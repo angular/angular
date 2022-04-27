@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, EventEmitter, forwardRef, Host, HostBinding, importProvidersFrom, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, INJECTOR_INITIALIZER, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, Directive, ElementRef, EventEmitter, forwardRef, Host, HostBinding, importProvidersFrom, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, INJECTOR_INITIALIZER, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -174,6 +174,45 @@ describe('importProvidersFrom', () => {
        expect(hasProviderWithToken(providers, A)).toBe(true);
        expect(hasProviderWithToken(providers, B)).toBe(true);
        expect(hasProviderWithToken(providers, C)).toBe(true);
+     });
+
+  it('should collect providers defined via `@NgModule.providers` when ModuleWithProviders type is used',
+     () => {
+       @NgModule({
+         providers: [
+           {provide: A, useValue: 'Original A'},  //
+           {provide: B, useValue: 'B'},           //
+           {provide: D, useValue: 'Original D', multi: true}
+         ]
+       })
+       class ModuleA {
+         static forRoot(): ModuleWithProviders<ModuleA> {
+           return {
+             ngModule: ModuleA,
+             providers: [
+               {provide: A, useValue: 'Overridden A'},  //
+               {provide: C, useValue: 'C'},             //
+               {provide: D, useValue: 'Extra D', multi: true}
+             ]
+           };
+         }
+       }
+
+       const providers = importProvidersFrom(ModuleA.forRoot());
+
+       // Expect all tokens to be collected.
+       expect(hasProviderWithToken(providers, A)).toBe(true);
+       expect(hasProviderWithToken(providers, B)).toBe(true);
+       expect(hasProviderWithToken(providers, C)).toBe(true);
+       expect(hasProviderWithToken(providers, D)).toBe(true);
+
+       const injector = createEnvironmentInjector(providers);
+
+       // Verify that overridden token A has the right value.
+       expect(injector.get(A)).toBe('Overridden A');
+
+       // Verify that a multi-provider has both values.
+       expect(injector.get(D)).toEqual(['Original D', 'Extra D']);
      });
 });
 
