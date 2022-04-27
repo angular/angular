@@ -1,3 +1,68 @@
+<a name="14.0.0-next.15"></a>
+# 14.0.0-next.15 (2022-04-27)
+## Breaking Changes
+### common
+- Adds new required class member that any implementors of the LocationStrategy will need to satisfy.
+  Location does not depend on PlatformLocation anymore.
+### compiler
+- Keyframes names are now prefixed with the component's "scope name".
+  For example, the following keyframes rule in a component definition,
+  whose "scope name" is host-my-cmp:
+  
+     @keyframes foo { ... }
+  
+  will become:
+  
+     @keyframes host-my-cmp_foo { ... }
+  
+  Any TypeScript/JavaScript code which relied on the names of keyframes rules
+  will no longer match.
+  
+  The recommended solutions in this case are to either:
+  - change the component's view encapsulation to the `None` or `ShadowDom`
+  - define keyframes rules in global stylesheets (e.g styles.css)
+  - define keyframes rules programmatically in code.
+### router
+- When a guard returns a `UrlTree`, the router would previously schedule
+  the redirect navigation within a `setTimeout`. This timeout is now removed,
+  which can result in test failures due to incorrectly written tests.
+  Tests which perform navigations should ensure that all timeouts are
+  flushed before making assertions. Tests should ensure they are capable
+  of handling all redirects from the original navigation.
+### bazel
+| Commit | Type | Description |
+| -- | -- | -- |
+| [68597bb0ca](https://github.com/angular/angular/commit/68597bb0ca958445655653a0a3cb206c01c7e0b3) | feat | speed up dev-turnaround by bundling types only when packaging ([#45405](https://github.com/angular/angular/pull/45405)) |
+| [970a3b5c70](https://github.com/angular/angular/commit/970a3b5c70fee29aa40945836ebeb464d75438e4) | fix | add this_is_bazel marker ([#45728](https://github.com/angular/angular/pull/45728)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [31d7c3bd71](https://github.com/angular/angular/commit/31d7c3bd71fdab3fef1b4615ecb8124fe6c165bd) | feat | add getState method to LocationStrategy interface ([#45648](https://github.com/angular/angular/pull/45648)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4d6a1d6722](https://github.com/angular/angular/commit/4d6a1d672210219328b33f4f96210870563066ee) | fix | scope css keyframes in emulated view encapsulation ([#42608](https://github.com/angular/angular/pull/42608)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5771b18a98](https://github.com/angular/angular/commit/5771b18a989c3c75d713ffb75cd7c047c63e4090) | feat | add the `bootstrapApplication` function ([#45674](https://github.com/angular/angular/pull/45674)) |
+| [5a10fc4f82](https://github.com/angular/angular/commit/5a10fc4f8287d448c88ce2f6c97c48307af34af1) | feat | implement standalone directives, components, and pipes ([#45687](https://github.com/angular/angular/pull/45687)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a50e2da64a](https://github.com/angular/angular/commit/a50e2da64a4297d1bc994a267203c2097da2efaf) | fix | ensure transitively loaded compiler code is tree-shakable ([#45405](https://github.com/angular/angular/pull/45405)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dea8c86cd5](https://github.com/angular/angular/commit/dea8c86cd57f8e1720634928805f9ea0ba8f0baa) | feat | add ariaCurrentWhenActive input to RouterLinkActive directive ([#45167](https://github.com/angular/angular/pull/45167)) |
+| [4962a4a332](https://github.com/angular/angular/commit/4962a4a3324d5972f364d768b38b21a33fdb7d7c) | feat | Allow `loadChildren` to return a `Route` array ([#45700](https://github.com/angular/angular/pull/45700)) |
+| [50004c143b](https://github.com/angular/angular/commit/50004c143ba9b1e041c7b30caf98f6582d3d26d4) | feat | Support lazy loading standalone components with `loadComponent` ([#45705](https://github.com/angular/angular/pull/45705)) |
+| [7b367d9d90](https://github.com/angular/angular/commit/7b367d9d908e15222645a45e2ba133b9d9da76b7) | refactor | Remove unnecessary setTimeout in UrlTree redirects ([#45735](https://github.com/angular/angular/pull/45735)) |
+## Special Thanks
+Alex Rickabaugh, Andrew Kushnir, Andrew Scott, George Kalpakas, Joey Perrott, Michal Materowski, Paul Gschwendtner, Pawel Kozlowski, Sumit Arora and dario-piotrowicz
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.5"></a>
 # 13.3.5 (2022-04-27)
 ### bazel
