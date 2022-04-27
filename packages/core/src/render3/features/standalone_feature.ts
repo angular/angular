@@ -56,6 +56,7 @@ export class StandaloneService implements OnDestroy {
     }
   }
 
+  /** @nocollapse */
   static ɵprov = /** @pureOrBreakMyCode */ defineInjectable({
     token: StandaloneService,
     providedIn: 'environment',
