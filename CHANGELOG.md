@@ -1,3 +1,14 @@
+<a name="13.3.5"></a>
+# 13.3.5 (2022-04-27)
+### bazel
+| Commit | Type | Description |
+| -- | -- | -- |
+| [63398e0eb4](https://github.com/angular/angular/commit/63398e0eb4d386eb43cf562e1350887d40489f0a) | fix | add this_is_bazel marker ([#45728](https://github.com/angular/angular/pull/45728)) |
+## Special Thanks
+Andrew Kushnir, George Kalpakas, Joey Perrott and dario-piotrowicz
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.14"></a>
 # 14.0.0-next.14 (2022-04-20)
 ## Breaking Changes
