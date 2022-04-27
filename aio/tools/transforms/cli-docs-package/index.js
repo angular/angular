@@ -1,12 +1,27 @@
+const {runfiles} = require("@bazel/runfiles");
 const {resolve} = require('canonical-path');
+const { existsSync } = require('fs');
 const semver = require('semver');
 const Package = require('dgeni').Package;
 const basePackage = require('../angular-base-package');
 const contentPackage = require('../content-package');
 const {CONTENTS_PATH, TEMPLATES_PATH, requireFolder} = require('../config');
 
-const CLI_SOURCE_PATH = resolve('external/angular_cli_src');
+const CLI_SOURCE_PATH = resolveCliSourcePath();
 const CLI_SOURCE_HELP_PATH = resolve(CLI_SOURCE_PATH, 'help');
+
+// The cli sources are downloaded as an external repository, so where
+// to resolve them depends on whether we are running dgeni under a build
+// target or a test target.
+function resolveCliSourcePath() {
+  // Case: build, find in execroot
+  const path = resolve('external', 'angular_cli_src')
+  if (existsSync(path)) {
+    return path;
+  }
+  // Case: bazel test, find in runfiles
+  return runfiles.resolveWorkspaceRelative('../angular_cli_src');
+}
 
 // Define the dgeni package for generating the docs
 module.exports =
@@ -65,3 +80,4 @@ module.exports =
           postProcessHtml.docTypes =
               postProcessHtml.docTypes.concat(['cli-command', 'cli-overview']);
         });
+
