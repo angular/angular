@@ -91,23 +91,18 @@ export abstract class StyleMigrator {
   }
 
   /**
-   * Create the new mixin nodes and add them after the provided
-   * all-components-theme mixin node
+   * Replaces the all-component-themes mixin with the MDC equivalent.
    *
-   * @param namespace the namespace being used for angular/material.
    * @param allComponentThemesNode a all-components-theme mixin node
    */
-  addNewMixinsAfterNode(namespace: string, allComponentThemesNode: postcss.AtRule) {
-    // We know there will be a theme name since it is an at-include rule
-    const themeName = allComponentThemesNode.params.match(THEME_NAME_REGEX)![0];
-    this.mixinChanges.forEach(mixinChange => {
-      let oldMixinNode = new postcss.AtRule({
-        params: `${namespace}.${mixinChange.old}${themeName}`,
-        name: 'include',
-      });
-      allComponentThemesNode.parent!.insertAfter(allComponentThemesNode, oldMixinNode);
-      this.replaceMixin(namespace, oldMixinNode);
+  replaceAllComponentThemeMixin(allComponentThemesNode: postcss.AtRule) {
+    allComponentThemesNode.cloneBefore({
+      params: allComponentThemesNode.params.replace(
+        'all-component-themes',
+        'all-mdc-component-themes',
+      ),
     });
+    allComponentThemesNode.remove();
   }
 
   /**

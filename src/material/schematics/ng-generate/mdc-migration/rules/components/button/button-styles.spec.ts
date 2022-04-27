@@ -87,58 +87,6 @@ describe('button styles', () => {
       );
     });
 
-    it('should add correct theme if all-component-themes mixin included', async () => {
-      await runMigrationTest(
-        `
-        @use '@angular/material' as mat;
-        $theme: ();
-        @include mat.all-component-themes($theme);
-      `,
-        `
-        @use '@angular/material' as mat;
-        $theme: ();
-        @include mat.all-component-themes($theme);
-        @include mat.mdc-button-theme($theme);
-        @include mat.mdc-button-typography($theme);
-        @include mat.mdc-fab-theme($theme);
-        @include mat.mdc-fab-typography($theme);
-        @include mat.mdc-icon-button-theme($theme);
-        @include mat.mdc-icon-button-typography($theme);
-      `,
-      );
-    });
-
-    it('should add multiple themes for multiple all-component-themes mixins', async () => {
-      await runMigrationTest(
-        `
-        @use '@angular/material' as mat;
-        $light-theme: ();
-        $dark-theme: ();
-        @include mat.all-component-themes($light-theme);
-        @include mat.all-component-themes($dark-theme);
-      `,
-        `
-        @use '@angular/material' as mat;
-        $light-theme: ();
-        $dark-theme: ();
-        @include mat.all-component-themes($light-theme);
-        @include mat.mdc-button-theme($light-theme);
-        @include mat.mdc-button-typography($light-theme);
-        @include mat.mdc-fab-theme($light-theme);
-        @include mat.mdc-fab-typography($light-theme);
-        @include mat.mdc-icon-button-theme($light-theme);
-        @include mat.mdc-icon-button-typography($light-theme);
-        @include mat.all-component-themes($dark-theme);
-        @include mat.mdc-button-theme($dark-theme);
-        @include mat.mdc-button-typography($dark-theme);
-        @include mat.mdc-fab-theme($dark-theme);
-        @include mat.mdc-fab-typography($dark-theme);
-        @include mat.mdc-icon-button-theme($dark-theme);
-        @include mat.mdc-icon-button-typography($dark-theme);
-      `,
-      );
-    });
-
     it('should preserve whitespace', async () => {
       await runMigrationTest(
         `

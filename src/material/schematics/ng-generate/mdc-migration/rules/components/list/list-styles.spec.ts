@@ -71,46 +71,6 @@ describe('list styles', () => {
       );
     });
 
-    it('should add correct theme if all-component-themes mixin included', async () => {
-      await runMigrationTest(
-        `
-        @use '@angular/material' as mat;
-        $theme: ();
-        @include mat.all-component-themes($theme);
-      `,
-        `
-        @use '@angular/material' as mat;
-        $theme: ();
-        @include mat.all-component-themes($theme);
-        @include mat.mdc-list-theme($theme);
-        @include mat.mdc-list-typography($theme);
-      `,
-      );
-    });
-
-    it('should add multiple themes for multiple all-component-themes mixins', async () => {
-      await runMigrationTest(
-        `
-        @use '@angular/material' as mat;
-        $light-theme: ();
-        $dark-theme: ();
-        @include mat.all-component-themes($light-theme);
-        @include mat.all-component-themes($dark-theme);
-      `,
-        `
-        @use '@angular/material' as mat;
-        $light-theme: ();
-        $dark-theme: ();
-        @include mat.all-component-themes($light-theme);
-        @include mat.mdc-list-theme($light-theme);
-        @include mat.mdc-list-typography($light-theme);
-        @include mat.all-component-themes($dark-theme);
-        @include mat.mdc-list-theme($dark-theme);
-        @include mat.mdc-list-typography($dark-theme);
-      `,
-      );
-    });
-
     it('should preserve whitespace', async () => {
       await runMigrationTest(
         `

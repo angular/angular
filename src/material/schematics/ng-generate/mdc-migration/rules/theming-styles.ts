@@ -45,9 +45,7 @@ export class ThemingStylesMigration extends Migration<ComponentMigrator[], Schem
     if (migrator) {
       migrator.styles.replaceMixin(this.namespace, atRule);
     } else if (atRule.params.includes('all-component-themes') && atRule.parent) {
-      this.upgradeData.forEach(m => {
-        m?.styles.addNewMixinsAfterNode(this.namespace, atRule);
-      });
+      this.upgradeData[0]?.styles.replaceAllComponentThemeMixin(atRule);
     }
   }
 
