@@ -23,6 +23,9 @@ import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../valid
 export const NG_MODEL_WITH_FORM_CONTROL_WARNING =
     new InjectionToken('NgModelWithFormControlWarning');
 
+export const NG_SUBMIT_AFTER_ASYNC_VALIDATION =
+    new InjectionToken<boolean>('NgSubmitAfterAsyncValidation');
+
 export const formControlBinding: any = {
   provide: NgControl,
   useExisting: forwardRef(() => FormControlDirective)

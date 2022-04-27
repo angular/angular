@@ -37,7 +37,7 @@ export {NgModelGroup} from './directives/ng_model_group';
 export {NumberValueAccessor} from './directives/number_value_accessor';
 export {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
 export {RangeValueAccessor} from './directives/range_value_accessor';
-export {FormControlDirective, NG_MODEL_WITH_FORM_CONTROL_WARNING} from './directives/reactive_directives/form_control_directive';
+export {FormControlDirective, NG_MODEL_WITH_FORM_CONTROL_WARNING, NG_SUBMIT_AFTER_ASYNC_VALIDATION} from './directives/reactive_directives/form_control_directive';
 export {FormControlName} from './directives/reactive_directives/form_control_name';
 export {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
 export {FormArrayName, FormGroupName} from './directives/reactive_directives/form_group_name';

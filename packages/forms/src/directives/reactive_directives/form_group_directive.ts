@@ -7,7 +7,9 @@
  */
 
 import {Directive, EventEmitter, forwardRef, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {first} from 'rxjs/operators';
 
+import {NG_SUBMIT_AFTER_ASYNC_VALIDATION} from '../../directives';
 import {FormArray} from '../../model/form_array';
 import {FormControl, isFormControl} from '../../model/form_control';
 import {FormGroup} from '../../model/form_group';
@@ -89,6 +91,12 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
 
   /**
    * @description
+   * whether to wait for async validation to complete before emiting ngSubmit
+   */
+  @Input() submitAfterAsyncValidation: boolean;
+
+  /**
+   * @description
    * Emits an event when the form submission has been triggered.
    */
   @Output() ngSubmit = new EventEmitter();
@@ -96,8 +104,13 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   constructor(
       @Optional() @Self() @Inject(NG_VALIDATORS) private validators: (Validator|ValidatorFn)[],
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private asyncValidators:
-          (AsyncValidator|AsyncValidatorFn)[]) {
+          (AsyncValidator|AsyncValidatorFn)[],
+      @Optional() @Inject(NG_SUBMIT_AFTER_ASYNC_VALIDATION) submitAfterAsyncValidation:
+          boolean = false) {
     super();
+
+    this.submitAfterAsyncValidation = !!submitAfterAsyncValidation;
+
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
   }
@@ -270,7 +283,12 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   onSubmit($event: Event): boolean {
     (this as {submitted: boolean}).submitted = true;
     syncPendingControls(this.form, this.directives);
-    this.ngSubmit.emit($event);
+    if (this.submitAfterAsyncValidation) {
+      this.form.statusChanges.pipe(first(status => status !== 'PENDING'))
+          .subscribe(() => this.ngSubmit.emit($event));
+    } else {
+      this.ngSubmit.emit($event);
+    }
     return false;
   }
 

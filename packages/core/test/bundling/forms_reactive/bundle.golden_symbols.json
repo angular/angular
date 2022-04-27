@@ -36,6 +36,9 @@
     "name": "ApplicationRef"
   },
   {
+    "name": "ArgumentOutOfRangeError"
+  },
+  {
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
@@ -117,6 +120,12 @@
     "name": "DefaultDomRenderer2"
   },
   {
+    "name": "DefaultIfEmptyOperator"
+  },
+  {
+    "name": "DefaultIfEmptySubscriber"
+  },
+  {
     "name": "DefaultIterableDiffer"
   },
   {
@@ -138,6 +147,9 @@
     "name": "EMAIL_REGEXP"
   },
   {
+    "name": "EMPTY"
+  },
+  {
     "name": "EMPTY_ARRAY"
   },
   {
@@ -151,6 +163,9 @@
   },
   {
     "name": "ElementRef"
+  },
+  {
+    "name": "EmptyError"
   },
   {
     "name": "EmulatedEncapsulationDomRenderer2"
@@ -169,6 +184,12 @@
   },
   {
     "name": "EventManagerPlugin"
+  },
+  {
+    "name": "FilterOperator"
+  },
+  {
+    "name": "FilterSubscriber"
   },
   {
     "name": "FormArray"
@@ -292,6 +313,9 @@
   },
   {
     "name": "NG_PROV_DEF"
+  },
+  {
+    "name": "NG_SUBMIT_AFTER_ASYNC_VALIDATION"
   },
   {
     "name": "NG_VALIDATORS"
@@ -465,6 +489,12 @@
     "name": "TRANSITION_ID"
   },
   {
+    "name": "TakeOperator"
+  },
+  {
+    "name": "TakeSubscriber"
+  },
+  {
     "name": "TemplateRef"
   },
   {
@@ -472,6 +502,12 @@
   },
   {
     "name": "TestabilityRegistry"
+  },
+  {
+    "name": "ThrowIfEmptyOperator"
+  },
+  {
+    "name": "ThrowIfEmptySubscriber"
   },
   {
     "name": "USE_VALUE"
@@ -720,7 +756,13 @@
     "name": "deepForEach"
   },
   {
+    "name": "defaultErrorFactory"
+  },
+  {
     "name": "defaultErrorLogger"
+  },
+  {
+    "name": "defaultIfEmpty"
   },
   {
     "name": "defaultIterableDiffersFactory"
@@ -753,7 +795,7 @@
     "name": "empty"
   },
   {
-    "name": "empty2"
+    "name": "empty3"
   },
   {
     "name": "enterDI"
@@ -784,6 +826,9 @@
   },
   {
     "name": "fillProperties"
+  },
+  {
+    "name": "filter"
   },
   {
     "name": "findAttrIndexInNode"
@@ -1492,6 +1537,12 @@
   },
   {
     "name": "subscribeToArray"
+  },
+  {
+    "name": "take"
+  },
+  {
+    "name": "throwIfEmpty"
   },
   {
     "name": "throwProviderNotFoundError"

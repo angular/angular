@@ -24,6 +24,16 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
       return TestBed.createComponent(component);
     }
 
+    function initTestWithConfig<T>(
+        component: Type<T>, config: Parameters<typeof FormsModule.withConfig>[0],
+        ...directives: Type<any>[]): ComponentFixture<T> {
+      TestBed.configureTestingModule({
+        declarations: [component, ...directives],
+        imports: [FormsModule.withConfig(config), CommonModule]
+      });
+      return TestBed.createComponent(component);
+    }
+
     describe('basic functionality', () => {
       it('should support ngModel for standalone fields', fakeAsync(() => {
            const fixture = initTest(StandaloneNgModel);
@@ -1244,6 +1254,99 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            fixture.detectChanges();
            tick();
            expect(form.submitted).toBe(false);
+         }));
+    });
+
+    describe('submitAfterAsyncValidation flag', () => {
+      it('should default submitAfterAsyncValidation to false', fakeAsync(() => {
+           const fixture = initTest(NgModelForm);
+           fixture.detectChanges();
+
+           const form = fixture.debugElement.children[0];
+           const ng_form = form.injector.get(NgForm);
+
+           expect(ng_form.submitAfterAsyncValidation).toBe(false);
+         }));
+
+      it('should accept submitAfterAsyncValidation from config object', fakeAsync(() => {
+           const fixture = initTestWithConfig(NgModelForm, {submitAfterAsyncValidation: true});
+
+           fixture.detectChanges();
+
+           const form = fixture.debugElement.children[0];
+           const ng_form = form.injector.get(NgForm);
+
+           expect(ng_form.submitAfterAsyncValidation).toBe(true);
+         }));
+
+      it('should accept and override submitAsyncValidation using the directive', fakeAsync(() => {
+           const fixture =
+               initTestWithConfig(NgModelFormSubmitAfterAsync, {submitAfterAsyncValidation: true});
+           fixture.detectChanges();
+
+           const form = fixture.debugElement.children[0];
+           const ng_form = form.injector.get(NgForm);
+
+           expect(ng_form.submitAfterAsyncValidation).toBe(false);
+         }));
+
+      it('should emit ngSubmit immediately after sync validation if flag is false',
+         fakeAsync(() => {
+           const fixture = initTest(NgModelAsyncForm, NgAsyncValidator);
+
+           const form = fixture.debugElement.children[0];
+           const ng_form = form.injector.get(NgForm);
+           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+           fixture.componentInstance.event = null!;
+           fixture.detectChanges();
+           tick();
+
+           // passing a value that fails sync validation
+           // so async validation will not run
+           // (this should ideally be moved into a seperate test for validation?)
+           input.value = '12345';
+           dispatchEvent(input, 'input');
+           dispatchEvent(form.nativeElement, 'submit');
+           expect(ng_form.status).toEqual('INVALID');
+           expect(fixture.componentInstance.event).not.toBeNull();
+
+           fixture.componentInstance.event = null!;
+           fixture.detectChanges();
+           tick();
+
+           // passing a value that satisfies sync validation
+           input.value = '1234567890';
+           dispatchEvent(input, 'input');
+           dispatchEvent(form.nativeElement, 'submit');
+           expect(ng_form.status).toEqual('PENDING');
+           expect(fixture.componentInstance.event).not.toBeNull();
+
+           tick();
+           expect(ng_form.status).toEqual('VALID');
+         }));
+
+      it('should emit ngSubmit after async validation if flag is true', fakeAsync(() => {
+           const fixture = initTestWithConfig(
+               NgModelAsyncForm, {submitAfterAsyncValidation: true}, NgAsyncValidator);
+
+           const form = fixture.debugElement.children[0];
+           const ng_form = form.injector.get(NgForm);
+           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+           fixture.componentInstance.event = null!;
+           fixture.detectChanges();
+           tick();
+
+           input.value = '1235467890';
+           dispatchEvent(input, 'input');
+           dispatchEvent(form.nativeElement, 'submit');
+           expect(ng_form.status).toEqual('PENDING');
+           expect(fixture.componentInstance.event).toBeNull();
+
+           tick();
+           expect(fixture.componentInstance.event).not.toBeNull();
+           expect(ng_form.status).toEqual('VALID');
          }));
     });
 
@@ -2721,6 +2824,36 @@ class NgModelNgIfForm {
   // TODO(issue/24571): remove '!'.
   email!: string;
 }
+
+@Component({
+  selector: 'ng-model-async-form',
+  template: `
+    <form (ngSubmit)="event=$event" (reset)="onReset()">
+      <input name="name" [(ngModel)]="name" minlength="10" [ngModelOptions]="options" ng-async-validator>
+    </form>
+  `
+})
+class NgModelAsyncForm {
+  // TODO(issue/24571): remove '!'.
+  name!: string|null;
+  // TODO(issue/24571): remove '!'.
+  event!: Event;
+  options = {};
+  onReset() {}
+}
+
+@Component({
+  selector: 'ng-model-form-submit-after-async',
+  template: `
+    <form [submitAfterAsyncValidation]="false">
+      <input name="name" [(ngModel)]="name">
+    </form>
+  `
+})
+class NgModelFormSubmitAfterAsync {
+  name!: string;
+}
+
 
 @Component({
   selector: 'ng-model-nested',

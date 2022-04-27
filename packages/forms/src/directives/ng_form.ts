@@ -7,7 +7,9 @@
  */
 
 import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Self} from '@angular/core';
+import {first} from 'rxjs/operators';
 
+import {NG_SUBMIT_AFTER_ASYNC_VALIDATION} from '../directives';
 import {AbstractControl, FormHooks} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
 import {FormGroup} from '../model/form_group';
@@ -132,11 +134,22 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   // TODO(issue/24571): remove '!'.
   @Input('ngFormOptions') options!: {updateOn?: FormHooks};
 
+  /**
+   * @description
+   * whether to wait for async validation to complete before emiting ngSubmit
+   */
+  @Input() submitAfterAsyncValidation: boolean;
+
   constructor(
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
-          (AsyncValidator|AsyncValidatorFn)[]) {
+          (AsyncValidator|AsyncValidatorFn)[],
+      @Optional() @Inject(NG_SUBMIT_AFTER_ASYNC_VALIDATION) submitAfterAsyncValidation:
+          boolean = false) {
     super();
+
+    this.submitAfterAsyncValidation = !!submitAfterAsyncValidation;
+
     this.form =
         new FormGroup({}, composeValidators(validators), composeAsyncValidators(asyncValidators));
   }
@@ -297,7 +310,12 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   onSubmit($event: Event): boolean {
     (this as {submitted: boolean}).submitted = true;
     syncPendingControls(this.form, this._directives);
-    this.ngSubmit.emit($event);
+    if (this.submitAfterAsyncValidation) {
+      this.form.statusChanges.pipe(first(status => status !== 'PENDING'))
+          .subscribe(() => this.ngSubmit.emit($event));
+    } else {
+      this.ngSubmit.emit($event);
+    }
     return false;
   }
 

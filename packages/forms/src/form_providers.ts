@@ -8,7 +8,7 @@
 
 import {ModuleWithProviders, NgModule} from '@angular/core';
 
-import {InternalFormsSharedModule, NG_MODEL_WITH_FORM_CONTROL_WARNING, REACTIVE_DRIVEN_DIRECTIVES, TEMPLATE_DRIVEN_DIRECTIVES} from './directives';
+import {InternalFormsSharedModule, NG_MODEL_WITH_FORM_CONTROL_WARNING, NG_SUBMIT_AFTER_ASYNC_VALIDATION, REACTIVE_DRIVEN_DIRECTIVES, TEMPLATE_DRIVEN_DIRECTIVES} from './directives';
 
 /**
  * Exports the required providers and directives for template-driven forms,
@@ -27,6 +27,22 @@ import {InternalFormsSharedModule, NG_MODEL_WITH_FORM_CONTROL_WARNING, REACTIVE_
   exports: [InternalFormsSharedModule, TEMPLATE_DRIVEN_DIRECTIVES]
 })
 export class FormsModule {
+  /**
+   * @description
+   * Provides options for configuring the forms module.
+   *
+   * @param opts An object of configuration options
+   * * `submitAfterAsyncValidation` Configures whether ngSubmit waits for async validation to finish
+   * before emitting.
+   */
+  static withConfig(opts: {submitAfterAsyncValidation?: boolean}):
+      ModuleWithProviders<FormsModule> {
+    return {
+      ngModule: FormsModule,
+      providers:
+          [{provide: NG_SUBMIT_AFTER_ASYNC_VALIDATION, useValue: opts.submitAfterAsyncValidation}]
+    };
+  }
 }
 
 /**
@@ -56,12 +72,14 @@ export class ReactiveFormsModule {
    * binding is used with reactive form directives.
    */
   static withConfig(opts: {
-    /** @deprecated as of v6 */ warnOnNgModelWithFormControl: 'never'|'once'|'always'
+    /** @deprecated as of v6 */ warnOnNgModelWithFormControl: 'never'|'once'|'always',
+    submitAfterAsyncValidation?: boolean
   }): ModuleWithProviders<ReactiveFormsModule> {
     return {
       ngModule: ReactiveFormsModule,
       providers: [
-        {provide: NG_MODEL_WITH_FORM_CONTROL_WARNING, useValue: opts.warnOnNgModelWithFormControl}
+        {provide: NG_MODEL_WITH_FORM_CONTROL_WARNING, useValue: opts.warnOnNgModelWithFormControl},
+        {provide: NG_SUBMIT_AFTER_ASYNC_VALIDATION, useValue: opts.submitAfterAsyncValidation}
       ]
     };
   }

@@ -452,7 +452,7 @@ export class FormGroup<TControl extends {
 
 // @public
 export class FormGroupDirective extends ControlContainer implements Form, OnChanges, OnDestroy {
-    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
+    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], submitAfterAsyncValidation?: boolean);
     addControl(dir: FormControlName): FormControl;
     addFormArray(dir: FormArrayName): void;
     addFormGroup(dir: FormGroupName): void;
@@ -475,12 +475,13 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     removeFormArray(dir: FormArrayName): void;
     removeFormGroup(dir: FormGroupName): void;
     resetForm(value?: any): void;
+    submitAfterAsyncValidation: boolean;
     readonly submitted: boolean;
     updateModel(dir: FormControlName, value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupDirective, "[formGroup]", ["ngForm"], { "form": "formGroup"; }, { "ngSubmit": "ngSubmit"; }, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupDirective, "[formGroup]", ["ngForm"], { "form": "formGroup"; "submitAfterAsyncValidation": "submitAfterAsyncValidation"; }, { "ngSubmit": "ngSubmit"; }, never, never, false>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupDirective, [{ optional: true; self: true; }, { optional: true; self: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupDirective, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
 }
 
 // @public
@@ -537,6 +538,9 @@ export interface FormRecord<TControl> {
 
 // @public
 export class FormsModule {
+    static withConfig(opts: {
+        submitAfterAsyncValidation?: boolean;
+    }): ModuleWithProviders<FormsModule>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormsModule, never>;
     // (undocumented)
@@ -617,7 +621,7 @@ export class NgControlStatusGroup extends AbstractControlStatus {
 
 // @public
 export class NgForm extends ControlContainer implements Form, AfterViewInit {
-    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
+    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], submitAfterAsyncValidation?: boolean);
     addControl(dir: NgModel): void;
     addFormGroup(dir: NgModelGroup): void;
     get control(): FormGroup;
@@ -643,12 +647,13 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
     setValue(value: {
         [key: string]: any;
     }): void;
+    submitAfterAsyncValidation: boolean;
     readonly submitted: boolean;
     updateModel(dir: NgControl, value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgForm, "form:not([ngNoForm]):not([formGroup]),ng-form,[ngForm]", ["ngForm"], { "options": "ngFormOptions"; }, { "ngSubmit": "ngSubmit"; }, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgForm, "form:not([ngNoForm]):not([formGroup]),ng-form,[ngForm]", ["ngForm"], { "options": "ngFormOptions"; "submitAfterAsyncValidation": "submitAfterAsyncValidation"; }, { "ngSubmit": "ngSubmit"; }, never, never, false>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<NgForm, [{ optional: true; self: true; }, { optional: true; self: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgForm, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
 }
 
 // @public
@@ -758,6 +763,7 @@ export class RangeValueAccessor extends BuiltInControlValueAccessor implements C
 export class ReactiveFormsModule {
     static withConfig(opts: {
         warnOnNgModelWithFormControl: 'never' | 'once' | 'always';
+        submitAfterAsyncValidation?: boolean;
     }): ModuleWithProviders<ReactiveFormsModule>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<ReactiveFormsModule, never>;

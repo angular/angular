@@ -100,6 +100,16 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
       return TestBed.createComponent(component);
     }
 
+    function initReactiveFormsTestWithConfig<T>(
+        component: Type<T>, config: Parameters<typeof ReactiveFormsModule.withConfig>[0],
+        ...directives: Type<any>[]): ComponentFixture<T> {
+      TestBed.configureTestingModule({
+        declarations: [component, ...directives],
+        imports: [ReactiveFormsModule.withConfig(config)]
+      });
+      return TestBed.createComponent(component);
+    }
+
     // Helper method that attaches a spy to a `validate` function on a Validator class.
     function validatorSpyOn(validatorClass: any) {
       return spyOn(validatorClass.prototype, 'validate').and.callThrough();
@@ -995,6 +1005,106 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
            form.reset();
          });
+    });
+
+    describe('submitAfterAsyncValidation flag', () => {
+      it('should default submitAfterAsyncValidation to false', fakeAsync(() => {
+           const fixture = initReactiveFormsTest(FormGroupComp);
+           fixture.componentInstance.form = new FormGroup({login: new FormControl('loginValue')});
+           fixture.componentInstance.event = null!;
+           fixture.detectChanges();
+
+           const form_directive = fixture.debugElement.children[0].injector.get(FormGroupDirective);
+
+           expect(form_directive.submitAfterAsyncValidation).toBe(false);
+         }));
+
+      it('should accept submitAfterAsyncValidation from config object', fakeAsync(() => {
+           const fixture = initReactiveFormsTestWithConfig(
+               FormGroupComp,
+               {submitAfterAsyncValidation: true, warnOnNgModelWithFormControl: 'always'});
+           fixture.componentInstance.form = new FormGroup({login: new FormControl('loginValue')});
+           fixture.componentInstance.event = null!;
+           fixture.detectChanges();
+
+           const form_directive = fixture.debugElement.children[0].injector.get(FormGroupDirective);
+
+           expect(form_directive.submitAfterAsyncValidation).toBe(true);
+         }));
+
+      it('should accept and override submitAsyncValidation using the directive', fakeAsync(() => {
+           const fixture = initReactiveFormsTestWithConfig(
+               FormGroupCompSubmitAfterAsync,
+               {submitAfterAsyncValidation: true, warnOnNgModelWithFormControl: 'always'});
+           fixture.componentInstance.form = new FormGroup({login: new FormControl('loginValue')});
+           fixture.componentInstance.event = null!;
+           fixture.detectChanges();
+
+           const form_directive = fixture.debugElement.children[0].injector.get(FormGroupDirective);
+
+           expect(form_directive.submitAfterAsyncValidation).toBe(false);
+         }));
+
+      it('should emit ngSubmit immediately after sync validation if flag is false',
+         fakeAsync(() => {
+           const fixture = initReactiveFormsTest(FormGroupComp);
+           fixture.componentInstance.form = new FormGroup({
+             login: new FormControl(null, {
+               validators: [Validators.minLength(5)],
+               asyncValidators: [() => Promise.resolve(null)]
+             })
+           });
+           fixture.componentInstance.event = null!;
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.children[0];
+           const form_directive = form.injector.get(FormGroupDirective);
+
+           // passing value that fails sync validation
+           form_directive.form.setValue({login: '123'});
+           expect(form_directive.status).toBe('INVALID');
+           dispatchEvent(form.nativeElement, 'submit');
+           expect(fixture.componentInstance.event).not.toBeNull();
+           expect(form_directive.status).toBe('INVALID');
+           fixture.componentInstance.event = null!;
+           fixture.detectChanges();
+           tick();
+
+           // passing a value that satisfies sync validation
+           form_directive.form.setValue({login: '12345'});
+           dispatchEvent(form.nativeElement, 'submit');
+           expect(fixture.componentInstance.event).not.toBeNull();
+           expect(form_directive.status).toBe('PENDING');
+           tick();
+           expect(form_directive.status).toBe('VALID');
+         }));
+
+      it('should emit ngSubmit after async validation if flag is true', fakeAsync(() => {
+           const fixture = initReactiveFormsTestWithConfig(
+               FormGroupComp,
+               {submitAfterAsyncValidation: true, warnOnNgModelWithFormControl: 'always'});
+           fixture.componentInstance.form = new FormGroup({
+             login: new FormControl(null, {
+               validators: [Validators.minLength(5)],
+               asyncValidators: [() => Promise.resolve(null)]
+             })
+           });
+           fixture.componentInstance.event = null!;
+           fixture.detectChanges();
+           tick();
+
+           const form = fixture.debugElement.children[0];
+           const form_directive = form.injector.get(FormGroupDirective);
+
+           form_directive.form.setValue({login: '12345'});
+           dispatchEvent(form.nativeElement, 'submit');
+           expect(fixture.componentInstance.event).toBeNull();
+           expect(form_directive.status).toBe('PENDING');
+           tick();
+           expect(fixture.componentInstance.event).not.toBeNull();
+           expect(form_directive.status).toBe('VALID');
+         }));
     });
 
     describe('setting status classes', () => {
@@ -5166,6 +5276,22 @@ class FormControlComp {
     </form>`
 })
 class FormGroupComp {
+  // TODO(issue/24571): remove '!'.
+  control!: FormControl;
+  // TODO(issue/24571): remove '!'.
+  form!: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  event!: Event;
+}
+
+@Component({
+  selector: 'form-group-comp-submit-after-async',
+  template: `
+    <form [formGroup]="form" (ngSubmit)="event=$event" [submitAfterAsyncValidation]="false">
+      <input type="text" formControlName="login">
+    </form>`
+})
+class FormGroupCompSubmitAfterAsync {
   // TODO(issue/24571): remove '!'.
   control!: FormControl;
   // TODO(issue/24571): remove '!'.
