@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, createNgModuleRef, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, Injectable, InjectionToken, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element, ɵɵproperty as property} from '@angular/core';
+import {Component, createNgModuleRef, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, Directive, Injectable, InjectionToken, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element, ɵɵproperty as property} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -100,6 +100,92 @@ describe('NgModule', () => {
 
     TestBed.configureTestingModule({imports: [AppModule]});
     expect(TestBed.inject(Service).initializations).toEqual(['RoutesModule', 'AppModule']);
+  });
+
+  describe('standalone components, directives and pipes', () => {
+    it('should throw when a standalone component is added to NgModule declarations', () => {
+      @Component({
+        selector: 'my-comp',
+        standalone: true,
+        template: '',
+      })
+      class MyComp {
+      }
+
+      @NgModule({
+        declarations: [MyComp],
+      })
+      class MyModule {
+      }
+
+      TestBed.configureTestingModule({imports: [MyModule]});
+
+      expect(() => {
+        TestBed.createComponent(MyComp);
+      })
+          .toThrowError(
+              `Unexpected "MyComp" declaration in "MyModule" NgModule. "MyComp" is marked as standalone and can't be declared in any NgModule - did you intend to import it?`);
+    });
+
+    it('should throw when a standalone directive is added to NgModule declarations', () => {
+      @Directive({
+        selector: '[my-dir]',
+        standalone: true,
+      })
+      class MyDir {
+      }
+
+      @Component({
+        selector: 'my-comp',
+        template: '',
+      })
+      class MyComp {
+      }
+
+      @NgModule({
+        declarations: [MyDir],
+      })
+      class MyModule {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComp], imports: [MyModule]});
+
+      expect(() => {
+        TestBed.createComponent(MyComp);
+      })
+          .toThrowError(
+              `Unexpected "MyDir" declaration in "MyModule" NgModule. "MyDir" is marked as standalone and can't be declared in any NgModule - did you intend to import it?`);
+    });
+
+    it('should throw when a standalone pipe is added to NgModule declarations', () => {
+      @Pipe({
+        name: 'my-pipe',
+        standalone: true,
+      })
+      class MyPipe {
+      }
+
+      @Component({
+        selector: 'my-comp',
+        template: '',
+      })
+      class MyComp {
+      }
+
+      @NgModule({
+        declarations: [MyPipe],
+      })
+      class MyModule {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComp], imports: [MyModule]});
+
+      expect(() => {
+        TestBed.createComponent(MyComp);
+      })
+          .toThrowError(
+              `Unexpected "MyPipe" declaration in "MyModule" NgModule. "MyPipe" is marked as standalone and can't be declared in any NgModule - did you intend to import it?`);
+    });
   });
 
   describe('destroy', () => {
