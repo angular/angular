@@ -6,24 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, NgModuleFactory, NgModuleRef, PlatformRef, StaticProvider, Type, ɵisPromise} from '@angular/core';
-import {ɵTRANSITION_ID} from '@angular/platform-browser';
+import {ApplicationRef, importProvidersFrom, Injector, NgModuleFactory, NgModuleRef, PlatformRef, Provider, StaticProvider, Type, ɵbootstrapApplication as bootstrapApplication, ɵisPromise} from '@angular/core';
+import {BrowserModule, ɵTRANSITION_ID} from '@angular/platform-browser';
 import {first} from 'rxjs/operators';
 
 import {PlatformState} from './platform_state';
-import {platformDynamicServer, platformServer} from './server';
+import {platformDynamicServer, platformServer, ServerModule} from './server';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
 
 interface PlatformOptions {
   document?: string;
   url?: string;
-  extraProviders?: StaticProvider[];
+  platformProviders?: Provider[];
 }
 
 function _getPlatform(
     platformFactory: (extraProviders: StaticProvider[]) => PlatformRef,
     options: PlatformOptions): PlatformRef {
-  const extraProviders = options.extraProviders ? options.extraProviders : [];
+  const extraProviders = options.platformProviders ?? [];
   return platformFactory([
     {provide: INITIAL_CONFIG, useValue: {document: options.document, url: options.url}},
     extraProviders
@@ -31,15 +31,19 @@ function _getPlatform(
 }
 
 function _render<T>(
-    platform: PlatformRef, moduleRefPromise: Promise<NgModuleRef<T>>): Promise<string> {
-  return moduleRefPromise.then((moduleRef) => {
-    const transitionId = moduleRef.injector.get(ɵTRANSITION_ID, null);
+    platform: PlatformRef,
+    bootstrapPromise: Promise<NgModuleRef<T>|ApplicationRef>): Promise<string> {
+  return bootstrapPromise.then((moduleOrApplicationRef) => {
+    const environmentInjector = (moduleOrApplicationRef as {injector: Injector}).injector;
+    const transitionId = environmentInjector.get(ɵTRANSITION_ID, null);
     if (!transitionId) {
       throw new Error(
           `renderModule[Factory]() requires the use of BrowserModule.withServerTransition() to ensure
 the server-rendered app can be properly bootstrapped into a client app.`);
     }
-    const applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
+    const applicationRef: ApplicationRef = moduleOrApplicationRef instanceof ApplicationRef ?
+        moduleOrApplicationRef :
+        environmentInjector.get(ApplicationRef);
     return applicationRef.isStable.pipe((first((isStable: boolean) => isStable)))
         .toPromise()
         .then(() => {
@@ -48,7 +52,8 @@ the server-rendered app can be properly bootstrapped into a client app.`);
           const asyncPromises: Promise<any>[] = [];
 
           // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
-          const callbacks = moduleRef.injector.get(BEFORE_APP_SERIALIZED, null);
+          const callbacks = environmentInjector.get(BEFORE_APP_SERIALIZED, null);
+
           if (callbacks) {
             for (const callback of callbacks) {
               try {
@@ -98,8 +103,54 @@ the server-rendered app can be properly bootstrapped into a client app.`);
 export function renderModule<T>(
     module: Type<T>, options: {document?: string, url?: string, extraProviders?: StaticProvider[]}):
     Promise<string> {
-  const platform = _getPlatform(platformDynamicServer, options);
+  const {document, url, extraProviders: platformProviders} = options;
+  const platform = _getPlatform(platformDynamicServer, {document, url, platformProviders});
   return _render(platform, platform.bootstrapModule(module));
+}
+
+/**
+ * Bootstraps an instance of an Angular application and renders it to a string.
+ *
+ * Note: the root component passed into this function *must* be a standalone one (should have the
+ * `standalone: true` flag in the `@Component` decorator config).
+ *
+ * ```typescript
+ * @Component({
+ *   standalone: true,
+ *   template: 'Hello world!'
+ * })
+ * class RootComponent {}
+ *
+ * const output: string = await renderApplication(RootComponent, 'server-app');
+ * ```
+ *
+ * @param rootComponent A reference to a Standalone Component that should be rendered.
+ * @param appId A string identifier for the application. The id is used to prefix all
+ *              server-generated stylings and state keys of the application in TransferState use
+ * cases.
+ * @param options Additional configuration for the render operation:
+ *  - `document` - the full document HTML of the page to render, as a string.
+ *  - `url` - the URL for the current render request.
+ *  - `providers` - set of application level providers for the current render request.
+ *  - `platformProviders` - the platform level providers for the current render request.
+ * @returns A Promise, that returns serialized (to a string) rendered page, once resolved.
+ *
+ * @publicApi
+ */
+export function renderApplication<T>(rootComponent: Type<T>, appId: string, options: {
+  document?: string,
+  url?: string,
+  providers?: Provider[],
+  platformProviders?: Provider[],
+}): Promise<string> {
+  const {document, url, platformProviders} = options;
+  const platform = _getPlatform(platformDynamicServer, {document, url, platformProviders});
+  const appProviders = [
+    ...importProvidersFrom(BrowserModule.withServerTransition({appId})),
+    ...importProvidersFrom(ServerModule),
+    ...(options.providers ?? []),
+  ];
+  return _render(platform, bootstrapApplication({rootComponent, appProviders}));
 }
 
 /**
@@ -119,6 +170,7 @@ export function renderModuleFactory<T>(
     moduleFactory: NgModuleFactory<T>,
     options: {document?: string, url?: string, extraProviders?: StaticProvider[]}):
     Promise<string> {
-  const platform = _getPlatform(platformServer, options);
+  const {document, url, extraProviders: platformProviders} = options;
+  const platform = _getPlatform(platformServer, {document, url, platformProviders});
   return _render(platform, platform.bootstrapModuleFactory(moduleFactory));
 }
