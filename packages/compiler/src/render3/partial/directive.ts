@@ -22,7 +22,7 @@ import {toOptionalLiteralMap} from './util';
  *
  * Do not include any prerelease in these versions as they are ignored.
  */
-const MINIMUM_PARTIAL_LINKER_VERSION = '12.0.0';
+const MINIMUM_PARTIAL_LINKER_VERSION = '14.0.0';
 
 /**
  * Compile a directive declaration defined by the `R3DirectiveMetadata`.
