@@ -1,0 +1,10 @@
+filegroup(
+    name = "templates",
+    srcs = glob([
+        "**/*.html",
+        "**/*.js",
+        "**/*.json",
+        "**/*.xml",
+    ]),
+    visibility = ["//aio/tools/transforms:__subpackages__"],
+)

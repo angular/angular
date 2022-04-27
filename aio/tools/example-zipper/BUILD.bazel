@@ -6,7 +6,7 @@ nodejs_binary(
     name = "generate-example-zips",
     data = [
         "exampleZipper.mjs",
-        "//aio/tools/transforms",
+        "//aio/tools/transforms/examples-package",
         "@aio_npm//archiver",
         "@aio_npm//canonical-path",
         "@aio_npm//fs-extra",
