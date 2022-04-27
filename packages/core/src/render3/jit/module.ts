@@ -207,7 +207,7 @@ function verifySemanticsOfNgModuleDef(
     importingModule?: NgModuleType): void {
   if (verifiedNgModule.get(moduleType)) return;
 
-  // skip verifications of standalone components, direcrtives and pipes
+  // skip verifications of standalone components, directives and pipes
   if (isStandalone(moduleType)) return;
 
   verifiedNgModule.set(moduleType, true);
@@ -232,6 +232,7 @@ function verifySemanticsOfNgModuleDef(
   const exports = maybeUnwrapFn(ngModuleDef.exports);
   declarations.forEach(verifyDeclarationsHaveDefinitions);
   declarations.forEach(verifyDirectivesHaveSelector);
+  declarations.forEach((declarationType) => verifyNotStandalone(declarationType, moduleType));
   const combinedDeclarations: Type<any>[] = [
     ...declarations.map(resolveForwardRef),
     ...flatten(imports.map(computeCombinedExports)).map(resolveForwardRef),
@@ -272,6 +273,17 @@ function verifySemanticsOfNgModuleDef(
     const def = getDirectiveDef(type);
     if (!getComponentDef(type) && def && def.selectors.length == 0) {
       errors.push(`Directive ${stringifyForError(type)} has no selector, please add it!`);
+    }
+  }
+
+  function verifyNotStandalone(type: Type<any>, moduleType: NgModuleType): void {
+    type = resolveForwardRef(type);
+    const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
+    if (def?.standalone) {
+      errors.push(`Unexpected "${stringifyForError(type)}" declaration in "${
+          stringifyForError(moduleType)}" NgModule. "${
+          stringifyForError(
+              type)}" is marked as standalone and can't be declared in any NgModule - did you intend to import it?`);
     }
   }
 
