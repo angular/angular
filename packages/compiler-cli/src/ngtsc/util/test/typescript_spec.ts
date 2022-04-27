@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FileSystem, getFileSystem} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {getRootDirs} from '../src/typescript';
+import {FileSystem, getFileSystem} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {getRootDirs} from '../src/typescript.js';
 
 runInEachFileSystem(() => {
   let fs: FileSystem;

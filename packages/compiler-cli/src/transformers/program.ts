@@ -7,9 +7,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgtscProgram} from '../ngtsc/program';
+import {NgtscProgram} from '../ngtsc/program.js';
 
-import {CompilerHost, CompilerOptions, Program} from './api';
+import {CompilerHost, CompilerOptions, Program} from './api.js';
 
 export function createProgram({rootNames, options, host, oldProgram}: {
   rootNames: ReadonlyArray<string>,

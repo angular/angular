@@ -5,15 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {EntryPointWithDependencies} from '../dependencies/dependency_host';
-import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
-import {NgccConfiguration} from '../packages/configuration';
-import {PathMappings} from '../path_mappings';
+import {AbsoluteFsPath, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {EntryPointWithDependencies} from '../dependencies/dependency_host.js';
+import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver.js';
+import {NgccConfiguration} from '../packages/configuration.js';
+import {PathMappings} from '../path_mappings.js';
 
-import {EntryPointFinder} from './interface';
-import {getBasePaths} from './utils';
+import {EntryPointFinder} from './interface.js';
+import {getBasePaths} from './utils.js';
 
 /**
  * An EntryPointFinder that starts from a set of initial files and only returns entry-points that

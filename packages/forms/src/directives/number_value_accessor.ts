@@ -8,7 +8,7 @@
 
 import {Directive, ElementRef, forwardRef, Renderer2} from '@angular/core';
 
-import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor.js';
 
 export const NUMBER_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,

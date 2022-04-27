@@ -7,10 +7,10 @@
  */
 import {AnimationPlayer, ɵStyleDataMap} from '@angular/animations';
 
-import {computeStyle} from '../../util';
-import {SpecialCasedStyles} from '../special_cased_styles';
+import {computeStyle} from '../../util.js';
+import {SpecialCasedStyles} from '../special_cased_styles.js';
 
-import {DOMAnimation} from './dom_animation';
+import {DOMAnimation} from './dom_animation.js';
 
 export class WebAnimationsPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];

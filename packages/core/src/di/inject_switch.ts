@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {throwProviderNotFoundError} from '../render3/errors_di';
-import {assertNotEqual} from '../util/assert';
-import {stringify} from '../util/stringify';
+import {throwProviderNotFoundError} from '../render3/errors_di.js';
+import {assertNotEqual} from '../util/assert.js';
+import {stringify} from '../util/stringify.js';
 
-import {getInjectableDef, ɵɵInjectableDeclaration} from './interface/defs';
-import {InjectFlags} from './interface/injector';
-import {ProviderToken} from './provider_token';
+import {getInjectableDef, ɵɵInjectableDeclaration} from './interface/defs.js';
+import {InjectFlags} from './interface/injector.js';
+import {ProviderToken} from './provider_token.js';
 
 
 /**

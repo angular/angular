@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {extractProjectableNodes} from '../src/extract-projectable-nodes';
+import {extractProjectableNodes} from '../src/extract-projectable-nodes.js';
 
 describe('extractProjectableNodes()', () => {
   let elem: HTMLElement;

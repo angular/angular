@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {RootAppModule} from './root';
+export {RootAppModule} from './root.js';

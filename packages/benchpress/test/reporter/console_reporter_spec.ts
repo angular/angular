@@ -8,7 +8,7 @@
 
 import {StaticProvider} from '@angular/core';
 
-import {ConsoleReporter, Injector, MeasureValues, SampleDescription} from '../../index';
+import {ConsoleReporter, Injector, MeasureValues, SampleDescription} from '../../index.js';
 
 {
   describe('console reporter', () => {

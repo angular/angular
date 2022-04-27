@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {setAngularJSGlobal} from '../../src/angular1';
+import {setAngularJSGlobal} from '../../src/angular1.js';
 
 // Whether the upgrade tests should run against AngularJS minified or not. This can be
 // temporarily switched to "false" in order to make it easy to debug AngularJS locally.

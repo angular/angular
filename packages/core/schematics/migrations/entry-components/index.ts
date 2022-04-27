@@ -10,10 +10,10 @@ import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {relative} from 'path';
 import ts from 'typescript';
 
-import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
+import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths.js';
+import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host.js';
 
-import {migrateEntryComponentsUsages} from './util';
+import {migrateEntryComponentsUsages} from './util.js';
 
 
 /** Migration that removes `entryComponents` usages. */

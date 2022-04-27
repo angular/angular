@@ -9,7 +9,7 @@
 import {NgZone} from '@angular/core';
 import {Events, MessageBus, Parameters} from 'protocol';
 
-import {ChromeMessageBus} from './chrome-message-bus';
+import {ChromeMessageBus} from './chrome-message-bus.js';
 
 export class ZoneAwareChromeMessageBus extends MessageBus<Events> {
   private _bus: ChromeMessageBus;

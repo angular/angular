@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, Metric, MultiMetric} from '../../index';
+import {Injector, Metric, MultiMetric} from '../../index.js';
 
 (function() {
 function createMetric(ids: any[]) {

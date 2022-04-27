@@ -13,4 +13,4 @@
  * @description
  * Entry point for all public APIs of this package.
  */
-export * from './src/testing';
+export * from './src/testing.js';

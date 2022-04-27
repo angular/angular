@@ -8,8 +8,8 @@
 
 import {ComponentFactoryResolver, ComponentRef, EnvironmentInjector} from '@angular/core';
 
-import {RouterOutletContract} from './directives/router_outlet';
-import {ActivatedRoute} from './router_state';
+import {RouterOutletContract} from './directives/router_outlet.js';
+import {ActivatedRoute} from './router_state.js';
 
 
 /**

@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {dirname, relative, resolve, toRelativeImport} from '../../file_system';
-import {stripExtension} from '../../file_system/src/util';
+import {dirname, relative, resolve, toRelativeImport} from '../../file_system/index.js';
+import {stripExtension} from '../../file_system/src/util.js';
 
 export function relativePathBetween(from: string, to: string): string|null {
   const relativePath = stripExtension(relative(dirname(resolve(from)), resolve(to)));

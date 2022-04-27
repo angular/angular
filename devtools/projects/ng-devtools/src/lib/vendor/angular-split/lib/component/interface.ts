@@ -1,6 +1,6 @@
 // tslint:disable
 
-import {SplitAreaDirective} from './splitArea.directive';
+import {SplitAreaDirective} from './splitArea.directive.js';
 
 export interface IPoint {
   x: number;

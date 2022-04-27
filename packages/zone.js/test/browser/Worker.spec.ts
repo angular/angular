@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {zoneSymbol} from '../../lib/common/utils';
-import {asyncTest, ifEnvSupports} from '../test-util';
+import {zoneSymbol} from '../../lib/common/utils.js';
+import {asyncTest, ifEnvSupports} from '../test-util.js';
 
 function workerSupport() {
   const Worker = (window as any)['Worker'];

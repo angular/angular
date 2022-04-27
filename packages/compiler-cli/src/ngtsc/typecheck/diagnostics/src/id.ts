@@ -7,9 +7,9 @@
  */
 
 import ts from 'typescript';
-import {DeclarationNode} from '../../../reflection';
 
-import {TemplateId} from '../../api';
+import {DeclarationNode} from '../../../reflection/index.js';
+import {TemplateId} from '../../api/index.js';
 
 
 const TEMPLATE_ID = Symbol('ngTemplateId');

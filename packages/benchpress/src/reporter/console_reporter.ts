@@ -7,11 +7,12 @@
  */
 
 import {Inject, Injectable, InjectionToken} from '@angular/core';
-import {MeasureValues} from '../measure_values';
-import {Reporter} from '../reporter';
-import {SampleDescription} from '../sample_description';
 
-import {formatNum, formatStats, sortedProps} from './util';
+import {MeasureValues} from '../measure_values.js';
+import {Reporter} from '../reporter.js';
+import {SampleDescription} from '../sample_description.js';
+
+import {formatNum, formatStats, sortedProps} from './util.js';
 
 
 /**

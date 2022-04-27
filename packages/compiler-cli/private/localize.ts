@@ -11,6 +11,6 @@
  * package requires.
  */
 
-export * from '../src/ngtsc/logging';
-export * from '../src/ngtsc/file_system';
-export {SourceFile, SourceFileLoader} from '../src/ngtsc/sourcemaps';
+export * from '../src/ngtsc/logging/index.js';
+export * from '../src/ngtsc/file_system/index.js';
+export {SourceFile, SourceFileLoader} from '../src/ngtsc/sourcemaps/index.js';

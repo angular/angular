@@ -8,7 +8,7 @@
 
 import {ElementProfile, ProfilerFrame} from 'protocol';
 
-import {RecordFormatter} from './record-formatter';
+import {RecordFormatter} from './record-formatter.js';
 
 class MockFormatter extends RecordFormatter<any> {
   override addFrame(nodes: any[], elements: ElementProfile[]): void {

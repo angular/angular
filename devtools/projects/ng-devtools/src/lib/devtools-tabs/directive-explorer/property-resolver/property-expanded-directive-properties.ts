@@ -8,7 +8,7 @@
 
 import {Descriptor, NestedProp, PropType} from 'protocol';
 
-import {FlatNode} from './element-property-resolver';
+import {FlatNode} from './element-property-resolver.js';
 
 export const getExpandedDirectiveProperties = (data: FlatNode[]): NestedProp[] => {
   const getChildren = (prop: Descriptor) => {

@@ -5,19 +5,19 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import '../util/ng_dev_mode';
+import '../util/ng_dev_mode.js';
 
-import {assertDefined, assertDomNode} from '../util/assert';
-import {EMPTY_ARRAY} from '../util/empty';
+import {assertDefined, assertDomNode} from '../util/assert.js';
+import {EMPTY_ARRAY} from '../util/empty.js';
 
-import {assertLView} from './assert';
-import {LContext} from './interfaces/context';
-import {getLViewById, registerLView} from './interfaces/lview_tracking';
-import {TNode, TNodeFlags} from './interfaces/node';
-import {RElement, RNode} from './interfaces/renderer_dom';
-import {isLView} from './interfaces/type_checks';
-import {CONTEXT, HEADER_OFFSET, HOST, ID, LView, TVIEW} from './interfaces/view';
-import {getComponentLViewByIndex, unwrapRNode} from './util/view_utils';
+import {assertLView} from './assert.js';
+import {LContext} from './interfaces/context.js';
+import {getLViewById, registerLView} from './interfaces/lview_tracking.js';
+import {TNode, TNodeFlags} from './interfaces/node.js';
+import {RElement, RNode} from './interfaces/renderer_dom.js';
+import {isLView} from './interfaces/type_checks.js';
+import {CONTEXT, HEADER_OFFSET, HOST, ID, LView, TVIEW} from './interfaces/view.js';
+import {getComponentLViewByIndex, unwrapRNode} from './util/view_utils.js';
 
 
 

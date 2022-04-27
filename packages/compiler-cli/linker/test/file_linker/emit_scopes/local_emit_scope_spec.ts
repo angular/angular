@@ -9,10 +9,10 @@ import {ConstantPool} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
 import ts from 'typescript';
 
-import {TypeScriptAstFactory} from '../../../../src/ngtsc/translator';
-import {LocalEmitScope} from '../../../src/file_linker/emit_scopes/local_emit_scope';
-import {Translator} from '../../../src/file_linker/translator';
-import {generate} from '../helpers';
+import {TypeScriptAstFactory} from '../../../../src/ngtsc/translator/index.js';
+import {LocalEmitScope} from '../../../src/file_linker/emit_scopes/local_emit_scope.js';
+import {Translator} from '../../../src/file_linker/translator.js';
+import {generate} from '../helpers.js';
 
 describe('LocalEmitScope', () => {
   describe('translateDefinition()', () => {

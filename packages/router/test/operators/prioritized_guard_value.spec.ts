@@ -13,9 +13,9 @@ import {Observable, Observer, of} from 'rxjs';
 import {every, mergeMap} from 'rxjs/operators';
 import {TestScheduler} from 'rxjs/testing';
 
-import {prioritizedGuardValue} from '../../src/operators/prioritized_guard_value';
-import {Router} from '../../src/router';
-import {UrlTree} from '../../src/url_tree';
+import {prioritizedGuardValue} from '../../src/operators/prioritized_guard_value.js';
+import {Router} from '../../src/router.js';
+import {UrlTree} from '../../src/url_tree.js';
 
 
 describe('prioritizedGuardValue operator', () => {

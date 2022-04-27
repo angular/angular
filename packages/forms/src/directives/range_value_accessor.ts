@@ -8,7 +8,7 @@
 
 import {Directive, ElementRef, forwardRef, Renderer2, StaticProvider} from '@angular/core';
 
-import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor.js';
 
 export const RANGE_VALUE_ACCESSOR: StaticProvider = {
   provide: NG_VALUE_ACCESSOR,

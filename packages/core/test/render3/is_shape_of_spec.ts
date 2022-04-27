@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isShapeOf, ShapeOf} from './is_shape_of';
+import {isShapeOf, ShapeOf} from './is_shape_of.js';
 
 describe('isShapeOf', () => {
   const ShapeOfEmptyObject: ShapeOf<{}> = {};

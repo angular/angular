@@ -7,12 +7,12 @@
  */
 import ts from 'typescript';
 
-import {AbsoluteFsPath, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {parseStatementForUmdModule} from '../host/umd_host';
-import {resolveFileWithPostfixes} from '../utils';
+import {AbsoluteFsPath, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {parseStatementForUmdModule} from '../host/umd_host.js';
+import {resolveFileWithPostfixes} from '../utils.js';
 
-import {NgccConfiguration, NgccEntryPointConfig} from './configuration';
+import {NgccConfiguration, NgccEntryPointConfig} from './configuration.js';
 
 /**
  * The possible values for the format of an entry-point.

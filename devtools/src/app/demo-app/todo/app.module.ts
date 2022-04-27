@@ -14,8 +14,8 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {RouterModule} from '@angular/router';
 
-import {AppTodoComponent} from './app-todo.component';
-import {DialogComponent} from './dialog.component';
+import {AppTodoComponent} from './app-todo.component.js';
+import {DialogComponent} from './dialog.component.js';
 
 @NgModule({
   declarations: [AppTodoComponent, DialogComponent],

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {appIsAngular, appIsAngularInDevMode, appIsAngularIvy, appIsSupportedAngularVersion, getAngularVersion,} from './angular-check';
+import {appIsAngular, appIsAngularInDevMode, appIsAngularIvy, appIsSupportedAngularVersion, getAngularVersion,} from './angular-check.js';
 
 const setNgVersion = (version = '12.0.0'): void =>
     document.documentElement.setAttribute('ng-version', version);

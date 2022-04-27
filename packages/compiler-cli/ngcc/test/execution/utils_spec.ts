@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {DtsProcessing} from '../../src/execution/tasks/api';
-import {computeTaskDependencies, sortTasksByPriority} from '../../src/execution/tasks/utils';
-import {createTasksAndGraph} from './helpers';
+import {DtsProcessing} from '../../src/execution/tasks/api.js';
+import {computeTaskDependencies, sortTasksByPriority} from '../../src/execution/tasks/utils.js';
+
+import {createTasksAndGraph} from './helpers.js';
 
 describe('execution utils', () => {
   describe('computeTaskDependencies()', () => {

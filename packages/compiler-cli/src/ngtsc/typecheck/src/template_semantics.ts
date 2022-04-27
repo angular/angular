@@ -8,9 +8,9 @@
 
 import {AST, BoundTarget, ImplicitReceiver, PropertyWrite, RecursiveAstVisitor, TmplAstVariable} from '@angular/compiler';
 
-import {TemplateId} from '../api';
+import {TemplateId} from '../api/index.js';
 
-import {OutOfBandDiagnosticRecorder} from './oob';
+import {OutOfBandDiagnosticRecorder} from './oob.js';
 
 /**
  * Visits a template and records any semantic errors within its expressions.

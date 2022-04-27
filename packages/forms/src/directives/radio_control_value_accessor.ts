@@ -8,8 +8,8 @@
 
 import {Directive, ElementRef, forwardRef, Injectable, Injector, Input, NgModule, OnDestroy, OnInit, Renderer2} from '@angular/core';
 
-import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
-import {NgControl} from './ng_control';
+import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor.js';
+import {NgControl} from './ng_control.js';
 
 export const RADIO_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,

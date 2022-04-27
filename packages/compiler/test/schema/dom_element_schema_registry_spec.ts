@@ -10,10 +10,10 @@ import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '@angular/core';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
-import {Element} from '../../src/ml_parser/ast';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
+import {Element} from '../../src/ml_parser/ast.js';
+import {HtmlParser} from '../../src/ml_parser/html_parser.js';
 
-import {extractSchema} from './schema_extractor';
+import {extractSchema} from './schema_extractor.js';
 
 {
   describe('DOMElementSchema', () => {

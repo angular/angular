@@ -9,9 +9,9 @@
 import * as path from 'path';
 import ts from 'typescript';
 
-import {readConfiguration} from '../src/perform_compile';
+import {readConfiguration} from '../src/perform_compile.js';
 
-import {setup, TestSupport} from './test_support';
+import {setup, TestSupport} from './test_support.js';
 
 describe('perform_compile', () => {
   let support: TestSupport;

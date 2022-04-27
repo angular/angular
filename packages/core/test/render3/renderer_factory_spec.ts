@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RendererType2, ViewEncapsulation} from '../../src/core';
-import {ɵɵdefineComponent} from '../../src/render3/index';
-import {ɵɵelement, ɵɵtext} from '../../src/render3/instructions/all';
-import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {RendererType2, ViewEncapsulation} from '../../src/core.js';
+import {ɵɵdefineComponent} from '../../src/render3/index.js';
+import {ɵɵelement, ɵɵtext} from '../../src/render3/instructions/all.js';
+import {RenderFlags} from '../../src/render3/interfaces/definition.js';
 
-import {getRendererFactory2} from './imported_renderer2';
-import {document, renderToHtml} from './render_util';
+import {getRendererFactory2} from './imported_renderer2.js';
+import {document, renderToHtml} from './render_util.js';
 
 describe('renderer factory lifecycle', () => {
   let logs: string[] = [];

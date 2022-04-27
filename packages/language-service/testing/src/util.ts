@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {LanguageServiceTestEnv} from './env';
-import {Project, ProjectFiles, TestableOptions} from './project';
+import {LanguageServiceTestEnv} from './env.js';
+import {Project, ProjectFiles, TestableOptions} from './project.js';
 
 /**
  * Expect that a list of objects with a `fileName` property matches a set of expected files by only

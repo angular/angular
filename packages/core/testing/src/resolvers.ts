@@ -8,8 +8,8 @@
 
 import {Component, Directive, NgModule, Pipe, Type, ɵReflectionCapabilities as ReflectionCapabilities} from '@angular/core';
 
-import {MetadataOverride} from './metadata_override';
-import {MetadataOverrider} from './metadata_overrider';
+import {MetadataOverride} from './metadata_override.js';
+import {MetadataOverrider} from './metadata_overrider.js';
 
 const reflection = new ReflectionCapabilities();
 

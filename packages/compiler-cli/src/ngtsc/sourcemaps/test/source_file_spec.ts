@@ -7,12 +7,12 @@
  */
 import {encode} from 'sourcemap-codec';
 
-import {absoluteFrom, getFileSystem, PathManipulation} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {ContentOrigin} from '../src/content_origin';
-import {RawSourceMap, SourceMapInfo} from '../src/raw_source_map';
-import {SegmentMarker} from '../src/segment_marker';
-import {computeStartOfLinePositions, ensureOriginalSegmentLinks, extractOriginalSegments, findLastMappingIndexBefore, Mapping, parseMappings, SourceFile} from '../src/source_file';
+import {absoluteFrom, getFileSystem, PathManipulation} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {ContentOrigin} from '../src/content_origin.js';
+import {RawSourceMap, SourceMapInfo} from '../src/raw_source_map.js';
+import {SegmentMarker} from '../src/segment_marker.js';
+import {computeStartOfLinePositions, ensureOriginalSegmentLinks, extractOriginalSegments, findLastMappingIndexBefore, Mapping, parseMappings, SourceFile} from '../src/source_file.js';
 
 runInEachFileSystem(() => {
   describe('SourceFile and utilities', () => {

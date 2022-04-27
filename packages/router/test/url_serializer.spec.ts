@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, encodeUriFragment, encodeUriQuery, encodeUriSegment, serializePath, UrlSegmentGroup} from '../src/url_tree';
+import {PRIMARY_OUTLET} from '../src/shared.js';
+import {DefaultUrlSerializer, encodeUriFragment, encodeUriQuery, encodeUriSegment, serializePath, UrlSegmentGroup} from '../src/url_tree.js';
 
 describe('url serializer', () => {
   const url = new DefaultUrlSerializer();

@@ -8,8 +8,8 @@
 
 import {ComponentExplorerViewQuery, DirectiveMetadata, DirectivesProperties, ElementPosition, PropertyQueryTypes, UpdatedStateData,} from 'protocol';
 
-import {buildDirectiveTree, getLViewFromDirectiveOrElementInstance} from './directive-forest/index';
-import {deeplySerializeSelectedProperties, serializeDirectiveState} from './state-serializer/state-serializer';
+import {buildDirectiveTree, getLViewFromDirectiveOrElementInstance} from './directive-forest/index.js';
+import {deeplySerializeSelectedProperties, serializeDirectiveState} from './state-serializer/state-serializer.js';
 
 // Need to be kept in sync with Angular framework
 // We can't directly import it from framework now
@@ -20,7 +20,7 @@ enum ChangeDetectionStrategy {
   Default = 1,
 }
 
-import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from './interfaces';
+import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from './interfaces.js';
 
 const ngDebug = () => (window as any).ng;
 

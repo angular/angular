@@ -8,13 +8,13 @@
 
 import {Directive, EventEmitter, forwardRef, Inject, InjectionToken, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
 
-import {FormControl} from '../../model/form_control';
-import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
-import {NgControl} from '../ng_control';
-import {disabledAttrWarning} from '../reactive_errors';
-import {_ngModelWarning, cleanUpControl, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared';
-import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
+import {FormControl} from '../../model/form_control.js';
+import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators.js';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor.js';
+import {NgControl} from '../ng_control.js';
+import {disabledAttrWarning} from '../reactive_errors.js';
+import {_ngModelWarning, cleanUpControl, isPropertyUpdated, selectValueAccessor, setUpControl} from '../shared.js';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators.js';
 
 
 /**

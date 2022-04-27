@@ -7,7 +7,8 @@
  */
 
 import {ApplicationRef, ComponentRef} from '@angular/core';
-import {window} from './browser';
+
+import {window} from './browser.js';
 
 export class ChangeDetectionPerfRecord {
   constructor(public msPerTick: number, public numTicks: number) {}

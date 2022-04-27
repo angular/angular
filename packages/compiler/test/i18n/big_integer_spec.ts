@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BigInteger, BigIntExponentiation, BigIntForMultiplication} from '../../src/i18n/big_integer';
+import {BigInteger, BigIntExponentiation, BigIntForMultiplication} from '../../src/i18n/big_integer.js';
 
 describe('big integers', () => {
   describe('add', () => {

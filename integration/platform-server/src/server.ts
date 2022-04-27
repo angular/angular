@@ -12,10 +12,10 @@ import {enableProdMode, Type} from '@angular/core';
 import {renderModule} from '@angular/platform-server';
 import * as express from 'express';
 
-import {HelloWorldServerModule} from './helloworld/app.server';
+import {HelloWorldServerModule} from './helloworld/app.server.js';
 const {default: helloworld} = require('raw-loader!./helloworld/index.html');
 
-import {TransferStateServerModule} from './transferstate/app.server';
+import {TransferStateServerModule} from './transferstate/app.server.js';
 const {default: transferstate} = require('raw-loader!./transferstate/index.html');
 
 const app = express();

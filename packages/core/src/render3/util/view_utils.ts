@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDomNode, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert';
-import {assertTNode, assertTNodeForLView} from '../assert';
-import {LContainer, TYPE} from '../interfaces/container';
-import {TConstants, TNode} from '../interfaces/node';
-import {isProceduralRenderer} from '../interfaces/renderer';
-import {RNode} from '../interfaces/renderer_dom';
-import {isLContainer, isLView} from '../interfaces/type_checks';
-import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, RENDERER, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TView} from '../interfaces/view';
+import {assertDomNode, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert.js';
+import {assertTNode, assertTNodeForLView} from '../assert.js';
+import {LContainer, TYPE} from '../interfaces/container.js';
+import {TConstants, TNode} from '../interfaces/node.js';
+import {isProceduralRenderer} from '../interfaces/renderer.js';
+import {RNode} from '../interfaces/renderer_dom.js';
+import {isLContainer, isLView} from '../interfaces/type_checks.js';
+import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, RENDERER, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TView} from '../interfaces/view.js';
 
 
 

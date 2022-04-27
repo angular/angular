@@ -11,7 +11,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Events, MessageBus} from 'protocol';
 import {interval} from 'rxjs';
 
-import {ThemeService} from './theme-service';
+import {ThemeService} from './theme-service.js';
 
 @Component({
   selector: 'ng-devtools',

@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {transformSync} from '../../../src/babel_core';
-import {makeLocalePlugin} from '../../../src/translate/source_files/locale_plugin';
+import {transformSync} from '../../../src/babel_core.js';
+import {makeLocalePlugin} from '../../../src/translate/source_files/locale_plugin.js';
 
 describe('makeLocalePlugin', () => {
   it('should replace $localize.locale with the locale string', () => {

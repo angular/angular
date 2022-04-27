@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {basename, dirname, resolve} from '../../src/helpers';
-import {AbsoluteFsPath, FileStats, FileSystem, PathSegment, PathString} from '../../src/types';
+import {basename, dirname, resolve} from '../../src/helpers.js';
+import {AbsoluteFsPath, FileStats, FileSystem, PathSegment, PathString} from '../../src/types.js';
 
 /**
  * An in-memory file system that can be used in unit tests.

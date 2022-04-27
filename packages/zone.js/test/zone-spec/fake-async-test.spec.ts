@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import '../../lib/rxjs/rxjs-fake-async';
+import '../../lib/rxjs/rxjs-fake-async.js';
 
 import {Observable} from 'rxjs';
 import {delay} from 'rxjs/operators';
 
-import {isNode, patchMacroTask, zoneSymbol} from '../../lib/common/utils';
-import {ifEnvSupports} from '../test-util';
+import {isNode, patchMacroTask, zoneSymbol} from '../../lib/common/utils.js';
+import {ifEnvSupports} from '../test-util.js';
 
 function supportNode() {
   return isNode;

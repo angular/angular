@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {Filesystem} from './src/filesystem';
-export {Generator} from './src/generator';
-export {AssetGroup, Config, DataGroup, Duration, Glob} from './src/in';
+export {Filesystem} from './src/filesystem.js';
+export {Generator} from './src/generator.js';
+export {AssetGroup, Config, DataGroup, Duration, Glob} from './src/in.js';

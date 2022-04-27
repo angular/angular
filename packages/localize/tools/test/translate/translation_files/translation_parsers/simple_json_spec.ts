@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵmakeTemplateObject} from '@angular/localize';
-import {SimpleJsonTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/simple_json_translation_parser';
-import {ParsedTranslationBundle} from '../../../../src/translate/translation_files/translation_parsers/translation_parser';
+
+import {SimpleJsonTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/simple_json_translation_parser.js';
+import {ParsedTranslationBundle} from '../../../../src/translate/translation_files/translation_parsers/translation_parser.js';
 
 describe('SimpleJsonTranslationParser', () => {
   describe('canParse()', () => {

@@ -9,8 +9,8 @@
 import {enableProdMode} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
-import {init} from './init';
-import {AppModule} from './table';
+import {init} from './init.js';
+import {AppModule} from './table.js';
 
 enableProdMode();
 platformBrowser().bootstrapModule(AppModule).then(init);

@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined, assertEqual, assertNumber, throwError} from '../util/assert';
+import {assertDefined, assertEqual, assertNumber, throwError} from '../util/assert.js';
 
-import {getComponentDef, getNgModuleDef} from './definition';
-import {LContainer} from './interfaces/container';
-import {DirectiveDef} from './interfaces/definition';
-import {TIcu} from './interfaces/i18n';
-import {NodeInjectorOffset} from './interfaces/injector';
-import {TNode} from './interfaces/node';
-import {isLContainer, isLView} from './interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, T_HOST, TVIEW, TView} from './interfaces/view';
+import {getComponentDef, getNgModuleDef} from './definition.js';
+import {LContainer} from './interfaces/container.js';
+import {DirectiveDef} from './interfaces/definition.js';
+import {TIcu} from './interfaces/i18n.js';
+import {NodeInjectorOffset} from './interfaces/injector.js';
+import {TNode} from './interfaces/node.js';
+import {isLContainer, isLView} from './interfaces/type_checks.js';
+import {DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, T_HOST, TVIEW, TView} from './interfaces/view.js';
 
 // [Assert functions do not constraint type when they are guarded by a truthy
 // expression.](https://github.com/microsoft/TypeScript/issues/37295)

@@ -10,8 +10,8 @@
 import * as os from 'os';
 import ts from 'typescript';
 
-import {absoluteFrom} from './helpers';
-import {FileSystem} from './types';
+import {absoluteFrom} from './helpers.js';
+import {FileSystem} from './types.js';
 
 export class NgtscCompilerHost implements ts.CompilerHost {
   constructor(protected fs: FileSystem, protected options: ts.CompilerOptions = {}) {}

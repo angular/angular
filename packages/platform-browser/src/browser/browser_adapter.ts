@@ -8,7 +8,7 @@
 
 import {ɵparseCookieValue as parseCookieValue, ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/common';
 
-import {GenericBrowserDomAdapter} from './generic_browser_adapter';
+import {GenericBrowserDomAdapter} from './generic_browser_adapter.js';
 
 /**
  * A `DomAdapter` powered by full browser DOM APIs.

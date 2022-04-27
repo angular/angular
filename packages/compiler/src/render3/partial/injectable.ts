@@ -5,14 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {createInjectableType, R3InjectableMetadata} from '../../injectable_compiler_2';
-import * as o from '../../output/output_ast';
-import {Identifiers as R3} from '../r3_identifiers';
-import {convertFromMaybeForwardRefExpression, R3CompiledExpression} from '../util';
-import {DefinitionMap} from '../view/util';
+import {createInjectableType, R3InjectableMetadata} from '../../injectable_compiler_2.js';
+import * as o from '../../output/output_ast.js';
+import {Identifiers as R3} from '../r3_identifiers.js';
+import {convertFromMaybeForwardRefExpression, R3CompiledExpression} from '../util.js';
+import {DefinitionMap} from '../view/util.js';
 
-import {R3DeclareInjectableMetadata} from './api';
-import {compileDependency} from './util';
+import {R3DeclareInjectableMetadata} from './api.js';
+import {compileDependency} from './util.js';
 
 /**
  * Every time we make a breaking change to the declaration interface or partial-linker behavior, we

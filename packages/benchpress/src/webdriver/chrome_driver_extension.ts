@@ -9,9 +9,9 @@
 import {Inject, Injectable, StaticProvider} from '@angular/core';
 import * as fs from 'fs';
 
-import {Options} from '../common_options';
-import {WebDriverAdapter} from '../web_driver_adapter';
-import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
+import {Options} from '../common_options.js';
+import {WebDriverAdapter} from '../web_driver_adapter.js';
+import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension.js';
 
 /**
  * Set the following 'traceCategories' to collect metrics in Chrome:

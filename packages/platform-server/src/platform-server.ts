@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {PlatformState} from './platform_state';
-export {platformDynamicServer, platformServer, ServerModule} from './server';
-export {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig} from './tokens';
-export {ServerTransferStateModule} from './transfer_state';
-export {renderModule, renderModuleFactory} from './utils';
+export {PlatformState} from './platform_state.js';
+export {platformDynamicServer, platformServer, ServerModule} from './server.js';
+export {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig} from './tokens.js';
+export {ServerTransferStateModule} from './transfer_state.js';
+export {renderModule, renderModuleFactory} from './utils.js';
 
-export * from './private_export';
-export {VERSION} from './version';
+export * from './private_export.js';
+export {VERSION} from './version.js';

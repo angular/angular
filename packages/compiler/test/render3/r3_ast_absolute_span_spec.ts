@@ -8,8 +8,8 @@
 
 import {AbsoluteSourceSpan} from '@angular/compiler';
 
-import {humanizeExpressionSource} from './util/expression';
-import {parseR3 as parse} from './view/util';
+import {humanizeExpressionSource} from './util/expression.js';
+import {parseR3 as parse} from './view/util.js';
 
 describe('expression AST absolute source spans', () => {
   it('should handle comment in interpolation', () => {

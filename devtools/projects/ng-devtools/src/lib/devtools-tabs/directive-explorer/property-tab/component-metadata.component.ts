@@ -9,8 +9,8 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {ComponentType} from 'protocol';
 
-import {DirectivePropertyResolver} from '../property-resolver/directive-property-resolver';
-import {ElementPropertyResolver} from '../property-resolver/element-property-resolver';
+import {DirectivePropertyResolver} from '../property-resolver/directive-property-resolver.js';
+import {ElementPropertyResolver} from '../property-resolver/element-property-resolver.js';
 
 @Component({
   selector: 'ng-component-metadata',

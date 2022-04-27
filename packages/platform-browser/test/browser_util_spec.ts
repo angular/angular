@@ -7,7 +7,7 @@
  */
 
 
-import {BrowserDetection} from '../testing/src/browser_util';
+import {BrowserDetection} from '../testing/src/browser_util.js';
 
 {
   describe('BrowserDetection', () => {

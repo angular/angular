@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createFilter, parseFilter} from './filter';
+import {createFilter, parseFilter} from './filter.js';
 
 describe('filtering', () => {
   describe('parsing', () => {

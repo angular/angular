@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {initMockFileSystem} from '../../file_system/testing';
-import {TypeCheckingConfig} from '../api';
-import {ALL_ENABLED_CONFIG, tcb, TestDeclaration, TestDirective} from '../testing';
+import {initMockFileSystem} from '../../file_system/testing/index.js';
+import {TypeCheckingConfig} from '../api/index.js';
+import {ALL_ENABLED_CONFIG, tcb, TestDeclaration, TestDirective} from '../testing/index.js';
 
 
 describe('type check blocks', () => {

@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertIndexInRange, assertLessThan, assertNotSame} from '../util/assert';
-import {devModeEqual} from '../util/comparison';
+import {assertIndexInRange, assertLessThan, assertNotSame} from '../util/assert.js';
+import {devModeEqual} from '../util/comparison.js';
 
-import {getExpressionChangedErrorDetails, throwErrorIfNoChangesMode} from './errors';
-import {LView} from './interfaces/view';
-import {isInCheckNoChangesMode} from './state';
-import {NO_CHANGE} from './tokens';
+import {getExpressionChangedErrorDetails, throwErrorIfNoChangesMode} from './errors.js';
+import {LView} from './interfaces/view.js';
+import {isInCheckNoChangesMode} from './state.js';
+import {NO_CHANGE} from './tokens.js';
 
 
 // TODO(misko): consider inlining

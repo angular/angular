@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Task} from '../api';
-import {stringifyTask} from '../utils';
+import {Task} from '../api.js';
+import {stringifyTask} from '../utils.js';
 
-import {BaseTaskQueue} from './base_task_queue';
+import {BaseTaskQueue} from './base_task_queue.js';
 
 
 /**

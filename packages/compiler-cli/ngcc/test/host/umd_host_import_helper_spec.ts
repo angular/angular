@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {ClassMemberKind, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
-import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
-import {UmdReflectionHost} from '../../src/host/umd_host';
-import {makeTestBundleProgram} from '../helpers/utils';
+import {absoluteFrom} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {ClassMemberKind, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection/index.js';
+import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {UmdReflectionHost} from '../../src/host/umd_host.js';
+import {makeTestBundleProgram} from '../helpers/utils.js';
 
-import {expectTypeValueReferencesForParameters} from './util';
+import {expectTypeValueReferencesForParameters} from './util.js';
 
 runInEachFileSystem(() => {
   describe('UmdReflectionHost [import helper style]', () => {

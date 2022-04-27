@@ -14,7 +14,7 @@ import {isPresent} from '@angular/facade/src/lang';
 import {DOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {bindAction, getIntParameter} from '@angular/testing/src/benchmark_util';
 
-import {ScrollAreaComponent} from './scroll_area';
+import {ScrollAreaComponent} from './scroll_area.js';
 
 
 @Component({

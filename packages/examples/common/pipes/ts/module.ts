@@ -9,17 +9,17 @@
 import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {AsyncObservablePipeComponent, AsyncPromisePipeComponent} from './async_pipe';
-import {CurrencyPipeComponent} from './currency_pipe';
-import {DatePipeComponent, DeprecatedDatePipeComponent} from './date_pipe';
-import {I18nPluralPipeComponent, I18nSelectPipeComponent} from './i18n_pipe';
-import {JsonPipeComponent} from './json_pipe';
-import {KeyValuePipeComponent} from './keyvalue_pipe';
-import {LowerUpperPipeComponent} from './lowerupper_pipe';
-import {NumberPipeComponent} from './number_pipe';
-import {PercentPipeComponent} from './percent_pipe';
-import {SlicePipeListComponent, SlicePipeStringComponent} from './slice_pipe';
-import {TitleCasePipeComponent} from './titlecase_pipe';
+import {AsyncObservablePipeComponent, AsyncPromisePipeComponent} from './async_pipe.js';
+import {CurrencyPipeComponent} from './currency_pipe.js';
+import {DatePipeComponent, DeprecatedDatePipeComponent} from './date_pipe.js';
+import {I18nPluralPipeComponent, I18nSelectPipeComponent} from './i18n_pipe.js';
+import {JsonPipeComponent} from './json_pipe.js';
+import {KeyValuePipeComponent} from './keyvalue_pipe.js';
+import {LowerUpperPipeComponent} from './lowerupper_pipe.js';
+import {NumberPipeComponent} from './number_pipe.js';
+import {PercentPipeComponent} from './percent_pipe.js';
+import {SlicePipeListComponent, SlicePipeStringComponent} from './slice_pipe.js';
+import {TitleCasePipeComponent} from './titlecase_pipe.js';
 
 @Component({
   selector: 'example-app',

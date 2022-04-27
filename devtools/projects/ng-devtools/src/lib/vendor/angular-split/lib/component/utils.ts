@@ -1,7 +1,7 @@
 // tslint:disable
 import {ElementRef} from '@angular/core';
 
-import {IArea, IAreaAbsorptionCapacity, IAreaSnapshot, IPoint, ISplitSideAbsorptionCapacity} from './interface';
+import {IArea, IAreaAbsorptionCapacity, IAreaSnapshot, IPoint, ISplitSideAbsorptionCapacity} from './interface.js';
 
 export function getPointFromEvent(event: MouseEvent|TouchEvent): IPoint|null {
   // TouchEvent

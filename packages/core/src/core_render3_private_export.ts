@@ -14,36 +14,36 @@
 export {
   compileNgModuleFactory as ɵcompileNgModuleFactory,
   isBoundToModule as ɵisBoundToModule
-} from './application_ref';
+} from './application_ref.js';
 export {
   injectChangeDetectorRef as ɵinjectChangeDetectorRef,
-} from './change_detection/change_detector_ref';
+} from './change_detection/change_detector_ref.js';
 export {
   getDebugNode as ɵgetDebugNode,
-} from './debug/debug_node';
+} from './debug/debug_node.js';
 export {
   NG_INJ_DEF as ɵNG_INJ_DEF,
   NG_PROV_DEF as ɵNG_PROV_DEF,
-} from './di/interface/defs';
-export {createInjector as ɵcreateInjector} from './di/create_injector';
+} from './di/interface/defs.js';
+export {createInjector as ɵcreateInjector} from './di/create_injector.js';
 export {
   registerNgModuleType as ɵɵregisterNgModuleType,
   setAllowDuplicateNgModuleIdsForTest as ɵsetAllowDuplicateNgModuleIdsForTest,
-} from './linker/ng_module_registration';
+} from './linker/ng_module_registration.js';
 export {
   NgModuleDef as ɵNgModuleDef,
   NgModuleTransitiveScopes as ɵNgModuleTransitiveScopes,
-} from './metadata/ng_module_def';
+} from './metadata/ng_module_def.js';
 export {
   getLContext as ɵgetLContext
-} from './render3/context_discovery';
+} from './render3/context_discovery.js';
 export {
   NG_COMP_DEF as ɵNG_COMP_DEF,
   NG_DIR_DEF as ɵNG_DIR_DEF,
   NG_ELEMENT_ID as ɵNG_ELEMENT_ID,
   NG_MOD_DEF as ɵNG_MOD_DEF,
   NG_PIPE_DEF as ɵNG_PIPE_DEF,
-} from './render3/fields';
+} from './render3/fields.js';
 export {
   AttributeMarker as ɵAttributeMarker,
   ComponentDef as ɵComponentDef,
@@ -209,26 +209,26 @@ export {
   ɵɵtextInterpolate8,
   ɵɵtextInterpolateV,
   ɵɵviewQuery,
-} from './render3/index';
+} from './render3/index.js';
 export {
   LContext as ɵLContext,
-} from './render3/interfaces/context';
+} from './render3/interfaces/context.js';
 export {
   setDocument as ɵsetDocument
-} from './render3/interfaces/document';
+} from './render3/interfaces/document.js';
 export {
   Player as ɵPlayer,
   PlayerFactory as ɵPlayerFactory,
   PlayerHandler as ɵPlayerHandler,
   PlayState as ɵPlayState,
-} from './render3/interfaces/player';
+} from './render3/interfaces/player.js';
 export {
   compileComponent as ɵcompileComponent,
   compileDirective as ɵcompileDirective,
-} from './render3/jit/directive';
+} from './render3/jit/directive.js';
 export {
   resetJitOptions as ɵresetJitOptions,
-} from './render3/jit/jit_options';
+} from './render3/jit/jit_options.js';
 export {
   compileNgModule as ɵcompileNgModule,
   compileNgModuleDefs as ɵcompileNgModuleDefs,
@@ -236,7 +236,7 @@ export {
   patchComponentDefWithScope as ɵpatchComponentDefWithScope,
   resetCompiledComponents as ɵresetCompiledComponents,
   transitiveScopesFor as ɵtransitiveScopesFor,
-} from './render3/jit/module';
+} from './render3/jit/module.js';
 export {
   FactoryTarget as ɵɵFactoryTarget,
   ɵɵngDeclareClassMetadata,
@@ -247,26 +247,26 @@ export {
   ɵɵngDeclareInjector,
   ɵɵngDeclareNgModule,
   ɵɵngDeclarePipe,
-} from './render3/jit/partial';
+} from './render3/jit/partial.js';
 export {
   compilePipe as ɵcompilePipe,
-} from './render3/jit/pipe';
+} from './render3/jit/pipe.js';
 export {
   isStandalone as ɵisStandalone,
-} from './render3/jit/module';
-export { Profiler as ɵProfiler, ProfilerEvent as ɵProfilerEvent } from './render3/profiler';
+} from './render3/jit/module.js';
+export { Profiler as ɵProfiler, ProfilerEvent as ɵProfilerEvent } from './render3/profiler.js';
 export {
   publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils
 ,
-  publishGlobalUtil as ɵpublishGlobalUtil} from './render3/util/global_utils';
-export {ViewRef as ɵViewRef} from './render3/view_ref';
+  publishGlobalUtil as ɵpublishGlobalUtil} from './render3/util/global_utils.js';
+export {ViewRef as ɵViewRef} from './render3/view_ref.js';
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,
   bypassSanitizationTrustResourceUrl as ɵbypassSanitizationTrustResourceUrl,
   bypassSanitizationTrustScript as ɵbypassSanitizationTrustScript,
   bypassSanitizationTrustStyle as ɵbypassSanitizationTrustStyle,
   bypassSanitizationTrustUrl as ɵbypassSanitizationTrustUrl,
-} from './sanitization/bypass';
+} from './sanitization/bypass.js';
 export {
   ɵɵsanitizeHtml,
   ɵɵsanitizeResourceUrl,
@@ -276,9 +276,9 @@ export {
   ɵɵsanitizeUrlOrResourceUrl,
   ɵɵtrustConstantHtml,
   ɵɵtrustConstantResourceUrl,
-} from './sanitization/sanitization';
+} from './sanitization/sanitization.js';
 export {
   noSideEffects as ɵnoSideEffects,
-} from './util/closure';
+} from './util/closure.js';
 
 // clang-format on

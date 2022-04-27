@@ -9,7 +9,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import {SymbolExtractor} from './symbol_extractor';
+import {SymbolExtractor} from './symbol_extractor.js';
 
 describe('scenarios', () => {
   const symbolExtractorSpecDir = path.dirname(

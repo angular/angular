@@ -9,12 +9,12 @@
 import {BoundTarget, CssSelector, parseTemplate, ParseTemplateOptions, R3TargetBinder, SelectorMatcher} from '@angular/compiler';
 import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
-import {Reference} from '../../imports';
-import {ClassPropertyMapping} from '../../metadata';
-import {ClassDeclaration} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing';
-import {ComponentMeta} from '../src/context';
+import {absoluteFrom, AbsoluteFsPath} from '../../file_system/index.js';
+import {Reference} from '../../imports/index.js';
+import {ClassPropertyMapping} from '../../metadata/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
+import {getDeclaration, makeProgram} from '../../testing/index.js';
+import {ComponentMeta} from '../src/context.js';
 
 /** Dummy file URL */
 function getTestFilePath(): AbsoluteFsPath {

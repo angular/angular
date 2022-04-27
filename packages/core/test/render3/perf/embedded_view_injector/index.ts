@@ -7,11 +7,11 @@
  */
 import {Injector, ɵɵelement} from '@angular/core';
 
-import {RenderFlags} from '../../../../src/render3/interfaces/definition';
-import {createBenchmark} from '../micro_bench';
-import {setupTestHarness} from '../setup';
+import {RenderFlags} from '../../../../src/render3/interfaces/definition.js';
+import {createBenchmark} from '../micro_bench.js';
+import {setupTestHarness} from '../setup.js';
 
-import {createAppComponent} from './app_component';
+import {createAppComponent} from './app_component.js';
 
 
 function template(rf: RenderFlags, ctx: any) {

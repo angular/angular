@@ -8,9 +8,9 @@
 
 import ts from 'typescript';
 
-import {ObjectAssignBuiltinFn} from './builtin';
-import {DynamicValue} from './dynamic';
-import {KnownFn, ResolvedValue, ResolvedValueArray} from './result';
+import {ObjectAssignBuiltinFn} from './builtin.js';
+import {DynamicValue} from './dynamic.js';
+import {KnownFn, ResolvedValue, ResolvedValueArray} from './result.js';
 
 
 // Use the same implementation we use for `Object.assign()`. Semantically these functions are the

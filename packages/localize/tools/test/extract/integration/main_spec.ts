@@ -10,10 +10,10 @@ import {InvalidFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/src
 import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
 import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
 
-import {extractTranslations} from '../../../src/extract/index';
-import {FormatOptions} from '../../../src/extract/translation_files/format_options';
-import {runInNativeFileSystem} from '../../helpers';
-import {toAttributes} from '../translation_files/utils';
+import {extractTranslations} from '../../../src/extract/index.js';
+import {FormatOptions} from '../../../src/extract/translation_files/format_options.js';
+import {runInNativeFileSystem} from '../../helpers/index.js';
+import {toAttributes} from '../translation_files/utils.js';
 
 runInNativeFileSystem(() => {
   let fs: FileSystem;

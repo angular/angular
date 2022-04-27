@@ -8,9 +8,9 @@
 
 import ts from 'typescript';
 
-import {FatalLinkerError} from '../../fatal_linker_error';
-import {AstHost, Range} from '../ast_host';
-import {assert} from '../utils';
+import {FatalLinkerError} from '../../fatal_linker_error.js';
+import {AstHost, Range} from '../ast_host.js';
+import {assert} from '../utils.js';
 
 
 /**

@@ -9,13 +9,13 @@
 import {DepGraph} from 'dependency-graph';
 import module from 'module';
 
-import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {NgccConfiguration} from '../packages/configuration';
-import {EntryPoint, EntryPointFormat, getEntryPointFormat, SUPPORTED_FORMAT_PROPERTIES} from '../packages/entry_point';
-import {PartiallyOrderedList} from '../utils';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {NgccConfiguration} from '../packages/configuration.js';
+import {EntryPoint, EntryPointFormat, getEntryPointFormat, SUPPORTED_FORMAT_PROPERTIES} from '../packages/entry_point.js';
+import {PartiallyOrderedList} from '../utils.js';
 
-import {createDependencyInfo, DependencyHost, EntryPointWithDependencies} from './dependency_host';
+import {createDependencyInfo, DependencyHost, EntryPointWithDependencies} from './dependency_host.js';
 
 const builtinNodeJsModules = new Set<string>(module.builtinModules);
 

@@ -6,31 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation} from '../metadata/view';
-import {Renderer2} from '../render/api';
-import {RendererStyleFlags2} from '../render/api_flags';
-import {addToArray, removeFromArray} from '../util/array_utils';
-import {assertDefined, assertDomNode, assertEqual, assertFunction, assertString} from '../util/assert';
-import {escapeCommentText} from '../util/dom';
+import {ViewEncapsulation} from '../metadata/view.js';
+import {Renderer2} from '../render/api.js';
+import {RendererStyleFlags2} from '../render/api_flags.js';
+import {addToArray, removeFromArray} from '../util/array_utils.js';
+import {assertDefined, assertDomNode, assertEqual, assertFunction, assertString} from '../util/assert.js';
+import {escapeCommentText} from '../util/dom.js';
 
-import {assertLContainer, assertLView, assertParentView, assertProjectionSlots, assertTNodeForLView} from './assert';
-import {attachPatchData} from './context_discovery';
-import {icuContainerIterate} from './i18n/i18n_tree_shaking';
-import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
-import {ComponentDef} from './interfaces/definition';
-import {NodeInjectorFactory} from './interfaces/injector';
-import {unregisterLView} from './interfaces/lview_tracking';
-import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
-import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
-import {isProceduralRenderer, ProceduralRenderer3, Renderer3, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
-import {RComment, RElement, RNode, RTemplate, RText} from './interfaces/renderer_dom';
-import {isLContainer, isLView} from './interfaces/type_checks';
-import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView, TViewType, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
-import {getNamespaceUri} from './namespaces';
-import {assertTNodeType} from './node_assert';
-import {profiler, ProfilerEvent} from './profiler';
-import {getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode, unwrapRNode, updateTransplantedViewCount} from './util/view_utils';
+import {assertLContainer, assertLView, assertParentView, assertProjectionSlots, assertTNodeForLView} from './assert.js';
+import {attachPatchData} from './context_discovery.js';
+import {icuContainerIterate} from './i18n/i18n_tree_shaking.js';
+import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE, unusedValueExportToPlacateAjd as unused1} from './interfaces/container.js';
+import {ComponentDef} from './interfaces/definition.js';
+import {NodeInjectorFactory} from './interfaces/injector.js';
+import {unregisterLView} from './interfaces/lview_tracking.js';
+import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node.js';
+import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection.js';
+import {isProceduralRenderer, ProceduralRenderer3, Renderer3, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer.js';
+import {RComment, RElement, RNode, RTemplate, RText} from './interfaces/renderer_dom.js';
+import {isLContainer, isLView} from './interfaces/type_checks.js';
+import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView, TViewType, unusedValueExportToPlacateAjd as unused5} from './interfaces/view.js';
+import {getNamespaceUri} from './namespaces.js';
+import {assertTNodeType} from './node_assert.js';
+import {profiler, ProfilerEvent} from './profiler.js';
+import {getLViewParent} from './util/view_traversal_utils.js';
+import {getNativeByTNode, unwrapRNode, updateTransplantedViewCount} from './util/view_utils.js';
 
 
 

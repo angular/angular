@@ -8,9 +8,9 @@
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, PathSegment, relativeFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {Diagnostics} from '../../../src/diagnostics';
-import {AssetTranslationHandler} from '../../../src/translate/asset_files/asset_translation_handler';
-import {TranslationBundle} from '../../../src/translate/translator';
+import {Diagnostics} from '../../../src/diagnostics.js';
+import {AssetTranslationHandler} from '../../../src/translate/asset_files/asset_translation_handler.js';
+import {TranslationBundle} from '../../../src/translate/translator.js';
 
 runInEachFileSystem(() => {
   describe('AssetTranslationHandler', () => {

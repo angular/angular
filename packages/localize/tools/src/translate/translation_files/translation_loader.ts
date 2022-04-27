@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath, ReadonlyFileSystem} from '@angular/compiler-cli/private/localize';
-import {DiagnosticHandlingStrategy, Diagnostics} from '../../diagnostics';
-import {TranslationBundle} from '../translator';
 
-import {ParseAnalysis, TranslationParser} from './translation_parsers/translation_parser';
+import {DiagnosticHandlingStrategy, Diagnostics} from '../../diagnostics.js';
+import {TranslationBundle} from '../translator.js';
+
+import {ParseAnalysis, TranslationParser} from './translation_parsers/translation_parser.js';
 
 /**
  * Use this class to load a collection of translation files from disk.

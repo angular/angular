@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {IncrementalCompilation} from './src/incremental';
-export {NOOP_INCREMENTAL_BUILD} from './src/noop';
-export {AnalyzedIncrementalState, DeltaIncrementalState, FreshIncrementalState, IncrementalState, IncrementalStateKind} from './src/state';
+export {IncrementalCompilation} from './src/incremental.js';
+export {NOOP_INCREMENTAL_BUILD} from './src/noop.js';
+export {AnalyzedIncrementalState, DeltaIncrementalState, FreshIncrementalState, IncrementalState, IncrementalStateKind} from './src/state.js';
 
-export * from './src/strategy';
+export * from './src/strategy.js';

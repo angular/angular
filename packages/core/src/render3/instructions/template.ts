@@ -5,17 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {assertFirstCreatePass} from '../assert';
-import {attachPatchData} from '../context_discovery';
-import {registerPostOrderHooks} from '../hooks';
-import {ComponentTemplate} from '../interfaces/definition';
-import {LocalRefExtractor, TAttributes, TContainerNode, TNodeType} from '../interfaces/node';
-import {isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, LView, RENDERER, TView, TViewType} from '../interfaces/view';
-import {appendChild} from '../node_manipulation';
-import {getLView, getTView, setCurrentTNode} from '../state';
-import {getConstant} from '../util/view_utils';
-import {addToViewTree, createDirectivesInstances, createLContainer, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
+import {assertFirstCreatePass} from '../assert.js';
+import {attachPatchData} from '../context_discovery.js';
+import {registerPostOrderHooks} from '../hooks.js';
+import {ComponentTemplate} from '../interfaces/definition.js';
+import {LocalRefExtractor, TAttributes, TContainerNode, TNodeType} from '../interfaces/node.js';
+import {isDirectiveHost} from '../interfaces/type_checks.js';
+import {HEADER_OFFSET, LView, RENDERER, TView, TViewType} from '../interfaces/view.js';
+import {appendChild} from '../node_manipulation.js';
+import {getLView, getTView, setCurrentTNode} from '../state.js';
+import {getConstant} from '../util/view_utils.js';
+
+import {addToViewTree, createDirectivesInstances, createLContainer, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared.js';
 
 
 

@@ -9,8 +9,8 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Host, OnDestroy} from '@angular/core';
 import {Subscription} from 'rxjs';
 
-import {ExpandingRow} from './expanding_row';
-import {expanding_row_css} from './expanding_row_css';
+import {ExpandingRow} from './expanding_row.js';
+import {expanding_row_css} from './expanding_row_css.js';
 
 /**
  * This component should be within cfc-expanding-row component. Note that the

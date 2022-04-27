@@ -12,7 +12,7 @@ import {Type, ɵglobal as global} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
-import {childNodesAsList, hasClass, hasStyle, isCommentNode} from './browser_util';
+import {childNodesAsList, hasClass, hasStyle, isCommentNode} from './browser_util.js';
 
 
 /**

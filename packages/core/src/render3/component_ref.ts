@@ -6,38 +6,38 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {Injector} from '../di/injector';
-import {InjectFlags} from '../di/interface/injector';
-import {ProviderToken} from '../di/provider_token';
-import {EnvironmentInjector} from '../di/r3_injector';
-import {Type} from '../interface/type';
-import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
-import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
-import {createElementRef, ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
-import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
-import {RendererFactory2} from '../render/api';
-import {Sanitizer} from '../sanitization/sanitizer';
-import {VERSION} from '../version';
-import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider_flags';
+import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref.js';
+import {Injector} from '../di/injector.js';
+import {InjectFlags} from '../di/interface/injector.js';
+import {ProviderToken} from '../di/provider_token.js';
+import {EnvironmentInjector} from '../di/r3_injector.js';
+import {Type} from '../interface/type.js';
+import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory.js';
+import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver.js';
+import {createElementRef, ElementRef as viewEngine_ElementRef} from '../linker/element_ref.js';
+import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory.js';
+import {RendererFactory2} from '../render/api.js';
+import {Sanitizer} from '../sanitization/sanitizer.js';
+import {VERSION} from '../version.js';
+import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider_flags.js';
 
-import {assertComponentType} from './assert';
-import {createRootComponent, createRootComponentView, createRootContext, LifecycleHooksFeature} from './component';
-import {getComponentDef} from './definition';
-import {NodeInjector} from './di';
-import {createLView, createTView, locateHostElement, renderView} from './instructions/shared';
-import {ComponentDef} from './interfaces/definition';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './interfaces/node';
-import {domRendererFactory3, RendererFactory3} from './interfaces/renderer';
-import {RNode} from './interfaces/renderer_dom';
-import {HEADER_OFFSET, LView, LViewFlags, TViewType} from './interfaces/view';
-import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
-import {createElementNode, writeDirectClass} from './node_manipulation';
-import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
-import {enterView, leaveView} from './state';
-import {setUpAttributes} from './util/attrs_utils';
-import {getTNode} from './util/view_utils';
-import {RootViewRef, ViewRef} from './view_ref';
+import {assertComponentType} from './assert.js';
+import {createRootComponent, createRootComponentView, createRootContext, LifecycleHooksFeature} from './component.js';
+import {getComponentDef} from './definition.js';
+import {NodeInjector} from './di.js';
+import {createLView, createTView, locateHostElement, renderView} from './instructions/shared.js';
+import {ComponentDef} from './interfaces/definition.js';
+import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './interfaces/node.js';
+import {domRendererFactory3, RendererFactory3} from './interfaces/renderer.js';
+import {RNode} from './interfaces/renderer_dom.js';
+import {HEADER_OFFSET, LView, LViewFlags, TViewType} from './interfaces/view.js';
+import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces.js';
+import {createElementNode, writeDirectClass} from './node_manipulation.js';
+import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher.js';
+import {enterView, leaveView} from './state.js';
+import {setUpAttributes} from './util/attrs_utils.js';
+import {getTNode} from './util/view_utils.js';
+import {RootViewRef, ViewRef} from './view_ref.js';
 
 export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolver {
   /**

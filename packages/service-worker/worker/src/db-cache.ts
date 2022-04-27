@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Adapter} from './adapter';
-import {Database, NotFound, Table} from './database';
-import {NamedCache} from './named-cache-storage';
+import {Adapter} from './adapter.js';
+import {Database, NotFound, Table} from './database.js';
+import {NamedCache} from './named-cache-storage.js';
 
 
 /**

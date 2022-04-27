@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../../interface/type';
+import {Type} from '../../interface/type.js';
 
 /**
  * Configures the `Injector` to return a value for a token.

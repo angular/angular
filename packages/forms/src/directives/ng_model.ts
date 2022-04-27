@@ -8,19 +8,19 @@
 
 import {ChangeDetectorRef, Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean} from '@angular/core';
 
-import {FormHooks} from '../model/abstract_model';
-import {FormControl} from '../model/form_control';
-import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
+import {FormHooks} from '../model/abstract_model.js';
+import {FormControl} from '../model/form_control.js';
+import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators.js';
 
-import {AbstractFormGroupDirective} from './abstract_form_group_directive';
-import {ControlContainer} from './control_container';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
-import {NgControl} from './ng_control';
-import {NgForm} from './ng_form';
-import {NgModelGroup} from './ng_model_group';
-import {controlPath, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
-import {formGroupNameException, missingNameException, modelParentException} from './template_driven_errors';
-import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
+import {AbstractFormGroupDirective} from './abstract_form_group_directive.js';
+import {ControlContainer} from './control_container.js';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor.js';
+import {NgControl} from './ng_control.js';
+import {NgForm} from './ng_form.js';
+import {NgModelGroup} from './ng_model_group.js';
+import {controlPath, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared.js';
+import {formGroupNameException, missingNameException, modelParentException} from './template_driven_errors.js';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators.js';
 
 export const formControlBinding: any = {
   provide: NgControl,

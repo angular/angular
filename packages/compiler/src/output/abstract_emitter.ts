@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseSourceSpan} from '../parse_util';
+import {ParseSourceSpan} from '../parse_util.js';
 
-import * as o from './output_ast';
-import {SourceMapGenerator} from './source_map';
+import * as o from './output_ast.js';
+import {SourceMapGenerator} from './source_map.js';
 
 const _SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;
 const _LEGAL_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;

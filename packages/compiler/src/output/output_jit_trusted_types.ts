@@ -16,7 +16,7 @@
  * security review.
  */
 
-import {global} from '../util';
+import {global} from '../util.js';
 
 /**
  * While Angular only uses Trusted Types internally for the time being,

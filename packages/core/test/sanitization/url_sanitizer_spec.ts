@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {_sanitizeUrl, sanitizeSrcset} from '../../src/sanitization/url_sanitizer';
+import {_sanitizeUrl, sanitizeSrcset} from '../../src/sanitization/url_sanitizer.js';
 
 {
   describe('URL sanitizer', () => {

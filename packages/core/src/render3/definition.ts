@@ -6,20 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy} from '../change_detection/constants';
-import {Mutable, Type} from '../interface/type';
-import {NgModuleDef, NgModuleType} from '../metadata/ng_module_def';
-import {SchemaMetadata} from '../metadata/schema';
-import {ViewEncapsulation} from '../metadata/view';
-import {noSideEffects} from '../util/closure';
-import {EMPTY_ARRAY, EMPTY_OBJ} from '../util/empty';
-import {initNgDevMode} from '../util/ng_dev_mode';
-import {stringify} from '../util/stringify';
+import {ChangeDetectionStrategy} from '../change_detection/constants.js';
+import {Mutable, Type} from '../interface/type.js';
+import {NgModuleDef, NgModuleType} from '../metadata/ng_module_def.js';
+import {SchemaMetadata} from '../metadata/schema.js';
+import {ViewEncapsulation} from '../metadata/view.js';
+import {noSideEffects} from '../util/closure.js';
+import {EMPTY_ARRAY, EMPTY_OBJ} from '../util/empty.js';
+import {initNgDevMode} from '../util/ng_dev_mode.js';
+import {stringify} from '../util/stringify.js';
 
-import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefList, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeTypesOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
-import {TAttributes, TConstantsOrFactory} from './interfaces/node';
-import {CssSelectorList} from './interfaces/projection';
+import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields.js';
+import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefList, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeTypesOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition.js';
+import {TAttributes, TConstantsOrFactory} from './interfaces/node.js';
+import {CssSelectorList} from './interfaces/projection.js';
 
 
 let _renderCompCount = 0;

@@ -7,7 +7,8 @@
  */
 
 import {NgModule} from '@angular/core';
-import {AnotherThirdpartyComponent} from './other_comp';
+
+import {AnotherThirdpartyComponent} from './other_comp.js';
 
 @NgModule({
   declarations: [AnotherThirdpartyComponent],

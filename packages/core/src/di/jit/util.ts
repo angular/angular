@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3DependencyMetadataFacade} from '../../compiler/compiler_facade';
-import {Type} from '../../interface/type';
-import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
-import {Host, Inject, Optional, Self, SkipSelf} from '../metadata';
-import {Attribute} from '../metadata_attr';
+import {R3DependencyMetadataFacade} from '../../compiler/compiler_facade.js';
+import {Type} from '../../interface/type.js';
+import {ReflectionCapabilities} from '../../reflection/reflection_capabilities.js';
+import {Host, Inject, Optional, Self, SkipSelf} from '../metadata.js';
+import {Attribute} from '../metadata_attr.js';
 
 let _reflect: ReflectionCapabilities|null = null;
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global} from '../../src/util/global';
+import {global} from '../../src/util/global.js';
 
 {
   describe('global', () => {

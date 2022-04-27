@@ -8,9 +8,9 @@
 
 import {ElementRef, Injector, SimpleChanges} from '@angular/core';
 
-import {DirectiveRequireProperty, element as angularElement, IAugmentedJQuery, ICloneAttachFunction, ICompileService, IController, IControllerService, IDirective, IHttpBackendService, IInjectorService, ILinkFn, IScope, ITemplateCacheService, SingleOrListOrMap} from './angular1';
-import {$COMPILE, $CONTROLLER, $HTTP_BACKEND, $INJECTOR, $TEMPLATE_CACHE} from './constants';
-import {cleanData, controllerKey, directiveNormalize, isFunction} from './util';
+import {DirectiveRequireProperty, element as angularElement, IAugmentedJQuery, ICloneAttachFunction, ICompileService, IController, IControllerService, IDirective, IHttpBackendService, IInjectorService, ILinkFn, IScope, ITemplateCacheService, SingleOrListOrMap} from './angular1.js';
+import {$COMPILE, $CONTROLLER, $HTTP_BACKEND, $INJECTOR, $TEMPLATE_CACHE} from './constants.js';
+import {cleanData, controllerKey, directiveNormalize, isFunction} from './util.js';
 
 
 

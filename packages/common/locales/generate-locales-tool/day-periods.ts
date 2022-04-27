@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CldrLocaleData} from './cldr-data';
+import {CldrLocaleData} from './cldr-data.js';
 
 /**
  * Returns data for the chosen day periods

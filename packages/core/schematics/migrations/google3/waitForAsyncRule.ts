@@ -9,9 +9,9 @@
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import ts from 'typescript';
 
-import {getImportSpecifier, replaceImport} from '../../utils/typescript/imports';
-import {closestNode} from '../../utils/typescript/nodes';
-import {isReferenceToImport} from '../../utils/typescript/symbol';
+import {getImportSpecifier, replaceImport} from '../../utils/typescript/imports.js';
+import {closestNode} from '../../utils/typescript/nodes.js';
+import {isReferenceToImport} from '../../utils/typescript/symbol.js';
 
 // This rule is also used inside of Google by Typescript linting.
 

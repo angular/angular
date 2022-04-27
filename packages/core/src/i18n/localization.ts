@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getLocalePluralCase} from './locale_data_api';
+import {getLocalePluralCase} from './locale_data_api.js';
 
 const pluralMapping = ['zero', 'one', 'two', 'few', 'many'];
 

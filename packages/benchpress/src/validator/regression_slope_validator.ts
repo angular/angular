@@ -8,9 +8,9 @@
 
 import {Inject, Injectable, InjectionToken} from '@angular/core';
 
-import {MeasureValues} from '../measure_values';
-import {Statistic} from '../statistic';
-import {Validator} from '../validator';
+import {MeasureValues} from '../measure_values.js';
+import {Statistic} from '../statistic.js';
+import {Validator} from '../validator.js';
 
 /**
  * A validator that checks the regression slope of a specific metric.

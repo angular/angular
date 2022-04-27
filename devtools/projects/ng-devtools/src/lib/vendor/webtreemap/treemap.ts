@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Node} from './tree';
+import {Node} from './tree.js';
 
 const CSS_PREFIX = 'webtreemap-';
 const NODE_CSS_CLASS = CSS_PREFIX + 'node';

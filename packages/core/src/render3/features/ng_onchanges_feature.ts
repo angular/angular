@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OnChanges} from '../../interface/lifecycle_hooks';
-import {SimpleChange, SimpleChanges} from '../../interface/simple_change';
-import {EMPTY_OBJ} from '../../util/empty';
-import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
+import {OnChanges} from '../../interface/lifecycle_hooks.js';
+import {SimpleChange, SimpleChanges} from '../../interface/simple_change.js';
+import {EMPTY_OBJ} from '../../util/empty.js';
+import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition.js';
 
 /**
  * The NgOnChangesFeature decorates a component with support for the ngOnChanges

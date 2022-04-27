@@ -7,7 +7,7 @@
  */
 import {computeMsgId} from '@angular/compiler';
 
-import {BLOCK_MARKER, ID_SEPARATOR, LEGACY_ID_INDICATOR, MEANING_SEPARATOR} from './constants';
+import {BLOCK_MARKER, ID_SEPARATOR, LEGACY_ID_INDICATOR, MEANING_SEPARATOR} from './constants.js';
 
 /**
  * Re-export this helper function so that users of `@angular/localize` don't need to actively import

@@ -7,11 +7,11 @@
  */
 import ts from 'typescript';
 
-import {Reference} from '../../../src/ngtsc/imports';
-import {ClassDeclaration} from '../../../src/ngtsc/reflection';
+import {Reference} from '../../../src/ngtsc/imports/index.js';
+import {ClassDeclaration} from '../../../src/ngtsc/reflection/index.js';
 
-import {Migration, MigrationHost} from './migration';
-import {createDirectiveDecorator, hasConstructor, hasDirectiveDecorator, isClassDeclaration} from './utils';
+import {Migration, MigrationHost} from './migration.js';
+import {createDirectiveDecorator, hasConstructor, hasDirectiveDecorator, isClassDeclaration} from './utils.js';
 
 
 /**

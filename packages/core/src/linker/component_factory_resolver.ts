@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '../di/injector';
-import {Type} from '../interface/type';
-import {stringify} from '../util/stringify';
+import {Injector} from '../di/injector.js';
+import {Type} from '../interface/type.js';
+import {stringify} from '../util/stringify.js';
 
-import {ComponentFactory, ComponentRef} from './component_factory';
-import {NgModuleRef} from './ng_module_factory';
+import {ComponentFactory, ComponentRef} from './component_factory.js';
+import {NgModuleRef} from './ng_module_factory.js';
 
 export function noComponentFactoryError(component: Function) {
   const error = Error(`No component factory found for ${

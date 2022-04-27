@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {bindingUpdated} from '../bindings';
-import {SanitizerFn} from '../interfaces/sanitization';
-import {RENDERER} from '../interfaces/view';
-import {getCurrentDirectiveDef, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
-import {NO_CHANGE} from '../tokens';
+import {bindingUpdated} from '../bindings.js';
+import {SanitizerFn} from '../interfaces/sanitization.js';
+import {RENDERER} from '../interfaces/view.js';
+import {getCurrentDirectiveDef, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state.js';
+import {NO_CHANGE} from '../tokens.js';
 
-import {elementPropertyInternal, loadComponentRenderer, storePropertyBindingMetadata} from './shared';
+import {elementPropertyInternal, loadComponentRenderer, storePropertyBindingMetadata} from './shared.js';
 
 /**
  * Update a property on a host element. Only applies to native node properties, not inputs.

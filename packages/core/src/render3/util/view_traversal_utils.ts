@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined} from '../../util/assert';
-import {assertLView} from '../assert';
-import {readPatchedLView} from '../context_discovery';
-import {LContainer} from '../interfaces/container';
-import {isLContainer, isLView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CONTEXT, FLAGS, LView, LViewFlags, NEXT, PARENT, RootContext} from '../interfaces/view';
+import {assertDefined} from '../../util/assert.js';
+import {assertLView} from '../assert.js';
+import {readPatchedLView} from '../context_discovery.js';
+import {LContainer} from '../interfaces/container.js';
+import {isLContainer, isLView} from '../interfaces/type_checks.js';
+import {CHILD_HEAD, CONTEXT, FLAGS, LView, LViewFlags, NEXT, PARENT, RootContext} from '../interfaces/view.js';
 
 
 /**

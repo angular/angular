@@ -12,14 +12,15 @@ import {getTranslationForTemplate, i18nStartFirstCreatePass} from '@angular/core
 import {getTIcu} from '@angular/core/src/render3/i18n/i18n_util';
 import {TElementNode, TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {getCurrentTNode} from '@angular/core/src/render3/state';
-import {ɵɵelementEnd, ɵɵelementStart} from '../../../src/render3/instructions/all';
-import {I18nCreateOpCode, I18nUpdateOpCodes, TI18n, TIcu} from '../../../src/render3/interfaces/i18n';
-import {HEADER_OFFSET, LView, TVIEW, TView} from '../../../src/render3/interfaces/view';
-import {getNativeByIndex} from '../../../src/render3/util/view_utils';
-import {matchTNode} from '../matchers';
-import {TemplateFixture} from '../render_util';
-import {matchDebug} from '../utils';
-import {ViewFixture} from '../view_fixture';
+
+import {ɵɵelementEnd, ɵɵelementStart} from '../../../src/render3/instructions/all.js';
+import {I18nCreateOpCode, I18nUpdateOpCodes, TI18n, TIcu} from '../../../src/render3/interfaces/i18n.js';
+import {HEADER_OFFSET, LView, TVIEW, TView} from '../../../src/render3/interfaces/view.js';
+import {getNativeByIndex} from '../../../src/render3/util/view_utils.js';
+import {matchTNode} from '../matchers.js';
+import {TemplateFixture} from '../render_util.js';
+import {matchDebug} from '../utils.js';
+import {ViewFixture} from '../view_fixture.js';
 
 
 

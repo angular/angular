@@ -8,19 +8,19 @@
  */
 import ts from 'typescript';
 
-import {replaceTsWithNgInErrors} from '../../../src/ngtsc/diagnostics';
-import {FileSystem} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {ParsedConfiguration} from '../../../src/perform_compile';
-import {EntryPointPackageJson, getEntryPointFormat} from '../packages/entry_point';
-import {makeEntryPointBundle} from '../packages/entry_point_bundle';
-import {createModuleResolutionCache, SharedFileCache} from '../packages/source_file_cache';
-import {Transformer} from '../packages/transformer';
-import {PathMappings} from '../path_mappings';
-import {FileWriter} from '../writing/file_writer';
+import {replaceTsWithNgInErrors} from '../../../src/ngtsc/diagnostics/index.js';
+import {FileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {ParsedConfiguration} from '../../../src/perform_compile.js';
+import {EntryPointPackageJson, getEntryPointFormat} from '../packages/entry_point.js';
+import {makeEntryPointBundle} from '../packages/entry_point_bundle.js';
+import {createModuleResolutionCache, SharedFileCache} from '../packages/source_file_cache.js';
+import {Transformer} from '../packages/transformer.js';
+import {PathMappings} from '../path_mappings.js';
+import {FileWriter} from '../writing/file_writer.js';
 
-import {CreateCompileFn} from './api';
-import {Task, TaskProcessingOutcome} from './tasks/api';
+import {CreateCompileFn} from './api.js';
+import {Task, TaskProcessingOutcome} from './tasks/api.js';
 
 /**
  * The function for creating the `compile()` function.

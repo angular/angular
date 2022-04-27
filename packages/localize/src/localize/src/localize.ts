@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {findEndOfBlock} from '../../utils';
+import {findEndOfBlock} from '../../utils/index.js';
 
 /** @nodoc */
 export interface LocalizeFn {

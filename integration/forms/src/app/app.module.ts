@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {AppComponent, ReactiveFormsComponent, TemplateFormsComponent} from './app.component';
+import {AppComponent, ReactiveFormsComponent, TemplateFormsComponent} from './app.component.js';
 
 @NgModule({
   declarations: [

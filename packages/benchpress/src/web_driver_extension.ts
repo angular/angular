@@ -8,7 +8,7 @@
 
 import {InjectionToken, Injector} from '@angular/core';
 
-import {Options} from './common_options';
+import {Options} from './common_options.js';
 
 export type PerfLogEvent = {
   [key: string]: any

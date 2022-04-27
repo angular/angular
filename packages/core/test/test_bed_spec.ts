@@ -11,9 +11,9 @@ import {getTestBed, TestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {getNgModuleById} from '../public_api';
-import {TestBedRender3} from '../testing/src/r3_test_bed';
-import {TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT} from '../testing/src/test_bed_common';
+import {getNgModuleById} from '../public_api.js';
+import {TestBedRender3} from '../testing/src/r3_test_bed.js';
+import {TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT} from '../testing/src/test_bed_common.js';
 
 const NAME = new InjectionToken<string>('name');
 

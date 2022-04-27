@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ErrorCode} from './error_code';
+import {ErrorCode} from './error_code.js';
 
 /**
  * Contains a set of error messages that have detailed guides at angular.io.

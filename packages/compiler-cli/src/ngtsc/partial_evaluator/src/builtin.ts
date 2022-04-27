@@ -8,8 +8,8 @@
 
 import ts from 'typescript';
 
-import {DynamicValue} from './dynamic';
-import {EnumValue, KnownFn, ResolvedValue, ResolvedValueArray} from './result';
+import {DynamicValue} from './dynamic.js';
+import {EnumValue, KnownFn, ResolvedValue, ResolvedValueArray} from './result.js';
 
 export class ArraySliceBuiltinFn extends KnownFn {
   constructor(private lhs: ResolvedValueArray) {

@@ -6,31 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
-import {injectRootLimpMode, setInjectImplementation} from '../di/inject_switch';
-import {Injector} from '../di/injector';
-import {InjectorMarkers} from '../di/injector_marker';
-import {InjectFlags} from '../di/interface/injector';
-import {ProviderToken} from '../di/provider_token';
-import {Type} from '../interface/type';
-import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
-import {noSideEffects} from '../util/closure';
+import {isForwardRef, resolveForwardRef} from '../di/forward_ref.js';
+import {injectRootLimpMode, setInjectImplementation} from '../di/inject_switch.js';
+import {Injector} from '../di/injector.js';
+import {InjectorMarkers} from '../di/injector_marker.js';
+import {InjectFlags} from '../di/interface/injector.js';
+import {ProviderToken} from '../di/provider_token.js';
+import {Type} from '../interface/type.js';
+import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert.js';
+import {noSideEffects} from '../util/closure.js';
 
-import {assertDirectiveDef, assertNodeInjector, assertTNodeForLView} from './assert';
-import {FactoryFn, getFactoryDef} from './definition_factory';
-import {throwCyclicDependencyError, throwProviderNotFoundError} from './errors_di';
-import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
-import {registerPreOrderHooks} from './hooks';
-import {DirectiveDef} from './interfaces/definition';
-import {isFactory, NO_PARENT_INJECTOR, NodeInjectorFactory, NodeInjectorOffset, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
-import {AttributeMarker, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeProviderIndexes, TNodeType} from './interfaces/node';
-import {isComponentDef, isComponentHost} from './interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, FLAGS, INJECTOR, LView, LViewFlags, T_HOST, TData, TVIEW, TView, TViewType} from './interfaces/view';
-import {assertTNodeType} from './node_assert';
-import {enterDI, getCurrentTNode, getLView, leaveDI} from './state';
-import {isNameOnlyAttributeMarker} from './util/attrs_utils';
-import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils';
-import {stringifyForError} from './util/stringify_utils';
+import {assertDirectiveDef, assertNodeInjector, assertTNodeForLView} from './assert.js';
+import {FactoryFn, getFactoryDef} from './definition_factory.js';
+import {throwCyclicDependencyError, throwProviderNotFoundError} from './errors_di.js';
+import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields.js';
+import {registerPreOrderHooks} from './hooks.js';
+import {DirectiveDef} from './interfaces/definition.js';
+import {isFactory, NO_PARENT_INJECTOR, NodeInjectorFactory, NodeInjectorOffset, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector.js';
+import {AttributeMarker, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeProviderIndexes, TNodeType} from './interfaces/node.js';
+import {isComponentDef, isComponentHost} from './interfaces/type_checks.js';
+import {DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, FLAGS, INJECTOR, LView, LViewFlags, T_HOST, TData, TVIEW, TView, TViewType} from './interfaces/view.js';
+import {assertTNodeType} from './node_assert.js';
+import {enterDI, getCurrentTNode, getLView, leaveDI} from './state.js';
+import {isNameOnlyAttributeMarker} from './util/attrs_utils.js';
+import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils.js';
+import {stringifyForError} from './util/stringify_utils.js';
 
 
 

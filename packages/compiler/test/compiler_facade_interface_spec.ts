@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as core from '../../core/src/compiler/compiler_facade_interface';
-import {FactoryTarget} from '../public_api';
-import * as compiler from '../src/compiler_facade_interface';
+import * as core from '../../core/src/compiler/compiler_facade_interface.js';
+import {FactoryTarget} from '../public_api.js';
+import * as compiler from '../src/compiler_facade_interface.js';
 
 /**
  * This file is compiler level file which asserts that the set of interfaces in `@angular/core` and

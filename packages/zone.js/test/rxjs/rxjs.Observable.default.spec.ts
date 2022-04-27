@@ -8,7 +8,7 @@
 import {Observable, of} from 'rxjs';
 import {defaultIfEmpty} from 'rxjs/operators';
 
-import {asyncTest} from '../test-util';
+import {asyncTest} from '../test-util.js';
 
 describe('Observable.defaultIfEmpty', () => {
   let log: any[];

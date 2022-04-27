@@ -8,17 +8,17 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DownleveledEnum, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
-import {getDeclaration, loadFakeCore, loadTestFiles, walkForDeclarations} from '../../../src/ngtsc/testing';
-import {DelegatingReflectionHost} from '../../src/host/delegating_host';
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {BundleProgram} from '../../src/packages/bundle_program';
-import {getRootFiles, makeTestBundleProgram, makeTestDtsBundleProgram} from '../helpers/utils';
+import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DownleveledEnum, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, TypeScriptReflectionHost} from '../../../src/ngtsc/reflection/index.js';
+import {getDeclaration, loadFakeCore, loadTestFiles, walkForDeclarations} from '../../../src/ngtsc/testing/index.js';
+import {DelegatingReflectionHost} from '../../src/host/delegating_host.js';
+import {Esm2015ReflectionHost} from '../../src/host/esm2015_host.js';
+import {BundleProgram} from '../../src/packages/bundle_program.js';
+import {getRootFiles, makeTestBundleProgram, makeTestDtsBundleProgram} from '../helpers/utils.js';
 
-import {expectTypeValueReferencesForParameters} from './util';
+import {expectTypeValueReferencesForParameters} from './util.js';
 
 runInEachFileSystem(() => {
   describe('Esm2015ReflectionHost', () => {

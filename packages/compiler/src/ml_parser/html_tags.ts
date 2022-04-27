@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TagContentType, TagDefinition} from './tags';
+import {TagContentType, TagDefinition} from './tags.js';
 
 export class HtmlTagDefinition implements TagDefinition {
   private closedByChildren: {[key: string]: boolean} = {};

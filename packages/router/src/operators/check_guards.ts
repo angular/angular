@@ -10,16 +10,16 @@ import {Injector} from '@angular/core';
 import {concat, defer, from, MonoTypeOperatorFunction, Observable, of} from 'rxjs';
 import {concatMap, first, map, mergeMap} from 'rxjs/operators';
 
-import {ActivationStart, ChildActivationStart, Event} from '../events';
-import {CanActivateChildFn, CanActivateFn, CanDeactivateFn} from '../models';
-import {NavigationTransition} from '../router';
-import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
-import {UrlTree} from '../url_tree';
-import {wrapIntoObservable} from '../utils/collection';
-import {CanActivate, CanDeactivate, getCanActivateChild, getToken} from '../utils/preactivation';
-import {isBoolean, isCanActivate, isCanActivateChild, isCanDeactivate, isFunction} from '../utils/type_guards';
+import {ActivationStart, ChildActivationStart, Event} from '../events.js';
+import {CanActivateChildFn, CanActivateFn, CanDeactivateFn} from '../models.js';
+import {NavigationTransition} from '../router.js';
+import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state.js';
+import {UrlTree} from '../url_tree.js';
+import {wrapIntoObservable} from '../utils/collection.js';
+import {CanActivate, CanDeactivate, getCanActivateChild, getToken} from '../utils/preactivation.js';
+import {isBoolean, isCanActivate, isCanActivateChild, isCanDeactivate, isFunction} from '../utils/type_guards.js';
 
-import {prioritizedGuardValue} from './prioritized_guard_value';
+import {prioritizedGuardValue} from './prioritized_guard_value.js';
 
 export function checkGuards(moduleInjector: Injector, forwardEvent?: (evt: Event) => void):
     MonoTypeOperatorFunction<NavigationTransition> {

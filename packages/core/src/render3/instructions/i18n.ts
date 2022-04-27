@@ -5,20 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import '../../util/ng_dev_mode';
-import '../../util/ng_i18n_closure_mode';
+import '../../util/ng_dev_mode.js';
+import '../../util/ng_i18n_closure_mode.js';
 
-import {assertDefined} from '../../util/assert';
-import {bindingUpdated} from '../bindings';
-import {applyCreateOpCodes, applyI18n, setMaskBit} from '../i18n/i18n_apply';
-import {i18nAttributesFirstPass, i18nStartFirstCreatePass} from '../i18n/i18n_parse';
-import {i18nPostprocess} from '../i18n/i18n_postprocess';
-import {TI18n} from '../interfaces/i18n';
-import {TElementNode, TNodeType} from '../interfaces/node';
-import {HEADER_OFFSET, T_HOST} from '../interfaces/view';
-import {getClosestRElement} from '../node_manipulation';
-import {getCurrentParentTNode, getLView, getTView, nextBindingIndex, setInI18nBlock} from '../state';
-import {getConstant} from '../util/view_utils';
+import {assertDefined} from '../../util/assert.js';
+import {bindingUpdated} from '../bindings.js';
+import {applyCreateOpCodes, applyI18n, setMaskBit} from '../i18n/i18n_apply.js';
+import {i18nAttributesFirstPass, i18nStartFirstCreatePass} from '../i18n/i18n_parse.js';
+import {i18nPostprocess} from '../i18n/i18n_postprocess.js';
+import {TI18n} from '../interfaces/i18n.js';
+import {TElementNode, TNodeType} from '../interfaces/node.js';
+import {HEADER_OFFSET, T_HOST} from '../interfaces/view.js';
+import {getClosestRElement} from '../node_manipulation.js';
+import {getCurrentParentTNode, getLView, getTView, nextBindingIndex, setInI18nBlock} from '../state.js';
+import {getConstant} from '../util/view_utils.js';
 
 /**
  * Marks a block of text as translatable.

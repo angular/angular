@@ -7,11 +7,11 @@
  */
 import {animate, animation, AnimationMetadata, AnimationMetadataType, AnimationOptions, AUTO_STYLE, group, keyframes, query, sequence, state, style, transition, trigger, useAnimation, ɵStyleDataMap} from '@angular/animations';
 
-import {Animation} from '../../src/dsl/animation';
-import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
-import {AnimationTimelineInstruction} from '../../src/dsl/animation_timeline_instruction';
-import {ElementInstructionMap} from '../../src/dsl/element_instruction_map';
-import {MockAnimationDriver} from '../../testing';
+import {Animation} from '../../src/dsl/animation.js';
+import {buildAnimationAst} from '../../src/dsl/animation_ast_builder.js';
+import {AnimationTimelineInstruction} from '../../src/dsl/animation_timeline_instruction.js';
+import {ElementInstructionMap} from '../../src/dsl/element_instruction_map.js';
+import {MockAnimationDriver} from '../../testing/index.js';
 
 function createDiv() {
   return document.createElement('div');

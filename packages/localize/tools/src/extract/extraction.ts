@@ -7,10 +7,11 @@
  */
 import {AbsoluteFsPath, Logger, ReadonlyFileSystem, SourceFile, SourceFileLoader} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
-import {transformSync} from '../babel_core';
 
-import {makeEs2015ExtractPlugin} from './source_files/es2015_extract_plugin';
-import {makeEs5ExtractPlugin} from './source_files/es5_extract_plugin';
+import {transformSync} from '../babel_core.js';
+
+import {makeEs2015ExtractPlugin} from './source_files/es2015_extract_plugin.js';
+import {makeEs5ExtractPlugin} from './source_files/es5_extract_plugin.js';
 
 export interface ExtractionOptions {
   basePath: AbsoluteFsPath;

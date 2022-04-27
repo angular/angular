@@ -8,11 +8,11 @@
 
 import ts from 'typescript';
 
-import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
-import {Reference} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
+import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../diagnostics/index.js';
+import {Reference} from '../../imports/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
 
-import {ComponentScopeKind, ComponentScopeReader} from './api';
+import {ComponentScopeKind, ComponentScopeReader} from './api.js';
 
 export function getDiagnosticNode(
     ref: Reference<ClassDeclaration>, rawExpr: ts.Expression|null): ts.Expression {

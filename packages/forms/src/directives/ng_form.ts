@@ -8,18 +8,18 @@
 
 import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Self} from '@angular/core';
 
-import {AbstractControl, FormHooks} from '../model/abstract_model';
-import {FormControl} from '../model/form_control';
-import {FormGroup} from '../model/form_group';
-import {composeAsyncValidators, composeValidators, NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
+import {AbstractControl, FormHooks} from '../model/abstract_model.js';
+import {FormControl} from '../model/form_control.js';
+import {FormGroup} from '../model/form_group.js';
+import {composeAsyncValidators, composeValidators, NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators.js';
 
-import {ControlContainer} from './control_container';
-import {Form} from './form_interface';
-import {NgControl} from './ng_control';
-import {NgModel} from './ng_model';
-import {NgModelGroup} from './ng_model_group';
-import {setUpControl, setUpFormContainer, syncPendingControls} from './shared';
-import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
+import {ControlContainer} from './control_container.js';
+import {Form} from './form_interface.js';
+import {NgControl} from './ng_control.js';
+import {NgModel} from './ng_model.js';
+import {NgModelGroup} from './ng_model_group.js';
+import {setUpControl, setUpFormContainer, syncPendingControls} from './shared.js';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators.js';
 
 export const formDirectiveProvider: any = {
   provide: ControlContainer,

@@ -8,7 +8,7 @@
 
 import {Type, ɵRuntimeError as RuntimeError, ɵstringify as stringify} from '@angular/core';
 
-import {RuntimeErrorCode} from '../errors';
+import {RuntimeErrorCode} from '../errors.js';
 
 export function invalidPipeArgumentError(type: Type<any>, value: Object) {
   const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?

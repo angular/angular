@@ -8,13 +8,13 @@
 
 import {DirectiveProfile, ElementPosition, ElementProfile, LifecycleProfile, ProfilerFrame} from 'protocol';
 
-import {getDirectiveName} from '../highlighter';
-import {ComponentTreeNode} from '../interfaces';
-import {isCustomElement, runOutsideAngular} from '../utils';
+import {getDirectiveName} from '../highlighter.js';
+import {ComponentTreeNode} from '../interfaces.js';
+import {isCustomElement, runOutsideAngular} from '../utils.js';
 
-import {initializeOrGetDirectiveForestHooks} from '.';
-import {DirectiveForestHooks} from './hooks';
-import {Hooks} from './profiler';
+import {DirectiveForestHooks} from './hooks.js';
+import {initializeOrGetDirectiveForestHooks} from './index.js';
+import {Hooks} from './profiler/index.js';
 
 let inProgress = false;
 let inChangeDetection = false;

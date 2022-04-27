@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {isBrowser} from '../../lib/common/utils';
-import {isSafari, zoneSymbol} from '../test-util';
+import {isBrowser} from '../../lib/common/utils.js';
+import {isSafari, zoneSymbol} from '../test-util.js';
 
 // simulate @angular/facade/src/error.ts
 class BaseError extends Error {

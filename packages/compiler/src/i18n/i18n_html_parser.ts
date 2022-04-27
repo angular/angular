@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MissingTranslationStrategy} from '../core';
-import {HtmlParser} from '../ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../ml_parser/interpolation_config';
-import {TokenizeOptions} from '../ml_parser/lexer';
-import {ParseTreeResult} from '../ml_parser/parser';
-import {Console} from '../util';
+import {MissingTranslationStrategy} from '../core.js';
+import {HtmlParser} from '../ml_parser/html_parser.js';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../ml_parser/interpolation_config.js';
+import {TokenizeOptions} from '../ml_parser/lexer.js';
+import {ParseTreeResult} from '../ml_parser/parser.js';
+import {Console} from '../util.js';
 
-import {digest} from './digest';
-import {mergeTranslations} from './extractor_merger';
-import {Serializer} from './serializers/serializer';
-import {Xliff} from './serializers/xliff';
-import {Xliff2} from './serializers/xliff2';
-import {Xmb} from './serializers/xmb';
-import {Xtb} from './serializers/xtb';
-import {TranslationBundle} from './translation_bundle';
+import {digest} from './digest.js';
+import {mergeTranslations} from './extractor_merger.js';
+import {Serializer} from './serializers/serializer.js';
+import {Xliff} from './serializers/xliff.js';
+import {Xliff2} from './serializers/xliff2.js';
+import {Xmb} from './serializers/xmb.js';
+import {Xtb} from './serializers/xtb.js';
+import {TranslationBundle} from './translation_bundle.js';
 
 export class I18NHtmlParser implements HtmlParser {
   // @override

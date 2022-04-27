@@ -11,8 +11,8 @@ import {Injectable} from '@angular/core';
 import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 
-import {Hero} from './hero';
-import {HeroService} from './hero-service';
+import {HeroService} from './hero-service.js';
+import {Hero} from './hero.js';
 
 const cudOptions = {
   headers: new HttpHeaders({'Content-Type': 'application/json'})

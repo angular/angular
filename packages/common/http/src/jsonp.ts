@@ -10,9 +10,9 @@ import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
-import {HttpBackend, HttpHandler} from './backend';
-import {HttpRequest} from './request';
-import {HttpErrorResponse, HttpEvent, HttpEventType, HttpResponse, HttpStatusCode} from './response';
+import {HttpBackend, HttpHandler} from './backend.js';
+import {HttpRequest} from './request.js';
+import {HttpErrorResponse, HttpEvent, HttpEventType, HttpResponse, HttpStatusCode} from './response.js';
 
 
 // Every request made through JSONP needs a callback name that's unique across the

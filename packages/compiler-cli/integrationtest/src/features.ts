@@ -10,7 +10,7 @@ import * as common from '@angular/common';
 import {Component, CUSTOM_ELEMENTS_SCHEMA, Directive, EventEmitter, forwardRef, Inject, InjectionToken, NgModule, Output} from '@angular/core';
 import {Observable} from 'rxjs';
 
-import {wrapInArray} from './funcs';
+import {wrapInArray} from './funcs.js';
 
 export const SOME_INJECTON_TOKEN = new InjectionToken('injectionToken');
 

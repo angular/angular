@@ -27,15 +27,15 @@ export type XhrFactory = XhrFactory_fromAngularCommon;
  */
 export const XhrFactory = XhrFactory_fromAngularCommon;
 
-export {HttpBackend, HttpHandler} from './src/backend';
-export {HttpClient} from './src/client';
-export {HttpContext, HttpContextToken} from './src/context';
-export {HttpHeaders} from './src/headers';
-export {HTTP_INTERCEPTORS, HttpInterceptor} from './src/interceptor';
-export {JsonpClientBackend, JsonpInterceptor} from './src/jsonp';
-export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule, HttpInterceptingHandler as ɵHttpInterceptingHandler} from './src/module';
-export {HttpParameterCodec, HttpParams, HttpParamsOptions, HttpUrlEncodingCodec} from './src/params';
-export {HttpRequest} from './src/request';
-export {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpProgressEvent, HttpResponse, HttpResponseBase, HttpSentEvent, HttpStatusCode, HttpUploadProgressEvent, HttpUserEvent} from './src/response';
-export {HttpXhrBackend} from './src/xhr';
-export {HttpXsrfTokenExtractor} from './src/xsrf';
+export {HttpBackend, HttpHandler} from './src/backend.js';
+export {HttpClient} from './src/client.js';
+export {HttpContext, HttpContextToken} from './src/context.js';
+export {HttpHeaders} from './src/headers.js';
+export {HTTP_INTERCEPTORS, HttpInterceptor} from './src/interceptor.js';
+export {JsonpClientBackend, JsonpInterceptor} from './src/jsonp.js';
+export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule, HttpInterceptingHandler as ɵHttpInterceptingHandler} from './src/module.js';
+export {HttpParameterCodec, HttpParams, HttpParamsOptions, HttpUrlEncodingCodec} from './src/params.js';
+export {HttpRequest} from './src/request.js';
+export {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpProgressEvent, HttpResponse, HttpResponseBase, HttpSentEvent, HttpStatusCode, HttpUploadProgressEvent, HttpUserEvent} from './src/response.js';
+export {HttpXhrBackend} from './src/xhr.js';
+export {HttpXsrfTokenExtractor} from './src/xsrf.js';

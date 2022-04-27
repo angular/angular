@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import '../lib/mocha/mocha';
+import '../lib/mocha/mocha.js';
 declare const global: any;
 
 ((context: any) => {

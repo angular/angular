@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Manifest} from '../src/manifest';
-import {sha1} from '../src/sha1';
+import {Manifest} from '../src/manifest.js';
+import {sha1} from '../src/sha1.js';
 
-import {MockResponse} from './fetch';
+import {MockResponse} from './fetch.js';
 
 export type HeaderMap = {
   [key: string]: string

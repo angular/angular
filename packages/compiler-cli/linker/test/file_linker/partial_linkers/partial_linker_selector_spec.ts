@@ -7,9 +7,9 @@
  */
 import semver from 'semver';
 
-import {MockLogger} from '../../../../src/ngtsc/logging/testing';
-import {PartialLinker} from '../../../src/file_linker/partial_linkers/partial_linker';
-import {LinkerRange, PartialLinkerSelector} from '../../../src/file_linker/partial_linkers/partial_linker_selector';
+import {MockLogger} from '../../../../src/ngtsc/logging/testing/index.js';
+import {PartialLinker} from '../../../src/file_linker/partial_linkers/partial_linker.js';
+import {LinkerRange, PartialLinkerSelector} from '../../../src/file_linker/partial_linkers/partial_linker_selector.js';
 
 describe('PartialLinkerSelector', () => {
   let logger: MockLogger;

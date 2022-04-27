@@ -8,7 +8,8 @@
 import {Tree} from '@angular-devkit/schematics';
 import {dirname, relative, resolve} from 'path';
 import ts from 'typescript';
-import {parseTsconfigFile} from './parse_tsconfig';
+
+import {parseTsconfigFile} from './parse_tsconfig.js';
 
 export type FakeReadFileFn = (fileName: string) => string|undefined;
 

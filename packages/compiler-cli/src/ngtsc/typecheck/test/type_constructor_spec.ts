@@ -7,19 +7,18 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, getFileSystem, getSourceFileOrError, LogicalFileSystem, NgtscCompilerHost} from '../../file_system';
-import {runInEachFileSystem, TestFile} from '../../file_system/testing';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
-import {NOOP_PERF_RECORDER} from '../../perf';
-import {TsCreateProgramDriver, UpdateMode} from '../../program_driver';
-import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing';
-import {getRootDirs} from '../../util/src/typescript';
-import {InliningMode, PendingFileTypeCheckingData, TypeCheckContextImpl, TypeCheckingHost} from '../src/context';
-import {TemplateSourceManager} from '../src/source';
-import {TypeCheckFile} from '../src/type_check_file';
-
-import {ALL_ENABLED_CONFIG} from '../testing';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, getSourceFileOrError, LogicalFileSystem, NgtscCompilerHost} from '../../file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../file_system/testing/index.js';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports/index.js';
+import {NOOP_PERF_RECORDER} from '../../perf/index.js';
+import {TsCreateProgramDriver, UpdateMode} from '../../program_driver/index.js';
+import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection/index.js';
+import {getDeclaration, makeProgram} from '../../testing/index.js';
+import {getRootDirs} from '../../util/src/typescript.js';
+import {InliningMode, PendingFileTypeCheckingData, TypeCheckContextImpl, TypeCheckingHost} from '../src/context.js';
+import {TemplateSourceManager} from '../src/source.js';
+import {TypeCheckFile} from '../src/type_check_file.js';
+import {ALL_ENABLED_CONFIG} from '../testing/index.js';
 
 runInEachFileSystem(() => {
   describe('ngtsc typechecking', () => {

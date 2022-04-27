@@ -6,22 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './common/microtasks.spec';
-import './common/zone.spec';
-import './common/task.spec';
-import './common/util.spec';
-import './common/Promise.spec';
-import './common/fetch.spec';
-import './common/Error.spec';
-import './common/setInterval.spec';
-import './common/setTimeout.spec';
-import './common/toString.spec';
-import './zone-spec/long-stack-trace-zone.spec';
-import './zone-spec/async-test.spec';
-import './zone-spec/sync-test.spec';
-import './zone-spec/fake-async-test.spec';
-import './zone-spec/proxy.spec';
-import './zone-spec/task-tracking.spec';
-import './rxjs/rxjs.spec';
+import './common/microtasks.spec.js';
+import './common/zone.spec.js';
+import './common/task.spec.js';
+import './common/util.spec.js';
+import './common/Promise.spec.js';
+import './common/fetch.spec.js';
+import './common/Error.spec.js';
+import './common/setInterval.spec.js';
+import './common/setTimeout.spec.js';
+import './common/toString.spec.js';
+import './zone-spec/long-stack-trace-zone.spec.js';
+import './zone-spec/async-test.spec.js';
+import './zone-spec/sync-test.spec.js';
+import './zone-spec/fake-async-test.spec.js';
+import './zone-spec/proxy.spec.js';
+import './zone-spec/task-tracking.spec.js';
+import './rxjs/rxjs.spec.js';
 
 Error.stackTraceLimit = Number.POSITIVE_INFINITY;

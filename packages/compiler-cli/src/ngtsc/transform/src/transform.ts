@@ -9,16 +9,16 @@
 import {ConstantPool} from '@angular/compiler';
 import ts from 'typescript';
 
-import {DefaultImportTracker, ImportRewriter} from '../../imports';
-import {getDefaultImportDeclaration} from '../../imports/src/default';
-import {PerfPhase, PerfRecorder} from '../../perf';
-import {Decorator, ReflectionHost} from '../../reflection';
-import {ImportManager, RecordWrappedNodeFn, translateExpression, translateStatement, TranslatorOptions} from '../../translator';
-import {visit, VisitListEntryResult, Visitor} from '../../util/src/visitor';
+import {DefaultImportTracker, ImportRewriter} from '../../imports/index.js';
+import {getDefaultImportDeclaration} from '../../imports/src/default.js';
+import {PerfPhase, PerfRecorder} from '../../perf/index.js';
+import {Decorator, ReflectionHost} from '../../reflection/index.js';
+import {ImportManager, RecordWrappedNodeFn, translateExpression, translateStatement, TranslatorOptions} from '../../translator/index.js';
+import {visit, VisitListEntryResult, Visitor} from '../../util/src/visitor.js';
 
-import {CompileResult} from './api';
-import {TraitCompiler} from './compilation';
-import {addImports} from './utils';
+import {CompileResult} from './api.js';
+import {TraitCompiler} from './compilation.js';
+import {addImports} from './utils.js';
 
 const NO_DECORATORS = new Set<ts.Decorator>();
 

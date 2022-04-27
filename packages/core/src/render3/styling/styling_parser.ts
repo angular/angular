@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertEqual, throwError} from '../../util/assert';
-import {CharCode} from '../../util/char_code';
+import {assertEqual, throwError} from '../../util/assert.js';
+import {CharCode} from '../../util/char_code.js';
 
 /**
  * Stores the locations of key/value indexes while parsing styling.

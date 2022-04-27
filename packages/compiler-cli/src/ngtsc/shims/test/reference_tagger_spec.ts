@@ -8,14 +8,14 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom as _, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {makeProgram} from '../../testing';
-import {ShimAdapter} from '../src/adapter';
-import {retagTsFile, untagTsFile} from '../src/expando';
-import {ShimReferenceTagger} from '../src/reference_tagger';
+import {absoluteFrom as _, AbsoluteFsPath, getSourceFileOrError} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {makeProgram} from '../../testing/index.js';
+import {ShimAdapter} from '../src/adapter.js';
+import {retagTsFile, untagTsFile} from '../src/expando.js';
+import {ShimReferenceTagger} from '../src/reference_tagger.js';
 
-import {TestShimGenerator} from './util';
+import {TestShimGenerator} from './util.js';
 
 runInEachFileSystem(() => {
   describe('ShimReferenceTagger', () => {

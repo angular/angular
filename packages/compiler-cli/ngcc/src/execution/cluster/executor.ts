@@ -5,15 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {PathManipulation} from '../../../../src/ngtsc/file_system';
-import {Logger} from '../../../../src/ngtsc/logging';
-import {AsyncLocker} from '../../locking/async_locker';
-import {FileWriter} from '../../writing/file_writer';
-import {PackageJsonUpdater} from '../../writing/package_json_updater';
-import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from '../api';
-import {CreateTaskCompletedCallback} from '../tasks/api';
+import {PathManipulation} from '../../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../../src/ngtsc/logging/index.js';
+import {AsyncLocker} from '../../locking/async_locker.js';
+import {FileWriter} from '../../writing/file_writer.js';
+import {PackageJsonUpdater} from '../../writing/package_json_updater.js';
+import {AnalyzeEntryPointsFn, CreateCompileFn, Executor} from '../api.js';
+import {CreateTaskCompletedCallback} from '../tasks/api.js';
 
-import {ClusterMaster} from './master';
+import {ClusterMaster} from './master.js';
 
 /**
  * An `Executor` that processes tasks in parallel (on multiple processes) and completes

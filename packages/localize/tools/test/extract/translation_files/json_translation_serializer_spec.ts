@@ -7,9 +7,9 @@
  */
 import {ɵParsedMessage} from '@angular/localize';
 
-import {SimpleJsonTranslationSerializer} from '../../../src/extract/translation_files/json_translation_serializer';
+import {SimpleJsonTranslationSerializer} from '../../../src/extract/translation_files/json_translation_serializer.js';
 
-import {mockMessage} from './mock_message';
+import {mockMessage} from './mock_message.js';
 
 describe('JsonTranslationSerializer', () => {
   describe('renderFile()', () => {

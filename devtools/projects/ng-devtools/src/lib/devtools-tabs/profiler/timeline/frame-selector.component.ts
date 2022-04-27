@@ -10,9 +10,9 @@ import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
 
-import {TabUpdate} from '../../tab-update/index';
+import {TabUpdate} from '../../tab-update/index.js';
 
-import {GraphNode} from './record-formatter/record-formatter';
+import {GraphNode} from './record-formatter/record-formatter.js';
 
 const ITEM_WIDTH = 30;
 

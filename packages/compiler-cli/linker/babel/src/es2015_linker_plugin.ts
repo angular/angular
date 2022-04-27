@@ -8,13 +8,13 @@
 
 import {NodePath} from '@babel/traverse';
 
-import {FileLinker, isFatalLinkerError, LinkerEnvironment} from '../../../linker';
+import {FileLinker, isFatalLinkerError, LinkerEnvironment} from '../../../linker/index.js';
 
-import {BabelAstFactory} from './ast/babel_ast_factory';
-import {BabelAstHost} from './ast/babel_ast_host';
-import {BabelFile, PluginObj, types as t} from './babel_core';
-import {BabelDeclarationScope, ConstantScopePath} from './babel_declaration_scope';
-import {LinkerPluginOptions} from './linker_plugin_options';
+import {BabelAstFactory} from './ast/babel_ast_factory.js';
+import {BabelAstHost} from './ast/babel_ast_host.js';
+import {BabelFile, PluginObj, types as t} from './babel_core.js';
+import {BabelDeclarationScope, ConstantScopePath} from './babel_declaration_scope.js';
+import {LinkerPluginOptions} from './linker_plugin_options.js';
 
 /**
  * Create a Babel plugin that visits the program, identifying and linking partial declarations.

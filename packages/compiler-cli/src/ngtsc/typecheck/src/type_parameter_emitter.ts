@@ -7,11 +7,11 @@
  */
 import ts from 'typescript';
 
-import {OwningModule, Reference} from '../../imports';
-import {DeclarationNode, ReflectionHost} from '../../reflection';
+import {OwningModule, Reference} from '../../imports/index.js';
+import {DeclarationNode, ReflectionHost} from '../../reflection/index.js';
 
-import {tsUpdateTypeParameterDeclaration} from './ts_util';
-import {canEmitType, TypeEmitter} from './type_emitter';
+import {tsUpdateTypeParameterDeclaration} from './ts_util.js';
+import {canEmitType, TypeEmitter} from './type_emitter.js';
 
 
 /**

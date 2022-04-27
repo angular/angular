@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {transitiveExport} from './transitive_fixture';
+export {transitiveExport} from './transitive_fixture.js';
 
 export const hello = 1;

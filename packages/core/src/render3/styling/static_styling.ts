@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {concatStringsWithSpace} from '../../util/stringify';
-import {assertFirstCreatePass} from '../assert';
-import {AttributeMarker, TAttributes, TNode} from '../interfaces/node';
-import {getTView} from '../state';
+import {concatStringsWithSpace} from '../../util/stringify.js';
+import {assertFirstCreatePass} from '../assert.js';
+import {AttributeMarker, TAttributes, TNode} from '../interfaces/node.js';
+import {getTView} from '../state.js';
 
 /**
  * Compute the static styling (class/style) from `TAttributes`.

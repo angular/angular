@@ -11,4 +11,4 @@
  * package requires for ngc-wrapped.
  */
 
-export {PerfPhase} from '../src/ngtsc/perf';
+export {PerfPhase} from '../src/ngtsc/perf/index.js';

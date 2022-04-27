@@ -8,9 +8,9 @@
 
 import {ApplicationRef, NgModuleRef} from '@angular/core';
 
-import {bindAction} from '../../util';
+import {bindAction} from '../../util.js';
 
-import {JsWebFrameworksComponent, JsWebFrameworksModule, RowData} from './rows';
+import {JsWebFrameworksComponent, JsWebFrameworksModule, RowData} from './rows.js';
 
 
 function _random(max: number) {

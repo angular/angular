@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import '../util/ng_dev_mode';
+import '../util/ng_dev_mode.js';
 
-import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {Type} from '../interface/type';
-import {stringify} from '../util/stringify';
+import {RuntimeError, RuntimeErrorCode} from '../errors.js';
+import {Type} from '../interface/type.js';
+import {stringify} from '../util/stringify.js';
 
-import {resolveForwardRef} from './forward_ref';
-import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
-import {Injector} from './injector';
-import {DecoratorFlags, InjectFlags, InternalInjectFlags} from './interface/injector';
-import {ProviderToken} from './provider_token';
+import {resolveForwardRef} from './forward_ref.js';
+import {getInjectImplementation, injectRootLimpMode} from './inject_switch.js';
+import {Injector} from './injector.js';
+import {DecoratorFlags, InjectFlags, InternalInjectFlags} from './interface/injector.js';
+import {ProviderToken} from './provider_token.js';
 
 
 const _THROW_IF_NOT_FOUND = {};

@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createInjectorWithoutInjectorInstances} from '../di/create_injector';
-import {Injector} from '../di/injector';
-import {INJECTOR} from '../di/injector_token';
-import {InjectFlags} from '../di/interface/injector';
-import {Provider} from '../di/interface/provider';
-import {EnvironmentInjector, getNullInjector, R3Injector} from '../di/r3_injector';
-import {Type} from '../interface/type';
-import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
-import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
-import {assertDefined} from '../util/assert';
-import {stringify} from '../util/stringify';
+import {createInjectorWithoutInjectorInstances} from '../di/create_injector.js';
+import {Injector} from '../di/injector.js';
+import {INJECTOR} from '../di/injector_token.js';
+import {InjectFlags} from '../di/interface/injector.js';
+import {Provider} from '../di/interface/provider.js';
+import {EnvironmentInjector, getNullInjector, R3Injector} from '../di/r3_injector.js';
+import {Type} from '../interface/type.js';
+import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver.js';
+import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory.js';
+import {assertDefined} from '../util/assert.js';
+import {stringify} from '../util/stringify.js';
 
-import {ComponentFactoryResolver} from './component_ref';
-import {getNgModuleDef} from './definition';
-import {maybeUnwrapFn} from './util/misc_utils';
+import {ComponentFactoryResolver} from './component_ref.js';
+import {getNgModuleDef} from './definition.js';
+import {maybeUnwrapFn} from './util/misc_utils.js';
 
 /**
  * Returns a new NgModuleRef instance based on the NgModule class and parent injector provided.

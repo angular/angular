@@ -5,15 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as o from '../../output/output_ast';
-import {Identifiers as R3} from '../r3_identifiers';
-import {convertFromMaybeForwardRefExpression, R3CompiledExpression} from '../util';
-import {R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from '../view/api';
-import {createDirectiveType} from '../view/compiler';
-import {asLiteral, conditionallyCreateMapObjectLiteral, DefinitionMap} from '../view/util';
+import * as o from '../../output/output_ast.js';
+import {Identifiers as R3} from '../r3_identifiers.js';
+import {convertFromMaybeForwardRefExpression, R3CompiledExpression} from '../util.js';
+import {R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from '../view/api.js';
+import {createDirectiveType} from '../view/compiler.js';
+import {asLiteral, conditionallyCreateMapObjectLiteral, DefinitionMap} from '../view/util.js';
 
-import {R3DeclareDirectiveMetadata, R3DeclareQueryMetadata} from './api';
-import {toOptionalLiteralMap} from './util';
+import {R3DeclareDirectiveMetadata, R3DeclareQueryMetadata} from './api.js';
+import {toOptionalLiteralMap} from './util.js';
 
 /**
  * Every time we make a breaking change to the declaration interface or partial-linker behavior, we

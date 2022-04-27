@@ -7,10 +7,10 @@
  */
 import ts from 'typescript';
 
-import {Reference} from '../../../src/ngtsc/imports';
-import {ClassDeclaration, Decorator, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {Reference} from '../../../src/ngtsc/imports/index.js';
+import {ClassDeclaration, Decorator, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection/index.js';
 
-import {MigrationHost} from './migration';
+import {MigrationHost} from './migration.js';
 
 export function isClassDeclaration(clazz: ts.Node): clazz is ClassDeclaration<ts.Declaration> {
   return isNamedClassDeclaration(clazz) || isNamedFunctionDeclaration(clazz) ||

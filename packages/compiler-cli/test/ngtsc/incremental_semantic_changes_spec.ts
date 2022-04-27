@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing/index.js';
+import {loadStandardTestFiles} from '../../src/ngtsc/testing/index.js';
 
-import {NgtscTestEnvironment} from './env';
+import {NgtscTestEnvironment} from './env.js';
 
 const testFiles = loadStandardTestFiles();
 

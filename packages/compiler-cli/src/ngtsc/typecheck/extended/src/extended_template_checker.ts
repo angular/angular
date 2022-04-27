@@ -9,10 +9,10 @@
 import {ParseSourceSpan} from '@angular/compiler';
 import ts from 'typescript';
 
-import {DiagnosticCategoryLabel, NgCompilerOptions} from '../../../core/api';
-import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../diagnostics';
-import {NgTemplateDiagnostic, TemplateDiagnostic, TemplateTypeChecker} from '../../api';
-import {ExtendedTemplateChecker, TemplateCheck, TemplateCheckFactory, TemplateContext} from '../api';
+import {DiagnosticCategoryLabel, NgCompilerOptions} from '../../../core/api/index.js';
+import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../diagnostics/index.js';
+import {NgTemplateDiagnostic, TemplateDiagnostic, TemplateTypeChecker} from '../../api/index.js';
+import {ExtendedTemplateChecker, TemplateCheck, TemplateCheckFactory, TemplateContext} from '../api/index.js';
 
 export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
   private readonly partialCtx: Omit<TemplateContext<ErrorCode>, 'makeTemplateDiagnostic'>;

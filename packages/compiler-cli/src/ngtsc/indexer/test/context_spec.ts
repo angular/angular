@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ParseSourceFile} from '@angular/compiler';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {IndexingContext} from '../src/context';
-import * as util from './util';
+
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {IndexingContext} from '../src/context.js';
+
+import * as util from './util.js';
 
 runInEachFileSystem(() => {
   describe('ComponentAnalysisContext', () => {

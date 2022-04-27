@@ -9,11 +9,11 @@
 import {Injector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-import {$INJECTOR} from '../../../src/common/src/constants';
-import {withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
-import {createAngularTestingModule} from '../src/create_angular_testing_module';
+import {$INJECTOR} from '../../../src/common/src/constants.js';
+import {withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers.js';
+import {createAngularTestingModule} from '../src/create_angular_testing_module.js';
 
-import {AppModule, defineAppModule, Inventory, serverRequestInstance} from './mocks';
+import {AppModule, defineAppModule, Inventory, serverRequestInstance} from './mocks.js';
 
 withEachNg1Version(() => {
   describe('Angular entry point', () => {

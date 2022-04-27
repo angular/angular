@@ -6,25 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
-import {SchemaMetadata} from '../../metadata/schema';
-import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
-import {assertFirstCreatePass, assertHasParent} from '../assert';
-import {attachPatchData} from '../context_discovery';
-import {registerPostOrderHooks} from '../hooks';
-import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNodeFlags, TNodeType} from '../interfaces/node';
-import {RElement} from '../interfaces/renderer_dom';
-import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view';
-import {assertTNodeType} from '../node_assert';
-import {appendChild, createElementNode, writeDirectClass, writeDirectStyle} from '../node_manipulation';
-import {decreaseElementDepthCount, getBindingIndex, getCurrentTNode, getElementDepthCount, getLView, getNamespace, getTView, increaseElementDepthCount, isCurrentTNodeParent, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
-import {computeStaticStyling} from '../styling/static_styling';
-import {setUpAttributes} from '../util/attrs_utils';
-import {getConstant} from '../util/view_utils';
+import {formatRuntimeError, RuntimeErrorCode} from '../../errors.js';
+import {SchemaMetadata} from '../../metadata/schema.js';
+import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert.js';
+import {assertFirstCreatePass, assertHasParent} from '../assert.js';
+import {attachPatchData} from '../context_discovery.js';
+import {registerPostOrderHooks} from '../hooks.js';
+import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNodeFlags, TNodeType} from '../interfaces/node.js';
+import {RElement} from '../interfaces/renderer_dom.js';
+import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks.js';
+import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view.js';
+import {assertTNodeType} from '../node_assert.js';
+import {appendChild, createElementNode, writeDirectClass, writeDirectStyle} from '../node_manipulation.js';
+import {decreaseElementDepthCount, getBindingIndex, getCurrentTNode, getElementDepthCount, getLView, getNamespace, getTView, increaseElementDepthCount, isCurrentTNodeParent, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state.js';
+import {computeStaticStyling} from '../styling/static_styling.js';
+import {setUpAttributes} from '../util/attrs_utils.js';
+import {getConstant} from '../util/view_utils.js';
 
-import {setDirectiveInputsWhichShadowsStyling} from './property';
-import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, matchingSchemas, resolveDirectives, saveResolvedLocalsInData} from './shared';
+import {setDirectiveInputsWhichShadowsStyling} from './property.js';
+import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, matchingSchemas, resolveDirectives, saveResolvedLocalsInData} from './shared.js';
 
 
 

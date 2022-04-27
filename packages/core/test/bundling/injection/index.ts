@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {INJECTOR, ScopedService} from './usage';
+import {INJECTOR, ScopedService} from './usage.js';
 
 INJECTOR.get(ScopedService).doSomething();

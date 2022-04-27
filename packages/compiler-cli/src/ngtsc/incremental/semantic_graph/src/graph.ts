@@ -7,9 +7,11 @@
  */
 
 import {Expression, ExternalExpr} from '@angular/compiler';
-import {AbsoluteFsPath} from '../../../file_system';
-import {ClassDeclaration} from '../../../reflection';
-import {SemanticReference, SemanticSymbol} from './api';
+
+import {AbsoluteFsPath} from '../../../file_system/index.js';
+import {ClassDeclaration} from '../../../reflection/index.js';
+
+import {SemanticReference, SemanticSymbol} from './api.js';
 
 export interface SemanticDependencyResult {
   /**

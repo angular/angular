@@ -10,7 +10,7 @@
 import {ConsoleLogger, LogLevel, NodeJSFileSystem, setFileSystem} from '@angular/compiler-cli/private/localize';
 import glob from 'glob';
 import yargs from 'yargs';
-import {migrateFiles} from './index';
+import {migrateFiles} from './index.js';
 
 const args = process.argv.slice(2);
 const options =

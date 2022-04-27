@@ -7,11 +7,11 @@
  */
 import {Element, Expansion, ExpansionCase, Node, Text, visitAll} from '@angular/compiler';
 
-import {BaseVisitor} from '../base_visitor';
-import {TranslationParseError} from '../translation_parsers/translation_parse_error';
-import {getAttribute, getAttrOrThrow} from '../translation_parsers/translation_utils';
+import {BaseVisitor} from '../base_visitor.js';
+import {TranslationParseError} from '../translation_parsers/translation_parse_error.js';
+import {getAttribute, getAttrOrThrow} from '../translation_parsers/translation_utils.js';
 
-import {MessageRenderer} from './message_renderer';
+import {MessageRenderer} from './message_renderer.js';
 
 export interface MessageSerializerConfig {
   inlineElements: string[];

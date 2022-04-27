@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {initMockFileSystem} from '../../file_system/testing';
-import {tcb, TestDeclaration} from '../testing';
+import {initMockFileSystem} from '../../file_system/testing/index.js';
+import {tcb, TestDeclaration} from '../testing/index.js';
 
 describe('type check blocks diagnostics', () => {
   beforeEach(() => initMockFileSystem('Native'));

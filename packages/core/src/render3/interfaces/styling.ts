@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {KeyValueArray} from '../../util/array_utils';
-import {assertNumber, assertNumberInRange} from '../../util/assert';
+import {KeyValueArray} from '../../util/array_utils.js';
+import {assertNumber, assertNumberInRange} from '../../util/assert.js';
 
 /**
  * Value stored in the `TData` which is needed to re-concatenate the styling.

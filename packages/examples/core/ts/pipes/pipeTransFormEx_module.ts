@@ -7,8 +7,9 @@
  */
 
 import {NgModule} from '@angular/core';
-import {TruncatePipe as SimpleTruncatePipe} from './simple_truncate';
-import {TruncatePipe} from './truncate';
+
+import {TruncatePipe as SimpleTruncatePipe} from './simple_truncate.js';
+import {TruncatePipe} from './truncate.js';
 
 @NgModule({declarations: [SimpleTruncatePipe, TruncatePipe]})
 export class TruncateModule {

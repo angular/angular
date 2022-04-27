@@ -14,10 +14,10 @@ import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, Symbol, SymbolKind, TcbLocation, TemplateSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
-import {convertToTemplateDocumentSpan} from './references_and_rename_utils';
-import {getTargetAtPosition, TargetNodeKind} from './template_target';
-import {findTightestNode, getParentClassDeclaration} from './ts_utils';
-import {flatMap, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTemplateLocationFromTcbLocation, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
+import {convertToTemplateDocumentSpan} from './references_and_rename_utils.js';
+import {getTargetAtPosition, TargetNodeKind} from './template_target.js';
+import {findTightestNode, getParentClassDeclaration} from './ts_utils.js';
+import {flatMap, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTemplateLocationFromTcbLocation, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils.js';
 
 interface DefinitionMeta {
   node: AST|TmplAstNode;

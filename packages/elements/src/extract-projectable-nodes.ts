@@ -10,7 +10,7 @@
 //       `DowngradeComponentAdapter`.
 // TODO(gkalpak): Investigate if it makes sense to share the code.
 
-import {isElement, matchesSelector} from './utils';
+import {isElement, matchesSelector} from './utils.js';
 
 export function extractProjectableNodes(host: HTMLElement, ngContentSelectors: string[]): Node[][] {
   const nodes = host.childNodes;

@@ -12,7 +12,7 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {Subject} from 'rxjs';
 
-import {stringify} from '../../src/util/stringify';
+import {stringify} from '../../src/util/stringify.js';
 
 describe('Query API', () => {
   beforeEach(() => TestBed.configureTestingModule({

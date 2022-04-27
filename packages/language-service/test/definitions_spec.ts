@@ -8,7 +8,7 @@
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {assertFileNames, assertTextSpans, createModuleAndProjectWithDeclarations, humanizeDocumentSpanLike, LanguageServiceTestEnv, OpenBuffer, Project} from '../testing';
+import {assertFileNames, assertTextSpans, createModuleAndProjectWithDeclarations, humanizeDocumentSpanLike, LanguageServiceTestEnv, OpenBuffer, Project} from '../testing/index.js';
 
 describe('definitions', () => {
   it('gets definition for template reference in overridden template', () => {

@@ -8,7 +8,7 @@
 import {combineLatest, Observable, of} from 'rxjs';
 import {combineAll, map} from 'rxjs/operators';
 
-import {asyncTest} from '../test-util';
+import {asyncTest} from '../test-util.js';
 
 describe('Observable.combine', () => {
   let log: any[];

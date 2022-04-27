@@ -8,9 +8,9 @@
 
 import {ElementRef, forwardRef, ɵɵngDeclareDirective} from '@angular/core';
 
-import {AttributeMarker, DirectiveDef} from '../../../src/render3';
+import {AttributeMarker, DirectiveDef} from '../../../src/render3/index.js';
 
-import {functionContaining} from './matcher';
+import {functionContaining} from './matcher.js';
 
 describe('directive declaration jit compilation', () => {
   it('should compile a minimal directive declaration', () => {

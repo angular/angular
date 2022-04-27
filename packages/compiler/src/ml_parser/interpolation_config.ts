@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertInterpolationSymbols} from '../assertions';
+import {assertInterpolationSymbols} from '../assertions.js';
 
 export class InterpolationConfig {
   static fromArray(markers: [string, string]|null): InterpolationConfig {

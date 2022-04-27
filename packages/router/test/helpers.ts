@@ -8,10 +8,10 @@
 
 import {Type} from '@angular/core';
 
-import {Data, ResolveData, Route} from '../src/models';
-import {ActivatedRouteSnapshot} from '../src/router_state';
-import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from '../src/shared';
-import {equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
+import {Data, ResolveData, Route} from '../src/models.js';
+import {ActivatedRouteSnapshot} from '../src/router_state.js';
+import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from '../src/shared.js';
+import {equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree.js';
 
 export class Logger {
   logs: string[] = [];

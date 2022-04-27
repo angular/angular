@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as i18n from '../../../i18n/i18n_ast';
-import {toPublicName} from '../../../i18n/serializers/xmb';
-import * as html from '../../../ml_parser/ast';
-import * as o from '../../../output/output_ast';
-import * as t from '../../r3_ast';
+import * as i18n from '../../../i18n/i18n_ast.js';
+import {toPublicName} from '../../../i18n/serializers/xmb.js';
+import * as html from '../../../ml_parser/ast.js';
+import * as o from '../../../output/output_ast.js';
+import * as t from '../../r3_ast.js';
 
 /* Closure variables holding messages must be named `MSG_[A-Z0-9]+` */
 const CLOSURE_TRANSLATION_VAR_PREFIX = 'MSG_';

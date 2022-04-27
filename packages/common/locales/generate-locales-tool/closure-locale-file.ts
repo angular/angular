@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CldrData, CldrLocaleData} from './cldr-data';
-import {fileHeader} from './file-header';
-import {BaseCurrencies} from './locale-base-currencies';
-import {generateLocale} from './locale-file';
+import {CldrData, CldrLocaleData} from './cldr-data.js';
+import {fileHeader} from './file-header.js';
+import {BaseCurrencies} from './locale-base-currencies.js';
+import {generateLocale} from './locale-file.js';
 
 interface ClosureLocale {
   /** Closure-supported locale names that resolve to this locale. */

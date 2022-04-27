@@ -8,7 +8,7 @@
 
 import {Directive, DoCheck, Host, Input, Optional, TemplateRef, ViewContainerRef, ɵRuntimeError as RuntimeError} from '@angular/core';
 
-import {RuntimeErrorCode} from '../errors';
+import {RuntimeErrorCode} from '../errors.js';
 
 export class SwitchView {
   private _created = false;

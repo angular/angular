@@ -9,7 +9,7 @@
 import {Component} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 
-import {DialogComponent} from './dialog.component';
+import {DialogComponent} from './dialog.component.js';
 
 @Component({
   selector: 'app-todo-demo',

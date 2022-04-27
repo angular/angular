@@ -11,7 +11,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {ServerModule} from '@angular/platform-server';
 import {RouterModule} from '@angular/router';
 
-import {LazyModule} from './root_lazy';
+import {LazyModule} from './root_lazy.js';
 
 @Component({
   selector: 'root-app',

@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {ConsoleLogger, LogLevel} from '../../../src/ngtsc/logging';
-import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {ConsoleLogger, LogLevel} from '../../../src/ngtsc/logging/index.js';
+import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps/index.js';
 
 /**
  * Check the source-mappings of the generated source file against mappings stored in the expected

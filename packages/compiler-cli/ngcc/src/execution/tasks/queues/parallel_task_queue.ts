@@ -5,10 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Logger} from '../../../../../src/ngtsc/logging';
-import {PartiallyOrderedTasks, Task, TaskDependencies} from '../api';
-import {getBlockedTasks, sortTasksByPriority, stringifyTask} from '../utils';
-import {BaseTaskQueue} from './base_task_queue';
+import {Logger} from '../../../../../src/ngtsc/logging/index.js';
+import {PartiallyOrderedTasks, Task, TaskDependencies} from '../api.js';
+import {getBlockedTasks, sortTasksByPriority, stringifyTask} from '../utils.js';
+
+import {BaseTaskQueue} from './base_task_queue.js';
 
 /**
  * A `TaskQueue` implementation that assumes tasks are processed in parallel, thus has to ensure a

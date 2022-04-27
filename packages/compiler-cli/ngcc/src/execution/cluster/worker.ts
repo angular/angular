@@ -9,12 +9,12 @@
 
 import cluster from 'cluster';
 
-import {Logger} from '../../../../src/ngtsc/logging';
-import {CreateCompileFn} from '../api';
-import {stringifyTask} from '../tasks/utils';
+import {Logger} from '../../../../src/ngtsc/logging/index.js';
+import {CreateCompileFn} from '../api.js';
+import {stringifyTask} from '../tasks/utils.js';
 
-import {MessageToWorker} from './api';
-import {sendMessageToMaster} from './utils';
+import {MessageToWorker} from './api.js';
+import {sendMessageToMaster} from './utils.js';
 
 export async function startWorker(logger: Logger, createCompileFn: CreateCompileFn): Promise<void> {
   if (cluster.isMaster) {

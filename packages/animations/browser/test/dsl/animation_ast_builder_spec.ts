@@ -7,8 +7,8 @@
  */
 import {AnimationMetadata, AnimationMetadataType} from '@angular/animations';
 
-import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
-import {MockAnimationDriver} from '../../testing';
+import {buildAnimationAst} from '../../src/dsl/animation_ast_builder.js';
+import {MockAnimationDriver} from '../../testing/index.js';
 
 {
   describe('buildAnimationAst', () => {

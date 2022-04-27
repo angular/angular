@@ -8,7 +8,7 @@
 import {absoluteFrom, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {getOutputPathFn} from '../../src/translate/output_path';
+import {getOutputPathFn} from '../../src/translate/output_path.js';
 
 runInEachFileSystem(() => {
   let fs: PathManipulation;

@@ -8,10 +8,10 @@
 
 import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EnvironmentInjector, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef,} from '@angular/core';
 
-import {Data} from '../models';
-import {ChildrenOutletContexts} from '../router_outlet_context';
-import {ActivatedRoute} from '../router_state';
-import {PRIMARY_OUTLET} from '../shared';
+import {Data} from '../models.js';
+import {ChildrenOutletContexts} from '../router_outlet_context.js';
+import {ActivatedRoute} from '../router_state.js';
+import {PRIMARY_OUTLET} from '../shared.js';
 
 /**
  * An interface that defines the contract for developing a component outlet for the `Router`.

@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ViewEncapsulation} from '../../core';
-import {InterpolationConfig} from '../../ml_parser/interpolation_config';
-import * as o from '../../output/output_ast';
-import {ParseSourceSpan} from '../../parse_util';
-import * as t from '../r3_ast';
-import {R3DependencyMetadata} from '../r3_factory';
-import {MaybeForwardRefExpression, R3Reference} from '../util';
+import {ChangeDetectionStrategy, ViewEncapsulation} from '../../core.js';
+import {InterpolationConfig} from '../../ml_parser/interpolation_config.js';
+import * as o from '../../output/output_ast.js';
+import {ParseSourceSpan} from '../../parse_util.js';
+import * as t from '../r3_ast.js';
+import {R3DependencyMetadata} from '../r3_factory.js';
+import {MaybeForwardRefExpression, R3Reference} from '../util.js';
 
 
 /**

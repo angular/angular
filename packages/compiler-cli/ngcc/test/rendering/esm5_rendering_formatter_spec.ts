@@ -9,18 +9,18 @@ import {DeclareVarStmt, LiteralExpr, StmtModifier} from '@angular/compiler';
 import MagicString from 'magic-string';
 import ts from 'typescript';
 
-import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {NoopImportRewriter} from '../../../src/ngtsc/imports';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
-import {ImportManager} from '../../../src/ngtsc/translator';
-import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
-import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
-import {IMPORT_PREFIX} from '../../src/constants';
-import {Esm5ReflectionHost} from '../../src/host/esm5_host';
-import {Esm5RenderingFormatter} from '../../src/rendering/esm5_rendering_formatter';
-import {makeTestEntryPointBundle} from '../helpers/utils';
+import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {NoopImportRewriter} from '../../../src/ngtsc/imports/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {ImportManager} from '../../../src/ngtsc/translator/index.js';
+import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer.js';
+import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry.js';
+import {IMPORT_PREFIX} from '../../src/constants.js';
+import {Esm5ReflectionHost} from '../../src/host/esm5_host.js';
+import {Esm5RenderingFormatter} from '../../src/rendering/esm5_rendering_formatter.js';
+import {makeTestEntryPointBundle} from '../helpers/utils.js';
 
 function setup(file: {name: AbsoluteFsPath, contents: string}) {
   loadTestFiles([file]);

@@ -8,14 +8,14 @@
 import {ConstantPool} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
 
-import {absoluteFrom} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
-import {NOOP_PERF_RECORDER} from '../../perf';
-import {ClassDeclaration, Decorator, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing';
-import {CompilationMode, DetectResult, DtsTransformRegistry, TraitCompiler} from '../../transform';
-import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerPrecedence} from '../src/api';
+import {absoluteFrom} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {NOOP_INCREMENTAL_BUILD} from '../../incremental/index.js';
+import {NOOP_PERF_RECORDER} from '../../perf/index.js';
+import {ClassDeclaration, Decorator, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection/index.js';
+import {getDeclaration, makeProgram} from '../../testing/index.js';
+import {CompilationMode, DetectResult, DtsTransformRegistry, TraitCompiler} from '../../transform/index.js';
+import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerPrecedence} from '../src/api.js';
 
 runInEachFileSystem(() => {
   describe('TraitCompiler', () => {

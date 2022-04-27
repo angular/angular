@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockLogger} from '../../../../../src/ngtsc/logging/testing';
-import {DtsProcessing, PartiallyOrderedTasks, TaskQueue} from '../../../../src/execution/tasks/api';
-import {ParallelTaskQueue} from '../../../../src/execution/tasks/queues/parallel_task_queue';
-import {computeTaskDependencies} from '../../../../src/execution/tasks/utils';
-import {createTasksAndGraph} from '../../helpers';
+import {MockLogger} from '../../../../../src/ngtsc/logging/testing/index.js';
+import {DtsProcessing, PartiallyOrderedTasks, TaskQueue} from '../../../../src/execution/tasks/api.js';
+import {ParallelTaskQueue} from '../../../../src/execution/tasks/queues/parallel_task_queue.js';
+import {computeTaskDependencies} from '../../../../src/execution/tasks/utils.js';
+import {createTasksAndGraph} from '../../helpers.js';
 
 describe('ParallelTaskQueue', () => {
   /**

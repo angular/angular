@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectFlags} from '../di';
-import {InternalInjectFlags} from '../di/interface/injector';
-import {TNode, TNodeType} from '../render3/interfaces/node';
-import {isComponentHost} from '../render3/interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, LView} from '../render3/interfaces/view';
-import {getCurrentTNode, getLView} from '../render3/state';
-import {getComponentLViewByIndex} from '../render3/util/view_utils';
-import {ViewRef as R3_ViewRef} from '../render3/view_ref';
+import {InjectFlags} from '../di/index.js';
+import {InternalInjectFlags} from '../di/interface/injector.js';
+import {TNode, TNodeType} from '../render3/interfaces/node.js';
+import {isComponentHost} from '../render3/interfaces/type_checks.js';
+import {DECLARATION_COMPONENT_VIEW, LView} from '../render3/interfaces/view.js';
+import {getCurrentTNode, getLView} from '../render3/state.js';
+import {getComponentLViewByIndex} from '../render3/util/view_utils.js';
+import {ViewRef as R3_ViewRef} from '../render3/view_ref.js';
 
 /**
  * Base class that provides change detection functionality.

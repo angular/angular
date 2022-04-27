@@ -5,28 +5,28 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import '../../util/ng_dev_mode';
-import '../../util/ng_i18n_closure_mode';
+import '../../util/ng_dev_mode.js';
+import '../../util/ng_i18n_closure_mode.js';
 
-import {getTemplateContent, SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS} from '../../sanitization/html_sanitizer';
-import {getInertBodyHelper} from '../../sanitization/inert_body';
-import {_sanitizeUrl, sanitizeSrcset} from '../../sanitization/url_sanitizer';
-import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertOneOf, assertString} from '../../util/assert';
-import {CharCode} from '../../util/char_code';
-import {loadIcuContainerVisitor} from '../instructions/i18n_icu_container_visitor';
-import {allocExpando, createTNodeAtIndex} from '../instructions/shared';
-import {getDocument} from '../interfaces/document';
-import {ELEMENT_MARKER, I18nCreateOpCode, I18nCreateOpCodes, I18nRemoveOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes, IcuExpression, IcuType, TI18n, TIcu} from '../interfaces/i18n';
-import {TNode, TNodeType} from '../interfaces/node';
-import {SanitizerFn} from '../interfaces/sanitization';
-import {HEADER_OFFSET, LView, TView} from '../interfaces/view';
-import {getCurrentParentTNode, getCurrentTNode, setCurrentTNode} from '../state';
-import {attachDebugGetter} from '../util/debug_utils';
+import {getTemplateContent, SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS} from '../../sanitization/html_sanitizer.js';
+import {getInertBodyHelper} from '../../sanitization/inert_body.js';
+import {_sanitizeUrl, sanitizeSrcset} from '../../sanitization/url_sanitizer.js';
+import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertOneOf, assertString} from '../../util/assert.js';
+import {CharCode} from '../../util/char_code.js';
+import {loadIcuContainerVisitor} from '../instructions/i18n_icu_container_visitor.js';
+import {allocExpando, createTNodeAtIndex} from '../instructions/shared.js';
+import {getDocument} from '../interfaces/document.js';
+import {ELEMENT_MARKER, I18nCreateOpCode, I18nCreateOpCodes, I18nRemoveOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes, IcuExpression, IcuType, TI18n, TIcu} from '../interfaces/i18n.js';
+import {TNode, TNodeType} from '../interfaces/node.js';
+import {SanitizerFn} from '../interfaces/sanitization.js';
+import {HEADER_OFFSET, LView, TView} from '../interfaces/view.js';
+import {getCurrentParentTNode, getCurrentTNode, setCurrentTNode} from '../state.js';
+import {attachDebugGetter} from '../util/debug_utils.js';
 
-import {i18nCreateOpCodesToString, i18nRemoveOpCodesToString, i18nUpdateOpCodesToString, icuCreateOpCodesToString} from './i18n_debug';
-import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
-import {ensureIcuContainerVisitorLoaded} from './i18n_tree_shaking';
-import {createTNodePlaceholder, icuCreateOpCode, setTIcu, setTNodeInsertBeforeIndex} from './i18n_util';
+import {i18nCreateOpCodesToString, i18nRemoveOpCodesToString, i18nUpdateOpCodesToString, icuCreateOpCodesToString} from './i18n_debug.js';
+import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index.js';
+import {ensureIcuContainerVisitorLoaded} from './i18n_tree_shaking.js';
+import {createTNodePlaceholder, icuCreateOpCode, setTIcu, setTNodeInsertBeforeIndex} from './i18n_util.js';
 
 
 

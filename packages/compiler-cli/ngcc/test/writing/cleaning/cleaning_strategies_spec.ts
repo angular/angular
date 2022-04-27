@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, PathSegment} from '../../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
-import {EntryPointPackageJson} from '../../../src/packages/entry_point';
-import {BackupFileCleaner, NgccDirectoryCleaner, PackageJsonCleaner} from '../../../src/writing/cleaning/cleaning_strategies';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, PathSegment} from '../../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing/index.js';
+import {EntryPointPackageJson} from '../../../src/packages/entry_point.js';
+import {BackupFileCleaner, NgccDirectoryCleaner, PackageJsonCleaner} from '../../../src/writing/cleaning/cleaning_strategies.js';
 
 runInEachFileSystem(() => {
   describe('cleaning strategies', () => {

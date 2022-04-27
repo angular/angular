@@ -5,8 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ImportGenerator, NamedImport} from '../../src/ngtsc/translator';
-import {FatalLinkerError} from './fatal_linker_error';
+import {ImportGenerator, NamedImport} from '../../src/ngtsc/translator/index.js';
+
+import {FatalLinkerError} from './fatal_linker_error.js';
 
 /**
  * A class that is used to generate imports when translating from Angular Output AST to an AST to

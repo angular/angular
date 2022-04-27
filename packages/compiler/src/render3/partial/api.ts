@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ChangeDetectionStrategy, ViewEncapsulation} from '../../core';
-import * as o from '../../output/output_ast';
+import {ChangeDetectionStrategy, ViewEncapsulation} from '../../core.js';
+import * as o from '../../output/output_ast.js';
 
 export interface R3PartialDeclaration {
   /**

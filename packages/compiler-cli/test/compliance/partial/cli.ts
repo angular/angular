@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {fs} from '../test_helpers/get_compliance_tests';
+import {fs} from '../test_helpers/get_compliance_tests.js';
 
-import {generateGoldenPartial} from './generate_golden_partial';
+import {generateGoldenPartial} from './generate_golden_partial.js';
 
 generateGoldenPartial(fs.resolve(process.argv[2]));

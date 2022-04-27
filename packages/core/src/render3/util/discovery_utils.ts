@@ -6,24 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy} from '../../change_detection/constants';
-import {Injector} from '../../di/injector';
-import {ViewEncapsulation} from '../../metadata/view';
-import {assertEqual} from '../../util/assert';
-import {assertLView} from '../assert';
-import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext, readPatchedLView} from '../context_discovery';
-import {getComponentDef, getDirectiveDef} from '../definition';
-import {NodeInjector} from '../di';
-import {buildDebugNode} from '../instructions/lview_debug';
-import {LContext} from '../interfaces/context';
-import {DirectiveDef} from '../interfaces/definition';
-import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
-import {isLView} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, DebugNode, FLAGS, LView, LViewFlags, RootContext, T_HOST, TVIEW, TViewType} from '../interfaces/view';
+import {ChangeDetectionStrategy} from '../../change_detection/constants.js';
+import {Injector} from '../../di/injector.js';
+import {ViewEncapsulation} from '../../metadata/view.js';
+import {assertEqual} from '../../util/assert.js';
+import {assertLView} from '../assert.js';
+import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext, readPatchedLView} from '../context_discovery.js';
+import {getComponentDef, getDirectiveDef} from '../definition.js';
+import {NodeInjector} from '../di.js';
+import {buildDebugNode} from '../instructions/lview_debug.js';
+import {LContext} from '../interfaces/context.js';
+import {DirectiveDef} from '../interfaces/definition.js';
+import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node.js';
+import {isLView} from '../interfaces/type_checks.js';
+import {CLEANUP, CONTEXT, DebugNode, FLAGS, LView, LViewFlags, RootContext, T_HOST, TVIEW, TViewType} from '../interfaces/view.js';
 
-import {stringifyForError} from './stringify_utils';
-import {getLViewParent, getRootContext} from './view_traversal_utils';
-import {getTNode, unwrapRNode} from './view_utils';
+import {stringifyForError} from './stringify_utils.js';
+import {getLViewParent, getRootContext} from './view_traversal_utils.js';
+import {getTNode, unwrapRNode} from './view_utils.js';
 
 
 

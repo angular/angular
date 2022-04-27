@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '../di';
-import {scheduleMicroTask} from '../util/microtask';
-import {NgZone} from '../zone/ng_zone';
+import {Injectable} from '../di/index.js';
+import {scheduleMicroTask} from '../util/microtask.js';
+import {NgZone} from '../zone/ng_zone.js';
 
 /**
  * Testability API.

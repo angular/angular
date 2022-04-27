@@ -9,14 +9,14 @@
 import {Type} from '@angular/core';
 import {Observable, Observer, of} from 'rxjs';
 
-import {Data, ResolveData, Route, Routes} from './models';
-import {ActivatedRouteSnapshot, inheritedParamsDataResolve, ParamsInheritanceStrategy, RouterStateSnapshot} from './router_state';
-import {PRIMARY_OUTLET} from './shared';
-import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
-import {last} from './utils/collection';
-import {getOutlet, sortByMatchingOutlets} from './utils/config';
-import {isImmediateMatch, match, noLeftoversInUrl, split} from './utils/config_matching';
-import {TreeNode} from './utils/tree';
+import {Data, ResolveData, Route, Routes} from './models.js';
+import {ActivatedRouteSnapshot, inheritedParamsDataResolve, ParamsInheritanceStrategy, RouterStateSnapshot} from './router_state.js';
+import {PRIMARY_OUTLET} from './shared.js';
+import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree.js';
+import {last} from './utils/collection.js';
+import {getOutlet, sortByMatchingOutlets} from './utils/config.js';
+import {isImmediateMatch, match, noLeftoversInUrl, split} from './utils/config_matching.js';
+import {TreeNode} from './utils/tree.js';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 

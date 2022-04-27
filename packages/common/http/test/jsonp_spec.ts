@@ -12,7 +12,7 @@ import {HttpRequest} from '@angular/common/http/src/request';
 import {HttpErrorResponse, HttpEventType} from '@angular/common/http/src/response';
 import {toArray} from 'rxjs/operators';
 
-import {MockDocument} from './jsonp_mock';
+import {MockDocument} from './jsonp_mock.js';
 
 function runOnlyCallback(home: any, data: Object) {
   const keys = Object.keys(home);

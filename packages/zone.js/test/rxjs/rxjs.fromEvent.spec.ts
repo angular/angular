@@ -8,8 +8,8 @@
 
 import {fromEvent, fromEventPattern, Observable} from 'rxjs';
 
-import {isBrowser} from '../../lib/common/utils';
-import {ifEnvSupports} from '../test-util';
+import {isBrowser} from '../../lib/common/utils.js';
+import {ifEnvSupports} from '../test-util.js';
 
 function isEventTarget() {
   return isBrowser;

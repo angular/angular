@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Generator, processNavigationUrls} from '../src/generator';
-import {AssetGroup} from '../src/in';
-import {HashTrackingMockFilesystem, MockFilesystem} from '../testing/mock';
+import {Generator, processNavigationUrls} from '../src/generator.js';
+import {AssetGroup} from '../src/in.js';
+import {HashTrackingMockFilesystem, MockFilesystem} from '../testing/mock.js';
 
 describe('Generator', () => {
   beforeEach(() => spyOn(Date, 'now').and.returnValue(1234567890123));

@@ -10,8 +10,8 @@ import {createTNode, createTView} from '@angular/core/src/render3/instructions/s
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {TViewType} from '@angular/core/src/render3/interfaces/view';
 
-import {isShapeOf, ShapeOf} from './is_shape_of';
-import {matchDomElement, matchDomText, matchObjectShape, matchTNode, matchTView} from './matchers';
+import {isShapeOf, ShapeOf} from './is_shape_of.js';
+import {matchDomElement, matchDomText, matchObjectShape, matchTNode, matchTView} from './matchers.js';
 
 describe('render3 matchers', () => {
   const fakeMatcherUtil = {equals: (a: any, b: any) => a === b} as jasmine.MatchersUtil;

@@ -7,17 +7,17 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom, getSourceFileOrError} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {Reference} from '../../imports';
-import {DependencyTracker} from '../../incremental/api';
-import {Declaration, DeclarationKind, isConcreteDeclaration, KnownDeclaration, SpecialDeclarationKind, TypeScriptReflectionHost} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing';
-import {DynamicValue} from '../src/dynamic';
-import {ForeignFunctionResolver, PartialEvaluator} from '../src/interface';
-import {EnumValue, ResolvedValue} from '../src/result';
+import {absoluteFrom, getSourceFileOrError} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {Reference} from '../../imports/index.js';
+import {DependencyTracker} from '../../incremental/api.js';
+import {Declaration, DeclarationKind, isConcreteDeclaration, KnownDeclaration, SpecialDeclarationKind, TypeScriptReflectionHost} from '../../reflection/index.js';
+import {getDeclaration, makeProgram} from '../../testing/index.js';
+import {DynamicValue} from '../src/dynamic.js';
+import {ForeignFunctionResolver, PartialEvaluator} from '../src/interface.js';
+import {EnumValue, ResolvedValue} from '../src/result.js';
 
-import {arrowReturnValueFfr, evaluate, firstArgFfr, makeEvaluator, makeExpression, owningModuleOf, returnTypeFfr} from './utils';
+import {arrowReturnValueFfr, evaluate, firstArgFfr, makeEvaluator, makeExpression, owningModuleOf, returnTypeFfr} from './utils.js';
 
 runInEachFileSystem(() => {
   describe('ngtsc metadata', () => {

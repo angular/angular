@@ -12,11 +12,11 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {downgradeComponent, downgradeModule, UpgradeComponent} from '@angular/upgrade/static';
 
-import * as angular from '../../../src/common/src/angular1';
-import {$EXCEPTION_HANDLER, $ROOT_SCOPE, INJECTOR_KEY, LAZY_MODULE_REF} from '../../../src/common/src/constants';
-import {LazyModuleRef} from '../../../src/common/src/util';
-import {html, multiTrim, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
-import {setTempInjectorRef} from '../../src/angular1_providers';
+import * as angular from '../../../src/common/src/angular1.js';
+import {$EXCEPTION_HANDLER, $ROOT_SCOPE, INJECTOR_KEY, LAZY_MODULE_REF} from '../../../src/common/src/constants.js';
+import {LazyModuleRef} from '../../../src/common/src/util.js';
+import {html, multiTrim, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers.js';
+import {setTempInjectorRef} from '../../src/angular1_providers.js';
 
 
 withEachNg1Version(() => {

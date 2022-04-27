@@ -7,9 +7,9 @@
  */
 import {NodePath, Scope} from '@babel/traverse';
 
-import {DeclarationScope} from '../../../linker';
+import {DeclarationScope} from '../../../linker/index.js';
 
-import {types as t} from './babel_core';
+import {types as t} from './babel_core.js';
 
 export type ConstantScopePath =
     NodePath<t.FunctionDeclaration>|NodePath<t.FunctionExpression>|NodePath<t.Program>;

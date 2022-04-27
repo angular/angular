@@ -8,9 +8,9 @@
 
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Inject, InjectionToken, Input, Output, QueryList, ViewChild} from '@angular/core';
 
-import {expanding_row_css} from './expanding_row_css';
-import {ExpandingRowSummary} from './expanding_row_summary';
-import {ExpandingRowToggleEvent} from './expanding_row_toggle_event';
+import {expanding_row_css} from './expanding_row_css.js';
+import {ExpandingRowSummary} from './expanding_row_summary.js';
+import {ExpandingRowToggleEvent} from './expanding_row_toggle_event.js';
 
 
 /**

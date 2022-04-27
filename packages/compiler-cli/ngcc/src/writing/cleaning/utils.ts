@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../../src/ngtsc/file_system/index.js';
 
 /**
  * Returns true if the given `path` is a directory (not a symlink) and actually exists.

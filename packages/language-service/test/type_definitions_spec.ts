@@ -8,7 +8,7 @@
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {assertFileNames, assertTextSpans, humanizeDocumentSpanLike, LanguageServiceTestEnv, Project} from '../testing';
+import {assertFileNames, assertTextSpans, humanizeDocumentSpanLike, LanguageServiceTestEnv, Project} from '../testing/index.js';
 
 describe('type definitions', () => {
   let env: LanguageServiceTestEnv;

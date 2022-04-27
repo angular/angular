@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from './di';
-import {ComponentRef} from './linker/component_factory';
+import {InjectionToken} from './di/index.js';
+import {ComponentRef} from './linker/component_factory.js';
 
 
 /**

@@ -9,13 +9,13 @@
 import {AST, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
 import ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
-import {ErrorCode} from '../../diagnostics';
+import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system/index.js';
+import {ErrorCode} from '../../diagnostics/index.js';
 
-import {FullTemplateMapping, NgTemplateDiagnostic, TypeCheckableDirectiveMeta} from './api';
-import {GlobalCompletion} from './completion';
-import {DirectiveInScope, PipeInScope} from './scope';
-import {ElementSymbol, Symbol, TcbLocation, TemplateSymbol} from './symbols';
+import {FullTemplateMapping, NgTemplateDiagnostic, TypeCheckableDirectiveMeta} from './api.js';
+import {GlobalCompletion} from './completion.js';
+import {DirectiveInScope, PipeInScope} from './scope.js';
+import {ElementSymbol, Symbol, TcbLocation, TemplateSymbol} from './symbols.js';
 
 /**
  * Interface to the Angular Template Type Checker to extract diagnostics and intelligence from the

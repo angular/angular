@@ -7,7 +7,8 @@
  */
 
 import * as ts from 'typescript/lib/tsserverlibrary';
-import {NgLanguageService, PluginConfig} from './api';
+
+import {NgLanguageService, PluginConfig} from './api.js';
 
 interface PluginModule extends ts.server.PluginModule {
   create(createInfo: ts.server.PluginCreateInfo): NgLanguageService;

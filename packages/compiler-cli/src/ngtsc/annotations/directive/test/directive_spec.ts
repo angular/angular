@@ -8,16 +8,16 @@
 import {CssSelector, DirectiveMeta as T2DirectiveMeta, parseTemplate, R3TargetBinder, SelectorMatcher, TmplAstElement} from '@angular/compiler';
 import ts from 'typescript';
 
-import {absoluteFrom} from '../../../file_system';
-import {runInEachFileSystem} from '../../../file_system/testing';
-import {ReferenceEmitter} from '../../../imports';
-import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../../metadata';
-import {PartialEvaluator} from '../../../partial_evaluator';
-import {NOOP_PERF_RECORDER} from '../../../perf';
-import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../../reflection';
-import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../scope';
-import {getDeclaration, makeProgram} from '../../../testing';
-import {DirectiveDecoratorHandler} from '../index';
+import {absoluteFrom} from '../../../file_system/index.js';
+import {runInEachFileSystem} from '../../../file_system/testing/index.js';
+import {ReferenceEmitter} from '../../../imports/index.js';
+import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../../metadata/index.js';
+import {PartialEvaluator} from '../../../partial_evaluator/index.js';
+import {NOOP_PERF_RECORDER} from '../../../perf/index.js';
+import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../../reflection/index.js';
+import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../scope/index.js';
+import {getDeclaration, makeProgram} from '../../../testing/index.js';
+import {DirectiveDecoratorHandler} from '../index.js';
 
 runInEachFileSystem(() => {
   let _: typeof absoluteFrom;

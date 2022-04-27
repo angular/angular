@@ -8,17 +8,17 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {Declaration, DeclarationKind, Import, isNamedFunctionDeclaration} from '../../../src/ngtsc/reflection';
-import {BundleProgram} from '../packages/bundle_program';
-import {FactoryMap, getTsHelperFnFromIdentifier, stripExtension} from '../utils';
+import {absoluteFrom} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {Declaration, DeclarationKind, Import, isNamedFunctionDeclaration} from '../../../src/ngtsc/reflection/index.js';
+import {BundleProgram} from '../packages/bundle_program.js';
+import {FactoryMap, getTsHelperFnFromIdentifier, stripExtension} from '../utils.js';
 
-import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, isDefinePropertyReexportStatement, isExportsAssignment, isExportsDeclaration, isExportsStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, skipAliases, WildcardReexportStatement} from './commonjs_umd_utils';
-import {getInnerClassDeclaration, getOuterNodeFromInnerDeclaration, isAssignment} from './esm2015_host';
-import {Esm5ReflectionHost} from './esm5_host';
-import {NgccClassSymbol} from './ngcc_host';
-import {stripParentheses} from './utils';
+import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, isDefinePropertyReexportStatement, isExportsAssignment, isExportsDeclaration, isExportsStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, skipAliases, WildcardReexportStatement} from './commonjs_umd_utils.js';
+import {getInnerClassDeclaration, getOuterNodeFromInnerDeclaration, isAssignment} from './esm2015_host.js';
+import {Esm5ReflectionHost} from './esm5_host.js';
+import {NgccClassSymbol} from './ngcc_host.js';
+import {stripParentheses} from './utils.js';
 
 export class UmdReflectionHost extends Esm5ReflectionHost {
   protected umdModules =

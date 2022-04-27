@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {trustedHTMLFromString} from '../util/security/trusted_types';
+import {trustedHTMLFromString} from '../util/security/trusted_types.js';
 
 /**
  * This helper is used to get hold of an inert tree of DOM elements containing dirty HTML

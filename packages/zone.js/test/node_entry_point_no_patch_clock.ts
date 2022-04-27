@@ -14,23 +14,23 @@
  */
 
 // Must be loaded before zone loads, so that zone can detect WTF.
-import './node-env-setup';
-import './test_fake_polyfill';
-
+import './node-env-setup.js';
+import './test_fake_polyfill.js';
 // Setup tests for Zone without microtask support
-import '../lib/node/rollup-main';
+import '../lib/node/rollup-main.js';
+
 require('@bazel/jasmine').boot();
-import './test-env-setup-jasmine-no-patch-clock';
+import './test-env-setup-jasmine-no-patch-clock.js';
 // Zone symbol prefix is set to '__zone_symbol2__' in node-env-setup.ts.
 if (typeof global !== 'undefined' &&
     (global as any)['__zone_symbol_test__fakeAsyncAutoFakeAsyncWhenClockPatched'] !== false) {
   (global as any)['__zone_symbol_test__fakeAsyncAutoFakeAsyncWhenClockPatched'] = true;
 }
 
-import './wtf_mock';
-import '../lib/testing/zone-testing';
-import '../lib/zone-spec/task-tracking';
-import '../lib/zone-spec/wtf';
-import '../lib/rxjs/rxjs';
-import '../lib/rxjs/rxjs-fake-async';
-import '../lib/jasmine/jasmine';
+import './wtf_mock.js';
+import '../lib/testing/zone-testing.js';
+import '../lib/zone-spec/task-tracking.js';
+import '../lib/zone-spec/wtf.js';
+import '../lib/rxjs/rxjs.js';
+import '../lib/rxjs/rxjs-fake-async.js';
+import '../lib/jasmine/jasmine.js';

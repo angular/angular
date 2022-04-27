@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SecurityContext} from '../core';
-import {AST, BindingType, BoundElementProperty, ParsedEvent, ParsedEventType} from '../expression_parser/ast';
-import {I18nMeta} from '../i18n/i18n_ast';
-import {ParseSourceSpan} from '../parse_util';
+import {SecurityContext} from '../core.js';
+import {AST, BindingType, BoundElementProperty, ParsedEvent, ParsedEventType} from '../expression_parser/ast.js';
+import {I18nMeta} from '../i18n/i18n_ast.js';
+import {ParseSourceSpan} from '../parse_util.js';
 
 export interface Node {
   sourceSpan: ParseSourceSpan;

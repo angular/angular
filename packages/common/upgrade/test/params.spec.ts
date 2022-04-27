@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AngularJSUrlCodec} from '../src/params';
+import {AngularJSUrlCodec} from '../src/params.js';
 
 describe('AngularJSUrlCodec', () => {
   const codec = new AngularJSUrlCodec();

@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {stringify} from '../util/stringify';
-import {Injector} from './injector';
-import {THROW_IF_NOT_FOUND} from './injector_compatibility';
+import {stringify} from '../util/stringify.js';
+
+import {Injector} from './injector.js';
+import {THROW_IF_NOT_FOUND} from './injector_compatibility.js';
 
 export class NullInjector implements Injector {
   get(token: any, notFoundValue: any = THROW_IF_NOT_FOUND): any {

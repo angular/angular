@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {createCompilerHost} from './compiler_host';
-export {createProgram} from './program';
+export {createCompilerHost} from './compiler_host.js';
+export {createProgram} from './program.js';

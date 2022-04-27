@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, MeasureValues, RegressionSlopeValidator} from '../../index';
+import {Injector, MeasureValues, RegressionSlopeValidator} from '../../index.js';
 
 {
   describe('regression slope validator', () => {

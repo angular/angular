@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Observable, timer} from 'rxjs';
-import {asyncTest} from '../test-util';
+
+import {asyncTest} from '../test-util.js';
 
 describe('Observable.timer', () => {
   let log: any[];

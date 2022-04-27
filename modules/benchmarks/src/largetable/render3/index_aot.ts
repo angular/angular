@@ -7,10 +7,10 @@
  */
 import {ɵrenderComponent as renderComponent} from '@angular/core';
 
-import {bindAction, profile} from '../../util';
-import {initTableUtils} from '../util';
+import {bindAction, profile} from '../../util.js';
+import {initTableUtils} from '../util.js';
 
-import {createDom, destroyDom, LargeTableComponent} from './table';
+import {createDom, destroyDom, LargeTableComponent} from './table.js';
 
 function noop() {}
 

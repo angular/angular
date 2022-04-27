@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Byte, newArray, utf8Encode} from '../util';
-import {BigIntExponentiation} from './big_integer';
+import {Byte, newArray, utf8Encode} from '../util.js';
 
-import * as i18n from './i18n_ast';
+import {BigIntExponentiation} from './big_integer.js';
+import * as i18n from './i18n_ast.js';
 
 /**
  * Return the message id or compute it using the XLIFF1 digest.

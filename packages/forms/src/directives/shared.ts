@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbstractControl} from '../model/abstract_model';
-import {FormArray} from '../model/form_array';
-import {FormControl} from '../model/form_control';
-import {FormGroup} from '../model/form_group';
-import {getControlAsyncValidators, getControlValidators, mergeValidators} from '../validators';
+import {AbstractControl} from '../model/abstract_model.js';
+import {FormArray} from '../model/form_array.js';
+import {FormControl} from '../model/form_control.js';
+import {FormGroup} from '../model/form_group.js';
+import {getControlAsyncValidators, getControlValidators, mergeValidators} from '../validators.js';
 
-import {AbstractControlDirective} from './abstract_control_directive';
-import {AbstractFormGroupDirective} from './abstract_form_group_directive';
-import {ControlContainer} from './control_container';
-import {BuiltInControlValueAccessor, ControlValueAccessor} from './control_value_accessor';
-import {DefaultValueAccessor} from './default_value_accessor';
-import {NgControl} from './ng_control';
-import {FormArrayName} from './reactive_directives/form_group_name';
-import {ngModelWarning} from './reactive_errors';
-import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
+import {AbstractControlDirective} from './abstract_control_directive.js';
+import {AbstractFormGroupDirective} from './abstract_form_group_directive.js';
+import {ControlContainer} from './control_container.js';
+import {BuiltInControlValueAccessor, ControlValueAccessor} from './control_value_accessor.js';
+import {DefaultValueAccessor} from './default_value_accessor.js';
+import {NgControl} from './ng_control.js';
+import {FormArrayName} from './reactive_directives/form_group_name.js';
+import {ngModelWarning} from './reactive_errors.js';
+import {AsyncValidatorFn, Validator, ValidatorFn} from './validators.js';
 
 export function controlPath(name: string|null, parent: ControlContainer): string[] {
   return [...parent.path!, name!];

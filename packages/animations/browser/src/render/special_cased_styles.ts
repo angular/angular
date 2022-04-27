@@ -7,7 +7,7 @@
  */
 import {ɵStyleDataMap} from '@angular/animations';
 
-import {eraseStyles, setStyles} from '../util';
+import {eraseStyles, setStyles} from '../util.js';
 
 /**
  * Returns an instance of `SpecialCasedStyles` if and when any special (non animateable) styles are

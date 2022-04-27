@@ -7,10 +7,10 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom, getSourceFileOrError} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {makeProgram} from '../../testing';
-import {visit, VisitListEntryResult, Visitor} from '../src/visitor';
+import {absoluteFrom, getSourceFileOrError} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {makeProgram} from '../../testing/index.js';
+import {visit, VisitListEntryResult, Visitor} from '../src/visitor.js';
 
 class TestAstVisitor extends Visitor {
   override visitClassDeclaration(node: ts.ClassDeclaration):

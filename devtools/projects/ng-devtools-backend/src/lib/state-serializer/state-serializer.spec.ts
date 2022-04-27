@@ -8,7 +8,7 @@
 
 import {PropType} from 'protocol';
 
-import {deeplySerializeSelectedProperties} from './state-serializer';
+import {deeplySerializeSelectedProperties} from './state-serializer.js';
 
 const QUERY_1_1 = [];
 

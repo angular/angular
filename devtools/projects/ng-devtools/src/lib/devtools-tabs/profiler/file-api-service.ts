@@ -9,7 +9,7 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
 
-import {toISO8601Compact} from '../../vendor/chromium/date-utilities';
+import {toISO8601Compact} from '../../vendor/chromium/date-utilities.js';
 
 @Injectable({
   providedIn: 'root',

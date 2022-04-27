@@ -8,8 +8,8 @@
 
 import {InjectionToken, Injector} from '@angular/core';
 
-import {MeasureValues} from '../measure_values';
-import {Reporter} from '../reporter';
+import {MeasureValues} from '../measure_values.js';
+import {Reporter} from '../reporter.js';
 
 export class MultiReporter extends Reporter {
   static provideWith(childTokens: any[]): any[] {

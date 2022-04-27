@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {makeParamDecorator} from '../util/decorators';
+import {makeParamDecorator} from '../util/decorators.js';
 
-import {attachInjectFlag} from './injector_compatibility';
-import {DecoratorFlags, InternalInjectFlags} from './interface/injector';
+import {attachInjectFlag} from './injector_compatibility.js';
+import {DecoratorFlags, InternalInjectFlags} from './interface/injector.js';
 
 
 /**

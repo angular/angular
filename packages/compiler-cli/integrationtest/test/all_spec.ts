@@ -8,13 +8,13 @@
 
 require('source-map-support').install();
 
-import './init';
-import './animate_spec';
-import './basic_spec';
-import './entry_components_spec';
-import './i18n_spec';
-import './ng_module_spec';
-import './projection_spec';
-import './query_spec';
-import './source_map_spec';
-import './jit_summaries_spec';
+import './init.js';
+import './animate_spec.js';
+import './basic_spec.js';
+import './entry_components_spec.js';
+import './i18n_spec.js';
+import './ng_module_spec.js';
+import './projection_spec.js';
+import './query_spec.js';
+import './source_map_spec.js';
+import './jit_summaries_spec.js';

@@ -11,16 +11,16 @@
 import cluster from 'cluster';
 import module from 'module';
 
-import {AbsoluteFsPath, PathManipulation} from '../../../../src/ngtsc/file_system';
-import {Logger} from '../../../../src/ngtsc/logging';
-import {FileWriter} from '../../writing/file_writer';
-import {PackageJsonUpdater} from '../../writing/package_json_updater';
-import {AnalyzeEntryPointsFn} from '../api';
-import {CreateTaskCompletedCallback, Task, TaskCompletedCallback, TaskQueue} from '../tasks/api';
-import {stringifyTask} from '../tasks/utils';
+import {AbsoluteFsPath, PathManipulation} from '../../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../../src/ngtsc/logging/index.js';
+import {FileWriter} from '../../writing/file_writer.js';
+import {PackageJsonUpdater} from '../../writing/package_json_updater.js';
+import {AnalyzeEntryPointsFn} from '../api.js';
+import {CreateTaskCompletedCallback, Task, TaskCompletedCallback, TaskQueue} from '../tasks/api.js';
+import {stringifyTask} from '../tasks/utils.js';
 
-import {MessageFromWorker, TaskCompletedMessage, TransformedFilesMessage, UpdatePackageJsonMessage} from './api';
-import {Deferred, sendMessageToWorker} from './utils';
+import {MessageFromWorker, TaskCompletedMessage, TransformedFilesMessage, UpdatePackageJsonMessage} from './api.js';
+import {Deferred, sendMessageToWorker} from './utils.js';
 
 /**
  * The cluster master is responsible for analyzing all entry-points, planning the work that needs to

@@ -9,19 +9,19 @@
 import {ConstantPool} from '@angular/compiler';
 import ts from 'typescript';
 
-import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../../cycles';
-import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
-import {absoluteFrom} from '../../../file_system';
-import {runInEachFileSystem} from '../../../file_system/testing';
-import {ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
-import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../../metadata';
-import {PartialEvaluator} from '../../../partial_evaluator';
-import {NOOP_PERF_RECORDER} from '../../../perf';
-import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../../reflection';
-import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../../scope';
-import {getDeclaration, makeProgram} from '../../../testing';
-import {ResourceLoader, ResourceLoaderContext} from '../../common';
-import {ComponentDecoratorHandler} from '../src/handler';
+import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../../cycles/index.js';
+import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics/index.js';
+import {absoluteFrom} from '../../../file_system/index.js';
+import {runInEachFileSystem} from '../../../file_system/testing/index.js';
+import {ModuleResolver, Reference, ReferenceEmitter} from '../../../imports/index.js';
+import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../../metadata/index.js';
+import {PartialEvaluator} from '../../../partial_evaluator/index.js';
+import {NOOP_PERF_RECORDER} from '../../../perf/index.js';
+import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../../reflection/index.js';
+import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../../scope/index.js';
+import {getDeclaration, makeProgram} from '../../../testing/index.js';
+import {ResourceLoader, ResourceLoaderContext} from '../../common/index.js';
+import {ComponentDecoratorHandler} from '../src/handler.js';
 
 export class StubResourceLoader implements ResourceLoader {
   resolve(v: string): string {

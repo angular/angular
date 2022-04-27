@@ -10,5 +10,5 @@
  * Public API Surface of ng-devtools-backend
  */
 
-export * from './lib';
-export {findNodeFromSerializedPosition} from './lib/component-tree';
+export * from './lib/index.js';
+export {findNodeFromSerializedPosition} from './lib/component-tree.js';

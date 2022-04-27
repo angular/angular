@@ -8,11 +8,11 @@
 import {AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
-import {FormatOptions, validateOptions} from './format_options';
-import {extractIcuPlaceholders} from './icu_parsing';
-import {TranslationSerializer} from './translation_serializer';
-import {consolidateMessages, hasLocation} from './utils';
-import {XmlFile} from './xml_file';
+import {FormatOptions, validateOptions} from './format_options.js';
+import {extractIcuPlaceholders} from './icu_parsing.js';
+import {TranslationSerializer} from './translation_serializer.js';
+import {consolidateMessages, hasLocation} from './utils.js';
+import {XmlFile} from './xml_file.js';
 
 /** This is the number of characters that a legacy Xliff 1.2 message id has. */
 const LEGACY_XLIFF_MESSAGE_LENGTH = 40;

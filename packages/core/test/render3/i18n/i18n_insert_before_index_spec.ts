@@ -10,7 +10,8 @@ import {addTNodeAndUpdateInsertBeforeIndex} from '@angular/core/src/render3/i18n
 import {createTNode} from '@angular/core/src/render3/instructions/shared';
 import {TNode, TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
-import {matchTNode} from '../matchers';
+
+import {matchTNode} from '../matchers.js';
 
 
 describe('addTNodeAndUpdateInsertBeforeIndex', () => {

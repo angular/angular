@@ -7,7 +7,8 @@
  */
 
 import {browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../test-utils';
+
+import {verifyNoBrowserErrors} from '../../../test-utils/index.js';
 
 describe('SW `SwRegistrationOptions` example', () => {
   const pageUrl = '/registration-options';

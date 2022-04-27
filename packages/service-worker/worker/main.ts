@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Adapter} from './src/adapter';
-import {CacheDatabase} from './src/db-cache';
-import {Driver} from './src/driver';
+import {Adapter} from './src/adapter.js';
+import {CacheDatabase} from './src/db-cache.js';
+import {Driver} from './src/driver.js';
 
 const scope = self as unknown as ServiceWorkerGlobalScope;
 

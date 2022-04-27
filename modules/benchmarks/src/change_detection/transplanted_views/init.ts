@@ -8,10 +8,10 @@
 
 import {ApplicationRef, NgModuleRef} from '@angular/core';
 
-import {bindAction, profile} from '../../util';
-import {numViews} from '../util';
+import {bindAction, profile} from '../../util.js';
+import {numViews} from '../util.js';
 
-import {DeclarationComponent, TransplantedViewsModule} from './transplanted_views';
+import {DeclarationComponent, TransplantedViewsModule} from './transplanted_views.js';
 
 export function init(moduleRef: NgModuleRef<TransplantedViewsModule>) {
   const appRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);

@@ -7,7 +7,7 @@
  */
 import ts from 'typescript';
 
-import {AstFactory, BinaryOperator, LeadingComment, ObjectLiteralProperty, SourceMapRange, TemplateLiteral, UnaryOperator, VariableDeclarationType} from './api/ast_factory';
+import {AstFactory, BinaryOperator, LeadingComment, ObjectLiteralProperty, SourceMapRange, TemplateLiteral, UnaryOperator, VariableDeclarationType} from './api/ast_factory.js';
 
 /**
  * Different optimizers use different annotations on a function or method call to indicate its pure

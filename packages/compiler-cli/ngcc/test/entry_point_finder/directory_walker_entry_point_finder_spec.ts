@@ -5,20 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {DependencyResolver} from '../../src/dependencies/dependency_resolver';
-import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
-import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
-import {ModuleResolver} from '../../src/dependencies/module_resolver';
-import {DirectoryWalkerEntryPointFinder} from '../../src/entry_point_finder/directory_walker_entry_point_finder';
-import {EntryPointCollector} from '../../src/entry_point_finder/entry_point_collector';
-import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
-import {EntryPoint} from '../../src/packages/entry_point';
-import {EntryPointManifest, EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
-import {PathMappings} from '../../src/path_mappings';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {DependencyResolver} from '../../src/dependencies/dependency_resolver.js';
+import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host.js';
+import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host.js';
+import {ModuleResolver} from '../../src/dependencies/module_resolver.js';
+import {DirectoryWalkerEntryPointFinder} from '../../src/entry_point_finder/directory_walker_entry_point_finder.js';
+import {EntryPointCollector} from '../../src/entry_point_finder/entry_point_collector.js';
+import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration.js';
+import {EntryPoint} from '../../src/packages/entry_point.js';
+import {EntryPointManifest, EntryPointManifestFile} from '../../src/packages/entry_point_manifest.js';
+import {PathMappings} from '../../src/path_mappings.js';
 
 runInEachFileSystem(() => {
   describe('DirectoryWalkerEntryPointFinder', () => {

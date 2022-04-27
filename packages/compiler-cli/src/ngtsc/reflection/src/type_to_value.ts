@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {TypeValueReference, TypeValueReferenceKind, UnavailableTypeValueReference, ValueUnavailableKind} from './host';
+import {TypeValueReference, TypeValueReferenceKind, UnavailableTypeValueReference, ValueUnavailableKind} from './host.js';
 
 /**
  * Potentially convert a `ts.TypeNode` to a `TypeValueReference`, which indicates how to use the

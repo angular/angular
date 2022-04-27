@@ -13,7 +13,7 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {MockResourceLoader} from './resource_loader_mock';
+import {MockResourceLoader} from './resource_loader_mock.js';
 
 
 const TEST_COMPILER_PROVIDERS: Provider[] = [

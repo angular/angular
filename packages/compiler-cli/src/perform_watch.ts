@@ -10,10 +10,10 @@ import * as chokidar from 'chokidar';
 import * as path from 'path';
 import ts from 'typescript';
 
-import {exitCodeFromResult, ParsedConfiguration, performCompilation, PerformCompilationResult, readConfiguration} from './perform_compile';
-import * as api from './transformers/api';
-import {createCompilerHost} from './transformers/entry_points';
-import {createMessageDiagnostic} from './transformers/util';
+import {exitCodeFromResult, ParsedConfiguration, performCompilation, PerformCompilationResult, readConfiguration} from './perform_compile.js';
+import * as api from './transformers/api.js';
+import {createCompilerHost} from './transformers/entry_points.js';
+import {createMessageDiagnostic} from './transformers/util.js';
 
 function totalCompilationTimeDiagnostic(timeInMillis: number): ts.Diagnostic {
   let duration: string;

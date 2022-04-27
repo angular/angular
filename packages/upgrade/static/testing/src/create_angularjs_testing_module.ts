@@ -9,9 +9,9 @@
 import {Injector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-import * as ng from '../../../src/common/src/angular1';
-import {$INJECTOR, INJECTOR_KEY, UPGRADE_APP_TYPE_KEY} from '../../../src/common/src/constants';
-import {UpgradeAppType} from '../../../src/common/src/util';
+import * as ng from '../../../src/common/src/angular1.js';
+import {$INJECTOR, INJECTOR_KEY, UPGRADE_APP_TYPE_KEY} from '../../../src/common/src/constants.js';
+import {UpgradeAppType} from '../../../src/common/src/util.js';
 
 
 /**

@@ -19,19 +19,19 @@ import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {findFirstMatchingNode} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {GetComponentLocationsForTemplateResponse, GetTcbResponse, GetTemplateLocationForComponentResponse} from '../api';
+import {GetComponentLocationsForTemplateResponse, GetTcbResponse, GetTemplateLocationForComponentResponse} from '../api.js';
 
-import {LanguageServiceAdapter, LSParseConfigHost} from './adapters';
-import {CompilerFactory} from './compiler_factory';
-import {CompletionBuilder, CompletionNodeContext} from './completions';
-import {DefinitionBuilder} from './definitions';
-import {QuickInfoBuilder} from './quick_info';
-import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
-import {createLocationKey} from './references_and_rename_utils';
-import {getSignatureHelp} from './signature_help';
-import {getTargetAtPosition, TargetContext, TargetNodeKind} from './template_target';
-import {findTightestNode, getClassDeclFromDecoratorProp, getParentClassDeclaration, getPropertyAssignmentFromValue} from './ts_utils';
-import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
+import {LanguageServiceAdapter, LSParseConfigHost} from './adapters.js';
+import {CompilerFactory} from './compiler_factory.js';
+import {CompletionBuilder, CompletionNodeContext} from './completions.js';
+import {DefinitionBuilder} from './definitions.js';
+import {QuickInfoBuilder} from './quick_info.js';
+import {ReferencesBuilder, RenameBuilder} from './references_and_rename.js';
+import {createLocationKey} from './references_and_rename_utils.js';
+import {getSignatureHelp} from './signature_help.js';
+import {getTargetAtPosition, TargetContext, TargetNodeKind} from './template_target.js';
+import {findTightestNode, getClassDeclFromDecoratorProp, getParentClassDeclaration, getPropertyAssignmentFromValue} from './ts_utils.js';
+import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils.js';
 
 interface LanguageServiceConfig {
   /**

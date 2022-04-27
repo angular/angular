@@ -8,9 +8,9 @@
 import {MessageId, ɵParsedTranslation, ɵparseTranslation} from '@angular/localize';
 import {extname} from 'path';
 
-import {Diagnostics} from '../../../diagnostics';
+import {Diagnostics} from '../../../diagnostics.js';
 
-import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
+import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser.js';
 
 interface SimpleJsonFile {
   locale: string;

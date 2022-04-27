@@ -9,20 +9,20 @@
 import {HtmlParser, MessageBundle} from '@angular/compiler';
 import ts from 'typescript';
 
-import * as api from '../transformers/api';
-import {i18nExtract} from '../transformers/i18n';
-import {verifySupportedTypeScriptVersion} from '../typescript_support';
+import * as api from '../transformers/api.js';
+import {i18nExtract} from '../transformers/i18n.js';
+import {verifySupportedTypeScriptVersion} from '../typescript_support.js';
 
-import {CompilationTicket, freshCompilationTicket, incrementalFromCompilerTicket, NgCompiler, NgCompilerHost} from './core';
-import {NgCompilerOptions} from './core/api';
-import {absoluteFrom, AbsoluteFsPath, getFileSystem, resolve} from './file_system';
-import {TrackedIncrementalBuildStrategy} from './incremental';
-import {IndexedComponent} from './indexer';
-import {ActivePerfRecorder, PerfCheckpoint as PerfCheckpoint, PerfEvent, PerfPhase} from './perf';
-import {TsCreateProgramDriver} from './program_driver';
-import {DeclarationNode} from './reflection';
-import {retagAllTsFiles, untagAllTsFiles} from './shims';
-import {OptimizeFor} from './typecheck/api';
+import {NgCompilerOptions} from './core/api/index.js';
+import {CompilationTicket, freshCompilationTicket, incrementalFromCompilerTicket, NgCompiler, NgCompilerHost} from './core/index.js';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, resolve} from './file_system/index.js';
+import {TrackedIncrementalBuildStrategy} from './incremental/index.js';
+import {IndexedComponent} from './indexer/index.js';
+import {ActivePerfRecorder, PerfCheckpoint as PerfCheckpoint, PerfEvent, PerfPhase} from './perf/index.js';
+import {TsCreateProgramDriver} from './program_driver/index.js';
+import {DeclarationNode} from './reflection/index.js';
+import {retagAllTsFiles, untagAllTsFiles} from './shims/index.js';
+import {OptimizeFor} from './typecheck/api/index.js';
 
 /**
  * Entrypoint to the Angular Compiler (Ivy+) which sits behind the `api.Program` interface, allowing

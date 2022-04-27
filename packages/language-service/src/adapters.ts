@@ -16,7 +16,7 @@ import {getRootDirs} from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
 import * as p from 'path';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {isTypeScriptFile} from './utils';
+import {isTypeScriptFile} from './utils.js';
 
 const PRE_COMPILED_STYLE_EXTENSIONS = ['.scss', '.sass', '.less', '.styl'];
 

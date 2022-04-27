@@ -8,9 +8,9 @@
 
 import {ComponentRef} from '@angular/core';
 
-import {OutletContext} from './router_outlet_context';
-import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
-import {TreeNode} from './utils/tree';
+import {OutletContext} from './router_outlet_context.js';
+import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state.js';
+import {TreeNode} from './utils/tree.js';
 
 /**
  * @description

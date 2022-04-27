@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {indexForest} from './';
+import {indexForest} from './index.js';
 
 describe('indexForest', () => {
   it('should work with an empty forest', () => {

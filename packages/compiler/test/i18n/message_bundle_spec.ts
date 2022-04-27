@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {serializeNodes} from '../../src/i18n/digest';
-import * as i18n from '../../src/i18n/i18n_ast';
-import {MessageBundle} from '../../src/i18n/message_bundle';
-import {Serializer} from '../../src/i18n/serializers/serializer';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
+import {serializeNodes} from '../../src/i18n/digest.js';
+import * as i18n from '../../src/i18n/i18n_ast.js';
+import {MessageBundle} from '../../src/i18n/message_bundle.js';
+import {Serializer} from '../../src/i18n/serializers/serializer.js';
+import {HtmlParser} from '../../src/ml_parser/html_parser.js';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config.js';
 
 {
   describe('MessageBundle', () => {

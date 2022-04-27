@@ -8,7 +8,7 @@
 
 import {Component, Inject, LOCALE_ID, TRANSLATIONS_FORMAT} from '@angular/core';
 
-import {CUSTOM, Named} from './custom_token';
+import {CUSTOM, Named} from './custom_token.js';
 
 @Component({
   selector: 'basic',

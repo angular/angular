@@ -8,8 +8,8 @@
 
 import ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../file_system';
-import {ClassDeclaration} from '../../reflection';
+import {AbsoluteFsPath} from '../../file_system/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
 
 /**
  * Represents an resource for a component and contains the `AbsoluteFsPath`

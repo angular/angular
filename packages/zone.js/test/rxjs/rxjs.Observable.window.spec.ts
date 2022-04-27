@@ -8,7 +8,7 @@
 import {interval, Observable, timer} from 'rxjs';
 import {mergeAll, take, window, windowCount, windowToggle, windowWhen} from 'rxjs/operators';
 
-import {asyncTest} from '../test-util';
+import {asyncTest} from '../test-util.js';
 
 
 // @JiaLiPassion, in Safari 9(iOS 9), the case is not

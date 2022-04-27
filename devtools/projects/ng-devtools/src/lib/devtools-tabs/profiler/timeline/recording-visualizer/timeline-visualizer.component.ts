@@ -9,9 +9,9 @@
 import {Component, Input} from '@angular/core';
 import {ProfilerFrame} from 'protocol';
 
-import {BargraphNode} from '../record-formatter/bargraph-formatter';
-import {FlamegraphNode} from '../record-formatter/flamegraph-formatter';
-import {VisualizationMode} from '../visualization-mode';
+import {BargraphNode} from '../record-formatter/bargraph-formatter/index.js';
+import {FlamegraphNode} from '../record-formatter/flamegraph-formatter/index.js';
+import {VisualizationMode} from '../visualization-mode/index.js';
 
 export interface SelectedEntry {
   entry: BargraphNode|FlamegraphNode;

@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {global} from '../util/global';
+import {global} from '../util/global.js';
 
-import localeEn from './locale_en';
+import localeEn from './locale_en.js';
 
 /**
  * This const is used to store the locale data registered with `registerLocaleData`

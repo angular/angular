@@ -8,8 +8,8 @@
 
 import {Inject, Injectable, InjectionToken} from '@angular/core';
 
-import {MeasureValues} from '../measure_values';
-import {Validator} from '../validator';
+import {MeasureValues} from '../measure_values.js';
+import {Validator} from '../validator.js';
 
 /**
  * A validator that waits for the sample to have a certain size.

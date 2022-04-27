@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getLView,} from '../state';
-import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
-import {checkStylingProperty} from './styling';
+import {getLView,} from '../state.js';
+
+import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation.js';
+import {checkStylingProperty} from './styling.js';
 
 
 /**

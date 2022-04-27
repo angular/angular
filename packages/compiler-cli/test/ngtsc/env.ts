@@ -11,16 +11,16 @@ import * as api from '@angular/compiler-cli/src/transformers/api';
 import * as tsickle from 'tsickle';
 import ts from 'typescript';
 
-import {createCompilerHost, createProgram} from '../../index';
-import {mainXi18n} from '../../src/extract_i18n';
-import {main, mainDiagnosticsForTest, readNgcCommandLineAndConfiguration} from '../../src/main';
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relativeFrom} from '../../src/ngtsc/file_system';
-import {Folder, MockFileSystem} from '../../src/ngtsc/file_system/testing';
-import {IndexedComponent} from '../../src/ngtsc/indexer';
-import {NgtscProgram} from '../../src/ngtsc/program';
-import {DeclarationNode} from '../../src/ngtsc/reflection';
-import {NgtscTestCompilerHost} from '../../src/ngtsc/testing';
-import {setWrapHostForTest} from '../../src/transformers/compiler_host';
+import {createCompilerHost, createProgram} from '../../index.js';
+import {mainXi18n} from '../../src/extract_i18n.js';
+import {main, mainDiagnosticsForTest, readNgcCommandLineAndConfiguration} from '../../src/main.js';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relativeFrom} from '../../src/ngtsc/file_system/index.js';
+import {Folder, MockFileSystem} from '../../src/ngtsc/file_system/testing/index.js';
+import {IndexedComponent} from '../../src/ngtsc/indexer/index.js';
+import {NgtscProgram} from '../../src/ngtsc/program.js';
+import {DeclarationNode} from '../../src/ngtsc/reflection/index.js';
+import {NgtscTestCompilerHost} from '../../src/ngtsc/testing/index.js';
+import {setWrapHostForTest} from '../../src/transformers/compiler_host.js';
 
 type TsConfigOptionsValue =
     string|boolean|number|null|TsConfigOptionsValue[]|{[key: string]: TsConfigOptionsValue};

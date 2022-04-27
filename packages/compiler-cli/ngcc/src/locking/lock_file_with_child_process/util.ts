@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
-import {Logger} from '../../../../src/ngtsc/logging';
+import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../../src/ngtsc/logging/index.js';
 
 /**
  * Remove the lock-file at the provided `lockFilePath` from the given file-system.

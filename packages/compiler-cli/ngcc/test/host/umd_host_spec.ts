@@ -8,21 +8,21 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DeclarationKind, DownleveledEnum, Import, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
-import {getDeclaration, loadFakeCore, loadTestFiles} from '../../../src/ngtsc/testing';
-import {isExportsDeclaration, isExportsStatement} from '../../src/host/commonjs_umd_utils';
-import {DelegatingReflectionHost} from '../../src/host/delegating_host';
-import {NgccReflectionHost} from '../../src/host/ngcc_host';
-import {parseStatementForUmdModule, UmdReflectionHost} from '../../src/host/umd_host';
-import {BundleProgram} from '../../src/packages/bundle_program';
-import {hasNameIdentifier} from '../../src/utils';
-import {testForEachUmdFormat} from '../helpers/umd_utils';
-import {getRootFiles, makeTestBundleProgram} from '../helpers/utils';
+import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DeclarationKind, DownleveledEnum, Import, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost, TypeValueReferenceKind} from '../../../src/ngtsc/reflection/index.js';
+import {getDeclaration, loadFakeCore, loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {isExportsDeclaration, isExportsStatement} from '../../src/host/commonjs_umd_utils.js';
+import {DelegatingReflectionHost} from '../../src/host/delegating_host.js';
+import {NgccReflectionHost} from '../../src/host/ngcc_host.js';
+import {parseStatementForUmdModule, UmdReflectionHost} from '../../src/host/umd_host.js';
+import {BundleProgram} from '../../src/packages/bundle_program.js';
+import {hasNameIdentifier} from '../../src/utils.js';
+import {testForEachUmdFormat} from '../helpers/umd_utils.js';
+import {getRootFiles, makeTestBundleProgram} from '../helpers/utils.js';
 
-import {expectTypeValueReferencesForParameters} from './util';
+import {expectTypeValueReferencesForParameters} from './util.js';
 
 runInEachFileSystem(() => {
   for (const mode of ['inline exports', 'exported vars']) {

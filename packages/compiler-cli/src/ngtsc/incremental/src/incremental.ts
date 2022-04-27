@@ -8,17 +8,17 @@
 
 import ts from 'typescript';
 
-import {absoluteFromSourceFile, AbsoluteFsPath, resolve} from '../../file_system';
-import {PerfPhase, PerfRecorder} from '../../perf';
-import {MaybeSourceFileWithOriginalFile, NgOriginalFile} from '../../program_driver';
-import {ClassRecord, TraitCompiler} from '../../transform';
-import {FileTypeCheckingData} from '../../typecheck';
-import {toUnredirectedSourceFile} from '../../util/src/typescript';
-import {IncrementalBuild} from '../api';
-import {SemanticDepGraphUpdater} from '../semantic_graph';
+import {absoluteFromSourceFile, AbsoluteFsPath, resolve} from '../../file_system/index.js';
+import {PerfPhase, PerfRecorder} from '../../perf/index.js';
+import {MaybeSourceFileWithOriginalFile, NgOriginalFile} from '../../program_driver/index.js';
+import {ClassRecord, TraitCompiler} from '../../transform/index.js';
+import {FileTypeCheckingData} from '../../typecheck/index.js';
+import {toUnredirectedSourceFile} from '../../util/src/typescript.js';
+import {IncrementalBuild} from '../api.js';
+import {SemanticDepGraphUpdater} from '../semantic_graph/index.js';
 
-import {FileDependencyGraph} from './dependency_tracking';
-import {AnalyzedIncrementalState, DeltaIncrementalState, IncrementalState, IncrementalStateKind} from './state';
+import {FileDependencyGraph} from './dependency_tracking.js';
+import {AnalyzedIncrementalState, DeltaIncrementalState, IncrementalState, IncrementalStateKind} from './state.js';
 
 /**
  * Information about the previous compilation being used as a starting point for the current one,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getIntParameter} from '../util';
+import {getIntParameter} from '../util.js';
 
 export class TableCell {
   constructor(public row: number, public col: number, public value: string) {}

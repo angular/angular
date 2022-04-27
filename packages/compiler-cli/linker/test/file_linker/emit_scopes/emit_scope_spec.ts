@@ -8,10 +8,10 @@
 import * as o from '@angular/compiler/src/output/output_ast';
 import ts from 'typescript';
 
-import {TypeScriptAstFactory} from '../../../../src/ngtsc/translator';
-import {EmitScope} from '../../../src/file_linker/emit_scopes/emit_scope';
-import {Translator} from '../../../src/file_linker/translator';
-import {generate} from '../helpers';
+import {TypeScriptAstFactory} from '../../../../src/ngtsc/translator/index.js';
+import {EmitScope} from '../../../src/file_linker/emit_scopes/emit_scope.js';
+import {Translator} from '../../../src/file_linker/translator.js';
+import {generate} from '../helpers.js';
 
 describe('EmitScope', () => {
   describe('translateDefinition()', () => {

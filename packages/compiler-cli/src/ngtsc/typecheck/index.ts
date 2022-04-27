@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {FileTypeCheckingData, TemplateTypeCheckerImpl} from './src/checker';
-export {TypeCheckContextImpl} from './src/context';
-export {TypeCheckShimGenerator} from './src/shim';
-export {typeCheckFilePath} from './src/type_check_file';
+export {FileTypeCheckingData, TemplateTypeCheckerImpl} from './src/checker.js';
+export {TypeCheckContextImpl} from './src/context.js';
+export {TypeCheckShimGenerator} from './src/shim.js';
+export {typeCheckFilePath} from './src/type_check_file.js';

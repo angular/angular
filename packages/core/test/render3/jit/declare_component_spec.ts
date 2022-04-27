@@ -8,9 +8,9 @@
 
 import {ChangeDetectionStrategy, Component, Directive, ElementRef, forwardRef, Pipe, Type, ViewEncapsulation, ɵɵngDeclareComponent} from '@angular/core';
 
-import {AttributeMarker, ComponentDef} from '../../../src/render3';
+import {AttributeMarker, ComponentDef} from '../../../src/render3/index.js';
 
-import {functionContaining} from './matcher';
+import {functionContaining} from './matcher.js';
 
 describe('component declaration jit compilation', () => {
   it('should compile a minimal component declaration', () => {

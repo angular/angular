@@ -9,10 +9,10 @@
 import {DEFAULT_CURRENCY_CODE, LOCALE_ID} from '@angular/core';
 import {inject} from '@angular/core/testing';
 
-import {DEFAULT_LOCALE_ID} from '../src/i18n/localization';
-import {getLocaleId, setLocaleId} from '../src/render3';
-import {global} from '../src/util/global';
-import {TestBed} from '../testing';
+import {DEFAULT_LOCALE_ID} from '../src/i18n/localization.js';
+import {getLocaleId, setLocaleId} from '../src/render3/index.js';
+import {global} from '../src/util/global.js';
+import {TestBed} from '../testing/index.js';
 
 {
   describe('Application module', () => {

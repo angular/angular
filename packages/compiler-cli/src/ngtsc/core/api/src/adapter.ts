@@ -8,10 +8,10 @@
 
 import ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../../file_system';
-import {FactoryTracker} from '../../../shims/api';
+import {AbsoluteFsPath} from '../../../file_system/index.js';
+import {FactoryTracker} from '../../../shims/api.js';
 
-import {ExtendedTsCompilerHost, UnifiedModulesHost} from './interfaces';
+import {ExtendedTsCompilerHost, UnifiedModulesHost} from './interfaces.js';
 
 /**
  * Names of methods from `ExtendedTsCompilerHost` that need to be provided by the

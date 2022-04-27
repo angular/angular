@@ -8,9 +8,9 @@
 
 import {InjectionToken} from '@angular/core';
 
-import {Options} from './common_options';
-import {Metric} from './metric';
-import {Validator} from './validator';
+import {Options} from './common_options.js';
+import {Metric} from './metric.js';
+import {Validator} from './validator.js';
 
 
 /**

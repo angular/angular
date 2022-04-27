@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {InjectFlags, resolveForwardRef} from '../../di';
-import {assertInjectImplementationNotEqual} from '../../di/inject_switch';
-import {ɵɵinject} from '../../di/injector_compatibility';
-import {ProviderToken} from '../../di/provider_token';
-import {getOrCreateInjectable} from '../di';
-import {TDirectiveHostNode} from '../interfaces/node';
-import {getCurrentTNode, getLView} from '../state';
+import {InjectFlags, resolveForwardRef} from '../../di/index.js';
+import {assertInjectImplementationNotEqual} from '../../di/inject_switch.js';
+import {ɵɵinject} from '../../di/injector_compatibility.js';
+import {ProviderToken} from '../../di/provider_token.js';
+import {getOrCreateInjectable} from '../di.js';
+import {TDirectiveHostNode} from '../interfaces/node.js';
+import {getCurrentTNode, getLView} from '../state.js';
 
 /**
  * Returns the value associated to the given token from the injectors.

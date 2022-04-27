@@ -7,10 +7,10 @@
  */
 import ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {isRequireCall, isWildcardReexportStatement, RequireCall} from '../host/commonjs_umd_utils';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system/index.js';
+import {isRequireCall, isWildcardReexportStatement, RequireCall} from '../host/commonjs_umd_utils.js';
 
-import {DependencyHostBase} from './dependency_host';
+import {DependencyHostBase} from './dependency_host.js';
 
 /**
  * Helper functions for computing dependencies.

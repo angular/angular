@@ -7,18 +7,18 @@
  */
 import {AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationPlayer, AUTO_STYLE, ɵStyleDataMap} from '@angular/animations';
 
-import {Ast} from '../dsl/animation_ast';
-import {buildAnimationAst} from '../dsl/animation_ast_builder';
-import {buildAnimationTimelines} from '../dsl/animation_timeline_builder';
-import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
-import {ElementInstructionMap} from '../dsl/element_instruction_map';
-import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
-import {createAnimationFailed, missingOrDestroyedAnimation, missingPlayer, registerFailed} from '../error_helpers';
-import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '../util';
-import {warnRegister} from '../warning_helpers';
+import {Ast} from '../dsl/animation_ast.js';
+import {buildAnimationAst} from '../dsl/animation_ast_builder.js';
+import {buildAnimationTimelines} from '../dsl/animation_timeline_builder.js';
+import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction.js';
+import {ElementInstructionMap} from '../dsl/element_instruction_map.js';
+import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer.js';
+import {createAnimationFailed, missingOrDestroyedAnimation, missingPlayer, registerFailed} from '../error_helpers.js';
+import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '../util.js';
+import {warnRegister} from '../warning_helpers.js';
 
-import {AnimationDriver} from './animation_driver';
-import {getOrSetDefaultValue, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
+import {AnimationDriver} from './animation_driver.js';
+import {getOrSetDefaultValue, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared.js';
 
 const EMPTY_INSTRUCTION_MAP = new ElementInstructionMap();
 

@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MissingTranslationStrategy} from '../core';
-import * as html from '../ml_parser/ast';
-import {HtmlParser} from '../ml_parser/html_parser';
-import {Console} from '../util';
+import {MissingTranslationStrategy} from '../core.js';
+import * as html from '../ml_parser/ast.js';
+import {HtmlParser} from '../ml_parser/html_parser.js';
+import {Console} from '../util.js';
 
-import * as i18n from './i18n_ast';
-import {I18nError} from './parse_util';
-import {PlaceholderMapper, Serializer} from './serializers/serializer';
-import {escapeXml} from './serializers/xml_helper';
+import * as i18n from './i18n_ast.js';
+import {I18nError} from './parse_util.js';
+import {PlaceholderMapper, Serializer} from './serializers/serializer.js';
+import {escapeXml} from './serializers/xml_helper.js';
 
 
 /**

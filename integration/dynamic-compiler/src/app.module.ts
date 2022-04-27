@@ -2,7 +2,7 @@ import {Compiler, COMPILER_OPTIONS, CompilerFactory, NgModule} from '@angular/co
 import { BrowserModule } from '@angular/platform-browser';
 import {JitCompilerFactory} from '@angular/platform-browser-dynamic';
 
-import { AppComponent } from './app.component';
+import { AppComponent } from './app.component.js';
 
 export function createCompiler(compilerFactory: CompilerFactory) {
   return compilerFactory.createCompiler();

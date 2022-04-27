@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {needsLinking} from '../../src/file_linker/needs_linking';
+import {needsLinking} from '../../src/file_linker/needs_linking.js';
 
 describe('needsLinking', () => {
   it('should return true for directive declarations', () => {

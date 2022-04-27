@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TNode} from './node';
-import {RComment, RElement} from './renderer_dom';
-import {HOST, LView, NEXT, PARENT, T_HOST, TRANSPLANTED_VIEWS_TO_REFRESH} from './view';
+import {TNode} from './node.js';
+import {RComment, RElement} from './renderer_dom.js';
+import {HOST, LView, NEXT, PARENT, T_HOST, TRANSPLANTED_VIEWS_TO_REFRESH} from './view.js';
 
 
 

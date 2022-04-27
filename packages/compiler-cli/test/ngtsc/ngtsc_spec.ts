@@ -9,13 +9,13 @@
 import {platform} from 'os';
 import ts from 'typescript';
 
-import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
-import {absoluteFrom} from '../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '../../src/ngtsc/testing';
-import {restoreTypeScriptVersionForTesting, setTypeScriptVersionForTesting} from '../../src/typescript_support';
+import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics/index.js';
+import {absoluteFrom} from '../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing/index.js';
+import {loadStandardTestFiles} from '../../src/ngtsc/testing/index.js';
+import {restoreTypeScriptVersionForTesting, setTypeScriptVersionForTesting} from '../../src/typescript_support.js';
 
-import {NgtscTestEnvironment} from './env';
+import {NgtscTestEnvironment} from './env.js';
 
 const trim = (input: string): string => input.replace(/\s+/g, ' ').trim();
 

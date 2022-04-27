@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isType, Type} from '../interface/type';
-import {newArray} from '../util/array_utils';
-import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../util/decorators';
-import {global} from '../util/global';
+import {isType, Type} from '../interface/type.js';
+import {newArray} from '../util/array_utils.js';
+import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../util/decorators.js';
+import {global} from '../util/global.js';
 
-import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
+import {PlatformReflectionCapabilities} from './platform_reflection_capabilities.js';
 
 
 

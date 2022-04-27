@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ml from '../../ml_parser/ast';
-import {XmlParser} from '../../ml_parser/xml_parser';
-import {digest} from '../digest';
-import * as i18n from '../i18n_ast';
-import {I18nError} from '../parse_util';
+import * as ml from '../../ml_parser/ast.js';
+import {XmlParser} from '../../ml_parser/xml_parser.js';
+import {digest} from '../digest.js';
+import * as i18n from '../i18n_ast.js';
+import {I18nError} from '../parse_util.js';
 
-import {Serializer} from './serializer';
-import * as xml from './xml_helper';
+import {Serializer} from './serializer.js';
+import * as xml from './xml_helper.js';
 
 const _VERSION = '1.2';
 const _XMLNS = 'urn:oasis:names:tc:xliff:document:1.2';

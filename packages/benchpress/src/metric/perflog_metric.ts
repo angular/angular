@@ -8,9 +8,9 @@
 
 import {Inject, Injectable, InjectionToken} from '@angular/core';
 
-import {Options} from '../common_options';
-import {Metric} from '../metric';
-import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
+import {Options} from '../common_options.js';
+import {Metric} from '../metric.js';
+import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension.js';
 
 
 /**

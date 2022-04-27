@@ -9,7 +9,7 @@
 import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable} from '@angular/core';
 
-import {EventManagerPlugin} from './event_manager';
+import {EventManagerPlugin} from './event_manager.js';
 
 @Injectable()
 export class DomEventsPlugin extends EventManagerPlugin {

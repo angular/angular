@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration} from '../../reflection/index.js';
 
-import {ComponentScope, ComponentScopeReader, LocalModuleScope, RemoteScope} from './api';
+import {ComponentScope, ComponentScopeReader, LocalModuleScope, RemoteScope} from './api.js';
 
 /**
  * A `ComponentScopeReader` that reads from an ordered set of child readers until it obtains the

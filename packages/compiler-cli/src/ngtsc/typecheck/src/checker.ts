@@ -9,27 +9,27 @@
 import {AST, CssSelector, DomElementSchemaRegistry, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
-import {Reference, ReferenceEmitter} from '../../imports';
-import {IncrementalBuild} from '../../incremental/api';
-import {MetaKind} from '../../metadata';
-import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from '../../perf';
-import {ProgramDriver, UpdateMode} from '../../program_driver';
-import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
-import {ComponentScopeKind, ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
-import {isShim} from '../../shims';
-import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
-import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, Symbol, TcbLocation, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
-import {makeTemplateDiagnostic} from '../diagnostics';
+import {ErrorCode, ngErrorCode} from '../../diagnostics/index.js';
+import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system/index.js';
+import {Reference, ReferenceEmitter} from '../../imports/index.js';
+import {IncrementalBuild} from '../../incremental/api.js';
+import {MetaKind} from '../../metadata/index.js';
+import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from '../../perf/index.js';
+import {ProgramDriver, UpdateMode} from '../../program_driver/index.js';
+import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection/index.js';
+import {ComponentScopeKind, ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope/index.js';
+import {isShim} from '../../shims/index.js';
+import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript.js';
+import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, Symbol, TcbLocation, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api/index.js';
+import {makeTemplateDiagnostic} from '../diagnostics/index.js';
 
-import {CompletionEngine} from './completion';
-import {InliningMode, ShimTypeCheckingData, TemplateData, TypeCheckContextImpl, TypeCheckingHost} from './context';
-import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
-import {TypeCheckShimGenerator} from './shim';
-import {TemplateSourceManager} from './source';
-import {findTypeCheckBlock, getTemplateMapping, TemplateSourceResolver} from './tcb_util';
-import {SymbolBuilder} from './template_symbol_builder';
+import {CompletionEngine} from './completion.js';
+import {InliningMode, ShimTypeCheckingData, TemplateData, TypeCheckContextImpl, TypeCheckingHost} from './context.js';
+import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics.js';
+import {TypeCheckShimGenerator} from './shim.js';
+import {TemplateSourceManager} from './source.js';
+import {findTypeCheckBlock, getTemplateMapping, TemplateSourceResolver} from './tcb_util.js';
+import {SymbolBuilder} from './template_symbol_builder.js';
 
 
 const REGISTRY = new DomElementSchemaRegistry();

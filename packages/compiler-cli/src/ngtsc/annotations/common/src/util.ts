@@ -9,11 +9,11 @@
 import {Expression, ExternalExpr, FactoryTarget, ParseLocation, ParseSourceFile, ParseSourceSpan, R3CompiledExpression, R3FactoryMetadata, R3Reference, ReadPropExpr, Statement, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {assertSuccessfulReferenceEmit, ImportedFile, ImportFlags, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
-import {attachDefaultImportDeclaration} from '../../../imports/src/default';
-import {DynamicValue, ForeignFunctionResolver, PartialEvaluator} from '../../../partial_evaluator';
-import {ClassDeclaration, Decorator, Import, ImportedTypeValueReference, isNamedClassDeclaration, LocalTypeValueReference, ReflectionHost, TypeValueReference, TypeValueReferenceKind} from '../../../reflection';
-import {CompileResult} from '../../../transform';
+import {assertSuccessfulReferenceEmit, ImportedFile, ImportFlags, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports/index.js';
+import {attachDefaultImportDeclaration} from '../../../imports/src/default.js';
+import {DynamicValue, ForeignFunctionResolver, PartialEvaluator} from '../../../partial_evaluator/index.js';
+import {ClassDeclaration, Decorator, Import, ImportedTypeValueReference, isNamedClassDeclaration, LocalTypeValueReference, ReflectionHost, TypeValueReference, TypeValueReferenceKind} from '../../../reflection/index.js';
+import {CompileResult} from '../../../transform/index.js';
 
 /**
  * Convert a `TypeValueReference` to an `Expression` which refers to the type as a value.

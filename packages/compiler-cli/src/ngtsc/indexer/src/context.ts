@@ -7,8 +7,9 @@
  */
 
 import {BoundTarget, DirectiveMeta, ParseSourceFile} from '@angular/compiler';
-import {Reference} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
+
+import {Reference} from '../../imports/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
 
 export interface ComponentMeta extends DirectiveMeta {
   ref: Reference<ClassDeclaration>;

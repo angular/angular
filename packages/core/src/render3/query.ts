@@ -9,25 +9,26 @@
 // We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
 
-import {ProviderToken} from '../di/provider_token';
-import {createElementRef, ElementRef as ViewEngine_ElementRef, unwrapElementRef} from '../linker/element_ref';
-import {QueryList} from '../linker/query_list';
-import {createTemplateRef, TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
-import {createContainerRef, ViewContainerRef} from '../linker/view_container_ref';
-import {assertDefined, assertIndexInRange, assertNumber, throwError} from '../util/assert';
-import {stringify} from '../util/stringify';
-import {assertFirstCreatePass, assertLContainer} from './assert';
-import {getNodeInjectable, locateDirectiveOrProvider} from './di';
-import {storeCleanupWithContext} from './instructions/shared';
-import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS} from './interfaces/container';
-import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
-import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
-import {LQueries, LQuery, QueryFlags, TQueries, TQuery, TQueryMetadata, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
-import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from './interfaces/view';
-import {assertTNodeType} from './node_assert';
-import {getCurrentQueryIndex, getCurrentTNode, getLView, getTView, setCurrentQueryIndex} from './state';
-import {isCreationMode} from './util/view_utils';
+import {ProviderToken} from '../di/provider_token.js';
+import {createElementRef, ElementRef as ViewEngine_ElementRef, unwrapElementRef} from '../linker/element_ref.js';
+import {QueryList} from '../linker/query_list.js';
+import {createTemplateRef, TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref.js';
+import {createContainerRef, ViewContainerRef} from '../linker/view_container_ref.js';
+import {assertDefined, assertIndexInRange, assertNumber, throwError} from '../util/assert.js';
+import {stringify} from '../util/stringify.js';
+
+import {assertFirstCreatePass, assertLContainer} from './assert.js';
+import {getNodeInjectable, locateDirectiveOrProvider} from './di.js';
+import {storeCleanupWithContext} from './instructions/shared.js';
+import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS} from './interfaces/container.js';
+import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition.js';
+import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector.js';
+import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node.js';
+import {LQueries, LQuery, QueryFlags, TQueries, TQuery, TQueryMetadata, unusedValueExportToPlacateAjd as unused4} from './interfaces/query.js';
+import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from './interfaces/view.js';
+import {assertTNodeType} from './node_assert.js';
+import {getCurrentQueryIndex, getCurrentTNode, getLView, getTView, setCurrentQueryIndex} from './state.js';
+import {isCreationMode} from './util/view_utils.js';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 

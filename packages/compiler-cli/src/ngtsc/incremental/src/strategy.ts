@@ -7,7 +7,8 @@
  */
 
 import ts from 'typescript';
-import {IncrementalState} from './state';
+
+import {IncrementalState} from './state.js';
 
 /**
  * Strategy used to manage the association between a `ts.Program` and the `IncrementalDriver` which

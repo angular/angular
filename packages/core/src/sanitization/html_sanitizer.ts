@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TrustedHTML} from '../util/security/trusted_type_defs';
-import {trustedHTMLFromString} from '../util/security/trusted_types';
-import {getInertBodyHelper, InertBodyHelper} from './inert_body';
-import {_sanitizeUrl, sanitizeSrcset} from './url_sanitizer';
+import {TrustedHTML} from '../util/security/trusted_type_defs.js';
+import {trustedHTMLFromString} from '../util/security/trusted_types.js';
+
+import {getInertBodyHelper, InertBodyHelper} from './inert_body.js';
+import {_sanitizeUrl, sanitizeSrcset} from './url_sanitizer.js';
 
 function tagSet(tags: string): {[k: string]: boolean} {
   const res: {[k: string]: boolean} = {};

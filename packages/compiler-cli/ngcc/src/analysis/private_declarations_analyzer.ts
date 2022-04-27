@@ -7,12 +7,12 @@
  */
 import ts from 'typescript';
 
-import {absoluteFromSourceFile, AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {Declaration} from '../../../src/ngtsc/reflection';
-import {NgccReflectionHost} from '../host/ngcc_host';
-import {hasNameIdentifier, isDefined} from '../utils';
+import {absoluteFromSourceFile, AbsoluteFsPath} from '../../../src/ngtsc/file_system/index.js';
+import {Declaration} from '../../../src/ngtsc/reflection/index.js';
+import {NgccReflectionHost} from '../host/ngcc_host.js';
+import {hasNameIdentifier, isDefined} from '../utils.js';
 
-import {NgccReferencesRegistry} from './ngcc_references_registry';
+import {NgccReferencesRegistry} from './ngcc_references_registry.js';
 
 export interface ExportInfo {
   identifier: string;

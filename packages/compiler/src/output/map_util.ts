@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as o from './output_ast';
+import * as o from './output_ast.js';
 
 export type MapEntry = {
   key: string,

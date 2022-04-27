@@ -10,8 +10,8 @@ import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {platformServerTesting, ServerTestingModule} from '@angular/platform-server/testing';
 
-import {expectInstanceCreated, SomeDep, SomeDirective, SomeModule, SomePipe, SomePrivateComponent, SomeService} from '../src/jit_summaries';
-import {SomeModuleNgSummary} from '../src/jit_summaries.ngsummary';
+import {expectInstanceCreated, SomeDep, SomeDirective, SomeModule, SomePipe, SomePrivateComponent, SomeService} from '../src/jit_summaries.js';
+import {SomeModuleNgSummary} from '../src/jit_summaries.ngsummary.js';
 
 describe('Jit Summaries', () => {
   beforeEach(() => {

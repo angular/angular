@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './src/diagnostic';
-export * from './src/id';
+export * from './src/diagnostic.js';
+export * from './src/id.js';

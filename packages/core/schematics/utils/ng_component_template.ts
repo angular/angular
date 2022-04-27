@@ -11,10 +11,10 @@ import {existsSync, readFileSync} from 'fs';
 import {dirname, relative, resolve} from 'path';
 import ts from 'typescript';
 
-import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings';
-import {getAngularDecorators} from './ng_decorators';
-import {unwrapExpression} from './typescript/functions';
-import {getPropertyNameText} from './typescript/property_name';
+import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings.js';
+import {getAngularDecorators} from './ng_decorators.js';
+import {unwrapExpression} from './typescript/functions.js';
+import {getPropertyNameText} from './typescript/property_name.js';
 
 export interface ResolvedTemplate {
   /** Class declaration that contains this template. */

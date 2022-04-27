@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
+import {Type} from '../interface/type.js';
 
-import {resolveForwardRef} from './forward_ref';
-import {InjectionToken} from './injection_token';
-import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from './interface/provider';
-import {getReflect} from './jit/util';
-import {Inject, Optional, Self, SkipSelf} from './metadata';
-import {invalidProviderError, mixingMultiProvidersWithRegularProvidersError, noAnnotationError} from './reflective_errors';
-import {ReflectiveKey} from './reflective_key';
+import {resolveForwardRef} from './forward_ref.js';
+import {InjectionToken} from './injection_token.js';
+import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from './interface/provider.js';
+import {getReflect} from './jit/util.js';
+import {Inject, Optional, Self, SkipSelf} from './metadata.js';
+import {invalidProviderError, mixingMultiProvidersWithRegularProvidersError, noAnnotationError} from './reflective_errors.js';
+import {ReflectiveKey} from './reflective_key.js';
 
 
 interface NormalizedProvider extends TypeProvider, ValueProvider, ClassProvider, ExistingProvider,

@@ -10,8 +10,8 @@
 // Must be imported first, because Angular decorators throw on load.
 import 'reflect-metadata';
 
-import {NodeJSFileSystem, setFileSystem} from '../ngtsc/file_system';
-import {main} from '../main';
+import {NodeJSFileSystem, setFileSystem} from '../ngtsc/file_system/index.js';
+import {main} from '../main.js';
 
 async function runNgcComamnd() {
   process.title = 'Angular Compiler (ngc)';

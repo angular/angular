@@ -19,7 +19,7 @@ import {fakeAsync, getTestBed, TestBed, tick, waitForAsync} from '@angular/core/
 import {createMouseEvent, dispatchEvent, el, isCommentNode} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {stringify} from '../../src/util/stringify';
+import {stringify} from '../../src/util/stringify.js';
 
 const ANCHOR_ELEMENT = new InjectionToken('AnchorElement');
 

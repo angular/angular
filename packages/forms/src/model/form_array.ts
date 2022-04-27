@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
+import {AsyncValidatorFn, ValidatorFn} from '../directives/validators.js';
 
-import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertControlPresent, pickAsyncValidators, pickValidators, ɵRawValue, ɵTypedOrUntyped, ɵValue} from './abstract_model';
+import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertControlPresent, pickAsyncValidators, pickValidators, ɵRawValue, ɵTypedOrUntyped, ɵValue} from './abstract_model.js';
 
 /**
  * FormArrayValue extracts the type of `.value` from a FormArray's element type, and wraps it in an

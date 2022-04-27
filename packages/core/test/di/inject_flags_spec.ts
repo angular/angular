@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectFlags, InternalInjectFlags} from '../../src/di/interface/injector';
+import {InjectFlags, InternalInjectFlags} from '../../src/di/interface/injector.js';
 
 describe('InjectFlags', () => {
   it('should always match InternalInjectFlags', () => {

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Reference} from '../../imports';
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
+import {Reference} from '../../imports/index.js';
+import {ClassDeclaration, ReflectionHost} from '../../reflection/index.js';
 
-import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from './api';
-import {hasInjectableFields} from './util';
+import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from './api.js';
+import {hasInjectableFields} from './util.js';
 
 /**
  * A registry of directive, pipe, and module metadata for types defined in the current compilation

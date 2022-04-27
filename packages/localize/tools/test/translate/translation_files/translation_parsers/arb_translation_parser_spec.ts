@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵmakeTemplateObject} from '@angular/localize';
-import {ArbTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/arb_translation_parser';
+
+import {ArbTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/arb_translation_parser.js';
 
 describe('SimpleArbTranslationParser', () => {
   describe('canParse()', () => {

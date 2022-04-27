@@ -8,7 +8,7 @@
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {assertFileNames, createModuleAndProjectWithDeclarations, humanizeDocumentSpanLike, LanguageServiceTestEnv} from '../testing';
+import {assertFileNames, createModuleAndProjectWithDeclarations, humanizeDocumentSpanLike, LanguageServiceTestEnv} from '../testing/index.js';
 
 describe('get template location for component', () => {
   beforeEach(() => {

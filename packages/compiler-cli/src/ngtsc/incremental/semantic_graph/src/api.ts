@@ -7,8 +7,8 @@
  */
 import ts from 'typescript';
 
-import {absoluteFromSourceFile, AbsoluteFsPath} from '../../../file_system';
-import {ClassDeclaration} from '../../../reflection';
+import {absoluteFromSourceFile, AbsoluteFsPath} from '../../../file_system/index.js';
+import {ClassDeclaration} from '../../../reflection/index.js';
 
 /**
  * Represents a symbol that is recognizable across incremental rebuilds, which enables the captured

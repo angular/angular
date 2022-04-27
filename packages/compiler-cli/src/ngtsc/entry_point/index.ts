@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {FlatIndexGenerator} from './src/generator';
-export {findFlatIndexEntryPoint} from './src/logic';
-export {checkForPrivateExports} from './src/private_export_checker';
-export {ReferenceGraph} from './src/reference_graph';
+export {FlatIndexGenerator} from './src/generator.js';
+export {findFlatIndexEntryPoint} from './src/logic.js';
+export {checkForPrivateExports} from './src/private_export_checker.js';
+export {ReferenceGraph} from './src/reference_graph.js';

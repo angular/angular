@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbstractType, Type} from '../interface/type';
-import {InjectionToken} from './injection_token';
+import {AbstractType, Type} from '../interface/type.js';
+
+import {InjectionToken} from './injection_token.js';
 
 /**
  * @description

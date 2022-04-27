@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, JsonFileReporter, MeasureValues, Options, SampleDescription} from '../../index';
+import {Injector, JsonFileReporter, MeasureValues, Options, SampleDescription} from '../../index.js';
 
 {
   describe('file reporter', () => {

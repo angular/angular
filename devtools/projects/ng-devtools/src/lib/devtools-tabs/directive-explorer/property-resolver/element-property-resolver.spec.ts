@@ -8,7 +8,7 @@
 
 import {Properties, PropType} from 'protocol';
 
-import {ElementPropertyResolver} from './element-property-resolver';
+import {ElementPropertyResolver} from './element-property-resolver.js';
 
 const mockIndexedNode = {
   component: {

@@ -9,10 +9,10 @@ import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/
 import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
 import {resolve as realResolve} from 'path';
 
-import {Diagnostics} from '../../../src/diagnostics';
-import {translateFiles} from '../../../src/translate/index';
-import {getOutputPathFn} from '../../../src/translate/output_path';
-import {runInNativeFileSystem} from '../../helpers';
+import {Diagnostics} from '../../../src/diagnostics.js';
+import {translateFiles} from '../../../src/translate/index.js';
+import {getOutputPathFn} from '../../../src/translate/output_path.js';
+import {runInNativeFileSystem} from '../../helpers/index.js';
 
 runInNativeFileSystem(() => {
   describe('translateFiles()', () => {

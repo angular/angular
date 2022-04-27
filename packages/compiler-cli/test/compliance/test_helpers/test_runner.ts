@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FileSystem} from '../../../src/ngtsc/file_system';
+import {FileSystem} from '../../../src/ngtsc/file_system/index.js';
 
-import {checkErrors, checkNoUnexpectedErrors} from './check_errors';
-import {checkExpectations} from './check_expectations';
-import {CompileResult, initMockTestFileSystem} from './compile_test';
-import {CompilationMode, ComplianceTest, getAllComplianceTests} from './get_compliance_tests';
+import {checkErrors, checkNoUnexpectedErrors} from './check_errors.js';
+import {checkExpectations} from './check_expectations.js';
+import {CompileResult, initMockTestFileSystem} from './compile_test.js';
+import {CompilationMode, ComplianceTest, getAllComplianceTests} from './get_compliance_tests.js';
 
 /**
  * Set up jasmine specs for each of the compliance tests.

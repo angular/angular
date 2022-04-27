@@ -7,15 +7,15 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {Reference} from '../../../src/ngtsc/imports';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
-import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
-import {PrivateDeclarationsAnalyzer} from '../../src/analysis/private_declarations_analyzer';
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
+import {absoluteFrom, AbsoluteFsPath} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {Reference} from '../../../src/ngtsc/imports/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry.js';
+import {PrivateDeclarationsAnalyzer} from '../../src/analysis/private_declarations_analyzer.js';
+import {Esm2015ReflectionHost} from '../../src/host/esm2015_host.js';
+import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils.js';
 
 runInEachFileSystem(() => {
   describe('PrivateDeclarationsAnalyzer', () => {

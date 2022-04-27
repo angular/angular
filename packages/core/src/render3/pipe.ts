@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PipeTransform} from '../change_detection/pipe_transform';
-import {setInjectImplementation} from '../di/inject_switch';
-import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {Type} from '../interface/type';
+import {PipeTransform} from '../change_detection/pipe_transform.js';
+import {setInjectImplementation} from '../di/inject_switch.js';
+import {RuntimeError, RuntimeErrorCode} from '../errors.js';
+import {Type} from '../interface/type.js';
 
-import {getFactoryDef} from './definition_factory';
-import {setIncludeViewProviders} from './di';
-import {store, ɵɵdirectiveInject} from './instructions/all';
-import {PipeDef, PipeDefList} from './interfaces/definition';
-import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
-import {pureFunction1Internal, pureFunction2Internal, pureFunction3Internal, pureFunction4Internal, pureFunctionVInternal} from './pure_function';
-import {getBindingRoot, getLView, getTView} from './state';
-import {load} from './util/view_utils';
+import {getFactoryDef} from './definition_factory.js';
+import {setIncludeViewProviders} from './di.js';
+import {store, ɵɵdirectiveInject} from './instructions/all.js';
+import {PipeDef, PipeDefList} from './interfaces/definition.js';
+import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, TVIEW} from './interfaces/view.js';
+import {pureFunction1Internal, pureFunction2Internal, pureFunction3Internal, pureFunction4Internal, pureFunctionVInternal} from './pure_function.js';
+import {getBindingRoot, getLView, getTView} from './state.js';
+import {load} from './util/view_utils.js';
 
 
 

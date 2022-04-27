@@ -7,8 +7,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './ng_dev_mode';
-import {newTrustedFunctionForDev} from './security/trusted_types';
+import './ng_dev_mode.js';
+
+import {newTrustedFunctionForDev} from './security/trusted_types.js';
 
 /**
  * THIS FILE CONTAINS CODE WHICH SHOULD BE TREE SHAKEN AND NEVER CALLED FROM PRODUCTION CODE!!!

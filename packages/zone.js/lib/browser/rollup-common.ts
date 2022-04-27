@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import '../zone';
-import '../common/promise';
-import '../common/to-string';
-import './api-util';
+import '../zone.js';
+import '../common/promise.js';
+import '../common/to-string.js';
+import './api-util.js';

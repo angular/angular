@@ -7,8 +7,9 @@
  */
 import {AbsoluteFsPath, PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
-import {TranslationSerializer} from './translation_serializer';
-import {consolidateMessages, hasLocation} from './utils';
+
+import {TranslationSerializer} from './translation_serializer.js';
+import {consolidateMessages, hasLocation} from './utils.js';
 
 /**
  * A translation serializer that can render JSON formatted as an Application Resource Bundle (ARB).

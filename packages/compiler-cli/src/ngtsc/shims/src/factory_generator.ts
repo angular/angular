@@ -7,11 +7,11 @@
  */
 import ts from 'typescript';
 
-import {absoluteFromSourceFile, AbsoluteFsPath, basename} from '../../file_system';
-import {ImportRewriter} from '../../imports';
-import {FactoryInfo, FactoryTracker, ModuleInfo, PerFileShimGenerator} from '../api';
+import {absoluteFromSourceFile, AbsoluteFsPath, basename} from '../../file_system/index.js';
+import {ImportRewriter} from '../../imports/index.js';
+import {FactoryInfo, FactoryTracker, ModuleInfo, PerFileShimGenerator} from '../api.js';
 
-import {generatedModuleName} from './util';
+import {generatedModuleName} from './util.js';
 
 const TS_DTS_SUFFIX = /(\.d)?\.ts$/;
 const STRIP_NG_FACTORY = /(.*)NgFactory$/;

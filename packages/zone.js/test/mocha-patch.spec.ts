@@ -19,7 +19,7 @@ declare function before(fn: () => void): void;
 declare function after(fn: () => void): void;
 //
 
-import {ifEnvSupports} from './test-util';
+import {ifEnvSupports} from './test-util.js';
 
 ifEnvSupports('Mocha', function() {
   describe('Mocha BDD-style', () => {

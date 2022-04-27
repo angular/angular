@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PRIMARY_OUTLET} from '../src/shared';
-import {validateConfig} from '../src/utils/config';
+import {PRIMARY_OUTLET} from '../src/shared.js';
+import {validateConfig} from '../src/utils/config.js';
 
 describe('config', () => {
   describe('validateConfig', () => {

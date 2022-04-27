@@ -6,20 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as e from '../../../src/expression_parser/ast';
-import {Lexer} from '../../../src/expression_parser/lexer';
-import {Parser} from '../../../src/expression_parser/parser';
-import * as html from '../../../src/ml_parser/ast';
-import {HtmlParser} from '../../../src/ml_parser/html_parser';
-import {WhitespaceVisitor} from '../../../src/ml_parser/html_whitespaces';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/interpolation_config';
-import {ParseTreeResult} from '../../../src/ml_parser/parser';
-import * as a from '../../../src/render3/r3_ast';
-import {htmlAstToRender3Ast, Render3ParseResult} from '../../../src/render3/r3_template_transform';
-import {I18nMetaVisitor} from '../../../src/render3/view/i18n/meta';
-import {LEADING_TRIVIA_CHARS} from '../../../src/render3/view/template';
-import {ElementSchemaRegistry} from '../../../src/schema/element_schema_registry';
-import {BindingParser} from '../../../src/template_parser/binding_parser';
+import * as e from '../../../src/expression_parser/ast.js';
+import {Lexer} from '../../../src/expression_parser/lexer.js';
+import {Parser} from '../../../src/expression_parser/parser.js';
+import * as html from '../../../src/ml_parser/ast.js';
+import {HtmlParser} from '../../../src/ml_parser/html_parser.js';
+import {WhitespaceVisitor} from '../../../src/ml_parser/html_whitespaces.js';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/interpolation_config.js';
+import {ParseTreeResult} from '../../../src/ml_parser/parser.js';
+import * as a from '../../../src/render3/r3_ast.js';
+import {htmlAstToRender3Ast, Render3ParseResult} from '../../../src/render3/r3_template_transform.js';
+import {I18nMetaVisitor} from '../../../src/render3/view/i18n/meta.js';
+import {LEADING_TRIVIA_CHARS} from '../../../src/render3/view/template.js';
+import {ElementSchemaRegistry} from '../../../src/schema/element_schema_registry.js';
+import {BindingParser} from '../../../src/template_parser/binding_parser.js';
 
 class MockSchemaRegistry implements ElementSchemaRegistry {
   constructor(

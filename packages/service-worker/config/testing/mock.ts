@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {sha1} from '../../cli/sha1';
-import {Filesystem} from '../src/filesystem';
+import {sha1} from '../../cli/sha1.js';
+import {Filesystem} from '../src/filesystem.js';
 
 export class MockFilesystem implements Filesystem {
   private files = new Map<string, string>();

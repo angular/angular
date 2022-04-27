@@ -7,9 +7,9 @@
  */
 import {PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage, ɵparseMessage} from '@angular/localize';
-import {NodePath, PluginObj, types as t} from '../../babel_core';
 
-import {getLocation, isGlobalIdentifier, isNamedIdentifier, unwrapExpressionsFromTemplateLiteral, unwrapMessagePartsFromTemplateLiteral} from '../../source_file_utils';
+import {NodePath, PluginObj, types as t} from '../../babel_core.js';
+import {getLocation, isGlobalIdentifier, isNamedIdentifier, unwrapExpressionsFromTemplateLiteral, unwrapMessagePartsFromTemplateLiteral} from '../../source_file_utils.js';
 
 export function makeEs2015ExtractPlugin(
     fs: PathManipulation, messages: ɵParsedMessage[], localizeName = '$localize'): PluginObj {

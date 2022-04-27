@@ -8,9 +8,9 @@
 
 import {Attribute, Directive, Host, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {getPluralCategory, NgLocalization} from '../i18n/localization';
+import {getPluralCategory, NgLocalization} from '../i18n/localization.js';
 
-import {SwitchView} from './ng_switch';
+import {SwitchView} from './ng_switch.js';
 
 
 /**

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ExtendedTemplateDiagnosticName} from '../../../../ngtsc/diagnostics';
+import {ExtendedTemplateDiagnosticName} from '../../../../ngtsc/diagnostics/index.js';
 
 /**
  * Options supported by the legacy View Engine compiler, which are still consumed by the Angular Ivy

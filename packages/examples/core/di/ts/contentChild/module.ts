@@ -8,7 +8,8 @@
 
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {ContentChildComp, Pane, Tab} from './content_child_example';
+
+import {ContentChildComp, Pane, Tab} from './content_child_example.js';
 
 @NgModule({
   imports: [BrowserModule],

@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, getFileSystem, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {PathMappings} from '../path_mappings';
+import {AbsoluteFsPath, getFileSystem, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {PathMappings} from '../path_mappings.js';
 
 /**
  * Extract all the base-paths that we need to search for entry-points.

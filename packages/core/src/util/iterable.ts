@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getSymbolIterator} from './symbol';
+import {getSymbolIterator} from './symbol.js';
 
 
 export function isIterable(obj: any): obj is Iterable<any> {

@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵParsedMessage as ParsedMessage} from '@angular/localize';
-import {Diagnostics} from '../../diagnostics';
-import {TranslationSerializer} from './translation_serializer';
+
+import {Diagnostics} from '../../diagnostics.js';
+
+import {TranslationSerializer} from './translation_serializer.js';
 
 
 /**

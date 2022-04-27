@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {OpaqueViewState} from '../interfaces/view';
-import {getLView} from '../state';
+import {OpaqueViewState} from '../interfaces/view.js';
+import {getLView} from '../state.js';
 
 /**
  * Returns the current OpaqueViewState instance.

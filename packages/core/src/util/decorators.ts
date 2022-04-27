@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
+import {Type} from '../interface/type.js';
 
-import {noSideEffects} from './closure';
+import {noSideEffects} from './closure.js';
 
 
 

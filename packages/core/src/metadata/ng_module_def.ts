@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
-import {SchemaMetadata} from './schema';
+import {Type} from '../interface/type.js';
+
+import {SchemaMetadata} from './schema.js';
 
 
 export interface NgModuleType<T = any> extends Type<T> {

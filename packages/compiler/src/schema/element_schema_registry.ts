@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SchemaMetadata, SecurityContext} from '../core';
+import {SchemaMetadata, SecurityContext} from '../core.js';
 
 export abstract class ElementSchemaRegistry {
   abstract hasProperty(tagName: string, propName: string, schemaMetas: SchemaMetadata[]): boolean;

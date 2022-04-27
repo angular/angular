@@ -9,10 +9,10 @@
 import {TmplAstElement, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../file_system';
-import {SymbolWithValueDeclaration} from '../../util/src/typescript';
+import {AbsoluteFsPath} from '../../file_system/index.js';
+import {SymbolWithValueDeclaration} from '../../util/src/typescript.js';
 
-import {DirectiveInScope} from './scope';
+import {DirectiveInScope} from './scope.js';
 
 export enum SymbolKind {
   Input,

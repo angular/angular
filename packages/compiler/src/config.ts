@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MissingTranslationStrategy, ViewEncapsulation} from './core';
-import {noUndefined} from './util';
+import {MissingTranslationStrategy, ViewEncapsulation} from './core.js';
+import {noUndefined} from './util.js';
 
 export class CompilerConfig {
   public defaultEncapsulation: ViewEncapsulation|null;

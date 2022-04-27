@@ -7,15 +7,15 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, getFileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
-import {TestFile} from '../../../src/ngtsc/file_system/testing';
-import {DtsProcessing} from '../../src/execution/tasks/api';
-import {BundleProgram, makeBundleProgram} from '../../src/packages/bundle_program';
-import {NgccEntryPointConfig} from '../../src/packages/configuration';
-import {EntryPoint, EntryPointFormat} from '../../src/packages/entry_point';
-import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
-import {NgccSourcesCompilerHost} from '../../src/packages/ngcc_compiler_host';
-import {createModuleResolutionCache, EntryPointFileCache, SharedFileCache} from '../../src/packages/source_file_cache';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system/index.js';
+import {TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {DtsProcessing} from '../../src/execution/tasks/api.js';
+import {BundleProgram, makeBundleProgram} from '../../src/packages/bundle_program.js';
+import {NgccEntryPointConfig} from '../../src/packages/configuration.js';
+import {EntryPoint, EntryPointFormat} from '../../src/packages/entry_point.js';
+import {EntryPointBundle} from '../../src/packages/entry_point_bundle.js';
+import {NgccSourcesCompilerHost} from '../../src/packages/ngcc_compiler_host.js';
+import {createModuleResolutionCache, EntryPointFileCache, SharedFileCache} from '../../src/packages/source_file_cache.js';
 
 export type TestConfig = Pick<NgccEntryPointConfig, 'generateDeepReexports'>;
 

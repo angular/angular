@@ -9,12 +9,12 @@
 import {Injector, NgModuleFactory, NgModuleRef, PlatformRef, StaticProvider, Type} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
-import {IInjectorService, IProvideService, module_ as angularModule} from '../../src/common/src/angular1';
-import {$INJECTOR, $PROVIDE, DOWNGRADED_MODULE_COUNT_KEY, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../../src/common/src/constants';
-import {destroyApp, getDowngradedModuleCount, isFunction, isNgModuleType, LazyModuleRef, UpgradeAppType} from '../../src/common/src/util';
+import {IInjectorService, IProvideService, module_ as angularModule} from '../../src/common/src/angular1.js';
+import {$INJECTOR, $PROVIDE, DOWNGRADED_MODULE_COUNT_KEY, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../../src/common/src/constants.js';
+import {destroyApp, getDowngradedModuleCount, isFunction, isNgModuleType, LazyModuleRef, UpgradeAppType} from '../../src/common/src/util.js';
 
-import {angular1Providers, setTempInjectorRef} from './angular1_providers';
-import {NgAdapterInjector} from './util';
+import {angular1Providers, setTempInjectorRef} from './angular1_providers.js';
+import {NgAdapterInjector} from './util.js';
 
 
 let moduleUid = 0;

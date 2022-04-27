@@ -9,11 +9,11 @@
 import {AbsoluteSourceSpan, ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
 import ts from 'typescript';
 
-import {TemplateId, TemplateSourceMapping} from '../api';
-import {getTemplateId} from '../diagnostics';
+import {TemplateId, TemplateSourceMapping} from '../api/index.js';
+import {getTemplateId} from '../diagnostics/index.js';
 
-import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings';
-import {TemplateSourceResolver} from './tcb_util';
+import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings.js';
+import {TemplateSourceResolver} from './tcb_util.js';
 
 /**
  * Represents the source of a template that was processed during type-checking. This information is

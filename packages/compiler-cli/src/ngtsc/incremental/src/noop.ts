@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {IncrementalBuild} from '../api';
+import {IncrementalBuild} from '../api.js';
 
 export const NOOP_INCREMENTAL_BUILD: IncrementalBuild<any, any> = {
   priorAnalysisFor: () => null,

@@ -8,10 +8,10 @@
 
 import ts from 'typescript';
 
-import {Reference} from '../../imports';
-import {FunctionDefinition} from '../../reflection';
+import {Reference} from '../../imports/index.js';
+import {FunctionDefinition} from '../../reflection/index.js';
 
-import {SyntheticValue} from './synthetic';
+import {SyntheticValue} from './synthetic.js';
 
 /**
  * The reason why a value cannot be determined statically.

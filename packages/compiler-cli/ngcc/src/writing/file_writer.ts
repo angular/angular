@@ -6,10 +6,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
-import {EntryPointBundle} from '../packages/entry_point_bundle';
-import {FileToWrite} from '../rendering/utils';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system/index.js';
+import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point.js';
+import {EntryPointBundle} from '../packages/entry_point_bundle.js';
+import {FileToWrite} from '../rendering/utils.js';
 
 /**
  * Responsible for writing out the transformed files to disk.

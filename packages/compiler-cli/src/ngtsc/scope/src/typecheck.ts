@@ -9,11 +9,11 @@
 import {CssSelector, SchemaMetadata, SelectorMatcher} from '@angular/compiler';
 import ts from 'typescript';
 
-import {Reference} from '../../imports';
-import {DirectiveMeta, flattenInheritedDirectiveMetadata, MetadataReader, MetaKind} from '../../metadata';
-import {ClassDeclaration} from '../../reflection';
+import {Reference} from '../../imports/index.js';
+import {DirectiveMeta, flattenInheritedDirectiveMetadata, MetadataReader, MetaKind} from '../../metadata/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
 
-import {ComponentScopeKind, ComponentScopeReader} from './api';
+import {ComponentScopeKind, ComponentScopeReader} from './api.js';
 
 /**
  * The scope that is used for type-check code generation of a component template.

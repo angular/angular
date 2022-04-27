@@ -5,10 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import './init';
+import './init.js';
+
 import {DebugElement} from '@angular/core';
-import {AnimateCmp} from '../src/animate';
-import {createComponent} from './util';
+
+import {AnimateCmp} from '../src/animate.js';
+
+import {createComponent} from './util.js';
 
 // TODO(matsko): make this green again...
 xdescribe('template codegen output', () => {

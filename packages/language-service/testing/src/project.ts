@@ -11,9 +11,9 @@ import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, getSourceFileOr
 import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {LanguageService} from '../../src/language_service';
+import {LanguageService} from '../../src/language_service.js';
 
-import {OpenBuffer} from './buffer';
+import {OpenBuffer} from './buffer.js';
 
 export type ProjectFiles = {
   [fileName: string]: string;

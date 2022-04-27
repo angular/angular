@@ -11,8 +11,8 @@
 import realFs from 'fs';
 import * as os from 'os';
 
-import {NodeJSFileSystem, NodeJSPathManipulation, NodeJSReadonlyFileSystem} from '../src/node_js_file_system';
-import {AbsoluteFsPath, PathSegment} from '../src/types';
+import {NodeJSFileSystem, NodeJSPathManipulation, NodeJSReadonlyFileSystem} from '../src/node_js_file_system.js';
+import {AbsoluteFsPath, PathSegment} from '../src/types.js';
 
 describe('NodeJSPathManipulation', () => {
   let fs: NodeJSPathManipulation;

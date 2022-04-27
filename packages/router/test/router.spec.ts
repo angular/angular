@@ -11,18 +11,18 @@ import {inject, TestBed} from '@angular/core/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {of} from 'rxjs';
 
-import {ChildActivationStart} from '../src/events';
-import {Routes} from '../src/models';
-import {checkGuards as checkGuardsOperator} from '../src/operators/check_guards';
-import {resolveData as resolveDataOperator} from '../src/operators/resolve_data';
-import {NavigationTransition, Router} from '../src/router';
-import {ChildrenOutletContexts} from '../src/router_outlet_context';
-import {createEmptyStateSnapshot, RouterStateSnapshot} from '../src/router_state';
-import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
-import {getAllRouteGuards} from '../src/utils/preactivation';
-import {TreeNode} from '../src/utils/tree';
+import {ChildActivationStart} from '../src/events.js';
+import {Routes} from '../src/models.js';
+import {checkGuards as checkGuardsOperator} from '../src/operators/check_guards.js';
+import {resolveData as resolveDataOperator} from '../src/operators/resolve_data.js';
+import {NavigationTransition, Router} from '../src/router.js';
+import {ChildrenOutletContexts} from '../src/router_outlet_context.js';
+import {createEmptyStateSnapshot, RouterStateSnapshot} from '../src/router_state.js';
+import {DefaultUrlSerializer, UrlTree} from '../src/url_tree.js';
+import {getAllRouteGuards} from '../src/utils/preactivation.js';
+import {TreeNode} from '../src/utils/tree.js';
 
-import {createActivatedRouteSnapshot, Logger, provideTokenLogger} from './helpers';
+import {createActivatedRouteSnapshot, Logger, provideTokenLogger} from './helpers.js';
 
 describe('Router', () => {
   describe('resetConfig', () => {

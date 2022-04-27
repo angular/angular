@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {inspect} from 'util';
-import {ExpectedError} from './get_compliance_tests';
+
+import {ExpectedError} from './get_compliance_tests.js';
 
 export function checkErrors(
     testPath: string, failureMessage: string, expectedErrors: ExpectedError[],

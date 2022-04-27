@@ -9,7 +9,7 @@
 import {Type, ɵɵadvance, ɵɵdefineComponent, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵreference, ɵɵtemplate, ɵɵtemplateRefExtractor} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
-import {InjectorComp} from './injector_component';
+import {InjectorComp} from './injector_component.js';
 
 /**
  * Creates a component that will be rendered inside the main app that adds a few layers of elements

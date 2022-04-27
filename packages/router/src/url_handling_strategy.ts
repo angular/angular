@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {UrlTree} from './url_tree';
+import {UrlTree} from './url_tree.js';
 
 /**
  * @description

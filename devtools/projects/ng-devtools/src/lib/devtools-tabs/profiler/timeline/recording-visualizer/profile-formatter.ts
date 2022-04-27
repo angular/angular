@@ -8,7 +8,7 @@
 
 import {DirectiveProfile} from 'protocol';
 
-import {SelectedDirective} from './timeline-visualizer.component';
+import {SelectedDirective} from './timeline-visualizer.component.js';
 
 const ignore = /^([A-Z]|listener|\d|listener)/;
 

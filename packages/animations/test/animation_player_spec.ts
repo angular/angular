@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {fakeAsync} from '@angular/core/testing';
-import {flushMicrotasks} from '../../core/testing/src/fake_async';
-import {NoopAnimationPlayer} from '../src/players/animation_player';
-import {scheduleMicroTask} from '../src/util';
+
+import {flushMicrotasks} from '../../core/testing/src/fake_async.js';
+import {NoopAnimationPlayer} from '../src/players/animation_player.js';
+import {scheduleMicroTask} from '../src/util.js';
 
 {
   describe('NoopAnimationPlayer', function() {

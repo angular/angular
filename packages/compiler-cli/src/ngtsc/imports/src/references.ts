@@ -9,7 +9,7 @@
 import {Expression} from '@angular/compiler';
 import ts from 'typescript';
 
-import {identifierOfNode} from '../../util/src/typescript';
+import {identifierOfNode} from '../../util/src/typescript.js';
 
 export interface OwningModule {
   specifier: string;

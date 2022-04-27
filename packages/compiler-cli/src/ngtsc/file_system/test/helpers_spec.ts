@@ -7,8 +7,8 @@
  */
 import * as os from 'os';
 
-import {absoluteFrom, relativeFrom, setFileSystem} from '../src/helpers';
-import {NodeJSFileSystem} from '../src/node_js_file_system';
+import {absoluteFrom, relativeFrom, setFileSystem} from '../src/helpers.js';
+import {NodeJSFileSystem} from '../src/node_js_file_system.js';
 
 describe('path types', () => {
   beforeEach(() => {

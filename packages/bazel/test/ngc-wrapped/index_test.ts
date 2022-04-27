@@ -8,7 +8,7 @@
 
 import * as path from 'path';
 
-import {setup} from './test_support';
+import {setup} from './test_support.js';
 
 describe('ngc_wrapped', () => {
   it('should work', async () => {

@@ -7,7 +7,8 @@
  */
 
 import ts from 'typescript';
-import {AbsoluteFsPath} from '../../file_system';
+
+import {AbsoluteFsPath} from '../../file_system/index.js';
 
 export interface FileUpdate {
   /**

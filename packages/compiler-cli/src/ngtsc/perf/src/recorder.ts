@@ -7,8 +7,8 @@
  */
 /// <reference types="node" />
 
-import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from './api';
-import {HrTime, mark, timeSinceInMicros} from './clock';
+import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from './api.js';
+import {HrTime, mark, timeSinceInMicros} from './clock.js';
 
 /**
  * Serializable performance data for the compilation, using string names.

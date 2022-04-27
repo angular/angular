@@ -9,13 +9,13 @@
 import {Compiler, CompilerOptions, Injector, NgModule, NgModuleRef, NgZone, resolveForwardRef, StaticProvider, Testability, Type} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import {bootstrap, element as angularElement, IAngularBootstrapConfig, IAugmentedJQuery, IInjectorService, IModule, IProvideService, IRootScopeService, ITestabilityService, module_ as angularModule} from '../../common/src/angular1';
-import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, LAZY_MODULE_REF, NG_ZONE_KEY, UPGRADE_APP_TYPE_KEY} from '../../common/src/constants';
-import {downgradeComponent} from '../../common/src/downgrade_component';
-import {downgradeInjectable} from '../../common/src/downgrade_injectable';
-import {controllerKey, Deferred, destroyApp, LazyModuleRef, onError, UpgradeAppType} from '../../common/src/util';
+import {bootstrap, element as angularElement, IAngularBootstrapConfig, IAugmentedJQuery, IInjectorService, IModule, IProvideService, IRootScopeService, ITestabilityService, module_ as angularModule} from '../../common/src/angular1.js';
+import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, LAZY_MODULE_REF, NG_ZONE_KEY, UPGRADE_APP_TYPE_KEY} from '../../common/src/constants.js';
+import {downgradeComponent} from '../../common/src/downgrade_component.js';
+import {downgradeInjectable} from '../../common/src/downgrade_injectable.js';
+import {controllerKey, Deferred, destroyApp, LazyModuleRef, onError, UpgradeAppType} from '../../common/src/util.js';
 
-import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
+import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter.js';
 
 let upgradeCount: number = 0;
 

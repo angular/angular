@@ -11,5 +11,5 @@
  * @description
  * Entry point for all public APIs of the router/testing package.
  */
-export * from './router_testing_module';
-export * from './spy_ng_module_factory_loader';
+export * from './router_testing_module.js';
+export * from './spy_ng_module_factory_loader.js';

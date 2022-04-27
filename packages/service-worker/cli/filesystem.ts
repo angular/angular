@@ -10,7 +10,7 @@ import {Filesystem} from '@angular/service-worker/config';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import {sha1Binary} from './sha1';
+import {sha1Binary} from './sha1.js';
 
 export class NodeFilesystem implements Filesystem {
   constructor(private base: string) {}

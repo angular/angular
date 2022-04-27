@@ -8,6 +8,6 @@
 
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import {TestsAppModule} from './test_module';
+import {TestsAppModule} from './test_module.js';
 
 platformBrowserDynamic().bootstrapModule(TestsAppModule);

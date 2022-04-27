@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './bargraph-formatter';
+export * from './bargraph-formatter.js';

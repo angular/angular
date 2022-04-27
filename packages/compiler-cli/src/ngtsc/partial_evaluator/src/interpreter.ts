@@ -8,18 +8,18 @@
 
 import ts from 'typescript';
 
-import {Reference} from '../../imports';
-import {OwningModule} from '../../imports/src/references';
-import {DependencyTracker} from '../../incremental/api';
-import {Declaration, DeclarationKind, DeclarationNode, EnumMember, FunctionDefinition, isConcreteDeclaration, ReflectionHost, SpecialDeclarationKind} from '../../reflection';
-import {isDeclaration} from '../../util/src/typescript';
+import {Reference} from '../../imports/index.js';
+import {OwningModule} from '../../imports/src/references.js';
+import {DependencyTracker} from '../../incremental/api.js';
+import {Declaration, DeclarationKind, DeclarationNode, EnumMember, FunctionDefinition, isConcreteDeclaration, ReflectionHost, SpecialDeclarationKind} from '../../reflection/index.js';
+import {isDeclaration} from '../../util/src/typescript.js';
 
-import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn, StringConcatBuiltinFn} from './builtin';
-import {DynamicValue} from './dynamic';
-import {ForeignFunctionResolver} from './interface';
-import {resolveKnownDeclaration} from './known_declaration';
-import {EnumValue, KnownFn, ResolvedModule, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
-import {SyntheticValue} from './synthetic';
+import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn, StringConcatBuiltinFn} from './builtin.js';
+import {DynamicValue} from './dynamic.js';
+import {ForeignFunctionResolver} from './interface.js';
+import {resolveKnownDeclaration} from './known_declaration.js';
+import {EnumValue, KnownFn, ResolvedModule, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result.js';
+import {SyntheticValue} from './synthetic.js';
 
 
 

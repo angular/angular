@@ -7,7 +7,8 @@
  */
 
 import ts from 'typescript';
-import {TemplateDiagnostic} from '../../api';
+
+import {TemplateDiagnostic} from '../../api/index.js';
 
 /**
  * Interface to generate extended template diangostics from the component tempaltes.

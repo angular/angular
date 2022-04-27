@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵɵdefineDirective, ɵɵelement, ɵɵhostProperty, ɵɵlistener} from '../../../../src/render3/index';
-import {DirectiveDefList, RenderFlags} from '../../../../src/render3/interfaces/definition';
-import {TAttributes} from '../../../../src/render3/interfaces/node';
-import {createBenchmark} from '../micro_bench';
-import {setupTestHarness} from '../setup';
+import {ɵɵdefineDirective, ɵɵelement, ɵɵhostProperty, ɵɵlistener} from '../../../../src/render3/index.js';
+import {DirectiveDefList, RenderFlags} from '../../../../src/render3/interfaces/definition.js';
+import {TAttributes} from '../../../../src/render3/interfaces/node.js';
+import {createBenchmark} from '../micro_bench.js';
+import {setupTestHarness} from '../setup.js';
 
 // Number of Directives with Host Binding and Host Listener
 // that should be generated for one element in a template.

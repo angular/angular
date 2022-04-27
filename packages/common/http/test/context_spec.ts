@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpContext, HttpContextToken} from '../src/context';
+import {HttpContext, HttpContextToken} from '../src/context.js';
 
 const IS_ENABLED = new HttpContextToken<boolean>(() => false);
 const UNUSED = new HttpContextToken<boolean>(() => true);

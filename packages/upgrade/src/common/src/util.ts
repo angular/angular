@@ -8,8 +8,8 @@
 
 import {Injector, Type, ɵNG_MOD_DEF} from '@angular/core';
 
-import {element as angularElement, IAugmentedJQuery, IInjectorService, INgModelController, IRootScopeService} from './angular1';
-import {$ROOT_ELEMENT, $ROOT_SCOPE, DOWNGRADED_MODULE_COUNT_KEY, UPGRADE_APP_TYPE_KEY} from './constants';
+import {element as angularElement, IAugmentedJQuery, IInjectorService, INgModelController, IRootScopeService} from './angular1.js';
+import {$ROOT_ELEMENT, $ROOT_SCOPE, DOWNGRADED_MODULE_COUNT_KEY, UPGRADE_APP_TYPE_KEY} from './constants.js';
 
 const DIRECTIVE_PREFIX_REGEXP = /^(?:x|data)[:\-_]/i;
 const DIRECTIVE_SPECIAL_CHARS_REGEXP = /[:\-_]+(.)/g;

@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {scheduleMicroTask} from '../util';
-import {AnimationPlayer} from './animation_player';
+import {scheduleMicroTask} from '../util.js';
+
+import {AnimationPlayer} from './animation_player.js';
 
 /**
  * A programmatic controller for a group of reusable animations.

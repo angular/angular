@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {sha1} from './sha1';
+import {sha1} from './sha1.js';
 
 export type ManifestHash = string;
 

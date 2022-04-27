@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertNotEqual} from '../../util/assert';
-import {CharCode} from '../../util/char_code';
+import {assertNotEqual} from '../../util/assert.js';
+import {CharCode} from '../../util/char_code.js';
 
 
 /**

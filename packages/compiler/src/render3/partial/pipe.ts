@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as o from '../../output/output_ast';
-import {Identifiers as R3} from '../r3_identifiers';
-import {createPipeType, R3PipeMetadata} from '../r3_pipe_compiler';
-import {R3CompiledExpression} from '../util';
-import {DefinitionMap} from '../view/util';
+import * as o from '../../output/output_ast.js';
+import {Identifiers as R3} from '../r3_identifiers.js';
+import {createPipeType, R3PipeMetadata} from '../r3_pipe_compiler.js';
+import {R3CompiledExpression} from '../util.js';
+import {DefinitionMap} from '../view/util.js';
 
-import {R3DeclarePipeMetadata} from './api';
+import {R3DeclarePipeMetadata} from './api.js';
 
 /**
  * Every time we make a breaking change to the declaration interface or partial-linker behavior, we

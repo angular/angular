@@ -8,9 +8,9 @@
 
 import {LifecycleProfile} from 'protocol';
 
-import {getDirectiveName} from '../highlighter';
+import {getDirectiveName} from '../highlighter.js';
 
-import {DirectiveForestHooks} from './hooks';
+import {DirectiveForestHooks} from './hooks.js';
 
 const markName = (s: string, method: Method) => `🅰️ ${s}#${method}`;
 

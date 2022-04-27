@@ -10,7 +10,8 @@ import {DOCUMENT, LocationChangeEvent, LocationChangeListener, PlatformLocation,
 import {Inject, Injectable, Optional} from '@angular/core';
 import {Subject} from 'rxjs';
 import * as url from 'url';
-import {INITIAL_CONFIG, PlatformConfig} from './tokens';
+
+import {INITIAL_CONFIG, PlatformConfig} from './tokens.js';
 
 function parseUrl(urlStr: string) {
   const parsedUrl = url.parse(urlStr);

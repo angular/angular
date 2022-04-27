@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {getFileSystem} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {AsyncLocker} from '../../src/locking/async_locker';
-import {MockLockFile} from '../helpers/mock_lock_file';
+import {getFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {AsyncLocker} from '../../src/locking/async_locker.js';
+import {MockLockFile} from '../helpers/mock_lock_file.js';
 
 runInEachFileSystem(() => {
   describe('AsyncLocker', () => {

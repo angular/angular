@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {Cycle, CycleAnalyzer, CycleHandlingStrategy} from './src/analyzer';
-export {ImportGraph} from './src/imports';
+export {Cycle, CycleAnalyzer, CycleHandlingStrategy} from './src/analyzer.js';
+export {ImportGraph} from './src/imports.js';

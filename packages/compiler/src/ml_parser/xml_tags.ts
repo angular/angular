@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TagContentType, TagDefinition} from './tags';
+import {TagContentType, TagDefinition} from './tags.js';
 
 export class XmlTagDefinition implements TagDefinition {
   closedByParent: boolean = false;

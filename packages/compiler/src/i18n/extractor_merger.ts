@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as html from '../ml_parser/ast';
-import {InterpolationConfig} from '../ml_parser/interpolation_config';
-import {ParseTreeResult} from '../ml_parser/parser';
+import * as html from '../ml_parser/ast.js';
+import {InterpolationConfig} from '../ml_parser/interpolation_config.js';
+import {ParseTreeResult} from '../ml_parser/parser.js';
 
-import * as i18n from './i18n_ast';
-import {createI18nMessageFactory, I18nMessageFactory} from './i18n_parser';
-import {I18nError} from './parse_util';
-import {TranslationBundle} from './translation_bundle';
+import * as i18n from './i18n_ast.js';
+import {createI18nMessageFactory, I18nMessageFactory} from './i18n_parser.js';
+import {I18nError} from './parse_util.js';
+import {TranslationBundle} from './translation_bundle.js';
 
 const _I18N_ATTR = 'i18n';
 const _I18N_ATTR_PREFIX = 'i18n-';

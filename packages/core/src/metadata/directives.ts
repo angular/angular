@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy} from '../change_detection/constants';
-import {Provider} from '../di/interface/provider';
-import {Type} from '../interface/type';
-import {compileComponent, compileDirective} from '../render3/jit/directive';
-import {compilePipe} from '../render3/jit/pipe';
-import {makeDecorator, makePropDecorator, TypeDecorator} from '../util/decorators';
+import {ChangeDetectionStrategy} from '../change_detection/constants.js';
+import {Provider} from '../di/interface/provider.js';
+import {Type} from '../interface/type.js';
+import {compileComponent, compileDirective} from '../render3/jit/directive.js';
+import {compilePipe} from '../render3/jit/pipe.js';
+import {makeDecorator, makePropDecorator, TypeDecorator} from '../util/decorators.js';
 
-import {ViewEncapsulation} from './view';
+import {ViewEncapsulation} from './view.js';
 
 
 

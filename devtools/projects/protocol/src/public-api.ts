@@ -10,6 +10,6 @@
  * Public API Surface of protocol
  */
 
-export * from './lib/messages';
-export * from './lib/message-bus';
-export * from './lib/priority-aware-message-bus';
+export * from './lib/messages.js';
+export * from './lib/message-bus.js';
+export * from './lib/priority-aware-message-bus.js';

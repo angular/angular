@@ -7,7 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {IInjectorService} from '../../src/common/src/angular1';
+import {IInjectorService} from '../../src/common/src/angular1.js';
 
 // We have to do a little dance to get the ng1 injector into the module injector.
 // We store the ng1 injector so that the provider in the module injector can access it

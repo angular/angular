@@ -8,8 +8,8 @@
 
 import ts from 'typescript';
 
-import {TypeScriptReflectionHost} from '../../packages/compiler-cli/src/ngtsc/reflection/src/typescript';
-import {getDownlevelDecoratorsTransform} from '../../packages/compiler-cli/src/transformers/downlevel_decorators_transform/index';
+import {TypeScriptReflectionHost} from '../../packages/compiler-cli/src/ngtsc/reflection/src/typescript.js';
+import {getDownlevelDecoratorsTransform} from '../../packages/compiler-cli/src/transformers/downlevel_decorators_transform/index.js';
 
 /**
  * Transform for downleveling Angular decorators and Angular-decorated class

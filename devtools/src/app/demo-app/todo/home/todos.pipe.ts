@@ -8,7 +8,7 @@
 
 import {Pipe, PipeTransform} from '@angular/core';
 
-import {Todo} from './todo';
+import {Todo} from './todo.js';
 
 export const enum TodoFilter {
   All = 'all',

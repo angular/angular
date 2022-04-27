@@ -8,7 +8,7 @@
 
 // THIS CODE IS GENERATED - DO NOT MODIFY.
 
-import {registerLocaleData} from '../src/i18n/locale_data';
+import {registerLocaleData} from '../src/i18n/locale_data.js';
 
 const u = undefined;
 

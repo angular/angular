@@ -8,8 +8,8 @@
 import {AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵStyleDataMap} from '@angular/animations';
 import {AnimationDriver, ɵallowPreviousPlayerStylesMerge as allowPreviousPlayerStylesMerge, ɵcontainsElement as containsElement, ɵgetParentElement as getParentElement, ɵinvokeQuery as invokeQuery, ɵnormalizeKeyframes as normalizeKeyframes, ɵvalidateStyleProperty as validateStyleProperty,} from '@angular/animations/browser';
 
-import {validateWebAnimatableStyleProperty} from '../../src/render/shared';
-import {camelCaseToDashCase} from '../../src/util';
+import {validateWebAnimatableStyleProperty} from '../../src/render/shared.js';
+import {camelCaseToDashCase} from '../../src/util.js';
 
 /**
  * @publicApi

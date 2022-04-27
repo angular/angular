@@ -8,12 +8,12 @@
 
 import {Injector, NgModule, NgZone, PlatformRef, Testability} from '@angular/core';
 
-import {bootstrap, element as angularElement, IInjectorService, IIntervalService, IProvideService, ITestabilityService, module_ as angularModule} from '../../src/common/src/angular1';
-import {$$TESTABILITY, $DELEGATE, $INJECTOR, $INTERVAL, $PROVIDE, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../../src/common/src/constants';
-import {controllerKey, destroyApp, LazyModuleRef, UpgradeAppType} from '../../src/common/src/util';
+import {bootstrap, element as angularElement, IInjectorService, IIntervalService, IProvideService, ITestabilityService, module_ as angularModule} from '../../src/common/src/angular1.js';
+import {$$TESTABILITY, $DELEGATE, $INJECTOR, $INTERVAL, $PROVIDE, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../../src/common/src/constants.js';
+import {controllerKey, destroyApp, LazyModuleRef, UpgradeAppType} from '../../src/common/src/util.js';
 
-import {angular1Providers, setTempInjectorRef} from './angular1_providers';
-import {NgAdapterInjector} from './util';
+import {angular1Providers, setTempInjectorRef} from './angular1_providers.js';
+import {NgAdapterInjector} from './util.js';
 
 
 

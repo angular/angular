@@ -9,12 +9,12 @@
 import {DEFAULT_INTERPOLATION_CONFIG, HtmlParser} from '@angular/compiler';
 import {MissingTranslationStrategy} from '@angular/core';
 
-import {digest, serializeNodes as serializeI18nNodes} from '../../src/i18n/digest';
-import {extractMessages, mergeTranslations} from '../../src/i18n/extractor_merger';
-import * as i18n from '../../src/i18n/i18n_ast';
-import {TranslationBundle} from '../../src/i18n/translation_bundle';
-import * as html from '../../src/ml_parser/ast';
-import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
+import {digest, serializeNodes as serializeI18nNodes} from '../../src/i18n/digest.js';
+import {extractMessages, mergeTranslations} from '../../src/i18n/extractor_merger.js';
+import * as i18n from '../../src/i18n/i18n_ast.js';
+import {TranslationBundle} from '../../src/i18n/translation_bundle.js';
+import * as html from '../../src/ml_parser/ast.js';
+import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util.js';
 
 {
   describe('Extractor', () => {

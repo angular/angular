@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, PathSegment, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {EntryPointWithDependencies} from '../dependencies/dependency_host';
-import {DependencyResolver} from '../dependencies/dependency_resolver';
-import {NgccConfiguration} from '../packages/configuration';
-import {getEntryPointInfo, IGNORED_ENTRY_POINT, INCOMPATIBLE_ENTRY_POINT, isEntryPoint, NO_ENTRY_POINT} from '../packages/entry_point';
-import {NGCC_DIRECTORY} from '../writing/new_entry_point_file_writer';
+import {AbsoluteFsPath, PathSegment, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {EntryPointWithDependencies} from '../dependencies/dependency_host.js';
+import {DependencyResolver} from '../dependencies/dependency_resolver.js';
+import {NgccConfiguration} from '../packages/configuration.js';
+import {getEntryPointInfo, IGNORED_ENTRY_POINT, INCOMPATIBLE_ENTRY_POINT, isEntryPoint, NO_ENTRY_POINT} from '../packages/entry_point.js';
+import {NGCC_DIRECTORY} from '../writing/new_entry_point_file_writer.js';
 
 /**
  * A class that traverses a file-tree, starting at a given path, looking for all entry-points,

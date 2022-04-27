@@ -9,16 +9,16 @@
 import {platform} from 'os';
 import ts from 'typescript';
 
-import {absoluteFrom as _, absoluteFromSourceFile} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {Reference} from '../../imports';
-import {TypeScriptReflectionHost} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing';
-import {ObjectAssignBuiltinFn} from '../src/builtin';
-import {describeResolvedType, traceDynamicValue} from '../src/diagnostics';
-import {DynamicValue} from '../src/dynamic';
-import {PartialEvaluator} from '../src/interface';
-import {EnumValue, ResolvedModule} from '../src/result';
+import {absoluteFrom as _, absoluteFromSourceFile} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {Reference} from '../../imports/index.js';
+import {TypeScriptReflectionHost} from '../../reflection/index.js';
+import {getDeclaration, makeProgram} from '../../testing/index.js';
+import {ObjectAssignBuiltinFn} from '../src/builtin.js';
+import {describeResolvedType, traceDynamicValue} from '../src/diagnostics.js';
+import {DynamicValue} from '../src/dynamic.js';
+import {PartialEvaluator} from '../src/interface.js';
+import {EnumValue, ResolvedModule} from '../src/result.js';
 
 runInEachFileSystem(os => {
   describe('partial evaluator', () => {

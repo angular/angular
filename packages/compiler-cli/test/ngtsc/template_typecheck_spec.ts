@@ -8,14 +8,14 @@
 
 import ts from 'typescript';
 
-import {DiagnosticCategoryLabel} from '../../src/ngtsc/core/api';
-import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
-import {absoluteFrom as _, getSourceFileOrError} from '../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {expectCompleteReuse, getSourceCodeForDiagnostic, loadStandardTestFiles} from '../../src/ngtsc/testing';
-import {factory as invalidBananaInBoxFactory} from '../../src/ngtsc/typecheck/extended/checks/invalid_banana_in_box';
+import {DiagnosticCategoryLabel} from '../../src/ngtsc/core/api/index.js';
+import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics/index.js';
+import {absoluteFrom as _, getSourceFileOrError} from '../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing/index.js';
+import {expectCompleteReuse, getSourceCodeForDiagnostic, loadStandardTestFiles} from '../../src/ngtsc/testing/index.js';
+import {factory as invalidBananaInBoxFactory} from '../../src/ngtsc/typecheck/extended/checks/invalid_banana_in_box/index.js';
 
-import {NgtscTestEnvironment} from './env';
+import {NgtscTestEnvironment} from './env.js';
 
 const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
 

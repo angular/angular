@@ -10,10 +10,10 @@
 import {readdirSync, readFileSync, statSync} from 'fs';
 import {resolve} from 'path';
 
-import {AbsoluteFsPath, FileSystem, getFileSystem} from '../../file_system';
-import {Folder, MockFileSystemPosix, TestFile} from '../../file_system/testing';
+import {AbsoluteFsPath, FileSystem, getFileSystem} from '../../file_system/index.js';
+import {Folder, MockFileSystemPosix, TestFile} from '../../file_system/testing/index.js';
 
-import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from './runfile_helpers';
+import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from './runfile_helpers.js';
 
 export function loadTestFiles(files: TestFile[]) {
   const fs = getFileSystem();

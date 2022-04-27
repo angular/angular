@@ -8,13 +8,13 @@
 import {compileClassMetadata} from '@angular/compiler';
 import ts from 'typescript';
 
-import {absoluteFrom, getSourceFileOrError} from '../../../file_system';
-import {runInEachFileSystem, TestFile} from '../../../file_system/testing';
-import {NoopImportRewriter} from '../../../imports';
-import {TypeScriptReflectionHost} from '../../../reflection';
-import {getDeclaration, makeProgram} from '../../../testing';
-import {ImportManager, translateStatement} from '../../../translator';
-import {extractClassMetadata} from '../src/metadata';
+import {absoluteFrom, getSourceFileOrError} from '../../../file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../file_system/testing/index.js';
+import {NoopImportRewriter} from '../../../imports/index.js';
+import {TypeScriptReflectionHost} from '../../../reflection/index.js';
+import {getDeclaration, makeProgram} from '../../../testing/index.js';
+import {ImportManager, translateStatement} from '../../../translator/index.js';
+import {extractClassMetadata} from '../src/metadata.js';
 
 runInEachFileSystem(() => {
   describe('ngtsc setClassMetadata converter', () => {

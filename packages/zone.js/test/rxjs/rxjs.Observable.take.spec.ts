@@ -8,7 +8,7 @@
 import {interval, Observable, of} from 'rxjs';
 import {take, takeLast, takeUntil, takeWhile} from 'rxjs/operators';
 
-import {asyncTest} from '../test-util';
+import {asyncTest} from '../test-util.js';
 
 describe('Observable.take', () => {
   let log: any[];

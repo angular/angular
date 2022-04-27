@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NormalizedUrl} from '../src/api';
+import {NormalizedUrl} from '../src/api.js';
 
 
 /**

@@ -10,12 +10,12 @@ import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {concatMap, filter, map} from 'rxjs/operators';
 
-import {HttpHandler} from './backend';
-import {HttpContext} from './context';
-import {HttpHeaders} from './headers';
-import {HttpParams, HttpParamsOptions} from './params';
-import {HttpRequest} from './request';
-import {HttpEvent, HttpResponse} from './response';
+import {HttpHandler} from './backend.js';
+import {HttpContext} from './context.js';
+import {HttpHeaders} from './headers.js';
+import {HttpParams, HttpParamsOptions} from './params.js';
+import {HttpRequest} from './request.js';
+import {HttpEvent, HttpResponse} from './response.js';
 
 
 /**

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Adapter} from './adapter';
-import {DebugLogger} from './api';
+import {Adapter} from './adapter.js';
+import {DebugLogger} from './api.js';
 
 export interface IdleTask {
   run: () => Promise<void>;

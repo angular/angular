@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NormalizedUrl} from './api';
-import {NamedCacheStorage} from './named-cache-storage';
+import {NormalizedUrl} from './api.js';
+import {NamedCacheStorage} from './named-cache-storage.js';
 
 
 /**

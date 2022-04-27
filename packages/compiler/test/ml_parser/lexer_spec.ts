@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getHtmlTagDefinition} from '../../src/ml_parser/html_tags';
-import {TokenError, tokenize, TokenizeOptions, TokenizeResult} from '../../src/ml_parser/lexer';
-import {Token, TokenType} from '../../src/ml_parser/tokens';
-import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util';
+import {getHtmlTagDefinition} from '../../src/ml_parser/html_tags.js';
+import {TokenError, tokenize, TokenizeOptions, TokenizeResult} from '../../src/ml_parser/lexer.js';
+import {Token, TokenType} from '../../src/ml_parser/tokens.js';
+import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util.js';
 
 {
   describe('HtmlLexer', () => {

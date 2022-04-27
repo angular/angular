@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as chars from '../chars';
+import * as chars from '../chars.js';
 
 export enum TokenType {
   Character,

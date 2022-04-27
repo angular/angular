@@ -9,7 +9,8 @@
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
-import {SimpleFormControl} from './simple_form_control_example';
+
+import {SimpleFormControl} from './simple_form_control_example.js';
 
 @NgModule({
   imports: [BrowserModule, ReactiveFormsModule],

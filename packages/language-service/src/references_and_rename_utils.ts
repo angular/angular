@@ -13,9 +13,9 @@ import {DirectiveSymbol, Symbol, SymbolKind, TcbLocation, TemplateTypeChecker} f
 import {ExpressionIdentifier, hasExpressionIdentifier} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import ts from 'typescript';
 
-import {getTargetAtPosition, TargetNodeKind} from './template_target';
-import {findTightestNode, getParentClassDeclaration} from './ts_utils';
-import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateLocationFromTcbLocation, isWithin, TemplateInfo, toTextSpan} from './utils';
+import {getTargetAtPosition, TargetNodeKind} from './template_target.js';
+import {findTightestNode, getParentClassDeclaration} from './ts_utils.js';
+import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateLocationFromTcbLocation, isWithin, TemplateInfo, toTextSpan} from './utils.js';
 
 /** Represents a location in a file. */
 export interface FilePosition {

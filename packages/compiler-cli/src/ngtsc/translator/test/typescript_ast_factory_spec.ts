@@ -8,7 +8,7 @@
 import {leadingComment} from '@angular/compiler';
 import ts from 'typescript';
 
-import {TypeScriptAstFactory} from '../src/typescript_ast_factory';
+import {TypeScriptAstFactory} from '../src/typescript_ast_factory.js';
 
 describe('TypeScriptAstFactory', () => {
   let factory: TypeScriptAstFactory;

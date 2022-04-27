@@ -6,24 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {getPluralCase} from '../../i18n/localization';
-import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertIndexInRange, throwError} from '../../util/assert';
-import {assertIndexInExpandoRange, assertTIcu} from '../assert';
-import {attachPatchData} from '../context_discovery';
-import {elementPropertyInternal, setElementAttribute} from '../instructions/shared';
-import {ELEMENT_MARKER, I18nCreateOpCode, I18nCreateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes, IcuType, TI18n, TIcu} from '../interfaces/i18n';
-import {TNode} from '../interfaces/node';
-import {RElement, RNode, RText} from '../interfaces/renderer_dom';
-import {SanitizerFn} from '../interfaces/sanitization';
-import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view';
-import {createCommentNode, createElementNode, createTextNode, nativeInsertBefore, nativeParentNode, nativeRemoveNode, updateTextNode} from '../node_manipulation';
-import {getBindingIndex} from '../state';
-import {renderStringify} from '../util/stringify_utils';
-import {getNativeByIndex, unwrapRNode} from '../util/view_utils';
+import {RuntimeError, RuntimeErrorCode} from '../../errors.js';
+import {getPluralCase} from '../../i18n/localization.js';
+import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, assertIndexInRange, throwError} from '../../util/assert.js';
+import {assertIndexInExpandoRange, assertTIcu} from '../assert.js';
+import {attachPatchData} from '../context_discovery.js';
+import {elementPropertyInternal, setElementAttribute} from '../instructions/shared.js';
+import {ELEMENT_MARKER, I18nCreateOpCode, I18nCreateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes, IcuType, TI18n, TIcu} from '../interfaces/i18n.js';
+import {TNode} from '../interfaces/node.js';
+import {RElement, RNode, RText} from '../interfaces/renderer_dom.js';
+import {SanitizerFn} from '../interfaces/sanitization.js';
+import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view.js';
+import {createCommentNode, createElementNode, createTextNode, nativeInsertBefore, nativeParentNode, nativeRemoveNode, updateTextNode} from '../node_manipulation.js';
+import {getBindingIndex} from '../state.js';
+import {renderStringify} from '../util/stringify_utils.js';
+import {getNativeByIndex, unwrapRNode} from '../util/view_utils.js';
 
-import {getLocaleId} from './i18n_locale_id';
-import {getCurrentICUCaseIndex, getParentFromIcuCreateOpCode, getRefFromIcuCreateOpCode, getTIcu} from './i18n_util';
+import {getLocaleId} from './i18n_locale_id.js';
+import {getCurrentICUCaseIndex, getParentFromIcuCreateOpCode, getRefFromIcuCreateOpCode, getTIcu} from './i18n_util.js';
 
 
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {declarationFunctions} from './partial_linkers/partial_linker_selector';
+import {declarationFunctions} from './partial_linkers/partial_linker_selector.js';
 
 /**
  * Determines if the provided source file may need to be processed by the linker, i.e. whether it

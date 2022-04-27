@@ -11,4 +11,4 @@
  * @description
  * Entry point for all public APIs of the platform-browser-dynamic/testing package.
  */
-export * from './server';
+export * from './server.js';

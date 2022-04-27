@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {checkVersion} from '../src/typescript_support';
+import {checkVersion} from '../src/typescript_support.js';
 
 describe('checkVersion', () => {
   const MIN_TS_VERSION = '2.7.2';

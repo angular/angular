@@ -8,8 +8,8 @@
 
 import {NgModule} from '@angular/core';
 
-import {COMMON_DIRECTIVES} from './directives/index';
-import {COMMON_PIPES} from './pipes/index';
+import {COMMON_DIRECTIVES} from './directives/index.js';
+import {COMMON_PIPES} from './pipes/index.js';
 
 
 

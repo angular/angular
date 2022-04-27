@@ -1,6 +1,6 @@
 import {Component, Injectable} from '@angular/core';
 
-import {CustomClassDecorator} from './custom';
+import {CustomClassDecorator} from './custom.js';
 
 @Injectable()
 export class BasicInjectable {

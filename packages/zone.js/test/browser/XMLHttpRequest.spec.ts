@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ifEnvSupports, ifEnvSupportsWithDone, supportPatchXHROnProperty, zoneSymbol} from '../test-util';
+import {ifEnvSupports, ifEnvSupportsWithDone, supportPatchXHROnProperty, zoneSymbol} from '../test-util.js';
 declare const global: any;
 const wtfMock = global.wtfMock;
 

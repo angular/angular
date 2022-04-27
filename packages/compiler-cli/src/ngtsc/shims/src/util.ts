@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
+import {absoluteFrom, AbsoluteFsPath} from '../../file_system/index.js';
 
 const TS_EXTENSIONS = /\.tsx?$/i;
 

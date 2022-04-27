@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as i18n from '../i18n_ast';
+import * as i18n from '../i18n_ast.js';
 
 export abstract class Serializer {
   // - The `placeholders` and `placeholderToMessage` properties are irrelevant in the input messages

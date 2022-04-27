@@ -2,7 +2,7 @@
 import {CommonModule} from '@angular/common';
 import {ModuleWithProviders, NgModule} from '@angular/core';
 
-import {SplitModule} from './component/split.module';
+import {SplitModule} from './component/split.module.js';
 
 @NgModule({
   imports: [CommonModule, SplitModule],

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CanActivate, CanActivateChild, CanDeactivate, CanLoad} from '../models';
-import {UrlTree} from '../url_tree';
+import {CanActivate, CanActivateChild, CanDeactivate, CanLoad} from '../models.js';
+import {UrlTree} from '../url_tree.js';
 
 /**
  * Simple function check, but generic so type inference will flow. Example:

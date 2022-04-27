@@ -8,7 +8,7 @@
 
 import {Events, MessageBus, Parameters} from 'protocol';
 
-import {IFrameMessageBus} from './iframe-message-bus';
+import {IFrameMessageBus} from './iframe-message-bus.js';
 
 type AnyEventCallback<Ev> = <E extends keyof Ev>(topic: E, args: Parameters<Ev[E]>) => void;
 

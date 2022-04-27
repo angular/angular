@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global} from './global';
+import {global} from './global.js';
 
 declare global {
   const ngI18nClosureMode: boolean;

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, IOsDriverExtension, WebDriverAdapter, WebDriverExtension} from '../../index';
-import {TraceEventFactory} from '../trace_event_factory';
+import {Injector, IOsDriverExtension, WebDriverAdapter, WebDriverExtension} from '../../index.js';
+import {TraceEventFactory} from '../trace_event_factory.js';
 
 {
   describe('ios driver extension', () => {

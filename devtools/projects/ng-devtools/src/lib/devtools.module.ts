@@ -11,8 +11,8 @@ import {NgModule} from '@angular/core';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatTooltipModule} from '@angular/material/tooltip';
 
-import {DevToolsTabModule} from './devtools-tabs/devtools-tabs.module';
-import {DevToolsComponent} from './devtools.component';
+import {DevToolsTabModule} from './devtools-tabs/devtools-tabs.module.js';
+import {DevToolsComponent} from './devtools.component.js';
 
 @NgModule({
   declarations: [DevToolsComponent],

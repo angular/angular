@@ -9,10 +9,10 @@
 import {ParseError, ParseSourceFile, R3TargetBinder, SchemaMetadata, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
-import {Reference} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
+import {Reference} from '../../imports/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
 
-import {TemplateSourceMapping, TypeCheckableDirectiveMeta} from './api';
+import {TemplateSourceMapping, TypeCheckableDirectiveMeta} from './api.js';
 
 /**
  * A currently pending type checking operation, into which templates for type-checking can be

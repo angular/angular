@@ -8,12 +8,12 @@
 
 import {Inject, Injectable, StaticProvider} from '@angular/core';
 
-import {Options} from './common_options';
-import {MeasureValues} from './measure_values';
-import {Metric} from './metric';
-import {Reporter} from './reporter';
-import {Validator} from './validator';
-import {WebDriverAdapter} from './web_driver_adapter';
+import {Options} from './common_options.js';
+import {MeasureValues} from './measure_values.js';
+import {Metric} from './metric.js';
+import {Reporter} from './reporter.js';
+import {Validator} from './validator.js';
+import {WebDriverAdapter} from './web_driver_adapter.js';
 
 
 /**

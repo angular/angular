@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TokenizeOptions} from './lexer';
-import {Parser, ParseTreeResult} from './parser';
-import {getXmlTagDefinition} from './xml_tags';
+import {TokenizeOptions} from './lexer.js';
+import {Parser, ParseTreeResult} from './parser.js';
+import {getXmlTagDefinition} from './xml_tags.js';
 
 export class XmlParser extends Parser {
   constructor() {

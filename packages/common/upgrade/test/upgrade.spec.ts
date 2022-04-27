@@ -10,9 +10,9 @@ import {CommonModule, PathLocationStrategy} from '@angular/common';
 import {inject, TestBed} from '@angular/core/testing';
 import {UpgradeModule} from '@angular/upgrade/static';
 
-import {$locationShim} from '../src/location_shim';
+import {$locationShim} from '../src/location_shim.js';
 
-import {LocationUpgradeTestModule} from './upgrade_location_test_module';
+import {LocationUpgradeTestModule} from './upgrade_location_test_module.js';
 
 export class MockUpgradeModule {
   $injector = {

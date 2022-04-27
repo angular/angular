@@ -9,9 +9,9 @@
 import {Injectable} from '@angular/core';
 import {ComponentExplorerViewProperties, Descriptor, DirectivePosition, DirectivesProperties, Events, MessageBus,} from 'protocol';
 
-import {IndexedNode} from '../directive-forest/index-forest';
+import {IndexedNode} from '../directive-forest/index-forest/index.js';
 
-import {DirectivePropertyResolver} from './directive-property-resolver';
+import {DirectivePropertyResolver} from './directive-property-resolver.js';
 
 export interface FlatNode {
   expandable: boolean;

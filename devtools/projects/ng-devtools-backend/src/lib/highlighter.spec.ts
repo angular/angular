@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as highlighter from './highlighter';
+import * as highlighter from './highlighter.js';
 
 describe('highlighter', () => {
   describe('findComponentAndHost', () => {

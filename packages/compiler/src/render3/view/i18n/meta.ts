@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computeDecimalDigest, computeDigest, decimalDigest} from '../../../i18n/digest';
-import * as i18n from '../../../i18n/i18n_ast';
-import {createI18nMessageFactory, VisitNodeFn} from '../../../i18n/i18n_parser';
-import {I18nError} from '../../../i18n/parse_util';
-import * as html from '../../../ml_parser/ast';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../ml_parser/interpolation_config';
-import {ParseTreeResult} from '../../../ml_parser/parser';
-import * as o from '../../../output/output_ast';
-import {isTrustedTypesSink} from '../../../schema/trusted_types_sinks';
+import {computeDecimalDigest, computeDigest, decimalDigest} from '../../../i18n/digest.js';
+import * as i18n from '../../../i18n/i18n_ast.js';
+import {createI18nMessageFactory, VisitNodeFn} from '../../../i18n/i18n_parser.js';
+import {I18nError} from '../../../i18n/parse_util.js';
+import * as html from '../../../ml_parser/ast.js';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../ml_parser/interpolation_config.js';
+import {ParseTreeResult} from '../../../ml_parser/parser.js';
+import * as o from '../../../output/output_ast.js';
+import {isTrustedTypesSink} from '../../../schema/trusted_types_sinks.js';
 
-import {hasI18nAttrs, I18N_ATTR, I18N_ATTR_PREFIX, icuFromI18nMessage} from './util';
+import {hasI18nAttrs, I18N_ATTR, I18N_ATTR_PREFIX, icuFromI18nMessage} from './util.js';
 
 export type I18nMeta = {
   id?: string,

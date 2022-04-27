@@ -7,12 +7,12 @@
  */
 import {AnimationPlayer, ɵStyleDataMap} from '@angular/animations';
 
-import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, camelCaseToDashCase, copyStyles, normalizeKeyframes} from '../../util';
-import {AnimationDriver} from '../animation_driver';
-import {containsElement, getParentElement, invokeQuery, validateStyleProperty, validateWebAnimatableStyleProperty} from '../shared';
-import {packageNonAnimatableStyles} from '../special_cased_styles';
+import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, camelCaseToDashCase, copyStyles, normalizeKeyframes} from '../../util.js';
+import {AnimationDriver} from '../animation_driver.js';
+import {containsElement, getParentElement, invokeQuery, validateStyleProperty, validateWebAnimatableStyleProperty} from '../shared.js';
+import {packageNonAnimatableStyles} from '../special_cased_styles.js';
 
-import {WebAnimationsPlayer} from './web_animations_player';
+import {WebAnimationsPlayer} from './web_animations_player.js';
 
 export class WebAnimationsDriver implements AnimationDriver {
   validateStyleProperty(prop: string): boolean {

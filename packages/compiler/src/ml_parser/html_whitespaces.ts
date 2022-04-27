@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as html from './ast';
-import {NGSP_UNICODE} from './entities';
-import {ParseTreeResult} from './parser';
-import {TextToken, TokenType} from './tokens';
+import * as html from './ast.js';
+import {NGSP_UNICODE} from './entities.js';
+import {ParseTreeResult} from './parser.js';
+import {TextToken, TokenType} from './tokens.js';
 
 export const PRESERVE_WS_ATTR_NAME = 'ngPreserveWhitespaces';
 

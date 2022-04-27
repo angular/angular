@@ -6,18 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef, ViewRefTracker} from '../linker/view_ref';
-import {removeFromArray} from '../util/array_utils';
-import {assertEqual} from '../util/assert';
+import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref.js';
+import {RuntimeError, RuntimeErrorCode} from '../errors.js';
+import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef, ViewRefTracker} from '../linker/view_ref.js';
+import {removeFromArray} from '../util/array_utils.js';
+import {assertEqual} from '../util/assert.js';
 
-import {collectNativeNodes} from './collect_native_nodes';
-import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupWithContext} from './instructions/shared';
-import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
-import {isLContainer} from './interfaces/type_checks';
-import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
-import {destroyLView, detachView, renderDetachView} from './node_manipulation';
+import {collectNativeNodes} from './collect_native_nodes.js';
+import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupWithContext} from './instructions/shared.js';
+import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container.js';
+import {isLContainer} from './interfaces/type_checks.js';
+import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view.js';
+import {destroyLView, detachView, renderDetachView} from './node_manipulation.js';
 
 
 

@@ -10,7 +10,7 @@
  * @suppress {globalThis}
  */
 
-import {isBrowser, isIE, isMix, isNode, ObjectGetPrototypeOf, patchOnProperties} from '../common/utils';
+import {isBrowser, isIE, isMix, isNode, ObjectGetPrototypeOf, patchOnProperties} from '../common/utils.js';
 
 export interface IgnoreProperty {
   target: any;

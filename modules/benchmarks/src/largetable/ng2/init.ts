@@ -8,10 +8,10 @@
 
 import {ApplicationRef, NgModuleRef} from '@angular/core';
 
-import {bindAction, profile} from '../../util';
-import {buildTable, emptyTable, initTableUtils} from '../util';
+import {bindAction, profile} from '../../util.js';
+import {buildTable, emptyTable, initTableUtils} from '../util.js';
 
-import {AppModule, TableComponent} from './table';
+import {AppModule, TableComponent} from './table.js';
 
 export function init(moduleRef: NgModuleRef<AppModule>) {
   let table: TableComponent;

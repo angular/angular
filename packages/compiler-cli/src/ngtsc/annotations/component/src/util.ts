@@ -9,10 +9,10 @@
 import {AnimationTriggerNames} from '@angular/compiler';
 import ts from 'typescript';
 
-import {Reference} from '../../../imports';
-import {ForeignFunctionResolver, ResolvedValue} from '../../../partial_evaluator';
-import {ClassDeclaration, isNamedClassDeclaration} from '../../../reflection';
-import {createValueHasWrongTypeError} from '../../common';
+import {Reference} from '../../../imports/index.js';
+import {ForeignFunctionResolver, ResolvedValue} from '../../../partial_evaluator/index.js';
+import {ClassDeclaration, isNamedClassDeclaration} from '../../../reflection/index.js';
+import {createValueHasWrongTypeError} from '../../common/index.js';
 
 /**
  * Collect the animation names from the static evaluation result.

@@ -8,12 +8,12 @@
 import * as o from '@angular/compiler/src/output/output_ast';
 import generate from '@babel/generator';
 
-import {FileLinker} from '../../../linker';
-import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {PartialDirectiveLinkerVersion1} from '../../src/file_linker/partial_linkers/partial_directive_linker_1';
-import {NodePath, PluginObj, transformSync, types as t} from '../src/babel_core';
-import {createEs2015LinkerPlugin} from '../src/es2015_linker_plugin';
+import {FileLinker} from '../../../linker/index.js';
+import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {PartialDirectiveLinkerVersion1} from '../../src/file_linker/partial_linkers/partial_directive_linker_1.js';
+import {NodePath, PluginObj, transformSync, types as t} from '../src/babel_core.js';
+import {createEs2015LinkerPlugin} from '../src/es2015_linker_plugin.js';
 
 describe('createEs2015LinkerPlugin()', () => {
   it('should return a Babel plugin visitor that handles Program (enter/exit) and CallExpression nodes',

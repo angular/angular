@@ -5,10 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {PathMappings} from '../path_mappings';
-import {EsmDependencyHost} from './esm_dependency_host';
-import {ModuleResolver} from './module_resolver';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {PathMappings} from '../path_mappings.js';
+
+import {EsmDependencyHost} from './esm_dependency_host.js';
+import {ModuleResolver} from './module_resolver.js';
 
 /**
  * Helper functions for computing dependencies via typings files.

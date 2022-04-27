@@ -4,8 +4,8 @@ import { createCustomElement } from '@angular/elements';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 
-import { AppComponent } from './app.component';
-import { TitleComponent } from './title.component';
+import { AppComponent } from './app.component.js';
+import { TitleComponent } from './title.component.js';
 
 @NgModule({
   bootstrap: [

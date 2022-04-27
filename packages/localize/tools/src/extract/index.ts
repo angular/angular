@@ -8,18 +8,18 @@
 import {AbsoluteFsPath, FileSystem, Logger, PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage} from '@angular/localize';
 
-import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics';
+import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics.js';
 
-import {checkDuplicateMessages} from './duplicates';
-import {MessageExtractor} from './extraction';
-import {ArbTranslationSerializer} from './translation_files/arb_translation_serializer';
-import {FormatOptions} from './translation_files/format_options';
-import {SimpleJsonTranslationSerializer} from './translation_files/json_translation_serializer';
-import {LegacyMessageIdMigrationSerializer} from './translation_files/legacy_message_id_migration_serializer';
-import {TranslationSerializer} from './translation_files/translation_serializer';
-import {Xliff1TranslationSerializer} from './translation_files/xliff1_translation_serializer';
-import {Xliff2TranslationSerializer} from './translation_files/xliff2_translation_serializer';
-import {XmbTranslationSerializer} from './translation_files/xmb_translation_serializer';
+import {checkDuplicateMessages} from './duplicates.js';
+import {MessageExtractor} from './extraction.js';
+import {ArbTranslationSerializer} from './translation_files/arb_translation_serializer.js';
+import {FormatOptions} from './translation_files/format_options.js';
+import {SimpleJsonTranslationSerializer} from './translation_files/json_translation_serializer.js';
+import {LegacyMessageIdMigrationSerializer} from './translation_files/legacy_message_id_migration_serializer.js';
+import {TranslationSerializer} from './translation_files/translation_serializer.js';
+import {Xliff1TranslationSerializer} from './translation_files/xliff1_translation_serializer.js';
+import {Xliff2TranslationSerializer} from './translation_files/xliff2_translation_serializer.js';
+import {XmbTranslationSerializer} from './translation_files/xmb_translation_serializer.js';
 
 
 export interface ExtractTranslationsOptions {

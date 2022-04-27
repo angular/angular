@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {parseCommandLineOptions} from '../../command_line_options';
-import {getSharedSetup} from '../../ngcc_options';
-import {getCreateCompileFn} from '../create_compile_function';
+import {parseCommandLineOptions} from '../../command_line_options.js';
+import {getSharedSetup} from '../../ngcc_options.js';
+import {getCreateCompileFn} from '../create_compile_function.js';
 
-import {ClusterWorkerPackageJsonUpdater} from './package_json_updater';
-import {startWorker} from './worker';
+import {ClusterWorkerPackageJsonUpdater} from './package_json_updater.js';
+import {startWorker} from './worker.js';
 
 // Cluster worker entry point
 (async () => {

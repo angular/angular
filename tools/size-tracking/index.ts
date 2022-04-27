@@ -9,9 +9,9 @@
 import * as chalk from 'chalk';
 import {readFileSync, writeFileSync} from 'fs';
 
-import {compareFileSizeData} from './file_size_compare';
-import {FileSizeData} from './file_size_data';
-import {SizeTracker} from './size_tracker';
+import {compareFileSizeData} from './file_size_compare.js';
+import {FileSizeData} from './file_size_data.js';
+import {SizeTracker} from './size_tracker.js';
 
 if (require.main === module) {
   const [filePath, sourceMapPath, goldenPath, maxPercentageDiffArg, maxSizeDiffArg, writeGoldenArg] =

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LTreeStrategy} from './ltree';
-import {RTreeStrategy} from './render-tree';
+import {LTreeStrategy} from './ltree.js';
+import {RTreeStrategy} from './render-tree.js';
 
-export {getDirectiveHostElement, getLViewFromDirectiveOrElementInstance, METADATA_PROPERTY_NAME} from './ltree';
+export {getDirectiveHostElement, getLViewFromDirectiveOrElementInstance, METADATA_PROPERTY_NAME} from './ltree.js';
 
 // The order of the strategies matters. Lower indices have higher priority.
 const strategies = [new RTreeStrategy(), new LTreeStrategy()];

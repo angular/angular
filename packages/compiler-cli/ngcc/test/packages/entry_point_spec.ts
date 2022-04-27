@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom, AbsoluteFsPath, getFileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, getEntryPointFormat, getEntryPointInfo, IGNORED_ENTRY_POINT, INCOMPATIBLE_ENTRY_POINT, isEntryPoint, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration.js';
+import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, getEntryPointFormat, getEntryPointInfo, IGNORED_ENTRY_POINT, INCOMPATIBLE_ENTRY_POINT, isEntryPoint, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point.js';
 
 runInEachFileSystem(() => {
   describe('getEntryPointInfo()', () => {

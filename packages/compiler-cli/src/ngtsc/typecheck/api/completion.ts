@@ -8,7 +8,7 @@
 
 import {TmplAstReference, TmplAstVariable} from '@angular/compiler';
 
-import {TcbLocation} from './symbols';
+import {TcbLocation} from './symbols.js';
 
 /**
  * An autocompletion source of any kind.

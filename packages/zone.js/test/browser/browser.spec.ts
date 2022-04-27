@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {patchFilteredProperties} from '../../lib/browser/property-descriptor';
-import {patchEventTarget} from '../../lib/common/events';
-import {isIEOrEdge, zoneSymbol} from '../../lib/common/utils';
-import {getEdgeVersion, getIEVersion, ifEnvSupports, ifEnvSupportsWithDone, isEdge} from '../test-util';
+import {patchFilteredProperties} from '../../lib/browser/property-descriptor.js';
+import {patchEventTarget} from '../../lib/common/events.js';
+import {isIEOrEdge, zoneSymbol} from '../../lib/common/utils.js';
+import {getEdgeVersion, getIEVersion, ifEnvSupports, ifEnvSupportsWithDone, isEdge} from '../test-util.js';
 
 import Spy = jasmine.Spy;
 declare const global: any;

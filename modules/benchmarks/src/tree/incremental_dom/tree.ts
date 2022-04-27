@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TreeNode} from '../util';
+import {TreeNode} from '../util.js';
 
 // We load "IncrementalDOM" as a AMD global because the "incremental-dom" NPM package does not
 // come with a named UMD module, and it's easier to just import the AMD file and use it globally.

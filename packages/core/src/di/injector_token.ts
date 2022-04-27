@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from './injection_token';
-import {Injector} from './injector';
-import {InjectorMarkers} from './injector_marker';
+import {InjectionToken} from './injection_token.js';
+import {Injector} from './injector.js';
+import {InjectorMarkers} from './injector_marker.js';
 
 
 

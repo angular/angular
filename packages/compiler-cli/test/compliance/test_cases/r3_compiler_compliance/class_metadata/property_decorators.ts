@@ -1,5 +1,6 @@
 import {Directive, Input, Output} from '@angular/core';
-import {CustomPropDecorator} from './custom';
+
+import {CustomPropDecorator} from './custom.js';
 
 @Directive()
 export class MyDir {

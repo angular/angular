@@ -8,11 +8,11 @@
 
 import ts from 'typescript';
 
-import {AliasingHost, Reference} from '../../imports';
-import {DirectiveMeta, MetadataReader, PipeMeta} from '../../metadata';
-import {ClassDeclaration} from '../../reflection';
+import {AliasingHost, Reference} from '../../imports/index.js';
+import {DirectiveMeta, MetadataReader, PipeMeta} from '../../metadata/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
 
-import {ExportScope} from './api';
+import {ExportScope} from './api.js';
 
 export interface DtsModuleScopeResolver {
   resolve(ref: Reference<ClassDeclaration>): ExportScope|null;

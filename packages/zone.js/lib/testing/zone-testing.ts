@@ -7,12 +7,12 @@
  */
 
 // load test related files into bundle in correct order
-import '../zone-spec/long-stack-trace';
-import '../zone-spec/proxy';
-import '../zone-spec/sync-test';
-import '../jasmine/jasmine';
-import '../jest/jest';
-import '../mocha/mocha';
-import './async-testing';
-import './fake-async';
-import './promise-testing';
+import '../zone-spec/long-stack-trace.js';
+import '../zone-spec/proxy.js';
+import '../zone-spec/sync-test.js';
+import '../jasmine/jasmine.js';
+import '../jest/jest.js';
+import '../mocha/mocha.js';
+import './async-testing.js';
+import './fake-async.js';
+import './promise-testing.js';

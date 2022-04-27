@@ -9,19 +9,19 @@ import {DeclareVarStmt, LiteralExpr, StmtModifier} from '@angular/compiler';
 import MagicString from 'magic-string';
 import ts from 'typescript';
 
-import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {NoopImportRewriter} from '../../../src/ngtsc/imports';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {loadFakeCore, loadTestFiles} from '../../../src/ngtsc/testing';
-import {ImportManager} from '../../../src/ngtsc/translator';
-import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
-import {ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
-import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
-import {IMPORT_PREFIX} from '../../src/constants';
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {EsmRenderingFormatter} from '../../src/rendering/esm_rendering_formatter';
-import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
+import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {NoopImportRewriter} from '../../../src/ngtsc/imports/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {loadFakeCore, loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {ImportManager} from '../../../src/ngtsc/translator/index.js';
+import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer.js';
+import {ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer.js';
+import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry.js';
+import {IMPORT_PREFIX} from '../../src/constants.js';
+import {Esm2015ReflectionHost} from '../../src/host/esm2015_host.js';
+import {EsmRenderingFormatter} from '../../src/rendering/esm_rendering_formatter.js';
+import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils.js';
 
 function setup(files: TestFile[], dtsFiles?: TestFile[]) {
   const fs = getFileSystem();

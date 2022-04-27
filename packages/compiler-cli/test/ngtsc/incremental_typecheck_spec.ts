@@ -8,11 +8,11 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom} from '../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {absoluteFrom} from '../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing/index.js';
+import {loadStandardTestFiles} from '../../src/ngtsc/testing/index.js';
 
-import {NgtscTestEnvironment} from './env';
+import {NgtscTestEnvironment} from './env.js';
 
 const testFiles = loadStandardTestFiles();
 

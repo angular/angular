@@ -7,14 +7,14 @@
  */
 import {R3PartialDeclaration} from '@angular/compiler';
 
-import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {AstObject} from '../ast/ast_value';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system/index.js';
+import {AstObject} from '../ast/ast_value.js';
 
-import {DeclarationScope} from './declaration_scope';
-import {EmitScope} from './emit_scopes/emit_scope';
-import {LocalEmitScope} from './emit_scopes/local_emit_scope';
-import {LinkerEnvironment} from './linker_environment';
-import {createLinkerMap, PartialLinkerSelector} from './partial_linkers/partial_linker_selector';
+import {DeclarationScope} from './declaration_scope.js';
+import {EmitScope} from './emit_scopes/emit_scope.js';
+import {LocalEmitScope} from './emit_scopes/local_emit_scope.js';
+import {LinkerEnvironment} from './linker_environment.js';
+import {createLinkerMap, PartialLinkerSelector} from './partial_linkers/partial_linker_selector.js';
 
 export const NO_STATEMENTS: Readonly<any[]> = [] as const;
 

@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {DepGraph} from 'dependency-graph';
-import {EntryPoint} from '../../packages/entry_point';
-import {DtsProcessing, PartiallyOrderedTasks, Task, TaskDependencies} from './api';
+
+import {EntryPoint} from '../../packages/entry_point.js';
+
+import {DtsProcessing, PartiallyOrderedTasks, Task, TaskDependencies} from './api.js';
 
 /** Stringify a task for debugging purposes. */
 export const stringifyTask = (task: Task): string =>

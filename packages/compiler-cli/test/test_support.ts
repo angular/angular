@@ -10,9 +10,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import ts from 'typescript';
 
-import * as ng from '../index';
-import {NodeJSFileSystem, setFileSystem} from '../src/ngtsc/file_system';
-import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '../src/ngtsc/testing';
+import * as ng from '../index.js';
+import {NodeJSFileSystem, setFileSystem} from '../src/ngtsc/file_system/index.js';
+import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '../src/ngtsc/testing/index.js';
 
 // TEST_TMPDIR is always set by Bazel.
 const tmpdir = process.env.TEST_TMPDIR!;

@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CacheDatabase} from '../src/db-cache';
-import {Driver} from '../src/driver';
-import {Manifest} from '../src/manifest';
-import {MockCache} from '../testing/cache';
-import {MockRequest} from '../testing/fetch';
-import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
-import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
-import {envIsSupported} from '../testing/utils';
+import {CacheDatabase} from '../src/db-cache.js';
+import {Driver} from '../src/driver.js';
+import {Manifest} from '../src/manifest.js';
+import {MockCache} from '../testing/cache.js';
+import {MockRequest} from '../testing/fetch.js';
+import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock.js';
+import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope.js';
+import {envIsSupported} from '../testing/utils.js';
 
 (function() {
 // Skip environments that don't support the minimum APIs needed to run the SW tests.

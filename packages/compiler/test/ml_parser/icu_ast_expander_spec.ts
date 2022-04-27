@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as html from '../../src/ml_parser/ast';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {expandNodes, ExpansionResult} from '../../src/ml_parser/icu_ast_expander';
-import {ParseError} from '../../src/parse_util';
+import * as html from '../../src/ml_parser/ast.js';
+import {HtmlParser} from '../../src/ml_parser/html_parser.js';
+import {expandNodes, ExpansionResult} from '../../src/ml_parser/icu_ast_expander.js';
+import {ParseError} from '../../src/parse_util.js';
 
-import {humanizeNodes} from './ast_spec_utils';
+import {humanizeNodes} from './ast_spec_utils.js';
 
 {
   describe('Expander', () => {

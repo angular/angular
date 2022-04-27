@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isArrayEqual, isReferenceEqual, SemanticReference, SemanticSymbol} from '../../../incremental/semantic_graph';
-import {DirectiveSymbol} from '../../directive';
+import {isArrayEqual, isReferenceEqual, SemanticReference, SemanticSymbol} from '../../../incremental/semantic_graph/index.js';
+import {DirectiveSymbol} from '../../directive/index.js';
 
 /**
  * Represents an Angular component.

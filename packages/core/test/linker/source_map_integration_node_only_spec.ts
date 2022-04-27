@@ -15,8 +15,8 @@ import {CompilerFacade, ExportedCompilerFacade} from '@angular/core/src/compiler
 import {resolveComponentResources} from '@angular/core/src/metadata/resource_loading';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 
-import {MockResourceLoader} from './resource_loader_mock';
-import {extractSourceMap, originalPositionFor} from './source_map_util';
+import {MockResourceLoader} from './resource_loader_mock.js';
+import {extractSourceMap, originalPositionFor} from './source_map_util.js';
 
 describe('jit source mapping', () => {
   let resourceLoader: MockResourceLoader;

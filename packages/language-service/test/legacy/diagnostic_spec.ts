@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LanguageService} from '../../src/language_service';
+import {LanguageService} from '../../src/language_service.js';
 
-import {MockService, setup, TEST_TEMPLATE} from './mock_host';
+import {MockService, setup, TEST_TEMPLATE} from './mock_host.js';
 
 describe('getSemanticDiagnostics', () => {
   let service: MockService;

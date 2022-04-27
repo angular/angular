@@ -10,7 +10,7 @@
  * @suppress {globalThis}
  */
 
-import * as webSocketPatch from './websocket';
+import * as webSocketPatch from './websocket.js';
 
 export function propertyDescriptorLegacyPatch(api: _ZonePrivate, _global: any) {
   const {isNode, isMix} = api.getGlobalObjects()!;

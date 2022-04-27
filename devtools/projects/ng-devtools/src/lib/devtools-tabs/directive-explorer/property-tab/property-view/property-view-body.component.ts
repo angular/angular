@@ -10,8 +10,8 @@ import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {DirectivePosition} from 'protocol';
 
-import {DirectivePropertyResolver, DirectiveTreeData} from '../../property-resolver/directive-property-resolver';
-import {FlatNode} from '../../property-resolver/element-property-resolver';
+import {DirectivePropertyResolver, DirectiveTreeData} from '../../property-resolver/directive-property-resolver.js';
+import {FlatNode} from '../../property-resolver/element-property-resolver.js';
 
 @Component({
   selector: 'ng-property-view-body',

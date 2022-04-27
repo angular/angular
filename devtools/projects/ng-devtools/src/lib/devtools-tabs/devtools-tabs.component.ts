@@ -13,11 +13,11 @@ import {MatTabNav} from '@angular/material/tabs';
 import {Events, MessageBus, Route} from 'protocol';
 import {Subscription} from 'rxjs';
 
-import {ApplicationEnvironment} from '../application-environment/index';
-import {Theme, ThemeService} from '../theme-service';
+import {ApplicationEnvironment} from '../application-environment/index.js';
+import {Theme, ThemeService} from '../theme-service.js';
 
-import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
-import {TabUpdate} from './tab-update/index';
+import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component.js';
+import {TabUpdate} from './tab-update/index.js';
 
 @Component({
   selector: 'ng-devtools-tabs',

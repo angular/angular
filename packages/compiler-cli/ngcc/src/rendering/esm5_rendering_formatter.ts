@@ -9,11 +9,11 @@ import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import ts from 'typescript';
 
-import {ImportManager, translateStatement} from '../../../src/ngtsc/translator';
-import {CompiledClass} from '../analysis/types';
-import {getContainingStatement} from '../host/esm2015_host';
+import {ImportManager, translateStatement} from '../../../src/ngtsc/translator/index.js';
+import {CompiledClass} from '../analysis/types.js';
+import {getContainingStatement} from '../host/esm2015_host.js';
 
-import {EsmRenderingFormatter} from './esm_rendering_formatter';
+import {EsmRenderingFormatter} from './esm_rendering_formatter.js';
 
 /**
  * A RenderingFormatter that works with files that use ECMAScript Module `import` and `export`

@@ -9,15 +9,15 @@
 import {AST, ASTWithSource, BindingPipe, Call, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../file_system';
-import {ClassDeclaration} from '../../reflection';
-import {ComponentScopeKind, ComponentScopeReader} from '../../scope';
-import {isAssignment, isSymbolWithValueDeclaration} from '../../util/src/typescript';
-import {BindingSymbol, DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, Symbol, SymbolKind, TcbLocation, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
+import {AbsoluteFsPath} from '../../file_system/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
+import {ComponentScopeKind, ComponentScopeReader} from '../../scope/index.js';
+import {isAssignment, isSymbolWithValueDeclaration} from '../../util/src/typescript.js';
+import {BindingSymbol, DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, Symbol, SymbolKind, TcbLocation, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api/index.js';
 
-import {ExpressionIdentifier, findAllMatchingNodes, findFirstMatchingNode, hasExpressionIdentifier} from './comments';
-import {TemplateData} from './context';
-import {isAccessExpression} from './ts_util';
+import {ExpressionIdentifier, findAllMatchingNodes, findFirstMatchingNode, hasExpressionIdentifier} from './comments.js';
+import {TemplateData} from './context.js';
+import {isAccessExpression} from './ts_util.js';
 
 /**
  * Generates and caches `Symbol`s for various template structures for a given component.

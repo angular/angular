@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './src/flat.component';
-export * from './src/flat.module';
+export * from './src/flat.component.js';
+export * from './src/flat.module.js';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {supportPatchXHROnProperty} from '../test-util';
+import {supportPatchXHROnProperty} from '../test-util.js';
 
 declare const global: any;
 

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ProviderToken} from '../../di/provider_token';
-import {QueryList} from '../../linker/query_list';
+import {ProviderToken} from '../../di/provider_token.js';
+import {QueryList} from '../../linker/query_list.js';
 
-import {TNode} from './node';
-import {TView} from './view';
+import {TNode} from './node.js';
+import {TView} from './view.js';
 
 /**
  * An object representing query metadata extracted from query annotations.

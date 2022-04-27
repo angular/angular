@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool} from '../../constant_pool';
-import {Interpolation} from '../../expression_parser/ast';
-import * as o from '../../output/output_ast';
-import {ParseSourceSpan} from '../../parse_util';
-import {splitAtColon} from '../../util';
-import * as t from '../r3_ast';
-import {Identifiers as R3} from '../r3_identifiers';
-import {ForwardRefHandling} from '../util';
+import {ConstantPool} from '../../constant_pool.js';
+import {Interpolation} from '../../expression_parser/ast.js';
+import * as o from '../../output/output_ast.js';
+import {ParseSourceSpan} from '../../parse_util.js';
+import {splitAtColon} from '../../util.js';
+import * as t from '../r3_ast.js';
+import {Identifiers as R3} from '../r3_identifiers.js';
+import {ForwardRefHandling} from '../util.js';
 
-import {R3QueryMetadata} from './api';
-import {isI18nAttribute} from './i18n/util';
+import {R3QueryMetadata} from './api.js';
+import {isI18nAttribute} from './i18n/util.js';
 
 
 /**

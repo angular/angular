@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SecurityContext} from '../core';
+import {SecurityContext} from '../core.js';
 
 // =================================================================================================
 // =================================================================================================

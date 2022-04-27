@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as o from '../output/output_ast';
-import {Identifiers as R3} from './r3_identifiers';
-import {R3CompiledExpression, R3Reference} from './util';
-import {DefinitionMap} from './view/util';
+import * as o from '../output/output_ast.js';
+
+import {Identifiers as R3} from './r3_identifiers.js';
+import {R3CompiledExpression, R3Reference} from './util.js';
+import {DefinitionMap} from './view/util.js';
 
 export interface R3InjectorMetadata {
   name: string;

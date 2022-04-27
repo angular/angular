@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, PathSegment, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {EntryPoint} from '../packages/entry_point';
-import {resolveFileWithPostfixes} from '../utils';
+import {AbsoluteFsPath, PathSegment, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {EntryPoint} from '../packages/entry_point.js';
+import {resolveFileWithPostfixes} from '../utils.js';
 
-import {ModuleResolver, ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver';
+import {ModuleResolver, ResolvedDeepImport, ResolvedRelativeModule} from './module_resolver.js';
 
 export interface DependencyHost {
   collectDependencies(

@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Reference} from '../../imports';
-import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from '../../metadata';
-import {ClassDeclaration} from '../../reflection';
+import {Reference} from '../../imports/index.js';
+import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from '../../metadata/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
 
-import {ComponentScopeKind, ComponentScopeReader, ExportScope, RemoteScope, StandaloneScope} from './api';
-import {DtsModuleScopeResolver} from './dependency';
-import {LocalModuleScopeRegistry} from './local';
+import {ComponentScopeKind, ComponentScopeReader, ExportScope, RemoteScope, StandaloneScope} from './api.js';
+import {DtsModuleScopeResolver} from './dependency.js';
+import {LocalModuleScopeRegistry} from './local.js';
 
 /**
  * Computes scopes for standalone components based on their `imports`, expanding imported NgModule

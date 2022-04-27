@@ -9,15 +9,15 @@
 import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output, ViewChild,} from '@angular/core';
 import {ComponentExplorerView, ComponentExplorerViewQuery, DevToolsNode, DirectivePosition, ElementPosition, Events, MessageBus, PropertyQuery, PropertyQueryTypes,} from 'protocol';
 
-import {SplitComponent} from '../../../lib/vendor/angular-split/public_api';
-import {ApplicationOperations} from '../../application-operations/index';
+import {SplitComponent} from '../../../lib/vendor/angular-split/public_api.js';
+import {ApplicationOperations} from '../../application-operations/index.js';
 
-import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
-import {FlatNode} from './directive-forest/component-data-source';
-import {DirectiveForestComponent} from './directive-forest/directive-forest.component';
-import {IndexedNode} from './directive-forest/index-forest';
-import {constructPathOfKeysToPropertyValue} from './property-resolver/directive-property-resolver';
-import {ElementPropertyResolver, FlatNode as PropertyFlatNode} from './property-resolver/element-property-resolver';
+import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component.js';
+import {FlatNode} from './directive-forest/component-data-source/index.js';
+import {DirectiveForestComponent} from './directive-forest/directive-forest.component.js';
+import {IndexedNode} from './directive-forest/index-forest/index.js';
+import {constructPathOfKeysToPropertyValue} from './property-resolver/directive-property-resolver.js';
+import {ElementPropertyResolver, FlatNode as PropertyFlatNode} from './property-resolver/element-property-resolver.js';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {

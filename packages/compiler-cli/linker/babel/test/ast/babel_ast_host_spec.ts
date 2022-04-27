@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {types as t} from '../../src/babel_core';
+import {types as t} from '../../src/babel_core.js';
 import template from '@babel/template';
 import {parse} from '@babel/parser';
-import {BabelAstHost} from '../../src/ast/babel_ast_host';
+import {BabelAstHost} from '../../src/ast/babel_ast_host.js';
 
 describe('BabelAstHost', () => {
   let host: BabelAstHost;

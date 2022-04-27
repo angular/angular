@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵdefineInjectable} from '../di/interface/defs';
-import {SecurityContext} from './security';
+import {ɵɵdefineInjectable} from '../di/interface/defs.js';
+
+import {SecurityContext} from './security.js';
 
 /**
  * Sanitizer is used by the views to sanitize potentially dangerous values.

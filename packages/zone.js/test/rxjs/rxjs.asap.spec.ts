@@ -9,7 +9,7 @@
 import {asapScheduler, of} from 'rxjs';
 import {map, observeOn} from 'rxjs/operators';
 
-import {asyncTest} from '../test-util';
+import {asyncTest} from '../test-util.js';
 
 describe('Scheduler.asap', () => {
   let log: any[];

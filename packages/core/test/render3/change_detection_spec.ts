@@ -9,15 +9,15 @@
 import {NgIf} from '@angular/common';
 import {withBody} from '@angular/private/testing';
 
-import {ChangeDetectionStrategy, DoCheck, OnInit} from '../../src/core';
-import {whenRendered} from '../../src/render3/component';
-import {AttributeMarker, getRenderedText, LifecycleHooksFeature, ɵɵadvance, ɵɵdefineComponent, ɵɵgetCurrentView, ɵɵproperty, ɵɵtextInterpolate1, ɵɵtextInterpolate2} from '../../src/render3/index';
-import {detectChanges, markDirty, tick, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵlistener, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
-import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
-import {FLAGS, LViewFlags} from '../../src/render3/interfaces/view';
+import {ChangeDetectionStrategy, DoCheck, OnInit} from '../../src/core.js';
+import {whenRendered} from '../../src/render3/component.js';
+import {AttributeMarker, getRenderedText, LifecycleHooksFeature, ɵɵadvance, ɵɵdefineComponent, ɵɵgetCurrentView, ɵɵproperty, ɵɵtextInterpolate1, ɵɵtextInterpolate2} from '../../src/render3/index.js';
+import {detectChanges, markDirty, tick, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵlistener, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all.js';
+import {RenderFlags} from '../../src/render3/interfaces/definition.js';
+import {Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer.js';
+import {FLAGS, LViewFlags} from '../../src/render3/interfaces/view.js';
 
-import {containerEl, createComponent, renderComponent, requestAnimationFrame} from './render_util';
+import {containerEl, createComponent, renderComponent, requestAnimationFrame} from './render_util.js';
 
 describe('change detection', () => {
   describe('markDirty, detectChanges, whenRendered, getRenderedText', () => {

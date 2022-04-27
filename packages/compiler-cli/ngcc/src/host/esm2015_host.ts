@@ -8,16 +8,16 @@
 
 import ts from 'typescript';
 
-import {absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationNode, Decorator, EnumMember, Import, isConcreteDeclaration, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference, TypeValueReferenceKind, ValueUnavailableKind} from '../../../src/ngtsc/reflection';
-import {isSymbolWithValueDeclaration, SymbolWithValueDeclaration} from '../../../src/ngtsc/util/src/typescript';
-import {isWithinPackage} from '../analysis/util';
-import {BundleProgram} from '../packages/bundle_program';
-import {getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
+import {absoluteFromSourceFile} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationNode, Decorator, EnumMember, Import, isConcreteDeclaration, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference, TypeValueReferenceKind, ValueUnavailableKind} from '../../../src/ngtsc/reflection/index.js';
+import {isSymbolWithValueDeclaration, SymbolWithValueDeclaration} from '../../../src/ngtsc/util/src/typescript.js';
+import {isWithinPackage} from '../analysis/util.js';
+import {BundleProgram} from '../packages/bundle_program.js';
+import {getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils.js';
 
-import {ClassSymbol, NgccClassSymbol, NgccReflectionHost} from './ngcc_host';
-import {stripParentheses} from './utils';
+import {ClassSymbol, NgccClassSymbol, NgccReflectionHost} from './ngcc_host.js';
+import {stripParentheses} from './utils.js';
 
 export const DECORATORS = 'decorators' as ts.__String;
 export const PROP_DECORATORS = 'propDecorators' as ts.__String;

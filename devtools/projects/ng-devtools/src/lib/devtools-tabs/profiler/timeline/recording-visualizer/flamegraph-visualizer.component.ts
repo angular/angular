@@ -11,11 +11,11 @@ import {Color, RawData} from 'ngx-flamegraph/lib/utils';
 import {ProfilerFrame} from 'protocol';
 import {Subscription} from 'rxjs';
 
-import {Theme, ThemeService} from '../../../../theme-service';
-import {FlamegraphFormatter, FlamegraphNode, ROOT_LEVEL_ELEMENT_LABEL,} from '../record-formatter/flamegraph-formatter/flamegraph-formatter';
+import {Theme, ThemeService} from '../../../../theme-service.js';
+import {FlamegraphFormatter, FlamegraphNode, ROOT_LEVEL_ELEMENT_LABEL,} from '../record-formatter/flamegraph-formatter/flamegraph-formatter.js';
 
-import {formatDirectiveProfile} from './profile-formatter';
-import {SelectedDirective, SelectedEntry} from './timeline-visualizer.component';
+import {formatDirectiveProfile} from './profile-formatter.js';
+import {SelectedDirective, SelectedEntry} from './timeline-visualizer.component.js';
 
 @Component({
   selector: 'ng-flamegraph-visualizer',

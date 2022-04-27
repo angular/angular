@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {patchMethod, patchProperty, patchPrototype, zoneSymbol} from '../../lib/common/utils';
+import {patchMethod, patchProperty, patchPrototype, zoneSymbol} from '../../lib/common/utils.js';
 
 describe('utils', function() {
   describe('patchMethod', () => {

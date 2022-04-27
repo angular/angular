@@ -12,8 +12,8 @@
  * allows tests to be asynchronous by either returning a promise or using a 'done' parameter.
  */
 
-import {resetFakeAsyncZone} from './fake_async';
-import {TestBed} from './test_bed';
+import {resetFakeAsyncZone} from './fake_async.js';
+import {TestBed} from './test_bed.js';
 
 declare var global: any;
 

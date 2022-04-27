@@ -9,13 +9,13 @@
 import {writeFileSync} from 'fs';
 import {join} from 'path';
 
-import {CldrData} from '../cldr-data';
-import {generateBaseCurrencies} from '../locale-base-currencies';
-import {generateLocaleExtra} from '../locale-extra-file';
-import {generateLocale} from '../locale-file';
-import {generateLocaleGlobalFile} from '../locale-global-file';
+import {CldrData} from '../cldr-data.js';
+import {generateBaseCurrencies} from '../locale-base-currencies.js';
+import {generateLocaleExtra} from '../locale-extra-file.js';
+import {generateLocale} from '../locale-file.js';
+import {generateLocaleGlobalFile} from '../locale-global-file.js';
 
-import {BASE_LOCALE} from './base-locale';
+import {BASE_LOCALE} from './base-locale.js';
 
 /**
  * Generates locale files for each available CLDR locale and writes it to the

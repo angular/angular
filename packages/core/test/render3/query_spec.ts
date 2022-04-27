@@ -10,15 +10,15 @@ import {ElementRef, QueryList, TemplateRef, ViewContainerRef} from '@angular/cor
 import {QueryFlags} from '@angular/core/src/render3/interfaces/query';
 import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
 
-import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵProvidersFeature} from '../../src/render3/index';
-import {ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementStart, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
-import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {ɵɵcontentQuery, ɵɵloadQuery, ɵɵqueryRefresh, ɵɵviewQuery} from '../../src/render3/query';
-import {getLView} from '../../src/render3/state';
-import {getNativeByIndex, load} from '../../src/render3/util/view_utils';
-import {ɵɵtemplateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
+import {AttributeMarker, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵProvidersFeature} from '../../src/render3/index.js';
+import {ɵɵdirectiveInject, ɵɵelement, ɵɵelementContainerEnd, ɵɵelementContainerStart, ɵɵelementEnd, ɵɵelementStart, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all.js';
+import {RenderFlags} from '../../src/render3/interfaces/definition.js';
+import {ɵɵcontentQuery, ɵɵloadQuery, ɵɵqueryRefresh, ɵɵviewQuery} from '../../src/render3/query.js';
+import {getLView} from '../../src/render3/state.js';
+import {getNativeByIndex, load} from '../../src/render3/util/view_utils.js';
+import {ɵɵtemplateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound.js';
 
-import {ComponentFixture, createComponent, createDirective, getDirectiveOnNode, renderComponent, TemplateFixture} from './render_util';
+import {ComponentFixture, createComponent, createDirective, getDirectiveOnNode, renderComponent, TemplateFixture} from './render_util.js';
 
 
 

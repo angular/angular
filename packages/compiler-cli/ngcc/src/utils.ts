@@ -7,8 +7,8 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, isRooted, ReadonlyFileSystem} from '../../src/ngtsc/file_system';
-import {DeclarationNode, KnownDeclaration} from '../../src/ngtsc/reflection';
+import {absoluteFrom, AbsoluteFsPath, isRooted, ReadonlyFileSystem} from '../../src/ngtsc/file_system/index.js';
+import {DeclarationNode, KnownDeclaration} from '../../src/ngtsc/reflection/index.js';
 
 /**
  * A list (`Array`) of partially ordered `T` items.

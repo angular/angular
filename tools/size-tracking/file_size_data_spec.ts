@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FileSizeData, omitCommonPathPrefix, sortFileSizeData} from './file_size_data';
+import {FileSizeData, omitCommonPathPrefix, sortFileSizeData} from './file_size_data.js';
 
 describe('file size data', () => {
   it('should be able to properly omit the common path prefix', () => {

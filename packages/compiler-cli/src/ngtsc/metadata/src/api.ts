@@ -9,10 +9,10 @@
 import {DirectiveMeta as T2DirectiveMeta, SchemaMetadata} from '@angular/compiler';
 import ts from 'typescript';
 
-import {Reference} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
+import {Reference} from '../../imports/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
 
-import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
+import {ClassPropertyMapping, ClassPropertyName} from './property_mapping.js';
 
 /**
  * Metadata collected for an `NgModule`.

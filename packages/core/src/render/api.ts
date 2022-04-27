@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../di/injection_token';
-import {isProceduralRenderer} from '../render3/interfaces/renderer';
-import {isLView} from '../render3/interfaces/type_checks';
-import {LView, RENDERER} from '../render3/interfaces/view';
-import {getCurrentTNode, getLView} from '../render3/state';
-import {getComponentLViewByIndex} from '../render3/util/view_utils';
+import {InjectionToken} from '../di/injection_token.js';
+import {isProceduralRenderer} from '../render3/interfaces/renderer.js';
+import {isLView} from '../render3/interfaces/type_checks.js';
+import {LView, RENDERER} from '../render3/interfaces/view.js';
+import {getCurrentTNode, getLView} from '../render3/state.js';
+import {getComponentLViewByIndex} from '../render3/util/view_utils.js';
 
-import {RendererStyleFlags2, RendererType2} from './api_flags';
+import {RendererStyleFlags2, RendererType2} from './api_flags.js';
 
 
 export const Renderer2Interceptor = new InjectionToken<Renderer2[]>('Renderer2Interceptor');

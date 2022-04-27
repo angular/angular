@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {decimalDigest} from '../digest';
-import * as i18n from '../i18n_ast';
+import {decimalDigest} from '../digest.js';
+import * as i18n from '../i18n_ast.js';
 
-import {PlaceholderMapper, Serializer, SimplePlaceholderMapper} from './serializer';
-import * as xml from './xml_helper';
+import {PlaceholderMapper, Serializer, SimplePlaceholderMapper} from './serializer.js';
+import * as xml from './xml_helper.js';
 
 const _MESSAGES_TAG = 'messagebundle';
 const _MESSAGE_TAG = 'msg';

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {initNgDevMode} from './ng_dev_mode';
+import {initNgDevMode} from './ng_dev_mode.js';
 
 /**
  * This file contains reuseable "empty" symbols that can be used as default return values

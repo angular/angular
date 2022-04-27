@@ -8,13 +8,13 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, ReadonlyFileSystem, relative, resolve} from '../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, ReadonlyFileSystem, relative, resolve} from '../src/ngtsc/file_system/index.js';
 
-import {NgCompilerOptions} from './ngtsc/core/api';
-import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
-import * as api from './transformers/api';
-import * as ng from './transformers/entry_points';
-import {createMessageDiagnostic} from './transformers/util';
+import {NgCompilerOptions} from './ngtsc/core/api/index.js';
+import {replaceTsWithNgInErrors} from './ngtsc/diagnostics/index.js';
+import * as api from './transformers/api.js';
+import * as ng from './transformers/entry_points.js';
+import {createMessageDiagnostic} from './transformers/util.js';
 
 const defaultFormatHost: ts.FormatDiagnosticsHost = {
   getCurrentDirectory: () => ts.sys.getCurrentDirectory(),

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '../di/injector';
-import {EnvironmentInjector} from '../di/r3_injector';
-import {Type} from '../interface/type';
+import {Injector} from '../di/injector.js';
+import {EnvironmentInjector} from '../di/r3_injector.js';
+import {Type} from '../interface/type.js';
 
-import {ComponentFactoryResolver} from './component_factory_resolver';
+import {ComponentFactoryResolver} from './component_factory_resolver.js';
 
 
 /**

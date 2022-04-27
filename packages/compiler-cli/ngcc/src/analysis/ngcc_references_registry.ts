@@ -7,10 +7,11 @@
  */
 
 import ts from 'typescript';
-import {ReferencesRegistry} from '../../../src/ngtsc/annotations';
-import {Reference} from '../../../src/ngtsc/imports';
-import {Declaration, DeclarationNode, ReflectionHost} from '../../../src/ngtsc/reflection';
-import {hasNameIdentifier} from '../utils';
+
+import {ReferencesRegistry} from '../../../src/ngtsc/annotations/index.js';
+import {Reference} from '../../../src/ngtsc/imports/index.js';
+import {Declaration, DeclarationNode, ReflectionHost} from '../../../src/ngtsc/reflection/index.js';
+import {hasNameIdentifier} from '../utils.js';
 
 /**
  * This is a place for DecoratorHandlers to register references that they

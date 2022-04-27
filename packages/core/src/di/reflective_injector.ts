@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from './injector';
-import {THROW_IF_NOT_FOUND} from './injector_compatibility';
-import {Provider} from './interface/provider';
-import {Self, SkipSelf} from './metadata';
-import {cyclicDependencyError, instantiationError, noProviderError, outOfBoundsError} from './reflective_errors';
-import {ReflectiveKey} from './reflective_key';
-import {ReflectiveDependency, ResolvedReflectiveFactory, ResolvedReflectiveProvider, resolveReflectiveProviders} from './reflective_provider';
+import {Injector} from './injector.js';
+import {THROW_IF_NOT_FOUND} from './injector_compatibility.js';
+import {Provider} from './interface/provider.js';
+import {Self, SkipSelf} from './metadata.js';
+import {cyclicDependencyError, instantiationError, noProviderError, outOfBoundsError} from './reflective_errors.js';
+import {ReflectiveKey} from './reflective_key.js';
+import {ReflectiveDependency, ResolvedReflectiveFactory, ResolvedReflectiveProvider, resolveReflectiveProviders} from './reflective_provider.js';
 
 
 // Threshold for the dynamic version

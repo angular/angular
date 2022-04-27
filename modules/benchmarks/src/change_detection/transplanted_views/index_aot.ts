@@ -9,8 +9,8 @@
 import {enableProdMode} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
-import {init} from './init';
-import {TransplantedViewsModule} from './transplanted_views';
+import {init} from './init.js';
+import {TransplantedViewsModule} from './transplanted_views.js';
 
 enableProdMode();
 platformBrowser().bootstrapModule(TransplantedViewsModule).then(init);

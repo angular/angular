@@ -12,10 +12,10 @@ import {CompletionKind, DirectiveInScope, SymbolKind, TemplateDeclarationSymbol}
 import {BoundEvent, TextAttribute} from '@angular/compiler/src/render3/r3_ast';
 import ts from 'typescript';
 
-import {addAttributeCompletionEntries, AttributeCompletionKind, buildAnimationCompletionEntries, buildAttributeCompletionTable, getAttributeCompletionSymbol} from './attribute_completions';
-import {DisplayInfo, DisplayInfoKind, getDirectiveDisplayInfo, getSymbolDisplayInfo, getTsSymbolDisplayInfo, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
-import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
-import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
+import {addAttributeCompletionEntries, AttributeCompletionKind, buildAnimationCompletionEntries, buildAttributeCompletionTable, getAttributeCompletionSymbol} from './attribute_completions.js';
+import {DisplayInfo, DisplayInfoKind, getDirectiveDisplayInfo, getSymbolDisplayInfo, getTsSymbolDisplayInfo, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts.js';
+import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target.js';
+import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils.js';
 
 type PropertyExpressionCompletionBuilder =
     CompletionBuilder<PropertyRead|PropertyWrite|EmptyExpr|SafePropertyRead|TmplAstBoundEvent>;

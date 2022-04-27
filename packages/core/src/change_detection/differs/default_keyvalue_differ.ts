@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {isJsObject} from '../../util/iterable';
-import {stringify} from '../../util/stringify';
+import {RuntimeError, RuntimeErrorCode} from '../../errors.js';
+import {isJsObject} from '../../util/iterable.js';
+import {stringify} from '../../util/stringify.js';
 
-import {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory} from './keyvalue_differs';
+import {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory} from './keyvalue_differs.js';
 
 
 export class DefaultKeyValueDifferFactory<K, V> implements KeyValueDifferFactory {

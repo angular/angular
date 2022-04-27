@@ -8,10 +8,10 @@
  */
 import {FileSystem, getFileSystem, PathSegment, relativeFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedMessage} from '@angular/localize/private';
-import {transformSync} from '../../../src/babel_core';
 
-import {makeEs5ExtractPlugin} from '../../../src/extract/source_files/es5_extract_plugin';
-import {runInNativeFileSystem} from '../../helpers';
+import {transformSync} from '../../../src/babel_core.js';
+import {makeEs5ExtractPlugin} from '../../../src/extract/source_files/es5_extract_plugin.js';
+import {runInNativeFileSystem} from '../../helpers/index.js';
 
 runInNativeFileSystem(() => {
   let fs: FileSystem;

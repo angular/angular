@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter} from '../event_emitter';
-import {global} from '../util/global';
-import {noop} from '../util/noop';
-import {getNativeRequestAnimationFrame} from '../util/raf';
+import {EventEmitter} from '../event_emitter.js';
+import {global} from '../util/global.js';
+import {noop} from '../util/noop.js';
+import {getNativeRequestAnimationFrame} from '../util/raf.js';
 
 
 /**

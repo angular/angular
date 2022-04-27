@@ -10,12 +10,12 @@ import {LocationStrategy} from '@angular/common';
 import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges, ɵcoerceToBoolean as coerceToBoolean} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
-import {Event, NavigationEnd} from '../events';
-import {QueryParamsHandling} from '../models';
-import {Router} from '../router';
-import {ActivatedRoute} from '../router_state';
-import {Params} from '../shared';
-import {UrlTree} from '../url_tree';
+import {Event, NavigationEnd} from '../events.js';
+import {QueryParamsHandling} from '../models.js';
+import {Router} from '../router.js';
+import {ActivatedRoute} from '../router_state.js';
+import {Params} from '../shared.js';
+import {UrlTree} from '../url_tree.js';
 
 
 /**

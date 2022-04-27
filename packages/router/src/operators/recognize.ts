@@ -10,10 +10,10 @@ import {Type} from '@angular/core';
 import {MonoTypeOperatorFunction} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 
-import {Route} from '../models';
-import {recognize as recognizeFn} from '../recognize';
-import {NavigationTransition} from '../router';
-import {UrlTree} from '../url_tree';
+import {Route} from '../models.js';
+import {recognize as recognizeFn} from '../recognize.js';
+import {NavigationTransition} from '../router.js';
+import {UrlTree} from '../url_tree.js';
 
 export function recognize(
     rootComponentType: Type<any>|null, config: Route[], serializer: (url: UrlTree) => string,

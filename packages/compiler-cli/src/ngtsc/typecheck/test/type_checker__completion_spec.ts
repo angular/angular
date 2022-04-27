@@ -9,11 +9,11 @@
 import {TmplAstTemplate} from '@angular/compiler';
 import ts from 'typescript';
 
-import {absoluteFrom, getSourceFileOrError} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {getTokenAtPosition} from '../../util/src/typescript';
-import {CompletionKind, GlobalCompletion, TemplateTypeChecker, TypeCheckingConfig} from '../api';
-import {getClass, setup, TypeCheckingTarget} from '../testing';
+import {absoluteFrom, getSourceFileOrError} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {getTokenAtPosition} from '../../util/src/typescript.js';
+import {CompletionKind, GlobalCompletion, TemplateTypeChecker, TypeCheckingConfig} from '../api/index.js';
+import {getClass, setup, TypeCheckingTarget} from '../testing/index.js';
 
 runInEachFileSystem(() => {
   describe('TemplateTypeChecker.getGlobalCompletions()', () => {

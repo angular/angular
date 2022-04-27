@@ -7,15 +7,15 @@
  */
 import ts from 'typescript';
 
-import {AbsoluteFsPath, FileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {DtsProcessing} from '../execution/tasks/api';
-import {PathMappings} from '../path_mappings';
+import {AbsoluteFsPath, FileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {DtsProcessing} from '../execution/tasks/api.js';
+import {PathMappings} from '../path_mappings.js';
 
-import {adjustElementAccessExports} from './adjust_cjs_umd_exports';
-import {BundleProgram, makeBundleProgram} from './bundle_program';
-import {EntryPoint, EntryPointFormat} from './entry_point';
-import {NgccDtsCompilerHost, NgccSourcesCompilerHost} from './ngcc_compiler_host';
-import {EntryPointFileCache, SharedFileCache} from './source_file_cache';
+import {adjustElementAccessExports} from './adjust_cjs_umd_exports.js';
+import {BundleProgram, makeBundleProgram} from './bundle_program.js';
+import {EntryPoint, EntryPointFormat} from './entry_point.js';
+import {NgccDtsCompilerHost, NgccSourcesCompilerHost} from './ngcc_compiler_host.js';
+import {EntryPointFileCache, SharedFileCache} from './source_file_cache.js';
 
 /**
  * A bundle of files and paths (and TS programs) that correspond to a particular

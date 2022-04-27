@@ -9,11 +9,11 @@
 import {DomElementSchemaRegistry, ParseSourceSpan, SchemaMetadata, TmplAstElement} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {TemplateDiagnostic, TemplateId} from '../api';
-import {makeTemplateDiagnostic} from '../diagnostics';
+import {ErrorCode, ngErrorCode} from '../../diagnostics/index.js';
+import {TemplateDiagnostic, TemplateId} from '../api/index.js';
+import {makeTemplateDiagnostic} from '../diagnostics/index.js';
 
-import {TemplateSourceResolver} from './tcb_util';
+import {TemplateSourceResolver} from './tcb_util.js';
 
 const REGISTRY = new DomElementSchemaRegistry();
 const REMOVE_XHTML_REGEX = /^:xhtml:/;

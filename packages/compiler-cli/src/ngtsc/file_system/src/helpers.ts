@@ -7,9 +7,9 @@
  */
 import ts from 'typescript';
 
-import {InvalidFileSystem} from './invalid_file_system';
-import {AbsoluteFsPath, FileSystem, PathSegment, PathString} from './types';
-import {normalizeSeparators} from './util';
+import {InvalidFileSystem} from './invalid_file_system.js';
+import {AbsoluteFsPath, FileSystem, PathSegment, PathString} from './types.js';
+import {normalizeSeparators} from './util.js';
 
 let fs: FileSystem = new InvalidFileSystem();
 export function getFileSystem(): FileSystem {

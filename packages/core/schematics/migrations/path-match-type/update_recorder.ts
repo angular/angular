@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {ImportManagerUpdateRecorder} from '../../utils/import_manager';
+import {ImportManagerUpdateRecorder} from '../../utils/import_manager.js';
 
 /**
  * Update recorder interface that is used to transform source files

@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined, throwError} from '../util/assert';
-import {TNode, TNodeType, toTNodeTypeAsString} from './interfaces/node';
+import {assertDefined, throwError} from '../util/assert.js';
+
+import {TNode, TNodeType, toTNodeTypeAsString} from './interfaces/node.js';
 
 export function assertTNodeType(
     tNode: TNode|null, expectedTypes: TNodeType, message?: string): void {

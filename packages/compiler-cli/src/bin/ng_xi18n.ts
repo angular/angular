@@ -10,8 +10,8 @@
 // Must be imported first, because Angular decorators throw on load.
 import 'reflect-metadata';
 
-import {NodeJSFileSystem, setFileSystem} from '../ngtsc/file_system';
-import {mainXi18n} from '../extract_i18n';
+import {NodeJSFileSystem, setFileSystem} from '../ngtsc/file_system/index.js';
+import {mainXi18n} from '../extract_i18n.js';
 
 process.title = 'Angular i18n Message Extractor (ng-xi18n)';
 const args = process.argv.slice(2);

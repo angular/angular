@@ -5,19 +5,19 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {DependencyResolver} from '../../src/dependencies/dependency_resolver';
-import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
-import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host';
-import {ModuleResolver} from '../../src/dependencies/module_resolver';
-import {TargetedEntryPointFinder} from '../../src/entry_point_finder/targeted_entry_point_finder';
-import {NGCC_VERSION} from '../../src/packages/build_marker';
-import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
-import {EntryPoint, EntryPointPackageJson} from '../../src/packages/entry_point';
-import {PathMappings} from '../../src/path_mappings';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {DependencyResolver} from '../../src/dependencies/dependency_resolver.js';
+import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host.js';
+import {EsmDependencyHost} from '../../src/dependencies/esm_dependency_host.js';
+import {ModuleResolver} from '../../src/dependencies/module_resolver.js';
+import {TargetedEntryPointFinder} from '../../src/entry_point_finder/targeted_entry_point_finder.js';
+import {NGCC_VERSION} from '../../src/packages/build_marker.js';
+import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration.js';
+import {EntryPoint, EntryPointPackageJson} from '../../src/packages/entry_point.js';
+import {PathMappings} from '../../src/path_mappings.js';
 
 runInEachFileSystem(() => {
   describe('TargetedEntryPointFinder', () => {

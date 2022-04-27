@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compareFileSizeData} from './file_size_compare';
+import {compareFileSizeData} from './file_size_compare.js';
 
 describe('file size compare', () => {
   it('should report if size entry differ by more than the specified max percentage diff', () => {

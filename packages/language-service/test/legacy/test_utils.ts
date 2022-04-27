@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockService} from './mock_host';
+import {MockService} from './mock_host.js';
 
 export interface HumanizedDefinitionInfo {
   fileName: string;

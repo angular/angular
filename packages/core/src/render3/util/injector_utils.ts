@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertGreaterThan, assertNotEqual, assertNumber} from '../../util/assert';
-import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from '../interfaces/injector';
-import {DECLARATION_VIEW, HEADER_OFFSET, LView} from '../interfaces/view';
+import {assertGreaterThan, assertNotEqual, assertNumber} from '../../util/assert.js';
+import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from '../interfaces/injector.js';
+import {DECLARATION_VIEW, HEADER_OFFSET, LView} from '../interfaces/view.js';
 
 
 /// Parent Injector Utils ///////////////////////////////////////////////////////////////

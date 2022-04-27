@@ -7,7 +7,7 @@
  */
 import {runfiles} from '@bazel/runfiles';
 
-import {AbsoluteFsPath, NodeJSFileSystem, PathSegment, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, NodeJSFileSystem, PathSegment, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
 
 export const fs = new NodeJSFileSystem();
 

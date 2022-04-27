@@ -10,11 +10,11 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angula
 import {ProfilerFrame} from 'protocol';
 import {Subscription} from 'rxjs';
 
-import {Theme, ThemeService} from '../../../../theme-service';
-import {BarGraphFormatter, BargraphNode} from '../record-formatter/bargraph-formatter/index';
+import {Theme, ThemeService} from '../../../../theme-service.js';
+import {BarGraphFormatter, BargraphNode} from '../record-formatter/bargraph-formatter/index.js';
 
-import {formatDirectiveProfile} from './profile-formatter';
-import {SelectedDirective, SelectedEntry} from './timeline-visualizer.component';
+import {formatDirectiveProfile} from './profile-formatter.js';
+import {SelectedDirective, SelectedEntry} from './timeline-visualizer.component.js';
 
 @Component({
   selector: 'ng-bargraph-visualizer',

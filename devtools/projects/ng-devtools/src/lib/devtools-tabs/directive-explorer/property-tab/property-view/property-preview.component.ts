@@ -9,7 +9,7 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {PropType} from 'protocol';
 
-import {FlatNode} from '../../property-resolver/element-property-resolver';
+import {FlatNode} from '../../property-resolver/element-property-resolver.js';
 
 @Component({
   selector: 'ng-property-preview',

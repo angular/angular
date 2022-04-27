@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {assertEqual, assertIndexInRange} from '../../util/assert';
-import {TElementNode, TNodeType} from '../interfaces/node';
-import {HEADER_OFFSET, RENDERER, T_HOST} from '../interfaces/view';
-import {appendChild, createTextNode} from '../node_manipulation';
-import {getBindingIndex, getLView, getTView, setCurrentTNode} from '../state';
+import {assertEqual, assertIndexInRange} from '../../util/assert.js';
+import {TElementNode, TNodeType} from '../interfaces/node.js';
+import {HEADER_OFFSET, RENDERER, T_HOST} from '../interfaces/view.js';
+import {appendChild, createTextNode} from '../node_manipulation.js';
+import {getBindingIndex, getLView, getTView, setCurrentTNode} from '../state.js';
 
-import {getOrCreateTNode} from './shared';
+import {getOrCreateTNode} from './shared.js';
 
 
 

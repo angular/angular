@@ -7,7 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReferenceGraph} from '../src/reference_graph';
+import {ReferenceGraph} from '../src/reference_graph.js';
 
 describe('entry_point reference graph', () => {
   let graph: ReferenceGraph<string>;

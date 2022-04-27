@@ -3,9 +3,9 @@ import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, El
 import {Observable, Subject, Subscriber} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 
-import {IArea, IAreaSnapshot, IOutputAreaSizes, IOutputData, IPoint, ISplitSnapshot} from './interface';
-import {SplitAreaDirective} from './splitArea.directive';
-import {getAreaMaxSize, getAreaMinSize, getElementPixelSize, getGutterSideAbsorptionCapacity, getInputBoolean, getInputPositiveNumber, getPointFromEvent, isUserSizesValid, updateAreaSize,} from './utils';
+import {IArea, IAreaSnapshot, IOutputAreaSizes, IOutputData, IPoint, ISplitSnapshot} from './interface.js';
+import {SplitAreaDirective} from './splitArea.directive.js';
+import {getAreaMaxSize, getAreaMinSize, getElementPixelSize, getGutterSideAbsorptionCapacity, getInputBoolean, getInputPositiveNumber, getPointFromEvent, isUserSizesValid, updateAreaSize,} from './utils.js';
 
 /**
  * angular-split

@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom, getSourceFileOrError} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {NOOP_PERF_RECORDER} from '../../perf';
-import {makeProgram} from '../../testing';
-import {TraitCompiler} from '../../transform';
-import {IncrementalCompilation} from '../src/incremental';
+import {absoluteFrom, getSourceFileOrError} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {NOOP_PERF_RECORDER} from '../../perf/index.js';
+import {makeProgram} from '../../testing/index.js';
+import {TraitCompiler} from '../../transform/index.js';
+import {IncrementalCompilation} from '../src/incremental.js';
 
 runInEachFileSystem(() => {
   describe('incremental reconciliation', () => {

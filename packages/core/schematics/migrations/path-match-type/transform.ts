@@ -8,10 +8,10 @@
 
 import ts from 'typescript';
 
-import {ImportManager} from '../../utils/import_manager';
+import {ImportManager} from '../../utils/import_manager.js';
 
-import {UpdateRecorder} from './update_recorder';
-import {findExpressionsToMigrate} from './util';
+import {UpdateRecorder} from './update_recorder.js';
+import {findExpressionsToMigrate} from './util.js';
 
 
 export class PathMatchTypeTransform {

@@ -2,7 +2,7 @@ import {Injector, NgModule} from '@angular/core';
 import {createCustomElement} from '@angular/elements';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {HelloWorldComponent, HelloWorldOnpushComponent, HelloWorldShadowComponent, TestCardComponent} from './elements';
+import {HelloWorldComponent, HelloWorldOnpushComponent, HelloWorldShadowComponent, TestCardComponent} from './elements.js';
 
 
 @NgModule({

@@ -7,32 +7,32 @@
  */
 import ts from 'typescript';
 
-import {ParsedConfiguration} from '../../..';
-import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
-import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
-import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../analysis/module_with_providers_analyzer';
-import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
-import {ExportInfo, PrivateDeclarationsAnalyzer} from '../analysis/private_declarations_analyzer';
-import {CompiledFile} from '../analysis/types';
-import {DtsProcessing} from '../execution/tasks/api';
-import {CommonJsReflectionHost} from '../host/commonjs_host';
-import {DelegatingReflectionHost} from '../host/delegating_host';
-import {Esm2015ReflectionHost} from '../host/esm2015_host';
-import {Esm5ReflectionHost} from '../host/esm5_host';
-import {NgccReflectionHost} from '../host/ngcc_host';
-import {UmdReflectionHost} from '../host/umd_host';
-import {CommonJsRenderingFormatter} from '../rendering/commonjs_rendering_formatter';
-import {DtsRenderer} from '../rendering/dts_renderer';
-import {Esm5RenderingFormatter} from '../rendering/esm5_rendering_formatter';
-import {EsmRenderingFormatter} from '../rendering/esm_rendering_formatter';
-import {Renderer} from '../rendering/renderer';
-import {RenderingFormatter} from '../rendering/rendering_formatter';
-import {UmdRenderingFormatter} from '../rendering/umd_rendering_formatter';
-import {FileToWrite} from '../rendering/utils';
+import {ParsedConfiguration} from '../../../index.js';
+import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {TypeScriptReflectionHost} from '../../../src/ngtsc/reflection/index.js';
+import {DecorationAnalyzer} from '../analysis/decoration_analyzer.js';
+import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../analysis/module_with_providers_analyzer.js';
+import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry.js';
+import {ExportInfo, PrivateDeclarationsAnalyzer} from '../analysis/private_declarations_analyzer.js';
+import {CompiledFile} from '../analysis/types.js';
+import {DtsProcessing} from '../execution/tasks/api.js';
+import {CommonJsReflectionHost} from '../host/commonjs_host.js';
+import {DelegatingReflectionHost} from '../host/delegating_host.js';
+import {Esm2015ReflectionHost} from '../host/esm2015_host.js';
+import {Esm5ReflectionHost} from '../host/esm5_host.js';
+import {NgccReflectionHost} from '../host/ngcc_host.js';
+import {UmdReflectionHost} from '../host/umd_host.js';
+import {CommonJsRenderingFormatter} from '../rendering/commonjs_rendering_formatter.js';
+import {DtsRenderer} from '../rendering/dts_renderer.js';
+import {Esm5RenderingFormatter} from '../rendering/esm5_rendering_formatter.js';
+import {EsmRenderingFormatter} from '../rendering/esm_rendering_formatter.js';
+import {Renderer} from '../rendering/renderer.js';
+import {RenderingFormatter} from '../rendering/rendering_formatter.js';
+import {UmdRenderingFormatter} from '../rendering/umd_rendering_formatter.js';
+import {FileToWrite} from '../rendering/utils.js';
 
-import {EntryPointBundle} from './entry_point_bundle';
+import {EntryPointBundle} from './entry_point_bundle.js';
 
 export type TransformResult = {
   success: true; diagnostics: ts.Diagnostic[]; transformedFiles: FileToWrite[];

@@ -9,8 +9,8 @@
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 
-import {FlatNode} from '../../property-resolver/element-property-resolver';
-import {PropertyDataSource} from '../../property-resolver/property-data-source';
+import {FlatNode} from '../../property-resolver/element-property-resolver.js';
+import {PropertyDataSource} from '../../property-resolver/property-data-source.js';
 
 @Component({
   selector: 'ng-property-view-tree',

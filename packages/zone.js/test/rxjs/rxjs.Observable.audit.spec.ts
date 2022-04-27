@@ -8,7 +8,7 @@
 import {interval, Observable} from 'rxjs';
 import {audit, auditTime} from 'rxjs/operators';
 
-import {asyncTest} from '../test-util';
+import {asyncTest} from '../test-util.js';
 
 xdescribe('Observable.audit', () => {
   let log: any[];

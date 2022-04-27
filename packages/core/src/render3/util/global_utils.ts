@@ -5,11 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {assertDefined} from '../../util/assert';
-import {global} from '../../util/global';
-import {setProfiler} from '../profiler';
-import {applyChanges} from './change_detection_utils';
-import {getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils';
+import {assertDefined} from '../../util/assert.js';
+import {global} from '../../util/global.js';
+import {setProfiler} from '../profiler.js';
+
+import {applyChanges} from './change_detection_utils.js';
+import {getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils.js';
 
 
 

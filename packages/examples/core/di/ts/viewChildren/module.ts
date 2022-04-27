@@ -9,7 +9,7 @@
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {Pane, ViewChildrenComp} from './view_children_example';
+import {Pane, ViewChildrenComp} from './view_children_example.js';
 
 @NgModule({
   imports: [BrowserModule],

@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from '../interface/lifecycle_hooks';
-import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
-import {assertFirstCreatePass} from './assert';
-import {NgOnChangesFeatureImpl} from './features/ng_onchanges_feature';
-import {DirectiveDef} from './interfaces/definition';
-import {TNode} from './interfaces/node';
-import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
-import {profiler, ProfilerEvent} from './profiler';
-import {isInCheckNoChangesMode} from './state';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from '../interface/lifecycle_hooks.js';
+import {assertDefined, assertEqual, assertNotEqual} from '../util/assert.js';
+
+import {assertFirstCreatePass} from './assert.js';
+import {NgOnChangesFeatureImpl} from './features/ng_onchanges_feature.js';
+import {DirectiveDef} from './interfaces/definition.js';
+import {TNode} from './interfaces/node.js';
+import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view.js';
+import {profiler, ProfilerEvent} from './profiler.js';
+import {isInCheckNoChangesMode} from './state.js';
 
 
 

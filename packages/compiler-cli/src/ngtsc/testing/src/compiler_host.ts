@@ -7,8 +7,10 @@
  */
 
 import ts from 'typescript';
-import {NgtscCompilerHost} from '../../file_system';
-import {getCachedSourceFile} from './cached_source_files';
+
+import {NgtscCompilerHost} from '../../file_system/index.js';
+
+import {getCachedSourceFile} from './cached_source_files.js';
 
 /**
  * A compiler host intended to improve test performance by caching default library source files for

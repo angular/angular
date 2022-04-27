@@ -7,16 +7,16 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {DeclarationNode} from '../../../src/ngtsc/reflection';
-import {getDeclaration, isNamedDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
-import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer';
-import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {BundleProgram} from '../../src/packages/bundle_program';
-import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
+import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {DeclarationNode} from '../../../src/ngtsc/reflection/index.js';
+import {getDeclaration, isNamedDeclaration, loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../../src/analysis/module_with_providers_analyzer.js';
+import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry.js';
+import {Esm2015ReflectionHost} from '../../src/host/esm2015_host.js';
+import {BundleProgram} from '../../src/packages/bundle_program.js';
+import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils.js';
 
 runInEachFileSystem(() => {
   describe('ModuleWithProvidersAnalyzer', () => {

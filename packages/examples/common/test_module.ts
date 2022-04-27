@@ -9,11 +9,11 @@
 import {Component, NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
-import * as locationExample from './location/ts/module';
-import * as ngComponentOutletExample from './ngComponentOutlet/ts/module';
-import * as ngIfExample from './ngIf/ts/module';
-import * as ngTemplateOutletExample from './ngTemplateOutlet/ts/module';
-import * as pipesExample from './pipes/ts/module';
+import * as locationExample from './location/ts/module.js';
+import * as ngComponentOutletExample from './ngComponentOutlet/ts/module.js';
+import * as ngIfExample from './ngIf/ts/module.js';
+import * as ngTemplateOutletExample from './ngTemplateOutlet/ts/module.js';
+import * as pipesExample from './pipes/ts/module.js';
 
 @Component({selector: 'example-app', template: '<router-outlet></router-outlet>'})
 export class TestsAppComponent {

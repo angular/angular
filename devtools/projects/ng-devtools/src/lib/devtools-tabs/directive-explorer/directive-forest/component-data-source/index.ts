@@ -14,8 +14,8 @@ import {DevToolsNode} from 'protocol';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {diff} from '../../../diffing';
-import {IndexedNode, indexForest} from '../index-forest';
+import {diff} from '../../../diffing/index.js';
+import {IndexedNode, indexForest} from '../index-forest/index.js';
 
 /** Flat node with expandable and level information */
 export interface FlatNode {

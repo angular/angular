@@ -5,14 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {newArray} from '../../util/array_utils';
-import {TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
-import {ProjectionSlots} from '../interfaces/projection';
-import {DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, T_HOST} from '../interfaces/view';
-import {applyProjection} from '../node_manipulation';
-import {getProjectAsAttrValue, isNodeMatchingSelectorList, isSelectorInSelectorList} from '../node_selector_matcher';
-import {getLView, getTView, setCurrentTNodeAsNotParent} from '../state';
-import {getOrCreateTNode} from './shared';
+import {newArray} from '../../util/array_utils.js';
+import {TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node.js';
+import {ProjectionSlots} from '../interfaces/projection.js';
+import {DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, T_HOST} from '../interfaces/view.js';
+import {applyProjection} from '../node_manipulation.js';
+import {getProjectAsAttrValue, isNodeMatchingSelectorList, isSelectorInSelectorList} from '../node_selector_matcher.js';
+import {getLView, getTView, setCurrentTNodeAsNotParent} from '../state.js';
+
+import {getOrCreateTNode} from './shared.js';
 
 
 

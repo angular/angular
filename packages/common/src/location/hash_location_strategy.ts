@@ -8,9 +8,9 @@
 
 import {Inject, Injectable, OnDestroy, Optional} from '@angular/core';
 
-import {APP_BASE_HREF, LocationStrategy} from './location_strategy';
-import {LocationChangeListener, PlatformLocation} from './platform_location';
-import {joinWithSlash, normalizeQueryParams} from './util';
+import {APP_BASE_HREF, LocationStrategy} from './location_strategy.js';
+import {LocationChangeListener, PlatformLocation} from './platform_location.js';
+import {joinWithSlash, normalizeQueryParams} from './util.js';
 
 
 

@@ -9,7 +9,7 @@
 import {ParseSourceSpan} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ExternalTemplateSourceMapping, TemplateDiagnostic, TemplateId, TemplateSourceMapping} from '../../api';
+import {ExternalTemplateSourceMapping, TemplateDiagnostic, TemplateId, TemplateSourceMapping} from '../../api/index.js';
 
 /**
  * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.

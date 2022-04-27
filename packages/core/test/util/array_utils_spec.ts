@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {arrayIndexOfSorted, arrayInsert, arrayInsert2, arrayInsertSorted, arrayRemoveSorted, arraySplice, flatten, KeyValueArray, keyValueArrayDelete, keyValueArrayGet, keyValueArrayIndexOf, keyValueArraySet} from '../../src/util/array_utils';
+import {arrayIndexOfSorted, arrayInsert, arrayInsert2, arrayInsertSorted, arrayRemoveSorted, arraySplice, flatten, KeyValueArray, keyValueArrayDelete, keyValueArrayGet, keyValueArrayIndexOf, keyValueArraySet} from '../../src/util/array_utils.js';
 
 describe('array_utils', () => {
   describe('flatten', () => {

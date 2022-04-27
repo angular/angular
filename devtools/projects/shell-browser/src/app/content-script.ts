@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChromeMessageBus} from './chrome-message-bus';
-import {SamePageMessageBus} from './same-page-message-bus';
+import {ChromeMessageBus} from './chrome-message-bus.js';
+import {SamePageMessageBus} from './same-page-message-bus.js';
 
 export const main = () => {
   let backgroundDisconnected = false;

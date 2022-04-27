@@ -9,7 +9,8 @@
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
-import {SimpleNgModelComp} from './simple_ng_model_example';
+
+import {SimpleNgModelComp} from './simple_ng_model_example.js';
 
 @NgModule({
   imports: [BrowserModule, FormsModule],

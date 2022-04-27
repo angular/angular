@@ -9,12 +9,12 @@
 import {Type} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ImportRewriter} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
-import {ImportManager, translateType} from '../../translator';
+import {ImportRewriter} from '../../imports/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
+import {ImportManager, translateType} from '../../translator/index.js';
 
-import {DtsTransform} from './api';
-import {addImports} from './utils';
+import {DtsTransform} from './api.js';
+import {addImports} from './utils.js';
 
 /**
  * Keeps track of `DtsTransform`s per source file, so that it is known which source files need to

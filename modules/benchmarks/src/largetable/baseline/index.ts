@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bindAction, profile} from '../../util';
-import {buildTable, emptyTable, initTableUtils} from '../util';
+import {bindAction, profile} from '../../util.js';
+import {buildTable, emptyTable, initTableUtils} from '../util.js';
 
-import {TableComponent} from './table';
+import {TableComponent} from './table.js';
 
 let table: TableComponent;
 

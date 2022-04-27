@@ -5,10 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {bindingUpdated} from '../bindings';
-import {SanitizerFn} from '../interfaces/sanitization';
-import {getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
-import {elementAttributeInternal, storePropertyBindingMetadata} from './shared';
+import {bindingUpdated} from '../bindings.js';
+import {SanitizerFn} from '../interfaces/sanitization.js';
+import {getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state.js';
+
+import {elementAttributeInternal, storePropertyBindingMetadata} from './shared.js';
 
 
 

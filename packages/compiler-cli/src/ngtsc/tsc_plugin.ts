@@ -8,14 +8,14 @@
 
 import ts from 'typescript';
 
-import {CompilationTicket, freshCompilationTicket, incrementalFromStateTicket, NgCompiler, NgCompilerHost} from './core';
-import {NgCompilerOptions, UnifiedModulesHost} from './core/api';
-import {AbsoluteFsPath, NodeJSFileSystem, resolve, setFileSystem} from './file_system';
-import {PatchedProgramIncrementalBuildStrategy} from './incremental';
-import {ActivePerfRecorder, PerfPhase} from './perf';
-import {TsCreateProgramDriver} from './program_driver';
-import {untagAllTsFiles} from './shims';
-import {OptimizeFor} from './typecheck/api';
+import {NgCompilerOptions, UnifiedModulesHost} from './core/api/index.js';
+import {CompilationTicket, freshCompilationTicket, incrementalFromStateTicket, NgCompiler, NgCompilerHost} from './core/index.js';
+import {AbsoluteFsPath, NodeJSFileSystem, resolve, setFileSystem} from './file_system/index.js';
+import {PatchedProgramIncrementalBuildStrategy} from './incremental/index.js';
+import {ActivePerfRecorder, PerfPhase} from './perf/index.js';
+import {TsCreateProgramDriver} from './program_driver/index.js';
+import {untagAllTsFiles} from './shims/index.js';
+import {OptimizeFor} from './typecheck/api/index.js';
 
 // The following is needed to fix a the chicken-and-egg issue where the sync (into g3) script will
 // refuse to accept this file unless the following string appears:

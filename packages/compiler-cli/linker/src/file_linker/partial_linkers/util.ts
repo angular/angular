@@ -7,8 +7,8 @@
  */
 import {createMayBeForwardRefExpression, ForwardRefHandling, MaybeForwardRefExpression, outputAst as o, R3DeclareDependencyMetadata, R3DependencyMetadata, R3Reference} from '@angular/compiler';
 
-import {AstObject, AstValue} from '../../ast/ast_value';
-import {FatalLinkerError} from '../../fatal_linker_error';
+import {AstObject, AstValue} from '../../ast/ast_value.js';
+import {FatalLinkerError} from '../../fatal_linker_error.js';
 
 export function wrapReference<TExpression>(wrapped: o.WrappedNodeExpr<TExpression>): R3Reference {
   return {value: wrapped, type: wrapped};

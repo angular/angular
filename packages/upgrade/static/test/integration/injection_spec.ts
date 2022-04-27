@@ -11,12 +11,12 @@ import {waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import * as angular from '../../../src/common/src/angular1';
-import {$INJECTOR, INJECTOR_KEY} from '../../../src/common/src/constants';
-import {html, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
-import {downgradeInjectable, getAngularJSGlobal, setAngularJSGlobal, UpgradeModule} from '../../index';
+import * as angular from '../../../src/common/src/angular1.js';
+import {$INJECTOR, INJECTOR_KEY} from '../../../src/common/src/constants.js';
+import {html, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers.js';
+import {downgradeInjectable, getAngularJSGlobal, setAngularJSGlobal, UpgradeModule} from '../../index.js';
 
-import {bootstrap} from './static_test_helpers';
+import {bootstrap} from './static_test_helpers.js';
 
 withEachNg1Version(() => {
   describe('injection', () => {

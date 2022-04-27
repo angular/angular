@@ -8,8 +8,8 @@
 
 import {createNgModuleRef} from '@angular/core';
 
-import {BasicComp} from './basic';
-import {MainModule} from './module';
+import {BasicComp} from './basic.js';
+import {MainModule} from './module.js';
 
 const ngModuleRef = createNgModuleRef(MainModule);
 ngModuleRef.instance.appRef.bootstrap(BasicComp);

@@ -10,8 +10,8 @@ import {HttpBackend, HttpEvent, HttpEventType, HttpRequest} from '@angular/commo
 import {Injectable} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
-import {HttpTestingController, RequestMatch} from './api';
-import {TestRequest} from './request';
+import {HttpTestingController, RequestMatch} from './api.js';
+import {TestRequest} from './request.js';
 
 
 /**

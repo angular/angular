@@ -9,10 +9,10 @@
 import {Rule, SchematicsException, Tree, UpdateRecorder} from '@angular-devkit/schematics';
 import {relative} from 'path';
 
-import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
+import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths.js';
+import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host.js';
 
-import {migrateFile} from './util';
+import {migrateFile} from './util.js';
 
 export default function(): Rule {
   return async (tree: Tree) => {

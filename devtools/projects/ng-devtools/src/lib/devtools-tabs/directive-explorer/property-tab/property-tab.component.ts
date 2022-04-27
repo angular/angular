@@ -9,8 +9,8 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {DirectivePosition} from 'protocol';
 
-import {IndexedNode} from '../directive-forest/index-forest';
-import {FlatNode} from '../property-resolver/element-property-resolver';
+import {IndexedNode} from '../directive-forest/index-forest/index.js';
+import {FlatNode} from '../property-resolver/element-property-resolver.js';
 
 @Component({
   templateUrl: './property-tab.component.html',

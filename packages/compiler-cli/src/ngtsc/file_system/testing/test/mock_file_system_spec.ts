@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getFileSystem} from '../../src/helpers';
-import {FileSystem} from '../../src/types';
-import {runInEachFileSystem} from '../src/test_helper';
+import {getFileSystem} from '../../src/helpers.js';
+import {FileSystem} from '../../src/types.js';
+import {runInEachFileSystem} from '../src/test_helper.js';
 
 runInEachFileSystem(() => {
   describe('MockFileSystem', () => {

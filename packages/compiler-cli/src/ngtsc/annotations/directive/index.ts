@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {DirectiveDecoratorHandler} from './src/handler';
-export {DirectiveSymbol} from './src/symbol';
-export * from './src/shared';
+export {DirectiveDecoratorHandler} from './src/handler.js';
+export {DirectiveSymbol} from './src/symbol.js';
+export * from './src/shared.js';

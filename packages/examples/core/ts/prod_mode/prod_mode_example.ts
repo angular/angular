@@ -10,7 +10,7 @@ import {enableProdMode, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import {MyComponent} from './my_component';
+import {MyComponent} from './my_component.js';
 
 enableProdMode();
 

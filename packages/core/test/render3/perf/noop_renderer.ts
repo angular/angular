@@ -7,7 +7,7 @@
  */
 import {RComment, RElement, RNode, RText} from '@angular/core/src/render3/interfaces/renderer_dom';
 
-import {ProceduralRenderer3, Renderer3, RendererFactory3, RendererStyleFlags3} from '../../../src/render3/interfaces/renderer';
+import {ProceduralRenderer3, Renderer3, RendererFactory3, RendererStyleFlags3} from '../../../src/render3/interfaces/renderer.js';
 
 export class MicroBenchmarkRenderNode implements RNode, RComment, RText {
   tagName?: string;

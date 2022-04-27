@@ -7,13 +7,13 @@
  */
 import {BoundTarget, ParseSourceFile} from '@angular/compiler';
 
-import {runInEachFileSystem} from '../../file_system/testing';
-import {ClassDeclaration} from '../../reflection';
-import {ComponentMeta, IndexingContext} from '../src/context';
-import {getTemplateIdentifiers} from '../src/template';
-import {generateAnalysis} from '../src/transform';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
+import {ComponentMeta, IndexingContext} from '../src/context.js';
+import {getTemplateIdentifiers} from '../src/template.js';
+import {generateAnalysis} from '../src/transform.js';
 
-import * as util from './util';
+import * as util from './util.js';
 
 /**
  * Adds information about a component to a context.

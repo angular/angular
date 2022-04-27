@@ -9,7 +9,7 @@
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {Events, MessageBus, PriorityAwareMessageBus} from 'protocol';
 
-import {IFrameMessageBus} from '../../iframe-message-bus';
+import {IFrameMessageBus} from '../../iframe-message-bus.js';
 
 @Component({
   templateUrl: './devtools-app.component.html',

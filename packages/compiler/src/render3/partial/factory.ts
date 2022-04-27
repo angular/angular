@@ -5,14 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as o from '../../output/output_ast';
-import {createFactoryType, FactoryTarget, R3FactoryMetadata} from '../r3_factory';
-import {Identifiers as R3} from '../r3_identifiers';
-import {R3CompiledExpression} from '../util';
-import {DefinitionMap} from '../view/util';
+import * as o from '../../output/output_ast.js';
+import {createFactoryType, FactoryTarget, R3FactoryMetadata} from '../r3_factory.js';
+import {Identifiers as R3} from '../r3_identifiers.js';
+import {R3CompiledExpression} from '../util.js';
+import {DefinitionMap} from '../view/util.js';
 
-import {R3DeclareFactoryMetadata} from './api';
-import {compileDependencies} from './util';
+import {R3DeclareFactoryMetadata} from './api.js';
+import {compileDependencies} from './util.js';
 
 /**
  * Every time we make a breaking change to the declaration interface or partial-linker behavior, we

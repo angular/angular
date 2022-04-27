@@ -7,10 +7,10 @@
  */
 
 
-import {Type} from '../interface/type';
-import {NgModuleType} from '../metadata/ng_module_def';
-import {getNgModuleDef} from '../render3/definition';
-import {stringify} from '../util/stringify';
+import {Type} from '../interface/type.js';
+import {NgModuleType} from '../metadata/ng_module_def.js';
+import {getNgModuleDef} from '../render3/definition.js';
+import {stringify} from '../util/stringify.js';
 
 /**
  * Map of module-id to the corresponding NgModule.

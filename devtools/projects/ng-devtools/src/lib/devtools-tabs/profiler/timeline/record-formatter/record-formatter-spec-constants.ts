@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FlamegraphNode} from './flamegraph-formatter';
+import {FlamegraphNode} from './flamegraph-formatter/index.js';
 
 export const SIMPLE_RECORD = [
   {

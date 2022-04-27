@@ -10,9 +10,9 @@ import {ApplicationRef, NgModuleFactory, NgModuleRef, PlatformRef, StaticProvide
 import {ɵTRANSITION_ID} from '@angular/platform-browser';
 import {first} from 'rxjs/operators';
 
-import {PlatformState} from './platform_state';
-import {platformDynamicServer, platformServer} from './server';
-import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
+import {PlatformState} from './platform_state.js';
+import {platformDynamicServer, platformServer} from './server.js';
+import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens.js';
 
 interface PlatformOptions {
   document?: string;

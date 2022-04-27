@@ -8,12 +8,12 @@
 
 import ts from 'typescript';
 
-import {Reference, ReferenceEmitter} from '../../imports';
-import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, LocalMetadataRegistry, MetadataRegistry, MetaKind, PipeMeta} from '../../metadata';
-import {ClassDeclaration} from '../../reflection';
-import {LocalModuleScope, ScopeData} from '../src/api';
-import {DtsModuleScopeResolver} from '../src/dependency';
-import {LocalModuleScopeRegistry} from '../src/local';
+import {Reference, ReferenceEmitter} from '../../imports/index.js';
+import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, LocalMetadataRegistry, MetadataRegistry, MetaKind, PipeMeta} from '../../metadata/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
+import {LocalModuleScope, ScopeData} from '../src/api.js';
+import {DtsModuleScopeResolver} from '../src/dependency.js';
+import {LocalModuleScopeRegistry} from '../src/local.js';
 
 function registerFakeRefs(registry: MetadataRegistry):
     {[name: string]: Reference<ClassDeclaration>} {

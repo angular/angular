@@ -12,8 +12,8 @@ import {DOCUMENT} from '@angular/common';
 import {ANIMATION_MODULE_TYPE, Inject, Injectable, InjectionToken, NgZone, OnDestroy, Provider, RendererFactory2} from '@angular/core';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 
-import {BrowserAnimationBuilder} from './animation_builder';
-import {AnimationRendererFactory} from './animation_renderer';
+import {BrowserAnimationBuilder} from './animation_builder.js';
+import {AnimationRendererFactory} from './animation_renderer.js';
 
 @Injectable()
 export class InjectableAnimationEngine extends AnimationEngine implements OnDestroy {

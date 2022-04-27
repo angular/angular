@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵɵproperty} from '../../../../src/render3/instructions/all';
-import {ɵɵelement} from '../../../../src/render3/instructions/element';
-import {ɵɵclassMap, ɵɵclassProp} from '../../../../src/render3/instructions/styling';
-import {ComponentTemplate, RenderFlags} from '../../../../src/render3/interfaces/definition';
-import {AttributeMarker, TAttributes} from '../../../../src/render3/interfaces/node';
-import {Benchmark, createBenchmark} from '../micro_bench';
-import {setupTestHarness} from '../setup';
+import {ɵɵproperty} from '../../../../src/render3/instructions/all.js';
+import {ɵɵelement} from '../../../../src/render3/instructions/element.js';
+import {ɵɵclassMap, ɵɵclassProp} from '../../../../src/render3/instructions/styling.js';
+import {ComponentTemplate, RenderFlags} from '../../../../src/render3/interfaces/definition.js';
+import {AttributeMarker, TAttributes} from '../../../../src/render3/interfaces/node.js';
+import {Benchmark, createBenchmark} from '../micro_bench.js';
+import {setupTestHarness} from '../setup.js';
 
 const PROFILE_CREATE = true;
 const PROFILE_UPDATE = true;

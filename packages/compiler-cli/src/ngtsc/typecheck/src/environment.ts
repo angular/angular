@@ -9,15 +9,15 @@
 import {ExpressionType, ExternalExpr, Type, TypeModifier} from '@angular/compiler';
 import ts from 'typescript';
 
-import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitKind, ReferenceEmitter} from '../../imports';
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
-import {ImportManager, translateExpression, translateType} from '../../translator';
-import {TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from '../api';
+import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitKind, ReferenceEmitter} from '../../imports/index.js';
+import {ClassDeclaration, ReflectionHost} from '../../reflection/index.js';
+import {ImportManager, translateExpression, translateType} from '../../translator/index.js';
+import {TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from '../api/index.js';
 
-import {ReferenceEmitEnvironment} from './tcb_util';
-import {tsDeclareVariable} from './ts_util';
-import {generateTypeCtorDeclarationFn, requiresInlineTypeCtor} from './type_constructor';
-import {TypeParameterEmitter} from './type_parameter_emitter';
+import {ReferenceEmitEnvironment} from './tcb_util.js';
+import {tsDeclareVariable} from './ts_util.js';
+import {generateTypeCtorDeclarationFn, requiresInlineTypeCtor} from './type_constructor.js';
+import {TypeParameterEmitter} from './type_parameter_emitter.js';
 
 /**
  * A context which hosts one or more Type Check Blocks (TCBs).

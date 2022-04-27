@@ -7,13 +7,13 @@
  */
 import {AnimateChildOptions, AnimateTimings, AnimationMetadataType, AnimationOptions, AnimationQueryOptions, AUTO_STYLE, ɵPRE_STYLE as PRE_STYLE, ɵStyleDataMap} from '@angular/animations';
 
-import {invalidQuery} from '../error_helpers';
-import {AnimationDriver} from '../render/animation_driver';
-import {copyStyles, interpolateParams, iteratorToArray, resolveTiming, resolveTimingValue, visitDslNode} from '../util';
+import {invalidQuery} from '../error_helpers.js';
+import {AnimationDriver} from '../render/animation_driver.js';
+import {copyStyles, interpolateParams, iteratorToArray, resolveTiming, resolveTimingValue, visitDslNode} from '../util.js';
 
-import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, AstVisitor, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast';
-import {AnimationTimelineInstruction, createTimelineInstruction} from './animation_timeline_instruction';
-import {ElementInstructionMap} from './element_instruction_map';
+import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, AstVisitor, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast.js';
+import {AnimationTimelineInstruction, createTimelineInstruction} from './animation_timeline_instruction.js';
+import {ElementInstructionMap} from './element_instruction_map.js';
 
 const ONE_FRAME_IN_MILLISECONDS = 1;
 const ENTER_TOKEN = ':enter';

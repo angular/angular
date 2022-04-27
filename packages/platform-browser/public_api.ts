@@ -11,5 +11,5 @@
  * @description
  * Entry point for all public APIs of this package.
  */
-export * from './src/platform-browser';
+export * from './src/platform-browser.js';
 // This file only reexports content of the `src` folder. Keep it that way.

@@ -7,7 +7,8 @@
  */
 
 import ts from 'typescript';
-import {ClassDeclaration} from './host';
+
+import {ClassDeclaration} from './host.js';
 
 export function isNamedClassDeclaration(node: ts.Node):
     node is ClassDeclaration<ts.ClassDeclaration> {

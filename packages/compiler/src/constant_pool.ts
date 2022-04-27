@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as o from './output/output_ast';
+import * as o from './output/output_ast.js';
 
 const CONSTANT_PREFIX = '_c';
 

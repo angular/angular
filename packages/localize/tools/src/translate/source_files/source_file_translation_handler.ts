@@ -7,15 +7,15 @@
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, PathSegment} from '@angular/compiler-cli/private/localize';
 
-import {parseSync, transformFromAstSync, types as t} from '../../babel_core';
-import {Diagnostics} from '../../diagnostics';
-import {TranslatePluginOptions} from '../../source_file_utils';
-import {OutputPathFn} from '../output_path';
-import {TranslationBundle, TranslationHandler} from '../translator';
+import {parseSync, transformFromAstSync, types as t} from '../../babel_core.js';
+import {Diagnostics} from '../../diagnostics.js';
+import {TranslatePluginOptions} from '../../source_file_utils.js';
+import {OutputPathFn} from '../output_path.js';
+import {TranslationBundle, TranslationHandler} from '../translator.js';
 
-import {makeEs2015TranslatePlugin} from './es2015_translate_plugin';
-import {makeEs5TranslatePlugin} from './es5_translate_plugin';
-import {makeLocalePlugin} from './locale_plugin';
+import {makeEs2015TranslatePlugin} from './es2015_translate_plugin.js';
+import {makeEs5TranslatePlugin} from './es5_translate_plugin.js';
+import {makeLocalePlugin} from './locale_plugin.js';
 
 /**
  * Translate a file by inlining all messages tagged by `$localize` with the appropriate translated

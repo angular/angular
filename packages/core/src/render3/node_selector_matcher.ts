@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import '../util/ng_dev_mode';
+import '../util/ng_dev_mode.js';
 
-import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
+import {assertDefined, assertEqual, assertNotEqual} from '../util/assert.js';
 
-import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
-import {CssSelector, CssSelectorList, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
-import {classIndexOf} from './styling/class_differ';
-import {isNameOnlyAttributeMarker} from './util/attrs_utils';
+import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node.js';
+import {CssSelector, CssSelectorList, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection.js';
+import {classIndexOf} from './styling/class_differ.js';
+import {isNameOnlyAttributeMarker} from './util/attrs_utils.js';
 
 const unusedValueToPlacateAjd = unused1 + unused2;
 

@@ -9,25 +9,25 @@
 import {BoundTarget, ParseError, ParseSourceFile, R3TargetBinder, SchemaMetadata, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, ngErrorCode} from '../../../../src/ngtsc/diagnostics';
-import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
-import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
-import {PerfEvent, PerfRecorder} from '../../perf';
-import {FileUpdate} from '../../program_driver';
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
-import {ImportManager} from '../../translator';
-import {TemplateDiagnostic, TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
-import {makeTemplateDiagnostic} from '../diagnostics';
+import {ErrorCode, ngErrorCode} from '../../../../src/ngtsc/diagnostics/index.js';
+import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system/index.js';
+import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports/index.js';
+import {PerfEvent, PerfRecorder} from '../../perf/index.js';
+import {FileUpdate} from '../../program_driver/index.js';
+import {ClassDeclaration, ReflectionHost} from '../../reflection/index.js';
+import {ImportManager} from '../../translator/index.js';
+import {TemplateDiagnostic, TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api/index.js';
+import {makeTemplateDiagnostic} from '../diagnostics/index.js';
 
-import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
-import {Environment} from './environment';
-import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
-import {TypeCheckShimGenerator} from './shim';
-import {TemplateSourceManager} from './source';
-import {requiresInlineTypeCheckBlock, TcbInliningRequirement} from './tcb_util';
-import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block';
-import {TypeCheckFile} from './type_check_file';
-import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
+import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom.js';
+import {Environment} from './environment.js';
+import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob.js';
+import {TypeCheckShimGenerator} from './shim.js';
+import {TemplateSourceManager} from './source.js';
+import {requiresInlineTypeCheckBlock, TcbInliningRequirement} from './tcb_util.js';
+import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block.js';
+import {TypeCheckFile} from './type_check_file.js';
+import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor.js';
 
 export interface ShimTypeCheckingData {
   /**

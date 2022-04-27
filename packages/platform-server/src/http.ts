@@ -12,7 +12,7 @@ import {Injectable, Injector, Provider} from '@angular/core';
 import {Observable, Observer, Subscription} from 'rxjs';
 import * as xhr2 from 'xhr2';
 
-import {INITIAL_CONFIG, PlatformConfig} from './tokens';
+import {INITIAL_CONFIG, PlatformConfig} from './tokens.js';
 
 // @see https://www.w3.org/Protocols/HTTP/1.1/draft-ietf-http-v11-spec-01#URI-syntax
 const isAbsoluteUrl = /^[a-zA-Z\-\+.]+:\/\//;

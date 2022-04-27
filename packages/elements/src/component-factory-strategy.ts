@@ -10,9 +10,9 @@ import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentFactoryRes
 import {merge, Observable, ReplaySubject} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
-import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from './element-strategy';
-import {extractProjectableNodes} from './extract-projectable-nodes';
-import {isFunction, scheduler, strictEquals} from './utils';
+import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from './element-strategy.js';
+import {extractProjectableNodes} from './extract-projectable-nodes.js';
+import {isFunction, scheduler, strictEquals} from './utils.js';
 
 /** Time in milliseconds to wait before destroying the component ref when disconnected. */
 const DESTROY_DELAY = 10;

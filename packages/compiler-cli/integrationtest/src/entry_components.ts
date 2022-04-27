@@ -8,7 +8,7 @@
 
 import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, Inject, InjectionToken} from '@angular/core';
 
-import {BasicComp} from './basic';
+import {BasicComp} from './basic.js';
 
 @Component({
   selector: 'cmp-entryComponents',

@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {PathMappings} from '../path_mappings';
-import {isRelativePath, resolveFileWithPostfixes} from '../utils';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {PathMappings} from '../path_mappings.js';
+import {isRelativePath, resolveFileWithPostfixes} from '../utils.js';
 
 /**
  * This is a very cut-down implementation of the TypeScript module resolution strategy.

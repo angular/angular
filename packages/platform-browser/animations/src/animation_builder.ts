@@ -9,7 +9,7 @@ import {AnimationBuilder, AnimationFactory, AnimationMetadata, AnimationOptions,
 import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable, RendererFactory2, RendererType2, ViewEncapsulation} from '@angular/core';
 
-import {AnimationRenderer} from './animation_renderer';
+import {AnimationRenderer} from './animation_renderer.js';
 
 @Injectable()
 export class BrowserAnimationBuilder extends AnimationBuilder {

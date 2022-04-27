@@ -8,7 +8,7 @@
 
 import module from 'module';
 
-import {AbsoluteFsPath, PathManipulation} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, PathManipulation} from '../../../src/ngtsc/file_system/index.js';
 
 export function getLockFilePath(fs: PathManipulation) {
   // This is an interop allowing for the unlocking script to be determined in both

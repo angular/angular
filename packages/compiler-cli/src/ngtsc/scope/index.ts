@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {ComponentScopeKind, ComponentScopeReader, ExportScope, LocalModuleScope, ScopeData, StandaloneScope} from './src/api';
-export {CompoundComponentScopeReader} from './src/component_scope';
-export {DtsModuleScopeResolver, MetadataDtsModuleScopeResolver} from './src/dependency';
-export {DeclarationData, LocalModuleScopeRegistry, LocalNgModuleData} from './src/local';
-export {TypeCheckScope, TypeCheckScopeRegistry} from './src/typecheck';
-export {makeNotStandaloneDiagnostic, makeUnknownComponentImportDiagnostic} from './src/util';
+export {ComponentScopeKind, ComponentScopeReader, ExportScope, LocalModuleScope, ScopeData, StandaloneScope} from './src/api.js';
+export {CompoundComponentScopeReader} from './src/component_scope.js';
+export {DtsModuleScopeResolver, MetadataDtsModuleScopeResolver} from './src/dependency.js';
+export {DeclarationData, LocalModuleScopeRegistry, LocalNgModuleData} from './src/local.js';
+export {TypeCheckScope, TypeCheckScopeRegistry} from './src/typecheck.js';
+export {makeNotStandaloneDiagnostic, makeUnknownComponentImportDiagnostic} from './src/util.js';

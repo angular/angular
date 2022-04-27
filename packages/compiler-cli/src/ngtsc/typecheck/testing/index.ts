@@ -9,26 +9,26 @@
 import {CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, Type} from '@angular/compiler';
 import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
-import {TestFile} from '../../file_system/testing';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reexport, Reference, ReferenceEmitter, RelativePathStrategy} from '../../imports';
-import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
-import {ClassPropertyMapping, CompoundMetadataReader, MetaKind} from '../../metadata';
-import {NOOP_PERF_RECORDER} from '../../perf';
-import {TsCreateProgramDriver} from '../../program_driver';
-import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
-import {ComponentScopeKind, ComponentScopeReader, LocalModuleScope, ScopeData, TypeCheckScopeRegistry} from '../../scope';
-import {makeProgram} from '../../testing';
-import {getRootDirs} from '../../util/src/typescript';
-import {ProgramTypeCheckAdapter, TemplateDiagnostic, TemplateTypeChecker, TypeCheckContext} from '../api';
-import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig} from '../api/api';
-import {TemplateTypeCheckerImpl} from '../src/checker';
-import {DomSchemaChecker} from '../src/dom';
-import {Environment} from '../src/environment';
-import {OutOfBandDiagnosticRecorder} from '../src/oob';
-import {TypeCheckShimGenerator} from '../src/shim';
-import {generateTypeCheckBlock, TcbGenericContextBehavior} from '../src/type_check_block';
-import {TypeCheckFile} from '../src/type_check_file';
+import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} from '../../file_system/index.js';
+import {TestFile} from '../../file_system/testing/index.js';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reexport, Reference, ReferenceEmitter, RelativePathStrategy} from '../../imports/index.js';
+import {NOOP_INCREMENTAL_BUILD} from '../../incremental/index.js';
+import {ClassPropertyMapping, CompoundMetadataReader, MetaKind} from '../../metadata/index.js';
+import {NOOP_PERF_RECORDER} from '../../perf/index.js';
+import {TsCreateProgramDriver} from '../../program_driver/index.js';
+import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection/index.js';
+import {ComponentScopeKind, ComponentScopeReader, LocalModuleScope, ScopeData, TypeCheckScopeRegistry} from '../../scope/index.js';
+import {makeProgram} from '../../testing/index.js';
+import {getRootDirs} from '../../util/src/typescript.js';
+import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig} from '../api/api.js';
+import {ProgramTypeCheckAdapter, TemplateDiagnostic, TemplateTypeChecker, TypeCheckContext} from '../api/index.js';
+import {TemplateTypeCheckerImpl} from '../src/checker.js';
+import {DomSchemaChecker} from '../src/dom.js';
+import {Environment} from '../src/environment.js';
+import {OutOfBandDiagnosticRecorder} from '../src/oob.js';
+import {TypeCheckShimGenerator} from '../src/shim.js';
+import {generateTypeCheckBlock, TcbGenericContextBehavior} from '../src/type_check_block.js';
+import {TypeCheckFile} from '../src/type_check_file.js';
 
 export function typescriptLibDts(): TestFile {
   return {

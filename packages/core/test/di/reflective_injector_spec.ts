@@ -11,8 +11,8 @@ import {ReflectiveInjector_} from '@angular/core/src/di/reflective_injector';
 import {ResolvedReflectiveProvider_} from '@angular/core/src/di/reflective_provider';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {getOriginalError} from '../../src/util/errors';
-import {stringify} from '../../src/util/stringify';
+import {getOriginalError} from '../../src/util/errors.js';
+import {stringify} from '../../src/util/stringify.js';
 
 class Engine {}
 

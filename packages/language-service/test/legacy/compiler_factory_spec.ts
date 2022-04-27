@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {APP_COMPONENT, MockService, setup, TEST_TEMPLATE} from './mock_host';
+import {APP_COMPONENT, MockService, setup, TEST_TEMPLATE} from './mock_host.js';
 
 /**
  * The following specs do not directly test the CompilerFactory class, rather

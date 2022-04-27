@@ -7,11 +7,11 @@
  */
 import {animate, AnimationMetadata, style} from '@angular/animations';
 
-import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
-import {AnimationDriver} from '../../src/render/animation_driver';
-import {getBodyNode} from '../../src/render/shared';
-import {TimelineAnimationEngine} from '../../src/render/timeline_animation_engine';
-import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_animation_driver';
+import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer.js';
+import {AnimationDriver} from '../../src/render/animation_driver.js';
+import {getBodyNode} from '../../src/render/shared.js';
+import {TimelineAnimationEngine} from '../../src/render/timeline_animation_engine.js';
+import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_animation_driver.js';
 
 (function() {
 const defaultDriver = new MockAnimationDriver();

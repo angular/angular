@@ -8,14 +8,14 @@
 import {injectTemplateRef} from '@angular/core/src/linker/template_ref';
 import {injectViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 
-import {TemplateRef, ViewContainerRef} from '../../../../src/linker';
-import {ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵtemplate} from '../../../../src/render3/index';
-import {createLView, createTNode, createTView} from '../../../../src/render3/instructions/shared';
-import {RenderFlags} from '../../../../src/render3/interfaces/definition';
-import {TNodeType} from '../../../../src/render3/interfaces/node';
-import {LViewFlags, TViewType} from '../../../../src/render3/interfaces/view';
-import {createBenchmark} from '../micro_bench';
-import {createAndRenderLView} from '../setup';
+import {TemplateRef, ViewContainerRef} from '../../../../src/linker.js';
+import {ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵtemplate} from '../../../../src/render3/index.js';
+import {createLView, createTNode, createTView} from '../../../../src/render3/instructions/shared.js';
+import {RenderFlags} from '../../../../src/render3/interfaces/definition.js';
+import {TNodeType} from '../../../../src/render3/interfaces/node.js';
+import {LViewFlags, TViewType} from '../../../../src/render3/interfaces/view.js';
+import {createBenchmark} from '../micro_bench.js';
+import {createAndRenderLView} from '../setup.js';
 
 
 

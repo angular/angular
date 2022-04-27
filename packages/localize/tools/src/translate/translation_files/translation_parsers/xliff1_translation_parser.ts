@@ -7,12 +7,12 @@
  */
 import {Element, ParseErrorLevel, visitAll} from '@angular/compiler';
 
-import {Diagnostics} from '../../../diagnostics';
-import {BaseVisitor} from '../base_visitor';
+import {Diagnostics} from '../../../diagnostics.js';
+import {BaseVisitor} from '../base_visitor.js';
 
-import {serializeTranslationMessage} from './serialize_translation_message';
-import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
-import {addErrorsToBundle, addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, XmlTranslationParserHint} from './translation_utils';
+import {serializeTranslationMessage} from './serialize_translation_message.js';
+import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser.js';
+import {addErrorsToBundle, addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, XmlTranslationParserHint} from './translation_utils.js';
 
 /**
  * A translation parser that can load XLIFF 1.2 files.

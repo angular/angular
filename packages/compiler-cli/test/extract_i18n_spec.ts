@@ -9,9 +9,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import {mainXi18n} from '../src/extract_i18n';
+import {mainXi18n} from '../src/extract_i18n.js';
 
-import {setup} from './test_support';
+import {setup} from './test_support.js';
 
 const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE messagebundle [

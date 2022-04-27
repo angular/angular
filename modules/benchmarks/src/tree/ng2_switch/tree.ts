@@ -9,7 +9,7 @@
 import {Component, Input, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {emptyTree, TreeNode} from '../util';
+import {emptyTree, TreeNode} from '../util.js';
 
 @Component({
   selector: 'tree',

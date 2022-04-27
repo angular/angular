@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from '../di/interface/provider';
-import {Type} from '../interface/type';
-import {SchemaMetadata} from '../metadata/schema';
-import {compileNgModule} from '../render3/jit/module';
-import {makeDecorator, TypeDecorator} from '../util/decorators';
+import {Provider} from '../di/interface/provider.js';
+import {Type} from '../interface/type.js';
+import {SchemaMetadata} from '../metadata/schema.js';
+import {compileNgModule} from '../render3/jit/module.js';
+import {makeDecorator, TypeDecorator} from '../util/decorators.js';
 
 
 /**

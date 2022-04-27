@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component as _Component, ComponentFactoryResolver, ElementRef, Injectable as _Injectable, InjectFlags, InjectionToken, InjectorType, Provider, RendererFactory2, Type, ViewContainerRef, ɵcreateInjector as createInjector, ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵdefineNgModule, ɵɵinject} from '../../src/core';
-import {forwardRef} from '../../src/di/forward_ref';
-import {injectComponentFactoryResolver, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵgetInheritedFactory, ɵɵProvidersFeature, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
-import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {NgModuleFactory} from '../../src/render3/ng_module_ref';
-import {getInjector} from '../../src/render3/util/discovery_utils';
+import {Component as _Component, ComponentFactoryResolver, ElementRef, Injectable as _Injectable, InjectFlags, InjectionToken, InjectorType, Provider, RendererFactory2, Type, ViewContainerRef, ɵcreateInjector as createInjector, ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵdefineNgModule, ɵɵinject} from '../../src/core.js';
+import {forwardRef} from '../../src/di/forward_ref.js';
+import {injectComponentFactoryResolver, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵgetInheritedFactory, ɵɵProvidersFeature, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index.js';
+import {RenderFlags} from '../../src/render3/interfaces/definition.js';
+import {NgModuleFactory} from '../../src/render3/ng_module_ref.js';
+import {getInjector} from '../../src/render3/util/discovery_utils.js';
 
-import {getRendererFactory2} from './imported_renderer2';
-import {expectProvidersScenario} from './providers_helper';
-import {ComponentFixture} from './render_util';
+import {getRendererFactory2} from './imported_renderer2.js';
+import {expectProvidersScenario} from './providers_helper.js';
+import {ComponentFixture} from './render_util.js';
 
 const Component: typeof _Component = function(...args: any[]): any {
   // In test we use @Component for documentation only so it's safe to mock out the implementation.

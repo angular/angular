@@ -8,17 +8,15 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom as _, FileSystem, getFileSystem, getSourceFileOrError, NgtscCompilerHost, setFileSystem} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {IncrementalBuildStrategy, NoopIncrementalBuildStrategy} from '../../incremental';
-import {ProgramDriver, TsCreateProgramDriver} from '../../program_driver';
-import {ClassDeclaration, isNamedClassDeclaration} from '../../reflection';
-import {OptimizeFor} from '../../typecheck/api';
-
-import {NgCompilerOptions} from '../api';
-
-import {freshCompilationTicket, NgCompiler, resourceChangeTicket} from '../src/compiler';
-import {NgCompilerHost} from '../src/host';
+import {absoluteFrom as _, FileSystem, getFileSystem, getSourceFileOrError, NgtscCompilerHost, setFileSystem} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {IncrementalBuildStrategy, NoopIncrementalBuildStrategy} from '../../incremental/index.js';
+import {ProgramDriver, TsCreateProgramDriver} from '../../program_driver/index.js';
+import {ClassDeclaration, isNamedClassDeclaration} from '../../reflection/index.js';
+import {OptimizeFor} from '../../typecheck/api/index.js';
+import {NgCompilerOptions} from '../api/index.js';
+import {freshCompilationTicket, NgCompiler, resourceChangeTicket} from '../src/compiler.js';
+import {NgCompilerHost} from '../src/host.js';
 
 function makeFreshCompiler(
     host: NgCompilerHost, options: NgCompilerOptions, program: ts.Program,
@@ -205,7 +203,7 @@ runInEachFileSystem(() => {
         const resources = compiler.getComponentResources(CmpA);
         expect(resources).not.toBeNull();
         const {template, styles} = resources!;
-        expect(template !.path).toEqual(templateFile);
+        expect(template!.path).toEqual(templateFile);
         expect(styles.size).toEqual(2);
         const actualPaths = new Set(Array.from(styles).map(r => r.path));
         expect(actualPaths).toEqual(new Set([styleFile, styleFile2]));

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentTreeNode} from '../interfaces';
-import {isCustomElement} from '../utils';
+import {ComponentTreeNode} from '../interfaces.js';
+import {isCustomElement} from '../utils.js';
 
 const extractViewTree =
     (domNode: Node|Element, result: ComponentTreeNode[], getComponent: (element: Element) => {},

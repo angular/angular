@@ -8,8 +8,8 @@
 // Ensure that `$localize` is loaded to the global scope.
 import '@angular/localize/init';
 
-import {clearTranslations, loadTranslations} from '../localize';
-import {computeMsgId, MessageId, TargetMessage} from '../src/utils';
+import {clearTranslations, loadTranslations} from '../localize.js';
+import {computeMsgId, MessageId, TargetMessage} from '../src/utils/index.js';
 
 describe('$localize tag with translations', () => {
   describe('identities', () => {

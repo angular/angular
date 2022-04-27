@@ -10,4 +10,4 @@
 // The public API exports are specified in the `./localize` module, which is checked by the
 // public_api_guard rules
 
-export * from './localize';
+export * from './localize.js';

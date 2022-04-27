@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
-import {equalArraysOrString, forEach, shallowEqual} from './utils/collection';
+import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared.js';
+import {equalArraysOrString, forEach, shallowEqual} from './utils/collection.js';
 
 export function createEmptyUrlTree() {
   return new UrlTree(new UrlSegmentGroup([], {}), {}, null);

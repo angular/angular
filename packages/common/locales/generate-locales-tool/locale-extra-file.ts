@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {removeDuplicates} from './array-deduplication';
-import {CldrLocaleData} from './cldr-data';
-import {getDayPeriodRules, getDayPeriodsNoAmPm} from './day-periods';
-import {fileHeader} from './file-header';
-import {stringify} from './object-stringify';
+import {removeDuplicates} from './array-deduplication.js';
+import {CldrLocaleData} from './cldr-data.js';
+import {getDayPeriodRules, getDayPeriodsNoAmPm} from './day-periods.js';
+import {fileHeader} from './file-header.js';
+import {stringify} from './object-stringify.js';
 
 /**
  * Generate the contents for the extra data file

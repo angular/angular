@@ -8,7 +8,7 @@
 
 import {asapScheduler, concat, Observable, range} from 'rxjs';
 
-import {asyncTest} from '../test-util';
+import {asyncTest} from '../test-util.js';
 
 describe('Observable.concat', () => {
   let log: any[];

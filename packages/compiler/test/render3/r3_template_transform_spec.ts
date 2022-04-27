@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BindingType} from '../../src/expression_parser/ast';
-import * as t from '../../src/render3/r3_ast';
-import {unparse} from '../expression_parser/utils/unparser';
+import {BindingType} from '../../src/expression_parser/ast.js';
+import * as t from '../../src/render3/r3_ast.js';
+import {unparse} from '../expression_parser/utils/unparser.js';
 
-import {parseR3 as parse} from './view/util';
+import {parseR3 as parse} from './view/util.js';
 
 
 // Transform an IVY AST to a flat list of nodes to ease testing

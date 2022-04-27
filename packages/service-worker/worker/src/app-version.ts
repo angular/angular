@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Adapter} from './adapter';
-import {CacheState, NormalizedUrl, UpdateCacheStatus, UpdateSource} from './api';
-import {AssetGroup, LazyAssetGroup, PrefetchAssetGroup} from './assets';
-import {DataGroup} from './data';
-import {Database} from './database';
-import {DebugHandler} from './debug';
-import {IdleScheduler} from './idle';
-import {Manifest} from './manifest';
+import {Adapter} from './adapter.js';
+import {CacheState, NormalizedUrl, UpdateCacheStatus, UpdateSource} from './api.js';
+import {AssetGroup, LazyAssetGroup, PrefetchAssetGroup} from './assets.js';
+import {DataGroup} from './data.js';
+import {Database} from './database.js';
+import {DebugHandler} from './debug.js';
+import {IdleScheduler} from './idle.js';
+import {Manifest} from './manifest.js';
 
 
 const BACKWARDS_COMPATIBILITY_NAVIGATION_URLS = [

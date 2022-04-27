@@ -10,7 +10,7 @@ import {Location, LocationStrategy} from '@angular/common';
 import {EventEmitter, Injectable} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 
-import {normalizeQueryParams} from '../../src/location/util';
+import {normalizeQueryParams} from '../../src/location/util.js';
 
 /**
  * A spy for {@link Location} that allows tests to fire simulated location events.

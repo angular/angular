@@ -8,10 +8,10 @@
 
 import {ElementPosition} from 'protocol';
 
-import {ComponentTreeNode} from '../interfaces';
+import {ComponentTreeNode} from '../interfaces.js';
 
-import {IdentityTracker, IndexedNode} from './identity-tracker';
-import {Profiler, selectProfilerStrategy} from './profiler';
+import {IdentityTracker, IndexedNode} from './identity-tracker.js';
+import {Profiler, selectProfilerStrategy} from './profiler/index.js';
 
 /**
  *  Class to hook into directive forest.

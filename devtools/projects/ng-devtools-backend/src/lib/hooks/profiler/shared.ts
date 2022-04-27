@@ -9,7 +9,7 @@
 import {ElementPosition, LifecycleProfile} from 'protocol';
 import {Subject} from 'rxjs';
 
-import {NodeArray} from '../identity-tracker';
+import {NodeArray} from '../identity-tracker.js';
 
 type CreationHook =
     (componentOrDirective: any, node: Node, id: number, isComponent: boolean,

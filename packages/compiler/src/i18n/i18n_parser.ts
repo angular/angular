@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Lexer as ExpressionLexer} from '../expression_parser/lexer';
-import {Parser as ExpressionParser} from '../expression_parser/parser';
-import * as html from '../ml_parser/ast';
-import {getHtmlTagDefinition} from '../ml_parser/html_tags';
-import {InterpolationConfig} from '../ml_parser/interpolation_config';
-import {InterpolatedAttributeToken, InterpolatedTextToken, TokenType} from '../ml_parser/tokens';
-import {ParseSourceSpan} from '../parse_util';
+import {Lexer as ExpressionLexer} from '../expression_parser/lexer.js';
+import {Parser as ExpressionParser} from '../expression_parser/parser.js';
+import * as html from '../ml_parser/ast.js';
+import {getHtmlTagDefinition} from '../ml_parser/html_tags.js';
+import {InterpolationConfig} from '../ml_parser/interpolation_config.js';
+import {InterpolatedAttributeToken, InterpolatedTextToken, TokenType} from '../ml_parser/tokens.js';
+import {ParseSourceSpan} from '../parse_util.js';
 
-import * as i18n from './i18n_ast';
-import {PlaceholderRegistry} from './serializers/placeholder';
+import * as i18n from './i18n_ast.js';
+import {PlaceholderRegistry} from './serializers/placeholder.js';
 
 const _expParser = new ExpressionParser(new ExpressionLexer());
 

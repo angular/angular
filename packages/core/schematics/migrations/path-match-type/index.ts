@@ -10,11 +10,11 @@ import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {relative} from 'path';
 import ts from 'typescript';
 
-import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
+import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths.js';
+import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host.js';
 
-import {PathMatchTypeTransform} from './transform';
-import {UpdateRecorder} from './update_recorder';
+import {PathMatchTypeTransform} from './transform.js';
+import {UpdateRecorder} from './update_recorder.js';
 
 
 /** Migration that adds explicit type to `Route`/`Routes` which use `patchMatch` */

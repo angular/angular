@@ -12,9 +12,9 @@
 
 import yargs from 'yargs';
 
-import {main, readCommandLineAndConfiguration} from './main';
-import {ParsedConfiguration} from './perform_compile';
-import * as api from './transformers/api';
+import {main, readCommandLineAndConfiguration} from './main.js';
+import {ParsedConfiguration} from './perform_compile.js';
+import * as api from './transformers/api.js';
 
 export function mainXi18n(
     args: string[], consoleError: (msg: string) => void = console.error): number {

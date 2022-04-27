@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {exactMatchOptions, subsetMatchOptions} from '../src/router';
-import {containsTree, DefaultUrlSerializer} from '../src/url_tree';
+import {exactMatchOptions, subsetMatchOptions} from '../src/router.js';
+import {containsTree, DefaultUrlSerializer} from '../src/url_tree.js';
 
 describe('UrlTree', () => {
   const serializer = new DefaultUrlSerializer();

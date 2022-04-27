@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {IdleScheduler} from '../src/idle';
-import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
-import {envIsSupported} from '../testing/utils';
+import {IdleScheduler} from '../src/idle.js';
+import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope.js';
+import {envIsSupported} from '../testing/utils.js';
 
 (function() {
 // Skip environments that don't support the minimum APIs needed to run the SW tests.

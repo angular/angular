@@ -8,13 +8,12 @@
 import {ExternalExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {OwningModule, Reference} from '../../imports';
-import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
-import {loadFakeCore, makeProgram} from '../../testing';
-
-import {DtsMetadataReader} from '../src/dts';
+import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {OwningModule, Reference} from '../../imports/index.js';
+import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection/index.js';
+import {loadFakeCore, makeProgram} from '../../testing/index.js';
+import {DtsMetadataReader} from '../src/dts.js';
 
 runInEachFileSystem(() => {
   beforeEach(() => {

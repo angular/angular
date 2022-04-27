@@ -9,7 +9,7 @@
 import {ProfilerEvent, setProfiler} from '@angular/core/src/render3/profiler';
 import {TestBed} from '@angular/core/testing';
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, DoCheck, ErrorHandler, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, ViewChild} from '../../src/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, DoCheck, ErrorHandler, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, ViewChild} from '../../src/core.js';
 
 
 describe('profiler', () => {

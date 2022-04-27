@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CldrLocaleData} from './cldr-data';
+import {CldrLocaleData} from './cldr-data.js';
 
 // There are no types available for `cldr`.
 const cldr = require('cldr');

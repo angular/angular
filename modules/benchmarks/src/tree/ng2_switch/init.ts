@@ -8,10 +8,10 @@
 
 import {ApplicationRef, NgModuleRef} from '@angular/core';
 
-import {bindAction, profile} from '../../util';
-import {buildTree, emptyTree, initTreeUtils} from '../util';
+import {bindAction, profile} from '../../util.js';
+import {buildTree, emptyTree, initTreeUtils} from '../util.js';
 
-import {AppModule, TreeComponent} from './tree';
+import {AppModule, TreeComponent} from './tree.js';
 
 export function init(moduleRef: NgModuleRef<AppModule>) {
   let tree: TreeComponent;

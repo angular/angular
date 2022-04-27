@@ -8,7 +8,7 @@
 
 import {ɵCurrencyIndex, ɵExtraLocaleDataIndex, ɵfindLocaleData, ɵgetLocaleCurrencyCode, ɵgetLocalePluralCase, ɵLocaleDataIndex} from '@angular/core';
 
-import {CURRENCIES_EN, CurrenciesSymbols} from './currencies';
+import {CURRENCIES_EN, CurrenciesSymbols} from './currencies.js';
 
 
 /**

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {camelToDashCase, isElement, isFunction, kebabToCamelCase, matchesSelector, scheduler, strictEquals} from '../src/utils';
+import {camelToDashCase, isElement, isFunction, kebabToCamelCase, matchesSelector, scheduler, strictEquals} from '../src/utils.js';
 
 describe('utils', () => {
   describe('scheduler', () => {

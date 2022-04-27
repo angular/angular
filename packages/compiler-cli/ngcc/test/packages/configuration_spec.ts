@@ -7,10 +7,10 @@
  */
 import {createHash} from 'crypto';
 
-import {absoluteFrom, getFileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {DEFAULT_NGCC_CONFIG, NgccConfiguration, NgccProjectConfig, PartiallyProcessedConfig, ProcessLockingConfiguration} from '../../src/packages/configuration';
+import {absoluteFrom, getFileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing/index.js';
+import {loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {DEFAULT_NGCC_CONFIG, NgccConfiguration, NgccProjectConfig, PartiallyProcessedConfig, ProcessLockingConfiguration} from '../../src/packages/configuration.js';
 
 
 runInEachFileSystem(() => {

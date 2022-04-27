@@ -1,4 +1,4 @@
-import {HelloWorldComponent} from './hello-world.component';
+import {HelloWorldComponent} from './hello-world.component.js';
 import {NgModule} from '@angular/core';
 
 @NgModule({

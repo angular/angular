@@ -7,9 +7,10 @@
  */
 import {ConstantPool} from '@angular/compiler';
 import ts from 'typescript';
-import {Reexport} from '../../../src/ngtsc/imports';
-import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
-import {CompileResult} from '../../../src/ngtsc/transform';
+
+import {Reexport} from '../../../src/ngtsc/imports/index.js';
+import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection/index.js';
+import {CompileResult} from '../../../src/ngtsc/transform/index.js';
 
 export interface CompiledClass {
   name: string;

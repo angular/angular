@@ -10,10 +10,10 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {ViewEncapsulation} from '@angular/core';
 import {Descriptor, DirectivePosition, Events, MessageBus, NestedProp, Properties} from 'protocol';
 
-import {FlatNode, Property} from './element-property-resolver';
-import {getTreeFlattener} from './flatten';
-import {PropertyDataSource} from './property-data-source';
-import {getExpandedDirectiveProperties} from './property-expanded-directive-properties';
+import {FlatNode, Property} from './element-property-resolver.js';
+import {getTreeFlattener} from './flatten.js';
+import {PropertyDataSource} from './property-data-source.js';
+import {getExpandedDirectiveProperties} from './property-expanded-directive-properties.js';
 
 export interface DirectiveTreeData {
   dataSource: PropertyDataSource;

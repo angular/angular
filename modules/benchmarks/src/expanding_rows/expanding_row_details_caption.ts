@@ -11,8 +11,8 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Host, Input, OnDe
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
-import {ExpandingRow} from './expanding_row';
-import {expanding_row_css} from './expanding_row_css';
+import {ExpandingRow} from './expanding_row.js';
+import {expanding_row_css} from './expanding_row_css.js';
 
 /**
  * This component should be within cfc-expanding-row component. The caption

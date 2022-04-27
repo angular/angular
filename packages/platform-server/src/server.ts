@@ -14,14 +14,14 @@ import {BrowserModule, EVENT_MANAGER_PLUGINS, ɵSharedStylesHost as SharedStyles
 import {ɵplatformCoreDynamic as platformCoreDynamic} from '@angular/platform-browser-dynamic';
 import {NoopAnimationsModule, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
-import {DominoAdapter, parseDocument} from './domino_adapter';
-import {SERVER_HTTP_PROVIDERS} from './http';
-import {ServerPlatformLocation} from './location';
-import {PlatformState} from './platform_state';
-import {ServerEventManagerPlugin} from './server_events';
-import {ServerRendererFactory2} from './server_renderer';
-import {ServerStylesHost} from './styles_host';
-import {INITIAL_CONFIG, PlatformConfig} from './tokens';
+import {DominoAdapter, parseDocument} from './domino_adapter.js';
+import {SERVER_HTTP_PROVIDERS} from './http.js';
+import {ServerPlatformLocation} from './location.js';
+import {PlatformState} from './platform_state.js';
+import {ServerEventManagerPlugin} from './server_events.js';
+import {ServerRendererFactory2} from './server_renderer.js';
+import {ServerStylesHost} from './styles_host.js';
+import {INITIAL_CONFIG, PlatformConfig} from './tokens.js';
 
 function notSupported(feature: string): Error {
   throw new Error(`platform-server does not support '${feature}'.`);

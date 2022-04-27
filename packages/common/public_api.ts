@@ -11,6 +11,6 @@
  * @description
  * Entry point for all public APIs of this package.
  */
-export * from './src/common';
+export * from './src/common.js';
 
 // This file only reexports content of the `src` folder. Keep it that way.

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {areTypeParametersEqual, isArrayEqual, isSetEqual, isSymbolEqual, SemanticSymbol, SemanticTypeParameter} from '../../../incremental/semantic_graph';
-import {BindingPropertyName, ClassPropertyMapping, ClassPropertyName, DirectiveTypeCheckMeta, TemplateGuardMeta} from '../../../metadata';
-import {ClassDeclaration} from '../../../reflection';
+import {areTypeParametersEqual, isArrayEqual, isSetEqual, isSymbolEqual, SemanticSymbol, SemanticTypeParameter} from '../../../incremental/semantic_graph/index.js';
+import {BindingPropertyName, ClassPropertyMapping, ClassPropertyName, DirectiveTypeCheckMeta, TemplateGuardMeta} from '../../../metadata/index.js';
+import {ClassDeclaration} from '../../../reflection/index.js';
 
 /**
  * Represents an Angular directive. Components are represented by `ComponentSymbol`, which inherits

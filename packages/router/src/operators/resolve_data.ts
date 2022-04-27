@@ -10,11 +10,11 @@ import {Injector} from '@angular/core';
 import {EMPTY, EmptyError, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, map, mapTo, mergeMap, takeLast, tap} from 'rxjs/operators';
 
-import {ResolveData, Route} from '../models';
-import {NavigationTransition} from '../router';
-import {ActivatedRouteSnapshot, inheritedParamsDataResolve, RouterStateSnapshot} from '../router_state';
-import {wrapIntoObservable} from '../utils/collection';
-import {getToken} from '../utils/preactivation';
+import {ResolveData, Route} from '../models.js';
+import {NavigationTransition} from '../router.js';
+import {ActivatedRouteSnapshot, inheritedParamsDataResolve, RouterStateSnapshot} from '../router_state.js';
+import {wrapIntoObservable} from '../utils/collection.js';
+import {getToken} from '../utils/preactivation.js';
 
 /**
  * A private symbol used to store the value of `Route.title` inside the `Route.data` if it is a

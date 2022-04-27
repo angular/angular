@@ -9,9 +9,9 @@
 import {AST, TmplAstBoundEvent, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
-import {NgTemplateDiagnostic} from '../../../api';
-import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics/index.js';
+import {NgTemplateDiagnostic} from '../../../api/index.js';
+import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api/index.js';
 
 /**
  * Ensures the two-way binding syntax is correct.

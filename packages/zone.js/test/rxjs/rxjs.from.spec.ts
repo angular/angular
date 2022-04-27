@@ -7,7 +7,7 @@
  */
 import {from, Observable} from 'rxjs';
 
-import {asyncTest} from '../test-util';
+import {asyncTest} from '../test-util.js';
 
 describe('Observable.from', () => {
   let log: any[];

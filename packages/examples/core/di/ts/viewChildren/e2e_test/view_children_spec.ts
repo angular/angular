@@ -9,7 +9,7 @@
 
 import {browser, by, element, ElementFinder} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../../test-utils/index.js';
 
 describe('viewChildren example', () => {
   afterEach(verifyNoBrowserErrors);

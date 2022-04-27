@@ -8,8 +8,8 @@
 
 import {DefaultIterableDiffer, DefaultIterableDifferFactory} from '@angular/core/src/change_detection/differs/default_iterable_differ';
 
-import {TestIterable} from '../../util/iterable';
-import {iterableChangesAsString, iterableDifferToString} from '../util';
+import {TestIterable} from '../../util/iterable.js';
+import {iterableChangesAsString, iterableDifferToString} from '../util.js';
 
 class ItemWithId {
   constructor(private id: string) {}

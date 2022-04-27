@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ProcessProvidersFunction} from '../../di/interface/provider';
-import {EnvironmentInjector} from '../../di/r3_injector';
-import {Type} from '../../interface/type';
-import {SchemaMetadata} from '../../metadata/schema';
-import {ViewEncapsulation} from '../../metadata/view';
-import {FactoryFn} from '../definition_factory';
+import {ProcessProvidersFunction} from '../../di/interface/provider.js';
+import {EnvironmentInjector} from '../../di/r3_injector.js';
+import {Type} from '../../interface/type.js';
+import {SchemaMetadata} from '../../metadata/schema.js';
+import {ViewEncapsulation} from '../../metadata/view.js';
+import {FactoryFn} from '../definition_factory.js';
 
-import {TAttributes, TConstantsOrFactory} from './node';
-import {CssSelectorList} from './projection';
-import {TView} from './view';
+import {TAttributes, TConstantsOrFactory} from './node.js';
+import {CssSelectorList} from './projection.js';
+import {TView} from './view.js';
 
 
 /**

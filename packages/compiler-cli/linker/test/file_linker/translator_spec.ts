@@ -9,8 +9,9 @@ import * as o from '@angular/compiler';
 import {ImportGenerator, NamedImport, TypeScriptAstFactory} from '@angular/compiler-cli/src/ngtsc/translator';
 import ts from 'typescript';
 
-import {Translator} from '../../src/file_linker/translator';
-import {generate} from './helpers';
+import {Translator} from '../../src/file_linker/translator.js';
+
+import {generate} from './helpers.js';
 
 describe('Translator', () => {
   let factory: TypeScriptAstFactory;

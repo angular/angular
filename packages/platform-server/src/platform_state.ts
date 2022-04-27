@@ -9,7 +9,7 @@
 import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable} from '@angular/core';
 
-import {serializeDocument} from './domino_adapter';
+import {serializeDocument} from './domino_adapter.js';
 
 /**
  * Representation of the current platform state.

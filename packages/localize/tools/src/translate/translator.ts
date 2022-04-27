@@ -8,9 +8,9 @@
 import {AbsoluteFsPath, PathSegment, ReadonlyFileSystem,} from '@angular/compiler-cli/private/localize';
 import {MessageId, ɵParsedTranslation} from '@angular/localize';
 
-import {Diagnostics} from '../diagnostics';
+import {Diagnostics} from '../diagnostics.js';
 
-import {OutputPathFn} from './output_path';
+import {OutputPathFn} from './output_path.js';
 
 /**
  * An object that holds information to be used to translate files.

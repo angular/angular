@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RTreeStrategy} from './render-tree';
+import {RTreeStrategy} from './render-tree.js';
 
 describe('render tree extraction', () => {
   let treeStrategy: RTreeStrategy;

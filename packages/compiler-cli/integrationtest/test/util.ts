@@ -10,8 +10,8 @@ import {NgModuleRef} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
 import {platformServerTesting} from '@angular/platform-server/testing';
 
-import {MainModule} from '../src/module';
-import {MainModuleNgFactory} from '../src/module.ngfactory';
+import {MainModule} from '../src/module.js';
+import {MainModuleNgFactory} from '../src/module.ngfactory.js';
 
 let mainModuleRef: NgModuleRef<MainModule> = null!;
 beforeEach((done) => {

@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {getImportOfIdentifier, Import} from './imports';
+import {getImportOfIdentifier, Import} from './imports.js';
 
 export function getCallDecoratorImport(
     typeChecker: ts.TypeChecker, decorator: ts.Decorator): Import|null {

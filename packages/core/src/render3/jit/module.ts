@@ -6,26 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getCompilerFacade, JitCompilerUsage, R3InjectorMetadataFacade} from '../../compiler/compiler_facade';
-import {resolveForwardRef} from '../../di/forward_ref';
-import {NG_INJ_DEF} from '../../di/interface/defs';
-import {reflectDependencies} from '../../di/jit/util';
-import {Type} from '../../interface/type';
-import {registerNgModuleType} from '../../linker/ng_module_registration';
-import {Component} from '../../metadata/directives';
-import {ModuleWithProviders, NgModule} from '../../metadata/ng_module';
-import {NgModuleDef, NgModuleTransitiveScopes, NgModuleType} from '../../metadata/ng_module_def';
-import {deepForEach, flatten} from '../../util/array_utils';
-import {assertDefined} from '../../util/assert';
-import {EMPTY_ARRAY} from '../../util/empty';
-import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
-import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
-import {ComponentDef} from '../interfaces/definition';
-import {maybeUnwrapFn} from '../util/misc_utils';
-import {stringifyForError} from '../util/stringify_utils';
+import {getCompilerFacade, JitCompilerUsage, R3InjectorMetadataFacade} from '../../compiler/compiler_facade.js';
+import {resolveForwardRef} from '../../di/forward_ref.js';
+import {NG_INJ_DEF} from '../../di/interface/defs.js';
+import {reflectDependencies} from '../../di/jit/util.js';
+import {Type} from '../../interface/type.js';
+import {registerNgModuleType} from '../../linker/ng_module_registration.js';
+import {Component} from '../../metadata/directives.js';
+import {ModuleWithProviders, NgModule} from '../../metadata/ng_module.js';
+import {NgModuleDef, NgModuleTransitiveScopes, NgModuleType} from '../../metadata/ng_module_def.js';
+import {deepForEach, flatten} from '../../util/array_utils.js';
+import {assertDefined} from '../../util/assert.js';
+import {EMPTY_ARRAY} from '../../util/empty.js';
+import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition.js';
+import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields.js';
+import {ComponentDef} from '../interfaces/definition.js';
+import {maybeUnwrapFn} from '../util/misc_utils.js';
+import {stringifyForError} from '../util/stringify_utils.js';
 
-import {angularCoreEnv} from './environment';
-import {patchModuleCompilation} from './module_patch';
+import {angularCoreEnv} from './environment.js';
+import {patchModuleCompilation} from './module_patch.js';
 
 interface ModuleQueueItem {
   moduleType: Type<any>;

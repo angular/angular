@@ -8,7 +8,7 @@
 
 import {Descriptor, NestedProp, PropType} from 'protocol';
 
-import {getKeys} from './object-utils';
+import {getKeys} from './object-utils.js';
 
 // todo(aleksanderbodurri) pull this out of this file
 const METADATA_PROPERTY_NAME = '__ngContext__';

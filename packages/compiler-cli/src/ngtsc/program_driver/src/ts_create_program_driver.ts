@@ -8,11 +8,11 @@
 
 import ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../file_system';
-import {copyFileShimData, retagAllTsFiles, ShimReferenceTagger, untagAllTsFiles} from '../../shims';
-import {RequiredDelegations, toUnredirectedSourceFile} from '../../util/src/typescript';
+import {AbsoluteFsPath} from '../../file_system/index.js';
+import {copyFileShimData, retagAllTsFiles, ShimReferenceTagger, untagAllTsFiles} from '../../shims/index.js';
+import {RequiredDelegations, toUnredirectedSourceFile} from '../../util/src/typescript.js';
 
-import {FileUpdate, MaybeSourceFileWithOriginalFile, NgOriginalFile, ProgramDriver, UpdateMode} from './api';
+import {FileUpdate, MaybeSourceFileWithOriginalFile, NgOriginalFile, ProgramDriver, UpdateMode} from './api.js';
 
 /**
  * Delegates all methods of `ts.CompilerHost` to a delegate, with the exception of

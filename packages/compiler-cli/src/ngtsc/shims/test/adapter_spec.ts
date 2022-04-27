@@ -8,11 +8,12 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom as _} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {makeProgram} from '../../testing';
-import {ShimAdapter} from '../src/adapter';
-import {TestShimGenerator} from './util';
+import {absoluteFrom as _} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {makeProgram} from '../../testing/index.js';
+import {ShimAdapter} from '../src/adapter.js';
+
+import {TestShimGenerator} from './util.js';
 
 runInEachFileSystem(() => {
   describe('ShimAdapter', () => {

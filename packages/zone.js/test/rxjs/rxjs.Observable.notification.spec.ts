@@ -8,7 +8,7 @@
 import {Notification, Observable, of} from 'rxjs';
 import {dematerialize} from 'rxjs/operators';
 
-import {asyncTest, ifEnvSupports} from '../test-util';
+import {asyncTest, ifEnvSupports} from '../test-util.js';
 
 const supportNotification = function() {
   return typeof Notification !== 'undefined';

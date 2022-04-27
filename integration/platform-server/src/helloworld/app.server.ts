@@ -9,8 +9,8 @@
 import {NgModule} from '@angular/core';
 import {ServerModule} from '@angular/platform-server';
 
-import {HelloWorldModule} from './app';
-import {HelloWorldComponent} from './hello-world.component';
+import {HelloWorldModule} from './app.js';
+import {HelloWorldComponent} from './hello-world.component.js';
 
 @NgModule({
   bootstrap: [HelloWorldComponent],

@@ -7,7 +7,7 @@
  */
 import {MessageId, ɵParsedTranslation} from '@angular/localize';
 
-import {Diagnostics} from '../../../diagnostics';
+import {Diagnostics} from '../../../diagnostics.js';
 
 /**
  * Indicates that a parser can parse a given file, with a hint that can be used to speed up actual

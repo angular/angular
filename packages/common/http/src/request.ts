@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpContext} from './context';
-import {HttpHeaders} from './headers';
-import {HttpParams} from './params';
+import {HttpContext} from './context.js';
+import {HttpHeaders} from './headers.js';
+import {HttpParams} from './params.js';
 
 
 /**

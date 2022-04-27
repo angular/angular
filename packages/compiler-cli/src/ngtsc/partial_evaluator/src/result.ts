@@ -8,11 +8,11 @@
 
 import ts from 'typescript';
 
-import {Reference} from '../../imports';
-import {Declaration} from '../../reflection';
+import {Reference} from '../../imports/index.js';
+import {Declaration} from '../../reflection/index.js';
 
-import {DynamicValue} from './dynamic';
-import {SyntheticValue} from './synthetic';
+import {DynamicValue} from './dynamic.js';
+import {SyntheticValue} from './synthetic.js';
 
 
 /**

@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
-import {absoluteFrom, getSourceFileOrError} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {getDeclaration, makeProgram} from '../../testing';
-import {ClassMember, ClassMemberKind, CtorParameter, DeclarationKind, TypeValueReferenceKind} from '../src/host';
-import {TypeScriptReflectionHost} from '../src/typescript';
-import {isNamedClassDeclaration} from '../src/util';
+
+import {absoluteFrom, getSourceFileOrError} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {getDeclaration, makeProgram} from '../../testing/index.js';
+import {ClassMember, ClassMemberKind, CtorParameter, DeclarationKind, TypeValueReferenceKind} from '../src/host.js';
+import {TypeScriptReflectionHost} from '../src/typescript.js';
+import {isNamedClassDeclaration} from '../src/util.js';
 
 runInEachFileSystem(() => {
   describe('reflector', () => {

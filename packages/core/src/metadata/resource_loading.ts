@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
-import {Component} from './directives';
+import {Type} from '../interface/type.js';
+
+import {Component} from './directives.js';
 
 
 /**

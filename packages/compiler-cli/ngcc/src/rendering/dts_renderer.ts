@@ -8,21 +8,21 @@
 import MagicString from 'magic-string';
 import ts from 'typescript';
 
-import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {Reexport} from '../../../src/ngtsc/imports';
-import {Logger} from '../../../src/ngtsc/logging';
-import {CompileResult} from '../../../src/ngtsc/transform';
-import {ImportManager, translateType} from '../../../src/ngtsc/translator';
-import {ModuleWithProvidersAnalyses, ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyzer';
-import {ExportInfo, PrivateDeclarationsAnalyses} from '../analysis/private_declarations_analyzer';
-import {DecorationAnalyses} from '../analysis/types';
-import {IMPORT_PREFIX} from '../constants';
-import {NgccReflectionHost} from '../host/ngcc_host';
-import {EntryPointBundle} from '../packages/entry_point_bundle';
+import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Reexport} from '../../../src/ngtsc/imports/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {CompileResult} from '../../../src/ngtsc/transform/index.js';
+import {ImportManager, translateType} from '../../../src/ngtsc/translator/index.js';
+import {ModuleWithProvidersAnalyses, ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyzer.js';
+import {ExportInfo, PrivateDeclarationsAnalyses} from '../analysis/private_declarations_analyzer.js';
+import {DecorationAnalyses} from '../analysis/types.js';
+import {IMPORT_PREFIX} from '../constants.js';
+import {NgccReflectionHost} from '../host/ngcc_host.js';
+import {EntryPointBundle} from '../packages/entry_point_bundle.js';
 
-import {RenderingFormatter} from './rendering_formatter';
-import {renderSourceAndMap} from './source_maps';
-import {FileToWrite, getImportRewriter} from './utils';
+import {RenderingFormatter} from './rendering_formatter.js';
+import {renderSourceAndMap} from './source_maps.js';
+import {FileToWrite, getImportRewriter} from './utils.js';
 
 /**
  * A structure that captures information about what needs to be rendered

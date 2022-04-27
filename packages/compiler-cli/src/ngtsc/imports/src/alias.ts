@@ -9,11 +9,11 @@
 import {Expression, ExternalExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {UnifiedModulesHost} from '../../core/api';
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
+import {UnifiedModulesHost} from '../../core/api/index.js';
+import {ClassDeclaration, ReflectionHost} from '../../reflection/index.js';
 
-import {EmittedReference, ImportFlags, ReferenceEmitKind, ReferenceEmitStrategy} from './emitter';
-import {Reference} from './references';
+import {EmittedReference, ImportFlags, ReferenceEmitKind, ReferenceEmitStrategy} from './emitter.js';
+import {Reference} from './references.js';
 
 
 // Escape anything that isn't alphanumeric, '/' or '_'.

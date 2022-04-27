@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './node_util';
-import './events';
-import './fs';
+import './node_util.js';
+import './events.js';
+import './fs.js';
 
-import {findEventTasks} from '../common/events';
-import {patchTimer} from '../common/timers';
-import {ArraySlice, isMix, patchMacroTask, patchMicroTask} from '../common/utils';
+import {findEventTasks} from '../common/events.js';
+import {patchTimer} from '../common/timers.js';
+import {ArraySlice, isMix, patchMacroTask, patchMicroTask} from '../common/utils.js';
 
 const set = 'set';
 const clear = 'clear';

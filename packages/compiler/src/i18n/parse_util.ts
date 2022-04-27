@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseError, ParseSourceSpan} from '../parse_util';
+import {ParseError, ParseSourceSpan} from '../parse_util.js';
 
 /**
  * An i18n error.

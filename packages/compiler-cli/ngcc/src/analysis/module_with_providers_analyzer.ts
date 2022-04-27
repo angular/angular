@@ -7,12 +7,12 @@
  */
 import ts from 'typescript';
 
-import {ReferencesRegistry} from '../../../src/ngtsc/annotations';
-import {Reference} from '../../../src/ngtsc/imports';
-import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
-import {ClassDeclaration, DeclarationNode, isNamedClassDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
-import {NgccReflectionHost} from '../host/ngcc_host';
-import {hasNameIdentifier, isDefined} from '../utils';
+import {ReferencesRegistry} from '../../../src/ngtsc/annotations/index.js';
+import {Reference} from '../../../src/ngtsc/imports/index.js';
+import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator/index.js';
+import {ClassDeclaration, DeclarationNode, isNamedClassDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection/index.js';
+import {NgccReflectionHost} from '../host/ngcc_host.js';
+import {hasNameIdentifier, isDefined} from '../utils.js';
 
 /**
  * A structure returned from `getModuleWithProvidersFunctions()` that describes functions

@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {getImportSpecifier} from '../../utils/typescript/imports';
+import {getImportSpecifier} from '../../utils/typescript/imports.js';
 
 export const classes = new Set(['FormArray', 'FormBuilder', 'FormControl', 'FormGroup']);
 export const formControl = 'FormControl';

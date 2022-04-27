@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentInspector} from './component-inspector';
+import {ComponentInspector} from './component-inspector.js';
 
 describe('ComponentInspector', () => {
   it('should create instance from class', () => {

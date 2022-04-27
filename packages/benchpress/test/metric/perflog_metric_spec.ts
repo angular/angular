@@ -8,8 +8,8 @@
 
 import {StaticProvider} from '@angular/core';
 
-import {Injector, Metric, Options, PerfLogEvent, PerfLogFeatures, PerflogMetric, WebDriverExtension} from '../../index';
-import {TraceEventFactory} from '../trace_event_factory';
+import {Injector, Metric, Options, PerfLogEvent, PerfLogFeatures, PerflogMetric, WebDriverExtension} from '../../index.js';
+import {TraceEventFactory} from '../trace_event_factory.js';
 
 (function() {
 let commandLog: any[];

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileStats, FileSystem, PathSegment, PathString} from './types';
+import {AbsoluteFsPath, FileStats, FileSystem, PathSegment, PathString} from './types.js';
 
 /**
  * The default `FileSystem` that will always fail.

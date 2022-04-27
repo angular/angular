@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createRouterState} from '../src/create_router_state';
-import {Routes} from '../src/models';
-import {recognize} from '../src/recognize';
-import {DefaultRouteReuseStrategy} from '../src/route_reuse_strategy';
-import {ActivatedRoute, advanceActivatedRoute, createEmptyState, RouterState, RouterStateSnapshot} from '../src/router_state';
-import {PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
-import {TreeNode} from '../src/utils/tree';
+import {createRouterState} from '../src/create_router_state.js';
+import {Routes} from '../src/models.js';
+import {recognize} from '../src/recognize.js';
+import {DefaultRouteReuseStrategy} from '../src/route_reuse_strategy.js';
+import {ActivatedRoute, advanceActivatedRoute, createEmptyState, RouterState, RouterStateSnapshot} from '../src/router_state.js';
+import {PRIMARY_OUTLET} from '../src/shared.js';
+import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree.js';
+import {TreeNode} from '../src/utils/tree.js';
 
 describe('create router state', () => {
   let reuseStrategy: DefaultRouteReuseStrategy;

@@ -10,9 +10,9 @@ import {NgModule} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ApplicationEnvironment, ApplicationOperations, DevToolsModule} from 'ng-devtools';
 
-import {AppComponent} from './app.component';
-import {ChromeApplicationEnvironment} from './chrome-application-environment';
-import {ChromeApplicationOperations} from './chrome-application-operations';
+import {AppComponent} from './app.component.js';
+import {ChromeApplicationEnvironment} from './chrome-application-environment.js';
+import {ChromeApplicationOperations} from './chrome-application-operations.js';
 
 @NgModule({
   declarations: [AppComponent],

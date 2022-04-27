@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {removeDuplicates} from './array-deduplication';
-import {CldrLocaleData} from './cldr-data';
-import {getDayPeriodsAmPm} from './day-periods';
-import {fileHeader} from './file-header';
-import {BaseCurrencies} from './locale-base-currencies';
-import {generateLocaleCurrencies, getCurrencySettings} from './locale-currencies';
-import {stringify} from './object-stringify';
-import {getPluralFunction} from './plural-function';
+import {removeDuplicates} from './array-deduplication.js';
+import {CldrLocaleData} from './cldr-data.js';
+import {getDayPeriodsAmPm} from './day-periods.js';
+import {fileHeader} from './file-header.js';
+import {BaseCurrencies} from './locale-base-currencies.js';
+import {generateLocaleCurrencies, getCurrencySettings} from './locale-currencies.js';
+import {stringify} from './object-stringify.js';
+import {getPluralFunction} from './plural-function.js';
 
 const WEEK_DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 

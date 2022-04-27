@@ -8,7 +8,7 @@
 
 import {asapScheduler, bindCallback, bindNodeCallback, Observable} from 'rxjs';
 
-import {asyncTest} from '../test-util';
+import {asyncTest} from '../test-util.js';
 
 describe('Observable.bindNodeCallback', () => {
   let log: any[];

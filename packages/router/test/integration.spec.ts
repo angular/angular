@@ -16,10 +16,10 @@ import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, 
 import {EMPTY, Observable, Observer, of, Subscription, SubscriptionLike} from 'rxjs';
 import {delay, filter, first, map, mapTo, tap} from 'rxjs/operators';
 
-import {forEach} from '../src/utils/collection';
-import {getLoadedRoutes} from '../src/utils/config';
-import {isUrlTree} from '../src/utils/type_guards';
-import {RouterTestingModule} from '../testing';
+import {forEach} from '../src/utils/collection.js';
+import {getLoadedRoutes} from '../src/utils/config.js';
+import {isUrlTree} from '../src/utils/type_guards.js';
+import {RouterTestingModule} from '../testing/index.js';
 
 describe('Integration', () => {
   const noopConsole: Console = {log() {}, warn() {}};

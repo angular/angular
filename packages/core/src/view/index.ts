@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {EMPTY_ARRAY} from '../util/empty';
+export {EMPTY_ARRAY} from '../util/empty.js';

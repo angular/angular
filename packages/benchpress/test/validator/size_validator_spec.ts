@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, MeasureValues, SizeValidator} from '../../index';
+import {Injector, MeasureValues, SizeValidator} from '../../index.js';
 
 {
   describe('size validator', () => {

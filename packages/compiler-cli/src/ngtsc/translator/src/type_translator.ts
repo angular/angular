@@ -9,8 +9,8 @@
 import * as o from '@angular/compiler';
 import ts from 'typescript';
 
-import {Context} from './context';
-import {ImportManager} from './import_manager';
+import {Context} from './context.js';
+import {ImportManager} from './import_manager.js';
 
 
 export function translateType(type: o.Type, imports: ImportManager): ts.TypeNode {

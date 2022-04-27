@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertParentView} from './assert';
-import {icuContainerIterate} from './i18n/i18n_tree_shaking';
-import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
-import {TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
-import {RNode} from './interfaces/renderer_dom';
-import {isLContainer} from './interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, LView, T_HOST, TVIEW, TView} from './interfaces/view';
-import {assertTNodeType} from './node_assert';
-import {getProjectionNodes} from './node_manipulation';
-import {getLViewParent} from './util/view_traversal_utils';
-import {unwrapRNode} from './util/view_utils';
+import {assertParentView} from './assert.js';
+import {icuContainerIterate} from './i18n/i18n_tree_shaking.js';
+import {CONTAINER_HEADER_OFFSET} from './interfaces/container.js';
+import {TIcuContainerNode, TNode, TNodeType} from './interfaces/node.js';
+import {RNode} from './interfaces/renderer_dom.js';
+import {isLContainer} from './interfaces/type_checks.js';
+import {DECLARATION_COMPONENT_VIEW, LView, T_HOST, TVIEW, TView} from './interfaces/view.js';
+import {assertTNodeType} from './node_assert.js';
+import {getProjectionNodes} from './node_manipulation.js';
+import {getLViewParent} from './util/view_traversal_utils.js';
+import {unwrapRNode} from './util/view_utils.js';
 
 
 

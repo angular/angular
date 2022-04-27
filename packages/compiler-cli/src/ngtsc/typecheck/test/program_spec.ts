@@ -8,14 +8,13 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {FileUpdate, TsCreateProgramDriver, UpdateMode} from '../../program_driver';
-import {sfExtensionData, ShimReferenceTagger} from '../../shims';
-import {expectCompleteReuse, makeProgram} from '../../testing';
-import {OptimizeFor} from '../api';
-
-import {setup} from '../testing';
+import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {FileUpdate, TsCreateProgramDriver, UpdateMode} from '../../program_driver/index.js';
+import {sfExtensionData, ShimReferenceTagger} from '../../shims/index.js';
+import {expectCompleteReuse, makeProgram} from '../../testing/index.js';
+import {OptimizeFor} from '../api/index.js';
+import {setup} from '../testing/index.js';
 
 runInEachFileSystem(() => {
   describe('template type-checking program', () => {

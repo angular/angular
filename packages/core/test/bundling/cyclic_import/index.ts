@@ -8,7 +8,7 @@
 
 import {Component, NgModule, ɵrenderComponent as renderComponent} from '@angular/core';
 
-import {TriggerComponent} from './trigger';
+import {TriggerComponent} from './trigger.js';
 
 @Component({
   selector: 'dep',

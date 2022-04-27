@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockResponse} from './fetch';
-import {normalizeUrl} from './utils';
+import {MockResponse} from './fetch.js';
+import {normalizeUrl} from './utils.js';
 
 export interface DehydratedResponse {
   body: string|null;

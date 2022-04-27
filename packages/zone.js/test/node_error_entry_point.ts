@@ -7,29 +7,28 @@
  */
 
 // Must be loaded before zone loads, so that zone can detect WTF.
-import './test_fake_polyfill';
-
+import './test_fake_polyfill.js';
 // Setup tests for Zone without microtask support
-import '../lib/zone';
-import '../lib/common/promise';
-import '../lib/common/to-string';
+import '../lib/zone.js';
+import '../lib/common/promise.js';
+import '../lib/common/to-string.js';
 
 process.env['errorpolicy'] = (global as any)['__Zone_Error_ZoneJsInternalStackFrames_policy'] =
     'disable';
 // Setup test environment
 require('@bazel/jasmine').boot();
-import './test-env-setup-jasmine';
+import './test-env-setup-jasmine.js';
 
-import './wtf_mock';
-import '../lib/common/error-rewrite';
-import '../lib/node/node';
-import '../lib/zone-spec/async-test';
-import '../lib/zone-spec/fake-async-test';
-import '../lib/zone-spec/long-stack-trace';
-import '../lib/zone-spec/proxy';
-import '../lib/zone-spec/sync-test';
-import '../lib/zone-spec/task-tracking';
-import '../lib/zone-spec/wtf';
-import '../lib/rxjs/rxjs';
+import './wtf_mock.js';
+import '../lib/common/error-rewrite.js';
+import '../lib/node/node.js';
+import '../lib/zone-spec/async-test.js';
+import '../lib/zone-spec/fake-async-test.js';
+import '../lib/zone-spec/long-stack-trace.js';
+import '../lib/zone-spec/proxy.js';
+import '../lib/zone-spec/sync-test.js';
+import '../lib/zone-spec/task-tracking.js';
+import '../lib/zone-spec/wtf.js';
+import '../lib/rxjs/rxjs.js';
 
-import '../lib/testing/promise-testing';
+import '../lib/testing/promise-testing.js';

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../../src/interface/type';
-import {setClassMetadata} from '../../src/render3/metadata';
+import {Type} from '../../src/interface/type.js';
+import {setClassMetadata} from '../../src/render3/metadata.js';
 
 interface Decorator {
   type: any;

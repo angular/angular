@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Adapter} from './adapter';
-import {CacheState, NormalizedUrl, UpdateCacheStatus, UpdateSource, UrlMetadata} from './api';
-import {Database, Table} from './database';
-import {CacheTable} from './db-cache';
-import {errorToString, SwCriticalError, SwUnrecoverableStateError} from './error';
-import {IdleScheduler} from './idle';
-import {AssetGroupConfig} from './manifest';
-import {NamedCache} from './named-cache-storage';
-import {sha1Binary} from './sha1';
+import {Adapter} from './adapter.js';
+import {CacheState, NormalizedUrl, UpdateCacheStatus, UpdateSource, UrlMetadata} from './api.js';
+import {Database, Table} from './database.js';
+import {CacheTable} from './db-cache.js';
+import {errorToString, SwCriticalError, SwUnrecoverableStateError} from './error.js';
+import {IdleScheduler} from './idle.js';
+import {AssetGroupConfig} from './manifest.js';
+import {NamedCache} from './named-cache-storage.js';
+import {sha1Binary} from './sha1.js';
 
 /**
  * A group of assets that are cached in a `Cache` and managed by a given policy.

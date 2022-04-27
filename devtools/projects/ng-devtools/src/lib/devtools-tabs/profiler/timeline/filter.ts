@@ -8,7 +8,7 @@
 
 import {ProfilerFrame} from 'protocol';
 
-import {GraphNode} from './record-formatter/record-formatter';
+import {GraphNode} from './record-formatter/record-formatter.js';
 
 export type Filter = (nodes: GraphNode) => boolean;
 

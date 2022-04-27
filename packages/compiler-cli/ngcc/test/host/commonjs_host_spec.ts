@@ -7,19 +7,19 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DeclarationKind, DownleveledEnum, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
-import {getDeclaration, loadFakeCore, loadTestFiles} from '../../../src/ngtsc/testing';
-import {CommonJsReflectionHost} from '../../src/host/commonjs_host';
-import {DelegatingReflectionHost} from '../../src/host/delegating_host';
-import {getIifeBody} from '../../src/host/esm2015_host';
-import {NgccReflectionHost} from '../../src/host/ngcc_host';
-import {BundleProgram} from '../../src/packages/bundle_program';
-import {getRootFiles, makeTestBundleProgram, makeTestDtsBundleProgram} from '../helpers/utils';
+import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {ClassMemberKind, ConcreteDeclaration, CtorParameter, DeclarationKind, DownleveledEnum, InlineDeclaration, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, TypeScriptReflectionHost, TypeValueReferenceKind} from '../../../src/ngtsc/reflection/index.js';
+import {getDeclaration, loadFakeCore, loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {CommonJsReflectionHost} from '../../src/host/commonjs_host.js';
+import {DelegatingReflectionHost} from '../../src/host/delegating_host.js';
+import {getIifeBody} from '../../src/host/esm2015_host.js';
+import {NgccReflectionHost} from '../../src/host/ngcc_host.js';
+import {BundleProgram} from '../../src/packages/bundle_program.js';
+import {getRootFiles, makeTestBundleProgram, makeTestDtsBundleProgram} from '../helpers/utils.js';
 
-import {expectTypeValueReferencesForParameters} from './util';
+import {expectTypeValueReferencesForParameters} from './util.js';
 
 runInEachFileSystem(() => {
   describe('CommonJsReflectionHost', () => {

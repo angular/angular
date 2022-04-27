@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {zoneSymbol} from '../../lib/common/utils';
+import {zoneSymbol} from '../../lib/common/utils.js';
 
 describe('process related test', () => {
   let zoneA: Zone, result: any[];

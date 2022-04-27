@@ -9,8 +9,8 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {DirectivePosition} from 'protocol';
 
-import {DirectivePropertyResolver, DirectiveTreeData} from '../../property-resolver/directive-property-resolver';
-import {ElementPropertyResolver, FlatNode} from '../../property-resolver/element-property-resolver';
+import {DirectivePropertyResolver, DirectiveTreeData} from '../../property-resolver/directive-property-resolver.js';
+import {ElementPropertyResolver, FlatNode} from '../../property-resolver/element-property-resolver.js';
 
 @Component({
   selector: 'ng-property-view',

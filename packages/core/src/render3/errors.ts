@@ -7,14 +7,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {Type} from '../interface/type';
+import {RuntimeError, RuntimeErrorCode} from '../errors.js';
+import {Type} from '../interface/type.js';
 
-import {getComponentDef} from './definition';
-import {TNode} from './interfaces/node';
-import {LView, TVIEW} from './interfaces/view';
-import {INTERPOLATION_DELIMITER} from './util/misc_utils';
-import {stringifyForError} from './util/stringify_utils';
+import {getComponentDef} from './definition.js';
+import {TNode} from './interfaces/node.js';
+import {LView, TVIEW} from './interfaces/view.js';
+import {INTERPOLATION_DELIMITER} from './util/misc_utils.js';
+import {stringifyForError} from './util/stringify_utils.js';
 
 /** Verifies that a given type is a Standalone Component. */
 export function assertStandaloneComponentType(type: Type<unknown>) {

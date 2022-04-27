@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MessageBus} from './message-bus';
-import {Events, Topic} from './messages';
-import {PriorityAwareMessageBus} from './priority-aware-message-bus';
+import {MessageBus} from './message-bus.js';
+import {Events, Topic} from './messages.js';
+import {PriorityAwareMessageBus} from './priority-aware-message-bus.js';
 
 class MockMessageBus extends MessageBus<Events> {
   cbs: any = {};

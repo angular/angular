@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseSourceSpan} from '../../src/parse_util';
-import * as t from '../../src/render3/r3_ast';
-import {parseR3 as parse} from './view/util';
+import {ParseSourceSpan} from '../../src/parse_util.js';
+import * as t from '../../src/render3/r3_ast.js';
+
+import {parseR3 as parse} from './view/util.js';
 
 
 class R3AstSourceSpans implements t.Visitor<void> {

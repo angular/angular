@@ -9,8 +9,8 @@
 import {HttpBackend, HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
 
-import {HttpTestingController} from './api';
-import {HttpClientTestingBackend} from './backend';
+import {HttpTestingController} from './api.js';
+import {HttpClientTestingBackend} from './backend.js';
 
 
 /**

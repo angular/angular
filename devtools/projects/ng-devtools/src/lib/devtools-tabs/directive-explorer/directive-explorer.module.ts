@@ -16,11 +16,11 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatTreeModule} from '@angular/material/tree';
 
-import {AngularSplitModule} from '../../vendor/angular-split/public_api';
+import {AngularSplitModule} from '../../vendor/angular-split/public_api.js';
 
-import {DirectiveExplorerComponent} from './directive-explorer.component';
-import {DirectiveForestModule} from './directive-forest/directive-forest.module';
-import {PropertyTabModule} from './property-tab/property-tab.module';
+import {DirectiveExplorerComponent} from './directive-explorer.component.js';
+import {DirectiveForestModule} from './directive-forest/directive-forest.module.js';
+import {PropertyTabModule} from './property-tab/property-tab.module.js';
 
 @NgModule({
   declarations: [DirectiveExplorerComponent],

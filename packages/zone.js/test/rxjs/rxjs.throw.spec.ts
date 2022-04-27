@@ -7,7 +7,7 @@
  */
 import {asapScheduler, Observable, throwError} from 'rxjs';
 
-import {asyncTest} from '../test-util';
+import {asyncTest} from '../test-util.js';
 
 describe('Observable.throw', () => {
   let log: any[];

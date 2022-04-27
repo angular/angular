@@ -8,10 +8,10 @@
 import {Compiler, Component, ComponentFactory, Injector, NgModule, TestabilityRegistry} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-import * as angular from '../src/angular1';
-import {DowngradeComponentAdapter, groupNodesBySelector} from '../src/downgrade_component_adapter';
+import * as angular from '../src/angular1.js';
+import {DowngradeComponentAdapter, groupNodesBySelector} from '../src/downgrade_component_adapter.js';
 
-import {nodes, withEachNg1Version} from './helpers/common_test_helpers';
+import {nodes, withEachNg1Version} from './helpers/common_test_helpers.js';
 
 withEachNg1Version(() => {
   describe('DowngradeComponentAdapter', () => {

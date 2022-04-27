@@ -5,21 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {ParsedConfiguration} from '../../../src/perform_compile';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {ParsedConfiguration} from '../../../src/perform_compile.js';
+import {createDependencyInfo, EntryPointWithDependencies} from '../dependencies/dependency_host.js';
+import {DependencyResolver} from '../dependencies/dependency_resolver.js';
+import {EsmDependencyHost} from '../dependencies/esm_dependency_host.js';
+import {ModuleResolver} from '../dependencies/module_resolver.js';
+import {NgccConfiguration} from '../packages/configuration.js';
+import {EntryPointManifest} from '../packages/entry_point_manifest.js';
+import {getPathMappingsFromTsConfig} from '../path_mappings.js';
 
-import {createDependencyInfo, EntryPointWithDependencies} from '../dependencies/dependency_host';
-import {DependencyResolver} from '../dependencies/dependency_resolver';
-import {EsmDependencyHost} from '../dependencies/esm_dependency_host';
-import {ModuleResolver} from '../dependencies/module_resolver';
-import {NgccConfiguration} from '../packages/configuration';
-import {EntryPointManifest} from '../packages/entry_point_manifest';
-import {getPathMappingsFromTsConfig} from '../path_mappings';
-
-import {EntryPointCollector} from './entry_point_collector';
-import {TracingEntryPointFinder} from './tracing_entry_point_finder';
-import {trackDuration} from './utils';
+import {EntryPointCollector} from './entry_point_collector.js';
+import {TracingEntryPointFinder} from './tracing_entry_point_finder.js';
+import {trackDuration} from './utils.js';
 
 /**
  * An EntryPointFinder that starts from the files in the program defined by the given tsconfig.json

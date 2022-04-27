@@ -7,16 +7,16 @@
  */
 import ts from 'typescript';
 
-import {absoluteFromSourceFile, AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {MetadataReader} from '../../../src/ngtsc/metadata';
-import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
-import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
-import {HandlerFlags, TraitState} from '../../../src/ngtsc/transform';
-import {NgccReflectionHost} from '../host/ngcc_host';
-import {MigrationHost} from '../migrations/migration';
+import {absoluteFromSourceFile, AbsoluteFsPath} from '../../../src/ngtsc/file_system/index.js';
+import {MetadataReader} from '../../../src/ngtsc/metadata/index.js';
+import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator/index.js';
+import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection/index.js';
+import {HandlerFlags, TraitState} from '../../../src/ngtsc/transform/index.js';
+import {NgccReflectionHost} from '../host/ngcc_host.js';
+import {MigrationHost} from '../migrations/migration.js';
 
-import {NgccTraitCompiler} from './ngcc_trait_compiler';
-import {isWithinPackage} from './util';
+import {NgccTraitCompiler} from './ngcc_trait_compiler.js';
+import {isWithinPackage} from './util.js';
 
 /**
  * The standard implementation of `MigrationHost`, which is created by the `DecorationAnalyzer`.

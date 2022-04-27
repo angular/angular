@@ -10,9 +10,9 @@ import {HttpHeaders} from '@angular/common/http';
 import {BehaviorSubject, from, Observable, Observer, of} from 'rxjs';
 import {concatMap, first} from 'rxjs/operators';
 
-import {delayResponse} from './delay-response';
-import {getStatusText, isSuccess, STATUS} from './http-status-codes';
-import {InMemoryBackendConfig, InMemoryBackendConfigArgs, InMemoryDbService, ParsedRequestUrl, parseUri, PassThruBackend, removeTrailingSlash, RequestCore, RequestInfo, RequestInfoUtilities, ResponseOptions, UriInfo} from './interfaces';
+import {delayResponse} from './delay-response.js';
+import {getStatusText, isSuccess, STATUS} from './http-status-codes.js';
+import {InMemoryBackendConfig, InMemoryBackendConfigArgs, InMemoryDbService, ParsedRequestUrl, parseUri, PassThruBackend, removeTrailingSlash, RequestCore, RequestInfo, RequestInfoUtilities, ResponseOptions, UriInfo} from './interfaces.js';
 
 /**
  * Base class for in-memory web api back-ends

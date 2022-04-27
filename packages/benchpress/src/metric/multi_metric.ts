@@ -8,7 +8,7 @@
 
 import {InjectionToken, Injector} from '@angular/core';
 
-import {Metric} from '../metric';
+import {Metric} from '../metric.js';
 
 export class MultiMetric extends Metric {
   static provideWith(childTokens: any[]): any[] {

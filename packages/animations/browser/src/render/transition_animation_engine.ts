@@ -7,17 +7,17 @@
  */
 import {AnimationOptions, AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵAnimationGroupPlayer as AnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleDataMap} from '@angular/animations';
 
-import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
-import {AnimationTransitionFactory} from '../dsl/animation_transition_factory';
-import {AnimationTransitionInstruction} from '../dsl/animation_transition_instruction';
-import {AnimationTrigger} from '../dsl/animation_trigger';
-import {ElementInstructionMap} from '../dsl/element_instruction_map';
-import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
-import {missingEvent, missingTrigger, transitionFailed, triggerTransitionsFailed, unregisteredTrigger, unsupportedTriggerEvent} from '../error_helpers';
-import {copyObj, ENTER_CLASSNAME, eraseStyles, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, setStyles} from '../util';
+import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction.js';
+import {AnimationTransitionFactory} from '../dsl/animation_transition_factory.js';
+import {AnimationTransitionInstruction} from '../dsl/animation_transition_instruction.js';
+import {AnimationTrigger} from '../dsl/animation_trigger.js';
+import {ElementInstructionMap} from '../dsl/element_instruction_map.js';
+import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer.js';
+import {missingEvent, missingTrigger, transitionFailed, triggerTransitionsFailed, unregisteredTrigger, unsupportedTriggerEvent} from '../error_helpers.js';
+import {copyObj, ENTER_CLASSNAME, eraseStyles, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, setStyles} from '../util.js';
 
-import {AnimationDriver} from './animation_driver';
-import {getOrSetDefaultValue, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
+import {AnimationDriver} from './animation_driver.js';
+import {getOrSetDefaultValue, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared.js';
 
 const QUEUED_CLASSNAME = 'ng-animate-queued';
 const QUEUED_SELECTOR = '.ng-animate-queued';

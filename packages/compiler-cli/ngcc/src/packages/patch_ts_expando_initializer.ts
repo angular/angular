@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
-import {hasNameIdentifier} from '../utils';
+
+import {hasNameIdentifier} from '../utils.js';
 
 /**
  * Consider the following ES5 code that may have been generated for a class:

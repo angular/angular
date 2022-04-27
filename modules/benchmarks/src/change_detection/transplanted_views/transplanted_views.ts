@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, NgModule, TemplateRef, ViewChild} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {newArray} from '../util';
+import {newArray} from '../util.js';
 
 @Component({
   selector: 'insertion-component',

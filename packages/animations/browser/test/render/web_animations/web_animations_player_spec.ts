@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {DOMAnimation} from '../../../src/render/web_animations/dom_animation';
-import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animations_player';
+import {DOMAnimation} from '../../../src/render/web_animations/dom_animation.js';
+import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animations_player.js';
 
 {
   let element: any;

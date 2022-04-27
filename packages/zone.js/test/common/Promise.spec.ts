@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isNode, zoneSymbol} from '../../lib/common/utils';
-import {ifEnvSupports} from '../test-util';
+import {isNode, zoneSymbol} from '../../lib/common/utils.js';
+import {ifEnvSupports} from '../test-util.js';
 
 declare const global: any;
 

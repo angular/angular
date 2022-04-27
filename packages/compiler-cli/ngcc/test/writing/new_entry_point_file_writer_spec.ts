@@ -5,21 +5,21 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {RawSourceMap} from '../../../src/ngtsc/sourcemaps';
-import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {DtsProcessing} from '../../src/execution/tasks/api';
-import {NgccConfiguration} from '../../src/packages/configuration';
-import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointInfo, isEntryPoint} from '../../src/packages/entry_point';
-import {EntryPointBundle, makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
-import {NewEntryPointPropertiesMap} from '../../src/packages/entry_point_manifest';
-import {createModuleResolutionCache, SharedFileCache} from '../../src/packages/source_file_cache';
-import {FileWriter} from '../../src/writing/file_writer';
-import {NewEntryPointFileWriter} from '../../src/writing/new_entry_point_file_writer';
-import {DirectPackageJsonUpdater} from '../../src/writing/package_json_updater';
-import {loadPackageJson} from '../packages/entry_point_spec';
+import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {RawSourceMap} from '../../../src/ngtsc/sourcemaps/index.js';
+import {loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {DtsProcessing} from '../../src/execution/tasks/api.js';
+import {NgccConfiguration} from '../../src/packages/configuration.js';
+import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointInfo, isEntryPoint} from '../../src/packages/entry_point.js';
+import {EntryPointBundle, makeEntryPointBundle} from '../../src/packages/entry_point_bundle.js';
+import {NewEntryPointPropertiesMap} from '../../src/packages/entry_point_manifest.js';
+import {createModuleResolutionCache, SharedFileCache} from '../../src/packages/source_file_cache.js';
+import {FileWriter} from '../../src/writing/file_writer.js';
+import {NewEntryPointFileWriter} from '../../src/writing/new_entry_point_file_writer.js';
+import {DirectPackageJsonUpdater} from '../../src/writing/package_json_updater.js';
+import {loadPackageJson} from '../packages/entry_point_spec.js';
 
 runInEachFileSystem(() => {
   describe('NewEntryPointFileWriter', () => {

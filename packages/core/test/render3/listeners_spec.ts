@@ -9,14 +9,14 @@
 import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 
-import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵreference, ɵɵresolveBody, ɵɵresolveDocument} from '../../src/render3/index';
-import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵgetCurrentView, ɵɵlistener, ɵɵtext} from '../../src/render3/instructions/all';
-import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {GlobalTargetResolver} from '../../src/render3/interfaces/renderer';
-import {ɵɵresetView, ɵɵrestoreView} from '../../src/render3/state';
+import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵreference, ɵɵresolveBody, ɵɵresolveDocument} from '../../src/render3/index.js';
+import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵgetCurrentView, ɵɵlistener, ɵɵtext} from '../../src/render3/instructions/all.js';
+import {RenderFlags} from '../../src/render3/interfaces/definition.js';
+import {GlobalTargetResolver} from '../../src/render3/interfaces/renderer.js';
+import {ɵɵresetView, ɵɵrestoreView} from '../../src/render3/state.js';
 
-import {getRendererFactory2} from './imported_renderer2';
-import {ComponentFixture, containerEl, createComponent, getDirectiveOnNode, renderToHtml, TemplateFixture} from './render_util';
+import {getRendererFactory2} from './imported_renderer2.js';
+import {ComponentFixture, containerEl, createComponent, getDirectiveOnNode, renderToHtml, TemplateFixture} from './render_util.js';
 
 
 describe('event listeners', () => {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {patchEventTarget} from '../common/events';
+import {patchEventTarget} from '../common/events.js';
 
 Zone.__load_patch('EventEmitter', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   // For EventEmitter

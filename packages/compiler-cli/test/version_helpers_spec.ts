@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compareNumbers, compareVersions, isVersionBetween, toNumbers} from '../src/version_helpers';
+import {compareNumbers, compareVersions, isVersionBetween, toNumbers} from '../src/version_helpers.js';
 
 
 describe('toNumbers', () => {

@@ -8,11 +8,11 @@
 
 import {Directive, OnDestroy, OnInit} from '@angular/core';
 
-import {FormGroup} from '../model/form_group';
+import {FormGroup} from '../model/form_group.js';
 
-import {ControlContainer} from './control_container';
-import {Form} from './form_interface';
-import {controlPath} from './shared';
+import {ControlContainer} from './control_container.js';
+import {Form} from './form_interface.js';
+import {controlPath} from './shared.js';
 
 
 

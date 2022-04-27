@@ -7,9 +7,9 @@
  */
 import * as o from '@angular/compiler';
 
-import {AstFactory, BinaryOperator, ObjectLiteralProperty, SourceMapRange, TemplateElement, TemplateLiteral, UnaryOperator} from './api/ast_factory';
-import {ImportGenerator} from './api/import_generator';
-import {Context} from './context';
+import {AstFactory, BinaryOperator, ObjectLiteralProperty, SourceMapRange, TemplateElement, TemplateLiteral, UnaryOperator} from './api/ast_factory.js';
+import {ImportGenerator} from './api/import_generator.js';
+import {Context} from './context.js';
 
 const UNARY_OPERATORS = new Map<o.UnaryOperator, UnaryOperator>([
   [o.UnaryOperator.Minus, '-'],

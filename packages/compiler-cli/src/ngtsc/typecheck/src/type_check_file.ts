@@ -7,16 +7,16 @@
  */
 import ts from 'typescript';
 
-import {AbsoluteFsPath, join} from '../../file_system';
-import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
-import {ImportManager} from '../../translator';
-import {TypeCheckBlockMetadata, TypeCheckingConfig} from '../api';
+import {AbsoluteFsPath, join} from '../../file_system/index.js';
+import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports/index.js';
+import {ClassDeclaration, ReflectionHost} from '../../reflection/index.js';
+import {ImportManager} from '../../translator/index.js';
+import {TypeCheckBlockMetadata, TypeCheckingConfig} from '../api/index.js';
 
-import {DomSchemaChecker} from './dom';
-import {Environment} from './environment';
-import {OutOfBandDiagnosticRecorder} from './oob';
-import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block';
+import {DomSchemaChecker} from './dom.js';
+import {Environment} from './environment.js';
+import {OutOfBandDiagnosticRecorder} from './oob.js';
+import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block.js';
 
 
 

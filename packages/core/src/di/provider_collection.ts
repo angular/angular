@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
-import {getComponentDef} from '../render3/definition';
-import {getFactoryDef} from '../render3/definition_factory';
-import {throwCyclicDependencyError, throwInvalidProviderError} from '../render3/errors_di';
-import {deepForEach} from '../util/array_utils';
-import {getClosureSafeProperty} from '../util/property';
-import {stringify} from '../util/stringify';
-import {EMPTY_ARRAY} from '../view';
+import {Type} from '../interface/type.js';
+import {getComponentDef} from '../render3/definition.js';
+import {getFactoryDef} from '../render3/definition_factory.js';
+import {throwCyclicDependencyError, throwInvalidProviderError} from '../render3/errors_di.js';
+import {deepForEach} from '../util/array_utils.js';
+import {getClosureSafeProperty} from '../util/property.js';
+import {stringify} from '../util/stringify.js';
+import {EMPTY_ARRAY} from '../view/index.js';
 
-import {resolveForwardRef} from './forward_ref';
-import {INJECTOR_INITIALIZER} from './initializer_token';
-import {ɵɵinject as inject} from './injector_compatibility';
-import {getInjectorDef, InjectorType, InjectorTypeWithProviders} from './interface/defs';
-import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, Provider, StaticClassProvider, TypeProvider, ValueProvider} from './interface/provider';
-import {INJECTOR_DEF_TYPES} from './internal_tokens';
+import {resolveForwardRef} from './forward_ref.js';
+import {INJECTOR_INITIALIZER} from './initializer_token.js';
+import {ɵɵinject as inject} from './injector_compatibility.js';
+import {getInjectorDef, InjectorType, InjectorTypeWithProviders} from './interface/defs.js';
+import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, Provider, StaticClassProvider, TypeProvider, ValueProvider} from './interface/provider.js';
+import {INJECTOR_DEF_TYPES} from './internal_tokens.js';
 
 /**
  * Collects providers from all NgModules and standalone components, including transitively imported

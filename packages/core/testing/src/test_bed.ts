@@ -8,10 +8,10 @@
 
 import {Component, Directive, InjectFlags, NgModule, Pipe, PlatformRef, ProviderToken, Type} from '@angular/core';
 
-import {ComponentFixture} from './component_fixture';
-import {MetadataOverride} from './metadata_override';
-import {_getTestBedRender3, TestBedRender3} from './r3_test_bed';
-import {TestBedStatic, TestEnvironmentOptions, TestModuleMetadata} from './test_bed_common';
+import {ComponentFixture} from './component_fixture.js';
+import {MetadataOverride} from './metadata_override.js';
+import {_getTestBedRender3, TestBedRender3} from './r3_test_bed.js';
+import {TestBedStatic, TestEnvironmentOptions, TestModuleMetadata} from './test_bed_common.js';
 
 /**
  * @publicApi

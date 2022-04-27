@@ -12,7 +12,7 @@ import {By} from '@angular/platform-browser';
 import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 
-import {RouterModule} from '../src';
+import {RouterModule} from '../src/index.js';
 
 @Component({template: '<div>simple standalone</div>', standalone: true})
 export class SimpleStandaloneComponent {

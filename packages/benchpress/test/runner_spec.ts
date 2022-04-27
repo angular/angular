@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, Metric, Options, Runner, SampleDescription, Sampler, SampleState, Validator, WebDriverAdapter} from '../index';
+import {Injector, Metric, Options, Runner, SampleDescription, Sampler, SampleState, Validator, WebDriverAdapter} from '../index.js';
 
 {
   describe('runner', () => {

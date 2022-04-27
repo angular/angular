@@ -9,15 +9,15 @@
 import {ExternalExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
-import {AliasingHost, assertSuccessfulReferenceEmit, Reexport, Reference, ReferenceEmitter} from '../../imports';
-import {DirectiveMeta, MetadataReader, MetadataRegistry, MetaKind, NgModuleMeta, PipeMeta} from '../../metadata';
-import {ClassDeclaration, DeclarationNode} from '../../reflection';
-import {identifierOfNode, nodeNameForError} from '../../util/src/typescript';
+import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../diagnostics/index.js';
+import {AliasingHost, assertSuccessfulReferenceEmit, Reexport, Reference, ReferenceEmitter} from '../../imports/index.js';
+import {DirectiveMeta, MetadataReader, MetadataRegistry, MetaKind, NgModuleMeta, PipeMeta} from '../../metadata/index.js';
+import {ClassDeclaration, DeclarationNode} from '../../reflection/index.js';
+import {identifierOfNode, nodeNameForError} from '../../util/src/typescript.js';
 
-import {ComponentScopeKind, ComponentScopeReader, ExportScope, LocalModuleScope, RemoteScope, ScopeData} from './api';
-import {DtsModuleScopeResolver} from './dependency';
-import {getDiagnosticNode, makeNotStandaloneDiagnostic} from './util';
+import {ComponentScopeKind, ComponentScopeReader, ExportScope, LocalModuleScope, RemoteScope, ScopeData} from './api.js';
+import {DtsModuleScopeResolver} from './dependency.js';
+import {getDiagnosticNode, makeNotStandaloneDiagnostic} from './util.js';
 
 export interface LocalNgModuleData {
   declarations: Reference<ClassDeclaration>[];

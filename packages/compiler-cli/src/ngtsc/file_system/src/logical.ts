@@ -7,9 +7,9 @@
  */
 import ts from 'typescript';
 
-import {absoluteFromSourceFile, dirname, isLocalRelativePath, relative, resolve, toRelativeImport} from './helpers';
-import {AbsoluteFsPath, BrandedPath, PathSegment} from './types';
-import {stripExtension} from './util';
+import {absoluteFromSourceFile, dirname, isLocalRelativePath, relative, resolve, toRelativeImport} from './helpers.js';
+import {AbsoluteFsPath, BrandedPath, PathSegment} from './types.js';
+import {stripExtension} from './util.js';
 
 
 

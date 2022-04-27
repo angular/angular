@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './src/api';
-export * from './src/di';
-export * from './src/diagnostics';
-export * from './src/evaluation';
-export * from './src/factory';
-export * from './src/metadata';
-export * from './src/references_registry';
-export * from './src/util';
+export * from './src/api.js';
+export * from './src/di.js';
+export * from './src/diagnostics.js';
+export * from './src/evaluation.js';
+export * from './src/factory.js';
+export * from './src/metadata.js';
+export * from './src/references_registry.js';
+export * from './src/util.js';

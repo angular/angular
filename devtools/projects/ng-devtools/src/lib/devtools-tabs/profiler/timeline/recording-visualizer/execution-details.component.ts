@@ -8,7 +8,7 @@
 
 import {Component, Input} from '@angular/core';
 
-import {SelectedDirective} from './timeline-visualizer.component';
+import {SelectedDirective} from './timeline-visualizer.component.js';
 
 @Component({
   selector: 'ng-execution-details',

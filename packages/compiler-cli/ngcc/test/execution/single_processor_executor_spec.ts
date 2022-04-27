@@ -8,12 +8,12 @@
 
 /// <reference types="node" />
 
-import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {SingleProcessExecutorSync} from '../../src/execution/single_process_executor';
-import {Task, TaskQueue} from '../../src/execution/tasks/api';
-import {SyncLocker} from '../../src/locking/sync_locker';
-import {MockLockFile} from '../helpers/mock_lock_file';
+import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {SingleProcessExecutorSync} from '../../src/execution/single_process_executor.js';
+import {Task, TaskQueue} from '../../src/execution/tasks/api.js';
+import {SyncLocker} from '../../src/locking/sync_locker.js';
+import {MockLockFile} from '../helpers/mock_lock_file.js';
 
 
 describe('SingleProcessExecutor', () => {

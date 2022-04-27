@@ -7,16 +7,16 @@
  */
 import {createHash} from 'crypto';
 
-import {absoluteFrom, FileSystem, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {EntryPointWithDependencies} from '../../src/dependencies/dependency_host';
-import {NGCC_VERSION} from '../../src/packages/build_marker';
-import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
-import {EntryPointManifest, EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
+import {absoluteFrom, FileSystem, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {EntryPointWithDependencies} from '../../src/dependencies/dependency_host.js';
+import {NGCC_VERSION} from '../../src/packages/build_marker.js';
+import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration.js';
+import {EntryPointManifest, EntryPointManifestFile} from '../../src/packages/entry_point_manifest.js';
 
-import {createPackageJson} from './entry_point_spec';
+import {createPackageJson} from './entry_point_spec.js';
 
 runInEachFileSystem(() => {
   describe('EntryPointManifest', () => {

@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertIndexInRange} from '../util/assert';
-import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, getBinding, updateBinding} from './bindings';
-import {LView} from './interfaces/view';
-import {getBindingRoot, getLView} from './state';
-import {NO_CHANGE} from './tokens';
+import {assertIndexInRange} from '../util/assert.js';
+
+import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, getBinding, updateBinding} from './bindings.js';
+import {LView} from './interfaces/view.js';
+import {getBindingRoot, getLView} from './state.js';
+import {NO_CHANGE} from './tokens.js';
 
 
 /**

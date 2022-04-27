@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {assertGreaterThan} from '../../util/assert';
-import {assertIndexInDeclRange} from '../assert';
-import {executeCheckHooks, executeInitAndCheckHooks} from '../hooks';
-import {FLAGS, InitPhaseState, LView, LViewFlags, TView} from '../interfaces/view';
-import {getLView, getSelectedIndex, getTView, isInCheckNoChangesMode, setSelectedIndex} from '../state';
+import {assertGreaterThan} from '../../util/assert.js';
+import {assertIndexInDeclRange} from '../assert.js';
+import {executeCheckHooks, executeInitAndCheckHooks} from '../hooks.js';
+import {FLAGS, InitPhaseState, LView, LViewFlags, TView} from '../interfaces/view.js';
+import {getLView, getSelectedIndex, getTView, isInCheckNoChangesMode, setSelectedIndex} from '../state.js';
 
 
 /**

@@ -12,6 +12,6 @@
  * Entry point for all public APIs of the compiler package.
  */
 
-import {Version} from './util';
+import {Version} from './util.js';
 
 export const VERSION = new Version('0.0.0-PLACEHOLDER');

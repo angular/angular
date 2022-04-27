@@ -8,8 +8,9 @@
 /// <reference types="node" />
 import * as p from 'path';
 
-import {AbsoluteFsPath, PathSegment, PathString} from '../../src/types';
-import {MockFileSystem} from './mock_file_system';
+import {AbsoluteFsPath, PathSegment, PathString} from '../../src/types.js';
+
+import {MockFileSystem} from './mock_file_system.js';
 
 export class MockFileSystemWindows extends MockFileSystem {
   override resolve(...paths: string[]): AbsoluteFsPath {

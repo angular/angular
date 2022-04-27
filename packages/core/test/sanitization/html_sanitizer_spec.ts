@@ -8,8 +8,8 @@
 
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
-import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
-import {isDOMParserAvailable} from '../../src/sanitization/inert_body';
+import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer.js';
+import {isDOMParserAvailable} from '../../src/sanitization/inert_body.js';
 
 function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
   return _sanitizeHtml(defaultDoc, unsafeHtmlInput).toString();

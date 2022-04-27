@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {ComponentDecoratorHandler} from './src/handler';
+export {ComponentDecoratorHandler} from './src/handler.js';

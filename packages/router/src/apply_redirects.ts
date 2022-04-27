@@ -10,15 +10,15 @@ import {createEnvironmentInjector, EnvironmentInjector} from '@angular/core';
 import {EmptyError, from, Observable, Observer, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, last, map, mergeMap, scan, tap} from 'rxjs/operators';
 
-import {CanLoadFn, LoadedRouterConfig, Route, Routes} from './models';
-import {prioritizedGuardValue} from './operators/prioritized_guard_value';
-import {RouterConfigLoader} from './router_config_loader';
-import {navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
-import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
-import {forEach, wrapIntoObservable} from './utils/collection';
-import {getOutlet, sortByMatchingOutlets} from './utils/config';
-import {isImmediateMatch, match, noLeftoversInUrl, split} from './utils/config_matching';
-import {isCanLoad, isFunction, isUrlTree} from './utils/type_guards';
+import {CanLoadFn, LoadedRouterConfig, Route, Routes} from './models.js';
+import {prioritizedGuardValue} from './operators/prioritized_guard_value.js';
+import {RouterConfigLoader} from './router_config_loader.js';
+import {navigationCancelingError, Params, PRIMARY_OUTLET} from './shared.js';
+import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree.js';
+import {forEach, wrapIntoObservable} from './utils/collection.js';
+import {getOutlet, sortByMatchingOutlets} from './utils/config.js';
+import {isImmediateMatch, match, noLeftoversInUrl, split} from './utils/config_matching.js';
+import {isCanLoad, isFunction, isUrlTree} from './utils/type_guards.js';
 
 class NoMatch {
   public segmentGroup: UrlSegmentGroup|null;

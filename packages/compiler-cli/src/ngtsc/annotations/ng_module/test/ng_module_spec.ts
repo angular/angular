@@ -9,17 +9,17 @@ import {WrappedNodeExpr} from '@angular/compiler';
 import {R3Reference} from '@angular/compiler/src/compiler';
 import ts from 'typescript';
 
-import {absoluteFrom} from '../../../file_system';
-import {runInEachFileSystem} from '../../../file_system/testing';
-import {LocalIdentifierStrategy, ReferenceEmitter} from '../../../imports';
-import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../../metadata';
-import {PartialEvaluator} from '../../../partial_evaluator';
-import {NOOP_PERF_RECORDER} from '../../../perf';
-import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../../reflection';
-import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../scope';
-import {getDeclaration, makeProgram} from '../../../testing';
-import {NoopReferencesRegistry} from '../../common';
-import {NgModuleDecoratorHandler} from '../src/handler';
+import {absoluteFrom} from '../../../file_system/index.js';
+import {runInEachFileSystem} from '../../../file_system/testing/index.js';
+import {LocalIdentifierStrategy, ReferenceEmitter} from '../../../imports/index.js';
+import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../../metadata/index.js';
+import {PartialEvaluator} from '../../../partial_evaluator/index.js';
+import {NOOP_PERF_RECORDER} from '../../../perf/index.js';
+import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../../reflection/index.js';
+import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../scope/index.js';
+import {getDeclaration, makeProgram} from '../../../testing/index.js';
+import {NoopReferencesRegistry} from '../../common/index.js';
+import {NgModuleDecoratorHandler} from '../src/handler.js';
 
 runInEachFileSystem(() => {
   describe('NgModuleDecoratorHandler', () => {

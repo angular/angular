@@ -8,9 +8,9 @@
 
 import {SchemaMetadata} from '@angular/compiler';
 
-import {Reexport, Reference} from '../../imports';
-import {DirectiveMeta, NgModuleMeta, PipeMeta} from '../../metadata';
-import {ClassDeclaration} from '../../reflection';
+import {Reexport, Reference} from '../../imports/index.js';
+import {DirectiveMeta, NgModuleMeta, PipeMeta} from '../../metadata/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
 
 
 /**

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {nextContextImpl} from '../state';
+import {nextContextImpl} from '../state.js';
 
 /**
  * Retrieves a context at the level specified and saves it as the global, contextViewData.

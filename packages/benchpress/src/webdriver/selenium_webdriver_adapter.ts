@@ -8,7 +8,7 @@
 
 import {StaticProvider} from '@angular/core';
 
-import {WebDriverAdapter} from '../web_driver_adapter';
+import {WebDriverAdapter} from '../web_driver_adapter.js';
 
 
 /**

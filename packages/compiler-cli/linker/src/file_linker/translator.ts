@@ -7,7 +7,7 @@
  */
 import * as o from '@angular/compiler';
 
-import {AstFactory, Context, ExpressionTranslatorVisitor, ImportGenerator, TranslatorOptions} from '../../../src/ngtsc/translator';
+import {AstFactory, Context, ExpressionTranslatorVisitor, ImportGenerator, TranslatorOptions} from '../../../src/ngtsc/translator/index.js';
 
 /**
  * Generic translator helper class, which exposes methods for translating expressions and

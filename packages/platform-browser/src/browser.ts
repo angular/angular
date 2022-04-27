@@ -9,15 +9,15 @@
 import {CommonModule, DOCUMENT, XhrFactory, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
 import {APP_ID, ApplicationModule, ApplicationRef, createPlatformFactory, ErrorHandler, Inject, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, SkipSelf, StaticProvider, Testability, Type, ɵbootstrapApplication as _bootstrapApplication, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵsetDocument} from '@angular/core';
 
-import {BrowserDomAdapter} from './browser/browser_adapter';
-import {SERVER_TRANSITION_PROVIDERS, TRANSITION_ID} from './browser/server-transition';
-import {BrowserGetTestability} from './browser/testability';
-import {BrowserXhr} from './browser/xhr';
-import {DomRendererFactory2} from './dom/dom_renderer';
-import {DomEventsPlugin} from './dom/events/dom_events';
-import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
-import {KeyEventsPlugin} from './dom/events/key_events';
-import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
+import {BrowserDomAdapter} from './browser/browser_adapter.js';
+import {SERVER_TRANSITION_PROVIDERS, TRANSITION_ID} from './browser/server-transition.js';
+import {BrowserGetTestability} from './browser/testability.js';
+import {BrowserXhr} from './browser/xhr.js';
+import {DomRendererFactory2} from './dom/dom_renderer.js';
+import {DomEventsPlugin} from './dom/events/dom_events.js';
+import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager.js';
+import {KeyEventsPlugin} from './dom/events/key_events.js';
+import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host.js';
 
 /**
  * Set of config options available during the bootstrap operation via `bootstrapApplication` call.

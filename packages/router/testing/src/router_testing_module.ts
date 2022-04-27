@@ -11,7 +11,7 @@ import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
 import {Compiler, Injector, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 import {ChildrenOutletContexts, DefaultTitleStrategy, ExtraOptions, NoPreloading, PreloadingStrategy, provideRoutes, Route, Router, ROUTER_CONFIGURATION, RouteReuseStrategy, RouterModule, ROUTES, Routes, TitleStrategy, UrlHandlingStrategy, UrlSerializer, ɵassignExtraOptionsToRouter as assignExtraOptionsToRouter, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS} from '@angular/router';
 
-import {EXTRA_ROUTER_TESTING_PROVIDERS} from './extra_router_testing_providers';
+import {EXTRA_ROUTER_TESTING_PROVIDERS} from './extra_router_testing_providers.js';
 
 function isUrlHandlingStrategy(opts: ExtraOptions|
                                UrlHandlingStrategy): opts is UrlHandlingStrategy {

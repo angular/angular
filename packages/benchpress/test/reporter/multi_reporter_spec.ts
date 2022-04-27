@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, MeasureValues, MultiReporter, Reporter} from '../../index';
+import {Injector, MeasureValues, MultiReporter, Reporter} from '../../index.js';
 
 (function() {
 function createReporters(ids: any[]) {

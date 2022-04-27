@@ -8,8 +8,8 @@
 
 import ts from 'typescript';
 
-import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
-import {DependencyTracker} from '../api';
+import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system/index.js';
+import {DependencyTracker} from '../api.js';
 
 /**
  * An implementation of the `DependencyTracker` dependency graph API.

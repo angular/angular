@@ -11,7 +11,7 @@
  * is properly patched
  */
 
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupports} from '../test-util.js';
 
 function registerElement() {
   return ('registerElement' in document) && (typeof customElements === 'undefined');

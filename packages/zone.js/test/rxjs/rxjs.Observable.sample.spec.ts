@@ -8,7 +8,7 @@
 import {interval, Observable} from 'rxjs';
 import {sample, take, throttle} from 'rxjs/operators';
 
-import {asyncTest} from '../test-util';
+import {asyncTest} from '../test-util.js';
 
 describe('Observable.sample', () => {
   let log: any[];

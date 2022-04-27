@@ -9,11 +9,11 @@ import mapHelpers from 'convert-source-map';
 import MagicString from 'magic-string';
 import ts from 'typescript';
 
-import {absoluteFrom, absoluteFromSourceFile, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {ContentOrigin, RawSourceMap, SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
+import {absoluteFrom, absoluteFromSourceFile, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {ContentOrigin, RawSourceMap, SourceFileLoader} from '../../../src/ngtsc/sourcemaps/index.js';
 
-import {FileToWrite} from './utils';
+import {FileToWrite} from './utils.js';
 
 export interface SourceMapInfo {
   source: string;

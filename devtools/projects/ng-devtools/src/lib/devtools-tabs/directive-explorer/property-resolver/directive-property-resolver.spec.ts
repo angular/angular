@@ -8,7 +8,7 @@
 
 import {Properties, PropType} from 'protocol';
 
-import {DirectivePropertyResolver} from './directive-property-resolver';
+import {DirectivePropertyResolver} from './directive-property-resolver.js';
 
 const properties: Properties = {
   props: {

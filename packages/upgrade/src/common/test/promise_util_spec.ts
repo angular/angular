@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isThenable, SyncPromise} from '../src/promise_util';
+import {isThenable, SyncPromise} from '../src/promise_util.js';
 
 describe('isThenable()', () => {
   it('should return false for primitive values', () => {

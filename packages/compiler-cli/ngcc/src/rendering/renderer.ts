@@ -9,19 +9,19 @@ import {ConstantPool, Expression, jsDocComment, LeadingComment, Statement, Wrapp
 import MagicString from 'magic-string';
 import ts from 'typescript';
 
-import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {ImportManager} from '../../../src/ngtsc/translator';
-import {ParsedConfiguration} from '../../../src/perform_compile';
-import {PrivateDeclarationsAnalyses} from '../analysis/private_declarations_analyzer';
-import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/types';
-import {IMPORT_PREFIX} from '../constants';
-import {NgccReflectionHost} from '../host/ngcc_host';
-import {EntryPointBundle} from '../packages/entry_point_bundle';
+import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {ImportManager} from '../../../src/ngtsc/translator/index.js';
+import {ParsedConfiguration} from '../../../src/perform_compile.js';
+import {PrivateDeclarationsAnalyses} from '../analysis/private_declarations_analyzer.js';
+import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/types.js';
+import {IMPORT_PREFIX} from '../constants.js';
+import {NgccReflectionHost} from '../host/ngcc_host.js';
+import {EntryPointBundle} from '../packages/entry_point_bundle.js';
 
-import {RedundantDecoratorMap, RenderingFormatter} from './rendering_formatter';
-import {renderSourceAndMap} from './source_maps';
-import {FileToWrite, getImportRewriter, stripExtension} from './utils';
+import {RedundantDecoratorMap, RenderingFormatter} from './rendering_formatter.js';
+import {renderSourceAndMap} from './source_maps.js';
+import {FileToWrite, getImportRewriter, stripExtension} from './utils.js';
 
 /**
  * A base-class for rendering an `AnalyzedFile`.

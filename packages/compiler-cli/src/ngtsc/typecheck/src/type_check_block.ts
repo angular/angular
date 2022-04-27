@@ -9,21 +9,21 @@
 import {AST, BindingPipe, BindingType, BoundTarget, Call, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeCall, SafePropertyRead, SchemaMetadata, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
-import {Reference} from '../../imports';
-import {ClassPropertyName} from '../../metadata';
-import {ClassDeclaration} from '../../reflection';
-import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api';
+import {Reference} from '../../imports/index.js';
+import {ClassPropertyName} from '../../metadata/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
+import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api/index.js';
 
-import {addExpressionIdentifier, ExpressionIdentifier, markIgnoreDiagnostics} from './comments';
-import {addParseSpanInfo, addTemplateId, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics';
-import {DomSchemaChecker} from './dom';
-import {Environment} from './environment';
-import {astToTypescript, NULL_AS_ANY} from './expression';
-import {OutOfBandDiagnosticRecorder} from './oob';
-import {ExpressionSemanticVisitor} from './template_semantics';
-import {tsCallMethod, tsCastToAny, tsCreateElement, tsCreateTypeQueryForCoercedInput, tsCreateVariable, tsDeclareVariable} from './ts_util';
-import {requiresInlineTypeCtor} from './type_constructor';
-import {TypeParameterEmitter} from './type_parameter_emitter';
+import {addExpressionIdentifier, ExpressionIdentifier, markIgnoreDiagnostics} from './comments.js';
+import {addParseSpanInfo, addTemplateId, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics.js';
+import {DomSchemaChecker} from './dom.js';
+import {Environment} from './environment.js';
+import {astToTypescript, NULL_AS_ANY} from './expression.js';
+import {OutOfBandDiagnosticRecorder} from './oob.js';
+import {ExpressionSemanticVisitor} from './template_semantics.js';
+import {tsCallMethod, tsCastToAny, tsCreateElement, tsCreateTypeQueryForCoercedInput, tsCreateVariable, tsDeclareVariable} from './ts_util.js';
+import {requiresInlineTypeCtor} from './type_constructor.js';
+import {TypeParameterEmitter} from './type_parameter_emitter.js';
 
 /**
  * Controls how generics for the component context class will be handled during TCB generation.

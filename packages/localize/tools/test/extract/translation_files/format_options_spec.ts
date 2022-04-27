@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {parseFormatOptions, validateOptions} from '../../../src/extract/translation_files/format_options';
+import {parseFormatOptions, validateOptions} from '../../../src/extract/translation_files/format_options.js';
 
 describe('format_options', () => {
   describe('validateOptions()', () => {

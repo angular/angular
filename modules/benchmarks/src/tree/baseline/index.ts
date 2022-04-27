@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bindAction, profile} from '../../util';
-import {buildTree, emptyTree, initTreeUtils} from '../util';
+import {bindAction, profile} from '../../util.js';
+import {buildTree, emptyTree, initTreeUtils} from '../util.js';
 
-import {TreeComponent} from './tree';
+import {TreeComponent} from './tree.js';
 
 let tree: TreeComponent;
 

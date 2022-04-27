@@ -8,10 +8,10 @@
 
 import {Observable} from 'rxjs';
 
-import {AbstractControl} from '../model/abstract_model';
-import {composeAsyncValidators, composeValidators} from '../validators';
+import {AbstractControl} from '../model/abstract_model.js';
+import {composeAsyncValidators, composeValidators} from '../validators.js';
 
-import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './validators';
+import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './validators.js';
 
 
 /**

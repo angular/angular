@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../../interface/type';
-import {getClosureSafeProperty} from '../../util/property';
+import {Type} from '../../interface/type.js';
+import {getClosureSafeProperty} from '../../util/property.js';
 
-import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, ValueProvider} from './provider';
+import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, ValueProvider} from './provider.js';
 
 
 

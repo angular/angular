@@ -9,7 +9,7 @@
 import {empty, interval, Observable, of} from 'rxjs';
 import {buffer, bufferCount, bufferTime, bufferToggle, bufferWhen} from 'rxjs/operators';
 
-import {asyncTest} from '../test-util';
+import {asyncTest} from '../test-util.js';
 
 xdescribe('Observable.buffer', () => {
   let log: any[];

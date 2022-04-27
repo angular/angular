@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentDef, DirectiveDef} from '../interfaces/definition';
-import {isComponentDef} from '../interfaces/type_checks';
+import {ComponentDef, DirectiveDef} from '../interfaces/definition.js';
+import {isComponentDef} from '../interfaces/type_checks.js';
 
-import {getSuperType} from './inherit_definition_feature';
+import {getSuperType} from './inherit_definition_feature.js';
 
 /**
  * Fields which exist on either directive or component definitions, and need to be copied from

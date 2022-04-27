@@ -19,7 +19,8 @@ import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_bin
 import {getComponentLView} from '@angular/core/src/render3/util/discovery_utils';
 import {KeyValueArray} from '@angular/core/src/util/array_utils';
 import {TestBed} from '@angular/core/testing';
-import {TemplateFixture} from '../render_util';
+
+import {TemplateFixture} from '../render_util.js';
 
 describe('lView_debug', () => {
   const mockFirstUpdatePassLView: LView = [null, {firstUpdatePass: true}] as any;

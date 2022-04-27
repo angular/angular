@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {parseRoutes} from './router-tree';
+import {parseRoutes} from './router-tree.js';
 
 describe('parseRoutes', () => {
   it('should work without any routes', () => {

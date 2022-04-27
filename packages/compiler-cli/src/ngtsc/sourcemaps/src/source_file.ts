@@ -8,10 +8,10 @@
 import mapHelpers from 'convert-source-map';
 import {decode, encode, SourceMapMappings, SourceMapSegment} from 'sourcemap-codec';
 
-import {AbsoluteFsPath, PathManipulation} from '../../file_system';
+import {AbsoluteFsPath, PathManipulation} from '../../file_system/index.js';
 
-import {RawSourceMap, SourceMapInfo} from './raw_source_map';
-import {compareSegments, offsetSegment, SegmentMarker} from './segment_marker';
+import {RawSourceMap, SourceMapInfo} from './raw_source_map.js';
+import {compareSegments, offsetSegment, SegmentMarker} from './segment_marker.js';
 
 export function removeSourceMapComments(contents: string): string {
   return mapHelpers.removeMapFileComments(mapHelpers.removeComments(contents))

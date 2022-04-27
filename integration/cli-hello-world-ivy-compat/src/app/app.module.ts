@@ -3,7 +3,7 @@ import { LOCALE_ID, NgModule } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 
-import { AppComponent } from './app.component';
+import { AppComponent } from './app.component.js';
 
 // adding this code to detect issues like https://github.com/angular/angular-cli/issues/10322
 registerLocaleData(localeFr);

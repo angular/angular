@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectFlags} from '../di/interface/injector';
-import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertLessThan, assertNotEqual} from '../util/assert';
+import {InjectFlags} from '../di/interface/injector.js';
+import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertLessThan, assertNotEqual} from '../util/assert.js';
 
-import {assertLViewOrUndefined, assertTNodeForLView, assertTNodeForTView} from './assert';
-import {DirectiveDef} from './interfaces/definition';
-import {TNode, TNodeType} from './interfaces/node';
-import {CONTEXT, DECLARATION_VIEW, HEADER_OFFSET, LView, OpaqueViewState, T_HOST, TData, TVIEW, TView, TViewType} from './interfaces/view';
-import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
-import {getTNode} from './util/view_utils';
+import {assertLViewOrUndefined, assertTNodeForLView, assertTNodeForTView} from './assert.js';
+import {DirectiveDef} from './interfaces/definition.js';
+import {TNode, TNodeType} from './interfaces/node.js';
+import {CONTEXT, DECLARATION_VIEW, HEADER_OFFSET, LView, OpaqueViewState, T_HOST, TData, TVIEW, TView, TViewType} from './interfaces/view.js';
+import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces.js';
+import {getTNode} from './util/view_utils.js';
 
 
 /**

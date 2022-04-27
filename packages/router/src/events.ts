@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Route} from './models';
-import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
+import {Route} from './models.js';
+import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state.js';
 
 /**
  * Identifies the call or event that triggered a navigation.

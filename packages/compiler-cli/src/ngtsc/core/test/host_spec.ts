@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom as _, FileSystem, getFileSystem, NgtscCompilerHost} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {NgCompilerOptions} from '../api';
-import {NgCompilerHost} from '../src/host';
+import {absoluteFrom as _, FileSystem, getFileSystem, NgtscCompilerHost} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {NgCompilerOptions} from '../api/index.js';
+import {NgCompilerHost} from '../src/host.js';
 
 runInEachFileSystem(() => {
   let fs!: FileSystem;

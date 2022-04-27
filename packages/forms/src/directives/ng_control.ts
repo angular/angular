@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbstractControlDirective} from './abstract_control_directive';
-import {ControlContainer} from './control_container';
-import {ControlValueAccessor} from './control_value_accessor';
+import {AbstractControlDirective} from './abstract_control_directive.js';
+import {ControlContainer} from './control_container.js';
+import {ControlValueAccessor} from './control_value_accessor.js';
 
 
 /**

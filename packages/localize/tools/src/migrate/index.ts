@@ -7,7 +7,8 @@
  */
 
 import {getFileSystem, Logger} from '@angular/compiler-cli/private/localize';
-import {migrateFile, MigrationMapping} from './migrate';
+
+import {migrateFile, MigrationMapping} from './migrate.js';
 
 export interface MigrateFilesOptions {
   /**

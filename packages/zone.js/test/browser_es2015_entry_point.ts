@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './browser/custom-element.spec';
+import './browser/custom-element.spec.js';

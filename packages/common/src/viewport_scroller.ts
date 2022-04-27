@@ -8,7 +8,7 @@
 
 import {ɵɵdefineInjectable, ɵɵinject} from '@angular/core';
 
-import {DOCUMENT} from './dom_tokens';
+import {DOCUMENT} from './dom_tokens.js';
 
 
 

@@ -11,8 +11,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {Events, MessageBus, ProfilerFrame} from 'protocol';
 import {Subject, Subscription} from 'rxjs';
 
-import {FileApiService} from './file-api-service';
-import {ProfilerImportDialogComponent} from './profiler-import-dialog.component';
+import {FileApiService} from './file-api-service.js';
+import {ProfilerImportDialogComponent} from './profiler-import-dialog.component.js';
 
 type State = 'idle'|'recording'|'visualizing';
 

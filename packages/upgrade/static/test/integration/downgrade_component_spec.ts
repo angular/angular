@@ -12,11 +12,11 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {downgradeComponent, UpgradeComponent, UpgradeModule} from '@angular/upgrade/static';
 
-import * as angular from '../../../src/common/src/angular1';
-import {$ROOT_SCOPE} from '../../../src/common/src/constants';
-import {html, multiTrim, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
+import * as angular from '../../../src/common/src/angular1.js';
+import {$ROOT_SCOPE} from '../../../src/common/src/constants.js';
+import {html, multiTrim, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers.js';
 
-import {$apply, bootstrap} from './static_test_helpers';
+import {$apply, bootstrap} from './static_test_helpers.js';
 
 withEachNg1Version(() => {
   describe('downgrade ng2 component', () => {

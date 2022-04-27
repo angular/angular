@@ -6,26 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SafeValue, unwrapSafeValue} from '../../sanitization/bypass';
-import {KeyValueArray, keyValueArrayGet, keyValueArraySet} from '../../util/array_utils';
-import {assertDefined, assertEqual, assertLessThan, assertNotEqual, throwError} from '../../util/assert';
-import {EMPTY_ARRAY} from '../../util/empty';
-import {concatStringsWithSpace, stringify} from '../../util/stringify';
-import {assertFirstUpdatePass} from '../assert';
-import {bindingUpdated} from '../bindings';
-import {DirectiveDef} from '../interfaces/definition';
-import {AttributeMarker, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
-import {Renderer3} from '../interfaces/renderer';
-import {RElement} from '../interfaces/renderer_dom';
-import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
-import {LView, RENDERER, TData, TView} from '../interfaces/view';
-import {applyStyling} from '../node_manipulation';
-import {getCurrentDirectiveDef, getLView, getSelectedIndex, getTView, incrementBindingIndex} from '../state';
-import {insertTStylingBinding} from '../styling/style_binding_list';
-import {getLastParsedKey, getLastParsedValue, parseClassName, parseClassNameNext, parseStyle, parseStyleNext} from '../styling/styling_parser';
-import {NO_CHANGE} from '../tokens';
-import {getNativeByIndex} from '../util/view_utils';
-import {setDirectiveInputsWhichShadowsStyling} from './property';
+import {SafeValue, unwrapSafeValue} from '../../sanitization/bypass.js';
+import {KeyValueArray, keyValueArrayGet, keyValueArraySet} from '../../util/array_utils.js';
+import {assertDefined, assertEqual, assertLessThan, assertNotEqual, throwError} from '../../util/assert.js';
+import {EMPTY_ARRAY} from '../../util/empty.js';
+import {concatStringsWithSpace, stringify} from '../../util/stringify.js';
+import {assertFirstUpdatePass} from '../assert.js';
+import {bindingUpdated} from '../bindings.js';
+import {DirectiveDef} from '../interfaces/definition.js';
+import {AttributeMarker, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node.js';
+import {Renderer3} from '../interfaces/renderer.js';
+import {RElement} from '../interfaces/renderer_dom.js';
+import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling.js';
+import {LView, RENDERER, TData, TView} from '../interfaces/view.js';
+import {applyStyling} from '../node_manipulation.js';
+import {getCurrentDirectiveDef, getLView, getSelectedIndex, getTView, incrementBindingIndex} from '../state.js';
+import {insertTStylingBinding} from '../styling/style_binding_list.js';
+import {getLastParsedKey, getLastParsedValue, parseClassName, parseClassNameNext, parseStyle, parseStyleNext} from '../styling/styling_parser.js';
+import {NO_CHANGE} from '../tokens.js';
+import {getNativeByIndex} from '../util/view_utils.js';
+
+import {setDirectiveInputsWhichShadowsStyling} from './property.js';
 
 
 /**
@@ -786,7 +787,8 @@ function findStylingValue(
       valueAtLViewIndex = isStylingMap ? EMPTY_ARRAY : undefined;
     }
     let currentValue = isStylingMap ? keyValueArrayGet(valueAtLViewIndex, prop) :
-                                      key === prop ? valueAtLViewIndex : undefined;
+        key === prop                ? valueAtLViewIndex :
+                                      undefined;
     if (containsStatics && !isStylingValuePresent(currentValue)) {
       currentValue = keyValueArrayGet(rawKey as KeyValueArray<any>, prop);
     }

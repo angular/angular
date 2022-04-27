@@ -8,9 +8,9 @@
 
 import {Inject, InjectionToken, LOCALE_ID, Optional, Pipe, PipeTransform} from '@angular/core';
 
-import {formatDate} from '../i18n/format_date';
+import {formatDate} from '../i18n/format_date.js';
 
-import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
+import {invalidPipeArgumentError} from './invalid_pipe_argument_error.js';
 
 /**
  * Optionally-provided default timezone to use for all instances of `DatePipe` (such as `'+0430'`).

@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Adapter} from './adapter';
-import {CacheState, Debuggable, DebugIdleState, DebugState, DebugVersion, NormalizedUrl, UpdateCacheStatus, UpdateSource} from './api';
-import {AppVersion} from './app-version';
-import {Database} from './database';
-import {CacheTable} from './db-cache';
-import {DebugHandler} from './debug';
-import {errorToString} from './error';
-import {IdleScheduler} from './idle';
-import {hashManifest, Manifest, ManifestHash} from './manifest';
-import {isMsgActivateUpdate, isMsgCheckForUpdates, MsgAny} from './msg';
+import {Adapter} from './adapter.js';
+import {CacheState, Debuggable, DebugIdleState, DebugState, DebugVersion, NormalizedUrl, UpdateCacheStatus, UpdateSource} from './api.js';
+import {AppVersion} from './app-version.js';
+import {Database} from './database.js';
+import {CacheTable} from './db-cache.js';
+import {DebugHandler} from './debug.js';
+import {errorToString} from './error.js';
+import {IdleScheduler} from './idle.js';
+import {hashManifest, Manifest, ManifestHash} from './manifest.js';
+import {isMsgActivateUpdate, isMsgCheckForUpdates, MsgAny} from './msg.js';
 
 type ClientId = string;
 

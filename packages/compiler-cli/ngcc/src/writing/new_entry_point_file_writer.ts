@@ -6,15 +6,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFromSourceFile, AbsoluteFsPath, FileSystem, isLocalRelativePath} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
-import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
-import {EntryPointBundle} from '../packages/entry_point_bundle';
-import {FileToWrite} from '../rendering/utils';
+import {absoluteFromSourceFile, AbsoluteFsPath, FileSystem, isLocalRelativePath} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {isDtsPath} from '../../../src/ngtsc/util/src/typescript.js';
+import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point.js';
+import {EntryPointBundle} from '../packages/entry_point_bundle.js';
+import {FileToWrite} from '../rendering/utils.js';
 
-import {InPlaceFileWriter} from './in_place_file_writer';
-import {PackageJsonUpdater} from './package_json_updater';
+import {InPlaceFileWriter} from './in_place_file_writer.js';
+import {PackageJsonUpdater} from './package_json_updater.js';
 
 export const NGCC_DIRECTORY = '__ivy_ngcc__';
 export const NGCC_PROPERTY_EXTENSION = '_ivy_ngcc';

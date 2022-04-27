@@ -8,7 +8,7 @@
 
 import {NgModule} from '@angular/core';
 
-import {FlatComponent} from './flat.component';
+import {FlatComponent} from './flat.component.js';
 
 @NgModule({
   declarations: [

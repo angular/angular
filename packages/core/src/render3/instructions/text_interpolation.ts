@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {getLView, getSelectedIndex} from '../state';
-import {NO_CHANGE} from '../tokens';
+import {getLView, getSelectedIndex} from '../state.js';
+import {NO_CHANGE} from '../tokens.js';
 
-import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
-import {textBindingInternal} from './shared';
+import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation.js';
+import {textBindingInternal} from './shared.js';
 
 
 /**

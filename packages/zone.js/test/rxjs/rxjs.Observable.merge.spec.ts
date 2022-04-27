@@ -8,9 +8,9 @@
 import {interval, merge, Observable, of, range} from 'rxjs';
 import {expand, map, mergeAll, mergeMap, mergeMapTo, switchAll, switchMap, switchMapTo, take} from 'rxjs/operators';
 
-import {asyncTest, ifEnvSupports} from '../test-util';
+import {asyncTest, ifEnvSupports} from '../test-util.js';
 
-import {supportFeature} from './rxjs.util';
+import {supportFeature} from './rxjs.util.js';
 
 describe('Observable.merge', () => {
   let log: any[];

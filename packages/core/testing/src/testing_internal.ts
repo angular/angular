@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {inject} from './test_bed';
+export {inject} from './test_bed.js';
 
-export * from './logger';
-export * from './ng_zone_mock';
+export * from './logger.js';
+export * from './ng_zone_mock.js';

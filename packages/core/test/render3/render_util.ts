@@ -22,27 +22,27 @@ import {EMPTY_ARRAY} from '@angular/core/src/util/empty';
 import {noop} from '@angular/core/src/util/noop';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
-import {injectChangeDetectorRef} from '../../src/change_detection/change_detector_ref';
-import {Injector} from '../../src/di/injector';
-import {Type} from '../../src/interface/type';
-import {injectElementRef as R3_ELEMENT_REF_FACTORY} from '../../src/linker/element_ref';
-import {injectTemplateRef as R3_TEMPLATE_REF_FACTORY} from '../../src/linker/template_ref';
-import {injectViewContainerRef as R3_VIEW_CONTAINER_REF_FACTORY} from '../../src/linker/view_container_ref';
-import {injectRenderer2 as R3_RENDERER2_FACTORY} from '../../src/render/api';
-import {CreateComponentOptions} from '../../src/render3/component';
-import {getDirectivesAtNodeIndex, getLContext, isComponentInstance} from '../../src/render3/context_discovery';
-import {extractDirectiveDef, getPipeDef} from '../../src/render3/definition';
-import {NG_ELEMENT_ID} from '../../src/render3/fields';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, renderComponent as _renderComponent, RenderFlags, tick, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵProvidersFeature} from '../../src/render3/index';
-import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
-import {PlayerHandler} from '../../src/render3/interfaces/player';
-import {domRendererFactory3, ProceduralRenderer3, Renderer3, RendererFactory3, RendererStyleFlags3} from '../../src/render3/interfaces/renderer';
-import {LView, LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view';
-import {destroyLView} from '../../src/render3/node_manipulation';
-import {getRootView} from '../../src/render3/util/view_traversal_utils';
-import {Sanitizer} from '../../src/sanitization/sanitizer';
+import {injectChangeDetectorRef} from '../../src/change_detection/change_detector_ref.js';
+import {Injector} from '../../src/di/injector.js';
+import {Type} from '../../src/interface/type.js';
+import {injectElementRef as R3_ELEMENT_REF_FACTORY} from '../../src/linker/element_ref.js';
+import {injectTemplateRef as R3_TEMPLATE_REF_FACTORY} from '../../src/linker/template_ref.js';
+import {injectViewContainerRef as R3_VIEW_CONTAINER_REF_FACTORY} from '../../src/linker/view_container_ref.js';
+import {injectRenderer2 as R3_RENDERER2_FACTORY} from '../../src/render/api.js';
+import {CreateComponentOptions} from '../../src/render3/component.js';
+import {getDirectivesAtNodeIndex, getLContext, isComponentInstance} from '../../src/render3/context_discovery.js';
+import {extractDirectiveDef, getPipeDef} from '../../src/render3/definition.js';
+import {NG_ELEMENT_ID} from '../../src/render3/fields.js';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, renderComponent as _renderComponent, RenderFlags, tick, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵProvidersFeature} from '../../src/render3/index.js';
+import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition.js';
+import {PlayerHandler} from '../../src/render3/interfaces/player.js';
+import {domRendererFactory3, ProceduralRenderer3, Renderer3, RendererFactory3, RendererStyleFlags3} from '../../src/render3/interfaces/renderer.js';
+import {LView, LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view.js';
+import {destroyLView} from '../../src/render3/node_manipulation.js';
+import {getRootView} from '../../src/render3/util/view_traversal_utils.js';
+import {Sanitizer} from '../../src/sanitization/sanitizer.js';
 
-import {getRendererFactory2} from './imported_renderer2';
+import {getRendererFactory2} from './imported_renderer2.js';
 
 
 

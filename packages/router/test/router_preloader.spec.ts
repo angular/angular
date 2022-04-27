@@ -12,9 +12,9 @@ import {PreloadAllModules, PreloadingStrategy, RouterPreloader} from '@angular/r
 import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import {catchError, delay, filter, switchMap, take} from 'rxjs/operators';
 
-import {Route, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouterModule} from '../index';
-import {getLoadedComponent, getLoadedInjector, getLoadedRoutes, getProvidersInjector} from '../src/utils/config';
-import {RouterTestingModule} from '../testing';
+import {Route, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouterModule} from '../index.js';
+import {getLoadedComponent, getLoadedInjector, getLoadedRoutes, getProvidersInjector} from '../src/utils/config.js';
+import {RouterTestingModule} from '../testing/index.js';
 
 
 describe('RouterPreloader', () => {

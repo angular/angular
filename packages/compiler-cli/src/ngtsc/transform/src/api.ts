@@ -9,14 +9,14 @@
 import {ConstantPool, Expression, Statement, Type} from '@angular/compiler';
 import ts from 'typescript';
 
-import {Reexport} from '../../imports';
-import {SemanticSymbol} from '../../incremental/semantic_graph';
-import {IndexingContext} from '../../indexer';
-import {ClassDeclaration, Decorator} from '../../reflection';
-import {ImportManager} from '../../translator';
-import {TypeCheckContext} from '../../typecheck/api';
-import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
-import {Xi18nContext} from '../../xi18n';
+import {Reexport} from '../../imports/index.js';
+import {SemanticSymbol} from '../../incremental/semantic_graph/index.js';
+import {IndexingContext} from '../../indexer/index.js';
+import {ClassDeclaration, Decorator} from '../../reflection/index.js';
+import {ImportManager} from '../../translator/index.js';
+import {TypeCheckContext} from '../../typecheck/api/index.js';
+import {ExtendedTemplateChecker} from '../../typecheck/extended/api/index.js';
+import {Xi18nContext} from '../../xi18n/index.js';
 
 /**
  * Specifies the compilation mode that is used for the compilation.

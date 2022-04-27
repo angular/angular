@@ -8,15 +8,15 @@
 import {ExternalExpr, ExternalReference} from '@angular/compiler';
 import ts from 'typescript';
 
-import {UnifiedModulesHost} from '../../core/api';
-import {absoluteFrom} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {AliasingHost, Reference, UnifiedModulesAliasingHost} from '../../imports';
-import {DtsMetadataReader} from '../../metadata';
-import {ClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
-import {makeProgram} from '../../testing';
-import {ExportScope} from '../src/api';
-import {MetadataDtsModuleScopeResolver} from '../src/dependency';
+import {UnifiedModulesHost} from '../../core/api/index.js';
+import {absoluteFrom} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {AliasingHost, Reference, UnifiedModulesAliasingHost} from '../../imports/index.js';
+import {DtsMetadataReader} from '../../metadata/index.js';
+import {ClassDeclaration, TypeScriptReflectionHost} from '../../reflection/index.js';
+import {makeProgram} from '../../testing/index.js';
+import {ExportScope} from '../src/api.js';
+import {MetadataDtsModuleScopeResolver} from '../src/dependency.js';
 
 const MODULE_FROM_NODE_MODULES_PATH = /.*node_modules\/(\w+)\/index\.d\.ts$/;
 

@@ -10,9 +10,9 @@
 
 import ts from 'typescript';
 
-import {AbsoluteFsPath, dirname, getFileSystem, getSourceFileOrError, NgtscCompilerHost} from '../../file_system';
-import {DeclarationNode} from '../../reflection';
-import {getTokenAtPosition} from '../../util/src/typescript';
+import {AbsoluteFsPath, dirname, getFileSystem, getSourceFileOrError, NgtscCompilerHost} from '../../file_system/index.js';
+import {DeclarationNode} from '../../reflection/index.js';
+import {getTokenAtPosition} from '../../util/src/typescript.js';
 
 export function makeProgram(
     files: {name: AbsoluteFsPath, contents: string, isRoot?: boolean}[],

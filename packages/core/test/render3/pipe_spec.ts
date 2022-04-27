@@ -9,10 +9,10 @@
 import {Injectable as _Injectable, Pipe as _Pipe, PipeTransform, ɵɵdefineInjectable, ɵɵdefinePipe, ɵɵgetInheritedFactory, ɵɵinject} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/instructions/all';
-import {ɵɵpipe, ɵɵpipeBind1} from '../../src/render3/pipe';
+import {ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/instructions/all.js';
+import {ɵɵpipe, ɵɵpipeBind1} from '../../src/render3/pipe.js';
 
-import {TemplateFixture} from './render_util';
+import {TemplateFixture} from './render_util.js';
 
 const Pipe: typeof _Pipe = function(...args: any[]): any {
   // In test we use @Pipe for documentation only so it's safe to mock out the implementation.

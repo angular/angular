@@ -8,7 +8,7 @@
 import {Observable, of} from 'rxjs';
 import {timeout} from 'rxjs/operators';
 
-import {asyncTest, isPhantomJS} from '../test-util';
+import {asyncTest, isPhantomJS} from '../test-util.js';
 
 describe('Observable.timeout', () => {
   let log: any[];

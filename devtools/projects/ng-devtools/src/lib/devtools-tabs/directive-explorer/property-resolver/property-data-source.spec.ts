@@ -9,9 +9,9 @@
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {PropType} from 'protocol';
 
-import {FlatNode} from './element-property-resolver';
-import {getTreeFlattener} from './flatten';
-import {PropertyDataSource} from './property-data-source';
+import {FlatNode} from './element-property-resolver.js';
+import {getTreeFlattener} from './flatten.js';
+import {PropertyDataSource} from './property-data-source.js';
 
 const flatTreeControl =
     new FlatTreeControl<FlatNode>((node) => node.level, (node) => node.expandable);

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '../../src/core';
-import {clearResolutionOfComponentResourcesQueue, isComponentResourceResolutionQueueEmpty, resolveComponentResources} from '../../src/metadata/resource_loading';
-import {ComponentType} from '../../src/render3/interfaces/definition';
-import {compileComponent} from '../../src/render3/jit/directive';
+import {Component} from '../../src/core.js';
+import {clearResolutionOfComponentResourcesQueue, isComponentResourceResolutionQueueEmpty, resolveComponentResources} from '../../src/metadata/resource_loading.js';
+import {ComponentType} from '../../src/render3/interfaces/definition.js';
+import {compileComponent} from '../../src/render3/jit/directive.js';
 
 describe('resource_loading', () => {
   afterEach(clearResolutionOfComponentResourcesQueue);

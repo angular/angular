@@ -10,9 +10,9 @@ import module from 'module';
 import semver from 'semver';
 import * as vm from 'vm';
 
-import {AbsoluteFsPath, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
 
-import {PackageJsonFormatPropertiesMap} from './entry_point';
+import {PackageJsonFormatPropertiesMap} from './entry_point.js';
 
 /**
  * The format of a project level configuration file.

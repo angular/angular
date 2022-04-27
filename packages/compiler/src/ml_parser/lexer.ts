@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as chars from '../chars';
-import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util';
+import * as chars from '../chars.js';
+import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util.js';
 
-import {NAMED_ENTITIES} from './entities';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
-import {TagContentType, TagDefinition} from './tags';
-import {IncompleteTagOpenToken, TagOpenStartToken, Token, TokenType} from './tokens';
+import {NAMED_ENTITIES} from './entities.js';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config.js';
+import {TagContentType, TagDefinition} from './tags.js';
+import {IncompleteTagOpenToken, TagOpenStartToken, Token, TokenType} from './tokens.js';
 
 export class TokenError extends ParseError {
   constructor(errorMsg: string, public tokenType: TokenType|null, span: ParseSourceSpan) {

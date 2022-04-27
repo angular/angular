@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AAT_STATUS_LIST, Account, Company, CustomDate, Offering, Opportunity, STATUS_LIST} from './common';
+import {AAT_STATUS_LIST, Account, Company, CustomDate, Offering, Opportunity, STATUS_LIST} from './common.js';
 
 export function generateOfferings(count: number): Offering[] {
   const res = [];

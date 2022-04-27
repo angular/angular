@@ -8,10 +8,10 @@
 
 import {SemVerDSL} from 'semver-dsl';
 
-import {getDirectiveName} from '../highlighter';
-import {ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType} from '../interfaces';
-import {isCustomElement} from '../utils';
-import {VERSION} from '../version';
+import {getDirectiveName} from '../highlighter.js';
+import {ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType} from '../interfaces.js';
+import {isCustomElement} from '../utils.js';
+import {VERSION} from '../version.js';
 
 let HEADER_OFFSET = 19;
 

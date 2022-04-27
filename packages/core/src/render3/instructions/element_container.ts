@@ -5,20 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {assertEqual, assertIndexInRange} from '../../util/assert';
-import {assertHasParent} from '../assert';
-import {attachPatchData} from '../context_discovery';
-import {registerPostOrderHooks} from '../hooks';
-import {TAttributes, TElementContainerNode, TNodeType} from '../interfaces/node';
-import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view';
-import {assertTNodeType} from '../node_assert';
-import {appendChild} from '../node_manipulation';
-import {getBindingIndex, getCurrentTNode, getLView, getTView, isCurrentTNodeParent, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
-import {computeStaticStyling} from '../styling/static_styling';
-import {getConstant} from '../util/view_utils';
+import {assertEqual, assertIndexInRange} from '../../util/assert.js';
+import {assertHasParent} from '../assert.js';
+import {attachPatchData} from '../context_discovery.js';
+import {registerPostOrderHooks} from '../hooks.js';
+import {TAttributes, TElementContainerNode, TNodeType} from '../interfaces/node.js';
+import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks.js';
+import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view.js';
+import {assertTNodeType} from '../node_assert.js';
+import {appendChild} from '../node_manipulation.js';
+import {getBindingIndex, getCurrentTNode, getLView, getTView, isCurrentTNodeParent, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state.js';
+import {computeStaticStyling} from '../styling/static_styling.js';
+import {getConstant} from '../util/view_utils.js';
 
-import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
+import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared.js';
 
 function elementContainerStartFirstCreatePass(
     index: number, tView: TView, lView: LView, attrsIndex?: number|null,

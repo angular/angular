@@ -5,10 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {NGCC_PROPERTY_EXTENSION} from '../writing/new_entry_point_file_writer';
-import {PackageJsonUpdater} from '../writing/package_json_updater';
-import {EntryPointPackageJson, PackageJsonFormatProperties} from './entry_point';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system/index.js';
+import {NGCC_PROPERTY_EXTENSION} from '../writing/new_entry_point_file_writer.js';
+import {PackageJsonUpdater} from '../writing/package_json_updater.js';
+
+import {EntryPointPackageJson, PackageJsonFormatProperties} from './entry_point.js';
 
 export const NGCC_VERSION = '0.0.0-PLACEHOLDER';
 

@@ -12,9 +12,9 @@ import {getSourceFileOrError} from '@angular/compiler-cli/src/ngtsc/file_system'
 import {SymbolKind} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {getTargetAtPosition, TargetNodeKind} from './template_target';
-import {findTightestNode} from './ts_utils';
-import {getTemplateInfoAtPosition} from './utils';
+import {getTargetAtPosition, TargetNodeKind} from './template_target.js';
+import {findTightestNode} from './ts_utils.js';
+import {getTemplateInfoAtPosition} from './utils.js';
 
 /**
  * Queries the TypeScript Language Service to get signature help for a template position.

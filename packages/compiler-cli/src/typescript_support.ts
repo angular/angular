@@ -7,7 +7,7 @@
  */
 import ts from 'typescript';
 
-import {compareVersions} from './version_helpers';
+import {compareVersions} from './version_helpers.js';
 
 /**
  * Minimum supported TypeScript version

@@ -6,9 +6,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {findFlatIndexEntryPoint} from '../src/logic';
+import {absoluteFrom} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {findFlatIndexEntryPoint} from '../src/logic.js';
 
 runInEachFileSystem(() => {
   describe('entry_point logic', () => {

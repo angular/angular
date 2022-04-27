@@ -7,12 +7,12 @@
  */
 import mapHelpers from 'convert-source-map';
 
-import {AbsoluteFsPath, ReadonlyFileSystem} from '../../file_system';
-import {Logger} from '../../logging';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../file_system/index.js';
+import {Logger} from '../../logging/index.js';
 
-import {ContentOrigin} from './content_origin';
-import {MapAndPath, RawSourceMap, SourceMapInfo} from './raw_source_map';
-import {SourceFile} from './source_file';
+import {ContentOrigin} from './content_origin.js';
+import {MapAndPath, RawSourceMap, SourceMapInfo} from './raw_source_map.js';
+import {SourceFile} from './source_file.js';
 
 const SCHEME_MATCHER = /^([a-z][a-z0-9.-]*):\/\//i;
 

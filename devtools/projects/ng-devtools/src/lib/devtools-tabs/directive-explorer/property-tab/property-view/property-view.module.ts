@@ -16,13 +16,13 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatTreeModule} from '@angular/material/tree';
 
-import {PropertyEditorComponent} from './property-editor.component';
-import {PropertyPreviewComponent} from './property-preview.component';
-import {PropertyTabBodyComponent} from './property-tab-body.component';
-import {PropertyViewBodyComponent} from './property-view-body.component';
-import {PropertyViewHeaderComponent} from './property-view-header.component';
-import {PropertyViewTreeComponent} from './property-view-tree.component';
-import {PropertyViewComponent} from './property-view.component';
+import {PropertyEditorComponent} from './property-editor.component.js';
+import {PropertyPreviewComponent} from './property-preview.component.js';
+import {PropertyTabBodyComponent} from './property-tab-body.component.js';
+import {PropertyViewBodyComponent} from './property-view-body.component.js';
+import {PropertyViewHeaderComponent} from './property-view-header.component.js';
+import {PropertyViewTreeComponent} from './property-view-tree.component.js';
+import {PropertyViewComponent} from './property-view.component.js';
 
 @NgModule({
   declarations: [

@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {AppModule, MyExpandoCmp as AppComponent} from './animation_example';
+export {AppModule, MyExpandoCmp as AppComponent} from './animation_example.js';

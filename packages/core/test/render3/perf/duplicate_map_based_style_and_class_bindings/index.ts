@@ -5,15 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵɵadvance} from '../../../../src/render3/instructions/advance';
-import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
-import {refreshView} from '../../../../src/render3/instructions/shared';
-import {ɵɵclassMap, ɵɵstyleMap} from '../../../../src/render3/instructions/styling';
-import {RenderFlags} from '../../../../src/render3/interfaces/definition';
-import {TVIEW} from '../../../../src/render3/interfaces/view';
-import {createBenchmark} from '../micro_bench';
-import {setupRootViewWithEmbeddedViews} from '../setup';
-import {defineBenchmarkTestDirective} from '../shared';
+import {ɵɵadvance} from '../../../../src/render3/instructions/advance.js';
+import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element.js';
+import {refreshView} from '../../../../src/render3/instructions/shared.js';
+import {ɵɵclassMap, ɵɵstyleMap} from '../../../../src/render3/instructions/styling.js';
+import {RenderFlags} from '../../../../src/render3/interfaces/definition.js';
+import {TVIEW} from '../../../../src/render3/interfaces/view.js';
+import {createBenchmark} from '../micro_bench.js';
+import {setupRootViewWithEmbeddedViews} from '../setup.js';
+import {defineBenchmarkTestDirective} from '../shared.js';
 
 `<ng-template>
   <section>

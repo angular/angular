@@ -11,11 +11,11 @@ import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Observable, of} from 'rxjs';
 import {delay, tap} from 'rxjs/operators';
 
-import {applyRedirects} from '../src/apply_redirects';
-import {Route, Routes} from '../src/models';
-import {RouterConfigLoader} from '../src/router_config_loader';
-import {DefaultUrlSerializer, equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
-import {getLoadedRoutes} from '../src/utils/config';
+import {applyRedirects} from '../src/apply_redirects.js';
+import {Route, Routes} from '../src/models.js';
+import {RouterConfigLoader} from '../src/router_config_loader.js';
+import {DefaultUrlSerializer, equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree.js';
+import {getLoadedRoutes} from '../src/utils/config.js';
 
 describe('applyRedirects', () => {
   const serializer = new DefaultUrlSerializer();

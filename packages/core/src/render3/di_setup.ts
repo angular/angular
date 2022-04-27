@@ -7,20 +7,20 @@
  */
 
 
-import {resolveForwardRef} from '../di/forward_ref';
-import {ClassProvider, Provider} from '../di/interface/provider';
-import {isClassProvider, isTypeProvider} from '../di/provider_collection';
-import {providerToFactory} from '../di/r3_injector';
-import {assertDefined} from '../util/assert';
+import {resolveForwardRef} from '../di/forward_ref.js';
+import {ClassProvider, Provider} from '../di/interface/provider.js';
+import {isClassProvider, isTypeProvider} from '../di/provider_collection.js';
+import {providerToFactory} from '../di/r3_injector.js';
+import {assertDefined} from '../util/assert.js';
 
-import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from './di';
-import {ɵɵdirectiveInject} from './instructions/all';
-import {DirectiveDef} from './interfaces/definition';
-import {NodeInjectorFactory} from './interfaces/injector';
-import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNodeProviderIndexes} from './interfaces/node';
-import {isComponentDef} from './interfaces/type_checks';
-import {DestroyHookData, LView, TData, TVIEW, TView} from './interfaces/view';
-import {getCurrentTNode, getLView, getTView} from './state';
+import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from './di.js';
+import {ɵɵdirectiveInject} from './instructions/all.js';
+import {DirectiveDef} from './interfaces/definition.js';
+import {NodeInjectorFactory} from './interfaces/injector.js';
+import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNodeProviderIndexes} from './interfaces/node.js';
+import {isComponentDef} from './interfaces/type_checks.js';
+import {DestroyHookData, LView, TData, TVIEW, TView} from './interfaces/view.js';
+import {getCurrentTNode, getLView, getTView} from './state.js';
 
 
 

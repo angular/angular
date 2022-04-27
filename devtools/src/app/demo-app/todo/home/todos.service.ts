@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Todo} from './todo';
+import {Todo} from './todo.js';
 
 export abstract class TodosService {
   getAll(): Promise<Todo[]> {

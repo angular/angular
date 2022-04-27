@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵinjectAttribute} from '../render3/instructions/di_attr';
-import {makeParamDecorator} from '../util/decorators';
+import {ɵɵinjectAttribute} from '../render3/instructions/di_attr.js';
+import {makeParamDecorator} from '../util/decorators.js';
 
 
 /**

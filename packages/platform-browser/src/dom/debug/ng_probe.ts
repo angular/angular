@@ -8,7 +8,7 @@
 
 import {ApplicationRef, DebugNode, NgProbeToken, NgZone, ɵgetDebugNodeR2} from '@angular/core';
 
-import {exportNgVar} from '../util';
+import {exportNgVar} from '../util.js';
 
 const CORE_TOKENS = (() => ({
                        'ApplicationRef': ApplicationRef,

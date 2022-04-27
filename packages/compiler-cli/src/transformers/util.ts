@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {CompilerOptions, DEFAULT_ERROR_CODE, SOURCE} from './api';
+import {CompilerOptions, DEFAULT_ERROR_CODE, SOURCE} from './api.js';
 
 export const GENERATED_FILES = /(.*?)\.(ngfactory|shim\.ngstyle|ngstyle|ngsummary)\.(js|d\.ts|ts)$/;
 

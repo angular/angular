@@ -6,8 +6,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {mainNgcc} from './src/main';
-import {parseCommandLineOptions} from './src/command_line_options';
+import {mainNgcc} from './src/main.js';
+import {parseCommandLineOptions} from './src/command_line_options.js';
 
 // CLI entry point
 process.title = 'ngcc';

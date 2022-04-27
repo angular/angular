@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectFlags} from '../../di/interface/injector';
-import {ProviderToken} from '../../di/provider_token';
-import {assertDefined, assertEqual} from '../../util/assert';
+import {InjectFlags} from '../../di/interface/injector.js';
+import {ProviderToken} from '../../di/provider_token.js';
+import {assertDefined, assertEqual} from '../../util/assert.js';
 
-import {TDirectiveHostNode} from './node';
-import {LView, TData} from './view';
+import {TDirectiveHostNode} from './node.js';
+import {LView, TData} from './view.js';
 
 /**
  * Offsets of the `NodeInjector` data structure in the expando.

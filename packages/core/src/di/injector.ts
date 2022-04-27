@@ -7,15 +7,15 @@
  */
 
 
-import {createInjector} from './create_injector';
-import {THROW_IF_NOT_FOUND, ɵɵinject} from './injector_compatibility';
-import {InjectorMarkers} from './injector_marker';
-import {INJECTOR} from './injector_token';
-import {ɵɵdefineInjectable} from './interface/defs';
-import {InjectFlags} from './interface/injector';
-import {StaticProvider} from './interface/provider';
-import {NullInjector} from './null_injector';
-import {ProviderToken} from './provider_token';
+import {createInjector} from './create_injector.js';
+import {THROW_IF_NOT_FOUND, ɵɵinject} from './injector_compatibility.js';
+import {InjectorMarkers} from './injector_marker.js';
+import {INJECTOR} from './injector_token.js';
+import {ɵɵdefineInjectable} from './interface/defs.js';
+import {InjectFlags} from './interface/injector.js';
+import {StaticProvider} from './interface/provider.js';
+import {NullInjector} from './null_injector.js';
+import {ProviderToken} from './provider_token.js';
 
 /**
  * Concrete injectors implement this interface. Injectors are configured

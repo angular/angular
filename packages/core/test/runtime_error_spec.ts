@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RuntimeError, RuntimeErrorCode} from '../src/errors';
+import {RuntimeError, RuntimeErrorCode} from '../src/errors.js';
 
 describe('RuntimeError utils', () => {
   it('should format the error message correctly', () => {

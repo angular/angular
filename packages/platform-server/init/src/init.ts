@@ -12,6 +12,6 @@
  * Entry point for all initialization APIs of the platform-server package.
  */
 
-import {applyShims} from './shims';
+import {applyShims} from './shims.js';
 
 applyShims();

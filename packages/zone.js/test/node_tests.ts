@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './node/events.spec';
-import './node/fs.spec';
-import './node/process.spec';
-import './node/Error.spec';
-import './node/crypto.spec';
-import './node/http.spec';
-import './node/console.spec';
-import './node/timer.spec';
+import './node/events.spec.js';
+import './node/fs.spec.js';
+import './node/process.spec.js';
+import './node/Error.spec.js';
+import './node/crypto.spec.js';
+import './node/http.spec.js';
+import './node/console.spec.js';
+import './node/timer.spec.js';

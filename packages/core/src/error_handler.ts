@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getErrorLogger, getOriginalError} from './util/errors';
+import {getErrorLogger, getOriginalError} from './util/errors.js';
 
 /**
  * Provides a hook for centralized exception handling.

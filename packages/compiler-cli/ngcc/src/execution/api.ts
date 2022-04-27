@@ -5,8 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FileToWrite} from '../rendering/utils';
-import {Task, TaskCompletedCallback, TaskQueue} from './tasks/api';
+import {FileToWrite} from '../rendering/utils.js';
+
+import {Task, TaskCompletedCallback, TaskQueue} from './tasks/api.js';
 
 /**
  * The type of the function that analyzes entry-points and creates the list of tasks.

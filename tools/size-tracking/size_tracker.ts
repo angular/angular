@@ -9,7 +9,7 @@
 import {readFileSync} from 'fs';
 import {RawSourceMap, SourceMapConsumer} from 'source-map';
 
-import {DirectorySizeEntry, FileSizeData, omitCommonPathPrefix, sortFileSizeData} from './file_size_data';
+import {DirectorySizeEntry, FileSizeData, omitCommonPathPrefix, sortFileSizeData} from './file_size_data.js';
 
 export class SizeTracker {
   private fileContent: string;

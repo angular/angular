@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './init';
+import './init.js';
 
-import {BasicComp} from '../src/basic';
-import {CompWithAnalyzeEntryComponentsProvider, CompWithEntryComponents} from '../src/entry_components';
+import {BasicComp} from '../src/basic.js';
+import {CompWithAnalyzeEntryComponentsProvider, CompWithEntryComponents} from '../src/entry_components.js';
 
-import {createComponent} from './util';
+import {createComponent} from './util.js';
 
 describe('content projection', () => {
   it('should support entryComponents in components', () => {

@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './api';
-export * from './extended_template_checker';
+export * from './api.js';
+export * from './extended_template_checker.js';

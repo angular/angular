@@ -8,8 +8,8 @@
 import {AbsoluteFsPath, PathManipulation} from '@angular/compiler-cli/private/localize';
 import {MessageId, ɵParsedMessage} from '@angular/localize';
 
-import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics';
-import {serializeLocationPosition} from '../source_file_utils';
+import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics.js';
+import {serializeLocationPosition} from '../source_file_utils.js';
 
 /**
  * Check each of the given `messages` to find those that have the same id but different message

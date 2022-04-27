@@ -5,13 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import './init';
+import './init.js';
+
 import * as fs from 'fs';
 import * as path from 'path';
 
-import {MultipleComponentsMyComp} from '../src/a/multiple_components';
-import {BasicComp} from '../src/basic';
-import {createComponent} from './util';
+import {MultipleComponentsMyComp} from '../src/a/multiple_components.js';
+import {BasicComp} from '../src/basic.js';
+
+import {createComponent} from './util.js';
 
 describe('template codegen output', () => {
   const outDir = 'src';

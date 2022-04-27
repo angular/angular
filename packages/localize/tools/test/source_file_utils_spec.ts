@@ -9,12 +9,12 @@ import {absoluteFrom, getFileSystem, PathManipulation} from '@angular/compiler-c
 import {ɵmakeTemplateObject} from '@angular/localize';
 import generate from '@babel/generator';
 
-import {NodePath, TransformOptions, transformSync, types as t} from '../src/babel_core';
+import {NodePath, TransformOptions, transformSync, types as t} from '../src/babel_core.js';
 
 import template from '@babel/template';
 
-import {isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, isArrayOfExpressions, unwrapStringLiteralArray, unwrapMessagePartsFromLocalizeCall, wrapInParensIfNecessary, buildLocalizeReplacement, unwrapSubstitutionsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral, getLocation} from '../src/source_file_utils';
-import {runInNativeFileSystem} from './helpers';
+import {isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, isArrayOfExpressions, unwrapStringLiteralArray, unwrapMessagePartsFromLocalizeCall, wrapInParensIfNecessary, buildLocalizeReplacement, unwrapSubstitutionsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral, getLocation} from '../src/source_file_utils.js';
+import {runInNativeFileSystem} from './helpers/index.js';
 
 runInNativeFileSystem(() => {
   let fs: PathManipulation;

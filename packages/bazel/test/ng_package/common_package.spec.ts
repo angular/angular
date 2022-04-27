@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as shx from 'shelljs';
 
-import {matchesObjectWithOrder} from './test_utils';
+import {matchesObjectWithOrder} from './test_utils.js';
 
 // Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
 // resolve the "package.json" of the package since otherwise NodeJS would resolve the "main"

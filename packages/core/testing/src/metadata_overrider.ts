@@ -8,7 +8,7 @@
 
 import {ɵstringify as stringify} from '@angular/core';
 
-import {MetadataOverride} from './metadata_override';
+import {MetadataOverride} from './metadata_override.js';
 
 type StringMap = {
   [key: string]: any

@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {keyValueArraySet} from '../../util/array_utils';
-import {getLView} from '../state';
-import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation';
-import {checkStylingMap, classStringParser} from './styling';
+import {keyValueArraySet} from '../../util/array_utils.js';
+import {getLView} from '../state.js';
+
+import {interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV} from './interpolation.js';
+import {checkStylingMap, classStringParser} from './styling.js';
 
 
 

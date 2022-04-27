@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computeMsgId} from '../i18n/digest';
-import {Message} from '../i18n/i18n_ast';
-import {ParseSourceSpan} from '../parse_util';
-import {I18nMeta} from '../render3/view/i18n/meta';
+import {computeMsgId} from '../i18n/digest.js';
+import {Message} from '../i18n/i18n_ast.js';
+import {ParseSourceSpan} from '../parse_util.js';
+import {I18nMeta} from '../render3/view/i18n/meta.js';
 
 //// Types
 export enum TypeModifier {

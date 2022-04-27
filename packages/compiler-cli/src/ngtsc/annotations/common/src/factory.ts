@@ -8,7 +8,7 @@
 
 import {compileDeclareFactoryFunction, compileFactoryFunction, R3FactoryMetadata} from '@angular/compiler';
 
-import {CompileResult} from '../../../transform';
+import {CompileResult} from '../../../transform/index.js';
 
 export type CompileFactoryFn = (metadata: R3FactoryMetadata) => CompileResult;
 

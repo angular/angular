@@ -8,9 +8,9 @@
 
 import {browser, by, element, ElementArrayFinder, ElementFinder} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../../test-utils/index.js';
 
-import {addCustomMatchers} from './e2e_util';
+import {addCustomMatchers} from './e2e_util.js';
 
 function loadPage() {
   browser.rootEl = 'example-app';

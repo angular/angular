@@ -10,7 +10,7 @@ import {Injectable} from '@angular/core';
 import {merge, NEVER, Observable, Subject} from 'rxjs';
 import {map, switchMap, take} from 'rxjs/operators';
 
-import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
+import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level.js';
 
 
 /**

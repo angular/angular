@@ -8,12 +8,12 @@
 import {FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵcomputeMsgId, ɵparseTranslation} from '@angular/localize';
 import {ɵParsedTranslation} from '@angular/localize/private';
-import {transformSync} from '../../../src/babel_core';
 
-import {Diagnostics} from '../../../src/diagnostics';
-import {TranslatePluginOptions} from '../../../src/source_file_utils';
-import {makeEs2015TranslatePlugin} from '../../../src/translate/source_files/es2015_translate_plugin';
-import {runInNativeFileSystem} from '../../helpers';
+import {transformSync} from '../../../src/babel_core.js';
+import {Diagnostics} from '../../../src/diagnostics.js';
+import {TranslatePluginOptions} from '../../../src/source_file_utils.js';
+import {makeEs2015TranslatePlugin} from '../../../src/translate/source_files/es2015_translate_plugin.js';
+import {runInNativeFileSystem} from '../../helpers/index.js';
 
 runInNativeFileSystem(() => {
   let fs: FileSystem;

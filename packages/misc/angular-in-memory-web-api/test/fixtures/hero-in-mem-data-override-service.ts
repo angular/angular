@@ -13,7 +13,7 @@ import {Injectable} from '@angular/core';
 import {getStatusText, ParsedRequestUrl, RequestInfo, RequestInfoUtilities, ResponseOptions, STATUS} from 'angular-in-memory-web-api';
 import {Observable} from 'rxjs';
 
-import {HeroInMemDataService} from './hero-in-mem-data-service';
+import {HeroInMemDataService} from './hero-in-mem-data-service.js';
 
 const villains = [
   // deliberately using string ids that look numeric

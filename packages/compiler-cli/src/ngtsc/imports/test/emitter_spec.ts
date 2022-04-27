@@ -8,14 +8,14 @@
 import {ExternalExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {UnifiedModulesHost} from '../../core/api';
-import {absoluteFrom as _, basename, LogicalFileSystem} from '../../file_system';
-import {runInEachFileSystem, TestFile} from '../../file_system/testing';
-import {Declaration, TypeScriptReflectionHost} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing';
-import {AbsoluteModuleStrategy, ImportFlags, LogicalProjectStrategy, ReferenceEmitKind, RelativePathStrategy, UnifiedModulesStrategy} from '../src/emitter';
-import {Reference} from '../src/references';
-import {ModuleResolver} from '../src/resolver';
+import {UnifiedModulesHost} from '../../core/api/index.js';
+import {absoluteFrom as _, basename, LogicalFileSystem} from '../../file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../file_system/testing/index.js';
+import {Declaration, TypeScriptReflectionHost} from '../../reflection/index.js';
+import {getDeclaration, makeProgram} from '../../testing/index.js';
+import {AbsoluteModuleStrategy, ImportFlags, LogicalProjectStrategy, ReferenceEmitKind, RelativePathStrategy, UnifiedModulesStrategy} from '../src/emitter.js';
+import {Reference} from '../src/references.js';
+import {ModuleResolver} from '../src/resolver.js';
 
 runInEachFileSystem(() => {
   describe('AbsoluteModuleStrategy', () => {

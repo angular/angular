@@ -7,14 +7,14 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom} from '../../file_system';
-import {TestFile} from '../../file_system/testing';
-import {Reference} from '../../imports';
-import {DependencyTracker} from '../../incremental/api';
-import {TypeScriptReflectionHost} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing';
-import {ForeignFunctionResolver, PartialEvaluator} from '../src/interface';
-import {ResolvedValue} from '../src/result';
+import {absoluteFrom} from '../../file_system/index.js';
+import {TestFile} from '../../file_system/testing/index.js';
+import {Reference} from '../../imports/index.js';
+import {DependencyTracker} from '../../incremental/api.js';
+import {TypeScriptReflectionHost} from '../../reflection/index.js';
+import {getDeclaration, makeProgram} from '../../testing/index.js';
+import {ForeignFunctionResolver, PartialEvaluator} from '../src/interface.js';
+import {ResolvedValue} from '../src/result.js';
 
 export function makeExpression(code: string, expr: string, supportingFiles: TestFile[] = []): {
   expression: ts.Expression,

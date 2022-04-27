@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
-import {NgModuleFactory as R3NgModuleFactory} from '../render3/ng_module_ref';
+import {Type} from '../interface/type.js';
+import {NgModuleFactory as R3NgModuleFactory} from '../render3/ng_module_ref.js';
 
-import {NgModuleFactory} from './ng_module_factory';
-import {getRegisteredNgModuleType} from './ng_module_registration';
+import {NgModuleFactory} from './ng_module_factory.js';
+import {getRegisteredNgModuleType} from './ng_module_registration.js';
 
 /**
  * Returns the NgModuleFactory with the given id (specified using [@NgModule.id

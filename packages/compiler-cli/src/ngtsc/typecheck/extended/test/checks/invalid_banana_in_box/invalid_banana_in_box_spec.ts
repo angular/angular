@@ -8,14 +8,14 @@
 
 import ts from 'typescript';
 
-import {DiagnosticCategoryLabel} from '../../../../../core/api';
-import {ErrorCode, ExtendedTemplateDiagnosticName, ngErrorCode} from '../../../../../diagnostics';
-import {absoluteFrom, getSourceFileOrError} from '../../../../../file_system';
-import {runInEachFileSystem} from '../../../../../file_system/testing';
-import {getSourceCodeForDiagnostic} from '../../../../../testing';
-import {getClass, setup} from '../../../../testing';
-import {factory as invalidBananaInBoxFactory} from '../../../checks/invalid_banana_in_box/index';
-import {ExtendedTemplateCheckerImpl} from '../../../src/extended_template_checker';
+import {DiagnosticCategoryLabel} from '../../../../../core/api/index.js';
+import {ErrorCode, ExtendedTemplateDiagnosticName, ngErrorCode} from '../../../../../diagnostics/index.js';
+import {absoluteFrom, getSourceFileOrError} from '../../../../../file_system/index.js';
+import {runInEachFileSystem} from '../../../../../file_system/testing/index.js';
+import {getSourceCodeForDiagnostic} from '../../../../../testing/index.js';
+import {getClass, setup} from '../../../../testing/index.js';
+import {factory as invalidBananaInBoxFactory} from '../../../checks/invalid_banana_in_box/index.js';
+import {ExtendedTemplateCheckerImpl} from '../../../src/extended_template_checker.js';
 
 runInEachFileSystem(() => {
   describe('TemplateChecks', () => {

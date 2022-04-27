@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './src/buffer';
-export * from './src/env';
-export * from './src/project';
-export * from './src/util';
+export * from './src/buffer.js';
+export * from './src/env.js';
+export * from './src/project.js';
+export * from './src/util.js';

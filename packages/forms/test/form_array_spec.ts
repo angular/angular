@@ -11,7 +11,7 @@ import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Va
 import {Validators} from '@angular/forms/src/validators';
 import {of} from 'rxjs';
 
-import {asyncValidator} from './util';
+import {asyncValidator} from './util.js';
 
 (function() {
 describe('FormArray', () => {

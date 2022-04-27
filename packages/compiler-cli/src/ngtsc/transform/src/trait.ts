@@ -7,8 +7,10 @@
  */
 
 import ts from 'typescript';
-import {SemanticSymbol} from '../../incremental/semantic_graph';
-import {DecoratorHandler, DetectResult} from './api';
+
+import {SemanticSymbol} from '../../incremental/semantic_graph/index.js';
+
+import {DecoratorHandler, DetectResult} from './api.js';
 
 export enum TraitState {
   /**

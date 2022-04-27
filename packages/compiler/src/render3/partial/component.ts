@@ -5,20 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as core from '../../core';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
-import * as o from '../../output/output_ast';
-import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../parse_util';
-import {Identifiers as R3} from '../r3_identifiers';
-import {generateForwardRef, R3CompiledExpression} from '../util';
-import {DeclarationListEmitMode, R3ComponentMetadata, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from '../view/api';
-import {createComponentType} from '../view/compiler';
-import {ParsedTemplate} from '../view/template';
-import {DefinitionMap} from '../view/util';
+import * as core from '../../core.js';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config.js';
+import * as o from '../../output/output_ast.js';
+import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../parse_util.js';
+import {Identifiers as R3} from '../r3_identifiers.js';
+import {generateForwardRef, R3CompiledExpression} from '../util.js';
+import {DeclarationListEmitMode, R3ComponentMetadata, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from '../view/api.js';
+import {createComponentType} from '../view/compiler.js';
+import {ParsedTemplate} from '../view/template.js';
+import {DefinitionMap} from '../view/util.js';
 
-import {R3DeclareComponentMetadata, R3DeclareDirectiveDependencyMetadata, R3DeclareNgModuleDependencyMetadata, R3DeclarePipeDependencyMetadata} from './api';
-import {createDirectiveDefinitionMap} from './directive';
-import {toOptionalLiteralArray} from './util';
+import {R3DeclareComponentMetadata, R3DeclareDirectiveDependencyMetadata, R3DeclareNgModuleDependencyMetadata, R3DeclarePipeDependencyMetadata} from './api.js';
+import {createDirectiveDefinitionMap} from './directive.js';
+import {toOptionalLiteralArray} from './util.js';
 
 export interface DeclareComponentTemplateInfo {
   /**

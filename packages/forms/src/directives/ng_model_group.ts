@@ -8,13 +8,13 @@
 
 import {Directive, forwardRef, Host, Inject, Input, OnDestroy, OnInit, Optional, Self, SkipSelf} from '@angular/core';
 
-import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
+import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators.js';
 
-import {AbstractFormGroupDirective} from './abstract_form_group_directive';
-import {ControlContainer} from './control_container';
-import {NgForm} from './ng_form';
-import {modelGroupParentException} from './template_driven_errors';
-import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
+import {AbstractFormGroupDirective} from './abstract_form_group_directive.js';
+import {ControlContainer} from './control_container.js';
+import {NgForm} from './ng_form.js';
+import {modelGroupParentException} from './template_driven_errors.js';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators.js';
 
 export const modelGroupProvider: any = {
   provide: ControlContainer,

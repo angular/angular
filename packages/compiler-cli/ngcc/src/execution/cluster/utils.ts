@@ -10,7 +10,7 @@
 
 import cluster from 'cluster';
 
-import {MessageFromWorker, MessageToWorker} from './api';
+import {MessageFromWorker, MessageToWorker} from './api.js';
 
 
 

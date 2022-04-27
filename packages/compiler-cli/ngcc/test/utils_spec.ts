@@ -8,10 +8,10 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom as _abs} from '../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {KnownDeclaration} from '../../src/ngtsc/reflection';
-import {FactoryMap, getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, isRelativePath, stripExtension} from '../src/utils';
+import {absoluteFrom as _abs} from '../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing/index.js';
+import {KnownDeclaration} from '../../src/ngtsc/reflection/index.js';
+import {FactoryMap, getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, isRelativePath, stripExtension} from '../src/utils.js';
 
 describe('FactoryMap', () => {
   it('should return an existing value', () => {

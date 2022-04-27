@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationTimelineInstruction} from './animation_timeline_instruction';
+import {AnimationTimelineInstruction} from './animation_timeline_instruction.js';
 
 export class ElementInstructionMap {
   private _map = new Map<any, AnimationTimelineInstruction[]>();

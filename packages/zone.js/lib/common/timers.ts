@@ -10,7 +10,7 @@
  * @suppress {missingRequire}
  */
 
-import {patchMethod, scheduleMacroTaskWithCurrentZone, zoneSymbol} from './utils';
+import {patchMethod, scheduleMacroTaskWithCurrentZone, zoneSymbol} from './utils.js';
 
 const taskSymbol = zoneSymbol('zoneTask');
 

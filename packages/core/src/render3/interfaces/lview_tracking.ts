@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertNumber} from '../../util/assert';
+import {assertNumber} from '../../util/assert.js';
 
-import {ID, LView} from './view';
+import {ID, LView} from './view.js';
 
 // Keeps track of the currently-active LViews.
 const TRACKED_LVIEWS = new Map<number, LView>();

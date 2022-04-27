@@ -15,7 +15,7 @@ import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/
 import {merge, NEVER, of, Subscription, timer} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 
-import {MyInput, MyInputForm} from './value_accessor_integration_spec';
+import {MyInput, MyInputForm} from './value_accessor_integration_spec.js';
 
 // Produces a new @Directive (with a given selector) that represents a validator class.
 function createValidatorClass(selector: string) {

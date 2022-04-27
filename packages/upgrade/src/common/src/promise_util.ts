@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isFunction} from './util';
+import {isFunction} from './util.js';
 
 export interface Thenable<T> {
   then(callback: (value: T) => any): any;

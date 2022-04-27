@@ -8,7 +8,7 @@
 
 import {Events, MessageBus} from 'protocol';
 
-import {subscribeToClientEvents} from './client-event-subscribers';
+import {subscribeToClientEvents} from './client-event-subscribers.js';
 
 export const initializeMessageBus = (messageBus: MessageBus<Events>) => {
   subscribeToClientEvents(messageBus);

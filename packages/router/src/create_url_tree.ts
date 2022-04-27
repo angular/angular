@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ActivatedRoute} from './router_state';
-import {Params, PRIMARY_OUTLET} from './shared';
-import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
-import {forEach, last, shallowEqual} from './utils/collection';
+import {ActivatedRoute} from './router_state.js';
+import {Params, PRIMARY_OUTLET} from './shared.js';
+import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree.js';
+import {forEach, last, shallowEqual} from './utils/collection.js';
 
 export function createUrlTree(
     route: ActivatedRoute, urlTree: UrlTree, commands: any[], queryParams: Params|null,

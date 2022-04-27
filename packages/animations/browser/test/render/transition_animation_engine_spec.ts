@@ -7,13 +7,13 @@
  */
 import {animate, AnimationEvent, AnimationMetadata, AnimationTriggerMetadata, NoopAnimationPlayer, state, style, transition, trigger} from '@angular/animations';
 
-import {TriggerAst} from '../../src/dsl/animation_ast';
-import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
-import {buildTrigger} from '../../src/dsl/animation_trigger';
-import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
-import {getBodyNode} from '../../src/render/shared';
-import {TransitionAnimationEngine, TransitionAnimationPlayer} from '../../src/render/transition_animation_engine';
-import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_animation_driver';
+import {TriggerAst} from '../../src/dsl/animation_ast.js';
+import {buildAnimationAst} from '../../src/dsl/animation_ast_builder.js';
+import {buildTrigger} from '../../src/dsl/animation_trigger.js';
+import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer.js';
+import {getBodyNode} from '../../src/render/shared.js';
+import {TransitionAnimationEngine, TransitionAnimationPlayer} from '../../src/render/transition_animation_engine.js';
+import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_animation_driver.js';
 
 const DEFAULT_NAMESPACE_ID = 'id';
 

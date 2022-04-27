@@ -11,9 +11,9 @@ import {APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, ModuleWithPro
 import {merge, Observable, of} from 'rxjs';
 import {delay, filter, take} from 'rxjs/operators';
 
-import {NgswCommChannel} from './low_level';
-import {SwPush} from './push';
-import {SwUpdate} from './update';
+import {NgswCommChannel} from './low_level.js';
+import {SwPush} from './push.js';
+import {SwUpdate} from './update.js';
 
 /**
  * Token that can be used to provide options for `ServiceWorkerModule` outside of

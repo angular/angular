@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {invalidCssUnitValue} from '../../error_helpers';
-import {dashCaseToCamelCase} from '../../util';
+import {invalidCssUnitValue} from '../../error_helpers.js';
+import {dashCaseToCamelCase} from '../../util.js';
 
-import {AnimationStyleNormalizer} from './animation_style_normalizer';
+import {AnimationStyleNormalizer} from './animation_style_normalizer.js';
 
 const DIMENSIONAL_PROP_SET = new Set([
   'width',

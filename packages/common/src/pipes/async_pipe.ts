@@ -9,7 +9,7 @@
 import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, ɵisPromise, ɵisSubscribable} from '@angular/core';
 import {Observable, Subscribable, Unsubscribable} from 'rxjs';
 
-import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
+import {invalidPipeArgumentError} from './invalid_pipe_argument_error.js';
 
 interface SubscriptionStrategy {
   createSubscription(async: Subscribable<any>|Promise<any>, updateLatestValue: any): Unsubscribable

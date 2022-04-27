@@ -5,16 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, PathSegment, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {EntryPointWithDependencies} from '../dependencies/dependency_host';
-import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
-import {hasBeenProcessed} from '../packages/build_marker';
-import {NgccConfiguration} from '../packages/configuration';
-import {EntryPointJsonProperty, getEntryPointInfo, isEntryPoint} from '../packages/entry_point';
-import {PathMappings} from '../path_mappings';
+import {AbsoluteFsPath, PathSegment, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {EntryPointWithDependencies} from '../dependencies/dependency_host.js';
+import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver.js';
+import {hasBeenProcessed} from '../packages/build_marker.js';
+import {NgccConfiguration} from '../packages/configuration.js';
+import {EntryPointJsonProperty, getEntryPointInfo, isEntryPoint} from '../packages/entry_point.js';
+import {PathMappings} from '../path_mappings.js';
 
-import {TracingEntryPointFinder} from './tracing_entry_point_finder';
+import {TracingEntryPointFinder} from './tracing_entry_point_finder.js';
 
 /**
  * An EntryPointFinder that starts from a target entry-point and only finds

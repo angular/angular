@@ -9,8 +9,8 @@ import {AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler
 import {ɵisMissingTranslationError, ɵmakeTemplateObject, ɵParsedTranslation, ɵSourceLocation, ɵtranslate} from '@angular/localize';
 import {NodePath} from '@babel/traverse';
 
-import {types as t} from './babel_core';
-import {DiagnosticHandlingStrategy, Diagnostics} from './diagnostics';
+import {types as t} from './babel_core.js';
+import {DiagnosticHandlingStrategy, Diagnostics} from './diagnostics.js';
 
 /**
  * Is the given `expression` the global `$localize` identifier?

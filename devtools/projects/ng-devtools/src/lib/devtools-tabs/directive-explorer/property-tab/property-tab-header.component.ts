@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 
-import {IndexedNode} from '../directive-forest/index-forest';
+import {IndexedNode} from '../directive-forest/index-forest/index.js';
 
 @Component({
   templateUrl: './property-tab-header.component.html',

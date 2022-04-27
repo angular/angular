@@ -12,11 +12,11 @@
  * Entry point for all public APIs of the core/testing package.
  */
 
-export * from './async';
-export * from './component_fixture';
-export * from './fake_async';
-export {TestBed, getTestBed, inject, InjectSetupWrapper, withModule} from './test_bed';
-export {TestComponentRenderer, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestModuleMetadata, TestEnvironmentOptions, ModuleTeardownOptions, TestBedStatic} from './test_bed_common';
-export * from './test_hooks';
-export * from './metadata_override';
-export {MetadataOverrider as ɵMetadataOverrider} from './metadata_overrider';
+export * from './async.js';
+export * from './component_fixture.js';
+export * from './fake_async.js';
+export {TestBed, getTestBed, inject, InjectSetupWrapper, withModule} from './test_bed.js';
+export {TestComponentRenderer, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestModuleMetadata, TestEnvironmentOptions, ModuleTeardownOptions, TestBedStatic} from './test_bed_common.js';
+export * from './test_hooks.js';
+export * from './metadata_override.js';
+export {MetadataOverrider as ɵMetadataOverrider} from './metadata_overrider.js';

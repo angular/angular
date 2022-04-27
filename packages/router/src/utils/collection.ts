@@ -9,7 +9,7 @@
 import {ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
 import {from, Observable, of} from 'rxjs';
 
-import {Params} from '../shared';
+import {Params} from '../shared.js';
 
 export function shallowEqualArrays(a: any[], b: any[]): boolean {
   if (a.length !== b.length) return false;

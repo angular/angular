@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PerfLogEvent} from '../index';
+import {PerfLogEvent} from '../index.js';
 
 export class TraceEventFactory {
   constructor(private _cat: string, private _pid: string) {}

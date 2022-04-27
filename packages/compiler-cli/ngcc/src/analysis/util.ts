@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, isLocalRelativePath, relative} from '../../../src/ngtsc/file_system';
-import {DependencyTracker} from '../../../src/ngtsc/incremental/api';
+import {AbsoluteFsPath, isLocalRelativePath, relative} from '../../../src/ngtsc/file_system/index.js';
+import {DependencyTracker} from '../../../src/ngtsc/incremental/api.js';
 
 export function isWithinPackage(packagePath: AbsoluteFsPath, filePath: AbsoluteFsPath): boolean {
   const relativePath = relative(packagePath, filePath);

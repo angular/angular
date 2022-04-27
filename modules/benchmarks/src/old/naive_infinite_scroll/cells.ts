@@ -9,7 +9,7 @@
 import {NgFor} from '@angular/common';
 import {Component, Directive} from '@angular/core';
 
-import {Account, Company, CustomDate, Offering, Opportunity, STATUS_LIST} from './common';
+import {Account, Company, CustomDate, Offering, Opportunity, STATUS_LIST} from './common.js';
 
 export class HasStyle {
   cellWidth: number;

@@ -10,10 +10,10 @@
  * @suppress {missingRequire}
  */
 
-import {_redefineProperty, propertyPatch} from './define-property';
-import {eventTargetLegacyPatch} from './event-target-legacy';
-import {propertyDescriptorLegacyPatch} from './property-descriptor-legacy';
-import {registerElementPatch} from './register-element';
+import {_redefineProperty, propertyPatch} from './define-property.js';
+import {eventTargetLegacyPatch} from './event-target-legacy.js';
+import {propertyDescriptorLegacyPatch} from './property-descriptor-legacy.js';
+import {registerElementPatch} from './register-element.js';
 
 (function(_global: any) {
 const symbolPrefix = _global['__Zone_symbol_prefix'] || '__zone_symbol__';
@@ -35,6 +35,7 @@ _global[__symbol__('legacyPatch')] = function() {
     propertyDescriptorLegacyPatch(api, global);
   });
 };
-})(typeof window !== 'undefined' ?
-       window :
-       typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {});
+})(typeof window !== 'undefined'     ? window :
+       typeof global !== 'undefined' ? global :
+       typeof self !== 'undefined'   ? self :
+                                       {});

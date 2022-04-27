@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {unwrapExpression} from '../src/util';
+import {unwrapExpression} from '../src/util.js';
 
 describe('ngtsc annotation utilities', () => {
   describe('unwrapExpression', () => {

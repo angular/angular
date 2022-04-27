@@ -7,15 +7,15 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom, LogicalFileSystem} from '../../file_system';
-import {runInEachFileSystem, TestFile} from '../../file_system/testing';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, ReferenceEmitter} from '../../imports';
-import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing';
-import {Environment} from '../src/environment';
-import {TypeCheckFile} from '../src/type_check_file';
-import {TypeParameterEmitter} from '../src/type_parameter_emitter';
-import {ALL_ENABLED_CONFIG, angularCoreDts} from '../testing';
+import {absoluteFrom, LogicalFileSystem} from '../../file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../file_system/testing/index.js';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, ReferenceEmitter} from '../../imports/index.js';
+import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection/index.js';
+import {getDeclaration, makeProgram} from '../../testing/index.js';
+import {Environment} from '../src/environment.js';
+import {TypeCheckFile} from '../src/type_check_file.js';
+import {TypeParameterEmitter} from '../src/type_parameter_emitter.js';
+import {ALL_ENABLED_CONFIG, angularCoreDts} from '../testing/index.js';
 
 
 runInEachFileSystem(() => {

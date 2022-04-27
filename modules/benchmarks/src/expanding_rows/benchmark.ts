@@ -10,9 +10,9 @@ import {CommonModule} from '@angular/common';
 import {AfterViewInit, Component, NgModule, ViewChild, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {BenchmarkModule} from './benchmark_module';
-import {BenchmarkableExpandingRow} from './benchmarkable_expanding_row';
-import {BenchmarkableExpandingRowModule} from './benchmarkable_expanding_row_module';
+import {BenchmarkModule} from './benchmark_module.js';
+import {BenchmarkableExpandingRow} from './benchmarkable_expanding_row.js';
+import {BenchmarkableExpandingRowModule} from './benchmarkable_expanding_row_module.js';
 
 @Component({
   selector: 'benchmark-root',

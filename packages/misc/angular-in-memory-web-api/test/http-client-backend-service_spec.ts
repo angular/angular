@@ -15,11 +15,11 @@ import {HttpClientBackendService, HttpClientInMemoryWebApiModule} from 'angular-
 import {Observable, zip} from 'rxjs';
 import {concatMap, map, tap} from 'rxjs/operators';
 
-import {Hero} from './fixtures/hero';
-import {HeroInMemDataOverrideService} from './fixtures/hero-in-mem-data-override-service';
-import {HeroInMemDataService} from './fixtures/hero-in-mem-data-service';
-import {HeroService} from './fixtures/hero-service';
-import {HttpClientHeroService} from './fixtures/http-client-hero-service';
+import {HeroInMemDataOverrideService} from './fixtures/hero-in-mem-data-override-service.js';
+import {HeroInMemDataService} from './fixtures/hero-in-mem-data-service.js';
+import {HeroService} from './fixtures/hero-service.js';
+import {Hero} from './fixtures/hero.js';
+import {HttpClientHeroService} from './fixtures/http-client-hero-service.js';
 
 describe('HttpClient Backend Service', () => {
   const delay = 1;  // some minimal simulated latency delay

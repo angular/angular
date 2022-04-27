@@ -7,7 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ImportRewriter, validateAndRewriteCoreSymbol} from '../../../src/ngtsc/imports';
+import {ImportRewriter, validateAndRewriteCoreSymbol} from '../../../src/ngtsc/imports/index.js';
 
 export class NgccFlatImportRewriter implements ImportRewriter {
   shouldImportSymbol(symbol: string, specifier: string): boolean {

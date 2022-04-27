@@ -9,7 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {Component, Input, NgModule, ɵdetectChanges} from '@angular/core';
 
-import {buildTable, emptyTable, TableCell} from '../util';
+import {buildTable, emptyTable, TableCell} from '../util.js';
 
 @Component({
   selector: 'largetable',

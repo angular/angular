@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 
-import {Todo} from './todo';
+import {Todo} from './todo.js';
 
 @Component({
   templateUrl: 'todo.component.html',

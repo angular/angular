@@ -5,14 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics';
-import {absoluteFrom} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {InjectableClassRegistry} from '../../metadata';
-import {NOOP_PERF_RECORDER} from '../../perf';
-import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing';
-import {InjectableDecoratorHandler} from '../src/injectable';
+import {ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics/index.js';
+import {absoluteFrom} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {InjectableClassRegistry} from '../../metadata/index.js';
+import {NOOP_PERF_RECORDER} from '../../perf/index.js';
+import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection/index.js';
+import {getDeclaration, makeProgram} from '../../testing/index.js';
+import {InjectableDecoratorHandler} from '../src/injectable.js';
 
 runInEachFileSystem(() => {
   describe('InjectableDecoratorHandler', () => {

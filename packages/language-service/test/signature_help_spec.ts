@@ -9,7 +9,7 @@
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {getText} from '@angular/language-service/testing/src/util';
 
-import {LanguageServiceTestEnv, OpenBuffer} from '../testing';
+import {LanguageServiceTestEnv, OpenBuffer} from '../testing/index.js';
 
 describe('signature help', () => {
   beforeEach(() => {

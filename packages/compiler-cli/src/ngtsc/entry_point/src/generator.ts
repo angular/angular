@@ -10,9 +10,9 @@
 
 import ts from 'typescript';
 
-import {AbsoluteFsPath, dirname, join} from '../../file_system';
-import {TopLevelShimGenerator} from '../../shims/api';
-import {relativePathBetween} from '../../util/src/path';
+import {AbsoluteFsPath, dirname, join} from '../../file_system/index.js';
+import {TopLevelShimGenerator} from '../../shims/api.js';
+import {relativePathBetween} from '../../util/src/path.js';
 
 export class FlatIndexGenerator implements TopLevelShimGenerator {
   readonly flatIndexPath: string;

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {KnownDeclaration} from '../../reflection/src/host';
+import {KnownDeclaration} from '../../reflection/src/host.js';
 
-import {ObjectAssignBuiltinFn} from './builtin';
-import {ResolvedValue} from './result';
-import {AssignHelperFn, ReadHelperFn, SpreadArrayHelperFn, SpreadHelperFn} from './ts_helpers';
+import {ObjectAssignBuiltinFn} from './builtin.js';
+import {ResolvedValue} from './result.js';
+import {AssignHelperFn, ReadHelperFn, SpreadArrayHelperFn, SpreadHelperFn} from './ts_helpers.js';
 
 /** Resolved value for the JavaScript global `Object` declaration. */
 export const jsGlobalObjectValue = new Map([['assign', new ObjectAssignBuiltinFn()]]);

@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
-import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {ImportRewriter, NoopImportRewriter, R3SymbolsImportRewriter} from '../../../src/ngtsc/imports';
-import {NgccFlatImportRewriter} from './ngcc_import_rewriter';
+
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system/index.js';
+import {ImportRewriter, NoopImportRewriter, R3SymbolsImportRewriter} from '../../../src/ngtsc/imports/index.js';
+
+import {NgccFlatImportRewriter} from './ngcc_import_rewriter.js';
 
 /**
  * Information about a file that has been rendered.

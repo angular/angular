@@ -11,7 +11,7 @@ import {TestBed} from '@angular/core/testing';
 import {EMPTY, interval, NEVER, of} from 'rxjs';
 import {TestScheduler} from 'rxjs/testing';
 
-import {resolveData} from '../../src/operators/resolve_data';
+import {resolveData} from '../../src/operators/resolve_data.js';
 
 describe('resolveData operator', () => {
   let testScheduler: TestScheduler;

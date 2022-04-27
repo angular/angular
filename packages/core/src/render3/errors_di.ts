@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {Type} from '../interface/type';
-import {stringify} from '../util/stringify';
+import {RuntimeError, RuntimeErrorCode} from '../errors.js';
+import {Type} from '../interface/type.js';
+import {stringify} from '../util/stringify.js';
 
-import {stringifyForError} from './util/stringify_utils';
+import {stringifyForError} from './util/stringify_utils.js';
 
 
 /** Called when directives inject each other (creating a circular dependency) */

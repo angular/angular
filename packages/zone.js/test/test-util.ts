@@ -21,7 +21,7 @@
  *
  *  ifEnvSupports(supportsOnClick, function() { ... });
  */
-import {isNode, zoneSymbol} from '../lib/common/utils';
+import {isNode, zoneSymbol} from '../lib/common/utils.js';
 
 // Re-export for convenience.
 export {zoneSymbol};

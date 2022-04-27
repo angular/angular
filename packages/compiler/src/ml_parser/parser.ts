@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseError, ParseLocation, ParseSourceSpan} from '../parse_util';
+import {ParseError, ParseLocation, ParseSourceSpan} from '../parse_util.js';
 
-import * as html from './ast';
-import {NAMED_ENTITIES} from './entities';
-import {tokenize, TokenizeOptions} from './lexer';
-import {getNsPrefix, mergeNsAndName, splitNsName, TagDefinition} from './tags';
-import {AttributeNameToken, AttributeQuoteToken, CdataStartToken, CommentStartToken, ExpansionCaseExpressionEndToken, ExpansionCaseExpressionStartToken, ExpansionCaseValueToken, ExpansionFormStartToken, IncompleteTagOpenToken, InterpolatedAttributeToken, InterpolatedTextToken, TagCloseToken, TagOpenStartToken, TextToken, Token, TokenType} from './tokens';
+import * as html from './ast.js';
+import {NAMED_ENTITIES} from './entities.js';
+import {tokenize, TokenizeOptions} from './lexer.js';
+import {getNsPrefix, mergeNsAndName, splitNsName, TagDefinition} from './tags.js';
+import {AttributeNameToken, AttributeQuoteToken, CdataStartToken, CommentStartToken, ExpansionCaseExpressionEndToken, ExpansionCaseExpressionStartToken, ExpansionCaseValueToken, ExpansionFormStartToken, IncompleteTagOpenToken, InterpolatedAttributeToken, InterpolatedTextToken, TagCloseToken, TagOpenStartToken, TextToken, Token, TokenType} from './tokens.js';
 
 export class TreeError extends ParseError {
   static create(elementName: string|null, span: ParseSourceSpan, msg: string): TreeError {

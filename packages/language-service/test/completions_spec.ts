@@ -9,8 +9,8 @@
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
-import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from '../src/display_parts';
-import {LanguageServiceTestEnv, OpenBuffer} from '../testing';
+import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from '../src/display_parts.js';
+import {LanguageServiceTestEnv, OpenBuffer} from '../testing/index.js';
 
 const DIR_WITH_INPUT = {
   'Dir': `

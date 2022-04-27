@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as chars from './chars';
-import {stringify} from './util';
+import * as chars from './chars.js';
+import {stringify} from './util.js';
 
 export class ParseLocation {
   constructor(

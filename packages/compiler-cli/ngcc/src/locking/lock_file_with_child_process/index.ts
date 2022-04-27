@@ -8,11 +8,11 @@
 import {ChildProcess, fork} from 'child_process';
 import module from 'module';
 
-import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
-import {Logger, LogLevel} from '../../../../src/ngtsc/logging';
-import {getLockFilePath, LockFile} from '../lock_file';
+import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system/index.js';
+import {Logger, LogLevel} from '../../../../src/ngtsc/logging/index.js';
+import {getLockFilePath, LockFile} from '../lock_file.js';
 
-import {removeLockFile} from './util';
+import {removeLockFile} from './util.js';
 
 /// <reference types="node" />
 

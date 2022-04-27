@@ -8,8 +8,8 @@
 import {absoluteFrom, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
 
-import {MessageExtractor} from '../../src/extract/extraction';
-import {runInNativeFileSystem} from '../helpers';
+import {MessageExtractor} from '../../src/extract/extraction.js';
+import {runInNativeFileSystem} from '../helpers/index.js';
 
 runInNativeFileSystem(() => {
   describe('extractMessages', () => {

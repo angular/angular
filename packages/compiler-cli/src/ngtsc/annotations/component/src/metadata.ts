@@ -9,12 +9,12 @@
 import {AnimationTriggerNames, R3ClassMetadata, R3ComponentMetadata, R3TemplateDependency, R3TemplateDependencyMetadata} from '@angular/compiler';
 import ts from 'typescript';
 
-import {Reference} from '../../../imports';
-import {ClassPropertyMapping, ComponentResources, DirectiveTypeCheckMeta} from '../../../metadata';
-import {ClassDeclaration} from '../../../reflection';
-import {SubsetOfKeys} from '../../../util/src/typescript';
+import {Reference} from '../../../imports/index.js';
+import {ClassPropertyMapping, ComponentResources, DirectiveTypeCheckMeta} from '../../../metadata/index.js';
+import {ClassDeclaration} from '../../../reflection/index.js';
+import {SubsetOfKeys} from '../../../util/src/typescript.js';
 
-import {ParsedTemplateWithSource, StyleUrlMeta} from './resources';
+import {ParsedTemplateWithSource, StyleUrlMeta} from './resources.js';
 
 /**
  * These fields of `R3ComponentMetadata` are updated in the `resolve` phase.

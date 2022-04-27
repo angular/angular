@@ -7,10 +7,10 @@
  */
 import {ConstantPool, outputAst as o} from '@angular/compiler';
 
-import {AstFactory} from '../../../../src/ngtsc/translator';
-import {LinkerImportGenerator} from '../../linker_import_generator';
-import {LinkedDefinition} from '../partial_linkers/partial_linker';
-import {Translator} from '../translator';
+import {AstFactory} from '../../../../src/ngtsc/translator/index.js';
+import {LinkerImportGenerator} from '../../linker_import_generator.js';
+import {LinkedDefinition} from '../partial_linkers/partial_linker.js';
+import {Translator} from '../translator.js';
 
 /**
  * This class represents (from the point of view of the `FileLinker`) the scope in which

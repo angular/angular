@@ -8,8 +8,8 @@
 
 import ts from 'typescript';
 
-import {ReflectionHost} from '../../reflection';
-import {isNamedDeclaration} from '../../util/src/typescript';
+import {ReflectionHost} from '../../reflection/index.js';
+import {isNamedDeclaration} from '../../util/src/typescript.js';
 
 /**
  * Find the name, if any, by which a node is exported from a given file.

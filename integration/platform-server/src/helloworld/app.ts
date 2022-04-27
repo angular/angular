@@ -9,7 +9,7 @@
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {HelloWorldComponent} from './hello-world.component';
+import {HelloWorldComponent} from './hello-world.component.js';
 
 @NgModule({
   declarations: [HelloWorldComponent],

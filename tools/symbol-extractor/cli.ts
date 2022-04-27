@@ -9,7 +9,7 @@
 import {runfiles} from '@bazel/runfiles';
 import * as fs from 'fs';
 
-import {SymbolExtractor} from './symbol_extractor';
+import {SymbolExtractor} from './symbol_extractor.js';
 
 if (require.main === module) {
   const args = process.argv.slice(2) as [string, string];

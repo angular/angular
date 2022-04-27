@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
-import {JsonObject} from '../../packages/entry_point';
-import {PackageJsonChange} from '../../writing/package_json_updater';
-import {Task, TaskProcessingOutcome} from '../tasks/api';
+import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system/index.js';
+import {JsonObject} from '../../packages/entry_point.js';
+import {PackageJsonChange} from '../../writing/package_json_updater.js';
+import {Task, TaskProcessingOutcome} from '../tasks/api.js';
 
 /** A message reporting that the worker is ready for retrieving tasks. */
 export interface ReadyMessage extends JsonObject {

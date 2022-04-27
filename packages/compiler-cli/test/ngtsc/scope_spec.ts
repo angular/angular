@@ -8,11 +8,11 @@
 
 import ts from 'typescript';
 
-import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
-import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {diagnosticToNode, loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics/index.js';
+import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing/index.js';
+import {diagnosticToNode, loadStandardTestFiles} from '../../src/ngtsc/testing/index.js';
 
-import {NgtscTestEnvironment} from './env';
+import {NgtscTestEnvironment} from './env.js';
 
 const testFiles = loadStandardTestFiles();
 

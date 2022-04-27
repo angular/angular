@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bindAction, profile} from '../../util';
-import {buildTree, emptyTree, initTreeUtils} from '../util';
+import {bindAction, profile} from '../../util.js';
+import {buildTree, emptyTree, initTreeUtils} from '../util.js';
 
-import {addTreeToModule} from './tree';
+import {addTreeToModule} from './tree.js';
 
 declare var angular: any;
 

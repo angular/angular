@@ -8,7 +8,7 @@
 
 import {$, browser, by, element, ExpectedConditions} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../test-utils/index.js';
 
 function waitForElement(selector: string) {
   const EC = ExpectedConditions;

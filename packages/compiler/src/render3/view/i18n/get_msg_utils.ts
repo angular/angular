@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as i18n from '../../../i18n/i18n_ast';
-import {mapLiteral} from '../../../output/map_util';
-import * as o from '../../../output/output_ast';
+import * as i18n from '../../../i18n/i18n_ast.js';
+import {mapLiteral} from '../../../output/map_util.js';
+import * as o from '../../../output/output_ast.js';
 
-import {serializeIcuNode} from './icu_serializer';
-import {i18nMetaToJSDoc} from './meta';
-import {formatI18nPlaceholderName, formatI18nPlaceholderNamesInMap} from './util';
+import {serializeIcuNode} from './icu_serializer.js';
+import {i18nMetaToJSDoc} from './meta.js';
+import {formatI18nPlaceholderName, formatI18nPlaceholderNamesInMap} from './util.js';
 
 /** Closure uses `goog.getMsg(message)` to lookup translations */
 const GOOG_GET_MSG = 'goog.getMsg';

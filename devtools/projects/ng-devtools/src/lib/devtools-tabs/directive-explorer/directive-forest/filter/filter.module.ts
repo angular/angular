@@ -12,7 +12,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
 
-import {FilterComponent} from './filter.component';
+import {FilterComponent} from './filter.component.js';
 
 @NgModule({
   declarations: [FilterComponent],

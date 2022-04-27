@@ -7,9 +7,9 @@
  */
 import {MessageId, ɵparseTranslation, ɵSourceMessage} from '@angular/localize';
 
-import {Diagnostics} from '../../../diagnostics';
+import {Diagnostics} from '../../../diagnostics.js';
 
-import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
+import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser.js';
 
 export interface ArbJsonObject extends Record<MessageId, ɵSourceMessage|ArbMetadata> {
   '@@locale': string;

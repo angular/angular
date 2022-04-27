@@ -9,12 +9,12 @@
 import {compileClassMetadata, CompileClassMetadataFn, compileDeclareClassMetadata, compileDeclareInjectableFromMetadata, compileInjectable, createMayBeForwardRefExpression, FactoryTarget, ForwardRefHandling, LiteralExpr, MaybeForwardRefExpression, R3ClassMetadata, R3CompiledExpression, R3DependencyMetadata, R3InjectableMetadata, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {InjectableClassRegistry} from '../../metadata';
-import {PerfEvent, PerfRecorder} from '../../perf';
-import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
-import {compileDeclareFactory, CompileFactoryFn, compileNgFactoryDefField, extractClassMetadata, findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, toFactoryMetadata, tryUnwrapForwardRef, unwrapConstructorDependencies, validateConstructorDependencies, wrapTypeReference} from '../common';
+import {ErrorCode, FatalDiagnosticError} from '../../diagnostics/index.js';
+import {InjectableClassRegistry} from '../../metadata/index.js';
+import {PerfEvent, PerfRecorder} from '../../perf/index.js';
+import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection/index.js';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform/index.js';
+import {compileDeclareFactory, CompileFactoryFn, compileNgFactoryDefField, extractClassMetadata, findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, toFactoryMetadata, tryUnwrapForwardRef, unwrapConstructorDependencies, validateConstructorDependencies, wrapTypeReference} from '../common/index.js';
 
 export interface InjectableHandlerData {
   meta: R3InjectableMetadata;

@@ -12,7 +12,7 @@ import {PendingMacrotask, Testability, TestabilityRegistry} from '@angular/core/
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {fakeAsync, flush, tick, waitForAsync} from '@angular/core/testing';
 
-import {scheduleMicroTask} from '../../src/util/microtask';
+import {scheduleMicroTask} from '../../src/util/microtask.js';
 
 // Schedules a microtasks (using a resolved promise .then())
 function microTask(fn: Function): void {

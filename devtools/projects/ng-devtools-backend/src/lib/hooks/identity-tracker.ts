@@ -8,8 +8,8 @@
 
 import {DevToolsNode, ElementPosition} from 'protocol';
 
-import {buildDirectiveForest} from '../component-tree';
-import {ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType} from '../interfaces';
+import {buildDirectiveForest} from '../component-tree.js';
+import {ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType} from '../interfaces.js';
 
 export declare interface Type<T> extends Function {
   new(...args: any[]): T;

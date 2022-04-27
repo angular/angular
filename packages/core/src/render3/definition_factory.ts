@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
-import {stringify} from '../util/stringify';
-import {NG_FACTORY_DEF} from './fields';
+import {Type} from '../interface/type.js';
+import {stringify} from '../util/stringify.js';
+
+import {NG_FACTORY_DEF} from './fields.js';
 
 
 /**

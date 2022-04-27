@@ -8,13 +8,13 @@
 
 import ts from 'typescript';
 
-import {Reference} from '../../imports';
-import {DependencyTracker} from '../../incremental/api';
-import {ReflectionHost} from '../../reflection';
+import {Reference} from '../../imports/index.js';
+import {DependencyTracker} from '../../incremental/api.js';
+import {ReflectionHost} from '../../reflection/index.js';
 
-import {DynamicValue} from './dynamic';
-import {StaticInterpreter} from './interpreter';
-import {ResolvedValue} from './result';
+import {DynamicValue} from './dynamic.js';
+import {StaticInterpreter} from './interpreter.js';
+import {ResolvedValue} from './result.js';
 
 export type ForeignFunctionResolver =
     (fn: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,

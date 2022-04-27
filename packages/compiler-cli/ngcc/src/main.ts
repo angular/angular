@@ -8,38 +8,38 @@
 
 /// <reference types="node" />
 
-import {AbsoluteFsPath, FileSystem, ReadonlyFileSystem} from '../../src/ngtsc/file_system';
-import {Logger} from '../../src/ngtsc/logging';
-import {ParsedConfiguration} from '../../src/perform_compile';
+import {AbsoluteFsPath, FileSystem, ReadonlyFileSystem} from '../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../src/ngtsc/logging/index.js';
+import {ParsedConfiguration} from '../../src/perform_compile.js';
 
-import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host';
-import {DependencyResolver} from './dependencies/dependency_resolver';
-import {DtsDependencyHost} from './dependencies/dts_dependency_host';
-import {EsmDependencyHost} from './dependencies/esm_dependency_host';
-import {ModuleResolver} from './dependencies/module_resolver';
-import {UmdDependencyHost} from './dependencies/umd_dependency_host';
-import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder';
-import {EntryPointCollector} from './entry_point_finder/entry_point_collector';
-import {EntryPointFinder} from './entry_point_finder/interface';
-import {ProgramBasedEntryPointFinder} from './entry_point_finder/program_based_entry_point_finder';
-import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder';
-import {getAnalyzeEntryPointsFn} from './execution/analyze_entry_points';
-import {Executor} from './execution/api';
-import {ClusterExecutor} from './execution/cluster/executor';
-import {getCreateCompileFn} from './execution/create_compile_function';
-import {SingleProcessExecutorAsync, SingleProcessExecutorSync} from './execution/single_process_executor';
-import {CreateTaskCompletedCallback, TaskProcessingOutcome} from './execution/tasks/api';
-import {composeTaskCompletedCallbacks, createLogErrorHandler, createMarkAsProcessedHandler, createThrowErrorHandler} from './execution/tasks/completion';
-import {AsyncLocker} from './locking/async_locker';
-import {LockFileWithChildProcess} from './locking/lock_file_with_child_process';
-import {SyncLocker} from './locking/sync_locker';
-import {AsyncNgccOptions, getMaxNumberOfWorkers, getSharedSetup, SyncNgccOptions} from './ngcc_options';
-import {NgccConfiguration} from './packages/configuration';
-import {EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';
-import {EntryPointManifest, InvalidatingEntryPointManifest} from './packages/entry_point_manifest';
-import {PathMappings} from './path_mappings';
-import {FileWriter} from './writing/file_writer';
-import {DirectPackageJsonUpdater, PackageJsonUpdater} from './writing/package_json_updater';
+import {CommonJsDependencyHost} from './dependencies/commonjs_dependency_host.js';
+import {DependencyResolver} from './dependencies/dependency_resolver.js';
+import {DtsDependencyHost} from './dependencies/dts_dependency_host.js';
+import {EsmDependencyHost} from './dependencies/esm_dependency_host.js';
+import {ModuleResolver} from './dependencies/module_resolver.js';
+import {UmdDependencyHost} from './dependencies/umd_dependency_host.js';
+import {DirectoryWalkerEntryPointFinder} from './entry_point_finder/directory_walker_entry_point_finder.js';
+import {EntryPointCollector} from './entry_point_finder/entry_point_collector.js';
+import {EntryPointFinder} from './entry_point_finder/interface.js';
+import {ProgramBasedEntryPointFinder} from './entry_point_finder/program_based_entry_point_finder.js';
+import {TargetedEntryPointFinder} from './entry_point_finder/targeted_entry_point_finder.js';
+import {getAnalyzeEntryPointsFn} from './execution/analyze_entry_points.js';
+import {Executor} from './execution/api.js';
+import {ClusterExecutor} from './execution/cluster/executor.js';
+import {getCreateCompileFn} from './execution/create_compile_function.js';
+import {SingleProcessExecutorAsync, SingleProcessExecutorSync} from './execution/single_process_executor.js';
+import {CreateTaskCompletedCallback, TaskProcessingOutcome} from './execution/tasks/api.js';
+import {composeTaskCompletedCallbacks, createLogErrorHandler, createMarkAsProcessedHandler, createThrowErrorHandler} from './execution/tasks/completion.js';
+import {AsyncLocker} from './locking/async_locker.js';
+import {LockFileWithChildProcess} from './locking/lock_file_with_child_process/index.js';
+import {SyncLocker} from './locking/sync_locker.js';
+import {AsyncNgccOptions, getMaxNumberOfWorkers, getSharedSetup, SyncNgccOptions} from './ngcc_options.js';
+import {NgccConfiguration} from './packages/configuration.js';
+import {EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point.js';
+import {EntryPointManifest, InvalidatingEntryPointManifest} from './packages/entry_point_manifest.js';
+import {PathMappings} from './path_mappings.js';
+import {FileWriter} from './writing/file_writer.js';
+import {DirectPackageJsonUpdater, PackageJsonUpdater} from './writing/package_json_updater.js';
 
 /**
  * This is the main entry-point into ngcc (aNGular Compatibility Compiler).

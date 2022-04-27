@@ -10,9 +10,9 @@ import {NodeJSFileSystem, setFileSystem} from '@angular/compiler-cli/private/loc
 import glob from 'glob';
 import yargs from 'yargs';
 
-import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics';
-import {getOutputPathFn} from './output_path';
-import {translateFiles} from './index';
+import {DiagnosticHandlingStrategy, Diagnostics} from '../diagnostics.js';
+import {getOutputPathFn} from './output_path.js';
+import {translateFiles} from './index.js';
 
 process.title = 'Angular Localization Message Translator (localize-translate)';
 const args = process.argv.slice(2);

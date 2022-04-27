@@ -8,7 +8,7 @@
 
 import {findNodeFromSerializedPosition} from 'ng-devtools-backend';
 
-import {buildDirectiveForest, queryDirectiveForest} from '../../../ng-devtools-backend/src/lib/component-tree';
+import {buildDirectiveForest, queryDirectiveForest} from '../../../ng-devtools-backend/src/lib/component-tree.js';
 
 export const initializeExtendedWindowOperations = () => {
   extendWindowOperations(window, {inspectedApplication: chromeWindowExtensions});

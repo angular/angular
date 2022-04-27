@@ -9,12 +9,12 @@
 import {BindingPipe, PropertyWrite, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstReference, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
-import {ClassDeclaration} from '../../reflection';
-import {TemplateDiagnostic, TemplateId} from '../api';
-import {makeTemplateDiagnostic} from '../diagnostics';
+import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
+import {TemplateDiagnostic, TemplateId} from '../api/index.js';
+import {makeTemplateDiagnostic} from '../diagnostics/index.js';
 
-import {TemplateSourceResolver} from './tcb_util';
+import {TemplateSourceResolver} from './tcb_util.js';
 
 
 

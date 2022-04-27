@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Tree, TreeNode} from '../../src/utils/tree';
+import {Tree, TreeNode} from '../../src/utils/tree.js';
 
 describe('tree', () => {
   it('should return the root of the tree', () => {

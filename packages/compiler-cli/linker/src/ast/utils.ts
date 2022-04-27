@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FatalLinkerError} from '../fatal_linker_error';
+import {FatalLinkerError} from '../fatal_linker_error.js';
 
 /**
  * Assert that the given `node` is of the type guarded by the `predicate` function.

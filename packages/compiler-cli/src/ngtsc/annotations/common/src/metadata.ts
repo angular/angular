@@ -9,9 +9,9 @@
 import {Expression, FunctionExpr, LiteralArrayExpr, LiteralExpr, literalMap, R3ClassMetadata, ReturnStatement, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {CtorParameter, DeclarationNode, Decorator, ReflectionHost, TypeValueReferenceKind} from '../../../reflection';
+import {CtorParameter, DeclarationNode, Decorator, ReflectionHost, TypeValueReferenceKind} from '../../../reflection/index.js';
 
-import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './util';
+import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './util.js';
 
 /**
  * Given a class declaration, generate a call to `setClassMetadata` with the Angular metadata

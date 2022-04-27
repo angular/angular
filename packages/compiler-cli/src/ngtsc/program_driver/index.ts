@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './src/api';
-export {TsCreateProgramDriver} from './src/ts_create_program_driver';
+export * from './src/api.js';
+export {TsCreateProgramDriver} from './src/ts_create_program_driver.js';

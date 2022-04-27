@@ -10,7 +10,7 @@ import {Injectable} from '@angular/core';
 import {NEVER, Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 
-import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UnrecoverableStateEvent, UpdateActivatedEvent, UpdateAvailableEvent, VersionEvent, VersionReadyEvent} from './low_level';
+import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UnrecoverableStateEvent, UpdateActivatedEvent, UpdateAvailableEvent, VersionEvent, VersionReadyEvent} from './low_level.js';
 
 
 

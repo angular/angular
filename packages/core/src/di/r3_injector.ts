@@ -6,33 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import '../util/ng_dev_mode';
+import '../util/ng_dev_mode.js';
 
-import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {OnDestroy} from '../interface/lifecycle_hooks';
-import {Type} from '../interface/type';
-import {getComponentDef} from '../render3/definition';
-import {FactoryFn, getFactoryDef} from '../render3/definition_factory';
-import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors_di';
-import {flatten, newArray} from '../util/array_utils';
-import {EMPTY_ARRAY} from '../util/empty';
-import {stringify} from '../util/stringify';
+import {RuntimeError, RuntimeErrorCode} from '../errors.js';
+import {OnDestroy} from '../interface/lifecycle_hooks.js';
+import {Type} from '../interface/type.js';
+import {getComponentDef} from '../render3/definition.js';
+import {FactoryFn, getFactoryDef} from '../render3/definition_factory.js';
+import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors_di.js';
+import {flatten, newArray} from '../util/array_utils.js';
+import {EMPTY_ARRAY} from '../util/empty.js';
+import {stringify} from '../util/stringify.js';
 
-import {resolveForwardRef} from './forward_ref';
-import {INJECTOR_INITIALIZER} from './initializer_token';
-import {setInjectImplementation} from './inject_switch';
-import {InjectionToken} from './injection_token';
-import {Injector} from './injector';
-import {catchInjectorError, injectArgs, NG_TEMP_TOKEN_PATH, setCurrentInjector, THROW_IF_NOT_FOUND, ɵɵinject} from './injector_compatibility';
-import {INJECTOR} from './injector_token';
-import {getInheritedInjectableDef, getInjectableDef, InjectorType, ɵɵInjectableDeclaration} from './interface/defs';
-import {InjectFlags} from './interface/injector';
-import {ClassProvider, ConstructorProvider, Provider, StaticClassProvider} from './interface/provider';
-import {INJECTOR_DEF_TYPES} from './internal_tokens';
-import {NullInjector} from './null_injector';
-import {importProvidersFrom, isExistingProvider, isFactoryProvider, isTypeProvider, isValueProvider, SingleProvider} from './provider_collection';
-import {ProviderToken} from './provider_token';
-import {INJECTOR_SCOPE, InjectorScope} from './scope';
+import {resolveForwardRef} from './forward_ref.js';
+import {INJECTOR_INITIALIZER} from './initializer_token.js';
+import {setInjectImplementation} from './inject_switch.js';
+import {InjectionToken} from './injection_token.js';
+import {Injector} from './injector.js';
+import {catchInjectorError, injectArgs, NG_TEMP_TOKEN_PATH, setCurrentInjector, THROW_IF_NOT_FOUND, ɵɵinject} from './injector_compatibility.js';
+import {INJECTOR} from './injector_token.js';
+import {getInheritedInjectableDef, getInjectableDef, InjectorType, ɵɵInjectableDeclaration} from './interface/defs.js';
+import {InjectFlags} from './interface/injector.js';
+import {ClassProvider, ConstructorProvider, Provider, StaticClassProvider} from './interface/provider.js';
+import {INJECTOR_DEF_TYPES} from './internal_tokens.js';
+import {NullInjector} from './null_injector.js';
+import {importProvidersFrom, isExistingProvider, isFactoryProvider, isTypeProvider, isValueProvider, SingleProvider} from './provider_collection.js';
+import {ProviderToken} from './provider_token.js';
+import {INJECTOR_SCOPE, InjectorScope} from './scope.js';
 
 /**
  * Marker which indicates that a value has not yet been created from the factory function.

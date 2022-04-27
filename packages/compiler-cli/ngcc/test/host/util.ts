@@ -8,8 +8,8 @@
 import {Trait, TraitState} from '@angular/compiler-cli/src/ngtsc/transform';
 import ts from 'typescript';
 
-import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
-import {CtorParameter, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
+import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph/index.js';
+import {CtorParameter, TypeValueReferenceKind} from '../../../src/ngtsc/reflection/index.js';
 
 /**
  * Check that a given list of `CtorParameter`s has `typeValueReference`s of specific `ts.Identifier`

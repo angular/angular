@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, ReadonlyFileSystem} from '../../../../src/ngtsc/file_system';
-import {needsCleaning} from '../../packages/build_marker';
-import {EntryPoint} from '../../packages/entry_point';
+import {AbsoluteFsPath, FileSystem, ReadonlyFileSystem} from '../../../../src/ngtsc/file_system/index.js';
+import {needsCleaning} from '../../packages/build_marker.js';
+import {EntryPoint} from '../../packages/entry_point.js';
 
-import {BackupFileCleaner, CleaningStrategy, NgccDirectoryCleaner, PackageJsonCleaner} from './cleaning_strategies';
-import {isLocalDirectory} from './utils';
+import {BackupFileCleaner, CleaningStrategy, NgccDirectoryCleaner, PackageJsonCleaner} from './cleaning_strategies.js';
+import {isLocalDirectory} from './utils.js';
 
 /**
  * A class that can clean ngcc artifacts from a directory.

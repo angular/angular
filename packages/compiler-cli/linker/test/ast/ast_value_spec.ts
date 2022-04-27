@@ -9,9 +9,9 @@ import {WrappedNodeExpr} from '@angular/compiler';
 import {TypeScriptAstFactory} from '@angular/compiler-cli/src/ngtsc/translator';
 import ts from 'typescript';
 
-import {AstHost} from '../../src/ast/ast_host';
-import {AstObject, AstValue} from '../../src/ast/ast_value';
-import {TypeScriptAstHost} from '../../src/ast/typescript/typescript_ast_host';
+import {AstHost} from '../../src/ast/ast_host.js';
+import {AstObject, AstValue} from '../../src/ast/ast_value.js';
+import {TypeScriptAstHost} from '../../src/ast/typescript/typescript_ast_host.js';
 
 interface TestObject {
   a: number;

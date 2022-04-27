@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
-import {TypeScriptAstHost} from '../../../src/ast/typescript/typescript_ast_host';
+
+import {TypeScriptAstHost} from '../../../src/ast/typescript/typescript_ast_host.js';
 
 describe('TypeScriptAstHost', () => {
   let host: TypeScriptAstHost;

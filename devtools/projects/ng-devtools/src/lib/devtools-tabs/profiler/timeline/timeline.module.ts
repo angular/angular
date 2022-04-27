@@ -21,12 +21,12 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {NgxFlamegraphModule} from 'ngx-flamegraph';
 
-import {FrameSelectorComponent} from './frame-selector.component';
-import {RecordingDialogComponent} from './recording-dialog.component';
-import {RecordingModalComponent} from './recording-modal.component';
-import {RecordingVisualizerModule} from './recording-visualizer/recording-visualizer.module';
-import {TimelineControlsComponent} from './timeline-controls.component';
-import {TimelineComponent} from './timeline.component';
+import {FrameSelectorComponent} from './frame-selector.component.js';
+import {RecordingDialogComponent} from './recording-dialog.component.js';
+import {RecordingModalComponent} from './recording-modal.component.js';
+import {RecordingVisualizerModule} from './recording-visualizer/recording-visualizer.module.js';
+import {TimelineControlsComponent} from './timeline-controls.component.js';
+import {TimelineComponent} from './timeline.component.js';
 
 @NgModule({
   declarations: [

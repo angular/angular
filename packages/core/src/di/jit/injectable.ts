@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getCompilerFacade, JitCompilerUsage, R3InjectableMetadataFacade} from '../../compiler/compiler_facade';
-import {Type} from '../../interface/type';
-import {NG_FACTORY_DEF} from '../../render3/fields';
-import {getClosureSafeProperty} from '../../util/property';
-import {resolveForwardRef} from '../forward_ref';
-import {Injectable} from '../injectable';
-import {NG_PROV_DEF} from '../interface/defs';
-import {ClassSansProvider, ExistingSansProvider, FactorySansProvider, ValueProvider, ValueSansProvider} from '../interface/provider';
+import {getCompilerFacade, JitCompilerUsage, R3InjectableMetadataFacade} from '../../compiler/compiler_facade.js';
+import {Type} from '../../interface/type.js';
+import {NG_FACTORY_DEF} from '../../render3/fields.js';
+import {getClosureSafeProperty} from '../../util/property.js';
+import {resolveForwardRef} from '../forward_ref.js';
+import {Injectable} from '../injectable.js';
+import {NG_PROV_DEF} from '../interface/defs.js';
+import {ClassSansProvider, ExistingSansProvider, FactorySansProvider, ValueProvider, ValueSansProvider} from '../interface/provider.js';
 
-import {angularCoreDiEnv} from './environment';
-import {convertDependencies, reflectDependencies} from './util';
+import {angularCoreDiEnv} from './environment.js';
+import {convertDependencies, reflectDependencies} from './util.js';
 
 
 

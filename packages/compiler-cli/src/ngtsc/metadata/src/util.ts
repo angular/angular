@@ -8,12 +8,12 @@
 
 import ts from 'typescript';
 
-import {OwningModule, Reference} from '../../imports';
-import {ClassDeclaration, ClassMember, ClassMemberKind, isNamedClassDeclaration, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
-import {nodeDebugInfo} from '../../util/src/typescript';
+import {OwningModule, Reference} from '../../imports/index.js';
+import {ClassDeclaration, ClassMember, ClassMemberKind, isNamedClassDeclaration, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection/index.js';
+import {nodeDebugInfo} from '../../util/src/typescript.js';
 
-import {DirectiveMeta, DirectiveTypeCheckMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
-import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
+import {DirectiveMeta, DirectiveTypeCheckMeta, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api.js';
+import {ClassPropertyMapping, ClassPropertyName} from './property_mapping.js';
 
 export function extractReferencesFromType(
     checker: ts.TypeChecker, def: ts.TypeNode,

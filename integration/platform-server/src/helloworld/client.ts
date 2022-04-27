@@ -9,7 +9,7 @@
 import 'zone.js/bundles/zone.umd';
 
 import {platformBrowser} from '@angular/platform-browser';
-import {HelloWorldModule} from './app';
+import {HelloWorldModule} from './app.js';
 
 window['doBootstrap'] = function() {
   platformBrowser().bootstrapModule(HelloWorldModule);

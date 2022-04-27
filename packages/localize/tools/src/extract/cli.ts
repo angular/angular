@@ -11,9 +11,9 @@ import {ConsoleLogger, LogLevel, NodeJSFileSystem, setFileSystem} from '@angular
 import glob from 'glob';
 import yargs from 'yargs';
 
-import {DiagnosticHandlingStrategy} from '../diagnostics';
-import {parseFormatOptions} from './translation_files/format_options';
-import {extractTranslations} from './index';
+import {DiagnosticHandlingStrategy} from '../diagnostics.js';
+import {parseFormatOptions} from './translation_files/format_options.js';
+import {extractTranslations} from './index.js';
 
 process.title = 'Angular Localization Message Extractor (localize-extract)';
 const args = process.argv.slice(2);

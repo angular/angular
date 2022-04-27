@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {HttpTestingController, RequestMatch} from './src/api';
-export {HttpClientTestingModule} from './src/module';
-export {TestRequest} from './src/request';
+export {HttpTestingController, RequestMatch} from './src/api.js';
+export {HttpClientTestingModule} from './src/module.js';
+export {TestRequest} from './src/request.js';

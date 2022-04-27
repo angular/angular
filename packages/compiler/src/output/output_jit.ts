@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {identifierName} from '../parse_util';
+import {identifierName} from '../parse_util.js';
 
-import {EmitterVisitorContext} from './abstract_emitter';
-import {AbstractJsEmitterVisitor} from './abstract_js_emitter';
-import * as o from './output_ast';
-import {newTrustedFunctionForJIT} from './output_jit_trusted_types';
+import {EmitterVisitorContext} from './abstract_emitter.js';
+import {AbstractJsEmitterVisitor} from './abstract_js_emitter.js';
+import * as o from './output_ast.js';
+import {newTrustedFunctionForJIT} from './output_jit_trusted_types.js';
 
 export interface ExternalReferenceResolver {
   resolveExternalReference(ref: o.ExternalReference): unknown;

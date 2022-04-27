@@ -15,8 +15,8 @@
 
 import ts from 'typescript';
 
-import {TypeScriptReflectionHost} from '../src/ngtsc/reflection';
-import {getDownlevelDecoratorsTransform} from '../src/transformers/downlevel_decorators_transform/index';
+import {TypeScriptReflectionHost} from '../src/ngtsc/reflection/index.js';
+import {getDownlevelDecoratorsTransform} from '../src/transformers/downlevel_decorators_transform/index.js';
 
 /**
  * Known values for global variables in `@angular/core` that Terser should set using

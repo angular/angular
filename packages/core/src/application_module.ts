@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef} from './application_ref';
-import {NgModule} from './metadata';
+import {ApplicationRef} from './application_ref.js';
+import {NgModule} from './metadata.js';
 
 /**
  * Re-exported by `BrowserModule`, which is included automatically in the root

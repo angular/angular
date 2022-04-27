@@ -11,10 +11,10 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterModule} from '@angular/router';
 import {ApplicationEnvironment, ApplicationOperations} from 'ng-devtools';
 
-import {DemoApplicationEnvironment} from '../demo-application-environment';
-import {DemoApplicationOperations} from '../demo-application-operations';
+import {DemoApplicationEnvironment} from '../demo-application-environment.js';
+import {DemoApplicationOperations} from '../demo-application-operations.js';
 
-import {AppComponent} from './app.component';
+import {AppComponent} from './app.component.js';
 
 @NgModule({
   declarations: [AppComponent],

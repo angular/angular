@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {stringify} from '../src/util/stringify';
+import {stringify} from '../src/util/stringify.js';
 
 {
   describe('stringify', () => {

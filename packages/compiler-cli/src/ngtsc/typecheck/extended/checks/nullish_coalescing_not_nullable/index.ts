@@ -9,10 +9,10 @@
 import {AST, Binary, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
-import {NgCompilerOptions} from '../../../../core/api';
-import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
-import {NgTemplateDiagnostic, SymbolKind} from '../../../api';
-import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {NgCompilerOptions} from '../../../../core/api/index.js';
+import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics/index.js';
+import {NgTemplateDiagnostic, SymbolKind} from '../../../api/index.js';
+import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api/index.js';
 
 /**
  * Ensures the left side of a nullish coalescing operation is nullable.

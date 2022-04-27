@@ -9,7 +9,7 @@
 import {Component, NgModule} from '@angular/core';
 import {BrowserModule, DomSanitizer, SafeStyle} from '@angular/platform-browser';
 
-import {emptyTree, TreeNode} from '../util';
+import {emptyTree, TreeNode} from '../util.js';
 
 let trustedEmptyColor: SafeStyle;
 let trustedGreyColor: SafeStyle;

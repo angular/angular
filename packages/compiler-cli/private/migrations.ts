@@ -11,7 +11,7 @@
  * package requires for migration schematics.
  */
 
-export {forwardRefResolver} from '../src/ngtsc/annotations';
-export {Reference} from '../src/ngtsc/imports';
-export {DynamicValue, PartialEvaluator, ResolvedValue, ResolvedValueMap, StaticInterpreter} from '../src/ngtsc/partial_evaluator';
-export {reflectObjectLiteral, TypeScriptReflectionHost} from '../src/ngtsc/reflection';
+export {forwardRefResolver} from '../src/ngtsc/annotations/index.js';
+export {Reference} from '../src/ngtsc/imports/index.js';
+export {DynamicValue, PartialEvaluator, ResolvedValue, ResolvedValueMap, StaticInterpreter} from '../src/ngtsc/partial_evaluator/index.js';
+export {reflectObjectLiteral, TypeScriptReflectionHost} from '../src/ngtsc/reflection/index.js';

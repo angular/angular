@@ -10,11 +10,11 @@ import {EnvironmentInjector} from '@angular/core';
 import {MonoTypeOperatorFunction} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
-import {applyRedirects as applyRedirectsFn} from '../apply_redirects';
-import {Routes} from '../models';
-import {NavigationTransition} from '../router';
-import {RouterConfigLoader} from '../router_config_loader';
-import {UrlSerializer} from '../url_tree';
+import {applyRedirects as applyRedirectsFn} from '../apply_redirects.js';
+import {Routes} from '../models.js';
+import {NavigationTransition} from '../router.js';
+import {RouterConfigLoader} from '../router_config_loader.js';
+import {UrlSerializer} from '../url_tree.js';
 
 export function applyRedirects(
     environmentInjector: EnvironmentInjector, configLoader: RouterConfigLoader,

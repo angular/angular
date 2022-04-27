@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
-import {getDeclaration, loadFakeCore, loadTestFiles} from '../../../src/ngtsc/testing';
-import {CommonJsReflectionHost} from '../../src/host/commonjs_host';
-import {makeTestBundleProgram} from '../helpers/utils';
+import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {isNamedVariableDeclaration} from '../../../src/ngtsc/reflection/index.js';
+import {getDeclaration, loadFakeCore, loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {CommonJsReflectionHost} from '../../src/host/commonjs_host.js';
+import {makeTestBundleProgram} from '../helpers/utils.js';
 
 runInEachFileSystem(() => {
   describe('CommonJsReflectionHost [import helper style]', () => {

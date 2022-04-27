@@ -13,9 +13,9 @@ import {getTIcu} from '@angular/core/src/render3/i18n/i18n_util';
 import {I18nUpdateOpCodes, IcuType, TI18n} from '@angular/core/src/render3/interfaces/i18n';
 import {HEADER_OFFSET, HOST} from '@angular/core/src/render3/interfaces/view';
 
-import {matchTI18n, matchTIcu} from '../matchers';
-import {matchDebug} from '../utils';
-import {ViewFixture} from '../view_fixture';
+import {matchTI18n, matchTIcu} from '../matchers.js';
+import {matchDebug} from '../utils.js';
+import {ViewFixture} from '../view_fixture.js';
 
 describe('i18n_parse', () => {
   let fixture: ViewFixture;

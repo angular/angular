@@ -5,14 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
-import {AstFactory} from '../../../src/ngtsc/translator';
+import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps/index.js';
+import {AstFactory} from '../../../src/ngtsc/translator/index.js';
+import {AstHost} from '../ast/ast_host.js';
 
-import {AstHost} from '../ast/ast_host';
-import {DEFAULT_LINKER_OPTIONS, LinkerOptions} from './linker_options';
-import {Translator} from './translator';
+import {DEFAULT_LINKER_OPTIONS, LinkerOptions} from './linker_options.js';
+import {Translator} from './translator.js';
 
 export class LinkerEnvironment<TStatement, TExpression> {
   readonly translator = new Translator<TStatement, TExpression>(this.factory);

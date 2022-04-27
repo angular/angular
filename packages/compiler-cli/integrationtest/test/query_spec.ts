@@ -6,11 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './init';
+import './init.js';
+
 import {QueryList} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {CompForChildQuery, CompWithChildQuery} from '../src/queries';
-import {createComponent} from './util';
+
+import {CompForChildQuery, CompWithChildQuery} from '../src/queries.js';
+
+import {createComponent} from './util.js';
 
 describe('child queries', () => {
   it('should support compiling child queries', () => {

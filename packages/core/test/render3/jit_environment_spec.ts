@@ -9,7 +9,7 @@
 import {ExternalReference} from '@angular/compiler';
 import {Identifiers} from '@angular/compiler/src/render3/r3_identifiers';
 
-import {angularCoreEnv} from '../../src/render3/jit/environment';
+import {angularCoreEnv} from '../../src/render3/jit/environment.js';
 
 const INTERFACE_EXCEPTIONS = new Set<string>([
   'ɵɵComponentDeclaration',

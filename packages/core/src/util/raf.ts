@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {global} from './global';
+import {global} from './global.js';
 
 export function getNativeRequestAnimationFrame() {
   let nativeRequestAnimationFrame: (callback: FrameRequestCallback) => number =

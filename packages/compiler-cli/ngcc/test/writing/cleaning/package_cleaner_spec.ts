@@ -7,9 +7,9 @@
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, PathSegment} from '@angular/compiler-cli/src/ngtsc/file_system';
 
-import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
-import {CleaningStrategy} from '../../../src/writing/cleaning/cleaning_strategies';
-import {PackageCleaner} from '../../../src/writing/cleaning/package_cleaner';
+import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing/index.js';
+import {CleaningStrategy} from '../../../src/writing/cleaning/cleaning_strategies.js';
+import {PackageCleaner} from '../../../src/writing/cleaning/package_cleaner.js';
 
 runInEachFileSystem(() => {
   describe('PackageCleaner', () => {

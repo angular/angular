@@ -7,19 +7,19 @@
  */
 
 
-import {assertIndexInRange} from '../../util/assert';
-import {isObservable} from '../../util/lang';
-import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
-import {GlobalTargetResolver, isProceduralRenderer, Renderer3} from '../interfaces/renderer';
-import {RElement} from '../interfaces/renderer_dom';
-import {isDirectiveHost} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, FLAGS, LView, LViewFlags, RENDERER, TView} from '../interfaces/view';
-import {assertTNodeType} from '../node_assert';
-import {profiler, ProfilerEvent} from '../profiler';
-import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
-import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
+import {assertIndexInRange} from '../../util/assert.js';
+import {isObservable} from '../../util/lang.js';
+import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node.js';
+import {GlobalTargetResolver, isProceduralRenderer, Renderer3} from '../interfaces/renderer.js';
+import {RElement} from '../interfaces/renderer_dom.js';
+import {isDirectiveHost} from '../interfaces/type_checks.js';
+import {CLEANUP, CONTEXT, FLAGS, LView, LViewFlags, RENDERER, TView} from '../interfaces/view.js';
+import {assertTNodeType} from '../node_assert.js';
+import {profiler, ProfilerEvent} from '../profiler.js';
+import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state.js';
+import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils.js';
 
-import {getOrCreateLViewCleanup, getOrCreateTViewCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
+import {getOrCreateLViewCleanup, getOrCreateTViewCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared.js';
 
 
 

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as o from '../output/output_ast';
-import {ExternalReferenceResolver} from '../output/output_jit';
+import * as o from '../output/output_ast.js';
+import {ExternalReferenceResolver} from '../output/output_jit.js';
 
 /**
  * Implementation of `CompileReflector` which resolves references to @angular/core

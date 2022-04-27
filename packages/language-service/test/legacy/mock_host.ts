@@ -10,7 +10,7 @@ import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {join} from 'path';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {isTypeScriptFile} from '../../src/utils';
+import {isTypeScriptFile} from '../../src/utils.js';
 
 const logger: ts.server.Logger = {
   close(): void{},

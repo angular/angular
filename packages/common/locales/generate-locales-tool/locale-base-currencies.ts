@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CldrLocaleData} from './cldr-data';
-import {fileHeader} from './file-header';
-import {stringify} from './object-stringify';
+import {CldrLocaleData} from './cldr-data.js';
+import {fileHeader} from './file-header.js';
+import {stringify} from './object-stringify.js';
 
 export type BaseCurrencySymbols = [
   string

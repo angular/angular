@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
-import {removeListItem} from '../util';
+import {AsyncValidatorFn, ValidatorFn} from '../directives/validators.js';
+import {removeListItem} from '../util.js';
 
-import {AbstractControl, AbstractControlOptions, isOptionsObj, pickAsyncValidators, pickValidators} from './abstract_model';
+import {AbstractControl, AbstractControlOptions, isOptionsObj, pickAsyncValidators, pickValidators} from './abstract_model.js';
 
 /**
  * FormControlState is a boxed form value. It is an object with a `value` key and a `disabled` key.

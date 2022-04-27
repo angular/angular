@@ -8,32 +8,32 @@
 
 import ts from 'typescript';
 
-import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from '../../annotations';
-import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
-import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, ngErrorCode} from '../../diagnostics';
-import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
-import {absoluteFromSourceFile, AbsoluteFsPath, LogicalFileSystem, resolve} from '../../file_system';
-import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
-import {IncrementalBuildStrategy, IncrementalCompilation, IncrementalState} from '../../incremental';
-import {SemanticSymbol} from '../../incremental/semantic_graph';
-import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
-import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader, PipeMeta, ResourceRegistry} from '../../metadata';
-import {PartialEvaluator} from '../../partial_evaluator';
-import {ActivePerfRecorder, DelegatingPerfRecorder, PerfCheckpoint, PerfEvent, PerfPhase} from '../../perf';
-import {FileUpdate, ProgramDriver, UpdateMode} from '../../program_driver';
-import {DeclarationNode, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
-import {AdapterResourceLoader} from '../../resource';
-import {ComponentScopeReader, CompoundComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../scope';
-import {StandaloneComponentScopeReader} from '../../scope/src/standalone';
-import {generatedFactoryTransform} from '../../shims';
-import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
-import {TemplateTypeCheckerImpl} from '../../typecheck';
-import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
-import {ALL_DIAGNOSTIC_FACTORIES, ExtendedTemplateCheckerImpl} from '../../typecheck/extended';
-import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
-import {getSourceFileOrNull, isDtsPath, toUnredirectedSourceFile} from '../../util/src/typescript';
-import {Xi18nContext} from '../../xi18n';
-import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../api';
+import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from '../../annotations/index.js';
+import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles/index.js';
+import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, ngErrorCode} from '../../diagnostics/index.js';
+import {checkForPrivateExports, ReferenceGraph} from '../../entry_point/index.js';
+import {absoluteFromSourceFile, AbsoluteFsPath, LogicalFileSystem, resolve} from '../../file_system/index.js';
+import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports/index.js';
+import {IncrementalBuildStrategy, IncrementalCompilation, IncrementalState} from '../../incremental/index.js';
+import {SemanticSymbol} from '../../incremental/semantic_graph/index.js';
+import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer/index.js';
+import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader, PipeMeta, ResourceRegistry} from '../../metadata/index.js';
+import {PartialEvaluator} from '../../partial_evaluator/index.js';
+import {ActivePerfRecorder, DelegatingPerfRecorder, PerfCheckpoint, PerfEvent, PerfPhase} from '../../perf/index.js';
+import {FileUpdate, ProgramDriver, UpdateMode} from '../../program_driver/index.js';
+import {DeclarationNode, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection/index.js';
+import {AdapterResourceLoader} from '../../resource/index.js';
+import {ComponentScopeReader, CompoundComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../scope/index.js';
+import {StandaloneComponentScopeReader} from '../../scope/src/standalone.js';
+import {generatedFactoryTransform} from '../../shims/index.js';
+import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform/index.js';
+import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api/index.js';
+import {ExtendedTemplateChecker} from '../../typecheck/extended/api/index.js';
+import {ALL_DIAGNOSTIC_FACTORIES, ExtendedTemplateCheckerImpl} from '../../typecheck/extended/index.js';
+import {TemplateTypeCheckerImpl} from '../../typecheck/index.js';
+import {getSourceFileOrNull, isDtsPath, toUnredirectedSourceFile} from '../../util/src/typescript.js';
+import {Xi18nContext} from '../../xi18n/index.js';
+import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../api/index.js';
 
 /**
  * State information about a compilation which is only generated once some data is requested from

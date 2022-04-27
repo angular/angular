@@ -8,8 +8,8 @@
 
 import {APP_ID, Inject, Injectable, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
 
-import {EventManager} from './events/event_manager';
-import {DomSharedStylesHost} from './shared_styles_host';
+import {EventManager} from './events/event_manager.js';
+import {DomSharedStylesHost} from './shared_styles_host.js';
 
 export const NAMESPACE_URIS: {[ns: string]: string} = {
   'svg': 'http://www.w3.org/2000/svg',

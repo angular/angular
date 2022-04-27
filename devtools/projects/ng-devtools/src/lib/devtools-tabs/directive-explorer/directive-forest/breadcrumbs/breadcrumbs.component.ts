@@ -10,7 +10,7 @@ import {AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input,
 import {Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 
-import {FlatNode} from '../component-data-source';
+import {FlatNode} from '../component-data-source/index.js';
 
 @Component({
   selector: 'ng-breadcrumbs',

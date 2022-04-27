@@ -1,4 +1,4 @@
-import {AppPage} from '../app.po';
+import {AppPage} from '../app.po.js';
 
 describe('cli-hello-world-ivy App', () => {
   let page: AppPage;

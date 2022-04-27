@@ -13,9 +13,9 @@ import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {getElementStyles} from '@angular/core/testing/src/styling';
 
-import {getLContext} from '../../src/render3/context_discovery';
-import {getHostElement, markDirty} from '../../src/render3/index';
-import {ComponentDebugMetadata, getComponent, getComponentLView, getContext, getDebugNode, getDirectiveMetadata, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils';
+import {getLContext} from '../../src/render3/context_discovery.js';
+import {getHostElement, markDirty} from '../../src/render3/index.js';
+import {ComponentDebugMetadata, getComponent, getComponentLView, getContext, getDebugNode, getDirectiveMetadata, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils.js';
 
 describe('discovery utils', () => {
   let fixture: ComponentFixture<MyApp>;

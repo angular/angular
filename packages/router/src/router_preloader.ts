@@ -10,10 +10,10 @@ import {Compiler, createEnvironmentInjector, EnvironmentInjector, Injectable, On
 import {from, Observable, of, Subscription} from 'rxjs';
 import {catchError, concatMap, filter, map, mapTo, mergeAll, mergeMap, tap} from 'rxjs/operators';
 
-import {Event, NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
-import {LoadedRouterConfig, Route, Routes} from './models';
-import {Router} from './router';
-import {RouterConfigLoader} from './router_config_loader';
+import {Event, NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart} from './events.js';
+import {LoadedRouterConfig, Route, Routes} from './models.js';
+import {Router} from './router.js';
+import {RouterConfigLoader} from './router_config_loader.js';
 
 
 /**

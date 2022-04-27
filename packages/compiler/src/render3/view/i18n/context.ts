@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST} from '../../../expression_parser/ast';
-import * as i18n from '../../../i18n/i18n_ast';
-import * as o from '../../../output/output_ast';
+import {AST} from '../../../expression_parser/ast.js';
+import * as i18n from '../../../i18n/i18n_ast.js';
+import * as o from '../../../output/output_ast.js';
 
-import {assembleBoundTextPlaceholders, getSeqNumberGenerator, updatePlaceholderMap, wrapI18nPlaceholder} from './util';
+import {assembleBoundTextPlaceholders, getSeqNumberGenerator, updatePlaceholderMap, wrapI18nPlaceholder} from './util.js';
 
 enum TagType {
   ELEMENT,

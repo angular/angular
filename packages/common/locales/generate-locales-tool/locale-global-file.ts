@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CldrLocaleData} from './cldr-data';
-import {fileHeader} from './file-header';
-import {BaseCurrencies} from './locale-base-currencies';
-import {generateDayPeriodsSupplementalString} from './locale-extra-file';
-import {generateBasicLocaleString} from './locale-file';
-import {getPluralFunction} from './plural-function';
+import {CldrLocaleData} from './cldr-data.js';
+import {fileHeader} from './file-header.js';
+import {BaseCurrencies} from './locale-base-currencies.js';
+import {generateDayPeriodsSupplementalString} from './locale-extra-file.js';
+import {generateBasicLocaleString} from './locale-file.js';
+import {getPluralFunction} from './plural-function.js';
 
 /**
  * Generated the contents for the global locale file

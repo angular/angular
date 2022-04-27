@@ -1,6 +1,6 @@
 import {Component, ContentChild, ElementRef, NgModule} from '@angular/core';
 
-import {SomeDirective} from './some.directive';
+import {SomeDirective} from './some.directive.js';
 
 @Component({
   selector: 'content-query-component',

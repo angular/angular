@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as e from '../../../src/expression_parser/ast';
-import * as a from '../../../src/render3/r3_ast';
-import {DirectiveMeta, InputOutputPropertySet} from '../../../src/render3/view/t2_api';
-import {R3TargetBinder} from '../../../src/render3/view/t2_binder';
-import {parseTemplate} from '../../../src/render3/view/template';
-import {CssSelector, SelectorMatcher} from '../../../src/selector';
+import * as e from '../../../src/expression_parser/ast.js';
+import * as a from '../../../src/render3/r3_ast.js';
+import {DirectiveMeta, InputOutputPropertySet} from '../../../src/render3/view/t2_api.js';
+import {R3TargetBinder} from '../../../src/render3/view/t2_binder.js';
+import {parseTemplate} from '../../../src/render3/view/template.js';
+import {CssSelector, SelectorMatcher} from '../../../src/selector.js';
 
-import {findExpression} from './util';
+import {findExpression} from './util.js';
 
 /**
  * A `InputOutputPropertySet` which only uses an identity mapping for fields and properties.

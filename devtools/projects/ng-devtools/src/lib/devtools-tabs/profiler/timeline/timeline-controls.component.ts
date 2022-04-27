@@ -9,7 +9,7 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {ProfilerFrame} from 'protocol';
 
-import {VisualizationMode} from './visualization-mode';
+import {VisualizationMode} from './visualization-mode/index.js';
 
 @Component({
   selector: 'ng-timeline-controls',

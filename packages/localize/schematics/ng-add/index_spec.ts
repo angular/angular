@@ -9,7 +9,7 @@
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
 
-import {localizePolyfill} from './index';
+import {localizePolyfill} from './index.js';
 
 
 describe('ng-add schematic', () => {

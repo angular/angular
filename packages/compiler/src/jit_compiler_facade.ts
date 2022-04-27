@@ -7,25 +7,25 @@
  */
 
 
-import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveDependencyFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeDependencyFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, R3TemplateDependencyFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
-import {ConstantPool} from './constant_pool';
-import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, ViewEncapsulation} from './core';
-import {compileInjectable} from './injectable_compiler_2';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/interpolation_config';
-import {DeclareVarStmt, Expression, literal, LiteralExpr, Statement, StmtModifier, WrappedNodeExpr} from './output/output_ast';
-import {JitEvaluator} from './output/output_jit';
-import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
-import {compileFactoryFunction, FactoryTarget, R3DependencyMetadata} from './render3/r3_factory';
-import {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
-import {R3JitReflector} from './render3/r3_jit';
-import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata, R3SelectorScopeMode} from './render3/r3_module_compiler';
-import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
-import {createMayBeForwardRefExpression, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, wrapReference} from './render3/util';
-import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
-import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
-import {makeBindingParser, parseTemplate} from './render3/view/template';
-import {ResourceLoader} from './resource_loader';
-import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
+import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveDependencyFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeDependencyFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, R3TemplateDependencyFacade, StringMap, StringMapWithRename} from './compiler_facade_interface.js';
+import {ConstantPool} from './constant_pool.js';
+import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, ViewEncapsulation} from './core.js';
+import {compileInjectable} from './injectable_compiler_2.js';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/interpolation_config.js';
+import {DeclareVarStmt, Expression, literal, LiteralExpr, Statement, StmtModifier, WrappedNodeExpr} from './output/output_ast.js';
+import {JitEvaluator} from './output/output_jit.js';
+import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util.js';
+import {compileFactoryFunction, FactoryTarget, R3DependencyMetadata} from './render3/r3_factory.js';
+import {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler.js';
+import {R3JitReflector} from './render3/r3_jit.js';
+import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata, R3SelectorScopeMode} from './render3/r3_module_compiler.js';
+import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler.js';
+import {createMayBeForwardRefExpression, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, wrapReference} from './render3/util.js';
+import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api.js';
+import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler.js';
+import {makeBindingParser, parseTemplate} from './render3/view/template.js';
+import {ResourceLoader} from './resource_loader.js';
+import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry.js';
 
 export class CompilerFacadeImpl implements CompilerFacade {
   FactoryTarget = FactoryTarget as any;

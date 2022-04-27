@@ -8,11 +8,11 @@
 
 import {ɵProfilerEvent} from '@angular/core';
 
-import {getDirectiveHostElement} from '../../directive-forest';
-import {runOutsideAngular} from '../../utils';
-import {IdentityTracker, NodeArray} from '../identity-tracker';
+import {getDirectiveHostElement} from '../../directive-forest/index.js';
+import {runOutsideAngular} from '../../utils.js';
+import {IdentityTracker, NodeArray} from '../identity-tracker.js';
 
-import {getLifeCycleName, Hooks, Profiler} from './shared';
+import {getLifeCycleName, Hooks, Profiler} from './shared.js';
 
 type ProfilerCallback = (event: ɵProfilerEvent, instanceOrLView: {}, hookOrListener: any) => void;
 

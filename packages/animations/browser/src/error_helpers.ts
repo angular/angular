@@ -8,7 +8,7 @@
 
 import {ɵRuntimeError as RuntimeError} from '@angular/core';
 
-import {RuntimeErrorCode} from './errors';
+import {RuntimeErrorCode} from './errors.js';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 const LINE_START = '\n - ';

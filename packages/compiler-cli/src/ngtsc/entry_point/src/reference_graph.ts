@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DeclarationNode} from '../../reflection';
+import {DeclarationNode} from '../../reflection/index.js';
 
 export class ReferenceGraph<T = DeclarationNode> {
   private references = new Map<T, Set<T>>();

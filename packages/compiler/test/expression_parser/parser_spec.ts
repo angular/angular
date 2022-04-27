@@ -11,8 +11,8 @@ import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {Parser, SplitInterpolation} from '@angular/compiler/src/expression_parser/parser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {unparse, unparseWithSpan} from './utils/unparser';
-import {validate} from './utils/validator';
+import {unparse, unparseWithSpan} from './utils/unparser.js';
+import {validate} from './utils/validator.js';
 
 describe('parser', () => {
   describe('parseAction', () => {

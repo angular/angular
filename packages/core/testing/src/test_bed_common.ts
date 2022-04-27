@@ -8,9 +8,9 @@
 
 import {Component, Directive, InjectFlags, InjectionToken, NgModule, Pipe, PlatformRef, ProviderToken, SchemaMetadata, Type} from '@angular/core';
 
-import {ComponentFixture} from './component_fixture';
-import {MetadataOverride} from './metadata_override';
-import {TestBed} from './test_bed';
+import {ComponentFixture} from './component_fixture.js';
+import {MetadataOverride} from './metadata_override.js';
+import {TestBed} from './test_bed.js';
 
 /** Whether test modules should be torn down by default. */
 export const TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT = true;

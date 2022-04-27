@@ -10,8 +10,8 @@ import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentFactoryRes
 import {fakeAsync, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs';
 
-import {ComponentNgElementStrategy, ComponentNgElementStrategyFactory} from '../src/component-factory-strategy';
-import {NgElementStrategyEvent} from '../src/element-strategy';
+import {ComponentNgElementStrategy, ComponentNgElementStrategyFactory} from '../src/component-factory-strategy.js';
+import {NgElementStrategyEvent} from '../src/element-strategy.js';
 
 describe('ComponentFactoryNgElementStrategy', () => {
   let factory: FakeComponentFactory<typeof FakeComponent>;

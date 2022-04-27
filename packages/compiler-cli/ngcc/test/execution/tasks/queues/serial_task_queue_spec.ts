@@ -7,11 +7,11 @@
  */
 import {DepGraph} from 'dependency-graph';
 
-import {MockLogger} from '../../../../../src/ngtsc/logging/testing';
-import {DtsProcessing, PartiallyOrderedTasks, Task, TaskQueue} from '../../../../src/execution/tasks/api';
-import {SerialTaskQueue} from '../../../../src/execution/tasks/queues/serial_task_queue';
-import {computeTaskDependencies} from '../../../../src/execution/tasks/utils';
-import {EntryPoint, EntryPointJsonProperty} from '../../../../src/packages/entry_point';
+import {MockLogger} from '../../../../../src/ngtsc/logging/testing/index.js';
+import {DtsProcessing, PartiallyOrderedTasks, Task, TaskQueue} from '../../../../src/execution/tasks/api.js';
+import {SerialTaskQueue} from '../../../../src/execution/tasks/queues/serial_task_queue.js';
+import {computeTaskDependencies} from '../../../../src/execution/tasks/utils.js';
+import {EntryPoint, EntryPointJsonProperty} from '../../../../src/packages/entry_point.js';
 
 
 describe('SerialTaskQueue', () => {

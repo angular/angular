@@ -9,7 +9,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
-import {AboutComponent} from './about.component';
+import {AboutComponent} from './about.component.js';
 
 @NgModule({
   imports: [

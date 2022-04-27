@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {Folder, MockFileSystemPosix} from '../../../src/ngtsc/file_system/testing';
-import {loadTestDirectory, loadTsLib, resolveNpmTreeArtifact} from '../../../src/ngtsc/testing';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system/index.js';
+import {Folder, MockFileSystemPosix} from '../../../src/ngtsc/file_system/testing/index.js';
+import {loadTestDirectory, loadTsLib, resolveNpmTreeArtifact} from '../../../src/ngtsc/testing/index.js';
 
 export function loadNgccIntegrationTestFiles(): Folder {
   const tmpFs = new MockFileSystemPosix(true);

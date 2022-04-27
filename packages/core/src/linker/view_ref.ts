@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {ChangeDetectorRef} from '../change_detection/change_detector_ref.js';
 
 /**
  * Represents an Angular [view](guide/glossary#view "Definition").

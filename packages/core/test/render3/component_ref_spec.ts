@@ -7,13 +7,14 @@
  */
 
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
-import {Injector, NgModuleRef, RendererType2, ViewEncapsulation} from '../../src/core';
-import {ComponentFactory} from '../../src/linker/component_factory';
-import {RendererFactory2} from '../../src/render/api';
-import {injectComponentFactoryResolver} from '../../src/render3/component_ref';
-import {AttributeMarker, ɵɵdefineComponent} from '../../src/render3/index';
-import {domRendererFactory3, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
-import {Sanitizer} from '../../src/sanitization/sanitizer';
+
+import {Injector, NgModuleRef, RendererType2, ViewEncapsulation} from '../../src/core.js';
+import {ComponentFactory} from '../../src/linker/component_factory.js';
+import {RendererFactory2} from '../../src/render/api.js';
+import {injectComponentFactoryResolver} from '../../src/render3/component_ref.js';
+import {AttributeMarker, ɵɵdefineComponent} from '../../src/render3/index.js';
+import {domRendererFactory3, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer.js';
+import {Sanitizer} from '../../src/sanitization/sanitizer.js';
 
 describe('ComponentFactory', () => {
   const cfr = injectComponentFactoryResolver();

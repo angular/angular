@@ -9,7 +9,7 @@
 import {Component, NgModule} from '@angular/core';
 import {ActivatedRoute, RouterModule} from '@angular/router';
 
-import {DbService, InboxRecord} from './inbox-app';
+import {DbService, InboxRecord} from './inbox-app.js';
 
 @Component({selector: 'inbox-detail', templateUrl: './inbox-detail.html'})
 export class InboxDetailCmp {

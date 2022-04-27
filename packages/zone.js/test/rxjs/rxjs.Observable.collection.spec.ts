@@ -8,7 +8,7 @@
 import {from, interval, Observable, of} from 'rxjs';
 import {elementAt, every, filter, find, findIndex, first, flatMap, groupBy, ignoreElements, isEmpty, last, map, mapTo, max, min, reduce, repeat, scan, single, skip, skipUntil, skipWhile, startWith} from 'rxjs/operators';
 
-import {asyncTest, isPhantomJS} from '../test-util';
+import {asyncTest, isPhantomJS} from '../test-util.js';
 
 describe('Observable.collection', () => {
   let log: any[];

@@ -10,8 +10,8 @@ import {XhrFactory} from '@angular/common';
 import {HttpBackend} from '@angular/common/http';
 import {ModuleWithProviders, NgModule, Type} from '@angular/core';
 
-import {httpClientInMemBackendServiceFactory} from './http-client-in-memory-web-api-module';
-import {InMemoryBackendConfig, InMemoryBackendConfigArgs, InMemoryDbService} from './interfaces';
+import {httpClientInMemBackendServiceFactory} from './http-client-in-memory-web-api-module.js';
+import {InMemoryBackendConfig, InMemoryBackendConfigArgs, InMemoryDbService} from './interfaces.js';
 
 @NgModule()
 export class InMemoryWebApiModule {

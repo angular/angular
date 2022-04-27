@@ -11,11 +11,11 @@ import {createCustomElement} from '@angular/elements';
 import {RouterModule} from '@angular/router';
 import {initializeMessageBus} from 'ng-devtools-backend';
 
-import {ZoneUnawareIFrameMessageBus} from '../../zone-unaware-iframe-message-bus';
+import {ZoneUnawareIFrameMessageBus} from '../../zone-unaware-iframe-message-bus.js';
 
-import {DemoAppComponent} from './demo-app.component';
-import {HeavyComponent} from './heavy.component';
-import {ZippyComponent} from './zippy.component';
+import {DemoAppComponent} from './demo-app.component.js';
+import {HeavyComponent} from './heavy.component.js';
+import {ZippyComponent} from './zippy.component.js';
 
 @NgModule({
   declarations: [DemoAppComponent, HeavyComponent],

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as html from '../ml_parser/ast';
-import {isNgContent} from '../ml_parser/tags';
+import * as html from '../ml_parser/ast.js';
+import {isNgContent} from '../ml_parser/tags.js';
 
 const NG_CONTENT_SELECT_ATTR = 'select';
 const LINK_ELEMENT = 'link';

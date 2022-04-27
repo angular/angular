@@ -9,10 +9,10 @@
 import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Call, Chain, Conditional, EmptyExpr, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, SafeCall, SafeKeyedRead, SafePropertyRead, ThisReceiver, Unary} from '@angular/compiler';
 import ts from 'typescript';
 
-import {TypeCheckingConfig} from '../api';
+import {TypeCheckingConfig} from '../api/index.js';
 
-import {addParseSpanInfo, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics';
-import {tsCastToAny} from './ts_util';
+import {addParseSpanInfo, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics.js';
+import {tsCastToAny} from './ts_util.js';
 
 export const NULL_AS_ANY = ts.factory.createAsExpression(
     ts.factory.createNull(), ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));

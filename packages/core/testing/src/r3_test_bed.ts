@@ -33,11 +33,11 @@ import {
 
 /* clang-format on */
 
-import {ComponentFixture} from './component_fixture';
-import {MetadataOverride} from './metadata_override';
-import {R3TestBedCompiler} from './r3_test_bed_compiler';
-import {TestBed} from './test_bed';
-import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestBedStatic, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata} from './test_bed_common';
+import {ComponentFixture} from './component_fixture.js';
+import {MetadataOverride} from './metadata_override.js';
+import {R3TestBedCompiler} from './r3_test_bed_compiler.js';
+import {TestBed} from './test_bed.js';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestBedStatic, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata} from './test_bed_common.js';
 
 let _nextRootElementId = 0;
 

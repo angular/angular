@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global} from './global';
+import {global} from './global.js';
 
 /**
  * This file is used to control if the default rendering pipeline should be `ViewEngine` or `Ivy`.

@@ -6,26 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getCompilerFacade, JitCompilerUsage, R3DirectiveMetadataFacade} from '../../compiler/compiler_facade';
-import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
-import {resolveForwardRef} from '../../di/forward_ref';
-import {getReflect, reflectDependencies} from '../../di/jit/util';
-import {Type} from '../../interface/type';
-import {Query} from '../../metadata/di';
-import {Component, Directive, Input} from '../../metadata/directives';
-import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
-import {ViewEncapsulation} from '../../metadata/view';
-import {flatten} from '../../util/array_utils';
-import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty';
-import {initNgDevMode} from '../../util/ng_dev_mode';
-import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
-import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF} from '../fields';
-import {ComponentDef, ComponentType, DirectiveDefList, PipeDefList} from '../interfaces/definition';
-import {stringifyForError} from '../util/stringify_utils';
+import {getCompilerFacade, JitCompilerUsage, R3DirectiveMetadataFacade} from '../../compiler/compiler_facade.js';
+import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface.js';
+import {resolveForwardRef} from '../../di/forward_ref.js';
+import {getReflect, reflectDependencies} from '../../di/jit/util.js';
+import {Type} from '../../interface/type.js';
+import {Query} from '../../metadata/di.js';
+import {Component, Directive, Input} from '../../metadata/directives.js';
+import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading.js';
+import {ViewEncapsulation} from '../../metadata/view.js';
+import {flatten} from '../../util/array_utils.js';
+import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty.js';
+import {initNgDevMode} from '../../util/ng_dev_mode.js';
+import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition.js';
+import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF} from '../fields.js';
+import {ComponentDef, ComponentType, DirectiveDefList, PipeDefList} from '../interfaces/definition.js';
+import {stringifyForError} from '../util/stringify_utils.js';
 
-import {angularCoreEnv} from './environment';
-import {getJitOptions} from './jit_options';
-import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, transitiveScopesFor} from './module';
+import {angularCoreEnv} from './environment.js';
+import {getJitOptions} from './jit_options.js';
+import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, transitiveScopesFor} from './module.js';
 
 /**
  * Keep track of the compilation depth to avoid reentrancy issues during JIT compilation. This

@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationMetadata, AnimationOptions} from './animation_metadata';
-import {AnimationPlayer} from './players/animation_player';
+import {AnimationMetadata, AnimationOptions} from './animation_metadata.js';
+import {AnimationPlayer} from './players/animation_player.js';
 
 /**
  * An injectable service that produces an animation sequence programmatically within an

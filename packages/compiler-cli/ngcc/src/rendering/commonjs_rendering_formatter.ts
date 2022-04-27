@@ -8,15 +8,15 @@
 import MagicString from 'magic-string';
 import ts from 'typescript';
 
-import {PathManipulation} from '../../../src/ngtsc/file_system';
-import {Reexport} from '../../../src/ngtsc/imports';
-import {Import, ImportManager} from '../../../src/ngtsc/translator';
-import {ExportInfo} from '../analysis/private_declarations_analyzer';
-import {isRequireCall} from '../host/commonjs_umd_utils';
-import {NgccReflectionHost} from '../host/ngcc_host';
+import {PathManipulation} from '../../../src/ngtsc/file_system/index.js';
+import {Reexport} from '../../../src/ngtsc/imports/index.js';
+import {Import, ImportManager} from '../../../src/ngtsc/translator/index.js';
+import {ExportInfo} from '../analysis/private_declarations_analyzer.js';
+import {isRequireCall} from '../host/commonjs_umd_utils.js';
+import {NgccReflectionHost} from '../host/ngcc_host.js';
 
-import {Esm5RenderingFormatter} from './esm5_rendering_formatter';
-import {stripExtension} from './utils';
+import {Esm5RenderingFormatter} from './esm5_rendering_formatter.js';
+import {stripExtension} from './utils.js';
 
 /**
  * A RenderingFormatter that works with CommonJS files, instead of `import` and `export` statements

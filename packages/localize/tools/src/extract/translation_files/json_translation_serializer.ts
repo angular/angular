@@ -7,8 +7,8 @@
  */
 import {MessageId, ɵParsedMessage, ɵSourceMessage} from '@angular/localize';
 
-import {TranslationSerializer} from './translation_serializer';
-import {consolidateMessages} from './utils';
+import {TranslationSerializer} from './translation_serializer.js';
+import {consolidateMessages} from './utils.js';
 
 interface SimpleJsonTranslationFile {
   locale: string;

@@ -7,14 +7,15 @@
  */
 
 import {Provider} from '@angular/core';
-import {NgClass} from './ng_class';
-import {NgComponentOutlet} from './ng_component_outlet';
-import {NgForOf, NgForOfContext} from './ng_for_of';
-import {NgIf, NgIfContext} from './ng_if';
-import {NgPlural, NgPluralCase} from './ng_plural';
-import {NgStyle} from './ng_style';
-import {NgSwitch, NgSwitchCase, NgSwitchDefault} from './ng_switch';
-import {NgTemplateOutlet} from './ng_template_outlet';
+
+import {NgClass} from './ng_class.js';
+import {NgComponentOutlet} from './ng_component_outlet.js';
+import {NgForOf, NgForOfContext} from './ng_for_of.js';
+import {NgIf, NgIfContext} from './ng_if.js';
+import {NgPlural, NgPluralCase} from './ng_plural.js';
+import {NgStyle} from './ng_style.js';
+import {NgSwitch, NgSwitchCase, NgSwitchDefault} from './ng_switch.js';
+import {NgTemplateOutlet} from './ng_template_outlet.js';
 
 export {
   NgClass,

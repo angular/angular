@@ -13,14 +13,14 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {NgxFlamegraphModule} from 'ngx-flamegraph';
 
-import {AngularSplitModule} from '../../../../vendor/angular-split/public_api';
+import {AngularSplitModule} from '../../../../vendor/angular-split/public_api.js';
 
-import {BarChartComponent} from './bar-chart.component';
-import {BargraphVisualizerComponent} from './bargraph-visualizer.component';
-import {ExecutionDetailsComponent} from './execution-details.component';
-import {FlamegraphVisualizerComponent} from './flamegraph-visualizer.component';
-import {TimelineVisualizerComponent} from './timeline-visualizer.component';
-import {TreeMapVisualizerComponent} from './tree-map-visualizer.component';
+import {BarChartComponent} from './bar-chart.component.js';
+import {BargraphVisualizerComponent} from './bargraph-visualizer.component.js';
+import {ExecutionDetailsComponent} from './execution-details.component.js';
+import {FlamegraphVisualizerComponent} from './flamegraph-visualizer.component.js';
+import {TimelineVisualizerComponent} from './timeline-visualizer.component.js';
+import {TreeMapVisualizerComponent} from './tree-map-visualizer.component.js';
 
 @NgModule({
   declarations: [

@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {ImportManager} from '../../utils/import_manager';
+import {ImportManager} from '../../utils/import_manager.js';
 
 
 export function findExpressionsToMigrate(sourceFile: ts.SourceFile, importManager: ImportManager) {

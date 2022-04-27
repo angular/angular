@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {flatten} from '../util/array_utils';
-import {EMPTY_ARRAY} from '../util/empty';
-import {stringify} from '../util/stringify';
+import {flatten} from '../util/array_utils.js';
+import {EMPTY_ARRAY} from '../util/empty.js';
+import {stringify} from '../util/stringify.js';
 
-import {Injector} from './injector';
-import {StaticProvider} from './interface/provider';
-import {importProvidersFrom} from './provider_collection';
-import {getNullInjector, R3Injector} from './r3_injector';
-import {InjectorScope} from './scope';
+import {Injector} from './injector.js';
+import {StaticProvider} from './interface/provider.js';
+import {importProvidersFrom} from './provider_collection.js';
+import {getNullInjector, R3Injector} from './r3_injector.js';
+import {InjectorScope} from './scope.js';
 
 /**
  * Create a new `Injector` which is configured using a `defType` of `InjectorType<any>`s.

@@ -9,7 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {Component, NgModule, ɵdetectChanges} from '@angular/core';
 
-import {buildTree, emptyTree} from '../util';
+import {buildTree, emptyTree} from '../util.js';
 
 export function destroyDom(component: TreeComponent) {
   component.data = emptyTree;

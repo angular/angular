@@ -10,7 +10,7 @@ import {writeFileSync} from 'fs';
 import {join} from 'path';
 import {SourceMapGenerator} from 'source-map';
 
-import {SizeTracker} from './size_tracker';
+import {SizeTracker} from './size_tracker.js';
 
 const testTempDir = process.env['TEST_TMPDIR']!;
 

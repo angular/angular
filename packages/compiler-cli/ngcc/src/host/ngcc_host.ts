@@ -7,8 +7,8 @@
  */
 import ts from 'typescript';
 
-import {ClassDeclaration, Declaration, Decorator, ReflectionHost} from '../../../src/ngtsc/reflection';
-import {SymbolWithValueDeclaration} from '../../../src/ngtsc/util/src/typescript';
+import {ClassDeclaration, Declaration, Decorator, ReflectionHost} from '../../../src/ngtsc/reflection/index.js';
+import {SymbolWithValueDeclaration} from '../../../src/ngtsc/util/src/typescript.js';
 
 /**
  * The symbol corresponding to a "class" declaration. I.e. a `ts.Symbol` whose `valueDeclaration` is

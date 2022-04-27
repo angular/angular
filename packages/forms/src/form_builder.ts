@@ -8,12 +8,12 @@
 
 import {Injectable} from '@angular/core';
 
-import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
-import {ReactiveFormsModule} from './form_providers';
-import {AbstractControl, AbstractControlOptions, FormHooks} from './model/abstract_model';
-import {FormArray, UntypedFormArray} from './model/form_array';
-import {FormControl, FormControlOptions, FormControlState, UntypedFormControl} from './model/form_control';
-import {FormGroup, UntypedFormGroup} from './model/form_group';
+import {AsyncValidatorFn, ValidatorFn} from './directives/validators.js';
+import {ReactiveFormsModule} from './form_providers.js';
+import {AbstractControl, AbstractControlOptions, FormHooks} from './model/abstract_model.js';
+import {FormArray, UntypedFormArray} from './model/form_array.js';
+import {FormControl, FormControlOptions, FormControlState, UntypedFormControl} from './model/form_control.js';
+import {FormGroup, UntypedFormGroup} from './model/form_group.js';
 
 function isAbstractControlOptions(options: AbstractControlOptions|{[key: string]: any}|null|
                                   undefined): options is AbstractControlOptions {

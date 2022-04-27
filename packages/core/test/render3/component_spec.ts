@@ -8,12 +8,12 @@
 
 import {NgIf} from '@angular/common';
 
-import {ViewEncapsulation, ɵcreateInjector as createInjector, ɵɵdefineInjectable, ɵɵdefineInjector} from '../../src/core';
-import {AttributeMarker, markDirty, ɵɵadvance, ɵɵdefineComponent, ɵɵdirectiveInject, ɵɵproperty, ɵɵtemplate} from '../../src/render3/index';
-import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
-import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {ViewEncapsulation, ɵcreateInjector as createInjector, ɵɵdefineInjectable, ɵɵdefineInjector} from '../../src/core.js';
+import {AttributeMarker, markDirty, ɵɵadvance, ɵɵdefineComponent, ɵɵdirectiveInject, ɵɵproperty, ɵɵtemplate} from '../../src/render3/index.js';
+import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all.js';
+import {RenderFlags} from '../../src/render3/interfaces/definition.js';
 
-import {ComponentFixture, containerEl, createComponent, MockRendererFactory, renderComponent, requestAnimationFrame, toHtml} from './render_util';
+import {ComponentFixture, containerEl, createComponent, MockRendererFactory, renderComponent, requestAnimationFrame, toHtml} from './render_util.js';
 
 describe('component', () => {
   class CounterComponent {

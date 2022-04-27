@@ -7,7 +7,8 @@
  */
 
 import {ɵɵngDeclarePipe} from '@angular/core';
-import {PipeDef} from '../../../src/render3';
+
+import {PipeDef} from '../../../src/render3/index.js';
 
 describe('Pipe declaration jit compilation', () => {
   it('should compile a named Pipe declaration', () => {

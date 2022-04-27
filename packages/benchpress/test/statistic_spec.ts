@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Statistic} from '../src/statistic';
+import {Statistic} from '../src/statistic.js';
 
 {
   describe('statistic', () => {

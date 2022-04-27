@@ -11,27 +11,27 @@ import {Compiler, Injectable, Injector, NgModuleRef, NgZone, Type, ɵConsole as 
 import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject, SubscriptionLike} from 'rxjs';
 import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 
-import {createRouterState} from './create_router_state';
-import {createUrlTree} from './create_url_tree';
-import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
-import {QueryParamsHandling, Route, Routes} from './models';
-import {activateRoutes} from './operators/activate_routes';
-import {applyRedirects} from './operators/apply_redirects';
-import {checkGuards} from './operators/check_guards';
-import {recognize} from './operators/recognize';
-import {resolveData} from './operators/resolve_data';
-import {switchTap} from './operators/switch_tap';
-import {TitleStrategy} from './page_title_strategy';
-import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strategy';
-import {RouterConfigLoader} from './router_config_loader';
-import {ChildrenOutletContexts} from './router_outlet_context';
-import {ActivatedRoute, ActivatedRouteSnapshot, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
-import {isNavigationCancelingError, navigationCancelingError, Params} from './shared';
-import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
-import {containsTree, createEmptyUrlTree, IsActiveMatchOptions, UrlSerializer, UrlTree} from './url_tree';
-import {standardizeConfig, validateConfig} from './utils/config';
-import {Checks, getAllRouteGuards} from './utils/preactivation';
-import {isUrlTree} from './utils/type_guards';
+import {createRouterState} from './create_router_state.js';
+import {createUrlTree} from './create_url_tree.js';
+import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events.js';
+import {QueryParamsHandling, Route, Routes} from './models.js';
+import {activateRoutes} from './operators/activate_routes.js';
+import {applyRedirects} from './operators/apply_redirects.js';
+import {checkGuards} from './operators/check_guards.js';
+import {recognize} from './operators/recognize.js';
+import {resolveData} from './operators/resolve_data.js';
+import {switchTap} from './operators/switch_tap.js';
+import {TitleStrategy} from './page_title_strategy.js';
+import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strategy.js';
+import {RouterConfigLoader} from './router_config_loader.js';
+import {ChildrenOutletContexts} from './router_outlet_context.js';
+import {ActivatedRoute, ActivatedRouteSnapshot, createEmptyState, RouterState, RouterStateSnapshot} from './router_state.js';
+import {isNavigationCancelingError, navigationCancelingError, Params} from './shared.js';
+import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy.js';
+import {containsTree, createEmptyUrlTree, IsActiveMatchOptions, UrlSerializer, UrlTree} from './url_tree.js';
+import {standardizeConfig, validateConfig} from './utils/config.js';
+import {Checks, getAllRouteGuards} from './utils/preactivation.js';
+import {isUrlTree} from './utils/type_guards.js';
 
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;

@@ -8,10 +8,10 @@
 
 import {Inject, Injectable, InjectionToken, OnDestroy, Optional, ɵɵinject} from '@angular/core';
 
-import {DOCUMENT} from '../dom_tokens';
+import {DOCUMENT} from '../dom_tokens.js';
 
-import {LocationChangeListener, PlatformLocation} from './platform_location';
-import {joinWithSlash, normalizeQueryParams} from './util';
+import {LocationChangeListener, PlatformLocation} from './platform_location.js';
+import {joinWithSlash, normalizeQueryParams} from './util.js';
 
 /**
  * Enables the `Location` service to read route state from the browser's URL.

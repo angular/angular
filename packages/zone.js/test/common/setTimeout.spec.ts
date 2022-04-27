@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {patchTimer} from '../../lib/common/timers';
-import {isNode, zoneSymbol} from '../../lib/common/utils';
+import {patchTimer} from '../../lib/common/timers.js';
+import {isNode, zoneSymbol} from '../../lib/common/utils.js';
 
 declare const global: any;
 const wtfMock = global.wtfMock;

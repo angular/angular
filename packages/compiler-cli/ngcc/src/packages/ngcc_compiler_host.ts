@@ -7,10 +7,11 @@
  */
 import ts from 'typescript';
 
-import {AbsoluteFsPath, FileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
-import {isWithinPackage} from '../analysis/util';
-import {isRelativePath} from '../utils';
-import {EntryPointFileCache} from './source_file_cache';
+import {AbsoluteFsPath, FileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system/index.js';
+import {isWithinPackage} from '../analysis/util.js';
+import {isRelativePath} from '../utils.js';
+
+import {EntryPointFileCache} from './source_file_cache.js';
 
 /**
  * Represents a compiler host that resolves a module import as a JavaScript source file if

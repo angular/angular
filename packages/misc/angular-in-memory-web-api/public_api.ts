@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './src/in-memory-web-api';
+export * from './src/in-memory-web-api.js';
 
 // This file only reexports content of the `src` folder. Keep it that way.

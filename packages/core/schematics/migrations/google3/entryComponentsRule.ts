@@ -9,7 +9,7 @@
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import ts from 'typescript';
 
-import {migrateEntryComponentsUsages} from '../entry-components/util';
+import {migrateEntryComponentsUsages} from '../entry-components/util.js';
 
 
 /** TSLint rule that removes usages of `entryComponents`. */

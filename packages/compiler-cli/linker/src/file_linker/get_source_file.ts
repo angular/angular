@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {SourceFile, SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system/index.js';
+import {SourceFile, SourceFileLoader} from '../../../src/ngtsc/sourcemaps/index.js';
 
 /**
  * A function that will return a `SourceFile` object (or null) for the current file being linked.

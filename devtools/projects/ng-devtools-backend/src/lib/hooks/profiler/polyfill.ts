@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getDirectiveHostElement, getLViewFromDirectiveOrElementInstance, METADATA_PROPERTY_NAME,} from '../../directive-forest';
-import {runOutsideAngular} from '../../utils';
-import {IdentityTracker, NodeArray} from '../identity-tracker';
+import {getDirectiveHostElement, getLViewFromDirectiveOrElementInstance, METADATA_PROPERTY_NAME,} from '../../directive-forest/index.js';
+import {runOutsideAngular} from '../../utils.js';
+import {IdentityTracker, NodeArray} from '../identity-tracker.js';
 
-import {getLifeCycleName, Profiler} from './shared';
+import {getLifeCycleName, Profiler} from './shared.js';
 
 const hookTViewProperties = [
   'preOrderHooks',

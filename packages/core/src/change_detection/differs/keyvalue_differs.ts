@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Optional, SkipSelf, StaticProvider, ɵɵdefineInjectable} from '../../di';
-import {RuntimeError, RuntimeErrorCode} from '../../errors';
+import {Optional, SkipSelf, StaticProvider, ɵɵdefineInjectable} from '../../di/index.js';
+import {RuntimeError, RuntimeErrorCode} from '../../errors.js';
 
-import {DefaultKeyValueDifferFactory} from './default_keyvalue_differ';
+import {DefaultKeyValueDifferFactory} from './default_keyvalue_differ.js';
 
 
 /**

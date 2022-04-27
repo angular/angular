@@ -9,11 +9,11 @@
 import {AST, EmptyExpr, ImplicitReceiver, LiteralPrimitive, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
 import ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../file_system';
-import {CompletionKind, GlobalCompletion, ReferenceCompletion, TcbLocation, VariableCompletion} from '../api';
+import {AbsoluteFsPath} from '../../file_system/index.js';
+import {CompletionKind, GlobalCompletion, ReferenceCompletion, TcbLocation, VariableCompletion} from '../api/index.js';
 
-import {ExpressionIdentifier, findFirstMatchingNode} from './comments';
-import {TemplateData} from './context';
+import {ExpressionIdentifier, findFirstMatchingNode} from './comments.js';
+import {TemplateData} from './context.js';
 
 /**
  * Powers autocompletion for a specific component.

@@ -10,8 +10,8 @@ import {CssSelector, SelectorMatcher, TmplAstElement, TmplAstTemplate} from '@an
 import {DirectiveInScope, ElementSymbol, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
-import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
-import {makeElementSelector} from './utils';
+import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts.js';
+import {makeElementSelector} from './utils.js';
 
 /**
  * Differentiates different kinds of `AttributeCompletion`s.

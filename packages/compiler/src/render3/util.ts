@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {escapeIdentifier} from '../output/abstract_emitter';
-import * as o from '../output/output_ast';
+import {escapeIdentifier} from '../output/abstract_emitter.js';
+import * as o from '../output/output_ast.js';
 
-import {Identifiers} from './r3_identifiers';
+import {Identifiers} from './r3_identifiers.js';
 
 export function typeWithParameters(type: o.Expression, numParams: number): o.ExpressionType {
   if (numParams === 0) {

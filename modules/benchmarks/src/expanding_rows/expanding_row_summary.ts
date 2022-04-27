@@ -9,8 +9,8 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Host, HostListener, OnDestroy, ViewChild} from '@angular/core';
 import {Subscription} from 'rxjs';
 
-import {ExpandingRow} from './expanding_row';
-import {expanding_row_css} from './expanding_row_css';
+import {ExpandingRow} from './expanding_row.js';
+import {expanding_row_css} from './expanding_row_css.js';
 
 const KEY_CODE_TAB = 9;
 

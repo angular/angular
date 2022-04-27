@@ -9,8 +9,8 @@
 import {enableProdMode} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import {init} from './init';
-import {AppModule} from './tree';
+import {init} from './init.js';
+import {AppModule} from './tree.js';
 
 enableProdMode();
 platformBrowserDynamic().bootstrapModule(AppModule).then(init);

@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CharCode} from '../../util/char_code';
-import {AttributeMarker, TAttributes} from '../interfaces/node';
-import {CssSelector} from '../interfaces/projection';
-import {isProceduralRenderer, ProceduralRenderer3, Renderer3} from '../interfaces/renderer';
-import {RElement} from '../interfaces/renderer_dom';
+import {CharCode} from '../../util/char_code.js';
+import {AttributeMarker, TAttributes} from '../interfaces/node.js';
+import {CssSelector} from '../interfaces/projection.js';
+import {isProceduralRenderer, ProceduralRenderer3, Renderer3} from '../interfaces/renderer.js';
+import {RElement} from '../interfaces/renderer_dom.js';
 
 
 

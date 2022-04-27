@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as cdAst from '../expression_parser/ast';
-import * as o from '../output/output_ast';
-import {ParseSourceSpan} from '../parse_util';
+import * as cdAst from '../expression_parser/ast.js';
+import * as o from '../output/output_ast.js';
+import {ParseSourceSpan} from '../parse_util.js';
 
 export class EventHandlerVars {
   static event = o.variable('$event');

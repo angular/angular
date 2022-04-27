@@ -7,10 +7,10 @@
  */
 import {AnimateTimings, AnimationMetadata, AnimationMetadataType, AnimationOptions, sequence, ɵStyleData, ɵStyleDataMap} from '@angular/animations';
 
-import {Ast as AnimationAst, AstVisitor as AnimationAstVisitor} from './dsl/animation_ast';
-import {AnimationDslVisitor} from './dsl/animation_dsl_visitor';
-import {invalidNodeType, invalidParamValue, invalidStyleParams, invalidTimingValue, negativeDelayValue, negativeStepValue} from './error_helpers';
-import {isNode} from './render/shared';
+import {Ast as AnimationAst, AstVisitor as AnimationAstVisitor} from './dsl/animation_ast.js';
+import {AnimationDslVisitor} from './dsl/animation_dsl_visitor.js';
+import {invalidNodeType, invalidParamValue, invalidStyleParams, invalidTimingValue, negativeDelayValue, negativeStepValue} from './error_helpers.js';
+import {isNode} from './render/shared.js';
 
 export const ONE_SECOND = 1000;
 

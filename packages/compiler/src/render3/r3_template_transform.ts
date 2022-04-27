@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParsedEvent, ParsedProperty, ParsedVariable} from '../expression_parser/ast';
-import * as i18n from '../i18n/i18n_ast';
-import * as html from '../ml_parser/ast';
-import {replaceNgsp} from '../ml_parser/html_whitespaces';
-import {isNgTemplate} from '../ml_parser/tags';
-import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/tokens';
-import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
-import {isStyleUrlResolvable} from '../style_url_resolver';
-import {BindingParser} from '../template_parser/binding_parser';
-import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
+import {ParsedEvent, ParsedProperty, ParsedVariable} from '../expression_parser/ast.js';
+import * as i18n from '../i18n/i18n_ast.js';
+import * as html from '../ml_parser/ast.js';
+import {replaceNgsp} from '../ml_parser/html_whitespaces.js';
+import {isNgTemplate} from '../ml_parser/tags.js';
+import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/tokens.js';
+import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util.js';
+import {isStyleUrlResolvable} from '../style_url_resolver.js';
+import {BindingParser} from '../template_parser/binding_parser.js';
+import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser.js';
 
-import * as t from './r3_ast';
-import {I18N_ICU_VAR_PREFIX, isI18nRootNode} from './view/i18n/util';
+import * as t from './r3_ast.js';
+import {I18N_ICU_VAR_PREFIX, isI18nRootNode} from './view/i18n/util.js';
 
 const BIND_NAME_REGEXP = /^(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*)$/;
 

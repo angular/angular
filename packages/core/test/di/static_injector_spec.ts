@@ -9,7 +9,7 @@
 import {forwardRef, Inject, InjectFlags, Injector, Self, SkipSelf} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {stringify} from '../../src/util/stringify';
+import {stringify} from '../../src/util/stringify.js';
 
 class Engine {
   static PROVIDER = {provide: Engine, useClass: Engine, deps: []};

@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {refreshView} from '../../../../src/render3/instructions/shared';
-import {TVIEW} from '../../../../src/render3/interfaces/view';
-import {createBenchmark} from '../micro_bench';
-import {setupRootViewWithEmbeddedViews} from '../setup';
+import {refreshView} from '../../../../src/render3/instructions/shared.js';
+import {TVIEW} from '../../../../src/render3/interfaces/view.js';
+import {createBenchmark} from '../micro_bench.js';
+import {setupRootViewWithEmbeddedViews} from '../setup.js';
 
 const rootLView = setupRootViewWithEmbeddedViews(null, 0, 0, 1000);
 const rootTView = rootLView[TVIEW];

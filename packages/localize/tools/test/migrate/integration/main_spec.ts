@@ -8,8 +8,9 @@
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
 import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
-import {migrateFiles} from '../../../src/migrate/index';
-import {runInNativeFileSystem} from '../../helpers';
+
+import {migrateFiles} from '../../../src/migrate/index.js';
+import {runInNativeFileSystem} from '../../helpers/index.js';
 
 runInNativeFileSystem(() => {
   let fs: FileSystem;

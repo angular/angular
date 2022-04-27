@@ -10,7 +10,7 @@
 import {Component, Injectable} from '@angular/core';
 import {ActivatedRoute, Router, Routes} from '@angular/router';
 
-import * as db from './data';
+import * as db from './data.js';
 
 export class InboxRecord {
   id: string = '';

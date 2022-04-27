@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getReflect} from '../../src/di/jit/util';
-import {ANNOTATIONS, makeDecorator, makePropDecorator} from '../../src/util/decorators';
+import {getReflect} from '../../src/di/jit/util.js';
+import {ANNOTATIONS, makeDecorator, makePropDecorator} from '../../src/util/decorators.js';
 
 class DecoratedParent {}
 class DecoratedChild extends DecoratedParent {}

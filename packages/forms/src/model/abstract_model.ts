@@ -9,11 +9,11 @@
 import {EventEmitter, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable} from 'rxjs';
 
-import {missingControlError, missingControlValueError, noControlsError} from '../directives/reactive_errors';
-import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from '../directives/validators';
-import {RuntimeErrorCode} from '../errors';
-import {FormArray, FormGroup} from '../forms';
-import {addValidators, composeAsyncValidators, composeValidators, hasValidator, removeValidators, toObservable} from '../validators';
+import {missingControlError, missingControlValueError, noControlsError} from '../directives/reactive_errors.js';
+import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from '../directives/validators.js';
+import {RuntimeErrorCode} from '../errors.js';
+import {FormArray, FormGroup} from '../forms.js';
+import {addValidators, composeAsyncValidators, composeValidators, hasValidator, removeValidators, toObservable} from '../validators.js';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 

@@ -7,16 +7,16 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, getFileSystem} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {loadFakeCore, loadTestFiles} from '../../../src/ngtsc/testing';
-import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
-import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
-import {DecorationAnalyses} from '../../src/analysis/types';
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {getAngularCoreDecoratorName, MissingInjectableMigration} from '../../src/migrations/missing_injectable_migration';
-import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {loadFakeCore, loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer.js';
+import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry.js';
+import {DecorationAnalyses} from '../../src/analysis/types.js';
+import {Esm2015ReflectionHost} from '../../src/host/esm2015_host.js';
+import {getAngularCoreDecoratorName, MissingInjectableMigration} from '../../src/migrations/missing_injectable_migration.js';
+import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils.js';
 
 runInEachFileSystem(() => {
   describe('MissingInjectableMigration', () => {

@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertEqual, assertLessThan} from '../../util/assert';
-import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from '../bindings';
-import {LView} from '../interfaces/view';
-import {getBindingIndex, incrementBindingIndex, nextBindingIndex, setBindingIndex} from '../state';
-import {NO_CHANGE} from '../tokens';
-import {renderStringify} from '../util/stringify_utils';
+import {assertEqual, assertLessThan} from '../../util/assert.js';
+import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from '../bindings.js';
+import {LView} from '../interfaces/view.js';
+import {getBindingIndex, incrementBindingIndex, nextBindingIndex, setBindingIndex} from '../state.js';
+import {NO_CHANGE} from '../tokens.js';
+import {renderStringify} from '../util/stringify_utils.js';
 
 
 

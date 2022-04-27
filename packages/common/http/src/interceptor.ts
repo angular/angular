@@ -9,9 +9,9 @@
 import {Injectable, InjectionToken} from '@angular/core';
 import {Observable} from 'rxjs';
 
-import {HttpHandler} from './backend';
-import {HttpRequest} from './request';
-import {HttpEvent} from './response';
+import {HttpHandler} from './backend.js';
+import {HttpRequest} from './request.js';
+import {HttpEvent} from './response.js';
 
 /**
  * Intercepts and handles an `HttpRequest` or `HttpResponse`.

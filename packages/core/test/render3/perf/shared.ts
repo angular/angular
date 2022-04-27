@@ -7,7 +7,7 @@
  */
 import {ɵɵdefineDirective} from '@angular/core/src/core';
 
-import {HostBindingsFunction} from '../../../src/render3/interfaces/definition';
+import {HostBindingsFunction} from '../../../src/render3/interfaces/definition.js';
 
 export function defineBenchmarkTestDirective(
     selector: string, hostBindings: HostBindingsFunction<any>, type?: any) {

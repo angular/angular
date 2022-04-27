@@ -18,7 +18,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {bootstrapApplication} from '../../src/browser';
+import {bootstrapApplication} from '../../src/browser.js';
 
 @Component({selector: 'non-existent', template: ''})
 class NonExistentComp {

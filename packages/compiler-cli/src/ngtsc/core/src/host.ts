@@ -8,15 +8,15 @@
 
 import ts from 'typescript';
 
-import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {findFlatIndexEntryPoint, FlatIndexGenerator} from '../../entry_point';
-import {AbsoluteFsPath, resolve} from '../../file_system';
-import {FactoryGenerator, isShim, ShimAdapter, ShimReferenceTagger, SummaryGenerator} from '../../shims';
-import {FactoryTracker, PerFileShimGenerator, TopLevelShimGenerator} from '../../shims/api';
-import {TypeCheckShimGenerator} from '../../typecheck';
-import {normalizeSeparators} from '../../util/src/path';
-import {getRootDirs, isNonDeclarationTsPath, RequiredDelegations} from '../../util/src/typescript';
-import {ExtendedTsCompilerHost, NgCompilerAdapter, NgCompilerOptions, UnifiedModulesHost} from '../api';
+import {ErrorCode, ngErrorCode} from '../../diagnostics/index.js';
+import {findFlatIndexEntryPoint, FlatIndexGenerator} from '../../entry_point/index.js';
+import {AbsoluteFsPath, resolve} from '../../file_system/index.js';
+import {FactoryTracker, PerFileShimGenerator, TopLevelShimGenerator} from '../../shims/api.js';
+import {FactoryGenerator, isShim, ShimAdapter, ShimReferenceTagger, SummaryGenerator} from '../../shims/index.js';
+import {TypeCheckShimGenerator} from '../../typecheck/index.js';
+import {normalizeSeparators} from '../../util/src/path.js';
+import {getRootDirs, isNonDeclarationTsPath, RequiredDelegations} from '../../util/src/typescript.js';
+import {ExtendedTsCompilerHost, NgCompilerAdapter, NgCompilerOptions, UnifiedModulesHost} from '../api/index.js';
 
 // A persistent source of bugs in CompilerHost delegation has been the addition by TS of new,
 // optional methods on ts.CompilerHost. Since these methods are optional, it's not a type error that

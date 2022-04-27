@@ -8,10 +8,10 @@
 import {AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
-import {extractIcuPlaceholders} from './icu_parsing';
-import {TranslationSerializer} from './translation_serializer';
-import {consolidateMessages} from './utils';
-import {XmlFile} from './xml_file';
+import {extractIcuPlaceholders} from './icu_parsing.js';
+import {TranslationSerializer} from './translation_serializer.js';
+import {consolidateMessages} from './utils.js';
+import {XmlFile} from './xml_file.js';
 
 /**
  * A translation serializer that can write files in XMB format.

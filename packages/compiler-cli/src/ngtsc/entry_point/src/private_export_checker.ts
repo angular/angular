@@ -8,10 +8,10 @@
 
 import ts from 'typescript';
 
-import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {DeclarationNode} from '../../reflection';
+import {ErrorCode, ngErrorCode} from '../../diagnostics/index.js';
+import {DeclarationNode} from '../../reflection/index.js';
 
-import {ReferenceGraph} from './reference_graph';
+import {ReferenceGraph} from './reference_graph.js';
 
 /**
  * Produce `ts.Diagnostic`s for classes that are visible from exported types (e.g. directives

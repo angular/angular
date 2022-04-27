@@ -7,8 +7,10 @@
  */
 
 import {ComponentRef} from '@angular/core';
-import {exportNgVar} from '../../dom/util';
-import {AngularProfiler} from './common_tools';
+
+import {exportNgVar} from '../../dom/util.js';
+
+import {AngularProfiler} from './common_tools.js';
 
 const PROFILER_GLOBAL_NAME = 'profiler';
 

@@ -10,9 +10,9 @@ import {Compiler, EnvironmentInjector, Injectable, InjectFlags, InjectionToken, 
 import {ConnectableObservable, from, Observable, of, Subject} from 'rxjs';
 import {catchError, finalize, map, mergeMap, refCount, tap} from 'rxjs/operators';
 
-import {LoadChildren, LoadedRouterConfig, Route, Routes} from './models';
-import {flatten, wrapIntoObservable} from './utils/collection';
-import {assertStandalone, standardizeConfig, validateConfig} from './utils/config';
+import {LoadChildren, LoadedRouterConfig, Route, Routes} from './models.js';
+import {flatten, wrapIntoObservable} from './utils/collection.js';
+import {assertStandalone, standardizeConfig, validateConfig} from './utils/config.js';
 
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {generatedModuleName} from '../src/util';
+import {generatedModuleName} from '../src/util.js';
 
 describe('shim utilities', () => {
   describe('generatedModuleName', () => {

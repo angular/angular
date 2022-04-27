@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {migrateFile} from '../../src/migrate/migrate';
+import {migrateFile} from '../../src/migrate/migrate.js';
 
 describe('migrateFile', () => {
   it('should migrate all of the legacy message IDs', () => {

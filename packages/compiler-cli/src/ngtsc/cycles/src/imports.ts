@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {PerfPhase, PerfRecorder} from '../../perf';
+import {PerfPhase, PerfRecorder} from '../../perf/index.js';
 
 /**
  * A cached graph of imports in the `ts.Program`.

@@ -8,10 +8,10 @@
 
 import {BehaviorSubject} from 'rxjs';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute, equalParamsAndUrlSegments, RouterState, RouterStateSnapshot} from '../src/router_state';
-import {Params} from '../src/shared';
-import {UrlSegment} from '../src/url_tree';
-import {TreeNode} from '../src/utils/tree';
+import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute, equalParamsAndUrlSegments, RouterState, RouterStateSnapshot} from '../src/router_state.js';
+import {Params} from '../src/shared.js';
+import {UrlSegment} from '../src/url_tree.js';
+import {TreeNode} from '../src/utils/tree.js';
 
 describe('RouterState & Snapshot', () => {
   describe('RouterStateSnapshot', () => {

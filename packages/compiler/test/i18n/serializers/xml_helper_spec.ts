@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as xml from '../../../src/i18n/serializers/xml_helper';
+import * as xml from '../../../src/i18n/serializers/xml_helper.js';
 
 {
   describe('XML helper', () => {

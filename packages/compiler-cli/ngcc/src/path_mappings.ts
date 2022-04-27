@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, PathManipulation} from '../../src/ngtsc/file_system';
-import {ParsedConfiguration} from '../../src/perform_compile';
+import {AbsoluteFsPath, PathManipulation} from '../../src/ngtsc/file_system/index.js';
+import {ParsedConfiguration} from '../../src/perform_compile.js';
 
 export type PathMappings = {
   baseUrl: string,

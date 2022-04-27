@@ -7,7 +7,8 @@
  */
 
 import {Injectable} from '@angular/core';
-import {MySecondService} from './second';
+
+import {MySecondService} from './second.js';
 
 @Injectable({providedIn: 'root'})
 export class MyService {

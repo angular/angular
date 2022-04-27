@@ -10,18 +10,18 @@ import {NgIf} from '@angular/common';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 
-import {RendererType2} from '../../src/render/api_flags';
-import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
-import {AttributeMarker, ɵɵadvance, ɵɵattribute, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵhostProperty, ɵɵproperty} from '../../src/render3/index';
-import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵprojection, ɵɵprojectionDef, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
-import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {domRendererFactory3, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
-import {CONTEXT, HEADER_OFFSET, ID, LView} from '../../src/render3/interfaces/view';
-import {ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
-import {Sanitizer} from '../../src/sanitization/sanitizer';
-import {SecurityContext} from '../../src/sanitization/security';
+import {RendererType2} from '../../src/render/api_flags.js';
+import {getLContext, readPatchedData} from '../../src/render3/context_discovery.js';
+import {AttributeMarker, ɵɵadvance, ɵɵattribute, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵhostProperty, ɵɵproperty} from '../../src/render3/index.js';
+import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵprojection, ɵɵprojectionDef, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all.js';
+import {RenderFlags} from '../../src/render3/interfaces/definition.js';
+import {domRendererFactory3, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer.js';
+import {CONTEXT, HEADER_OFFSET, ID, LView} from '../../src/render3/interfaces/view.js';
+import {ɵɵsanitizeUrl} from '../../src/sanitization/sanitization.js';
+import {Sanitizer} from '../../src/sanitization/sanitizer.js';
+import {SecurityContext} from '../../src/sanitization/security.js';
 
-import {ComponentFixture, MockRendererFactory, renderToHtml} from './render_util';
+import {ComponentFixture, MockRendererFactory, renderToHtml} from './render_util.js';
 
 describe('render3 integration test', () => {
   describe('render', () => {

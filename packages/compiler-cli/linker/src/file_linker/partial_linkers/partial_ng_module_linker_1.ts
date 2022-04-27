@@ -7,10 +7,10 @@
  */
 import {compileNgModule, ConstantPool, outputAst as o, R3DeclareNgModuleMetadata, R3NgModuleMetadata, R3PartialDeclaration, R3Reference, R3SelectorScopeMode} from '@angular/compiler';
 
-import {AstObject, AstValue} from '../../ast/ast_value';
+import {AstObject, AstValue} from '../../ast/ast_value.js';
 
-import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {wrapReference} from './util';
+import {LinkedDefinition, PartialLinker} from './partial_linker.js';
+import {wrapReference} from './util.js';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareNgModule()` call expressions.

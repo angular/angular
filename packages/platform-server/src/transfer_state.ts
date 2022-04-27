@@ -10,7 +10,7 @@ import {DOCUMENT} from '@angular/common';
 import {APP_ID, NgModule} from '@angular/core';
 import {TransferState, ɵescapeHtml as escapeHtml} from '@angular/platform-browser';
 
-import {BEFORE_APP_SERIALIZED} from './tokens';
+import {BEFORE_APP_SERIALIZED} from './tokens.js';
 
 export function serializeTransferStateFactory(
     doc: Document, appId: string, transferStore: TransferState) {

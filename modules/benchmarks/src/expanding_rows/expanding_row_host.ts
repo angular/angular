@@ -9,7 +9,7 @@
 import {AfterContentInit, AfterViewInit, ChangeDetectionStrategy, Component, ContentChildren, ElementRef, EventEmitter, forwardRef, HostListener, Input, OnDestroy, Output, QueryList, ViewChild} from '@angular/core';
 import {Subscription} from 'rxjs';
 
-import {EXPANDING_ROW_HOST_INJECTION_TOKEN, ExpandingRow, ExpandingRowHostBase} from './expanding_row';
+import {EXPANDING_ROW_HOST_INJECTION_TOKEN, ExpandingRow, ExpandingRowHostBase} from './expanding_row.js';
 
 
 /**

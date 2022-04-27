@@ -7,7 +7,7 @@
  */
 import ts from 'typescript';
 
-import {ImportManager} from '../../translator';
+import {ImportManager} from '../../translator/index.js';
 
 /**
  * Adds extra imports in the import manage for this source file, after the existing imports

@@ -8,9 +8,9 @@
 
 import {AbsoluteSourceSpan} from '@angular/compiler';
 
-import * as e from '../../../src/expression_parser/ast';
-import * as t from '../../../src/render3/r3_ast';
-import {unparse} from '../../expression_parser/utils/unparser';
+import * as e from '../../../src/expression_parser/ast.js';
+import * as t from '../../../src/render3/r3_ast.js';
+import {unparse} from '../../expression_parser/utils/unparser.js';
 
 type HumanizedExpressionSource = [string, AbsoluteSourceSpan];
 class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visitor {

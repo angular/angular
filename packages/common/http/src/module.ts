@@ -9,14 +9,14 @@
 import {Injectable, Injector, ModuleWithProviders, NgModule} from '@angular/core';
 import {Observable} from 'rxjs';
 
-import {HttpBackend, HttpHandler} from './backend';
-import {HttpClient} from './client';
-import {HTTP_INTERCEPTORS, HttpInterceptor, HttpInterceptorHandler, NoopInterceptor} from './interceptor';
-import {JsonpCallbackContext, JsonpClientBackend, JsonpInterceptor} from './jsonp';
-import {HttpRequest} from './request';
-import {HttpEvent} from './response';
-import {HttpXhrBackend} from './xhr';
-import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_HEADER_NAME} from './xsrf';
+import {HttpBackend, HttpHandler} from './backend.js';
+import {HttpClient} from './client.js';
+import {HTTP_INTERCEPTORS, HttpInterceptor, HttpInterceptorHandler, NoopInterceptor} from './interceptor.js';
+import {JsonpCallbackContext, JsonpClientBackend, JsonpInterceptor} from './jsonp.js';
+import {HttpRequest} from './request.js';
+import {HttpEvent} from './response.js';
+import {HttpXhrBackend} from './xhr.js';
+import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_HEADER_NAME} from './xsrf.js';
 
 /**
  * An injectable `HttpHandler` that applies multiple interceptors

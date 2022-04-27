@@ -8,10 +8,10 @@
 
 import {EnvironmentInjector, Type, ɵisStandalone as isStandalone} from '@angular/core';
 
-import {EmptyOutletComponent} from '../components/empty_outlet';
-import {Route, Routes} from '../models';
-import {ActivatedRouteSnapshot} from '../router_state';
-import {PRIMARY_OUTLET} from '../shared';
+import {EmptyOutletComponent} from '../components/empty_outlet.js';
+import {Route, Routes} from '../models.js';
+import {ActivatedRouteSnapshot} from '../router_state.js';
+import {PRIMARY_OUTLET} from '../shared.js';
 
 export function getLoadedRoutes(route: Route): Route[]|undefined {
   return route._loadedRoutes;

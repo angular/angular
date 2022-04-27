@@ -12,9 +12,9 @@ import {Inject, Injectable, Optional} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {BackendService} from './backend-service';
-import {STATUS} from './http-status-codes';
-import {InMemoryBackendConfig, InMemoryBackendConfigArgs, InMemoryDbService, ResponseOptions} from './interfaces';
+import {BackendService} from './backend-service.js';
+import {STATUS} from './http-status-codes.js';
+import {InMemoryBackendConfig, InMemoryBackendConfigArgs, InMemoryDbService, ResponseOptions} from './interfaces.js';
 
 /**
  * For Angular `HttpClient` simulate the behavior of a RESTy web api

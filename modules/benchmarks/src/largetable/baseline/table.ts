@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TableCell} from '../util';
+import {TableCell} from '../util.js';
 
 export class TableComponent {
   private _renderCells: any[][];

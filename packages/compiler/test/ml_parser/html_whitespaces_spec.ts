@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as html from '../../src/ml_parser/ast';
-import {NGSP_UNICODE} from '../../src/ml_parser/entities';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {PRESERVE_WS_ATTR_NAME, removeWhitespaces} from '../../src/ml_parser/html_whitespaces';
-import {TokenizeOptions} from '../../src/ml_parser/lexer';
+import * as html from '../../src/ml_parser/ast.js';
+import {NGSP_UNICODE} from '../../src/ml_parser/entities.js';
+import {HtmlParser} from '../../src/ml_parser/html_parser.js';
+import {PRESERVE_WS_ATTR_NAME, removeWhitespaces} from '../../src/ml_parser/html_whitespaces.js';
+import {TokenizeOptions} from '../../src/ml_parser/lexer.js';
 
-import {humanizeDom} from './ast_spec_utils';
+import {humanizeDom} from './ast_spec_utils.js';
 
 {
   describe('removeWhitespaces', () => {

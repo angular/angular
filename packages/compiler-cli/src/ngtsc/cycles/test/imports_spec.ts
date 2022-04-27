@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
-import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {NOOP_PERF_RECORDER} from '../../perf';
-import {ImportGraph} from '../src/imports';
-import {importPath, makeProgramFromGraph} from './util';
+
+import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {NOOP_PERF_RECORDER} from '../../perf/index.js';
+import {ImportGraph} from '../src/imports.js';
+
+import {importPath, makeProgramFromGraph} from './util.js';
 
 runInEachFileSystem(() => {
   describe('ImportGraph', () => {

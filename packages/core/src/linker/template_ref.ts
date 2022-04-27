@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '../di/injector';
-import {assertLContainer} from '../render3/assert';
-import {createLView, renderView} from '../render3/instructions/shared';
-import {TContainerNode, TNode, TNodeType} from '../render3/interfaces/node';
-import {DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, TView} from '../render3/interfaces/view';
-import {getCurrentTNode, getLView} from '../render3/state';
-import {ViewRef as R3_ViewRef} from '../render3/view_ref';
-import {assertDefined} from '../util/assert';
+import {Injector} from '../di/injector.js';
+import {assertLContainer} from '../render3/assert.js';
+import {createLView, renderView} from '../render3/instructions/shared.js';
+import {TContainerNode, TNode, TNodeType} from '../render3/interfaces/node.js';
+import {DECLARATION_LCONTAINER, LView, LViewFlags, QUERIES, TView} from '../render3/interfaces/view.js';
+import {getCurrentTNode, getLView} from '../render3/state.js';
+import {ViewRef as R3_ViewRef} from '../render3/view_ref.js';
+import {assertDefined} from '../util/assert.js';
 
-import {createElementRef, ElementRef} from './element_ref';
-import {EmbeddedViewRef} from './view_ref';
+import {createElementRef, ElementRef} from './element_ref.js';
+import {EmbeddedViewRef} from './view_ref.js';
 
 /**
  * Represents an embedded template that can be used to instantiate embedded views.

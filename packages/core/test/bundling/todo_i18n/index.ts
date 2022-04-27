@@ -11,7 +11,7 @@ import {CommonModule} from '@angular/common';
 import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent, ɵwhenRendered as whenRendered} from '@angular/core';
 import {loadTranslations} from '@angular/localize';
 
-import {translations} from './translations';
+import {translations} from './translations.js';
 
 class Todo {
   editing: boolean;

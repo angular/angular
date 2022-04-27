@@ -8,10 +8,10 @@
 
 import ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, CtorParameter, Declaration, DeclarationNode, Decorator, FunctionDefinition, Import, ReflectionHost} from '../../../src/ngtsc/reflection';
-import {isFromDtsFile} from '../../../src/ngtsc/util/src/typescript';
+import {ClassDeclaration, ClassMember, CtorParameter, Declaration, DeclarationNode, Decorator, FunctionDefinition, Import, ReflectionHost} from '../../../src/ngtsc/reflection/index.js';
+import {isFromDtsFile} from '../../../src/ngtsc/util/src/typescript.js';
 
-import {NgccClassSymbol, NgccReflectionHost} from './ngcc_host';
+import {NgccClassSymbol, NgccReflectionHost} from './ngcc_host.js';
 
 /**
  * A reflection host implementation that delegates reflector queries depending on whether they

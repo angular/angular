@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LinkedDefinition} from '../partial_linkers/partial_linker';
+import {LinkedDefinition} from '../partial_linkers/partial_linker.js';
 
-import {EmitScope} from './emit_scope';
+import {EmitScope} from './emit_scope.js';
 
 /**
  * This class is a specialization of the `EmitScope` class that is designed for the situation where

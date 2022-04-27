@@ -8,11 +8,11 @@
 
 import {ComponentFactory, ComponentFactoryResolver, Injector, NgZone, Type} from '@angular/core';
 
-import {IAnnotatedFunction, IAttributes, IAugmentedJQuery, ICompileService, IDirective, IInjectorService, INgModelController, IParseService, IScope} from './angular1';
-import {$COMPILE, $INJECTOR, $PARSE, INJECTOR_KEY, LAZY_MODULE_REF, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants';
-import {DowngradeComponentAdapter} from './downgrade_component_adapter';
-import {SyncPromise, Thenable} from './promise_util';
-import {controllerKey, getDowngradedModuleCount, getTypeName, getUpgradeAppType, LazyModuleRef, UpgradeAppType, validateInjectionKey} from './util';
+import {IAnnotatedFunction, IAttributes, IAugmentedJQuery, ICompileService, IDirective, IInjectorService, INgModelController, IParseService, IScope} from './angular1.js';
+import {$COMPILE, $INJECTOR, $PARSE, INJECTOR_KEY, LAZY_MODULE_REF, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants.js';
+import {DowngradeComponentAdapter} from './downgrade_component_adapter.js';
+import {SyncPromise, Thenable} from './promise_util.js';
+import {controllerKey, getDowngradedModuleCount, getTypeName, getUpgradeAppType, LazyModuleRef, UpgradeAppType, validateInjectionKey} from './util.js';
 
 
 /**

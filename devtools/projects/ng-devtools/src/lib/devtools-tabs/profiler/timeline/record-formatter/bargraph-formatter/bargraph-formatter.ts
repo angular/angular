@@ -8,8 +8,8 @@
 
 import {ElementProfile, ProfilerFrame} from 'protocol';
 
-import {memo} from '../../../../../vendor/memo-decorator';
-import {RecordFormatter} from '../record-formatter';
+import {memo} from '../../../../../vendor/memo-decorator/index.js';
+import {RecordFormatter} from '../record-formatter.js';
 
 export interface BargraphNode {
   parents: ElementProfile[];

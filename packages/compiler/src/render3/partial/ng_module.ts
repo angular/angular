@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as o from '../../output/output_ast';
-import {Identifiers as R3} from '../r3_identifiers';
-import {createNgModuleType, R3NgModuleMetadata} from '../r3_module_compiler';
-import {R3CompiledExpression, refsToArray} from '../util';
-import {DefinitionMap} from '../view/util';
+import * as o from '../../output/output_ast.js';
+import {Identifiers as R3} from '../r3_identifiers.js';
+import {createNgModuleType, R3NgModuleMetadata} from '../r3_module_compiler.js';
+import {R3CompiledExpression, refsToArray} from '../util.js';
+import {DefinitionMap} from '../view/util.js';
 
-import {R3DeclareNgModuleMetadata} from './api';
+import {R3DeclareNgModuleMetadata} from './api.js';
 
 /**
  * Every time we make a breaking change to the declaration interface or partial-linker behavior, we

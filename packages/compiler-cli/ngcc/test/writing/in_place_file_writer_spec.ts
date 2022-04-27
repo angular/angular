@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {EntryPoint} from '../../src/packages/entry_point';
-import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
-import {InPlaceFileWriter, NGCC_BACKUP_EXTENSION} from '../../src/writing/in_place_file_writer';
+import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {EntryPoint} from '../../src/packages/entry_point.js';
+import {EntryPointBundle} from '../../src/packages/entry_point_bundle.js';
+import {InPlaceFileWriter, NGCC_BACKUP_EXTENSION} from '../../src/writing/in_place_file_writer.js';
 
 runInEachFileSystem(() => {
   describe('InPlaceFileWriter', () => {

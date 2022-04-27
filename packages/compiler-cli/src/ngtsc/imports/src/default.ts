@@ -9,7 +9,7 @@
 import {WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {getSourceFile} from '../../util/src/typescript';
+import {getSourceFile} from '../../util/src/typescript.js';
 
 const DefaultImportDeclaration = Symbol('DefaultImportDeclaration');
 

@@ -8,9 +8,9 @@
  */
 import yargs from 'yargs';
 
-import {setFileSystem, NodeJSFileSystem} from '../../src/ngtsc/file_system';
-import {ConsoleLogger, LogLevel} from '../../src/ngtsc/logging';
-import {NgccOptions} from './ngcc_options';
+import {setFileSystem, NodeJSFileSystem} from '../../src/ngtsc/file_system/index.js';
+import {ConsoleLogger, LogLevel} from '../../src/ngtsc/logging/index.js';
+import {NgccOptions} from './ngcc_options.js';
 
 export function parseCommandLineOptions(args: string[]): NgccOptions {
   const options =

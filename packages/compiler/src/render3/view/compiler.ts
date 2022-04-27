@@ -6,24 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {convertPropertyBinding} from '../../compiler_util/expression_converter';
-import {ConstantPool} from '../../constant_pool';
-import * as core from '../../core';
-import {AST, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expression_parser/ast';
-import * as o from '../../output/output_ast';
-import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util';
-import {CssSelector} from '../../selector';
-import {ShadowCss} from '../../shadow_css';
-import {BindingParser} from '../../template_parser/binding_parser';
-import {error} from '../../util';
-import {BoundEvent} from '../r3_ast';
-import {Identifiers as R3} from '../r3_identifiers';
-import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, R3CompiledExpression, typeWithParameters} from '../util';
+import {convertPropertyBinding} from '../../compiler_util/expression_converter.js';
+import {ConstantPool} from '../../constant_pool.js';
+import * as core from '../../core.js';
+import {AST, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expression_parser/ast.js';
+import * as o from '../../output/output_ast.js';
+import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util.js';
+import {CssSelector} from '../../selector.js';
+import {ShadowCss} from '../../shadow_css.js';
+import {BindingParser} from '../../template_parser/binding_parser.js';
+import {error} from '../../util.js';
+import {BoundEvent} from '../r3_ast.js';
+import {Identifiers as R3} from '../r3_identifiers.js';
+import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, R3CompiledExpression, typeWithParameters} from '../util.js';
 
-import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3TemplateDependency} from './api';
-import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
-import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
-import {asLiteral, conditionallyCreateMapObjectLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, getQueryPredicate, Instruction, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
+import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3TemplateDependency} from './api.js';
+import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder.js';
+import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template.js';
+import {asLiteral, conditionallyCreateMapObjectLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, getQueryPredicate, Instruction, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util.js';
 
 
 // This regex matches any binding names that contain the "attr." prefix, e.g. "attr.required"

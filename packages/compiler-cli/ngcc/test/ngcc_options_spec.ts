@@ -10,11 +10,10 @@
 // the default export gives us an object where we can patch properties on.
 import os from 'os';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../src/ngtsc/logging/testing';
-
-import {clearTsConfigCache, getMaxNumberOfWorkers, getSharedSetup, NgccOptions} from '../src/ngcc_options';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../src/ngtsc/logging/testing/index.js';
+import {clearTsConfigCache, getMaxNumberOfWorkers, getSharedSetup, NgccOptions} from '../src/ngcc_options.js';
 
 
 

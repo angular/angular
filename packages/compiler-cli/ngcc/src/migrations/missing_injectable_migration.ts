@@ -7,13 +7,13 @@
  */
 import ts from 'typescript';
 
-import {forwardRefResolver} from '../../../src/ngtsc/annotations';
-import {Reference} from '../../../src/ngtsc/imports';
-import {ResolvedValue, ResolvedValueMap} from '../../../src/ngtsc/partial_evaluator';
-import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
+import {forwardRefResolver} from '../../../src/ngtsc/annotations/index.js';
+import {Reference} from '../../../src/ngtsc/imports/index.js';
+import {ResolvedValue, ResolvedValueMap} from '../../../src/ngtsc/partial_evaluator/index.js';
+import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection/index.js';
 
-import {Migration, MigrationHost} from './migration';
-import {createInjectableDecorator, isClassDeclaration} from './utils';
+import {Migration, MigrationHost} from './migration.js';
+import {createInjectableDecorator, isClassDeclaration} from './utils.js';
 
 /**
  * Ensures that classes that are provided as an Angular service in either `NgModule.providers` or

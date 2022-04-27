@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Route} from '../models';
-import {defaultUrlMatcher, PRIMARY_OUTLET} from '../shared';
-import {UrlSegment, UrlSegmentGroup} from '../url_tree';
+import {Route} from '../models.js';
+import {defaultUrlMatcher, PRIMARY_OUTLET} from '../shared.js';
+import {UrlSegment, UrlSegmentGroup} from '../url_tree.js';
 
-import {forEach} from './collection';
-import {getOutlet} from './config';
+import {forEach} from './collection.js';
+import {getOutlet} from './config.js';
 
 export interface MatchResult {
   matched: boolean;

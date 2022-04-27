@@ -9,11 +9,11 @@ import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
-import {FormatOptions} from '../../../src/extract/translation_files/format_options';
-import {Xliff2TranslationSerializer} from '../../../src/extract/translation_files/xliff2_translation_serializer';
+import {FormatOptions} from '../../../src/extract/translation_files/format_options.js';
+import {Xliff2TranslationSerializer} from '../../../src/extract/translation_files/xliff2_translation_serializer.js';
 
-import {location, mockMessage} from './mock_message';
-import {toAttributes} from './utils';
+import {location, mockMessage} from './mock_message.js';
+import {toAttributes} from './utils.js';
 
 runInEachFileSystem(() => {
   describe('Xliff2TranslationSerializer', () => {

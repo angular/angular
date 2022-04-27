@@ -7,13 +7,13 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {createDependencyInfo} from '../../src/dependencies/dependency_host';
-import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
-import {EsmDependencyHost, hasImportOrReexportStatements, isStringImportOrReexport} from '../../src/dependencies/esm_dependency_host';
-import {ModuleResolver} from '../../src/dependencies/module_resolver';
+import {absoluteFrom, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing/index.js';
+import {loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {createDependencyInfo} from '../../src/dependencies/dependency_host.js';
+import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host.js';
+import {EsmDependencyHost, hasImportOrReexportStatements, isStringImportOrReexport} from '../../src/dependencies/esm_dependency_host.js';
+import {ModuleResolver} from '../../src/dependencies/module_resolver.js';
 
 runInEachFileSystem(() => {
   describe('EsmDependencyHost', () => {

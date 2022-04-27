@@ -8,10 +8,10 @@
 import {Element, ParseError} from '@angular/compiler';
 import {ɵParsedTranslation} from '@angular/localize';
 
-import {MessageSerializer, MessageSerializerConfig} from '../message_serialization/message_serializer';
-import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
+import {MessageSerializer, MessageSerializerConfig} from '../message_serialization/message_serializer.js';
+import {TargetMessageRenderer} from '../message_serialization/target_message_renderer.js';
 
-import {parseInnerRange} from './translation_utils';
+import {parseInnerRange} from './translation_utils.js';
 
 /**
  * Serialize the given `element` into a parsed translation using the given `serializer`.

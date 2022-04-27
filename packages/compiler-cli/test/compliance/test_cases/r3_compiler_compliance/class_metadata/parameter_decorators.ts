@@ -1,5 +1,6 @@
 import {Inject, Injectable, InjectionToken, SkipSelf} from '@angular/core';
-import {CustomParamDecorator} from './custom';
+
+import {CustomParamDecorator} from './custom.js';
 
 export const TOKEN = new InjectionToken<string>('TOKEN');
 class Service {}

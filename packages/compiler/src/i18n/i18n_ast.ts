@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseSourceSpan} from '../parse_util';
+import {ParseSourceSpan} from '../parse_util.js';
 
 /**
  * Describes the text contents of a placeholder as it appears in an ICU expression, including its

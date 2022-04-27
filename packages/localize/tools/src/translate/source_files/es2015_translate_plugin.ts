@@ -7,10 +7,10 @@
  */
 import {getFileSystem, PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵParsedTranslation} from '@angular/localize';
-import {NodePath, PluginObj, types as t} from '../../babel_core';
 
-import {Diagnostics} from '../../diagnostics';
-import {buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLocalize, translate, TranslatePluginOptions, unwrapMessagePartsFromTemplateLiteral} from '../../source_file_utils';
+import {NodePath, PluginObj, types as t} from '../../babel_core.js';
+import {Diagnostics} from '../../diagnostics.js';
+import {buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLocalize, translate, TranslatePluginOptions, unwrapMessagePartsFromTemplateLiteral} from '../../source_file_utils.js';
 
 /**
  * Create a Babel plugin that can be used to do compile-time translation of `$localize` tagged

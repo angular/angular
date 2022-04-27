@@ -7,11 +7,11 @@
  */
 import {compileFactoryFunction, ConstantPool, FactoryTarget, outputAst as o, R3DeclareFactoryMetadata, R3DependencyMetadata, R3FactoryMetadata, R3PartialDeclaration} from '@angular/compiler';
 
-import {AstObject} from '../../ast/ast_value';
-import {FatalLinkerError} from '../../fatal_linker_error';
+import {AstObject} from '../../ast/ast_value.js';
+import {FatalLinkerError} from '../../fatal_linker_error.js';
 
-import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {getDependency, parseEnum, wrapReference} from './util';
+import {LinkedDefinition, PartialLinker} from './partial_linker.js';
+import {getDependency, parseEnum, wrapReference} from './util.js';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareFactory()` call expressions.

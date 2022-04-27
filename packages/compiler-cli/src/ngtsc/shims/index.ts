@@ -8,8 +8,8 @@
 
 /// <reference types="node" />
 
-export {ShimAdapter} from './src/adapter';
-export {copyFileShimData, isShim, retagAllTsFiles, retagTsFile, sfExtensionData, untagAllTsFiles, untagTsFile} from './src/expando';
-export {FactoryGenerator, generatedFactoryTransform} from './src/factory_generator';
-export {ShimReferenceTagger} from './src/reference_tagger';
-export {SummaryGenerator} from './src/summary_generator';
+export {ShimAdapter} from './src/adapter.js';
+export {copyFileShimData, isShim, retagAllTsFiles, retagTsFile, sfExtensionData, untagAllTsFiles, untagTsFile} from './src/expando.js';
+export {FactoryGenerator, generatedFactoryTransform} from './src/factory_generator.js';
+export {ShimReferenceTagger} from './src/reference_tagger.js';
+export {SummaryGenerator} from './src/summary_generator.js';

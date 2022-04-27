@@ -7,8 +7,8 @@
  */
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
-import {WebAnimationsDriver} from '../../../src/render/web_animations/web_animations_driver';
-import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animations_player';
+import {WebAnimationsDriver} from '../../../src/render/web_animations/web_animations_driver.js';
+import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animations_player.js';
 
 {
   describe('WebAnimationsDriver', () => {

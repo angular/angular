@@ -8,13 +8,13 @@
 
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
-import {Reference} from '../../../imports';
-import {EnumValue, PartialEvaluator, ResolvedValue} from '../../../partial_evaluator';
-import {ClassDeclaration, Decorator, ValueUnavailableKind} from '../../../reflection';
+import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics/index.js';
+import {Reference} from '../../../imports/index.js';
+import {EnumValue, PartialEvaluator, ResolvedValue} from '../../../partial_evaluator/index.js';
+import {ClassDeclaration, Decorator, ValueUnavailableKind} from '../../../reflection/index.js';
 
-import {createValueHasWrongTypeError} from './diagnostics';
-import {isAngularCoreReference, unwrapExpression} from './util';
+import {createValueHasWrongTypeError} from './diagnostics.js';
+import {isAngularCoreReference, unwrapExpression} from './util.js';
 
 
 

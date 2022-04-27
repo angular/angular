@@ -8,10 +8,10 @@
 
 import {Directive, DoCheck, ElementRef, EventEmitter, Inject, Injector, OnChanges, OnDestroy, OnInit, SimpleChange, SimpleChanges, Type} from '@angular/core';
 
-import {IAttributes, IDirective, IDirectivePrePost, IInjectorService, ILinkFn, IScope, ITranscludeFunction} from '../../common/src/angular1';
-import {$SCOPE} from '../../common/src/constants';
-import {IBindingDestination, IControllerInstance, UpgradeHelper} from '../../common/src/upgrade_helper';
-import {isFunction, strictEquals} from '../../common/src/util';
+import {IAttributes, IDirective, IDirectivePrePost, IInjectorService, ILinkFn, IScope, ITranscludeFunction} from '../../common/src/angular1.js';
+import {$SCOPE} from '../../common/src/constants.js';
+import {IBindingDestination, IControllerInstance, UpgradeHelper} from '../../common/src/upgrade_helper.js';
+import {isFunction, strictEquals} from '../../common/src/util.js';
 
 
 const CAMEL_CASE = /([A-Z])/g;
@@ -33,7 +33,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
   propertyMap: {[name: string]: string} = {};
   directive: IDirective|null = null;
   // TODO(issue/24571): remove '!'.
-  template !: string;
+  template!: string;
 
   constructor(public name: string) {
     const selector =

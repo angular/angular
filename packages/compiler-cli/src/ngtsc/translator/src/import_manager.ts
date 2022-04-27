@@ -7,9 +7,9 @@
  */
 import ts from 'typescript';
 
-import {ImportRewriter, NoopImportRewriter} from '../../imports';
+import {ImportRewriter, NoopImportRewriter} from '../../imports/index.js';
 
-import {ImportGenerator, NamedImport} from './api/import_generator';
+import {ImportGenerator, NamedImport} from './api/import_generator.js';
 
 /**
  * Information about an import that has been added to a module.

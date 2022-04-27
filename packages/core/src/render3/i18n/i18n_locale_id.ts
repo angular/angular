@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DEFAULT_LOCALE_ID} from '../../i18n/localization';
-import {assertDefined} from '../../util/assert';
+import {DEFAULT_LOCALE_ID} from '../../i18n/localization.js';
+import {assertDefined} from '../../util/assert.js';
 
 
 /**

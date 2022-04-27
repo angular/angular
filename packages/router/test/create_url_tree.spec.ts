@@ -8,10 +8,10 @@
 
 import {BehaviorSubject} from 'rxjs';
 
-import {createUrlTree} from '../src/create_url_tree';
-import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute} from '../src/router_state';
-import {Params, PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
+import {createUrlTree} from '../src/create_url_tree.js';
+import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute} from '../src/router_state.js';
+import {Params, PRIMARY_OUTLET} from '../src/shared.js';
+import {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree.js';
 
 describe('createUrlTree', () => {
   const serializer = new DefaultUrlSerializer();

@@ -11,8 +11,8 @@ import {fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 
-import {ServiceWorkerModule, SwRegistrationOptions} from '../src/module';
-import {SwUpdate} from '../src/update';
+import {ServiceWorkerModule, SwRegistrationOptions} from '../src/module.js';
+import {SwUpdate} from '../src/update.js';
 
 
 describe('ServiceWorkerModule', () => {

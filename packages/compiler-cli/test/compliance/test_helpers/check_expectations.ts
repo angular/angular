@@ -5,16 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
+import {ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
 
-import {getBuildOutputDirectory, getRootDirectory} from './compile_test';
-import {verifyUniqueFactory} from './di_checks';
-import {expectEmit} from './expect_emit';
-import {replaceMacros} from './expected_file_macros';
-import {verifyUniqueFunctions} from './function_checks';
-import {ExpectedFile, ExtraCheck} from './get_compliance_tests';
-import {verifyPlaceholdersIntegrity, verifyUniqueConsts} from './i18n_checks';
-import {checkMappings} from './sourcemap_helpers';
+import {getBuildOutputDirectory, getRootDirectory} from './compile_test.js';
+import {verifyUniqueFactory} from './di_checks.js';
+import {expectEmit} from './expect_emit.js';
+import {replaceMacros} from './expected_file_macros.js';
+import {verifyUniqueFunctions} from './function_checks.js';
+import {ExpectedFile, ExtraCheck} from './get_compliance_tests.js';
+import {verifyPlaceholdersIntegrity, verifyUniqueConsts} from './i18n_checks.js';
+import {checkMappings} from './sourcemap_helpers.js';
 
 type ExtraCheckFunction = (generated: string, ...extraArgs: any[]) => boolean;
 const EXTRA_CHECK_FUNCTIONS: Record<string, ExtraCheckFunction> = {

@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compareSegments, offsetSegment} from '../src/segment_marker';
-import {computeStartOfLinePositions} from '../src/source_file';
+import {compareSegments, offsetSegment} from '../src/segment_marker.js';
+import {computeStartOfLinePositions} from '../src/source_file.js';
 
 describe('SegmentMarker utils', () => {
   describe('compareSegments()', () => {

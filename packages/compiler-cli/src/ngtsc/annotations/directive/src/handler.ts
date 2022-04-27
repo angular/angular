@@ -9,18 +9,18 @@
 import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, FactoryTarget, makeBindingParser, R3ClassMetadata, R3DirectiveMetadata, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {Reference} from '../../../imports';
-import {extractSemanticTypeParameters, SemanticDepGraphUpdater} from '../../../incremental/semantic_graph';
-import {ClassPropertyMapping, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
-import {PartialEvaluator} from '../../../partial_evaluator';
-import {PerfEvent, PerfRecorder} from '../../../perf';
-import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost} from '../../../reflection';
-import {LocalModuleScopeRegistry} from '../../../scope';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../../transform';
-import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata} from '../../common';
+import {Reference} from '../../../imports/index.js';
+import {extractSemanticTypeParameters, SemanticDepGraphUpdater} from '../../../incremental/semantic_graph/index.js';
+import {ClassPropertyMapping, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata/index.js';
+import {PartialEvaluator} from '../../../partial_evaluator/index.js';
+import {PerfEvent, PerfRecorder} from '../../../perf/index.js';
+import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost} from '../../../reflection/index.js';
+import {LocalModuleScopeRegistry} from '../../../scope/index.js';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../../transform/index.js';
+import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata} from '../../common/index.js';
 
-import {extractDirectiveMetadata} from './shared';
-import {DirectiveSymbol} from './symbol';
+import {extractDirectiveMetadata} from './shared.js';
+import {DirectiveSymbol} from './symbol.js';
 
 const FIELD_DECORATORS = [
   'Input', 'Output', 'ViewChild', 'ViewChildren', 'ContentChild', 'ContentChildren', 'HostBinding',

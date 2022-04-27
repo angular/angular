@@ -9,14 +9,14 @@
 import {dirname, join} from 'path';
 import {fileURLToPath} from 'url';
 
-import {NodeJSFileSystem, setFileSystem} from '../src/ngtsc/file_system';
+import {NodeJSFileSystem, setFileSystem} from '../src/ngtsc/file_system/index.js';
 
-import {mainNgcc} from './src/main';
-import {AsyncNgccOptions, SyncNgccOptions} from './src/ngcc_options';
+import {mainNgcc} from './src/main.js';
+import {AsyncNgccOptions, SyncNgccOptions} from './src/ngcc_options.js';
 
-export {ConsoleLogger, Logger, LogLevel} from '../src/ngtsc/logging';
-export {AsyncNgccOptions, clearTsConfigCache, NgccOptions, SyncNgccOptions} from './src/ngcc_options';
-export {PathMappings} from './src/path_mappings';
+export {ConsoleLogger, Logger, LogLevel} from '../src/ngtsc/logging/index.js';
+export {AsyncNgccOptions, clearTsConfigCache, NgccOptions, SyncNgccOptions} from './src/ngcc_options.js';
+export {PathMappings} from './src/path_mappings.js';
 
 export function process<T extends AsyncNgccOptions|SyncNgccOptions>(options: T):
     T extends AsyncNgccOptions ? Promise<void>: void;

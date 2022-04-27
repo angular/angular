@@ -7,9 +7,9 @@
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, PathSegment} from '@angular/compiler-cli/private/localize';
 
-import {Diagnostics} from '../../diagnostics';
-import {OutputPathFn} from '../output_path';
-import {TranslationBundle, TranslationHandler} from '../translator';
+import {Diagnostics} from '../../diagnostics.js';
+import {OutputPathFn} from '../output_path.js';
+import {TranslationBundle, TranslationHandler} from '../translator.js';
 
 /**
  * Translate an asset file by simply copying it to the appropriate translation output paths.

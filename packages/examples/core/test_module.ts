@@ -9,12 +9,12 @@
 import {Component, NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
-import * as animationDslExample from './animation/ts/dsl/module';
-import * as diContentChildExample from './di/ts/contentChild/module';
-import * as diContentChildrenExample from './di/ts/contentChildren/module';
-import * as diViewChildExample from './di/ts/viewChild/module';
-import * as diViewChildrenExample from './di/ts/viewChildren/module';
-import * as testabilityWhenStableExample from './testability/ts/whenStable/module';
+import * as animationDslExample from './animation/ts/dsl/module.js';
+import * as diContentChildExample from './di/ts/contentChild/module.js';
+import * as diContentChildrenExample from './di/ts/contentChildren/module.js';
+import * as diViewChildExample from './di/ts/viewChild/module.js';
+import * as diViewChildrenExample from './di/ts/viewChildren/module.js';
+import * as testabilityWhenStableExample from './testability/ts/whenStable/module.js';
 
 @Component({selector: 'example-app', template: '<router-outlet></router-outlet>'})
 export class TestsAppComponent {

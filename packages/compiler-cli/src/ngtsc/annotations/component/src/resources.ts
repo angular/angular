@@ -9,14 +9,14 @@
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, LexerRange, ParsedTemplate, ParseSourceFile, parseTemplate, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
-import {absoluteFrom} from '../../../file_system';
-import {DependencyTracker} from '../../../incremental/api';
-import {Resource} from '../../../metadata';
-import {PartialEvaluator} from '../../../partial_evaluator';
-import {ClassDeclaration, DeclarationNode, Decorator} from '../../../reflection';
-import {TemplateSourceMapping} from '../../../typecheck/api';
-import {createValueHasWrongTypeError, isStringArray, ResourceLoader} from '../../common';
+import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics/index.js';
+import {absoluteFrom} from '../../../file_system/index.js';
+import {DependencyTracker} from '../../../incremental/api.js';
+import {Resource} from '../../../metadata/index.js';
+import {PartialEvaluator} from '../../../partial_evaluator/index.js';
+import {ClassDeclaration, DeclarationNode, Decorator} from '../../../reflection/index.js';
+import {TemplateSourceMapping} from '../../../typecheck/api/index.js';
+import {createValueHasWrongTypeError, isStringArray, ResourceLoader} from '../../common/index.js';
 
 /**
  * The literal style url extracted from the decorator, along with metadata for diagnostics.

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from './injection_token';
+import {InjectionToken} from './injection_token.js';
 
 /**
  * A multi-provider token for initialization functions that will run upon construction of a

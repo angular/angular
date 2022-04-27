@@ -8,7 +8,7 @@
 
 import {HttpRequest} from '@angular/common/http';
 
-import {TestRequest} from './request';
+import {TestRequest} from './request.js';
 
 /**
  * Defines a matcher for requests based on URL, method, or both.

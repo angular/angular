@@ -8,12 +8,12 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom as _, getSourceFileOrError} from '../../../file_system';
-import {runInEachFileSystem, TestFile} from '../../../file_system/testing';
-import {PartialEvaluator} from '../../../partial_evaluator';
-import {TypeScriptReflectionHost} from '../../../reflection';
-import {getDeclaration, makeProgram} from '../../../testing';
-import {createValueHasWrongTypeError} from '../src/diagnostics';
+import {absoluteFrom as _, getSourceFileOrError} from '../../../file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../file_system/testing/index.js';
+import {PartialEvaluator} from '../../../partial_evaluator/index.js';
+import {TypeScriptReflectionHost} from '../../../reflection/index.js';
+import {getDeclaration, makeProgram} from '../../../testing/index.js';
+import {createValueHasWrongTypeError} from '../src/diagnostics.js';
 
 runInEachFileSystem(() => {
   describe('ngtsc annotation diagnostics', () => {

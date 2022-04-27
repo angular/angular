@@ -8,9 +8,9 @@
 
 import {ApplicationRef, NgModuleRef} from '@angular/core';
 
-import {bindAction, profile} from '../../util';
+import {bindAction, profile} from '../../util.js';
 
-import {StylingModule} from './styling';
+import {StylingModule} from './styling.js';
 
 export function init(moduleRef: NgModuleRef<StylingModule>) {
   const injector = moduleRef.injector;

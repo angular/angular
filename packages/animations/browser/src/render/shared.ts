@@ -7,11 +7,11 @@
  */
 import {AnimationEvent, AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵAnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleDataMap} from '@angular/animations';
 
-import {AnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
-import {AnimationDriver} from '../../src/render/animation_driver';
-import {animationFailed} from '../error_helpers';
+import {AnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer.js';
+import {AnimationDriver} from '../../src/render/animation_driver.js';
+import {animationFailed} from '../error_helpers.js';
 
-import {ANIMATABLE_PROP_SET} from './web_animations/animatable_props_set';
+import {ANIMATABLE_PROP_SET} from './web_animations/animatable_props_set.js';
 
 // We don't include ambient node types here since @angular/animations/browser
 // is meant to target the browser so technically it should not depend on node

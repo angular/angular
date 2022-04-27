@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupports} from '../test-util.js';
 declare const window: any;
 
 describe('requestAnimationFrame', function() {

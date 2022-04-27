@@ -5,22 +5,22 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST} from '../../../src/expression_parser/ast';
-import {Lexer} from '../../../src/expression_parser/lexer';
-import {Parser} from '../../../src/expression_parser/parser';
-import * as i18n from '../../../src/i18n/i18n_ast';
-import * as o from '../../../src/output/output_ast';
-import {ParseSourceSpan} from '../../../src/parse_util';
-import * as t from '../../../src/render3/r3_ast';
-import {I18nContext} from '../../../src/render3/view/i18n/context';
-import {serializeI18nMessageForGetMsg} from '../../../src/render3/view/i18n/get_msg_utils';
-import {serializeIcuNode} from '../../../src/render3/view/i18n/icu_serializer';
-import {serializeI18nMessageForLocalize} from '../../../src/render3/view/i18n/localize_utils';
-import {I18nMeta, i18nMetaToJSDoc, parseI18nMeta} from '../../../src/render3/view/i18n/meta';
-import {formatI18nPlaceholderName} from '../../../src/render3/view/i18n/util';
-import {LEADING_TRIVIA_CHARS} from '../../../src/render3/view/template';
+import {AST} from '../../../src/expression_parser/ast.js';
+import {Lexer} from '../../../src/expression_parser/lexer.js';
+import {Parser} from '../../../src/expression_parser/parser.js';
+import * as i18n from '../../../src/i18n/i18n_ast.js';
+import * as o from '../../../src/output/output_ast.js';
+import {ParseSourceSpan} from '../../../src/parse_util.js';
+import * as t from '../../../src/render3/r3_ast.js';
+import {I18nContext} from '../../../src/render3/view/i18n/context.js';
+import {serializeI18nMessageForGetMsg} from '../../../src/render3/view/i18n/get_msg_utils.js';
+import {serializeIcuNode} from '../../../src/render3/view/i18n/icu_serializer.js';
+import {serializeI18nMessageForLocalize} from '../../../src/render3/view/i18n/localize_utils.js';
+import {I18nMeta, i18nMetaToJSDoc, parseI18nMeta} from '../../../src/render3/view/i18n/meta.js';
+import {formatI18nPlaceholderName} from '../../../src/render3/view/i18n/util.js';
+import {LEADING_TRIVIA_CHARS} from '../../../src/render3/view/template.js';
 
-import {parseR3 as parse} from './util';
+import {parseR3 as parse} from './util.js';
 
 const expressionParser = new Parser(new Lexer());
 const i18nOf = (element: t.Node&{i18n?: i18n.I18nMeta}) => element.i18n!;

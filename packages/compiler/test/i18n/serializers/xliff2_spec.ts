@@ -8,11 +8,11 @@
 
 import {escapeRegExp} from '@angular/compiler/src/util';
 
-import {serializeNodes} from '../../../src/i18n/digest';
-import {MessageBundle} from '../../../src/i18n/message_bundle';
-import {Xliff2} from '../../../src/i18n/serializers/xliff2';
-import {HtmlParser} from '../../../src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/interpolation_config';
+import {serializeNodes} from '../../../src/i18n/digest.js';
+import {MessageBundle} from '../../../src/i18n/message_bundle.js';
+import {Xliff2} from '../../../src/i18n/serializers/xliff2.js';
+import {HtmlParser} from '../../../src/ml_parser/html_parser.js';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/interpolation_config.js';
 
 const HTML = `
 <p i18n-title title="translatable attribute">not translatable</p>

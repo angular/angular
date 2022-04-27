@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as o from '@angular/compiler';
-import {FatalLinkerError} from '../fatal_linker_error';
-import {AstHost, Range} from './ast_host';
+
+import {FatalLinkerError} from '../fatal_linker_error.js';
+
+import {AstHost, Range} from './ast_host.js';
 
 /**
  * Represents only those types in `T` that are object types.

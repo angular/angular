@@ -8,7 +8,7 @@
 
 import {ProfilerFrame} from 'protocol';
 
-import {mergeFrames} from './frame-merger';
+import {mergeFrames} from './frame-merger.js';
 
 describe('mergeFrames', () => {
   it('should work with empty frames', () => {

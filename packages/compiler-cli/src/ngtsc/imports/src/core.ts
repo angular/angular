@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {relativePathBetween} from '../../util/src/path';
+import {relativePathBetween} from '../../util/src/path.js';
 
 /**
  * Rewrites imports of symbols being written into generated code.

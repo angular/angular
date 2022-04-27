@@ -7,13 +7,13 @@
  */
 import ts from 'typescript';
 
-import {AbsoluteFsPath, FileSystem, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {initMockFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {loadStandardTestFiles, loadTestDirectory, NgtscTestCompilerHost} from '../../../src/ngtsc/testing';
-import {performCompilation} from '../../../src/perform_compile';
-import {CompilerOptions} from '../../../src/transformers/api';
+import {AbsoluteFsPath, FileSystem, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {initMockFileSystem} from '../../../src/ngtsc/file_system/testing/index.js';
+import {loadStandardTestFiles, loadTestDirectory, NgtscTestCompilerHost} from '../../../src/ngtsc/testing/index.js';
+import {performCompilation} from '../../../src/perform_compile.js';
+import {CompilerOptions} from '../../../src/transformers/api.js';
 
-import {ConfigOptions} from './get_compliance_tests';
+import {ConfigOptions} from './get_compliance_tests.js';
 
 /**
  * Setup a mock file-system that is used to generate the partial files.

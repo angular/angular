@@ -10,7 +10,7 @@ import {MessageBundle, Serializer, Xliff, Xliff2, Xmb} from '@angular/compiler';
 import * as path from 'path';
 import ts from 'typescript';
 
-import {CompilerOptions} from './api';
+import {CompilerOptions} from './api.js';
 
 export function i18nGetExtension(formatName: string): string {
   const format = formatName.toLowerCase();

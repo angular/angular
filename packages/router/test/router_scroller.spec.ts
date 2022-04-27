@@ -11,8 +11,8 @@ import {DefaultUrlSerializer, NavigationEnd, NavigationStart, RouterEvent} from 
 import {Subject} from 'rxjs';
 import {filter, switchMap} from 'rxjs/operators';
 
-import {Scroll} from '../src/events';
-import {RouterScroller} from '../src/router_scroller';
+import {Scroll} from '../src/events.js';
+import {RouterScroller} from '../src/router_scroller.js';
 
 describe('RouterScroller', () => {
   it('defaults to disabled', () => {

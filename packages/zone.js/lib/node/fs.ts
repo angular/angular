@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {patchMacroTask} from '../common/utils';
+import {patchMacroTask} from '../common/utils.js';
 
 Zone.__load_patch('fs', () => {
   let fs: any;

@@ -9,8 +9,8 @@
 import {EnvironmentInjector, NgModuleFactory, Provider, Type} from '@angular/core';
 import {Observable} from 'rxjs';
 
-import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
-import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
+import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state.js';
+import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree.js';
 
 
 /**

@@ -7,11 +7,11 @@
  */
 import mapHelpers from 'convert-source-map';
 
-import {absoluteFrom, FileSystem, getFileSystem} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {MockLogger} from '../../logging/testing';
-import {RawSourceMap} from '../src/raw_source_map';
-import {SourceFileLoader} from '../src/source_file_loader';
+import {absoluteFrom, FileSystem, getFileSystem} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {MockLogger} from '../../logging/testing/index.js';
+import {RawSourceMap} from '../src/raw_source_map.js';
+import {SourceFileLoader} from '../src/source_file_loader.js';
 
 runInEachFileSystem(() => {
   describe('SourceFileLoader', () => {

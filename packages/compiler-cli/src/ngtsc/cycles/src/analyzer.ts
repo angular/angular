@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {ImportGraph} from './imports';
+import {ImportGraph} from './imports.js';
 
 /**
  * Analyzes a `ts.Program` for cycles.

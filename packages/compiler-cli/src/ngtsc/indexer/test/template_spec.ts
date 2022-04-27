@@ -8,12 +8,12 @@
 
 import {BoundTarget} from '@angular/compiler';
 
-import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from '..';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {ComponentMeta} from '../src/context';
-import {getTemplateIdentifiers as getTemplateIdentifiersAndErrors} from '../src/template';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {AbsoluteSourceSpan, AttributeIdentifier, ElementIdentifier, IdentifierKind, ReferenceIdentifier, TemplateNodeIdentifier, TopLevelIdentifier, VariableIdentifier} from '../index.js';
+import {ComponentMeta} from '../src/context.js';
+import {getTemplateIdentifiers as getTemplateIdentifiersAndErrors} from '../src/template.js';
 
-import * as util from './util';
+import * as util from './util.js';
 
 function bind(template: string) {
   return util.getBoundTemplate(template, {

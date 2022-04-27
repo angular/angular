@@ -10,12 +10,12 @@
 
 import cluster from 'cluster';
 
-import {absoluteFrom as _} from '../../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
-import {ClusterWorkerPackageJsonUpdater} from '../../../src/execution/cluster/package_json_updater';
-import {JsonObject} from '../../../src/packages/entry_point';
-import {PackageJsonPropertyPositioning, PackageJsonUpdate, PackageJsonUpdater} from '../../../src/writing/package_json_updater';
-import {mockProperty} from '../../helpers/spy_utils';
+import {absoluteFrom as _} from '../../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing/index.js';
+import {ClusterWorkerPackageJsonUpdater} from '../../../src/execution/cluster/package_json_updater.js';
+import {JsonObject} from '../../../src/packages/entry_point.js';
+import {PackageJsonPropertyPositioning, PackageJsonUpdate, PackageJsonUpdater} from '../../../src/writing/package_json_updater.js';
+import {mockProperty} from '../../helpers/spy_utils.js';
 
 
 runInEachFileSystem(() => {

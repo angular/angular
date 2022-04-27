@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {areIterablesEqual, isListLikeIterable} from './iterable';
+import {areIterablesEqual, isListLikeIterable} from './iterable.js';
 
 export function devModeEqual(a: any, b: any): boolean {
   const isListLikeIterableA = isListLikeIterable(a);

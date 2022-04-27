@@ -7,7 +7,8 @@
  */
 
 import ts from 'typescript';
-import {getCallDecoratorImport} from './typescript/decorators';
+
+import {getCallDecoratorImport} from './typescript/decorators.js';
 
 export type CallExpressionDecorator = ts.Decorator&{
   expression: ts.CallExpression;

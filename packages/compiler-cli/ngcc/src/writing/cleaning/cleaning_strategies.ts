@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, PathSegment} from '../../../../src/ngtsc/file_system';
-import {cleanPackageJson} from '../../packages/build_marker';
-import {EntryPointPackageJson} from '../../packages/entry_point';
-import {NGCC_BACKUP_EXTENSION} from '../in_place_file_writer';
-import {NGCC_DIRECTORY} from '../new_entry_point_file_writer';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, PathSegment} from '../../../../src/ngtsc/file_system/index.js';
+import {cleanPackageJson} from '../../packages/build_marker.js';
+import {EntryPointPackageJson} from '../../packages/entry_point.js';
+import {NGCC_BACKUP_EXTENSION} from '../in_place_file_writer.js';
+import {NGCC_DIRECTORY} from '../new_entry_point_file_writer.js';
 
-import {isLocalDirectory} from './utils';
+import {isLocalDirectory} from './utils.js';
 
 /**
  * Implement this interface to extend the cleaning strategies of the `PackageCleaner`.

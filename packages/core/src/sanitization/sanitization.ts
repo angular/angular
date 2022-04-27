@@ -6,20 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {getDocument} from '../render3/interfaces/document';
-import {SANITIZER} from '../render3/interfaces/view';
-import {getLView} from '../render3/state';
-import {renderStringify} from '../render3/util/stringify_utils';
-import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
-import {trustedHTMLFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
-import {trustedHTMLFromStringBypass, trustedScriptFromStringBypass, trustedScriptURLFromStringBypass} from '../util/security/trusted_types_bypass';
+import {RuntimeError, RuntimeErrorCode} from '../errors.js';
+import {getDocument} from '../render3/interfaces/document.js';
+import {SANITIZER} from '../render3/interfaces/view.js';
+import {getLView} from '../render3/state.js';
+import {renderStringify} from '../render3/util/stringify_utils.js';
+import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs.js';
+import {trustedHTMLFromString, trustedScriptURLFromString} from '../util/security/trusted_types.js';
+import {trustedHTMLFromStringBypass, trustedScriptFromStringBypass, trustedScriptURLFromStringBypass} from '../util/security/trusted_types_bypass.js';
 
-import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
-import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
-import {Sanitizer} from './sanitizer';
-import {SecurityContext} from './security';
-import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
+import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass.js';
+import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer.js';
+import {Sanitizer} from './sanitizer.js';
+import {SecurityContext} from './security.js';
+import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer.js';
 
 
 

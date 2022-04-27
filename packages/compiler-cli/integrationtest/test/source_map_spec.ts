@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './init';
-import {BindingErrorComp} from '../src/errors';
-import {createComponent} from './util';
+import './init.js';
+
+import {BindingErrorComp} from '../src/errors.js';
+
+import {createComponent} from './util.js';
 
 // TODO(tbosch): source maps does not currently work with the transformer pipeline
 xdescribe('source maps', () => {

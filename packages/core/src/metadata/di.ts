@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../di/injection_token';
-import {ProviderToken} from '../di/provider_token';
-import {makePropDecorator} from '../util/decorators';
+import {InjectionToken} from '../di/injection_token.js';
+import {ProviderToken} from '../di/provider_token.js';
+import {makePropDecorator} from '../util/decorators.js';
 
 /**
  * A DI token that you can use to create a virtual [provider](guide/glossary#provider)

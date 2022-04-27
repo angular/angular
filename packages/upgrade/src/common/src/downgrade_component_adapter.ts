@@ -8,10 +8,10 @@
 
 import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider, Testability, TestabilityRegistry, Type} from '@angular/core';
 
-import {IAttributes, IAugmentedJQuery, ICompileService, INgModelController, IParseService, IScope} from './angular1';
-import {PropertyBinding} from './component_info';
-import {$SCOPE} from './constants';
-import {cleanData, getTypeName, hookupNgModel, strictEquals} from './util';
+import {IAttributes, IAugmentedJQuery, ICompileService, INgModelController, IParseService, IScope} from './angular1.js';
+import {PropertyBinding} from './component_info.js';
+import {$SCOPE} from './constants.js';
+import {cleanData, getTypeName, hookupNgModel, strictEquals} from './util.js';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true

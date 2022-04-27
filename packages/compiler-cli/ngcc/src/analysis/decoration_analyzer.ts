@@ -8,29 +8,29 @@
 import {ConstantPool} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ParsedConfiguration} from '../../..';
-import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
-import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../../src/ngtsc/cycles';
-import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
-import {absoluteFromSourceFile, LogicalFileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
-import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
-import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../../src/ngtsc/metadata';
-import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
-import {NOOP_PERF_RECORDER} from '../../../src/ngtsc/perf';
-import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../../src/ngtsc/scope';
-import {DecoratorHandler} from '../../../src/ngtsc/transform';
-import {NgccReflectionHost} from '../host/ngcc_host';
-import {Migration} from '../migrations/migration';
-import {MissingInjectableMigration} from '../migrations/missing_injectable_migration';
-import {UndecoratedChildMigration} from '../migrations/undecorated_child_migration';
-import {UndecoratedParentMigration} from '../migrations/undecorated_parent_migration';
-import {EntryPointBundle} from '../packages/entry_point_bundle';
+import {ParsedConfiguration} from '../../../index.js';
+import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations/index.js';
+import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../../src/ngtsc/cycles/index.js';
+import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics/index.js';
+import {absoluteFromSourceFile, LogicalFileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports/index.js';
+import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph/index.js';
+import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../../src/ngtsc/metadata/index.js';
+import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator/index.js';
+import {NOOP_PERF_RECORDER} from '../../../src/ngtsc/perf/index.js';
+import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../../src/ngtsc/scope/index.js';
+import {DecoratorHandler} from '../../../src/ngtsc/transform/index.js';
+import {NgccReflectionHost} from '../host/ngcc_host.js';
+import {Migration} from '../migrations/migration.js';
+import {MissingInjectableMigration} from '../migrations/missing_injectable_migration.js';
+import {UndecoratedChildMigration} from '../migrations/undecorated_child_migration.js';
+import {UndecoratedParentMigration} from '../migrations/undecorated_parent_migration.js';
+import {EntryPointBundle} from '../packages/entry_point_bundle.js';
 
-import {DefaultMigrationHost} from './migration_host';
-import {NgccTraitCompiler} from './ngcc_trait_compiler';
-import {CompiledClass, CompiledFile, DecorationAnalyses} from './types';
-import {isWithinPackage, NOOP_DEPENDENCY_TRACKER} from './util';
+import {DefaultMigrationHost} from './migration_host.js';
+import {NgccTraitCompiler} from './ngcc_trait_compiler.js';
+import {CompiledClass, CompiledFile, DecorationAnalyses} from './types.js';
+import {isWithinPackage, NOOP_DEPENDENCY_TRACKER} from './util.js';
 
 
 

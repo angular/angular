@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getClosureSafeProperty} from '../util/property';
+import {getClosureSafeProperty} from '../util/property.js';
 
 export const NG_COMP_DEF = getClosureSafeProperty({ɵcmp: getClosureSafeProperty});
 export const NG_DIR_DEF = getClosureSafeProperty({ɵdir: getClosureSafeProperty});

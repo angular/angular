@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CldrLocaleData} from './cldr-data';
-import {BaseCurrencies} from './locale-base-currencies';
+import {CldrLocaleData} from './cldr-data.js';
+import {BaseCurrencies} from './locale-base-currencies.js';
 
 /**
  * To minimize the file even more, we only output the differences compared to the base currency

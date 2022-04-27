@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {isListLikeIterable, iterateListLike} from '../../util/iterable';
-import {stringify} from '../../util/stringify';
+import {RuntimeError, RuntimeErrorCode} from '../../errors.js';
+import {isListLikeIterable, iterateListLike} from '../../util/iterable.js';
+import {stringify} from '../../util/stringify.js';
 
-import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, NgIterable, TrackByFunction} from './iterable_differs';
+import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, NgIterable, TrackByFunction} from './iterable_differs.js';
 
 
 export class DefaultIterableDifferFactory implements IterableDifferFactory {

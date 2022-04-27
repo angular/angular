@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ml from '../../ml_parser/ast';
-import {XmlParser} from '../../ml_parser/xml_parser';
-import * as i18n from '../i18n_ast';
-import {I18nError} from '../parse_util';
+import * as ml from '../../ml_parser/ast.js';
+import {XmlParser} from '../../ml_parser/xml_parser.js';
+import * as i18n from '../i18n_ast.js';
+import {I18nError} from '../parse_util.js';
 
-import {PlaceholderMapper, Serializer, SimplePlaceholderMapper} from './serializer';
-import {digest, toPublicName} from './xmb';
+import {PlaceholderMapper, Serializer, SimplePlaceholderMapper} from './serializer.js';
+import {digest, toPublicName} from './xmb.js';
 
 const _TRANSLATIONS_TAG = 'translationbundle';
 const _TRANSLATION_TAG = 'translation';

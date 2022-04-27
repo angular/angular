@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {Type, Writable} from '../../interface/type';
-import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty';
-import {fillProperties} from '../../util/property';
-import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, HostBindingsFunction, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
-import {TAttributes} from '../interfaces/node';
-import {isComponentDef} from '../interfaces/type_checks';
-import {mergeHostAttrs} from '../util/attrs_utils';
-import {stringifyForError} from '../util/stringify_utils';
+import {RuntimeError, RuntimeErrorCode} from '../../errors.js';
+import {Type, Writable} from '../../interface/type.js';
+import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty.js';
+import {fillProperties} from '../../util/property.js';
+import {ComponentDef, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, HostBindingsFunction, RenderFlags, ViewQueriesFunction} from '../interfaces/definition.js';
+import {TAttributes} from '../interfaces/node.js';
+import {isComponentDef} from '../interfaces/type_checks.js';
+import {mergeHostAttrs} from '../util/attrs_utils.js';
+import {stringifyForError} from '../util/stringify_utils.js';
 
 export function getSuperType(type: Type<any>): Type<any>&
     {ɵcmp?: ComponentDef<any>, ɵdir?: DirectiveDef<any>} {

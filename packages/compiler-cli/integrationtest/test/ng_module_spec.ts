@@ -5,14 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import './init';
+import './init.js';
 
-import {ComponentUsingThirdParty} from '../src/comp_using_3rdp';
-import {ComponentUsingFlatModule} from '../src/comp_using_flat_module';
-import {MainModule} from '../src/module';
-import {CompUsingLibModuleDirectiveAndPipe, CompUsingRootModuleDirectiveAndPipe, ServiceUsingLibModule, SOME_TOKEN, SomeLibModule, SomeService} from '../src/module_fixtures';
+import {ComponentUsingThirdParty} from '../src/comp_using_3rdp.js';
+import {ComponentUsingFlatModule} from '../src/comp_using_flat_module.js';
+import {MainModule} from '../src/module.js';
+import {CompUsingLibModuleDirectiveAndPipe, CompUsingRootModuleDirectiveAndPipe, ServiceUsingLibModule, SOME_TOKEN, SomeLibModule, SomeService} from '../src/module_fixtures.js';
 
-import {createComponent, createModule} from './util';
+import {createComponent, createModule} from './util.js';
 
 describe('NgModule', () => {
   it('should support providers', () => {

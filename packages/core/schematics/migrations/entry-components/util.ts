@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {getCallDecoratorImport} from '../../utils/typescript/decorators';
+import {getCallDecoratorImport} from '../../utils/typescript/decorators.js';
 
 /** Finds and migrates all Angular decorators that pass in `entryComponents`. */
 export function migrateEntryComponentsUsages(

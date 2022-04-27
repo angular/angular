@@ -10,7 +10,7 @@ import {I18nDebug, IcuCreateOpCodes, TI18n, TIcu} from '@angular/core/src/render
 import {TNode} from '@angular/core/src/render3/interfaces/node';
 import {TView} from '@angular/core/src/render3/interfaces/view';
 
-import {isDOMElement, isDOMText, isTI18n, isTIcu, isTNode, isTView} from './is_shape_of';
+import {isDOMElement, isDOMText, isTI18n, isTIcu, isTNode, isTView} from './is_shape_of.js';
 
 
 /**

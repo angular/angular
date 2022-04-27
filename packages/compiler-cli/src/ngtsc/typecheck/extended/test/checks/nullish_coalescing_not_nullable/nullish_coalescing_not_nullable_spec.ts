@@ -9,13 +9,13 @@
 import {DiagnosticCategoryLabel} from '@angular/compiler-cli/src/ngtsc/core/api';
 import ts from 'typescript';
 
-import {ErrorCode, ExtendedTemplateDiagnosticName, ngErrorCode} from '../../../../../diagnostics';
-import {absoluteFrom, getSourceFileOrError} from '../../../../../file_system';
-import {runInEachFileSystem} from '../../../../../file_system/testing';
-import {getSourceCodeForDiagnostic} from '../../../../../testing';
-import {getClass, setup} from '../../../../testing';
-import {factory as nullishCoalescingNotNullableFactory} from '../../../checks/nullish_coalescing_not_nullable';
-import {ExtendedTemplateCheckerImpl} from '../../../src/extended_template_checker';
+import {ErrorCode, ExtendedTemplateDiagnosticName, ngErrorCode} from '../../../../../diagnostics/index.js';
+import {absoluteFrom, getSourceFileOrError} from '../../../../../file_system/index.js';
+import {runInEachFileSystem} from '../../../../../file_system/testing/index.js';
+import {getSourceCodeForDiagnostic} from '../../../../../testing/index.js';
+import {getClass, setup} from '../../../../testing/index.js';
+import {factory as nullishCoalescingNotNullableFactory} from '../../../checks/nullish_coalescing_not_nullable/index.js';
+import {ExtendedTemplateCheckerImpl} from '../../../src/extended_template_checker.js';
 
 runInEachFileSystem(() => {
   describe('NullishCoalescingNotNullableCheck', () => {

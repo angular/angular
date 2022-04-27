@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {formArrayNameExample, formControlNameExample, formGroupNameExample, ngModelGroupExample} from './error_examples';
+import {formArrayNameExample, formControlNameExample, formGroupNameExample, ngModelGroupExample} from './error_examples.js';
 
 
 export function controlParentException(): Error {

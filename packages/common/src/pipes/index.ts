@@ -11,15 +11,15 @@
  * @description
  * This module provides a set of common Pipes.
  */
-import {AsyncPipe} from './async_pipe';
-import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from './case_conversion_pipes';
-import {DATE_PIPE_DEFAULT_TIMEZONE, DatePipe} from './date_pipe';
-import {I18nPluralPipe} from './i18n_plural_pipe';
-import {I18nSelectPipe} from './i18n_select_pipe';
-import {JsonPipe} from './json_pipe';
-import {KeyValue, KeyValuePipe} from './keyvalue_pipe';
-import {CurrencyPipe, DecimalPipe, PercentPipe} from './number_pipe';
-import {SlicePipe} from './slice_pipe';
+import {AsyncPipe} from './async_pipe.js';
+import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from './case_conversion_pipes.js';
+import {DATE_PIPE_DEFAULT_TIMEZONE, DatePipe} from './date_pipe.js';
+import {I18nPluralPipe} from './i18n_plural_pipe.js';
+import {I18nSelectPipe} from './i18n_select_pipe.js';
+import {JsonPipe} from './json_pipe.js';
+import {KeyValue, KeyValuePipe} from './keyvalue_pipe.js';
+import {CurrencyPipe, DecimalPipe, PercentPipe} from './number_pipe.js';
+import {SlicePipe} from './slice_pipe.js';
 
 export {
   AsyncPipe,

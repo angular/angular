@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {LocalizeFn} from './localize';
-import {MessageId, ParsedTranslation, parseTranslation, TargetMessage, translate as _translate} from './utils';
+import {LocalizeFn} from './localize/index.js';
+import {MessageId, ParsedTranslation, parseTranslation, TargetMessage, translate as _translate} from './utils/index.js';
 
 /**
  * We augment the `$localize` object to also store the translations.

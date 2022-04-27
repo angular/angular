@@ -11,10 +11,10 @@ import {fakeAsync, flushMicrotasks, TestBed, tick, waitForAsync} from '@angular/
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import * as angular from '../../common/src/angular1';
-import {$EXCEPTION_HANDLER, $ROOT_SCOPE} from '../../common/src/constants';
-import {html, multiTrim, withEachNg1Version} from '../../common/test/helpers/common_test_helpers';
-import {UpgradeAdapter, UpgradeAdapterRef} from '../src/upgrade_adapter';
+import * as angular from '../../common/src/angular1.js';
+import {$EXCEPTION_HANDLER, $ROOT_SCOPE} from '../../common/src/constants.js';
+import {html, multiTrim, withEachNg1Version} from '../../common/test/helpers/common_test_helpers.js';
+import {UpgradeAdapter, UpgradeAdapterRef} from '../src/upgrade_adapter.js';
 
 
 declare global {

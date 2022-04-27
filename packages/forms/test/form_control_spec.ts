@@ -9,7 +9,7 @@
 import {fakeAsync, tick} from '@angular/core/testing';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 
-import {asyncValidator, asyncValidatorReturningObservable} from './util';
+import {asyncValidator, asyncValidatorReturningObservable} from './util.js';
 
 (function() {
 function otherAsyncValidator() {

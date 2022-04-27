@@ -9,11 +9,11 @@
 /// <reference types="node" />
 import {inspect} from 'util';
 
-import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing/index.js';
+import {loadStandardTestFiles} from '../../src/ngtsc/testing/index.js';
 
-import {NgtscTestEnvironment} from './env';
-import {getMappedSegments, SegmentMapping} from './sourcemap_utils';
+import {NgtscTestEnvironment} from './env.js';
+import {getMappedSegments, SegmentMapping} from './sourcemap_utils.js';
 
 const testFiles = loadStandardTestFiles();
 

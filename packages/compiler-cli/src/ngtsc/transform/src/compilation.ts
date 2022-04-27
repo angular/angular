@@ -9,21 +9,21 @@
 import {ConstantPool} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {IncrementalBuild} from '../../incremental/api';
-import {SemanticDepGraphUpdater, SemanticSymbol} from '../../incremental/semantic_graph';
-import {IndexingContext} from '../../indexer';
-import {PerfEvent, PerfRecorder} from '../../perf';
-import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
-import {isShim} from '../../shims';
-import {ProgramTypeCheckAdapter, TypeCheckContext} from '../../typecheck/api';
-import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
-import {getSourceFile, isExported} from '../../util/src/typescript';
-import {Xi18nContext} from '../../xi18n';
+import {ErrorCode, FatalDiagnosticError} from '../../diagnostics/index.js';
+import {IncrementalBuild} from '../../incremental/api.js';
+import {SemanticDepGraphUpdater, SemanticSymbol} from '../../incremental/semantic_graph/index.js';
+import {IndexingContext} from '../../indexer/index.js';
+import {PerfEvent, PerfRecorder} from '../../perf/index.js';
+import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost} from '../../reflection/index.js';
+import {isShim} from '../../shims/index.js';
+import {ProgramTypeCheckAdapter, TypeCheckContext} from '../../typecheck/api/index.js';
+import {ExtendedTemplateChecker} from '../../typecheck/extended/api/index.js';
+import {getSourceFile, isExported} from '../../util/src/typescript.js';
+import {Xi18nContext} from '../../xi18n/index.js';
 
-import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api';
-import {DtsTransformRegistry} from './declaration';
-import {PendingTrait, Trait, TraitState} from './trait';
+import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api.js';
+import {DtsTransformRegistry} from './declaration.js';
+import {PendingTrait, Trait, TraitState} from './trait.js';
 
 
 /**

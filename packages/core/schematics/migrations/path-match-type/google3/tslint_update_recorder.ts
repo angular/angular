@@ -9,7 +9,7 @@
 import {Replacement, RuleFailure} from 'tslint';
 import ts from 'typescript';
 
-import {UpdateRecorder} from '../update_recorder';
+import {UpdateRecorder} from '../update_recorder.js';
 
 export class TslintUpdateRecorder implements UpdateRecorder {
   failures: RuleFailure[] = [];

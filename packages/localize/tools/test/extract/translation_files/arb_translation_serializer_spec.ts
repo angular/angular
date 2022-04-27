@@ -9,9 +9,9 @@ import {absoluteFrom, getFileSystem, PathManipulation} from '@angular/compiler-c
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {ɵParsedMessage} from '@angular/localize';
 
-import {ArbTranslationSerializer} from '../../../src/extract/translation_files/arb_translation_serializer';
+import {ArbTranslationSerializer} from '../../../src/extract/translation_files/arb_translation_serializer.js';
 
-import {location, mockMessage} from './mock_message';
+import {location, mockMessage} from './mock_message.js';
 
 runInEachFileSystem(() => {
   let fs: PathManipulation;

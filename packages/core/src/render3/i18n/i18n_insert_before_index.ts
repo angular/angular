@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertEqual} from '../../util/assert';
-import {TNode, TNodeType} from '../interfaces/node';
-import {setI18nHandling} from '../node_manipulation';
-import {getInsertInFrontOfRNodeWithI18n, processI18nInsertBefore} from '../node_manipulation_i18n';
+import {assertEqual} from '../../util/assert.js';
+import {TNode, TNodeType} from '../interfaces/node.js';
+import {setI18nHandling} from '../node_manipulation.js';
+import {getInsertInFrontOfRNodeWithI18n, processI18nInsertBefore} from '../node_manipulation_i18n.js';
 
 /**
  * Add `tNode` to `previousTNodes` list and update relevant `TNode`s in `previousTNodes` list

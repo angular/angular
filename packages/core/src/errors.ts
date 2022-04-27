@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ERROR_DETAILS_PAGE_BASE_URL} from './error_details_base_url';
+import {ERROR_DETAILS_PAGE_BASE_URL} from './error_details_base_url.js';
 
 /**
  * The list of error codes used in runtime code of the `core` package.

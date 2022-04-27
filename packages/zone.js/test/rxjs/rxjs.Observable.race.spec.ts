@@ -8,7 +8,7 @@
 import {interval, Observable, race} from 'rxjs';
 import {mapTo} from 'rxjs/operators';
 
-import {asyncTest} from '../test-util';
+import {asyncTest} from '../test-util.js';
 
 describe('Observable.race', () => {
   let log: any[];

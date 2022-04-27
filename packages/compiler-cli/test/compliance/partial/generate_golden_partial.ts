@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
-import {compileTest, getBuildOutputDirectory, initMockTestFileSystem} from '../test_helpers/compile_test';
-import {ComplianceTest, getComplianceTests} from '../test_helpers/get_compliance_tests';
-import {PartiallyCompiledFile, renderGoldenPartial} from '../test_helpers/golden_partials';
+import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {compileTest, getBuildOutputDirectory, initMockTestFileSystem} from '../test_helpers/compile_test.js';
+import {ComplianceTest, getComplianceTests} from '../test_helpers/get_compliance_tests.js';
+import {PartiallyCompiledFile, renderGoldenPartial} from '../test_helpers/golden_partials.js';
 
 /**
  * Generate the golden partial output for the tests described in the `testConfigPath` config file.

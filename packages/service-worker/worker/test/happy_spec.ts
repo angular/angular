@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {processNavigationUrls} from '../../config/src/generator';
-import {CacheDatabase} from '../src/db-cache';
-import {Driver, DriverReadyState} from '../src/driver';
-import {AssetGroupConfig, DataGroupConfig, Manifest} from '../src/manifest';
-import {sha1} from '../src/sha1';
-import {clearAllCaches, MockCache} from '../testing/cache';
-import {MockWindowClient} from '../testing/clients';
-import {MockRequest, MockResponse} from '../testing/fetch';
-import {MockFileSystem, MockFileSystemBuilder, MockServerState, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
-import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
-import {envIsSupported} from '../testing/utils';
+import {processNavigationUrls} from '../../config/src/generator.js';
+import {CacheDatabase} from '../src/db-cache.js';
+import {Driver, DriverReadyState} from '../src/driver.js';
+import {AssetGroupConfig, DataGroupConfig, Manifest} from '../src/manifest.js';
+import {sha1} from '../src/sha1.js';
+import {clearAllCaches, MockCache} from '../testing/cache.js';
+import {MockWindowClient} from '../testing/clients.js';
+import {MockRequest, MockResponse} from '../testing/fetch.js';
+import {MockFileSystem, MockFileSystemBuilder, MockServerState, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock.js';
+import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope.js';
+import {envIsSupported} from '../testing/utils.js';
 
 (function() {
 // Skip environments that don't support the minimum APIs needed to run the SW tests.

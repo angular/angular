@@ -8,8 +8,8 @@
 
 import {Injectable} from '@angular/core';
 
-import {WebDriverAdapter} from '../web_driver_adapter';
-import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension';
+import {WebDriverAdapter} from '../web_driver_adapter.js';
+import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_extension.js';
 
 @Injectable()
 export class FirefoxDriverExtension extends WebDriverExtension {

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {parseDurationToMs} from './duration';
-import {Filesystem} from './filesystem';
-import {globToRegex} from './glob';
-import {AssetGroup, Config} from './in';
+import {parseDurationToMs} from './duration.js';
+import {Filesystem} from './filesystem.js';
+import {globToRegex} from './glob.js';
+import {AssetGroup, Config} from './in.js';
 
 const DEFAULT_NAVIGATION_URLS = [
   '/**',           // Include all URLs.

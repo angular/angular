@@ -8,7 +8,7 @@
 
 import {Component, Directive, EventEmitter, Input, OnChanges, Output, Pipe, PipeTransform, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {Hero} from './app.component';
+import {Hero} from './app.component.js';
 
 @Directive({
   selector: '[string-model]',

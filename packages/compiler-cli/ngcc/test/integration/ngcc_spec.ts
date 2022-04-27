@@ -10,21 +10,21 @@
 import realFs from 'fs';
 import os from 'os';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
-import {Folder, MockFileSystem, runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {getLockFilePath} from '../../src/locking/lock_file';
-import {mainNgcc} from '../../src/main';
-import {clearTsConfigCache} from '../../src/ngcc_options';
-import {hasBeenProcessed, markAsProcessed} from '../../src/packages/build_marker';
-import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
-import {EntryPointManifestFile} from '../../src/packages/entry_point_manifest';
-import {Transformer} from '../../src/packages/transformer';
-import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
-import {mockRequireResolveForLockfile} from '../helpers/utils';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Folder, MockFileSystem, runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {getLockFilePath} from '../../src/locking/lock_file.js';
+import {mainNgcc} from '../../src/main.js';
+import {clearTsConfigCache} from '../../src/ngcc_options.js';
+import {hasBeenProcessed, markAsProcessed} from '../../src/packages/build_marker.js';
+import {EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point.js';
+import {EntryPointManifestFile} from '../../src/packages/entry_point_manifest.js';
+import {Transformer} from '../../src/packages/transformer.js';
+import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater.js';
+import {mockRequireResolveForLockfile} from '../helpers/utils.js';
 
-import {loadNgccIntegrationTestFiles} from './util';
+import {loadNgccIntegrationTestFiles} from './util.js';
 
 const ANGULAR_CORE_IMPORT_REGEX = /import \* as ɵngcc\d+ from '@angular\/core';/;
 const testFiles = loadNgccIntegrationTestFiles();

@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDomNode, assertIndexInRange} from '../util/assert';
+import {assertDomNode, assertIndexInRange} from '../util/assert.js';
 
-import {TNode, TNodeFlags, TNodeType} from './interfaces/node';
-import {Renderer3} from './interfaces/renderer';
-import {RElement, RNode} from './interfaces/renderer_dom';
-import {LView} from './interfaces/view';
-import {getInsertInFrontOfRNodeWithNoI18n, nativeInsertBefore} from './node_manipulation';
-import {unwrapRNode} from './util/view_utils';
+import {TNode, TNodeFlags, TNodeType} from './interfaces/node.js';
+import {Renderer3} from './interfaces/renderer.js';
+import {RElement, RNode} from './interfaces/renderer_dom.js';
+import {LView} from './interfaces/view.js';
+import {getInsertInFrontOfRNodeWithNoI18n, nativeInsertBefore} from './node_manipulation.js';
+import {unwrapRNode} from './util/view_utils.js';
 
 
 /**

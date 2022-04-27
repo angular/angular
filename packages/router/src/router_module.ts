@@ -11,23 +11,23 @@ import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, A
 import {Title} from '@angular/platform-browser';
 import {of, Subject} from 'rxjs';
 
-import {EmptyOutletComponent} from './components/empty_outlet';
-import {RouterLink, RouterLinkWithHref} from './directives/router_link';
-import {RouterLinkActive} from './directives/router_link_active';
-import {RouterOutlet} from './directives/router_outlet';
-import {Event} from './events';
-import {Route, Routes} from './models';
-import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
-import {RouteReuseStrategy} from './route_reuse_strategy';
-import {ErrorHandler, Router} from './router';
-import {RouterConfigLoader, ROUTES} from './router_config_loader';
-import {ChildrenOutletContexts} from './router_outlet_context';
-import {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
-import {RouterScroller} from './router_scroller';
-import {ActivatedRoute} from './router_state';
-import {UrlHandlingStrategy} from './url_handling_strategy';
-import {DefaultUrlSerializer, UrlSerializer, UrlTree} from './url_tree';
-import {flatten} from './utils/collection';
+import {EmptyOutletComponent} from './components/empty_outlet.js';
+import {RouterLink, RouterLinkWithHref} from './directives/router_link.js';
+import {RouterLinkActive} from './directives/router_link_active.js';
+import {RouterOutlet} from './directives/router_outlet.js';
+import {Event} from './events.js';
+import {Route, Routes} from './models.js';
+import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy.js';
+import {RouteReuseStrategy} from './route_reuse_strategy.js';
+import {ErrorHandler, Router} from './router.js';
+import {RouterConfigLoader, ROUTES} from './router_config_loader.js';
+import {ChildrenOutletContexts} from './router_outlet_context.js';
+import {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader.js';
+import {RouterScroller} from './router_scroller.js';
+import {ActivatedRoute} from './router_state.js';
+import {UrlHandlingStrategy} from './url_handling_strategy.js';
+import {DefaultUrlSerializer, UrlSerializer, UrlTree} from './url_tree.js';
+import {flatten} from './utils/collection.js';
 
 /**
  * The directives defined in the `RouterModule`.

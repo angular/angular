@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getHtmlTagDefinition} from './ml_parser/html_tags';
+import {getHtmlTagDefinition} from './ml_parser/html_tags.js';
 
 const _SELECTOR_REGEXP = new RegExp(
     '(\\:not\\()|' +               // 1: ":not("

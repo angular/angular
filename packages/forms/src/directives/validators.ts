@@ -9,8 +9,8 @@
 import {Directive, forwardRef, Input, OnChanges, SimpleChanges, StaticProvider, ɵcoerceToBoolean as coerceToBoolean} from '@angular/core';
 import {Observable} from 'rxjs';
 
-import {AbstractControl} from '../model/abstract_model';
-import {emailValidator, maxLengthValidator, maxValidator, minLengthValidator, minValidator, NG_VALIDATORS, nullValidator, patternValidator, requiredTrueValidator, requiredValidator} from '../validators';
+import {AbstractControl} from '../model/abstract_model.js';
+import {emailValidator, maxLengthValidator, maxValidator, minLengthValidator, minValidator, NG_VALIDATORS, nullValidator, patternValidator, requiredTrueValidator, requiredValidator} from '../validators.js';
 
 /**
  * Method that updates string to integer if not already a number

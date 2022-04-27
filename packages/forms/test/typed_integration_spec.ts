@@ -9,9 +9,9 @@
 // These tests mainly check the types of strongly typed form controls, which is generally enforced
 // at compile time.
 
-import {FormBuilder, UntypedFormBuilder} from '../src/form_builder';
-import {AbstractControl, FormArray, FormControl, FormGroup, UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators} from '../src/forms';
-import {FormRecord} from '../src/model/form_group';
+import {FormBuilder, UntypedFormBuilder} from '../src/form_builder.js';
+import {AbstractControl, FormArray, FormControl, FormGroup, UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators} from '../src/forms.js';
+import {FormRecord} from '../src/model/form_group.js';
 
 describe('Typed Class', () => {
   describe('FormControl', () => {

@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {DtsProcessing} from '../../src/execution/tasks/api';
-import {EntryPoint} from '../../src/packages/entry_point';
-import {makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
-import {createModuleResolutionCache, SharedFileCache} from '../../src/packages/source_file_cache';
+import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing/index.js';
+import {loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {DtsProcessing} from '../../src/execution/tasks/api.js';
+import {EntryPoint} from '../../src/packages/entry_point.js';
+import {makeEntryPointBundle} from '../../src/packages/entry_point_bundle.js';
+import {createModuleResolutionCache, SharedFileCache} from '../../src/packages/source_file_cache.js';
 
 runInEachFileSystem(() => {
   describe('entry point bundle', () => {

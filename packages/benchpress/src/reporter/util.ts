@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MeasureValues} from '../measure_values';
-import {Statistic} from '../statistic';
+import {MeasureValues} from '../measure_values.js';
+import {Statistic} from '../statistic.js';
 
 export function formatNum(n: number) {
   return n.toFixed(2);

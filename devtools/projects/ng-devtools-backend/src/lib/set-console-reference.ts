@@ -9,7 +9,7 @@
 import {ElementPosition} from 'protocol';
 import {arrayEquals} from 'shared-utils';
 
-import {ComponentTreeNode} from './interfaces';
+import {ComponentTreeNode} from './interfaces.js';
 
 interface ConsoleReferenceNode {
   node: ComponentTreeNode|null;

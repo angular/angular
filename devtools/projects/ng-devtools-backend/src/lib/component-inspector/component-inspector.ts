@@ -8,10 +8,10 @@
 
 import {ElementPosition} from 'protocol';
 
-import {findNodeInForest} from '../component-tree';
-import {findComponentAndHost, highlight, unHighlight} from '../highlighter';
-import {initializeOrGetDirectiveForestHooks} from '../hooks';
-import {ComponentTreeNode} from '../interfaces';
+import {findNodeInForest} from '../component-tree.js';
+import {findComponentAndHost, highlight, unHighlight} from '../highlighter.js';
+import {initializeOrGetDirectiveForestHooks} from '../hooks/index.js';
+import {ComponentTreeNode} from '../interfaces.js';
 
 interface Type<T> extends Function {
   new(...args: any[]): T;

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MeasureValues} from './measure_values';
+import {MeasureValues} from './measure_values.js';
 
 /**
  * A Validator calculates a valid sample out of the complete sample.

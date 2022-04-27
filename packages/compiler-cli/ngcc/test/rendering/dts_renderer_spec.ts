@@ -10,21 +10,21 @@ import MagicString from 'magic-string';
 import {encode} from 'sourcemap-codec';
 import ts from 'typescript';
 
-import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {Reexport} from '../../../src/ngtsc/imports';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {Import, ImportManager} from '../../../src/ngtsc/translator';
-import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
-import {ModuleWithProvidersAnalyzer, ModuleWithProvidersInfo} from '../../src/analysis/module_with_providers_analyzer';
-import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
-import {ExportInfo, PrivateDeclarationsAnalyzer} from '../../src/analysis/private_declarations_analyzer';
-import {CompiledClass} from '../../src/analysis/types';
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {DtsRenderer} from '../../src/rendering/dts_renderer';
-import {RedundantDecoratorMap, RenderingFormatter} from '../../src/rendering/rendering_formatter';
-import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
+import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {Reexport} from '../../../src/ngtsc/imports/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {Import, ImportManager} from '../../../src/ngtsc/translator/index.js';
+import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer.js';
+import {ModuleWithProvidersAnalyzer, ModuleWithProvidersInfo} from '../../src/analysis/module_with_providers_analyzer.js';
+import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry.js';
+import {ExportInfo, PrivateDeclarationsAnalyzer} from '../../src/analysis/private_declarations_analyzer.js';
+import {CompiledClass} from '../../src/analysis/types.js';
+import {Esm2015ReflectionHost} from '../../src/host/esm2015_host.js';
+import {DtsRenderer} from '../../src/rendering/dts_renderer.js';
+import {RedundantDecoratorMap, RenderingFormatter} from '../../src/rendering/rendering_formatter.js';
+import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils.js';
 
 class TestRenderingFormatter implements RenderingFormatter {
   addImports(output: MagicString, imports: Import[], sf: ts.SourceFile) {

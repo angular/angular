@@ -7,10 +7,11 @@
  */
 
 import {setProfiler} from '@angular/core/src/render3/profiler';
-import {applyChanges} from '../../src/render3/util/change_detection_utils';
-import {getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils';
-import {GLOBAL_PUBLISH_EXPANDO_KEY, GlobalDevModeContainer, publishDefaultGlobalUtils, publishGlobalUtil} from '../../src/render3/util/global_utils';
-import {global} from '../../src/util/global';
+
+import {applyChanges} from '../../src/render3/util/change_detection_utils.js';
+import {getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils.js';
+import {GLOBAL_PUBLISH_EXPANDO_KEY, GlobalDevModeContainer, publishDefaultGlobalUtils, publishGlobalUtil} from '../../src/render3/util/global_utils.js';
+import {global} from '../../src/util/global.js';
 
 describe('global utils', () => {
   describe('publishGlobalUtil', () => {

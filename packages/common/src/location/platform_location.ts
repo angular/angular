@@ -7,8 +7,9 @@
  */
 
 import {Inject, Injectable, InjectionToken, ɵɵinject} from '@angular/core';
-import {getDOM} from '../dom_adapter';
-import {DOCUMENT} from '../dom_tokens';
+
+import {getDOM} from '../dom_adapter.js';
+import {DOCUMENT} from '../dom_tokens.js';
 
 /**
  * This class should not be used directly by an application developer. Instead, use

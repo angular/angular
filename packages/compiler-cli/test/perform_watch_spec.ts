@@ -10,10 +10,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import ts from 'typescript';
 
-import * as ng from '../index';
-import {FileChangeEvent, performWatchCompilation} from '../src/perform_watch';
+import * as ng from '../index.js';
+import {FileChangeEvent, performWatchCompilation} from '../src/perform_watch.js';
 
-import {expectNoDiagnostics, setup, TestSupport} from './test_support';
+import {expectNoDiagnostics, setup, TestSupport} from './test_support.js';
 
 describe('perform watch', () => {
   let testSupport: TestSupport;

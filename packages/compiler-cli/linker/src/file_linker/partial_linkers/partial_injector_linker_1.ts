@@ -7,11 +7,11 @@
  */
 import {compileInjector, ConstantPool, outputAst as o, R3DeclareInjectorMetadata, R3InjectorMetadata, R3PartialDeclaration} from '@angular/compiler';
 
-import {AstObject} from '../../ast/ast_value';
-import {FatalLinkerError} from '../../fatal_linker_error';
+import {AstObject} from '../../ast/ast_value.js';
+import {FatalLinkerError} from '../../fatal_linker_error.js';
 
-import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {wrapReference} from './util';
+import {LinkedDefinition, PartialLinker} from './partial_linker.js';
+import {wrapReference} from './util.js';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareInjector()` call expressions.

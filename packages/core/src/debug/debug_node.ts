@@ -6,18 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '../di/injector';
-import {assertTNodeForLView} from '../render3/assert';
-import {getLContext} from '../render3/context_discovery';
-import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
-import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
-import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, LView, PARENT, T_HOST, TData, TVIEW} from '../render3/interfaces/view';
-import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent} from '../render3/util/discovery_utils';
-import {INTERPOLATION_DELIMITER} from '../render3/util/misc_utils';
-import {renderStringify} from '../render3/util/stringify_utils';
-import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
-import {assertDomNode} from '../util/assert';
+import {Injector} from '../di/injector.js';
+import {assertTNodeForLView} from '../render3/assert.js';
+import {getLContext} from '../render3/context_discovery.js';
+import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container.js';
+import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node.js';
+import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks.js';
+import {DECLARATION_COMPONENT_VIEW, LView, PARENT, T_HOST, TData, TVIEW} from '../render3/interfaces/view.js';
+import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent} from '../render3/util/discovery_utils.js';
+import {INTERPOLATION_DELIMITER} from '../render3/util/misc_utils.js';
+import {renderStringify} from '../render3/util/stringify_utils.js';
+import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils.js';
+import {assertDomNode} from '../util/assert.js';
 
 /**
  * @publicApi

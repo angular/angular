@@ -6,10 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './init';
+import './init.js';
+
 import {By} from '@angular/platform-browser';
-import {CompWithNgContent, ProjectingComp} from '../src/projection';
-import {createComponent} from './util';
+
+import {CompWithNgContent, ProjectingComp} from '../src/projection.js';
+
+import {createComponent} from './util.js';
 
 describe('content projection', () => {
   it('should support basic content projection', () => {

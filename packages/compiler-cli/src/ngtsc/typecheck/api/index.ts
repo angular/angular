@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './api';
-export * from './checker';
-export * from './completion';
-export * from './context';
-export * from './scope';
-export * from './symbols';
+export * from './api.js';
+export * from './checker.js';
+export * from './completion.js';
+export * from './context.js';
+export * from './scope.js';
+export * from './symbols.js';

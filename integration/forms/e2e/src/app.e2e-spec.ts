@@ -1,6 +1,6 @@
 import {browser, logging} from 'protractor';
 
-import {AppPage} from './app.po';
+import {AppPage} from './app.po.js';
 
 describe('forms app', () => {
   let page: AppPage;

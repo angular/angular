@@ -16,9 +16,9 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTooltipModule} from '@angular/material/tooltip';
 
-import {ProfilerImportDialogComponent} from './profiler-import-dialog.component';
-import {ProfilerComponent} from './profiler.component';
-import {TimelineModule} from './timeline/timeline.module';
+import {ProfilerImportDialogComponent} from './profiler-import-dialog.component.js';
+import {ProfilerComponent} from './profiler.component.js';
+import {TimelineModule} from './timeline/timeline.module.js';
 
 @NgModule({
   declarations: [ProfilerComponent, ProfilerImportDialogComponent],

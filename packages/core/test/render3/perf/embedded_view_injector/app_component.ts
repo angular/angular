@@ -9,8 +9,8 @@
 import {Injector} from '@angular/core';
 import {RenderFlags, ɵɵadvance, ɵɵdefineComponent, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵreference, ɵɵtemplate, ɵɵtemplateRefExtractor} from '@angular/core/src/render3';
 
-import {createInnerComponent} from './inner_component';
-import {createRenderTemplateDirective} from './render_template_directive';
+import {createInnerComponent} from './inner_component.js';
+import {createRenderTemplateDirective} from './render_template_directive.js';
 
 /**
  * Creates the root component of the benchmark. The goal is to add a few more layers of elements

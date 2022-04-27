@@ -11,7 +11,7 @@ import {NgModule} from '@angular/core';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatSelectModule} from '@angular/material/select';
 
-import {RouterTreeComponent} from './router-tree.component';
+import {RouterTreeComponent} from './router-tree.component.js';
 
 @NgModule({
   declarations: [RouterTreeComponent],

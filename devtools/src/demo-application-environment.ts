@@ -8,7 +8,7 @@
 
 import {ApplicationEnvironment, Environment} from 'ng-devtools';
 
-import {environment} from './environments/environment';
+import {environment} from './environments/environment.js';
 
 export class DemoApplicationEnvironment extends ApplicationEnvironment {
   get environment(): Environment {

@@ -7,13 +7,13 @@
  */
 import {compileDirectiveFromMetadata, ConstantPool, makeBindingParser, outputAst as o, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostMetadata, R3PartialDeclaration, R3QueryMetadata} from '@angular/compiler';
 
-import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
-import {Range} from '../../ast/ast_host';
-import {AstObject, AstValue} from '../../ast/ast_value';
-import {FatalLinkerError} from '../../fatal_linker_error';
+import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system/index.js';
+import {Range} from '../../ast/ast_host.js';
+import {AstObject, AstValue} from '../../ast/ast_value.js';
+import {FatalLinkerError} from '../../fatal_linker_error.js';
 
-import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {extractForwardRef, wrapReference} from './util';
+import {LinkedDefinition, PartialLinker} from './partial_linker.js';
+import {extractForwardRef, wrapReference} from './util.js';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareDirective()` call expressions.

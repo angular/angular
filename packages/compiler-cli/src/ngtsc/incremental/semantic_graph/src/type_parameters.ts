@@ -7,8 +7,9 @@
  */
 import ts from 'typescript';
 
-import {ClassDeclaration} from '../../../reflection';
-import {isArrayEqual} from './util';
+import {ClassDeclaration} from '../../../reflection/index.js';
+
+import {isArrayEqual} from './util.js';
 
 /**
  * Describes a generic type parameter of a semantic symbol. A class declaration with type parameters

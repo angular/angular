@@ -7,7 +7,8 @@
  */
 
 import {NgModule} from '@angular/core';
-import {a} from './secondary/secondarymodule';
+
+import {a} from './secondary/secondarymodule.js';
 
 @NgModule({})
 export class MyModule {

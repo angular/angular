@@ -7,8 +7,8 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom} from '../../file_system';
-import {getSourceFileOrNull, resolveModuleName} from '../../util/src/typescript';
+import {absoluteFrom} from '../../file_system/index.js';
+import {getSourceFileOrNull, resolveModuleName} from '../../util/src/typescript.js';
 
 /**
  * Used by `RouterEntryPointManager` and `NgModuleRouteAnalyzer` (which is in turn is used by

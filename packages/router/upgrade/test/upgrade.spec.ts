@@ -14,7 +14,7 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {setUpLocationSync} from '@angular/router/upgrade';
 import {UpgradeModule} from '@angular/upgrade/static';
 
-import {LocationUpgradeTestModule} from './upgrade_location_test_module';
+import {LocationUpgradeTestModule} from './upgrade_location_test_module.js';
 
 export function injectorFactory() {
   const rootScopeMock = new $rootScopeMock();

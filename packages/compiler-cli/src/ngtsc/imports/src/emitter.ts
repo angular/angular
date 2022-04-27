@@ -8,16 +8,16 @@
 import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {UnifiedModulesHost} from '../../core/api';
-import {ErrorCode, FatalDiagnosticError, makeDiagnosticChain, makeRelatedInformation} from '../../diagnostics';
-import {absoluteFromSourceFile, dirname, LogicalFileSystem, LogicalProjectPath, relative, toRelativeImport} from '../../file_system';
-import {stripExtension} from '../../file_system/src/util';
-import {DeclarationNode, ReflectionHost} from '../../reflection';
-import {getSourceFile, isDeclaration, isNamedDeclaration, isTypeDeclaration, nodeNameForError} from '../../util/src/typescript';
+import {UnifiedModulesHost} from '../../core/api/index.js';
+import {ErrorCode, FatalDiagnosticError, makeDiagnosticChain, makeRelatedInformation} from '../../diagnostics/index.js';
+import {absoluteFromSourceFile, dirname, LogicalFileSystem, LogicalProjectPath, relative, toRelativeImport} from '../../file_system/index.js';
+import {stripExtension} from '../../file_system/src/util.js';
+import {DeclarationNode, ReflectionHost} from '../../reflection/index.js';
+import {getSourceFile, isDeclaration, isNamedDeclaration, isTypeDeclaration, nodeNameForError} from '../../util/src/typescript.js';
 
-import {findExportedNameOfNode} from './find_export';
-import {Reference} from './references';
-import {ModuleResolver} from './resolver';
+import {findExportedNameOfNode} from './find_export.js';
+import {Reference} from './references.js';
+import {ModuleResolver} from './resolver.js';
 
 
 /**

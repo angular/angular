@@ -7,16 +7,16 @@
  */
 import * as os from 'os';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, PathManipulation} from '../../src/ngtsc/file_system';
-import {ConsoleLogger, Logger, LogLevel} from '../../src/ngtsc/logging';
-import {ParsedConfiguration, readConfiguration} from '../../src/perform_compile';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, PathManipulation} from '../../src/ngtsc/file_system/index.js';
+import {ConsoleLogger, Logger, LogLevel} from '../../src/ngtsc/logging/index.js';
+import {ParsedConfiguration, readConfiguration} from '../../src/perform_compile.js';
 
-import {SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point';
-import {getPathMappingsFromTsConfig, PathMappings} from './path_mappings';
-import {FileWriter} from './writing/file_writer';
-import {InPlaceFileWriter} from './writing/in_place_file_writer';
-import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer';
-import {PackageJsonUpdater} from './writing/package_json_updater';
+import {SUPPORTED_FORMAT_PROPERTIES} from './packages/entry_point.js';
+import {getPathMappingsFromTsConfig, PathMappings} from './path_mappings.js';
+import {FileWriter} from './writing/file_writer.js';
+import {InPlaceFileWriter} from './writing/in_place_file_writer.js';
+import {NewEntryPointFileWriter} from './writing/new_entry_point_file_writer.js';
+import {PackageJsonUpdater} from './writing/package_json_updater.js';
 
 /**
  * The options to configure the ngcc compiler for synchronous execution.

@@ -7,16 +7,16 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {ClassMemberKind, isNamedFunctionDeclaration, isNamedVariableDeclaration, TypeValueReferenceKind} from '../../../src/ngtsc/reflection';
-import {getDeclaration, loadFakeCore, loadTestFiles, loadTsLib} from '../../../src/ngtsc/testing';
-import {getIifeBody} from '../../src/host/esm2015_host';
-import {Esm5ReflectionHost} from '../../src/host/esm5_host';
-import {convertToDirectTsLibImport, convertToInlineTsLib, makeTestBundleProgram} from '../helpers/utils';
+import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {ClassMemberKind, isNamedFunctionDeclaration, isNamedVariableDeclaration, TypeValueReferenceKind} from '../../../src/ngtsc/reflection/index.js';
+import {getDeclaration, loadFakeCore, loadTestFiles, loadTsLib} from '../../../src/ngtsc/testing/index.js';
+import {getIifeBody} from '../../src/host/esm2015_host.js';
+import {Esm5ReflectionHost} from '../../src/host/esm5_host.js';
+import {convertToDirectTsLibImport, convertToInlineTsLib, makeTestBundleProgram} from '../helpers/utils.js';
 
-import {expectTypeValueReferencesForParameters} from './util';
+import {expectTypeValueReferencesForParameters} from './util.js';
 
 runInEachFileSystem(() => {
   describe('Esm5ReflectionHost [import helper style]', () => {

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getAngularJSGlobal} from '../../../src/common/src/angular1';
-import {withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
-import {createAngularJSTestingModule} from '../src/create_angularjs_testing_module';
+import {getAngularJSGlobal} from '../../../src/common/src/angular1.js';
+import {withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers.js';
+import {createAngularJSTestingModule} from '../src/create_angularjs_testing_module.js';
 
-import {AppModule, defineAppModule, Inventory} from './mocks';
+import {AppModule, defineAppModule, Inventory} from './mocks.js';
 
 
 withEachNg1Version(() => {

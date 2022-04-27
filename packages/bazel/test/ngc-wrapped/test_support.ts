@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import ts from 'typescript';
 
-import {createTsConfig} from './tsconfig_template';
+import {createTsConfig} from './tsconfig_template.js';
 
 export interface TestSupport {
   basePath: string;

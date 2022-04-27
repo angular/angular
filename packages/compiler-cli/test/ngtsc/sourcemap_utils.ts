@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {MappingItem, RawSourceMap, SourceMapConsumer} from 'source-map';
-import {NgtscTestEnvironment} from './env';
+
+import {NgtscTestEnvironment} from './env.js';
 
 class TestSourceFile {
   private lineStarts: number[];

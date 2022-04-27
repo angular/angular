@@ -8,9 +8,9 @@
 
 import {Inject, Injectable, StaticProvider} from '@angular/core';
 
-import {Options} from '../common_options';
-import {Metric} from '../metric';
-import {WebDriverAdapter} from '../web_driver_adapter';
+import {Options} from '../common_options.js';
+import {Metric} from '../metric.js';
+import {WebDriverAdapter} from '../web_driver_adapter.js';
 
 @Injectable()
 export class UserMetric extends Metric {

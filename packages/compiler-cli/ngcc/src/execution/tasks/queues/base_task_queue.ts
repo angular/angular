@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Logger} from '../../../../../src/ngtsc/logging';
-import {PartiallyOrderedTasks, Task, TaskDependencies, TaskQueue} from '../api';
-import {stringifyTask} from '../utils';
+import {Logger} from '../../../../../src/ngtsc/logging/index.js';
+import {PartiallyOrderedTasks, Task, TaskDependencies, TaskQueue} from '../api.js';
+import {stringifyTask} from '../utils.js';
 
 
 /**

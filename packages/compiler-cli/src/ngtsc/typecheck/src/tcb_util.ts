@@ -9,14 +9,14 @@
 import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ClassDeclaration, ReflectionHost} from '../../../../src/ngtsc/reflection';
-import {Reference} from '../../imports';
-import {getTokenAtPosition} from '../../util/src/typescript';
-import {FullTemplateMapping, SourceLocation, TemplateId, TemplateSourceMapping} from '../api';
+import {ClassDeclaration, ReflectionHost} from '../../../../src/ngtsc/reflection/index.js';
+import {Reference} from '../../imports/index.js';
+import {getTokenAtPosition} from '../../util/src/typescript.js';
+import {FullTemplateMapping, SourceLocation, TemplateId, TemplateSourceMapping} from '../api/index.js';
 
-import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
-import {checkIfClassIsExported} from './ts_util';
-import {TypeParameterEmitter} from './type_parameter_emitter';
+import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments.js';
+import {checkIfClassIsExported} from './ts_util.js';
+import {TypeParameterEmitter} from './type_parameter_emitter.js';
 
 /**
  * Represents the origin environment from where reference will be emitted. This interface exists

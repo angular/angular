@@ -10,8 +10,8 @@ import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise
 import {forkJoin, from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
-import {AbstractControl} from './model/abstract_model';
+import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators.js';
+import {AbstractControl} from './model/abstract_model.js';
 
 function isEmptyInputValue(value: any): boolean {
   /**

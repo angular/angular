@@ -7,9 +7,9 @@
  */
 
 
-import {getLViewById} from './lview_tracking';
-import {RNode} from './renderer_dom';
-import {LView} from './view';
+import {getLViewById} from './lview_tracking.js';
+import {RNode} from './renderer_dom.js';
+import {LView} from './view.js';
 
 
 /**

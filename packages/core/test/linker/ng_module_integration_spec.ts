@@ -13,9 +13,9 @@ import {getNgModuleDef} from '@angular/core/src/render3/definition';
 import {ComponentFixture, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
-import {clearModulesForTest, setAllowDuplicateNgModuleIdsForTest} from '../../src/linker/ng_module_registration';
-import {stringify} from '../../src/util/stringify';
+import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory.js';
+import {clearModulesForTest, setAllowDuplicateNgModuleIdsForTest} from '../../src/linker/ng_module_registration.js';
+import {stringify} from '../../src/util/stringify.js';
 
 class Engine {}
 

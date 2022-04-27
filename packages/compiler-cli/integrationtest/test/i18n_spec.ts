@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './init';
+import './init.js';
 
 import * as fs from 'fs';
 import * as path from 'path';

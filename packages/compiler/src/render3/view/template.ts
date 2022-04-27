@@ -6,39 +6,39 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
-import {ConstantPool} from '../../constant_pool';
-import * as core from '../../core';
-import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, Call, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
-import {Lexer} from '../../expression_parser/lexer';
-import {Parser} from '../../expression_parser/parser';
-import * as i18n from '../../i18n/i18n_ast';
-import * as html from '../../ml_parser/ast';
-import {HtmlParser} from '../../ml_parser/html_parser';
-import {WhitespaceVisitor} from '../../ml_parser/html_whitespaces';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../ml_parser/interpolation_config';
-import {LexerRange} from '../../ml_parser/lexer';
-import {isNgContainer as checkIsNgContainer, splitNsName} from '../../ml_parser/tags';
-import {mapLiteral} from '../../output/map_util';
-import * as o from '../../output/output_ast';
-import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util';
-import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
-import {isTrustedTypesSink} from '../../schema/trusted_types_sinks';
-import {CssSelector} from '../../selector';
-import {BindingParser} from '../../template_parser/binding_parser';
-import {error, partitionArray} from '../../util';
-import * as t from '../r3_ast';
-import {Identifiers as R3} from '../r3_identifiers';
-import {htmlAstToRender3Ast} from '../r3_template_transform';
-import {prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName} from '../util';
+import {BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter.js';
+import {ConstantPool} from '../../constant_pool.js';
+import * as core from '../../core.js';
+import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, Call, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast.js';
+import {Lexer} from '../../expression_parser/lexer.js';
+import {Parser} from '../../expression_parser/parser.js';
+import * as i18n from '../../i18n/i18n_ast.js';
+import * as html from '../../ml_parser/ast.js';
+import {HtmlParser} from '../../ml_parser/html_parser.js';
+import {WhitespaceVisitor} from '../../ml_parser/html_whitespaces.js';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../ml_parser/interpolation_config.js';
+import {LexerRange} from '../../ml_parser/lexer.js';
+import {isNgContainer as checkIsNgContainer, splitNsName} from '../../ml_parser/tags.js';
+import {mapLiteral} from '../../output/map_util.js';
+import * as o from '../../output/output_ast.js';
+import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util.js';
+import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry.js';
+import {isTrustedTypesSink} from '../../schema/trusted_types_sinks.js';
+import {CssSelector} from '../../selector.js';
+import {BindingParser} from '../../template_parser/binding_parser.js';
+import {error, partitionArray} from '../../util.js';
+import * as t from '../r3_ast.js';
+import {Identifiers as R3} from '../r3_identifiers.js';
+import {htmlAstToRender3Ast} from '../r3_template_transform.js';
+import {prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName} from '../util.js';
 
-import {I18nContext} from './i18n/context';
-import {createGoogleGetMsgStatements} from './i18n/get_msg_utils';
-import {createLocalizeStatements} from './i18n/localize_utils';
-import {I18nMetaVisitor} from './i18n/meta';
-import {assembleBoundTextPlaceholders, assembleI18nBoundString, declareI18nVariable, formatI18nPlaceholderNamesInMap, getTranslationConstPrefix, hasI18nMeta, I18N_ICU_MAPPING_PREFIX, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, TRANSLATION_VAR_PREFIX, wrapI18nPlaceholder} from './i18n/util';
-import {StylingBuilder, StylingInstruction} from './styling_builder';
-import {asLiteral, CONTEXT_NAME, getInstructionStatements, getInterpolationArgsLength, IMPLICIT_REFERENCE, Instruction, InstructionParams, invalid, invokeInstruction, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, RESTORED_VIEW_CONTEXT_NAME, trimTrailingNulls} from './util';
+import {I18nContext} from './i18n/context.js';
+import {createGoogleGetMsgStatements} from './i18n/get_msg_utils.js';
+import {createLocalizeStatements} from './i18n/localize_utils.js';
+import {I18nMetaVisitor} from './i18n/meta.js';
+import {assembleBoundTextPlaceholders, assembleI18nBoundString, declareI18nVariable, formatI18nPlaceholderNamesInMap, getTranslationConstPrefix, hasI18nMeta, I18N_ICU_MAPPING_PREFIX, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, TRANSLATION_VAR_PREFIX, wrapI18nPlaceholder} from './i18n/util.js';
+import {StylingBuilder, StylingInstruction} from './styling_builder.js';
+import {asLiteral, CONTEXT_NAME, getInstructionStatements, getInterpolationArgsLength, IMPLICIT_REFERENCE, Instruction, InstructionParams, invalid, invokeInstruction, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, RESTORED_VIEW_CONTEXT_NAME, trimTrailingNulls} from './util.js';
 
 
 

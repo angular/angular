@@ -8,14 +8,14 @@
 /// <reference types="jasmine"/>
 import ts from 'typescript';
 
-import {absoluteFrom, setFileSystem} from '../../src/helpers';
-import {InvalidFileSystem} from '../../src/invalid_file_system';
-import {AbsoluteFsPath} from '../../src/types';
+import {absoluteFrom, setFileSystem} from '../../src/helpers.js';
+import {InvalidFileSystem} from '../../src/invalid_file_system.js';
+import {AbsoluteFsPath} from '../../src/types.js';
 
-import {MockFileSystem} from './mock_file_system';
-import {MockFileSystemNative} from './mock_file_system_native';
-import {MockFileSystemPosix} from './mock_file_system_posix';
-import {MockFileSystemWindows} from './mock_file_system_windows';
+import {MockFileSystem} from './mock_file_system.js';
+import {MockFileSystemNative} from './mock_file_system_native.js';
+import {MockFileSystemPosix} from './mock_file_system_posix.js';
+import {MockFileSystemWindows} from './mock_file_system_windows.js';
 
 export interface TestFile {
   name: AbsoluteFsPath;

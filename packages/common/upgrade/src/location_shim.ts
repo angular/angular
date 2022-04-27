@@ -10,8 +10,8 @@ import {Location, LocationStrategy, PlatformLocation} from '@angular/common';
 import {UpgradeModule} from '@angular/upgrade/static';
 import {ReplaySubject} from 'rxjs';
 
-import {UrlCodec} from './params';
-import {deepEqual, isAnchor, isPromise} from './utils';
+import {UrlCodec} from './params.js';
+import {deepEqual, isAnchor, isPromise} from './utils.js';
 
 const PATH_MATCH = /^([^?#]*)(\?([^#]*))?(#(.*))?$/;
 const DOUBLE_SLASH_REGEX = /^\s*[\\/]{2,}/;

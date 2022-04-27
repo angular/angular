@@ -14,7 +14,7 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
 import {merge} from 'rxjs';
 
-import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integration_spec';
+import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integration_spec.js';
 
 {
   describe('template-driven forms integration tests', () => {

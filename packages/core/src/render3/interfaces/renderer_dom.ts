@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../../util/security/trusted_type_defs';
+import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../../util/security/trusted_type_defs.js';
 
 /**
  * The goal here is to make sure that the browser DOM API is the Renderer.

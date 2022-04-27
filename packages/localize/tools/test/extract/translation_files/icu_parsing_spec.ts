@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {extractIcuPlaceholders} from '../../../src/extract/translation_files/icu_parsing';
+import {extractIcuPlaceholders} from '../../../src/extract/translation_files/icu_parsing.js';
 
 describe('extractIcuPlaceholders()', () => {
   it('should return a single string if there is no ICU', () => {

@@ -7,9 +7,9 @@
  */
 import ts from 'typescript';
 
-import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system/index.js';
 
-import {patchTsGetExpandoInitializer, restoreGetExpandoInitializer} from './patch_ts_expando_initializer';
+import {patchTsGetExpandoInitializer, restoreGetExpandoInitializer} from './patch_ts_expando_initializer.js';
 
 /**
  * An entry point bundle contains one or two programs, e.g. `src` and `dts`,

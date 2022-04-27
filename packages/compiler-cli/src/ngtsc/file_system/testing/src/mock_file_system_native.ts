@@ -7,10 +7,11 @@
  */
 /// <reference types="node" />
 import * as os from 'os';
-import {NodeJSFileSystem} from '../../src/node_js_file_system';
-import {AbsoluteFsPath, PathSegment, PathString} from '../../src/types';
 
-import {MockFileSystem} from './mock_file_system';
+import {NodeJSFileSystem} from '../../src/node_js_file_system.js';
+import {AbsoluteFsPath, PathSegment, PathString} from '../../src/types.js';
+
+import {MockFileSystem} from './mock_file_system.js';
 
 const isWindows = os.platform() === 'win32';
 

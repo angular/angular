@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import '../browser/rollup-main';
-import '../node/node';
+import '../browser/rollup-main.js';
+import '../node/node.js';

@@ -7,16 +7,16 @@
  */
 import {AnimationMetadata, AnimationMetadataType, AnimationOptions, ɵStyleDataMap} from '@angular/animations';
 
-import {buildingFailed, validationFailed} from '../error_helpers';
-import {AnimationDriver} from '../render/animation_driver';
-import {ENTER_CLASSNAME, LEAVE_CLASSNAME, normalizeStyles} from '../util';
-import {warnValidation} from '../warning_helpers';
+import {buildingFailed, validationFailed} from '../error_helpers.js';
+import {AnimationDriver} from '../render/animation_driver.js';
+import {ENTER_CLASSNAME, LEAVE_CLASSNAME, normalizeStyles} from '../util.js';
+import {warnValidation} from '../warning_helpers.js';
 
-import {Ast} from './animation_ast';
-import {buildAnimationAst} from './animation_ast_builder';
-import {buildAnimationTimelines} from './animation_timeline_builder';
-import {AnimationTimelineInstruction} from './animation_timeline_instruction';
-import {ElementInstructionMap} from './element_instruction_map';
+import {Ast} from './animation_ast.js';
+import {buildAnimationAst} from './animation_ast_builder.js';
+import {buildAnimationTimelines} from './animation_timeline_builder.js';
+import {AnimationTimelineInstruction} from './animation_timeline_instruction.js';
+import {ElementInstructionMap} from './element_instruction_map.js';
 
 export class Animation {
   private _animationAst: Ast<AnimationMetadataType>;

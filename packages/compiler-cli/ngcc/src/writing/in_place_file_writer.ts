@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, dirname, FileSystem} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point';
-import {EntryPointBundle} from '../packages/entry_point_bundle';
-import {FileToWrite} from '../rendering/utils';
+import {absoluteFrom, AbsoluteFsPath, dirname, FileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {EntryPoint, EntryPointJsonProperty} from '../packages/entry_point.js';
+import {EntryPointBundle} from '../packages/entry_point_bundle.js';
+import {FileToWrite} from '../rendering/utils.js';
 
-import {FileWriter} from './file_writer';
+import {FileWriter} from './file_writer.js';
 
 export const NGCC_BACKUP_EXTENSION = '.__ivy_ngcc_bak';
 /**

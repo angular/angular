@@ -7,10 +7,10 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {EntryPointFileCache, isAngularDts, isDefaultLibrary, SharedFileCache} from '../../src/packages/source_file_cache';
+import {absoluteFrom, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing/index.js';
+import {loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {EntryPointFileCache, isAngularDts, isDefaultLibrary, SharedFileCache} from '../../src/packages/source_file_cache.js';
 
 runInEachFileSystem(() => {
   describe('caching', () => {

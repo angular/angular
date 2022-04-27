@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDomNode, assertNumber, assertNumberInRange} from '../../util/assert';
-import {EMPTY_ARRAY} from '../../util/empty';
-import {assertTIcu, assertTNodeForLView} from '../assert';
-import {getCurrentICUCaseIndex} from '../i18n/i18n_util';
-import {I18nRemoveOpCodes, TIcu} from '../interfaces/i18n';
-import {TIcuContainerNode} from '../interfaces/node';
-import {RNode} from '../interfaces/renderer_dom';
-import {LView, TVIEW} from '../interfaces/view';
+import {assertDomNode, assertNumber, assertNumberInRange} from '../../util/assert.js';
+import {EMPTY_ARRAY} from '../../util/empty.js';
+import {assertTIcu, assertTNodeForLView} from '../assert.js';
+import {getCurrentICUCaseIndex} from '../i18n/i18n_util.js';
+import {I18nRemoveOpCodes, TIcu} from '../interfaces/i18n.js';
+import {TIcuContainerNode} from '../interfaces/node.js';
+import {RNode} from '../interfaces/renderer_dom.js';
+import {LView, TVIEW} from '../interfaces/view.js';
 
 export function loadIcuContainerVisitor() {
   const _stack: any[] = [];

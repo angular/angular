@@ -7,11 +7,11 @@
  */
 import {compileInjectable, ConstantPool, createMayBeForwardRefExpression, ForwardRefHandling, outputAst as o, R3DeclareInjectableMetadata, R3InjectableMetadata, R3PartialDeclaration} from '@angular/compiler';
 
-import {AstObject} from '../../ast/ast_value';
-import {FatalLinkerError} from '../../fatal_linker_error';
+import {AstObject} from '../../ast/ast_value.js';
+import {FatalLinkerError} from '../../fatal_linker_error.js';
 
-import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {extractForwardRef, getDependency, wrapReference} from './util';
+import {LinkedDefinition, PartialLinker} from './partial_linker.js';
+import {extractForwardRef, getDependency, wrapReference} from './util.js';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareInjectable()` call expressions.

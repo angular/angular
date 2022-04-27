@@ -8,7 +8,7 @@
 
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
-import {BrowserViewportScroller, ViewportScroller} from '../src/viewport_scroller';
+import {BrowserViewportScroller, ViewportScroller} from '../src/viewport_scroller.js';
 
 describe('BrowserViewportScroller', () => {
   describe('setHistoryScrollRestoration', () => {

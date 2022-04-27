@@ -8,7 +8,7 @@
 
 import {ModuleWithProviders, NgModule} from '@angular/core';
 
-import {InternalFormsSharedModule, NG_MODEL_WITH_FORM_CONTROL_WARNING, REACTIVE_DRIVEN_DIRECTIVES, TEMPLATE_DRIVEN_DIRECTIVES} from './directives';
+import {InternalFormsSharedModule, NG_MODEL_WITH_FORM_CONTROL_WARNING, REACTIVE_DRIVEN_DIRECTIVES, TEMPLATE_DRIVEN_DIRECTIVES} from './directives.js';
 
 /**
  * Exports the required providers and directives for template-driven forms,

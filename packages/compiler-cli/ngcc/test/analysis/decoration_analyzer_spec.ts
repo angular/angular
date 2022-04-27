@@ -7,20 +7,20 @@
  */
 import ts from 'typescript';
 
-import {FatalDiagnosticError, makeDiagnostic} from '../../../src/ngtsc/diagnostics';
-import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {ClassDeclaration, DeclarationNode, Decorator} from '../../../src/ngtsc/reflection';
-import {loadFakeCore, loadTestFiles} from '../../../src/ngtsc/testing';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
-import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
-import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
-import {CompiledClass, DecorationAnalyses} from '../../src/analysis/types';
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {Migration, MigrationHost} from '../../src/migrations/migration';
-import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
+import {FatalDiagnosticError, makeDiagnostic} from '../../../src/ngtsc/diagnostics/index.js';
+import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {ClassDeclaration, DeclarationNode, Decorator} from '../../../src/ngtsc/reflection/index.js';
+import {loadFakeCore, loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform/index.js';
+import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer.js';
+import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry.js';
+import {CompiledClass, DecorationAnalyses} from '../../src/analysis/types.js';
+import {Esm2015ReflectionHost} from '../../src/host/esm2015_host.js';
+import {Migration, MigrationHost} from '../../src/migrations/migration.js';
+import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils.js';
 
 type DecoratorHandlerWithResolve =
     DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>&{

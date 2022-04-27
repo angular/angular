@@ -8,7 +8,7 @@
 
 /// <reference types="chrome"/>
 
-import {AngularDetection} from './ng-validate';
+import {AngularDetection} from './ng-validate.js';
 
 // Electron does not expose browserAction object,
 // Use empty calls as fallback if they are not defined.

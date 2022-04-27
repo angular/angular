@@ -8,8 +8,8 @@
 
 import ts from 'typescript';
 
-import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
-import {PerFileShimGenerator} from '../api';
+import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system/index.js';
+import {PerFileShimGenerator} from '../api.js';
 
 export class TestShimGenerator implements PerFileShimGenerator {
   readonly shouldEmit = false;

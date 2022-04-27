@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as html from '../../src/ml_parser/ast';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {ParseTreeResult, TreeError} from '../../src/ml_parser/parser';
-import {TokenType} from '../../src/ml_parser/tokens';
-import {ParseError} from '../../src/parse_util';
+import * as html from '../../src/ml_parser/ast.js';
+import {HtmlParser} from '../../src/ml_parser/html_parser.js';
+import {ParseTreeResult, TreeError} from '../../src/ml_parser/parser.js';
+import {TokenType} from '../../src/ml_parser/tokens.js';
+import {ParseError} from '../../src/parse_util.js';
 
-import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} from './ast_spec_utils';
+import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} from './ast_spec_utils.js';
 
 {
   describe('HtmlParser', () => {

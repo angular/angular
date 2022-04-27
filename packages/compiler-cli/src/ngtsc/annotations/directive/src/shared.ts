@@ -9,13 +9,13 @@
 import {createMayBeForwardRefExpression, emitDistinctChangesOnlyDefaultValue, Expression, ExternalExpr, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3QueryMetadata, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
-import {Reference} from '../../../imports';
-import {ClassPropertyMapping} from '../../../metadata';
-import {DynamicValue, EnumValue, PartialEvaluator} from '../../../partial_evaluator';
-import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
-import {HandlerFlags} from '../../../transform';
-import {createSourceSpan, createValueHasWrongTypeError, getConstructorDependencies, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
+import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics/index.js';
+import {Reference} from '../../../imports/index.js';
+import {ClassPropertyMapping} from '../../../metadata/index.js';
+import {DynamicValue, EnumValue, PartialEvaluator} from '../../../partial_evaluator/index.js';
+import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, ReflectionHost, reflectObjectLiteral} from '../../../reflection/index.js';
+import {HandlerFlags} from '../../../transform/index.js';
+import {createSourceSpan, createValueHasWrongTypeError, getConstructorDependencies, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common/index.js';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 const QUERY_TYPES = new Set([

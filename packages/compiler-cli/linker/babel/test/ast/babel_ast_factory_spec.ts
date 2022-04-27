@@ -8,9 +8,9 @@
 import {leadingComment} from '@angular/compiler';
 import generate from '@babel/generator';
 import template from '@babel/template';
-import {types as t} from '../../src/babel_core';
+import {types as t} from '../../src/babel_core.js';
 
-import {BabelAstFactory} from '../../src/ast/babel_ast_factory';
+import {BabelAstFactory} from '../../src/ast/babel_ast_factory.js';
 
 // Exposes shorthands for the `expression` and `statement`
 // methods exposed by `@babel/template`.

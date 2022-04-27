@@ -11,6 +11,6 @@
  * @description
  * Entry point for all public APIs of this package.
  */
-export * from './src/core';
+export * from './src/core.js';
 
 // This file only reexports content of the `src` folder. Keep it that way.

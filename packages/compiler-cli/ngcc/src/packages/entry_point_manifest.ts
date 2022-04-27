@@ -7,13 +7,13 @@
  */
 import {createHash} from 'crypto';
 
-import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {EntryPointWithDependencies} from '../dependencies/dependency_host';
+import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {EntryPointWithDependencies} from '../dependencies/dependency_host.js';
 
-import {NGCC_VERSION} from './build_marker';
-import {NgccConfiguration} from './configuration';
-import {getEntryPointInfo, isEntryPoint, PackageJsonFormatProperties} from './entry_point';
+import {NGCC_VERSION} from './build_marker.js';
+import {NgccConfiguration} from './configuration.js';
+import {getEntryPointInfo, isEntryPoint, PackageJsonFormatProperties} from './entry_point.js';
 
 /**
  * Manages reading and writing a manifest file that contains a list of all the entry-points that

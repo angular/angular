@@ -10,14 +10,14 @@ import {ComponentFactoryResolver, EnvironmentInjector, NgModuleRef} from '@angul
 import {MonoTypeOperatorFunction} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {ActivationEnd, ChildActivationEnd, Event} from '../events';
-import {DetachedRouteHandleInternal, RouteReuseStrategy} from '../route_reuse_strategy';
-import {NavigationTransition} from '../router';
-import {ChildrenOutletContexts} from '../router_outlet_context';
-import {ActivatedRoute, advanceActivatedRoute, RouterState} from '../router_state';
-import {forEach} from '../utils/collection';
-import {getClosestRouteInjector} from '../utils/config';
-import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
+import {ActivationEnd, ChildActivationEnd, Event} from '../events.js';
+import {DetachedRouteHandleInternal, RouteReuseStrategy} from '../route_reuse_strategy.js';
+import {NavigationTransition} from '../router.js';
+import {ChildrenOutletContexts} from '../router_outlet_context.js';
+import {ActivatedRoute, advanceActivatedRoute, RouterState} from '../router_state.js';
+import {forEach} from '../utils/collection.js';
+import {getClosestRouteInjector} from '../utils/config.js';
+import {nodeChildrenAsMap, TreeNode} from '../utils/tree.js';
 
 export const activateRoutes =
     (rootContexts: ChildrenOutletContexts, routeReuseStrategy: RouteReuseStrategy,

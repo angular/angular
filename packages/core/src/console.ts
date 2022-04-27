@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from './di';
+import {Injectable} from './di/index.js';
 
 @Injectable({providedIn: 'platform'})
 export class Console {

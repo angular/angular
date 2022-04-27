@@ -8,12 +8,12 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
-import {isDtsPath} from '../../util/src/typescript';
-import {PerFileShimGenerator, TopLevelShimGenerator} from '../api';
+import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system/index.js';
+import {isDtsPath} from '../../util/src/typescript.js';
+import {PerFileShimGenerator, TopLevelShimGenerator} from '../api.js';
 
-import {isFileShimSourceFile, isShim, sfExtensionData} from './expando';
-import {makeShimFileName} from './util';
+import {isFileShimSourceFile, isShim, sfExtensionData} from './expando.js';
+import {makeShimFileName} from './util.js';
 
 interface ShimGeneratorData {
   generator: PerFileShimGenerator;

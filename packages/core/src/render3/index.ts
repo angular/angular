@@ -5,21 +5,21 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {LifecycleHooksFeature, renderComponent, whenRendered} from './component';
-import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefineNgModule, ɵɵdefinePipe, ɵɵsetComponentScope, ɵɵsetNgModuleScope} from './definition';
-import {ɵɵCopyDefinitionFeature} from './features/copy_definition_feature';
-import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_feature';
-import {ɵɵNgOnChangesFeature} from './features/ng_onchanges_feature';
-import {ɵɵProvidersFeature} from './features/providers_feature';
-import {ɵɵStandaloneFeature} from './features/standalone_feature';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PipeDef} from './interfaces/definition';
-import {ɵɵComponentDeclaration, ɵɵDirectiveDeclaration, ɵɵFactoryDeclaration, ɵɵInjectorDeclaration, ɵɵNgModuleDeclaration, ɵɵPipeDeclaration} from './interfaces/public_definitions';
-import {ComponentDebugMetadata, DirectiveDebugMetadata, getComponent, getDirectiveMetadata, getDirectives, getHostElement, getRenderedText} from './util/discovery_utils';
+import {LifecycleHooksFeature, renderComponent, whenRendered} from './component.js';
+import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefineNgModule, ɵɵdefinePipe, ɵɵsetComponentScope, ɵɵsetNgModuleScope} from './definition.js';
+import {ɵɵCopyDefinitionFeature} from './features/copy_definition_feature.js';
+import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_feature.js';
+import {ɵɵNgOnChangesFeature} from './features/ng_onchanges_feature.js';
+import {ɵɵProvidersFeature} from './features/providers_feature.js';
+import {ɵɵStandaloneFeature} from './features/standalone_feature.js';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PipeDef} from './interfaces/definition.js';
+import {ɵɵComponentDeclaration, ɵɵDirectiveDeclaration, ɵɵFactoryDeclaration, ɵɵInjectorDeclaration, ɵɵNgModuleDeclaration, ɵɵPipeDeclaration} from './interfaces/public_definitions.js';
+import {ComponentDebugMetadata, DirectiveDebugMetadata, getComponent, getDirectiveMetadata, getDirectives, getHostElement, getRenderedText} from './util/discovery_utils.js';
 
-export {NgModuleType} from '../metadata/ng_module_def';
-export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref';
-export {ɵɵgetInheritedFactory} from './di';
-export {getLocaleId, setLocaleId} from './i18n/i18n_locale_id';
+export {NgModuleType} from '../metadata/ng_module_def.js';
+export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref.js';
+export {ɵɵgetInheritedFactory} from './di.js';
+export {getLocaleId, setLocaleId} from './i18n/i18n_locale_id.js';
 // clang-format off
 export {
   detectChanges,
@@ -129,17 +129,17 @@ export {
   ɵɵtextInterpolate7,
   ɵɵtextInterpolate8,
   ɵɵtextInterpolateV,
-} from './instructions/all';
-export {ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nEnd, ɵɵi18nExp,ɵɵi18nPostprocess, ɵɵi18nStart} from './instructions/i18n';
-export {RenderFlags} from './interfaces/definition';
+} from './instructions/all.js';
+export {ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nEnd, ɵɵi18nExp,ɵɵi18nPostprocess, ɵɵi18nStart} from './instructions/i18n.js';
+export {RenderFlags} from './interfaces/definition.js';
 export {
   AttributeMarker
-} from './interfaces/node';
-export {CssSelectorList, ProjectionSlots} from './interfaces/projection';
+} from './interfaces/node.js';
+export {CssSelectorList, ProjectionSlots} from './interfaces/projection.js';
 export {
   setClassMetadata,
-} from './metadata';
-export {NgModuleFactory, NgModuleRef, createEnvironmentInjector} from './ng_module_ref';
+} from './metadata.js';
+export {NgModuleFactory, NgModuleRef, createEnvironmentInjector} from './ng_module_ref.js';
 export {
   ɵɵpipe,
   ɵɵpipeBind1,
@@ -147,7 +147,7 @@ export {
   ɵɵpipeBind3,
   ɵɵpipeBind4,
   ɵɵpipeBindV,
-} from './pipe';
+} from './pipe.js';
 export {
   ɵɵpureFunction0,
   ɵɵpureFunction1,
@@ -159,22 +159,22 @@ export {
   ɵɵpureFunction7,
   ɵɵpureFunction8,
   ɵɵpureFunctionV,
-} from './pure_function';
+} from './pure_function.js';
 export {
   ɵɵcontentQuery,
   ɵɵloadQuery,
   ɵɵqueryRefresh,
-  ɵɵviewQuery} from './query';
+  ɵɵviewQuery} from './query.js';
 export {
   ɵɵdisableBindings,
 
   ɵɵenableBindings,
   ɵɵresetView,
   ɵɵrestoreView,
-} from './state';
-export {NO_CHANGE} from './tokens';
-export { ɵɵresolveBody, ɵɵresolveDocument,ɵɵresolveWindow} from './util/misc_utils';
-export { ɵɵtemplateRefExtractor} from './view_engine_compatibility_prebound';
+} from './state.js';
+export {NO_CHANGE} from './tokens.js';
+export { ɵɵresolveBody, ɵɵresolveDocument,ɵɵresolveWindow} from './util/misc_utils.js';
+export { ɵɵtemplateRefExtractor} from './view_engine_compatibility_prebound.js';
 // clang-format on
 
 export {

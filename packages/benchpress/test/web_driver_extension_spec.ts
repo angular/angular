@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, Options, WebDriverExtension} from '../index';
+import {Injector, Options, WebDriverExtension} from '../index.js';
 
 (function() {
 function createExtension(ids: any[], caps: any) {

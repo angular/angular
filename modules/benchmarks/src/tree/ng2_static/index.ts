@@ -9,10 +9,10 @@
 import {ApplicationRef, enableProdMode} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import {bindAction, profile} from '../../util';
-import {buildTree, emptyTree, initTreeUtils} from '../util';
+import {bindAction, profile} from '../../util.js';
+import {buildTree, emptyTree, initTreeUtils} from '../util.js';
 
-import {createAppModule, RootTreeComponent} from './tree';
+import {createAppModule, RootTreeComponent} from './tree.js';
 
 let tree: RootTreeComponent;
 let appRef: ApplicationRef;

@@ -9,7 +9,7 @@
 import {IterableChangeRecord, IterableChanges} from '@angular/core/src/change_detection/differs/iterable_differs';
 import {KeyValueChangeRecord, KeyValueChanges} from '@angular/core/src/change_detection/differs/keyvalue_differs';
 
-import {stringify} from '../../src/util/stringify';
+import {stringify} from '../../src/util/stringify.js';
 
 export function iterableDifferToString<V>(iterableChanges: IterableChanges<V>) {
   const collection: string[] = [];

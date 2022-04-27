@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {ClassDeclaration} from '../../reflection';
+import {ClassDeclaration} from '../../reflection/index.js';
 
 const PARSED_TS_VERSION = parseFloat(ts.versionMajorMinor);
 

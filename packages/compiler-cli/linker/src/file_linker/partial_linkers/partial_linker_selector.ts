@@ -7,20 +7,20 @@
  */
 import semver from 'semver';
 
-import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
-import {Logger} from '../../../../src/ngtsc/logging';
-import {createGetSourceFile} from '../get_source_file';
-import {LinkerEnvironment} from '../linker_environment';
+import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../../src/ngtsc/logging/index.js';
+import {createGetSourceFile} from '../get_source_file.js';
+import {LinkerEnvironment} from '../linker_environment.js';
 
-import {PartialClassMetadataLinkerVersion1} from './partial_class_metadata_linker_1';
-import {PartialComponentLinkerVersion1} from './partial_component_linker_1';
-import {PartialDirectiveLinkerVersion1} from './partial_directive_linker_1';
-import {PartialFactoryLinkerVersion1} from './partial_factory_linker_1';
-import {PartialInjectableLinkerVersion1} from './partial_injectable_linker_1';
-import {PartialInjectorLinkerVersion1} from './partial_injector_linker_1';
-import {PartialLinker} from './partial_linker';
-import {PartialNgModuleLinkerVersion1} from './partial_ng_module_linker_1';
-import {PartialPipeLinkerVersion1} from './partial_pipe_linker_1';
+import {PartialClassMetadataLinkerVersion1} from './partial_class_metadata_linker_1.js';
+import {PartialComponentLinkerVersion1} from './partial_component_linker_1.js';
+import {PartialDirectiveLinkerVersion1} from './partial_directive_linker_1.js';
+import {PartialFactoryLinkerVersion1} from './partial_factory_linker_1.js';
+import {PartialInjectableLinkerVersion1} from './partial_injectable_linker_1.js';
+import {PartialInjectorLinkerVersion1} from './partial_injector_linker_1.js';
+import {PartialLinker} from './partial_linker.js';
+import {PartialNgModuleLinkerVersion1} from './partial_ng_module_linker_1.js';
+import {PartialPipeLinkerVersion1} from './partial_pipe_linker_1.js';
 
 export const ɵɵngDeclareDirective = 'ɵɵngDeclareDirective';
 export const ɵɵngDeclareClassMetadata = 'ɵɵngDeclareClassMetadata';

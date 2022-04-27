@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵcomputeMsgId, ɵmakeParsedTranslation} from '@angular/localize';
-import {ParseAnalysis, ParsedTranslationBundle} from '../../../../src/translate/translation_files/translation_parsers/translation_parser';
-import {XtbTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/xtb_translation_parser';
+
+import {ParseAnalysis, ParsedTranslationBundle} from '../../../../src/translate/translation_files/translation_parsers/translation_parser.js';
+import {XtbTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/xtb_translation_parser.js';
 
 describe('XtbTranslationParser', () => {
   describe('canParse()', () => {

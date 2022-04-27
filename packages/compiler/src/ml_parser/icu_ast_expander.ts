@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseError, ParseSourceSpan} from '../parse_util';
+import {ParseError, ParseSourceSpan} from '../parse_util.js';
 
-import * as html from './ast';
+import * as html from './ast.js';
 
 // http://cldr.unicode.org/index/cldr-spec/plural-rules
 const PLURAL_CASES: string[] = ['zero', 'one', 'two', 'few', 'many', 'other'];

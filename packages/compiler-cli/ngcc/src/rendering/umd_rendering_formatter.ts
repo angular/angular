@@ -8,14 +8,14 @@
 import MagicString from 'magic-string';
 import ts from 'typescript';
 
-import {PathManipulation} from '../../../src/ngtsc/file_system';
-import {Reexport} from '../../../src/ngtsc/imports';
-import {Import, ImportManager} from '../../../src/ngtsc/translator';
-import {ExportInfo} from '../analysis/private_declarations_analyzer';
-import {UmdReflectionHost} from '../host/umd_host';
+import {PathManipulation} from '../../../src/ngtsc/file_system/index.js';
+import {Reexport} from '../../../src/ngtsc/imports/index.js';
+import {Import, ImportManager} from '../../../src/ngtsc/translator/index.js';
+import {ExportInfo} from '../analysis/private_declarations_analyzer.js';
+import {UmdReflectionHost} from '../host/umd_host.js';
 
-import {Esm5RenderingFormatter} from './esm5_rendering_formatter';
-import {stripExtension} from './utils';
+import {Esm5RenderingFormatter} from './esm5_rendering_formatter.js';
+import {stripExtension} from './utils.js';
 
 /**
  * A RenderingFormatter that works with UMD files, instead of `import` and `export` statements

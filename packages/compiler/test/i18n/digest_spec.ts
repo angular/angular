@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computeMsgId, digest, sha1} from '../../src/i18n/digest';
+import {computeMsgId, digest, sha1} from '../../src/i18n/digest.js';
 
 {
   describe('digest', () => {

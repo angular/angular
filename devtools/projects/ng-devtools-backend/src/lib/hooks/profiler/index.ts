@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgProfiler} from './native';
-import {PatchingProfiler} from './polyfill';
-import {Profiler} from './shared';
+import {NgProfiler} from './native.js';
+import {PatchingProfiler} from './polyfill.js';
+import {Profiler} from './shared.js';
 
-export {Hooks, Profiler} from './shared';
+export {Hooks, Profiler} from './shared.js';
 
 /**
  * Factory method for creating profiler object.

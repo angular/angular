@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Adapter} from './adapter';
-import {Debuggable, DebugLogger} from './api';
+import {Adapter} from './adapter.js';
+import {Debuggable, DebugLogger} from './api.js';
 
 const SW_VERSION = '0.0.0-PLACEHOLDER';
 const DEBUG_LOG_BUFFER_SIZE = 100;

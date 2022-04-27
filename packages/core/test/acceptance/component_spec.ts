@@ -12,8 +12,8 @@ import {TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {global} from '../../src/util/global';
+import {domRendererFactory3} from '../../src/render3/interfaces/renderer.js';
+import {global} from '../../src/util/global.js';
 
 
 describe('component', () => {

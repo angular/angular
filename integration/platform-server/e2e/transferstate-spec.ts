@@ -8,7 +8,7 @@
 
 import {browser, by, element} from 'protractor';
 
-import {verifyNoBrowserErrors} from './util';
+import {verifyNoBrowserErrors} from './util.js';
 
 describe('TransferState', function() {
   it('should transfer component state', function() {

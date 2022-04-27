@@ -8,10 +8,10 @@
 
 import {Events, MessageBus} from 'protocol';
 
-import {ApplicationEnvironment} from '../application-environment/index';
+import {ApplicationEnvironment} from '../application-environment/index.js';
 
-import {DevToolsTabsComponent} from './devtools-tabs.component';
-import {TabUpdate} from './tab-update/index';
+import {DevToolsTabsComponent} from './devtools-tabs.component.js';
+import {TabUpdate} from './tab-update/index.js';
 
 describe('DevtoolsTabsComponent', () => {
   let messageBusMock: MessageBus<Events>;

@@ -8,11 +8,11 @@
 
 import {ParseSourceFile} from '@angular/compiler';
 
-import {DeclarationNode} from '../../reflection';
+import {DeclarationNode} from '../../reflection/index.js';
 
-import {IndexedComponent} from './api';
-import {IndexingContext} from './context';
-import {getTemplateIdentifiers} from './template';
+import {IndexedComponent} from './api.js';
+import {IndexingContext} from './context.js';
+import {getTemplateIdentifiers} from './template.js';
 
 /**
  * Generates `IndexedComponent` entries from a `IndexingContext`, which has information

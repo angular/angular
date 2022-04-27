@@ -8,13 +8,13 @@
 
 import ts from 'typescript';
 
-import {readBaseClass} from '../../../src/ngtsc/annotations/common';
-import {Reference} from '../../../src/ngtsc/imports';
-import {ClassDeclaration} from '../../../src/ngtsc/reflection';
-import {HandlerFlags} from '../../../src/ngtsc/transform';
+import {readBaseClass} from '../../../src/ngtsc/annotations/common/index.js';
+import {Reference} from '../../../src/ngtsc/imports/index.js';
+import {ClassDeclaration} from '../../../src/ngtsc/reflection/index.js';
+import {HandlerFlags} from '../../../src/ngtsc/transform/index.js';
 
-import {Migration, MigrationHost} from './migration';
-import {createComponentDecorator, createDirectiveDecorator, hasDirectiveDecorator, hasPipeDecorator} from './utils';
+import {Migration, MigrationHost} from './migration.js';
+import {createComponentDecorator, createDirectiveDecorator, hasDirectiveDecorator, hasPipeDecorator} from './utils.js';
 
 export class UndecoratedChildMigration implements Migration {
   apply(clazz: ClassDeclaration, host: MigrationHost): ts.Diagnostic|null {

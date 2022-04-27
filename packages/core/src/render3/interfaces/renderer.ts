@@ -15,10 +15,11 @@
  * it will be easy to implement such API.
  */
 
-import {RendererStyleFlags2, RendererType2} from '../../render/api_flags';
-import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../../util/security/trusted_type_defs';
-import {getDocument} from './document';
-import {RComment, RElement, RNode, RText} from './renderer_dom';
+import {RendererStyleFlags2, RendererType2} from '../../render/api_flags.js';
+import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../../util/security/trusted_type_defs.js';
+
+import {getDocument} from './document.js';
+import {RComment, RElement, RNode, RText} from './renderer_dom.js';
 
 // TODO: cleanup once the code is merged in angular/angular
 export enum RendererStyleFlags3 {

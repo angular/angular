@@ -9,16 +9,16 @@
 import {compileClassMetadata, compileDeclareClassMetadata, compileDeclarePipeFromMetadata, compilePipeFromMetadata, FactoryTarget, R3ClassMetadata, R3PipeMetadata, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {Reference} from '../../imports';
-import {SemanticSymbol} from '../../incremental/semantic_graph';
-import {InjectableClassRegistry, MetadataRegistry, MetaKind} from '../../metadata';
-import {PartialEvaluator} from '../../partial_evaluator';
-import {PerfEvent, PerfRecorder} from '../../perf';
-import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
-import {LocalModuleScopeRegistry} from '../../scope';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
-import {compileDeclareFactory, compileNgFactoryDefField, compileResults, createValueHasWrongTypeError, extractClassMetadata, findAngularDecorator, getValidConstructorDependencies, makeDuplicateDeclarationError, toFactoryMetadata, unwrapExpression, wrapTypeReference} from '../common';
+import {ErrorCode, FatalDiagnosticError} from '../../diagnostics/index.js';
+import {Reference} from '../../imports/index.js';
+import {SemanticSymbol} from '../../incremental/semantic_graph/index.js';
+import {InjectableClassRegistry, MetadataRegistry, MetaKind} from '../../metadata/index.js';
+import {PartialEvaluator} from '../../partial_evaluator/index.js';
+import {PerfEvent, PerfRecorder} from '../../perf/index.js';
+import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection/index.js';
+import {LocalModuleScopeRegistry} from '../../scope/index.js';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform/index.js';
+import {compileDeclareFactory, compileNgFactoryDefField, compileResults, createValueHasWrongTypeError, extractClassMetadata, findAngularDecorator, getValidConstructorDependencies, makeDuplicateDeclarationError, toFactoryMetadata, unwrapExpression, wrapTypeReference} from '../common/index.js';
 
 export interface PipeHandlerData {
   meta: R3PipeMetadata;

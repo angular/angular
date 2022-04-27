@@ -7,11 +7,11 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {createDependencyInfo} from '../../src/dependencies/dependency_host';
-import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host';
+import {absoluteFrom, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing/index.js';
+import {loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {createDependencyInfo} from '../../src/dependencies/dependency_host.js';
+import {DtsDependencyHost} from '../../src/dependencies/dts_dependency_host.js';
 
 runInEachFileSystem(() => {
   describe('DtsDependencyHost', () => {

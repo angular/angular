@@ -5,12 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {KeyValueArray} from '../../util/array_utils';
-import {TStylingRange} from '../interfaces/styling';
-import {TIcu} from './i18n';
-import {CssSelector} from './projection';
-import {RNode} from './renderer_dom';
-import {LView, TView} from './view';
+import {KeyValueArray} from '../../util/array_utils.js';
+import {TStylingRange} from '../interfaces/styling.js';
+
+import {TIcu} from './i18n.js';
+import {CssSelector} from './projection.js';
+import {RNode} from './renderer_dom.js';
+import {LView, TView} from './view.js';
 
 
 /**

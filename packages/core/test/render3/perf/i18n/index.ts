@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵadvance, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nExp, ɵɵpropertyInterpolate1, ɵɵtext, ɵɵtextInterpolate1} from '../../../../src/render3/instructions/all';
-import {ComponentTemplate, RenderFlags} from '../../../../src/render3/interfaces/definition';
-import {AttributeMarker, TAttributes} from '../../../../src/render3/interfaces/node';
-import {Benchmark, createBenchmark} from '../micro_bench';
-import {MicroBenchmarkRenderNode} from '../noop_renderer';
-import {setupTestHarness} from '../setup';
+import {ɵɵadvance, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nExp, ɵɵpropertyInterpolate1, ɵɵtext, ɵɵtextInterpolate1} from '../../../../src/render3/instructions/all.js';
+import {ComponentTemplate, RenderFlags} from '../../../../src/render3/interfaces/definition.js';
+import {AttributeMarker, TAttributes} from '../../../../src/render3/interfaces/node.js';
+import {Benchmark, createBenchmark} from '../micro_bench.js';
+import {MicroBenchmarkRenderNode} from '../noop_renderer.js';
+import {setupTestHarness} from '../setup.js';
 
 type ComponentDef = {
   consts: (string|TAttributes)[],

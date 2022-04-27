@@ -8,7 +8,7 @@
 
 import {filter} from 'rxjs/operators';
 
-import {EventEmitter} from '../src/event_emitter';
+import {EventEmitter} from '../src/event_emitter.js';
 
 {
   describe('EventEmitter', () => {

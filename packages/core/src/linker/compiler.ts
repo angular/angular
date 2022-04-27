@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '../di/injectable';
-import {InjectionToken} from '../di/injection_token';
-import {StaticProvider} from '../di/interface/provider';
-import {MissingTranslationStrategy} from '../i18n/tokens';
-import {Type} from '../interface/type';
-import {ViewEncapsulation} from '../metadata/view';
-import {ComponentFactory as ComponentFactoryR3} from '../render3/component_ref';
-import {getComponentDef, getNgModuleDef} from '../render3/definition';
-import {NgModuleFactory as NgModuleFactoryR3} from '../render3/ng_module_ref';
-import {maybeUnwrapFn} from '../render3/util/misc_utils';
+import {Injectable} from '../di/injectable.js';
+import {InjectionToken} from '../di/injection_token.js';
+import {StaticProvider} from '../di/interface/provider.js';
+import {MissingTranslationStrategy} from '../i18n/tokens.js';
+import {Type} from '../interface/type.js';
+import {ViewEncapsulation} from '../metadata/view.js';
+import {ComponentFactory as ComponentFactoryR3} from '../render3/component_ref.js';
+import {getComponentDef, getNgModuleDef} from '../render3/definition.js';
+import {NgModuleFactory as NgModuleFactoryR3} from '../render3/ng_module_ref.js';
+import {maybeUnwrapFn} from '../render3/util/misc_utils.js';
 
-import {ComponentFactory} from './component_factory';
-import {NgModuleFactory} from './ng_module_factory';
+import {ComponentFactory} from './component_factory.js';
+import {NgModuleFactory} from './ng_module_factory.js';
 
 /**
  * Combination of NgModuleFactory and ComponentFactories.

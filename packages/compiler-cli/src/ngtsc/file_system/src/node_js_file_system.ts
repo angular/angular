@@ -11,7 +11,7 @@ import module from 'module';
 import * as p from 'path';
 import {fileURLToPath} from 'url';
 
-import {AbsoluteFsPath, FileStats, FileSystem, PathManipulation, PathSegment, PathString, ReadonlyFileSystem} from './types';
+import {AbsoluteFsPath, FileStats, FileSystem, PathManipulation, PathSegment, PathString, ReadonlyFileSystem} from './types.js';
 
 /**
  * A wrapper around the Node.js file-system that supports path manipulation.

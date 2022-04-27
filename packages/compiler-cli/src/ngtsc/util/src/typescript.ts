@@ -10,8 +10,8 @@ const TS = /\.tsx?$/i;
 const D_TS = /\.d\.ts$/i;
 
 import ts from 'typescript';
-import {AbsoluteFsPath, getFileSystem} from '../../file_system';
-import {DeclarationNode} from '../../reflection';
+import {AbsoluteFsPath, getFileSystem} from '../../file_system/index.js';
+import {DeclarationNode} from '../../reflection/index.js';
 
 /**
  * Type describing a symbol that is guaranteed to have a value declaration.

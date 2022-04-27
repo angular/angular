@@ -7,17 +7,17 @@
  */
 import {AnimationMetadata, AnimationPlayer, AnimationTriggerMetadata} from '@angular/animations';
 
-import {TriggerAst} from '../dsl/animation_ast';
-import {buildAnimationAst} from '../dsl/animation_ast_builder';
-import {AnimationTrigger, buildTrigger} from '../dsl/animation_trigger';
-import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
-import {triggerBuildFailed} from '../error_helpers';
-import {warnTriggerBuild} from '../warning_helpers';
+import {TriggerAst} from '../dsl/animation_ast.js';
+import {buildAnimationAst} from '../dsl/animation_ast_builder.js';
+import {AnimationTrigger, buildTrigger} from '../dsl/animation_trigger.js';
+import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer.js';
+import {triggerBuildFailed} from '../error_helpers.js';
+import {warnTriggerBuild} from '../warning_helpers.js';
 
-import {AnimationDriver} from './animation_driver';
-import {parseTimelineCommand} from './shared';
-import {TimelineAnimationEngine} from './timeline_animation_engine';
-import {TransitionAnimationEngine} from './transition_animation_engine';
+import {AnimationDriver} from './animation_driver.js';
+import {parseTimelineCommand} from './shared.js';
+import {TimelineAnimationEngine} from './timeline_animation_engine.js';
+import {TransitionAnimationEngine} from './transition_animation_engine.js';
 
 export class AnimationEngine {
   private _transitionEngine: TransitionAnimationEngine;

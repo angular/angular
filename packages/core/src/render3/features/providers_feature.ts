@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ProcessProvidersFunction, Provider} from '../../di/interface/provider';
-import {providersResolver} from '../di_setup';
-import {DirectiveDef} from '../interfaces/definition';
+import {ProcessProvidersFunction, Provider} from '../../di/interface/provider.js';
+import {providersResolver} from '../di_setup.js';
+import {DirectiveDef} from '../interfaces/definition.js';
 
 /**
  * This feature resolves the providers of a directive (or component),

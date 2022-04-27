@@ -8,7 +8,7 @@
 import {APP_ID, createPlatformFactory, NgModule, NgZone, PLATFORM_INITIALIZER, platformCore, StaticProvider} from '@angular/core';
 import {BrowserModule, ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
 
-import {BrowserDetection, createNgZone} from './browser_util';
+import {BrowserDetection, createNgZone} from './browser_util.js';
 
 function initBrowserTests() {
   BrowserDomAdapter.makeCurrent();

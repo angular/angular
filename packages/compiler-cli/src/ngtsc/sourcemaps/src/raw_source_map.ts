@@ -5,8 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath} from '../../file_system';
-import {ContentOrigin} from './content_origin';
+import {AbsoluteFsPath} from '../../file_system/index.js';
+
+import {ContentOrigin} from './content_origin.js';
 
 /**
  * This interface is the basic structure of the JSON in a raw source map that one might load from

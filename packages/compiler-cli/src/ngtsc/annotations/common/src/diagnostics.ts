@@ -8,15 +8,15 @@
 
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
-import {Reference} from '../../../imports';
-import {InjectableClassRegistry, MetadataReader} from '../../../metadata';
-import {describeResolvedType, DynamicValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
-import {ClassDeclaration, ReflectionHost} from '../../../reflection';
-import {DeclarationData, LocalModuleScopeRegistry} from '../../../scope';
-import {identifierOfNode} from '../../../util/src/typescript';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics/index.js';
+import {Reference} from '../../../imports/index.js';
+import {InjectableClassRegistry, MetadataReader} from '../../../metadata/index.js';
+import {describeResolvedType, DynamicValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator/index.js';
+import {ClassDeclaration, ReflectionHost} from '../../../reflection/index.js';
+import {DeclarationData, LocalModuleScopeRegistry} from '../../../scope/index.js';
+import {identifierOfNode} from '../../../util/src/typescript.js';
 
-import {readBaseClass} from './util';
+import {readBaseClass} from './util.js';
 
 
 /**

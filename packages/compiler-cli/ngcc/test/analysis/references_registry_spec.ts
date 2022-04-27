@@ -7,14 +7,14 @@
  */
 import ts from 'typescript';
 
-import {absoluteFrom} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
-import {Reference} from '../../../src/ngtsc/imports';
-import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
-import {DeclarationNode, TypeScriptReflectionHost} from '../../../src/ngtsc/reflection';
-import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
-import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
-import {makeTestBundleProgram} from '../helpers/utils';
+import {absoluteFrom} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing/index.js';
+import {Reference} from '../../../src/ngtsc/imports/index.js';
+import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator/index.js';
+import {DeclarationNode, TypeScriptReflectionHost} from '../../../src/ngtsc/reflection/index.js';
+import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry.js';
+import {makeTestBundleProgram} from '../helpers/utils.js';
 
 runInEachFileSystem(() => {
   describe('NgccReferencesRegistry', () => {

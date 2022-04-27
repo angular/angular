@@ -11,8 +11,8 @@ import {ProfilerFrame} from 'protocol';
 import {Subject, Subscription} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 
-import {render} from '../../../../vendor/webtreemap/treemap';
-import {TreeMapFormatter, TreeMapNode} from '../record-formatter/tree-map-formatter';
+import {render} from '../../../../vendor/webtreemap/treemap.js';
+import {TreeMapFormatter, TreeMapNode} from '../record-formatter/tree-map-formatter/index.js';
 
 @Component({
   selector: 'ng-tree-map-visualizer',

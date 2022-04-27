@@ -10,8 +10,8 @@ import {APP_BASE_HREF} from '@angular/common';
 import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {HashLocationComponent} from './hash_location_component';
-import {PathLocationComponent} from './path_location_component';
+import {HashLocationComponent} from './hash_location_component.js';
+import {PathLocationComponent} from './path_location_component.js';
 
 @Component({
   selector: 'example-app',

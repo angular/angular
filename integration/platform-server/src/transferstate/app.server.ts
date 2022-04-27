@@ -9,8 +9,8 @@
 import {NgModule} from '@angular/core';
 import {ServerModule, ServerTransferStateModule} from '@angular/platform-server';
 
-import {TransferStateModule} from './app';
-import {TransferStateComponent} from './transfer-state.component';
+import {TransferStateModule} from './app.js';
+import {TransferStateComponent} from './transfer-state.component.js';
 
 @NgModule({
   bootstrap: [TransferStateComponent],

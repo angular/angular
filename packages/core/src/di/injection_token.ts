@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
-import {assertLessThan} from '../util/assert';
+import {Type} from '../interface/type.js';
+import {assertLessThan} from '../util/assert.js';
 
-import {ɵɵdefineInjectable} from './interface/defs';
+import {ɵɵdefineInjectable} from './interface/defs.js';
 
 /**
  * Creates a token that can be used in a DI Provider.

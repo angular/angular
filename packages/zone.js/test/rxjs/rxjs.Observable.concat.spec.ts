@@ -9,7 +9,7 @@
 import {asapScheduler, concat, Observable, of, range} from 'rxjs';
 import {concatAll, concatMap, concatMapTo, map} from 'rxjs/operators';
 
-import {asyncTest} from '../test-util';
+import {asyncTest} from '../test-util.js';
 
 describe('Observable instance method concat', () => {
   let log: any[];

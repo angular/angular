@@ -7,8 +7,9 @@
  */
 
 import ts from 'typescript';
-import {ClassDeclaration} from '../../reflection';
-import {SymbolWithValueDeclaration} from '../../util/src/typescript';
+
+import {ClassDeclaration} from '../../reflection/index.js';
+import {SymbolWithValueDeclaration} from '../../util/src/typescript.js';
 
 /**
  * Metadata on a directive which is available in the scope of a template.

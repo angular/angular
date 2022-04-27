@@ -13,10 +13,10 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {UpgradeModule} from '@angular/upgrade/static';
 
-import * as angular from '../../../src/common/src/angular1';
-import {html, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
+import * as angular from '../../../src/common/src/angular1.js';
+import {html, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers.js';
 
-import {bootstrap} from './static_test_helpers';
+import {bootstrap} from './static_test_helpers.js';
 
 withEachNg1Version(() => {
   describe('testability', () => {

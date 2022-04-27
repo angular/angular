@@ -8,9 +8,9 @@
 
 import ts from 'typescript';
 
-import {Cycle} from '../../../cycles';
-import {makeRelatedInformation} from '../../../diagnostics';
-import {Reference} from '../../../imports';
+import {Cycle} from '../../../cycles/index.js';
+import {makeRelatedInformation} from '../../../diagnostics/index.js';
+import {Reference} from '../../../imports/index.js';
 
 
 /**

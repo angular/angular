@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {escapeRegExp, partitionArray, splitAtColon, stringify, utf8Encode} from '../src/util';
+import {escapeRegExp, partitionArray, splitAtColon, stringify, utf8Encode} from '../src/util.js';
 
 {
   describe('util', () => {

@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵParsedMessage} from '@angular/localize';
-import {Diagnostics} from '../../../src/diagnostics';
-import {LegacyMessageIdMigrationSerializer} from '../../../src/extract/translation_files/legacy_message_id_migration_serializer';
-import {mockMessage} from './mock_message';
+
+import {Diagnostics} from '../../../src/diagnostics.js';
+import {LegacyMessageIdMigrationSerializer} from '../../../src/extract/translation_files/legacy_message_id_migration_serializer.js';
+
+import {mockMessage} from './mock_message.js';
 
 // Doesn't need to run in each file system since it doesn't interact with the file system.
 

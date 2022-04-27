@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getCompilerFacade, JitCompilerUsage, R3PipeMetadataFacade} from '../../compiler/compiler_facade';
-import {reflectDependencies} from '../../di/jit/util';
-import {Type} from '../../interface/type';
-import {Pipe} from '../../metadata/directives';
-import {NG_FACTORY_DEF, NG_PIPE_DEF} from '../fields';
+import {getCompilerFacade, JitCompilerUsage, R3PipeMetadataFacade} from '../../compiler/compiler_facade.js';
+import {reflectDependencies} from '../../di/jit/util.js';
+import {Type} from '../../interface/type.js';
+import {Pipe} from '../../metadata/directives.js';
+import {NG_FACTORY_DEF, NG_PIPE_DEF} from '../fields.js';
 
-import {angularCoreEnv} from './environment';
+import {angularCoreEnv} from './environment.js';
 
 export function compilePipe(type: Type<any>, meta: Pipe): void {
   let ngPipeDef: any = null;

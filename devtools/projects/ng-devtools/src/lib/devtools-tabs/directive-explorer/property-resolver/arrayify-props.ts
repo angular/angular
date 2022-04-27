@@ -8,7 +8,7 @@
 
 import {Descriptor} from 'protocol';
 
-import {Property} from './element-property-resolver';
+import {Property} from './element-property-resolver.js';
 
 export const arrayifyProps =
     (props: {[prop: string]: Descriptor}|Descriptor[], parent: Property|null = null): Property[] =>

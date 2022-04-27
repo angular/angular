@@ -8,9 +8,9 @@
 
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {GetComponentLocationsForTemplateResponse, GetTcbResponse, GetTemplateLocationForComponentResponse, NgLanguageService} from '../api';
+import {GetComponentLocationsForTemplateResponse, GetTcbResponse, GetTemplateLocationForComponentResponse, NgLanguageService} from '../api.js';
 
-import {LanguageService} from './language_service';
+import {LanguageService} from './language_service.js';
 
 export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   const {project, languageService: tsLS, config} = info;

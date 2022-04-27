@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, ImplicitReceiver, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafePropertyRead} from '../../expression_parser/ast';
-import {SelectorMatcher} from '../../selector';
-import {BoundAttribute, BoundEvent, BoundText, Content, Element, Icu, Node, Reference, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
+import {AST, BindingPipe, ImplicitReceiver, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafePropertyRead} from '../../expression_parser/ast.js';
+import {SelectorMatcher} from '../../selector.js';
+import {BoundAttribute, BoundEvent, BoundText, Content, Element, Icu, Node, Reference, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast.js';
 
-import {BoundTarget, DirectiveMeta, Target, TargetBinder} from './t2_api';
-import {createCssSelector} from './template';
-import {getAttrsForDirectiveMatching} from './util';
+import {BoundTarget, DirectiveMeta, Target, TargetBinder} from './t2_api.js';
+import {createCssSelector} from './template.js';
+import {getAttrsForDirectiveMatching} from './util.js';
 
 
 /**

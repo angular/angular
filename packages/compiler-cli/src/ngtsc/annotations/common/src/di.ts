@@ -9,10 +9,10 @@
 import {Expression, LiteralExpr, R3DependencyMetadata, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../diagnostics';
-import {ClassDeclaration, CtorParameter, Decorator, ReflectionHost, TypeValueReferenceKind, UnavailableValue, ValueUnavailableKind} from '../../../reflection';
+import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../diagnostics/index.js';
+import {ClassDeclaration, CtorParameter, Decorator, ReflectionHost, TypeValueReferenceKind, UnavailableValue, ValueUnavailableKind} from '../../../reflection/index.js';
 
-import {isAngularCore, valueReferenceToExpression} from './util';
+import {isAngularCore, valueReferenceToExpression} from './util.js';
 
 export type ConstructorDeps = {
   deps: R3DependencyMetadata[];

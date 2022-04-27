@@ -9,10 +9,10 @@ import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {ɵParsedTranslation, ɵparseTranslation} from '@angular/localize';
 
-import {DiagnosticHandlingStrategy, Diagnostics} from '../../../src/diagnostics';
-import {TranslationLoader} from '../../../src/translate/translation_files/translation_loader';
-import {SimpleJsonTranslationParser} from '../../../src/translate/translation_files/translation_parsers/simple_json_translation_parser';
-import {ParseAnalysis, TranslationParser} from '../../../src/translate/translation_files/translation_parsers/translation_parser';
+import {DiagnosticHandlingStrategy, Diagnostics} from '../../../src/diagnostics.js';
+import {TranslationLoader} from '../../../src/translate/translation_files/translation_loader.js';
+import {SimpleJsonTranslationParser} from '../../../src/translate/translation_files/translation_parsers/simple_json_translation_parser.js';
+import {ParseAnalysis, TranslationParser} from '../../../src/translate/translation_files/translation_parsers/translation_parser.js';
 
 runInEachFileSystem(() => {
   describe('TranslationLoader', () => {

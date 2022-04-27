@@ -9,10 +9,10 @@
 import ts from 'typescript';
 import type {TsickleHost} from 'tsickle';
 import yargs from 'yargs';
-import {exitCodeFromResult, formatDiagnostics, ParsedConfiguration, performCompilation, readConfiguration} from './perform_compile';
-import {createPerformWatchHost, performWatchCompilation} from './perform_watch';
-import * as api from './transformers/api';
-import {GENERATED_FILES} from './transformers/util';
+import {exitCodeFromResult, formatDiagnostics, ParsedConfiguration, performCompilation, readConfiguration} from './perform_compile.js';
+import {createPerformWatchHost, performWatchCompilation} from './perform_watch.js';
+import * as api from './transformers/api.js';
+import {GENERATED_FILES} from './transformers/util.js';
 
 type TsickleModule = typeof import('tsickle');
 

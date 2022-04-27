@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath, getFileSystem} from '../../file_system';
-import {isNonDeclarationTsPath} from '../../util/src/typescript';
+import {AbsoluteFsPath, getFileSystem} from '../../file_system/index.js';
+import {isNonDeclarationTsPath} from '../../util/src/typescript.js';
 
 export function findFlatIndexEntryPoint(rootFiles: ReadonlyArray<AbsoluteFsPath>): AbsoluteFsPath|
     null {

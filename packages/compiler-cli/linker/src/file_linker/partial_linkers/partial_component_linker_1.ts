@@ -7,15 +7,15 @@
  */
 import {ChangeDetectionStrategy, compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, ForwardRefHandling, InterpolationConfig, makeBindingParser, outputAst as o, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareDirectiveDependencyMetadata, R3DeclarePipeDependencyMetadata, R3DirectiveDependencyMetadata, R3PartialDeclaration, R3TemplateDependencyKind, R3TemplateDependencyMetadata, ViewEncapsulation} from '@angular/compiler';
 
-import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
-import {Range} from '../../ast/ast_host';
-import {AstObject, AstValue} from '../../ast/ast_value';
-import {FatalLinkerError} from '../../fatal_linker_error';
-import {GetSourceFileFn} from '../get_source_file';
+import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system/index.js';
+import {Range} from '../../ast/ast_host.js';
+import {AstObject, AstValue} from '../../ast/ast_value.js';
+import {FatalLinkerError} from '../../fatal_linker_error.js';
+import {GetSourceFileFn} from '../get_source_file.js';
 
-import {toR3DirectiveMeta} from './partial_directive_linker_1';
-import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {extractForwardRef} from './util';
+import {toR3DirectiveMeta} from './partial_directive_linker_1.js';
+import {LinkedDefinition, PartialLinker} from './partial_linker.js';
+import {extractForwardRef} from './util.js';
 
 function makeDirectiveMetadata<TExpression>(
     directiveExpr: AstObject<R3DeclareDirectiveDependencyMetadata, TExpression>,

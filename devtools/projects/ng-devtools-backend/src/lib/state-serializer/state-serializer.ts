@@ -8,8 +8,8 @@
 
 import {Descriptor, NestedProp, PropType} from 'protocol';
 
-import {getKeys} from './object-utils';
-import {createLevelSerializedDescriptor, createNestedSerializedDescriptor, createShallowSerializedDescriptor, PropertyData,} from './serialized-descriptor-factory';
+import {getKeys} from './object-utils.js';
+import {createLevelSerializedDescriptor, createNestedSerializedDescriptor, createShallowSerializedDescriptor, PropertyData,} from './serialized-descriptor-factory.js';
 
 // todo(aleksanderbodurri) pull this out of this file
 const METADATA_PROPERTY_NAME = '__ngContext__';

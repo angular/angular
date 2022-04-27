@@ -1,6 +1,6 @@
 import {TestBed} from '@angular/core/testing';
 
-import {AppComponent} from './app.component';
+import {AppComponent} from './app.component.js';
 
 describe('AppComponent', () => {
   it('should create the app', () => {

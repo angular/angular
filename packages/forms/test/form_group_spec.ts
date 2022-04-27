@@ -10,7 +10,7 @@ import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {of} from 'rxjs';
 
-import {asyncValidator, asyncValidatorReturningObservable, currentStateOf, simpleAsyncValidator} from './util';
+import {asyncValidator, asyncValidatorReturningObservable, currentStateOf, simpleAsyncValidator} from './util.js';
 
 
 (function() {

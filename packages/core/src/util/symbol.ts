@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global as _global} from './global';
+import {global as _global} from './global.js';
 
 // When Symbol.iterator doesn't exist, retrieves the key used in es6-shim
 declare const Symbol: any;

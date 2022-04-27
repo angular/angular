@@ -9,7 +9,7 @@
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import ts from 'typescript';
 
-import {migrateFile} from '../typed-forms/util';
+import {migrateFile} from '../typed-forms/util.js';
 
 /** TSLint rule for Typed Forms migration. */
 export class Rule extends Rules.TypedRule {

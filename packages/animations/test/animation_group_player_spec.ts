@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {fakeAsync} from '@angular/core/testing';
-import {NoopAnimationPlayer} from '../src/animations';
-import {AnimationGroupPlayer} from '../src/players/animation_group_player';
+
+import {NoopAnimationPlayer} from '../src/animations.js';
+import {AnimationGroupPlayer} from '../src/players/animation_group_player.js';
 
 
 describe('AnimationGroupPlayer', () => {

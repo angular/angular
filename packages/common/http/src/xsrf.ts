@@ -10,10 +10,10 @@ import {DOCUMENT, ɵparseCookieValue as parseCookieValue} from '@angular/common'
 import {Inject, Injectable, InjectionToken, PLATFORM_ID} from '@angular/core';
 import {Observable} from 'rxjs';
 
-import {HttpHandler} from './backend';
-import {HttpInterceptor} from './interceptor';
-import {HttpRequest} from './request';
-import {HttpEvent} from './response';
+import {HttpHandler} from './backend.js';
+import {HttpInterceptor} from './interceptor.js';
+import {HttpRequest} from './request.js';
+import {HttpEvent} from './response.js';
 
 export const XSRF_COOKIE_NAME = new InjectionToken<string>('XSRF_COOKIE_NAME');
 export const XSRF_HEADER_NAME = new InjectionToken<string>('XSRF_HEADER_NAME');

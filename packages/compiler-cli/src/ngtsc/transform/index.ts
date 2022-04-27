@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './src/api';
-export {aliasTransformFactory} from './src/alias';
-export {ClassRecord, TraitCompiler} from './src/compilation';
-export {declarationTransformFactory, DtsTransformRegistry, IvyDeclarationDtsTransform} from './src/declaration';
-export {AnalyzedTrait, PendingTrait, ResolvedTrait, SkippedTrait, Trait, TraitState} from './src/trait';
-export {ivyTransformFactory} from './src/transform';
+export * from './src/api.js';
+export {aliasTransformFactory} from './src/alias.js';
+export {ClassRecord, TraitCompiler} from './src/compilation.js';
+export {declarationTransformFactory, DtsTransformRegistry, IvyDeclarationDtsTransform} from './src/declaration.js';
+export {AnalyzedTrait, PendingTrait, ResolvedTrait, SkippedTrait, Trait, TraitState} from './src/trait.js';
+export {ivyTransformFactory} from './src/transform.js';

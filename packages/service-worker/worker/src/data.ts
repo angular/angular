@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Adapter} from './adapter';
-import {Database, Table} from './database';
-import {CacheTable} from './db-cache';
-import {DebugHandler} from './debug';
-import {DataGroupConfig} from './manifest';
-import {NamedCache} from './named-cache-storage';
+import {Adapter} from './adapter.js';
+import {Database, Table} from './database.js';
+import {CacheTable} from './db-cache.js';
+import {DebugHandler} from './debug.js';
+import {DataGroupConfig} from './manifest.js';
+import {NamedCache} from './named-cache-storage.js';
 
 /**
  * A metadata record of how old a particular cached resource is.

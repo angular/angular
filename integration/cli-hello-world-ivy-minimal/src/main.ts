@@ -2,6 +2,6 @@
 // in `packages/core/test/bundling/hello_world`, and should be kept similar.
 
 import { ɵrenderComponent as renderComponent } from '@angular/core';
-import { AppComponent } from './app/app.component';
-import './environments/environment';
+import { AppComponent } from './app/app.component.js';
+import './environments/environment.js';
 renderComponent(AppComponent);

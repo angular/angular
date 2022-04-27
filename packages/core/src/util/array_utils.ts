@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertEqual, assertLessThanOrEqual} from './assert';
+import {assertEqual, assertLessThanOrEqual} from './assert.js';
 
 /**
  * Equivalent to ES6 spread, add each item to an array.

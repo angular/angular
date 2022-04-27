@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectorySizeEntry, FileSizeData, getChildEntryNames} from './file_size_data';
+import {DirectorySizeEntry, FileSizeData, getChildEntryNames} from './file_size_data.js';
 
 export interface SizeDifference {
   filePath?: string;

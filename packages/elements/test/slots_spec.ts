@@ -11,7 +11,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
-import {createCustomElement, NgElement} from '../src/create-custom-element';
+import {createCustomElement, NgElement} from '../src/create-custom-element.js';
 
 
 // we only run these tests in browsers that support Shadom DOM slots natively

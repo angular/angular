@@ -8,10 +8,10 @@
 
 import ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../file_system';
-import {PerFileShimGenerator} from '../api';
+import {AbsoluteFsPath} from '../../file_system/index.js';
+import {PerFileShimGenerator} from '../api.js';
 
-import {generatedModuleName} from './util';
+import {generatedModuleName} from './util.js';
 
 export class SummaryGenerator implements PerFileShimGenerator {
   readonly shouldEmit = true;

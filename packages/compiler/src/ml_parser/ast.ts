@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {I18nMeta} from '../i18n/i18n_ast';
-import {ParseSourceSpan} from '../parse_util';
+import {I18nMeta} from '../i18n/i18n_ast.js';
+import {ParseSourceSpan} from '../parse_util.js';
 
-import {InterpolatedAttributeToken, InterpolatedTextToken} from './tokens';
+import {InterpolatedAttributeToken, InterpolatedTextToken} from './tokens.js';
 
 interface BaseNode {
   sourceSpan: ParseSourceSpan;

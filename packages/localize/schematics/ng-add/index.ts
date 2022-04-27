@@ -15,7 +15,7 @@ import {addPackageJsonDependency, NodeDependencyType, removePackageJsonDependenc
 import {getWorkspace} from '@schematics/angular/utility/workspace';
 import {Builders} from '@schematics/angular/utility/workspace-models';
 
-import {Schema} from './schema';
+import {Schema} from './schema.js';
 
 
 export const localizePolyfill = `import '@angular/localize/init';`;

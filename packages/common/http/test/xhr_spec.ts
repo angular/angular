@@ -12,7 +12,7 @@ import {HttpXhrBackend} from '@angular/common/http/src/xhr';
 import {Observable} from 'rxjs';
 import {toArray} from 'rxjs/operators';
 
-import {MockXhrFactory} from './xhr_mock';
+import {MockXhrFactory} from './xhr_mock.js';
 
 function trackEvents(obs: Observable<HttpEvent<any>>): HttpEvent<any>[] {
   const events: HttpEvent<any>[] = [];

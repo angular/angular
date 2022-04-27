@@ -9,10 +9,10 @@
 import * as o from '@angular/compiler';
 import ts from 'typescript';
 
-import {ImportGenerator} from './api/import_generator';
-import {Context} from './context';
-import {ExpressionTranslatorVisitor, TranslatorOptions} from './translator';
-import {TypeScriptAstFactory} from './typescript_ast_factory';
+import {ImportGenerator} from './api/import_generator.js';
+import {Context} from './context.js';
+import {ExpressionTranslatorVisitor, TranslatorOptions} from './translator.js';
+import {TypeScriptAstFactory} from './typescript_ast_factory.js';
 
 export function translateExpression(
     expression: o.Expression, imports: ImportGenerator<ts.Expression>,

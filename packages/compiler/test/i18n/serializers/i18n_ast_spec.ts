@@ -8,8 +8,8 @@
 
 import * as i18n from '@angular/compiler/src/i18n/i18n_ast';
 
-import {serializeNodes} from '../../../src/i18n/digest';
-import {_extractMessages} from '../i18n_parser_spec';
+import {serializeNodes} from '../../../src/i18n/digest.js';
+import {_extractMessages} from '../i18n_parser_spec.js';
 
 {
   describe('i18n AST', () => {

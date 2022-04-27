@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FatalLinkerError, isFatalLinkerError} from '../src/fatal_linker_error';
+import {FatalLinkerError, isFatalLinkerError} from '../src/fatal_linker_error.js';
 
 describe('FatalLinkerError', () => {
   it('should expose the `node` and `message`', () => {

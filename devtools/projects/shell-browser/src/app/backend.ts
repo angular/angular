@@ -8,10 +8,10 @@
 
 import {initializeMessageBus} from 'ng-devtools-backend';
 
-import {unHighlight} from '../../../ng-devtools-backend/src/lib/highlighter';
+import {unHighlight} from '../../../ng-devtools-backend/src/lib/highlighter.js';
 
-import {initializeExtendedWindowOperations} from './chrome-window-extensions';
-import {SamePageMessageBus} from './same-page-message-bus';
+import {initializeExtendedWindowOperations} from './chrome-window-extensions.js';
+import {SamePageMessageBus} from './same-page-message-bus.js';
 
 const messageBus =
     new SamePageMessageBus('angular-devtools-backend', 'angular-devtools-content-script');

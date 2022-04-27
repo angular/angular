@@ -7,9 +7,10 @@
  */
 
 
-import {createTemplateRef, TemplateRef} from '../linker/template_ref';
-import {TNode} from './interfaces/node';
-import {LView} from './interfaces/view';
+import {createTemplateRef, TemplateRef} from '../linker/template_ref.js';
+
+import {TNode} from './interfaces/node.js';
+import {LView} from './interfaces/view.js';
 
 
 /**

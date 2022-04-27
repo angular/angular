@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as o from '../../output/output_ast';
-import {R3DependencyMetadata} from '../r3_factory';
-import {DefinitionMap} from '../view/util';
+import * as o from '../../output/output_ast.js';
+import {R3DependencyMetadata} from '../r3_factory.js';
+import {DefinitionMap} from '../view/util.js';
 
-import {R3DeclareDependencyMetadata} from './api';
+import {R3DeclareDependencyMetadata} from './api.js';
 
 /**
  * Creates an array literal expression from the given array, mapping all values to an expression

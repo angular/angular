@@ -8,13 +8,13 @@
 
 import {MissingTranslationStrategy} from '@angular/core';
 
-import * as i18n from '../../src/i18n/i18n_ast';
-import {TranslationBundle} from '../../src/i18n/translation_bundle';
-import * as html from '../../src/ml_parser/ast';
-import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util';
-import {serializeNodes} from '../ml_parser/util/util';
+import * as i18n from '../../src/i18n/i18n_ast.js';
+import {TranslationBundle} from '../../src/i18n/translation_bundle.js';
+import * as html from '../../src/ml_parser/ast.js';
+import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util.js';
+import {serializeNodes} from '../ml_parser/util/util.js';
 
-import {_extractMessages} from './i18n_parser_spec';
+import {_extractMessages} from './i18n_parser_spec.js';
 
 {
   describe('TranslationBundle', () => {

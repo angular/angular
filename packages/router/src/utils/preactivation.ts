@@ -8,13 +8,13 @@
 
 import {Injector} from '@angular/core';
 
-import {RunGuardsAndResolvers} from '../models';
-import {ChildrenOutletContexts, OutletContext} from '../router_outlet_context';
-import {ActivatedRouteSnapshot, equalParamsAndUrlSegments, RouterStateSnapshot} from '../router_state';
-import {equalPath} from '../url_tree';
-import {forEach, shallowEqual} from '../utils/collection';
-import {getClosestRouteInjector} from '../utils/config';
-import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
+import {RunGuardsAndResolvers} from '../models.js';
+import {ChildrenOutletContexts, OutletContext} from '../router_outlet_context.js';
+import {ActivatedRouteSnapshot, equalParamsAndUrlSegments, RouterStateSnapshot} from '../router_state.js';
+import {equalPath} from '../url_tree.js';
+import {forEach, shallowEqual} from '../utils/collection.js';
+import {getClosestRouteInjector} from '../utils/config.js';
+import {nodeChildrenAsMap, TreeNode} from '../utils/tree.js';
 
 export class CanActivate {
   readonly route: ActivatedRouteSnapshot;

@@ -8,9 +8,9 @@
 
 import {Observable} from 'rxjs';
 
-import {EventEmitter} from '../event_emitter';
-import {arrayEquals, flatten} from '../util/array_utils';
-import {getSymbolIterator} from '../util/symbol';
+import {EventEmitter} from '../event_emitter.js';
+import {arrayEquals, flatten} from '../util/array_utils.js';
+import {getSymbolIterator} from '../util/symbol.js';
 
 function symbolIterator<T>(this: QueryList<T>): Iterator<T> {
   return ((this as any as {_results: Array<T>})._results as any)[getSymbolIterator()]();

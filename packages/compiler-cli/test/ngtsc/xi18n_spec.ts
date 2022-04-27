@@ -10,7 +10,7 @@ import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/t
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 import {platform} from 'os';
 
-import {NgtscTestEnvironment} from './env';
+import {NgtscTestEnvironment} from './env.js';
 
 const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
 

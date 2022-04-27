@@ -5,16 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AttributeMarker} from '../../core';
-import {AST, ASTWithSource, BindingPipe, BindingType, EmptyExpr, Interpolation} from '../../expression_parser/ast';
-import * as o from '../../output/output_ast';
-import {ParseSourceSpan} from '../../parse_util';
-import * as t from '../r3_ast';
-import {Identifiers as R3} from '../r3_identifiers';
+import {AttributeMarker} from '../../core.js';
+import {AST, ASTWithSource, BindingPipe, BindingType, EmptyExpr, Interpolation} from '../../expression_parser/ast.js';
+import * as o from '../../output/output_ast.js';
+import {ParseSourceSpan} from '../../parse_util.js';
+import * as t from '../r3_ast.js';
+import {Identifiers as R3} from '../r3_identifiers.js';
 
-import {hyphenate, parse as parseStyle} from './style_parser';
-import {ValueConverter} from './template';
-import {DefinitionMap, getInterpolationArgsLength} from './util';
+import {hyphenate, parse as parseStyle} from './style_parser.js';
+import {ValueConverter} from './template.js';
+import {DefinitionMap, getInterpolationArgsLength} from './util.js';
 
 const IMPORTANT_FLAG = '!important';
 

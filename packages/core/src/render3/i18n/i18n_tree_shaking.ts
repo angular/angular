@@ -13,9 +13,9 @@
  * ICU is present in the template.
  */
 
-import {TIcuContainerNode} from '../interfaces/node';
-import {RNode} from '../interfaces/renderer_dom';
-import {LView} from '../interfaces/view';
+import {TIcuContainerNode} from '../interfaces/node.js';
+import {RNode} from '../interfaces/renderer_dom.js';
+import {LView} from '../interfaces/view.js';
 
 
 let _icuContainerIterate: (tIcuContainerNode: TIcuContainerNode, lView: LView) =>

@@ -10,7 +10,7 @@
 import {TestBed} from '@angular/core/testing';
 import {createAngularJSTestingModule, createAngularTestingModule} from '@angular/upgrade/static/testing';
 
-import {HeroesService, ng1AppModule, Ng2AppModule} from './module';
+import {HeroesService, ng1AppModule, Ng2AppModule} from './module.js';
 
 const {module, inject} = (window as any).angular.mock;
 

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseSourceSpan} from '../../../src/parse_util';
-import {Comment} from '../../../src/render3/r3_ast';
-import {parseTemplate} from '../../../src/render3/view/template';
+import {ParseSourceSpan} from '../../../src/parse_util.js';
+import {Comment} from '../../../src/render3/r3_ast.js';
+import {parseTemplate} from '../../../src/render3/view/template.js';
 
 describe('collectCommentNodes', () => {
   it('should include an array of HTML comment nodes on the returned R3 AST', () => {

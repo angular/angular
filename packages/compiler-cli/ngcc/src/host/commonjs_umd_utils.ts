@@ -7,8 +7,9 @@
  */
 
 import ts from 'typescript';
-import {Declaration} from '../../../src/ngtsc/reflection';
-import {isAssignment} from '../../../src/ngtsc/util/src/typescript';
+
+import {Declaration} from '../../../src/ngtsc/reflection/index.js';
+import {isAssignment} from '../../../src/ngtsc/util/src/typescript.js';
 
 export interface ExportDeclaration {
   name: string;

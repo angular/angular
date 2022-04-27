@@ -10,11 +10,11 @@ import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, Element
 import {from, of, Subscription} from 'rxjs';
 import {mergeAll} from 'rxjs/operators';
 
-import {Event, NavigationEnd} from '../events';
-import {Router} from '../router';
-import {IsActiveMatchOptions} from '../url_tree';
+import {Event, NavigationEnd} from '../events.js';
+import {Router} from '../router.js';
+import {IsActiveMatchOptions} from '../url_tree.js';
 
-import {RouterLink, RouterLinkWithHref} from './router_link';
+import {RouterLink, RouterLinkWithHref} from './router_link.js';
 
 
 /**

@@ -8,18 +8,18 @@
 import * as o from '@angular/compiler/src/output/output_ast';
 import ts from 'typescript';
 
-import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {TypeScriptAstFactory} from '../../../src/ngtsc/translator';
-import {AstHost} from '../../src/ast/ast_host';
-import {TypeScriptAstHost} from '../../src/ast/typescript/typescript_ast_host';
-import {DeclarationScope} from '../../src/file_linker/declaration_scope';
-import {FileLinker} from '../../src/file_linker/file_linker';
-import {LinkerEnvironment} from '../../src/file_linker/linker_environment';
-import {DEFAULT_LINKER_OPTIONS} from '../../src/file_linker/linker_options';
-import {PartialDirectiveLinkerVersion1} from '../../src/file_linker/partial_linkers/partial_directive_linker_1';
+import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {TypeScriptAstFactory} from '../../../src/ngtsc/translator/index.js';
+import {AstHost} from '../../src/ast/ast_host.js';
+import {TypeScriptAstHost} from '../../src/ast/typescript/typescript_ast_host.js';
+import {DeclarationScope} from '../../src/file_linker/declaration_scope.js';
+import {FileLinker} from '../../src/file_linker/file_linker.js';
+import {LinkerEnvironment} from '../../src/file_linker/linker_environment.js';
+import {DEFAULT_LINKER_OPTIONS} from '../../src/file_linker/linker_options.js';
+import {PartialDirectiveLinkerVersion1} from '../../src/file_linker/partial_linkers/partial_directive_linker_1.js';
 
-import {generate} from './helpers';
+import {generate} from './helpers.js';
 
 describe('FileLinker', () => {
   let factory: TypeScriptAstFactory;

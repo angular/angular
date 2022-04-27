@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, MeasureValues, Metric, Options, Reporter, Sampler, Validator, WebDriverAdapter} from '../index';
+import {Injector, MeasureValues, Metric, Options, Reporter, Sampler, Validator, WebDriverAdapter} from '../index.js';
 
 {
   const EMPTY_EXECUTE = () => {};

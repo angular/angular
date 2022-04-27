@@ -11,6 +11,6 @@
  * @description
  * Entry point for all public APIs of this package.
  */
-export * from './src/platform-browser-dynamic';
+export * from './src/platform-browser-dynamic.js';
 
 // This file only reexports content of the `src` folder. Keep it that way.

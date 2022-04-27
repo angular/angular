@@ -10,7 +10,7 @@ import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import {Store, Todo, TodoFactory} from './app/TodoStore';
+import {Store, Todo, TodoFactory} from './app/TodoStore.js';
 
 @Component({selector: 'todo-app', viewProviders: [Store, TodoFactory], templateUrl: 'todo.html'})
 export class TodoApp {

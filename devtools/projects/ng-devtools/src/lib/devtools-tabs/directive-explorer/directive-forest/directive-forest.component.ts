@@ -12,11 +12,11 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Hos
 import {DevToolsNode, ElementPosition, Events, MessageBus} from 'protocol';
 import {Subscription} from 'rxjs';
 
-import {TabUpdate} from '../../tab-update/index';
+import {TabUpdate} from '../../tab-update/index.js';
 
-import {ComponentDataSource, FlatNode} from './component-data-source';
-import {isChildOf, parentCollapsed} from './directive-forest-utils';
-import {IndexedNode} from './index-forest';
+import {ComponentDataSource, FlatNode} from './component-data-source/index.js';
+import {isChildOf, parentCollapsed} from './directive-forest-utils.js';
+import {IndexedNode} from './index-forest/index.js';
 
 @Component({
   selector: 'ng-directive-forest',

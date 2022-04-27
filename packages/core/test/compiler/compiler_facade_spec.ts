@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getCompilerFacade, JitCompilerUsage} from '../../src/compiler/compiler_facade';
-import {CompilerFacade, ExportedCompilerFacade} from '../../src/compiler/compiler_facade_interface';
-import {global} from '../../src/util/global';
+import {getCompilerFacade, JitCompilerUsage} from '../../src/compiler/compiler_facade.js';
+import {CompilerFacade, ExportedCompilerFacade} from '../../src/compiler/compiler_facade_interface.js';
+import {global} from '../../src/util/global.js';
 
 describe('getCompilerFacade', () => {
   describe('errors', () => {

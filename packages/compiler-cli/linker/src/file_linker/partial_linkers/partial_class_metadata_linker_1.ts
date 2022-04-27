@@ -7,9 +7,9 @@
  */
 import {compileClassMetadata, ConstantPool, outputAst as o, R3ClassMetadata, R3DeclareClassMetadata, R3PartialDeclaration} from '@angular/compiler';
 
-import {AstObject} from '../../ast/ast_value';
+import {AstObject} from '../../ast/ast_value.js';
 
-import {LinkedDefinition, PartialLinker} from './partial_linker';
+import {LinkedDefinition, PartialLinker} from './partial_linker.js';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareClassMetadata()` call expressions.

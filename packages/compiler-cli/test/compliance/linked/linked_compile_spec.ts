@@ -5,16 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {needsLinking} from '../../../linker';
-import {createEs2015LinkerPlugin} from '../../../linker/babel';
-import {PluginObj, transformSync} from '../../../linker/babel/src/babel_core';
-import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
-import {ConsoleLogger, LogLevel} from '../../../src/ngtsc/logging';
-import {MapAndPath, RawSourceMap, SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
-import {CompileResult, getBuildOutputDirectory} from '../test_helpers/compile_test';
-import {ComplianceTest} from '../test_helpers/get_compliance_tests';
-import {parseGoldenPartial} from '../test_helpers/golden_partials';
-import {runTests} from '../test_helpers/test_runner';
+import {createEs2015LinkerPlugin} from '../../../linker/babel/index.js';
+import {PluginObj, transformSync} from '../../../linker/babel/src/babel_core.js';
+import {needsLinking} from '../../../linker/index.js';
+import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {ConsoleLogger, LogLevel} from '../../../src/ngtsc/logging/index.js';
+import {MapAndPath, RawSourceMap, SourceFileLoader} from '../../../src/ngtsc/sourcemaps/index.js';
+import {CompileResult, getBuildOutputDirectory} from '../test_helpers/compile_test.js';
+import {ComplianceTest} from '../test_helpers/get_compliance_tests.js';
+import {parseGoldenPartial} from '../test_helpers/golden_partials.js';
+import {runTests} from '../test_helpers/test_runner.js';
 
 runTests('linked compile', linkPartials);
 

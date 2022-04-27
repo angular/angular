@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {ExtendedTsCompilerHost, NgCompilerOptions} from '../ngtsc/core/api';
+import {ExtendedTsCompilerHost, NgCompilerOptions} from '../ngtsc/core/api/index.js';
 
 export const DEFAULT_ERROR_CODE = 100;
 export const UNKNOWN_ERROR_CODE = 500;

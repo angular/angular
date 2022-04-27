@@ -8,8 +8,8 @@
 
 import {ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 
-import {Todo} from './todo';
-import {TodoFilter} from './todos.pipe';
+import {Todo} from './todo.js';
+import {TodoFilter} from './todos.pipe.js';
 
 const fib = (n: number) => {
   if (n === 1 || n === 2) {

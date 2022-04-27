@@ -6,48 +6,48 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './util/ng_jit_mode';
+import './util/ng_jit_mode.js';
 
 import {merge, Observable, Observer, Subscription} from 'rxjs';
 import {share} from 'rxjs/operators';
 
-import {ApplicationInitStatus} from './application_init';
-import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
-import {getCompilerFacade, JitCompilerUsage} from './compiler/compiler_facade';
-import {Console} from './console';
-import {importProvidersFrom} from './di';
-import {Injectable} from './di/injectable';
-import {InjectionToken} from './di/injection_token';
-import {Injector} from './di/injector';
-import {Provider, StaticProvider} from './di/interface/provider';
-import {EnvironmentInjector} from './di/r3_injector';
-import {INJECTOR_SCOPE} from './di/scope';
-import {ErrorHandler} from './error_handler';
-import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from './errors';
-import {DEFAULT_LOCALE_ID} from './i18n/localization';
-import {LOCALE_ID} from './i18n/tokens';
-import {Type} from './interface/type';
-import {COMPILER_OPTIONS, CompilerOptions} from './linker/compiler';
-import {ComponentFactory, ComponentRef} from './linker/component_factory';
-import {ComponentFactoryResolver} from './linker/component_factory_resolver';
-import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
-import {InternalViewRef, ViewRef} from './linker/view_ref';
-import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from './metadata/resource_loading';
-import {assertNgModuleType} from './render3/assert';
-import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
-import {getComponentDef} from './render3/definition';
-import {assertStandaloneComponentType} from './render3/errors';
-import {StandaloneService} from './render3/features/standalone_feature';
-import {setLocaleId} from './render3/i18n/i18n_locale_id';
-import {setJitOptions} from './render3/jit/jit_options';
-import {isStandalone} from './render3/jit/module';
-import {createEnvironmentInjector, NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
-import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
-import {Testability, TestabilityRegistry} from './testability/testability';
-import {isPromise} from './util/lang';
-import {scheduleMicroTask} from './util/microtask';
-import {stringify} from './util/stringify';
-import {NgZone, NoopNgZone} from './zone/ng_zone';
+import {ApplicationInitStatus} from './application_init.js';
+import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens.js';
+import {getCompilerFacade, JitCompilerUsage} from './compiler/compiler_facade.js';
+import {Console} from './console.js';
+import {importProvidersFrom} from './di/index.js';
+import {Injectable} from './di/injectable.js';
+import {InjectionToken} from './di/injection_token.js';
+import {Injector} from './di/injector.js';
+import {Provider, StaticProvider} from './di/interface/provider.js';
+import {EnvironmentInjector} from './di/r3_injector.js';
+import {INJECTOR_SCOPE} from './di/scope.js';
+import {ErrorHandler} from './error_handler.js';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from './errors.js';
+import {DEFAULT_LOCALE_ID} from './i18n/localization.js';
+import {LOCALE_ID} from './i18n/tokens.js';
+import {Type} from './interface/type.js';
+import {COMPILER_OPTIONS, CompilerOptions} from './linker/compiler.js';
+import {ComponentFactory, ComponentRef} from './linker/component_factory.js';
+import {ComponentFactoryResolver} from './linker/component_factory_resolver.js';
+import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from './linker/ng_module_factory.js';
+import {InternalViewRef, ViewRef} from './linker/view_ref.js';
+import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from './metadata/resource_loading.js';
+import {assertNgModuleType} from './render3/assert.js';
+import {ComponentFactory as R3ComponentFactory} from './render3/component_ref.js';
+import {getComponentDef} from './render3/definition.js';
+import {assertStandaloneComponentType} from './render3/errors.js';
+import {StandaloneService} from './render3/features/standalone_feature.js';
+import {setLocaleId} from './render3/i18n/i18n_locale_id.js';
+import {setJitOptions} from './render3/jit/jit_options.js';
+import {isStandalone} from './render3/jit/module.js';
+import {createEnvironmentInjector, NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref.js';
+import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils.js';
+import {Testability, TestabilityRegistry} from './testability/testability.js';
+import {isPromise} from './util/lang.js';
+import {scheduleMicroTask} from './util/microtask.js';
+import {stringify} from './util/stringify.js';
+import {NgZone, NoopNgZone} from './zone/ng_zone.js';
 
 let _platformInjector: Injector|null = null;
 

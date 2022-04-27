@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3DeclareNgModuleFacade} from '../compiler_facade_interface';
-import * as o from '../output/output_ast';
+import {R3DeclareNgModuleFacade} from '../compiler_facade_interface.js';
+import * as o from '../output/output_ast.js';
 
-import {Identifiers as R3} from './r3_identifiers';
-import {jitOnlyGuardedExpression, R3CompiledExpression, R3Reference, refsToArray} from './util';
-import {DefinitionMap} from './view/util';
+import {Identifiers as R3} from './r3_identifiers.js';
+import {jitOnlyGuardedExpression, R3CompiledExpression, R3Reference, refsToArray} from './util.js';
+import {DefinitionMap} from './view/util.js';
 
 /**
  * How the selector scope of an NgModule (its declarations, imports, and exports) should be emitted

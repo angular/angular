@@ -9,7 +9,7 @@
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {DevToolsNode} from 'protocol';
 
-import {ComponentDataSource, FlatNode} from '.';
+import {ComponentDataSource, FlatNode} from './index.js';
 
 const tree1: DevToolsNode = {
   element: 'app',

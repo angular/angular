@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as i18n from '../../../i18n/i18n_ast';
-import * as o from '../../../output/output_ast';
-import {ParseLocation, ParseSourceSpan} from '../../../parse_util';
+import * as i18n from '../../../i18n/i18n_ast.js';
+import * as o from '../../../output/output_ast.js';
+import {ParseLocation, ParseSourceSpan} from '../../../parse_util.js';
 
-import {serializeIcuNode} from './icu_serializer';
-import {formatI18nPlaceholderName} from './util';
+import {serializeIcuNode} from './icu_serializer.js';
+import {formatI18nPlaceholderName} from './util.js';
 
 export function createLocalizeStatements(
     variable: o.ReadVarExpr, message: i18n.Message,

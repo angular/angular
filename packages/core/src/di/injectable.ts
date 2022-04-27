@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
-import {makeDecorator, TypeDecorator} from '../util/decorators';
+import {Type} from '../interface/type.js';
+import {makeDecorator, TypeDecorator} from '../util/decorators.js';
 
-import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider} from './interface/provider';
-import {compileInjectable} from './jit/injectable';
+import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider} from './interface/provider.js';
+import {compileInjectable} from './jit/injectable.js';
 
 export {compileInjectable};
 

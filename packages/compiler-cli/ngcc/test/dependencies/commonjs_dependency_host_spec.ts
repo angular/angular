@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
-import {absoluteFrom, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {CommonJsDependencyHost} from '../../src/dependencies/commonjs_dependency_host';
-import {createDependencyInfo} from '../../src/dependencies/dependency_host';
-import {ModuleResolver} from '../../src/dependencies/module_resolver';
+
+import {absoluteFrom, getFileSystem, relativeFrom} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing/index.js';
+import {loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {CommonJsDependencyHost} from '../../src/dependencies/commonjs_dependency_host.js';
+import {createDependencyInfo} from '../../src/dependencies/dependency_host.js';
+import {ModuleResolver} from '../../src/dependencies/module_resolver.js';
 
 runInEachFileSystem(() => {
   describe('CommonJsDependencyHost', () => {

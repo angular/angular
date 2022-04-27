@@ -23,4 +23,4 @@
  * safe to delete this file.
  */
 
-export * from './di/index';
+export * from './di/index.js';

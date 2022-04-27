@@ -5,11 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as o from '../output/output_ast';
+import * as o from '../output/output_ast.js';
 
-import {R3DependencyMetadata} from './r3_factory';
-import {Identifiers as R3} from './r3_identifiers';
-import {R3CompiledExpression, R3Reference, typeWithParameters} from './util';
+import {R3DependencyMetadata} from './r3_factory.js';
+import {Identifiers as R3} from './r3_identifiers.js';
+import {R3CompiledExpression, R3Reference, typeWithParameters} from './util.js';
 
 export interface R3PipeMetadata {
   /**

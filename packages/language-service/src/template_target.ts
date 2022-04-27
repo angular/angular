@@ -10,7 +10,7 @@ import {ParseSpan, TmplAstBoundEvent} from '@angular/compiler';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 
-import {isBoundEventWithSyntheticHandler, isTemplateNodeWithKeyAndValue, isWithin, isWithinKeyValue} from './utils';
+import {isBoundEventWithSyntheticHandler, isTemplateNodeWithKeyAndValue, isWithin, isWithinKeyValue} from './utils.js';
 
 /**
  * Contextual information for a target position within the template.

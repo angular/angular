@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {globalSources, patchEventPrototype, patchEventTarget, zoneSymbolEventNames} from '../common/events';
-import {ADD_EVENT_LISTENER_STR, ArraySlice, attachOriginToPatched, bindArguments, FALSE_STR, isBrowser, isIEOrEdge, isMix, isNode, ObjectCreate, ObjectDefineProperty, ObjectGetOwnPropertyDescriptor, patchClass, patchMacroTask, patchMethod, patchOnProperties, REMOVE_EVENT_LISTENER_STR, TRUE_STR, wrapWithCurrentZone, ZONE_SYMBOL_PREFIX} from '../common/utils';
+import {globalSources, patchEventPrototype, patchEventTarget, zoneSymbolEventNames} from '../common/events.js';
+import {ADD_EVENT_LISTENER_STR, ArraySlice, attachOriginToPatched, bindArguments, FALSE_STR, isBrowser, isIEOrEdge, isMix, isNode, ObjectCreate, ObjectDefineProperty, ObjectGetOwnPropertyDescriptor, patchClass, patchMacroTask, patchMethod, patchOnProperties, REMOVE_EVENT_LISTENER_STR, TRUE_STR, wrapWithCurrentZone, ZONE_SYMBOL_PREFIX} from '../common/utils.js';
 
-import {patchCallbacks} from './browser-util';
-import {filterProperties, getOnEventNames} from './property-descriptor';
+import {patchCallbacks} from './browser-util.js';
+import {filterProperties, getOnEventNames} from './property-descriptor.js';
 
 Zone.__load_patch('util', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   // Collect native event names by looking at properties

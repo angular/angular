@@ -8,10 +8,10 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom, getSourceFileOrError} from '../../file_system';
-import {runInEachFileSystem, TestFile} from '../../file_system/testing';
-import {OptimizeFor, TypeCheckingConfig} from '../api';
-import {ngForDeclaration, ngForDts, ngIfDeclaration, ngIfDts, setup, TestDeclaration} from '../testing';
+import {absoluteFrom, getSourceFileOrError} from '../../file_system/index.js';
+import {runInEachFileSystem, TestFile} from '../../file_system/testing/index.js';
+import {OptimizeFor, TypeCheckingConfig} from '../api/index.js';
+import {ngForDeclaration, ngForDts, ngIfDeclaration, ngIfDts, setup, TestDeclaration} from '../testing/index.js';
 
 runInEachFileSystem(() => {
   describe('template diagnostics', () => {

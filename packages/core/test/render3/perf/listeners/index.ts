@@ -5,14 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element';
-import {ɵɵlistener} from '../../../../src/render3/instructions/listener';
-import {createLView, createTNode, createTView} from '../../../../src/render3/instructions/shared';
-import {RenderFlags} from '../../../../src/render3/interfaces/definition';
-import {TNodeType} from '../../../../src/render3/interfaces/node';
-import {LViewFlags, TViewType} from '../../../../src/render3/interfaces/view';
-import {createBenchmark} from '../micro_bench';
-import {createAndRenderLView} from '../setup';
+import {ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/instructions/element.js';
+import {ɵɵlistener} from '../../../../src/render3/instructions/listener.js';
+import {createLView, createTNode, createTView} from '../../../../src/render3/instructions/shared.js';
+import {RenderFlags} from '../../../../src/render3/interfaces/definition.js';
+import {TNodeType} from '../../../../src/render3/interfaces/node.js';
+import {LViewFlags, TViewType} from '../../../../src/render3/interfaces/view.js';
+import {createBenchmark} from '../micro_bench.js';
+import {createAndRenderLView} from '../setup.js';
 
 `
 <div>

@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {NodeJSFileSystem} from '../../../../src/ngtsc/file_system';
-import {ConsoleLogger} from '../../../../src/ngtsc/logging';
-import {removeLockFile} from './util';
+import {NodeJSFileSystem} from '../../../../src/ngtsc/file_system/index.js';
+import {ConsoleLogger} from '../../../../src/ngtsc/logging/index.js';
+
+import {removeLockFile} from './util.js';
 
 /// <reference types="node" />
 

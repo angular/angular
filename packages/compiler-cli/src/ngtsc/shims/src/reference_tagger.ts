@@ -8,11 +8,11 @@
 
 import ts from 'typescript';
 
-import {absoluteFromSourceFile} from '../../file_system';
-import {isNonDeclarationTsPath} from '../../util/src/typescript';
+import {absoluteFromSourceFile} from '../../file_system/index.js';
+import {isNonDeclarationTsPath} from '../../util/src/typescript.js';
 
-import {isShim, sfExtensionData} from './expando';
-import {makeShimFileName} from './util';
+import {isShim, sfExtensionData} from './expando.js';
+import {makeShimFileName} from './util.js';
 
 /**
  * Manipulates the `referencedFiles` property of `ts.SourceFile`s to add references to shim files

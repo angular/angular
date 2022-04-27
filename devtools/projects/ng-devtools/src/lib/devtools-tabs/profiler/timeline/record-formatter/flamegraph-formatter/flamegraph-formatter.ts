@@ -8,8 +8,8 @@
 
 import {ElementProfile, ProfilerFrame} from 'protocol';
 
-import {Theme} from '../../../../../theme-service';
-import {RecordFormatter} from '../record-formatter';
+import {Theme} from '../../../../../theme-service.js';
+import {RecordFormatter} from '../record-formatter.js';
 
 export interface FlamegraphNode {
   value: number;

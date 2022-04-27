@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined} from '../../util/assert';
-import {getComponentViewByInstance} from '../context_discovery';
-import {CONTEXT, RootContext, RootContextFlags, TVIEW} from '../interfaces/view';
-import {getRootView} from '../util/view_traversal_utils';
+import {assertDefined} from '../../util/assert.js';
+import {getComponentViewByInstance} from '../context_discovery.js';
+import {CONTEXT, RootContext, RootContextFlags, TVIEW} from '../interfaces/view.js';
+import {getRootView} from '../util/view_traversal_utils.js';
 
-import {detectChangesInternal, markViewDirty, scheduleTick, tickRootContext} from './shared';
+import {detectChangesInternal, markViewDirty, scheduleTick, tickRootContext} from './shared.js';
 
 /**
  * Synchronously perform change detection on a component (and possibly its sub-components).

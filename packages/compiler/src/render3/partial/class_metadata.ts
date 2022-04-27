@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as o from '../../output/output_ast';
-import {R3ClassMetadata} from '../r3_class_metadata_compiler';
-import {Identifiers as R3} from '../r3_identifiers';
-import {DefinitionMap} from '../view/util';
+import * as o from '../../output/output_ast.js';
+import {R3ClassMetadata} from '../r3_class_metadata_compiler.js';
+import {Identifiers as R3} from '../r3_identifiers.js';
+import {DefinitionMap} from '../view/util.js';
 
-import {R3DeclareClassMetadata} from './api';
+import {R3DeclareClassMetadata} from './api.js';
 
 /**
  * Every time we make a breaking change to the declaration interface or partial-linker behavior, we

@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {detectChanges, markDirty} from '../instructions/change_detection';
-import {getRootComponents} from './discovery_utils';
+import {detectChanges, markDirty} from '../instructions/change_detection.js';
+
+import {getRootComponents} from './discovery_utils.js';
 
 /**
  * Marks a component for check (in case of OnPush components) and synchronously

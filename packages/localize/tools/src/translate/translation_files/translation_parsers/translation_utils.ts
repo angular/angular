@@ -7,10 +7,10 @@
  */
 import {Element, LexerRange, Node, ParseError, ParseErrorLevel, ParseSourceSpan, ParseTreeResult, XmlParser} from '@angular/compiler';
 
-import {Diagnostics} from '../../../diagnostics';
+import {Diagnostics} from '../../../diagnostics.js';
 
-import {TranslationParseError} from './translation_parse_error';
-import {ParseAnalysis, ParsedTranslationBundle} from './translation_parser';
+import {TranslationParseError} from './translation_parse_error.js';
+import {ParseAnalysis, ParsedTranslationBundle} from './translation_parser.js';
 
 export function getAttrOrThrow(element: Element, attrName: string): string {
   const attrValue = getAttribute(element, attrName);

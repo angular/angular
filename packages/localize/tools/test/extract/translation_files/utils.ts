@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FormatOptions} from '../../../src/extract/translation_files/format_options';
+import {FormatOptions} from '../../../src/extract/translation_files/format_options.js';
 
 export function toAttributes(options: FormatOptions) {
   let result = '';

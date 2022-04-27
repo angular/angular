@@ -9,8 +9,8 @@
 import {RuleFailure, Rules} from 'tslint';
 import ts from 'typescript';
 
-import {TslintUpdateRecorder} from '../path-match-type/google3/tslint_update_recorder';
-import {PathMatchTypeTransform} from '../path-match-type/transform';
+import {TslintUpdateRecorder} from '../path-match-type/google3/tslint_update_recorder.js';
+import {PathMatchTypeTransform} from '../path-match-type/transform.js';
 
 /**
  * TSLint rule that updates return value for guards that return UrlTree.

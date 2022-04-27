@@ -14,10 +14,10 @@ import {Descriptor, DirectivePosition, Events, MessageBus, Properties} from 'pro
 import {BehaviorSubject, merge, Observable, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {diff} from '../../diffing';
+import {diff} from '../../diffing/index.js';
 
-import {arrayifyProps} from './arrayify-props';
-import {FlatNode, Property} from './element-property-resolver';
+import {arrayifyProps} from './arrayify-props.js';
+import {FlatNode, Property} from './element-property-resolver.js';
 
 const trackBy: TrackByFunction<FlatNode> = (_: number, item: FlatNode) =>
     `#${item.prop.name}#${item.prop.descriptor.preview}#${item.level}`;

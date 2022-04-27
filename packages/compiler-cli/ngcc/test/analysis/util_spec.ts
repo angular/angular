@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {isWithinPackage} from '../../src/analysis/util';
+import {absoluteFrom} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing/index.js';
+import {isWithinPackage} from '../../src/analysis/util.js';
 
 runInEachFileSystem(() => {
   describe('isWithinPackage', () => {

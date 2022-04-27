@@ -9,8 +9,8 @@
 import {parse} from '@babel/parser';
 import traverse, {NodePath} from '@babel/traverse';
 
-import {types as t} from '../src/babel_core';
-import {BabelDeclarationScope} from '../src/babel_declaration_scope';
+import {types as t} from '../src/babel_core.js';
+import {BabelDeclarationScope} from '../src/babel_declaration_scope.js';
 
 describe('BabelDeclarationScope', () => {
   describe('getConstantScopeRef()', () => {

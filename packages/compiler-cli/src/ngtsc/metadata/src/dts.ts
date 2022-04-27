@@ -8,12 +8,12 @@
 
 import ts from 'typescript';
 
-import {Reference} from '../../imports';
-import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
+import {Reference} from '../../imports/index.js';
+import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, TypeValueReferenceKind} from '../../reflection/index.js';
 
-import {DirectiveMeta, MetadataReader, MetaKind, NgModuleMeta, PipeMeta} from './api';
-import {ClassPropertyMapping} from './property_mapping';
-import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readBooleanType, readStringArrayType, readStringMapType, readStringType} from './util';
+import {DirectiveMeta, MetadataReader, MetaKind, NgModuleMeta, PipeMeta} from './api.js';
+import {ClassPropertyMapping} from './property_mapping.js';
+import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readBooleanType, readStringArrayType, readStringMapType, readStringType} from './util.js';
 
 /**
  * A `MetadataReader` that can read metadata from `.d.ts` files, which have static Ivy properties

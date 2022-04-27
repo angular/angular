@@ -9,8 +9,8 @@
 import {enableProdMode} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
-import {init} from './init';
-import {StylingModule} from './styling';
+import {init} from './init.js';
+import {StylingModule} from './styling.js';
 
 enableProdMode();
 platformBrowser().bootstrapModule(StylingModule).then(init);

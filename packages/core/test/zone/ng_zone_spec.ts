@@ -11,10 +11,10 @@ import {fakeAsync, flushMicrotasks, inject, waitForAsync} from '@angular/core/te
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
-import {global} from '../../src/util/global';
-import {scheduleMicroTask} from '../../src/util/microtask';
-import {getNativeRequestAnimationFrame} from '../../src/util/raf';
-import {NoopNgZone} from '../../src/zone/ng_zone';
+import {global} from '../../src/util/global.js';
+import {scheduleMicroTask} from '../../src/util/microtask.js';
+import {getNativeRequestAnimationFrame} from '../../src/util/raf.js';
+import {NoopNgZone} from '../../src/zone/ng_zone.js';
 
 const needsLongerTimers = browserDetection.isSlow || browserDetection.isEdge;
 const resultTimer = 1000;

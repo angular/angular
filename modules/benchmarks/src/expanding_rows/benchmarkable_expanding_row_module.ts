@@ -9,8 +9,8 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 
-import {BenchmarkableExpandingRow} from './benchmarkable_expanding_row';
-import {ExpandingRowModule} from './expanding_row_module';
+import {BenchmarkableExpandingRow} from './benchmarkable_expanding_row.js';
+import {ExpandingRowModule} from './expanding_row_module.js';
 
 @NgModule({
   declarations: [BenchmarkableExpandingRow],

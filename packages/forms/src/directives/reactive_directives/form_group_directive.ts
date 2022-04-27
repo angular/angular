@@ -8,18 +8,18 @@
 
 import {Directive, EventEmitter, forwardRef, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
 
-import {FormArray} from '../../model/form_array';
-import {FormControl, isFormControl} from '../../model/form_control';
-import {FormGroup} from '../../model/form_group';
-import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
-import {ControlContainer} from '../control_container';
-import {Form} from '../form_interface';
-import {missingFormException} from '../reactive_errors';
-import {cleanUpControl, cleanUpFormContainer, cleanUpValidators, removeListItem, setUpControl, setUpFormContainer, setUpValidators, syncPendingControls} from '../shared';
-import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
+import {FormArray} from '../../model/form_array.js';
+import {FormControl, isFormControl} from '../../model/form_control.js';
+import {FormGroup} from '../../model/form_group.js';
+import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators.js';
+import {ControlContainer} from '../control_container.js';
+import {Form} from '../form_interface.js';
+import {missingFormException} from '../reactive_errors.js';
+import {cleanUpControl, cleanUpFormContainer, cleanUpValidators, removeListItem, setUpControl, setUpFormContainer, setUpValidators, syncPendingControls} from '../shared.js';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators.js';
 
-import {FormControlName} from './form_control_name';
-import {FormArrayName, FormGroupName} from './form_group_name';
+import {FormControlName} from './form_control_name.js';
+import {FormArrayName, FormGroupName} from './form_group_name.js';
 
 export const formDirectiveProvider: any = {
   provide: ControlContainer,

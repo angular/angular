@@ -7,8 +7,8 @@
  */
 import {DepGraph} from 'dependency-graph';
 
-import {DtsProcessing, PartiallyOrderedTasks} from '../../src/execution/tasks/api';
-import {EntryPoint, EntryPointJsonProperty} from '../../src/packages/entry_point';
+import {DtsProcessing, PartiallyOrderedTasks} from '../../src/execution/tasks/api.js';
+import {EntryPoint, EntryPointJsonProperty} from '../../src/packages/entry_point.js';
 
 /**
  * Create a set of tasks and a graph of their interdependencies.

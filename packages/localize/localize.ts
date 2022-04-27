@@ -8,8 +8,8 @@
 
 // This file contains the public API of the `@angular/localize` entry-point
 
-export {clearTranslations, loadTranslations} from './src/translate';
-export {MessageId, TargetMessage} from './src/utils';
+export {clearTranslations, loadTranslations} from './src/translate.js';
+export {MessageId, TargetMessage} from './src/utils/index.js';
 
 // Exports that are not part of the public API
-export * from './private';
+export * from './private.js';

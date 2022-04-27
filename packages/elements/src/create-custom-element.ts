@@ -9,9 +9,9 @@
 import {Injector, Type} from '@angular/core';
 import {Subscription} from 'rxjs';
 
-import {ComponentNgElementStrategyFactory} from './component-factory-strategy';
-import {NgElementStrategy, NgElementStrategyFactory} from './element-strategy';
-import {getComponentInputs, getDefaultAttributeToPropertyInputs} from './utils';
+import {ComponentNgElementStrategyFactory} from './component-factory-strategy.js';
+import {NgElementStrategy, NgElementStrategyFactory} from './element-strategy.js';
+import {getComponentInputs, getDefaultAttributeToPropertyInputs} from './utils.js';
 
 /**
  * Prototype for a class constructor based on an Angular component

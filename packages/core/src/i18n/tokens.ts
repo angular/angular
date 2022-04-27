@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../di/injection_token';
-import {inject} from '../di/injector_compatibility';
-import {InjectFlags} from '../di/interface/injector';
+import {InjectionToken} from '../di/injection_token.js';
+import {inject} from '../di/injector_compatibility.js';
+import {InjectFlags} from '../di/interface/injector.js';
 
-import {DEFAULT_LOCALE_ID, USD_CURRENCY_CODE} from './localization';
+import {DEFAULT_LOCALE_ID, USD_CURRENCY_CODE} from './localization.js';
 
 declare const $localize: {locale?: string};
 

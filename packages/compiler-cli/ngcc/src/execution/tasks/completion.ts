@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {PathManipulation, ReadonlyFileSystem} from '../../../../src/ngtsc/file_system';
-import {Logger} from '../../../../src/ngtsc/logging';
-import {markAsProcessed} from '../../packages/build_marker';
-import {getEntryPointFormat, PackageJsonFormatProperties} from '../../packages/entry_point';
-import {PackageJsonUpdater} from '../../writing/package_json_updater';
+import {PathManipulation, ReadonlyFileSystem} from '../../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../../src/ngtsc/logging/index.js';
+import {markAsProcessed} from '../../packages/build_marker.js';
+import {getEntryPointFormat, PackageJsonFormatProperties} from '../../packages/entry_point.js';
+import {PackageJsonUpdater} from '../../writing/package_json_updater.js';
 
-import {DtsProcessing, Task, TaskCompletedCallback, TaskProcessingOutcome, TaskQueue} from './api';
+import {DtsProcessing, Task, TaskCompletedCallback, TaskProcessingOutcome, TaskQueue} from './api.js';
 
 /**
  * A function that can handle a specific outcome of a task completion.

@@ -8,10 +8,10 @@
 
 import ts from 'typescript';
 
-import {ResourceLoader, ResourceLoaderContext} from '../../annotations';
-import {NgCompilerAdapter, ResourceHostContext} from '../../core/api';
-import {AbsoluteFsPath, join, PathSegment} from '../../file_system';
-import {RequiredDelegations} from '../../util/src/typescript';
+import {ResourceLoader, ResourceLoaderContext} from '../../annotations/index.js';
+import {NgCompilerAdapter, ResourceHostContext} from '../../core/api/index.js';
+import {AbsoluteFsPath, join, PathSegment} from '../../file_system/index.js';
+import {RequiredDelegations} from '../../util/src/typescript.js';
 
 const CSS_PREPROCESSOR_EXT = /(\.scss|\.sass|\.less|\.styl)$/;
 

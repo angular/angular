@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Adapter} from '../src/adapter';
-import {AssetGroupConfig, Manifest} from '../src/manifest';
-import {sha1} from '../src/sha1';
+import {Adapter} from '../src/adapter.js';
+import {AssetGroupConfig, Manifest} from '../src/manifest.js';
+import {sha1} from '../src/sha1.js';
 
-import {MockCacheStorage} from './cache';
-import {MockClient, MockClients} from './clients';
-import {MockActivateEvent, MockExtendableMessageEvent, MockFetchEvent, MockInstallEvent, MockNotificationEvent, MockPushEvent} from './events';
-import {MockHeaders, MockRequest, MockResponse} from './fetch';
-import {MockServerState, MockServerStateBuilder} from './mock';
-import {normalizeUrl, parseUrl} from './utils';
+import {MockCacheStorage} from './cache.js';
+import {MockClient, MockClients} from './clients.js';
+import {MockActivateEvent, MockExtendableMessageEvent, MockFetchEvent, MockInstallEvent, MockNotificationEvent, MockPushEvent} from './events.js';
+import {MockHeaders, MockRequest, MockResponse} from './fetch.js';
+import {MockServerState, MockServerStateBuilder} from './mock.js';
+import {normalizeUrl, parseUrl} from './utils.js';
 
 const EMPTY_SERVER_STATE = new MockServerStateBuilder().build();
 

@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {resolveForwardRef} from '../forward_ref';
-import {ɵɵinject, ɵɵinvalidFactoryDep} from '../injector_compatibility';
-import {ɵɵdefineInjectable, ɵɵdefineInjector} from '../interface/defs';
+import {resolveForwardRef} from '../forward_ref.js';
+import {ɵɵinject, ɵɵinvalidFactoryDep} from '../injector_compatibility.js';
+import {ɵɵdefineInjectable, ɵɵdefineInjector} from '../interface/defs.js';
 
 /**
  * A mapping of the @angular/core API surface used in generated expressions to the actual symbols.

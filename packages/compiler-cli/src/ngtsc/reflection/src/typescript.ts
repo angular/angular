@@ -8,9 +8,9 @@
 
 import ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationKind, DeclarationNode, Decorator, FunctionDefinition, Import, isDecoratorIdentifier, ReflectionHost} from './host';
-import {typeToValue} from './type_to_value';
-import {isNamedClassDeclaration} from './util';
+import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationKind, DeclarationNode, Decorator, FunctionDefinition, Import, isDecoratorIdentifier, ReflectionHost} from './host.js';
+import {typeToValue} from './type_to_value.js';
+import {isNamedClassDeclaration} from './util.js';
 
 /**
  * reflector.ts implements static reflection of declarations using the TypeScript `ts.TypeChecker`.
@@ -662,7 +662,8 @@ function getFarLeftIdentifier(propertyAccess: ts.PropertyAccessExpression): ts.I
  */
 function getContainingImportDeclaration(node: ts.Node): ts.ImportDeclaration|null {
   return ts.isImportSpecifier(node) ? node.parent!.parent!.parent! :
-                                      ts.isNamespaceImport(node) ? node.parent.parent : null;
+      ts.isNamespaceImport(node)    ? node.parent.parent :
+                                      null;
 }
 
 /**

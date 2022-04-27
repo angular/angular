@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertNumber, assertString} from '../../util/assert';
-import {ELEMENT_MARKER, I18nCreateOpCode, I18nCreateOpCodes, I18nRemoveOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes} from '../interfaces/i18n';
+import {assertNumber, assertString} from '../../util/assert.js';
+import {ELEMENT_MARKER, I18nCreateOpCode, I18nCreateOpCodes, I18nRemoveOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, ICU_MARKER, IcuCreateOpCode, IcuCreateOpCodes} from '../interfaces/i18n.js';
 
-import {getInstructionFromIcuCreateOpCode, getParentFromIcuCreateOpCode, getRefFromIcuCreateOpCode} from './i18n_util';
+import {getInstructionFromIcuCreateOpCode, getParentFromIcuCreateOpCode, getRefFromIcuCreateOpCode} from './i18n_util.js';
 
 
 /**

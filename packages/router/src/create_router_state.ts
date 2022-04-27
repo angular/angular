@@ -8,9 +8,9 @@
 
 import {BehaviorSubject} from 'rxjs';
 
-import {DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
-import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
-import {TreeNode} from './utils/tree';
+import {DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy.js';
+import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state.js';
+import {TreeNode} from './utils/tree.js';
 
 export function createRouterState(
     routeReuseStrategy: RouteReuseStrategy, curr: RouterStateSnapshot,

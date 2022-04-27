@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵɵinject as inject} from '../../di/injector_compatibility';
-import {ɵɵdefineInjectable as defineInjectable} from '../../di/interface/defs';
-import {importProvidersFrom} from '../../di/provider_collection';
-import {EnvironmentInjector} from '../../di/r3_injector';
-import {OnDestroy} from '../../interface/lifecycle_hooks';
-import {ComponentDef} from '../interfaces/definition';
-import {createEnvironmentInjector} from '../ng_module_ref';
+import {ɵɵinject as inject} from '../../di/injector_compatibility.js';
+import {ɵɵdefineInjectable as defineInjectable} from '../../di/interface/defs.js';
+import {importProvidersFrom} from '../../di/provider_collection.js';
+import {EnvironmentInjector} from '../../di/r3_injector.js';
+import {OnDestroy} from '../../interface/lifecycle_hooks.js';
+import {ComponentDef} from '../interfaces/definition.js';
+import {createEnvironmentInjector} from '../ng_module_ref.js';
 
 /**
  * A service used by the framework to create instances of standalone injectors. Those injectors are

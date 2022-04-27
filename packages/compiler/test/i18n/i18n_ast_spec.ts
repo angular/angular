@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createI18nMessageFactory} from '../../src/i18n/i18n_parser';
-import {Node} from '../../src/ml_parser/ast';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
+import {createI18nMessageFactory} from '../../src/i18n/i18n_parser.js';
+import {Node} from '../../src/ml_parser/ast.js';
+import {HtmlParser} from '../../src/ml_parser/html_parser.js';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config.js';
 
 describe('Message', () => {
   const messageFactory = createI18nMessageFactory(DEFAULT_INTERPOLATION_CONFIG);

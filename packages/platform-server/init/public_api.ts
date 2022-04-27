@@ -11,4 +11,4 @@
  * @description
  * Entry point for all public APIs of this package.
  */
-export * from './src/init';
+export * from './src/init.js';

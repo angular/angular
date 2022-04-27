@@ -8,12 +8,12 @@
 
 import {Inject, Injectable, InjectionToken} from '@angular/core';
 
-import {Options} from '../common_options';
-import {MeasureValues} from '../measure_values';
-import {Reporter} from '../reporter';
-import {SampleDescription} from '../sample_description';
+import {Options} from '../common_options.js';
+import {MeasureValues} from '../measure_values.js';
+import {Reporter} from '../reporter.js';
+import {SampleDescription} from '../sample_description.js';
 
-import {formatStats, sortedProps} from './util';
+import {formatStats, sortedProps} from './util.js';
 
 
 /**

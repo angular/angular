@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isBrowser, isIE, zoneSymbol} from '../../lib/common/utils';
-import {ifEnvSupports, isSafari, isSupportSetErrorStack} from '../test-util';
+import {isBrowser, isIE, zoneSymbol} from '../../lib/common/utils.js';
+import {ifEnvSupports, isSafari, isSupportSetErrorStack} from '../test-util.js';
 
 const defineProperty = (Object as any)[zoneSymbol('defineProperty')] || Object.defineProperty;
 

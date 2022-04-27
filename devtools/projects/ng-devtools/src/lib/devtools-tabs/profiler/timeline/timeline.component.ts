@@ -11,10 +11,10 @@ import {ProfilerFrame} from 'protocol';
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {map, share} from 'rxjs/operators';
 
-import {createFilter, Filter, noopFilter} from './filter';
-import {mergeFrames} from './record-formatter/frame-merger';
-import {GraphNode} from './record-formatter/record-formatter';
-import {VisualizationMode} from './visualization-mode';
+import {createFilter, Filter, noopFilter} from './filter.js';
+import {mergeFrames} from './record-formatter/frame-merger.js';
+import {GraphNode} from './record-formatter/record-formatter.js';
+import {VisualizationMode} from './visualization-mode/index.js';
 
 const MAX_HEIGHT = 50;
 

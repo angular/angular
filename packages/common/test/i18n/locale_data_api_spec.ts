@@ -13,7 +13,7 @@ import localeHe from '@angular/common/locales/he';
 import localeZh from '@angular/common/locales/zh';
 import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 
-import {FormatWidth, FormStyle, getCurrencySymbol, getLocaleDateFormat, getLocaleDayNames, getLocaleDirection, getLocaleMonthNames, getNumberOfCurrencyDigits, TranslationWidth} from '../../src/i18n/locale_data_api';
+import {FormatWidth, FormStyle, getCurrencySymbol, getLocaleDateFormat, getLocaleDayNames, getLocaleDirection, getLocaleMonthNames, getNumberOfCurrencyDigits, TranslationWidth} from '../../src/i18n/locale_data_api.js';
 
 {
   describe('locale data api', () => {

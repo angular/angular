@@ -8,8 +8,8 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
-import {PerFileShimGenerator, TopLevelShimGenerator} from '../../shims/api';
+import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system/index.js';
+import {PerFileShimGenerator, TopLevelShimGenerator} from '../../shims/api.js';
 
 /**
  * A `ShimGenerator` which adds type-checking files to the `ts.Program`.

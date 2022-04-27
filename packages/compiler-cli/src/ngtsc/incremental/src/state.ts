@@ -8,12 +8,12 @@
 
 import ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../file_system';
-import {ClassRecord} from '../../transform';
-import {FileTypeCheckingData} from '../../typecheck/src/checker';
-import {SemanticDepGraph} from '../semantic_graph';
+import {AbsoluteFsPath} from '../../file_system/index.js';
+import {ClassRecord} from '../../transform/index.js';
+import {FileTypeCheckingData} from '../../typecheck/src/checker.js';
+import {SemanticDepGraph} from '../semantic_graph/index.js';
 
-import {FileDependencyGraph} from './dependency_tracking';
+import {FileDependencyGraph} from './dependency_tracking.js';
 
 /**
  * Discriminant of the `IncrementalState` union.

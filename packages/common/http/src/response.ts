@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpHeaders} from './headers';
+import {HttpHeaders} from './headers.js';
 
 /**
  * Type enumeration for the different kinds of `HttpEvent`.

@@ -7,9 +7,9 @@
  */
 import ts from 'typescript';
 
-import {getFileSystem, PathManipulation} from '../../file_system';
-import {TestFile} from '../../file_system/testing';
-import {makeProgram} from '../../testing';
+import {getFileSystem, PathManipulation} from '../../file_system/index.js';
+import {TestFile} from '../../file_system/testing/index.js';
+import {makeProgram} from '../../testing/index.js';
 
 /**
  * Construct a TS program consisting solely of an import graph, from a string-based representation

@@ -6,28 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '../../di/injector';
-import {Type} from '../../interface/type';
-import {SchemaMetadata} from '../../metadata/schema';
-import {Sanitizer} from '../../sanitization/sanitizer';
-import {KeyValueArray} from '../../util/array_utils';
-import {assertDefined} from '../../util/assert';
-import {createNamedArrayType} from '../../util/named_array_type';
-import {assertNodeInjector} from '../assert';
-import {getInjectorIndex, getParentInjectorLocation} from '../di';
-import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
-import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
-import {NO_PARENT_INJECTOR, NodeInjectorOffset} from '../interfaces/injector';
-import {AttributeMarker, InsertBeforeIndex, PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, toTNodeTypeAsString} from '../interfaces/node';
-import {SelectorFlags} from '../interfaces/projection';
-import {LQueries, TQueries} from '../interfaces/query';
-import {Renderer3, RendererFactory3} from '../interfaces/renderer';
-import {RComment, RElement, RNode} from '../interfaces/renderer_dom';
-import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DebugNode, DECLARATION_VIEW, DestroyHookData, FLAGS, HEADER_OFFSET, HookData, HOST, HostBindingOpCodes, ID, INJECTOR, LContainerDebug as ILContainerDebug, LView, LViewDebug as ILViewDebug, LViewDebugRange, LViewDebugRangeContent, LViewFlags, NEXT, NodeInjectorDebug, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TView as ITView, TVIEW, TView, TViewType, TViewTypeAsString} from '../interfaces/view';
-import {attachDebugObject} from '../util/debug_utils';
-import {getParentInjectorIndex, getParentInjectorView} from '../util/injector_utils';
-import {unwrapRNode} from '../util/view_utils';
+import {Injector} from '../../di/injector.js';
+import {Type} from '../../interface/type.js';
+import {SchemaMetadata} from '../../metadata/schema.js';
+import {Sanitizer} from '../../sanitization/sanitizer.js';
+import {KeyValueArray} from '../../util/array_utils.js';
+import {assertDefined} from '../../util/assert.js';
+import {createNamedArrayType} from '../../util/named_array_type.js';
+import {assertNodeInjector} from '../assert.js';
+import {getInjectorIndex, getParentInjectorLocation} from '../di.js';
+import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container.js';
+import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition.js';
+import {NO_PARENT_INJECTOR, NodeInjectorOffset} from '../interfaces/injector.js';
+import {AttributeMarker, InsertBeforeIndex, PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, toTNodeTypeAsString} from '../interfaces/node.js';
+import {SelectorFlags} from '../interfaces/projection.js';
+import {LQueries, TQueries} from '../interfaces/query.js';
+import {Renderer3, RendererFactory3} from '../interfaces/renderer.js';
+import {RComment, RElement, RNode} from '../interfaces/renderer_dom.js';
+import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling.js';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DebugNode, DECLARATION_VIEW, DestroyHookData, FLAGS, HEADER_OFFSET, HookData, HOST, HostBindingOpCodes, ID, INJECTOR, LContainerDebug as ILContainerDebug, LView, LViewDebug as ILViewDebug, LViewDebugRange, LViewDebugRangeContent, LViewFlags, NEXT, NodeInjectorDebug, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TView as ITView, TVIEW, TView, TViewType, TViewTypeAsString} from '../interfaces/view.js';
+import {attachDebugObject} from '../util/debug_utils.js';
+import {getParentInjectorIndex, getParentInjectorView} from '../util/injector_utils.js';
+import {unwrapRNode} from '../util/view_utils.js';
 
 /*
  * This file contains conditionally attached classes which provide human readable (debug) level

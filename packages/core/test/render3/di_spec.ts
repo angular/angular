@@ -11,16 +11,16 @@ import {createLView, createTView, getOrCreateTNode} from '@angular/core/src/rend
 import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 import {NodeInjectorOffset} from '@angular/core/src/render3/interfaces/injector';
 
-import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {bloomAdd, bloomHashBitOrFactory as bloomHash, bloomHasToken, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
-import {ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵtext} from '../../src/render3/index';
-import {TNodeType} from '../../src/render3/interfaces/node';
-import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
-import {LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view';
-import {enterView, leaveView} from '../../src/render3/state';
+import {ɵɵdefineComponent} from '../../src/render3/definition.js';
+import {bloomAdd, bloomHashBitOrFactory as bloomHash, bloomHasToken, getOrCreateNodeInjectorForNode} from '../../src/render3/di.js';
+import {ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵtext} from '../../src/render3/index.js';
+import {TNodeType} from '../../src/render3/interfaces/node.js';
+import {isProceduralRenderer} from '../../src/render3/interfaces/renderer.js';
+import {LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view.js';
+import {enterView, leaveView} from '../../src/render3/state.js';
 
-import {getRendererFactory2} from './imported_renderer2';
-import {ComponentFixture, createComponent, createDirective} from './render_util';
+import {getRendererFactory2} from './imported_renderer2.js';
+import {ComponentFixture, createComponent, createDirective} from './render_util.js';
 
 describe('di', () => {
   describe('directive injection', () => {

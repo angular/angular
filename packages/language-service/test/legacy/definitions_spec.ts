@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LanguageService} from '../../src/language_service';
+import {LanguageService} from '../../src/language_service.js';
 
-import {APP_COMPONENT, MockService, setup} from './mock_host';
-import {humanizeDefinitionInfo} from './test_utils';
+import {APP_COMPONENT, MockService, setup} from './mock_host.js';
+import {humanizeDefinitionInfo} from './test_utils.js';
 
 describe('definitions', () => {
   let service: MockService;

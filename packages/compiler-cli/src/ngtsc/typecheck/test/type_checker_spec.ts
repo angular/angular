@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {absoluteFrom, absoluteFromSourceFile, getSourceFileOrError} from '../../file_system';
-import {runInEachFileSystem} from '../../file_system/testing';
-import {OptimizeFor} from '../api';
-
-import {getClass, setup, TestDeclaration} from '../testing';
+import {ErrorCode, ngErrorCode} from '../../diagnostics/index.js';
+import {absoluteFrom, absoluteFromSourceFile, getSourceFileOrError} from '../../file_system/index.js';
+import {runInEachFileSystem} from '../../file_system/testing/index.js';
+import {OptimizeFor} from '../api/index.js';
+import {getClass, setup, TestDeclaration} from '../testing/index.js';
 
 runInEachFileSystem(() => {
   describe('TemplateTypeChecker', () => {

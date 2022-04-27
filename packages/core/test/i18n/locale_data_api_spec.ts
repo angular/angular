@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {findLocaleData, getLocaleCurrencyCode, LocaleDataIndex, registerLocaleData, unregisterAllLocaleData} from '../../src/i18n/locale_data_api';
-import {global} from '../../src/util/global';
+import {findLocaleData, getLocaleCurrencyCode, LocaleDataIndex, registerLocaleData, unregisterAllLocaleData} from '../../src/i18n/locale_data_api.js';
+import {global} from '../../src/util/global.js';
 
 {
   describe('locale data api', () => {

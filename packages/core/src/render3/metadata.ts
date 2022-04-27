@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
-import {noSideEffects} from '../util/closure';
+import {Type} from '../interface/type.js';
+import {noSideEffects} from '../util/closure.js';
 
 interface TypeWithMetadata extends Type<any> {
   decorators?: any[];

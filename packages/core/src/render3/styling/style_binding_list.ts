@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {KeyValueArray, keyValueArrayIndexOf} from '../../util/array_utils';
-import {assertEqual, assertIndexInRange, assertNotEqual} from '../../util/assert';
-import {assertFirstUpdatePass} from '../assert';
-import {TNode} from '../interfaces/node';
-import {getTStylingRangeNext, getTStylingRangePrev, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange, TStylingKey, TStylingKeyPrimitive, TStylingRange} from '../interfaces/styling';
-import {TData} from '../interfaces/view';
-import {getTView} from '../state';
+import {KeyValueArray, keyValueArrayIndexOf} from '../../util/array_utils.js';
+import {assertEqual, assertIndexInRange, assertNotEqual} from '../../util/assert.js';
+import {assertFirstUpdatePass} from '../assert.js';
+import {TNode} from '../interfaces/node.js';
+import {getTStylingRangeNext, getTStylingRangePrev, setTStylingRangeNext, setTStylingRangeNextDuplicate, setTStylingRangePrev, setTStylingRangePrevDuplicate, toTStylingRange, TStylingKey, TStylingKeyPrimitive, TStylingRange} from '../interfaces/styling.js';
+import {TData} from '../interfaces/view.js';
+import {getTView} from '../state.js';
 
 
 /**

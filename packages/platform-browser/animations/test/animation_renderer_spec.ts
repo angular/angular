@@ -14,7 +14,7 @@ import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRenderer
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {withBody} from '@angular/private/testing';
 
-import {el} from '../../testing/src/browser_util';
+import {el} from '../../testing/src/browser_util.js';
 
 (function() {
 if (isNode) return;

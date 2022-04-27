@@ -8,7 +8,7 @@
 
 import {ParseSourceFile} from '@angular/compiler';
 
-import {ClassDeclaration, DeclarationNode} from '../../reflection';
+import {ClassDeclaration, DeclarationNode} from '../../reflection/index.js';
 
 /**
  * Describes the kind of identifier found in a template.

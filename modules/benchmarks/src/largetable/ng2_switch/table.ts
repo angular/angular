@@ -9,7 +9,7 @@
 import {Component, Input, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {emptyTable, TableCell} from '../util';
+import {emptyTable, TableCell} from '../util.js';
 
 @Component({
   selector: 'largetable',

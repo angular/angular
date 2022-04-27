@@ -7,8 +7,8 @@
  */
 
 
-import {AbstractEmitterVisitor, EmitterVisitorContext, escapeIdentifier} from './abstract_emitter';
-import * as o from './output_ast';
+import {AbstractEmitterVisitor, EmitterVisitorContext, escapeIdentifier} from './abstract_emitter.js';
+import * as o from './output_ast.js';
 
 /**
  * In TypeScript, tagged template functions expect a "template object", which is an array of

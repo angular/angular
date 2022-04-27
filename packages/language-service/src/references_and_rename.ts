@@ -14,9 +14,9 @@ import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
 import {SymbolKind} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
-import {convertToTemplateDocumentSpan, createLocationKey, FilePosition, getParentClassMeta, getRenameTextAndSpanAtPosition, getTargetDetailsAtTemplatePosition, TemplateLocationDetails} from './references_and_rename_utils';
-import {collectMemberMethods, findTightestNode} from './ts_utils';
-import {getTemplateInfoAtPosition, TemplateInfo} from './utils';
+import {convertToTemplateDocumentSpan, createLocationKey, FilePosition, getParentClassMeta, getRenameTextAndSpanAtPosition, getTargetDetailsAtTemplatePosition, TemplateLocationDetails} from './references_and_rename_utils.js';
+import {collectMemberMethods, findTightestNode} from './ts_utils.js';
+import {getTemplateInfoAtPosition, TemplateInfo} from './utils.js';
 
 export class ReferencesBuilder {
   private readonly ttc = this.compiler.getTemplateTypeChecker();

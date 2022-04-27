@@ -11,13 +11,13 @@
 import cluster from 'cluster';
 import {EventEmitter} from 'events';
 
-import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
-import {MockLogger} from '../../../../src/ngtsc/logging/testing';
-import {CreateCompileFn} from '../../../src/execution/api';
-import {startWorker} from '../../../src/execution/cluster/worker';
-import {DtsProcessing, Task, TaskCompletedCallback, TaskProcessingOutcome} from '../../../src/execution/tasks/api';
-import {FileToWrite} from '../../../src/rendering/utils';
-import {mockProperty, spyProperty} from '../../helpers/spy_utils';
+import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system/index.js';
+import {MockLogger} from '../../../../src/ngtsc/logging/testing/index.js';
+import {CreateCompileFn} from '../../../src/execution/api.js';
+import {startWorker} from '../../../src/execution/cluster/worker.js';
+import {DtsProcessing, Task, TaskCompletedCallback, TaskProcessingOutcome} from '../../../src/execution/tasks/api.js';
+import {FileToWrite} from '../../../src/rendering/utils.js';
+import {mockProperty, spyProperty} from '../../helpers/spy_utils.js';
 
 
 describe('startWorker()', () => {

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LanguageService} from '../../src/language_service';
-import {getExternalFiles} from '../../src/ts_plugin';
+import {LanguageService} from '../../src/language_service.js';
+import {getExternalFiles} from '../../src/ts_plugin.js';
 
-import {APP_COMPONENT, setup} from './mock_host';
+import {APP_COMPONENT, setup} from './mock_host.js';
 
 describe('getExternalFiles()', () => {
   it('should return all typecheck files', () => {

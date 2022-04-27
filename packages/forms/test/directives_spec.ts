@@ -12,7 +12,7 @@ import {AbstractControl, CheckboxControlValueAccessor, ControlValueAccessor, Def
 import {selectValueAccessor} from '@angular/forms/src/directives/shared';
 import {composeValidators} from '@angular/forms/src/validators';
 
-import {asyncValidator} from './util';
+import {asyncValidator} from './util.js';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
   writtenValue: any;

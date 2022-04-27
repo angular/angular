@@ -11,7 +11,7 @@ import '@angular/localize/init';
 import {enableProdMode} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
-import {ExpandingRowBenchmarkModule} from './benchmark';
+import {ExpandingRowBenchmarkModule} from './benchmark.js';
 
 enableProdMode();
 platformBrowser().bootstrapModule(ExpandingRowBenchmarkModule);

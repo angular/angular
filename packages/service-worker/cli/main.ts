@@ -10,7 +10,7 @@ import {Config, Generator} from '@angular/service-worker/config';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import {NodeFilesystem} from './filesystem';
+import {NodeFilesystem} from './filesystem.js';
 
 
 const cwd = process.cwd();

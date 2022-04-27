@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {CompilerHost, CompilerOptions} from './api';
+import {CompilerHost, CompilerOptions} from './api.js';
 
 let wrapHostForTest: ((host: ts.CompilerHost) => ts.CompilerHost)|null = null;
 

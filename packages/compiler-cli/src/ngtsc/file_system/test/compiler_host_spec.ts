@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
-import {NgtscCompilerHost} from '../src/compiler_host';
-import {absoluteFrom, getFileSystem} from '../src/helpers';
-import {runInEachFileSystem} from '../testing';
+
+import {NgtscCompilerHost} from '../src/compiler_host.js';
+import {absoluteFrom, getFileSystem} from '../src/helpers.js';
+import {runInEachFileSystem} from '../testing/index.js';
 
 runInEachFileSystem(() => {
   describe('NgtscCompilerHost', () => {

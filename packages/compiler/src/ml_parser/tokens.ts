@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseSourceSpan} from '../parse_util';
+import {ParseSourceSpan} from '../parse_util.js';
 
 export const enum TokenType {
   TAG_OPEN_START,

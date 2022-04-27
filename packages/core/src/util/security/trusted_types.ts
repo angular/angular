@@ -16,8 +16,9 @@
  * security review.
  */
 
-import {global} from '../global';
-import {TrustedHTML, TrustedScript, TrustedScriptURL, TrustedTypePolicy, TrustedTypePolicyFactory} from './trusted_type_defs';
+import {global} from '../global.js';
+
+import {TrustedHTML, TrustedScript, TrustedScriptURL, TrustedTypePolicy, TrustedTypePolicyFactory} from './trusted_type_defs.js';
 
 /**
  * The Trusted Types policy, or null if Trusted Types are not

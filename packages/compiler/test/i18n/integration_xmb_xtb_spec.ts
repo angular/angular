@@ -10,7 +10,7 @@ import {Xmb} from '@angular/compiler/src/i18n/serializers/xmb';
 import {waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {configureCompiler, createComponent, HTML, serializeTranslations, validateHtml} from './integration_common';
+import {configureCompiler, createComponent, HTML, serializeTranslations, validateHtml} from './integration_common.js';
 
 // TODO(alxhub): figure out if this test is still relevant.
 xdescribe('i18n XMB/XTB integration spec', () => {

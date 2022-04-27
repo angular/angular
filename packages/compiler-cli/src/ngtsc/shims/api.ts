@@ -7,7 +7,7 @@
  */
 import ts from 'typescript';
 
-import {AbsoluteFsPath} from '../file_system';
+import {AbsoluteFsPath} from '../file_system/index.js';
 
 /**
  * Generates a single shim file for the entire program.

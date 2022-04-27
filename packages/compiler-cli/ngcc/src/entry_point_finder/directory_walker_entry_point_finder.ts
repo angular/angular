@@ -5,16 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {EntryPointWithDependencies} from '../dependencies/dependency_host';
-import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
-import {EntryPointManifest} from '../packages/entry_point_manifest';
-import {PathMappings} from '../path_mappings';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {EntryPointWithDependencies} from '../dependencies/dependency_host.js';
+import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver.js';
+import {EntryPointManifest} from '../packages/entry_point_manifest.js';
+import {PathMappings} from '../path_mappings.js';
 
-import {EntryPointCollector} from './entry_point_collector';
-import {EntryPointFinder} from './interface';
-import {getBasePaths, trackDuration} from './utils';
+import {EntryPointCollector} from './entry_point_collector.js';
+import {EntryPointFinder} from './interface.js';
+import {getBasePaths, trackDuration} from './utils.js';
 
 /**
  * An EntryPointFinder that searches for all entry-points that can be found given a `basePath` and

@@ -10,13 +10,13 @@
  * @suppress {missingRequire}
  */
 
-import {findEventTasks} from '../common/events';
-import {patchTimer} from '../common/timers';
-import {patchClass, patchMethod, patchPrototype, scheduleMacroTaskWithCurrentZone, ZONE_SYMBOL_ADD_EVENT_LISTENER, ZONE_SYMBOL_REMOVE_EVENT_LISTENER, zoneSymbol,} from '../common/utils';
+import {findEventTasks} from '../common/events.js';
+import {patchTimer} from '../common/timers.js';
+import {patchClass, patchMethod, patchPrototype, scheduleMacroTaskWithCurrentZone, ZONE_SYMBOL_ADD_EVENT_LISTENER, ZONE_SYMBOL_REMOVE_EVENT_LISTENER, zoneSymbol,} from '../common/utils.js';
 
-import {patchCustomElements} from './custom-elements';
-import {eventTargetPatch, patchEvent} from './event-target';
-import {propertyDescriptorPatch} from './property-descriptor';
+import {patchCustomElements} from './custom-elements.js';
+import {eventTargetPatch, patchEvent} from './event-target.js';
+import {propertyDescriptorPatch} from './property-descriptor.js';
 
 Zone.__load_patch('legacy', (global: any) => {
   const legacyPatch = global[Zone.__symbol__('legacyPatch')];

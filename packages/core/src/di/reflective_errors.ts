@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
-import {ERROR_ORIGINAL_ERROR, wrappedError} from '../util/errors';
-import {stringify} from '../util/stringify';
+import {Type} from '../interface/type.js';
+import {ERROR_ORIGINAL_ERROR, wrappedError} from '../util/errors.js';
+import {stringify} from '../util/stringify.js';
 
-import {ReflectiveInjector} from './reflective_injector';
-import {ReflectiveKey} from './reflective_key';
+import {ReflectiveInjector} from './reflective_injector.js';
+import {ReflectiveKey} from './reflective_key.js';
 
 function findFirstClosedCycle(keys: any[]): any[] {
   const res: any[] = [];

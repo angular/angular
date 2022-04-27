@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {invalidExpression, invalidTransitionAlias} from '../error_helpers';
+import {invalidExpression, invalidTransitionAlias} from '../error_helpers.js';
 
 export const ANY_STATE = '*';
 export declare type TransitionMatcherFn =

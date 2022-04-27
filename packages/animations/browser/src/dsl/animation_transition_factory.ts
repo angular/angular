@@ -7,16 +7,16 @@
  */
 import {AnimationOptions, ɵStyleDataMap} from '@angular/animations';
 
-import {AnimationDriver} from '../render/animation_driver';
-import {getOrSetDefaultValue} from '../render/shared';
-import {copyObj, interpolateParams, iteratorToArray} from '../util';
+import {AnimationDriver} from '../render/animation_driver.js';
+import {getOrSetDefaultValue} from '../render/shared.js';
+import {copyObj, interpolateParams, iteratorToArray} from '../util.js';
 
-import {StyleAst, TransitionAst} from './animation_ast';
-import {buildAnimationTimelines} from './animation_timeline_builder';
-import {TransitionMatcherFn} from './animation_transition_expr';
-import {AnimationTransitionInstruction, createTransitionInstruction} from './animation_transition_instruction';
-import {ElementInstructionMap} from './element_instruction_map';
-import {AnimationStyleNormalizer} from './style_normalization/animation_style_normalizer';
+import {StyleAst, TransitionAst} from './animation_ast.js';
+import {buildAnimationTimelines} from './animation_timeline_builder.js';
+import {TransitionMatcherFn} from './animation_transition_expr.js';
+import {AnimationTransitionInstruction, createTransitionInstruction} from './animation_transition_instruction.js';
+import {ElementInstructionMap} from './element_instruction_map.js';
+import {AnimationStyleNormalizer} from './style_normalization/animation_style_normalizer.js';
 
 const EMPTY_OBJECT = {};
 

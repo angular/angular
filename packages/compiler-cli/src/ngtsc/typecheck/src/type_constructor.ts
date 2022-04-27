@@ -8,11 +8,11 @@
 
 import ts from 'typescript';
 
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
-import {TypeCtorMetadata} from '../api';
+import {ClassDeclaration, ReflectionHost} from '../../reflection/index.js';
+import {TypeCtorMetadata} from '../api/index.js';
 
-import {checkIfGenericTypeBoundsCanBeEmitted, ReferenceEmitEnvironment} from './tcb_util';
-import {tsCreateTypeQueryForCoercedInput, tsUpdateTypeParameterDeclaration} from './ts_util';
+import {checkIfGenericTypeBoundsCanBeEmitted, ReferenceEmitEnvironment} from './tcb_util.js';
+import {tsCreateTypeQueryForCoercedInput, tsUpdateTypeParameterDeclaration} from './ts_util.js';
 
 export function generateTypeCtorDeclarationFn(
     node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata, nodeTypeRef: ts.EntityName,

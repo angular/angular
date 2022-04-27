@@ -8,13 +8,13 @@
 
 import ts from 'typescript';
 
-import {makeRelatedInformation} from '../../diagnostics';
-import {Reference} from '../../imports';
-import {FunctionDefinition} from '../../reflection';
+import {makeRelatedInformation} from '../../diagnostics/index.js';
+import {Reference} from '../../imports/index.js';
+import {FunctionDefinition} from '../../reflection/index.js';
 
-import {DynamicValue, DynamicValueVisitor} from './dynamic';
-import {EnumValue, KnownFn, ResolvedModule, ResolvedValue} from './result';
-import {SyntheticValue} from './synthetic';
+import {DynamicValue, DynamicValueVisitor} from './dynamic.js';
+import {EnumValue, KnownFn, ResolvedModule, ResolvedValue} from './result.js';
+import {SyntheticValue} from './synthetic.js';
 
 /**
  * Derives a type representation from a resolved value to be reported in a diagnostic.

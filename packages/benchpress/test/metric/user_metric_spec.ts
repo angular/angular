@@ -8,7 +8,7 @@
 
 import {Injector, StaticProvider} from '@angular/core';
 
-import {Options, PerfLogEvent, PerfLogFeatures, UserMetric, WebDriverAdapter} from '../../index';
+import {Options, PerfLogEvent, PerfLogFeatures, UserMetric, WebDriverAdapter} from '../../index.js';
 
 (function() {
 let wdAdapter: MockDriverAdapter;

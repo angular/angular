@@ -9,8 +9,8 @@
 import {EventEmitter, Injectable, OnDestroy, ɵɵinject} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 
-import {LocationStrategy} from './location_strategy';
-import {joinWithSlash, normalizeQueryParams, stripTrailingSlash} from './util';
+import {LocationStrategy} from './location_strategy.js';
+import {joinWithSlash, normalizeQueryParams, stripTrailingSlash} from './util.js';
 
 /** @publicApi */
 export interface PopStateEvent {

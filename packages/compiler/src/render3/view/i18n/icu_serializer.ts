@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as i18n from '../../../i18n/i18n_ast';
+import * as i18n from '../../../i18n/i18n_ast.js';
 
-import {formatI18nPlaceholderName} from './util';
+import {formatI18nPlaceholderName} from './util.js';
 
 class IcuSerializerVisitor implements i18n.Visitor {
   visitText(text: i18n.Text): any {

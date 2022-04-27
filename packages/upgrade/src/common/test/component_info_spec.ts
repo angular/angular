@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PropertyBinding} from '../src/component_info';
+import {PropertyBinding} from '../src/component_info.js';
 
 {
   describe('PropertyBinding', () => {

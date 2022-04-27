@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-export * from './src/utils';
-export * from './src/cached_source_files';
-export * from './src/compiler_host';
-export * from './src/mock_file_loading';
-export * from './src/runfile_helpers';
+export * from './src/utils.js';
+export * from './src/cached_source_files.js';
+export * from './src/compiler_host.js';
+export * from './src/mock_file_loading.js';
+export * from './src/runfile_helpers.js';

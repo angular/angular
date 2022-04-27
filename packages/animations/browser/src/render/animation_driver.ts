@@ -8,7 +8,7 @@
 import {AnimationPlayer, NoopAnimationPlayer} from '@angular/animations';
 import {Injectable} from '@angular/core';
 
-import {containsElement, getParentElement, invokeQuery, validateStyleProperty} from './shared';
+import {containsElement, getParentElement, invokeQuery, validateStyleProperty} from './shared.js';
 
 /**
  * @publicApi

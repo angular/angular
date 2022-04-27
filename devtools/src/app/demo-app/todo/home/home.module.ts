@@ -10,11 +10,11 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
-import {TooltipDirective} from './/tooltip.directive';
-import {SamplePipe} from './sample.pipe';
-import {TodoComponent} from './todo.component';
-import {TodosComponent} from './todos.component';
-import {TodosFilter} from './todos.pipe';
+import {TooltipDirective} from './/tooltip.directive.js';
+import {SamplePipe} from './sample.pipe.js';
+import {TodoComponent} from './todo.component.js';
+import {TodosComponent} from './todos.component.js';
+import {TodosFilter} from './todos.pipe.js';
 
 @NgModule({
   imports: [

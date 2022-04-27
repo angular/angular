@@ -8,9 +8,9 @@
 import {Observable, observable, of} from 'rxjs';
 import {pairwise, partition, pluck} from 'rxjs/operators';
 
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupports} from '../test-util.js';
 
-import {supportFeature} from './rxjs.util';
+import {supportFeature} from './rxjs.util.js';
 
 describe('Observable.map', () => {
   let log: any[];

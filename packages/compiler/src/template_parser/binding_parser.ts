@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SecurityContext} from '../core';
-import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast';
-import {Parser} from '../expression_parser/parser';
-import {InterpolationConfig} from '../ml_parser/interpolation_config';
-import {mergeNsAndName} from '../ml_parser/tags';
-import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/tokens';
-import {ParseError, ParseErrorLevel, ParseLocation, ParseSourceSpan} from '../parse_util';
-import {ElementSchemaRegistry} from '../schema/element_schema_registry';
-import {CssSelector} from '../selector';
-import {splitAtColon, splitAtPeriod} from '../util';
+import {SecurityContext} from '../core.js';
+import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast.js';
+import {Parser} from '../expression_parser/parser.js';
+import {InterpolationConfig} from '../ml_parser/interpolation_config.js';
+import {mergeNsAndName} from '../ml_parser/tags.js';
+import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/tokens.js';
+import {ParseError, ParseErrorLevel, ParseLocation, ParseSourceSpan} from '../parse_util.js';
+import {ElementSchemaRegistry} from '../schema/element_schema_registry.js';
+import {CssSelector} from '../selector.js';
+import {splitAtColon, splitAtPeriod} from '../util.js';
 
 const PROPERTY_PARTS_SEPARATOR = '.';
 const ATTRIBUTE_PREFIX = 'attr';

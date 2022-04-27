@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PrefetchAssetGroup} from '../src/assets';
-import {CacheDatabase} from '../src/db-cache';
-import {IdleScheduler} from '../src/idle';
-import {MockCache} from '../testing/cache';
-import {MockExtendableEvent} from '../testing/events';
-import {MockRequest} from '../testing/fetch';
-import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTable, tmpManifestSingleAssetGroup} from '../testing/mock';
-import {SwTestHarnessBuilder} from '../testing/scope';
-import {envIsSupported} from '../testing/utils';
+import {PrefetchAssetGroup} from '../src/assets.js';
+import {CacheDatabase} from '../src/db-cache.js';
+import {IdleScheduler} from '../src/idle.js';
+import {MockCache} from '../testing/cache.js';
+import {MockExtendableEvent} from '../testing/events.js';
+import {MockRequest} from '../testing/fetch.js';
+import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTable, tmpManifestSingleAssetGroup} from '../testing/mock.js';
+import {SwTestHarnessBuilder} from '../testing/scope.js';
+import {envIsSupported} from '../testing/utils.js';
 
 (function() {
 // Skip environments that don't support the minimum APIs needed to run the SW tests.

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './src/host';
-export {typeNodeToValueExpr} from './src/type_to_value';
-export {TypeScriptReflectionHost, filterToMembersWithDecorator, reflectIdentifierOfDeclaration, reflectNameOfDeclaration, reflectObjectLiteral, reflectTypeEntityToDeclaration} from './src/typescript';
-export {isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from './src/util';
+export * from './src/host.js';
+export {typeNodeToValueExpr} from './src/type_to_value.js';
+export {TypeScriptReflectionHost, filterToMembersWithDecorator, reflectIdentifierOfDeclaration, reflectNameOfDeclaration, reflectObjectLiteral, reflectTypeEntityToDeclaration} from './src/typescript.js';
+export {isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from './src/util.js';

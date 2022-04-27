@@ -11,8 +11,8 @@ import {MockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testin
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
-import {MockServerHost} from './host';
-import {Project, ProjectFiles, TestableOptions} from './project';
+import {MockServerHost} from './host.js';
+import {Project, ProjectFiles, TestableOptions} from './project.js';
 
 /**
  * Testing environment for the Angular Language Service, which creates an in-memory tsserver

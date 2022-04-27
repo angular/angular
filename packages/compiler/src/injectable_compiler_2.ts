@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as o from './output/output_ast';
-import {compileFactoryFunction, FactoryTarget, R3DependencyMetadata, R3FactoryDelegateType, R3FactoryMetadata} from './render3/r3_factory';
-import {Identifiers} from './render3/r3_identifiers';
-import {convertFromMaybeForwardRefExpression, ForwardRefHandling, generateForwardRef, MaybeForwardRefExpression, R3CompiledExpression, R3Reference, typeWithParameters} from './render3/util';
-import {DefinitionMap} from './render3/view/util';
+import * as o from './output/output_ast.js';
+import {compileFactoryFunction, FactoryTarget, R3DependencyMetadata, R3FactoryDelegateType, R3FactoryMetadata} from './render3/r3_factory.js';
+import {Identifiers} from './render3/r3_identifiers.js';
+import {convertFromMaybeForwardRefExpression, ForwardRefHandling, generateForwardRef, MaybeForwardRefExpression, R3CompiledExpression, R3Reference, typeWithParameters} from './render3/util.js';
+import {DefinitionMap} from './render3/view/util.js';
 
 export interface R3InjectableMetadata {
   name: string;

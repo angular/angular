@@ -8,12 +8,12 @@
 
 import {AbsoluteSourceSpan, BoundTarget, DirectiveMeta, ParseSourceSpan, SchemaMetadata} from '@angular/compiler';
 import ts from 'typescript';
-import {ErrorCode} from '../../diagnostics';
 
-import {AbsoluteFsPath} from '../../file_system';
-import {Reference} from '../../imports';
-import {ClassPropertyMapping, DirectiveTypeCheckMeta} from '../../metadata';
-import {ClassDeclaration} from '../../reflection';
+import {ErrorCode} from '../../diagnostics/index.js';
+import {AbsoluteFsPath} from '../../file_system/index.js';
+import {Reference} from '../../imports/index.js';
+import {ClassPropertyMapping, DirectiveTypeCheckMeta} from '../../metadata/index.js';
+import {ClassDeclaration} from '../../reflection/index.js';
 
 
 /**

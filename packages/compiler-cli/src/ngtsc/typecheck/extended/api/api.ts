@@ -9,9 +9,9 @@
 import {AST, ASTWithSource, ParseSourceSpan, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
-import {NgCompilerOptions} from '../../../core/api';
-import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../diagnostics';
-import {NgTemplateDiagnostic, TemplateTypeChecker} from '../../api';
+import {NgCompilerOptions} from '../../../core/api/index.js';
+import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../diagnostics/index.js';
+import {NgTemplateDiagnostic, TemplateTypeChecker} from '../../api/index.js';
 
 /**
  * A Template Check receives information about the template it's checking and returns

@@ -8,9 +8,9 @@
 
 import {NgModule} from '@angular/core';
 
-import {ThirdPartyComponent} from './comp';
-import {ThirdPartyDirective} from './directive';
-import {AnotherThirdPartyModule} from './other_module';
+import {ThirdPartyComponent} from './comp.js';
+import {ThirdPartyDirective} from './directive.js';
+import {AnotherThirdPartyModule} from './other_module.js';
 
 @NgModule({
   declarations: [

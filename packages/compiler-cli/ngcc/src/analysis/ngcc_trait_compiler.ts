@@ -7,13 +7,13 @@
  */
 import ts from 'typescript';
 
-import {IncrementalBuild} from '../../../src/ngtsc/incremental/api';
-import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
-import {NOOP_PERF_RECORDER} from '../../../src/ngtsc/perf';
-import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
-import {CompilationMode, DecoratorHandler, DtsTransformRegistry, HandlerFlags, Trait, TraitCompiler} from '../../../src/ngtsc/transform';
-import {NgccReflectionHost} from '../host/ngcc_host';
-import {isDefined} from '../utils';
+import {IncrementalBuild} from '../../../src/ngtsc/incremental/api.js';
+import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph/index.js';
+import {NOOP_PERF_RECORDER} from '../../../src/ngtsc/perf/index.js';
+import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection/index.js';
+import {CompilationMode, DecoratorHandler, DtsTransformRegistry, HandlerFlags, Trait, TraitCompiler} from '../../../src/ngtsc/transform/index.js';
+import {NgccReflectionHost} from '../host/ngcc_host.js';
+import {isDefined} from '../utils.js';
 
 /**
  * Specializes the `TraitCompiler` for ngcc purposes. Mainly, this includes an alternative way of

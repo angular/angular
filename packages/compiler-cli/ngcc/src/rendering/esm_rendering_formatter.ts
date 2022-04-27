@@ -9,18 +9,18 @@ import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import ts from 'typescript';
 
-import {absoluteFromSourceFile, AbsoluteFsPath, PathManipulation, toRelativeImport} from '../../../src/ngtsc/file_system';
-import {Reexport} from '../../../src/ngtsc/imports';
-import {Import, ImportManager, translateStatement} from '../../../src/ngtsc/translator';
-import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
-import {ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyzer';
-import {ExportInfo} from '../analysis/private_declarations_analyzer';
-import {CompiledClass} from '../analysis/types';
-import {getContainingStatement, isAssignment} from '../host/esm2015_host';
-import {NgccReflectionHost} from '../host/ngcc_host';
+import {absoluteFromSourceFile, AbsoluteFsPath, PathManipulation, toRelativeImport} from '../../../src/ngtsc/file_system/index.js';
+import {Reexport} from '../../../src/ngtsc/imports/index.js';
+import {Import, ImportManager, translateStatement} from '../../../src/ngtsc/translator/index.js';
+import {isDtsPath} from '../../../src/ngtsc/util/src/typescript.js';
+import {ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyzer.js';
+import {ExportInfo} from '../analysis/private_declarations_analyzer.js';
+import {CompiledClass} from '../analysis/types.js';
+import {getContainingStatement, isAssignment} from '../host/esm2015_host.js';
+import {NgccReflectionHost} from '../host/ngcc_host.js';
 
-import {RedundantDecoratorMap, RenderingFormatter} from './rendering_formatter';
-import {stripExtension} from './utils';
+import {RedundantDecoratorMap, RenderingFormatter} from './rendering_formatter.js';
+import {stripExtension} from './utils.js';
 
 /**
  * A RenderingFormatter that works with ECMAScript Module import and export statements.

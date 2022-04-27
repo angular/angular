@@ -13,9 +13,9 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
 
-import {BreadcrumbsModule} from './breadcrumbs/breadcrumbs.module';
-import {DirectiveForestComponent} from './directive-forest.component';
-import {FilterModule} from './filter/filter.module';
+import {BreadcrumbsModule} from './breadcrumbs/breadcrumbs.module.js';
+import {DirectiveForestComponent} from './directive-forest.component.js';
+import {FilterModule} from './filter/filter.module.js';
 
 @NgModule({
   declarations: [DirectiveForestComponent],

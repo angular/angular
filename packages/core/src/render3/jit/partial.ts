@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FactoryTarget, getCompilerFacade, JitCompilerUsage, R3DeclareComponentFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade} from '../../compiler/compiler_facade';
-import {Type} from '../../interface/type';
-import {setClassMetadata} from '../metadata';
-import {angularCoreEnv} from './environment';
+import {FactoryTarget, getCompilerFacade, JitCompilerUsage, R3DeclareComponentFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade} from '../../compiler/compiler_facade.js';
+import {Type} from '../../interface/type.js';
+import {setClassMetadata} from '../metadata.js';
+
+import {angularCoreEnv} from './environment.js';
 
 /**
  * Compiles a partial directive declaration object into a full directive definition object.
@@ -94,7 +95,7 @@ export function ɵɵngDeclareInjectable(decl: R3DeclareInjectableFacade): unknow
 /**
  * These enums are used in the partial factory declaration calls.
  */
-export {FactoryTarget} from '../../compiler/compiler_facade';
+export {FactoryTarget} from '../../compiler/compiler_facade.js';
 
 /**
  * Compiles a partial injector declaration object into a full injector definition object.

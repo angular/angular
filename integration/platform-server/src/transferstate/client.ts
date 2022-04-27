@@ -9,7 +9,7 @@
 import 'zone.js/bundles/zone.umd';
 
 import {platformBrowser} from '@angular/platform-browser';
-import {TransferStateModule} from './app';
+import {TransferStateModule} from './app.js';
 
 window['doBootstrap'] = function() {
   platformBrowser().bootstrapModule(TransferStateModule);

@@ -12,7 +12,7 @@ import {AbsoluteFsPath, resolve} from '@angular/compiler-cli/src/ngtsc/file_syst
 import {TrackedIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/incremental';
 import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
 
-import {LanguageServiceAdapter} from './adapters';
+import {LanguageServiceAdapter} from './adapters.js';
 
 /**
  * Manages the `NgCompiler` instance which backs the language service, updating or replacing it as

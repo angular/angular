@@ -9,18 +9,18 @@
 import {Component, NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
-import * as formBuilderExample from './ts/formBuilder/module';
-import * as nestedFormArrayExample from './ts/nestedFormArray/module';
-import * as nestedFormGroupExample from './ts/nestedFormGroup/module';
-import * as ngModelGroupExample from './ts/ngModelGroup/module';
-import * as radioButtonsExample from './ts/radioButtons/module';
-import * as reactiveRadioButtonsExample from './ts/reactiveRadioButtons/module';
-import * as reactiveSelectControlExample from './ts/reactiveSelectControl/module';
-import * as selectControlExample from './ts/selectControl/module';
-import * as simpleFormExample from './ts/simpleForm/module';
-import * as simpleFormControlExample from './ts/simpleFormControl/module';
-import * as simpleFormGroupExample from './ts/simpleFormGroup/module';
-import * as simpleNgModelExample from './ts/simpleNgModel/module';
+import * as formBuilderExample from './ts/formBuilder/module.js';
+import * as nestedFormArrayExample from './ts/nestedFormArray/module.js';
+import * as nestedFormGroupExample from './ts/nestedFormGroup/module.js';
+import * as ngModelGroupExample from './ts/ngModelGroup/module.js';
+import * as radioButtonsExample from './ts/radioButtons/module.js';
+import * as reactiveRadioButtonsExample from './ts/reactiveRadioButtons/module.js';
+import * as reactiveSelectControlExample from './ts/reactiveSelectControl/module.js';
+import * as selectControlExample from './ts/selectControl/module.js';
+import * as simpleFormExample from './ts/simpleForm/module.js';
+import * as simpleFormControlExample from './ts/simpleFormControl/module.js';
+import * as simpleFormGroupExample from './ts/simpleFormGroup/module.js';
+import * as simpleNgModelExample from './ts/simpleNgModel/module.js';
 
 @Component({selector: 'example-app', template: '<router-outlet></router-outlet>'})
 export class TestsAppComponent {

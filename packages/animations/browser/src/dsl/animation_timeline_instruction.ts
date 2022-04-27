@@ -7,7 +7,7 @@
  */
 import {ɵStyleDataMap} from '@angular/animations';
 
-import {AnimationEngineInstruction, AnimationTransitionInstructionType} from '../render/animation_engine_instruction';
+import {AnimationEngineInstruction, AnimationTransitionInstructionType} from '../render/animation_engine_instruction.js';
 
 export interface AnimationTimelineInstruction extends AnimationEngineInstruction {
   element: any;

@@ -9,7 +9,7 @@
 import {Directive, HostListener, Input} from '@angular/core';
 import {setClassMetadata} from '@angular/core/src/render3/metadata';
 
-import {convertToR3QueryMetadata, directiveMetadata, extendsDirectlyFromObject} from '../../../src/render3/jit/directive';
+import {convertToR3QueryMetadata, directiveMetadata, extendsDirectlyFromObject} from '../../../src/render3/jit/directive.js';
 
 describe('jit directive helper functions', () => {
   describe('extendsDirectlyFromObject', () => {

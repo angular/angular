@@ -6,20 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ErrorCode, makeDiagnostic, ngErrorCode} from '../../../src/ngtsc/diagnostics';
-import {absoluteFrom} from '../../../src/ngtsc/file_system';
-import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
-import {MockLogger} from '../../../src/ngtsc/logging/testing';
-import {ClassDeclaration, Decorator, isNamedClassDeclaration} from '../../../src/ngtsc/reflection';
-import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, TraitState} from '../../../src/ngtsc/transform';
-import {NgccTraitCompiler} from '../../src/analysis/ngcc_trait_compiler';
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {createComponentDecorator} from '../../src/migrations/utils';
-import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
-import {makeTestEntryPointBundle} from '../helpers/utils';
-import {getTraitDiagnostics} from '../host/util';
+import {ErrorCode, makeDiagnostic, ngErrorCode} from '../../../src/ngtsc/diagnostics/index.js';
+import {absoluteFrom} from '../../../src/ngtsc/file_system/index.js';
+import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing/index.js';
+import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph/index.js';
+import {MockLogger} from '../../../src/ngtsc/logging/testing/index.js';
+import {ClassDeclaration, Decorator, isNamedClassDeclaration} from '../../../src/ngtsc/reflection/index.js';
+import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing/index.js';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, TraitState} from '../../../src/ngtsc/transform/index.js';
+import {NgccTraitCompiler} from '../../src/analysis/ngcc_trait_compiler.js';
+import {Esm2015ReflectionHost} from '../../src/host/esm2015_host.js';
+import {createComponentDecorator} from '../../src/migrations/utils.js';
+import {EntryPointBundle} from '../../src/packages/entry_point_bundle.js';
+import {makeTestEntryPointBundle} from '../helpers/utils.js';
+import {getTraitDiagnostics} from '../host/util.js';
 
 runInEachFileSystem(() => {
   describe('NgccTraitCompiler', () => {

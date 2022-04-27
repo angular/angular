@@ -9,7 +9,8 @@
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
-import {NestedFormArray} from './nested_form_array_example';
+
+import {NestedFormArray} from './nested_form_array_example.js';
 
 @NgModule({
   imports: [BrowserModule, ReactiveFormsModule],

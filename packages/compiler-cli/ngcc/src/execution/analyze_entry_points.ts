@@ -7,19 +7,19 @@
  */
 import {DepGraph} from 'dependency-graph';
 
-import {FileSystem} from '../../../src/ngtsc/file_system';
-import {Logger} from '../../../src/ngtsc/logging';
-import {InvalidEntryPoint} from '../dependencies/dependency_resolver';
-import {EntryPointFinder} from '../entry_point_finder/interface';
-import {ParallelTaskQueue} from '../execution/tasks/queues/parallel_task_queue';
-import {SerialTaskQueue} from '../execution/tasks/queues/serial_task_queue';
-import {computeTaskDependencies} from '../execution/tasks/utils';
-import {hasBeenProcessed} from '../packages/build_marker';
-import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../packages/entry_point';
-import {cleanOutdatedPackages} from '../writing/cleaning/package_cleaner';
+import {FileSystem} from '../../../src/ngtsc/file_system/index.js';
+import {Logger} from '../../../src/ngtsc/logging/index.js';
+import {InvalidEntryPoint} from '../dependencies/dependency_resolver.js';
+import {EntryPointFinder} from '../entry_point_finder/interface.js';
+import {ParallelTaskQueue} from '../execution/tasks/queues/parallel_task_queue.js';
+import {SerialTaskQueue} from '../execution/tasks/queues/serial_task_queue.js';
+import {computeTaskDependencies} from '../execution/tasks/utils.js';
+import {hasBeenProcessed} from '../packages/build_marker.js';
+import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FORMAT_PROPERTIES} from '../packages/entry_point.js';
+import {cleanOutdatedPackages} from '../writing/cleaning/package_cleaner.js';
 
-import {AnalyzeEntryPointsFn} from './api';
-import {DtsProcessing, PartiallyOrderedTasks, TaskQueue} from './tasks/api';
+import {AnalyzeEntryPointsFn} from './api.js';
+import {DtsProcessing, PartiallyOrderedTasks, TaskQueue} from './tasks/api.js';
 
 /**
  * Create the function for performing the analysis of the entry-points.
@@ -69,7 +69,8 @@ export function getAnalyzeEntryPointsFn(
         continue;
       }
       let processDts = hasProcessedTypings ? DtsProcessing.No :
-                                             typingsOnly ? DtsProcessing.Only : DtsProcessing.Yes;
+          typingsOnly                      ? DtsProcessing.Only :
+                                             DtsProcessing.Yes;
 
       for (const formatProperty of propertiesToProcess) {
         if (hasBeenProcessed(entryPoint.packageJson, formatProperty)) {

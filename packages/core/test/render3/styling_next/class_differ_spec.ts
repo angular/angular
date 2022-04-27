@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {classIndexOf} from '../../../src/render3/styling/class_differ';
+import {classIndexOf} from '../../../src/render3/styling/class_differ.js';
 
 describe('class differ', () => {
   describe('classIndexOf', () => {
