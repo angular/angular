@@ -730,6 +730,11 @@ export class ApplicationRef {
   public readonly isStable!: Observable<boolean>;
 
   /** @internal */
+  get injector(): Injector {
+    return this._injector;
+  }
+
+  /** @internal */
   constructor(
       private _zone: NgZone, private _injector: Injector, private _exceptionHandler: ErrorHandler,
       private _initStatus: ApplicationInitStatus) {

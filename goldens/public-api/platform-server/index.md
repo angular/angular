@@ -11,6 +11,7 @@ import * as i3 from '@angular/platform-browser';
 import { InjectionToken } from '@angular/core';
 import { NgModuleFactory } from '@angular/core';
 import { PlatformRef } from '@angular/core';
+import { Provider } from '@angular/core';
 import { StaticProvider } from '@angular/core';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
@@ -45,6 +46,14 @@ export class PlatformState {
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<PlatformState>;
 }
+
+// @public
+export function renderApplication<T>(rootComponent: Type<T>, appId: string, options: {
+    document?: string;
+    url?: string;
+    providers?: Provider[];
+    platformProviders?: Provider[];
+}): Promise<string>;
 
 // @public
 export function renderModule<T>(module: Type<T>, options: {
