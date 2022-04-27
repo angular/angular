@@ -12,6 +12,13 @@ exports_files([
     "package.json",
 ])
 
+filegroup(
+    # filegroup is needed so that this package.json file can be a dep
+    # in a js_library target, which doesn't allow source file deps
+    name = "package_json",
+    srcs = ["package.json"],
+)
+
 alias(
     name = "tsconfig.json",
     actual = "//packages:tsconfig-build.json",
