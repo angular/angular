@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
+import {Directive, EventEmitter, forwardRef, Inject, InjectionToken, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
 import {first} from 'rxjs/operators';
 
-import {NG_SUBMIT_AFTER_ASYNC_VALIDATION} from '../../directives';
 import {FormArray} from '../../model/form_array';
 import {FormControl, isFormControl} from '../../model/form_control';
 import {FormGroup} from '../../model/form_group';
@@ -22,6 +21,9 @@ import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../valid
 
 import {FormControlName} from './form_control_name';
 import {FormArrayName, FormGroupName} from './form_group_name';
+
+export const NG_SUBMIT_AFTER_ASYNC_VALIDATION =
+    new InjectionToken<boolean>('NgSubmitAfterAsyncValidation');
 
 export const formDirectiveProvider: any = {
   provide: ControlContainer,
