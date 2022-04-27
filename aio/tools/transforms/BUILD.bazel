@@ -1,17 +1,9 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+
 package(default_visibility = ["//visibility:public"])
 
-filegroup(
+js_library(
     name = "transforms",
-    srcs = glob(
-        [
-            "**/*.js",
-            "**/*.html",
-            "**/*.json",
-            "**/*.xml",
-        ],
-        exclude = [
-            "test.js",
-            "**/*.spec.js",
-        ],
-    ),
+    srcs = ["config.js"],
+    visibility = [":__subpackages__"],
 )
