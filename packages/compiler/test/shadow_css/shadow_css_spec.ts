@@ -336,6 +336,63 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       });
     });
 
+    describe('functional pseudo-class selectors', () => {
+      it('should handle selectors with a single function', () => {
+        expect(s(':is(.foo) {}', 'contenta', 'hosta')).toEqual('[contenta]:is(.foo) {}');
+        expect(s(':is(.foo, .bar){}', 'contenta', 'hosta')).toEqual('[contenta]:is(.foo, .bar){}');
+        expect(s(':is(.foo, .bar) :host {}', 'contenta', 'hosta'))
+            .toEqual(':is(.foo, .bar) [hosta] {}');
+        expect(s(':is(.foo, .bar, .baz) {}', 'contenta', 'hosta'))
+            .toEqual('[contenta]:is(.foo, .bar, .baz) {}');
+      });
+
+      it('should handle selectors with multiple functions on the same element', () => {
+        expect(s(':is(.foo, .bar, .baz):is(.qux, .quux){}', 'contenta', 'hosta'))
+            .toEqual('[contenta]:is(.foo, .bar, .baz):is(.qux, .quux){}');
+        expect(s(':is(.foo, .bar):not(p, div, a):is(.baz, .qux){}', 'contenta', 'hosta'))
+            .toEqual('[contenta]:is(.foo, .bar):not(p, div, a):is(.baz, .qux){}');
+      });
+
+      it('should handle selectors with multiple functions on different elements', () => {
+        expect(s(':where(header, footer) p:is(.foo, .bar){}', 'contenta', 'hosta'))
+            .toEqual('[contenta]:where(header, footer) p[contenta]:is(.foo, .bar){}');
+        expect(
+            s(':is(.foo, .foobar) :host:not(p):not(div, a) :is(.bar, .baz){}', 'contenta', 'hosta'))
+            .toEqual(':is(.foo, .foobar) [hosta]:not(p):not(div, a) [contenta]:is(.bar, .baz){}');
+      });
+
+      it('should handle selectors with nested functions (without scoping the functions\' arguments)',
+         () => {
+           expect(s('p:is(.foo, .bar:not(.baz)){}', 'contenta', 'hosta'))
+               .toEqual('p[contenta]:is(.foo, .bar:not(.baz)){}');
+           expect(s(':is(.foo, .foobar:not(:not(p:is(.foo)))):not(.bar){}', 'contenta', 'hosta'))
+               .toEqual('[contenta]:is(.foo, .foobar:not(:not(p:is(.foo)))):not(.bar){}');
+           expect(s('div:is(:is(.foo):not(:bar)){}', 'contenta', 'hosta'))
+               .toEqual('div[contenta]:is(:is(.foo):not(:bar)){}');
+         });
+
+      it('should ignore ::ng-deep provided as the functions\' arguments)', () => {
+        expect(s('div:is(::ng-deep span){}', 'contenta', 'hosta'))
+            .toEqual('div[contenta]:is(::ng-deep span){}');
+      });
+
+      it('should ignore :host provided as the functions\' arguments)', () => {
+        expect(s('span:is(:host){}', 'contenta', 'hosta')).toEqual('span[contenta]:is(:host){}');
+        expect(s('h1:is(:host([x], [y=z])) {}', 'contenta', 'a-host'))
+            .toEqual('h1[contenta]:is(:host([x], [y="z"])) {}');
+      });
+
+      it('should ignore :host-context provided as the functions\' arguments)', () => {
+        expect(s('div:is(:host-context){}', 'contenta', 'hosta'))
+            .toEqual('div[contenta]:is(:host-context){}');
+        expect(s('.container:not(:host-context(ul)) > .element {}', 'contenta', 'a-host'))
+            .toEqual('.container[contenta]:not(:host-context(ul)) > .element[contenta] {}');
+        expect(s('div.foo:not(:host-context(.bar, .baz), .qux) > .foobar {}', 'contenta', 'a-host'))
+            .toEqual(
+                'div.foo[contenta]:not(:host-context(.bar, .baz), .qux) > .foobar[contenta] {}');
+      });
+    });
+
     it('should support polyfill-next-selector', () => {
       let css = s('polyfill-next-selector {content: \'x > y\'} z {}', 'contenta');
       expect(css).toEqual('x[contenta] > y[contenta]{}');

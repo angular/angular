@@ -411,8 +411,9 @@ export class ShadowCss {
    */
   private _scopeCssText(cssText: string, scopeSelector: string, hostSelector: string): string {
     const unscopedRules = this._extractUnscopedRulesFromCssText(cssText);
+    const [escapedCssText, escapedSelectorFns] = this._escapeSelectorFns(cssText);
     // replace :host and :host-context -shadowcsshost and -shadowcsshost respectively
-    cssText = this._insertPolyfillHostInCssText(cssText);
+    cssText = this._insertPolyfillHostInCssText(escapedCssText);
     cssText = this._convertColonHost(cssText);
     cssText = this._convertColonHostContext(cssText);
     cssText = this._convertShadowDOMSelectors(cssText);
@@ -420,6 +421,7 @@ export class ShadowCss {
       cssText = this._scopeKeyframesRelatedCss(cssText, scopeSelector);
       cssText = this._scopeSelectors(cssText, scopeSelector, hostSelector);
     }
+    cssText = this._unescapeSelectorFns(cssText, escapedSelectorFns);
     cssText = cssText + '\n' + unscopedRules;
     return cssText.trim();
   }
@@ -606,6 +608,104 @@ export class ShadowCss {
       const selector = rule.selector.replace(_shadowDeepSelectors, ' ')
                            .replace(_polyfillHostNoCombinatorRe, ' ');
       return new CssRule(selector, rule.content);
+    });
+  }
+
+  /** Placeholder used for the escaping of functional selector arguments */
+  private readonly SELECTOR_FN_ARGS_PLACEHOLDER = '%SELECTORFNARGS%';
+
+  /** Regex used for the unescaping of functional selector arguments, note that */
+  private readonly SELECTOR_FN_ARGS_PLACEHOLDER_REGEX =
+      new RegExp(this.SELECTOR_FN_ARGS_PLACEHOLDER, 'g');
+
+  /**
+   * Escapes the content of (top level) functional selectors (parens included) so that commas
+   * and spaces inside them don't compromise the selectors' parsing, the function returns the
+   * scoped selector alongside a list of the original/removed selector's parts so that they can
+   * be put back later after the processing of the selector.
+   *
+   * For example, given:
+   *   `:is(.foo, .bar, .baz):not(div:is(.test)):not(.qux) {}`
+   * it returns
+   *  `':is%SELECTORFNARGS%:not%SELECTORFNARGS%:not%SELECTORFNARGS% {}'`,
+   *   `['(.foo, .bar, .baz)', '(div)', '(.qux)']`
+   *
+   * The function however does not escape :host and :host-context functions since they need to be
+   * present for the rest of the css shimming, so for example, given:
+   *   `:host-context(div) p:not(.foo) {}`
+   * it returns
+   *  `':host-context(div) p:not%SELECTORFNARGS% {}'`,
+   *   `['(.foo)']`
+   *
+   */
+  private _escapeSelectorFns(selector: string): [string, string[]] {
+    const escapedSelectorFns: string[] = [];
+
+    let adjustedSelector = '';
+
+    let parensCount = 0;
+
+    let selectorFunctionStartIdx = -1;
+    let selectorFunctionEndIdx = -1;
+
+    for (let i = 0; i < selector.length; i++) {
+      const previousParensCount = parensCount;
+      const char = selector[i];
+
+      if (char === '(') {
+        if (parensCount === 0) {
+          selectorFunctionStartIdx = i;
+        }
+        parensCount++;
+      } else if (char === ')') {
+        parensCount--;
+        if (parensCount === 0) {
+          selectorFunctionEndIdx = i;
+        }
+      }
+
+      if (parensCount === 0 && previousParensCount !== 1) {
+        adjustedSelector += char;
+      }
+
+      if (selectorFunctionEndIdx > 0) {
+        const escapedArguments =
+            selector.substring(selectorFunctionStartIdx, selectorFunctionEndIdx + 1);
+        const placeholderShouldNotBeApplied = [':host', ':host-context'].some(
+            functionName => functionName ===
+                selector.substring(
+                    selectorFunctionStartIdx - functionName.length, selectorFunctionStartIdx),
+        );
+        if (placeholderShouldNotBeApplied) {
+          adjustedSelector += escapedArguments;
+        } else {
+          adjustedSelector += this.SELECTOR_FN_ARGS_PLACEHOLDER;
+          escapedSelectorFns.push(escapedArguments);
+        }
+        selectorFunctionStartIdx = -1;
+        selectorFunctionEndIdx = -1;
+      }
+    }
+
+    return [adjustedSelector, escapedSelectorFns];
+  }
+
+  /**
+   * Unescapes the content of functional selectors escaped via the _escapeSelectorFns function,
+   * its input and outputs are the exact opposite of the aforementioned function
+   *
+   * For example, given:
+   *  `':is%SELECTORFNARGS%:not%SELECTORFNARGS%:not%SELECTORFNARGS% {}'`,
+   *   `['.foo, .bar, .baz', 'div', '.qux']`
+   * it returns
+   *   `:is(.foo, .bar, .baz):not(div):not(.qux) {}`
+   *
+   */
+  private _unescapeSelectorFns(escapedSelector: string, escapedSelectorFns: string[]): string {
+    let placeholderIdx = 0;
+
+    return escapedSelector.replace(this.SELECTOR_FN_ARGS_PLACEHOLDER_REGEX, () => {
+      return escapedSelectorFns[placeholderIdx++];
     });
   }
 
