@@ -214,6 +214,17 @@
     ora "5.4.1"
     rxjs "6.6.7"
 
+"@angular-devkit/schematics@14.0.0-next.12":
+  version "14.0.0-next.12"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-14.0.0-next.12.tgz#25ad4e0875e6bcafeb30b3ec5d74551a4fa93511"
+  integrity sha512-m+QDR9C825+7uak9Qsa9WtQJA4O6agvdUF/Wu+T8ifGc2POthvseqUQUbZFqKU2qL0lRmT2O/l4dQZaKr8M+AA==
+  dependencies:
+    "@angular-devkit/core" "14.0.0-next.12"
+    jsonc-parser "3.0.0"
+    magic-string "0.26.1"
+    ora "5.4.1"
+    rxjs "6.6.7"
+
 "@angular/animations@14.0.0-next.14":
   version "14.0.0-next.14"
   resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-14.0.0-next.14.tgz#824fa734b25fc2c603a62f40fb1f3ff6880a9936"
@@ -239,15 +250,15 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/cli@14.0.0-next.11":
-  version "14.0.0-next.11"
-  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-14.0.0-next.11.tgz#93f2205b2fd9f82a43fb646d7ebe7da83377cc9e"
-  integrity sha512-wKbkc56gJ/sAQrgT8keQsotUhr/+CK2zqY8Ab+GHjAdiP07cIuocP3PELoluGlDNxraqilUSgQwjqxsRcdPluw==
+"@angular/cli@14.0.0-next.12":
+  version "14.0.0-next.12"
+  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-14.0.0-next.12.tgz#c16286e826628f3f6a89b5e1d57a2a282389c689"
+  integrity sha512-HUvXvAz5TUOl0EbE1aIIyk4sR6Dp/HbczNcSqL+V9cg4mp3Obx5EHAUt+dbDNx3/5PoG9yDduU1Q3IuNEKd1KA==
   dependencies:
-    "@angular-devkit/architect" "0.1400.0-next.11"
-    "@angular-devkit/core" "14.0.0-next.11"
-    "@angular-devkit/schematics" "14.0.0-next.11"
-    "@schematics/angular" "14.0.0-next.11"
+    "@angular-devkit/architect" "0.1400.0-next.12"
+    "@angular-devkit/core" "14.0.0-next.12"
+    "@angular-devkit/schematics" "14.0.0-next.12"
+    "@schematics/angular" "14.0.0-next.12"
     "@yarnpkg/lockfile" "1.1.0"
     ansi-colors "4.1.1"
     debug "4.3.4"
@@ -321,7 +332,6 @@
 
 "@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#0026ddaac15d7717152c8e113b9f7e1a7075ee82":
   version "0.0.0-93fef044b38a3818d292be5bad0817ca6578f3e5"
-  uid "0026ddaac15d7717152c8e113b9f7e1a7075ee82"
   resolved "https://github.com/angular/dev-infra-private-builds.git#0026ddaac15d7717152c8e113b9f7e1a7075ee82"
   dependencies:
     "@angular-devkit/build-angular" "14.0.0-next.12"
@@ -2816,6 +2826,15 @@
   dependencies:
     "@angular-devkit/core" "14.0.0-next.11"
     "@angular-devkit/schematics" "14.0.0-next.11"
+    jsonc-parser "3.0.0"
+
+"@schematics/angular@14.0.0-next.12":
+  version "14.0.0-next.12"
+  resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-14.0.0-next.12.tgz#bc53e55ffd5d4bf8ca378dde691b4472d485003c"
+  integrity sha512-SuwFJTNLH0kaBZ5NBrcBVmo0P4MoSjsXQa/9Tr1FHxbW+Orz1DGGZm+SP7MM/ynKhUSrL/t26OzCEEmMkomS9Q==
+  dependencies:
+    "@angular-devkit/core" "14.0.0-next.12"
+    "@angular-devkit/schematics" "14.0.0-next.12"
     jsonc-parser "3.0.0"
 
 "@sindresorhus/is@^0.14.0":
