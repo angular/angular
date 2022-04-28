@@ -629,4 +629,81 @@ describe('standalone components, directives and pipes', () => {
               `The 'schemas' was specified for the AppCmp but is only valid on a component that is standalone.`);
     });
   });
+
+  /*
+    The following test verify that we don't impose limits when it comes to extending components of
+    various type (standalone vs. non-standalone).
+
+    This is based on the reasoning that the "template"
+    / "templateUrl", "imports", "schemas" and "standalone" properties are all related and they
+    specify how to compile a template. As of today extending a component means providing a new
+    template and this implies providing compiler configuration for a new template. In this sense
+    neither a template nor its compiler configuration is carried over from a class being extended
+    (we can think of each component being a "fresh copy" when it comes to a template and its
+    compiler configuration).
+   */
+  describe('inheritance', () => {
+    it('should allow extending a regular component and turn it into a standalone one', () => {
+      @Component({selector: 'regular', template: 'regular: {{in}}'})
+      class RegularCmp {
+        @Input() in : string|undefined;
+      }
+
+      @Component({selector: 'standalone', template: 'standalone: {{in}}', standalone: true})
+      class StandaloneCmp extends RegularCmp {
+      }
+
+      const fixture = TestBed.createComponent(StandaloneCmp);
+      fixture.componentInstance.in = 'input value';
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('standalone: input value');
+    });
+
+    it('should allow extending a regular component and turn it into a standalone one', () => {
+      @Component({selector: 'standalone', template: 'standalone: {{in}}', standalone: true})
+      class StandaloneCmp {
+        @Input() in : string|undefined;
+      }
+
+      @Component({selector: 'regular', template: 'regular: {{in}}'})
+      class RegularCmp extends StandaloneCmp {
+      }
+
+      const fixture = TestBed.createComponent(RegularCmp);
+      fixture.componentInstance.in = 'input value';
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('regular: input value');
+    });
+
+    it('should ?', () => {
+      @Component({
+        selector: 'inner',
+        template: 'inner',
+        standalone: true,
+      })
+      class InnerCmp {
+      }
+
+      @Component({
+        selector: 'standalone',
+        standalone: true,
+        template: 'standalone: {{in}}; (<inner></inner>)',
+        imports: [InnerCmp]
+      })
+      class StandaloneCmp {
+        @Input() in : string|undefined;
+      }
+
+      @Component({selector: 'regular'})
+      class RegularCmp extends StandaloneCmp {
+      }
+
+      const fixture = TestBed.createComponent(RegularCmp);
+      fixture.componentInstance.in = 'input value';
+      fixture.detectChanges();
+      // the assumption here is that not providing a template is equivalent to providing an empty
+      // one
+      expect(fixture.nativeElement.textContent).toBe('');
+    });
+  });
 });
