@@ -418,8 +418,7 @@ export class TestBedRender3 implements TestBed {
     const componentDef = (type as any).ɵcmp;
 
     if (!componentDef) {
-      throw new Error(
-          `It looks like '${stringify(type)}' has not been IVY compiled - it has no 'ɵcmp' field`);
+      throw new Error(`It looks like '${stringify(type)}' has not been compiled.`);
     }
 
     // TODO: Don't cast as `InjectionToken<boolean>`, proper type is boolean[]
