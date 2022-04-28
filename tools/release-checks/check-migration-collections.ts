@@ -1,9 +1,10 @@
 import {error} from '@angular/dev-infra-private/ng-dev';
-import {dirname, join} from 'path';
 import chalk from 'chalk';
-import {releasePackages} from '../../.ng-dev/release';
-import {readFileSync} from 'fs';
+import {existsSync, readFileSync} from 'fs';
+import {dirname, join} from 'path';
 import semver from 'semver';
+
+import {releasePackages} from '../../.ng-dev/release';
 
 /** Path to the directory containing all package sources. */
 const packagesDir = join(__dirname, '../../src');
@@ -12,9 +13,19 @@ const packagesDir = join(__dirname, '../../src');
 export async function assertValidUpdateMigrationCollections(newVersion: semver.SemVer) {
   const failures: string[] = [];
   releasePackages.forEach(packageName => {
+    const packageDir = join(packagesDir, packageName);
+    let packageJsonPath = join(packageDir, 'package.json');
+
+    // Some `package.json` files are auto-generated. In such cases we will have
+    // a `package-base.json` file (as seen in the `material-experimental` package).
+    // This will be the handwritten base config we use for validation.
+    if (!existsSync(packageJsonPath)) {
+      packageJsonPath = join(packageDir, 'package-base.json');
+    }
+
     failures.push(
-      ...checkPackageJsonMigrations(join(packagesDir, packageName, 'package.json'), newVersion).map(
-        f => chalk.yellow(`       ⮑  ${chalk.bold(packageName)}: ${f}`),
+      ...checkPackageJsonMigrations(packageJsonPath, newVersion).map(f =>
+        chalk.yellow(`       ⮑  ${chalk.bold(packageName)}: ${f}`),
       ),
     );
   });
