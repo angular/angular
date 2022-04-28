@@ -62,6 +62,8 @@ export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultip
  */
 const PLATFORM_ON_DESTROY = new InjectionToken<() => void>('PlatformOnDestroy');
 
+export const BOOTSTRAP_METHOD = new InjectionToken<boolean>('Bootstrap Method');
+
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 export function compileNgModuleFactory<M>(

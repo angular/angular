@@ -6,15 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {APP_INITIALIZER} from '../application_init';
+import {BOOTSTRAP_APPLICATION_METHOD, BOOTSTRAP_METHOD} from '../application_ref';
 import {isForwardRef, resolveForwardRef} from '../di/forward_ref';
 import {injectRootLimpMode, setInjectImplementation} from '../di/inject_switch';
 import {Injector} from '../di/injector';
+import {setCurrentInjector} from '../di/injector_compatibility';
 import {InjectorMarkers} from '../di/injector_marker';
 import {InjectFlags} from '../di/interface/injector';
 import {ProviderToken} from '../di/provider_token';
+import {formatRuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
 import {noSideEffects} from '../util/closure';
+import {EMPTY_ARRAY} from '../view';
 
 import {assertDirectiveDef, assertNodeInjector, assertTNodeForLView} from './assert';
 import {FactoryFn, getFactoryDef} from './definition_factory';
@@ -699,13 +704,46 @@ function shouldSearchParent(flags: InjectFlags, isFirstHostTNode: boolean): bool
   return !(flags & InjectFlags.Self) && !(flags & InjectFlags.Host && isFirstHostTNode);
 }
 
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
+
 export class NodeInjector implements Injector {
   constructor(
       private _tNode: TElementNode|TContainerNode|TElementContainerNode|null,
-      private _lView: LView) {}
+      private _lView: LView) {
+    NG_DEV_MODE && assertNoAppInitializers(this);
+  }
 
   get(token: any, notFoundValue?: any, flags?: InjectFlags): any {
     return getOrCreateInjectable(this._tNode, this._lView, token, flags, notFoundValue);
+  }
+}
+
+/**
+ * Verifies that there are no `APP_INITIALIZER` tokens provided at the NodeInjector
+ * location. The `APP_INITIALIZER` presence here most likely indicates that something
+ * was not setup correctly, so we warn developers that none of the `APP_INITIALIZER`
+ * will be invoked.
+ */
+function assertNoAppInitializers(injector: NodeInjector) {
+  const previousInjector = setCurrentInjector(injector);
+  const previousInjectImplementation = setInjectImplementation(undefined);
+  try {
+    const initializers = injector.get(APP_INITIALIZER.multi, EMPTY_ARRAY, InjectFlags.Self);
+    if (initializers.length > 0) {
+      const bootstrapMethod = injector.get(BOOTSTRAP_METHOD, null);
+      if (bootstrapMethod !== null) {
+        console.warn(formatRuntimeError(
+            RuntimeErrorCode.APP_INITIALIZER_PROVIDED_IN_NODE_INJECTOR,
+            'An `APP_INITIALIZER` was provided after app initialization completed. ' +
+                `Ensure that anything with an 'APP_INITIALIZER' is placed in the '${
+                    bootstrapMethod}' method.`));
+      } else {
+        // Is it valuable to provide this warning to bootstrapModule(AppModule) applications?
+      }
+    }
+  } finally {
+    setCurrentInjector(previousInjector);
+    setInjectImplementation(previousInjectImplementation);
   }
 }
 

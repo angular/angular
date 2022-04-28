@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
-import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, InjectionToken, Injector, Input, LOCALE_ID, NgModule, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Type, VERSION} from '@angular/core';
+import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, importProvidersFrom, Inject, InjectionToken, Injector, Input, LOCALE_ID, NgModule, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Type, VERSION} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -17,8 +17,9 @@ import {Log} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {RouterModule} from '@angular/router';
 
-import {bootstrapApplication} from '../../src/browser';
+import {bootstrapApplication, platformBrowser} from '../../src/browser';
 
 @Component({selector: 'non-existent', template: ''})
 class NonExistentComp {
@@ -116,11 +117,11 @@ function bootstrap(
       lightDom: any /** TODO #9100 */;
 
   describe('bootstrap factory method', () => {
-    if (isNode) {
-      // Jasmine will throw if there are no tests.
-      it('should pass', () => {});
-      return;
-    }
+    // if (isNode) {
+    //   // Jasmine will throw if there are no tests.
+    //   it('should pass', () => {});
+    //   return;
+    // }
 
     let compilerConsole: DummyConsole;
 
@@ -209,6 +210,57 @@ function bootstrap(
 
         await bootstrapApplication(ComponentWithDeps);
         expect(el.innerText).toBe('Hello from Name via DI (Platform level)!');
+      });
+
+      fit('should warn when providing APP_INITIALIZER in the NodeInjector', async () => {
+        @Component({
+          selector: 'test-app',
+          providers: [{provide: APP_INITIALIZER, multi: true, useValue: () => {}}],
+          standalone: true,
+        })
+        class Standalone {
+        }
+
+        spyOn(console, 'warn');
+        await bootstrapApplication(Standalone);
+        expect(console.warn).toHaveBeenCalledWith(/NG0206/);
+      });
+
+      it('works when providers are in the bootstrapApplication', async () => {
+        @Component({
+          selector: 'test-app',
+          providers: [],
+          standalone: true,
+        })
+        class Standalone {
+        }
+
+        spyOn(console, 'warn');
+        const providers: Provider[] = [{provide: APP_INITIALIZER, multi: true, useValue: () => {}}];
+        await bootstrapApplication(Standalone, {providers});
+        expect(console.warn).not.toHaveBeenCalled();
+      });
+
+      it('works in the ngModule world', async () => {
+        @Component({
+          selector: 'test-app',
+        })
+        class App {
+        }
+
+        @NgModule({providers: [{provide: APP_INITIALIZER, multi: true, useValue: () => {}}]})
+        class ModuleWithInitializer {
+        }
+
+        @NgModule({
+          imports: [BrowserModule, ModuleWithInitializer],
+          bootstrap: [App],
+          declarations: [App]
+        })
+        class AppModule {
+        }
+
+        await platformBrowser().bootstrapModule(AppModule);
       });
 
       it('should allow bootstrapping multiple apps', async () => {

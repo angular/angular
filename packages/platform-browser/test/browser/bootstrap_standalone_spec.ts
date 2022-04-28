@@ -7,10 +7,12 @@
  */
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {Component, destroyPlatform, Inject, Injectable, InjectionToken, NgModule} from '@angular/core';
+import {Component, destroyPlatform, importProvidersFrom, Inject, Injectable, InjectionToken, NgModule, Provider} from '@angular/core';
 import {inject} from '@angular/core/testing';
+import {RouterModule} from '@angular/router';
+import {PassThrough} from 'stream';
 
-import {bootstrapApplication} from '../../src/browser';
+import {bootstrapApplication, BrowserModule, platformBrowser} from '../../src/browser';
 
 describe('bootstrapApplication for standalone components', () => {
   let rootEl: HTMLUnknownElement;
@@ -23,6 +25,8 @@ describe('bootstrapApplication for standalone components', () => {
     destroyPlatform();
     rootEl.remove();
   });
+
+
 
   it('should create injector where ambient providers shadow explicit providers', async () => {
     const testToken = new InjectionToken('test token');
