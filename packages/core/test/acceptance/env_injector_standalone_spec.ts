@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, createEnvironmentInjector, importProvidersFrom, NgModule} from '@angular/core';
+import {Component, createEnvironmentInjector, importProvidersFrom, InjectionToken, NgModule} from '@angular/core';
 
 describe('environement injector and standalone components', () => {
   it('should see providers from modules imported by standalone components', () => {
@@ -69,5 +69,28 @@ describe('environement injector and standalone components', () => {
     const services = envInjector.get(ModuleService) as ModuleService[];
 
     expect(services.length).toBe(1);
+  });
+
+  it('should support nested arrays of providers', () => {
+    const A = new InjectionToken('A');
+    const B = new InjectionToken('B');
+    const C = new InjectionToken('C');
+    const MULTI = new InjectionToken('D');
+
+    const providers = [
+      {provide: MULTI, useValue: 1, multi: true}, {provide: A, useValue: 'A'},  //
+      [
+        {provide: B, useValue: 'B'},
+        [
+          {provide: C, useValue: 'C'},
+          {provide: MULTI, useValue: 2, multi: true},
+        ]
+      ]
+    ];
+    const envInjector = createEnvironmentInjector(providers);
+    expect(envInjector.get(A)).toBe('A');
+    expect(envInjector.get(B)).toBe('B');
+    expect(envInjector.get(C)).toBe('C');
+    expect(envInjector.get(MULTI)).toEqual([1, 2]);
   });
 });
