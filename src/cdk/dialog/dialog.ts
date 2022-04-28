@@ -48,7 +48,7 @@ export class Dialog implements OnDestroy {
   private _scrollStrategy: () => ScrollStrategy;
 
   /** Keeps track of the currently-open dialogs. */
-  get openDialogs(): DialogRef<any, any>[] {
+  get openDialogs(): readonly DialogRef<any, any>[] {
     return this._parentDialog ? this._parentDialog.openDialogs : this._openDialogsAtThisLevel;
   }
 
@@ -129,7 +129,7 @@ export class Dialog implements OnDestroy {
     const dialogRef = new DialogRef(overlayRef, config);
     const dialogContainer = this._attachContainer(overlayRef, dialogRef, config);
 
-    dialogRef.containerInstance = dialogContainer;
+    (dialogRef as {containerInstance: BasePortalOutlet}).containerInstance = dialogContainer;
     this._attachDialogContent(componentOrTemplateRef, dialogRef, dialogContainer, config);
 
     // If this is the first dialog that we're opening, hide all the non-overlay content.
@@ -137,7 +137,7 @@ export class Dialog implements OnDestroy {
       this._hideNonDialogContentFromAssistiveTechnology();
     }
 
-    this.openDialogs.push(dialogRef);
+    (this.openDialogs as DialogRef<R, C>[]).push(dialogRef);
     dialogRef.closed.subscribe(() => this._removeOpenDialog(dialogRef));
     this.afterOpened.next(dialogRef);
 
@@ -278,7 +278,7 @@ export class Dialog implements OnDestroy {
           config.componentFactoryResolver,
         ),
       );
-      dialogRef.componentInstance = contentRef.instance;
+      (dialogRef as {componentInstance: C}).componentInstance = contentRef.instance;
     }
   }
 
@@ -331,7 +331,7 @@ export class Dialog implements OnDestroy {
     const index = this.openDialogs.indexOf(dialogRef);
 
     if (index > -1) {
-      this.openDialogs.splice(index, 1);
+      (this.openDialogs as DialogRef<R, C>[]).splice(index, 1);
 
       // If all the dialogs were closed, remove/restore the `aria-hidden`
       // to a the siblings and emit to the `afterAllClosed` stream.
@@ -375,7 +375,7 @@ export class Dialog implements OnDestroy {
   }
 
   /** Closes all of the dialogs in an array. */
-  private _closeDialogs(dialogs: DialogRef<unknown>[]) {
+  private _closeDialogs(dialogs: readonly DialogRef<unknown>[]) {
     let i = dialogs.length;
 
     while (i--) {

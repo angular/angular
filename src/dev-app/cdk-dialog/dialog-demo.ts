@@ -34,7 +34,6 @@ export class DialogDemo {
     maxHeight: defaultDialogConfig.maxHeight,
     data: {
       message: 'Jazzy jazz jazz',
-      hmm: false,
     },
   };
   numTemplateOpens = 0;

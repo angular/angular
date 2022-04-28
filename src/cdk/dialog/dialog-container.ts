@@ -241,13 +241,22 @@ export class CdkDialogContainer<C extends DialogConfig = DialogConfig>
 
   /** Restores focus to the element that was focused before the dialog opened. */
   private _restoreFocus() {
-    const previousElement = this._elementFocusedBeforeDialogWasOpened;
+    const focusConfig = this._config.restoreFocus;
+    let focusTargetElement: HTMLElement | null = null;
+
+    if (typeof focusConfig === 'string') {
+      focusTargetElement = this._document.querySelector(focusConfig);
+    } else if (typeof focusConfig === 'boolean') {
+      focusTargetElement = focusConfig ? this._elementFocusedBeforeDialogWasOpened : null;
+    } else if (focusConfig) {
+      focusTargetElement = focusConfig;
+    }
 
     // We need the extra check, because IE can set the `activeElement` to null in some cases.
     if (
       this._config.restoreFocus &&
-      previousElement &&
-      typeof previousElement.focus === 'function'
+      focusTargetElement &&
+      typeof focusTargetElement.focus === 'function'
     ) {
       const activeElement = _getFocusedElementPierceShadowDom();
       const element = this._elementRef.nativeElement;
@@ -263,10 +272,10 @@ export class CdkDialogContainer<C extends DialogConfig = DialogConfig>
         element.contains(activeElement)
       ) {
         if (this._focusMonitor) {
-          this._focusMonitor.focusVia(previousElement, this._closeInteractionType);
+          this._focusMonitor.focusVia(focusTargetElement, this._closeInteractionType);
           this._closeInteractionType = null;
         } else {
-          previousElement.focus();
+          focusTargetElement.focus();
         }
       }
     }

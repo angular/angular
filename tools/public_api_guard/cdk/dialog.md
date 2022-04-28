@@ -89,7 +89,7 @@ export class Dialog implements OnDestroy {
     open<R = unknown, D = unknown, C = unknown>(template: TemplateRef<C>, config?: DialogConfig<D, DialogRef<R, C>>): DialogRef<R, C>;
     // (undocumented)
     open<R = unknown, D = unknown, C = unknown>(componentOrTemplateRef: ComponentType<C> | TemplateRef<C>, config?: DialogConfig<D, DialogRef<R, C>>): DialogRef<R, C>;
-    get openDialogs(): DialogRef<any, any>[];
+    get openDialogs(): readonly DialogRef<any, any>[];
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Dialog, [null, null, { optional: true; }, { optional: true; skipSelf: true; }, null, null]>;
     // (undocumented)
@@ -145,7 +145,7 @@ export class DialogConfig<D = unknown, R = unknown, C extends BasePortalOutlet =
     panelClass?: string | string[];
     positionStrategy?: PositionStrategy;
     providers?: StaticProvider[] | ((dialogRef: R, config: DialogConfig<D, R, C>, container: C) => StaticProvider[]);
-    restoreFocus?: boolean;
+    restoreFocus?: boolean | string | HTMLElement;
     role?: DialogRole;
     scrollStrategy?: ScrollStrategy;
     templateContext?: Record<string, any> | (() => Record<string, any>);
@@ -170,10 +170,10 @@ export class DialogRef<R = unknown, C = unknown> {
     readonly backdropClick: Observable<MouseEvent>;
     close(result?: R, options?: DialogCloseOptions): void;
     readonly closed: Observable<R | undefined>;
-    componentInstance: C | null;
+    readonly componentInstance: C | null;
     // (undocumented)
     readonly config: DialogConfig<any, DialogRef<R, C>, BasePortalOutlet>;
-    containerInstance: BasePortalOutlet & {
+    readonly containerInstance: BasePortalOutlet & {
         _closeInteractionType?: FocusOrigin;
     };
     disableClose: boolean | undefined;
@@ -184,7 +184,7 @@ export class DialogRef<R = unknown, C = unknown> {
     readonly overlayRef: OverlayRef;
     removePanelClass(classes: string | string[]): this;
     updatePosition(): this;
-    updateSize(width?: string, height?: string): this;
+    updateSize(width?: string | number, height?: string | number): this;
 }
 
 // @public

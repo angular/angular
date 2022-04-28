@@ -934,6 +934,85 @@ describe('Dialog', () => {
         .withContext('Expected dialog container to be focused.')
         .toBe('cdk-dialog-container');
     }));
+
+    it('should allow for focus restoration to be disabled', fakeAsync(() => {
+      // Create a element that has focus before the dialog is opened.
+      const button = document.createElement('button');
+      button.id = 'dialog-trigger';
+      document.body.appendChild(button);
+      button.focus();
+
+      const dialogRef = dialog.open(PizzaMsg, {
+        viewContainerRef: testViewContainerRef,
+        restoreFocus: false,
+      });
+
+      flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      expect(document.activeElement!.id).not.toBe('dialog-trigger');
+
+      dialogRef.close();
+      flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      flush();
+
+      expect(document.activeElement!.id).not.toBe('dialog-trigger');
+      button.remove();
+    }));
+
+    it('should allow for focus to be restored to an element matching a selector', fakeAsync(() => {
+      // Create a element that has focus before the dialog is opened.
+      const button = document.createElement('button');
+      button.id = 'dialog-trigger';
+      document.body.appendChild(button);
+
+      const dialogRef = dialog.open(PizzaMsg, {
+        viewContainerRef: testViewContainerRef,
+        restoreFocus: `#${button.id}`,
+      });
+
+      flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      expect(document.activeElement!.id).not.toBe('dialog-trigger');
+
+      dialogRef.close();
+      flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      flush();
+
+      expect(document.activeElement!.id).toBe('dialog-trigger');
+      button.remove();
+    }));
+
+    it('should allow for focus to be restored to a specific DOM node', fakeAsync(() => {
+      // Create a element that has focus before the dialog is opened.
+      const button = document.createElement('button');
+      button.id = 'dialog-trigger';
+      document.body.appendChild(button);
+
+      const dialogRef = dialog.open(PizzaMsg, {
+        viewContainerRef: testViewContainerRef,
+        restoreFocus: button,
+      });
+
+      flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      expect(document.activeElement!.id).not.toBe('dialog-trigger');
+
+      dialogRef.close();
+      flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      flush();
+
+      expect(document.activeElement!.id).toBe('dialog-trigger');
+      button.remove();
+    }));
   });
 
   describe('aria-label', () => {

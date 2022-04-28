@@ -27,10 +27,10 @@ export class DialogRef<R = unknown, C = unknown> {
    * Instance of component opened into the dialog. Will be
    * null when the dialog is opened using a `TemplateRef`.
    */
-  componentInstance: C | null;
+  readonly componentInstance: C | null;
 
   /** Instance of the container that is rendering out the dialog content. */
-  containerInstance: BasePortalOutlet & {_closeInteractionType?: FocusOrigin};
+  readonly containerInstance: BasePortalOutlet & {_closeInteractionType?: FocusOrigin};
 
   /** Whether the user is allowed to close the dialog. */
   disableClose: boolean | undefined;
@@ -86,11 +86,13 @@ export class DialogRef<R = unknown, C = unknown> {
       this.overlayRef.dispose();
       closedSubject.next(result);
       closedSubject.complete();
-      this.componentInstance = this.containerInstance = null!;
+      (this as {componentInstance: C}).componentInstance = (
+        this as {containerInstance: BasePortalOutlet}
+      ).containerInstance = null!;
     }
   }
 
-  /** Updates the dialog's position. */
+  /** Updates the position of the dialog based on the current position strategy. */
   updatePosition(): this {
     this.overlayRef.updatePosition();
     return this;
@@ -101,9 +103,8 @@ export class DialogRef<R = unknown, C = unknown> {
    * @param width New width of the dialog.
    * @param height New height of the dialog.
    */
-  updateSize(width: string = '', height: string = ''): this {
+  updateSize(width: string | number = '', height: string | number = ''): this {
     this.overlayRef.updateSize({width, height});
-    this.overlayRef.updatePosition();
     return this;
   }
 
