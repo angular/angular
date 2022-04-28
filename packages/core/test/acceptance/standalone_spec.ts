@@ -427,6 +427,32 @@ describe('standalone components, directives and pipes', () => {
     expect(fixture.nativeElement.textContent).toBe('(service)');
   });
 
+  it('should support nested arrays in @Component.imports', () => {
+    @Directive({selector: '[red]', standalone: true, host: {'[attr.red]': 'true'}})
+    class RedIdDirective {
+    }
+
+    @Pipe({name: 'blue', pure: true, standalone: true})
+    class BluePipe implements PipeTransform {
+      transform() {
+        return 'blue';
+      }
+    }
+
+    @Component({
+      selector: 'standalone',
+      standalone: true,
+      template: `<div red>{{'' | blue}}</div>`,
+      imports: [[RedIdDirective, [BluePipe]]],
+    })
+    class TestComponent {
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML).toBe('<div red="true">blue</div>');
+  });
+
   it('should error when forwardRef does not resolve to a truthy value', () => {
     @Component({
       selector: 'test',
