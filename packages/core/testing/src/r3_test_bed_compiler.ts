@@ -143,18 +143,31 @@ export class R3TestBedCompiler {
   }
 
   overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void {
+    this.verifyNoStandaloneFlagOverrides(component, override);
     this.resolvers.component.addOverride(component, override);
     this.pendingComponents.add(component);
   }
 
   overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void {
+    this.verifyNoStandaloneFlagOverrides(directive, override);
     this.resolvers.directive.addOverride(directive, override);
     this.pendingDirectives.add(directive);
   }
 
   overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): void {
+    this.verifyNoStandaloneFlagOverrides(pipe, override);
     this.resolvers.pipe.addOverride(pipe, override);
     this.pendingPipes.add(pipe);
+  }
+
+  private verifyNoStandaloneFlagOverrides(
+      type: Type<any>, override: MetadataOverride<Component|Directive|Pipe>) {
+    if (override.add?.hasOwnProperty('standalone') || override.set?.hasOwnProperty('standalone') ||
+        override.remove?.hasOwnProperty('standalone')) {
+      throw new Error(
+          `An override for the ${type.name} class has the \`standalone\` flag. ` +
+          `Changing the \`standalone\` flag via TestBed overrides is not supported.`);
+    }
   }
 
   overrideProvider(
