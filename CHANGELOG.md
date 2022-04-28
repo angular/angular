@@ -1,3 +1,23 @@
+<a name="13.3.5"></a>
+# 13.3.5 "bread-bun" (2022-04-27)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [68d09ddecd](https://github.com/angular/components/commit/68d09ddecdde594ed395e0ec580c4b403663f8de) | fix | **overlay:** animations interrupted on repeat insertions ([#24815](https://github.com/angular/components/pull/24815)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [86a1e8c7be](https://github.com/angular/components/commit/86a1e8c7be80a89303f47d6eba72d28a9f2e13a6) | fix | **autocomplete:** outside click in Angular zone. ([#24817](https://github.com/angular/components/pull/24817)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b16a33dbb2](https://github.com/angular/components/commit/b16a33dbb29136dbf230b37cd9d12d46376c210d) | fix | **mdc-slider:** remove pointerdown passive eve… ([#24766](https://github.com/angular/components/pull/24766)) |
+| [6603bd5ec6](https://github.com/angular/components/commit/6603bd5ec6891dcc2a4c0d5ab3b5a9cfc8eec068) | fix | **mdc-snack-bar:** avoid querying the DOM on each change detection ([#24770](https://github.com/angular/components/pull/24770)) |
+## Special Thanks
+Egor Volvachev, Jesse Beder, Kirill Cherkashin, Kristiyan Kostadinov, Paul Gschwendtner, Ruslan Lekhman, Sukka and Wagner Maciel
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.11"></a>
 # 14.0.0-next.11 "madras-macaque" (2022-04-20)
 ### cdk
