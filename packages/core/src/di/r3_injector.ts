@@ -14,7 +14,7 @@ import {Type} from '../interface/type';
 import {getComponentDef} from '../render3/definition';
 import {FactoryFn, getFactoryDef} from '../render3/definition_factory';
 import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors_di';
-import {flatten, newArray} from '../util/array_utils';
+import {deepForEach, flatten, newArray} from '../util/array_utils';
 import {EMPTY_ARRAY} from '../util/empty';
 import {stringify} from '../util/stringify';
 
@@ -125,9 +125,9 @@ export class R3Injector extends EnvironmentInjector {
       readonly scopes: Set<InjectorScope>) {
     super();
     // Start off by creating Records for every provider.
-    for (const provider of providers) {
+    deepForEach(providers, provider => {
       this.processProvider(provider as SingleProvider);
-    }
+    });
 
     // Make sure the INJECTOR token provides this injector.
     this.records.set(INJECTOR, makeRecord(undefined, this));
