@@ -49,11 +49,14 @@ export type ɵOptionalKeys<T> = {
  * of its children. For example, if one of the controls in a group is invalid, the entire
  * group becomes invalid.
  *
- * `FormGroup` is one of the three fundamental building blocks used to define forms in Angular,
- * along with `FormControl` and `FormArray`.
+ * `FormGroup` is one of the four fundamental building blocks used to define forms in Angular,
+ * along with `FormControl`, `FormArray`, and `FormRecord`.
  *
  * When instantiating a `FormGroup`, pass in a collection of child controls as the first
  * argument. The key for each child registers the name for the control.
+ *
+ * `FormGroup` is intended for use cases where the keys are known ahead of time.
+ * If you need to dynamically add and remove controls, use {@see FormRecord} instead.
  *
  * `FormGroup` accepts an optional type parameter `TControl`, which is an object type with inner
  * control types as values.
@@ -70,6 +73,26 @@ export type ɵOptionalKeys<T> = {
  *
  * console.log(form.value);   // {first: 'Nancy', last; 'Drew'}
  * console.log(form.status);  // 'VALID'
+ * ```
+ *
+ * ### The type argument, and optional controls
+ *
+ * `FormGroup` accepts one generic argument, which is an object containing its inner controls.
+ * This type will usually be inferred automatically, but you can always specify it explicitly if you
+ * wish.
+ *
+ * If you have controls that are optional (i.e. they can be removed, you can use the `?` in the
+ * type):
+ *
+ * ```
+ * const form = new FormGroup<{
+ *   first: FormControl<string|null>,
+ *   middle?: FormControl<string|null>, // Middle name is optional.
+ *   last: FormControl<string|null>,
+ * }>({
+ *   first: new FormControl('Nancy'),
+ *   last: new FormControl('Drew'),
+ * });
  * ```
  *
  * ### Create a form group with a group-level validator
@@ -576,8 +599,6 @@ interface UntypedFormGroupCtor {
 
 /**
  * UntypedFormGroup is a non-strongly-typed version of @see FormGroup.
- * Note: this is used for migration purposes only. Please avoid using it directly in your code and
- * prefer `FormControl` instead, unless you have been migrated to it automatically.
  */
 export type UntypedFormGroup = FormGroup<any>;
 
@@ -593,8 +614,18 @@ export class FormRecord<TControl extends AbstractControl<ɵValue<TControl>, ɵRa
  * Tracks the value and validity state of a collection of `FormControl` instances, each of which has
  * the same value type.
  *
- * `FormRecord` is very similar to {@see FormGroup}, except it enforces that all controls in the group have the same type,
- * and can be used with an open-ended, dynamically changing set of controls.
+ * `FormRecord` is very similar to {@see FormGroup}, except it can be used with a dynamic keys,
+ * with controls added and removed as needed.
+ *
+ * `FormRecord` accepts one generic argument, which describes the type of the controls it contains.
+ *
+ * @usageNotes
+ *
+ * ```
+ * let numbers = new FormRecord({bill: '415-123-456'});
+ * numbers.addControl('bob', '415-234-567');
+ * numbers.removeControl('bill');
+ * ```
  *
  * @publicApi
  */

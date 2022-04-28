@@ -43,10 +43,16 @@ export interface FormControlOptions extends AbstractControlOptions {
 /**
  * Tracks the value and validation status of an individual form control.
  *
- * This is one of the three fundamental building blocks of Angular forms, along with
- * `FormGroup` and `FormArray`. It extends the `AbstractControl` class that
+ * This is one of the four fundamental building blocks of Angular forms, along with
+ * `FormGroup`, `FormArray` and `FormRecord`. It extends the `AbstractControl` class that
  * implements most of the base functionality for accessing the value, validation status,
- * user interactions and events. See [usage examples below](#usage-notes).
+ * user interactions and events.
+ *
+ * `FormControl` takes a single generic argument, which describes the type of its value. This
+ * argument always implicitly includes `null` because the control can be reset. To change this
+ * behavior, set `initialValueIsDefault` or see the usage notes below.
+ *
+ * See [usage examples below](#usage-notes).
  *
  * @see `AbstractControl`
  * @see [Reactive Forms Guide](guide/reactive-forms)
@@ -93,6 +99,23 @@ export interface FormControlOptions extends AbstractControlOptions {
  * });
  * ```
  *
+ * ### The single type argument
+ *
+ * `FormControl` accepts a generic argument, which describes the type of its value.
+ * In most cases, this argument will be inferred.
+ *
+ * If you are initializing the control to `null`, or you otherwise wish to provide a
+ * wider type, you may specify the argument explicitly:
+ *
+ * ```
+ * let fc = new FormControl<string|null>(null);
+ * fc.setValue('foo');
+ * ```
+ *
+ * You might notice that `null` is always added to the type of the control.
+ * This is because the control will become `null` if you call `reset`. You can change
+ * this  behavior by setting `{initialValueIsDefault: true}`.
+ *
  * ### Configure the control to update on a blur event
  *
  * Set the `updateOn` option to `'blur'` to update on the blur `event`.
@@ -109,7 +132,7 @@ export interface FormControlOptions extends AbstractControlOptions {
  * const control = new FormControl('', { updateOn: 'submit' });
  * ```
  *
- * ### Reset the control back to an initial value
+ * ### Reset the control back to a specific value
  *
  * You reset to a specific form state by passing through a standalone
  * value or a form state object that contains both a value and a disabled state
@@ -123,6 +146,21 @@ export interface FormControlOptions extends AbstractControlOptions {
  * control.reset('Drew');
  *
  * console.log(control.value); // 'Drew'
+ * ```
+ *
+ * ### Reset the control to its initial value
+ *
+ * If you wish to always reset the control to its initial value (instead of null),
+ * you can pass the `initialValueIsDefault` option:
+ *
+ * ```
+ * const control = new FormControl('Nancy', {initialValueIsDefault: true});
+ *
+ * console.log(control.value); // 'Nancy'
+ *
+ * control.reset();
+ *
+ * console.log(control.value); // 'Nancy'
  * ```
  *
  * ### Reset the control back to an initial value and disabled
@@ -498,8 +536,6 @@ interface UntypedFormControlCtor {
 
 /**
  * UntypedFormControl is a non-strongly-typed version of @see FormControl.
- * Note: this is used for migration purposes only. Please avoid using it directly in your code and
- * prefer `FormControl` instead, unless you have been migrated to it automatically.
  */
 export type UntypedFormControl = FormControl<any>;
 

@@ -37,8 +37,11 @@ export type ɵFormArrayRawValue<T extends AbstractControl<any>> =
  * It calculates its status by reducing the status values of its children. For example, if one of
  * the controls in a `FormArray` is invalid, the entire array becomes invalid.
  *
- * `FormArray` is one of the three fundamental building blocks used to define forms in Angular,
- * along with `FormControl` and `FormGroup`.
+ * `FormArray` accepts one generic argument, which is the type of the controls inside.
+ * If you need a heterogenous array, use {@see UntypedFormArray}.
+ *
+ * `FormArray` is one of the four fundamental building blocks used to define forms in Angular,
+ * along with `FormControl`, `FormGroup`, and `FormRecord`.
  *
  * @usageNotes
  *
@@ -520,9 +523,8 @@ interface UntypedFormArrayCtor {
 }
 
 /**
- * UntypedFormArray is a non-strongly-typed version of @see FormArray.
- * Note: this is used for migration purposes only. Please avoid using it directly in your code and
- * prefer `FormControl` instead, unless you have been migrated to it automatically.
+ * UntypedFormArray is a non-strongly-typed version of @see FormArray, which
+ * permits heterogenous controls.
  */
 export type UntypedFormArray = FormArray<any>;
 

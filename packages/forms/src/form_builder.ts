@@ -75,6 +75,21 @@ export type ɵElement<T> =
  */
 @Injectable({providedIn: ReactiveFormsModule})
 export class FormBuilder {
+  /**
+   * @description
+   * Construct a new `FormGroup` instance. Accepts a single generic argument, which is an object
+   * containing all the keys and corresponding inner control types.
+   *
+   * @param controls A collection of child controls. The key for each child is the name
+   * under which it is registered.
+   *
+   * @param options Configuration options object for the `FormGroup`. The object should have the
+   * `AbstractControlOptions` type and might contain the following fields:
+   * * `validators`: A synchronous validator function, or an array of validator functions.
+   * * `asyncValidators`: A single async validator or array of async validator functions.
+   * * `updateOn`: The event upon which the control should be updated (options: 'change' | 'blur'
+   * | submit').
+   */
   group<T extends {}>(
       controls: T,
       options?: AbstractControlOptions|null,
@@ -108,20 +123,6 @@ export class FormBuilder {
       options: {[key: string]: any},
       ): FormGroup;
 
-  /**
-   * @description
-   * Construct a new `FormGroup` instance.
-   *
-   * @param controls A collection of child controls. The key for each child is the name
-   * under which it is registered.
-   *
-   * @param options Configuration options object for the `FormGroup`. The object should have the
-   * `AbstractControlOptions` type and might contain the following fields:
-   * * `validators`: A synchronous validator function, or an array of validator functions.
-   * * `asyncValidators`: A single async validator or array of async validator functions.
-   * * `updateOn`: The event upon which the control should be updated (options: 'change' | 'blur'
-   * | submit').
-   */
   group(controls: {[key: string]: any}, options: AbstractControlOptions|{[key: string]:
                                                                              any}|null = null):
       FormGroup {
@@ -162,7 +163,8 @@ export class FormBuilder {
    * @description
    * Construct a new `FormControl` with the given state, validators and options. Set
    * `{initialValueIsDefault: true}` in the options to get a non-nullable control. Otherwise, the
-   * control will be nullable.
+   * control will be nullable. Accepts a single generic argument, which is the type  of the
+   * control's value.
    *
    * @param formState Initializes the control with an initial state value, or
    * with an object that contains both a value and a disabled status.
@@ -192,7 +194,8 @@ export class FormBuilder {
 
   /**
    * Constructs a new `FormArray` from the given array of configurations,
-   * validators and options.
+   * validators and options. Accepts a single generic argument, which is the type of each control
+   * inside the array.
    *
    * @param controls An array of child controls or control configs. Each child control is given an
    *     index when it is registered.
