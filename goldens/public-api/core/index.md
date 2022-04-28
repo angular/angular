@@ -180,14 +180,11 @@ export interface Component extends Directive {
     encapsulation?: ViewEncapsulation;
     // @deprecated
     entryComponents?: Array<Type<any> | any[]>;
-    // (undocumented)
     imports?: (Type<any> | any[])[];
     interpolation?: [string, string];
     moduleId?: string;
     preserveWhitespaces?: boolean;
-    // (undocumented)
     schemas?: SchemaMetadata[];
-    // (undocumented)
     standalone?: boolean;
     styles?: string[];
     styleUrls?: string[];
@@ -412,7 +409,6 @@ export interface Directive {
         [key: string]: any;
     };
     selector?: string;
-    // (undocumented)
     standalone?: boolean;
 }
 
@@ -964,7 +960,6 @@ export const PACKAGE_ROOT_URL: InjectionToken<string>;
 export interface Pipe {
     name: string;
     pure?: boolean;
-    // (undocumented)
     standalone?: boolean;
 }
 
