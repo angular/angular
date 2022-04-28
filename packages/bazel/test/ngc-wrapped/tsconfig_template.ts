@@ -61,6 +61,7 @@ export function createTsConfig(options: TsConfigOptions) {
       'target': options.target,
       // we have to set this as the default tsconfig is made of es6 mode
       'es5Mode': true,
+      'devmode': true,
       'manifest': createManifestPath(options),
       'compilationTargetSrc': options.compilationTargetSrc,
       // Override this property from the real tsconfig we read
