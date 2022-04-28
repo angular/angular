@@ -8,7 +8,7 @@
 
 // `tsc-wrapped` helpers are not exposed in the primary `@bazel/concatjs` entry-point.
 // TODO: Update when https://github.com/bazelbuild/rules_nodejs/pull/3286 is available.
-import {BazelOptions, CachedFileLoader, CompilerHost, constructManifest, debug, FileCache, FileLoader, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop, UncachedFileLoader} from '@bazel/concatjs/internal/tsc_wrapped';
+import {BazelOptions as ExternalBazelOptions, CachedFileLoader, CompilerHost, constructManifest, debug, FileCache, FileLoader, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop, UncachedFileLoader} from '@bazel/concatjs/internal/tsc_wrapped';
 
 import type {AngularCompilerOptions, CompilerHost as NgCompilerHost, TsEmitCallback, Program, CompilerOptions} from '@angular/compiler-cli';
 import * as fs from 'fs';
@@ -19,6 +19,11 @@ import {pathToFileURL} from 'url';
 
 type CompilerCliModule =
     typeof import('@angular/compiler-cli')&typeof import('@angular/compiler-cli/private/bazel');
+
+// Add devmode for blaze internal
+interface BazelOptions extends ExternalBazelOptions {
+  devmode?: boolean;
+}
 
 /**
  * Reference to the previously loaded `compiler-cli` module exports. We cache the exports
@@ -301,7 +306,7 @@ export function compile({
   // Though, if we are building inside `google3`, closure annotations are desired for
   // prodmode output, so we enable it by default. The defaults can be overridden by
   // setting the `annotateForClosureCompiler` compiler option in the user tsconfig.
-  if (!bazelOpts.es5Mode) {
+  if (!bazelOpts.es5Mode && !bazelOpts.devmode) {
     if (bazelOpts.workspaceName === 'google3') {
       compilerOpts.annotateForClosureCompiler = true;
       // Enable the tsickle decorator transform in google3 with Ivy mode enabled. The tsickle
