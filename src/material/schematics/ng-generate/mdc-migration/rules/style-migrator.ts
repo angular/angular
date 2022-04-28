@@ -9,7 +9,7 @@
 import * as postcss from 'postcss';
 
 const END_OF_SELECTOR_REGEX = '(?!-)';
-const THEME_NAME_REGEX = '\\(((\\s|.)*)\\)';
+const MIXIN_ARGUMENTS_REGEX = '\\(((\\s|.)*)\\)';
 
 /** The changes to a class names. */
 export interface ClassNameChange {
@@ -27,6 +27,9 @@ export interface MixinChange {
 
   /** The name(s) of the new scss mixin(s). */
   new: string[];
+
+  /** Optional check to see if new scss mixin(s) already exist in the styles */
+  checkForDuplicates?: boolean;
 }
 
 /** StyleMigrator implements the basic case for migrating old component styles to new ones. */
@@ -69,10 +72,33 @@ export abstract class StyleMigrator {
       return;
     }
 
+    // Check if mixin replacements already exist in the stylesheet
+    const replacements = [...change.new];
+    if (change.checkForDuplicates) {
+      const mixinArgumentMatches = atRule.params.match(MIXIN_ARGUMENTS_REGEX);
+      atRule.root().walkAtRules(rule => {
+        for (const index in replacements) {
+          // Include arguments if applicable since there can be multiple themes.
+          // The first element of the match object includes parentheses since
+          // it's the whole match from the regex.
+          const mixinName =
+            replacements[index] + (mixinArgumentMatches ? mixinArgumentMatches[0] : '');
+          if (rule.params.includes(mixinName)) {
+            replacements.splice(Number(index), 1);
+          }
+        }
+      });
+    }
+
+    // Don't do anything if all the new changes already exist in the stylesheet
+    if (replacements.length < 1) {
+      return;
+    }
+
     // Cloning & inserting the first node before changing the
     // indentation preserves the indentation of the first node (e.g. 3 newlines).
     atRule.cloneBefore({
-      params: atRule.params.replace(change.old, change.new[0]),
+      params: atRule.params.replace(change.old, replacements[0]),
     });
 
     // We change the indentation before inserting all of the other nodes
@@ -82,9 +108,9 @@ export abstract class StyleMigrator {
 
     // Note: It may be more efficient to create an array of clones and then insert
     // them all at once. If we are having performance issues, we should revisit this.
-    for (let i = 1; i < change.new.length; i++) {
+    for (let i = 1; i < replacements.length; i++) {
       atRule.cloneBefore({
-        params: atRule.params.replace(change.old, change.new[i]),
+        params: atRule.params.replace(change.old, replacements[i]),
       });
     }
     atRule.remove();

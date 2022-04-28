@@ -29,6 +29,7 @@ import {RuntimeMigrator} from './ts-migration/runtime-migrator';
 import {SelectStylesMigrator} from './components/select/select-styles';
 import {SlideToggleStylesMigrator} from './components/slide-toggle/slide-toggle-styles';
 import {SliderStylesMigrator} from './components/slider/slider-styles';
+import {SnackBarMigrator} from './components/snack-bar/snack-bar-styles';
 import {TableStylesMigrator} from './components/table/table-styles';
 import {TabsStylesMigrator} from './components/tabs/tabs-styles';
 import {TooltipStylesMigrator} from './components/tooltip/tooltip-styles';
@@ -128,6 +129,10 @@ export const MIGRATORS: ComponentMigrator[] = [
     component: 'slider',
     styles: new SliderStylesMigrator(),
     runtime: new RuntimeMigrator('slider'),
+  },
+  {
+    component: 'snack-bar',
+    styles: new SnackBarMigrator(),
   },
   {
     component: 'table',

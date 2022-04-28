@@ -38,6 +38,28 @@ describe('button styles', () => {
       );
     });
 
+    it('should replace the old theme with the non-duplicated new ones', async () => {
+      await runMigrationTest(
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.mdc-button-theme($theme);
+        @include mat.mdc-button-typography($theme);
+        @include mat.button-theme($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.mdc-button-theme($theme);
+        @include mat.mdc-button-typography($theme);
+        @include mat.mdc-fab-theme($theme);
+        @include mat.mdc-fab-typography($theme);
+        @include mat.mdc-icon-button-theme($theme);
+        @include mat.mdc-icon-button-typography($theme);
+      `,
+      );
+    });
+
     it('should use the correct namespace', async () => {
       await runMigrationTest(
         `

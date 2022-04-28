@@ -24,6 +24,7 @@ export class ButtonStylesMigrator extends StyleMigrator {
         'mdc-icon-button-theme',
         'mdc-icon-button-typography',
       ],
+      checkForDuplicates: true,
     },
   ];
 

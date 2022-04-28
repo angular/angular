@@ -42,6 +42,30 @@ describe('multiple component styles', () => {
       );
     });
 
+    it('should add theme once if both components include it', async () => {
+      await runMigrationTest(
+        ['button', 'snack-bar'],
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.button-theme($theme);
+        @include mat.snack-bar-theme($theme);
+      `,
+        `
+        @use '@angular/material' as mat;
+        $theme: ();
+        @include mat.mdc-button-theme($theme);
+        @include mat.mdc-button-typography($theme);
+        @include mat.mdc-fab-theme($theme);
+        @include mat.mdc-fab-typography($theme);
+        @include mat.mdc-icon-button-theme($theme);
+        @include mat.mdc-icon-button-typography($theme);
+        @include mat.mdc-snack-bar-theme($theme);
+        @include mat.mdc-snack-bar-typography($theme);
+      `,
+      );
+    });
+
     it('should add correct theme if all-component-themes mixin included', async () => {
       await runMigrationTest(
         ['checkbox', 'radio'],
