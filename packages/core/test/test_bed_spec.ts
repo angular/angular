@@ -181,6 +181,64 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Hello World!');
   });
 
+  it('should not allow overrides of the `standalone` field', () => {
+    @Component({
+      standalone: true,
+      selector: 'standalone-comp',
+      template: '...',
+    })
+    class StandaloneComponent {
+    }
+
+    @Component({
+      selector: 'non-standalone-comp',
+      template: '...',
+    })
+    class NonStandaloneComponent {
+    }
+
+    @Directive({standalone: true})
+    class StandaloneDirective {
+    }
+
+    @Directive({})
+    class NonStandaloneDirective {
+    }
+
+    @Pipe({standalone: true, name: 'test'})
+    class StandalonePipe {
+    }
+
+    @Pipe({name: 'test'})
+    class NonStandalonePipe {
+    }
+
+    const getExpectedError = (typeName: string) =>
+        `An override for the ${typeName} class has the \`standalone\` flag. ` +
+        `Changing the \`standalone\` flag via TestBed overrides is not supported.`;
+
+    const overrides = [
+      {set: {standalone: false}},
+      {add: {standalone: false}},
+      {remove: {standalone: true}},
+    ];
+
+    const scenarios = [
+      [TestBed.overrideComponent, StandaloneComponent, NonStandaloneComponent],
+      [TestBed.overrideDirective, StandaloneDirective, NonStandaloneDirective],
+      [TestBed.overridePipe, StandalonePipe, NonStandalonePipe]
+    ];
+
+    overrides.forEach(override => {
+      scenarios.forEach(([fn, standaloneType, nonStandaloneType]) => {
+        expect(() => (fn as Function)(standaloneType, override))
+            .toThrowError(getExpectedError(standaloneType.name));
+        expect(() => (fn as Function)(nonStandaloneType, override))
+            .toThrowError(getExpectedError(nonStandaloneType.name));
+      });
+    });
+  });
+
   it('should give access to the component instance', () => {
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
