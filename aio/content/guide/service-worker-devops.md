@@ -239,7 +239,7 @@ This version hash is the "latest manifest hash" listed above.
 Both clients are on the latest version.
 Each client is listed by its ID from the `Clients` API in the browser.
 
-</div
+</div>
 
 #### Idle task queue
 
