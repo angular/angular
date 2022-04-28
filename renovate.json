@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "automerge": false,
-  "baseBranches": ["master"],
+  "baseBranches": ["main"],
   "enabledManagers": ["npm", "bazel", "github-actions"],
   "stopUpdatingLabel": "merge ready",
   "labels": ["target: patch", "merge safe"],

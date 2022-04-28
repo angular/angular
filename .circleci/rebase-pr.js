@@ -157,7 +157,7 @@ function getShaFromRef(ref) {
  * by committerdate.
  *
  * example:
- *   upstream/master
+ *   upstream/main
  *   upstream/9.0.x
  *   upstream/test
  *   upstream/1.1.x
