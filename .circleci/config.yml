@@ -117,7 +117,7 @@ var_17: &setup_bazel_binary
 var_18: &setup_snapshot_builds
   run:
     name: 'Setting up Angular snapshot builds'
-    command: node ./scripts/circleci/setup-angular-snapshots.js master
+    command: node ./scripts/circleci/setup-angular-snapshots.js main
 
 # Filter which ensures that jobs only run for pull requests.
 var_19: &only_on_pull_requests_filter
