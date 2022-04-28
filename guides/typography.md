@@ -212,6 +212,10 @@ typography level. The `.mat-h5` style uses the `body-1` level with the font-size
 
 The `button` and `input` typography levels do not map to CSS classes.
 
+You can also manually emit the CSS rules for these CSS classes and native elements by calling the `typography-hierarchy`
+mixin. This mixin accepts a typography config and a CSS selector under which the styles are scopes (defaulting to
+`.mat-typography`).
+
 The following example demonstrates usage of the typography styles emitted by the `core` mixin.
 
 ```html
