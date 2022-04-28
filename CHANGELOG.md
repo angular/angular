@@ -1,3 +1,40 @@
+<a name="14.0.0-next.12"></a>
+# 14.0.0-next.12 "plastic-keyboard" (2022-04-28)
+## Deprecations
+### material
+- `mat.define-dark-theme` no longer accepts `$primary`, `$accent` and `$warn`.
+    Pass a single config map instead.
+- `mat.define-light-theme` no longer accepts `$primary`, `$accent` and `$warn`.
+  Pass a single config map instead.
+- Custom Material themes should no longer access `primary`, `accent`, `warn`,
+  `is-dark`, `foreground` and `background` from the theme map, but instead use the actual `color`
+  configuration (`mat.get-color-config($theme)`).
+- Passing a color configuration directly to a `-theme` mixin
+  is not supported. Pass the theme container object instead or use the dedicated
+  `-color` mixins.
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ce67406f4a](https://github.com/angular/components/commit/ce67406f4ac6ed7a4ed9bb7be4299edea1cc72bd) | fix | **mdc-slider:** remove pointerdown passive eve… ([#24766](https://github.com/angular/components/pull/24766)) |
+| [d3428ba5a2](https://github.com/angular/components/commit/d3428ba5a20a6780c90f68403806f8e8acc41414) | fix | **mdc-snack-bar:** avoid querying the DOM on each change detection ([#24770](https://github.com/angular/components/pull/24770)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4e5e286e9e](https://github.com/angular/components/commit/4e5e286e9ebdefdc13222611c36a42f0685277f4) | fix | **autocomplete:** outside click in Angular zone. ([#24817](https://github.com/angular/components/pull/24817)) |
+| [8dfbbed549](https://github.com/angular/components/commit/8dfbbed549621546d72dda341aa268cbb44fed97) | fix | **table:** accessibility improvements on table examples |
+| [f30609c925](https://github.com/angular/components/commit/f30609c9259ec5b2cabf52abaa051cac6fbe0bc5) | refactor | **core:** deprecate legacy theming API ([#24835](https://github.com/angular/components/pull/24835)) |
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c6a1d1519e](https://github.com/angular/components/commit/c6a1d1519e1cf6677c161d8794b6af108fa996ed) | feat | **dialog:** move experimental CDK dialog into stable ([#24804](https://github.com/angular/components/pull/24804)) |
+| [49c1921316](https://github.com/angular/components/commit/49c1921316282c561adb6694b699cd3c6ab0e5ac) | feat | **drag-drop:** adding method to set drag position ([#24769](https://github.com/angular/components/pull/24769)) |
+| [653457eaf4](https://github.com/angular/components/commit/653457eaf48faab99227f37bc2fe104d9f308787) | feat | **menu:** move experimental CDK menu into stable ([#24826](https://github.com/angular/components/pull/24826)) |
+| [0faba6e5fc](https://github.com/angular/components/commit/0faba6e5fcb3ebed7fad497fb5938bde47827c9a) | fix | **overlay:** animations interrupted on repeat insertions ([#24815](https://github.com/angular/components/pull/24815)) |
+## Special Thanks
+Andrew Seguin, Diego Bonura, Egor Volvachev, Jesse Beder, Kirill Cherkashin, Kristiyan Kostadinov, Martin Forstner, Paul Gschwendtner, Ruslan Lekhman, Sukka, Wagner Maciel, Zach Arend and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.5"></a>
 # 13.3.5 "bread-bun" (2022-04-27)
 ### cdk
