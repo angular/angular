@@ -78,7 +78,7 @@ export interface OpaqueViewState {
  * Keeping separate state for each view facilities view insertion / deletion, so we
  * don't have to edit the data array based on which views are present.
  */
-export interface LView extends Array<any> {
+export interface LView<T = unknown> extends Array<any> {
   /**
    * Human readable representation of the `LView`.
    *
@@ -180,7 +180,7 @@ export interface LView extends Array<any> {
    * - For non-root components, the context is the component instance,
    * - For inline views, the context is null.
    */
-  [CONTEXT]: {}|RootContext|null;
+  [CONTEXT]: T;
 
   /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
   readonly[INJECTOR]: Injector|null;
@@ -818,7 +818,7 @@ export const enum RootContextFlags {
  * RootContext contains information which is shared for all components which
  * were bootstrapped with {@link renderComponent}.
  */
-export interface RootContext {
+export interface RootContext<T = unknown> {
   /**
    * A function used for scheduling change detection in the future. Usually
    * this is `requestAnimationFrame`.
@@ -836,7 +836,7 @@ export interface RootContext {
    * RootComponents - The components that were instantiated by the call to
    * {@link renderComponent}.
    */
-  components: {}[];
+  components: T[];
 
   /**
    * The player flushing handler to kick off all animations
@@ -935,7 +935,7 @@ export const unusedValueExportToPlacateAjd = 1;
  * `LViewDebug` for easier debugging and test writing. It is the intent of `LViewDebug` to be used
  * in tests.
  */
-export interface LViewDebug {
+export interface LViewDebug<T = unknown> {
   /**
    * Flags associated with the `LView` unpacked into a more readable state.
    *
@@ -973,7 +973,7 @@ export interface LViewDebug {
    *
    * (Usually the component)
    */
-  readonly context: {}|null;
+  readonly context: T;
 
   /**
    * Hierarchical tree of nodes.

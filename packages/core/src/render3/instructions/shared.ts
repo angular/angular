@@ -292,20 +292,20 @@ export function allocExpando(
  * - updating static queries (if any);
  * - creating child components defined in a given view.
  */
-export function renderView<T>(tView: TView, lView: LView, context: T): void {
+export function renderView<T>(tView: TView, lView: LView<T>, context: T): void {
   ngDevMode && assertEqual(isCreationMode(lView), true, 'Should be run in creation mode');
   enterView(lView);
   try {
     const viewQuery = tView.viewQuery;
     if (viewQuery !== null) {
-      executeViewQueryFn(RenderFlags.Create, viewQuery, context);
+      executeViewQueryFn<T>(RenderFlags.Create, viewQuery, context);
     }
 
     // Execute a template associated with this view, if it exists. A template function might not be
     // defined for the root component views.
     const templateFn = tView.template;
     if (templateFn !== null) {
-      executeTemplate(tView, lView, templateFn, RenderFlags.Create, context);
+      executeTemplate<T>(tView, lView, templateFn, RenderFlags.Create, context);
     }
 
     // This needs to be set before children are processed to support recursive components.
@@ -328,7 +328,7 @@ export function renderView<T>(tView: TView, lView: LView, context: T): void {
     // in case a child component has projected a container. The LContainer needs
     // to exist so the embedded views are properly attached by the container.
     if (tView.staticViewQueries) {
-      executeViewQueryFn(RenderFlags.Update, tView.viewQuery!, context);
+      executeViewQueryFn<T>(RenderFlags.Update, tView.viewQuery!, context);
     }
 
     // Render child component views.
@@ -439,7 +439,7 @@ export function refreshView<T>(
     // refresh, the template might not yet be inserted.
     const viewQuery = tView.viewQuery;
     if (viewQuery !== null) {
-      executeViewQueryFn(RenderFlags.Update, viewQuery, context);
+      executeViewQueryFn<T>(RenderFlags.Update, viewQuery, context);
     }
 
     // execute view hooks (AfterViewInit, AfterViewChecked)
@@ -507,7 +507,7 @@ export function renderComponentOrTemplate<T>(
 }
 
 function executeTemplate<T>(
-    tView: TView, lView: LView, templateFn: ComponentTemplate<T>, rf: RenderFlags, context: T) {
+    tView: TView, lView: LView<T>, templateFn: ComponentTemplate<T>, rf: RenderFlags, context: T) {
   const prevSelectedIndex = getSelectedIndex();
   const isUpdatePhase = rf & RenderFlags.Update;
   try {
@@ -520,14 +520,14 @@ function executeTemplate<T>(
 
     const preHookType =
         isUpdatePhase ? ProfilerEvent.TemplateUpdateStart : ProfilerEvent.TemplateCreateStart;
-    profiler(preHookType, context);
+    profiler(preHookType, context as unknown as {});
     templateFn(rf, context);
   } finally {
     setSelectedIndex(prevSelectedIndex);
 
     const postHookType =
         isUpdatePhase ? ProfilerEvent.TemplateUpdateEnd : ProfilerEvent.TemplateCreateEnd;
-    profiler(postHookType, context);
+    profiler(postHookType, context as unknown as {});
   }
 }
 
@@ -1995,7 +1995,7 @@ export function checkNoChangesInRootView(lView: LView): void {
 }
 
 function executeViewQueryFn<T>(
-    flags: RenderFlags, viewQueryFn: ViewQueriesFunction<{}>, component: T): void {
+    flags: RenderFlags, viewQueryFn: ViewQueriesFunction<T>, component: T): void {
   ngDevMode && assertDefined(viewQueryFn, 'View queries function to execute must be defined.');
   setCurrentQueryIndex(0);
   viewQueryFn(flags, component);

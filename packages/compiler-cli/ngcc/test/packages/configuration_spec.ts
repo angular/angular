@@ -697,7 +697,7 @@ runInEachFileSystem(() => {
         });
 
         it('should correctly handle pre-release versions and version ranges', () => {
-          Object.assign(DEFAULT_NGCC_CONFIG.packages, {
+          Object.assign(DEFAULT_NGCC_CONFIG.packages!, {
             'package-1': {
               entryPoints: {
                 './entry-point-1': {},

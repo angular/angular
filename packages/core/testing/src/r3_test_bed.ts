@@ -322,7 +322,7 @@ export class TestBedRender3 implements TestBed {
     if (token as unknown === TestBedRender3) {
       return this as any;
     }
-    const UNDEFINED = {};
+    const UNDEFINED = {} as unknown as T;
     const result = this.testModuleRef.injector.get(token, UNDEFINED, flags);
     return result === UNDEFINED ? this.compiler.injector.get(token, notFoundValue, flags) as any :
                                   result;
