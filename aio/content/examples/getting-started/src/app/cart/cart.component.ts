@@ -5,6 +5,7 @@ import { FormBuilder , FormGroup } from '@angular/forms';
 
 import { CartService } from '../cart.service';
 import { Product } from '../products';
+import { Observable } from 'rxjs';
 
 // #enddocregion imports
 
@@ -17,7 +18,7 @@ import { Product } from '../products';
 export class CartComponent implements OnInit {
 
   // #enddocregion inject-form-builder
-  items: Product[] = [];
+  items: Observable<Product[]>;
 
   checkoutForm: FormGroup;
 
@@ -39,7 +40,6 @@ export class CartComponent implements OnInit {
     this.items = this.cartService.getItems();
   }
 
-// #enddocregion initialize form, checkout-form group
 
   onSubmit(): void {
     // Process checkout data here
