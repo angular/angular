@@ -7,10 +7,17 @@
  */
 
 import * as ts from 'typescript';
+import {IMPORT_REPLACEMENTS} from './import-replacements';
 
-export abstract class RuntimeMigrator {
-  abstract oldImportModule: string;
-  abstract newImportModule: string;
+export class RuntimeMigrator {
+  oldImportModule: string;
+  newImportModule: string;
+
+  constructor(component: string) {
+    const replacements = IMPORT_REPLACEMENTS[component];
+    this.oldImportModule = replacements.old;
+    this.newImportModule = replacements.new;
+  }
 
   updateModuleSpecifier(specifier: ts.StringLiteralLike): ts.StringLiteral | null {
     if (specifier.text !== this.oldImportModule) {

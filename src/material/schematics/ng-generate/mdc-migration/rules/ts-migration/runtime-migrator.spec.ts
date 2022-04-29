@@ -1,4 +1,8 @@
-import {APP_MODULE_FILE, createNewTestRunner, migrateComponents} from '../test-setup-helper';
+import {
+  APP_MODULE_FILE,
+  createNewTestRunner,
+  migrateComponents,
+} from '../components/test-setup-helper';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
 import {createTestApp, patchDevkitTreeToExposeTypeScript} from '@angular/cdk/schematics/testing';
 

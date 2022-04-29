@@ -10,7 +10,6 @@ import {StyleMigrator} from './style-migrator';
 import {TemplateMigrator} from './template-migrator';
 
 import {AutocompleteStylesMigrator} from './components/autocomplete/autocomplete-styles';
-import {ButtonRuntimeMigrator} from './components/button/button-runtime';
 import {ButtonStylesMigrator} from './components/button/button-styles';
 import {CardStylesMigrator} from './components/card/card-styles';
 import {CardTemplateMigrator} from './components/card/card-template';
@@ -26,7 +25,7 @@ import {PaginatorStylesMigrator} from './components/paginator/paginator-styles';
 import {ProgressBarStylesMigrator} from './components/progress-bar/progress-bar-styles';
 import {ProgressSpinnerStylesMigrator} from './components/progress-spinner/progress-spinner-styles';
 import {RadioStylesMigrator} from './components/radio/radio-styles';
-import {RuntimeMigrator} from './runtime-migrator';
+import {RuntimeMigrator} from './ts-migration/runtime-migrator';
 import {SelectStylesMigrator} from './components/select/select-styles';
 import {SlideToggleStylesMigrator} from './components/slide-toggle/slide-toggle-styles';
 import {SliderStylesMigrator} from './components/slider/slider-styles';
@@ -46,84 +45,103 @@ export const MIGRATORS: ComponentMigrator[] = [
   {
     component: 'autocomplete',
     styles: new AutocompleteStylesMigrator(),
+    runtime: new RuntimeMigrator('autocomplete'),
   },
   {
     component: 'button',
     styles: new ButtonStylesMigrator(),
-    runtime: new ButtonRuntimeMigrator(),
+    runtime: new RuntimeMigrator('button'),
   },
   {
     component: 'card',
     styles: new CardStylesMigrator(),
+    runtime: new RuntimeMigrator('card'),
     template: new CardTemplateMigrator(),
   },
   {
     component: 'checkbox',
     styles: new CheckboxStylesMigrator(),
+    runtime: new RuntimeMigrator('checkbox'),
   },
   {
     component: 'chips',
     styles: new ChipsStylesMigrator(),
+    runtime: new RuntimeMigrator('chips'),
     template: new ChipsTemplateMigrator(),
   },
   {
     component: 'dialog',
     styles: new DialogStylesMigrator(),
+    runtime: new RuntimeMigrator('dialog'),
   },
   {
     component: 'form-field',
     styles: new FormFieldStylesMigrator(),
+    runtime: new RuntimeMigrator('form-field'),
   },
   {
     component: 'input',
     styles: new InputStylesMigrator(),
+    runtime: new RuntimeMigrator('input'),
   },
   {
     component: 'list',
     styles: new ListStylesMigrator(),
+    runtime: new RuntimeMigrator('list'),
   },
   {
     component: 'menu',
     styles: new MenuStylesMigrator(),
+    runtime: new RuntimeMigrator('menu'),
   },
   {
     component: 'paginator',
     styles: new PaginatorStylesMigrator(),
+    runtime: new RuntimeMigrator('paginator'),
   },
   {
     component: 'progress-bar',
     styles: new ProgressBarStylesMigrator(),
+    runtime: new RuntimeMigrator('progress-bar'),
   },
   {
     component: 'progress-spinner',
     styles: new ProgressSpinnerStylesMigrator(),
+    runtime: new RuntimeMigrator('progress-spinner'),
   },
   {
     component: 'radio',
     styles: new RadioStylesMigrator(),
+    runtime: new RuntimeMigrator('radio'),
   },
   {
     component: 'select',
     styles: new SelectStylesMigrator(),
+    runtime: new RuntimeMigrator('select'),
   },
   {
     component: 'slide-toggle',
     styles: new SlideToggleStylesMigrator(),
+    runtime: new RuntimeMigrator('slide-toggle'),
   },
   {
     component: 'slider',
     styles: new SliderStylesMigrator(),
+    runtime: new RuntimeMigrator('slider'),
   },
   {
     component: 'table',
     styles: new TableStylesMigrator(),
+    runtime: new RuntimeMigrator('table'),
   },
   {
     component: 'tabs',
     styles: new TabsStylesMigrator(),
+    runtime: new RuntimeMigrator('tabs'),
   },
   {
     component: 'tooltip',
     styles: new TooltipStylesMigrator(),
+    runtime: new RuntimeMigrator('tooltip'),
   },
 ];

@@ -10,7 +10,7 @@ import {ComponentMigrator, MIGRATORS} from './rules';
 import {DevkitFileSystem, UpdateProject, findStylesheetFiles} from '@angular/cdk/schematics';
 import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 
-import {RuntimeCodeMigration} from './rules/runtime-migration';
+import {RuntimeCodeMigration} from './rules/ts-migration/runtime-migration';
 import {Schema} from './schema';
 import {TemplateMigration} from './rules/template-migration';
 import {ThemingStylesMigration} from './rules/theming-styles';

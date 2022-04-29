@@ -8,7 +8,7 @@
 
 import {Migration} from '@angular/cdk/schematics';
 import {SchematicContext} from '@angular-devkit/schematics';
-import {ComponentMigrator} from './index';
+import {ComponentMigrator} from '../index';
 import * as ts from 'typescript';
 
 export class RuntimeCodeMigration extends Migration<ComponentMigrator[], SchematicContext> {
