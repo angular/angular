@@ -10,12 +10,13 @@ aio-resource-list {
   }
 
   .resource-item {
-    h4 {
+    .resource-name {
       margin: 0;
       @include mixins.line-height(24);
+      @include mixins.font-size(20);
     }
 
-    p {
+    .resource-description {
       margin: 0;
     }
   }
@@ -23,6 +24,7 @@ aio-resource-list {
   .subcategory-title {
     padding: 16px 23px;
     margin: 0;
+    @include mixins.font-size(24);
   }
 
   .resource-row-link {
