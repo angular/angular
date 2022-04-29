@@ -24,7 +24,7 @@ TCBs are not ever emitted, nor are they referenced from any other code (they're 
 Given a component `SomeCmp`, its TCB takes the form of a function:
 
 ```typescript
-function tcb(ctx: SomeCmp): void {
+function tcb(this: SomeCmp): void {
   // TCB code
 }
 ```
@@ -38,15 +38,15 @@ The component context is the theoretical component instance associated with the 
 
 For example, if `SomeCmp`'s template has an interpolation expression `{{foo.bar}}`, this suggests that `SomeCmp` has a property `foo`, and that `foo` itself is an object with a property `bar` (or in a type sense, that the type of `SomeCmp.foo` has a property `bar`).
 
-Such a binding is expressed in the TCB function, using the `ctx` parameter as the component instance:
+Such a binding is expressed in the TCB function, using the `this` parameter as the component instance:
 
 ```typescript
-function tcb(ctx: SomeCmp): void {
-  '' + ctx.foo.bar;
+function tcb(this: SomeCmp): void {
+  '' + this.foo.bar;
 }
 ```
 
-If `SomeCmp` does not have a `foo` property, then TypeScript will produce a type error/diagnostic for the expression `ctx.foo`. If `ctx.foo` does exist, but is not of a type that has a `bar` property, then TypeScript will catch that too. By mapping the template expression `{{foo.bar}}` to TypeScript code, the compiler has captured its _intent_ in the TCB in a way that TypeScript can validate.
+If `SomeCmp` does not have a `foo` property, then TypeScript will produce a type error/diagnostic for the expression `this.foo`. If `this.foo` does exist, but is not of a type that has a `bar` property, then TypeScript will catch that too. By mapping the template expression `{{foo.bar}}` to TypeScript code, the compiler has captured its _intent_ in the TCB in a way that TypeScript can validate.
 
 #### Types of template declarations
 
@@ -62,7 +62,7 @@ declares a single `<input>` element with a local ref `#name`, meaning that withi
 Within the TCB, the `<input>` element is treated as a declaration, and the compiler leverages the powerful type inference of `document.createElement`:
 
 ```typescript
-function tcb(ctx: SomeCmp): void {
+function tcb(this: SomeCmp): void {
   var _t1 = document.createElement('input');
   '' + _t1.value;
 }
@@ -83,13 +83,13 @@ Just like with HTML elements, directives present on elements within the template
 The TCB for this template looks like:
 
 ```typescript
-function tcb(ctx: SomeCmp): void {
+function tcb(this: SomeCmp): void {
   var _t1: OtherCmp = null!;
-  _t1.foo = ctx.bar;
+  _t1.foo = this.bar;
 }
 ```
 
-Since `<other-cmp>` is a component, the TCB declares `_t1` to be of that component's type. This allows for the binding `[foo]="bar"` to be expressed in TypeScript as `_t1.foo = ctx.bar` - an assignment to `OtherCmp`'s `@Input` for `foo` of the `bar` property from the template's context. TypeScript can then type check this operation and produce diagnostics if the type of `ctx.bar` is not assignable to the `_t1.foo` property which backs the `@Input`.
+Since `<other-cmp>` is a component, the TCB declares `_t1` to be of that component's type. This allows for the binding `[foo]="bar"` to be expressed in TypeScript as `_t1.foo = this.bar` - an assignment to `OtherCmp`'s `@Input` for `foo` of the `bar` property from the template's context. TypeScript can then type check this operation and produce diagnostics if the type of `this.bar` is not assignable to the `_t1.foo` property which backs the `@Input`.
 
 #### Generic directives & type constructors
 
@@ -147,9 +147,9 @@ This type constructor can then be used to infer the instance type of a usage of 
 Would use the above type constructor in its TCB:
 
 ```typescript
-function tcb(ctx: SomeCmp): void {
-  var _t1 = ctor1({ngForOf: ctx.users});
-  // Assuming ctx.users is User[], then _t1 is inferred as NgFor<User>.
+function tcb(this: SomeCmp): void {
+  var _t1 = ctor1({ngForOf: this.users});
+  // Assuming this.users is User[], then _t1 is inferred as NgFor<User>.
 }
 ```
 
@@ -180,9 +180,9 @@ In the TCB, the template context of this nested template is itself a declaration
 ```typescript
 declare function ctor1(inputs: {ngForOf?: Iterable<T>}): NgFor<T>;
 
-function tcb(ctx: SomeCmp): void {
+function tcb(this: SomeCmp): void {
   // _t1 is the NgFor directive instance, inferred as NgFor<User>.
-  var _t1 = ctor1({ngForOf: ctx.users});
+  var _t1 = ctor1({ngForOf: this.users});
 
   // _t2 is the context type for the embedded views created by the NgFor structural directive.
   var _t2: any;
@@ -221,9 +221,9 @@ The `typecheck` system is aware of the presence of this method on any structural
 ```typescript
 declare function ctor1(inputs: {ngForOf?: Iterable<T>}): NgFor<T>;
 
-function tcb(ctx: SomeCmp): void {
+function tcb(this: SomeCmp): void {
   // _t1 is the NgFor directive instance, inferred as NgFor<User>.
-  var _t1 = ctor1({ngForOf: ctx.users});
+  var _t1 = ctor1({ngForOf: this.users});
 
   // _t2 is the context type for the embedded views created by the NgFor structural directive.
   var _t2: any;
@@ -258,15 +258,15 @@ Because the `NgFor` directive _declared_ to the template type checking engine wh
 Obviously, if `user` is potentially `null`, then this `NgIf` is intended to only show the `<div>` when `user` actually has a value. However, from a type-checking perspective, the expression `user.name` is not legal if `user` is potentially `null`. So if this template was rendered into a TCB as:
 
 ```typescript
-function tcb(ctx: SomeCmp): void {
+function tcb(this: SomeCmp): void {
   // Type of the NgIf directive instance.
   var _t1: NgIf;
   
   // Binding *ngIf="user != null".
-  _t1.ngIf = ctx.user !== null;
+  _t1.ngIf = this.user !== null;
   
   // Nested template interpolation `{{user.name}}`
-  '' + ctx.user.name;
+  '' + this.user.name;
 }
 ```
 
@@ -286,23 +286,23 @@ export class NgIf {
 The presence and type of this static property tells the template type-checking engine to reflect the bound expression for its `ngIf` input as a guard for any embedded views created by the structural directive. This produces a TCB:
 
 ```typescript
-function tcb(ctx: SomeCmp): void {
+function tcb(this: SomeCmp): void {
   // Type of the NgIf directive instance.
   var _t1: NgIf;
   
   // Binding *ngIf="user != null".
-  _t1.ngIf = ctx.user !== null;
+  _t1.ngIf = this.user !== null;
   
   // Guard generated due to the `ngTemplateGuard_ngIf` declaration by the NgIf directive.
   if (user !== null) {
     // Nested template interpolation `{{user.name}}`.
-    // `ctx.user` here is appropriately narrowed to be non-nullable.
-    '' + ctx.user.name;
+    // `this.user` here is appropriately narrowed to be non-nullable.
+    '' + this.user.name;
   } 
 }
 ```
 
-The guard expression causes TypeScript to narrow the type of `ctx.user` within the `if` block and identify that `ctx.user` cannot be `null` within the embedded view context, just as `NgIf` itself does during rendering.
+The guard expression causes TypeScript to narrow the type of `this.user` within the `if` block and identify that `this.user` cannot be `null` within the embedded view context, just as `NgIf` itself does during rendering.
 
 ### Generation process
 
@@ -393,7 +393,7 @@ Here, type-checking the `[in]` binding requires knowing the type of `ref`, which
 ```typescript
 declare function ctor1<T>(inputs: {in?: T}): GenericCmp<T>;
 
-function tcb(ctx: SomeCmp): void {
+function tcb(this: SomeCmp): void {
   // Not legal: cannot refer to t1 (ref) before its declaration.
   var t1 = ctor1({in: t1.value});
 
@@ -408,7 +408,7 @@ To get around this, `TcbOp`s may optionally provide a fallback value via a `circ
 ```typescript
 declare function ctor1<T>(inputs: {in?: T}): GenericCmp<T>;
 
-function tcb(ctx: SomeCmp): void {
+function tcb(this: SomeCmp): void {
   // Generated to break the cycle for `ref` - infers a placeholder
   // type for the component without using any of its input bindings.
   var t1 = ctor1(null!);
@@ -445,16 +445,16 @@ Consider a template expression of the form:
 The generated TCB code for this expression would look like:
 
 ```typescript
-'' + ctx.foo.bar;
+'' + this.foo.bar;
 ```
 
 What actually gets generated for this expression looks more like:
 
 ```typescript
-'' + (ctx.foo /* 3,5 */).bar /* 3,9 */;
+'' + (this.foo /* 3,5 */).bar /* 3,9 */;
 ```
 
-The trailing comment for each node in the TCB indicates the template offsets for the corresponding template nodes. If for example TypeScript returns a diagnostic for the `ctx.foo` part of the expression (such as if `foo` is not a valid property on the component context), the attached comment can be used to map this diagnostic back to the original template's `foo` node.
+The trailing comment for each node in the TCB indicates the template offsets for the corresponding template nodes. If for example TypeScript returns a diagnostic for the `this.foo` part of the expression (such as if `foo` is not a valid property on the component context), the attached comment can be used to map this diagnostic back to the original template's `foo` node.
 
 #### `TemplateId`
 
@@ -548,7 +548,7 @@ Additions of such inline type checking code have significant ramifications on th
 A similar problem exists for generic components and the declaration of TCBs. A TCB function must also copy the generic bounds of its context component:
 
 ```typescript
-function tcb<T extends string>(ctx: SomeCmp<T>): void {
+function tcb<T extends string>(this: SomeCmp<T>): void {
   /* tcb code */
 }
 ```

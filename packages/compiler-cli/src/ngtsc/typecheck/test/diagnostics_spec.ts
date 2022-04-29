@@ -585,6 +585,29 @@ class TestComponent {
       expect(messages).toEqual(
           [`TestComponent.html(3, 30): Type 'HTMLElement' is not assignable to type 'string'.`]);
     });
+
+    it('allows access to protected members', () => {
+      const messages = diagnose(`<button (click)="doFoo()">{{ message }}</button>`, `
+        class TestComponent {
+          protected message = 'Hello world';
+          protected doFoo(): void {}
+        }`);
+
+      expect(messages).toEqual([]);
+    });
+
+    it('disallows access to private members', () => {
+      const messages = diagnose(`<button (click)="doFoo()">{{ message }}</button>`, `
+        class TestComponent {
+          private message = 'Hello world';
+          private doFoo(): void {}
+        }`);
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 18): Property 'doFoo' is private and only accessible within class 'TestComponent'.`,
+        `TestComponent.html(1, 30): Property 'message' is private and only accessible within class 'TestComponent'.`
+      ]);
+    });
   });
 
   describe('method call spans', () => {
