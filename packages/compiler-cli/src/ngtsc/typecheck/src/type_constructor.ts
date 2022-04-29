@@ -12,7 +12,7 @@ import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {TypeCtorMetadata} from '../api';
 
 import {checkIfGenericTypeBoundsCanBeEmitted, ReferenceEmitEnvironment} from './tcb_util';
-import {tsCreateTypeQueryForCoercedInput} from './ts_util';
+import {tsCreateTypeQueryForCoercedInput, tsUpdateTypeParameterDeclaration} from './ts_util';
 
 export function generateTypeCtorDeclarationFn(
     node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata, nodeTypeRef: ts.EntityName,
@@ -244,11 +244,9 @@ function typeParametersWithDefaultTypes(params: ReadonlyArray<ts.TypeParameterDe
 
   return params.map(param => {
     if (param.default === undefined) {
-      return ts.factory.updateTypeParameterDeclaration(
-          /* node */ param,
-          /* name */ param.name,
-          /* constraint */ param.constraint,
-          /* defaultType */ ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+      return tsUpdateTypeParameterDeclaration(
+          param, param.name, param.constraint,
+          ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
     } else {
       return param;
     }

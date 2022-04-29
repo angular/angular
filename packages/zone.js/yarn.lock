@@ -4007,10 +4007,10 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript@~4.6.2:
-  version "4.6.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.3.tgz#eefeafa6afdd31d725584c67a0eaba80f6fc6c6c"
-  integrity sha512-yNIatDa5iaofVozS/uQJEl3JRWLKKGJKh6Yaiv0GLGSuhpFJe7P3SbHZ8/yjAHRQwKRoA6YZqlfjXWmVzoVSMw==
+typescript@4.7.0-beta:
+  version "4.7.0-beta"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.0-beta.tgz#15952f24d4177479ca3d19f09436ad8c69a30563"
+  integrity sha512-m+CNL8lzHyHDxYYDTI+pm5hw5/bufYVGan2bokPyJY/y9C/4W/PCWMtYZ0vV9fLXbEL57elMeoaz9Evxs8UQ+A==
 
 unbox-primitive@^1.0.1:
   version "1.0.2"

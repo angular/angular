@@ -43,9 +43,9 @@ export const diff = <T>(differ: DefaultIterableDiffer<T>, a: T[], b: T[]):
         if (!alreadySet[record.previousIndex]) {
           a[record.currentIndex] = a[record.previousIndex];
         } else {
-          a[record.currentIndex] = {} as T;
+          a[record.currentIndex] = {} as unknown as T;
         }
-        Object.keys(b[record.currentIndex]).forEach(prop => {
+        Object.keys(b[record.currentIndex] as unknown as {}).forEach(prop => {
           // TypeScript's type inference didn't follow the check from above.
           if (record.currentIndex === null) {
             return;

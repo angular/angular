@@ -78,16 +78,17 @@ class ChainedInjector implements Injector {
   constructor(private injector: Injector, private parentInjector: Injector) {}
 
   get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T {
-    const value = this.injector.get(token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as T, flags);
+    const value = this.injector.get<T|typeof NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR>(
+        token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR, flags);
 
     if (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR ||
-        notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
+        notFoundValue === (NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as unknown as T)) {
       // Return the value from the root element injector when
       // - it provides it
       //   (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
       // - the module injector should not be checked
       //   (notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
-      return value;
+      return value as T;
     }
 
     return this.parentInjector.get(token, notFoundValue, flags);

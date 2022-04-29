@@ -27,7 +27,7 @@ export interface DirectiveDebugMetadata {
 export function getComponent<T>(element: Element): T | null;
 
 // @public
-export function getContext<T>(element: Element): T | null;
+export function getContext<T extends ({} | RootContext)>(element: Element): T | null;
 
 // @public
 export function getDirectiveMetadata(directiveOrComponentInstance: any): ComponentDebugMetadata | DirectiveDebugMetadata | null;
@@ -58,7 +58,6 @@ export interface Listener {
     type: 'dom' | 'output';
     useCapture: boolean;
 }
-
 
 // (No @packageDocumentation comment for this package)
 

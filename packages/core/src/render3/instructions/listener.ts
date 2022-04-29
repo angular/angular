@@ -40,7 +40,7 @@ import {getOrCreateLViewCleanup, getOrCreateTViewCleanup, handleError, loadCompo
 export function ɵɵlistener(
     eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean,
     eventTargetResolver?: GlobalTargetResolver): typeof ɵɵlistener {
-  const lView = getLView();
+  const lView = getLView<{}|null>();
   const tView = getTView();
   const tNode = getCurrentTNode()!;
   listenerInternal(
@@ -73,7 +73,7 @@ export function ɵɵlistener(
 export function ɵɵsyntheticHostListener(
     eventName: string, listenerFn: (e?: any) => any): typeof ɵɵsyntheticHostListener {
   const tNode = getCurrentTNode()!;
-  const lView = getLView();
+  const lView = getLView<{}|null>();
   const tView = getTView();
   const currentDef = getCurrentDirectiveDef(tView.data);
   const renderer = loadComponentRenderer(currentDef, tNode, lView);
@@ -114,7 +114,7 @@ function findExistingListener(
 }
 
 function listenerInternal(
-    tView: TView, lView: LView, renderer: Renderer3, tNode: TNode, eventName: string,
+    tView: TView, lView: LView<{}|null>, renderer: Renderer3, tNode: TNode, eventName: string,
     listenerFn: (e?: any) => any, useCapture: boolean,
     eventTargetResolver?: GlobalTargetResolver): void {
   const isTNodeDirectiveHost = isDirectiveHost(tNode);
@@ -250,7 +250,7 @@ function executeListenerWithErrorHandling(
  * (the procedural renderer does this already, so in those cases, we should skip)
  */
 function wrapListener(
-    tNode: TNode, lView: LView, context: {}|null, listenerFn: (e?: any) => any,
+    tNode: TNode, lView: LView<{}|null>, context: {}|null, listenerFn: (e?: any) => any,
     wrapWithPreventDefault: boolean): EventListener {
   // Note: we are performing most of the work in the listener function itself
   // to optimize listener registration.

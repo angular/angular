@@ -83,8 +83,8 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
  */
 @Injectable()
 export class TransferState {
-  private store: {[k: string]: {}|undefined} = {};
-  private onSerializeCallbacks: {[k: string]: () => {} | undefined} = {};
+  private store: {[k: string]: unknown|undefined} = {};
+  private onSerializeCallbacks: {[k: string]: () => unknown | undefined} = {};
 
   /** @internal */
   static init(initState: {}) {

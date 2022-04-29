@@ -489,7 +489,7 @@ function lookupTokenUsingNodeInjector<T>(
         // At this point, we have an injector which *may* contain the token, so we step through
         // the providers and directives associated with the injector's corresponding node to get
         // the instance.
-        const instance: T|null = searchTokensOnInjector<T>(
+        const instance: T|{}|null = searchTokensOnInjector<T>(
             injectorIndex, lView, token, previousTView, flags, hostTElementNode);
         if (instance !== NOT_FOUND) {
           return instance;
@@ -803,7 +803,8 @@ function lookupTokenUsingEmbeddedInjector<T>(
       // Before we go to the next LView, check if the token exists on the current embedded injector.
       const embeddedViewInjector = currentLView[EMBEDDED_VIEW_INJECTOR];
       if (embeddedViewInjector) {
-        const embeddedViewInjectorValue = embeddedViewInjector.get(token, NOT_FOUND as T, flags);
+        const embeddedViewInjectorValue =
+            embeddedViewInjector.get(token, NOT_FOUND as T | {}, flags);
         if (embeddedViewInjectorValue !== NOT_FOUND) {
           return embeddedViewInjectorValue;
         }
