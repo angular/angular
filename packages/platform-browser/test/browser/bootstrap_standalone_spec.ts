@@ -10,7 +10,7 @@ import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {Component, destroyPlatform, Inject, Injectable, InjectionToken, NgModule} from '@angular/core';
 import {inject} from '@angular/core/testing';
 
-import {bootstrapApplication} from '../../src/browser';
+import {bootstrapApplication, BrowserModule} from '../../src/browser';
 
 describe('bootstrapApplication for standalone components', () => {
   let rootEl: HTMLUnknownElement;
@@ -21,7 +21,7 @@ describe('bootstrapApplication for standalone components', () => {
 
   afterEach(() => {
     destroyPlatform();
-    rootEl.remove();
+    rootEl?.remove();
   });
 
   it('should create injector where ambient providers shadow explicit providers', async () => {
@@ -106,6 +106,62 @@ describe('bootstrapApplication for standalone components', () => {
        } catch (e: unknown) {
          expect(e).toBeInstanceOf(Error);
          expect((e as Error).message).toContain('No provider for InjectionToken ambient token!');
+       }
+     });
+
+  it('should throw if `BrowserModule` is imported in the standalone bootstrap scenario',
+     async () => {
+       @Component({
+         selector: 'test-app',
+         template: '...',
+         standalone: true,
+         imports: [BrowserModule],
+       })
+       class StandaloneCmp {
+       }
+
+       try {
+         await bootstrapApplication(StandaloneCmp);
+
+         // The `bootstrapApplication` already includes the set of providers from the
+         // `BrowserModule`, so including the `BrowserModule` again will bring duplicate providers
+         // and we want to avoid it.
+         fail('Expected to throw');
+       } catch (e: unknown) {
+         expect(e).toBeInstanceOf(Error);
+         expect((e as Error).message)
+             .toContain('Providers from the `BrowserModule` have already been loaded.');
+       }
+     });
+
+  it('should throw if `BrowserModule` is imported indirectly in the standalone bootstrap scenario',
+     async () => {
+       @NgModule({
+         imports: [BrowserModule],
+       })
+       class SomeDependencyModule {
+       }
+
+       @Component({
+         selector: 'test-app',
+         template: '...',
+         standalone: true,
+         imports: [SomeDependencyModule],
+       })
+       class StandaloneCmp {
+       }
+
+       try {
+         await bootstrapApplication(StandaloneCmp);
+
+         // The `bootstrapApplication` already includes the set of providers from the
+         // `BrowserModule`, so including the `BrowserModule` again will bring duplicate providers
+         // and we want to avoid it.
+         fail('Expected to throw');
+       } catch (e: unknown) {
+         expect(e).toBeInstanceOf(Error);
+         expect((e as Error).message)
+             .toContain('Providers from the `BrowserModule` have already been loaded.');
        }
      });
 });
