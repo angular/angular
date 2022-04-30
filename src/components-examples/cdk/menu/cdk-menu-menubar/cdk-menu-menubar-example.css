@@ -1,6 +1,5 @@
 .example-menu-bar-item {
   cursor: pointer;
-  outline: none;
   border: none;
 
   user-select: none;
@@ -35,7 +34,6 @@
 .example-menu .example-menu-item {
   background-color: transparent;
   cursor: pointer;
-  outline: none;
   border: none;
 
   user-select: none;

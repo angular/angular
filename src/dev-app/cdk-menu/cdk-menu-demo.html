@@ -160,9 +160,9 @@
 
 <div class="example-menu-container">
   <h3>Radio items</h3>
-  <button cdkMenuItem [cdkMenuTriggerFor]="sizeMenu">Size menu (items directly in menu)</button>
-  <button cdkMenuItem [cdkMenuTriggerFor]="colorMenu">Color menu (items in menu group)</button>
-  <button cdkMenuItem [cdkMenuTriggerFor]="sizeAndColorMenu">Size & Color menu (items in directly in menu & in menu group)</button>
+  <button [cdkMenuTriggerFor]="sizeMenu">Size menu (items directly in menu)</button>
+  <button [cdkMenuTriggerFor]="colorMenu">Color menu (items in menu group)</button>
+  <button [cdkMenuTriggerFor]="sizeAndColorMenu">Size & Color menu (items in directly in menu & in menu group)</button>
 
   <ng-template #sizeMenu>
     <div class="example-menu" cdkMenu>

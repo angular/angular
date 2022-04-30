@@ -10,7 +10,6 @@
 .example-menu-item {
   background-color: transparent;
   cursor: pointer;
-  outline: none;
   border: none;
 
   user-select: none;
