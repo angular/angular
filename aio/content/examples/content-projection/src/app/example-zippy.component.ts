@@ -1,4 +1,16 @@
-import { Component, Directive, Input, TemplateRef, ContentChild} from '@angular/core';
+import { Component, Directive, Input, TemplateRef, ContentChild, HostBinding, HostListener } from '@angular/core';
+
+@Directive({
+  selector: 'button[appExampleZippyToggle]',
+})
+export class ZippyToggleDirective {
+  @HostBinding('attr.aria-expanded') ariaExpanded = this.zippy.expanded;
+  @HostBinding('attr.aria-controls') ariaControls = this.zippy.contentId;
+  @HostListener('click') toggleZippy() {
+    this.zippy.expanded = !this.zippy.expanded;
+  }
+  constructor(public zippy: ZippyComponent) {}
+}
 
 let nextId = 0;
 
