@@ -326,7 +326,7 @@ function verifySemanticsOfNgModuleDef(
   function verifyComponentIsPartOfNgModule(type: Type<any>) {
     type = resolveForwardRef(type);
     const existingModule = ownerNgModule.get(type);
-    if (!existingModule) {
+    if (!existingModule && !isStandalone(type)) {
       errors.push(`Component ${
           stringifyForError(
               type)} is not part of any NgModule or the module has not been imported into your module.`);
@@ -337,6 +337,14 @@ function verifySemanticsOfNgModuleDef(
     type = resolveForwardRef(type);
     if (!getComponentDef(type)) {
       errors.push(`${stringifyForError(type)} cannot be used as an entry component.`);
+    }
+    if (isStandalone(type)) {
+      // Note: this error should be the same as the
+      // `NGMODULE_BOOTSTRAP_IS_STANDALONE` one in AOT compiler.
+      errors.push(
+          `The \`${stringifyForError(type)}\` class is a standalone component, which can ` +
+          `not be used in the \`@NgModule.bootstrap\` array. Use the \`bootstrapApplication\` ` +
+          `function for bootstrap instead.`);
     }
   }
 

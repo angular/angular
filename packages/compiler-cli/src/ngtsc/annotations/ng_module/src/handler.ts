@@ -17,6 +17,7 @@ import {DynamicValue, PartialEvaluator, ResolvedValue, SyntheticValue} from '../
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../../reflection';
 import {LocalModuleScopeRegistry, ScopeData} from '../../../scope';
+import {getDiagnosticNode} from '../../../scope/src/util';
 import {FactoryTracker} from '../../../shims/api';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {getSourceFile} from '../../../util/src/typescript';
@@ -235,6 +236,14 @@ export class NgModuleDecoratorHandler implements
       const expr = ngModule.get('bootstrap')!;
       const bootstrapMeta = this.evaluator.evaluate(expr, forwardRefResolver);
       bootstrapRefs = this.resolveTypeList(expr, bootstrapMeta, name, 'bootstrap', 0).references;
+
+      // Verify that the `@NgModule.bootstrap` list doesn't have Standalone Components.
+      for (const ref of bootstrapRefs) {
+        const dirMeta = this.metaReader.getDirectiveMetadata(ref);
+        if (dirMeta?.isStandalone) {
+          diagnostics.push(makeStandaloneBootstrapDiagnostic(node, ref, expr));
+        }
+      }
     }
 
     const schemas = ngModule.has('schemas') ?
@@ -833,4 +842,25 @@ function isResolvedModuleWithProviders(sv: SyntheticValue<unknown>):
   return typeof sv.value === 'object' && sv.value != null &&
       sv.value.hasOwnProperty('ngModule' as keyof ResolvedModuleWithProviders) &&
       sv.value.hasOwnProperty('mwpCall' as keyof ResolvedModuleWithProviders);
+}
+
+/**
+ * Helper method to produce a diagnostics for a situation when a standalone component
+ * is referenced in the `@NgModule.bootstrap` array.
+ */
+function makeStandaloneBootstrapDiagnostic(
+    ngModuleClass: ClassDeclaration, bootstrappedClassRef: Reference<ClassDeclaration>,
+    rawBootstrapExpr: ts.Expression|null): ts.Diagnostic {
+  const componentClassName = bootstrappedClassRef.node.name.text;
+  // Note: this error message should be aligned with the one produced by JIT.
+  const message =  //
+      `The \`${componentClassName}\` class is a standalone component, which can ` +
+      `not be used in the \`@NgModule.bootstrap\` array. Use the \`bootstrapApplication\` ` +
+      `function for bootstrap instead.`;
+  const relatedInformation: ts.DiagnosticRelatedInformation[]|undefined =
+      [makeRelatedInformation(ngModuleClass, `The 'bootstrap' array is present on this NgModule.`)];
+
+  return makeDiagnostic(
+      ErrorCode.NGMODULE_BOOTSTRAP_IS_STANDALONE,
+      getDiagnosticNode(bootstrappedClassRef, rawBootstrapExpr), message, relatedInformation);
 }

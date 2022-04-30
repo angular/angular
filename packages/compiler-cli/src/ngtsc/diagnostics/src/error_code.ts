@@ -146,6 +146,11 @@ export enum ErrorCode {
   NGMODULE_DECLARATION_IS_STANDALONE = 6008,
 
   /**
+   * Raised when a standalone component is part of the bootstrap list of an NgModule.
+   */
+  NGMODULE_BOOTSTRAP_IS_STANDALONE = 6009,
+
+  /**
    * Indicates that an NgModule is declared with `id: module.id`. This is an anti-pattern that is
    * disabled explicitly in the compiler, that was originally based on a misunderstanding of
    * `NgModule.id`.
