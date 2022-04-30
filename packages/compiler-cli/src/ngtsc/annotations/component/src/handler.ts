@@ -276,16 +276,6 @@ export class ComponentDecoratorHandler implements
         }
         diagnostics.push(...importDiagnostics);
       }
-
-      const validationDiagnostics =
-          validateStandaloneImports(resolvedImports, rawImports, this.metaReader, this.scopeReader);
-      if (validationDiagnostics.length > 0) {
-        isPoisoned = true;
-        if (diagnostics === undefined) {
-          diagnostics = [];
-        }
-        diagnostics.push(...validationDiagnostics);
-      }
     }
 
     let schemas: SchemaMetadata[]|null = null;
@@ -799,6 +789,12 @@ export class ComponentDecoratorHandler implements
               relatedMessages);
         }
       }
+    }
+
+    if (analysis.resolvedImports !== null && analysis.rawImports !== null) {
+      const standaloneDiagnostics = validateStandaloneImports(
+          analysis.resolvedImports, analysis.rawImports, this.metaReader, this.scopeReader);
+      diagnostics.push(...standaloneDiagnostics);
     }
 
     if (analysis.providersRequiringFactory !== null &&
