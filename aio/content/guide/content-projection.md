@@ -129,7 +129,7 @@ The following steps demonstrate a typical implementation of conditional content 
 
 1.  In the component you want to project content into, use `@ContentChild` to get the template of the projected content.
 
-    <code-example header="content-projection/src/app/app.component.ts" path="content-projection/src/app/app.component.ts" region="contentchild"></code-example>
+    <code-example header="content-projection/src/app/example-zippy.component.ts" path="content-projection/src/app/example-zippy.component.ts" region="contentchild"></code-example>
 
     Prior to this step, your application has a component that instantiates a template when certain conditions are met.
     You've also created a directive that provides a reference to that template.
