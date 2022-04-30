@@ -7658,6 +7658,55 @@ function allTests(os: string) {
       expect(codes).toEqual([ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX)]);
     });
 
+    it('should produce an error when standalone component is used in @NgModule.bootstrap', () => {
+      env.tsconfig();
+
+      env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          standalone: true,
+          selector: 'standalone-component',
+          template: '...',
+        })
+        class StandaloneComponent {}
+
+        @NgModule({
+          bootstrap: [StandaloneComponent]
+        })
+        class BootstrapModule {}
+      `);
+
+      const diagnostics = env.driveDiagnostics();
+      const codes = diagnostics.map((diag) => diag.code);
+      expect(codes).toEqual([ngErrorCode(ErrorCode.NGMODULE_BOOTSTRAP_IS_STANDALONE)]);
+    });
+
+    it('should produce an error when standalone component wrapped in `forwardRef` is used in @NgModule.bootstrap',
+       () => {
+         env.tsconfig();
+
+         env.write('test.ts', `
+        import {Component, NgModule, forwardRef} from '@angular/core';
+
+        @Component({
+          standalone: true,
+          selector: 'standalone-component',
+          template: '...',
+        })
+        class StandaloneComponent {}
+
+        @NgModule({
+          bootstrap: [forwardRef(() => StandaloneComponent)]
+        })
+        class BootstrapModule {}
+      `);
+
+         const diagnostics = env.driveDiagnostics();
+         const codes = diagnostics.map((diag) => diag.code);
+         expect(codes).toEqual([ngErrorCode(ErrorCode.NGMODULE_BOOTSTRAP_IS_STANDALONE)]);
+       });
+
     describe('InjectorDef emit optimizations for standalone', () => {
       it('should not filter components out of NgModule.imports', () => {
         env.write('test.ts', `
