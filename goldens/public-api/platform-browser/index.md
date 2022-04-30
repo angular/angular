@@ -33,7 +33,7 @@ export function bootstrapApplication(rootComponent: Type<unknown>, options?: App
 
 // @public
 export class BrowserModule {
-    constructor(parentModule: BrowserModule | null);
+    constructor(providersAlreadyPresent: boolean | null);
     static withServerTransition(params: {
         appId: string;
     }): ModuleWithProviders<BrowserModule>;

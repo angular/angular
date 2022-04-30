@@ -45,6 +45,9 @@
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
+    "name": "BROWSER_MODULE_PROVIDERS_MARKER"
+  },
+  {
     "name": "BehaviorSubject"
   },
   {

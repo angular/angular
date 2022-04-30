@@ -449,7 +449,9 @@ function bootstrap(
                return compiler.compileModuleAsync(AsyncModule).then(factory => {
                  expect(() => factory.create(ref.injector))
                      .toThrowError(
-                         `BrowserModule has already been loaded. If you need access to common directives such as NgIf and NgFor from a lazy loaded module, import CommonModule instead.`);
+                         'Providers from the `BrowserModule` have already been loaded. ' +
+                         'If you need access to common directives such as NgIf and NgFor, ' +
+                         'import the `CommonModule` instead.');
                });
              })
              .then(() => done(), err => done.fail(err));

@@ -75,6 +75,9 @@
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
+    "name": "BROWSER_MODULE_PROVIDERS_MARKER"
+  },
+  {
     "name": "BROWSER_NOOP_ANIMATIONS_PROVIDERS"
   },
   {

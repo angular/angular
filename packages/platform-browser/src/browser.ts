@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, XhrFactory, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationModule, ApplicationRef, createPlatformFactory, ErrorHandler, ImportedNgModuleProviders, Inject, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, SkipSelf, StaticProvider, Testability, Type, ɵbootstrapApplication as _bootstrapApplication, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵsetDocument} from '@angular/core';
+import {APP_ID, ApplicationModule, ApplicationRef, createPlatformFactory, ErrorHandler, ImportedNgModuleProviders, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, SkipSelf, StaticProvider, Testability, Type, ɵbootstrapApplication as _bootstrapApplication, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵsetDocument} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {SERVER_TRANSITION_PROVIDERS, TRANSITION_ID} from './browser/server-transition';
@@ -18,6 +18,8 @@ import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
+
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
  * Set of config options available during the bootstrap operation via `bootstrapApplication` call.
@@ -96,17 +98,24 @@ export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
 export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef =
     createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
 
+/**
+ * Internal marker to signal whether providers from the `BrowserModule` are already present in DI.
+ * This is needed to avoid loading `BrowserModule` providers twice. We can't rely on the
+ * `BrowserModule` presence itself, since the standalone-based bootstrap just imports
+ * `BrowserModule` providers without referencing the module itself.
+ */
+const BROWSER_MODULE_PROVIDERS_MARKER =
+    new InjectionToken(NG_DEV_MODE ? 'BrowserModule Providers Marker' : '');
+
 export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   {provide: INJECTOR_SCOPE, useValue: 'root'},
-  {provide: ErrorHandler, useFactory: errorHandler, deps: []},
-  {
+  {provide: ErrorHandler, useFactory: errorHandler, deps: []}, {
     provide: EVENT_MANAGER_PLUGINS,
     useClass: DomEventsPlugin,
     multi: true,
     deps: [DOCUMENT, NgZone, PLATFORM_ID]
   },
-  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]},
-  {
+  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]}, {
     provide: DomRendererFactory2,
     useClass: DomRendererFactory2,
     deps: [EventManager, DomSharedStylesHost, APP_ID]
@@ -117,6 +126,7 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   {provide: Testability, useClass: Testability, deps: [NgZone]},
   {provide: EventManager, useClass: EventManager, deps: [EVENT_MANAGER_PLUGINS, NgZone]},
   {provide: XhrFactory, useClass: BrowserXhr, deps: []},
+  NG_DEV_MODE ? {provide: BROWSER_MODULE_PROVIDERS_MARKER, useValue: true} : []
 ];
 
 /**
@@ -128,12 +138,17 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
  *
  * @publicApi
  */
-@NgModule({providers: BROWSER_MODULE_PROVIDERS, exports: [CommonModule, ApplicationModule]})
+@NgModule({
+  providers: BROWSER_MODULE_PROVIDERS,
+  exports: [CommonModule, ApplicationModule],
+})
 export class BrowserModule {
-  constructor(@Optional() @SkipSelf() @Inject(BrowserModule) parentModule: BrowserModule|null) {
-    if (parentModule) {
+  constructor(@Optional() @SkipSelf() @Inject(BROWSER_MODULE_PROVIDERS_MARKER)
+              providersAlreadyPresent: boolean|null) {
+    if (NG_DEV_MODE && providersAlreadyPresent) {
       throw new Error(
-          `BrowserModule has already been loaded. If you need access to common directives such as NgIf and NgFor from a lazy loaded module, import CommonModule instead.`);
+          `Providers from the \`BrowserModule\` have already been loaded. If you need access ` +
+          `to common directives such as NgIf and NgFor, import the \`CommonModule\` instead.`);
     }
   }
 
