@@ -154,7 +154,7 @@ export class CdkContextMenuTrigger extends CdkMenuTriggerBase implements OnDestr
   private _getOverlayConfig(coordinates: ContextMenuCoordinates) {
     return new OverlayConfig({
       positionStrategy: this._getOverlayPositionStrategy(coordinates),
-      scrollStrategy: this._overlay.scrollStrategies.block(),
+      scrollStrategy: this._overlay.scrollStrategies.reposition(),
       direction: this._directionality,
     });
   }
@@ -169,6 +169,8 @@ export class CdkContextMenuTrigger extends CdkMenuTriggerBase implements OnDestr
     return this._overlay
       .position()
       .flexibleConnectedTo(coordinates)
+      .withLockedPosition()
+      .withGrowAfterOpen()
       .withPositions(this.menuPosition ?? CONTEXT_MENU_POSITIONS);
   }
 

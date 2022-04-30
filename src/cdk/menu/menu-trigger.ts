@@ -240,7 +240,7 @@ export class CdkMenuTrigger extends CdkMenuTriggerBase implements OnDestroy {
   private _getOverlayConfig() {
     return new OverlayConfig({
       positionStrategy: this._getOverlayPositionStrategy(),
-      scrollStrategy: this._overlay.scrollStrategies.block(),
+      scrollStrategy: this._overlay.scrollStrategies.reposition(),
       direction: this._directionality,
     });
   }
@@ -250,6 +250,8 @@ export class CdkMenuTrigger extends CdkMenuTriggerBase implements OnDestroy {
     return this._overlay
       .position()
       .flexibleConnectedTo(this._elementRef)
+      .withLockedPosition()
+      .withGrowAfterOpen()
       .withPositions(this._getOverlayPositions());
   }
 
