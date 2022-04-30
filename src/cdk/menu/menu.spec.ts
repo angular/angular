@@ -204,23 +204,23 @@ describe('Menu', () => {
       function hover(from: Point, to: Point, inMenu: HTMLElement, duration: number) {
         const getNextPoint = getNextPointIterator(from, to);
 
-        let currPoint: Point | null = from;
-        let currElement = getElementAt(currPoint);
+        let currentPoint: Point | null = from;
+        let currElement = getElementAt(currentPoint);
 
         const timeout = duration / (to.x - from.x);
 
         let numEnters = 0;
-        while (currPoint) {
-          mousemove(inMenu, currPoint);
-          const nextElement = getElementAt(currPoint);
+        while (currentPoint) {
+          mousemove(inMenu, currentPoint);
+          const nextElement = getElementAt(currentPoint);
           if (nextElement !== currElement && nextElement instanceof HTMLButtonElement) {
             numEnters++;
             mouseout(currElement);
-            mouseenter(nextElement, currPoint);
+            mouseenter(nextElement, currentPoint);
             currElement = nextElement;
             fixture.detectChanges();
           }
-          currPoint = getNextPoint();
+          currentPoint = getNextPoint();
           tick(timeout);
         }
         return numEnters;
@@ -243,27 +243,23 @@ describe('Menu', () => {
         };
       }
 
-      it(
-        'should close the edit menu when hovering directly down from the edit menu trigger to' +
-          ' the print item without waiting',
-        fakeAsync(() => {
-          openFileMenu();
-          openMenuOnHover(nativeEditTrigger!);
-          const editPosition = nativeEditTrigger!.getBoundingClientRect();
-          const printPosition = nativeFileButtons![4].getBoundingClientRect();
+      it('should close the edit menu when hovering directly down from the edit menu trigger to the print item without waiting', fakeAsync(() => {
+        openFileMenu();
+        openMenuOnHover(nativeEditTrigger!);
+        const editPosition = nativeEditTrigger!.getBoundingClientRect();
+        const printPosition = nativeFileButtons![4].getBoundingClientRect();
 
-          const numEnterEvents = hover(
-            editPosition,
-            {x: printPosition.x + 5, y: printPosition.y + 1},
-            nativeMenus[0],
-            100,
-          );
-          detectChanges();
+        const numEnterEvents = hover(
+          {x: editPosition.x, y: editPosition.y + 1},
+          {x: printPosition.x + 5, y: printPosition.y + 1},
+          nativeMenus[0],
+          100,
+        );
+        detectChanges();
 
-          expect(numEnterEvents).toBe(4);
-          expect(nativeMenus.length).toBe(1);
-        }),
-      );
+        expect(numEnterEvents).toBe(4);
+        expect(nativeMenus.length).toBe(1);
+      }));
 
       it('should close the edit menu after moving towards submenu and stopping', fakeAsync(() => {
         openFileMenu();
@@ -448,29 +444,25 @@ describe('Menu', () => {
         };
       }
 
-      it(
-        'should close the edit menu when hovering directly up from the edit menu trigger to' +
-          ' the print item without waiting',
-        fakeAsync(() => {
-          openFileMenu();
-          openMenuOnHover(nativeEditTrigger!);
+      it('should close the edit menu when hovering directly up from the edit menu trigger to the print item without waiting', fakeAsync(() => {
+        openFileMenu();
+        openMenuOnHover(nativeEditTrigger!);
 
-          const editPosition = nativeEditTrigger!.getBoundingClientRect();
-          const printPosition = nativeFileButtons![0].getBoundingClientRect();
+        const editPosition = nativeEditTrigger!.getBoundingClientRect();
+        const printPosition = nativeFileButtons![0].getBoundingClientRect();
 
-          const numEnterEvents = hover(
-            {x: editPosition.x + editPosition.width / 2, y: editPosition.y + 5},
-            {x: printPosition.x + 10, y: printPosition.y - 10},
-            nativeMenus[0],
-            100,
-          );
-          detectChanges();
-          flush();
+        const numEnterEvents = hover(
+          {x: editPosition.x + editPosition.width / 2, y: editPosition.y + 5},
+          {x: printPosition.x + 10, y: printPosition.y - 10},
+          nativeMenus[0],
+          100,
+        );
+        detectChanges();
+        flush();
 
-          expect(numEnterEvents).toBe(4);
-          expect(nativeMenus.length).toBe(1);
-        }),
-      );
+        expect(numEnterEvents).toBe(4);
+        expect(nativeMenus.length).toBe(1);
+      }));
 
       it('should close the edit menu after moving towards submenu and stopping', fakeAsync(() => {
         openFileMenu();
