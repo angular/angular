@@ -109,7 +109,7 @@ In this section, you'll listen for the hero item click event and update the hero
 
 ### Add a click event binding
 
-Add a `<button>` with a click event binding in the `<li>` like this:
+Start creating a `<button>` with a click event binding in the `<li>` like this:
 
 <code-example header="heroes.component.html (template excerpt)" path="toh-pt2/src/app/heroes/heroes.component.1.html" region="selectedHero-click"></code-example>
 
