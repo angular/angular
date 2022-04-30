@@ -31,7 +31,7 @@ export function makeNotStandaloneDiagnostic(
 
   let message = `The ${kind} '${
       ref.node.name
-          .text}' appears in 'imports', but is not standalone and cannot be imported directly`;
+          .text}' appears in 'imports', but is not standalone and cannot be imported directly.`;
   let relatedInformation: ts.DiagnosticRelatedInformation[]|undefined = undefined;
   if (scope !== null && scope.kind === ComponentScopeKind.NgModule) {
     // The directive/pipe in question is declared in an NgModule. Check if it's also exported.
