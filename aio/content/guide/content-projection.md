@@ -121,7 +121,7 @@ The following steps demonstrate a typical implementation of conditional content 
 1.  [Create an attribute directive](guide/attribute-directives#building-an-attribute-directive) with a selector that matches the custom attribute for your template.
     In this directive, inject a `TemplateRef` instance.
 
-    <code-example header="content-projection/src/app/app.component.ts" path="content-projection/src/app/app.component.ts" region="zippycontentdirective"></code-example>
+    <code-example header="content-projection/src/app/example-zippy.component.ts" path="content-projection/src/app/example-zippy.component.ts" region="zippycontentdirective"></code-example>
 
     In the previous step, you added an `<ng-template>` element with a custom attribute, `appExampleZippyContent`.
     This code provides the logic that Angular will use when it encounters that custom attribute.
