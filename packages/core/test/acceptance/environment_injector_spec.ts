@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, createEnvironmentInjector, EnvironmentInjector, InjectionToken, INJECTOR, Injector, INJECTOR_INITIALIZER, NgModuleRef} from '@angular/core';
+import {Component, ComponentFactoryResolver, createEnvironmentInjector, ENVIRONMENT_INITIALIZER, EnvironmentInjector, InjectionToken, INJECTOR, Injector, NgModuleRef} from '@angular/core';
 import {R3Injector} from '@angular/core/src/di/r3_injector';
 
 describe('environment injector', () => {
@@ -86,10 +86,10 @@ describe('environment injector', () => {
        expect(cRef.instance.service).toBeInstanceOf(Service);
      });
 
-  it('should support the INJECTOR_INITIALIZER muli-token', () => {
+  it('should support the ENVIRONMENT_INITIALIZER muli-token', () => {
     let initialized = false;
     createEnvironmentInjector([{
-      provide: INJECTOR_INITIALIZER,
+      provide: ENVIRONMENT_INITIALIZER,
       useValue: () => initialized = true,
       multi: true,
     }]);

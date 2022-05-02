@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, Directive, ElementRef, EventEmitter, forwardRef, Host, HostBinding, importProvidersFrom, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, INJECTOR_INITIALIZER, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EventEmitter, forwardRef, Host, HostBinding, importProvidersFrom, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -20,8 +20,8 @@ const getProvidersByToken =
 const hasProviderWithToken = (providers: Provider[], token: InjectionToken<unknown>): boolean =>
     getProvidersByToken(providers, token).length > 0;
 
-const collectInjectorInitializerProviders = (providers: Provider[]) =>
-    getProvidersByToken(providers, INJECTOR_INITIALIZER);
+const collectEnvironmentInitializerProviders = (providers: Provider[]) =>
+    getProvidersByToken(providers, ENVIRONMENT_INITIALIZER);
 
 describe('importProvidersFrom', () => {
   // Set of tokens used in various tests.
@@ -53,7 +53,7 @@ describe('importProvidersFrom', () => {
     // 4 tokens (A, B, C, D) + 2 providers for each NgModule:
     // - the definition type itself
     // - `INJECTOR_DEF_TYPES`
-    // - `INJECTOR_INITIALIZER`
+    // - `ENVIRONMENT_INITIALIZER`
     expect(providers.length).toBe(10);
 
     expect(hasProviderWithToken(providers, A)).toBe(true);
@@ -61,8 +61,8 @@ describe('importProvidersFrom', () => {
     expect(hasProviderWithToken(providers, C)).toBe(true);
     expect(hasProviderWithToken(providers, D)).toBe(true);
 
-    // Expect 2 `INJECTOR_INITIALIZER` providers: one for `MyModule`, another was `MyModule2`
-    expect(collectInjectorInitializerProviders(providers).length).toBe(2);
+    // Expect 2 `ENVIRONMENT_INITIALIZER` providers: one for `MyModule`, another was `MyModule2`
+    expect(collectEnvironmentInitializerProviders(providers).length).toBe(2);
   });
 
   it('should collect providers from directly imported ModuleWithProviders', () => {
@@ -99,8 +99,8 @@ describe('importProvidersFrom', () => {
 
        const providers = importProvidersFrom(ModuleB.forRoot(), ModuleB.forChild());
 
-       // Expect 2 `INJECTOR_INITIALIZER` providers: one for `ModuleA`, another one for `ModuleB`
-       expect(collectInjectorInitializerProviders(providers).length).toBe(2);
+       // Expect 2 `ENVIRONMENT_INITIALIZER` providers: one for `ModuleA`, another one for `ModuleB`
+       expect(collectEnvironmentInitializerProviders(providers).length).toBe(2);
 
        // Expect exactly 1 provider for each module: `ModuleA` and `ModuleB`
        expect(getProvidersByToken(providers, ModuleA).length).toBe(1);
@@ -129,8 +129,8 @@ describe('importProvidersFrom', () => {
 
     const providers = importProvidersFrom(ModuleA.forRoot());
 
-    // Expect 1 `INJECTOR_INITIALIZER` provider (for `ModuleA`)
-    expect(collectInjectorInitializerProviders(providers).length).toBe(1);
+    // Expect 1 `ENVIRONMENT_INITIALIZER` provider (for `ModuleA`)
+    expect(collectEnvironmentInitializerProviders(providers).length).toBe(1);
 
     // Expect exactly 1 provider for `ModuleA`
     expect(getProvidersByToken(providers, ModuleA).length).toBe(1);
@@ -163,8 +163,8 @@ describe('importProvidersFrom', () => {
 
        const providers = importProvidersFrom(ModuleB);
 
-       // Expect 2 `INJECTOR_INITIALIZER` providers: one for `ModuleA`, another one for `ModuleB`
-       expect(collectInjectorInitializerProviders(providers).length).toBe(2);
+       // Expect 2 `ENVIRONMENT_INITIALIZER` providers: one for `ModuleA`, another one for `ModuleB`
+       expect(collectEnvironmentInitializerProviders(providers).length).toBe(2);
 
        // Expect exactly 1 provider for each module: `ModuleA` and `ModuleB`
        expect(getProvidersByToken(providers, ModuleA).length).toBe(1);
