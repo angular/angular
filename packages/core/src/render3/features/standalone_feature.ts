@@ -30,9 +30,9 @@ class StandaloneService implements OnDestroy {
 
     if (!this.cachedInjectors.has(componentDef)) {
       const providers = importProvidersFrom(componentDef.type);
-      const standaloneInjector = providers.length > 0 ?
+      const standaloneInjector = providers.ɵproviders.length > 0 ?
           createEnvironmentInjector(
-              providers, this._injector, `Standalone[${componentDef.type.name}]`) :
+              [providers], this._injector, `Standalone[${componentDef.type.name}]`) :
           null;
       this.cachedInjectors.set(componentDef, standaloneInjector);
     }

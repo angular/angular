@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EventEmitter, forwardRef, Host, HostBinding, importProvidersFrom, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -22,6 +22,10 @@ const hasProviderWithToken = (providers: Provider[], token: InjectionToken<unkno
 
 const collectEnvironmentInitializerProviders = (providers: Provider[]) =>
     getProvidersByToken(providers, ENVIRONMENT_INITIALIZER);
+
+function unwrappedImportProvidersFrom(...sources: ImportProvidersSource[]): Provider[] {
+  return importProvidersFrom(...sources).ɵproviders;
+}
 
 describe('importProvidersFrom', () => {
   // Set of tokens used in various tests.
@@ -48,7 +52,7 @@ describe('importProvidersFrom', () => {
     })
     class MyModule {
     }
-    const providers = importProvidersFrom(MyModule);
+    const providers = unwrappedImportProvidersFrom(MyModule);
 
     // 4 tokens (A, B, C, D) + 2 providers for each NgModule:
     // - the definition type itself
@@ -70,7 +74,7 @@ describe('importProvidersFrom', () => {
     class Module {
     }
 
-    const providers = importProvidersFrom({
+    const providers = unwrappedImportProvidersFrom({
       ngModule: Module,
       providers: [{provide: A, useValue: 'A'}],
     });
@@ -97,7 +101,7 @@ describe('importProvidersFrom', () => {
          }
        }
 
-       const providers = importProvidersFrom(ModuleB.forRoot(), ModuleB.forChild());
+       const providers = unwrappedImportProvidersFrom(ModuleB.forRoot(), ModuleB.forChild());
 
        // Expect 2 `ENVIRONMENT_INITIALIZER` providers: one for `ModuleA`, another one for `ModuleB`
        expect(collectEnvironmentInitializerProviders(providers).length).toBe(2);
@@ -127,7 +131,7 @@ describe('importProvidersFrom', () => {
       }
     }
 
-    const providers = importProvidersFrom(ModuleA.forRoot());
+    const providers = unwrappedImportProvidersFrom(ModuleA.forRoot());
 
     // Expect 1 `ENVIRONMENT_INITIALIZER` provider (for `ModuleA`)
     expect(collectEnvironmentInitializerProviders(providers).length).toBe(1);
@@ -161,7 +165,7 @@ describe('importProvidersFrom', () => {
        class ModuleB {
        }
 
-       const providers = importProvidersFrom(ModuleB);
+       const providers = unwrappedImportProvidersFrom(ModuleB);
 
        // Expect 2 `ENVIRONMENT_INITIALIZER` providers: one for `ModuleA`, another one for `ModuleB`
        expect(collectEnvironmentInitializerProviders(providers).length).toBe(2);
@@ -198,7 +202,7 @@ describe('importProvidersFrom', () => {
          }
        }
 
-       const providers = importProvidersFrom(ModuleA.forRoot());
+       const providers = unwrappedImportProvidersFrom(ModuleA.forRoot());
 
        // Expect all tokens to be collected.
        expect(hasProviderWithToken(providers, A)).toBe(true);
@@ -214,6 +218,26 @@ describe('importProvidersFrom', () => {
        // Verify that a multi-provider has both values.
        expect(injector.get(D)).toEqual(['Original D', 'Extra D']);
      });
+
+  it('should not be allowed in component providers', () => {
+    @NgModule({})
+    class Module {
+    }
+
+    expect(() => {
+      @Component({
+        selector: 'test-cmp',
+        template: '',
+        // The double array here is necessary to escape the compile-time error, via Provider's
+        // `any[]` option.
+        providers: [[importProvidersFrom(Module)]],
+      })
+      class Cmp {
+      }
+
+      TestBed.createComponent(Cmp);
+    }).toThrowError(/NG0207/);
+  });
 });
 
 describe('di', () => {

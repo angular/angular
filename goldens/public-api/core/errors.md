@@ -61,6 +61,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     PLATFORM_NOT_FOUND = 401,
     // (undocumented)
+    PROVIDER_IN_WRONG_CONTEXT = 207,
+    // (undocumented)
     PROVIDER_NOT_FOUND = -201,
     // (undocumented)
     RECURSIVE_APPLICATION_REF_TICK = 101,

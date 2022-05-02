@@ -20,7 +20,7 @@ describe('environement injector and standalone components', () => {
     class StandaloneComponent {
     }
 
-    const envInjector = createEnvironmentInjector(importProvidersFrom(StandaloneComponent));
+    const envInjector = createEnvironmentInjector([importProvidersFrom(StandaloneComponent)]);
     expect(envInjector.get(ModuleService)).toBeInstanceOf(ModuleService);
   });
 
@@ -39,7 +39,7 @@ describe('environement injector and standalone components', () => {
     class AppModule {
     }
 
-    const envInjector = createEnvironmentInjector(importProvidersFrom(AppModule));
+    const envInjector = createEnvironmentInjector([importProvidersFrom(AppModule)]);
     expect(envInjector.get(ModuleService)).toBeInstanceOf(ModuleService);
   });
 
@@ -65,7 +65,7 @@ describe('environement injector and standalone components', () => {
     class AppModule {
     }
 
-    const envInjector = createEnvironmentInjector(importProvidersFrom(AppModule));
+    const envInjector = createEnvironmentInjector([importProvidersFrom(AppModule)]);
     const services = envInjector.get(ModuleService) as ModuleService[];
 
     expect(services.length).toBe(1);

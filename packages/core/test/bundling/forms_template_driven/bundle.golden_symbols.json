@@ -765,13 +765,13 @@
     "name": "findStylingValue"
   },
   {
-    "name": "flatten"
-  },
-  {
     "name": "flattenStyles"
   },
   {
     "name": "flattenUnsubscriptionErrors"
+  },
+  {
+    "name": "forEachSingleProvider"
   },
   {
     "name": "forkJoinInternal"
@@ -1072,6 +1072,9 @@
   },
   {
     "name": "isFunction"
+  },
+  {
+    "name": "isImportedNgModuleProviders"
   },
   {
     "name": "isInCheckNoChangesMode"

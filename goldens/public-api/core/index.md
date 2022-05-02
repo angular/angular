@@ -289,7 +289,7 @@ export interface ContentChildrenDecorator {
 }
 
 // @public
-export function createEnvironmentInjector(providers: Provider[], parent?: EnvironmentInjector | null, debugName?: string | null): EnvironmentInjector;
+export function createEnvironmentInjector(providers: Array<Provider | ImportedNgModuleProviders>, parent?: EnvironmentInjector | null, debugName?: string | null): EnvironmentInjector;
 
 // @public
 export function createNgModuleRef<T>(ngModule: Type<T>, parentInjector?: Injector): NgModuleRef<T>;
@@ -578,7 +578,13 @@ export interface HostListenerDecorator {
 }
 
 // @public
-export function importProvidersFrom(...sources: ImportProvidersSource[]): Provider[];
+export interface ImportedNgModuleProviders {
+    // (undocumented)
+    ɵproviders: Provider[];
+}
+
+// @public
+export function importProvidersFrom(...sources: ImportProvidersSource[]): ImportedNgModuleProviders;
 
 // @public
 export type ImportProvidersSource = Type<unknown> | ModuleWithProviders<unknown> | Array<ImportProvidersSource>;

@@ -13,6 +13,7 @@ import { ElementRef } from '@angular/core';
 import { EnvironmentInjector } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import * as i0 from '@angular/core';
+import { ImportedNgModuleProviders } from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
 import { Location as Location_2 } from '@angular/common';
@@ -456,7 +457,7 @@ export interface Route {
     outlet?: string;
     path?: string;
     pathMatch?: 'prefix' | 'full';
-    providers?: Provider[];
+    providers?: Array<Provider | ImportedNgModuleProviders>;
     redirectTo?: string;
     resolve?: ResolveData;
     runGuardsAndResolvers?: RunGuardsAndResolvers;

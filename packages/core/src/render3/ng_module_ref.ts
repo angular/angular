@@ -10,7 +10,7 @@ import {createInjectorWithoutInjectorInstances} from '../di/create_injector';
 import {Injector} from '../di/injector';
 import {INJECTOR} from '../di/injector_token';
 import {InjectFlags} from '../di/interface/injector';
-import {Provider} from '../di/interface/provider';
+import {ImportedNgModuleProviders, Provider} from '../di/interface/provider';
 import {EnvironmentInjector, getNullInjector, R3Injector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -115,7 +115,9 @@ class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {
       new ComponentFactoryResolver(this);
   override readonly instance = null;
 
-  constructor(providers: Provider[], parent: EnvironmentInjector|null, source: string|null) {
+  constructor(
+      providers: Array<Provider|ImportedNgModuleProviders>, parent: EnvironmentInjector|null,
+      source: string|null) {
     super();
     const injector = new R3Injector(
         [
@@ -143,7 +145,7 @@ class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {
  * @publicApi
  */
 export function createEnvironmentInjector(
-    providers: Provider[], parent: EnvironmentInjector|null = null,
+    providers: Array<Provider|ImportedNgModuleProviders>, parent: EnvironmentInjector|null = null,
     debugName: string|null = null): EnvironmentInjector {
   const adapter = new EnvironmentNgModuleRefAdapter(providers, parent, debugName);
   return adapter.injector;

@@ -351,3 +351,20 @@ export interface ModuleWithProviders<T> {
   ngModule: Type<T>;
   providers?: Provider[];
 }
+
+/**
+ * Providers that were imported from NgModules via the `importProvidersFrom` function.
+ *
+ * These providers are meant for use in an application injector (or other environment injectors) and
+ * should not be used in component injectors.
+ *
+ * This type cannot be directly implemented. It's returned from the `importProvidersFrom` function
+ * and serves to prevent the extracted NgModule providers from being used in the wrong contexts.
+ *
+ * @see `importProvidersFrom`
+ *
+ * @publicApi
+ */
+export interface ImportedNgModuleProviders {
+  ɵproviders: Provider[];
+}

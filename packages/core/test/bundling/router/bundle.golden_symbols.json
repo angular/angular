@@ -1119,6 +1119,9 @@
     "name": "forEach"
   },
   {
+    "name": "forEachSingleProvider"
+  },
+  {
     "name": "forwardRef"
   },
   {
@@ -1447,6 +1450,9 @@
   },
   {
     "name": "isImmediateMatch"
+  },
+  {
+    "name": "isImportedNgModuleProviders"
   },
   {
     "name": "isInCheckNoChangesMode"

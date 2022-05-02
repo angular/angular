@@ -19,7 +19,7 @@ import {resolveForwardRef} from './forward_ref';
 import {ENVIRONMENT_INITIALIZER} from './initializer_token';
 import {ɵɵinject as inject} from './injector_compatibility';
 import {getInjectorDef, InjectorType, InjectorTypeWithProviders} from './interface/defs';
-import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, ModuleWithProviders, Provider, StaticClassProvider, TypeProvider, ValueProvider} from './interface/provider';
+import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, ImportedNgModuleProviders, ModuleWithProviders, Provider, StaticClassProvider, TypeProvider, ValueProvider} from './interface/provider';
 import {INJECTOR_DEF_TYPES} from './internal_tokens';
 
 /**
@@ -34,10 +34,15 @@ export type ImportProvidersSource =
  * Collects providers from all NgModules and standalone components, including transitively imported
  * ones.
  *
- * @returns The list of collected providers from the specified list of types.
+ * Providers extracted via `importProvidersFrom` are only usable in an application injector or
+ * another environment injector (such as a route injector). They should not be used in component
+ * providers.
+ *
+ * @returns The collected providers from the specified list of types.
  * @publicApi
  */
-export function importProvidersFrom(...sources: ImportProvidersSource[]): Provider[] {
+export function importProvidersFrom(...sources: ImportProvidersSource[]):
+    ImportedNgModuleProviders {
   const providersOut: SingleProvider[] = [];
   const dedup = new Set<Type<unknown>>();  // already seen types
   let injectorTypesWithProviders: InjectorTypeWithProviders<unknown>[]|undefined;
@@ -53,7 +58,7 @@ export function importProvidersFrom(...sources: ImportProvidersSource[]): Provid
   if (injectorTypesWithProviders !== undefined) {
     processInjectorTypesWithProviders(injectorTypesWithProviders, providersOut);
   }
-  return providersOut;
+  return {ɵproviders: providersOut};
 }
 
 /**
