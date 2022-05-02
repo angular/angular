@@ -14,7 +14,7 @@ import {Type} from '../interface/type';
 import {getComponentDef} from '../render3/definition';
 import {FactoryFn, getFactoryDef} from '../render3/definition_factory';
 import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors_di';
-import {deepForEach, flatten, newArray} from '../util/array_utils';
+import {newArray} from '../util/array_utils';
 import {EMPTY_ARRAY} from '../util/empty';
 import {stringify} from '../util/stringify';
 
@@ -27,7 +27,7 @@ import {catchInjectorError, injectArgs, NG_TEMP_TOKEN_PATH, setCurrentInjector, 
 import {INJECTOR} from './injector_token';
 import {getInheritedInjectableDef, getInjectableDef, InjectorType, ɵɵInjectableDeclaration} from './interface/defs';
 import {InjectFlags} from './interface/injector';
-import {ClassProvider, ConstructorProvider, Provider, StaticClassProvider} from './interface/provider';
+import {ClassProvider, ConstructorProvider, ImportedNgModuleProviders, Provider, StaticClassProvider} from './interface/provider';
 import {INJECTOR_DEF_TYPES} from './internal_tokens';
 import {NullInjector} from './null_injector';
 import {importProvidersFrom, isExistingProvider, isFactoryProvider, isTypeProvider, isValueProvider, SingleProvider} from './provider_collection';
@@ -121,13 +121,11 @@ export class R3Injector extends EnvironmentInjector {
   private injectorDefTypes: Set<Type<unknown>>;
 
   constructor(
-      providers: Provider[], readonly parent: Injector, readonly source: string|null,
-      readonly scopes: Set<InjectorScope>) {
+      providers: Array<Provider|ImportedNgModuleProviders>, readonly parent: Injector,
+      readonly source: string|null, readonly scopes: Set<InjectorScope>) {
     super();
     // Start off by creating Records for every provider.
-    deepForEach(providers, provider => {
-      this.processProvider(provider as SingleProvider);
-    });
+    forEachSingleProvider(providers, provider => this.processProvider(provider));
 
     // Make sure the INJECTOR token provides this injector.
     this.records.set(INJECTOR, makeRecord(undefined, this));
@@ -403,6 +401,10 @@ function providerToRecord(provider: SingleProvider): Record<any> {
 export function providerToFactory(
     provider: SingleProvider, ngModuleType?: InjectorType<any>, providers?: any[]): () => any {
   let factory: (() => any)|undefined = undefined;
+  if (ngDevMode && isImportedNgModuleProviders(provider)) {
+    throwInvalidProviderError(undefined, providers, provider);
+  }
+
   if (isTypeProvider(provider)) {
     const unwrappedProvider = resolveForwardRef(provider);
     return getFactoryDef(unwrappedProvider) || injectableDefOrInjectorDefFactory(unwrappedProvider);
@@ -452,4 +454,23 @@ function hasOnDestroy(value: any): value is OnDestroy {
 function couldBeInjectableType(value: any): value is ProviderToken<any> {
   return (typeof value === 'function') ||
       (typeof value === 'object' && value instanceof InjectionToken);
+}
+
+function isImportedNgModuleProviders(provider: Provider|ImportedNgModuleProviders):
+    provider is ImportedNgModuleProviders {
+  return !!(provider as ImportedNgModuleProviders).ɵproviders;
+}
+
+function forEachSingleProvider(
+    providers: Array<Provider|ImportedNgModuleProviders>,
+    fn: (provider: SingleProvider) => void): void {
+  for (const provider of providers) {
+    if (Array.isArray(provider)) {
+      forEachSingleProvider(provider, fn);
+    } else if (isImportedNgModuleProviders(provider)) {
+      forEachSingleProvider(provider.ɵproviders, fn);
+    } else {
+      fn(provider);
+    }
+  }
 }

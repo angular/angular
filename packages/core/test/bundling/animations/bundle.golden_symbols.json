@@ -768,13 +768,13 @@
     "name": "findAttrIndexInNode"
   },
   {
-    "name": "flatten"
-  },
-  {
     "name": "flattenStyles"
   },
   {
     "name": "flattenUnsubscriptionErrors"
+  },
+  {
+    "name": "forEachSingleProvider"
   },
   {
     "name": "forwardRef"
@@ -1006,6 +1006,9 @@
   },
   {
     "name": "isFunction"
+  },
+  {
+    "name": "isImportedNgModuleProviders"
   },
   {
     "name": "isInCheckNoChangesMode"

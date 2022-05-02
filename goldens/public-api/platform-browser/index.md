@@ -10,6 +10,7 @@ import { DebugElement } from '@angular/core';
 import { DebugNode } from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';
+import { ImportedNgModuleProviders } from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { NgZone } from '@angular/core';
@@ -24,7 +25,7 @@ import { Version } from '@angular/core';
 
 // @public
 export interface ApplicationConfig {
-    providers: Provider[];
+    providers: Array<Provider | ImportedNgModuleProviders>;
 }
 
 // @public

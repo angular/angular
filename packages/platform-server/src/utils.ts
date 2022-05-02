@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, importProvidersFrom, Injector, NgModuleFactory, NgModuleRef, PlatformRef, Provider, StaticProvider, Type, ɵbootstrapApplication as bootstrapApplication, ɵisPromise} from '@angular/core';
+import {ApplicationRef, ImportedNgModuleProviders, importProvidersFrom, Injector, NgModuleFactory, NgModuleRef, PlatformRef, Provider, StaticProvider, Type, ɵbootstrapApplication as bootstrapApplication, ɵisPromise} from '@angular/core';
 import {BrowserModule, ɵTRANSITION_ID} from '@angular/platform-browser';
 import {first} from 'rxjs/operators';
 
@@ -141,14 +141,14 @@ export function renderApplication<T>(rootComponent: Type<T>, options: {
   appId: string,
   document?: string,
   url?: string,
-  providers?: Provider[],
+  providers?: Array<Provider|ImportedNgModuleProviders>,
   platformProviders?: Provider[],
 }): Promise<string> {
   const {document, url, platformProviders, appId} = options;
   const platform = _getPlatform(platformDynamicServer, {document, url, platformProviders});
   const appProviders = [
-    ...importProvidersFrom(BrowserModule.withServerTransition({appId})),
-    ...importProvidersFrom(ServerModule),
+    importProvidersFrom(BrowserModule.withServerTransition({appId})),
+    importProvidersFrom(ServerModule),
     ...(options.providers ?? []),
   ];
   return _render(platform, bootstrapApplication({rootComponent, appProviders}));

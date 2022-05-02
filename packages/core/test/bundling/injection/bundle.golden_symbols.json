@@ -84,7 +84,7 @@
     "name": "deepForEach"
   },
   {
-    "name": "flatten"
+    "name": "forEachSingleProvider"
   },
   {
     "name": "forwardRef"
@@ -121,6 +121,9 @@
   },
   {
     "name": "injectableDefOrInjectorDefFactory"
+  },
+  {
+    "name": "isImportedNgModuleProviders"
   },
   {
     "name": "isTypeProvider"

@@ -8,6 +8,7 @@ import * as i0 from '@angular/core';
 import * as i1 from '@angular/common/http';
 import * as i2 from '@angular/platform-browser/animations';
 import * as i3 from '@angular/platform-browser';
+import { ImportedNgModuleProviders } from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { NgModuleFactory } from '@angular/core';
 import { PlatformRef } from '@angular/core';
@@ -52,7 +53,7 @@ export function renderApplication<T>(rootComponent: Type<T>, options: {
     appId: string;
     document?: string;
     url?: string;
-    providers?: Provider[];
+    providers?: Array<Provider | ImportedNgModuleProviders>;
     platformProviders?: Provider[];
 }): Promise<string>;
 
