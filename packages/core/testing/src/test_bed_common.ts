@@ -15,9 +15,6 @@ import {TestBed} from './test_bed';
 /** Whether test modules should be torn down by default. */
 export const TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT = true;
 
-/** Whether unknown elements in templates should throw by default. */
-export const THROW_ON_UNKNOWN_ELEMENTS_DEFAULT = false;
-
 /**
  * An abstract class for inserting the root test component element in a platform independent way.
  *
@@ -48,13 +45,6 @@ export type TestModuleMetadata = {
   imports?: any[],
   schemas?: Array<SchemaMetadata|any[]>,
   teardown?: ModuleTeardownOptions;
-  /**
-   * Whether NG0304 runtime errors should be thrown on unknown elements.
-   * Defaults to `false`, where the error is simply logged.
-   * If sets to `true`, the error is thrown.
-   * @see https://angular.io/errors/NG8001 for the description of the problem and how to fix it
-   */
-  errorOnUnknownElements?: boolean;
 };
 
 /**
@@ -65,13 +55,6 @@ export interface TestEnvironmentOptions {
    * Configures the test module teardown behavior in `TestBed`.
    */
   teardown?: ModuleTeardownOptions;
-  /**
-   * Whether errors should be thrown on unknown elements.
-   * Defaults to `false`, where the error is simply logged.
-   * If sets to `true`, the error is thrown.
-   * @see https://angular.io/errors/NG8001 for the description of the error and how to fix it
-   */
-  errorOnUnknownElements?: boolean;
 }
 
 /**
