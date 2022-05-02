@@ -57,6 +57,9 @@ export const enum RuntimeErrorCode {
   // i18n Errors
   INVALID_I18N_STRUCTURE = 700,
 
+  // standalone errors
+  IMPORT_PROVIDERS_FROM_STANDALONE = 800,
+
   // JIT Compilation Errors
   // Other
   INVALID_DIFFER_INPUT = 900,

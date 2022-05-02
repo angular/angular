@@ -31,6 +31,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     EXPRESSION_CHANGED_AFTER_CHECKED = -100,
     // (undocumented)
+    IMPORT_PROVIDERS_FROM_STANDALONE = 800,
+    // (undocumented)
     INJECTOR_ALREADY_DESTROYED = 205,
     // (undocumented)
     INVALID_DIFFER_INPUT = 900,

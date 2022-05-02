@@ -960,6 +960,9 @@
     "name": "instructionState"
   },
   {
+    "name": "internalImportProvidersFrom"
+  },
+  {
     "name": "interpolateParams"
   },
   {

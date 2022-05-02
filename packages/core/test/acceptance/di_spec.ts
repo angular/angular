@@ -238,6 +238,41 @@ describe('importProvidersFrom', () => {
       TestBed.createComponent(Cmp);
     }).toThrowError(/NG0207/);
   });
+
+  it('should import providers from an array of NgModules (may be nested)', () => {
+    @NgModule({providers: [{provide: A, useValue: 'A'}]})
+    class ModuleA {
+    }
+
+    @NgModule({providers: [{provide: B, useValue: 'B'}]})
+    class ModuleB {
+    }
+
+    const providers = unwrappedImportProvidersFrom([ModuleA, [ModuleB]]);
+
+    expect(hasProviderWithToken(providers, A)).toBeTrue();
+    expect(hasProviderWithToken(providers, B)).toBeTrue();
+  });
+
+  it('should throw when trying to import providers from standalone components', () => {
+    @NgModule({providers: [{provide: A, useValue: 'A'}]})
+    class ModuleA {
+    }
+
+    @Component({
+      standalone: true,
+      template: '',
+      imports: [ModuleA],
+    })
+    class StandaloneCmp {
+    }
+
+    expect(() => {
+      importProvidersFrom(StandaloneCmp);
+    })
+        .toThrowError(
+            'NG0800: Importing providers supports NgModule or ModuleWithProviders but got a standalone component "StandaloneCmp"');
+  });
 });
 
 describe('di', () => {
