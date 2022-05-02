@@ -1072,6 +1072,11 @@ export class ApplicationRef {
     return () => remove(this._destroyListeners, callback);
   }
 
+  /**
+   * Destroys an Angular application represented by this `ApplicationRef`. Calling this function
+   * will destroy the associated environnement injectors as well as all the bootstrapped components
+   * with their views.
+   */
   destroy(): void {
     if (this._destroyed) {
       throw new RuntimeError(

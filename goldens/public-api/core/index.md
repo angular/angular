@@ -81,7 +81,6 @@ export class ApplicationRef {
     bootstrap<C>(componentFactory: ComponentFactory<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
     readonly components: ComponentRef<any>[];
     readonly componentTypes: Type<any>[];
-    // (undocumented)
     destroy(): void;
     get destroyed(): boolean;
     detachView(viewRef: ViewRef): void;
