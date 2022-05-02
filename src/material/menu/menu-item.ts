@@ -75,8 +75,16 @@ export class MatMenuItem
   /** Whether the menu item acts as a trigger for a sub-menu. */
   _triggersSubmenu: boolean = false;
 
+  constructor(
+    elementRef: ElementRef<HTMLElement>,
+    document: any,
+    focusMonitor: FocusMonitor,
+    parentMenu: MatMenuPanel<MatMenuItem> | undefined,
+    changeDetectorRef: ChangeDetectorRef,
+  );
+
   /**
-   * @deprecated `_document`, `changeDetectorRef` and `focusMonitor` to become required.
+   * @deprecated `document`, `changeDetectorRef` and `focusMonitor` to become required.
    * @breaking-change 12.0.0
    */
   constructor(

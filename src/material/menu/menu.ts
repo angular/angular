@@ -270,6 +270,24 @@ export class _MatMenuBase
   readonly panelId = `mat-menu-panel-${menuPanelUid++}`;
 
   constructor(
+    elementRef: ElementRef<HTMLElement>,
+    ngZone: NgZone,
+    defaultOptions: MatMenuDefaultOptions,
+    changeDetectorRef: ChangeDetectorRef,
+  );
+
+  /**
+   * @deprecated `_changeDetectorRef` to become a required parameter.
+   * @breaking-change 15.0.0
+   */
+  constructor(
+    elementRef: ElementRef<HTMLElement>,
+    ngZone: NgZone,
+    defaultOptions: MatMenuDefaultOptions,
+    changeDetectorRef?: ChangeDetectorRef,
+  );
+
+  constructor(
     private _elementRef: ElementRef<HTMLElement>,
     private _ngZone: NgZone,
     @Inject(MAT_MENU_DEFAULT_OPTIONS) private _defaultOptions: MatMenuDefaultOptions,

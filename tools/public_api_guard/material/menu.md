@@ -91,7 +91,9 @@ export const matMenuAnimations: {
 
 // @public
 export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnInit, OnDestroy {
-    constructor(_elementRef: ElementRef<HTMLElement>, _ngZone: NgZone, _defaultOptions: MatMenuDefaultOptions, _changeDetectorRef?: ChangeDetectorRef | undefined);
+    constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone, defaultOptions: MatMenuDefaultOptions, changeDetectorRef: ChangeDetectorRef);
+    // @deprecated
+    constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone, defaultOptions: MatMenuDefaultOptions, changeDetectorRef?: ChangeDetectorRef);
     // (undocumented)
     addItem(_item: MatMenuItem): void;
     _allItems: QueryList<MatMenuItem>;
@@ -169,6 +171,7 @@ export class MatMenuContent extends _MatMenuContentBase {
 
 // @public (undocumented)
 export abstract class _MatMenuContentBase implements OnDestroy {
+    constructor(template: TemplateRef<any>, componentFactoryResolver: ComponentFactoryResolver, appRef: ApplicationRef, injector: Injector, viewContainerRef: ViewContainerRef, document: any, changeDetectorRef: ChangeDetectorRef);
     // @deprecated
     constructor(template: TemplateRef<any>, componentFactoryResolver: ComponentFactoryResolver, appRef: ApplicationRef, injector: Injector, viewContainerRef: ViewContainerRef, document: any, changeDetectorRef?: ChangeDetectorRef);
     attach(context?: any): void;
@@ -194,6 +197,7 @@ export interface MatMenuDefaultOptions {
 
 // @public
 export class MatMenuItem extends _MatMenuItemBase implements FocusableOption, CanDisable, CanDisableRipple, AfterViewInit, OnDestroy {
+    constructor(elementRef: ElementRef<HTMLElement>, document: any, focusMonitor: FocusMonitor, parentMenu: MatMenuPanel<MatMenuItem> | undefined, changeDetectorRef: ChangeDetectorRef);
     // @deprecated
     constructor(elementRef: ElementRef<HTMLElement>, document?: any, focusMonitor?: FocusMonitor, parentMenu?: MatMenuPanel<MatMenuItem>, changeDetectorRef?: ChangeDetectorRef);
     _checkDisabled(event: Event): void;
@@ -283,6 +287,7 @@ export class MatMenuTrigger extends _MatMenuTriggerBase {
 
 // @public (undocumented)
 export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy {
+    constructor(overlay: Overlay, element: ElementRef<HTMLElement>, viewContainerRef: ViewContainerRef, scrollStrategy: any, parentMenu: MatMenuPanel, menuItemInstance: MatMenuItem, dir: Directionality, focusMonitor: FocusMonitor, ngZone: NgZone);
     // @deprecated
     constructor(overlay: Overlay, element: ElementRef<HTMLElement>, viewContainerRef: ViewContainerRef, scrollStrategy: any, parentMenu: MatMenuPanel, menuItemInstance: MatMenuItem, dir: Directionality, focusMonitor?: FocusMonitor | null);
     // @deprecated

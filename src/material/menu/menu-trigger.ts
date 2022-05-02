@@ -196,6 +196,18 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
   // tslint:disable-next-line:no-output-on-prefix
   @Output() readonly onMenuClose: EventEmitter<void> = this.menuClosed;
 
+  constructor(
+    overlay: Overlay,
+    element: ElementRef<HTMLElement>,
+    viewContainerRef: ViewContainerRef,
+    scrollStrategy: any,
+    parentMenu: MatMenuPanel,
+    menuItemInstance: MatMenuItem,
+    dir: Directionality,
+    focusMonitor: FocusMonitor,
+    ngZone: NgZone,
+  );
+
   /**
    * @deprecated `focusMonitor` will become a required parameter.
    * @breaking-change 8.0.0
