@@ -8,7 +8,9 @@
 
 import {Component, createEnvironmentInjector, importProvidersFrom, InjectionToken, NgModule} from '@angular/core';
 
-describe('environement injector and standalone components', () => {
+import {internalImportProvidersFrom} from '../../src/di/provider_collection';
+
+describe('environment injector and standalone components', () => {
   it('should see providers from modules imported by standalone components', () => {
     class ModuleService {}
 
@@ -20,7 +22,8 @@ describe('environement injector and standalone components', () => {
     class StandaloneComponent {
     }
 
-    const envInjector = createEnvironmentInjector([importProvidersFrom(StandaloneComponent)]);
+    const envInjector =
+        createEnvironmentInjector(internalImportProvidersFrom(false, StandaloneComponent));
     expect(envInjector.get(ModuleService)).toBeInstanceOf(ModuleService);
   });
 

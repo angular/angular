@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import {getComponentDef} from '../render3/definition';
 import {getFactoryDef} from '../render3/definition_factory';
 import {throwCyclicDependencyError, throwInvalidProviderError} from '../render3/errors_di';
+import {stringifyForError} from '../render3/util/stringify_utils';
 import {deepForEach} from '../util/array_utils';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
@@ -43,10 +45,25 @@ export type ImportProvidersSource =
  */
 export function importProvidersFrom(...sources: ImportProvidersSource[]):
     ImportedNgModuleProviders {
+  return {ɵproviders: internalImportProvidersFrom(true, sources)};
+}
+
+export function internalImportProvidersFrom(
+    checkForStandaloneCmp: boolean, ...sources: ImportProvidersSource[]): Provider[] {
   const providersOut: SingleProvider[] = [];
   const dedup = new Set<Type<unknown>>();  // already seen types
   let injectorTypesWithProviders: InjectorTypeWithProviders<unknown>[]|undefined;
   deepForEach(sources, source => {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && checkForStandaloneCmp) {
+      const cmpDef = getComponentDef(source);
+      if (cmpDef?.standalone) {
+        throw new RuntimeError(
+            RuntimeErrorCode.IMPORT_PROVIDERS_FROM_STANDALONE,
+            `Importing providers supports NgModule or ModuleWithProviders but got a standalone component "${
+                stringifyForError(source)}"`);
+      }
+    }
+
     // Narrow `source` to access the internal type analogue for `ModuleWithProviders`.
     const internalSource = source as Type<unknown>| InjectorTypeWithProviders<unknown>;
     if (walkProviderTree(internalSource, providersOut, [], dedup)) {
@@ -58,7 +75,8 @@ export function importProvidersFrom(...sources: ImportProvidersSource[]):
   if (injectorTypesWithProviders !== undefined) {
     processInjectorTypesWithProviders(injectorTypesWithProviders, providersOut);
   }
-  return {ɵproviders: providersOut};
+
+  return providersOut;
 }
 
 /**

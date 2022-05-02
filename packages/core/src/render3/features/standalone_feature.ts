@@ -7,7 +7,7 @@
  */
 import {ɵɵinject as inject} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable as defineInjectable} from '../../di/interface/defs';
-import {importProvidersFrom} from '../../di/provider_collection';
+import {internalImportProvidersFrom} from '../../di/provider_collection';
 import {EnvironmentInjector} from '../../di/r3_injector';
 import {OnDestroy} from '../../interface/lifecycle_hooks';
 import {ComponentDef} from '../interfaces/definition';
@@ -29,8 +29,8 @@ class StandaloneService implements OnDestroy {
     }
 
     if (!this.cachedInjectors.has(componentDef)) {
-      const providers = importProvidersFrom(componentDef.type);
-      const standaloneInjector = providers.ɵproviders.length > 0 ?
+      const providers = internalImportProvidersFrom(false, componentDef.type);
+      const standaloneInjector = providers.length > 0 ?
           createEnvironmentInjector(
               [providers], this._injector, `Standalone[${componentDef.type.name}]`) :
           null;
