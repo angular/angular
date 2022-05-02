@@ -743,7 +743,7 @@ describe('platform-server integration', () => {
       it('using renderModule should work', waitForAsync(() => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(MyAsyncServerAppStandalone, 'simple-cmp', options) :
+               renderApplication(MyAsyncServerAppStandalone, {...options, appId: 'simple-cmp'}) :
                renderModule(AsyncServerModule, options);
            bootstrap.then(output => {
              expect(output).toBe(expectedOutput);
@@ -754,7 +754,7 @@ describe('platform-server integration', () => {
       it('works with SVG elements', waitForAsync(() => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(SVGComponentStandalone, 'simple-cmp', options) :
+               renderApplication(SVGComponentStandalone, {...options, appId: 'simple-cmp'}) :
                renderModule(SVGServerModule, options);
            bootstrap.then(output => {
              expect(output).toBe(
@@ -767,7 +767,7 @@ describe('platform-server integration', () => {
       it('works with animation', waitForAsync(() => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(MyAnimationAppStandalone, 'simple-cmp', options) :
+               renderApplication(MyAnimationAppStandalone, {...options, appId: 'simple-cmp'}) :
                renderModule(AnimationServerModule, options);
            bootstrap.then(output => {
              expect(output).toContain('Works!');
@@ -782,7 +782,8 @@ describe('platform-server integration', () => {
       it('should handle ViewEncapsulation.ShadowDom', waitForAsync(() => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(ShadowDomEncapsulationAppStandalone, 'simple-cmp', options) :
+               renderApplication(
+                   ShadowDomEncapsulationAppStandalone, {...options, appId: 'simple-cmp'}) :
                renderModule(ShadowDomExampleModule, options);
            bootstrap.then(output => {
              expect(output).not.toBe('');
@@ -794,7 +795,7 @@ describe('platform-server integration', () => {
       it('sets a prefix for the _nghost and _ngcontent attributes', waitForAsync(() => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(MyStylesAppStandalone, 'example-styles', options) :
+               renderApplication(MyStylesAppStandalone, {...options, appId: 'example-styles'}) :
                renderModule(ExampleStylesModule, options);
            bootstrap.then(output => {
              expect(output).toMatch(
@@ -806,7 +807,7 @@ describe('platform-server integration', () => {
       it('should handle false values on attributes', waitForAsync(() => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(MyHostComponentStandalone, 'example-app', options) :
+               renderApplication(MyHostComponentStandalone, {...options, appId: 'example-app'}) :
                renderModule(FalseAttributesModule, options);
            bootstrap.then(output => {
              expect(output).toBe(
@@ -819,7 +820,7 @@ describe('platform-server integration', () => {
       it('should handle element property "name"', waitForAsync(() => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(MyInputComponentStandalone, 'example-app', options) :
+               renderApplication(MyInputComponentStandalone, {...options, appId: 'example-app'}) :
                renderModule(NameModule, options);
            bootstrap.then(output => {
              expect(output).toBe(
@@ -836,7 +837,7 @@ describe('platform-server integration', () => {
            (global as any).Document = undefined;
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(HTMLTypesAppStandalone, 'example-app', options) :
+               renderApplication(HTMLTypesAppStandalone, {...options, appId: 'example-app'}) :
                renderModule(HTMLTypesModule, options);
            bootstrap.then(output => {
              expect(output).toBe(
@@ -849,7 +850,7 @@ describe('platform-server integration', () => {
       it('should handle element property "hidden"', waitForAsync(() => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
-               renderApplication(MyHiddenComponentStandalone, 'example-app', options) :
+               renderApplication(MyHiddenComponentStandalone, {...options, appId: 'example-app'}) :
                renderModule(HiddenModule, options);
            bootstrap.then(output => {
              expect(output).toBe(
@@ -861,10 +862,11 @@ describe('platform-server integration', () => {
 
       it('should call render hook', waitForAsync(() => {
            const options = {document: doc};
-           const bootstrap = isStandalone ? renderApplication(
-                                                MyServerAppStandalone, 'example-app',
-                                                {...options, providers: [...RenderHookProviders]}) :
-                                            renderModule(RenderHookModule, options);
+           const bootstrap = isStandalone ?
+               renderApplication(
+                   MyServerAppStandalone,
+                   {...options, appId: 'example-app', providers: [...RenderHookProviders]}) :
+               renderModule(RenderHookModule, options);
            bootstrap.then(output => {
              // title should be added by the render hook.
              expect(output).toBe(
@@ -879,8 +881,8 @@ describe('platform-server integration', () => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
                renderApplication(
-                   MyServerAppStandalone, 'example-app',
-                   {...options, providers: [...MultiRenderHookProviders]}) :
+                   MyServerAppStandalone,
+                   {...options, appId: 'example-app', providers: [...MultiRenderHookProviders]}) :
                renderModule(MultiRenderHookModule, options);
            bootstrap.then(output => {
              // title should be added by the render hook.
@@ -896,8 +898,8 @@ describe('platform-server integration', () => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
                renderApplication(
-                   MyServerAppStandalone, 'example-app',
-                   {...options, providers: [...AsyncRenderHookProviders]}) :
+                   MyServerAppStandalone,
+                   {...options, appId: 'example-app', providers: [...AsyncRenderHookProviders]}) :
                renderModule(AsyncRenderHookModule, options);
            bootstrap.then(output => {
              // title should be added by the render hook.
@@ -911,11 +913,12 @@ describe('platform-server integration', () => {
       it('should call multiple async and sync render hooks', waitForAsync(() => {
            const consoleSpy = spyOn(console, 'warn');
            const options = {document: doc};
-           const bootstrap = isStandalone ?
-               renderApplication(
-                   MyServerAppStandalone, 'example-app',
-                   {...options, providers: [...AsyncMultiRenderHookProviders]}) :
-               renderModule(AsyncMultiRenderHookModule, options);
+           const bootstrap = isStandalone ? renderApplication(MyServerAppStandalone, {
+             ...options,
+             appId: 'example-app',
+             providers: [...AsyncMultiRenderHookProviders]
+           }) :
+                                            renderModule(AsyncMultiRenderHookModule, options);
            bootstrap.then(output => {
              // title should be added by the render hook.
              expect(output).toBe(

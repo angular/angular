@@ -48,7 +48,8 @@ export class PlatformState {
 }
 
 // @public
-export function renderApplication<T>(rootComponent: Type<T>, appId: string, options: {
+export function renderApplication<T>(rootComponent: Type<T>, options: {
+    appId: string;
     document?: string;
     url?: string;
     providers?: Provider[];
