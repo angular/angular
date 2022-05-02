@@ -62,8 +62,8 @@
 
 version: 3
 
-availability:
-  users_unavailable:
+#availability:
+#  users_unavailable:
 #    - username
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
