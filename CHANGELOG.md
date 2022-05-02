@@ -4,24 +4,6 @@
 ### common
 - Adds new required class member that any implementors of the LocationStrategy will need to satisfy.
   Location does not depend on PlatformLocation anymore.
-### compiler
-- Keyframes names are now prefixed with the component's "scope name".
-  For example, the following keyframes rule in a component definition,
-  whose "scope name" is host-my-cmp:
-  
-     @keyframes foo { ... }
-  
-  will become:
-  
-     @keyframes host-my-cmp_foo { ... }
-  
-  Any TypeScript/JavaScript code which relied on the names of keyframes rules
-  will no longer match.
-  
-  The recommended solutions in this case are to either:
-  - change the component's view encapsulation to the `None` or `ShadowDom`
-  - define keyframes rules in global stylesheets (e.g styles.css)
-  - define keyframes rules programmatically in code.
 ### router
 - When a guard returns a `UrlTree`, the router would previously schedule
   the redirect navigation within a `setTimeout`. This timeout is now removed,
@@ -38,10 +20,6 @@
 | Commit | Type | Description |
 | -- | -- | -- |
 | [31d7c3bd71](https://github.com/angular/angular/commit/31d7c3bd71fdab3fef1b4615ecb8124fe6c165bd) | feat | add getState method to LocationStrategy interface ([#45648](https://github.com/angular/angular/pull/45648)) |
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4d6a1d6722](https://github.com/angular/angular/commit/4d6a1d672210219328b33f4f96210870563066ee) | fix | scope css keyframes in emulated view encapsulation ([#42608](https://github.com/angular/angular/pull/42608)) |
 ### core
 | Commit | Type | Description |
 | -- | -- | -- |
@@ -271,24 +249,6 @@ AlirezaEbrahimkhani, Andrew Kushnir, Andrew Scott, Ben Brook, Dylan Hunn, George
 <a name="14.0.0-next.10"></a>
 # 14.0.0-next.10 (2022-03-30)
 ## Breaking Changes
-### compiler
-- Keyframes names are now prefixed with the component's "scope name".
-  For example, the following keyframes rule in a component definition,
-  whose "scope name" is host-my-cmp:
-  
-     @keyframes foo { ... }
-  
-  will become:
-  
-     @keyframes host-my-cmp_foo { ... }
-  
-  Any TypeScript/JavaScript code which relied on the names of keyframes rules
-  will no longer match.
-  
-  The recommended solutions in this case are to either:
-  - change the component's view encapsulation to the `None` or `ShadowDom`
-  - define keyframes rules in global stylesheets (e.g styles.css)
-  - define keyframes rules programmatically in code.
 ### http
 - JSONP will throw an error when headers are set on a request
   
@@ -298,10 +258,6 @@ AlirezaEbrahimkhani, Andrew Kushnir, Andrew Scott, Ben Brook, Dylan Hunn, George
   receives a request that has any headers set. Any uses of JSONP
   on requests with headers set will need to remove the headers
   to avoid the error.
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [f03e313f24](https://github.com/angular/angular/commit/f03e313f24465cbe9ce99aa5f9f482a6c6b5485f) | fix | scope css keyframes in emulated view encapsulation ([#42608](https://github.com/angular/angular/pull/42608)) |
 ### compiler-cli
 | Commit | Type | Description |
 | -- | -- | -- |
