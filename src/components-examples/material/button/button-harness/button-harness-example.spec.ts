@@ -8,7 +8,6 @@ import {ButtonHarnessExample} from './button-harness-example';
 describe('ButtonHarnessExample', () => {
   let fixture: ComponentFixture<ButtonHarnessExample>;
   let loader: HarnessLoader;
-  let buttonHarness = MatButtonHarness;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -26,13 +25,14 @@ describe('ButtonHarnessExample', () => {
   });
 
   it('should load button with exact text', async () => {
-    const buttons = await loader.getAllHarnesses(buttonHarness.with({text: 'Basic button'}));
+    const buttons = await loader.getAllHarnesses(MatButtonHarness.with({text: 'Basic button'}));
     expect(buttons.length).toBe(1);
     expect(await buttons[0].getText()).toBe('Basic button');
   });
 
   it('should click a button', async () => {
-    const button = await loader.getHarness(buttonHarness.with({text: 'Basic button'}));
+    const button = await loader.getHarness(MatButtonHarness.with({text: 'Basic button'}));
+    expect(fixture.componentInstance.clicked).toBe(false);
     await button.click();
     expect(fixture.componentInstance.clicked).toBe(true);
   });
