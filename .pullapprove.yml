@@ -64,7 +64,7 @@ version: 3
 
 availability:
   users_unavailable:
-    - pkozlowski-opensource # OOO as of 2020-09-28
+#    - username
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
