@@ -70,6 +70,11 @@ export abstract class _MatAutocompleteHarnessBase<
     return (await this.host()).sendKeys(value);
   }
 
+  /** Clears the input value. */
+  async clear(): Promise<void> {
+    return (await this.host()).clear();
+  }
+
   /** Gets the options inside the autocomplete panel. */
   async getOptions(filters?: Omit<OptionFilters, 'ancestor'>): Promise<Option[]> {
     if (!(await this.isOpen())) {

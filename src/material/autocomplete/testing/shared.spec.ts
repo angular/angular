@@ -67,6 +67,14 @@ export function runHarnessTests(
     expect(await input.getValue()).toBe('Hello there');
   });
 
+  it('should be able to clear the input', async () => {
+    const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
+    await input.enterText('Hello there');
+    expect(await input.getValue()).toBe('Hello there');
+    await input.clear();
+    expect(await input.getValue()).toBe('');
+  });
+
   it('should be able to get the autocomplete panel options', async () => {
     const input = await loader.getHarness(autocompleteHarness.with({selector: '#plain'}));
     await input.focus();

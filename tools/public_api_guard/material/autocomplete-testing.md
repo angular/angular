@@ -39,6 +39,7 @@ export abstract class _MatAutocompleteHarnessBase<OptionType extends ComponentHa
     with: (options?: OptionGroupFilters) => HarnessPredicate<OptionGroup>;
 }, OptionGroup extends ComponentHarness, OptionGroupFilters extends BaseHarnessFilters> extends ComponentHarness {
     blur(): Promise<void>;
+    clear(): Promise<void>;
     enterText(value: string): Promise<void>;
     focus(): Promise<void>;
     getOptionGroups(filters?: Omit<OptionGroupFilters, 'ancestor'>): Promise<OptionGroup[]>;
