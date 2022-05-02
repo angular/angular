@@ -9,9 +9,9 @@
 import {InjectionToken} from './injection_token';
 
 /**
- * A multi-provider token for initialization functions that will run upon construction of a
- * non-view injector.
+ * A multi-provider token for initialization functions that will run upon construction of an
+ * environment injector.
  *
  * @publicApi
  */
-export const INJECTOR_INITIALIZER = new InjectionToken<() => void>('INJECTOR_INITIALIZER');
+export const ENVIRONMENT_INITIALIZER = new InjectionToken<() => void>('ENVIRONMENT_INITIALIZER');

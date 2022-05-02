@@ -6,6 +6,9 @@
     "name": "EMPTY_ARRAY"
   },
   {
+    "name": "ENVIRONMENT_INITIALIZER"
+  },
+  {
     "name": "EnvironmentInjector"
   },
   {
@@ -13,9 +16,6 @@
   },
   {
     "name": "INJECTOR_DEF_TYPES"
-  },
-  {
-    "name": "INJECTOR_INITIALIZER"
   },
   {
     "name": "INJECTOR_SCOPE"

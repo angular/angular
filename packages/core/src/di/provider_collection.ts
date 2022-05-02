@@ -16,7 +16,7 @@ import {stringify} from '../util/stringify';
 import {EMPTY_ARRAY} from '../view';
 
 import {resolveForwardRef} from './forward_ref';
-import {INJECTOR_INITIALIZER} from './initializer_token';
+import {ENVIRONMENT_INITIALIZER} from './initializer_token';
 import {ɵɵinject as inject} from './injector_compatibility';
 import {getInjectorDef, InjectorType, InjectorTypeWithProviders} from './interface/defs';
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, ModuleWithProviders, Provider, StaticClassProvider, TypeProvider, ValueProvider} from './interface/provider';
@@ -191,8 +191,8 @@ export function walkProviderTree(
           // Make this `defType` available to an internal logic that calculates injector scope.
           {provide: INJECTOR_DEF_TYPES, useValue: defType, multi: true},
 
-          // Provider to eagerly instantiate `defType` via `INJECTOR_INITIALIZER`.
-          {provide: INJECTOR_INITIALIZER, useValue: () => inject(defType!), multi: true}  //
+          // Provider to eagerly instantiate `defType` via `ENVIRONMENT_INITIALIZER`.
+          {provide: ENVIRONMENT_INITIALIZER, useValue: () => inject(defType!), multi: true}  //
       );
     }
 

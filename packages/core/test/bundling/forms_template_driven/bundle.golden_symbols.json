@@ -150,6 +150,9 @@
     "name": "EMPTY_PAYLOAD"
   },
   {
+    "name": "ENVIRONMENT_INITIALIZER"
+  },
+  {
     "name": "EVENT_MANAGER_PLUGINS"
   },
   {
@@ -190,9 +193,6 @@
   },
   {
     "name": "INJECTOR_DEF_TYPES"
-  },
-  {
-    "name": "INJECTOR_INITIALIZER"
   },
   {
     "name": "INJECTOR_SCOPE"

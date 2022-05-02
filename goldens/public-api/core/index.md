@@ -453,6 +453,9 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
 export function enableProdMode(): void;
 
 // @public
+export const ENVIRONMENT_INITIALIZER: InjectionToken<() => void>;
+
+// @public
 export abstract class EnvironmentInjector implements Injector {
     // (undocumented)
     abstract destroy(): void;
@@ -679,9 +682,6 @@ export abstract class Injector {
     // (undocumented)
     static ɵprov: unknown;
 }
-
-// @public
-export const INJECTOR_INITIALIZER: InjectionToken<() => void>;
 
 // @public
 export interface InjectorType<T> extends Type<T> {

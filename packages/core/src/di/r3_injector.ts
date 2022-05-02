@@ -19,7 +19,7 @@ import {EMPTY_ARRAY} from '../util/empty';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
-import {INJECTOR_INITIALIZER} from './initializer_token';
+import {ENVIRONMENT_INITIALIZER} from './initializer_token';
 import {setInjectImplementation} from './inject_switch';
 import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
@@ -246,7 +246,7 @@ export class R3Injector extends EnvironmentInjector {
     const previousInjector = setCurrentInjector(this);
     const previousInjectImplementation = setInjectImplementation(undefined);
     try {
-      const initializers = this.get(INJECTOR_INITIALIZER.multi, EMPTY_ARRAY, InjectFlags.Self);
+      const initializers = this.get(ENVIRONMENT_INITIALIZER.multi, EMPTY_ARRAY, InjectFlags.Self);
       for (const initializer of initializers) {
         initializer();
       }
