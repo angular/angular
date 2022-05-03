@@ -16,7 +16,6 @@ ng_module(
         "//src/material-experimental/mdc-paginator",
         "//src/material-experimental/mdc-slide-toggle",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

@@ -7,11 +7,15 @@
  */
 
 import {Component} from '@angular/core';
+import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {MatIconModule} from '@angular/material/icon';
 
 @Component({
   selector: 'mdc-button-demo',
   templateUrl: 'mdc-button-demo.html',
   styleUrls: ['mdc-button-demo.css'],
+  standalone: true,
+  imports: [MatButtonModule, MatIconModule],
 })
 export class MdcButtonDemo {
   isDisabled: boolean = false;

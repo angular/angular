@@ -8,10 +8,13 @@
 
 import {Component} from '@angular/core';
 import {Platform, getSupportedInputTypes} from '@angular/cdk/platform';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'platform-demo',
   templateUrl: 'platform-demo.html',
+  standalone: true,
+  imports: [CommonModule],
 })
 export class PlatformDemo {
   supportedInputTypes = getSupportedInputTypes();

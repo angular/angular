@@ -12,7 +12,6 @@ ng_module(
     deps = [
         "//src/cdk/menu",
         "//src/material-experimental/menubar",
-        "@npm//@angular/router",
     ],
 )
 

@@ -19,7 +19,6 @@ ng_module(
         "//src/material/radio",
         "//src/material/slide-toggle",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

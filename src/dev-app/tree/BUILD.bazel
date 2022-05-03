@@ -22,7 +22,6 @@ ng_module(
         "//src/material/input",
         "//src/material/progress-bar",
         "//src/material/tree",
-        "@npm//@angular/router",
     ],
 )
 

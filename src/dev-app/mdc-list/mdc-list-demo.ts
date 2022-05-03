@@ -7,12 +7,21 @@
  */
 
 import {Component} from '@angular/core';
-import {MatListOptionCheckboxPosition} from '@angular/material-experimental/mdc-list';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {
+  MatListModule,
+  MatListOptionCheckboxPosition,
+} from '@angular/material-experimental/mdc-list';
+import {MatIconModule} from '@angular/material/icon';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'mdc-list-demo',
   templateUrl: 'mdc-list-demo.html',
   styleUrls: ['mdc-list-demo.css'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatListModule],
 })
 export class MdcListDemo {
   items: string[] = ['Pepper', 'Salt', 'Paprika'];

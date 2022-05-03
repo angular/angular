@@ -18,7 +18,6 @@ ng_module(
         "//src/material/input",
         "//src/material/select",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

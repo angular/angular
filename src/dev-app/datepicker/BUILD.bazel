@@ -20,7 +20,6 @@ ng_module(
         "//src/material/icon",
         "//src/material/input",
         "//src/material/select",
-        "@npm//@angular/router",
     ],
 )
 

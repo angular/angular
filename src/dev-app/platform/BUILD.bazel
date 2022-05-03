@@ -8,6 +8,5 @@ ng_module(
     assets = ["platform-demo.html"],
     deps = [
         "//src/cdk/platform",
-        "@npm//@angular/router",
     ],
 )

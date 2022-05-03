@@ -6,9 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
 import {Component, Inject, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
+import {DOCUMENT} from '@angular/common';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogConfig,
+  MatDialogRef,
+  MatDialogModule,
+} from '@angular/material/dialog';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
 
 const defaultDialogConfig = new MatDialogConfig();
 
@@ -16,6 +30,17 @@ const defaultDialogConfig = new MatDialogConfig();
   selector: 'dialog-demo',
   templateUrl: 'dialog-demo.html',
   styleUrls: ['dialog-demo.css'],
+  standalone: true,
+  imports: [
+    FormsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+  ],
 })
 export class DialogDemo {
   dialogRef: MatDialogRef<JazzDialog> | null;
@@ -97,7 +122,7 @@ export class DialogDemo {
         <input matInput #howMuch>
       </mat-form-field>
 
-      <p cdkDragHandle> {{ data.message }} </p>
+      <p cdkDragHandle>{{ data.message }} (use this message to drag the dialog)</p>
       <button type="button" (click)="dialogRef.close(howMuch.value)">Close dialog</button>
       <button (click)="togglePosition()">Change dimensions</button>
       <button (click)="temporarilyHide()">Hide for 2 seconds</button>
@@ -105,6 +130,8 @@ export class DialogDemo {
   `,
   encapsulation: ViewEncapsulation.None,
   styles: [`.hidden-dialog { opacity: 0; }`],
+  standalone: true,
+  imports: [MatFormFieldModule, MatInputModule, DragDropModule],
 })
 export class JazzDialog {
   private _dimesionToggle = false;
@@ -177,6 +204,8 @@ export class JazzDialog {
         Show in Dialog</button>
     </mat-dialog-actions>
   `,
+  standalone: true,
+  imports: [MatDialogModule, MatButtonModule],
 })
 export class ContentElementDialog {
   actionsAlignment: 'start' | 'center' | 'end';
@@ -197,6 +226,8 @@ export class ContentElementDialog {
     }
   `,
   ],
+  standalone: true,
+  imports: [MatDialogModule, MatButtonModule],
   template: `
     <h2 mat-dialog-title>Neptune</h2>
 

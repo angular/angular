@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CdkTrapFocus} from '@angular/cdk/a11y';
 import {
   AfterViewInit,
   Component,
@@ -16,14 +15,20 @@ import {
   ViewChildren,
   QueryList,
 } from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
+import {A11yModule, CdkTrapFocus} from '@angular/cdk/a11y';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {_supportsShadowDom} from '@angular/cdk/platform';
+import {CommonModule} from '@angular/common';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatToolbarModule} from '@angular/material/toolbar';
 
 @Component({
   selector: 'shadow-dom-demo',
   template: '<ng-content></ng-content>',
   host: {'class': 'demo-focus-trap-shadow-root'},
   encapsulation: ViewEncapsulation.ShadowDom,
+  standalone: true,
 })
 export class FocusTrapShadowDomDemo {}
 
@@ -31,6 +36,16 @@ export class FocusTrapShadowDomDemo {}
   selector: 'focus-trap-demo',
   templateUrl: 'focus-trap-demo.html',
   styleUrls: ['focus-trap-demo.css'],
+  standalone: true,
+  imports: [
+    A11yModule,
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatDialogModule,
+    MatToolbarModule,
+    FocusTrapShadowDomDemo,
+  ],
 })
 export class FocusTrapDemo implements AfterViewInit {
   @ViewChild('newElements')
@@ -75,6 +90,8 @@ let dialogCount = 0;
   selector: 'focus-trap-dialog-demo',
   styleUrls: ['focus-trap-dialog-demo.css'],
   templateUrl: 'focus-trap-dialog-demo.html',
+  standalone: true,
+  imports: [MatDialogModule],
 })
 export class FocusTrapDialogDemo {
   id = dialogCount++;

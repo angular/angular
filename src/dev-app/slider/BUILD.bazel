@@ -10,6 +10,5 @@ ng_module(
         "//src/material/slider",
         "//src/material/tabs",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )

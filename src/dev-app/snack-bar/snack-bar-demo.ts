@@ -6,12 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directionality} from '@angular/cdk/bidi';
 import {Component, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Directionality} from '@angular/cdk/bidi';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
 import {
   MatSnackBar,
   MatSnackBarConfig,
   MatSnackBarHorizontalPosition,
+  MatSnackBarModule,
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
 
@@ -20,6 +28,17 @@ import {
   styleUrls: ['snack-bar-demo.css'],
   templateUrl: 'snack-bar-demo.html',
   encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSnackBarModule,
+  ],
 })
 export class SnackBarDemo {
   @ViewChild('template') template: TemplateRef<any>;

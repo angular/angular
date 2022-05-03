@@ -10,6 +10,5 @@ ng_module(
         "//src/components-examples/material-experimental/popover-edit",
         "//src/dev-app/example",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )

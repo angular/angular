@@ -11,10 +11,13 @@ import {
   CdkOverlayOrigin,
   HorizontalConnectionPos,
   Overlay,
+  OverlayModule,
   OverlayRef,
   VerticalConnectionPos,
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
+import {CommonModule} from '@angular/common';
+import {CdkOverlayExamplesModule} from '@angular/components-examples/cdk/overlay';
 import {
   Component,
   TemplateRef,
@@ -22,12 +25,26 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatRadioModule} from '@angular/material/radio';
 
 @Component({
   selector: 'overlay-demo',
   templateUrl: 'connected-overlay-demo.html',
   styleUrls: ['connected-overlay-demo.css'],
   encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [
+    CdkOverlayExamplesModule,
+    CommonModule,
+    FormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatRadioModule,
+    OverlayModule,
+  ],
 })
 export class ConnectedOverlayDemo {
   @ViewChild(CdkOverlayOrigin) _overlayOrigin: CdkOverlayOrigin;

@@ -14,7 +14,6 @@ ng_module(
         "//src/material/button-toggle",
         "//src/material/progress-bar",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

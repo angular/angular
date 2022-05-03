@@ -17,7 +17,6 @@ ng_module(
         "//src/material/form-field",
         "//src/material/icon",
         "//src/material/toolbar",
-        "@npm//@angular/router",
     ],
 )
 

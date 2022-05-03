@@ -18,7 +18,6 @@ ng_module(
         "//src/material-experimental/mdc-form-field",
         "//src/material/icon",
         "//src/material/toolbar",
-        "@npm//@angular/router",
     ],
 )
 

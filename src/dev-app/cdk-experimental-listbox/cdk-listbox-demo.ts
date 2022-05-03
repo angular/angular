@@ -7,11 +7,15 @@
  */
 
 import {Component} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {CdkListboxModule} from '@angular/cdk-experimental/listbox';
+import {CommonModule} from '@angular/common';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 @Component({
   templateUrl: 'cdk-listbox-demo.html',
   styleUrls: ['cdk-listbox-demo.css'],
+  standalone: true,
+  imports: [CdkListboxModule, CommonModule, FormsModule, ReactiveFormsModule],
 })
 export class CdkListboxDemo {
   multiSelectable = false;

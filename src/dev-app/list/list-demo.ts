@@ -7,12 +7,26 @@
  */
 
 import {Component} from '@angular/core';
-import {MatListOptionCheckboxPosition} from '@angular/material/list';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatIconModule} from '@angular/material/icon';
+import {MatListModule, MatListOptionCheckboxPosition} from '@angular/material/list';
 
 @Component({
   selector: 'list-demo',
   templateUrl: 'list-demo.html',
   styleUrls: ['list-demo.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatIconModule,
+    MatListModule,
+  ],
 })
 export class ListDemo {
   items: string[] = ['Pepper', 'Salt', 'Paprika'];

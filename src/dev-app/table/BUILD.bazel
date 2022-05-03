@@ -10,6 +10,5 @@ ng_module(
         "//src/components-examples/cdk/table",
         "//src/components-examples/material/table",
         "//src/dev-app/example",
-        "@npm//@angular/router",
     ],
 )

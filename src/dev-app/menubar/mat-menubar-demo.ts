@@ -7,12 +7,8 @@
  */
 
 import {Component, ViewEncapsulation} from '@angular/core';
-import {CdkMenu, CdkMenuItem, CdkMenuGroup, CDK_MENU} from '@angular/cdk/menu';
-
-@Component({
-  templateUrl: 'mat-menubar-demo.html',
-})
-export class MatMenuBarDemo {}
+import {CdkMenu, CdkMenuItem, CdkMenuGroup, CDK_MENU, CdkMenuModule} from '@angular/cdk/menu';
+import {MatMenuBarModule} from '@angular/material-experimental/menubar';
 
 // TODO: Remove the fake when mat-menu is re-built with CdkMenu directives
 @Component({
@@ -32,6 +28,7 @@ export class MatMenuBarDemo {}
   ],
   styleUrls: ['mat-menubar-demo.css'],
   encapsulation: ViewEncapsulation.None,
+  standalone: true,
 })
 export class DemoMenu extends CdkMenu {}
 
@@ -49,5 +46,13 @@ export class DemoMenu extends CdkMenu {}
   template: '<ng-content></ng-content>',
   styleUrls: ['mat-menubar-demo.css'],
   encapsulation: ViewEncapsulation.None,
+  standalone: true,
 })
 export class DemoMenuItem extends CdkMenuItem {}
+
+@Component({
+  templateUrl: 'mat-menubar-demo.html',
+  standalone: true,
+  imports: [CdkMenuModule, MatMenuBarModule, DemoMenu, DemoMenuItem],
+})
+export class MatMenuBarDemo {}

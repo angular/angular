@@ -18,7 +18,6 @@ ng_module(
         "//src/material/checkbox",
         "//src/material/radio",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

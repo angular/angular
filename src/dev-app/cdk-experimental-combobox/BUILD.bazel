@@ -10,6 +10,5 @@ ng_module(
     ],
     deps = [
         "//src/cdk-experimental/combobox",
-        "@npm//@angular/router",
     ],
 )

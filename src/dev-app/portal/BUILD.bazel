@@ -11,7 +11,6 @@ ng_module(
     ],
     deps = [
         "//src/cdk/portal",
-        "@npm//@angular/router",
     ],
 )
 

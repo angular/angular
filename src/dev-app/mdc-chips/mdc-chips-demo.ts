@@ -6,10 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {Component} from '@angular/core';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
+import {CommonModule} from '@angular/common';
 import {ThemePalette} from '@angular/material-experimental/mdc-core';
-import {MatChipInputEvent, MatChipEditedEvent} from '@angular/material-experimental/mdc-chips';
+import {
+  MatChipInputEvent,
+  MatChipEditedEvent,
+  MatChipsModule,
+} from '@angular/material-experimental/mdc-chips';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {MatCardModule} from '@angular/material-experimental/mdc-card';
+import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
+import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatIconModule} from '@angular/material/icon';
 
 export interface Person {
   name: string;
@@ -24,6 +36,19 @@ export interface DemoColor {
   selector: 'mdc-chips-demo',
   templateUrl: 'mdc-chips-demo.html',
   styleUrls: ['mdc-chips-demo.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatChipsModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatToolbarModule,
+    ReactiveFormsModule,
+  ],
 })
 export class MdcChipsDemo {
   visible = true;

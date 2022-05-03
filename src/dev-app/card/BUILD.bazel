@@ -14,7 +14,6 @@ ng_module(
         "//src/material/card",
         "//src/material/divider",
         "//src/material/progress-bar",
-        "@npm//@angular/router",
     ],
 )
 

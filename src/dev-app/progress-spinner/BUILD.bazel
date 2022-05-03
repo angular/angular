@@ -15,7 +15,6 @@ ng_module(
         "//src/material/checkbox",
         "//src/material/progress-spinner",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

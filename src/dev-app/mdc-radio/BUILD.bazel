@@ -14,7 +14,6 @@ ng_module(
         "//src/material-experimental/mdc-checkbox",
         "//src/material-experimental/mdc-radio",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

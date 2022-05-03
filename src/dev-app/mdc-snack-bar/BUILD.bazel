@@ -18,7 +18,6 @@ ng_module(
         "//src/material-experimental/mdc-select",
         "//src/material-experimental/mdc-snack-bar",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

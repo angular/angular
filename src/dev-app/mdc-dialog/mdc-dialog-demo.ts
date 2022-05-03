@@ -13,7 +13,16 @@ import {
   MatDialog,
   MatDialogConfig,
   MatDialogRef,
+  MatDialogModule,
 } from '@angular/material-experimental/mdc-dialog';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {MatCardModule} from '@angular/material-experimental/mdc-card';
+import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
+import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
+import {MatInputModule} from '@angular/material-experimental/mdc-input';
+import {MatSelectModule} from '@angular/material-experimental/mdc-select';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 const defaultDialogConfig = new MatDialogConfig();
 
@@ -24,6 +33,17 @@ const defaultDialogConfig = new MatDialogConfig();
   // View encapsulation is disabled since we add the legacy dialog padding
   // styles that need to target the dialog (not only the projected content).
   encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [
+    FormsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+  ],
 })
 export class DialogDemo {
   dialogRef: MatDialogRef<JazzDialog> | null;
@@ -120,6 +140,8 @@ export class DialogDemo {
   `,
   encapsulation: ViewEncapsulation.None,
   styles: [`.hidden-dialog { opacity: 0; }`],
+  standalone: true,
+  imports: [MatFormFieldModule, MatInputModule, DragDropModule],
 })
 export class JazzDialog {
   private _dimesionToggle = false;
@@ -192,6 +214,8 @@ export class JazzDialog {
         Show in Dialog</button>
     </mat-dialog-actions>
   `,
+  standalone: true,
+  imports: [MatDialogModule, MatButtonModule],
 })
 export class ContentElementDialog {
   actionsAlignment: 'start' | 'center' | 'end';
@@ -226,5 +250,7 @@ export class ContentElementDialog {
         mat-dialog-close>Close</button>
     </mat-dialog-actions>
   `,
+  standalone: true,
+  imports: [MatDialogModule, MatButtonModule],
 })
 export class IFrameDialog {}

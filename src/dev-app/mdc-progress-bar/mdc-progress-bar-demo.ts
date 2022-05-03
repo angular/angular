@@ -8,11 +8,24 @@
 
 import {Component} from '@angular/core';
 import {ThemePalette} from '@angular/material-experimental/mdc-core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {MatProgressBarModule} from '@angular/material-experimental/mdc-progress-bar';
+import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 @Component({
   selector: 'mdc-progress-bar-demo',
   templateUrl: 'mdc-progress-bar-demo.html',
   styleUrls: ['mdc-progress-bar-demo.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatProgressBarModule,
+    MatButtonModule,
+    MatButtonToggleModule,
+  ],
 })
 export class MdcProgressBarDemo {
   color: ThemePalette = 'primary';

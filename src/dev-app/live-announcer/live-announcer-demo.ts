@@ -7,11 +7,14 @@
  */
 
 import {Component} from '@angular/core';
-import {LiveAnnouncer} from '@angular/cdk/a11y';
+import {A11yModule, LiveAnnouncer} from '@angular/cdk/a11y';
+import {MatButtonModule} from '@angular/material/button';
 
 @Component({
   selector: 'toolbar-demo',
   templateUrl: 'live-announcer-demo.html',
+  standalone: true,
+  imports: [A11yModule, MatButtonModule],
 })
 export class LiveAnnouncerDemo {
   constructor(private _liveAnnouncer: LiveAnnouncer) {}

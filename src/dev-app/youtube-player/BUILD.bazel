@@ -13,7 +13,6 @@ ng_module(
         "//src/material/radio",
         "//src/youtube-player",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

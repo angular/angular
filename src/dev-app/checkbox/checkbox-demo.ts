@@ -7,9 +7,15 @@
  */
 
 import {Component, Directive} from '@angular/core';
-import {MAT_CHECKBOX_DEFAULT_OPTIONS} from '@angular/material/checkbox';
+import {MatCheckboxModule, MAT_CHECKBOX_DEFAULT_OPTIONS} from '@angular/material/checkbox';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {ThemePalette} from '@angular/material/core';
+import {MatPseudoCheckboxModule, ThemePalette} from '@angular/material/core';
+import {CommonModule} from '@angular/common';
+import {CheckboxExamplesModule} from '@angular/components-examples/material/checkbox';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
 
 export interface Task {
   name: string;
@@ -20,18 +26,21 @@ export interface Task {
 @Directive({
   selector: '[clickActionNoop]',
   providers: [{provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'noop'}}],
+  standalone: true,
 })
 export class ClickActionNoop {}
 
 @Directive({
   selector: '[clickActionCheck]',
   providers: [{provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'check'}}],
+  standalone: true,
 })
 export class ClickActionCheck {}
 
 @Directive({
   selector: '[animationsNoop]',
   providers: [{provide: ANIMATION_MODULE_TYPE, useValue: 'NoopAnimations'}],
+  standalone: true,
 })
 export class AnimationsNoop {}
 
@@ -45,6 +54,8 @@ export class AnimationsNoop {}
   `,
   ],
   templateUrl: './nested-checklist.html',
+  standalone: true,
+  imports: [CommonModule, MatCheckboxModule, FormsModule],
 })
 export class MatCheckboxDemoNestedChecklist {
   tasks: Task[] = [
@@ -94,6 +105,22 @@ export class MatCheckboxDemoNestedChecklist {
   selector: 'mat-checkbox-demo',
   templateUrl: 'checkbox-demo.html',
   styleUrls: ['checkbox-demo.css'],
+  standalone: true,
+  imports: [
+    CheckboxExamplesModule,
+    CommonModule,
+    FormsModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatPseudoCheckboxModule,
+    ReactiveFormsModule,
+    MatCheckboxDemoNestedChecklist,
+    ClickActionNoop,
+    ClickActionCheck,
+    AnimationsNoop,
+  ],
 })
 export class CheckboxDemo {
   isIndeterminate: boolean = false;

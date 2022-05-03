@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CommonModule} from '@angular/common';
 import {Component, ViewChild} from '@angular/core';
 import {
+  GoogleMapsModule,
   MapCircle,
   MapDirectionsService,
   MapInfoWindow,
@@ -47,6 +49,8 @@ const CIRCLE_RADIUS = 500000;
   selector: 'google-map-demo',
   templateUrl: 'google-map-demo.html',
   styleUrls: ['google-map-demo.css'],
+  standalone: true,
+  imports: [CommonModule, GoogleMapsModule],
 })
 export class GoogleMapDemo {
   @ViewChild(MapInfoWindow) infoWindow: MapInfoWindow;

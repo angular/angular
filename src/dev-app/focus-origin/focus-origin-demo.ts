@@ -7,12 +7,14 @@
  */
 
 import {Component} from '@angular/core';
-import {FocusMonitor} from '@angular/cdk/a11y';
+import {A11yModule, FocusMonitor} from '@angular/cdk/a11y';
 
 @Component({
   selector: 'focus-origin-demo',
   templateUrl: 'focus-origin-demo.html',
   styleUrls: ['focus-origin-demo.css'],
+  standalone: true,
+  imports: [A11yModule],
 })
 export class FocusOriginDemo {
   constructor(public fom: FocusMonitor) {}

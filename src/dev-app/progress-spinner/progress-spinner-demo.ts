@@ -8,11 +8,24 @@
 
 import {Component} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'progress-spinner-demo',
   templateUrl: 'progress-spinner-demo.html',
   styleUrls: ['progress-spinner-demo.css'],
+  standalone: true,
+  imports: [
+    FormsModule,
+    MatButtonModule,
+    MatButtonToggleModule,
+    MatCheckboxModule,
+    MatProgressSpinnerModule,
+  ],
 })
 export class ProgressSpinnerDemo {
   progressValue = 60;

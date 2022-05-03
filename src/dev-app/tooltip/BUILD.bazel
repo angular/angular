@@ -9,6 +9,5 @@ ng_module(
     deps = [
         "//src/components-examples/material/tooltip",
         "//src/dev-app/example",
-        "@npm//@angular/router",
     ],
 )

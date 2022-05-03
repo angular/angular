@@ -21,7 +21,6 @@ ng_module(
         "//src/material/tabs",
         "//src/material/toolbar",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

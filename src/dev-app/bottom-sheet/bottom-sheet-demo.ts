@@ -7,11 +7,22 @@
  */
 
 import {Component, TemplateRef, ViewChild} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 import {
   MatBottomSheet,
   MatBottomSheetConfig,
+  MatBottomSheetModule,
   MatBottomSheetRef,
 } from '@angular/material/bottom-sheet';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatListModule} from '@angular/material/list';
+import {MatSelectModule} from '@angular/material/select';
 
 const defaultConfig = new MatBottomSheetConfig();
 
@@ -19,6 +30,20 @@ const defaultConfig = new MatBottomSheetConfig();
   selector: 'bottom-sheet-demo',
   styleUrls: ['bottom-sheet-demo.css'],
   templateUrl: 'bottom-sheet-demo.html',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatBottomSheetModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatSelectModule,
+    MatListModule,
+  ],
 })
 export class BottomSheetDemo {
   config: MatBottomSheetConfig = {
@@ -51,6 +76,8 @@ export class BottomSheetDemo {
       </a>
     </mat-nav-list>
   `,
+  standalone: true,
+  imports: [CommonModule, MatListModule],
 })
 export class ExampleBottomSheet {
   constructor(private _bottomSheet: MatBottomSheetRef) {}

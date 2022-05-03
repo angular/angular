@@ -14,7 +14,6 @@ ng_module(
         "//src/material/checkbox",
         "//src/material/icon",
         "//src/material/list",
-        "@npm//@angular/router",
     ],
 )
 

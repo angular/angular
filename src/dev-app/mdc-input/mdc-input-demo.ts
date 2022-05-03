@@ -7,22 +7,51 @@
  */
 
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {FormControl, Validators} from '@angular/forms';
+import {FormControl, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
   FloatLabelType,
   MatFormFieldAppearance,
+  MatFormFieldModule,
 } from '@angular/material-experimental/mdc-form-field';
 import {ErrorStateMatcher, ThemePalette} from '@angular/material-experimental/mdc-core';
+import {CommonModule} from '@angular/common';
+import {MdcFormFieldExamplesModule} from '@angular/components-examples/material-experimental/mdc-form-field';
+import {MatInputModule} from '@angular/material-experimental/mdc-input';
+import {MatAutocompleteModule} from '@angular/material-experimental/mdc-autocomplete';
+import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {MatCardModule} from '@angular/material-experimental/mdc-card';
+import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
+import {MatIconModule} from '@angular/material/icon';
+import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';
+import {MatToolbarModule} from '@angular/material/toolbar';
 
 let max = 5;
 
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'mdc-input-demo',
   templateUrl: 'mdc-input-demo.html',
   styleUrls: ['mdc-input-demo.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatAutocompleteModule,
+    MatButtonModule,
+    MatButtonToggleModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MdcFormFieldExamplesModule,
+    ReactiveFormsModule,
+  ],
 })
 export class MdcInputDemo {
   color: ThemePalette = 'primary';

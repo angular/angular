@@ -7,10 +7,15 @@
  */
 
 import {Component} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {MatSliderModule} from '@angular/material/slider';
+import {MatTabsModule} from '@angular/material/tabs';
 
 @Component({
   selector: 'slider-demo',
   templateUrl: 'slider-demo.html',
+  standalone: true,
+  imports: [FormsModule, MatSliderModule, MatTabsModule],
 })
 export class SliderDemo {
   demo: number;

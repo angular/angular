@@ -6,8 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {ChangeDetectionStrategy, Component, OnDestroy, ViewEncapsulation} from '@angular/core';
+import {CdkVirtualScrollViewport, ScrollingModule} from '@angular/cdk/scrolling';
+import {ScrollingModule as ExperimentalScrollingModule} from '@angular/cdk-experimental/scrolling';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
 import {BehaviorSubject} from 'rxjs';
 
 type State = {
@@ -21,6 +28,17 @@ type State = {
   styleUrls: ['virtual-scroll-demo.css'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    CommonModule,
+    ExperimentalScrollingModule,
+    FormsModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    ScrollingModule,
+  ],
 })
 export class VirtualScrollDemo implements OnDestroy {
   scrollToOffset = 0;

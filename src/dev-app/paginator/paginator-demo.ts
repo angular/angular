@@ -7,12 +7,28 @@
  */
 
 import {Component} from '@angular/core';
-import {PageEvent} from '@angular/material/paginator';
+import {MatPaginatorModule, PageEvent} from '@angular/material/paginator';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {MatCardModule} from '@angular/material/card';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'paginator-demo',
   templateUrl: 'paginator-demo.html',
   styleUrls: ['paginator-demo.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatPaginatorModule,
+    MatSlideToggleModule,
+  ],
 })
 export class PaginatorDemo {
   length = 50;

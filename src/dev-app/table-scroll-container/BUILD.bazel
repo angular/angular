@@ -17,7 +17,6 @@ ng_module(
         "//src/material/table",
         "@npm//@angular/common",
         "@npm//@angular/core",
-        "@npm//@angular/router",
     ],
 )
 

@@ -7,11 +7,26 @@
  */
 
 import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {MatMenuModule} from '@angular/material-experimental/mdc-menu';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatIconModule} from '@angular/material/icon';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 
 @Component({
   selector: 'mdc-menu-demo',
   templateUrl: 'mdc-menu-demo.html',
   styleUrls: ['mdc-menu-demo.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatDividerModule,
+  ],
 })
 export class MdcMenuDemo {
   selected = '';

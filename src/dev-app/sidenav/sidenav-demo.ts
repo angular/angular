@@ -7,12 +7,26 @@
  */
 
 import {Component} from '@angular/core';
-import {MatDrawerMode} from '@angular/material/sidenav';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatDrawerMode, MatSidenavModule} from '@angular/material/sidenav';
+import {MatToolbarModule} from '@angular/material/toolbar';
 
 @Component({
   selector: 'sidenav-demo',
   templateUrl: 'sidenav-demo.html',
   styleUrls: ['sidenav-demo.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatSidenavModule,
+    MatToolbarModule,
+  ],
 })
 export class SidenavDemo {
   isLaunched = false;

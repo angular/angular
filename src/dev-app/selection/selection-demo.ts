@@ -7,6 +7,9 @@
  */
 
 import {Component} from '@angular/core';
+import {CdkSelectionExamplesModule} from '@angular/components-examples/cdk-experimental/selection';
+import {MatSelectionExamplesModule} from '@angular/components-examples/material-experimental/selection';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   template: `
@@ -22,5 +25,7 @@ import {Component} from '@angular/core';
     <h3>Mat selection column and Mat row selection with Mat table</h3>
     <mat-selection-column-example></mat-selection-column-example>
   `,
+  standalone: true,
+  imports: [CdkSelectionExamplesModule, MatSelectionExamplesModule, FormsModule],
 })
 export class SelectionDemo {}

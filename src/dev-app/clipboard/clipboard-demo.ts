@@ -7,12 +7,15 @@
  */
 
 import {Component} from '@angular/core';
-import {Clipboard} from '@angular/cdk/clipboard';
+import {Clipboard, ClipboardModule} from '@angular/cdk/clipboard';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'clipboard-demo',
   styleUrls: ['clipboard-demo.css'],
   templateUrl: 'clipboard-demo.html',
+  standalone: true,
+  imports: [ClipboardModule, FormsModule],
 })
 export class ClipboardDemo {
   attempts = 3;

@@ -7,7 +7,8 @@
  */
 
 import {Component, Inject, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
-import {DIALOG_DATA, Dialog, DialogConfig, DialogRef} from '@angular/cdk/dialog';
+import {DIALOG_DATA, Dialog, DialogConfig, DialogRef, DialogModule} from '@angular/cdk/dialog';
+import {FormsModule} from '@angular/forms';
 
 const defaultDialogConfig = new DialogConfig();
 
@@ -16,6 +17,8 @@ const defaultDialogConfig = new DialogConfig();
   templateUrl: 'dialog-demo.html',
   styleUrls: ['dialog-demo.css'],
   encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [DialogModule, FormsModule],
 })
 export class DialogDemo {
   dialogRef: DialogRef<string> | null;
@@ -74,6 +77,7 @@ export class DialogDemo {
   `,
   encapsulation: ViewEncapsulation.None,
   styles: [`.hidden-dialog { opacity: 0; }`],
+  standalone: true,
 })
 export class JazzDialog {
   private _dimesionToggle = false;

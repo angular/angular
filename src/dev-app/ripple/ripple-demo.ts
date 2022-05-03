@@ -7,12 +7,27 @@
  */
 
 import {Component, ViewChild} from '@angular/core';
+import {CoreExamplesModule} from '@angular/components-examples/material/core';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRipple} from '@angular/material/core';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
 
 @Component({
   selector: 'ripple-demo',
   templateUrl: 'ripple-demo.html',
   styleUrls: ['ripple-demo.css'],
+  standalone: true,
+  imports: [
+    CoreExamplesModule,
+    FormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatIconModule,
+    MatInputModule,
+  ],
 })
 export class RippleDemo {
   @ViewChild(MatRipple) ripple: MatRipple;

@@ -7,6 +7,9 @@
  */
 
 import {Component} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {CdkPopoverEditExamplesModule} from '@angular/components-examples/cdk-experimental/popover-edit';
+import {PopoverEditExamplesModule} from '@angular/components-examples/material-experimental/popover-edit';
 
 @Component({
   template: `
@@ -31,5 +34,7 @@ import {Component} from '@angular/core';
     <h3 id="mat-popover-edit-tabout">Material popover-edit with mat-table and tab out</h3>
     <popover-edit-tab-out-mat-table-example></popover-edit-tab-out-mat-table-example>
   `,
+  standalone: true,
+  imports: [CdkPopoverEditExamplesModule, PopoverEditExamplesModule, FormsModule],
 })
 export class PopoverEditDemo {}

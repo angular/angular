@@ -13,7 +13,6 @@ ng_module(
         "//src/material/button-toggle",
         "//src/material/checkbox",
         "//src/material/icon",
-        "@npm//@angular/router",
     ],
 )
 

@@ -10,7 +10,6 @@ ng_module(
         ":typography_demo_scss",
     ],
     deps = [
-        "@npm//@angular/router",
     ],
 )
 

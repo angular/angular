@@ -10,6 +10,7 @@ ng_module(
         ":mdc_dialog_demo_scss",
     ],
     deps = [
+        "//src/cdk/drag-drop",
         "//src/material-experimental/mdc-button",
         "//src/material-experimental/mdc-card",
         "//src/material-experimental/mdc-checkbox",
@@ -17,7 +18,6 @@ ng_module(
         "//src/material-experimental/mdc-form-field",
         "//src/material-experimental/mdc-input",
         "//src/material-experimental/mdc-select",
-        "@npm//@angular/router",
     ],
 )
 

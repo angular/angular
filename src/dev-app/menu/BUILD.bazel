@@ -15,7 +15,6 @@ ng_module(
         "//src/material/icon",
         "//src/material/menu",
         "//src/material/toolbar",
-        "@npm//@angular/router",
     ],
 )
 

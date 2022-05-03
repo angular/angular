@@ -6,10 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {Component} from '@angular/core';
-import {MatChipInputEvent} from '@angular/material/chips';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
 import {ThemePalette} from '@angular/material/core';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {MatToolbarModule} from '@angular/material/toolbar';
 
 export interface Person {
   name: string;
@@ -24,6 +32,18 @@ export interface DemoColor {
   selector: 'chips-demo',
   templateUrl: 'chips-demo.html',
   styleUrls: ['chips-demo.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatChipsModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatToolbarModule,
+  ],
 })
 export class ChipsDemo {
   tabIndex = 0;

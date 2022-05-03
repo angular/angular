@@ -15,6 +15,5 @@ ng_module(
         "//src/material/select",
         "//src/material/stepper",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )

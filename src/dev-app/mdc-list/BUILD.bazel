@@ -13,7 +13,6 @@ ng_module(
         "//src/material-experimental/mdc-button",
         "//src/material-experimental/mdc-list",
         "//src/material/icon",
-        "@npm//@angular/router",
     ],
 )
 

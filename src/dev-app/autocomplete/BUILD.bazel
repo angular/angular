@@ -16,7 +16,6 @@ ng_module(
         "//src/material/form-field",
         "//src/material/input",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

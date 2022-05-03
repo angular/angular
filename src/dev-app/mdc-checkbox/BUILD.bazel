@@ -17,7 +17,6 @@ ng_module(
         "//src/material-experimental/mdc-input",
         "//src/material-experimental/mdc-select",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

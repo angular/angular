@@ -7,14 +7,30 @@
  */
 
 import {Component, OnDestroy, NgZone} from '@angular/core';
-import {InputModality, InputModalityDetector} from '@angular/cdk/a11y';
+import {A11yModule, InputModality, InputModalityDetector} from '@angular/cdk/a11y';
 
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {CommonModule} from '@angular/common';
+import {MatButtonModule} from '@angular/material/button';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatSelectModule} from '@angular/material/select';
 
 @Component({
   selector: 'input-modality-detector-demo',
   templateUrl: 'input-modality-detector-demo.html',
+  standalone: true,
+  imports: [
+    A11yModule,
+    CommonModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatRadioModule,
+    MatSelectModule,
+  ],
 })
 export class InputModalityDetectorDemo implements OnDestroy {
   _modality: InputModality = null;

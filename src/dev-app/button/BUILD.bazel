@@ -13,7 +13,6 @@ ng_module(
         "//src/components-examples/material/button",
         "//src/material/button",
         "//src/material/icon",
-        "@npm//@angular/router",
     ],
 )
 

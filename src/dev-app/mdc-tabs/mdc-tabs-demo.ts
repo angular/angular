@@ -7,11 +7,16 @@
  */
 
 import {Component} from '@angular/core';
+import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';
+import {CommonModule} from '@angular/common';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 @Component({
   selector: 'mdc-tabs-demo',
   templateUrl: 'mdc-tabs-demo.html',
   styleUrls: ['mdc-tabs-demo.css'],
+  standalone: true,
+  imports: [MatTabsModule, CommonModule, MatButtonToggleModule],
 })
 export class MdcTabsDemo {
   fitInkBarToContent = true;

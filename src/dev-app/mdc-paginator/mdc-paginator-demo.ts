@@ -7,12 +7,28 @@
  */
 
 import {Component} from '@angular/core';
-import {PageEvent} from '@angular/material-experimental/mdc-paginator';
+import {CommonModule} from '@angular/common';
+import {MatPaginatorModule, PageEvent} from '@angular/material-experimental/mdc-paginator';
+import {FormsModule} from '@angular/forms';
+import {MatCardModule} from '@angular/material-experimental/mdc-card';
+import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
+import {MatInputModule} from '@angular/material-experimental/mdc-input';
+import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-toggle';
 
 @Component({
   selector: 'mdc-paginator-demo',
   templateUrl: 'mdc-paginator-demo.html',
   styleUrls: ['mdc-paginator-demo.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatPaginatorModule,
+    MatSlideToggleModule,
+  ],
 })
 export class MdcPaginatorDemo {
   length = 50;

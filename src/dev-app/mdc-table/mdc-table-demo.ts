@@ -7,8 +7,13 @@
  */
 
 import {Component} from '@angular/core';
+import {MatIconModule} from '@angular/material/icon';
+import {MatTableModule} from '@angular/material-experimental/mdc-table';
+import {MdcTableExamplesModule} from '@angular/components-examples/material-experimental/mdc-table';
 
 @Component({
   templateUrl: 'mdc-table-demo.html',
+  standalone: true,
+  imports: [MatIconModule, MatTableModule, MdcTableExamplesModule],
 })
 export class MdcTableDemo {}

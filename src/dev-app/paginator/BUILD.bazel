@@ -16,7 +16,6 @@ ng_module(
         "//src/material/paginator",
         "//src/material/slide-toggle",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

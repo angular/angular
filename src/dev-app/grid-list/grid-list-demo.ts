@@ -7,11 +7,26 @@
  */
 
 import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatIconModule} from '@angular/material/icon';
 
 @Component({
   selector: 'grid-list-demo',
   templateUrl: 'grid-list-demo.html',
   styleUrls: ['grid-list-demo.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatGridListModule,
+    MatIconModule,
+  ],
 })
 export class GridListDemo {
   tiles: {text: string; cols: number; rows: number; color: string}[] = [

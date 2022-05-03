@@ -11,6 +11,5 @@ ng_module(
     ],
     deps = [
         "//src/cdk-experimental/listbox",
-        "@npm//@angular/router",
     ],
 )

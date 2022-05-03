@@ -12,7 +12,6 @@ ng_module(
     deps = [
         "//src/cdk/clipboard",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

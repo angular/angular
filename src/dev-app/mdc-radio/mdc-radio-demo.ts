@@ -7,11 +7,18 @@
  */
 
 import {Component} from '@angular/core';
+import {MatRadioModule} from '@angular/material-experimental/mdc-radio';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'mdc-radio-demo',
   templateUrl: 'mdc-radio-demo.html',
   styleUrls: ['mdc-radio-demo.css'],
+  standalone: true,
+  imports: [CommonModule, MatRadioModule, FormsModule, MatButtonModule, MatCheckboxModule],
 })
 export class MdcRadioDemo {
   isAlignEnd: boolean = false;

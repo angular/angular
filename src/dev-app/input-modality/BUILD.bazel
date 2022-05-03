@@ -13,6 +13,5 @@ ng_module(
         "//src/material/input",
         "//src/material/radio",
         "//src/material/select",
-        "@npm//@angular/router",
     ],
 )

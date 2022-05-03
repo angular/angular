@@ -12,6 +12,5 @@ ng_module(
         "//src/material-experimental/mdc-slider",
         "//src/material-experimental/mdc-tabs",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )

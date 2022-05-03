@@ -14,6 +14,10 @@ import {
   OnDestroy,
   ViewChild,
 } from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {MatRadioModule} from '@angular/material/radio';
+import {YouTubePlayerModule} from '@angular/youtube-player';
 
 interface Video {
   id: string;
@@ -39,6 +43,8 @@ const VIDEOS: Video[] = [
   selector: 'youtube-player-demo',
   templateUrl: 'youtube-player-demo.html',
   styleUrls: ['youtube-player-demo.css'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, MatRadioModule, YouTubePlayerModule],
 })
 export class YouTubePlayerDemo implements AfterViewInit, OnDestroy {
   @ViewChild('demoYouTubePlayer') demoYouTubePlayer: ElementRef<HTMLDivElement>;

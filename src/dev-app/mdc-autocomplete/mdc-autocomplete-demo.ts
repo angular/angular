@@ -7,7 +7,13 @@
  */
 
 import {Component, ViewChild} from '@angular/core';
-import {FormControl, NgModel} from '@angular/forms';
+import {FormControl, NgModel, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {CommonModule} from '@angular/common';
+import {MatAutocompleteModule} from '@angular/material-experimental/mdc-autocomplete';
+import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {MatCardModule} from '@angular/material-experimental/mdc-card';
+import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
+import {MatInputModule} from '@angular/material-experimental/mdc-input';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
@@ -25,6 +31,17 @@ export interface StateGroup {
   selector: 'mdc-autocomplete-demo',
   templateUrl: 'mdc-autocomplete-demo.html',
   styleUrls: ['mdc-autocomplete-demo.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatAutocompleteModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+  ],
 })
 export class MdcAutocompleteDemo {
   stateCtrl = new FormControl({code: 'CA', name: 'California'});

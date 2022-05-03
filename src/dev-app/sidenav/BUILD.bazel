@@ -15,7 +15,6 @@ ng_module(
         "//src/material/sidenav",
         "//src/material/toolbar",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

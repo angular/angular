@@ -8,6 +8,10 @@
 
 import {Component} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 // TODO(josephperrott): Add an automatically filling example progress bar.
 
@@ -15,6 +19,8 @@ import {ThemePalette} from '@angular/material/core';
   selector: 'progress-bar-demo',
   templateUrl: 'progress-bar-demo.html',
   styleUrls: ['progress-bar-demo.css'],
+  standalone: true,
+  imports: [FormsModule, MatButtonModule, MatButtonToggleModule, MatProgressBarModule],
 })
 export class ProgressBarDemo {
   color: ThemePalette = 'primary';

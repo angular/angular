@@ -6,14 +6,38 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbstractControl, FormBuilder, Validators} from '@angular/forms';
-
 import {Component} from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import {ThemePalette} from '@angular/material/core';
+import {CommonModule} from '@angular/common';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {MatStepperModule} from '@angular/material/stepper';
 
 @Component({
   selector: 'stepper-demo',
   templateUrl: 'stepper-demo.html',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatStepperModule,
+    MatSelectModule,
+    ReactiveFormsModule,
+  ],
 })
 export class StepperDemo {
   isNonLinear = false;

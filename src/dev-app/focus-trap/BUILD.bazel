@@ -18,7 +18,6 @@ ng_module(
         "//src/material/card",
         "//src/material/dialog",
         "//src/material/toolbar",
-        "@npm//@angular/router",
     ],
 )
 

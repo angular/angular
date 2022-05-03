@@ -13,7 +13,6 @@ ng_module(
         "//src/cdk/layout",
         "//src/material/grid-list",
         "//src/material/icon",
-        "@npm//@angular/router",
     ],
 )
 

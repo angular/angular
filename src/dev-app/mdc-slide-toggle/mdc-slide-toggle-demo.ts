@@ -7,11 +7,15 @@
  */
 
 import {Component} from '@angular/core';
+import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-toggle';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'mdc-slide-toggle-demo',
   templateUrl: 'mdc-slide-toggle-demo.html',
   styleUrls: ['mdc-slide-toggle-demo.css'],
+  standalone: true,
+  imports: [FormsModule, MatSlideToggleModule],
 })
 export class MdcSlideToggleDemo {
   firstToggle: boolean;

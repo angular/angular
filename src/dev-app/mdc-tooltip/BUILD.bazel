@@ -17,7 +17,6 @@ ng_module(
         "//src/material-experimental/mdc-tooltip",
         "@npm//@angular/common",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

@@ -15,7 +15,6 @@ ng_module(
         "//src/material-experimental/mdc-progress-spinner",
         "//src/material/button-toggle",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

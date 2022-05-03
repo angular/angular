@@ -7,13 +7,18 @@
  */
 
 import {Component, ViewEncapsulation} from '@angular/core';
-import {MatCardAppearance} from '@angular/material-experimental/mdc-card';
+import {MatCardAppearance, MatCardModule} from '@angular/material-experimental/mdc-card';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
 
 @Component({
   selector: 'mdc-card-demo',
   templateUrl: 'mdc-card-demo.html',
   styleUrls: ['mdc-card-demo.css'],
   encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [MatCardModule, MatButtonModule, MatCheckboxModule, FormsModule],
 })
 export class MdcCardDemo {
   appearance: MatCardAppearance = 'raised';

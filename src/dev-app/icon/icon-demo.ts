@@ -7,13 +7,15 @@
  */
 
 import {Component} from '@angular/core';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MatIconModule, MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'mat-icon-demo',
   templateUrl: 'icon-demo.html',
   styleUrls: ['icon-demo.css'],
+  standalone: true,
+  imports: [MatIconModule],
 })
 export class IconDemo {
   constructor(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {

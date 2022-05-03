@@ -20,7 +20,6 @@ ng_module(
         "//src/material/list",
         "//src/material/select",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
 

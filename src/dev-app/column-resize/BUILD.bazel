@@ -10,6 +10,5 @@ ng_module(
         "//src/components-examples/material-experimental/column-resize",
         "//src/dev-app/example",
         "//src/material/expansion",
-        "@npm//@angular/router",
     ],
 )

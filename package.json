@@ -71,7 +71,7 @@
     "@angular-devkit/build-angular": "14.0.0-next.12",
     "@angular-devkit/core": "14.0.0-next.12",
     "@angular-devkit/schematics": "14.0.0-next.12",
-    "@angular/bazel": "14.0.0-next.15",
+    "@angular/bazel": "14.0.0-next.14",
     "@angular/cli": "14.0.0-next.12",
     "@angular/compiler-cli": "14.0.0-next.15",
     "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#335aad1b04b3d95cd4cb1d719e73b93d4e90cce3",

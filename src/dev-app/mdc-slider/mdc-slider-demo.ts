@@ -7,11 +7,16 @@
  */
 
 import {Component} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {MatSliderModule} from '@angular/material-experimental/mdc-slider';
+import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';
 
 @Component({
   selector: 'mdc-slider-demo',
   templateUrl: 'mdc-slider-demo.html',
   styles: ['.mat-mdc-slider { width: 300px; }'],
+  standalone: true,
+  imports: [FormsModule, MatSliderModule, MatTabsModule],
 })
 export class MdcSliderDemo {
   demo: number;

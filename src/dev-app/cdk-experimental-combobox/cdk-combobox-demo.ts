@@ -7,8 +7,12 @@
  */
 
 import {Component} from '@angular/core';
+import {CdkComboboxModule} from '@angular/cdk-experimental/combobox';
+import {CommonModule} from '@angular/common';
 
 @Component({
   templateUrl: 'cdk-combobox-demo.html',
+  standalone: true,
+  imports: [CdkComboboxModule, CommonModule],
 })
 export class CdkComboboxDemo {}

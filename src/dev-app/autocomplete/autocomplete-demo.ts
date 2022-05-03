@@ -7,7 +7,13 @@
  */
 
 import {Component, ViewChild} from '@angular/core';
-import {FormControl, NgModel} from '@angular/forms';
+import {CommonModule} from '@angular/common';
+import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
@@ -25,6 +31,17 @@ export interface StateGroup {
   selector: 'autocomplete-demo',
   templateUrl: 'autocomplete-demo.html',
   styleUrls: ['autocomplete-demo.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatAutocompleteModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+  ],
 })
 export class AutocompleteDemo {
   stateCtrl = new FormControl({code: 'CA', name: 'California'});

@@ -6,14 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BreakpointObserver, Breakpoints, BreakpointState} from '@angular/cdk/layout';
 import {Component} from '@angular/core';
+import {BreakpointObserver, Breakpoints, BreakpointState, LayoutModule} from '@angular/cdk/layout';
+import {CommonModule} from '@angular/common';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatIconModule} from '@angular/material/icon';
 import {Observable} from 'rxjs';
 
 @Component({
   selector: 'screen-type',
   templateUrl: 'screen-type-demo.html',
   styleUrls: ['screen-type-demo.css'],
+  standalone: true,
+  imports: [CommonModule, LayoutModule, MatGridListModule, MatIconModule],
 })
 export class ScreenTypeDemo {
   isHandset: Observable<BreakpointState>;

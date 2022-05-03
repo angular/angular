@@ -10,6 +10,5 @@ ng_module(
         "//src/components-examples/material-experimental/selection",
         "//src/dev-app/example",
         "@npm//@angular/forms",
-        "@npm//@angular/router",
     ],
 )
