@@ -9,7 +9,7 @@ All of our npm dependencies are locked via the `yarn.lock` file for the followin
 
 Before changing a dependency, do the following:
 
-- make sure you are in sync with `upstream/master`: `git fetch upstream && git rebase upstream/master`
+- make sure you are in sync with `upstream/main`: `git fetch upstream && git rebase upstream/main`
 - ensure that your `node_modules` directory is not stale by running `yarn install`
 
 

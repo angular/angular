@@ -25,8 +25,8 @@ readonly CONTAINER_NAME=aio
   readonly lastDeployedCommit=$(git rev-parse HEAD)
   echo "Currently at commit $lastDeployedCommit."
 
-  # Pull latest master from origin.
-  git pull origin master
+  # Pull latest main from origin.
+  git pull origin main
 
   # Do not update the server unless files inside `aio-builds-setup/` have changed
   # or the last attempt failed (identified by the provisional image still being around).

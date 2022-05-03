@@ -5,18 +5,18 @@ that emulates CRUD operations over a RESTy API.
 
 It intercepts Angular `Http` and `HttpClient` requests that would otherwise go to the remote server and redirects them to an in-memory data store that you control.
 
-See [Austin McDaniel's article](https://medium.com/@amcdnl/mocking-with-angular-more-than-just-unit-testing-cbb7908c9fcc) 
+See [Austin McDaniel's article](https://medium.com/@amcdnl/mocking-with-angular-more-than-just-unit-testing-cbb7908c9fcc)
 for a quick introduction.
 
 _This package used to live [in its own repository](https://github.com/angular/in-memory-web-api)._
 
 ### _It used to work and now it doesn't :-(_
 
-Perhaps you installed a new version of this library? Check the 
-[CHANGELOG.md](https://github.com/angular/angular/blob/master/packages/misc/angular-in-memory-web-api/CHANGELOG.md) 
+Perhaps you installed a new version of this library? Check the
+[CHANGELOG.md](https://github.com/angular/angular/blob/main/packages/misc/angular-in-memory-web-api/CHANGELOG.md)
 for breaking changes that may have affected your app.
 
-If that doesn't explain it, create an 
+If that doesn't explain it, create an
 [issue on github](https://github.com/angular/angular/issues),
 preferably with a small repro.
 
@@ -30,7 +30,7 @@ You won't have to build and start a test server.
 * Share examples with the community in a web coding environment such as Plunker or CodePen.
 Create Angular issues and StackOverflow answers supported by live code.
 
-* Simulate operations against data collections that aren't yet implemented on your dev/test server. 
+* Simulate operations against data collections that aren't yet implemented on your dev/test server.
 You can pass requests thru to the dev/test server for collections that are supported.
 
 * Write unit test apps that read and write data.
@@ -44,25 +44,25 @@ This can be especially useful for CI (continuous integration) builds.
 
 >**LIMITATIONS**
 >
->The _in-memory-web-api_ exists primarily to support the 
+>The _in-memory-web-api_ exists primarily to support the
 [Angular documentation](https://angular.io/docs/ts/latest/ "Angular documentation web site").
 It is not supposed to emulate every possible real world web API and is not intended for production use.
 >
->Most importantly, it is ***always experimental***. 
-We will make breaking changes and we won't feel bad about it 
-because this is a development tool, not a production product. 
+>Most importantly, it is ***always experimental***.
+We will make breaking changes and we won't feel bad about it
+because this is a development tool, not a production product.
 We do try to tell you about such changes in the `CHANGELOG.md`
 and we fix bugs as fast as we can.
 
 ## HTTP request handling
-This in-memory web api service processes an HTTP request and 
+This in-memory web api service processes an HTTP request and
 returns an `Observable` of HTTP `Response` object
 in the manner of a RESTy web api.
 It natively handles URI patterns in the form `:base/:collectionName/:id?`
 
 Examples:
 ```ts
-  // for requests to an `api` base URL that gets heroes from a 'heroes' collection 
+  // for requests to an `api` base URL that gets heroes from a 'heroes' collection
   GET api/heroes          // all heroes
   GET api/heroes/42       // the hero with id=42
   GET api/heroes?name=^j  // 'j' is a regex; returns heroes whose name starting with 'j' or 'J'
@@ -77,7 +77,7 @@ The in-memory web api service processes these requests against a "database" - a 
 
 Create an `InMemoryDataService` class that implements `InMemoryDbService`.
 
-At minimum it must implement `createDb` which 
+At minimum it must implement `createDb` which
 creates a "database" hash whose keys are collection names
 and whose values are arrays of collection objects to return or update.
 For example:
@@ -107,7 +107,7 @@ Return the database _object_, an _observable_ of that object, or a _promise_ of 
 
 * The in-memory web api calls your `InMemoryDbService` data service class's  `createDb` method on two occasions.
 
-  1. when it handles the _first_ HTTP request 
+  1. when it handles the _first_ HTTP request
   1. when it receives a `resetdb` [command](#commands).
 
   In the command case, the service passes in a `RequestInfo` object,
@@ -137,7 +137,7 @@ export class AppModule { ... }
 
 **_Notes_**
 
-* Always import the `HttpClientInMemoryWebApiModule` _after_ the `HttpClientModule` 
+* Always import the `HttpClientInMemoryWebApiModule` _after_ the `HttpClientModule`
 to ensure that the in-memory backend provider supersedes the Angular version.
 
 * You can setup the in-memory web api within a lazy loaded feature module by calling the `.forFeature` method as you would `.forRoot`.
@@ -154,12 +154,12 @@ CLI-based apps can exclude the provider in production builds like this:
   ```
 
 # Examples
-The [tests](https://github.com/angular/angular/blob/master/packages/misc/angular-in-memory-web-api/test)
+The [tests](https://github.com/angular/angular/blob/main/packages/misc/angular-in-memory-web-api/test)
 are a good place to learn how to setup and use this in-memory web api library.
 
 See also the example source code in the official Angular.io documentation such as the
 [HttpClient](https://angular.io/guide/http) guide and the
-[Tour of Heroes](https://angular.io/tutorial/toh-pt6). 
+[Tour of Heroes](https://angular.io/tutorial/toh-pt6).
 
 # Advanced Features
 Some features are not readily apparent in the basic usage described above.
@@ -187,10 +187,10 @@ See the `handleRequest` method implementation for details.
 
 ## Default delayed response
 
-By default this service adds a 500ms delay 
+By default this service adds a 500ms delay
 to all data requests to simulate round-trip latency.
 
->[Command requests](#commands) have zero added delay as they concern 
+>[Command requests](#commands) have zero added delay as they concern
 in-memory service configuration and do not emulate real data requests.
 
 You can change or eliminate the latency by setting a different `delay` value:
@@ -200,7 +200,7 @@ You can change or eliminate the latency by setting a different `delay` value:
 ```
 
 ## Simple query strings
-Pass custom filters as a regex pattern via query string. 
+Pass custom filters as a regex pattern via query string.
 The query string defines which property and value to match.
 
 Format: `/app/heroes/?propertyName=regexPattern`
@@ -209,13 +209,13 @@ The following example matches all names that start with the letter 'j' or 'J' in
 
 `/app/heroes/?name=^j`
 
->Search pattern matches are case insensitive by default. 
+>Search pattern matches are case insensitive by default.
 Set `config.caseSensitiveSearch = true` if needed.
 
 <a id="passthru"></a>
 ## Pass thru to a live server
 
-If an existing, running remote server should handle requests for collections 
+If an existing, running remote server should handle requests for collections
 that are not in the in-memory database, set `Config.passThruUnknownUrl: true`.
 Then this service will forward unrecognized requests to the remote server
 via the Angular default `XHR` backend (it depends on whether your using `Http` or `HttpClient`).
@@ -224,7 +224,7 @@ via the Angular default `XHR` backend (it depends on whether your using `Http` o
 ## Commands
 
 The client may issue a command request to get configuration state
-from the in-memory web api service, reconfigure it, 
+from the in-memory web api service, reconfigure it,
 or reset the in-memory database.
 
 When the last segment of the _api base path_ is "commands", the `collectionName` is treated as the _command_.
@@ -261,7 +261,7 @@ http
         .map(data => data.data as Hero[])
   )
 
-  // execute the request sequence and 
+  // execute the request sequence and
   // do something with the heroes
   .subscribe(...)
 ```
@@ -318,22 +318,22 @@ In this way you can intercept and parse some URLs and leave the others to the de
 
 Collection items are presumed to have a primary key property called `id`.
 
-You can specify the `id` while adding a new item. 
+You can specify the `id` while adding a new item.
 The service will blindly use that `id`; it does not check for uniqueness.
 
 If you do not specify the `id`, the service generates one via the `genId` method.
 
 You can override the default id generator with a method called `genId` in your `InMemoryDbService`.
-Your method receives the new item's collection and collection name. 
+Your method receives the new item's collection and collection name.
 It should return the generated id.
-If your generator returns `null`|`undefined`, the service uses the default generator. 
+If your generator returns `null`|`undefined`, the service uses the default generator.
 
 ## _responseInterceptor_
 
 You can change the response returned by the service's default HTTP methods.
 A typical reason to intercept is to add a header that your application is expecting.
 
-To intercept responses, add a `responseInterceptor` method to your `InMemoryDbService` class. 
+To intercept responses, add a `responseInterceptor` method to your `InMemoryDbService` class.
 The service calls your interceptor like this:
 ```ts
 responseOptions = this.responseInterceptor(responseOptions, requestInfo);
@@ -344,7 +344,7 @@ responseOptions = this.responseInterceptor(responseOptions, requestInfo);
 
 You may have HTTP requests that the in-memory web api can't handle properly.
 
-You can override any HTTP method by implementing a method 
+You can override any HTTP method by implementing a method
 of that name in your `InMemoryDbService`.
 
 Your method's name must be the same as the HTTP method name but **all lowercase**.
@@ -358,11 +358,11 @@ Your custom HTTP method must return either:
 * `Observable<Response>` - you handled the request and the response is available from this
 observable.  It _should be "cold"_.
 
-* `null`/`undefined` - you decided not to intervene, 
+* `null`/`undefined` - you decided not to intervene,
 perhaps because you wish to intercept only certain paths for the given HTTP method.
 The service continues with its default processing of the HTTP request.
 
-The `RequestInfo` is an interface defined in `src/in-mem/interfaces.ts`. 
+The `RequestInfo` is an interface defined in `src/in-mem/interfaces.ts`.
 Its members include:
 ```ts
 req: Request;           // the request object from the client
@@ -377,7 +377,7 @@ and compose a response.
 
 ## In-memory Web Api Examples
 
-The [test fixtures](https://github.com/angular/angular/tree/master/packages/misc/angular-in-memory-web-api/test/fixtures)
+The [test fixtures](https://github.com/angular/angular/tree/main/packages/misc/angular-in-memory-web-api/test/fixtures)
 demonstrates library usage with tested examples.
 
 The `HeroInMemDataService` class (in `test/fixtures/hero-in-mem-data-service.ts`) is a Hero-oriented `InMemoryDbService`

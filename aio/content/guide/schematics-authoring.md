@@ -95,7 +95,7 @@ For example, the hypothetical "Hello World" schematic might have the following s
 }
 </code-example>
 
-See examples of schema files for the Angular CLI command schematics in [`@schematics/angular`](https://github.com/angular/angular-cli/blob/master/packages/schematics/angular/application/schema.json).
+See examples of schema files for the Angular CLI command schematics in [`@schematics/angular`](https://github.com/angular/angular-cli/blob/main/packages/schematics/angular/application/schema.json).
 
 ### Schematic prompts
 
