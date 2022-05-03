@@ -29,3 +29,9 @@ export {MapTrafficLayer} from './map-traffic-layer/map-traffic-layer';
 export {MapTransitLayer} from './map-transit-layer/map-transit-layer';
 export {MapHeatmapLayer, HeatmapData} from './map-heatmap-layer/map-heatmap-layer';
 export {MapGeocoder, MapGeocoderResponse} from './map-geocoder/map-geocoder';
+export {
+  MarkerClustererOptions,
+  ClusterIconStyle,
+  AriaLabelFn,
+  Calculator,
+} from './map-marker-clusterer/marker-clusterer-types';

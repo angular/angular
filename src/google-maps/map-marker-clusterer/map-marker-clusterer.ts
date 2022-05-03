@@ -8,7 +8,6 @@
 
 // Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/1265
 /// <reference types="google.maps" />
-/// <reference path="marker-clusterer-types.ts" />
 
 import {
   AfterContentInit,
@@ -31,6 +30,14 @@ import {takeUntil} from 'rxjs/operators';
 import {GoogleMap} from '../google-map/google-map';
 import {MapEventManager} from '../map-event-manager';
 import {MapMarker} from '../map-marker/map-marker';
+import {
+  AriaLabelFn,
+  Calculator,
+  Cluster,
+  ClusterIconStyle,
+  MarkerClusterer,
+  MarkerClustererOptions,
+} from './marker-clusterer-types';
 
 /** Default options for a clusterer. */
 const DEFAULT_CLUSTERER_OPTIONS: MarkerClustererOptions = {};
@@ -199,7 +206,7 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnChanges, 
   ngOnInit() {
     if (this._canInitialize) {
       const clustererWindow = window as unknown as typeof globalThis & {
-        MarkerClusterer?: MarkerClusterer;
+        MarkerClusterer?: typeof MarkerClusterer;
       };
 
       if (!clustererWindow.MarkerClusterer && (typeof ngDevMode === 'undefined' || ngDevMode)) {
@@ -214,7 +221,7 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnChanges, 
       // We'll bring it back in inside the `MapEventManager` only for the events that the
       // user has subscribed to.
       this._ngZone.runOutsideAngular(() => {
-        this.markerClusterer = new MarkerClusterer(
+        this.markerClusterer = new clustererWindow.MarkerClusterer!(
           this._googleMap.googleMap!,
           [],
           this._combineOptions(),

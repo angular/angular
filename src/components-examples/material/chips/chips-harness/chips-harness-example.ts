@@ -9,6 +9,6 @@ import {Component} from '@angular/core';
 })
 export class ChipsHarnessExample {
   isDisabled = false;
-  remove = jasmine.createSpy('remove spy');
-  add = jasmine.createSpy('add spy');
+  remove: () => void = jasmine.createSpy('remove spy');
+  add: () => void = jasmine.createSpy('add spy');
 }

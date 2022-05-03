@@ -14,7 +14,7 @@
  * See
  * googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.markerclusterer.html
  */
-declare class MarkerClusterer {
+export declare class MarkerClusterer {
   constructor(
     map: google.maps.Map,
     markers?: google.maps.Marker[],
@@ -93,7 +93,7 @@ declare class MarkerClusterer {
  *
  * See googlemaps.github.io/v3-utility-library/classes/_google_markerclustererplus.cluster.html
  */
-declare class Cluster {
+export declare class Cluster {
   constructor(markerClusterer: MarkerClusterer);
   getCenter(): google.maps.LatLng;
   getMarkers(): google.maps.Marker[];
@@ -108,7 +108,7 @@ declare class Cluster {
  * googlemaps.github.io/v3-utility-library/classes/
  * _google_markerclustererplus.markerclustereroptions.html
  */
-declare interface MarkerClustererOptions {
+export declare interface MarkerClustererOptions {
   ariaLabelFn?: AriaLabelFn;
   averageCenter?: boolean;
   batchSize?: number;
@@ -136,7 +136,7 @@ declare interface MarkerClustererOptions {
  * googlemaps.github.io/v3-utility-library/interfaces/
  * _google_markerclustererplus.clustericonstyle.html
  */
-declare interface ClusterIconStyle {
+export declare interface ClusterIconStyle {
   anchorIcon?: [number, number];
   anchorText?: [number, number];
   backgroundPosition?: string;
@@ -160,7 +160,7 @@ declare interface ClusterIconStyle {
  * googlemaps.github.io/v3-utility-library/interfaces/
  * _google_markerclustererplus.clustericoninfo.html
  */
-declare interface ClusterIconInfo {
+export declare interface ClusterIconInfo {
   index: number;
   text: string;
   title: string;
@@ -171,14 +171,14 @@ declare interface ClusterIconInfo {
  *
  * See googlemaps.github.io/v3-utility-library/modules/_google_markerclustererplus.html#arialabelfn
  */
-declare type AriaLabelFn = (text: string) => string;
+export declare type AriaLabelFn = (text: string) => string;
 
 /**
  * Function type alias for calculating how a marker cluster is displayed.
  *
  * See googlemaps.github.io/v3-utility-library/modules/_google_markerclustererplus.html#calculator
  */
-declare type Calculator = (
+export declare type Calculator = (
   markers: google.maps.Marker[],
   clusterIconStylesCount: number,
 ) => ClusterIconInfo;

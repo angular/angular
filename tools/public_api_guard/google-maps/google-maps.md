@@ -19,6 +19,44 @@ import { QueryList } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
 
 // @public
+export type AriaLabelFn = (text: string) => string;
+
+// @public
+export type Calculator = (markers: google.maps.Marker[], clusterIconStylesCount: number) => ClusterIconInfo;
+
+// @public
+export interface ClusterIconStyle {
+    // (undocumented)
+    anchorIcon?: [number, number];
+    // (undocumented)
+    anchorText?: [number, number];
+    // (undocumented)
+    backgroundPosition?: string;
+    // (undocumented)
+    className?: string;
+    // (undocumented)
+    fontFamily?: string;
+    // (undocumented)
+    fontStyle?: string;
+    // (undocumented)
+    fontWeight?: string;
+    // (undocumented)
+    height: number;
+    // (undocumented)
+    textColor?: string;
+    // (undocumented)
+    textDecoration?: string;
+    // (undocumented)
+    textLineHeight?: number;
+    // (undocumented)
+    textSize?: number;
+    // (undocumented)
+    url?: string;
+    // (undocumented)
+    width: number;
+}
+
+// @public
 const DEFAULT_HEIGHT = "500px";
 
 // @public
@@ -655,6 +693,46 @@ export class MapTransitLayer extends MapBaseLayer {
     static ɵdir: i0.ɵɵDirectiveDeclaration<MapTransitLayer, "map-transit-layer", ["mapTransitLayer"], {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MapTransitLayer, never>;
+}
+
+// @public
+export interface MarkerClustererOptions {
+    // (undocumented)
+    ariaLabelFn?: AriaLabelFn;
+    // (undocumented)
+    averageCenter?: boolean;
+    // (undocumented)
+    batchSize?: number;
+    // (undocumented)
+    batchSizeIE?: number;
+    // (undocumented)
+    calculator?: Calculator;
+    // (undocumented)
+    clusterClass?: string;
+    // (undocumented)
+    enableRetinaIcons?: boolean;
+    // (undocumented)
+    gridSize?: number;
+    // (undocumented)
+    ignoreHidden?: boolean;
+    // (undocumented)
+    imageExtension?: string;
+    // (undocumented)
+    imagePath?: string;
+    // (undocumented)
+    imageSizes?: number[];
+    // (undocumented)
+    maxZoom?: number;
+    // (undocumented)
+    minimumClusterSize?: number;
+    // (undocumented)
+    styles?: ClusterIconStyle[];
+    // (undocumented)
+    title?: string;
+    // (undocumented)
+    zIndex?: number;
+    // (undocumented)
+    zoomOnClick?: boolean;
 }
 
 // (No @packageDocumentation comment for this package)

@@ -12,6 +12,13 @@ import {
   createMarkerSpy,
 } from '../testing/fake-google-map-utils';
 import {MapMarkerClusterer} from './map-marker-clusterer';
+import {
+  AriaLabelFn,
+  Calculator,
+  ClusterIconStyle,
+  MarkerClusterer,
+  MarkerClustererOptions,
+} from './marker-clusterer-types';
 
 describe('MapMarkerClusterer', () => {
   let mapSpy: jasmine.SpyObj<google.maps.Map>;
