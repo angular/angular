@@ -9,7 +9,7 @@
 // These tests mainly check the types of strongly typed form controls, which is generally enforced
 // at compile time.
 
-import {FormBuilder, UntypedFormBuilder} from '../src/form_builder';
+import {FormBuilder, NonNullableFormBuilder, UntypedFormBuilder} from '../src/form_builder';
 import {AbstractControl, FormArray, FormControl, FormGroup, UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators} from '../src/forms';
 import {FormRecord} from '../src/model/form_group';
 
@@ -1268,6 +1268,191 @@ describe('Typed Class', () => {
         let t1 = myParty.controls;
         t1 = null as unknown as ControlType;
       }
+    });
+  });
+
+  describe('NonNullFormBuilder', () => {
+    let fb: NonNullableFormBuilder;
+
+    beforeEach(() => {
+      fb = new FormBuilder().nonNullable;
+    });
+
+    describe('should build FormControls', () => {
+      it('non-nullably from values', () => {
+        const c = fb.control('foo');
+        {
+          type RawValueType = string;
+          let t: RawValueType = c.getRawValue();
+          let t1 = c.getRawValue();
+          t1 = null as unknown as RawValueType;
+        }
+        c.reset();
+        expect(c.value).not.toBeNull;
+      });
+    });
+
+    describe('should build FormGroups', () => {
+      it('from objects with plain values', () => {
+        const c = fb.group({foo: 'bar'});
+        {
+          type ControlsType = {foo: FormControl<string>};
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+        c.reset();
+        expect(c.value).toEqual({foo: 'bar'});
+      });
+
+      it('from objects with FormControlState', () => {
+        const c = fb.group({foo: {value: 'bar', disabled: false}});
+        {
+          type ControlsType = {foo: FormControl<string>};
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+        c.reset();
+        expect(c.value).toEqual({foo: 'bar'});
+      });
+
+      it('from objects with ControlConfigs', () => {
+        const c = fb.group({foo: ['bar']});
+        {
+          type ControlsType = {foo: FormControl<string>};
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+        c.reset();
+        expect(c.value).toEqual({foo: 'bar'});
+      });
+
+      it('from objects with ControlConfigs and validators', () => {
+        const c = fb.group({foo: ['bar', Validators.required]});
+        {
+          type ControlsType = {foo: FormControl<string>};
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+        c.reset();
+        expect(c.value).toEqual({foo: 'bar'});
+      });
+
+      it('from objects with ControlConfigs and validator lists', () => {
+        const c = fb.group({foo: ['bar', [Validators.required, Validators.email]]});
+        {
+          type ControlsType = {foo: FormControl<string>};
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+        c.reset();
+        expect(c.value).toEqual({foo: 'bar'});
+      });
+
+      it('from objects with ControlConfigs and explicit types', () => {
+        const c: FormGroup<{foo: FormControl<string>}> =
+            fb.group({foo: ['bar', [Validators.required, Validators.email]]});
+        {
+          type ControlsType = {foo: FormControl<string>};
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+        c.reset();
+        expect(c.value).toEqual({foo: 'bar'});
+      });
+
+      describe('from objects with FormControls', () => {
+        it('from objects with builder FormGroups', () => {
+          const c = fb.group({foo: fb.group({baz: 'bar'})});
+          {
+            type ControlsType = {foo: FormGroup<{baz: FormControl<string>}>};
+            let t: ControlsType = c.controls;
+            let t1 = c.controls;
+            t1 = null as unknown as ControlsType;
+          }
+          c.reset();
+          expect(c.value).toEqual({foo: {baz: 'bar'}});
+        });
+
+        it('from objects with builder FormArrays', () => {
+          const c = fb.group({foo: fb.array(['bar'])});
+          {
+            type ControlsType = {foo: FormArray<FormControl<string>>};
+            let t: ControlsType = c.controls;
+            let t1 = c.controls;
+            t1 = null as unknown as ControlsType;
+          }
+          c.reset();
+          expect(c.value).toEqual({foo: ['bar']});
+        });
+      });
+    });
+
+    describe('should build FormArrays', () => {
+      it('from arrays with plain values', () => {
+        const c = fb.array(['foo']);
+        {
+          type ControlsType = Array<FormControl<string>>;
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+        c.reset();
+        expect(c.value).toEqual(['foo']);
+      });
+
+      it('from arrays with FormControlStates', () => {
+        const c = fb.array([{value: 'foo', disabled: false}]);
+        {
+          type ControlsType = Array<FormControl<string>>;
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+        c.reset();
+        expect(c.value).toEqual(['foo']);
+      });
+
+      it('from arrays with ControlConfigs', () => {
+        const c = fb.array([['foo']]);
+        {
+          type ControlsType = Array<FormControl<string>>;
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+        c.reset();
+        expect(c.value).toEqual(['foo']);
+      });
+
+      it('from arrays with builder FormArrays', () => {
+        const c = fb.array([fb.array(['foo'])]);
+        {
+          type ControlsType = Array<FormArray<FormControl<string>>>;
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+        c.reset();
+        expect(c.value).toEqual([['foo']]);
+      });
+
+      it('from arrays with builder FormGroups', () => {
+        const c = fb.array([fb.group({bar: 'foo'})]);
+        {
+          type ControlsType = Array<FormGroup<{bar: FormControl<string>}>>;
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+        c.reset();
+        expect(c.value).toEqual([{bar: 'foo'}]);
+      });
     });
   });
 });
