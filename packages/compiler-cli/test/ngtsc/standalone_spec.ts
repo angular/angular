@@ -353,6 +353,32 @@ runInEachFileSystem(() => {
         expect(diags).toContain(`Type 'number' is not assignable to type 'string'.`);
         expect(diags).toContain(`Type 'boolean' is not assignable to type 'string'.`);
       });
+
+      it('should not spam errors if imports is misconfigured', () => {
+        env.write('test.ts', `
+          import {Component, Input} from '@angular/core';
+
+          @Component({
+            standalone: true,
+            selector: 'dep-cmp',
+            template: '',
+          })
+          export class DepCmp {}
+
+          @Component({
+            // missing standalone: true, would ordinarily cause template type-checking errors
+            // as well as an error about imports on a non-standalone component.
+            imports: [DepCmp],
+            selector: 'test-cmp',
+            template: '<dep-cmp></dep-cmp>',
+          })
+          export class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain('imports');
+      });
     });
 
     describe('NgModule-side', () => {
