@@ -7,10 +7,10 @@
  */
 
 import {FocusMonitor, FocusTrapFactory, InteractivityChecker} from '@angular/cdk/a11y';
+import {OverlayRef} from '@angular/cdk/overlay';
 import {DOCUMENT} from '@angular/common';
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   Inject,
@@ -38,8 +38,8 @@ import {cssClasses, numbers} from '@material/dialog';
   host: {
     'class': 'mat-mdc-dialog-container mdc-dialog',
     'tabindex': '-1',
-    'aria-modal': 'true',
-    '[id]': '_id',
+    '[attr.aria-modal]': '_config.ariaModal',
+    '[id]': '_config.id',
     '[attr.role]': '_config.role',
     '[attr.aria-labelledby]': '_config.ariaLabel ? null : _ariaLabelledBy',
     '[attr.aria-label]': '_config.ariaLabel',
@@ -67,30 +67,31 @@ export class MatDialogContainer extends _MatDialogContainerBase implements OnDes
   constructor(
     elementRef: ElementRef,
     focusTrapFactory: FocusTrapFactory,
-    changeDetectorRef: ChangeDetectorRef,
     @Optional() @Inject(DOCUMENT) document: any,
-    config: MatDialogConfig,
+    dialogConfig: MatDialogConfig,
     checker: InteractivityChecker,
     ngZone: NgZone,
+    overlayRef: OverlayRef,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) private _animationMode?: string,
     focusMonitor?: FocusMonitor,
   ) {
     super(
       elementRef,
       focusTrapFactory,
-      changeDetectorRef,
       document,
-      config,
+      dialogConfig,
       checker,
       ngZone,
+      overlayRef,
       focusMonitor,
     );
   }
 
-  override _initializeWithAttachedContent() {
+  protected override _contentAttached(): void {
     // Delegate to the original dialog-container initialization (i.e. saving the
     // previous element, setting up the focus trap and moving focus to the container).
-    super._initializeWithAttachedContent();
+    super._contentAttached();
+
     // Note: Usually we would be able to use the MDC dialog foundation here to handle
     // the dialog animation for us, but there are a few reasons why we just leverage
     // their styles and not use the runtime foundation code:
@@ -103,7 +104,9 @@ export class MatDialogContainer extends _MatDialogContainerBase implements OnDes
     this._startOpenAnimation();
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
+    super.ngOnDestroy();
+
     if (this._animationTimer !== null) {
       clearTimeout(this._animationTimer);
     }
@@ -177,7 +180,6 @@ export class MatDialogContainer extends _MatDialogContainerBase implements OnDes
    */
   private _finishDialogClose = () => {
     this._clearAnimationClasses();
-    this._restoreFocus();
     this._animationStateChanged.emit({state: 'closed', totalTime: this._closeAnimationDuration});
   };
 

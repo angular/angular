@@ -1325,6 +1325,7 @@ describe('MDC-based MatDialog', () => {
 
       tick(500);
       viewContainerFixture.detectChanges();
+      flushMicrotasks();
       expect(lastFocusOrigin!).withContext('Expected the trigger button to be blurred').toBeNull();
 
       dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
@@ -1359,6 +1360,7 @@ describe('MDC-based MatDialog', () => {
 
       tick(500);
       viewContainerFixture.detectChanges();
+      flushMicrotasks();
       expect(lastFocusOrigin!).withContext('Expected the trigger button to be blurred').toBeNull();
 
       const backdrop = overlayContainerElement.querySelector(
@@ -1395,6 +1397,7 @@ describe('MDC-based MatDialog', () => {
 
       tick(500);
       viewContainerFixture.detectChanges();
+      flushMicrotasks();
       expect(lastFocusOrigin!).withContext('Expected the trigger button to be blurred').toBeNull();
 
       const closeButton = overlayContainerElement.querySelector(
@@ -1434,6 +1437,7 @@ describe('MDC-based MatDialog', () => {
 
       tick(500);
       viewContainerFixture.detectChanges();
+      flushMicrotasks();
       expect(lastFocusOrigin!).withContext('Expected the trigger button to be blurred').toBeNull();
 
       const closeButton = overlayContainerElement.querySelector(

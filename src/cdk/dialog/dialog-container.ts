@@ -24,7 +24,6 @@ import {
 } from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   ComponentRef,
@@ -67,7 +66,7 @@ export function throwDialogContentAlreadyAttachedError() {
 })
 export class CdkDialogContainer<C extends DialogConfig = DialogConfig>
   extends BasePortalOutlet
-  implements AfterViewInit, OnDestroy
+  implements OnDestroy
 {
   protected _document: Document;
 
@@ -105,7 +104,7 @@ export class CdkDialogContainer<C extends DialogConfig = DialogConfig>
     this._document = _document;
   }
 
-  ngAfterViewInit() {
+  protected _contentAttached() {
     this._initializeFocusTrap();
     this._handleBackdropClicks();
     this._captureInitialFocus();
@@ -132,7 +131,9 @@ export class CdkDialogContainer<C extends DialogConfig = DialogConfig>
       throwDialogContentAlreadyAttachedError();
     }
 
-    return this._portalOutlet.attachComponentPortal(portal);
+    const result = this._portalOutlet.attachComponentPortal(portal);
+    this._contentAttached();
+    return result;
   }
 
   /**
@@ -144,7 +145,9 @@ export class CdkDialogContainer<C extends DialogConfig = DialogConfig>
       throwDialogContentAlreadyAttachedError();
     }
 
-    return this._portalOutlet.attachTemplatePortal(portal);
+    const result = this._portalOutlet.attachTemplatePortal(portal);
+    this._contentAttached();
+    return result;
   }
 
   /**
@@ -158,8 +161,18 @@ export class CdkDialogContainer<C extends DialogConfig = DialogConfig>
       throwDialogContentAlreadyAttachedError();
     }
 
-    return this._portalOutlet.attachDomPortal(portal);
+    const result = this._portalOutlet.attachDomPortal(portal);
+    this._contentAttached();
+    return result;
   };
+
+  // TODO(crisbeto): this shouldn't be exposed, but there are internal references to it.
+  /** Captures focus if it isn't already inside the dialog. */
+  _recaptureFocus() {
+    if (!this._containsFocus()) {
+      this._trapFocus();
+    }
+  }
 
   /**
    * Focuses the provided element. If the element is not focusable, it will add a tabIndex
@@ -316,8 +329,8 @@ export class CdkDialogContainer<C extends DialogConfig = DialogConfig>
     // Clicking on the backdrop will move focus out of dialog.
     // Recapture it if closing via the backdrop is disabled.
     this._overlayRef.backdropClick().subscribe(() => {
-      if (this._config.disableClose && !this._containsFocus()) {
-        this._trapFocus();
+      if (this._config.disableClose) {
+        this._recaptureFocus();
       }
     });
   }

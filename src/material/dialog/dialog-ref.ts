@@ -6,18 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DialogRef} from '@angular/cdk/dialog';
 import {FocusOrigin} from '@angular/cdk/a11y';
 import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
-import {GlobalPositionStrategy, OverlayRef} from '@angular/cdk/overlay';
-import {Observable, Subject} from 'rxjs';
+import {GlobalPositionStrategy} from '@angular/cdk/overlay';
+import {merge, Observable, Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
-import {DialogPosition} from './dialog-config';
+import {DialogPosition, MatDialogConfig} from './dialog-config';
 import {_MatDialogContainerBase} from './dialog-container';
-
-// TODO(jelbourn): resizing
-
-// Counter for unique dialog ids.
-let uniqueId = 0;
 
 /** Possible states of the lifecycle of a dialog. */
 export const enum MatDialogState {
@@ -34,13 +30,13 @@ export class MatDialogRef<T, R = any> {
   componentInstance: T;
 
   /** Whether the user is allowed to close the dialog. */
-  disableClose: boolean | undefined = this._containerInstance._config.disableClose;
+  disableClose: boolean | undefined;
+
+  /** Unique ID for the dialog. */
+  id: string;
 
   /** Subject for notifying the user that the dialog has finished opening. */
   private readonly _afterOpened = new Subject<void>();
-
-  /** Subject for notifying the user that the dialog has finished closing. */
-  private readonly _afterClosed = new Subject<R | undefined>();
 
   /** Subject for notifying the user that the dialog has started closing. */
   private readonly _beforeClosed = new Subject<R | undefined>();
@@ -54,14 +50,20 @@ export class MatDialogRef<T, R = any> {
   /** Current state of the dialog. */
   private _state = MatDialogState.OPEN;
 
+  // TODO(crisbeto): we shouldn't have to declare this property, because `DialogRef.close`
+  // already has a second `options` parameter that we can use. The problem is that internal tests
+  // have assertions like `expect(MatDialogRef.close).toHaveBeenCalledWith(foo)` which will break,
+  // because it'll be called with two arguments by things like `MatDialogClose`.
+  /** Interaction that caused the dialog to close. */
+  private _closeInteractionType: FocusOrigin | undefined;
+
   constructor(
-    private _overlayRef: OverlayRef,
+    private _ref: DialogRef<R, T>,
+    config: MatDialogConfig,
     public _containerInstance: _MatDialogContainerBase,
-    /** Id of the dialog. */
-    readonly id: string = `mat-dialog-${uniqueId++}`,
   ) {
-    // Pass the id along to the container.
-    _containerInstance._id = id;
+    this.disableClose = config.disableClose;
+    this.id = _ref.id;
 
     // Emit when opening animation completes
     _containerInstance._animationStateChanged
@@ -85,32 +87,21 @@ export class MatDialogRef<T, R = any> {
         this._finishDialogClose();
       });
 
-    _overlayRef.detachments().subscribe(() => {
+    _ref.overlayRef.detachments().subscribe(() => {
       this._beforeClosed.next(this._result);
       this._beforeClosed.complete();
-      this._afterClosed.next(this._result);
-      this._afterClosed.complete();
-      this.componentInstance = null!;
-      this._overlayRef.dispose();
+      this._finishDialogClose();
     });
 
-    _overlayRef
-      .keydownEvents()
-      .pipe(
-        filter(event => {
-          return event.keyCode === ESCAPE && !this.disableClose && !hasModifierKey(event);
-        }),
-      )
-      .subscribe(event => {
+    merge(
+      this.backdropClick(),
+      this.keydownEvents().pipe(
+        filter(event => event.keyCode === ESCAPE && !this.disableClose && !hasModifierKey(event)),
+      ),
+    ).subscribe(event => {
+      if (!this.disableClose) {
         event.preventDefault();
-        _closeDialogVia(this, 'keyboard');
-      });
-
-    _overlayRef.backdropClick().subscribe(() => {
-      if (this.disableClose) {
-        this._containerInstance._recaptureFocus();
-      } else {
-        _closeDialogVia(this, 'mouse');
+        _closeDialogVia(this, event.type === 'keydown' ? 'keyboard' : 'mouse');
       }
     });
   }
@@ -131,7 +122,7 @@ export class MatDialogRef<T, R = any> {
       .subscribe(event => {
         this._beforeClosed.next(dialogResult);
         this._beforeClosed.complete();
-        this._overlayRef.detachBackdrop();
+        this._ref.overlayRef.detachBackdrop();
 
         // The logic that disposes of the overlay depends on the exit animation completing, however
         // it isn't guaranteed if the parent view is destroyed while it's running. Add a fallback
@@ -159,7 +150,7 @@ export class MatDialogRef<T, R = any> {
    * Gets an observable that is notified when the dialog is finished closing.
    */
   afterClosed(): Observable<R | undefined> {
-    return this._afterClosed;
+    return this._ref.closed;
   }
 
   /**
@@ -173,14 +164,14 @@ export class MatDialogRef<T, R = any> {
    * Gets an observable that emits when the overlay's backdrop has been clicked.
    */
   backdropClick(): Observable<MouseEvent> {
-    return this._overlayRef.backdropClick();
+    return this._ref.backdropClick;
   }
 
   /**
    * Gets an observable that emits when keydown events are targeted on the overlay.
    */
   keydownEvents(): Observable<KeyboardEvent> {
-    return this._overlayRef.keydownEvents();
+    return this._ref.keydownEvents;
   }
 
   /**
@@ -188,7 +179,7 @@ export class MatDialogRef<T, R = any> {
    * @param position New dialog position.
    */
   updatePosition(position?: DialogPosition): this {
-    let strategy = this._getPositionStrategy();
+    let strategy = this._ref.config.positionStrategy as GlobalPositionStrategy;
 
     if (position && (position.left || position.right)) {
       position.left ? strategy.left(position.left) : strategy.right(position.right);
@@ -202,7 +193,7 @@ export class MatDialogRef<T, R = any> {
       strategy.centerVertically();
     }
 
-    this._overlayRef.updatePosition();
+    this._ref.updatePosition();
 
     return this;
   }
@@ -213,20 +204,19 @@ export class MatDialogRef<T, R = any> {
    * @param height New height of the dialog.
    */
   updateSize(width: string = '', height: string = ''): this {
-    this._overlayRef.updateSize({width, height});
-    this._overlayRef.updatePosition();
+    this._ref.updateSize(width, height);
     return this;
   }
 
   /** Add a CSS class or an array of classes to the overlay pane. */
   addPanelClass(classes: string | string[]): this {
-    this._overlayRef.addPanelClass(classes);
+    this._ref.addPanelClass(classes);
     return this;
   }
 
   /** Remove a CSS class or an array of classes from the overlay pane. */
   removePanelClass(classes: string | string[]): this {
-    this._overlayRef.removePanelClass(classes);
+    this._ref.removePanelClass(classes);
     return this;
   }
 
@@ -241,12 +231,8 @@ export class MatDialogRef<T, R = any> {
    */
   private _finishDialogClose() {
     this._state = MatDialogState.CLOSED;
-    this._overlayRef.dispose();
-  }
-
-  /** Fetches the position strategy object from the overlay ref. */
-  private _getPositionStrategy(): GlobalPositionStrategy {
-    return this._overlayRef.getConfig().positionStrategy as GlobalPositionStrategy;
+    this._ref.close(this._result, {focusOrigin: this._closeInteractionType});
+    this.componentInstance = null!;
   }
 }
 
@@ -255,12 +241,8 @@ export class MatDialogRef<T, R = any> {
  * `MatDialogRef` as that would conflict with custom dialog ref mocks provided in tests.
  * More details. See: https://github.com/angular/components/pull/9257#issuecomment-651342226.
  */
-// TODO: TODO: Move this back into `MatDialogRef` when we provide an official mock dialog ref.
+// TODO: Move this back into `MatDialogRef` when we provide an official mock dialog ref.
 export function _closeDialogVia<R>(ref: MatDialogRef<R>, interactionType: FocusOrigin, result?: R) {
-  // Some mock dialog ref instances in tests do not have the `_containerInstance` property.
-  // For those, we keep the behavior as is and do not deal with the interaction type.
-  if (ref._containerInstance !== undefined) {
-    ref._containerInstance._closeInteractionType = interactionType;
-  }
+  (ref as unknown as {_closeInteractionType: FocusOrigin})._closeInteractionType = interactionType;
   return ref.close(result);
 }

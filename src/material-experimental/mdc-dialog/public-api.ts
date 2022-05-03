@@ -17,7 +17,6 @@ export {
   MatDialogState,
   MatDialogConfig,
   matDialogAnimations,
-  throwMatDialogContentAlreadyAttachedError,
   DialogRole,
   DialogPosition,
   MAT_DIALOG_SCROLL_STRATEGY_FACTORY,

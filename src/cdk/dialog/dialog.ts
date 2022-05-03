@@ -138,7 +138,7 @@ export class Dialog implements OnDestroy {
     }
 
     (this.openDialogs as DialogRef<R, C>[]).push(dialogRef);
-    dialogRef.closed.subscribe(() => this._removeOpenDialog(dialogRef));
+    dialogRef.closed.subscribe(() => this._removeOpenDialog(dialogRef, true));
     this.afterOpened.next(dialogRef);
 
     return dialogRef;
@@ -148,7 +148,7 @@ export class Dialog implements OnDestroy {
    * Closes all of the currently-open dialogs.
    */
   closeAll(): void {
-    this._closeDialogs(this.openDialogs);
+    reverseForEach(this.openDialogs, dialog => dialog.close());
   }
 
   /**
@@ -160,11 +160,24 @@ export class Dialog implements OnDestroy {
   }
 
   ngOnDestroy() {
-    // Only close the dialogs at this level on destroy
-    // since the parent service may still be active.
-    this._closeDialogs(this._openDialogsAtThisLevel);
+    // Make one pass over all the dialogs that need to be untracked, but should not be closed. We
+    // want to stop tracking the open dialog even if it hasn't been closed, because the tracking
+    // determines when `aria-hidden` is removed from elements outside the dialog.
+    reverseForEach(this._openDialogsAtThisLevel, dialog => {
+      // Check for `false` specifically since we want `undefined` to be interpreted as `true`.
+      if (dialog.config.closeOnDestroy === false) {
+        this._removeOpenDialog(dialog, false);
+      }
+    });
+
+    // Make a second pass and close the remaining dialogs. We do this second pass in order to
+    // correctly dispatch the `afterAllClosed` event in case we have a mixed array of dialogs
+    // that should be closed and dialogs that should not.
+    reverseForEach(this._openDialogsAtThisLevel, dialog => dialog.close());
+
     this._afterAllClosedAtThisLevel.complete();
     this._afterOpenedAtThisLevel.complete();
+    this._openDialogsAtThisLevel = [];
   }
 
   /**
@@ -326,8 +339,9 @@ export class Dialog implements OnDestroy {
   /**
    * Removes a dialog from the array of open dialogs.
    * @param dialogRef Dialog to be removed.
+   * @param emitEvent Whether to emit an event if this is the last dialog.
    */
-  private _removeOpenDialog<R, C>(dialogRef: DialogRef<R, C>) {
+  private _removeOpenDialog<R, C>(dialogRef: DialogRef<R, C>, emitEvent: boolean) {
     const index = this.openDialogs.indexOf(dialogRef);
 
     if (index > -1) {
@@ -345,7 +359,10 @@ export class Dialog implements OnDestroy {
         });
 
         this._ariaHiddenElements.clear();
-        this._getAfterAllClosed().next();
+
+        if (emitEvent) {
+          this._getAfterAllClosed().next();
+        }
       }
     }
   }
@@ -374,21 +391,20 @@ export class Dialog implements OnDestroy {
     }
   }
 
-  /** Closes all of the dialogs in an array. */
-  private _closeDialogs(dialogs: readonly DialogRef<unknown>[]) {
-    let i = dialogs.length;
-
-    while (i--) {
-      // The `_openDialogs` property isn't updated after close until the rxjs subscription
-      // runs on the next microtask, in addition to modifying the array as we're going
-      // through it. We loop through all of them and call close without assuming that
-      // they'll be removed from the list instantaneously.
-      dialogs[i].close();
-    }
-  }
-
   private _getAfterAllClosed(): Subject<void> {
     const parent = this._parentDialog;
     return parent ? parent._getAfterAllClosed() : this._afterAllClosedAtThisLevel;
+  }
+}
+
+/**
+ * Executes a callback against all elements in an array while iterating in reverse.
+ * Useful if the array is being modified as it is being iterated.
+ */
+function reverseForEach<T>(items: T[] | readonly T[], callback: (current: T) => void) {
+  let i = items.length;
+
+  while (i--) {
+    callback(items[i]);
   }
 }

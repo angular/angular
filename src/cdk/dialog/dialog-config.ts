@@ -126,6 +126,12 @@ export class DialogConfig<D = unknown, R = unknown, C extends BasePortalOutlet =
    */
   closeOnNavigation?: boolean = true;
 
+  /**
+   * Whether the dialog should close when the dialog service is destroyed. This is useful if
+   * another service is wrapping the dialog and is managing the destruction instead.
+   */
+  closeOnDestroy?: boolean = true;
+
   /** Alternate `ComponentFactoryResolver` to use when resolving the associated component. */
   componentFactoryResolver?: ComponentFactoryResolver;
 

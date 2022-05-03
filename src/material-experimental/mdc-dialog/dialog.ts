@@ -8,11 +8,18 @@
 
 import {Overlay, OverlayContainer, ScrollStrategy} from '@angular/cdk/overlay';
 import {Location} from '@angular/common';
-import {Inject, Injectable, InjectionToken, Injector, Optional, SkipSelf} from '@angular/core';
+import {
+  ANIMATION_MODULE_TYPE,
+  Inject,
+  Injectable,
+  InjectionToken,
+  Injector,
+  Optional,
+  SkipSelf,
+} from '@angular/core';
 import {_MatDialogBase, MatDialogConfig} from '@angular/material/dialog';
 import {MatDialogContainer} from './dialog-container';
 import {MatDialogRef} from './dialog-ref';
-import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 /** Injection token that can be used to access the data that was passed in to a dialog. */
 export const MAT_DIALOG_DATA = new InjectionToken<any>('MatMdcDialogData');
@@ -57,6 +64,10 @@ export class MatDialog extends _MatDialogBase<MatDialogContainer> {
     @Optional() @Inject(MAT_DIALOG_DEFAULT_OPTIONS) defaultOptions: MatDialogConfig,
     @Inject(MAT_DIALOG_SCROLL_STRATEGY) scrollStrategy: any,
     @Optional() @SkipSelf() parentDialog: MatDialog,
+    /**
+     * @deprecated No longer used. To be removed.
+     * @breaking-change 15.0.0
+     */
     overlayContainer: OverlayContainer,
     /**
      * @deprecated No longer used. To be removed.
@@ -78,5 +89,7 @@ export class MatDialog extends _MatDialogBase<MatDialogContainer> {
       MAT_DIALOG_DATA,
       animationMode,
     );
+
+    this._idPrefix = 'mat-mdc-dialog-';
   }
 }

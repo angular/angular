@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DialogModule} from '@angular/cdk/dialog';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {PortalModule} from '@angular/cdk/portal';
 import {NgModule} from '@angular/core';
@@ -20,7 +21,7 @@ import {
 } from './dialog-content-directives';
 
 @NgModule({
-  imports: [OverlayModule, PortalModule, MatCommonModule],
+  imports: [DialogModule, OverlayModule, PortalModule, MatCommonModule],
   exports: [
     MatDialogContainer,
     MatDialogClose,

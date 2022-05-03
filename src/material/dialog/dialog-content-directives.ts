@@ -16,7 +16,7 @@ import {
   ElementRef,
 } from '@angular/core';
 import {MatDialog} from './dialog';
-import {_closeDialogVia, MatDialogRef} from './dialog-ref';
+import {MatDialogRef, _closeDialogVia} from './dialog-ref';
 
 /** Counter used to generate unique IDs for dialog elements. */
 let dialogElementUid = 0;

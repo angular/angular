@@ -23,6 +23,7 @@ ng_module(
         "//src:dev_mode_types",
         "//src/cdk/a11y",
         "//src/cdk/bidi",
+        "//src/cdk/dialog",
         "//src/cdk/keycodes",
         "//src/cdk/overlay",
         "//src/cdk/platform",

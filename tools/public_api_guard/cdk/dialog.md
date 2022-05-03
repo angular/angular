@@ -4,7 +4,6 @@
 
 ```ts
 
-import { AfterViewInit } from '@angular/core';
 import { BasePortalOutlet } from '@angular/cdk/portal';
 import { CdkPortalOutlet } from '@angular/cdk/portal';
 import { ComponentFactoryResolver } from '@angular/core';
@@ -44,7 +43,7 @@ import { ViewContainerRef } from '@angular/core';
 export type AutoFocusTarget = 'dialog' | 'first-tabbable' | 'first-heading';
 
 // @public
-export class CdkDialogContainer<C extends DialogConfig = DialogConfig> extends BasePortalOutlet implements AfterViewInit, OnDestroy {
+export class CdkDialogContainer<C extends DialogConfig = DialogConfig> extends BasePortalOutlet implements OnDestroy {
     constructor(_elementRef: ElementRef, _focusTrapFactory: FocusTrapFactory, _document: any, _config: C, _interactivityChecker: InteractivityChecker, _ngZone: NgZone, _overlayRef: OverlayRef, _focusMonitor?: FocusMonitor | undefined);
     _ariaLabelledBy: string | null;
     attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;
@@ -56,16 +55,17 @@ export class CdkDialogContainer<C extends DialogConfig = DialogConfig> extends B
     // (undocumented)
     readonly _config: C;
     // (undocumented)
+    protected _contentAttached(): void;
+    // (undocumented)
     protected _document: Document;
     // (undocumented)
     protected _elementRef: ElementRef;
     // (undocumented)
     protected _focusTrapFactory: FocusTrapFactory;
     // (undocumented)
-    ngAfterViewInit(): void;
-    // (undocumented)
     ngOnDestroy(): void;
     _portalOutlet: CdkPortalOutlet;
+    _recaptureFocus(): void;
     protected _trapFocus(): void;
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<CdkDialogContainer<any>, "cdk-dialog-container", never, {}, {}, never, never, false>;
@@ -125,6 +125,7 @@ export class DialogConfig<D = unknown, R = unknown, C extends BasePortalOutlet =
     ariaModal?: boolean;
     autoFocus?: AutoFocusTarget | string | boolean;
     backdropClass?: string | string[];
+    closeOnDestroy?: boolean;
     closeOnNavigation?: boolean;
     componentFactoryResolver?: ComponentFactoryResolver;
     container?: Type<C> | {
