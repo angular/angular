@@ -118,7 +118,7 @@ Individual schematics for the default Angular CLI `ng generate` sub-commands are
 Specify the schematic name for a subcommand in the format `schematic-package:schematic-name`;
 for example, the schematic for generating a component is `@schematics/angular:component`.
 
-The JSON schemas for the default schematics used by the CLI to generate projects and parts of projects are collected in the package [`@schematics/angular`](https://github.com/angular/angular-cli/blob/master/packages/schematics/angular/application/schema.json).
+The JSON schemas for the default schematics used by the CLI to generate projects and parts of projects are collected in the package [`@schematics/angular`](https://github.com/angular/angular-cli/blob/main/packages/schematics/angular/application/schema.json).
 The schema describes the options available to the CLI for each of the `ng generate` sub-commands, as shown in the `--help` output.
 
 The fields given in the schema correspond to the allowed argument values and defaults for the CLI sub-command options.
@@ -138,15 +138,15 @@ See [Angular CLI Builders](guide/cli-builder).
 ### Default Architect builders and targets
 
 Angular defines default builders for use with specific CLI commands, or with the general `ng run` command.
-The JSON schemas that define the options and defaults for each of these default builders are collected in the [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/builders.json) package.
+The JSON schemas that define the options and defaults for each of these default builders are collected in the [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli/blob/main/packages/angular_devkit/build_angular/builders.json) package.
 The schemas configure options for the following builders.
 
-*   [app-shell](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/app-shell/schema.json)
-*   [browser](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/browser/schema.json)
-*   [dev-server](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/dev-server/schema.json)
-*   [extract-i18n](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/extract-i18n/schema.json)
-*   [karma](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/karma/schema.json)
-*   [server](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/build_angular/src/builders/server/schema.json)
+*   [app-shell](https://github.com/angular/angular-cli/blob/main/packages/angular_devkit/build_angular/src/builders/app-shell/schema.json)
+*   [browser](https://github.com/angular/angular-cli/blob/main/packages/angular_devkit/build_angular/src/builders/browser/schema.json)
+*   [dev-server](https://github.com/angular/angular-cli/blob/main/packages/angular_devkit/build_angular/src/builders/dev-server/schema.json)
+*   [extract-i18n](https://github.com/angular/angular-cli/blob/main/packages/angular_devkit/build_angular/src/builders/extract-i18n/schema.json)
+*   [karma](https://github.com/angular/angular-cli/blob/main/packages/angular_devkit/build_angular/src/builders/karma/schema.json)
+*   [server](https://github.com/angular/angular-cli/blob/main/packages/angular_devkit/build_angular/src/builders/server/schema.json)
 
 ### Configuring builder targets
 

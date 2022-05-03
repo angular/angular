@@ -243,7 +243,7 @@ zone.run(() =&gt; {
 </code-example>
 
 This new context, `zoneThis`, can be retrieved from the `setTimeout()` callback function, and this context is the same when the `setTimeout()` is scheduled.
-To get the context, you can call [`Zone.current`](https://github.com/angular/angular/blob/master/packages/zone.js/lib/zone.ts).
+To get the context, you can call [`Zone.current`](https://github.com/angular/angular/blob/main/packages/zone.js/lib/zone.ts).
 
 ## Zones and async lifecycle hooks
 
@@ -321,7 +321,7 @@ task state changed in the zone: { microTask: false,
 
 </code-example>
 
-All of the functions of `Zone` are provided by a library called [Zone.js](https://github.com/angular/angular/tree/master/packages/zone.js/README.md).
+All of the functions of `Zone` are provided by a library called [Zone.js](https://github.com/angular/angular/tree/main/packages/zone.js/README.md).
 This library implements those features by intercepting asynchronous APIs through monkey patching.
 Monkey patching is a technique to add or modify the default behavior of a function at runtime without changing the source code.
 
@@ -336,7 +336,7 @@ This service creates a zone named `angular` to automatically trigger change dete
 ### NgZone `run()` and `runOutsideOfAngular()`
 
 `Zone` handles most asynchronous APIs such as `setTimeout()`, `Promise.then()`, and `addEventListener()`.
-For the full list, see the [Zone Module document](https://github.com/angular/angular/blob/master/packages/zone.js/MODULE.md).
+For the full list, see the [Zone Module document](https://github.com/angular/angular/blob/main/packages/zone.js/MODULE.md).
 Therefore in those asynchronous APIs, you don't need to trigger change detection manually.
 
 There are still some third party APIs that Zone does not handle.
@@ -431,7 +431,7 @@ import 'zone.js';  // Included with Angular CLI.
 
 </code-example>
 
-For more information about what you can configure, see the [Zone.js](https://github.com/angular/angular/tree/master/packages/zone.js) documentation.
+For more information about what you can configure, see the [Zone.js](https://github.com/angular/angular/tree/main/packages/zone.js) documentation.
 
 ### NoopZone
 

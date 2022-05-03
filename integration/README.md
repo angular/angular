@@ -167,10 +167,10 @@ See: https://stackoverflow.com/questions/50642308/webdriverexception-unknown-err
 
 If size regression occurs, one way to debug is to get a build which shows the code before and after. Here are the steps to do that.
 
-1. Check out both the `master` branch as well as your change (let's refer to it as `change` branch) into two different working locations. (A suggested way to do this is using `git worktree`.)
-2. In both `master` and `change` locations update the failing tests `package.json` with `NG_BUILD_DEBUG_OPTIMIZE=minify` environment variable so that the resulting build would contain a human readable but optimized output. As an example:
+1. Check out both the `main` branch as well as your change (let's refer to it as `change` branch) into two different working locations. (A suggested way to do this is using `git worktree`.)
+2. In both `main` and `change` locations update the failing tests `package.json` with `NG_BUILD_DEBUG_OPTIMIZE=minify` environment variable so that the resulting build would contain a human readable but optimized output. As an example:
    - Open `integration/cli-hello-world/package.json` and prefix `NG_BUILD_DEBUG_OPTIMIZE=minify` into the `build` rule. Resulting in something like: `"build": "NG_BUILD_DEBUG_OPTIMIZE=minify ng build --prod",`
    - Run `bazel test //integration/cli-hello-world:test --test_output=streamed --cache_test_results=no` to run the test.
    - Open the test temporary directory as printed out by Bazel.
-   - Diff the `master` vs `change` to see the differences. `myDiffTool change/integration/cli-hello-world/dist/main-es2015.*.js master/integration/cli-hello-world/dist/main-es2015.*.js`
+   - Diff the `main` vs `change` to see the differences. `myDiffTool change/integration/cli-hello-world/dist/main-es2015.*.js main/integration/cli-hello-world/dist/main-es2015.*.js`
    - The above should give you a better understanding as to what has changed and what is causing the regression.

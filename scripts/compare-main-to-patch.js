@@ -11,12 +11,12 @@
 'use strict';
 
 /**
- * This script compares commits in master and patch branches to find the delta between them. This is
+ * This script compares commits in main and patch branches to find the delta between them. This is
  * useful for release reviews, to make sure all the necessary commits were included into the patch
  * branch and there is no discrepancy.
  *
  * Additionally, lists all 'feat' commits that were merged to the patch branch to aid in ensuring
- * features are only released to master.
+ * features are only released to main.
  */
 
 const {exec} = require('shelljs');
@@ -28,8 +28,8 @@ const ignoreCommitPatterns = [
   'release:',
   'docs: release notes',
   // These commits are created to update cli command docs sources with the most recent sha (stored
-  // in `aio/package.json`). Separate commits are generated for master and patch branches and since
-  // it's purely an infrastructure-related change, we ignore these commits while comparing master
+  // in `aio/package.json`). Separate commits are generated for main and patch branches and since
+  // it's purely an infrastructure-related change, we ignore these commits while comparing main
   // and patch diffs to look for delta.
   'build(docs-infra): upgrade cli command docs sources',
 ];
@@ -91,7 +91,7 @@ function collectCommitsAsMap(rawGitCommits) {
       //   15d3e741e9 feat: update the locale files (#33556)
       //
       // we extract only "feat: update the locale files" part and use it as a key, since commit SHA
-      // and PR number may be different for the same commit in master and patch branches.
+      // and PR number may be different for the same commit in main and patch branches.
       const key = commit.slice(11).replace(/\(\#\d+\)/g, '').trim();
       commitsMap.set(key, [commit, version]);
     }
@@ -134,12 +134,12 @@ function listFeatures(commitsMap) {
 }
 
 function getBranchByTag(tag) {
-  const version = semver(tag);
+  const version = semver.parse(tag);
   return `${version.major}.${version.minor}.x`;  // e.g. 9.0.x
 }
 
 function getLatestTag(tags) {
-  // Exclude Next releases, since we cut them from master, so there is nothing to compare.
+  // Exclude Next releases, since we cut them from main, so there is nothing to compare.
   const isNotNextVersion = version => version.indexOf('-next') === -1;
   return tags.filter(semver.valid)
       .filter(isNotNextVersion)
@@ -152,32 +152,32 @@ function main() {
   execGitCommand('git fetch upstream');
 
   // Extract tags information and pick the most recent version
-  // that we'll use later to compare with master.
+  // that we'll use later to compare with main.
   const tags = toArray(execGitCommand('git tag'));
   const latestTag = getLatestTag(tags);
 
   // Based on the latest tag, generate the name of the patch branch.
   const branch = getBranchByTag(latestTag);
 
-  // Extract master-only and patch-only commits using `git log` command.
-  const masterCommits = execGitCommand(
-      `git log --cherry-pick --oneline --right-only upstream/${branch}...upstream/master`);
+  // Extract main-only and patch-only commits using `git log` command.
+  const mainCommits = execGitCommand(
+      `git log --cherry-pick --oneline --right-only upstream/${branch}...upstream/main`);
   const patchCommits = execGitCommand(
-      `git log --cherry-pick --oneline --left-only upstream/${branch}...upstream/master`);
+      `git log --cherry-pick --oneline --left-only upstream/${branch}...upstream/main`);
 
   // Post-process commits and convert raw data into a Map, so that we can diff it easier.
-  const masterCommitsMap = collectCommitsAsMap(masterCommits);
+  const mainCommitsMap = collectCommitsAsMap(mainCommits);
   const patchCommitsMap = collectCommitsAsMap(patchCommits);
 
   // tslint:disable-next-line:no-console
   console.log(`
-Comparing branches "${branch}" and master.
+Comparing branches "${branch}" and main.
 
-***** Only in MASTER *****
-${diff(masterCommitsMap, patchCommitsMap).join('\n') || 'No extra commits'}
+***** Only in MAIN *****
+${diff(mainCommitsMap, patchCommitsMap).join('\n') || 'No extra commits'}
 
 ***** Only in PATCH (${branch}) *****
-${diff(patchCommitsMap, masterCommitsMap).join('\n') || 'No extra commits'}
+${diff(patchCommitsMap, mainCommitsMap).join('\n') || 'No extra commits'}
 
 ***** Features in PATCH (${branch}) - should always be empty *****
 ${listFeatures(patchCommitsMap).join('\n') || 'No extra commits'}

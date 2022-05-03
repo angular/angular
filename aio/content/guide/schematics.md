@@ -39,7 +39,7 @@ A JSON schema associated with a schematic tells the Angular CLI what options are
 These defaults can be overridden by providing a different value for an option on the command line.
 See [Workspace Configuration](guide/workspace-config) for information about how to change the generation option defaults for your workspace.
 
-The JSON schemas for the default schematics used by the CLI to generate projects and parts of projects are collected in the package [`@schematics/angular`](https://github.com/angular/angular-cli/tree/master/packages/schematics/angular).
+The JSON schemas for the default schematics used by the CLI to generate projects and parts of projects are collected in the package [`@schematics/angular`](https://github.com/angular/angular-cli/tree/main/packages/schematics/angular).
 The schema describes the options available to the CLI for each of the `ng generate` sub-commands, as shown in the `--help` output.
 
 ## Developing schematics for libraries
@@ -115,7 +115,7 @@ If there are inconsistencies \(for example, if peer dependencies cannot be match
 We recommend that you do not force an update of all dependencies by default.
 Try updating specific dependencies first.
 
-For more about how the `ng update` command works, see [Update Command](https://github.com/angular/angular-cli/blob/master/docs/specifications/update.md).
+For more about how the `ng update` command works, see [Update Command](https://github.com/angular/angular-cli/blob/main/docs/specifications/update.md).
 
 </div>
 
