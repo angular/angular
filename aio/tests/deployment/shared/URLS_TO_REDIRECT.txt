@@ -217,6 +217,7 @@
 /guide/updating-to-version-10 --> https://v10.angular.io/guide/updating-to-version-10
 /guide/updating-to-version-11 --> https://v11.angular.io/guide/updating-to-version-11
 /guide/updating-to-version-12 --> /guide/update-to-latest-version
+/guide/set-document-title --> /guide/router#setting-the-page-title
 /guide/webpack --> https://v5.angular.io/guide/webpack
 /index.html?foo=bar --> /?foo=bar
 /news --> https://blog.angular.io/
