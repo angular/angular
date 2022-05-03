@@ -2,7 +2,7 @@ const {resolve} = require('canonical-path');
 const sh = require('shelljs');
 const {CONTENTS_PATH} = require('../config');
 
-const cliGitRef = process.argv[2] || 'master';  // Can be a branch, commit or tag.
+const cliGitRef = process.argv[2] || 'main';  // Can be a branch, commit or tag.
 const pkgContent = JSON.stringify({
   dependencies: {
     '@angular/cli': `https://github.com/angular/cli-builds#${cliGitRef}`,

@@ -84,7 +84,7 @@ v14 - v17
 | template syntax                     | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)                                         | <!--  v7 --> unspecified |
 | template syntax                     | [`bind-`, `on-`, `bindon-`, and `ref-`](#bind-syntax)                                                      | <!-- v13 --> v15         |
 
-For information about Angular CDK and Angular Material deprecations, see the [changelog](https://github.com/angular/components/blob/master/CHANGELOG.md).
+For information about Angular CDK and Angular Material deprecations, see the [changelog](https://github.com/angular/components/blob/main/CHANGELOG.md).
 
 ## Deprecated APIs
 
@@ -225,7 +225,7 @@ It also includes deprecated API usage scenarios or API combinations, to augment 
 
 Bazel builder and schematics were introduced in Angular Labs to let users try out Bazel without having to manage Bazel version and BUILD files.
 This feature has been deprecated.
-For more information, please refer to the [migration doc](https://github.com/angular/angular/blob/master/packages/bazel/docs/BAZEL_SCHEMATICS.md).
+For more information, please refer to the [migration doc](https://github.com/angular/angular/blob/main/packages/bazel/docs/BAZEL_SCHEMATICS.md).
 
 <a id="wtf"></a>
 
@@ -475,7 +475,7 @@ For full rationale and discussion behind this deprecation, see [RFC: Internet Ex
 
 <div class="alert is-helpful">
 
-**NOTE**: <br /> 
+**NOTE**: <br />
 IE11 will be supported in Angular v12 LTS releases through November 2022.
 
 </div>

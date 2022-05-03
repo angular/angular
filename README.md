@@ -24,8 +24,8 @@
 </p>
 
 <p align="center">
-  <a href="https://circleci.com/gh/angular/workflows/angular/tree/master">
-    <img src="https://img.shields.io/circleci/build/github/angular/angular/master.svg?logo=circleci&logoColor=fff&label=CircleCI" alt="CI status" />
+  <a href="https://circleci.com/gh/angular/workflows/angular/tree/main">
+    <img src="https://img.shields.io/circleci/build/github/angular/angular/main.svg?logo=circleci&logoColor=fff&label=CircleCI" alt="CI status" />
   </a>&nbsp;
   <a href="https://www.npmjs.com/@angular/core">
     <img src="https://img.shields.io/npm/v/@angular/core.svg?logo=npm&logoColor=fff&label=NPM+package&color=limegreen" alt="Angular on npm" />

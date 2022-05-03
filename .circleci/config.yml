@@ -64,8 +64,6 @@ var_10: &only_on_main_branch
     branches:
       only:
         - main
-        # TODO(BRANCH_RENAME_CLEANUP): remove
-        - master
 
 # Filter to run a job on all releasable branches.
 var_11: &only_release_branches
@@ -73,8 +71,6 @@ var_11: &only_release_branches
     branches:
       only:
         - main
-        # TODO(BRANCH_RENAME_CLEANUP): remove
-        - master
         - /\d+\.\d+\.x/
 
 # CircleCI orbs
@@ -308,7 +304,7 @@ jobs:
           path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
           destination: core/todo/bundle.br
 
-  # NOTE: This is currently limited to master builds only. See the `monitoring` configuration.
+  # NOTE: This is currently limited to main builds only. See the `monitoring` configuration.
   saucelabs:
     executor:
       name: default-executor

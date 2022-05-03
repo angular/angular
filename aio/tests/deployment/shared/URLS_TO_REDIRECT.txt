@@ -199,8 +199,8 @@
 /getting-started/data --> /start/start-data
 /getting-started/forms --> /start/start-forms
 /getting-started/deployment --> /start/start-deployment
-/guide/bazel --> https://github.com/angular/angular/blob/master/packages/bazel/docs/BAZEL_SCHEMATICS.md
-/guide/change-log --> https://github.com/angular/angular/blob/master/CHANGELOG.md
+/guide/bazel --> https://github.com/angular/angular/blob/main/packages/bazel/docs/BAZEL_SCHEMATICS.md
+/guide/change-log --> https://github.com/angular/angular/blob/main/CHANGELOG.md
 /guide/cli-quickstart --> /start
 /guide/displaying-data --> /start#template-syntax
 /guide/i18n --> /guide/i18n-overview

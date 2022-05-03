@@ -97,7 +97,7 @@ merge:
 
     # whether the PR shouldn't have a conflict with the base branch
     noConflict: true
-    # list of labels that a PR needs to have, checked with a regexp (e.g. "target:" will work for the label "target: master")
+    # list of labels that a PR needs to have, checked with a regexp.
     requiredLabels:
       - 'target: *'
 
@@ -119,7 +119,7 @@ merge:
   # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable
   # {{MERGE_LABEL}} will be replaced by the value of the mergeLabel option
   # {{PLACEHOLDER}} will be replaced by the list of failing checks
-  mergeRemovedComment: "I see that you just added the `{{MERGE_LABEL}}` label, but the following checks are still failing:\n{{PLACEHOLDER}}\n\n**If you want your PR to be merged, it has to pass all the CI checks.**\n\nIf you can't get the PR to a green state due to flakes or broken master, please try rebasing to master and/or restarting the CI job. If that fails and you believe that the issue is not due to your change, please contact the caretaker and ask for help."
+  mergeRemovedComment: "I see that you just added the `{{MERGE_LABEL}}` label, but the following checks are still failing:\n{{PLACEHOLDER}}\n\n**If you want your PR to be merged, it has to pass all the CI checks.**\n\nIf you can't get the PR to a green state due to flakes or broken `main`, please try rebasing to `main` and/or restarting the CI job. If that fails and you believe that the issue is not due to your change, please contact the caretaker and ask for help."
 
 # options for the triage plugin
 triage:

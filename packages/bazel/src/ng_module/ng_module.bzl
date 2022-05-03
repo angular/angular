@@ -635,7 +635,7 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
     # Later packaging rules will point to these generated files as the entry point
     # into the package.
     # See the flatModuleOutFile documentation in
-    # https://github.com/angular/angular/blob/master/packages/compiler-cli/src/transformers/api.ts
+    # https://github.com/angular/angular/blob/main/packages/compiler-cli/src/transformers/api.ts
     "flat_module_out_file": attr.string(),
     # Should the rule generate ngfactory and ngsummary shim files?
     "generate_ve_shims": attr.bool(default = False),
