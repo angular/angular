@@ -1077,6 +1077,9 @@
     "name": "invokeHostBindingsInCreationMode"
   },
   {
+    "name": "isAbstractControlOptions"
+  },
+  {
     "name": "isAnimationProp"
   },
   {
