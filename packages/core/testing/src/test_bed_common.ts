@@ -18,6 +18,9 @@ export const TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT = true;
 /** Whether unknown elements in templates should throw by default. */
 export const THROW_ON_UNKNOWN_ELEMENTS_DEFAULT = false;
 
+/** Whether unknown properties in templates should throw by default. */
+export const THROW_ON_UNKNOWN_PROPERTIES_DEFAULT = false;
+
 /**
  * An abstract class for inserting the root test component element in a platform independent way.
  *
@@ -49,12 +52,19 @@ export type TestModuleMetadata = {
   schemas?: Array<SchemaMetadata|any[]>,
   teardown?: ModuleTeardownOptions;
   /**
-   * Whether NG0304 runtime errors should be thrown on unknown elements.
-   * Defaults to `false`, where the error is simply logged.
-   * If sets to `true`, the error is thrown.
+   * Whether NG0304 runtime errors should be thrown when unknown elements are present in component's
+   * template. Defaults to `false`, where the error is simply logged. If set to `true`, the error is
+   * thrown.
    * @see https://angular.io/errors/NG8001 for the description of the problem and how to fix it
    */
   errorOnUnknownElements?: boolean;
+  /**
+   * Whether errors should be thrown when unknown properties are present in component's template.
+   * Defaults to `false`, where the error is simply logged.
+   * If set to `true`, the error is thrown.
+   * @see https://angular.io/errors/NG8002 for the description of the error and how to fix it
+   */
+  errorOnUnknownProperties?: boolean;
 };
 
 /**
@@ -66,12 +76,19 @@ export interface TestEnvironmentOptions {
    */
   teardown?: ModuleTeardownOptions;
   /**
-   * Whether errors should be thrown on unknown elements.
+   * Whether errors should be thrown when unknown elements are present in component's template.
    * Defaults to `false`, where the error is simply logged.
-   * If sets to `true`, the error is thrown.
+   * If set to `true`, the error is thrown.
    * @see https://angular.io/errors/NG8001 for the description of the error and how to fix it
    */
   errorOnUnknownElements?: boolean;
+  /**
+   * Whether errors should be thrown when unknown properties are present in component's template.
+   * Defaults to `false`, where the error is simply logged.
+   * If set to `true`, the error is thrown.
+   * @see https://angular.io/errors/NG8002 for the description of the error and how to fix it
+   */
+  errorOnUnknownProperties?: boolean;
 }
 
 /**

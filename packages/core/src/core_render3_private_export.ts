@@ -210,7 +210,9 @@ export {
   ɵɵtextInterpolateV,
   ɵɵviewQuery,
   ɵgetUnknownElementStrictMode,
-  ɵsetUnknownElementStrictMode
+  ɵsetUnknownElementStrictMode,
+  ɵgetUnknownPropertyStrictMode,
+  ɵsetUnknownPropertyStrictMode
 } from './render3/index';
 export {
   LContext as ɵLContext,

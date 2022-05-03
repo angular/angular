@@ -48,7 +48,23 @@ import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreation
 import {selectIndexInternal} from './advance';
 import {attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData, LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeDebug, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor} from './lview_debug';
 
+let shouldThrowErrorOnUnknownProperty = false;
 
+/**
+ * Sets a strict mode for JIT-compiled components to throw an error on unknown properties,
+ * instead of just logging the error.
+ * (for AOT-compiled ones this check happens at build time).
+ */
+export function ɵsetUnknownPropertyStrictMode(shouldThrow: boolean) {
+  shouldThrowErrorOnUnknownProperty = shouldThrow;
+}
+
+/**
+ * Gets the current value of the strict mode.
+ */
+export function ɵgetUnknownPropertyStrictMode() {
+  return shouldThrowErrorOnUnknownProperty;
+}
 
 /**
  * A permanent marker promise which signifies that the current CD tree is
@@ -1013,7 +1029,7 @@ export function elementPropertyInternal<T>(
       validateAgainstEventProperties(propName);
       if (!validateProperty(element, tNode.value, propName, tView.schemas)) {
         // Return here since we only log warnings for unknown properties.
-        logUnknownPropertyError(propName, tNode.value);
+        handleUnknownPropertyError(propName, tNode.value);
         return;
       }
       ngDevMode.rendererSetProperty++;
@@ -1032,7 +1048,7 @@ export function elementPropertyInternal<T>(
     // If the node is a container and the property didn't
     // match any of the inputs or schemas we should throw.
     if (ngDevMode && !matchingSchemas(tView.schemas, tNode.value)) {
-      logUnknownPropertyError(propName, tNode.value);
+      handleUnknownPropertyError(propName, tNode.value);
     }
   }
 }
@@ -1145,13 +1161,17 @@ export function matchingSchemas(schemas: SchemaMetadata[]|null, tagName: string|
 }
 
 /**
- * Logs an error that a property is not supported on an element.
+ * Logs or throws an error that a property is not supported on an element.
  * @param propName Name of the invalid property.
  * @param tagName Name of the node on which we encountered the property.
  */
-function logUnknownPropertyError(propName: string, tagName: string): void {
+function handleUnknownPropertyError(propName: string, tagName: string): void {
   const message = `Can't bind to '${propName}' since it isn't a known property of '${tagName}'.`;
-  console.error(formatRuntimeError(RuntimeErrorCode.UNKNOWN_BINDING, message));
+  if (shouldThrowErrorOnUnknownProperty) {
+    throw new RuntimeError(RuntimeErrorCode.UNKNOWN_BINDING, message);
+  } else {
+    console.error(formatRuntimeError(RuntimeErrorCode.UNKNOWN_BINDING, message));
+  }
 }
 
 /**

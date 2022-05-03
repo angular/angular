@@ -50,3 +50,4 @@ export * from './style_map_interpolation';
 export * from './style_prop_interpolation';
 export * from './host_property';
 export * from './i18n';
+export {ɵgetUnknownPropertyStrictMode, ɵsetUnknownPropertyStrictMode} from './shared';
