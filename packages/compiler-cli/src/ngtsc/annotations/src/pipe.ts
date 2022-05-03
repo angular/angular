@@ -12,13 +12,13 @@ import ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Reference} from '../../imports';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
-import {MetadataRegistry, MetaKind} from '../../metadata';
+import {InjectableClassRegistry, MetadataRegistry, MetaKind} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
-import {compileDeclareFactory, compileNgFactoryDefField, compileResults, createValueHasWrongTypeError, extractClassMetadata, findAngularDecorator, getValidConstructorDependencies, InjectableClassRegistry, makeDuplicateDeclarationError, toFactoryMetadata, unwrapExpression, wrapTypeReference,} from '../common';
+import {compileDeclareFactory, compileNgFactoryDefField, compileResults, createValueHasWrongTypeError, extractClassMetadata, findAngularDecorator, getValidConstructorDependencies, makeDuplicateDeclarationError, toFactoryMetadata, unwrapExpression, wrapTypeReference} from '../common';
 
 export interface PipeHandlerData {
   meta: R3PipeMetadata;
@@ -161,9 +161,7 @@ export class PipeDecoratorHandler implements
       isStandalone: analysis.meta.isStandalone,
     });
 
-    this.injectableRegistry.registerInjectable(node, {
-      ctorDeps: analysis.meta.deps,
-    });
+    this.injectableRegistry.registerInjectable(node);
   }
 
   resolve(node: ClassDeclaration): ResolveResult<unknown> {

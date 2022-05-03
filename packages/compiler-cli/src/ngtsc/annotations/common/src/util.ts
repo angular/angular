@@ -380,8 +380,3 @@ export function resolveImportedFile(
   // Figure out what file is being imported.
   return moduleResolver.resolveModule(expr.value.moduleName!, origin.fileName);
 }
-
-export function isAbstractClassDeclaration(clazz: ClassDeclaration): boolean {
-  return clazz.modifiers !== undefined &&
-      clazz.modifiers.some(mod => mod.kind === ts.SyntaxKind.AbstractKeyword);
-}
