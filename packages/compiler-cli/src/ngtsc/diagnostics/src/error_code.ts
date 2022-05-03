@@ -72,12 +72,6 @@ export enum ErrorCode {
    */
   COMPONENT_UNKNOWN_IMPORT = 2012,
 
-  /**
-   * Raised when a type with Angular decorator inherits its constructor from a base class
-   * which has a constructor that is incompatible with Angular DI.
-   */
-  INJECTABLE_INHERITS_INVALID_CONSTRUCTOR = 2013,
-
   SYMBOL_NOT_EXPORTED = 3001,
   SYMBOL_EXPORTED_UNDER_DIFFERENT_NAME = 3002,
   /**

@@ -16,7 +16,7 @@ import {assertSuccessfulReferenceEmit, ImportedFile, ModuleResolver, Reference, 
 import {DependencyTracker} from '../../../incremental/api';
 import {extractSemanticTypeParameters, SemanticDepGraphUpdater} from '../../../incremental/semantic_graph';
 import {IndexingContext} from '../../../indexer';
-import {DirectiveMeta, extractDirectiveTypeCheckMeta, MetadataReader, MetadataRegistry, MetaKind, PipeMeta, ResourceRegistry} from '../../../metadata';
+import {DirectiveMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaKind, PipeMeta, ResourceRegistry} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
@@ -26,7 +26,7 @@ import {TypeCheckContext} from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {getSourceFile} from '../../../util/src/typescript';
 import {Xi18nContext} from '../../../xi18n';
-import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, InjectableClassRegistry, isExpressionForwardReference, readBaseClass, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, wrapFunctionExpressionsInParens} from '../../common';
+import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, isExpressionForwardReference, readBaseClass, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, wrapFunctionExpressionsInParens} from '../../common';
 import {extractDirectiveMetadata, parseFieldArrayValue} from '../../directive';
 import {NgModuleSymbol} from '../../ng_module';
 
@@ -51,13 +51,12 @@ export class ComponentDecoratorHandler implements
       private scopeRegistry: LocalModuleScopeRegistry,
       private typeCheckScopeRegistry: TypeCheckScopeRegistry,
       private resourceRegistry: ResourceRegistry, private isCore: boolean,
-      private strictCtorDeps: boolean, private resourceLoader: ResourceLoader,
-      private rootDirs: ReadonlyArray<string>, private defaultPreserveWhitespaces: boolean,
-      private i18nUseExternalIds: boolean, private enableI18nLegacyMessageIdFormat: boolean,
-      private usePoisonedData: boolean, private i18nNormalizeLineEndingsInICUs: boolean,
-      private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
-      private cycleHandlingStrategy: CycleHandlingStrategy, private refEmitter: ReferenceEmitter,
-      private depTracker: DependencyTracker|null,
+      private resourceLoader: ResourceLoader, private rootDirs: ReadonlyArray<string>,
+      private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean,
+      private enableI18nLegacyMessageIdFormat: boolean, private usePoisonedData: boolean,
+      private i18nNormalizeLineEndingsInICUs: boolean, private moduleResolver: ModuleResolver,
+      private cycleAnalyzer: CycleAnalyzer, private cycleHandlingStrategy: CycleHandlingStrategy,
+      private refEmitter: ReferenceEmitter, private depTracker: DependencyTracker|null,
       private injectableRegistry: InjectableClassRegistry,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean, private perf: PerfRecorder) {}
@@ -483,9 +482,7 @@ export class ComponentDecoratorHandler implements
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);
-    this.injectableRegistry.registerInjectable(node, {
-      ctorDeps: analysis.meta.deps,
-    });
+    this.injectableRegistry.registerInjectable(node);
   }
 
   index(
@@ -822,8 +819,7 @@ export class ComponentDecoratorHandler implements
     }
 
     const directiveDiagnostics = getDirectiveDiagnostics(
-        node, this.injectableRegistry, this.evaluator, this.reflector, this.scopeRegistry,
-        this.strictCtorDeps, 'Component');
+        node, this.metaReader, this.evaluator, this.reflector, this.scopeRegistry, 'Component');
     if (directiveDiagnostics !== null) {
       diagnostics.push(...directiveDiagnostics);
     }
