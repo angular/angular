@@ -32,7 +32,7 @@ import {NgModuleSymbol} from '../../ng_module';
 
 import {checkCustomElementSelectorForErrors, makeCyclicImportInfo} from './diagnostics';
 import {ComponentAnalysisData, ComponentResolutionData} from './metadata';
-import {_extractTemplateStyleUrls, extractComponentStyleUrls, extractStyleResources, extractTemplate, makeResourceNotFoundError, ParsedTemplateWithSource, parseTemplateDeclaration, preloadAndParseTemplate, ResourceTypeForDiagnostics, StyleUrlMeta, transformDecoratorToInlineResources} from './resources';
+import {_extractTemplateStyleUrls, extractComponentStyleUrls, extractStyleResources, extractTemplate, makeResourceNotFoundError, ParsedTemplateWithSource, parseTemplateDeclaration, preloadAndParseTemplate, ResourceTypeForDiagnostics, StyleUrlMeta, transformDecoratorResources} from './resources';
 import {ComponentSymbol} from './symbol';
 import {animationTriggerResolver, collectAnimationNames, validateAndFlattenComponentImports} from './util';
 
@@ -420,7 +420,7 @@ export class ComponentDecoratorHandler implements
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, inputs, this.reflector),
         classMetadata: extractClassMetadata(
             node, this.reflector, this.isCore, this.annotateForClosureCompiler,
-            dec => transformDecoratorToInlineResources(dec, component, styles, template)),
+            dec => transformDecoratorResources(dec, component, styles, template)),
         template,
         providersRequiringFactory,
         viewProvidersRequiringFactory,
@@ -869,7 +869,7 @@ export class ComponentDecoratorHandler implements
       styles.push(styleText);
     }
 
-    analysis.meta.styles = styles;
+    analysis.meta.styles = styles.filter(s => s.trim().length > 0);
   }
 
   compileFull(
