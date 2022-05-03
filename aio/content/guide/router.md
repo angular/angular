@@ -220,7 +220,7 @@ The one difference is that you place child routes in a `children` array within t
 
 <code-example header="AppRoutingModule (excerpt)" path="router/src/app/app-routing.module.9.ts" region="child-routes"></code-example>
 
-{@ setting-the-page-title}
+<a id="setting-the-page-title"></a>
 
 ## Setting the page title
 

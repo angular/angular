@@ -29,10 +29,10 @@ For more information, see [Introduction to Angular concepts](guide/architecture)
 
 ### Setting the document title
 
-<live-example name="set-document-title"></live-example>
+<code-example header="AppRoutingModule (excerpt)" path="router/src/app/app-routing.module.10.ts" region="page-title"></code-example>
 
 Demonstrates customizing the document title in the browser.
-For more information, see [Set the document title](guide/set-document-title).
+For more information, see [Setting the page title](guide/router#setting-the-page-title).
 
 ## Tour of Heroes tutorial application
 

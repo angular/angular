@@ -190,6 +190,9 @@
       // Use discoverable link for Angular Package Format and redirect to the guide page
       {"type": 301, "source": "/apf", "destination": "/guide/angular-package-format"},
 
+      // Previous guide for setting document title now redirects to the easier way of doing it in the router
+      {"type": 301, "source": "/guide/set-document-title", "destination": "/guide/router#setting-the-page-title"},
+
       // Temporarily serve the guide at `/devtools` as well as `/guide/devtools` until users have
       // their SW updated to a version that knows about the `/devtools` redirect.
       {"type": 302, "source": "/generated/docs/devtools.json", "destination": "/generated/docs/guide/devtools.json"}
