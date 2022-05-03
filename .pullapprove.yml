@@ -1168,8 +1168,8 @@ groups:
         - jessicajaniuk
         - pkozlowski-opensource
     reviews:
-      request: 4 # Request reviews from four people
-      required: 3 # Require that three people approve
+      request: 3 # Request reviews from 3 people
+      required: 2 # Require that 2 people approve
       reviewed_for: required
 
   # ================================================
@@ -1194,8 +1194,8 @@ groups:
         - jessicajaniuk
         - pkozlowski-opensource
     reviews:
-      request: 4 # Request reviews from four people
-      required: 2 # Require that two people approve
+      request: 2 # Request reviews from 2 people
+      required: 1 # Require that 1 person approve
       reviewed_for: required
 
   # ================================================
