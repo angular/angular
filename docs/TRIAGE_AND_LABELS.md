@@ -162,7 +162,7 @@ When a PR is ready for review, a review should be requested using the Reviewers 
 
 ## PR Target
 
-In our git workflow, we merge changes either to the `master` branch, the active patch branch (e.g. `5.0.x`), or to both.
+In our git workflow, we merge changes either to the `main` branch, the active patch branch (e.g. `5.0.x`), or to both.
 
 The decision about the target must be done by the PR author and/or reviewer.
 This decision is then honored when the PR is being merged by the caretaker.
@@ -183,7 +183,7 @@ Special Cases:
 
 Notes:
   - To land a change only in a patch/RC branch, without landing it in any other active release-train branch (such
-  as `master`), the patch/RC branch can be targeted in the GitHub UI with the appropriate
+  as `main`), the patch/RC branch can be targeted in the GitHub UI with the appropriate
   `target: patch`/`target: rc` label.
   - `target: lts` PRs must target the specific LTS branch they would need to merge into in the GitHub UI, in
   cases which a change is desired in multiple LTS branches, individual PRs for each LTS branch must be created
@@ -214,7 +214,7 @@ Only the `action: merge` label means that the PR is ready for merging.
 
 Managed by googlebot.
 Indicates whether a PR has a CLA on file for its author(s).
-Only issues with `cla:yes` should be merged into master.
+Only issues with `cla:yes` should be merged into main.
 
 ### `aio: preview`
 * _**Who adds it:** Any team member. (Typically the author or a reviewer.)_

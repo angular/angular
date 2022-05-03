@@ -101,14 +101,6 @@ function getRefFromBranchList(gitOutput) {
       return 1;
     }
 
-    // TODO(BRANCH_RENAME_CLEANUP): remove
-    if (a === 'master') {
-      return -1;
-    }
-    if (b === 'master') {
-      return 1;
-    }
-
     const aIsSemver = semverRegex.test(a);
     const bIsSemver = semverRegex.test(b);
     if (aIsSemver && bIsSemver) {
