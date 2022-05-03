@@ -78,6 +78,7 @@
       {"type": 301, "source": "/guide/updating-to-version-10", "destination": "https://v10.angular.io/guide/updating-to-version-10"},
       {"type": 301, "source": "/guide/updating-to-version-11", "destination": "https://v11.angular.io/guide/updating-to-version-11"},
       {"type": 301, "source": "/guide/updating-to-version-12", "destination": "/guide/update-to-latest-version"},
+      {"type": 301, "source": "/guide/set-document-title", "destination": "/guide/router#setting-the-page-title"},
 
       // Renaming of Getting Started topics
       {"type": 301, "source": "/start/data", "destination": "/start/start-data"},
@@ -189,9 +190,6 @@
 
       // Use discoverable link for Angular Package Format and redirect to the guide page
       {"type": 301, "source": "/apf", "destination": "/guide/angular-package-format"},
-
-      // Previous guide for setting document title now redirects to the easier way of doing it in the router
-      {"type": 301, "source": "/guide/set-document-title", "destination": "/guide/router#setting-the-page-title"},
 
       // Temporarily serve the guide at `/devtools` as well as `/guide/devtools` until users have
       // their SW updated to a version that knows about the `/devtools` redirect.
