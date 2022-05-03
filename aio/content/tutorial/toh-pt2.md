@@ -37,7 +37,8 @@ Open the `HeroesComponent` template file and make the following changes:
 
 1.  Add an `<h2>` at the top.
 1.  Below it add an HTML unordered list \(`<ul>`\) element.
-1.  Insert an `<li>` within the `<ul>` that displays properties of a `hero`.
+1.  Insert an `<li>` within the `<ul>`.
+1.  Place a `<button>` inside the `<li>` that displays properties of a `hero` inside `<span>` elements.
 1.  Sprinkle some CSS classes for styling \(you'll add the CSS styles shortly\).
 
 Make it look like this:
@@ -68,6 +69,17 @@ It's a critical part of the syntax.
 </div>
 
 After the browser refreshes, the list of heroes appears.
+
+<div class="callout is-helpful">
+
+<header>Interactive elements</header>
+
+**NOTE**: <br />
+Inside the `<li>` element, we've wrapped the hero's details in a `<button>` element. Later on we make the hero clickable, and it is better for accessibility purposes to use natively interactive HTML elements (e.g. `<button>`) instead of adding event listeners to non-interactive ones (e.g. `<li>`).
+
+For more details on accessibility, see [Accessibility in Angular](guide/accessibility).
+
+</div>
 
 <a id="styles"></a>
 
@@ -109,7 +121,7 @@ In this section, you'll listen for the hero item click event and update the hero
 
 ### Add a click event binding
 
-Start creating a `<button>` with a click event binding in the `<li>` like this:
+Add a click event binding to the `<button>` in the `<li>` like this:
 
 <code-example header="heroes.component.html (template excerpt)" path="toh-pt2/src/app/heroes/heroes.component.1.html" region="selectedHero-click"></code-example>
 
@@ -117,18 +129,6 @@ This is an example of Angular's [event binding](guide/event-binding) syntax.
 
 The parentheses around `click` tell Angular to listen for the `<button>` element's `click` event.
 When the user clicks in the `<button>`, Angular executes the `onSelect(hero)` expression.
-
-<div class="callout is-helpful">
-
-<header>Clickable elements</header>
-
-**NOTE**: <br />
-We added the click event binding on a new `<button>` element.
-While we could have added the event binding on the `<li>` element directly, it is better for accessibility purposes to use the native `<button>` element to handle clicks.
-
-For more details on accessibility, see [Accessibility in Angular](guide/accessibility).
-
-</div>
 
 In the next section, define an `onSelect()` method in `HeroesComponent` to display the hero that was defined in the `*ngFor` expression.
 
