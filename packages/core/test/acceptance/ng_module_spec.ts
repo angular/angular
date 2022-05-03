@@ -227,7 +227,7 @@ describe('NgModule', () => {
   });
 
   describe('schemas', () => {
-    it('should throw on unknown props if NO_ERRORS_SCHEMA is absent', () => {
+    it('should log an error on unknown props if NO_ERRORS_SCHEMA is absent', () => {
       @Component({
         selector: 'my-comp',
         template: `
@@ -255,6 +255,36 @@ describe('NgModule', () => {
       expect(spy.calls.mostRecent().args[0])
           .toMatch(/Can't bind to 'unknown-prop' since it isn't a known property of 'div'/);
     });
+    it('should throw an error with errorOnUnknownProperties on unknown props if NO_ERRORS_SCHEMA is absent',
+       () => {
+         @Component({
+           selector: 'my-comp',
+           template: `
+              <ng-container *ngIf="condition">
+                <div [unknown-prop]="true"></div>
+              </ng-container>
+            `,
+         })
+         class MyComp {
+           condition = true;
+         }
+
+         @NgModule({
+           imports: [CommonModule],
+           declarations: [MyComp],
+         })
+         class MyModule {
+         }
+
+         TestBed.configureTestingModule({imports: [MyModule], errorOnUnknownProperties: true});
+
+         expect(() => {
+           const fixture = TestBed.createComponent(MyComp);
+           fixture.detectChanges();
+         })
+             .toThrowError(
+                 /NG0303: Can't bind to 'unknown-prop' since it isn't a known property of 'div'/g);
+       });
 
     it('should not throw on unknown props if NO_ERRORS_SCHEMA is present', () => {
       @Component({
@@ -284,6 +314,36 @@ describe('NgModule', () => {
         fixture.detectChanges();
       }).not.toThrow();
     });
+
+    it('should not throw on unknown props with errorOnUnknownProperties if NO_ERRORS_SCHEMA is present',
+       () => {
+         @Component({
+           selector: 'my-comp',
+           template: `
+          <ng-container *ngIf="condition">
+            <div [unknown-prop]="true"></div>
+          </ng-container>
+        `,
+         })
+         class MyComp {
+           condition = true;
+         }
+
+         @NgModule({
+           imports: [CommonModule],
+           schemas: [NO_ERRORS_SCHEMA],
+           declarations: [MyComp],
+         })
+         class MyModule {
+         }
+
+         TestBed.configureTestingModule({imports: [MyModule], errorOnUnknownProperties: true});
+
+         expect(() => {
+           const fixture = TestBed.createComponent(MyComp);
+           fixture.detectChanges();
+         }).not.toThrow();
+       });
 
     it('should log an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element with dash in tag name',
        () => {
@@ -384,6 +444,21 @@ describe('NgModule', () => {
           .toMatch(/Can't bind to 'unknownProp' since it isn't a known property of 'ng-content'/);
     });
 
+    it('should throw an error on unknown property bindings on ng-content when errorOnUnknownProperties is enabled',
+       () => {
+         @Component({template: `<ng-content *unknownProp="123"></ng-content>`})
+         class App {
+         }
+
+         TestBed.configureTestingModule({declarations: [App], errorOnUnknownProperties: true});
+         expect(() => {
+           const fixture = TestBed.createComponent(App);
+           fixture.detectChanges();
+         })
+             .toThrowError(
+                 /NG0303: Can't bind to 'unknownProp' since it isn't a known property of 'ng-content'/g);
+       });
+
     it('should report unknown property bindings on ng-container', () => {
       @Component({template: `<ng-container [unknown-prop]="123"></ng-container>`})
       class App {
@@ -398,6 +473,21 @@ describe('NgModule', () => {
           .toMatch(
               /Can't bind to 'unknown-prop' since it isn't a known property of 'ng-container'/);
     });
+
+    it('should throw error on unknown property bindings on ng-container when errorOnUnknownProperties is enabled',
+       () => {
+         @Component({template: `<ng-container [unknown-prop]="123"></ng-container>`})
+         class App {
+         }
+
+         TestBed.configureTestingModule({declarations: [App], errorOnUnknownProperties: true});
+         expect(() => {
+           const fixture = TestBed.createComponent(App);
+           fixture.detectChanges();
+         })
+             .toThrowError(
+                 /NG0303: Can't bind to 'unknown-prop' since it isn't a known property of 'ng-container'/g);
+       });
 
     describe('AOT-compiled components', () => {
       function createComponent(

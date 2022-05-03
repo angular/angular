@@ -13,7 +13,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {getNgModuleById} from '../public_api';
 import {TestBedRender3} from '../testing/src/r3_test_bed';
-import {TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT} from '../testing/src/test_bed_common';
+import {TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from '../testing/src/test_bed_common';
 
 const NAME = new InjectionToken<string>('name');
 
@@ -1991,5 +1991,36 @@ describe('TestBed module `errorOnUnknownElements`', () => {
     expect(TestBed.shouldThrowErrorOnUnknownElements()).toBe(true);
     TestBed.resetTestingModule();
     expect(TestBed.shouldThrowErrorOnUnknownElements()).toBe(false);
+  });
+});
+
+describe('TestBed module `errorOnUnknownProperties`', () => {
+  // Cast the `TestBed` to the internal data type since we're testing private APIs.
+  let TestBed: TestBedRender3;
+
+  beforeEach(() => {
+    TestBed = getTestBed() as unknown as TestBedRender3;
+    TestBed.resetTestingModule();
+  });
+
+  it('should not throw based on the default behavior', () => {
+    expect(TestBed.shouldThrowErrorOnUnknownProperties()).toBe(THROW_ON_UNKNOWN_PROPERTIES_DEFAULT);
+  });
+
+  it('should not throw if the option is omitted', () => {
+    TestBed.configureTestingModule({});
+    expect(TestBed.shouldThrowErrorOnUnknownProperties()).toBe(false);
+  });
+
+  it('should be able to configure the option', () => {
+    TestBed.configureTestingModule({errorOnUnknownProperties: true});
+    expect(TestBed.shouldThrowErrorOnUnknownProperties()).toBe(true);
+  });
+
+  it('should reset the option back to the default when TestBed is reset', () => {
+    TestBed.configureTestingModule({errorOnUnknownProperties: true});
+    expect(TestBed.shouldThrowErrorOnUnknownProperties()).toBe(true);
+    TestBed.resetTestingModule();
+    expect(TestBed.shouldThrowErrorOnUnknownProperties()).toBe(false);
   });
 });
