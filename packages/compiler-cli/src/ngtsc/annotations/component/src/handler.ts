@@ -10,7 +10,7 @@ import {AnimationTriggerNames, compileClassMetadata, compileComponentFromMetadat
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
-import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {absoluteFrom, relative} from '../../../file_system';
 import {assertSuccessfulReferenceEmit, ImportedFile, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
 import {DependencyTracker} from '../../../incremental/api';
@@ -260,7 +260,12 @@ export class ComponentDecoratorHandler implements
       }
       diagnostics.push(makeDiagnostic(
           ErrorCode.COMPONENT_NOT_STANDALONE, component.get('imports')!,
-          `'imports' is only valid on a component that is standalone.`));
+          `'imports' is only valid on a component that is standalone.`,
+          [makeRelatedInformation(
+              node.name, `Did you forget to add 'standalone: true' to this @Component?`)]));
+      // Poison the component so that we don't spam further template type-checking errors that
+      // result from misconfigured imports.
+      isPoisoned = true;
     } else if (component.has('imports')) {
       const expr = component.get('imports')!;
       const imported = this.evaluator.evaluate(expr);
