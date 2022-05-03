@@ -27,7 +27,7 @@ To be notified when new releases are available, follow [@angular](https://twitte
 
 What's new? What's changed? We share the most important things you need to know on the Angular blog in [release announcements]( https://blog.angular.io/tagged/release%20notes "Angular blog - release announcements").
 
-To review a complete list of changes, organized by version, see the [Angular change log](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log").
+To review a complete list of changes, organized by version, see the [Angular change log](https://github.com/angular/angular/blob/main/CHANGELOG.md "Angular change log").
 
 <a id="checking-version-app"></a>
 
@@ -72,7 +72,7 @@ It also describes supported update paths.
     [Angular blog - announcements about releases prior to August 2017](https://blog.angularjs.org/search?q=available&by-date=true "Angular blog announcements about releases prior to August 2017")
 
 *   Release details:
-    [Angular change log](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log")
+    [Angular change log](https://github.com/angular/angular/blob/main/CHANGELOG.md "Angular change log")
 
 *   Update instructions:
     [Angular Update Guide](https://update.angular.io/ "Angular Update Guide")

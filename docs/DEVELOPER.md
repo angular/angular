@@ -13,7 +13,7 @@ It also explains the basic mechanics of using `git`, `node`, and `yarn`.
 * [Publishing Snapshot Builds](#publishing-snapshot-builds)
 * [Bazel Support](#bazel-support)
 
-See the [contribution guidelines](https://github.com/angular/angular/blob/master/CONTRIBUTING.md)
+See the [contribution guidelines](https://github.com/angular/angular/blob/main/CONTRIBUTING.md)
 if you'd like to contribute to Angular.
 
 ## Prerequisite Software
@@ -113,7 +113,7 @@ Angular uses [clang-format](https://clang.llvm.org/docs/ClangFormat.html) to for
 If the source code is not properly formatted, the CI will fail and the PR cannot be merged.
 
 You can automatically format your code by running:
-- `yarn ng-dev format changed [shaOrRef]`: format only files changed since the provided sha/ref. `shaOrRef` defaults to `master`.
+- `yarn ng-dev format changed [shaOrRef]`: format only files changed since the provided sha/ref. `shaOrRef` defaults to `main`.
 - `yarn ng-dev format all`: format _all_ source code
 - `yarn ng-dev format files <files..>`: format only provided files
 

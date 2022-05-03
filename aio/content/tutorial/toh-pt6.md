@@ -27,7 +27,7 @@ Next, still in the `AppModule`, add `HttpClientModule` to the `imports` array:
 
 ## Simulate a data server
 
-This tutorial sample mimics communication with a remote data server by using the [In-memory Web API](https://github.com/angular/angular/tree/master/packages/misc/angular-in-memory-web-api "In-memory Web API") module.
+This tutorial sample mimics communication with a remote data server by using the [In-memory Web API](https://github.com/angular/angular/tree/main/packages/misc/angular-in-memory-web-api "In-memory Web API") module.
 
 After installing the module, the application will make requests to and receive responses from the `HttpClient` without knowing that the *In-memory Web API* is intercepting those requests, applying them to an in-memory data store, and returning simulated responses.
 

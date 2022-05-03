@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/angular/angular/issues"
   },
-  "homepage": "https://github.com/angular/angular/tree/master/packages/compiler-cli",
+  "homepage": "https://github.com/angular/angular/tree/main/packages/benchpress",
   "publishConfig": {
     "registry": "https://wombat-dressing-room.appspot.com"
   }
