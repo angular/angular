@@ -39,54 +39,12 @@ If there are multiple bindings to the same class name, Angular uses [styling pre
 
 The following table summarizes class binding syntax.
 
-<style>
-  td, th {vertical-align: top}
-</style>
-
-<table width="100%">
-  <col width="15%">
-  </col>
-  <col width="20%">
-  </col>
-  <col width="35%">
-  </col>
-  <col width="30%">
-  </col>
-  <tr>
-    <th>
-      Binding Type
-    </th>
-    <th>
-      Syntax
-    </th>
-    <th>
-      Input Type
-    </th>
-    <th>
-      Example Input Values
-    </th>
-  </tr>
-  <tr>
-    <td>Single class binding</td>
-    <td><code>[class.sale]="onSale"</code></td>
-    <td><code>boolean | undefined | null</code></td>
-    <td><code>true</code>, <code>false</code></td>
-  </tr>
-  <tr>
-    <td rowspan=3>Multi-class binding</td>
-    <td rowspan=3><code>[class]="classExpression"</code></td>
-    <td><code>string</code></td>
-    <td><code>"my-class-1 my-class-2 my-class-3"</code></td>
-  </tr>
-  <tr>
-    <td><code>Record&lt;string, boolean | undefined | null&gt;</code></td>
-    <td><code>{foo: true, bar: false}</code></td>
-  </tr>
-  <tr>
-    <td><code>Array</code><<code>string</code>></td>
-    <td><code>['foo', 'bar']</code></td>
-  </tr>
-</table>
+| Binding Type         | Syntax                      | Input Type                                                                  | Example Input Values |
+|:---                  |:---                         |:---                                                                         |:---                  |
+| Single class binding | `[class.sale]="onSale"`     | <code>boolean &verbar; undefined &verbar; null</code>                       | `true`, `false`                      |
+| Multi-class binding  | `[class]="classExpression"` | `string`                                                                    | `"my-class-1 my-class-2 my-class-3"` |
+| Multi-class binding  | `[class]="classExpression"` | <code>Record&lt;string, boolean &verbar; undefined &verbar; null&gt;</code> | `{foo: true, bar: false}`            |
+| Multi-class binding  | `[class]="classExpression"` | <code>Array&lt;string&gt;</code>                                            | `['foo', 'bar']`                     |
 
 ## Binding to a single style
 
@@ -96,19 +54,15 @@ For example, set the ‘width’ style, type the following:  `[style.width]="wid
 
 Angular sets the property to the value of the bound expression, which is usually a string.  Optionally, you can add a unit extension like `em` or `%`, which requires a number type.
 
-<div class="alert is-helpful">
-
 1. To write a style in dash-case, type the following:
 
     <code-example language="html">&lt;nav [style.background-color]="expression"
-&gt;&lt;/nav&gt;
+&gt;&lt;/nav&gt;</code-example>
 
 2. To write a style in camelCase, type the following:
 
-    &lt;nav [style.backgroundColor]="expression"
+    <code-example language="html">&lt;nav [style.backgroundColor]="expression"
 &gt;&lt;/nav&gt;</code-example>
-
-</div>
 
 ## Binding to multiple styles
 
@@ -135,61 +89,12 @@ If there are multiple bindings to the same style attribute, Angular uses [stylin
 
 The following table summarizes style binding syntax.
 
-<style>
-  td, th {vertical-align: top}
-</style>
-
-<table width="100%">
-  <col width="15%">
-  </col>
-  <col width="20%">
-  </col>
-  <col width="35%">
-  </col>
-  <col width="30%">
-  </col>
-  <tr>
-    <th>
-      Binding Type
-    </th>
-    <th>
-      Syntax
-    </th>
-    <th>
-      Input Type
-    </th>
-    <th>
-      Example Input Values
-    </th>
-  </tr>
-  <tr>
-    <td>Single style binding</td>
-    <td><code>[style.width]="width"</code></td>
-    <td><code>string | undefined | null</code></td>
-    <td><code>"100px"</code></td>
-  </tr>
-  <tr>
-  <tr>
-    <td>Single style binding with units</td>
-    <td><code>[style.width.px]="width"</code></td>
-    <td><code>number | undefined | null</code></td>
-    <td><code>100</code></td>
-  </tr>
-    <tr>
-    <td rowspan=2>Multi-style binding</td>
-    <td rowspan=2><code>[style]="styleExpression"</code></td>
-    <td><code>string</code></td>
-    <td><code>"width: 100px; height: 100px"</code></td>
-  </tr>
-  <tr>
-    <td><code>Record&lt;string, string | undefined | null&gt;</code></td>
-    <td><code>{width: '100px', height: '100px'}</code></td>
-  </tr>
-</table>
-
-<div class="alert is-helpful">
-
-</div>
+| Binding Type                    | Syntax                      | Input Type                                                                 | Example Input Values |
+|:---                             |:---                         |:---                                                                        |:---                  |
+| Single style binding            | `[style.width]="width"`     | <code>string &verbar; undefined &verbar; null</code>                       | `"100px"`                           |
+| Single style binding with units | `[style.width.px]="width"`  | <code>number &verbar; undefined &verbar; null</code>                       | `100`                               |
+| Multi-style binding             | `[style]="styleExpression"` | `string`                                                                   | `"width: 100px; height: 100px"`     |
+| Multi-style binding             | `[style]="styleExpression"` | <code>Record&lt;string, string &verbar; undefined &verbar; null&gt;</code> | `{width: '100px', height: '100px'}` |
 
 {@a styling-precedence}
 ## Styling precedence
@@ -198,7 +103,7 @@ A single HTML element can have its CSS class list and style values bound to mult
 
 ## What’s next
 
-* Component styles(https://angular.io/guide/component-styles)
-* Introduction to Angular animations(https://angular.io/guide/animations)
+* [Component styles](https://angular.io/guide/component-styles)
+* [Introduction to Angular animations](https://angular.io/guide/animations)
 
-@reviewed 2022-03-30
+@reviewed 2022-05-03
