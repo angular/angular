@@ -95,12 +95,6 @@ export class NgOptimizedImage implements OnInit {
   }
 
   /**
-   * Function that takes the name of the image, its width, and a quality %,
-   * then turns it into a valid image CDN URL.
-   */
-  @Input() loader?: (config: ImageLoaderConfig) => string;
-
-  /**
    * Get a value of the `src` if it's set on a host <img> element.
    * This input is needed to verify that there are no `src` and `raw-src` provided
    * at the same time (thus causing an ambiguity on which src to use).
@@ -114,9 +108,6 @@ export class NgOptimizedImage implements OnInit {
   }
 
   getRewrittenSrc(): string {
-    // If a loader is provided as an input - use it, otherwise fall back
-    // to the loader configured globally using the `IMAGE_LOADER` token.
-    const imgLoader = this.loader ?? this.imageLoader;
     const imgConfig = {
       src: this.rawSrc,
       // TODO: if we're going to support responsive serving, we don't want to request the width
@@ -124,7 +115,7 @@ export class NgOptimizedImage implements OnInit {
       // The width would require pre-processing before passing to the image loader function.
       width: this.width,
     };
-    return imgLoader(imgConfig);
+    return this.imageLoader(imgConfig);
   }
 }
 
