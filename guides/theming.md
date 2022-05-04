@@ -250,7 +250,7 @@ npm package (`@angular/material/prebuilt-themes`). To include the pre-built them
 application, [add your chosen CSS file to the `styles` array of your project's `angular.json`
 file][adding-styles].
 
-[prebuilt]: https://github.com/angular/components/blob/master/src/material/core/theming/prebuilt
+[prebuilt]: https://github.com/angular/components/blob/main/src/material/core/theming/prebuilt
 
 ### Defining multiple themes
 

@@ -6,9 +6,6 @@
 @use './list-option-theme';
 @use '../mdc-helpers/mdc-helpers';
 
-// TODO: implement mat-list[dense] once density system is in master
-
-
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
   $primary: mat.get-color-from-palette(map.get($config, primary));

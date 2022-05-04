@@ -1,4 +1,4 @@
-This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angular/components/blob/master/CHANGELOG.md) for changes in 7.0.0+.
+This contains changes before 7.0.0. See [CHANGELOG.md](https://github.com/angular/components/blob/main/CHANGELOG.md) for changes in 7.0.0+.
 
 <a name="6.4.7"></a>
 ## [6.4.7 kryptonite-kombucha](https://github.com/angular/material2/compare/6.4.6...6.4.7) (2018-08-29)
@@ -588,7 +588,7 @@ ng update @angular/material
 
 
 ### Breaking Changes
-* A number of APIs that were deprecated during beta have been removed, see [here for complete list](https://github.com/angular/material2/blob/master/CHANGELOG.md#600-beta5-2018-03-23)
+* A number of APIs that were deprecated during beta have been removed, see [here for complete list](https://github.com/angular/material2/blob/main/CHANGELOG.md#600-beta5-2018-03-23)
 * See `ng update` tooling above to automatically migrate to the new APIs
 
 
@@ -1640,7 +1640,7 @@ We expect to have the tool ready when we release version 6.0.0.
 * **menu:** not closing when overlay is detached externally ([#8868](https://github.com/angular/material2/issues/8868)) ([534c797](https://github.com/angular/material2/commit/534c797))
 * **overlay:** export OverlaySizeConfig ([#8932](https://github.com/angular/material2/issues/8932)) ([adfa31e](https://github.com/angular/material2/commit/adfa31e))
 * **paginator:** set default display value ([#8455](https://github.com/angular/material2/issues/8455)) ([ccb325e](https://github.com/angular/material2/commit/ccb325e)), closes [#8454](https://github.com/angular/material2/issues/8454)
-* **portal:** inaccurate hasAttahed result and portal being cleared if attached too early ([#8642](https://github.com/angular/material2/issues/8642)) ([93e6c53](https://github.com/angular/material2/commit/93e6c53)), closes [/github.com/angular/material2/blob/master/src/material/dialog/dialog-container.ts#L118](https://github.com//github.com/angular/material2/blob/master/src/material/dialog/dialog-container.ts/issues/L118) [#8628](https://github.com/angular/material2/issues/8628)
+* **portal:** inaccurate hasAttahed result and portal being cleared if attached too early ([#8642](https://github.com/angular/material2/issues/8642)) ([93e6c53](https://github.com/angular/material2/commit/93e6c53)), closes [/github.com/angular/material2/blob/main/src/material/dialog/dialog-container.ts#L118](https://github.com//github.com/angular/material2/blob/main/src/material/dialog/dialog-container.ts/issues/L118) [#8628](https://github.com/angular/material2/issues/8628)
 * **select:** alt + arrow key not opening in single-selection mode ([#8910](https://github.com/angular/material2/issues/8910)) ([85f83f9](https://github.com/angular/material2/commit/85f83f9))
 * **select:** change event emitted before data binding is updated ([#8740](https://github.com/angular/material2/issues/8740)) ([2493797](https://github.com/angular/material2/commit/2493797)), closes [#8739](https://github.com/angular/material2/issues/8739)
 * **select:** complete state change event ([#8777](https://github.com/angular/material2/issues/8777)) ([46411e3](https://github.com/angular/material2/commit/46411e3))
@@ -2023,15 +2023,15 @@ StackBlitz instead of Plunker.
 ### Breaking Changes
 
 * All "md" prefixes have been removed. See the [deprecation notice in the beta.11 notes for more
-information](https://github.com/angular/material2/blob/master/CHANGELOG.md#deprecation-of-md-prefix).
+information](https://github.com/angular/material2/blob/main/CHANGELOG.md#deprecation-of-md-prefix).
 * All cdk re-exports in `@angular/material` have been removed. See the [the beta.10 notes for more
-information](https://github.com/angular/material2/blob/master/CHANGELOG.md#breaking-changes-2).
+information](https://github.com/angular/material2/blob/main/CHANGELOG.md#breaking-changes-2).
 * Previously the `ScrollDispatcher.scrolled` subscription would react both on scroll events and on window resize events. Now it only reacts to scroll events. To react to resize events, subscribe to the `ViewportRuler.change()` stream.
 * `UniqueSelectionDispatcher`, `UniqueSelectionDispatcherListener` and `UNIQUE_SELECTION_DISPATCHER_PROVIDER` are no longer
 available from @angular/material and instead must be imported from @angular/cdk/collections
 * `isFocusTrapEnabled` is now properly marked internal.
 * The `OverlayRef.getState` method has been renamed to `OverlayRef.getConfig`.
-* `defaultErrorStateMatcher` has been replaced by `ErrorStateMatcher`. For more info, see the [input docs](https://github.com/angular/material2/blob/master/src/material/input/input.md#custom-error-matcher).
+* `defaultErrorStateMatcher` has been replaced by `ErrorStateMatcher`. For more info, see the [input docs](https://github.com/angular/material2/blob/main/src/material/input/input.md#custom-error-matcher).
 
 ### Features
 
@@ -2128,7 +2128,7 @@ tools like webpack to more easily load _only_ the components being used in an ap
 
 * Angular Material now requires **Angular 4.4.3 or greater**
 * `MaterialModule` has been removed. ([cf1ece0](https://github.com/angular/material2/commit/cf1ece0)) (#6803)
-[See the deprecation notice from beta.3 for more information](https://github.com/angular/material2/blob/master/CHANGELOG.md#materialmodule).
+[See the deprecation notice from beta.3 for more information](https://github.com/angular/material2/blob/main/CHANGELOG.md#materialmodule).
 * `MdCoreModule` has been removed. Most of its functionality has been moved to `@angular/cdk` over
 the last few releases.
 * `FocusOriginMonitor` has been renamed to `FocusMonitor` and moved to `@angular/cdk`.
@@ -3570,7 +3570,7 @@ switch to using our UMD bundles.  Example config:
   }
 ```
 
-You can see a more detailed example in our [demo app's system config](https://github.com/angular/material2/blob/master/src/demo-app/system-config.ts).
+You can see a more detailed example in our [demo app's system config](https://github.com/angular/material2/blob/main/src/demo-app/system-config.ts).
 
 In addition to this, each component now has an `index.js` file, so you should now have imports like
 ```ts

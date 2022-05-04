@@ -25,7 +25,7 @@ declare global {
      * (no more pending tasks).
      *
      * For the implementation, see: https://github.com/
-     *  angular/angular/blob/master/packages/platform-browser/src/browser/testability.ts#L30-L49
+     *  angular/angular/blob/main/packages/platform-browser/src/browser/testability.ts#L30-L49
      */
     frameworkStabilizers: FrameworkStabilizer[];
   }

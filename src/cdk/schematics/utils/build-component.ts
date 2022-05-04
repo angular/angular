@@ -51,7 +51,7 @@ function buildDefaultPath(project: ProjectDefinition): string {
 
 /**
  * List of style extensions which are CSS compatible. All supported CLI style extensions can be
- * found here: angular/angular-cli/master/packages/schematics/angular/ng-new/schema.json#L118-L122
+ * found here: angular/angular-cli/main/packages/schematics/angular/ng-new/schema.json#L118-L122
  */
 const supportedCssExtensions = ['css', 'scss', 'less'];
 

@@ -2360,7 +2360,7 @@ Sass theming API has been reworked so that clients can take advantage of `@use`.
 * Renamed functions, mixins, and variables to be a better reflection of what they do
 * Applications still using `node-sass` will need to switch to the `sass` package
 
-For more information, check out the [new theming guide](https://github.com/angular/components/blob/master/guides/theming.md).
+For more information, check out the [new theming guide](https://github.com/angular/components/blob/main/guides/theming.md).
 
 ### cdk
 
@@ -4031,7 +4031,7 @@ the new Sass module system, which offers a number of benefits over the existing 
 | bug fix |  **autocomplete:** provide horizontal fallback positions ([#18906](https://github.com/angular/components/issues/18906)) ([3488dda](https://github.com/angular/components/commit/3488dda)), closes [#18854](https://github.com/angular/components/issues/18854) |
 | bug fix |  **bottom-sheet:** allow result to be passed when dismissing through service ([#18831](https://github.com/angular/components/issues/18831)) ([48e26b1](https://github.com/angular/components/commit/48e26b1)) |
 | bug fix |  **core:** ripple mutating global options when animations are… ([#18983](https://github.com/angular/components/issues/18983)) ([09f2872](https://github.com/angular/components/commit/09f2872)) |
-| bug fix |  **datepicker:** add hover indication to navigation buttons ([#18995](https://github.com/angular/components/issues/18995)) ([94ab707](https://github.com/angular/components/commit/94ab707)), closes [/github.com/angular/components/blob/master/src/material/button/button.scss#L13](https://github.com//github.com/angular/components/blob/master/src/material/button/button.scss/issues/L13) [#18958](https://github.com/angular/components/issues/18958) |
+| bug fix |  **datepicker:** add hover indication to navigation buttons ([#18995](https://github.com/angular/components/issues/18995)) ([94ab707](https://github.com/angular/components/commit/94ab707)), closes [/github.com/angular/components/blob/main/src/material/button/button.scss#L13](https://github.com//github.com/angular/components/blob/main/src/material/button/button.scss/issues/L13) [#18958](https://github.com/angular/components/issues/18958) |
 | bug fix |  **datepicker:** disable calendar hover styles on touch devices ([#18876](https://github.com/angular/components/issues/18876)) ([d752cdf](https://github.com/angular/components/commit/d752cdf)) |
 | bug fix |  **datepicker:** error in IE/Edge for static disabled binding ([#18202](https://github.com/angular/components/issues/18202)) ([80977f6](https://github.com/angular/components/commit/80977f6)) |
 | bug fix |  **dialog:** recapture focus when clicking on backdrop when cl… ([#18826](https://github.com/angular/components/issues/18826)) ([c5ddfe8](https://github.com/angular/components/commit/c5ddfe8)), closes [#18799](https://github.com/angular/components/issues/18799) |
@@ -4418,7 +4418,7 @@ features in that regard- a new package that wraps the
 in an easy-to-use Angular component.
 
 You can see the
-[documentation on GitHub](https://github.com/angular/components/blob/master/src/google-maps/README.md)
+[documentation on GitHub](https://github.com/angular/components/blob/main/src/google-maps/README.md)
 for the time being.
 
 Big thanks to @mbehrlich for contributing this!
@@ -4836,7 +4836,7 @@ features in that regard- a new package that wraps the
 in an easy-to-use Angular component.
 
 You can see the
-[documentation on GitHub](https://github.com/angular/components/blob/master/src/youtube-player)
+[documentation on GitHub](https://github.com/angular/components/blob/main/src/youtube-player)
 for the time being.
 
 Big thanks to @YourDeveloperFriend for contributing this!
@@ -6287,4 +6287,4 @@ You can view a beta version of the docs at https://beta-angular-material-io.fire
 
 # Changes Prior to 7.0.0
 
-To view changes that occurred prior to 7.0.0, see [CHANGELOG_ARCHIVE.md](https://github.com/angular/components/blob/master/CHANGELOG_ARCHIVE.md).
+To view changes that occurred prior to 7.0.0, see [CHANGELOG_ARCHIVE.md](https://github.com/angular/components/blob/main/CHANGELOG_ARCHIVE.md).

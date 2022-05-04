@@ -614,9 +614,9 @@ enum likely differ from the key codes used in the test environment. Environment 
 maintain a mapping from `TestKey` codes to the codes used in the particular testing environment.
 
 The
-[`UnitTestElement`](https://github.com/angular/components/blob/master/src/cdk/testing/testbed/unit-test-element.ts#L57)
+[`UnitTestElement`](https://github.com/angular/components/blob/main/src/cdk/testing/testbed/unit-test-element.ts#L57)
 and
-[`SeleniumWebDriverElement`](https://github.com/angular/components/blob/master/src/cdk/testing/selenium-webdriver/selenium-web-driver-element.ts#L22)
+[`SeleniumWebDriverElement`](https://github.com/angular/components/blob/main/src/cdk/testing/selenium-webdriver/selenium-web-driver-element.ts#L22)
 implementations in Angular CDK serve as good examples of implementations of this interface.
 
 #### Creating a `HarnessEnvironment` implementation for the environment
@@ -652,9 +652,9 @@ require arguments to be passed. (e.g. the `loader` method on `TestbedHarnessEnvi
 `harnessForFixture`).
 
 The
-[`TestbedHarnessEnvironment`](https://github.com/angular/components/blob/master/src/cdk/testing/testbed/testbed-harness-environment.ts#L20)
+[`TestbedHarnessEnvironment`](https://github.com/angular/components/blob/main/src/cdk/testing/testbed/testbed-harness-environment.ts#L20)
 and
-[`SeleniumWebDriverHarnessEnvironment`](https://github.com/angular/components/blob/master/src/cdk/testing/selenium-webdriver/selenium-web-driver-harness-environment.ts#L71)
+[`SeleniumWebDriverHarnessEnvironment`](https://github.com/angular/components/blob/main/src/cdk/testing/selenium-webdriver/selenium-web-driver-harness-environment.ts#L71)
 implementations in Angular CDK serve as good examples of implementations of this interface.
 
 #### Handling auto change detection status

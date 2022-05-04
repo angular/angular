@@ -65,4 +65,4 @@ should be given `role="tab"`, and the content that can be expanded upon selectio
 `role="tabpanel"`. Furthermore, the step header should have an `aria-selected` attribute that
 reflects its selected state and the associated content element should have `aria-expanded`.
 
-You can refer to the [Angular Material stepper](https://github.com/angular/components/tree/master/src/material/stepper) as an example of an accessible implementation.
+You can refer to the [Angular Material stepper](https://github.com/angular/components/tree/main/src/material/stepper) as an example of an accessible implementation.

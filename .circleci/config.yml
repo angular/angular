@@ -84,8 +84,6 @@ var_14: &publish_branches_filter
   branches:
     only:
       - main
-      # TODO(BRANCH_RENAME_CLEANUP): remove
-      - master
       # 6.0.x, 7.1.x, etc.
       - /\d+\.\d+\.x/
 
@@ -137,8 +135,6 @@ var_21: &only_main_branch_filter
   branches:
     only:
       - main
-        # TODO(BRANCH_RENAME_CLEANUP): remove
-      - master
 
 # -----------------------------
 # Container version of CircleCI
@@ -677,5 +673,3 @@ workflows:
                 # it's not guaranteed that older versions of Angular Material always work
                 # with the latest Angular version.
                 - main
-                # TODO(BRANCH_RENAME_CLEANUP): remove
-                - master

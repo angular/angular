@@ -263,8 +263,8 @@ the same tests that the non-MDC version had. Similarly, we check that the public
 Components match that of the non-MDC version.
 
 In the case where old tests no longer make sense and should be omitted or the public API should be
-changed, you can do so in [scripts/check-mdc-tests-config.ts](https://github.com/angular/components/blob/master/scripts/check-mdc-tests-config.ts) and
-[scripts/check-mdc-exports-config.ts](https://github.com/angular/components/blob/master/scripts/check-mdc-exports-config.ts).
+changed, you can do so in [scripts/check-mdc-tests-config.ts](https://github.com/angular/components/blob/main/scripts/check-mdc-tests-config.ts) and
+[scripts/check-mdc-exports-config.ts](https://github.com/angular/components/blob/main/scripts/check-mdc-exports-config.ts).
 Remember to leave a comment explaining why the change was necessary.
 
 #### Coercion

@@ -15,7 +15,7 @@
   "bugs": {
     "url": "https://github.com/angular/components/issues"
   },
-  "homepage": "https://github.com/angular/components/tree/master/src/google-maps#readme",
+  "homepage": "https://github.com/angular/components/tree/main/src/google-maps#readme",
   "dependencies": {
     "@types/google.maps": "^3.45.6",
     "tslib": "0.0.0-TSLIB"

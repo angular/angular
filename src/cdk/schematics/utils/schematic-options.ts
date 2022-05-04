@@ -20,7 +20,7 @@ import {Schema, Style} from '@schematics/angular/component/schema';
 export function getDefaultComponentOptions(project: ProjectDefinition): Partial<Schema> {
   // Note: Not all options which are available when running "ng new" will be stored in the
   // workspace config. List of options which will be available in the configuration:
-  // angular/angular-cli/blob/master/packages/schematics/angular/application/index.ts#L109-L131
+  // angular/angular-cli/blob/main/packages/schematics/angular/application/index.ts#L109-L131
   let skipTests = getDefaultComponentOption<boolean | null>(project, ['skipTests'], null);
 
   // In case "skipTests" is not set explicitly, also look for the "spec" option. The "spec"

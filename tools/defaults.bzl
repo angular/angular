@@ -367,8 +367,8 @@ def node_integration_test(setup_chromium = False, node_repository = "nodejs", **
 def ng_web_test_suite(deps = [], static_css = [], exclude_init_script = False, **kwargs):
     bootstrap = [
         # This matches the ZoneJS bundles used in default CLI projects. See:
-        # https://github.com/angular/angular-cli/blob/master/packages/schematics/angular/application/files/src/polyfills.ts.template#L58
-        # https://github.com/angular/angular-cli/blob/master/packages/schematics/angular/application/files/src/test.ts.template#L3
+        # https://github.com/angular/angular-cli/blob/main/packages/schematics/angular/application/files/src/polyfills.ts.template#L58
+        # https://github.com/angular/angular-cli/blob/main/packages/schematics/angular/application/files/src/test.ts.template#L3
         # Note `zone.js/dist/zone.js` is aliased in the CLI to point to the evergreen
         # output that does not include legacy patches. See: https://github.com/angular/angular/issues/35157.
         # TODO: Consider adding the legacy patches when testing Saucelabs/Browserstack with Bazel.
