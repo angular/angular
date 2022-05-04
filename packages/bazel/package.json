@@ -17,7 +17,7 @@
   "bazelBin": {
     "ngc-wrapped": {
       "additionalAttributes": {
-        "templated_args": "[\"--bazel_patch_module_resolver\"]"
+        "templated_args": "[\"--nobazel_run_linker\"]"
       }
     }
   },

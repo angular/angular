@@ -1,5 +1,5 @@
 load("@aio_npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
-load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
+load("//tools:defaults.bzl", "npm_package_bin")
 
 # The write_source_files macro is used to write bazel outputs to the source tree and test that they are up to date.
 # See: https://docs.aspect.build/aspect-build/bazel-lib/v0.5.0/docs/docs/write_source_files-docgen.html
