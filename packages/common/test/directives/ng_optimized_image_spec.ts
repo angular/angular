@@ -38,22 +38,6 @@ describe('Image directive', () => {
     expect(img.src.endsWith('/path/img.png?w=150')).toBeTrue();
   });
 
-  it('should use an image loader from inputs over the one provided via `IMAGE_LOADER` token',
-     () => {
-       const imageLoader = (config: ImageLoaderConfig) =>
-           `${config.src}?w=${config.width}&source=IMAGE_LOADER`;
-       setupTestingModule({imageLoader});
-
-       const template =
-           '<img raw-src="path/img.png" [loader]="cmpImageLoader" width="150" height="50">';
-       const fixture = createTestComponent(template);
-       fixture.detectChanges();
-
-       const nativeElement = fixture.nativeElement as HTMLElement;
-       const img = nativeElement.querySelector('img')!;
-       expect(img.src.endsWith('/path/img.png?w=150&source=component')).toBeTrue();
-     });
-
   describe('setup error handling', () => {
     it('should throw if both `src` and `raw-src` are present', () => {
       setupTestingModule();
@@ -79,9 +63,6 @@ describe('Image directive', () => {
   template: '',
 })
 class TestComponent {
-  cmpImageLoader = (config: ImageLoaderConfig) => {
-    return `${config.src}?w=${config.width}&source=component`;
-  }
 }
 
 function setupTestingModule(config?: {imageLoader: ImageLoader}) {
