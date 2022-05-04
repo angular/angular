@@ -13,15 +13,16 @@ import {map, mergeMap} from 'rxjs/operators';
 import {Route} from '../models';
 import {recognize as recognizeFn} from '../recognize';
 import {NavigationTransition} from '../router';
-import {UrlTree} from '../url_tree';
+import {UrlSerializer, UrlTree} from '../url_tree';
 
 export function recognize(
     injector: EnvironmentInjector, rootComponentType: Type<any>|null, config: Route[],
-    serializer: (url: UrlTree) => string, paramsInheritanceStrategy: 'emptyOnly'|'always',
+    serializer: UrlSerializer, paramsInheritanceStrategy: 'emptyOnly'|'always',
     relativeLinkResolution: 'legacy'|'corrected'): MonoTypeOperatorFunction<NavigationTransition> {
   return mergeMap(
       t => recognizeFn(
                injector, rootComponentType, config, t.urlAfterRedirects!,
-               serializer(t.urlAfterRedirects!), paramsInheritanceStrategy, relativeLinkResolution)
+               serializer.serialize(t.urlAfterRedirects!), serializer, paramsInheritanceStrategy,
+               relativeLinkResolution)
                .pipe(map(targetSnapshot => ({...t, targetSnapshot}))));
 }

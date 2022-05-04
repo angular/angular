@@ -4743,7 +4743,7 @@ describe('Integration', () => {
     describe('canMatch', () => {
       @Injectable({providedIn: 'root'})
       class ConfigurableGuard implements CanMatch {
-        result: Promise<boolean>|Observable<boolean>|boolean = false;
+        result: Promise<boolean|UrlTree>|Observable<boolean|UrlTree>|boolean|UrlTree = false;
         canMatch() {
           return this.result;
         }
@@ -4775,6 +4775,22 @@ describe('Integration', () => {
            router.navigateByUrl('/a');
            advance(fixture);
            expect(fixture.nativeElement.innerHTML).toContain('simple');
+         }));
+
+      it('can return UrlTree from canMatch guard', fakeAsync(() => {
+           const router = TestBed.inject(Router);
+           TestBed.inject(ConfigurableGuard).result =
+               Promise.resolve(router.createUrlTree(['/team/1']));
+           router.resetConfig([
+             {path: 'a', canMatch: [ConfigurableGuard], component: SimpleCmp},
+             {path: 'team/:id', component: TeamCmp},
+           ]);
+           const fixture = createRoot(router, RootCmp);
+
+
+           router.navigateByUrl('/a');
+           advance(fixture);
+           expect(fixture.nativeElement.innerHTML).toContain('team');
          }));
 
       it('runs canMatch guards provided in lazy module', fakeAsync(() => {

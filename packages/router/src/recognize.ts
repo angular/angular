@@ -13,7 +13,7 @@ import {switchMap} from 'rxjs/operators';
 import {Data, ResolveData, Route, Routes} from './models';
 import {ActivatedRouteSnapshot, inheritedParamsDataResolve, ParamsInheritanceStrategy, RouterStateSnapshot} from './router_state';
 import {PRIMARY_OUTLET} from './shared';
-import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
+import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {last} from './utils/collection';
 import {getOrCreateRouteInjectorIfNeeded, getOutlet, sortByMatchingOutlets} from './utils/config';
 import {isImmediateMatch, matchWithChecks, noLeftoversInUrl, split} from './utils/config_matching';
@@ -30,13 +30,13 @@ function newObservableError(e: unknown): Observable<RouterStateSnapshot> {
 
 export function recognize(
     injector: EnvironmentInjector, rootComponentType: Type<any>|null, config: Routes,
-    urlTree: UrlTree, url: string,
+    urlTree: UrlTree, url: string, urlSerializer: UrlSerializer,
     paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly',
     relativeLinkResolution: 'legacy'|'corrected' = 'legacy'): Observable<RouterStateSnapshot> {
   try {
     const result = new Recognizer(
                        injector, rootComponentType, config, urlTree, url, paramsInheritanceStrategy,
-                       relativeLinkResolution)
+                       relativeLinkResolution, urlSerializer)
                        .recognize();
     return from(result).pipe(switchMap(result => {
       if (result === null) {
@@ -57,7 +57,8 @@ export class Recognizer {
       private injector: EnvironmentInjector, private rootComponentType: Type<any>|null,
       private config: Routes, private urlTree: UrlTree, private url: string,
       private paramsInheritanceStrategy: ParamsInheritanceStrategy,
-      private relativeLinkResolution: 'legacy'|'corrected') {}
+      private relativeLinkResolution: 'legacy'|'corrected',
+      private readonly urlSerializer: UrlSerializer) {}
 
   async recognize(): Promise<RouterStateSnapshot|null> {
     const rootSegmentGroup =
@@ -183,7 +184,9 @@ export class Recognizer {
           (NG_DEV_MODE ? getCorrectedPathIndexShift(rawSegment) + segments.length :
                          pathIndexShift));
     } else {
-      const result = await matchWithChecks(rawSegment, route, segments, injector).toPromise();
+      const result =
+          await matchWithChecks(rawSegment, route, segments, injector, this.urlSerializer)
+              .toPromise();
       if (!result.matched) {
         return null;
       }

@@ -138,7 +138,7 @@ export interface CanLoad {
 // @public
 export interface CanMatch {
     // (undocumented)
-    canMatch(route: Route, segments: UrlSegment[]): Observable<boolean> | Promise<boolean> | boolean;
+    canMatch(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 }
 
 // @public

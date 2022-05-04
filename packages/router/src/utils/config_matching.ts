@@ -13,7 +13,7 @@ import {map} from 'rxjs/operators';
 import {Route} from '../models';
 import {runCanMatchGuards} from '../operators/check_guards';
 import {defaultUrlMatcher, PRIMARY_OUTLET} from '../shared';
-import {UrlSegment, UrlSegmentGroup} from '../url_tree';
+import {UrlSegment, UrlSegmentGroup, UrlSerializer} from '../url_tree';
 
 import {forEach} from './collection';
 import {getOutlet} from './config';
@@ -35,13 +35,13 @@ const noMatch: MatchResult = {
 };
 
 export function matchWithChecks(
-    segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[],
-    injector: Injector): Observable<MatchResult> {
+    segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[], injector: Injector,
+    urlSerializer: UrlSerializer): Observable<MatchResult> {
   const result = match(segmentGroup, route, segments);
   if (!result.matched) {
     return of(result);
   }
-  return runCanMatchGuards(injector, route, segments)
+  return runCanMatchGuards(injector, route, segments, urlSerializer)
       .pipe(
           map((v) => v === true ? result : {...noMatch}),
       );

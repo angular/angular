@@ -901,11 +901,12 @@ export type CanDeactivateFn<T> =
  * @publicApi
  */
 export interface CanMatch {
-  canMatch(route: Route, segments: UrlSegment[]): Observable<boolean>|Promise<boolean>|boolean;
+  canMatch(route: Route, segments: UrlSegment[]):
+      Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 }
 
 export type CanMatchFn = (route: Route, segments: UrlSegment[]) =>
-    Observable<boolean>|Promise<boolean>|boolean;
+    Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean;
 
 /**
  * @description

@@ -222,7 +222,8 @@ function redirectIfUrlTree(urlSerializer: UrlSerializer):
 }
 
 export function runCanMatchGuards(
-    injector: Injector, route: Route, segments: UrlSegment[]): Observable<boolean> {
+    injector: Injector, route: Route, segments: UrlSegment[],
+    urlSerializer: UrlSerializer): Observable<boolean> {
   const canMatch = route.canMatch;
   if (!canMatch || canMatch.length === 0) return of(true);
 
@@ -235,6 +236,6 @@ export function runCanMatchGuards(
   return of(canMatchObservables)
       .pipe(
           prioritizedGuardValue(),
-          filter((v): v is boolean => !(v instanceof UrlTree)),
+          redirectIfUrlTree(urlSerializer),
       );
 }
