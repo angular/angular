@@ -149,21 +149,35 @@ Add the following to `heroes.component.html` beneath the list section:
 
 <code-example header="heroes.component.html (selected hero details)" path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details"></code-example>
 
-After the browser refreshes, the application is broken.
+After the browser refreshes, the application is broken/failing compilation.
 
-Open the browser developer tools and look in the console for an error message like this:
+Look at your terminal running the application and you should see an error message like this:
 
 <code-example format="output" hideCopy language="shell">
 
-HeroesComponent.html:3 ERROR TypeError: Cannot read property 'name' of undefined
+Error: src/app/heroes/heroes.component.html:11:25 - error TS2532: Object is possibly 'undefined'.
 
 </code-example>
 
 #### What happened?
 
-When the application starts, the `selectedHero` is `undefined` *by design*.
+The issue is that `selectedHero` may be `undefined` (and it actually is at the start *by design*) and the TypeScript compiler prevents us from accessing the fields of a possibly `undefined` value.
 
-Binding expressions in the template that refer to properties of `selectedHero` &mdash;expressions like `{{selectedHero.name}}`&mdash; *must fail* because there is no selected hero.
+The compiler is actually doing us a favour since the binding expressions in the template that refer to properties of `selectedHero` &mdash;expressions like `{{selectedHero.name}}`&mdash; *must initially fail* because there is indeed no selected hero.
+
+<div class="alert is-helpful">
+
+Note that in this particular case the TypeScript compiler fails compilation before we can even see the issue in action because it is configured to [strict mode](https://www.typescriptlang.org/tsconfig#strict) by default by the Angular CLI, this is a good thing, as if it were not the case, the compilation would succeed but the application would not function as we'd expect it to, and we'd have to investigate further to see why (in this case the reason would be obvious but as your code gets more complex so will such type of investigation).
+
+If you were to disable strict mode, you'd see that the application would run but in a broken state and in the browser developer tools console you would see an error message like this:
+
+<code-example format="output" hideCopy language="shell">
+
+ERROR TypeError: Cannot read properties of undefined (reading 'name')
+
+</code-example>
+
+</div>
 
 #### The fix - hide empty details with `*ngIf`
 
