@@ -31,8 +31,8 @@ var_3: &cache_key v6-angular-node-14-{{ checksum "month.txt" }}-{{ checksum ".ba
 var_4: &cache_key_fallback v6-angular-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
 
 # Windows needs its own cache key because binaries in node_modules are different.
-var_3_win: &cache_key_win v7-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}
-var_4_win: &cache_key_win_fallback v7-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
+var_3_win: &cache_key_win v8-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}
+var_4_win: &cache_key_win_fallback v8-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
