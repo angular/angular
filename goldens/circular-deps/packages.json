@@ -315,7 +315,7 @@
   ],
   [
     "packages/router/src/models.ts",
-    "packages/router/src/router_state.ts",
+    "packages/router/src/url_tree.ts",
     "packages/router/src/shared.ts"
   ],
   [
@@ -341,10 +341,5 @@
   [
     "packages/router/src/shared.ts",
     "packages/router/src/url_tree.ts"
-  ],
-  [
-    "packages/router/src/shared.ts",
-    "packages/router/src/url_tree.ts",
-    "packages/router/src/utils/collection.ts"
   ]
 ]
