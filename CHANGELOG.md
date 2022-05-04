@@ -1,3 +1,24 @@
+<a name="14.0.0-next.13"></a>
+# 14.0.0-next.13 "quartzite-quetzal" (2022-05-04)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8946ce2b8f](https://github.com/angular/components/commit/8946ce2b8f4faa256e25d16048c3871560b808a0) | fix | **menu:** allow scrolling while menu is open |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [00cf4a2f26](https://github.com/angular/components/commit/00cf4a2f269ece56b0f0e14520019cca642d5f2f) | feat | **autocomplete:** add clear method to test harness ([#24752](https://github.com/angular/components/pull/24752)) |
+| [08851de204](https://github.com/angular/components/commit/08851de2044c5485d7831e15fa87fa033c3d79c6) | fix | **menu:** add constructor overloads for non-deprecated signatures ([#24860](https://github.com/angular/components/pull/24860)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [30f51814a5](https://github.com/angular/components/commit/30f51814a536440722ae9351d2c27fe1919ba8e9) | fix | **mdc-snack-bar:** avoid multiple snack bars on the page if opened in quick succession ([#24757](https://github.com/angular/components/pull/24757)) |
+| [f86faf534a](https://github.com/angular/components/commit/f86faf534a3d779037abd39e6dc79022c571a9d9) | fix | **mdc-table:** add inherit background to rows ([#24867](https://github.com/angular/components/pull/24867)) |
+## Special Thanks
+Andrew Seguin, Daniil Dubrava, Jeremy Elbourn, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner and Wagner Maciel
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.6"></a>
 # 13.3.6 "iridium-ire" (2022-05-04)
 ### material
