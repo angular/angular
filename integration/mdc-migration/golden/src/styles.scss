@@ -28,56 +28,8 @@ $sample-project-theme: mat.define-light-theme((
   )
 ));
 
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
-@include mat.all-component-themes($sample-project-theme);
-@include mat.mdc-tooltip-theme($sample-project-theme);
-@include mat.mdc-tooltip-typography($sample-project-theme);
-@include mat.mdc-tabs-theme($sample-project-theme);
-@include mat.mdc-tabs-typography($sample-project-theme);
-@include mat.mdc-table-theme($sample-project-theme);
-@include mat.mdc-table-typography($sample-project-theme);
-@include mat.mdc-slider-theme($sample-project-theme);
-@include mat.mdc-slider-typography($sample-project-theme);
-@include mat.mdc-slide-toggle-theme($sample-project-theme);
-@include mat.mdc-slide-toggle-typography($sample-project-theme);
-@include mat.mdc-select-theme($sample-project-theme);
-@include mat.mdc-select-typography($sample-project-theme);
-@include mat.mdc-core-theme($sample-project-theme);
-@include mat.mdc-core-typography($sample-project-theme);
-@include mat.mdc-radio-theme($sample-project-theme);
-@include mat.mdc-radio-typography($sample-project-theme);
-@include mat.mdc-progress-spinner-theme($sample-project-theme);
-@include mat.mdc-progress-spinner-typography($sample-project-theme);
-@include mat.mdc-progress-bar-theme($sample-project-theme);
-@include mat.mdc-progress-bar-typography($sample-project-theme);
-@include mat.mdc-paginator-theme($sample-project-theme);
-@include mat.mdc-paginator-typography($sample-project-theme);
 @include mat.mdc-menu-theme($sample-project-theme);
 @include mat.mdc-menu-typography($sample-project-theme);
-@include mat.mdc-list-theme($sample-project-theme);
-@include mat.mdc-list-typography($sample-project-theme);
-@include mat.mdc-input-theme($sample-project-theme);
-@include mat.mdc-input-typography($sample-project-theme);
-@include mat.mdc-form-field-theme($sample-project-theme);
-@include mat.mdc-form-field-typography($sample-project-theme);
-@include mat.mdc-dialog-theme($sample-project-theme);
-@include mat.mdc-dialog-typography($sample-project-theme);
-@include mat.mdc-chips-theme($sample-project-theme);
-@include mat.mdc-chips-typography($sample-project-theme);
-@include mat.mdc-checkbox-theme($sample-project-theme);
-@include mat.mdc-checkbox-typography($sample-project-theme);
-@include mat.mdc-card-theme($sample-project-theme);
-@include mat.mdc-card-typography($sample-project-theme);
-@include mat.mdc-button-theme($sample-project-theme);
-@include mat.mdc-button-typography($sample-project-theme);
-@include mat.mdc-fab-theme($sample-project-theme);
-@include mat.mdc-fab-typography($sample-project-theme);
-@include mat.mdc-icon-button-theme($sample-project-theme);
-@include mat.mdc-icon-button-typography($sample-project-theme);
-@include mat.mdc-autocomplete-theme($sample-project-theme);
-@include mat.mdc-autocomplete-typography($sample-project-theme);
 
 /* You can add global styles to this file, and also import other style files */
 

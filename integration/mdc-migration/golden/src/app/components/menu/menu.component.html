@@ -1,0 +1,13 @@
+<h2>Menu example</h2>
+<button [matMenuTriggerFor]="menu">Open Settings</button>
+<mat-menu #menu>
+  <button mat-menu-item [matMenuTriggerFor]="submenu">
+    <mat-icon>person</mat-icon>
+    <span>My Account</span>
+  </button>
+  <button mat-menu-item> Data Preferences </button>
+</mat-menu>
+<mat-menu #submenu>
+  <button mat-menu-item> View profile </button>
+  <button mat-menu-item> Logout </button>
+</mat-menu>
