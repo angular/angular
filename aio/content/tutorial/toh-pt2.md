@@ -117,7 +117,7 @@ The `heroes.component.css` styles apply only to the `HeroesComponent` and don't 
 
 When the user clicks a hero in the list, the component should display the selected hero's details at the bottom of the page.
 
-In this section, you'll listen for the hero item click event and update the hero detail.
+In this section, you'll listen for the hero item click event and display/update the hero details.
 
 ### Add a click event binding
 
@@ -134,8 +134,7 @@ In the next section, define an `onSelect()` method in `HeroesComponent` to displ
 
 ### Add the click event handler
 
-Rename the component's `hero` property to `selectedHero` but don't assign it.
-There is no *selected hero* when the application starts.
+Rename the component's `hero` property to `selectedHero` but don't assign any value to it since there is no *selected hero* when the application starts.
 
 Add the following `onSelect()` method, which assigns the clicked hero from the template to the component's `selectedHero`.
 
@@ -149,28 +148,7 @@ Add the following to `heroes.component.html` beneath the list section:
 
 <code-example header="heroes.component.html (selected hero details)" path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details"></code-example>
 
-After the browser refreshes, the application is broken.
-
-Open the browser developer tools and look in the console for an error message like this:
-
-<code-example format="output" hideCopy language="shell">
-
-HeroesComponent.html:3 ERROR TypeError: Cannot read property 'name' of undefined
-
-</code-example>
-
-#### What happened?
-
-When the application starts, the `selectedHero` is `undefined` *by design*.
-
-Binding expressions in the template that refer to properties of `selectedHero` &mdash;expressions like `{{selectedHero.name}}`&mdash; *must fail* because there is no selected hero.
-
-#### The fix - hide empty details with `*ngIf`
-
-The component should only display the selected hero details if the `selectedHero` exists.
-
-Wrap the hero detail HTML in a `<div>`.
-Add Angular's `*ngIf` directive to the `<div>` and set it to `selectedHero`.
+The hero details should only be displayed when a hero is selected. When a component is created initially, there is no selected hero, so we add the `*ngIf` directive to the `<div>` that wraps the hero details, to instruct Angular to render the section only when the `selectedHero` is actually defined (after it has been selected by clicking on a hero).
 
 <div class="alert is-important">
 
@@ -178,21 +156,6 @@ Don't forget the asterisk \(`*`\) character in front of `ngIf`.
 It's a critical part of the syntax.
 
 </div>
-
-<code-example header="src/app/heroes/heroes.component.html (*ngIf)" path="toh-pt2/src/app/heroes/heroes.component.html" region="ng-if"></code-example>
-
-After the browser refreshes, the list of names reappears.
-The details area is blank.
-Click a hero in the list of heroes and its details appear.
-The application seems to be working again.
-The heroes appear in a list and details about the clicked hero appear at the bottom of the page.
-
-#### Why it works
-
-When `selectedHero` is undefined, the `ngIf` removes the hero detail from the DOM.
-There are no `selectedHero` bindings to consider.
-
-When the user picks a hero, `selectedHero` has a value and `ngIf` puts the hero detail into the DOM.
 
 ### Style the selected hero
 
