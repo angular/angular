@@ -18,7 +18,7 @@ distribution tags](https://docs.npmjs.com/cli/v6/commands/npm-dist-tag#purpose) 
 ## Branch naming
 
 Angular's main branch is `main`. This branch always represents the absolute latest changes. The
-code on main always represents a pre-release version, often published with the `next` tag on npm.
+code on `main` always represents a pre-release version, often published with the `next` tag on npm.
 
 For each minor and major version increment, a new branch is created. These branches use a naming
 scheme matching `\d+\.\d+\.x` and receive subsequent patch changes for that version range. For
@@ -95,7 +95,6 @@ explicitly target a special branch.
 Breaking changes, marked with `target: major`, can only be merged when `main` represents the next
 major version.
 
-### Pull request examples
 ### Pull request examples
 
 | I want to...                                                | Target branch           | Target label | Your change will land in...                                                                                                |
