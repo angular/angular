@@ -109,7 +109,7 @@ There is one exception to this behavior that applies to `*ngFor`.  `*ngFor` has 
 
 ## What's next
 
-* Property binding
-* Event binding
+* [Property binding](guide/property-binding)
+* [Event binding](guide/event-binding)
 
-@reviewed 2022-04-06
+@reviewed 2022-05-04
