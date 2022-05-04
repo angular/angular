@@ -1,3 +1,19 @@
+<a name="13.3.6"></a>
+# 13.3.6 "iridium-ire" (2022-05-04)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6a0e6ba510](https://github.com/angular/components/commit/6a0e6ba51060a3bd54e2790d2e41d5db8acec9d6) | fix | **menu:** add constructor overloads for non-deprecated signatures ([#24860](https://github.com/angular/components/pull/24860)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8ca629dc7e](https://github.com/angular/components/commit/8ca629dc7e5aa7e015c10a9f57e8b003bdf36038) | fix | **mdc-snack-bar:** avoid multiple snack bars on the page if opened in quick succession ([#24757](https://github.com/angular/components/pull/24757)) |
+| [d6f9db37b0](https://github.com/angular/components/commit/d6f9db37b074fcd11133146e67b8966f5c867291) | fix | **mdc-table:** add inherit background to rows ([#24867](https://github.com/angular/components/pull/24867)) |
+## Special Thanks
+Andrew Seguin, Daniil Dubrava, Jeremy Elbourn, Kristiyan Kostadinov and Paul Gschwendtner
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.12"></a>
 # 14.0.0-next.12 "plastic-keyboard" (2022-04-28)
 ## Deprecations
