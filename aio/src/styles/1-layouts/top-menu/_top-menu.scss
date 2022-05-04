@@ -141,6 +141,20 @@ mat-toolbar.app-toolbar {
             padding: 8px clamp(5px, 0.7vw, 16px);
           }
 
+          &[href^="http:"],
+          &[href^="https:"] {
+            .nav-link-inner {
+              display: inline-flex;
+              align-items: center;
+              line-height: normal;
+              &::after {
+                content: "\e89e"; // codepoint for "open_in_new"
+                margin-left: 0.3rem;
+                font-family: "Material Icons";
+              }
+            }
+          }
+
           &:focus {
             outline: none;
 
