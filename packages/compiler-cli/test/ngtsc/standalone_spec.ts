@@ -29,13 +29,13 @@ runInEachFileSystem(() => {
       it('should compile a basic standalone component', () => {
         env.write('test.ts', `
               import {Component, Directive} from '@angular/core';
-        
+
               @Directive({
                 selector: '[dir]',
                 standalone: true,
               })
               export class TestDir {}
-        
+
               @Component({
                 selector: 'test-cmp',
                 template: '<div dir></div>',
@@ -59,7 +59,7 @@ runInEachFileSystem(() => {
       it('should compile a recursive standalone component', () => {
         env.write('test.ts', `
               import {Component, Directive} from '@angular/core';
-        
+
               @Component({
                 selector: 'test-cmp',
                 template: '<test-cmp></test-cmp>',
@@ -96,13 +96,13 @@ runInEachFileSystem(() => {
       it('should error when a non-standalone component tries to use imports', () => {
         env.write('test.ts', `
               import {Component, Directive} from '@angular/core';
-        
+
               @Directive({
                 selector: '[dir]',
                 standalone: true,
               })
               export class TestDir {}
-        
+
               @Component({
                 selector: 'test-cmp',
                 template: '<div dir></div>',
@@ -119,7 +119,7 @@ runInEachFileSystem(() => {
       it('should compile a standalone component with schema support', () => {
         env.write('test.ts', `
               import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
-        
+
               @Component({
                 selector: 'test-cmp',
                 standalone: true,
@@ -147,7 +147,7 @@ runInEachFileSystem(() => {
       it('should error when a non-standalone component tries to use schemas', () => {
         env.write('test.ts', `
               import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
-        
+
               @Component({
                 selector: 'test-cmp',
                 template: '<div></div>',
@@ -166,18 +166,18 @@ runInEachFileSystem(() => {
       it('should compile a standalone component that imports an NgModule', () => {
         env.write('test.ts', `
               import {Component, Directive, NgModule} from '@angular/core';
-        
+
               @Directive({
                 selector: '[dir]',
               })
               export class TestDir {}
-      
+
               @NgModule({
                 declarations: [TestDir],
                 exports: [TestDir],
               })
               export class TestModule {}
-        
+
               @Component({
                 selector: 'test-cmp',
                 template: '<div dir></div>',
@@ -193,15 +193,15 @@ runInEachFileSystem(() => {
       it('should allow nested arrays in standalone component imports', () => {
         env.write('test.ts', `
               import {Component, Directive} from '@angular/core';
-        
+
               @Directive({
                 selector: '[dir]',
                 standalone: true,
               })
               export class TestDir {}
-      
+
               export const DIRECTIVES = [TestDir];
-        
+
               @Component({
                 selector: 'test-cmp',
                 template: '<div dir></div>',
@@ -217,15 +217,15 @@ runInEachFileSystem(() => {
       it('should deduplicate standalone component imports', () => {
         env.write('test.ts', `
               import {Component, Directive} from '@angular/core';
-        
+
               @Directive({
                 selector: '[dir]',
                 standalone: true,
               })
               export class TestDir {}
-      
+
               export const DIRECTIVES = [TestDir];
-        
+
               @Component({
                 selector: 'test-cmp',
                 template: '<div dir></div>',
@@ -241,18 +241,18 @@ runInEachFileSystem(() => {
       it('should error when a standalone component imports a non-standalone entity', () => {
         env.write('test.ts', `
           import {Component, Directive, NgModule} from '@angular/core';
-    
+
           @Directive({
             selector: '[dir]',
           })
           export class TestDir {}
-  
+
           @NgModule({
             declarations: [TestDir],
             exports: [TestDir],
           })
           export class TestModule {}
-    
+
           @Component({
             selector: 'test-cmp',
             template: '<div dir></div>',
@@ -278,17 +278,17 @@ runInEachFileSystem(() => {
          () => {
            env.write('test.ts', `
             import {Component, Directive, NgModule} from '@angular/core';
-      
+
             @Directive({
               selector: '[dir]',
             })
             export class TestDir {}
-  
+
             @NgModule({
               declarations: [TestDir],
             })
             export class TestModule {}
-      
+
             @Component({
               selector: 'test-cmp',
               template: '<div dir></div>',
@@ -379,20 +379,45 @@ runInEachFileSystem(() => {
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toContain('imports');
       });
+
+      it('should handle a forwardRef used inside `imports`', () => {
+        env.write('test.ts', `
+          import {Component, forwardRef} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            standalone: true,
+            imports: [forwardRef(() => StandaloneComponent)],
+            template: "<other-standalone></other-standalone>"
+          })
+          class TestComponent {
+          }
+
+          @Component({selector: 'other-standalone', standalone: true, template: ""})
+          class StandaloneComponent {
+          }
+        `);
+        const diags = env.driveDiagnostics();
+        const jsCode = env.getContents('test.js');
+
+        expect(diags.length).toBe(0);
+        expect(jsCode).toContain('standalone: true');
+        expect(jsCode).toContain('dependencies: function () { return [StandaloneComponent]; }');
+      });
     });
 
     describe('NgModule-side', () => {
       it('should not allow a standalone component to be declared in an NgModule', () => {
         env.write('test.ts', `
               import {Component, NgModule} from '@angular/core';
-        
+
               @Component({
                 selector: 'test-cmp',
                 template: 'Test',
                 standalone: true,
               })
               export class TestCmp {}
-      
+
               @NgModule({
                 declarations: [TestCmp],
               })
@@ -408,13 +433,13 @@ runInEachFileSystem(() => {
       it('should not allow a standalone pipe to be declared in an NgModule', () => {
         env.write('test.ts', `
           import {Pipe, NgModule} from '@angular/core';
-    
+
           @Pipe({
             name: 'test',
             standalone: true,
           })
           export class TestPipe {}
-  
+
           @NgModule({
             declarations: [TestPipe],
           })
@@ -430,20 +455,20 @@ runInEachFileSystem(() => {
       it('should allow a standalone component to be imported by an NgModule', () => {
         env.write('test.ts', `
           import {Component, NgModule} from '@angular/core';
-        
+
           @Component({
             selector: 'st-cmp',
             standalone: true,
             template: 'Test',
           })
           export class StandaloneCmp {}
-        
+
           @Component({
             selector: 'test-cmp',
             template: '<st-cmp></st-cmp>',
           })
           export class TestCmp {}
-        
+
           @NgModule({
             declarations: [TestCmp],
             imports: [StandaloneCmp],
@@ -457,19 +482,19 @@ runInEachFileSystem(() => {
       it('should allow a standalone directive to be imported by an NgModule', () => {
         env.write('test.ts', `
           import {Component, Directive, NgModule} from '@angular/core';
-        
+
           @Directive({
             selector: '[st-dir]',
             standalone: true,
           })
           export class StandaloneDir {}
-        
+
           @Component({
             selector: 'test-cmp',
             template: '<div st-dir></div>',
           })
           export class TestCmp {}
-        
+
           @NgModule({
             declarations: [TestCmp],
             imports: [StandaloneDir],
@@ -483,7 +508,7 @@ runInEachFileSystem(() => {
       it('should allow a standalone pipe to be imported by an NgModule', () => {
         env.write('test.ts', `
           import {Component, Pipe, NgModule} from '@angular/core';
-        
+
           @Pipe({
             name: 'stpipe',
             standalone: true,
@@ -493,7 +518,7 @@ runInEachFileSystem(() => {
               return value;
             }
           }
-        
+
           @Component({
             selector: 'test-cmp',
             template: '{{data | stpipe}}',
@@ -501,7 +526,7 @@ runInEachFileSystem(() => {
           export class TestCmp {
             data = 'test';
           }
-        
+
           @NgModule({
             declarations: [TestCmp],
             imports: [StandalonePipe],
@@ -539,12 +564,12 @@ runInEachFileSystem(() => {
       it('should error when a non-standalone entity is imported into an NgModule', () => {
         env.write('test.ts', `
           import {Component, Directive, NgModule} from '@angular/core';
-      
+
           @Directive({
             selector: '[dir]',
           })
           export class TestDir {}
-      
+
           @NgModule({
             imports: [TestDir],
           })
@@ -562,7 +587,7 @@ runInEachFileSystem(() => {
       it('should compile a basic standalone directive', () => {
         env.write('test.ts', `
               import {Directive} from '@angular/core';
-        
+
               @Directive({
                 selector: '[dir]',
                 standalone: true,
@@ -576,7 +601,7 @@ runInEachFileSystem(() => {
       it('should compile a basic standalone pipe', () => {
         env.write('test.ts', `
               import {Pipe} from '@angular/core';
-        
+
               @Pipe({
                 name: 'testpipe',
                 standalone: true,
