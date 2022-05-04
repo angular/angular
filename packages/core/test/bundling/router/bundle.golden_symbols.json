@@ -963,6 +963,9 @@
     "name": "createResultForNode"
   },
   {
+    "name": "createRoot"
+  },
+  {
     "name": "createRouterScroller"
   },
   {
