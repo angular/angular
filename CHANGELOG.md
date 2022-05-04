@@ -1,3 +1,10 @@
+<a name="13.3.6"></a>
+# 13.3.6 (2022-05-04)
+## Special Thanks
+Andrew Kushnir, Andrew Scott, George Kalpakas, Paul Gschwendtner, Pawel Kozlowski, Ryan Day and dario-piotrowicz
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.5"></a>
 # 13.3.5 (2022-04-27)
 ### bazel
