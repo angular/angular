@@ -27,13 +27,6 @@ For more information, see [Launching your app with a root module](guide/bootstra
 Demonstrates the fundamental architecture of Angular applications.
 For more information, see [Introduction to Angular concepts](guide/architecture).
 
-### Setting the document title
-
-<code-example header="AppRoutingModule (excerpt)" path="router/src/app/app-routing.module.10.ts" region="page-title"></code-example>
-
-Demonstrates customizing the document title in the browser.
-For more information, see [Setting the page title](guide/router#setting-the-page-title).
-
 ## Tour of Heroes tutorial application
 
 The Tour of Heroes is a comprehensive tutorial that guides you through the process of building an application with many of Angular's most popular features.
