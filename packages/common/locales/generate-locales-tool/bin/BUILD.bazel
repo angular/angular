@@ -1,5 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -30,5 +29,5 @@ ts_library(
     # We need to patch the NodeJS module resolution as this binary runs as
     # part of a genrule where the linker does not work as expected.
     # See: https://github.com/bazelbuild/rules_nodejs/issues/2600.
-    templated_args = ["--bazel_patch_module_resolver"],
+    templated_args = ["--nobazel_run_linker"],
 ) for entrypoint in BIN_ENTRYPOINTS]

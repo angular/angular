@@ -49,9 +49,8 @@ nodejs_binary(
         "@npm//source-map-support",
     ],
     entry_point = ":extract_i18n.ts",
-    # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
-    # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
-    templated_args = ["--bazel_patch_module_resolver"],
+    # Follows the same reasoning as for the actual `ngc-wrapped` target.
+    templated_args = ["--nobazel_run_linker"],
     visibility = ["//visibility:public"],
 )
 

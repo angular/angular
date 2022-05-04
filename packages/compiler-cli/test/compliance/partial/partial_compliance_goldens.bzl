@@ -1,4 +1,5 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test", "nodejs_binary", "npm_package_bin")
+load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
+load("//tools:defaults.bzl", "nodejs_binary", "npm_package_bin")
 
 def partial_compliance_golden(filePath):
     """Creates the generate and testing targets for partial compile results.
@@ -19,10 +20,7 @@ def partial_compliance_golden(filePath):
         data = data + [filePath],
         visibility = [":__pkg__"],
         entry_point = "//packages/compiler-cli/test/compliance/partial:cli.ts",
-        templated_args = [
-            "--bazel_patch_module_resolver",
-            "$(execpath %s)" % filePath,
-        ],
+        templated_args = ["$(execpath %s)" % filePath],
     )
 
     nodejs_binary(
@@ -31,13 +29,7 @@ def partial_compliance_golden(filePath):
         data = data,
         visibility = [":__pkg__"],
         entry_point = "//packages/compiler-cli/test/compliance/partial:cli.ts",
-        templated_args = [
-            # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
-            # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
-            "--bazel_patch_module_resolver",
-            "--node_options=--inspect-brk",
-            filePath,
-        ],
+        templated_args = ["--node_options=--inspect-brk", filePath],
     )
 
     npm_package_bin(
@@ -46,6 +38,9 @@ def partial_compliance_golden(filePath):
         testonly = True,
         stdout = "%s/_generated.js" % path,
         link_workspace_root = True,
+        # Disable the linker and rely on patched resolution which works better on Windows
+        # and is less prone to race conditions when targets build concurrently.
+        args = ["--nobazel_run_linker"],
         visibility = [":__pkg__"],
         data = [],
     )
