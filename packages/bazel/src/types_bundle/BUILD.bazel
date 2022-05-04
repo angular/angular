@@ -1,7 +1,6 @@
 # BEGIN-DEV-ONLY
 
-load("//tools:defaults.bzl", "ts_library")
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
 
 package(default_visibility = ["//packages:__subpackages__"])
 
@@ -24,9 +23,9 @@ nodejs_binary(
         "@npm//@microsoft/api-extractor",
     ],
     entry_point = ":index.ts",
-    # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
-    # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
-    templated_args = ["--bazel_patch_module_resolver"],
+    # Disable the linker and rely on patched resolution which works better on Windows
+    # and is less prone to race conditions when targets build concurrently.
+    templated_args = ["--nobazel_run_linker"],
     visibility = ["//visibility:public"],
 )
 

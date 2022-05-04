@@ -1,4 +1,5 @@
-load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test", "ng_benchmark", "ts_library")
+load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test", "ts_library")
+load("//tools:ng_benchmark.bzl", "ng_benchmark")
 
 package(default_visibility = ["//visibility:private"])
 
