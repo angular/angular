@@ -38,7 +38,7 @@ Open the `HeroesComponent` template file and make the following changes:
 1.  Add an `<h2>` at the top.
 1.  Below it add an HTML unordered list \(`<ul>`\) element.
 1.  Insert an `<li>` within the `<ul>`.
-1.  Place a `<button>` inside the `<ul>` that displays properties of a `hero` inside `<span>` elements.
+1.  Place a `<button>` inside the `<li>` that displays properties of a `hero` inside `<span>` elements.
 1.  Sprinkle some CSS classes for styling \(you'll add the CSS styles shortly\).
 
 Make it look like this:
@@ -75,7 +75,7 @@ After the browser refreshes, the list of heroes appears.
 <header>Interactive elements</header>
 
 **NOTE**: <br />
-Inside the `<li>` element, we've wrapper the hero's details in a `<button>` element, we did so because we will later make such hero clickable, and it is better for accessibility purposes to use natively interactive HTML elements instead of adding event listeners to non-interactive ones.
+Inside the `<li>` element, we've wrapped the hero's details in a `<button>` element. Later on we make the hero clickable, and it is better for accessibility purposes to use natively interactive HTML elements (e.g. `<button>`) instead of adding event listeners to non-interactive ones (e.g. `<li>`).
 
 For more details on accessibility, see [Accessibility in Angular](guide/accessibility).
 
