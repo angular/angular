@@ -35,10 +35,10 @@ mat-row.mat-mdc-row, mat-header-row.mat-mdc-header-row, mat-footer-row.mat-mdc-f
 }
 
 // Cells need to inherit their background in order to overlap each other when sticky.
-// The background needs to be inherited from the table, tbody/tfoot, row
-// (already set in MDC), and cell.
+// The background needs to be inherited from the table, tbody/tfoot, row, and cell.
 .mat-mdc-table tbody, .mat-mdc-table tfoot, .mat-mdc-table thead,
 .mat-mdc-cell, .mat-mdc-footer-cell,
+.mat-mdc-header-row, .mat-mdc-row, .mat-mdc-footer-row,
 .mat-mdc-table .mat-mdc-header-cell {
   background: inherit;
 }
