@@ -100,7 +100,7 @@ describe('Image directive', () => {
       })
           .toThrowError(
               'NG02950: The NgOptimizedImage directive (activated on an <img> element with the ' +
-              '`rawSrc="path/img.png"`) detected that the `src` is also set (to `path/img2.png`). ' +
+              '`rawSrc="path/img.png"`) has detected that the `src` is also set (to `path/img2.png`). ' +
               'Please remove the `src` attribute from this image. The NgOptimizedImage directive will use ' +
               'the `rawSrc` to compute the final image URL and set the `src` itself.');
     });
@@ -114,7 +114,7 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              'NG02951: The NgOptimizedImage directive detected that the `rawSrc` was set ' +
+              'NG02951: The NgOptimizedImage directive has detected that the `rawSrc` was set ' +
               'to a Base64-encoded string (' + ANGULAR_LOGO_BASE64.substring(0, 50) + '...). ' +
               'Base64-encoded strings are not supported by the NgOptimizedImage directive. ' +
               'Use a regular `src` attribute (instead of `rawSrc`) to disable the NgOptimizedImage ' +
@@ -138,73 +138,129 @@ describe('Image directive', () => {
         // Note: use RegExp to partially match the error message, since the blob URL
         // is created dynamically, so it might be different for each invocation.
         const errorMessageRegExp =
-            /NG02951: The NgOptimizedImage directive detected that the `rawSrc` was set to a blob URL \(blob:/;
+            /NG02951: The NgOptimizedImage directive has detected that the `rawSrc` was set to a blob URL \(blob:/;
         expect(() => {
           const template = '<img rawSrc="' + blobURL + '" width="50" height="50">';
           const fixture = createTestComponent(template);
           fixture.detectChanges();
         }).toThrowError(errorMessageRegExp);
-
         done();
       });
+    });
 
-      it('should throw if `rawSrc` value is not provided', () => {
-        setupTestingModule();
+    it('should throw if `width` is not set', () => {
+      setupTestingModule();
 
-        const template = '<img rawSrc>';
-        expect(() => {
-          const fixture = createTestComponent(template);
-          fixture.detectChanges();
-        })
-            .toThrowError(
-                'NG02951: The NgOptimizedImage directive detected that the `rawSrc` ' +
-                'has invalid value: expecting a non-empty string, but got: `` (empty string).');
-      });
+      const template = '<img rawSrc="img.png" height="10">';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              'NG02953: The NgOptimizedImage directive (activated on an <img> ' +
+              'element with the `rawSrc="img.png"`) has detected that the required ' +
+              '`width` attribute is missing. Please specify the `width` attribute ' +
+              'on the mentioned element.');
+    });
 
-      it('should throw if `rawSrc` value is set to an empty string', () => {
-        setupTestingModule();
+    it('should throw if `width` has an invalid value', () => {
+      setupTestingModule();
 
-        const template = '<img rawSrc="  ">';
-        expect(() => {
-          const fixture = createTestComponent(template);
-          fixture.detectChanges();
-        })
-            .toThrowError(
-                'NG02951: The NgOptimizedImage directive detected that the `rawSrc` ' +
-                'has invalid value: expecting a non-empty string, but got: `  ` (empty string).');
-      });
+      const template = '<img rawSrc="img.png" width="10px" height="10">';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              'NG02951: The NgOptimizedImage directive has detected that the `width` ' +
+              'has an invalid value: expecting a number that represents the width ' +
+              'in pixels, but got: `10px`.');
+    });
 
-      const inputs = [
-        ['rawSrc', 'new-img.png'],  //
-        ['width', 10],              //
-        ['height', 20],             //
-        ['priority', true]
-      ];
-      inputs.forEach(([inputName, value]) => {
-        it(`should throw if inputs got changed after directive init (the \`${inputName}\` input)`,
-           () => {
-             setupTestingModule();
+    it('should throw if `height` is not set', () => {
+      setupTestingModule();
 
-             const template =
-                 '<img [rawSrc]="rawSrc" [width]="width" [height]="height" [priority]="priority">';
-             expect(() => {
-               // Initial render
-               const fixture = createTestComponent(template);
-               fixture.detectChanges();
+      const template = '<img rawSrc="img.png" width="10">';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              'NG02953: The NgOptimizedImage directive (activated on an <img> ' +
+              'element with the `rawSrc="img.png"`) has detected that the required ' +
+              '`height` attribute is missing. Please specify the `height` attribute ' +
+              'on the mentioned element.');
+    });
 
-               // Update input (expect to throw)
-               (fixture.componentInstance as unknown as
-                {[key: string]: unknown})[inputName as string] = value;
-               fixture.detectChanges();
-             })
-                 .toThrowError(
-                     `NG02952: The NgOptimizedImage directive (activated on an <img> element ` +
-                     `with the \`rawSrc="img.png"\`) detected that the \`${
-                         inputName}\` is updated ` +
-                     `after the initialization. The NgOptimizedImage directive will not react ` +
-                     `to this input change.`);
-           });
-      });
+    it('should throw if `height` has an invalid value', () => {
+      setupTestingModule();
+
+      const template = '<img rawSrc="img.png" width="10" height="10%">';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              'NG02951: The NgOptimizedImage directive has detected that the `height` ' +
+              'has an invalid value: expecting a number that represents the height ' +
+              'in pixels, but got: `10%`.');
+    });
+
+    it('should throw if `rawSrc` value is not provided', () => {
+      setupTestingModule();
+
+      const template = '<img rawSrc>';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              'NG02951: The NgOptimizedImage directive has detected that the `rawSrc` ' +
+              'has an invalid value: expecting a non-empty string, but got: `` (empty string).');
+    });
+
+    it('should throw if `rawSrc` value is set to an empty string', () => {
+      setupTestingModule();
+
+      const template = '<img rawSrc="  ">';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              'NG02951: The NgOptimizedImage directive has detected that the `rawSrc` ' +
+              'has an invalid value: expecting a non-empty string, but got: `  ` (empty string).');
+    });
+
+    const inputs = [
+      ['rawSrc', 'new-img.png'],  //
+      ['width', 10],              //
+      ['height', 20],             //
+      ['priority', true]
+    ];
+    inputs.forEach(([inputName, value]) => {
+      it(`should throw if inputs got changed after directive init (the \`${inputName}\` input)`,
+         () => {
+           setupTestingModule();
+
+           const template =
+               '<img [rawSrc]="rawSrc" [width]="width" [height]="height" [priority]="priority">';
+           expect(() => {
+             // Initial render
+             const fixture = createTestComponent(template);
+             fixture.detectChanges();
+
+             // Update input (expect to throw)
+             (fixture.componentInstance as unknown as
+              {[key: string]: unknown})[inputName as string] = value;
+             fixture.detectChanges();
+           })
+               .toThrowError(
+                   `NG02952: The NgOptimizedImage directive (activated on an <img> element ` +
+                   `with the \`rawSrc="img.png"\`) has detected that the \`${inputName}\` is ` +
+                   `updated after the initialization. The NgOptimizedImage directive will not ` +
+                   `react to this input change.`);
+         });
     });
   });
 
@@ -220,6 +276,7 @@ describe('Image directive', () => {
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('loading')).toBe('eager');
     });
+
     it('should lazily load non-priority images', () => {
       setupTestingModule();
 
@@ -245,6 +302,7 @@ describe('Image directive', () => {
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('fetchpriority')).toBe('high');
     });
+
     it('should be "auto" for non-priority images', () => {
       setupTestingModule();
 

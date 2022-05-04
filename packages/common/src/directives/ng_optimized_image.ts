@@ -82,10 +82,10 @@ export class NgOptimizedImage implements OnInit, OnChanges {
 
   /**
    * The intrinsic width of the image in px.
-   * This input is required unless the 'fill-parent' is provided.
    */
   @Input()
   set width(value: string|number|undefined) {
+    ngDevMode && assertValidNumberInput(value, 'width');
     this._width = inputToInteger(value);
   }
   get width(): number|undefined {
@@ -94,10 +94,10 @@ export class NgOptimizedImage implements OnInit, OnChanges {
 
   /**
    * The intrinsic height of the image in px.
-   * This input is required unless the 'fill-parent' is provided.
    */
   @Input()
   set height(value: string|number|undefined) {
+    ngDevMode && assertValidNumberInput(value, 'height');
     this._height = inputToInteger(value);
   }
   get height(): number|undefined {
@@ -129,6 +129,8 @@ export class NgOptimizedImage implements OnInit, OnChanges {
       assertNoConflictingSrc(this);
       assertNotBase64Image(this);
       assertNotBlobURL(this);
+      assertRequiredNumberInput(this, this.width, 'width');
+      assertRequiredNumberInput(this, this.height, 'height');
     }
   }
 
@@ -190,9 +192,10 @@ function assertNoConflictingSrc(dir: NgOptimizedImage) {
   if (dir.src) {
     throw new RuntimeError(
         RuntimeErrorCode.UNEXPECTED_SRC_ATTR,
-        `${imgDirectiveDetails(dir)} detected that the \`src\` is also set (to \`${dir.src}\`). ` +
-            `Please remove the \`src\` attribute from this image. The NgOptimizedImage directive will use ` +
-            `the \`rawSrc\` to compute the final image URL and set the \`src\` itself.`);
+        `${imgDirectiveDetails(dir)} has detected that the \`src\` is also set (to ` +
+            `\`${dir.src}\`). Please remove the \`src\` attribute from this image. ` +
+            `The NgOptimizedImage directive will use the \`rawSrc\` to compute ` +
+            `the final image URL and set the \`src\` itself.`);
   }
 }
 
@@ -205,7 +208,7 @@ function assertNotBase64Image(dir: NgOptimizedImage) {
     }
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
-        `The NgOptimizedImage directive detected that the \`rawSrc\` was set ` +
+        `The NgOptimizedImage directive has detected that the \`rawSrc\` was set ` +
             `to a Base64-encoded string (${rawSrc}). Base64-encoded strings are ` +
             `not supported by the NgOptimizedImage directive. Use a regular \`src\` ` +
             `attribute (instead of \`rawSrc\`) to disable the NgOptimizedImage ` +
@@ -219,7 +222,7 @@ function assertNotBlobURL(dir: NgOptimizedImage) {
   if (rawSrc.startsWith('blob:')) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
-        `The NgOptimizedImage directive detected that the \`rawSrc\` was set ` +
+        `The NgOptimizedImage directive has detected that the \`rawSrc\` was set ` +
             `to a blob URL (${rawSrc}). Blob URLs are not supported by the ` +
             `NgOptimizedImage directive. Use a regular \`src\` attribute ` +
             `(instead of \`rawSrc\`) to disable the NgOptimizedImage directive ` +
@@ -235,7 +238,7 @@ function assertValidRawSrc(value: unknown) {
     const extraMessage = isEmptyString ? ' (empty string)' : '';
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
-        `The NgOptimizedImage directive detected that the \`rawSrc\` has invalid value: ` +
+        `The NgOptimizedImage directive has detected that the \`rawSrc\` has an invalid value: ` +
             `expecting a non-empty string, but got: \`${value}\`${extraMessage}.`);
   }
 }
@@ -245,7 +248,7 @@ function assertValidRawSrc(value: unknown) {
 function postInitInputChangeError(dir: NgOptimizedImage, inputName: string): {} {
   return new RuntimeError(
       RuntimeErrorCode.UNEXPECTED_INPUT_CHANGE,
-      `${imgDirectiveDetails(dir)} detected that the \`${inputName}\` is updated after the ` +
+      `${imgDirectiveDetails(dir)} has detected that the \`${inputName}\` is updated after the ` +
           `initialization. The NgOptimizedImage directive will not react to this input change.`);
 }
 
@@ -265,4 +268,28 @@ function assertNoPostInitInputChange(
       throw postInitInputChangeError(dir, input);
     }
   });
+}
+
+// Verifies that a specified input has a correct type (number).
+function assertValidNumberInput(inputValue: unknown, inputName: string) {
+  const isValid = typeof inputValue === 'number' ||
+      (typeof inputValue === 'string' && /^\d+$/.test(inputValue.trim()));
+  if (!isValid) {
+    throw new RuntimeError(
+        RuntimeErrorCode.INVALID_INPUT,
+        `The NgOptimizedImage directive has detected that the \`${inputName}\` has an invalid ` +
+            `value: expecting a number that represents the ${inputName} in pixels, but got: ` +
+            `\`${inputValue}\`.`);
+  }
+}
+
+// Verifies that a specified input is set.
+function assertRequiredNumberInput(dir: NgOptimizedImage, inputValue: unknown, inputName: string) {
+  if (typeof inputValue === 'undefined') {
+    throw new RuntimeError(
+        RuntimeErrorCode.REQUIRED_INPUT_MISSING,
+        `${imgDirectiveDetails(dir)} has detected that the required \`${inputName}\` ` +
+            `attribute is missing. Please specify the \`${inputName}\` attribute ` +
+            `on the mentioned element.`);
+  }
 }
