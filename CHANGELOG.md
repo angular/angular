@@ -1,3 +1,10 @@
+<a name="13.3.6"></a>
+# 13.3.6 (2022-05-04)
+## Special Thanks
+Andrew Kushnir, Andrew Scott, George Kalpakas, Paul Gschwendtner, Pawel Kozlowski, Ryan Day and dario-piotrowicz
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.15"></a>
 # 14.0.0-next.15 (2022-04-27)
 ## Breaking Changes
