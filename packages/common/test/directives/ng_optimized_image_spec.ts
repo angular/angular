@@ -147,6 +147,64 @@ describe('Image directive', () => {
 
         done();
       });
+
+      it('should throw if `rawSrc` value is not provided', () => {
+        setupTestingModule();
+
+        const template = '<img rawSrc>';
+        expect(() => {
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+        })
+            .toThrowError(
+                'NG02951: The NgOptimizedImage directive detected that the `rawSrc` ' +
+                'has invalid value: expecting a non-empty string, but got: `` (empty string).');
+      });
+
+      it('should throw if `rawSrc` value is set to an empty string', () => {
+        setupTestingModule();
+
+        const template = '<img rawSrc="  ">';
+        expect(() => {
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+        })
+            .toThrowError(
+                'NG02951: The NgOptimizedImage directive detected that the `rawSrc` ' +
+                'has invalid value: expecting a non-empty string, but got: `  ` (empty string).');
+      });
+
+      const inputs = [
+        ['rawSrc', 'new-img.png'],  //
+        ['width', 10],              //
+        ['height', 20],             //
+        ['priority', true]
+      ];
+      inputs.forEach(([inputName, value]) => {
+        it(`should throw if inputs got changed after directive init (the \`${inputName}\` input)`,
+           () => {
+             setupTestingModule();
+
+             const template =
+                 '<img [rawSrc]="rawSrc" [width]="width" [height]="height" [priority]="priority">';
+             expect(() => {
+               // Initial render
+               const fixture = createTestComponent(template);
+               fixture.detectChanges();
+
+               // Update input (expect to throw)
+               (fixture.componentInstance as unknown as
+                {[key: string]: unknown})[inputName as string] = value;
+               fixture.detectChanges();
+             })
+                 .toThrowError(
+                     `NG02952: The NgOptimizedImage directive (activated on an <img> element ` +
+                     `with the \`rawSrc="img.png"\`) detected that the \`${
+                         inputName}\` is updated ` +
+                     `after the initialization. The NgOptimizedImage directive will not react ` +
+                     `to this input change.`);
+           });
+      });
     });
   });
 
@@ -211,6 +269,10 @@ const ANGULAR_LOGO_BASE64 =
   template: '',
 })
 class TestComponent {
+  width = 100;
+  height = 50;
+  rawSrc = 'img.png';
+  priority = false;
 }
 
 function setupTestingModule(config?: {imageLoader: ImageLoader}) {
