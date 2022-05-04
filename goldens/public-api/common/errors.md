@@ -15,6 +15,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     PARENT_NG_SWITCH_NOT_FOUND = 2000,
     // (undocumented)
+    UNEXPECTED_INPUT_CHANGE = 2952,
+    // (undocumented)
     UNEXPECTED_SRC_ATTR = 2950
 }
 

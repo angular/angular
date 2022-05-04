@@ -23,4 +23,5 @@ export const enum RuntimeErrorCode {
   // Image directive errors
   UNEXPECTED_SRC_ATTR = 2950,
   INVALID_INPUT = 2951,
+  UNEXPECTED_INPUT_CHANGE = 2952,
 }
