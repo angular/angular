@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Inject, InjectionToken, Input, NgModule, OnInit, Renderer2, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, ElementRef, Inject, InjectionToken, Input, NgModule, OnChanges, OnInit, Renderer2, SimpleChanges, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
@@ -63,7 +63,7 @@ export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
   standalone: true,
   selector: 'img[rawSrc]',
 })
-export class NgOptimizedImage implements OnInit {
+export class NgOptimizedImage implements OnInit, OnChanges {
   constructor(
       @Inject(IMAGE_LOADER) private imageLoader: ImageLoader, private renderer: Renderer2,
       private imgElement: ElementRef) {}
@@ -104,6 +104,9 @@ export class NgOptimizedImage implements OnInit {
     return this._height;
   }
 
+  /**
+   * Indicates whether this image should have a high priority.
+   */
   @Input()
   set priority(value: string|boolean|undefined) {
     this._priority = inputToBoolean(value);
@@ -116,14 +119,22 @@ export class NgOptimizedImage implements OnInit {
    * Get a value of the `src` if it's set on a host <img> element.
    * This input is needed to verify that there are no `src` and `rawSrc` provided
    * at the same time (thus causing an ambiguity on which src to use).
+   * @internal
    */
   @Input() src?: string;
 
   ngOnInit() {
     if (ngDevMode) {
-      assertExistingSrc(this);
+      assertValidRawSrc(this.rawSrc);
+      assertNoConflictingSrc(this);
       assertNotBase64Image(this);
       assertNotBlobURL(this);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (ngDevMode) {
+      assertNoPostInitInputChange(this, changes, ['rawSrc', 'width', 'height', 'priority']);
     }
     this.setHostAttribute('loading', this.getLoadingBehavior());
     this.setHostAttribute('fetchpriority', this.getFetchPriority());
@@ -175,7 +186,7 @@ function imgDirectiveDetails(dir: NgOptimizedImage) {
 /***** Assert functions *****/
 
 // Verifies that there is no `src` set on a host element.
-function assertExistingSrc(dir: NgOptimizedImage) {
+function assertNoConflictingSrc(dir: NgOptimizedImage) {
   if (dir.src) {
     throw new RuntimeError(
         RuntimeErrorCode.UNEXPECTED_SRC_ATTR,
@@ -214,4 +225,44 @@ function assertNotBlobURL(dir: NgOptimizedImage) {
             `(instead of \`rawSrc\`) to disable the NgOptimizedImage directive ` +
             `for this element.`);
   }
+}
+
+// Verifies that the `rawSrc` is set to a non-empty string.
+function assertValidRawSrc(value: unknown) {
+  const isString = typeof value === 'string';
+  const isEmptyString = isString && value.trim() === '';
+  if (!isString || isEmptyString) {
+    const extraMessage = isEmptyString ? ' (empty string)' : '';
+    throw new RuntimeError(
+        RuntimeErrorCode.INVALID_INPUT,
+        `The NgOptimizedImage directive detected that the \`rawSrc\` has invalid value: ` +
+            `expecting a non-empty string, but got: \`${value}\`${extraMessage}.`);
+  }
+}
+
+// Creates a `RuntimeError` instance to represent a situation when an input is set after
+// the directive has initialized.
+function postInitInputChangeError(dir: NgOptimizedImage, inputName: string): {} {
+  return new RuntimeError(
+      RuntimeErrorCode.UNEXPECTED_INPUT_CHANGE,
+      `${imgDirectiveDetails(dir)} detected that the \`${inputName}\` is updated after the ` +
+          `initialization. The NgOptimizedImage directive will not react to this input change.`);
+}
+
+// Verify that none of the listed inputs has changed.
+function assertNoPostInitInputChange(
+    dir: NgOptimizedImage, changes: SimpleChanges, inputs: string[]) {
+  inputs.forEach(input => {
+    const isUpdated = changes.hasOwnProperty(input);
+    if (isUpdated && !changes[input].isFirstChange()) {
+      if (input === 'rawSrc') {
+        // When the `rawSrc` input changes, we detect that only in the
+        // `ngOnChanges` hook, thus the `rawSrc` is already set. We use
+        // `rawSrc` in the error message, so we use a previous value, but
+        // not the updated one in it.
+        dir = {rawSrc: changes[input].previousValue} as NgOptimizedImage;
+      }
+      throw postInitInputChangeError(dir, input);
+    }
+  });
 }
