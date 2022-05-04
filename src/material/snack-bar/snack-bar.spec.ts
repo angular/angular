@@ -465,13 +465,15 @@ describe('MatSnackBar', () => {
   }));
 
   it('should dismiss the snackbar when the action is called, notifying of both action and dismiss', fakeAsync(() => {
+    const dismissNextSpy = jasmine.createSpy('dismiss next spy');
     const dismissCompleteSpy = jasmine.createSpy('dismiss complete spy');
+    const actionNextSpy = jasmine.createSpy('action next spy');
     const actionCompleteSpy = jasmine.createSpy('action complete spy');
     const snackBarRef = snackBar.open('Some content', 'Dismiss');
     viewContainerFixture.detectChanges();
 
-    snackBarRef.afterDismissed().subscribe({complete: dismissCompleteSpy});
-    snackBarRef.onAction().subscribe({complete: actionCompleteSpy});
+    snackBarRef.afterDismissed().subscribe({next: dismissNextSpy, complete: dismissCompleteSpy});
+    snackBarRef.onAction().subscribe({next: actionNextSpy, complete: actionCompleteSpy});
 
     const actionButton = overlayContainerElement.querySelector(
       'button.mat-button',
@@ -480,7 +482,9 @@ describe('MatSnackBar', () => {
     viewContainerFixture.detectChanges();
     tick();
 
+    expect(dismissNextSpy).toHaveBeenCalled();
     expect(dismissCompleteSpy).toHaveBeenCalled();
+    expect(actionNextSpy).toHaveBeenCalled();
     expect(actionCompleteSpy).toHaveBeenCalled();
 
     tick(500);
@@ -649,6 +653,16 @@ describe('MatSnackBar', () => {
     expect(window.setTimeout).toHaveBeenCalledWith(jasmine.any(Function), Math.pow(2, 31) - 1);
 
     flush();
+  }));
+
+  it('should only keep one snack bar in the DOM if multiple are opened at the same time', fakeAsync(() => {
+    for (let i = 0; i < 10; i++) {
+      snackBar.open('Snack time!', 'Chew');
+      viewContainerFixture.detectChanges();
+    }
+
+    flush();
+    expect(overlayContainerElement.querySelectorAll('snack-bar-container').length).toBe(1);
   }));
 
   describe('with custom component', () => {
