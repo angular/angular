@@ -263,6 +263,32 @@
           "tooltip": "A list of developer guides for building Angular applications."
         },
         {
+          "title": "Change detection",
+          "tooltip": "Learn how Angular updates the view based on data changes and how to keep your application fast",
+          "children": [
+            {
+              "url": "guide/change-detection",
+              "title": "Overview",
+              "tooltip": "Introduces the basics of Angular's change detection"
+            },
+            {
+              "url": "guide/change-detection-zone-pollution",
+              "title": "Zone Pollution",
+              "tooltip": "Explains how Zone.js works and what are the common pitfalls that can slow an application down"
+            },
+            {
+              "url": "guide/change-detection-slow-computations",
+              "title": "Slow Computations",
+              "tooltip": "Learn how to make your application faster by discovering and optimizing slow calculations"
+            },
+            {
+              "url": "guide/change-detection-skipping-subtrees",
+              "title": "Skipping Component Subtrees",
+              "tooltip": "Learn how to skip change detection in component subtrees using OnPush change detection strategy"
+            }
+          ]
+        },
+        {
           "title": "Routing and Navigation",
           "tooltip": "Learn how to use Angular Router to build in-app navigation between views.",
           "children": [
