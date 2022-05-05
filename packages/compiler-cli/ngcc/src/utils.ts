@@ -186,3 +186,33 @@ export function loadJson<T extends JsonObject = JsonObject>(
     return null;
   }
 }
+
+/**
+ * Given the parsed JSON of a `package.json` file, try to extract info for a secondary entry-point
+ * from the `exports` property. Such info will only be present for packages following Angular
+ * Package Format v14+.
+ *
+ * @param primaryPackageJson The parsed JSON of the primary `package.json` (or `null` if it failed
+ *     to be loaded).
+ * @param packagePath The absolute path to the containing npm package.
+ * @param entryPointPath The absolute path to the secondary entry-point.
+ * @returns The `exports` info for the specified entry-point if it exists, `null` otherwise.
+ */
+export function loadSecondaryEntryPointInfoForApfV14(
+    fs: ReadonlyFileSystem, primaryPackageJson: JsonObject|null, packagePath: AbsoluteFsPath,
+    entryPointPath: AbsoluteFsPath): JsonObject|null {
+  // Check if primary `package.json` has been loaded and has an `exports` property.
+  if (primaryPackageJson?.exports === undefined) {
+    return null;
+  }
+
+  // Find the `exports` key for the secondary entry-point.
+  const relativeEntryPointPath = fs.relative(packagePath, entryPointPath);
+  const exportsKey = `./${relativeEntryPointPath}`;
+
+  // Read the data (if it exists).
+  const exportsData =
+      (primaryPackageJson.exports as JsonObject)[exportsKey] as JsonObject | undefined;
+
+  return exportsData ?? null;
+}
