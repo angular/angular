@@ -23,10 +23,6 @@ The metadata, `providedIn: 'root'`, means that the `HeroService` is visible thro
 
 For clarity and maintainability, it is recommended that you define components and services in separate files.
 
-If you do combine a component and service in the same file, it is important to define the service first, and then the component.
-If you define the component before the service, Angular returns a run-time null reference error.
-
-
 {@a injector-config}
 {@a bootstrap}
 
@@ -35,5 +31,4 @@ If you define the component before the service, Angular returns a run-time null 
 ## What's next
 
 * [Dependency providers](guide/dependency-injection-providers)
-* [DI tokens and providers](guide/dependency-injection-providers)
 * [Dependency Injection in Action](guide/dependency-injection-in-action)

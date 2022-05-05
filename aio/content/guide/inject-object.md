@@ -1,4 +1,6 @@
-# Injecting an object
+# Configuring a dependency using DI tokens
+
+You define as an Angular injection token to identify a category of dependencies. Injecting an object Dis an example of configuring a dependency using DI tokens. 
 
 To inject an object, configure the injector with the `useValue` option.
 The following provider object uses the `useValue` key to associate the variable with the `Logger` token.
@@ -43,9 +45,9 @@ Now, inject the configuration object into the constructor with `@Inject()` param
 
 {@a di-and-interfaces}
 
-### Interfaces and dependency injection
+### Interfaces and DI
 
-Though the TypeScript `AppConfig` interface supports typing within the class, the `AppConfig` interface plays no role in dependency injection.
+Though the TypeScript `AppConfig` interface supports typing within the class, the `AppConfig` interface plays no role in DI.
 In TypeScript, an interface is a design-time artifact, and doesn't have a runtime representation, or token, that the DI framework can use.
 
 When the transpiler changes TypeScript to JavaScript, the interface disappears because JavaScript doesn't have interfaces.

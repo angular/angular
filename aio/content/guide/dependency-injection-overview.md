@@ -1,14 +1,11 @@
 # Dependency injection in Angular
 
-When you are developing a smaller part of your system, like a module or a class, you may need external dependencies. For example, you may need an HTTP service to make backend calls. Dependencies are services or objects that a class needs to perform its function. Dependency injection, or DI, is a design pattern in which a class requests dependencies from external sources rather than creating them. Angular's DI framework provides dependencies to a class upon instantiation. You can use Angular DI to increase flexibility and modularity in your applications. 
+When you develop a smaller part of your system, like a module or a class, you may need external dependencies. For example, you may need an HTTP service to make backend calls. Dependency Injection, or DI, is a design pattern in which a class declares which dependencies it has, using constructor arguments, and the framework that provides those dependencies while instantiating that class. Angular supports this design pattern and you can use it in your applications to increase flexibility and modularity. 
 
-Most of the times, dependency injection just works without much configuration. Other times, you need to configure it manually.
+You need in-depth knowledge of DI in these circumstances:
 
-You need in-depth knowledge of dependency injection in these circumstances:
-
-* to troubleshoot dependency injection error
 * to configure the dependencies for a unit test
-* to understand the unusual dependency injection configuration of third-party module
+* to understand the unusual DI configuration of third-party module
 * to create a third-party module that is to be shipped and used in multiple applications
 * to design your application in a more modular way
 * to ensure that different parts of your application are well isolated and do not interfere with each other
@@ -22,7 +19,7 @@ See the <live-example></live-example> for a working example containing the code 
 
 ## Prerequisites
 
-Before creating dependency injection, you should be familiar with the following:
+Before creating DI, you should be familiar with the following:
 
 [Tour of Heroes app and tutorial](tutorial)
 
@@ -31,8 +28,8 @@ Before creating dependency injection, you should be familiar with the following:
 <div class="card-container">
   <a href="guide/dependency-injection" class="docs-card" title="Understanding Dependency Injection">
     <section>Understanding Dependency Injection</section>
-    <p>Learn how dependency injection works in Angular.</p>
-    <p class="card-footer">Introduction to Dependency Injection</p>
+    <p>Learn how DI works in Angular.</p>
+    <p class="card-footer">Introduction to DI</p>
   </a>
   <a href="guide/creating-injectable-service" class="docs-card" title="Creating an injectable service">
     <section>Creating an injectable service</section>
@@ -61,7 +58,7 @@ Before creating dependency injection, you should be familiar with the following:
   </a>
   <a href="guide/hierarchical-dependency-injection" class="docs-card" title="Hierarchical injectors">
     <section>Hierarchical injectors</section>
-    <p>DHierarchical dependency injection enables you to share dependencies between different parts of the application only when and if you need to.</p>
+    <p>Hierarchical DI enables you to share dependencies between different parts of the application only when and if you need to.</p>
     <p class="card-footer">Hierarchical injectors</p>
   </a>
 </div>
