@@ -221,7 +221,7 @@ def _run_rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output,
     if stamp and ctx.version_file:
         other_inputs.append(ctx.version_file)
     ctx.actions.run(
-        progress_message = "ng_package: Rollup %s %s" % (bundle_name, ctx.label),
+        progress_message = "ng_package: Rollup %s (%s)" % (bundle_name, entry_point.short_path),
         mnemonic = "AngularPackageRollup",
         inputs = inputs.to_list() + other_inputs,
         outputs = [js_output, map_output],
