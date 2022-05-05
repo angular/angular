@@ -67,5 +67,9 @@ readonly CONTAINER_NAME=aio
       --volume $HOST_LOGS_DIR:/var/log/aio \
       "$LATEST_IMAGE_NAME"
 
+  # Clean up unused docker containers and images (to reclaim space).
+  sudo docker container prune --force
+  sudo docker image prune --all --force
+
   echo "The new docker image has been successfully deployed."
 )
