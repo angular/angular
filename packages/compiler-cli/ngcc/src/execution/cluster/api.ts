@@ -7,7 +7,7 @@
  */
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
-import {JsonObject} from '../../packages/entry_point';
+import {JsonObject} from '../../utils';
 import {PackageJsonChange} from '../../writing/package_json_updater';
 import {Task, TaskProcessingOutcome} from '../tasks/api';
 

@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {EntryPoint, EntryPointJsonProperty, JsonObject} from '../../packages/entry_point';
-import {PartiallyOrderedList} from '../../utils';
+import {EntryPoint, EntryPointJsonProperty} from '../../packages/entry_point';
+import {JsonObject, PartiallyOrderedList} from '../../utils';
 
 /**
  * Represents a unit of work to be undertaken by an `Executor`.

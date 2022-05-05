@@ -13,7 +13,7 @@ import cluster from 'cluster';
 import {absoluteFrom as _} from '../../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
 import {ClusterWorkerPackageJsonUpdater} from '../../../src/execution/cluster/package_json_updater';
-import {JsonObject} from '../../../src/packages/entry_point';
+import {JsonObject} from '../../../src/utils';
 import {PackageJsonPropertyPositioning, PackageJsonUpdate, PackageJsonUpdater} from '../../../src/writing/package_json_updater';
 import {mockProperty} from '../../helpers/spy_utils';
 

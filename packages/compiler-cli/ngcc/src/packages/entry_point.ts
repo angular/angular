@@ -10,7 +10,7 @@ import ts from 'typescript';
 import {AbsoluteFsPath, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {parseStatementForUmdModule} from '../host/umd_host';
-import {resolveFileWithPostfixes} from '../utils';
+import {JsonObject, loadJson, resolveFileWithPostfixes} from '../utils';
 
 import {NgccConfiguration, NgccEntryPointConfig} from './configuration';
 
@@ -47,13 +47,6 @@ export interface EntryPoint extends JsonObject {
   ignoreMissingDependencies: boolean;
   /** Should ngcc generate deep re-exports for this entrypoint? */
   generateDeepReexports: boolean;
-}
-
-export type JsonPrimitive = string|number|boolean|null;
-export type JsonValue = JsonPrimitive|JsonArray|JsonObject|undefined;
-export interface JsonArray extends Array<JsonValue> {}
-export interface JsonObject {
-  [key: string]: JsonValue;
 }
 
 export interface PackageJsonFormatPropertiesMap {
@@ -135,10 +128,10 @@ export function getEntryPointInfo(
     entryPointPath: AbsoluteFsPath): GetEntryPointResult {
   const packagePackageJsonPath = fs.resolve(packagePath, 'package.json');
   const entryPointPackageJsonPath = fs.resolve(entryPointPath, 'package.json');
-  const loadedPackagePackageJson = loadPackageJson(fs, packagePackageJsonPath);
+  const loadedPackagePackageJson = loadJson<EntryPointPackageJson>(fs, packagePackageJsonPath);
   const loadedEntryPointPackageJson = (packagePackageJsonPath === entryPointPackageJsonPath) ?
       loadedPackagePackageJson :
-      loadPackageJson(fs, entryPointPackageJsonPath);
+      loadJson<EntryPointPackageJson>(fs, entryPointPackageJsonPath);
   const {packageName, packageVersion} = getPackageNameAndVersion(
       fs, packagePath, loadedPackagePackageJson, loadedEntryPointPackageJson);
   const repositoryUrl = getRepositoryUrl(loadedPackagePackageJson);
@@ -250,20 +243,6 @@ export function getEntryPointFormat(
       return 'esm5';
     default:
       return undefined;
-  }
-}
-
-/**
- * Parse the JSON from a `package.json` file.
- * @param packageJsonPath the absolute path to the `package.json` file.
- * @returns JSON from the `package.json` file if it is valid, `null` otherwise.
- */
-function loadPackageJson(
-    fs: ReadonlyFileSystem, packageJsonPath: AbsoluteFsPath): EntryPointPackageJson|null {
-  try {
-    return JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
-  } catch {
-    return null;
   }
 }
 
