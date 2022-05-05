@@ -26,7 +26,7 @@ export const appIsSupportedAngularVersion = (): boolean => {
     return false;
   }
   const major = parseInt(version.toString().split('.')[0], 10);
-  return appIsAngular() && (major >= 9 || major === 0);
+  return appIsAngular() && (major >= 12 || major === 0);
 };
 
 /**
