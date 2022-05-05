@@ -137,7 +137,7 @@ export class ModuleResolver {
    *
    * This is achieved by checking for the existence of `${modulePath}/package.json`.
    * If there is no `package.json`, we check whether this is an APF v14+ secondary entry-point,
-   * which does not have each own `package.json` but has an `exports` entry in the package's primary
+   * which does not have its own `package.json` but has an `exports` entry in the package's primary
    * `package.json`.
    */
   private isEntryPoint(modulePath: AbsoluteFsPath): boolean {

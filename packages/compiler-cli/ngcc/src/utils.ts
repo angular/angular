@@ -201,18 +201,42 @@ export function loadJson<T extends JsonObject = JsonObject>(
 export function loadSecondaryEntryPointInfoForApfV14(
     fs: ReadonlyFileSystem, primaryPackageJson: JsonObject|null, packagePath: AbsoluteFsPath,
     entryPointPath: AbsoluteFsPath): JsonObject|null {
-  // Check if primary `package.json` has been loaded and has an `exports` property.
-  if (primaryPackageJson?.exports === undefined) {
+  // Check if primary `package.json` has been loaded and has an `exports` property that is an
+  // object.
+  const exportMap = primaryPackageJson?.exports;
+  if (!isExportObject(exportMap)) {
     return null;
   }
 
   // Find the `exports` key for the secondary entry-point.
   const relativeEntryPointPath = fs.relative(packagePath, entryPointPath);
-  const exportsKey = `./${relativeEntryPointPath}`;
+  const entryPointExportKey = `./${relativeEntryPointPath}`;
 
-  // Read the data (if it exists).
-  const exportsData =
-      (primaryPackageJson.exports as JsonObject)[exportsKey] as JsonObject | undefined;
+  // Read the info for the entry-point.
+  const entryPointInfo = exportMap[entryPointExportKey];
 
-  return exportsData ?? null;
+  // Check whether the entry-point info exists and is an export map.
+  return isExportObject(entryPointInfo) ? entryPointInfo : null;
+}
+
+/**
+ * Check whether a value read from a JSON file is a Node.js export map (either the top-level one or
+ * one for a subpath).
+ *
+ * In `package.json` files, the `exports` field can be of type `Object | string | string[]`, but APF
+ * v14+ uses an object with subpath exports for each entry-point, which in turn are conditional
+ * exports (see references below). This function verifies that a value read from the top-level
+ * `exports` field or a subpath is of type `Object` (and not `string` or `string[]`).
+ *
+ * References:
+ * - https://nodejs.org/api/packages.html#exports
+ * - https://nodejs.org/api/packages.html#subpath-exports
+ * - https://nodejs.org/api/packages.html#conditional-exports
+ * - https://v14.angular.io/guide/angular-package-format#exports
+ *
+ * @param thing The value read from the JSON file
+ * @returns True if the value is an `Object` (and not an `Array`).
+ */
+function isExportObject(thing: JsonValue): thing is JsonObject {
+  return (typeof thing === 'object') && (thing !== null) && !Array.isArray(thing);
 }
