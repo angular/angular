@@ -7,7 +7,7 @@
  */
 
 import {AbsoluteFsPath, dirname, FileSystem} from '../../../src/ngtsc/file_system';
-import {JsonObject, JsonValue} from '../packages/entry_point';
+import {JsonObject, JsonValue} from '../utils';
 
 
 export type PackageJsonChange = [string[], JsonValue, PackageJsonPropertyPositioning];

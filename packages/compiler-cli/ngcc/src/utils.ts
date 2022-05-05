@@ -10,6 +10,13 @@ import ts from 'typescript';
 import {absoluteFrom, AbsoluteFsPath, isRooted, ReadonlyFileSystem} from '../../src/ngtsc/file_system';
 import {DeclarationNode, KnownDeclaration} from '../../src/ngtsc/reflection';
 
+export type JsonPrimitive = string|number|boolean|null;
+export type JsonValue = JsonPrimitive|JsonArray|JsonObject|undefined;
+export interface JsonArray extends Array<JsonValue> {}
+export interface JsonObject {
+  [key: string]: JsonValue;
+}
+
 /**
  * A list (`Array`) of partially ordered `T` items.
  *
@@ -163,4 +170,19 @@ export function stripDollarSuffix(value: string): string {
 
 export function stripExtension(fileName: string): string {
   return fileName.replace(/\..+$/, '');
+}
+
+/**
+ * Parse the JSON from a `package.json` file.
+ *
+ * @param packageJsonPath The absolute path to the `package.json` file.
+ * @returns JSON from the `package.json` file if it exists and is valid, `null` otherwise.
+ */
+export function loadJson<T extends JsonObject = JsonObject>(
+    fs: ReadonlyFileSystem, packageJsonPath: AbsoluteFsPath): T|null {
+  try {
+    return JSON.parse(fs.readFile(packageJsonPath)) as T;
+  } catch {
+    return null;
+  }
 }
