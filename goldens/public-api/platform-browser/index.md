@@ -178,6 +178,9 @@ export type MetaDefinition = {
 export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef;
 
 // @public
+export function provideProtractorTestingSupport(): Provider[];
+
+// @public
 export interface SafeHtml extends SafeValue {
 }
 

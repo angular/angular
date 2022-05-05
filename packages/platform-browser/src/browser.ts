@@ -49,6 +49,17 @@ export interface ApplicationConfig {
  * const appRef: ApplicationRef = await bootstrapApplication(RootComponent);
  * ```
  *
+ * Note: this bootstrap method doesn't include [Testability](api/core/Testability) by default.
+ * You can add [Testability](api/core/Testability) by getting the list of necessary providers
+ * using `provideProtractorTestingSupport()` function and add them into the `options.providers`
+ * array. Example:
+ *
+ * ```typescript
+ * import {provideProtractorTestingSupport} from '@angular/platform-browser';
+ *
+ * await bootstrapApplication(RootComponent, providers: [provideProtractorTestingSupport()]);
+ * ```
+ *
  * @param rootComponent A reference to a Standalone Component that should be rendered.
  * @param options Additional configuration for the bootstrap operation, see `ApplicationConfig` for
  *     additional info.
@@ -62,11 +73,27 @@ export function bootstrapApplication(
     rootComponent,
     appProviders: [
       ...BROWSER_MODULE_PROVIDERS,
-      ...TESTABILITY_PROVIDERS,
       ...(options?.providers ?? []),
     ],
     platformProviders: INTERNAL_BROWSER_PLATFORM_PROVIDERS,
   });
+}
+
+/**
+ * Returns a set of providers required to setup [Testability](api/core/Testability) for an
+ * application bootstrapped using the `bootstrapApplication` function. The set of providers is
+ * needed to support testing an application with Protractor (which relies on the Testability APIs
+ * to be present).
+ *
+ * @returns An array of providers required to setup Testability for an application and make it
+ *     available for testing using Protractor.
+ *
+ * @publicApi
+ */
+export function provideProtractorTestingSupport(): Provider[] {
+  // Return a copy to prevent changes to the original array in case any in-place
+  // alterations are performed to the `provideProtractorTestingSupport` call results in app code.
+  return [...TESTABILITY_PROVIDERS];
 }
 
 export function initDomAdapter() {
@@ -107,7 +134,7 @@ export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef
 const BROWSER_MODULE_PROVIDERS_MARKER =
     new InjectionToken(NG_DEV_MODE ? 'BrowserModule Providers Marker' : '');
 
-export const TESTABILITY_PROVIDERS = [
+const TESTABILITY_PROVIDERS = [
   {
     provide: TESTABILITY_GETTER,
     useClass: BrowserGetTestability,
@@ -125,7 +152,7 @@ export const TESTABILITY_PROVIDERS = [
   }
 ];
 
-export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
+const BROWSER_MODULE_PROVIDERS: Provider[] = [
   {provide: INJECTOR_SCOPE, useValue: 'root'},
   {provide: ErrorHandler, useFactory: errorHandler, deps: []}, {
     provide: EVENT_MANAGER_PLUGINS,
