@@ -293,6 +293,7 @@ groups:
           'aio/content/guide/ngmodule-faq.md',
           'aio/content/guide/ngmodule-vs-jsmodule.md',
           'aio/content/guide/module-types.md',
+          'aio/content/guide/template-overview.md',
           'aio/content/guide/template-syntax.md',
           'aio/content/guide/built-in-template-functions.md',
           'aio/content/examples/built-in-template-functions/**',
