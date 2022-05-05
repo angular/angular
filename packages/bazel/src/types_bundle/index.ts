@@ -9,7 +9,8 @@
 /// <reference types="node"/>
 /// <reference lib="es2020"/>
 
-import {Extractor, ExtractorConfig, IConfigFile, IExtractorConfigPrepareOptions,} from '@microsoft/api-extractor';
+import {runAsWorker, runWorkerLoop} from '@bazel/worker';
+import {Extractor, ExtractorConfig, ExtractorMessage, IConfigFile, IExtractorConfigPrepareOptions} from '@microsoft/api-extractor';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -55,7 +56,8 @@ export async function runMain(
   };
 
   const extractorConfig = ExtractorConfig.prepare(options);
-  const {succeeded} = Extractor.invoke(extractorConfig);
+  const {succeeded} =
+      Extractor.invoke(extractorConfig, {messageCallback: handleApiExtractorMessage});
 
   if (!succeeded) {
     throw new Error('Type bundling failed. See error above.');
@@ -89,12 +91,51 @@ function stripAmdModuleDirectiveComments(content: string): string {
   return content.replace(/^\/\/\/ <amd-module name=.*\/>[\r\n]+/gm, '');
 }
 
-// Entry point
-const [entryPointExecpath, outputExecpath, packageJsonExecpath, licenseBannerExecpath] =
-    process.argv.slice(2);
+/**
+ * Handles logging messages from API extractor.
+ *
+ * Certain info messages should be omitted and other messages should be printed
+ * to stderr to avoid worker protocol conflicts.
+ */
+function handleApiExtractorMessage(msg: ExtractorMessage): void {
+  msg.handled = true;
 
-runMain({entryPointExecpath, outputExecpath, packageJsonExecpath, licenseBannerExecpath})
-    .catch(e => {
-      console.error(e);
+  if (msg.messageId === 'console-compiler-version-notice' || msg.messageId === 'console-preamble') {
+    return;
+  }
+
+  if (msg.logLevel !== 'verbose' && msg.logLevel !== 'none') {
+    console.error(msg.text);
+  }
+}
+
+/** Runs one build using the specified build action command line arguments. */
+async function runOneBuild(args: string[]): Promise<boolean> {
+  const [entryPointExecpath, outputExecpath, packageJsonExecpath, licenseBannerExecpath] = args;
+
+  try {
+    await runMain({entryPointExecpath, outputExecpath, packageJsonExecpath, licenseBannerExecpath});
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+}
+
+// Entry-point.
+const processArgs = process.argv.slice(2);
+
+if (runAsWorker(processArgs)) {
+  runWorkerLoop(runOneBuild);
+} else {
+  // In non-worker mode we need to manually read the flag file and omit
+  // the leading `@` that is added as part of the worker requirements.
+  const flagFile = processArgs[0].substring(1);
+  const args = fs.readFileSync(flagFile, 'utf8').split('\n');
+
+  runOneBuild(args).then(success => {
+    if (!success) {
       process.exitCode = 1;
-    });
+    }
+  });
+}
