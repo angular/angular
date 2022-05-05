@@ -7,7 +7,7 @@
     "http-server": "http-server",
     "protractor": "protractor",
     "webdriver:update": "node ../../../../scripts/webdriver-manager-update.js",
-    "postinstall": "yarn sync-deps && yarn webdriver:update",
+    "postinstall": "yarn webdriver:update && ngcc --properties es2015 main",
     "sync-deps": "node sync-boilerplate-dependencies"
   },
   "//engines-comment": "Keep this in sync with /package.json and /aio/package.json",

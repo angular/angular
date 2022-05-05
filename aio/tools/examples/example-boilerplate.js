@@ -6,8 +6,6 @@ const shelljs = require('shelljs');
 const yargs = require('yargs');
 const {EXAMPLES_BASE_PATH, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, EXAMPLE_CONFIG_FILENAME, SHARED_PATH} = require('./constants');
 
-const SHARED_NODE_MODULES_PATH = path.resolve(SHARED_PATH, 'node_modules');
-
 const BOILERPLATE_BASE_PATH = path.resolve(SHARED_PATH, 'boilerplate');
 const BOILERPLATE_CLI_PATH = path.resolve(BOILERPLATE_BASE_PATH, 'cli');
 const BOILERPLATE_COMMON_PATH = path.resolve(BOILERPLATE_BASE_PATH, 'common');
@@ -22,17 +20,6 @@ class ExampleBoilerPlate {
         this.getFoldersContaining(EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, 'node_modules');
     const gitignore = ignore().add(fs.readFileSync(path.resolve(BOILERPLATE_BASE_PATH, '.gitignore'), 'utf8'));
 
-    // TODO(bazel): Comment this out until example tests are run with bazel. The node_modules folder isn't
-    // needed to build the examples.
-    //
-    // if (!fs.existsSync(SHARED_NODE_MODULES_PATH)) {
-    //   throw new Error(
-    //       `The shared node_modules folder for the examples (${SHARED_NODE_MODULES_PATH}) is missing.\n` +
-    //       'Perhaps you need to run "yarn example-use-npm" or "yarn example-use-local" to install the dependencies?');
-    // }
-    //
-    // shelljs.exec(`yarn --cwd ${SHARED_PATH} ngcc --properties es2015 main`);
-
     exampleFolders.forEach(exampleFolder => {
       const exampleConfig = this.loadJsonFile(path.resolve(exampleFolder, EXAMPLE_CONFIG_FILENAME));
 
@@ -46,16 +33,9 @@ class ExampleBoilerPlate {
       );
       const isPathIgnored = absolutePath => boilerplateIgnore.ignores(path.relative(BOILERPLATE_BASE_PATH, absolutePath));
 
-      // TODO(bazel): Comment this out until example tests are being run with bazel. The node_modules folder isn't
-      // needed to build the examples.
-      //
-      // Link the node modules - requires admin access (on Windows) because it adds symlinks
-      // const destinationNodeModules = path.resolve(exampleFolder, 'node_modules');
-      // fs.ensureSymlinkSync(SHARED_NODE_MODULES_PATH, destinationNodeModules);
-
       const boilerPlateType = exampleConfig.projectType || 'cli';
       const boilerPlateBasePath = path.resolve(BOILERPLATE_BASE_PATH, boilerPlateType);
-      const outputPath = path.join(BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, path.basename(exampleFolder));
+      const outputPath = path.join(BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, path.relative(EXAMPLES_BASE_PATH, exampleFolder));
       shelljs.mkdir('-p', outputPath);
 
       // All example types other than `cli` and `systemjs` are based on `cli`. Copy over the `cli`
