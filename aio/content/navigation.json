@@ -163,6 +163,11 @@
           "tooltip": "Syntax to use in templates for binding, expressions, and directives.",
           "children": [
             {
+              "url": "guide/template-overview",
+              "title": "Overview",
+              "tooltip": "Introduction to templates."
+            },
+            {
               "url": "guide/template-syntax",
               "title": "Introduction",
               "tooltip": "Introduction to writing templates that display data and consume user events with the help of data binding."
