@@ -1,24 +1,17 @@
-# Protocol
+# Angular DevTools Communication Protocol
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.0-rc.5.
+Angular DevTools injects scripts in the user application page that interact with the framework debugging APIs. The injected scripts interact with the extension via message passing using a statically typed protocol.
 
-## Code scaffolding
+This subdirectory contains:
+- Declaration of a statically typed message bus
+- Implementation of priority aware message bus
+- Interfaces that declare the messages exchanged between the extension and the page
 
-Run `ng generate component component-name --project protocol` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project protocol`.
-> Note: Don't forget to add `--project protocol` or else it will be added to the default project in your `angular.json` file.
+We use the `PriorityAwareMessageBus` to ensure that certain messages have higher priority than others. Because of the asynchronous nature of the property exchange there's a risk that a message response may overwrite the result from a more recent response.
 
-## Build
+An example is:
+1. We request the state of the component tree
+1. We update the state
+1. We request the state of the properties of a particular component
 
-Run `ng build protocol` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Publishing
-
-After building your library with `ng build protocol`, go to the dist folder `cd dist/protocol` and run `npm publish`.
-
-## Running unit tests
-
-Run `ng test protocol` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/main/README.md).
+We don't have guarantees that the response of 1. will arrive before the response of 3. Often the response of 1. is larger and might be delivered after 3. In such a case, it may contain the application state prior to the update and override the state update we received from 3.
