@@ -178,29 +178,61 @@
               "tooltip": "Introductory guide to statements in templates that respond to events that components, directives, or elements raise."
             },
             {
-              "url": "guide/pipes",
+              "title": "Binding",
+              "tooltip": "A binding connects a template and a component.",
+              "children": [
+                {
+                  "url": "guide/binding-overview",
+                  "title": "Understanding binding",
+                  "tooltip": "Introductory guide to binding."
+                },
+                {
+                  "url": "guide/attribute-binding",
+                  "title": "Attribute binding",
+                  "tooltip": "Learn how to use attribute binding."
+                },
+                {
+                  "url": "guide/class-binding",
+                  "title": "Class and style binding",
+                  "tooltip": "Learn how to use class and style binding."
+                },
+                {
+                  "url": "guide/event-binding",
+                  "title": "Event binding",
+                  "tooltip": "Learn how to use to event binding."
+                },
+                {
+                  "url": "guide/property-binding",
+                  "title": "Property binding",
+                  "tooltip": "Learn how to use property binding."
+                },             
+                {
+                  "url": "guide/two-way-binding",
+                  "title": "Two-way binding",
+                  "tooltip": "Learn how to share data between a class and a template."
+                }
+              ]
+            },
+            {
               "title": "Pipes",
-              "tooltip": "Pipes transform displayed values within a template."
-            },
-            {
-              "url": "guide/property-binding",
-              "title": "Property binding",
-              "tooltip": "Introductory guide to setting element or input properties."
-            },
-            {
-              "url": "guide/attribute-binding",
-              "title": "Attribute, class, and style bindings",
-              "tooltip": "Introductory guide to setting the value of HTML attributes."
-            },
-            {
-              "url": "guide/event-binding",
-              "title": "Event binding",
-              "tooltip": "Introductory guide to listening for user interaction."
-            },
-            {
-              "url": "guide/two-way-binding",
-              "title": "Two-way binding",
-              "tooltip": "Introductory guide to sharing data between a class and a template."
+              "tooltip": "Pipes transform displayed values within a template.",
+              "children": [
+                {
+                  "url": "guide/pipes-overview",
+                  "title": "Understanding pipes",
+                  "tooltip": "Introductory guide to pipes."
+                },
+                {
+                  "url": "guide/pipe-template",
+                  "title": "Using a pipe in a template",
+                  "tooltip": "Learn how to use a pipe in a template."
+                },
+                {
+                  "url": "guide/pipes-transform-data",
+                  "title": "Transforming data with parameters and chained pipes",
+                  "tooltip": "Learn how to use a pipe transform data."
+                }
+             ]
             },
             {
               "url": "guide/template-reference-variables",

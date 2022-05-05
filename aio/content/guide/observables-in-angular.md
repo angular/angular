@@ -3,7 +3,8 @@
 Angular makes use of observables as an interface to handle a variety of common asynchronous operations.
 For example:
 
-*   You can define [custom events](guide/event-binding#custom-events-with-eventemitter) that send observable output data from a child to a parent component
+<!--todo: Have Alex review this -->
+<!-- *   You can define [custom events](guide/event-binding#custom-events-with-eventemitter) that send observable output data from a child to a parent component -->
 *   The HTTP module uses observables to handle AJAX requests and responses
 *   The Router and Forms modules use observables to listen for and respond to user-input events
 

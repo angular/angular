@@ -50,7 +50,7 @@ Add or remove multiple CSS classes simultaneously with `ngClass`.
 
 <div class="alert is-helpful">
 
-To add or remove a *single* class, use [class binding](guide/attribute-binding#class-binding) rather than `NgClass`.
+To add or remove a *single* class, use [class binding](guide/class-binding) rather than `NgClass`.
 
 </div>
 

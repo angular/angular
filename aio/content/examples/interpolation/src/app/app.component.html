@@ -16,16 +16,12 @@
 
     <h3>Evaluating template expressions </h3>
     <h4>Simple evaluation (to a string):</h4>
-    <!-- #docregion convert-string -->
     <!-- "The sum of 1 + 1 is 2" -->
     <p>The sum of 1 + 1 is {{1 + 1}}.</p>
-    <!-- #enddocregion convert-string -->
 
     <h4>Evaluates using a method (also evaluates to a string):</h4>
-    <!-- #docregion invoke-method -->
     <!-- "The sum of 1 + 1 is not 4" -->
     <p>The sum of 1 + 1 is not {{1 + 1 + getVal()}}.</p>
-    <!-- #enddocregion invoke-method -->
   </div>
 
   <hr />
