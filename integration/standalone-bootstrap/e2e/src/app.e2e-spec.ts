@@ -1,24 +1,11 @@
-import {browser, logging} from 'protractor';
-
-import {AppPage} from './app.po';
-
+/**
+ * Note: this file contains no e2e tests, since they rely on Protractor,
+ * which requires Testability. Testability is not included by default when
+ * the `bootstrapApplication` function is used (which is the case in this app).
+ * We use this app primarily to measure payload size, so we want to keep
+ * Testability excluded.
+ */
 describe('Standalone Bootstrap app', () => {
-  let page: AppPage;
-
-  beforeEach(() => {
-    page = new AppPage();
-  });
-
-  it('should display title', () => {
-    page.navigateTo();
-    expect(page.getTitleText()).toEqual('Standalone Bootstrap app');
-  });
-
-  afterEach(async () => {
-    // Assert that there are no errors emitted from the browser
-    const logs = await browser.manage().logs().get(logging.Type.BROWSER);
-    expect(logs).not.toContain(jasmine.objectContaining({
-      level: logging.Level.SEVERE,
-    } as logging.Entry));
-  });
+  // Jasmine will throw if there are no tests.
+  it('should pass', () => {});
 });
