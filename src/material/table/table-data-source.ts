@@ -155,7 +155,7 @@ export class _MatTableDataSource<
     data: T,
     sortHeaderId: string,
   ): string | number => {
-    const value = (data as {[key: string]: any})[sortHeaderId];
+    const value = (data as unknown as Record<string, any>)[sortHeaderId];
 
     if (_isNumberValue(value)) {
       const numberValue = Number(value);
@@ -237,7 +237,7 @@ export class _MatTableDataSource<
    */
   filterPredicate: (data: T, filter: string) => boolean = (data: T, filter: string): boolean => {
     // Transform the data into a lowercase string of all property values.
-    const dataStr = Object.keys(data)
+    const dataStr = Object.keys(data as unknown as Record<string, any>)
       .reduce((currentTerm: string, key: string) => {
         // Use an obscure Unicode character to delimit the words in the concatenated string.
         // This avoids matches where the values of two columns combined will match the user's query
@@ -245,7 +245,7 @@ export class _MatTableDataSource<
         // that has a very low chance of being typed in by somebody in a text field. This one in
         // particular is "White up-pointing triangle with dot" from
         // https://en.wikipedia.org/wiki/List_of_Unicode_characters
-        return currentTerm + (data as {[key: string]: any})[key] + '◬';
+        return currentTerm + (data as unknown as Record<string, any>)[key] + '◬';
       }, '')
       .toLowerCase();
 
