@@ -247,12 +247,11 @@ export function compileNgModuleDeclarationExpression(meta: R3DeclareNgModuleFaca
   return o.importExpr(R3.defineNgModule).callFn([definitionMap.toLiteralMap()]);
 }
 
-export function createNgModuleType(
-    {type: moduleType, declarations, imports, exports}: R3NgModuleMetadata): o.ExpressionType {
-  return new o.ExpressionType(o.importExpr(R3.NgModuleDeclaration, [
-    new o.ExpressionType(moduleType.type), tupleTypeOf(declarations), tupleTypeOf(imports),
-    tupleTypeOf(exports)
-  ]));
+export function createNgModuleType({type: moduleType, exports}: R3NgModuleMetadata):
+    o.ExpressionType {
+  return new o.ExpressionType(o.importExpr(
+      R3.NgModuleDeclaration,
+      [new o.ExpressionType(moduleType.type), o.NONE_TYPE, o.NONE_TYPE, tupleTypeOf(exports)]));
 }
 
 /**
