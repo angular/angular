@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
-import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, InjectionToken, Injector, Input, LOCALE_ID, NgModule, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, Type, VERSION} from '@angular/core';
+import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, InjectionToken, Injector, Input, LOCALE_ID, NgModule, NgModuleRef, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, Type, VERSION} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -578,22 +578,16 @@ function bootstrap(
       }, done.fail);
     });
 
-    it('should register each application with the testability registry', done => {
-      const refPromise1: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp, testProviders);
-      const refPromise2: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp2, testProviders);
+    it('should register each application with the testability registry', async () => {
+      const ngModuleRef1: NgModuleRef<unknown> = await bootstrap(HelloRootCmp, testProviders);
+      const ngModuleRef2: NgModuleRef<unknown> = await bootstrap(HelloRootCmp2, testProviders);
 
-      Promise.all([refPromise1, refPromise2]).then((refs: ComponentRef<any>[]) => {
-        const registry = refs[0].injector.get(TestabilityRegistry);
-        const testabilities =
-            [refs[0].injector.get(Testability), refs[1].injector.get(Testability)];
+      // The `TestabilityRegistry` is provided in the "platform", so the same instance is available
+      // to both `NgModuleRef`s and it can be retrieved from any ref (we use the first one).
+      const registry = ngModuleRef1.injector.get(TestabilityRegistry);
 
-        Promise.all(testabilities).then((testabilities: Testability[]) => {
-          expect(registry.findTestabilityInTree(el)).toEqual(testabilities[0]);
-          expect(registry.findTestabilityInTree(el2)).toEqual(testabilities[1]);
-
-          done();
-        }, done.fail);
-      }, done.fail);
+      expect(registry.findTestabilityInTree(el)).toEqual(ngModuleRef1.injector.get(Testability));
+      expect(registry.findTestabilityInTree(el2)).toEqual(ngModuleRef2.injector.get(Testability));
     });
 
     it('should allow to pass schemas', done => {
