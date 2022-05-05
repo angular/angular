@@ -135,6 +135,26 @@ yarn_install(
     yarn_lock = "//aio:yarn.lock",
 )
 
+# Needed for the aio example e2e tests which run with patched node_module resolution through bazel
+yarn_install(
+    name = "docs_examples_npm",
+    data = [
+        "//:.yarn/releases/yarn-1.22.17.cjs",
+        "//:.yarnrc",
+    ],
+    # Currently disabled due to:
+    #  1. Missing Windows support currently.
+    #  2. Incompatibilites with the `ts_library` rule.
+    exports_directories_only = False,
+    manual_build_file_contents = npm_package_archives(),
+    package_json = "//aio/tools/examples/shared:package.json",
+    # We prefer to symlink the `node_modules` to only maintain a single install.
+    # See https://github.com/angular/dev-infra/pull/446#issuecomment-1059820287 for details.
+    symlink_node_modules = True,
+    yarn = "//:.yarn/releases/yarn-1.22.17.cjs",
+    yarn_lock = "//aio:yarn.lock",
+)
+
 load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
 
 aspect_bazel_lib_dependencies()
