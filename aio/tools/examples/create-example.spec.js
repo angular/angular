@@ -2,7 +2,7 @@ const path = require('canonical-path');
 const fs = require('fs-extra');
 const {glob} = require('glob');
 
-const {EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, SHARED_PATH, STACKBLITZ_CONFIG_FILENAME} =
+const {EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, STACKBLITZ_CONFIG_FILENAME} =
     require('./constants');
 
 const {
