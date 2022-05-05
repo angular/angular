@@ -344,9 +344,8 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
 
   /** Formats a value and sets it on the input element. */
   protected _formatValue(value: D | null) {
-    this._elementRef.nativeElement.value = value
-      ? this._dateAdapter.format(value, this._dateFormats.display.dateInput)
-      : '';
+    this._elementRef.nativeElement.value =
+      value != null ? this._dateAdapter.format(value, this._dateFormats.display.dateInput) : '';
   }
 
   /** Assigns a value to the model. */

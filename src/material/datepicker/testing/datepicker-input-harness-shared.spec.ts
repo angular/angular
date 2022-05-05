@@ -1,7 +1,7 @@
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
-import {MatNativeDateModule} from '@angular/material/core';
+import {DateAdapter, MatNativeDateModule} from '@angular/material/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule} from '@angular/forms';
 import {MatDatepickerModule} from '@angular/material/datepicker';
@@ -84,6 +84,31 @@ export function runDatepickerInputHarnessTests(
 
     await input.setValue('1/1/2020');
     expect(await input.getValue()).toBe('1/1/2020');
+  });
+
+  it('should set the input value based on date adapter validation and formatting', async () => {
+    const adapter = fixture.debugElement.injector.get(DateAdapter);
+    const input = await loader.getHarness(datepickerInputHarness.with({selector: '#basic'}));
+    const validValues: any[] = [new Date(0), '', 0, false];
+    const invalidValues: any[] = [null, undefined];
+    spyOn(adapter, 'format').and.returnValue('FORMATTED_VALUE');
+    spyOn(adapter, 'isValid').and.callFake(value => validValues.includes(value));
+    spyOn(adapter, 'deserialize').and.callFake(value =>
+      validValues.includes(value) ? value : null,
+    );
+    spyOn(adapter, 'getValidDateOrNull').and.callFake(value =>
+      adapter.isValid(value) ? value : null,
+    );
+
+    for (let value of validValues) {
+      fixture.componentInstance.date = value;
+      expect(await input.getValue()).toBe('FORMATTED_VALUE');
+    }
+
+    for (let value of invalidValues) {
+      fixture.componentInstance.date = value;
+      expect(await input.getValue()).toBe('');
+    }
   });
 
   it('should get the input placeholder', async () => {
