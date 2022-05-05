@@ -29,12 +29,12 @@ describe('angular-check', () => {
     });
 
     it('should work with new versions', () => {
-      setNgVersion('9.0.0');
+      setNgVersion('12.0.0');
       expect(appIsSupportedAngularVersion()).toBeTrue();
     });
 
     it('should return false for older version', () => {
-      setNgVersion('8.0.0');
+      setNgVersion('9.0.0');
       expect(appIsSupportedAngularVersion()).toBeFalse();
     });
 

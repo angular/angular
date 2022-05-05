@@ -27,7 +27,7 @@ Angular DevTools is a Chrome extension that provides debugging and profiling cap
 
 ## Supported version
 
-Angular DevTools supports Angular v9 and above, with Ivy enabled.
+Angular DevTools supports Angular v12 and above, with Ivy enabled.
 
 ## Working on Angular DevTools
 
