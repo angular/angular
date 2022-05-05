@@ -88,7 +88,7 @@
   justify-content: flex-end;
   padding: 16px 8px 16px 24px;
 
-  button.mat-button-base, button.mat-mdc-button-base {
+  .mat-button-base, .mat-mdc-button-base {
     margin-left: 8px;
 
     [dir='rtl'] & {
