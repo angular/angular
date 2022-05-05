@@ -185,7 +185,7 @@ export function runPlatformInitializers(injector: Injector): void {
  *
  * @returns A promise that returns an `ApplicationRef` instance once resolved.
  */
-export function bootstrapApplication(config: {
+export function internalBootstrapApplication(config: {
   rootComponent: Type<unknown>,
   appProviders?: Array<Provider|ImportedNgModuleProviders>,
   platformProviders?: Provider[],
