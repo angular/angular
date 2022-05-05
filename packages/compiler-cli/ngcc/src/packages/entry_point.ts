@@ -10,7 +10,7 @@ import ts from 'typescript';
 import {AbsoluteFsPath, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {parseStatementForUmdModule} from '../host/umd_host';
-import {JsonObject, loadJson, resolveFileWithPostfixes} from '../utils';
+import {JsonObject, loadJson, loadSecondaryEntryPointInfoForApfV14, resolveFileWithPostfixes} from '../utils';
 
 import {NgccConfiguration, NgccEntryPointConfig} from './configuration';
 
@@ -131,7 +131,8 @@ export function getEntryPointInfo(
   const loadedPackagePackageJson = loadJson<EntryPointPackageJson>(fs, packagePackageJsonPath);
   const loadedEntryPointPackageJson = (packagePackageJsonPath === entryPointPackageJsonPath) ?
       loadedPackagePackageJson :
-      loadJson<EntryPointPackageJson>(fs, entryPointPackageJsonPath);
+      loadOrSynthesizeSecondaryPackageJson(
+          fs, packagePath, entryPointPath, entryPointPackageJsonPath, loadedPackagePackageJson);
   const {packageName, packageVersion} = getPackageNameAndVersion(
       fs, packagePath, loadedPackagePackageJson, loadedEntryPointPackageJson);
   const repositoryUrl = getRepositoryUrl(loadedPackagePackageJson);
@@ -141,17 +142,17 @@ export function getEntryPointInfo(
   let entryPointPackageJson: EntryPointPackageJson;
 
   if (entryPointConfig === undefined) {
-    if (!fs.exists(entryPointPackageJsonPath)) {
-      // No `package.json` and no config.
+    if (loadedEntryPointPackageJson !== null) {
+      entryPointPackageJson = loadedEntryPointPackageJson;
+    } else if (!fs.exists(entryPointPackageJsonPath)) {
+      // No entry-point `package.json` or package `package.json` with exports and no config.
       return NO_ENTRY_POINT;
-    } else if (loadedEntryPointPackageJson === null) {
+    } else {
       // `package.json` exists but could not be parsed and there is no redeeming config.
       logger.warn(`Failed to read entry point info from invalid 'package.json' file: ${
           entryPointPackageJsonPath}`);
 
       return INCOMPATIBLE_ENTRY_POINT;
-    } else {
-      entryPointPackageJson = loadedEntryPointPackageJson;
     }
   } else if (entryPointConfig.ignore === true) {
     // Explicitly ignored entry-point.
@@ -244,6 +245,69 @@ export function getEntryPointFormat(
     default:
       return undefined;
   }
+}
+
+/**
+ * Parse the JSON from a secondary `package.json` file. If no such file exists, look for a
+ * corresponding entry in the primary `package.json` file's `exports` property (if any) and
+ * synthesize the JSON from that.
+ *
+ * @param packagePath The absolute path to the containing npm package.
+ * @param entryPointPath The absolute path to the secondary entry-point.
+ * @param secondaryPackageJsonPath The absolute path to the secondary `package.json` file.
+ * @param primaryPackageJson The parsed JSON of the primary `package.json` (or `null` if it failed
+ *     to be loaded).
+ * @returns Parsed JSON (either loaded from a secondary `package.json` file or synthesized from a
+ *     primary one) if it is valid, `null` otherwise.
+ */
+function loadOrSynthesizeSecondaryPackageJson(
+    fs: ReadonlyFileSystem, packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath,
+    secondaryPackageJsonPath: AbsoluteFsPath,
+    primaryPackageJson: EntryPointPackageJson|null): EntryPointPackageJson|null {
+  // If a secondary `package.json` exists and is valid, load and return that.
+  const loadedPackageJson = loadJson<EntryPointPackageJson>(fs, secondaryPackageJsonPath);
+  if (loadedPackageJson !== null) {
+    return loadedPackageJson;
+  }
+
+  // Try to load the entry-point info from the primary `package.json` data.
+  const entryPointInfo =
+      loadSecondaryEntryPointInfoForApfV14(fs, primaryPackageJson, packagePath, entryPointPath);
+  if (entryPointInfo === null) {
+    return null;
+  }
+
+  // Create a synthesized `package.json`.
+  //
+  // NOTE:
+  // We do not care about being able to update the synthesized `package.json` (for example, updating
+  // its `__processed_by_ivy_ngcc__` property), because these packages are generated with Angular
+  // v14+ (following the Angular Package Format v14+) and thus are already in Ivy format and do not
+  // require processing by `ngcc`.
+  const synthesizedPackageJson: EntryPointPackageJson = {
+    synthesized: true,
+    name: `${primaryPackageJson!.name}/${fs.relative(packagePath, entryPointPath)}`,
+  };
+
+  // Update the synthesized `package.json` with any of the supported format and types properties,
+  // changing paths to make them relative to the entry-point directory. This makes the synthesized
+  // `package.json` similar to how a `package.json` inside the entry-point directory would look
+  // like.
+  for (const prop of [...SUPPORTED_FORMAT_PROPERTIES, 'types', 'typings']) {
+    const packageRelativePath = entryPointInfo[prop];
+
+    if (typeof packageRelativePath === 'string') {
+      const absolutePath = fs.resolve(packagePath, packageRelativePath);
+      const entryPointRelativePath = fs.relative(entryPointPath, absolutePath);
+      synthesizedPackageJson[prop] =
+          (fs.isRooted(entryPointRelativePath) || entryPointRelativePath.startsWith('.')) ?
+          entryPointRelativePath :
+          `./${entryPointRelativePath}`;
+    }
+  }
+
+  // Return the synthesized JSON.
+  return synthesizedPackageJson;
 }
 
 function sniffModuleFormat(
