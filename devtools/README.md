@@ -1,37 +1,8 @@
 # Angular DevTools
 
-## Table of content
+Angular DevTools is a browser DevTools extension for debugging and profiling Angular applications.
 
-- [Angular DevTools](#angular-devtools)
-  - [Table of content](#table-of-content)
-  - [Introduction](#introduction)
-  - [Inspecting Code](#inspecting-code)
-  - [Supported version](#supported-version)
-  - [Working on Angular DevTools](#working-on-angular-devtools)
-    - [Installing and Running locally](#installing-and-running-locally)
-    - [Build and Install on Chrome locally](#build-and-install-on-chrome-locally)
-  - [Reporting issues](#reporting-issues)
-  - [Contributing](#contributing)
-    - [General guidelines](#general-guidelines)
-    - [License](#license)
-
-## Introduction
-
-Angular DevTools is a Chrome DevTools extension for debugging and profiling Angular applications.
-
-You can install the extension from: [Chrome Web Store](https://chrome.google.com/webstore/detail/angular-developer-tools/ienfalfjdbdpebioblfackkekamfmbnh)
-
-## Inspecting Code
-
-Angular DevTools is a Chrome extension that provides debugging and profiling capabilities for Angular applications. A hard requirement is that the Angular application is running in development mode.
-
-## Supported version
-
-Angular DevTools supports Angular v12 and above.
-
-## Working on Angular DevTools
-
-### Installing and Running locally
+## Installing and Running locally
 
 To setup your local development environment for Angular DevTools, perform the following steps:
 
@@ -42,23 +13,31 @@ yarn
 yarn run devtools:devserver
 ```
 
-### Build and Install on Chrome locally
+## Publish Angular DevTools
 
-1. After installation, generate chrome build by running `yarn build:chrome`
-2. Navigate to `chrome://extensions` and enable Developer mode.
-3. Choose "Load unpacked extension".
-4. In the dialog, select the directory `dist/shell-browser`.
+To publish Angular DevTools to Firefox or Chrome stores:
 
-## Reporting issues
+1. Update the version of the corresponding manifest file. Currently, Angular DevTools uses different versioning compared to the rest of the packages within the monorepo.
+  * `manifest.chrome.json` for Chrome
+  * `manifest.firefox.json` for Firefox
+1. Build the extension:
+  * `yarn devtools:build:chrome` for Chrome
+  * `yarn devtools:build:firefox` for Firefox
+1. Find the extension production assets in `dist/bin/devtools/projects/shell-browser/src/prodapp` relative to the root of the Angular monorepo
+1. Zip the files in the directory
+1. Upload them to the corresponding store
 
-Please search to make sure your issue is not already been reported. When opening an issue, please follow the issue template provided.
+### Firefox
 
-## Contributing
+1. Go to the Firefox Addons [page](https://addons.mozilla.org/developers/addons)
+1. For email enter `devrel@angular.io`
+1. Find the password on Valentine
+1. Setup Google Authenticator with the 2FA QR code. You can find the QR code on Valentine
 
-### General guidelines
+### Chrome Web Store
 
-If you'd like to help out, please read our [Development Guidelines](DEVELOPING.md) and [Contributing Guidelines](CONTRIBUTING.md).
-
-### License
-
-[MIT](LICENSE)
+1. Go to the extension [page](https://chrome.google.com/webstore/category/extensions)
+1. Make sure your email is part of the Google Group we use for publishing the extension
+1. Navigate to "Developer Dashboard"
+1. Enter your account credentials
+1. You should be able to change the publisher to "Angular"
