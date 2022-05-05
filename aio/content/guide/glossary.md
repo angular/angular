@@ -239,8 +239,7 @@ Read about the following forms of binding of the [Template Syntax][AioGuideTempl
 *   [Property binding][AioGuidePropertyBinding]
 *   [Event binding][AioGuideEventBinding]
 *   [Attribute binding][AioGuideAttributeBinding]
-*   [Class binding][AioGuideAttributeBindingBindingToTheClassAttribute]
-*   [Style binding][AioGuideAttributeBindingBindingToTheStyleAttribute]
+*   [Class and style binding][AioGuideAttributeBindingBindingToTheClassAttribute]
 *   [Two-way data binding with ngModel][AioGuideBuiltInDirectivesDisplayingAndUpdatingPropertiesWithNgmodel]
 
 ## declarable
@@ -807,7 +806,8 @@ For an introduction and comparison of both forms approaches, see [Introduction t
 
 A TypeScript-like syntax that Angular evaluates within a [data binding][AioGuideGlossaryDataBinding].
 
-Read about how to write template expressions in the [template expressions][AioGuideInterpolationTemplateExpressions] section of the [Interpolation][AioGuideInterpolation] guide.
+<!--todo: have Alex review this -->
+<!-- Read about how to write template expressions in the [template expressions][AioGuideInterpolationTemplateExpressions] section of the [Interpolation][AioGuideInterpolation] guide. -->
 
 ## template reference variable
 
@@ -991,9 +991,8 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 
 [AioGuideArchitectureServices]: guide/architecture-services "Introduction to services and dependency injection | Angular"
 
-[AioGuideAttributeBinding]: guide/attribute-binding "Attribute, class, and style bindings | Angular"
-[AioGuideAttributeBindingBindingToTheClassAttribute]: guide/attribute-binding#binding-to-the-class-attribute "Binding to the class attribute - Attribute, class, and style bindings | Angular"
-[AioGuideAttributeBindingBindingToTheStyleAttribute]: guide/attribute-binding#binding-to-the-style-attribute "Binding to the style attribute - Attribute, class, and style bindings | Angular"
+[AioGuideAttributeBinding]: guide/attribute-binding "Attribute binding | Angular"
+[AioGuideAttributeBindingBindingToTheClassAttribute]: guide/class-binding "Class and style binding | Angular"
 
 [AioGuideAttributeDirectives]: guide/attribute-directives "Attribute directives | Angular"
 
@@ -1120,7 +1119,7 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 [AioGuideHierarchicalDependencyInjection]: guide/hierarchical-dependency-injection "Hierarchical injectors | Angular"
 
 [AioGuideInterpolation]: guide/interpolation "Text interpolation | Angular"
-[AioGuideInterpolationTemplateExpressions]: guide/interpolation#template-expressions "Template expressions - Text interpolation | Angular"
+<!-- [AioGuideInterpolationTemplateExpressions]: guide/interpolation#template-expressions "Template expressions - Text interpolation | Angular" -->
 
 [AioGuideNgmodules]: guide/ngmodules "NgModules | Angular"
 

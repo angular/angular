@@ -15,7 +15,6 @@ export class ItemDetailComponent {
   displayNone = '';
   @Input() prefix = '';
 
-  // #docregion deleteRequest
   // This component makes a request but it can't actually delete a hero.
   @Output() deleteRequest = new EventEmitter<Item>();
 
@@ -24,6 +23,5 @@ export class ItemDetailComponent {
     this.displayNone = this.displayNone ? '' : 'none';
     this.lineThrough = this.lineThrough ? '' : 'line-through';
   }
-  // #enddocregion deleteRequest
 
 }

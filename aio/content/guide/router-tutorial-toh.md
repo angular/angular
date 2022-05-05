@@ -1018,7 +1018,7 @@ The `ActivatedRoute.paramMap` property is an `Observable` map of route parameter
 The `paramMap` emits a new map of values that includes `id` when the user navigates to the component.
 In `ngOnInit()` you subscribe to those values, set the `selectedId`, and get the heroes.
 
-Update the template with a [class binding](guide/attribute-binding#class-binding).
+Update the template with a [class binding](guide/class-binding).
 The binding adds the `selected` CSS class when the comparison returns `true` and removes it when `false`.
 Look for it within the repeated `<li>` tag as shown here:
 

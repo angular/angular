@@ -28,19 +28,19 @@ To read a target element property or call one of its methods, see the API refere
 
 ## Binding to a property
 
-To bind to an element's property, enclose it in square brackets, '[]', which identifies the property as a target property.
+To bind to an element's property, enclose it in square brackets, `[]`, which identifies the property as a target property.
 
 A target property is the DOM property to which you want to assign a value.
 
-To assign a value to a target property for the image element's 'src' property, type the following code:
+To assign a value to a target property for the image element's `src` property, type the following code:
 
 <code-example path="property-binding/src/app/app.component.html" region="property-binding" header="src/app/app.component.html"></code-example>
 
 In most cases, the target name is the name of a property, even when it appears to be the name of an attribute.
 
-In this example, 'src' is the name of the '<img>' element property.
+In this example, `src` is the name of the `<img>` element property.
 
-The brackets, '[]', cause Angular to evaluate the right-hand side of the assignment as a dynamic expression.
+The brackets, `[]`, cause Angular to evaluate the right-hand side of the assignment as a dynamic expression.
 
 Without the brackets, Angular treats the right-hand side as a string literal and sets the property to that static value.
 
@@ -48,31 +48,31 @@ To assign a string to a property, type the following code:
 
 <code-example path="property-binding/src/app/app.component.html" region="no-evaluation" header="src/app.component.html"></code-example>
 
-Omitting the brackets renders the string 'parentItem', not the value of 'parentItem'.
+Omitting the brackets renders the string `parentItem`, not the value of `parentItem`.
 
 ## Setting an element property to a component property value
 
-To bind the ‘src’ property of an '<img>' element to a component's property, place the target, ‘src', in square brackets followed by an equal sign and then the property.
+To bind the `src` property of an `<img>` element to a component's property, place the target, `src`, in square brackets followed by an equal sign and then the property.
 
-Using the property 'itemImageUrl', type the following code:
+Using the property `itemImageUrl`, type the following code:
 
 <code-example path="property-binding/src/app/app.component.html" region="property-binding" header="src/app/app.component.html"></code-example>
 
-Declare the 'itemImageUrl' property in the class, in this case 'AppComponent'.
+Declare the `itemImageUrl` property in the class, in this case `AppComponent`.
 
 <code-example path="property-binding/src/app/app.component.ts" region="item-image" header="src/app/app.component.ts"></code-example>
 
 {@a colspan}
 
-#### 'colspan' and 'colSpan'
+#### `colspan` and `colSpan`
 
-A common point of confusion is between the attribute, 'colspan', and the property, 'colSpan'.  Notice that these two names differ by only a single letter.
+A common point of confusion is between the attribute, `colspan`, and the property, `colSpan`.  Notice that these two names differ by only a single letter.
 
 To use property binding using colSpan, type the following:
 
 <code-example path="attribute-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html"></code-example>
 
-To disable a button when the component says that it 'isUnchanged', type the following:
+To disable a button when the component says that it `isUnchanged`, type the following:
 
 <code-example path="property-binding/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html"></code-example>
 
@@ -87,11 +87,11 @@ To set the model property of a custom component for parent and child components 
 
 ## Toggling button functionality
 
-To disable a button's functionality depending on a Boolean value, bind the DOM 'disabled' property to a property in the class that is 'true' or 'false'.
+To disable a button's functionality depending on a Boolean value, bind the DOM `disabled` property to a property in the class that is `true` or `false`.
 
 <code-example path="property-binding/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html"></code-example>
 
-Because the value of the property 'isUnchanged' is 'true' in the 'AppComponent', Angular disables the button.
+Because the value of the property `isUnchanged` is `true` in the `AppComponent`, Angular disables the button.
 
 <code-example path="property-binding/src/app/app.component.ts" region="boolean" header="src/app/app.component.ts"></code-example>
 
