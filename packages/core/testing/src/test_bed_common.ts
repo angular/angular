@@ -45,11 +45,11 @@ export const ComponentFixtureNoNgZone = new InjectionToken<boolean[]>('Component
 /**
  * @publicApi
  */
-export type TestModuleMetadata = {
-  providers?: any[],
-  declarations?: any[],
-  imports?: any[],
-  schemas?: Array<SchemaMetadata|any[]>,
+export interface TestModuleMetadata {
+  providers?: any[];
+  declarations?: any[];
+  imports?: any[];
+  schemas?: Array<SchemaMetadata|any[]>;
   teardown?: ModuleTeardownOptions;
   /**
    * Whether NG0304 runtime errors should be thrown when unknown elements are present in component's
@@ -65,7 +65,7 @@ export type TestModuleMetadata = {
    * @see https://angular.io/errors/NG8002 for the description of the error and how to fix it
    */
   errorOnUnknownProperties?: boolean;
-};
+}
 
 /**
  * @publicApi
