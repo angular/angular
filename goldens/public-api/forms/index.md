@@ -706,12 +706,16 @@ export class NgSelectOption implements OnDestroy {
 }
 
 // @public
-export interface NonNullableFormBuilder {
-    array<T>(controls: Array<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray<ɵElement<T, never>>;
-    control<T>(formState: T | FormControlState<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl<T>;
-    group<T extends {}>(controls: T, options?: AbstractControlOptions | null): FormGroup<{
+export abstract class NonNullableFormBuilder {
+    abstract array<T>(controls: Array<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray<ɵElement<T, never>>;
+    abstract control<T>(formState: T | FormControlState<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl<T>;
+    abstract group<T extends {}>(controls: T, options?: AbstractControlOptions | null): FormGroup<{
         [K in keyof T]: ɵElement<T[K], never>;
     }>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NonNullableFormBuilder, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<NonNullableFormBuilder>;
 }
 
 // @public
