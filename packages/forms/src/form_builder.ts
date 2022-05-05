@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {inject, Injectable, InjectionToken} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {ReactiveFormsModule} from './form_providers';
@@ -315,13 +315,17 @@ export class FormBuilder {
  *
  * @publicApi
  */
-export interface NonNullableFormBuilder {
+@Injectable({
+  providedIn: ReactiveFormsModule,
+  useFactory: () => inject(FormBuilder).nonNullable,
+})
+export abstract class NonNullableFormBuilder {
   /**
    * Similar to {@see FormBuilder#group}, except any implicitly constructed `FormControl`
    * will be non-nullable (i.e. it will have `initialValueIsDefault` set to true). Note
    * that already-constructed controls will not be altered.
    */
-  group<T extends {}>(
+  abstract group<T extends {}>(
       controls: T,
       options?: AbstractControlOptions|null,
       ): FormGroup<{[K in keyof T]: ɵElement<T[K], never>}>;
@@ -331,7 +335,7 @@ export interface NonNullableFormBuilder {
    * will be non-nullable (i.e. it will have `initialValueIsDefault` set to true). Note
    * that already-constructed controls will not be altered.
    */
-  array<T>(
+  abstract array<T>(
       controls: Array<T>, validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray<ɵElement<T, never>>;
 
@@ -339,7 +343,7 @@ export interface NonNullableFormBuilder {
    * Similar to {@see FormBuilder#control}, except this overridden version of `control` forces
    * `initialValueIsDefault` to be `true`, resulting in the control always being non-nullable.
    */
-  control<T>(
+  abstract control<T>(
       formState: T|FormControlState<T>,
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormControl<T>;
