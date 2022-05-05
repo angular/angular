@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ContentContainerComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {
+  ComponentHarnessConstructor,
+  ContentContainerComponentHarness,
+  HarnessPredicate,
+} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ButtonHarnessFilters} from '@angular/material/button/testing';
 
@@ -23,11 +27,12 @@ export class MatButtonHarness extends ContentContainerComponentHarness {
    *   - `text` finds a button with specific text content.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: ButtonHarnessFilters = {}): HarnessPredicate<MatButtonHarness> {
-    return new HarnessPredicate(MatButtonHarness, options).addOption(
-      'text',
-      options.text,
-      (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text),
+  static with<T extends MatButtonHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: ButtonHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options).addOption('text', options.text, (harness, text) =>
+      HarnessPredicate.stringMatches(harness.getText(), text),
     );
   }
 

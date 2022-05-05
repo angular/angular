@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
 import {_MatRowHarnessBase, RowHarnessFilters} from '@angular/material/table/testing';
 import {MatCellHarness, MatHeaderCellHarness, MatFooterCellHarness} from './cell-harness';
 
@@ -21,8 +21,11 @@ export class MatRowHarness extends _MatRowHarnessBase<typeof MatCellHarness, Mat
    * @param options Options for narrowing the search
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: RowHarnessFilters = {}): HarnessPredicate<MatRowHarness> {
-    return new HarnessPredicate(MatRowHarness, options);
+  static with<T extends MatRowHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: RowHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 }
 
@@ -36,13 +39,16 @@ export class MatHeaderRowHarness extends _MatRowHarnessBase<
   protected _cellHarness = MatHeaderCellHarness;
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for
-   * a table header row with specific attributes.
+   * Gets a `HarnessPredicate` that can be used to search for a table header row with specific
+   * attributes.
    * @param options Options for narrowing the search
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: RowHarnessFilters = {}): HarnessPredicate<MatHeaderRowHarness> {
-    return new HarnessPredicate(MatHeaderRowHarness, options);
+  static with<T extends MatHeaderRowHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: RowHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 }
 
@@ -56,12 +62,15 @@ export class MatFooterRowHarness extends _MatRowHarnessBase<
   protected _cellHarness = MatFooterCellHarness;
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for
-   * a table footer row cell with specific attributes.
+   * Gets a `HarnessPredicate` that can be used to search for a table footer row cell with specific
+   * attributes.
    * @param options Options for narrowing the search
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: RowHarnessFilters = {}): HarnessPredicate<MatFooterRowHarness> {
-    return new HarnessPredicate(MatFooterRowHarness, options);
+  static with<T extends MatFooterRowHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: RowHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 }

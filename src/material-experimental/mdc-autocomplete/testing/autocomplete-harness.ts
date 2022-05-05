@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
 import {
   MatOptgroupHarness,
   MatOptionHarness,
@@ -33,16 +33,17 @@ export class MatAutocompleteHarness extends _MatAutocompleteHarnessBase<
   static hostSelector = '.mat-mdc-autocomplete-trigger';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatAutocompleteHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for an autocomplete with specific
+   * attributes.
    * @param options Options for filtering which autocomplete instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: AutocompleteHarnessFilters = {}): HarnessPredicate<MatAutocompleteHarness> {
-    return new HarnessPredicate(MatAutocompleteHarness, options).addOption(
-      'value',
-      options.value,
-      (harness, value) => HarnessPredicate.stringMatches(harness.getValue(), value),
+  static with<T extends MatAutocompleteHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: AutocompleteHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options).addOption('value', options.value, (harness, value) =>
+      HarnessPredicate.stringMatches(harness.getValue(), value),
     );
   }
 }

@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ContentContainerComponentHarness, HarnessPredicate, TestKey} from '@angular/cdk/testing';
+import {
+  ComponentHarnessConstructor,
+  ContentContainerComponentHarness,
+  HarnessPredicate,
+  TestKey,
+} from '@angular/cdk/testing';
 import {MatChipAvatarHarness} from './chip-avatar-harness';
 import {
   ChipAvatarHarnessFilters,
@@ -23,20 +28,16 @@ export class MatChipHarness extends ContentContainerComponentHarness {
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a chip with specific attributes.
+   * @param options Options for narrowing the search.
+   * @return a `HarnessPredicate` configured with the given options.
    */
-  // Note(mmalerba): generics are used as a workaround for lack of polymorphic `this` in static
-  // methods. See https://github.com/microsoft/TypeScript/issues/5863
-  static with<T extends typeof MatChipHarness>(
-    this: T,
+  static with<T extends MatChipHarness>(
+    this: ComponentHarnessConstructor<T>,
     options: ChipHarnessFilters = {},
-  ): HarnessPredicate<InstanceType<T>> {
-    return new HarnessPredicate(MatChipHarness, options).addOption(
-      'text',
-      options.text,
-      (harness, label) => {
-        return HarnessPredicate.stringMatches(harness.getText(), label);
-      },
-    ) as unknown as HarnessPredicate<InstanceType<T>>;
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options).addOption('text', options.text, (harness, label) => {
+      return HarnessPredicate.stringMatches(harness.getText(), label);
+    });
   }
 
   /** Gets a promise for the text content the option. */

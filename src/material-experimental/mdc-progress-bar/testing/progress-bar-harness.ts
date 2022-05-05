@@ -7,7 +7,11 @@
  */
 
 import {coerceNumberProperty} from '@angular/cdk/coercion';
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {
+  ComponentHarness,
+  ComponentHarnessConstructor,
+  HarnessPredicate,
+} from '@angular/cdk/testing';
 import {ProgressBarHarnessFilters} from '@angular/material/progress-bar/testing';
 
 /** Harness for interacting with an MDC-based `mat-progress-bar` in tests. */
@@ -17,9 +21,14 @@ export class MatProgressBarHarness extends ComponentHarness {
   /**
    * Gets a `HarnessPredicate` that can be used to search for a progress bar with specific
    * attributes.
+   * @param options Options for filtering which progress bar instances are considered a match.
+   * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: ProgressBarHarnessFilters = {}): HarnessPredicate<MatProgressBarHarness> {
-    return new HarnessPredicate(MatProgressBarHarness, options);
+  static with<T extends MatProgressBarHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: ProgressBarHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 
   /** Gets a promise for the progress bar's value. */

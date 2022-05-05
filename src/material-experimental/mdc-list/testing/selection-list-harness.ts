@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate, parallel} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {MatListOptionCheckboxPosition} from '@angular/material-experimental/mdc-list';
 import {MatListHarnessBase} from './list-harness-base';
 import {
@@ -26,15 +26,16 @@ export class MatSelectionListHarness extends MatListHarnessBase<
   static hostSelector = '.mat-mdc-selection-list';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatSelectionListHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a selection list with specific
+   * attributes.
    * @param options Options for filtering which selection list instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(
+  static with<T extends MatSelectionListHarness>(
+    this: ComponentHarnessConstructor<T>,
     options: SelectionListHarnessFilters = {},
-  ): HarnessPredicate<MatSelectionListHarness> {
-    return new HarnessPredicate(MatSelectionListHarness, options);
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 
   override _itemHarness = MatListOptionHarness;
@@ -80,13 +81,16 @@ export class MatListOptionHarness extends MatListItemHarnessBase {
   static hostSelector = '.mat-mdc-list-option';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatListOptionHarness` that
-   * meets certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a list option with specific
+   * attributes.
    * @param options Options for filtering which list option instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: ListOptionHarnessFilters = {}): HarnessPredicate<MatListOptionHarness> {
-    return getListItemPredicate(MatListOptionHarness, options).addOption(
+  static with<T extends MatListOptionHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: ListOptionHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return getListItemPredicate(this, options).addOption(
       'is selected',
       options.selected,
       async (harness, selected) => (await harness.isSelected()) === selected,

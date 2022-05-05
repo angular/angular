@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
 import {TableHarnessFilters, _MatTableHarnessBase} from '@angular/material/table/testing';
 import {MatRowHarness, MatHeaderRowHarness, MatFooterRowHarness} from './row-harness';
 
@@ -30,7 +30,10 @@ export class MatTableHarness extends _MatTableHarnessBase<
    * @param options Options for narrowing the search
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: TableHarnessFilters = {}): HarnessPredicate<MatTableHarness> {
-    return new HarnessPredicate(MatTableHarness, options);
+  static with<T extends MatTableHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: TableHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 }

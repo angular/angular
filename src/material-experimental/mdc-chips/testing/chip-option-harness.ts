@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
 import {MatChipHarness} from './chip-harness';
 import {ChipOptionHarnessFilters} from './chip-harness-filters';
 
@@ -17,13 +17,13 @@ export class MatChipOptionHarness extends MatChipHarness {
   /**
    * Gets a `HarnessPredicate` that can be used to search for a chip option with specific
    * attributes.
+   * @param options Options for narrowing the search.
+   * @return a `HarnessPredicate` configured with the given options.
    */
-  // Note(mmalerba): generics are used as a workaround for lack of polymorphic `this` in static
-  // methods. See https://github.com/microsoft/TypeScript/issues/5863
-  static override with<T extends typeof MatChipHarness>(
-    this: T,
+  static override with<T extends MatChipHarness>(
+    this: ComponentHarnessConstructor<T>,
     options: ChipOptionHarnessFilters = {},
-  ): HarnessPredicate<InstanceType<T>> {
+  ): HarnessPredicate<T> {
     return new HarnessPredicate(MatChipOptionHarness, options)
       .addOption('text', options.text, (harness, label) =>
         HarnessPredicate.stringMatches(harness.getText(), label),
@@ -32,7 +32,7 @@ export class MatChipOptionHarness extends MatChipHarness {
         'selected',
         options.selected,
         async (harness, selected) => (await harness.isSelected()) === selected,
-      ) as unknown as HarnessPredicate<InstanceType<T>>;
+      ) as unknown as HarnessPredicate<T>;
   }
 
   /** Whether the chip is selected. */

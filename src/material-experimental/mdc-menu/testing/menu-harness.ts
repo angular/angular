@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
 import {
   MenuHarnessFilters,
   MenuItemHarnessFilters,
@@ -25,13 +25,15 @@ export class MatMenuHarness extends _MatMenuHarnessBase<
   protected _itemClass = MatMenuItemHarness;
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatMenuHarness` that meets certain
-   * criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a menu with specific attributes.
    * @param options Options for filtering which menu instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: MenuHarnessFilters = {}): HarnessPredicate<MatMenuHarness> {
-    return new HarnessPredicate(MatMenuHarness, options).addOption(
+  static with<T extends MatMenuHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: MenuHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options).addOption(
       'triggerText',
       options.triggerText,
       (harness, text) => HarnessPredicate.stringMatches(harness.getTriggerText(), text),
@@ -49,13 +51,15 @@ export class MatMenuItemHarness extends _MatMenuItemHarnessBase<
   protected _menuClass = MatMenuHarness;
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatMenuItemHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a menu item with specific attributes.
    * @param options Options for filtering which menu item instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: MenuItemHarnessFilters = {}): HarnessPredicate<MatMenuItemHarness> {
-    return new HarnessPredicate(MatMenuItemHarness, options)
+  static with<T extends MatMenuItemHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: MenuItemHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options)
       .addOption('text', options.text, (harness, text) =>
         HarnessPredicate.stringMatches(harness.getText(), text),
       )

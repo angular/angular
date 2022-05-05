@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
 import {
   FormFieldHarnessFilters,
   _MatFormFieldHarnessBase,
@@ -31,13 +31,16 @@ export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldContr
   static hostSelector = '.mat-mdc-form-field';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatFormFieldHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a form field with specific
+   * attributes.
    * @param options Options for filtering which form field instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: FormFieldHarnessFilters = {}): HarnessPredicate<MatFormFieldHarness> {
-    return new HarnessPredicate(MatFormFieldHarness, options)
+  static with<T extends MatFormFieldHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: FormFieldHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options)
       .addOption('floatingLabelText', options.floatingLabelText, async (harness, text) =>
         HarnessPredicate.stringMatches(await harness.getLabel(), text),
       )

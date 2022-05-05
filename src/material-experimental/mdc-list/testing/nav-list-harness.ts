@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
 import {MatListHarnessBase} from './list-harness-base';
 import {NavListHarnessFilters, NavListItemHarnessFilters} from './list-harness-filters';
 import {getListItemPredicate, MatListItemHarnessBase} from './list-item-harness-base';
@@ -21,13 +21,16 @@ export class MatNavListHarness extends MatListHarnessBase<
   static hostSelector = '.mat-mdc-nav-list';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatNavListHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a nav list with specific
+   * attributes.
    * @param options Options for filtering which nav list instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: NavListHarnessFilters = {}): HarnessPredicate<MatNavListHarness> {
-    return new HarnessPredicate(MatNavListHarness, options);
+  static with<T extends MatNavListHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: NavListHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 
   override _itemHarness = MatNavListItemHarness;
@@ -39,13 +42,16 @@ export class MatNavListItemHarness extends MatListItemHarnessBase {
   static hostSelector = `${MatNavListHarness.hostSelector} .mat-mdc-list-item`;
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatNavListItemHarness` that
-   * meets certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a nav list item with specific
+   * attributes.
    * @param options Options for filtering which nav list item instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: NavListItemHarnessFilters = {}): HarnessPredicate<MatNavListItemHarness> {
-    return getListItemPredicate(MatNavListItemHarness, options).addOption(
+  static with<T extends MatNavListItemHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: NavListItemHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return getListItemPredicate(this, options).addOption(
       'href',
       options.href,
       async (harness, href) => HarnessPredicate.stringMatches(harness.getHref(), href),

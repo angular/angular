@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {
+  ComponentHarnessConstructor,
+  ComponentHarness,
+  HarnessPredicate,
+} from '@angular/cdk/testing';
 import {MatChipHarness} from './chip-harness';
 import {ChipHarnessFilters, ChipSetHarnessFilters} from './chip-harness-filters';
 
@@ -16,9 +20,14 @@ export class MatChipSetHarness extends ComponentHarness {
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a chip set with specific attributes.
+   * @param options Options for filtering which chip set instances are considered a match.
+   * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: ChipSetHarnessFilters = {}): HarnessPredicate<MatChipSetHarness> {
-    return new HarnessPredicate(MatChipSetHarness, options);
+  static with<T extends MatChipSetHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: ChipSetHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 
   /** Gets promise of the harnesses for the chips. */

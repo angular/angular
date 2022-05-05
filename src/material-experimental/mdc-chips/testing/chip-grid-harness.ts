@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {
+  ComponentHarness,
+  ComponentHarnessConstructor,
+  HarnessPredicate,
+} from '@angular/cdk/testing';
 import {
   ChipGridHarnessFilters,
   ChipInputHarnessFilters,
@@ -21,9 +25,14 @@ export class MatChipGridHarness extends ComponentHarness {
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a chip grid with specific attributes.
+   * @param options Options for filtering which chip grid instances are considered a match.
+   * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: ChipGridHarnessFilters = {}): HarnessPredicate<MatChipGridHarness> {
-    return new HarnessPredicate(MatChipGridHarness, options);
+  static with<T extends MatChipGridHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: ChipGridHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 
   /** Gets whether the chip grid is disabled. */

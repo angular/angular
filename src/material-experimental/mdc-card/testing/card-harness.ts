@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate, ContentContainerComponentHarness} from '@angular/cdk/testing';
+import {
+  ComponentHarnessConstructor,
+  ContentContainerComponentHarness,
+  HarnessPredicate,
+} from '@angular/cdk/testing';
 import {CardHarnessFilters} from './card-harness-filters';
 
 /** Selectors for different sections of the mat-card that can container user content. */
@@ -23,13 +27,15 @@ export class MatCardHarness extends ContentContainerComponentHarness<MatCardSect
   static hostSelector = '.mat-mdc-card';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatCardHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a card with specific attributes.
    * @param options Options for filtering which card instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: CardHarnessFilters = {}): HarnessPredicate<MatCardHarness> {
-    return new HarnessPredicate(MatCardHarness, options)
+  static with<T extends MatCardHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: CardHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options)
       .addOption('text', options.text, (harness, text) =>
         HarnessPredicate.stringMatches(harness.getText(), text),
       )

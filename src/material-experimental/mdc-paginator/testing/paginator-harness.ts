@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
 import {MatSelectHarness} from '@angular/material-experimental/mdc-select/testing';
 import {
   PaginatorHarnessFilters,
@@ -30,12 +30,14 @@ export class MatPaginatorHarness extends _MatPaginatorHarnessBase {
   protected _rangeLabel = this.locatorFor('.mat-mdc-paginator-range-label');
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatPaginatorHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a paginator with specific attributes.
    * @param options Options for filtering which paginator instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: PaginatorHarnessFilters = {}): HarnessPredicate<MatPaginatorHarness> {
-    return new HarnessPredicate(MatPaginatorHarness, options);
+  static with<T extends MatPaginatorHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: PaginatorHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
 import {CheckboxHarnessFilters, _MatCheckboxHarnessBase} from '@angular/material/checkbox/testing';
 
 /** Harness for interacting with a MDC-based mat-checkbox in tests. */
@@ -21,9 +21,12 @@ export class MatCheckboxHarness extends _MatCheckboxHarnessBase {
    *   - `name` finds a checkbox with specific name.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: CheckboxHarnessFilters = {}): HarnessPredicate<MatCheckboxHarness> {
+  static with<T extends MatCheckboxHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: CheckboxHarnessFilters = {},
+  ): HarnessPredicate<T> {
     return (
-      new HarnessPredicate(MatCheckboxHarness, options)
+      new HarnessPredicate(this, options)
         .addOption('label', options.label, (harness, label) =>
           HarnessPredicate.stringMatches(harness.getLabelText(), label),
         )

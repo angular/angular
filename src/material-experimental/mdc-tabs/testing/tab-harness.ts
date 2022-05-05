@@ -7,6 +7,7 @@
  */
 
 import {
+  ComponentHarnessConstructor,
   ContentContainerComponentHarness,
   HarnessLoader,
   HarnessPredicate,
@@ -19,16 +20,16 @@ export class MatTabHarness extends ContentContainerComponentHarness<string> {
   static hostSelector = '.mat-mdc-tab';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatTabHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a tab with specific attributes.
    * @param options Options for filtering which tab instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: TabHarnessFilters = {}): HarnessPredicate<MatTabHarness> {
-    return new HarnessPredicate(MatTabHarness, options).addOption(
-      'label',
-      options.label,
-      (harness, label) => HarnessPredicate.stringMatches(harness.getLabel(), label),
+  static with<T extends MatTabHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: TabHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options).addOption('label', options.label, (harness, label) =>
+      HarnessPredicate.stringMatches(harness.getLabel(), label),
     );
   }
 

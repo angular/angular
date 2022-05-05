@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
 import {_MatSelectHarnessBase} from '@angular/material/select/testing';
 import {
   MatOptionHarness,
@@ -31,12 +31,14 @@ export class MatSelectHarness extends _MatSelectHarnessBase<
   protected _optionGroupClass = MatOptgroupHarness;
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatSelectHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a select with specific attributes.
    * @param options Options for filtering which select instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: SelectHarnessFilters = {}): HarnessPredicate<MatSelectHarness> {
-    return new HarnessPredicate(MatSelectHarness, options);
+  static with<T extends MatSelectHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: SelectHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 }

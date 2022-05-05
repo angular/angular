@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
 import {
   MatCellHarness as BaseMatCellHarness,
   MatHeaderCellHarness as BaseMatHeaderCellHarness,
@@ -24,8 +24,11 @@ export class MatCellHarness extends BaseMatCellHarness {
    * @param options Options for narrowing the search
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static override with(options: CellHarnessFilters = {}): HarnessPredicate<MatCellHarness> {
-    return BaseMatCellHarness._getCellPredicate(MatCellHarness, options);
+  static override with<T extends MatCellHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: CellHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return BaseMatCellHarness._getCellPredicate(this, options);
   }
 }
 
@@ -35,13 +38,16 @@ export class MatHeaderCellHarness extends BaseMatHeaderCellHarness {
   static override hostSelector = '.mat-mdc-header-cell';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for
-   * a table header cell with specific attributes.
+   * Gets a `HarnessPredicate` that can be used to search for a table header cell with specific
+   * attributes.
    * @param options Options for narrowing the search
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static override with(options: CellHarnessFilters = {}): HarnessPredicate<MatHeaderCellHarness> {
-    return BaseMatHeaderCellHarness._getCellPredicate(MatHeaderCellHarness, options);
+  static override with<T extends MatHeaderCellHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: CellHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return BaseMatHeaderCellHarness._getCellPredicate(this, options);
   }
 }
 
@@ -51,12 +57,15 @@ export class MatFooterCellHarness extends BaseMatFooterCellHarness {
   static override hostSelector = '.mat-mdc-footer-cell';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for
-   * a table footer cell with specific attributes.
+   * Gets a `HarnessPredicate` that can be used to search for a table footer cell with specific
+   * attributes.
    * @param options Options for narrowing the search
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static override with(options: CellHarnessFilters = {}): HarnessPredicate<MatFooterCellHarness> {
-    return BaseMatFooterCellHarness._getCellPredicate(MatFooterCellHarness, options);
+  static override with<T extends MatFooterCellHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: CellHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return BaseMatFooterCellHarness._getCellPredicate(this, options);
   }
 }

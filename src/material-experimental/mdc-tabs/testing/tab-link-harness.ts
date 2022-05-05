@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {
+  ComponentHarness,
+  ComponentHarnessConstructor,
+  HarnessPredicate,
+} from '@angular/cdk/testing';
 import {TabLinkHarnessFilters} from './tab-harness-filters';
 
 /** Harness for interacting with an MDC-based Angular Material tab link in tests. */
@@ -15,16 +19,16 @@ export class MatTabLinkHarness extends ComponentHarness {
   static hostSelector = '.mat-mdc-tab-link';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatTabLinkHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a tab link with specific attributes.
    * @param options Options for filtering which tab link instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: TabLinkHarnessFilters = {}): HarnessPredicate<MatTabLinkHarness> {
-    return new HarnessPredicate(MatTabLinkHarness, options).addOption(
-      'label',
-      options.label,
-      (harness, label) => HarnessPredicate.stringMatches(harness.getLabel(), label),
+  static with<T extends MatTabLinkHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: TabLinkHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options).addOption('label', options.label, (harness, label) =>
+      HarnessPredicate.stringMatches(harness.getLabel(), label),
     );
   }
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
 import {
   MatSnackBarHarness as BaseMatSnackBarHarness,
   SnackBarHarnessFilters,
@@ -25,15 +25,15 @@ export class MatSnackBarHarness extends BaseMatSnackBarHarness {
   protected override _actionButtonSelector = '.mat-mdc-snack-bar-action';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatSnackBarHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a snack bar with specific attributes.
    * @param options Options for filtering which snack bar instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static override with(
+  static override with<T extends BaseMatSnackBarHarness>(
+    this: ComponentHarnessConstructor<T>,
     options: SnackBarHarnessFilters = {},
-  ): HarnessPredicate<BaseMatSnackBarHarness> {
-    return new HarnessPredicate<BaseMatSnackBarHarness>(MatSnackBarHarness, options);
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 
   protected override async _assertContentAnnotated() {}

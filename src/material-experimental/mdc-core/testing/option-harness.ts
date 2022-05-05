@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {
+  ComponentHarness,
+  ComponentHarnessConstructor,
+  HarnessPredicate,
+} from '@angular/cdk/testing';
 import {OptionHarnessFilters} from './option-harness-filters';
 
 /** Harness for interacting with an MDC-based `mat-option` in tests. */
@@ -18,13 +22,15 @@ export class MatOptionHarness extends ComponentHarness {
   private _text = this.locatorFor('.mdc-list-item__primary-text');
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatOptionsHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for an option with specific attributes.
    * @param options Options for filtering which option instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: OptionHarnessFilters = {}) {
-    return new HarnessPredicate(MatOptionHarness, options)
+  static with<T extends MatOptionHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: OptionHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options)
       .addOption('text', options.text, async (harness, title) =>
         HarnessPredicate.stringMatches(await harness.getText(), title),
       )

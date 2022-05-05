@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate, ComponentHarness} from '@angular/cdk/testing';
+import {
+  ComponentHarness,
+  ComponentHarnessConstructor,
+  HarnessPredicate,
+} from '@angular/cdk/testing';
 import {ChipAvatarHarnessFilters} from './chip-harness-filters';
 
 /** Harness for interacting with a standard Material chip avatar in tests. */
@@ -14,12 +18,15 @@ export class MatChipAvatarHarness extends ComponentHarness {
   static hostSelector = '.mat-mdc-chip-avatar';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatChipAvatarHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a chip avatar with specific
+   * attributes.
    * @param options Options for filtering which input instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: ChipAvatarHarnessFilters = {}): HarnessPredicate<MatChipAvatarHarness> {
-    return new HarnessPredicate(MatChipAvatarHarness, options);
+  static with<T extends MatChipAvatarHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: ChipAvatarHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 }

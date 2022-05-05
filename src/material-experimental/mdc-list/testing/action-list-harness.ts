@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
 import {MatListHarnessBase} from './list-harness-base';
 import {ActionListHarnessFilters, ActionListItemHarnessFilters} from './list-harness-filters';
 import {getListItemPredicate, MatListItemHarnessBase} from './list-item-harness-base';
@@ -21,13 +21,16 @@ export class MatActionListHarness extends MatListHarnessBase<
   static hostSelector = '.mat-mdc-action-list';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatActionListHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for an action list with specific
+   * attributes.
    * @param options Options for filtering which action list instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: ActionListHarnessFilters = {}): HarnessPredicate<MatActionListHarness> {
-    return new HarnessPredicate(MatActionListHarness, options);
+  static with<T extends MatActionListHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: ActionListHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 
   override _itemHarness = MatActionListItemHarness;
@@ -39,15 +42,16 @@ export class MatActionListItemHarness extends MatListItemHarnessBase {
   static hostSelector = `${MatActionListHarness.hostSelector} .mat-mdc-list-item`;
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatActionListItemHarness` that
-   * meets certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a list item with specific
+   * attributes.
    * @param options Options for filtering which action list item instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(
+  static with<T extends MatActionListItemHarness>(
+    this: ComponentHarnessConstructor<T>,
     options: ActionListItemHarnessFilters = {},
-  ): HarnessPredicate<MatActionListItemHarness> {
-    return getListItemPredicate(MatActionListItemHarness, options);
+  ): HarnessPredicate<T> {
+    return getListItemPredicate(this, options);
   }
 
   /** Clicks on the action list item. */

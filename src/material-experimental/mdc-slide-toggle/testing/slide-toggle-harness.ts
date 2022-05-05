@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate} from '@angular/cdk/testing';
+import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   _MatSlideToggleHarnessBase,
@@ -25,9 +25,12 @@ export class MatSlideToggleHarness extends _MatSlideToggleHarnessBase {
    *   - `label` finds a slide-toggle with specific label text.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: SlideToggleHarnessFilters = {}): HarnessPredicate<MatSlideToggleHarness> {
+  static with<T extends MatSlideToggleHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: SlideToggleHarnessFilters = {},
+  ): HarnessPredicate<T> {
     return (
-      new HarnessPredicate(MatSlideToggleHarness, options)
+      new HarnessPredicate(this, options)
         .addOption('label', options.label, (harness, label) =>
           HarnessPredicate.stringMatches(harness.getLabelText(), label),
         )

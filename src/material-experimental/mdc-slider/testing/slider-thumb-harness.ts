@@ -7,7 +7,12 @@
  */
 
 import {coerceNumberProperty} from '@angular/cdk/coercion';
-import {ComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing';
+import {
+  ComponentHarness,
+  ComponentHarnessConstructor,
+  HarnessPredicate,
+  parallel,
+} from '@angular/cdk/testing';
 import {SliderThumbHarnessFilters, ThumbPosition} from './slider-harness-filters';
 
 /** Harness for interacting with a thumb inside of a Material slider in tests. */
@@ -16,13 +21,15 @@ export class MatSliderThumbHarness extends ComponentHarness {
     'input[matSliderThumb], input[matSliderStartThumb], input[matSliderEndThumb]';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatSliderThumbHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a slider thumb with specific attributes.
    * @param options Options for filtering which thumb instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: SliderThumbHarnessFilters = {}): HarnessPredicate<MatSliderThumbHarness> {
-    return new HarnessPredicate(MatSliderThumbHarness, options).addOption(
+  static with<T extends MatSliderThumbHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: SliderThumbHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options).addOption(
       'position',
       options.position,
       async (harness, value) => {
