@@ -165,20 +165,6 @@ The issue is that the `selectedHero` may be `undefined` (and it actually is at t
 
 The error produced by the compiler is correct in our case, since the binding expressions in the template that refer to properties of `selectedHero` &mdash;expressions like `{{selectedHero.name}}`&mdash; *must initially fail* because there is indeed no selected hero.
 
-<div class="alert is-helpful">
-
-Note that in this particular case the TypeScript compiler fails compilation before we can even see the issue in action because it is configured to [strict mode](https://www.typescriptlang.org/tsconfig#strict) by default by the Angular CLI, this is a good thing, as if it were not the case, the compilation would succeed but the application would not function as we'd expect it to, and we'd have to investigate further to see why (in this case the reason would be obvious but as your code gets more complex so will such type of investigation).
-
-If you were to disable strict mode, you'd see that the application would run but in a broken state and in the browser developer tools console you would see an error message like this:
-
-<code-example format="output" hideCopy language="shell">
-
-ERROR TypeError: Cannot read properties of undefined (reading 'name')
-
-</code-example>
-
-</div>
-
 #### The fix - hide empty details with `*ngIf`
 
 The component should only display the selected hero details if the `selectedHero` exists.
