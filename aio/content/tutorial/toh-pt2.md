@@ -151,7 +151,7 @@ Add the following to `heroes.component.html` beneath the list section:
 
 After the browser refreshes, the application is broken/failing compilation.
 
-Look at your terminal running the application and you should see an error message like this:
+The following error is thrown in the terminal (where the `ng serve` command is running):
 
 <code-example format="output" hideCopy language="shell">
 
@@ -161,9 +161,9 @@ Error: src/app/heroes/heroes.component.html:11:25 - error TS2532: Object is poss
 
 #### What happened?
 
-The issue is that `selectedHero` may be `undefined` (and it actually is at the start *by design*) and the TypeScript compiler prevents us from accessing the fields of a possibly `undefined` value.
+The issue is that the `selectedHero` may be `undefined` (and it actually is at the start *by design*) and the TypeScript compiler prevents us from accessing the fields of a possibly `undefined` value.
 
-The compiler is actually doing us a favour since the binding expressions in the template that refer to properties of `selectedHero` &mdash;expressions like `{{selectedHero.name}}`&mdash; *must initially fail* because there is indeed no selected hero.
+The error produced by the compiler is correct in our case, since the binding expressions in the template that refer to properties of `selectedHero` &mdash;expressions like `{{selectedHero.name}}`&mdash; *must initially fail* because there is indeed no selected hero.
 
 <div class="alert is-helpful">
 
