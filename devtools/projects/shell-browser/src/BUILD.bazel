@@ -263,8 +263,9 @@ ng_module(
 
 esbuild(
     name = "bundle",
-    config = "//devtools/tools/esbuild:esbuild_config_esm",
+    config = "//devtools/tools/esbuild:esbuild_config_esm_prod",
     entry_points = [":main.ts"],
+    minify = True,
     platform = "browser",
     splitting = False,
     target = "esnext",
@@ -276,6 +277,7 @@ esbuild(
     config = "//devtools/tools/esbuild:esbuild_config_esm",
     entry_point = "devtools.ts",
     format = "iife",
+    minify = True,
     platform = "browser",
     splitting = False,
     target = "esnext",
