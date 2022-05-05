@@ -10,6 +10,7 @@ ts_library(
         "index.ts",
     ],
     deps = [
+        "@npm//@bazel/worker",
         "@npm//@microsoft/api-extractor",
         "@npm//@types/node",
     ],
@@ -17,11 +18,7 @@ ts_library(
 
 nodejs_binary(
     name = "types_bundler",
-    data = [
-        ":lib",
-        "@npm//@bazel/concatjs",
-        "@npm//@microsoft/api-extractor",
-    ],
+    data = [":lib"],
     entry_point = ":index.ts",
     # Disable the linker and rely on patched resolution which works better on Windows
     # and is less prone to race conditions when targets build concurrently.

@@ -30,6 +30,7 @@
   "peerDependencies": {
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
     "@bazel/concatjs": "^5.3.0",
+    "@bazel/worker": "^5.3.0",
     "@rollup/plugin-commonjs": "^21.0.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
     "rollup": "^2.56.3",
