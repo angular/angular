@@ -47,7 +47,6 @@ const INACTIVE_STATE = { state: 'inactive' };
 const TEST_TEAM_INFO = AIO_GITHUB_TEAM_SLUGS.map((slug, index) => ({ slug, id: index }));
 
 const CIRCLE_CI_API_HOST = 'https://circleci.com';
-const CIRCLE_CI_TOKEN_PARAM = `circle-token=${AIO_CIRCLE_CI_TOKEN}`;
 const ARTIFACT_1 = { path: 'artifact-1', url: `${CIRCLE_CI_API_HOST}/artifacts/artifact-1`, _urlPath: '/artifacts/artifact-1' };
 const ARTIFACT_2 = { path: 'artifact-2', url: `${CIRCLE_CI_API_HOST}/artifacts/artifact-2`, _urlPath: '/artifacts/artifact-2' };
 const ARTIFACT_3 = { path: 'artifact-3', url: `${CIRCLE_CI_API_HOST}/artifacts/artifact-3`, _urlPath: '/artifacts/artifact-3' };
@@ -57,10 +56,10 @@ const ARTIFACT_VALID_TRUSTED_USER = { path: AIO_ARTIFACT_PATH, url: `${CIRCLE_CI
 const ARTIFACT_VALID_TRUSTED_LABEL = { path: AIO_ARTIFACT_PATH, url: `${CIRCLE_CI_API_HOST}/artifacts/valid/label`, _urlPath: '/artifacts/valid/label' };
 const ARTIFACT_VALID_UNTRUSTED = { path: AIO_ARTIFACT_PATH, url: `${CIRCLE_CI_API_HOST}/artifacts/valid/untrusted`, _urlPath: '/artifacts/valid/untrusted' };
 
-const CIRCLE_CI_BUILD_INFO_URL = `/api/v1.1/project/github/${AIO_GITHUB_ORGANIZATION}/${AIO_GITHUB_REPO}`;
+const CIRCLE_CI_BUILD_INFO_URL = `/api/v2/project/gh/${AIO_GITHUB_ORGANIZATION}/${AIO_GITHUB_REPO}`;
 
-const buildInfoUrl = (buildNum: number) => `${CIRCLE_CI_BUILD_INFO_URL}/${buildNum}?${CIRCLE_CI_TOKEN_PARAM}`;
-const buildArtifactsUrl = (buildNum: number) => `${CIRCLE_CI_BUILD_INFO_URL}/${buildNum}/artifacts?${CIRCLE_CI_TOKEN_PARAM}`;
+const buildInfoUrl = (buildNum: number) => `${CIRCLE_CI_BUILD_INFO_URL}/job/${buildNum}`;
+const buildArtifactsUrl = (buildNum: number) => `${CIRCLE_CI_BUILD_INFO_URL}/${buildNum}/artifacts`;
 const buildInfo = (prNum: number) => ({ ...BASIC_BUILD_INFO, branch: `pull/${prNum}` });
 
 const GITHUB_API_HOST = 'https://api.github.com';
@@ -84,7 +83,7 @@ const createArchive = (buildNum: number, prNum: number, sha: string) => {
 };
 
 // Create request scopes
-const circleCiApi = nock(CIRCLE_CI_API_HOST).persist();
+const circleCiApi = nock(CIRCLE_CI_API_HOST).persist().matchHeader('Circle-Token', AIO_CIRCLE_CI_TOKEN);
 const githubApi = nock(GITHUB_API_HOST).persist().matchHeader('Authorization', `token ${AIO_GITHUB_TOKEN}`);
 
 //////////////////////////////
@@ -114,13 +113,13 @@ circleCiApi.get(buildArtifactsUrl(BuildNums.BUILD_ARTIFACTS_ERROR)).replyWithErr
 circleCiApi.get(buildInfoUrl(BuildNums.BUILD_ARTIFACTS_404)).reply(200, buildInfo(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER));
 circleCiApi.get(buildArtifactsUrl(BuildNums.BUILD_ARTIFACTS_404)).reply(404, 'BUILD_ARTIFACTS_ERROR');
 circleCiApi.get(buildInfoUrl(BuildNums.BUILD_ARTIFACTS_EMPTY)).reply(200, buildInfo(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER));
-circleCiApi.get(buildArtifactsUrl(BuildNums.BUILD_ARTIFACTS_EMPTY)).reply(200, []);
+circleCiApi.get(buildArtifactsUrl(BuildNums.BUILD_ARTIFACTS_EMPTY)).reply(200, { items: [] });
 circleCiApi.get(buildInfoUrl(BuildNums.BUILD_ARTIFACTS_MISSING)).reply(200, buildInfo(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER));
-circleCiApi.get(buildArtifactsUrl(BuildNums.BUILD_ARTIFACTS_MISSING)).reply(200, [ARTIFACT_1, ARTIFACT_2, ARTIFACT_3]);
+circleCiApi.get(buildArtifactsUrl(BuildNums.BUILD_ARTIFACTS_MISSING)).reply(200, { items: [ARTIFACT_1, ARTIFACT_2, ARTIFACT_3] });
 
 // ARTIFACT DOWNLOAD errors
 circleCiApi.get(buildInfoUrl(BuildNums.DOWNLOAD_ARTIFACT_ERROR)).reply(200, buildInfo(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER));
-circleCiApi.get(buildArtifactsUrl(BuildNums.DOWNLOAD_ARTIFACT_ERROR)).reply(200, [ARTIFACT_ERROR]);
+circleCiApi.get(buildArtifactsUrl(BuildNums.DOWNLOAD_ARTIFACT_ERROR)).reply(200, { items: [ARTIFACT_ERROR] });
 circleCiApi.get(ARTIFACT_ERROR._urlPath).replyWithError(ARTIFACT_ERROR._urlPath);
 circleCiApi.get(buildInfoUrl(BuildNums.DOWNLOAD_ARTIFACT_404)).reply(200, buildInfo(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER));
 circleCiApi.get(buildArtifactsUrl(BuildNums.DOWNLOAD_ARTIFACT_404)).reply(200, [ARTIFACT_404]);
@@ -129,13 +128,13 @@ circleCiApi.get(ARTIFACT_ERROR._urlPath).reply(404, ARTIFACT_ERROR._urlPath);
 // TRUST CHECK errors
 circleCiApi.get(buildInfoUrl(BuildNums.TRUST_CHECK_ERROR)).reply(200, buildInfo(PrNums.TRUST_CHECK_ERROR));
 githubApi.get(getFilesUrl(PrNums.TRUST_CHECK_ERROR)).reply(200, [{ filename: 'aio/a' }]);
-circleCiApi.get(buildArtifactsUrl(BuildNums.TRUST_CHECK_ERROR)).reply(200, [ARTIFACT_VALID_TRUSTED_USER]);
+circleCiApi.get(buildArtifactsUrl(BuildNums.TRUST_CHECK_ERROR)).reply(200, { items: [ARTIFACT_VALID_TRUSTED_USER] });
 githubApi.get(getIssueUrl(PrNums.TRUST_CHECK_ERROR)).replyWithError('TRUST_CHECK_ERROR');
 
 // ACTIVE TRUSTED USER response
 circleCiApi.get(buildInfoUrl(BuildNums.TRUST_CHECK_ACTIVE_TRUSTED_USER)).reply(200, BASIC_BUILD_INFO);
 githubApi.get(getFilesUrl(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER)).reply(200, [{ filename: 'aio/a' }]);
-circleCiApi.get(buildArtifactsUrl(BuildNums.TRUST_CHECK_ACTIVE_TRUSTED_USER)).reply(200, [ARTIFACT_VALID_TRUSTED_USER]);
+circleCiApi.get(buildArtifactsUrl(BuildNums.TRUST_CHECK_ACTIVE_TRUSTED_USER)).reply(200, { items: [ARTIFACT_VALID_TRUSTED_USER] });
 circleCiApi.get(ARTIFACT_VALID_TRUSTED_USER._urlPath).reply(200, createArchive(BuildNums.TRUST_CHECK_ACTIVE_TRUSTED_USER, PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER, SHA));
 githubApi.get(getIssueUrl(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER)).reply(200, ISSUE_INFO_ACTIVE_TRUSTED_USER);
 githubApi.get(getTeamMembershipUrl(0, ACTIVE_TRUSTED_USER)).reply(200, ACTIVE_STATE);
@@ -143,7 +142,7 @@ githubApi.get(getTeamMembershipUrl(0, ACTIVE_TRUSTED_USER)).reply(200, ACTIVE_ST
 // TRUSTED LABEL response
 circleCiApi.get(buildInfoUrl(BuildNums.TRUST_CHECK_TRUSTED_LABEL)).reply(200, BASIC_BUILD_INFO);
 githubApi.get(getFilesUrl(PrNums.TRUST_CHECK_TRUSTED_LABEL)).reply(200, [{ filename: 'aio/a' }]);
-circleCiApi.get(buildArtifactsUrl(BuildNums.TRUST_CHECK_TRUSTED_LABEL)).reply(200, [ARTIFACT_VALID_TRUSTED_LABEL]);
+circleCiApi.get(buildArtifactsUrl(BuildNums.TRUST_CHECK_TRUSTED_LABEL)).reply(200, { items: [ARTIFACT_VALID_TRUSTED_LABEL] });
 circleCiApi.get(ARTIFACT_VALID_TRUSTED_LABEL._urlPath).reply(200, createArchive(BuildNums.TRUST_CHECK_TRUSTED_LABEL, PrNums.TRUST_CHECK_TRUSTED_LABEL, SHA));
 githubApi.get(getIssueUrl(PrNums.TRUST_CHECK_TRUSTED_LABEL)).reply(200, ISSUE_INFO_TRUSTED_LABEL);
 githubApi.get(getTeamMembershipUrl(0, ACTIVE_TRUSTED_USER)).reply(200, ACTIVE_STATE);
@@ -151,14 +150,14 @@ githubApi.get(getTeamMembershipUrl(0, ACTIVE_TRUSTED_USER)).reply(200, ACTIVE_ST
 // INACTIVE TRUSTED USER response
 circleCiApi.get(buildInfoUrl(BuildNums.TRUST_CHECK_INACTIVE_TRUSTED_USER)).reply(200, BASIC_BUILD_INFO);
 githubApi.get(getFilesUrl(PrNums.TRUST_CHECK_INACTIVE_TRUSTED_USER)).reply(200, [{ filename: 'aio/a' }]);
-circleCiApi.get(buildArtifactsUrl(BuildNums.TRUST_CHECK_INACTIVE_TRUSTED_USER)).reply(200, [ARTIFACT_VALID_TRUSTED_USER]);
+circleCiApi.get(buildArtifactsUrl(BuildNums.TRUST_CHECK_INACTIVE_TRUSTED_USER)).reply(200, { items: [ARTIFACT_VALID_TRUSTED_USER] });
 githubApi.get(getIssueUrl(PrNums.TRUST_CHECK_INACTIVE_TRUSTED_USER)).reply(200, ISSUE_INFO_INACTIVE_TRUSTED_USER);
 githubApi.get(getTeamMembershipUrl(0, INACTIVE_TRUSTED_USER)).reply(200, INACTIVE_STATE);
 
 // UNTRUSTED reponse
 circleCiApi.get(buildInfoUrl(BuildNums.TRUST_CHECK_UNTRUSTED)).reply(200, buildInfo(PrNums.TRUST_CHECK_UNTRUSTED));
 githubApi.get(getFilesUrl(PrNums.TRUST_CHECK_UNTRUSTED)).reply(200, [{ filename: 'aio/a' }]);
-circleCiApi.get(buildArtifactsUrl(BuildNums.TRUST_CHECK_UNTRUSTED)).reply(200, [ARTIFACT_VALID_UNTRUSTED]);
+circleCiApi.get(buildArtifactsUrl(BuildNums.TRUST_CHECK_UNTRUSTED)).reply(200, { items: [ARTIFACT_VALID_UNTRUSTED] });
 circleCiApi.get(ARTIFACT_VALID_UNTRUSTED._urlPath).reply(200, createArchive(BuildNums.TRUST_CHECK_UNTRUSTED, PrNums.TRUST_CHECK_UNTRUSTED, SHA));
 githubApi.get(getIssueUrl(PrNums.TRUST_CHECK_UNTRUSTED)).reply(200, ISSUE_INFO_UNTRUSTED);
 githubApi.get(getTeamMembershipUrl(0, UNTRUSTED_USER)).reply(404);
