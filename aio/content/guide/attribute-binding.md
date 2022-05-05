@@ -67,6 +67,6 @@ For more information on how to bind to the `colSpan` property, see the [`colspan
 
 ## What’s next
 
-* [Class & Style Binding](class-binding.md)
+* [Class & Style Binding](guide/class-binding)
 
 @reviewed 2022-05-02
