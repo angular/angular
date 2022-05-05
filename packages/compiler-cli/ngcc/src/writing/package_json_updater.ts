@@ -101,6 +101,7 @@ export class PackageJsonUpdate {
    */
   writeChanges(packageJsonPath: AbsoluteFsPath, parsedJson?: JsonObject): void {
     this.ensureNotApplied();
+    this.ensureNotSynthesized(parsedJson);
     this.writeChangesImpl(this.changes, packageJsonPath, parsedJson);
     this.applied = true;
   }
@@ -108,6 +109,15 @@ export class PackageJsonUpdate {
   private ensureNotApplied() {
     if (this.applied) {
       throw new Error('Trying to apply a `PackageJsonUpdate` that has already been applied.');
+    }
+  }
+
+  private ensureNotSynthesized(parsedJson?: JsonObject) {
+    if (parsedJson?.synthesized) {
+      // Theoretically, this should never happen, because synthesized `package.json` files should
+      // only be created for libraries following the Angular Package Format v14+, which means they
+      // should already be in Ivy format and not require processing by `ngcc`.
+      throw new Error('Trying to update a non-existent (synthesized) `package.json` file.');
     }
   }
 }

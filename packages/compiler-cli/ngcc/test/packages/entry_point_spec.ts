@@ -707,6 +707,125 @@ runInEachFileSystem(() => {
           _('/project/node_modules/some_package/unexpected_symbols'));
       expect(entryPoint).toBe(INCOMPATIBLE_ENTRY_POINT);
     });
+
+    describe('when processing APF v14+ secondary entry-points', () => {
+      it('should retrieve info from primary `package.json`', () => {
+        const packagePath = _('/project/node_modules/primary');
+        const entryPointPath = fs.join(packagePath, 'second/ary');
+
+        loadTestFiles([
+          {
+            name: fs.join(packagePath, 'package.json'),
+            contents: `{
+              "name": "primary-package",
+              "exports": {
+                ".": {
+                  "types": "/something/primary.d.ts"
+                },
+                "./second/ary": {
+                  "types": "/something/secondary.d.ts"
+                }
+              }
+            }`,
+          },
+        ]);
+
+        const config = new NgccConfiguration(fs, _('/project'));
+        const entryPoint =
+            getEntryPointInfo(fs, config, new MockLogger(), packagePath, entryPointPath);
+
+        expect(entryPoint).toEqual({
+          name: 'primary-package/second/ary',
+          path: entryPointPath,
+          packageName: 'primary-package',
+          packagePath,
+          repositoryUrl: '',
+          packageJson: {
+            synthesized: true,
+            name: 'primary-package/second/ary',
+            types: jasmine.any(String),
+          },
+          typings: _('/something/secondary.d.ts'),
+          compiledByAngular: false,
+          ignoreMissingDependencies: false,
+          generateDeepReexports: false,
+        });
+      });
+
+      it('should only keep supported format properties', () => {
+        const packagePath = _('/project/node_modules/primary');
+        const entryPointPath = fs.join(packagePath, 'second/ary');
+
+        loadTestFiles([
+          {
+            name: fs.join(packagePath, 'package.json'),
+            contents: `{
+              "name": "primary-package",
+              "exports": {
+                "./second/ary": {
+                  "types": "/types/index.d.ts",
+                  "typings": "/typings/index.d.ts",
+                  "default": "/default/index.js",
+                  "other": "/other/index.js",
+                  ${
+                SUPPORTED_FORMAT_PROPERTIES.map(prop => `"${prop}": "/${prop}/index.js"`)
+                    .join(', ')}
+                }
+              }
+            }`,
+          },
+        ]);
+
+        const config = new NgccConfiguration(fs, _('/project'));
+        const entryPoint =
+            getEntryPointInfo(fs, config, new MockLogger(), packagePath, entryPointPath) as
+            EntryPoint;
+        const packageJsonProps = Object.keys(entryPoint.packageJson);
+
+        expect(packageJsonProps).not.toContain('default');
+        expect(packageJsonProps).not.toContain('other');
+        expect(packageJsonProps).toEqual(jasmine.arrayWithExactContents([
+          'synthesized',
+          'name',
+          'types',
+          'typings',
+          ...SUPPORTED_FORMAT_PROPERTIES,
+        ]));
+      });
+
+      it('should convert format paths to be relative to entry-point directory', () => {
+        const packagePath = _('/project/node_modules/primary');
+        const entryPointPath = fs.join(packagePath, 'second/ary');
+
+        loadTestFiles([
+          {
+            name: fs.join(packagePath, 'package.json'),
+            contents: `{
+              "name": "primary-package",
+              "main": "./bundles/index.js",
+              "exports": {
+                "./second/ary": {
+                  "fesm2015": "./fesm2015/secondary.js",
+                  "main": "./bundles/secondary.js",
+                  "types": "./second/ary/secondary.d.ts"
+                }
+              }
+            }`,
+          },
+        ]);
+
+        const config = new NgccConfiguration(fs, _('/project'));
+        const entryPoint =
+            getEntryPointInfo(fs, config, new MockLogger(), packagePath, entryPointPath) as
+            EntryPoint;
+
+        expect(entryPoint.packageJson).toEqual(jasmine.objectContaining({
+          fesm2015: '../../fesm2015/secondary.js',
+          main: '../../bundles/secondary.js',
+          types: './secondary.d.ts',
+        }));
+      });
+    });
   });
 
   describe('getEntryPointFormat()', () => {

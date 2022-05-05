@@ -153,6 +153,14 @@ runInEachFileSystem(() => {
           .toThrowError('Trying to apply a `PackageJsonUpdate` that has already been applied.');
     });
 
+    it('should throw, if trying to update a synthesized `package.json` file', () => {
+      const update = updater.createUpdate().addChange(['foo'], 'updated');
+
+      expect(() => update.writeChanges(_('/foo/package.json'), {
+        synthesized: true
+      })).toThrowError('Trying to update a non-existent (synthesized) `package.json` file.');
+    });
+
     describe('(property positioning)', () => {
       // Helpers
       const createJsonFile = (jsonObj: JsonObject) => {
