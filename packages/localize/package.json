@@ -35,7 +35,7 @@
     "./fesm2020/init.mjs"
   ],
   "dependencies": {
-    "@babel/core": "7.17.9",
+    "@babel/core": "7.17.10",
     "glob": "8.0.1",
     "yargs": "^17.2.1"
   },
