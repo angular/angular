@@ -8,7 +8,7 @@
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {JsonObject} from '../../src/packages/entry_point';
+import {JsonObject} from '../../src/utils';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 
 runInEachFileSystem(() => {

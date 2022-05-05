@@ -8,10 +8,11 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom as _abs} from '../../src/ngtsc/file_system';
+import {absoluteFrom as _abs, FileSystem, getFileSystem} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {KnownDeclaration} from '../../src/ngtsc/reflection';
-import {FactoryMap, getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, isRelativePath, stripExtension} from '../src/utils';
+import {loadTestFiles} from '../../src/ngtsc/testing';
+import {FactoryMap, getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, isRelativePath, loadJson, stripExtension} from '../src/utils';
 
 describe('FactoryMap', () => {
   it('should return an existing value', () => {
@@ -238,5 +239,40 @@ describe('stripExtension()', () => {
     expect(stripExtension('foo')).toBe('foo');
     expect(stripExtension('/foo/bar')).toBe('/foo/bar');
     expect(stripExtension('/fo-o/b_ar')).toBe('/fo-o/b_ar');
+  });
+});
+
+runInEachFileSystem(() => {
+  let fs: FileSystem;
+
+  beforeEach(() => fs = getFileSystem());
+
+  describe('loadJson()', () => {
+    it('should load a `.json` file', () => {
+      const jsonData = {foo: 'yes', bar: 'sure'};
+      loadTestFiles([
+        {
+          name: _abs('/foo/bar.json'),
+          contents: `${JSON.stringify(jsonData)}\n`,
+        },
+      ]);
+
+      expect(loadJson(fs, _abs('/foo/bar.json'))).toEqual(jsonData);
+    });
+
+    it('should return `null` if it fails to read the `.json` file', () => {
+      expect(loadJson(fs, _abs('/does/not/exist.json'))).toBeNull();
+    });
+
+    it('should return `null` if it fails to parse the `.json` file', () => {
+      loadTestFiles([
+        {
+          name: _abs('/foo/bar.txt'),
+          contents: '{This is not valid JSON.}',
+        },
+      ]);
+
+      expect(loadJson(fs, _abs('/foo/bar.json'))).toBeNull();
+    });
   });
 });
