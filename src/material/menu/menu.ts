@@ -409,42 +409,31 @@ export class _MatMenuBase
    * @param origin Action from which the focus originated. Used to set the correct styling.
    */
   focusFirstItem(origin: FocusOrigin = 'program'): void {
-    // When the content is rendered lazily, it takes a bit before the items are inside the DOM.
-    if (this.lazyContent) {
-      this._ngZone.onStable.pipe(take(1)).subscribe(() => this._focusFirstItem(origin));
-    } else {
-      this._focusFirstItem(origin);
-    }
-  }
+    // Wait for `onStable` to ensure iOS VoiceOver screen reader focuses the first item (#24735).
+    this._ngZone.onStable.pipe(take(1)).subscribe(() => {
+      let menuPanel: HTMLElement | null = null;
 
-  /**
-   * Actual implementation that focuses the first item. Needs to be separated
-   * out so we don't repeat the same logic in the public `focusFirstItem` method.
-   */
-  private _focusFirstItem(origin: FocusOrigin) {
-    const manager = this._keyManager;
+      if (this._directDescendantItems.length) {
+        // Because the `mat-menuPanel` is at the DOM insertion point, not inside the overlay, we don't
+        // have a nice way of getting a hold of the menuPanel panel. We can't use a `ViewChild` either
+        // because the panel is inside an `ng-template`. We work around it by starting from one of
+        // the items and walking up the DOM.
+        menuPanel = this._directDescendantItems.first!._getHostElement().closest('[role="menu"]');
+      }
 
-    manager.setFocusOrigin(origin).setFirstItemActive();
+      // If an item in the menuPanel is already focused, avoid overriding the focus.
+      if (!menuPanel || !menuPanel.contains(document.activeElement)) {
+        const manager = this._keyManager;
+        manager.setFocusOrigin(origin).setFirstItemActive();
 
-    // If there's no active item at this point, it means that all the items are disabled.
-    // Move focus to the menu panel so keyboard events like Escape still work. Also this will
-    // give _some_ feedback to screen readers.
-    if (!manager.activeItem && this._directDescendantItems.length) {
-      let element = this._directDescendantItems.first!._getHostElement().parentElement;
-
-      // Because the `mat-menu` is at the DOM insertion point, not inside the overlay, we don't
-      // have a nice way of getting a hold of the menu panel. We can't use a `ViewChild` either
-      // because the panel is inside an `ng-template`. We work around it by starting from one of
-      // the items and walking up the DOM.
-      while (element) {
-        if (element.getAttribute('role') === 'menu') {
-          element.focus();
-          break;
-        } else {
-          element = element.parentElement;
+        // If there's no active item at this point, it means that all the items are disabled.
+        // Move focus to the menuPanel panel so keyboard events like Escape still work. Also this will
+        // give _some_ feedback to screen readers.
+        if (!manager.activeItem && menuPanel) {
+          menuPanel.focus();
         }
       }
-    }
+    });
   }
 
   /**
