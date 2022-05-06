@@ -22,7 +22,9 @@ type CompilerCliModule =
 
 // Add devmode for blaze internal
 interface BazelOptions extends ExternalBazelOptions {
+  allowedInputs?: string;
   devmode?: boolean;
+  unusedInputsListPath?: string;
 }
 
 /**
@@ -443,7 +445,62 @@ export function compile({
     originalWriteFile(fileName, '', false);
   }
 
+  if (!compilerOpts.noEmit) {
+    maybeWriteUnusedInputsList(program.getTsProgram(), compilerOpts, bazelOpts);
+  }
+
   return {program, diagnostics};
+}
+
+/**
+ * Writes a collection of unused input files and directories which can be
+ * consumed by bazel to avoid triggering rebuilds if only unused inputs are
+ * changed.
+ *
+ * See https://bazel.build/contribute/codebase#input-discovery
+ */
+export function maybeWriteUnusedInputsList(
+    program: ts.Program, options: ts.CompilerOptions, bazelOpts: BazelOptions) {
+  if (!bazelOpts?.unusedInputsListPath) {
+    return;
+  }
+
+  // ts.Program's getSourceFiles() gets populated by the sources actually
+  // loaded while the program is being built.
+  const usedFiles = new Set();
+  const usedDirs = new Set();
+  for (const sourceFile of program.getSourceFiles()) {
+    // Only concern ourselves with typescript files and full directories.
+    usedFiles.add(sourceFile.fileName);
+    usedDirs.add(path.dirname(sourceFile.fileName));
+  }
+
+  // allowedInputs are absolute paths to files which may also end with /* which
+  // implies any files in that directory can be used.
+  const unusedInputs: string[] = [];
+  for (const f of bazelOpts.allowedInputs) {
+    // A ts/x file is unused if it was not found directly in the used sources.
+    if ((f.endsWith('.ts') || f.endsWith('.tsx')) && !usedFiles.has(f)) {
+      unusedInputs.push(f);
+      continue;
+    }
+
+    // A directory is unused if no descendants were found in the used sources.
+    if (f.endsWith('/*')) {
+      const dirName = path.dirname(f);
+      if (!usedDirs.has(dirName)) {
+        unusedInputs.push(dirName);
+        continue;
+      }
+    }
+  }
+
+  // Bazel expects the unused input list to contain paths relative to the
+  // execroot directory.
+  // See https://docs.bazel.build/versions/main/output_directories.html
+  fs.writeFileSync(
+      bazelOpts.unusedInputsListPath,
+      unusedInputs.map(f => path.relative(options.rootDir!, f)).join('\n'));
 }
 
 function isCompilationTarget(bazelOpts: BazelOptions, sf: ts.SourceFile): boolean {
