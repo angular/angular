@@ -21,7 +21,7 @@ All file paths must begin with `/`, which corresponds to the deployment director
 
 <a id="glob-patterns"></a>
 
-Unless otherwise commented, patterns use a limited glob format:
+Unless otherwise commented, patterns use a **limited*** glob format that internally will be converted into regex:
 
 | Glob formats | Details |
 |:---          |:---     |
@@ -29,6 +29,31 @@ Unless otherwise commented, patterns use a limited glob format:
 | `*`          | Matches 0 or more characters excluding `/`                                                             |
 | `?`          | Matches exactly one character excluding `/`                                                            |
 | `!` prefix   | Marks the pattern as being negative, meaning that only files that don't match the pattern are included |
+
+**\*** Pay attention that some characters with a special meaning in a regular expression are not escaped and also the pattern is not wrapped in `^`/`$` in the internal glob to regex conversion and can result in unexpected behavior.
+
+*   `$` is a special character in regex that matches the end of a line and will not be escaped in the internal conversion from glob to regex format.
+
+    Be aware that you have to escape it yourself, otherwise your URL can result in an unmatchable regular expression.
+
+<div class="alert is-helpful">
+
+`foo/bar/$value` is an unmatchable expression because it is impossible to have a string that has any characters after it has ended.
+
+</div>
+
+*   `$` will not be added from the internal conversion from glob to regex format at the end of the URL(s). If not present, the expression can result in unexpected behavior.
+    As a workaround, it is highly recommended to add `$` yourself at the end of the URL(s).
+
+<div class="alert is-helpful">
+
+`/foo/bar/*.js` will match any .js file but also any .json file.
+
+</div>
+
+* `^` is another character with a special meaning in a regular expression and matches the position before the first character in a string.
+  This character will not be added in the conversion from glob to regex.
+  If you want your pattern to match the beginning of the URL(s), you should add it.
 
 Example patterns:
 
