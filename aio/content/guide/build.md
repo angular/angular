@@ -60,7 +60,7 @@ export const environment = {
 </code-example>
 
 You can add target-specific configuration files, such as `environment.prod.ts`.
-The following sets content sets default values for the production build target:
+The following content sets default values for the production build target:
 
 <code-example format="typescript" language="typescript">
 
