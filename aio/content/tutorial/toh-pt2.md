@@ -134,7 +134,7 @@ In the next section, define an `onSelect()` method in `HeroesComponent` to displ
 
 ### Add the click event handler
 
-Rename the component's `hero` property to `selectedHero` but don't assign it since there is no *selected hero* when the application starts.
+Rename the component's `hero` property to `selectedHero` but don't assign any value to it since there is no *selected hero* when the application starts.
 
 Add the following `onSelect()` method, which assigns the clicked hero from the template to the component's `selectedHero`.
 
@@ -148,7 +148,7 @@ Add the following to `heroes.component.html` beneath the list section:
 
 <code-example header="heroes.component.html (selected hero details)" path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details"></code-example>
 
-Note that the whole hero details section is wrapped around a `<div>` presenting Angular's `*ngIf` directive set to `selectedHero`, this has the effect to include the section in the DOM only when there is a selected hero, or in other terms when `selectedHero` is no longer `undefined`.
+The hero details should only be displayed when a hero is selected. When a component is created initially, there is no selected hero, so we add the `*ngIf` directive to the `<div>` that wraps the hero details, to instruct Angular to render the section only when the `selectedHero` is actually defined (after it has been selected by clicking on a hero).
 
 <div class="alert is-important">
 
