@@ -21,7 +21,7 @@ All file paths must begin with `/`, which corresponds to the deployment director
 
 <a id="glob-patterns"></a>
 
-Unless otherwise commented, patterns use a limited glob format:
+Unless otherwise commented, patterns use a **limited*** glob format that internally will be converted into regex:
 
 | Glob formats | Details |
 |:---          |:---     |
@@ -29,6 +29,8 @@ Unless otherwise commented, patterns use a limited glob format:
 | `*`          | Matches 0 or more characters excluding `/`                                                             |
 | `?`          | Matches exactly one character excluding `/`                                                            |
 | `!` prefix   | Marks the pattern as being negative, meaning that only files that don't match the pattern are included |
+
+**\*** Pay attention attention that some characters with a special meaning in a regular expression are not escaped (or added) in the internal glob to regex conversion and can result in unexpected behavior.
 
 Example patterns:
 
@@ -222,6 +224,14 @@ Only non-mutating requests \(GET and HEAD\) are cached.
 
 *   Negative glob patterns are not supported
 *   `?` is matched literally; that is, it matches *only* the character `?`
+*   `$` is a special character in regex that matches the end of a line and will not be escaped in the internal conversion from glob to regex format. Be aware that you have to escape it yourself, otherwise your url can result in an unmatchable regular expression.
+
+**Example**: `foo/bar/$value` is an unmatchable expression because it is impossible to have a string that has any characters after it has ended.
+*   `$` will not be added from the internal conversion from glob to regex format at the end of the url(s). If not present, the expression can result in unexpected behavior. As a workaround, it is highly recommended to add `$` yourself at the end of the url(s).
+
+**Example** `/foo/bar/*.js` will match any .js file but also any .json file. 
+
+* `^` is another character with a special meaning in a regular expression and matches the position before the first character in a string. This character will not be added in the conversion from glob to regex and it is recommended to add `^` yourself at the beginning of the url(s).
 
 ### `version`
 
