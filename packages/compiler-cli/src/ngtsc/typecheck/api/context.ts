@@ -36,13 +36,14 @@ export interface TypeCheckContext {
    * template text described by the AST.
    * @param file the `ParseSourceFile` associated with the template.
    * @param parseErrors the `ParseError`'s associated with the template.
+   * @param isStandalone a boolean indicating whether the component is standalone.
    */
   addTemplate(
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       binder: R3TargetBinder<TypeCheckableDirectiveMeta>, template: TmplAstNode[],
       pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
       schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping, file: ParseSourceFile,
-      parseErrors: ParseError[]|null): void;
+      parseErrors: ParseError[]|null, isStandalone: boolean): void;
 }
 
 /**

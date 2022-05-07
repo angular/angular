@@ -2096,6 +2096,27 @@ export declare class AnimationEvent {
 2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
       });
 
+      it('should check for unknown elements in standalone components', () => {
+        env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<foo>test</foo>',
+          standalone: true,
+        })
+        export class FooCmp {}
+        @NgModule({
+          imports: [FooCmp],
+        })
+        export class FooModule {}
+      `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(`'foo' is not a known element:
+1. If 'foo' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.`);
+      });
+
       it('should have a descriptive error for unknown elements that contain a dash', () => {
         env.write('test.ts', `
         import {Component, NgModule} from '@angular/core';
@@ -2115,6 +2136,28 @@ export declare class AnimationEvent {
 1. If 'my-foo' is an Angular component, then verify that it is part of this module.
 2. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`);
       });
+
+      it('should have a descriptive error for unknown elements that contain a dash in standalone components',
+         () => {
+           env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<my-foo>test</my-foo>',
+          standalone: true,
+        })
+        export class FooCmp {}
+        @NgModule({
+          imports: [FooCmp],
+        })
+        export class FooModule {}
+      `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText).toBe(`'my-foo' is not a known element:
+1. If 'my-foo' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.`);
+         });
 
       it('should check for unknown properties', () => {
         env.write('test.ts', `
