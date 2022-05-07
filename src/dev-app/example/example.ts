@@ -7,6 +7,7 @@
  */
 
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
+import {CommonModule} from '@angular/common';
 import {EXAMPLE_COMPONENTS} from '@angular/components-examples';
 import {loadExample} from '@angular/components-examples/private';
 import {
@@ -20,6 +21,8 @@ import {
 
 @Component({
   selector: 'material-example',
+  standalone: true,
+  imports: [CommonModule],
   template: `
     <div class="label" *ngIf="showLabel">
       <span class="title"> {{title}} </span>

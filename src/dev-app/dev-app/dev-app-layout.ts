@@ -11,7 +11,13 @@ import {ChangeDetectorRef, Component, ElementRef, Inject, ViewEncapsulation} fro
 
 import {DevAppDirectionality} from './dev-app-directionality';
 import {DevAppRippleOptions} from './ripple-options';
-import {DOCUMENT} from '@angular/common';
+import {CommonModule, DOCUMENT} from '@angular/common';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatListModule} from '@angular/material/list';
+import {MatButtonModule} from '@angular/material/button';
+import {RouterModule} from '@angular/router';
+import {MatIconModule} from '@angular/material/icon';
+import {MatToolbarModule} from '@angular/material/toolbar';
 
 const isDarkThemeKey = 'ANGULAR_COMPONENTS_DEV_APP_DARK_THEME';
 
@@ -23,6 +29,16 @@ export const ANIMATIONS_STORAGE_KEY = 'ANGULAR_COMPONENTS_ANIMATIONS_DISABLED';
   templateUrl: 'dev-app-layout.html',
   styleUrls: ['dev-app-layout.css'],
   encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    MatListModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    RouterModule,
+  ],
 })
 export class DevAppLayout {
   readonly darkThemeClass = 'demo-unicorn-dark-theme';

@@ -10,7 +10,6 @@ ng_module(
     srcs = [
         "dev-app.ts",
         "main.ts",
-        "main-module.ts",
         "routes.ts",
     ],
     deps = [

@@ -7,6 +7,8 @@
  */
 
 import {Component} from '@angular/core';
+import {MatButtonModule} from '@angular/material/button';
+import {RouterModule} from '@angular/router';
 
 @Component({
   template: `
@@ -15,5 +17,7 @@ import {Component} from '@angular/core';
     <a mat-raised-button routerLink="/">Go back to the home page</a>
   `,
   host: {'class': 'mat-typography'},
+  standalone: true,
+  imports: [MatButtonModule, RouterModule],
 })
 export class DevApp404 {}
