@@ -41,8 +41,12 @@ export interface DomSchemaChecker {
    * @param element the element node in question.
    * @param schemas any active schemas for the template, which might affect the validity of the
    * element.
+   * @param hostIsStandalone boolean indicating whether the element's host is a standalone
+   *     component.
    */
-  checkElement(id: string, element: TmplAstElement, schemas: SchemaMetadata[]): void;
+  checkElement(
+      id: string, element: TmplAstElement, schemas: SchemaMetadata[],
+      hostIsStandalone: boolean): void;
 
   /**
    * Check a property binding on an element and record any diagnostics about it.
@@ -73,7 +77,9 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
 
   constructor(private resolver: TemplateSourceResolver) {}
 
-  checkElement(id: TemplateId, element: TmplAstElement, schemas: SchemaMetadata[]): void {
+  checkElement(
+      id: TemplateId, element: TmplAstElement, schemas: SchemaMetadata[],
+      hostIsStandalone: boolean): void {
     // HTML elements inside an SVG `foreignObject` are declared in the `xhtml` namespace.
     // We need to strip it before handing it over to the registry because all HTML tag names
     // in the registry are without a namespace.
@@ -82,15 +88,17 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
     if (!REGISTRY.hasElement(name, schemas)) {
       const mapping = this.resolver.getSourceMapping(id);
 
+      const schemas = `'${hostIsStandalone ? '@Component' : '@NgModule'}.schemas'`;
       let errorMsg = `'${name}' is not a known element:\n`;
-      errorMsg +=
-          `1. If '${name}' is an Angular component, then verify that it is part of this module.\n`;
+      errorMsg += `1. If '${name}' is an Angular component, then verify that it is ${
+          hostIsStandalone ? 'included in the \'@Component.imports\' of this component' :
+                             'part of this module'}.\n`;
       if (name.indexOf('-') > -1) {
-        errorMsg += `2. If '${
-            name}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
+        errorMsg += `2. If '${name}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${
+            schemas} of this component to suppress this message.`;
       } else {
         errorMsg +=
-            `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+            `2. To allow any element add 'NO_ERRORS_SCHEMA' to the ${schemas} of this component.`;
       }
 
       const diag = makeTemplateDiagnostic(

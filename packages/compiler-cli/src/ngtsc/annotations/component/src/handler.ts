@@ -542,7 +542,8 @@ export class ComponentDecoratorHandler implements
     const binder = new R3TargetBinder(scope.matcher);
     ctx.addTemplate(
         new Reference(node), binder, meta.template.diagNodes, scope.pipes, scope.schemas,
-        meta.template.sourceMapping, meta.template.file, meta.template.errors);
+        meta.template.sourceMapping, meta.template.file, meta.template.errors,
+        meta.meta.isStandalone);
   }
 
   extendedTemplateCheck(
