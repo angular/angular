@@ -505,10 +505,14 @@ export function refreshView<T>(
 export function renderComponentOrTemplate<T>(
     tView: TView, lView: LView, templateFn: ComponentTemplate<{}>|null, context: T) {
   const rendererFactory = lView[RENDERER_FACTORY];
-  const normalExecutionPath = !ngDevMode || !isInCheckNoChangesMode();
+
+  // Check no changes mode is a dev only mode used to verify that bindings have not changed
+  // since they were assigned. We do not want to invoke renderer factory functions in that mode
+  // to avoid any possible side-effects.
+  const checkNoChangesMode = !!ngDevMode && isInCheckNoChangesMode();
   const creationModeIsActive = isCreationMode(lView);
   try {
-    if (normalExecutionPath && !creationModeIsActive && rendererFactory.begin) {
+    if (!checkNoChangesMode && !creationModeIsActive && rendererFactory.begin) {
       rendererFactory.begin();
     }
     if (creationModeIsActive) {
@@ -516,7 +520,7 @@ export function renderComponentOrTemplate<T>(
     }
     refreshView(tView, lView, templateFn, context);
   } finally {
-    if (normalExecutionPath && !creationModeIsActive && rendererFactory.end) {
+    if (!checkNoChangesMode && !creationModeIsActive && rendererFactory.end) {
       rendererFactory.end();
     }
   }

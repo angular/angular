@@ -184,8 +184,8 @@ const instructionState: InstructionState = {
  *
  * Necessary to support ChangeDetectorRef.checkNoChanges().
  *
- * checkNoChanges Runs only in devmode=true and verifies that no unintended changes exist in
- * the change detector or its children.
+ * The `checkNoChanges` function is invoked only in ngDevMode=true and verifies that no unintended
+ * changes exist in the change detector or its children.
  */
 let _isInCheckNoChangesMode = false;
 
