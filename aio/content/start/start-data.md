@@ -166,7 +166,7 @@ This section shows you how to use the cart service to display the products in th
 
 1.  Verify that your cart works as expected:
 
-    1.  Click **My Store*.
+    1.  Click **My Store**.
     1.  Click on a product name to display its details.
     1.  Click **Buy** to add the product to the cart.
     1.  Click **Checkout** to see the cart.
