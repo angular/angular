@@ -281,7 +281,7 @@ export function tcb(
   const boundTarget = binder.bind({template: nodes});
 
   const id = 'tcb' as TemplateId;
-  const meta: TypeCheckBlockMetadata = {id, boundTarget, pipes, schemas: []};
+  const meta: TypeCheckBlockMetadata = {id, boundTarget, pipes, schemas: [], isStandalone: false};
 
   const fullConfig: TypeCheckingConfig = {
     applyTemplateContextGuards: true,
@@ -483,7 +483,8 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
           node: classRef.node.name,
         };
 
-        ctx.addTemplate(classRef, binder, nodes, pipes, [], sourceMapping, templateFile, errors);
+        ctx.addTemplate(
+            classRef, binder, nodes, pipes, [], sourceMapping, templateFile, errors, false);
       }
     }
   });
@@ -713,7 +714,9 @@ export class NoopSchemaChecker implements DomSchemaChecker {
     return [];
   }
 
-  checkElement(id: string, element: TmplAstElement, schemas: SchemaMetadata[]): void {}
+  checkElement(
+      id: string, element: TmplAstElement, schemas: SchemaMetadata[],
+      hostIsStandalone: boolean): void {}
   checkProperty(
       id: string, element: TmplAstElement, name: string, span: ParseSourceSpan,
       schemas: SchemaMetadata[]): void {}

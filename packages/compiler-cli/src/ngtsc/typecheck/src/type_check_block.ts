@@ -83,7 +83,8 @@ export function generateTypeCheckBlock(
     oobRecorder: OutOfBandDiagnosticRecorder,
     genericContextBehavior: TcbGenericContextBehavior): ts.FunctionDeclaration {
   const tcb = new Context(
-      env, domSchemaChecker, oobRecorder, meta.id, meta.boundTarget, meta.pipes, meta.schemas);
+      env, domSchemaChecker, oobRecorder, meta.id, meta.boundTarget, meta.pipes, meta.schemas,
+      meta.isStandalone);
   const scope = Scope.forNodes(tcb, null, tcb.boundTarget.target.template!, /* guard */ null);
   const ctxRawType = env.referenceType(ref);
   if (!ts.isTypeReferenceNode(ctxRawType)) {
@@ -849,7 +850,8 @@ class TcbDomSchemaCheckerOp extends TcbOp {
 
   override execute(): ts.Expression|null {
     if (this.checkElement) {
-      this.tcb.domSchemaChecker.checkElement(this.tcb.id, this.element, this.tcb.schemas);
+      this.tcb.domSchemaChecker.checkElement(
+          this.tcb.id, this.element, this.tcb.schemas, this.tcb.hostIsStandalone);
     }
 
     // TODO(alxhub): this could be more efficient.
@@ -1144,7 +1146,7 @@ export class Context {
       readonly oobRecorder: OutOfBandDiagnosticRecorder, readonly id: TemplateId,
       readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
       private pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
-      readonly schemas: SchemaMetadata[]) {}
+      readonly schemas: SchemaMetadata[], readonly hostIsStandalone: boolean) {}
 
   /**
    * Allocate a new variable name for use within the `Context`.
