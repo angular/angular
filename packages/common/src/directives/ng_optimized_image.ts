@@ -59,7 +59,10 @@ export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
  * @usageNotes
  * TODO: add Image directive usage notes.
  */
-@Directive({selector: 'img[rawSrc]'})
+@Directive({
+  standalone: true,
+  selector: 'img[rawSrc]',
+})
 export class NgOptimizedImage implements OnInit {
   constructor(
       @Inject(IMAGE_LOADER) private imageLoader: ImageLoader, private renderer: Renderer2,
@@ -151,17 +154,6 @@ export class NgOptimizedImage implements OnInit {
   private setHostAttribute(name: string, value: string): void {
     this.renderer.setAttribute(this.imgElement.nativeElement, name, value);
   }
-}
-
-/**
- * Temporary NgModule that exports the NgOptimizedImage directive.
- * The module should not be needed once the `standalone` flag is supported as a public API.
- */
-@NgModule({
-  declarations: [NgOptimizedImage],
-  exports: [NgOptimizedImage],
-})
-export class NgOptimizedImageModule {
 }
 
 /***** Helpers *****/
