@@ -35,12 +35,18 @@ import {
   Calculator,
   Cluster,
   ClusterIconStyle,
-  MarkerClusterer,
+  MarkerClusterer as MarkerClustererInstance,
   MarkerClustererOptions,
 } from './marker-clusterer-types';
 
 /** Default options for a clusterer. */
 const DEFAULT_CLUSTERER_OPTIONS: MarkerClustererOptions = {};
+
+/**
+ * The clusterer has to be defined and referred to as a global variable,
+ * otherwise it'll cause issues when minified through Closure.
+ */
+declare const MarkerClusterer: typeof MarkerClustererInstance;
 
 /**
  * Angular component for implementing a Google Maps Marker Clusterer.
@@ -197,7 +203,7 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnChanges, 
    * googlemaps.github.io/v3-utility-library/classes/
    * _google_markerclustererplus.markerclusterer.html
    */
-  markerClusterer?: MarkerClusterer;
+  markerClusterer?: MarkerClustererInstance;
 
   constructor(private readonly _googleMap: GoogleMap, private readonly _ngZone: NgZone) {
     this._canInitialize = this._googleMap._isBrowser;
@@ -205,11 +211,10 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnChanges, 
 
   ngOnInit() {
     if (this._canInitialize) {
-      const clustererWindow = window as unknown as typeof globalThis & {
-        MarkerClusterer?: typeof MarkerClusterer;
-      };
-
-      if (!clustererWindow.MarkerClusterer && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      if (
+        typeof MarkerClusterer !== 'function' &&
+        (typeof ngDevMode === 'undefined' || ngDevMode)
+      ) {
         throw Error(
           'MarkerClusterer class not found, cannot construct a marker cluster. ' +
             'Please install the MarkerClustererPlus library: ' +
@@ -221,7 +226,7 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnChanges, 
       // We'll bring it back in inside the `MapEventManager` only for the events that the
       // user has subscribed to.
       this._ngZone.runOutsideAngular(() => {
-        this.markerClusterer = new clustererWindow.MarkerClusterer!(
+        this.markerClusterer = new MarkerClusterer(
           this._googleMap.googleMap!,
           [],
           this._combineOptions(),
@@ -495,7 +500,7 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnChanges, 
       .map(markerComponent => markerComponent.marker!);
   }
 
-  private _assertInitialized(): asserts this is {markerClusterer: MarkerClusterer} {
+  private _assertInitialized(): asserts this is {markerClusterer: MarkerClustererInstance} {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (!this._googleMap.googleMap) {
         throw Error(
