@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Inject, InjectionToken, Input, NgModule, OnChanges, OnInit, Renderer2, SimpleChanges, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, ElementRef, Inject, Injectable, InjectionToken, Injector, Input, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
 
+import {DOCUMENT} from '../dom_tokens';
 import {RuntimeErrorCode} from '../errors';
 
 /**
@@ -49,12 +50,82 @@ export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
 });
 
 /**
+ * Contains the logic to detect whether an image with the `NgOptimizedImage` directive
+ * is treated as an LCP element. If so, verifies that the image is marked as a priority,
+ * using the `priority` attribute.
+ *
+ * Note: this is a dev-mode only class, which should not appear in prod bundles,
+ * thus there is no `ngDevMode` use in the code.
+ *
+ * Based on https://web.dev/lcp/#measure-lcp-in-javascript.
+ */
+@Injectable({
+  providedIn: 'root',
+})
+class LCPImageObserver implements OnDestroy {
+  // Map of full image URLs -> image metadata (`raw-src` and `priority`).
+  private images = new Map<string, {rawSrc: string, priority: boolean}>();
+
+  private window: Window|null = null;
+  private observer: PerformanceObserver|null = null;
+
+  constructor(@Inject(DOCUMENT) doc: Document) {
+    const win = doc.defaultView;
+    if (typeof win !== 'undefined' && typeof PerformanceObserver !== 'undefined') {
+      this.window = win;
+      this.observer = this.initPerformanceObserver();
+    }
+  }
+
+  // Converts relative image URL to a full URL.
+  private getFullUrl(src: string) {
+    return new URL(src, this.window!.location.href).href;
+  }
+
+  // Inits PerformanceObserver and subscribes to LCP events.
+  // Based on https://web.dev/lcp/#measure-lcp-in-javascript
+  private initPerformanceObserver(): PerformanceObserver {
+    const observer = new PerformanceObserver((entryList) => {
+      for (const entry of entryList.getEntries()) {
+        // Cast to `any` due to missing `element` on observed type of entry.
+        const imgSrc = (entry as any).element?.src ?? '';
+        const img = this.images.get(imgSrc);
+        // Exclude `data:` and `blob:` URLs, since they are not supported by the directive.
+        if (img && !img.priority && !imgSrc.startsWith('data:') && !imgSrc.startsWith('blob:')) {
+          const directiveDetails = imgDirectiveDetails({rawSrc: img.rawSrc} as any);
+          console.warn(formatRuntimeError(
+              RuntimeErrorCode.LCP_IMG_MISSING_PRIORITY,
+              `${directiveDetails}: the image was detected as the Largest Contentful Paint (LCP) ` +
+                  `element, so its loading should be prioritized for optimal performance. Please ` +
+                  `add the "priority" attribute if this image is above the fold.`));
+        }
+      }
+    });
+    observer.observe({type: 'largest-contentful-paint', buffered: true});
+    return observer;
+  }
+
+  registerImage(rewrittenSrc: string, rawSrc: string, priority: boolean) {
+    if (!this.observer) return;
+    this.images.set(this.getFullUrl(rewrittenSrc), {rawSrc, priority});
+  }
+
+  unregisterImage(rewrittenSrc: string) {
+    if (!this.observer) return;
+    this.images.delete(this.getFullUrl(rewrittenSrc));
+  }
+
+  ngOnDestroy() {
+    if (!this.observer) return;
+    this.observer.disconnect();
+    this.images.clear();
+  }
+}
+
+/**
  * ** EXPERIMENTAL **
  *
  * TODO: add Image directive description.
- *
- * IMPORTANT: this directive should become standalone (i.e. not attached to any NgModule) once
- * the `standalone` flag is implemented and available as a public API.
  *
  * @usageNotes
  * TODO: add Image directive usage notes.
@@ -63,15 +134,15 @@ export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
   standalone: true,
   selector: 'img[rawSrc]',
 })
-export class NgOptimizedImage implements OnInit, OnChanges {
+export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   constructor(
       @Inject(IMAGE_LOADER) private imageLoader: ImageLoader, private renderer: Renderer2,
-      private imgElement: ElementRef) {}
+      private imgElement: ElementRef, private injector: Injector) {}
 
   // Private fields to keep normalized input values.
   private _width?: number;
   private _height?: number;
-  private _priority?: boolean;
+  private _priority = false;
 
   /**
    * Name of the source image.
@@ -111,7 +182,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   set priority(value: string|boolean|undefined) {
     this._priority = inputToBoolean(value);
   }
-  get priority(): boolean|undefined {
+  get priority(): boolean {
     return this._priority;
   }
 
@@ -131,6 +202,10 @@ export class NgOptimizedImage implements OnInit, OnChanges {
       assertNotBlobURL(this);
       assertRequiredNumberInput(this, this.width, 'width');
       assertRequiredNumberInput(this, this.height, 'height');
+      withLCPImageObserver(
+          this.injector,
+          (observer: LCPImageObserver) =>
+              observer.registerImage(this.getRewrittenSrc(), this.rawSrc, this.priority));
     }
     this.setHostAttribute('loading', this.getLoadingBehavior());
     this.setHostAttribute('fetchpriority', this.getFetchPriority());
@@ -164,6 +239,15 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     return this.imageLoader(imgConfig);
   }
 
+  ngOnDestroy() {
+    if (ngDevMode) {
+      // An image is only registered in dev mode, try to unregister only in dev mode as well.
+      withLCPImageObserver(
+          this.injector,
+          (observer: LCPImageObserver) => observer.unregisterImage(this.getRewrittenSrc()));
+    }
+  }
+
   private setHostAttribute(name: string, value: string): void {
     this.renderer.setAttribute(this.imgElement.nativeElement, name, value);
   }
@@ -176,8 +260,28 @@ function inputToInteger(value: string|number|undefined): number|undefined {
   return typeof value === 'string' ? parseInt(value, 10) : value;
 }
 
+// Convert input value to boolean.
 function inputToBoolean(value: unknown): boolean {
   return value != null && `${value}` !== 'false';
+}
+
+/**
+ * Invokes a function, passing an instance of the `LCPImageObserver` as an argument.
+ *
+ * Notes:
+ * - the `LCPImageObserver` is a tree-shakable provider, provided in 'root',
+ *   thus it's a singleton within this application
+ * - the process of `LCPImageObserver` creation and an actual operation are invoked outside of the
+ *   NgZone to make sure none of the calls inside the `LCPImageObserver` class trigger unnecessary
+ *   change detection
+ */
+function withLCPImageObserver(
+    injector: Injector, operation: (observer: LCPImageObserver) => void): void {
+  const ngZone = injector.get(NgZone);
+  return ngZone.runOutsideAngular(() => {
+    const observer = injector.get(LCPImageObserver);
+    operation(observer);
+  });
 }
 
 function imgDirectiveDetails(dir: NgOptimizedImage) {
