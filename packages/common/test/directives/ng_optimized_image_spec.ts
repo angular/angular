@@ -217,10 +217,10 @@ function setupTestingModule(config?: {imageLoader: ImageLoader}) {
   const providers =
       config?.imageLoader ? [{provide: IMAGE_LOADER, useValue: config?.imageLoader}] : [];
   TestBed.configureTestingModule({
-    // Note: the `NgOptimizedImage` is a part of declarations for now,
-    // since it's experimental and not yet added to the `CommonModule`.
-    declarations: [TestComponent, NgOptimizedImage],
-    imports: [CommonModule],
+    declarations: [TestComponent],
+    // Note: the `NgOptimizedImage` directive is experimental and is not a part of the
+    // `CommonModule` yet, so it's imported separately.
+    imports: [CommonModule, NgOptimizedImage],
     providers,
   });
 }
