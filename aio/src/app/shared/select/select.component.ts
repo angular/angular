@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 
 export interface Option {
   title: string;
@@ -10,7 +10,15 @@ export interface Option {
   templateUrl: 'select.component.html'
 })
 export class SelectComponent implements OnInit {
-  @Input() selected: Option;
+  selectedIdx = -1;
+
+  @Input() set selected(selected: Option) {
+    this.selectedIdx = (this.options ?? []).indexOf(selected);
+  };
+
+  get selected(): Option {
+    return this.options?.[this.selectedIdx];
+  }
 
   @Input() options: Option[];
 
@@ -23,38 +31,12 @@ export class SelectComponent implements OnInit {
 
   @Input() disabled: boolean;
 
-  showOptions = false;
-
-  constructor(private hostElement: ElementRef) {}
-
   ngOnInit() {
     this.label = this.label || '';
   }
 
-  toggleOptions() {
-    this.showOptions = !this.showOptions;
-  }
-
-  hideOptions() {
-    this.showOptions = false;
-  }
-
-  select(option: Option, index: number) {
-    this.selected = option;
-    this.change.emit({option, index});
-    this.hideOptions();
-  }
-
-  @HostListener('document:click', ['$event.target'])
-  onClick(eventTarget: HTMLElement) {
-    // Hide the options if we clicked outside the component
-    if (!this.hostElement.nativeElement.contains(eventTarget)) {
-      this.hideOptions();
-    }
-  }
-
-  @HostListener('document:keydown.escape')
-  onKeyDown() {
-    this.hideOptions();
+  select(index: number) {
+    this.selected = this.options[index];
+    this.change.emit({option: this.selected, index});
   }
 }

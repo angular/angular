@@ -6,6 +6,8 @@
   transition: none;
 }
 
+$level1ItemPaddingLeft: 20px;
+
 mat-sidenav-container.sidenav-container {
   min-height: 100%;
   height: auto !important;
@@ -40,6 +42,7 @@ mat-sidenav-container.sidenav-container {
     // Angular Version Selector
     .doc-version {
       padding: 8px;
+      padding-left: $level1ItemPaddingLeft;
     }
   }
 }
@@ -129,7 +132,7 @@ aio-nav-menu {
       @include mixins.font-size(16);
       @include mixins.line-height(28);
       font-weight: 400;
-      padding-left: 20px;
+      padding-left: $level1ItemPaddingLeft;
       margin: 0;
       transition: background-color 0.2s;
     }

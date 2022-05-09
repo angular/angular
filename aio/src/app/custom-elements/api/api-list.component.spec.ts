@@ -7,6 +7,7 @@ import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
 import { MockLogger } from 'testing/logger.service';
 import { ApiListModule } from './api-list.module';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('ApiListComponent', () => {
   let component: ApiListComponent;
@@ -15,7 +16,7 @@ describe('ApiListComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ ApiListModule ],
+      imports: [ ApiListModule, NoopAnimationsModule ],
       providers: [
         { provide: ApiService, useClass: TestApiService },
         { provide: Logger, useClass: MockLogger },
