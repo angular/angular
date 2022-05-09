@@ -4,6 +4,8 @@ export const enum BuildNums {
   BUILD_INFO_BUILD_FAILED,
   BUILD_INFO_INVALID_GH_ORG,
   BUILD_INFO_INVALID_GH_REPO,
+  PIPELINE_INFO_ERROR,
+  PIPELINE_INFO_404,
   CHANGED_FILES_ERROR,
   CHANGED_FILES_404,
   CHANGED_FILES_NONE,
@@ -19,6 +21,17 @@ export const enum BuildNums {
   TRUST_CHECK_TRUSTED_LABEL,
   TRUST_CHECK_ACTIVE_TRUSTED_USER,
   TRUST_CHECK_INACTIVE_TRUSTED_USER,
+}
+
+export const enum PipelineIds {
+  PIPELINE_INFO_ERROR = 'pipeline-error',
+  PIPELINE_INFO_404 = 'pipeline-404',
+  CHANGED_FILES_ERROR = 'pipeline-cfe',
+  CHANGED_FILES_404 = 'pipeline-cf404',
+  CHANGED_FILES_NONE = 'pipeline-cfn',
+  TRUST_CHECK_ERROR = 'pipeline-tce',
+  TRUST_CHECK_UNTRUSTED = 'pipeline-tcu',
+  PIPELINE_INFO_OK = 'pipeline-ok',
 }
 
 export const enum PrNums {
