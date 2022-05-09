@@ -785,17 +785,14 @@ workflows:
       - test_docs_examples:
           requires:
             - build-npm-packages
-      # NOTE: the following CI jobs are currently disabled due to CircleCI API changes
-      #       and the jobs will be enabled again once the code is fully compatible.
-      #       More info is available here: https://github.com/angular/angular/issues/45931
-      #- aio_preview:
-      #    # Only run on PR builds. (There can be no previews for non-PR builds.)
-      #    <<: *only_on_pull_requests
-      #    requires:
-      #      - setup
-      #- test_aio_preview:
-      #    requires:
-      #      - aio_preview
+      - aio_preview:
+          # Only run on PR builds. (There can be no previews for non-PR builds.)
+          <<: *only_on_pull_requests
+          requires:
+            - setup
+      - test_aio_preview:
+          requires:
+            - aio_preview
       - publish_packages_as_artifacts:
           requires:
             - build-npm-packages
