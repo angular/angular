@@ -11,23 +11,16 @@
 // If a category becomes empty (e.g. BS and required), then the corresponding job must be commented
 // out in the CI configuration.
 const config = {
-  'Android10': {unitTest: {target: 'SL', required: true}},
   'Android11': {unitTest: {target: 'SL', required: true}},
+  'Android12': {unitTest: {target: 'SL', required: true}},
 };
 
 /** Whether browsers should be remotely acquired in debug mode. */
 const debugMode = false;
 
+// Specific platform configuration can be found at:
+// https://saucelabs.com/platform/platform-configurator
 const customLaunchers = {
-  'SL_ANDROID10': {
-    base: 'SauceLabs',
-    browserName: 'Chrome',
-    platformName: 'Android',
-    platformVersion: '10.0',
-    deviceName: 'Google Pixel 3a GoogleAPI Emulator',
-    appiumVersion: '1.20.2',
-    extendedDebugging: debugMode,
-  },
   'SL_ANDROID11': {
     base: 'SauceLabs',
     browserName: 'Chrome',
@@ -35,6 +28,15 @@ const customLaunchers = {
     platformVersion: '11.0',
     deviceName: 'Google Pixel 3a GoogleAPI Emulator',
     appiumVersion: '1.20.2',
+    extendedDebugging: debugMode,
+  },
+  'SL_ANDROID12': {
+    base: 'SauceLabs',
+    browserName: 'Chrome',
+    platformName: 'Android',
+    platformVersion: '12.0',
+    deviceName: 'Google Pixel 4a (5G) GoogleAPI Emulator',
+    appiumVersion: '1.22.1',
     extendedDebugging: debugMode,
   },
 };
@@ -45,8 +47,8 @@ const sauceAliases = {
 };
 
 module.exports = {
-  customLaunchers: customLaunchers,
-  sauceAliases: sauceAliases,
+  customLaunchers : customLaunchers,
+  sauceAliases : sauceAliases,
 };
 
 function buildConfiguration(type, target, required) {

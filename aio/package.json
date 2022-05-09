@@ -117,7 +117,6 @@
     "@types/jasmine": "~3.10.0",
     "@types/lunr": "^2.3.3",
     "@types/node": "^12.7.9",
-    "@types/stemmer": "^1.0.2",
     "@types/trusted-types": "^2.0.2",
     "@types/xregexp": "^4.3.0",
     "@typescript-eslint/eslint-plugin": "5.19.0",

@@ -168,9 +168,6 @@
     "name": "invertObject"
   },
   {
-    "name": "isInCheckNoChangesMode"
-  },
-  {
     "name": "isLView"
   },
   {

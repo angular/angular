@@ -54,6 +54,14 @@ merge:
       - 'packages/compiler-cli/linker/**'
       - 'packages/compiler-cli/ngcc/**'
       - 'packages/compiler-cli/src/ngtsc/sourcemaps/**'
+      # 'private' mostly contains entrypoints for 3P Angular.
+      # Note that 'private/migrations' _is_ used.
+      - 'packages/compiler-cli/private/bazel.ts'
+      - 'packages/compiler-cli/private/localize.ts'
+      - 'packages/compiler-cli/private/tooling.ts'
+      - 'packages/compiler-cli/private/babel.d.ts'
+      # google3 defines its own binary entrypoints.
+      - 'packages/compiler-cli/src/bin/**'
       - 'packages/docs/**'
       - 'packages/elements/schematics/**'
       - 'packages/examples/**'

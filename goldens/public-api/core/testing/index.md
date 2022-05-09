@@ -221,15 +221,20 @@ export interface TestEnvironmentOptions {
 }
 
 // @public (undocumented)
-export type TestModuleMetadata = {
-    providers?: any[];
+export interface TestModuleMetadata {
+    // (undocumented)
     declarations?: any[];
-    imports?: any[];
-    schemas?: Array<SchemaMetadata | any[]>;
-    teardown?: ModuleTeardownOptions;
     errorOnUnknownElements?: boolean;
     errorOnUnknownProperties?: boolean;
-};
+    // (undocumented)
+    imports?: any[];
+    // (undocumented)
+    providers?: any[];
+    // (undocumented)
+    schemas?: Array<SchemaMetadata | any[]>;
+    // (undocumented)
+    teardown?: ModuleTeardownOptions;
+}
 
 // @public
 export function tick(millis?: number, tickOptions?: {
