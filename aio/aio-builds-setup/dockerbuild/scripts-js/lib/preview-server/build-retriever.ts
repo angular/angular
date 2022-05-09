@@ -36,12 +36,13 @@ export class BuildRetriever {
    */
   public async getGithubInfo(buildNum: number): Promise<GithubInfo> {
     const buildInfo = await this.api.getBuildInfo(buildNum);
+    const pipelineInfo = await this.api.getPipelineInfo(buildInfo.pipeline.id);
     const githubInfo: GithubInfo = {
-      org: buildInfo.username,
-      pr: getPrFromBranch(buildInfo.branch),
-      repo: buildInfo.reponame,
-      sha: buildInfo.vcs_revision,
-      success: !buildInfo.failed,
+      org: buildInfo.organization.name,
+      pr: +pipelineInfo.vcs.review_id,
+      repo: buildInfo.project.name,
+      sha: pipelineInfo.vcs.revision,
+      success: buildInfo.status === 'success',
     };
     return githubInfo;
   }
@@ -75,13 +76,4 @@ export class BuildRetriever {
           status, `CircleCI artifact download failed (${error.message || error})`);
     }
   }
-}
-
-function getPrFromBranch(branch: string): number {
-  // CircleCI only exposes PR numbers via the `branch` field :-(
-  const match = /^pull\/(\d+)$/.exec(branch);
-  if (!match) {
-    throw new Error(`No PR found in branch field: ${branch}`);
-  }
-  return +match[1];
 }

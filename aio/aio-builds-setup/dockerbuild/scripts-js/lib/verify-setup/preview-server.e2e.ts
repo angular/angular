@@ -145,9 +145,11 @@ describe('preview-server', () => {
       ]);
     });
 
-    it('should respond with 500 if the CircleCI API request errors', async () => {
+    it('should respond with 500 if any of the CircleCI API requests errors', async () => {
       await curl(payload(BuildNums.BUILD_INFO_ERROR)).then(h.verifyResponse(500));
       await curl(payload(BuildNums.BUILD_INFO_404)).then(h.verifyResponse(500));
+      await curl(payload(BuildNums.PIPELINE_INFO_ERROR)).then(h.verifyResponse(500));
+      await curl(payload(BuildNums.PIPELINE_INFO_404)).then(h.verifyResponse(500));
     });
 
     it('should respond with 204 if the build on CircleCI failed', async () => {
