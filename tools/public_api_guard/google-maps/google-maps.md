@@ -292,6 +292,14 @@ export class MapDirectionsService {
 }
 
 // @public
+export class MapEventManager {
+    constructor(_ngZone: NgZone);
+    destroy(): void;
+    getLazyEmitter<T>(name: string): Observable<T>;
+    setTarget(target: MapEventManagerTarget): void;
+}
+
+// @public
 export class MapGeocoder {
     constructor(_ngZone: NgZone);
     geocode(request: google.maps.GeocoderRequest): Observable<MapGeocoderResponse>;

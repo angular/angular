@@ -35,3 +35,4 @@ export {
   AriaLabelFn,
   Calculator,
 } from './map-marker-clusterer/marker-clusterer-types';
+export {MapEventManager} from './map-event-manager';
