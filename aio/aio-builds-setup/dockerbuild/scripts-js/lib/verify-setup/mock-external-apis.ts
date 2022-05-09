@@ -3,7 +3,7 @@ import * as nock from 'nock';
 import * as tar from 'tar-stream';
 import {gzipSync} from 'zlib';
 import {getEnvVar, Logger} from '../common/utils';
-import {BuildNums, PrNums, SHA} from './constants';
+import {BuildNums, PipelineIds, PrNums, SHA} from './constants';
 
 // We are using the `nock` library to fake responses from REST requests, when testing.
 // This is necessary, because the test preview-server runs as a separate node process to
@@ -30,11 +30,18 @@ const INACTIVE_TRUSTED_USER = 'inactive-trusted-user';
 const UNTRUSTED_USER = 'untrusted-user';
 
 const BASIC_BUILD_INFO = {
-  branch: `pull/${PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER}`,
-  failed: false,
-  reponame: AIO_GITHUB_REPO,
-  username: AIO_GITHUB_ORGANIZATION,
-  vcs_revision: SHA,
+  name: 'test_job',
+  status: 'success',
+  organization: {name: AIO_GITHUB_ORGANIZATION},
+  project: {name: AIO_GITHUB_REPO},
+  pipeline: {id: PipelineIds.PIPELINE_INFO_OK},
+};
+const BASIC_PIPELINE_INFO = {
+  id: PipelineIds.PIPELINE_INFO_OK,
+  vcs: {
+    review_id: `${PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER}`,
+    revision: SHA,
+  },
 };
 
 const ISSUE_INFO_TRUSTED_LABEL = { labels: [{ name: AIO_TRUSTED_PR_LABEL }], user: { login: UNTRUSTED_USER } };
@@ -57,10 +64,12 @@ const ARTIFACT_VALID_TRUSTED_LABEL = { path: AIO_ARTIFACT_PATH, url: `${CIRCLE_C
 const ARTIFACT_VALID_UNTRUSTED = { path: AIO_ARTIFACT_PATH, url: `${CIRCLE_CI_API_HOST}/artifacts/valid/untrusted`, _urlPath: '/artifacts/valid/untrusted' };
 
 const CIRCLE_CI_BUILD_INFO_URL = `/api/v2/project/gh/${AIO_GITHUB_ORGANIZATION}/${AIO_GITHUB_REPO}`;
+const CIRCLE_CI_PIPELINE_INFO_URL = '/api/v2/pipeline';
 
 const buildInfoUrl = (buildNum: number) => `${CIRCLE_CI_BUILD_INFO_URL}/job/${buildNum}`;
 const buildArtifactsUrl = (buildNum: number) => `${CIRCLE_CI_BUILD_INFO_URL}/${buildNum}/artifacts`;
-const buildInfo = (prNum: number) => ({ ...BASIC_BUILD_INFO, branch: `pull/${prNum}` });
+const pipelineInfoUrl = (pipelineId: string) => `${CIRCLE_CI_PIPELINE_INFO_URL}/${pipelineId}`;
+const buildInfo = (pipelineId: string) => ({ ...BASIC_BUILD_INFO, pipeline: { id: pipelineId } });
 
 const GITHUB_API_HOST = 'https://api.github.com';
 const GITHUB_ISSUES_URL = `/repos/${AIO_GITHUB_ORGANIZATION}/${AIO_GITHUB_REPO}/issues`;
@@ -71,6 +80,15 @@ const getIssueUrl = (prNum: number) => `${GITHUB_ISSUES_URL}/${prNum}`;
 const getFilesUrl = (prNum: number, pageNum = 1) => `${GITHUB_PULLS_URL}/${prNum}/files?page=${pageNum}&per_page=100`;
 const getCommentUrl = (prNum: number) => `${getIssueUrl(prNum)}/comments`;
 const getTeamMembershipUrl = (teamId: number, username: string) => `/teams/${teamId}/memberships/${username}`;
+
+const setUpCircleCiApiForBuild =
+    (buildNum: number, pipelineId: string, prNum = PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER, sha = SHA) => {
+      circleCiApi.get(buildInfoUrl(buildNum)).reply(200, buildInfo(pipelineId));
+      circleCiApi.get(pipelineInfoUrl(pipelineId)).reply(200, {
+        id: pipelineId,
+        vcs: { review_id: `${prNum}`, revision: sha },
+      });
+    };
 
 const createArchive = (buildNum: number, prNum: number, sha: string) => {
   logger.log('createArchive', buildNum, prNum, sha);
@@ -91,42 +109,50 @@ const githubApi = nock(GITHUB_API_HOST).persist().matchHeader('Authorization', `
 // GENERAL responses
 githubApi.get(GITHUB_TEAMS_URL + '?page=1&per_page=100').reply(200, TEST_TEAM_INFO);
 githubApi.post(getCommentUrl(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER)).reply(200);
+circleCiApi.get(pipelineInfoUrl(PipelineIds.PIPELINE_INFO_OK)).reply(200, BASIC_PIPELINE_INFO);
 
-// BUILD_INFO errors
+// BUILD INFO errors
 circleCiApi.get(buildInfoUrl(BuildNums.BUILD_INFO_ERROR)).replyWithError('BUILD_INFO_ERROR');
 circleCiApi.get(buildInfoUrl(BuildNums.BUILD_INFO_404)).reply(404, 'BUILD_INFO_404');
-circleCiApi.get(buildInfoUrl(BuildNums.BUILD_INFO_BUILD_FAILED)).reply(200, { ...BASIC_BUILD_INFO, failed: true });
-circleCiApi.get(buildInfoUrl(BuildNums.BUILD_INFO_INVALID_GH_ORG)).reply(200, { ...BASIC_BUILD_INFO, username: 'bad' });
-circleCiApi.get(buildInfoUrl(BuildNums.BUILD_INFO_INVALID_GH_REPO)).reply(200, { ...BASIC_BUILD_INFO, reponame: 'bad' });
+circleCiApi.get(buildInfoUrl(BuildNums.BUILD_INFO_BUILD_FAILED)).reply(200, { ...BASIC_BUILD_INFO, status: 'failed' });
+circleCiApi.get(buildInfoUrl(BuildNums.BUILD_INFO_INVALID_GH_ORG)).reply(200, { ...BASIC_BUILD_INFO, organization: { name: 'bad' } });
+circleCiApi.get(buildInfoUrl(BuildNums.BUILD_INFO_INVALID_GH_REPO)).reply(200, { ...BASIC_BUILD_INFO, project: { name: 'bad' } });
+
+// PIPELINE INFO errors
+circleCiApi.get(buildInfoUrl(BuildNums.PIPELINE_INFO_ERROR)).reply(200, { ...BASIC_BUILD_INFO, pipeline: { id: PipelineIds.PIPELINE_INFO_ERROR } });
+circleCiApi.get(pipelineInfoUrl(PipelineIds.PIPELINE_INFO_ERROR)).replyWithError('PIPELINE_INFO_ERROR');
+
+circleCiApi.get(buildInfoUrl(BuildNums.PIPELINE_INFO_404)).reply(200, { ...BASIC_BUILD_INFO, pipeline: { id: PipelineIds.PIPELINE_INFO_404 } });
+circleCiApi.get(pipelineInfoUrl(PipelineIds.PIPELINE_INFO_ERROR)).reply(404, 'PIPELINE_INFO_404');
 
 // CHANGED FILE errors
-circleCiApi.get(buildInfoUrl(BuildNums.CHANGED_FILES_ERROR)).reply(200, buildInfo(PrNums.CHANGED_FILES_ERROR));
+setUpCircleCiApiForBuild(BuildNums.CHANGED_FILES_ERROR, PipelineIds.CHANGED_FILES_ERROR, PrNums.CHANGED_FILES_ERROR);
 githubApi.get(getFilesUrl(PrNums.CHANGED_FILES_ERROR)).replyWithError('CHANGED_FILES_ERROR');
-circleCiApi.get(buildInfoUrl(BuildNums.CHANGED_FILES_404)).reply(200, buildInfo(PrNums.CHANGED_FILES_404));
+setUpCircleCiApiForBuild(BuildNums.CHANGED_FILES_404, PipelineIds.CHANGED_FILES_404, PrNums.CHANGED_FILES_404);
 githubApi.get(getFilesUrl(PrNums.CHANGED_FILES_404)).reply(404, 'CHANGED_FILES_404');
-circleCiApi.get(buildInfoUrl(BuildNums.CHANGED_FILES_NONE)).reply(200, buildInfo(PrNums.CHANGED_FILES_NONE));
+setUpCircleCiApiForBuild(BuildNums.CHANGED_FILES_NONE, PipelineIds.CHANGED_FILES_NONE, PrNums.CHANGED_FILES_NONE);
 githubApi.get(getFilesUrl(PrNums.CHANGED_FILES_NONE)).reply(200, []);
 
 // ARTIFACT URL errors
-circleCiApi.get(buildInfoUrl(BuildNums.BUILD_ARTIFACTS_ERROR)).reply(200, buildInfo(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER));
+circleCiApi.get(buildInfoUrl(BuildNums.BUILD_ARTIFACTS_ERROR)).reply(200, BASIC_BUILD_INFO);
 circleCiApi.get(buildArtifactsUrl(BuildNums.BUILD_ARTIFACTS_ERROR)).replyWithError('BUILD_ARTIFACTS_ERROR');
-circleCiApi.get(buildInfoUrl(BuildNums.BUILD_ARTIFACTS_404)).reply(200, buildInfo(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER));
+circleCiApi.get(buildInfoUrl(BuildNums.BUILD_ARTIFACTS_404)).reply(200, BASIC_BUILD_INFO);
 circleCiApi.get(buildArtifactsUrl(BuildNums.BUILD_ARTIFACTS_404)).reply(404, 'BUILD_ARTIFACTS_ERROR');
-circleCiApi.get(buildInfoUrl(BuildNums.BUILD_ARTIFACTS_EMPTY)).reply(200, buildInfo(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER));
+circleCiApi.get(buildInfoUrl(BuildNums.BUILD_ARTIFACTS_EMPTY)).reply(200, BASIC_BUILD_INFO);
 circleCiApi.get(buildArtifactsUrl(BuildNums.BUILD_ARTIFACTS_EMPTY)).reply(200, { items: [] });
-circleCiApi.get(buildInfoUrl(BuildNums.BUILD_ARTIFACTS_MISSING)).reply(200, buildInfo(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER));
+circleCiApi.get(buildInfoUrl(BuildNums.BUILD_ARTIFACTS_MISSING)).reply(200, BASIC_BUILD_INFO);
 circleCiApi.get(buildArtifactsUrl(BuildNums.BUILD_ARTIFACTS_MISSING)).reply(200, { items: [ARTIFACT_1, ARTIFACT_2, ARTIFACT_3] });
 
 // ARTIFACT DOWNLOAD errors
-circleCiApi.get(buildInfoUrl(BuildNums.DOWNLOAD_ARTIFACT_ERROR)).reply(200, buildInfo(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER));
+circleCiApi.get(buildInfoUrl(BuildNums.DOWNLOAD_ARTIFACT_ERROR)).reply(200, BASIC_BUILD_INFO);
 circleCiApi.get(buildArtifactsUrl(BuildNums.DOWNLOAD_ARTIFACT_ERROR)).reply(200, { items: [ARTIFACT_ERROR] });
 circleCiApi.get(ARTIFACT_ERROR._urlPath).replyWithError(ARTIFACT_ERROR._urlPath);
-circleCiApi.get(buildInfoUrl(BuildNums.DOWNLOAD_ARTIFACT_404)).reply(200, buildInfo(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER));
+circleCiApi.get(buildInfoUrl(BuildNums.DOWNLOAD_ARTIFACT_404)).reply(200, BASIC_BUILD_INFO);
 circleCiApi.get(buildArtifactsUrl(BuildNums.DOWNLOAD_ARTIFACT_404)).reply(200, [ARTIFACT_404]);
 circleCiApi.get(ARTIFACT_ERROR._urlPath).reply(404, ARTIFACT_ERROR._urlPath);
 
 // TRUST CHECK errors
-circleCiApi.get(buildInfoUrl(BuildNums.TRUST_CHECK_ERROR)).reply(200, buildInfo(PrNums.TRUST_CHECK_ERROR));
+setUpCircleCiApiForBuild(BuildNums.TRUST_CHECK_ERROR, PipelineIds.TRUST_CHECK_ERROR, PrNums.TRUST_CHECK_ERROR);
 githubApi.get(getFilesUrl(PrNums.TRUST_CHECK_ERROR)).reply(200, [{ filename: 'aio/a' }]);
 circleCiApi.get(buildArtifactsUrl(BuildNums.TRUST_CHECK_ERROR)).reply(200, { items: [ARTIFACT_VALID_TRUSTED_USER] });
 githubApi.get(getIssueUrl(PrNums.TRUST_CHECK_ERROR)).replyWithError('TRUST_CHECK_ERROR');
@@ -155,7 +181,7 @@ githubApi.get(getIssueUrl(PrNums.TRUST_CHECK_INACTIVE_TRUSTED_USER)).reply(200, 
 githubApi.get(getTeamMembershipUrl(0, INACTIVE_TRUSTED_USER)).reply(200, INACTIVE_STATE);
 
 // UNTRUSTED reponse
-circleCiApi.get(buildInfoUrl(BuildNums.TRUST_CHECK_UNTRUSTED)).reply(200, buildInfo(PrNums.TRUST_CHECK_UNTRUSTED));
+setUpCircleCiApiForBuild(BuildNums.TRUST_CHECK_UNTRUSTED, PipelineIds.TRUST_CHECK_UNTRUSTED, PrNums.TRUST_CHECK_UNTRUSTED);
 githubApi.get(getFilesUrl(PrNums.TRUST_CHECK_UNTRUSTED)).reply(200, [{ filename: 'aio/a' }]);
 circleCiApi.get(buildArtifactsUrl(BuildNums.TRUST_CHECK_UNTRUSTED)).reply(200, { items: [ARTIFACT_VALID_UNTRUSTED] });
 circleCiApi.get(ARTIFACT_VALID_UNTRUSTED._urlPath).reply(200, createArchive(BuildNums.TRUST_CHECK_UNTRUSTED, PrNums.TRUST_CHECK_UNTRUSTED, SHA));

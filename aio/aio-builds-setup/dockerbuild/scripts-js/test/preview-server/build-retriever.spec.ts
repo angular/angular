@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as nock from 'nock';
 import {resolve as resolvePath} from 'path';
-import {BuildInfo, CircleCiApi} from '../../lib/common/circle-ci-api';
+import {BuildInfo, CircleCiApi, PipelineInfo} from '../../lib/common/circle-ci-api';
 import {Logger} from '../../lib/common/utils';
 import {BuildRetriever} from '../../lib/preview-server/build-retriever';
 
@@ -13,6 +13,7 @@ describe('BuildRetriever', () => {
 
   let api: CircleCiApi;
   let BUILD_INFO: BuildInfo;
+  let PIPELINE_INFO: PipelineInfo;
   let WRITEFILE_RESULT: any;
   let writeFileSpy: jasmine.Spy;
   let EXISTS_RESULT: boolean;
@@ -21,18 +22,24 @@ describe('BuildRetriever', () => {
 
   beforeEach(() => {
     BUILD_INFO = {
-      branch: 'pull/777',
-      build_num: 12345,
-      failed: false,
-      has_artifacts: true,
-      outcome: 'success',
-      reponame: 'REPO',
-      username: 'ORG',
-      vcs_revision: 'COMMIT',
+      number: 12345,
+      name: 'test_job',
+      status: 'success',
+      organization: {name: 'ORG'},
+      project: {name: 'REPO'},
+      pipeline: {id: 'test_pipeline'},
+    };
+    PIPELINE_INFO = {
+      id: 'test_pipeline',
+      vcs: {
+        review_id: '777',
+        revision: 'COMMIT',
+      },
     };
 
     api = new CircleCiApi('ORG', 'REPO', 'TOKEN');
     spyOn(api, 'getBuildInfo').and.resolveTo(BUILD_INFO);
+    spyOn(api, 'getPipelineInfo').and.resolveTo(PIPELINE_INFO);
     getBuildArtifactUrlSpy = spyOn(api, 'getBuildArtifactUrl').and.resolveTo(BASE_URL + ARTIFACT_PATH);
 
     WRITEFILE_RESULT = undefined;
@@ -65,18 +72,12 @@ describe('BuildRetriever', () => {
 
 
   describe('getGithubInfo', () => {
-    it('should request the info from CircleCI', async () => {
+    it('should request the build and pipeline info from CircleCI', async () => {
       const retriever = new BuildRetriever(api, MAX_DOWNLOAD_SIZE, DOWNLOAD_DIR);
       const info = await retriever.getGithubInfo(12345);
       expect(api.getBuildInfo).toHaveBeenCalledWith(12345);
+      expect(api.getPipelineInfo).toHaveBeenCalledWith('test_pipeline');
       expect(info).toEqual({org: 'ORG', pr: 777, repo: 'REPO', sha: 'COMMIT', success: true});
-    });
-
-    it('should error if it is not possible to extract the PR number from the branch', async () => {
-      BUILD_INFO.branch = 'master';
-      const retriever = new BuildRetriever(api, MAX_DOWNLOAD_SIZE, DOWNLOAD_DIR);
-
-      await expectAsync(retriever.getGithubInfo(12345)).toBeRejectedWithError('No PR found in branch field: master');
     });
   });
 
