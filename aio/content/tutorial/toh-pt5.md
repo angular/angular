@@ -420,12 +420,11 @@ Here are the code files discussed on this page.
 <a id="approutingmodule"></a>
 <a id="appmodule"></a>
 
-#### `AppRoutingModule`, `AppModule`, and `HeroService`
+#### `AppRoutingModule` and `AppModule`
 
 <code-tabs>
-    <code-pane header="hero-search/hero-search.component.html" path="toh-pt6/src/app/hero-search/hero-search.component.html"></code-pane>
+    <code-pane header="src/app/app-routing.module.ts" path="toh-pt5/src/app/app-routing.module.ts"></code-pane>
     <code-pane header="src/app/app.module.ts" path="toh-pt5/src/app/app.module.ts"></code-pane>
-    <code-pane header="hero-search/hero-search.component.html" path="toh-pt6/src/app/hero-search/hero-search.component.html"></code-pane>
 </code-tabs>
 
 <a id="appcomponent"></a>
@@ -433,7 +432,6 @@ Here are the code files discussed on this page.
 #### `AppComponent`
 
 <code-tabs>
-    <code-pane header="hero-search/hero-search.component.html" path="toh-pt6/src/app/hero-search/hero-search.component.html"></code-pane>
     <code-pane header="src/app/app.component.css" path="toh-pt5/src/app/app.component.css"></code-pane>
 </code-tabs>
 
