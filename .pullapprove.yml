@@ -438,6 +438,7 @@ groups:
           'aio/content/examples/forms-overview/**',
           'aio/content/images/guide/forms-overview/**',
           'aio/content/guide/form-validation.md',
+          'aio/content/guide/typed-forms.md',
           'aio/content/examples/form-validation/**',
           'aio/content/images/guide/form-validation/**',
           'aio/content/guide/dynamic-form.md',
