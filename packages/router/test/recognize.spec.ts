@@ -659,7 +659,8 @@ describe('recognize', async () => {
                            },
                          ],
                          tree('/b'), '/b', 'emptyOnly', 'corrected', new DefaultUrlSerializer())
-                         .recognize();
+                         .recognize()
+                         .toPromise();
            expect(s).toBeNull();
          });
     });
@@ -835,7 +836,8 @@ async function recognize(
   const result = await new Recognizer(
                      TestBed.inject(EnvironmentInjector), RootComponent, config, tree(url), url,
                      paramsInheritanceStrategy, relativeLinkResolution, serializer)
-                     .recognize();
+                     .recognize()
+                     .toPromise();
   expect(result).not.toBeNull();
   return result!;
 }

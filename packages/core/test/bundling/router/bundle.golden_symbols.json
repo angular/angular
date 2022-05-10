@@ -495,6 +495,9 @@
     "name": "ROUTES2"
   },
   {
+    "name": "Recognizer"
+  },
+  {
     "name": "RefCountOperator"
   },
   {
@@ -673,6 +676,9 @@
   },
   {
     "name": "TakeSubscriber"
+  },
+  {
+    "name": "TakeWhileSubscriber"
   },
   {
     "name": "TapSubscriber"
@@ -1521,6 +1527,9 @@
     "name": "joinWithSlash"
   },
   {
+    "name": "last"
+  },
+  {
     "name": "last2"
   },
   {
@@ -1563,6 +1572,9 @@
     "name": "matchSegments"
   },
   {
+    "name": "matchWithChecks"
+  },
+  {
     "name": "materializeViewResults"
   },
   {
@@ -1603,9 +1615,6 @@
   },
   {
     "name": "navigationCancelingError"
-  },
-  {
-    "name": "newObservableError"
   },
   {
     "name": "nextBindingIndex"
@@ -1668,6 +1677,9 @@
     "name": "pathCompareMap"
   },
   {
+    "name": "pipeFromArray"
+  },
+  {
     "name": "platformBrowser"
   },
   {
@@ -1695,7 +1707,7 @@
     "name": "readPatchedLView"
   },
   {
-    "name": "recognize2"
+    "name": "redirectIfUrlTree"
   },
   {
     "name": "refCount"
