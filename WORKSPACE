@@ -10,8 +10,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "2b2004784358655f334925e7eadc7ba80f701144363df949b3293e1ae7a2fb7b",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.4.0/rules_nodejs-5.4.0.tar.gz"],
+    sha256 = "0fad45a9bda7dc1990c47b002fd64f55041ea751fafc00cd34efb96107675778",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.5.0/rules_nodejs-5.5.0.tar.gz"],
 )
 
 load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
@@ -32,9 +32,9 @@ http_archive(
 # Fetch Aspect lib for utilities like write_source_files
 http_archive(
     name = "aspect_bazel_lib",
-    sha256 = "4f018d3c685174115188ffb778fca10a3f43f82bbbf0aa63361c1cd02f708dbb",
-    strip_prefix = "bazel-lib-0.5.3",
-    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v0.5.3.tar.gz",
+    sha256 = "82e80cd47a5c2127ca0d717b7270fa833996c24dce389999c9d67e6c3eeb92e3",
+    strip_prefix = "bazel-lib-0.11.10",
+    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v0.11.10.tar.gz",
 )
 
 # Download cli source from angular/cli-builds for doc generation at a specific tag or commit.
