@@ -13,7 +13,6 @@ export interface GithubInfo {
   pr: number;
   repo: string;
   sha: string;
-  success: boolean;
 }
 
 /**
@@ -42,7 +41,6 @@ export class BuildRetriever {
       pr: +pipelineInfo.vcs.review_id,
       repo: buildInfo.project.name,
       sha: pipelineInfo.vcs.revision,
-      success: buildInfo.status === 'success',
     };
     return githubInfo;
   }

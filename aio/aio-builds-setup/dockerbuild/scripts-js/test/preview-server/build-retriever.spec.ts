@@ -24,7 +24,6 @@ describe('BuildRetriever', () => {
     BUILD_INFO = {
       number: 12345,
       name: 'test_job',
-      status: 'success',
       organization: {name: 'ORG'},
       project: {name: 'REPO'},
       pipeline: {id: 'test_pipeline'},
@@ -77,7 +76,7 @@ describe('BuildRetriever', () => {
       const info = await retriever.getGithubInfo(12345);
       expect(api.getBuildInfo).toHaveBeenCalledWith(12345);
       expect(api.getPipelineInfo).toHaveBeenCalledWith('test_pipeline');
-      expect(info).toEqual({org: 'ORG', pr: 777, repo: 'REPO', sha: 'COMMIT', success: true});
+      expect(info).toEqual({org: 'ORG', pr: 777, repo: 'REPO', sha: 'COMMIT'});
     });
   });
 
