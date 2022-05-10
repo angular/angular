@@ -104,6 +104,50 @@ describe('Image directive', () => {
               'Please remove the `src` attribute from this image. The NgOptimizedImage directive will use ' +
               'the `rawSrc` to compute the final image URL and set the `src` itself.');
     });
+
+    it('should throw if `rawSrc` contains a Base64-encoded image (that starts with `data:`)', () => {
+      setupTestingModule();
+
+      expect(() => {
+        const template = '<img rawSrc="' + ANGULAR_LOGO_BASE64 + '" width="50" height="50">';
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              'NG02951: The NgOptimizedImage directive detected that the `rawSrc` was set ' +
+              'to a Base64-encoded string (' + ANGULAR_LOGO_BASE64.substring(0, 50) + '...). ' +
+              'Base64-encoded strings are not supported by the NgOptimizedImage directive. ' +
+              'Use a regular `src` attribute (instead of `rawSrc`) to disable the NgOptimizedImage ' +
+              'directive for this element.');
+    });
+
+    it('should throw if `rawSrc` contains a `blob:` URL', (done) => {
+      // Domino does not support canvas elements properly,
+      // so run this test only in a browser.
+      if (!isBrowser) {
+        done();
+        return;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.toBlob(function(blob) {
+        const blobURL = URL.createObjectURL(blob!);
+
+        setupTestingModule();
+
+        // Note: use RegExp to partially match the error message, since the blob URL
+        // is created dynamically, so it might be different for each invocation.
+        const errorMessageRegExp =
+            /NG02951: The NgOptimizedImage directive detected that the `rawSrc` was set to a blob URL \(blob:/;
+        expect(() => {
+          const template = '<img rawSrc="' + blobURL + '" width="50" height="50">';
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+        }).toThrowError(errorMessageRegExp);
+
+        done();
+      });
+    });
   });
 
   describe('lazy loading', () => {
@@ -158,6 +202,9 @@ describe('Image directive', () => {
 });
 
 // Helpers
+
+const ANGULAR_LOGO_BASE64 =
+    'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==';
 
 @Component({
   selector: 'test-cmp',
