@@ -13,7 +13,7 @@ import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/no
 import {GlobalTargetResolver, isProceduralRenderer, Renderer3} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
 import {isDirectiveHost} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, FLAGS, LView, LViewFlags, RENDERER, TView} from '../interfaces/view';
+import {CLEANUP, CONTEXT, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {profiler, ProfilerEvent} from '../profiler';
 import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
@@ -266,11 +266,7 @@ function wrapListener(
     const startView = tNode.flags & TNodeFlags.isComponentHost ?
         getComponentLViewByIndex(tNode.index, lView) :
         lView;
-
-    // See interfaces/view.ts for more on LViewFlags.ManualOnPush
-    if ((lView[FLAGS] & LViewFlags.ManualOnPush) === 0) {
-      markViewDirty(startView);
-    }
+    markViewDirty(startView);
 
     let result = executeListenerWithErrorHandling(lView, context, listenerFn, e);
     // A just-invoked listener function might have coalesced listeners so we need to check for
