@@ -107,6 +107,7 @@
   "devDependencies": {
     "@angular-devkit/architect-cli": "0.1400.0",
     "@angular-devkit/build-angular": "^14.0.0",
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#f557392bfe7eeccdd39e21853ed7d90e02b2bce7",
     "@angular-eslint/builder": "^13.0.0",
     "@angular-eslint/eslint-plugin": "^13.0.0",
     "@angular-eslint/eslint-plugin-template": "^13.0.0",
