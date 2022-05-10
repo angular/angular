@@ -4842,6 +4842,48 @@ describe('Integration', () => {
            expect(TestBed.inject(Location).path()).toEqual('/lazy/loaded/child');
            expect(fixture.nativeElement).toHaveText('lazy-loaded-parent [lazy-loaded-child]');
          }));
+
+      it('cancels guard execution when a new navigation happens', fakeAsync(() => {
+           @Injectable({providedIn: 'root'})
+           class DelayedGuard {
+             static delayedExecutions = 0;
+             canMatch() {
+               return of(true).pipe(delay(1000), tap(() => {
+                                      DelayedGuard.delayedExecutions++;
+                                    }));
+             }
+           }
+           const router = TestBed.inject(Router);
+           const delayedGuardSpy = spyOn(TestBed.inject(DelayedGuard), 'canMatch');
+           delayedGuardSpy.and.callThrough();
+           const configurableMatchSpy = spyOn(TestBed.inject(ConfigurableGuard), 'canMatch');
+           configurableMatchSpy.and.callFake(() => {
+             router.navigateByUrl('/team/1');
+             return false;
+           });
+           router.resetConfig([
+             {path: 'a', canMatch: [ConfigurableGuard, DelayedGuard], component: SimpleCmp},
+             {path: 'a', canMatch: [ConfigurableGuard, DelayedGuard], component: SimpleCmp},
+             {path: 'a', canMatch: [ConfigurableGuard, DelayedGuard], component: SimpleCmp},
+             {path: 'team/:id', component: TeamCmp},
+           ]);
+           const fixture = createRoot(router, RootCmp);
+
+
+           router.navigateByUrl('/a');
+           advance(fixture);
+           expect(fixture.nativeElement.innerHTML).toContain('team');
+
+           expect(configurableMatchSpy.calls.count()).toEqual(1);
+
+           // The delayed guard should not execute the delayed condition because the other guard
+           // initiates a new navigation, which cancels the current one and unsubscribes from
+           // intermediate results.
+           expect(DelayedGuard.delayedExecutions).toEqual(0);
+           // The delayed guard should still have executed once because guards are executed at the
+           // same time
+           expect(delayedGuardSpy.calls.count()).toEqual(1);
+         }));
     });
   });
 
