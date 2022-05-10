@@ -12,7 +12,7 @@ import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 @Component({
   selector: 'app-root',
   template: `
-    <img raw-src="./a.png" width="150" height="150">
+    <img rawSrc="./a.png" width="150" height="150">
   `,
 })
 class RootComponent {
