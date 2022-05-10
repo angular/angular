@@ -105,6 +105,7 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#f557392bfe7eeccdd39e21853ed7d90e02b2bce7",
     "@angular-devkit/architect-cli": "0.1303.0",
     "@angular-devkit/build-angular": "13.3.0",
     "@angular-eslint/builder": "^13.0.0",
