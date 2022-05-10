@@ -33,9 +33,6 @@ export interface BuildInfo {
   /** The job name (e.g. `'aio_preview'`). */
   name: string;
 
-  /** The job status (e.g. `'success'` or `'failed'`). */
-  status: string;
-
   /** Info about the organization which the project related to this job belongs to. */
   organization: {
     name: string;
