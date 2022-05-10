@@ -152,10 +152,6 @@ describe('preview-server', () => {
       await curl(payload(BuildNums.PIPELINE_INFO_404)).then(h.verifyResponse(500));
     });
 
-    it('should respond with 204 if the build on CircleCI failed', async () => {
-      await curl(payload(BuildNums.BUILD_INFO_BUILD_FAILED)).then(h.verifyResponse(204));
-    });
-
     it('should respond with 500 if the github org from CircleCI does not match what is configured', async () => {
       await curl(payload(BuildNums.BUILD_INFO_INVALID_GH_ORG)).then(h.verifyResponse(500));
     });
