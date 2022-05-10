@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Inject, InjectionToken, Input, NgModule, OnInit, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, ElementRef, Inject, InjectionToken, Input, NgModule, OnInit, Renderer2, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
@@ -50,18 +50,16 @@ export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
  * @usageNotes
  * TODO: add Image directive usage notes.
  */
-@Directive({
-  selector: 'img[rawSrc]',
-  host: {
-    '[src]': 'getRewrittenSrc()',
-  },
-})
+@Directive({selector: 'img[rawSrc]'})
 export class NgOptimizedImage implements OnInit {
-  constructor(@Inject(IMAGE_LOADER) private imageLoader: ImageLoader) {}
+  constructor(
+      @Inject(IMAGE_LOADER) private imageLoader: ImageLoader, private renderer: Renderer2,
+      private imgElement: ElementRef) {}
 
   // Private fields to keep normalized input values.
   private _width?: number;
   private _height?: number;
+  private _priority?: boolean;
 
   /**
    * Name of the source image.
@@ -94,6 +92,14 @@ export class NgOptimizedImage implements OnInit {
     return this._height;
   }
 
+  @Input()
+  set priority(value: string|boolean|undefined) {
+    this._priority = inputToBoolean(value);
+  }
+  get priority(): boolean|undefined {
+    return this._priority;
+  }
+
   /**
    * Get a value of the `src` if it's set on a host <img> element.
    * This input is needed to verify that there are no `src` and `rawSrc` provided
@@ -105,6 +111,19 @@ export class NgOptimizedImage implements OnInit {
     if (ngDevMode) {
       assertExistingSrc(this);
     }
+    this.setHostAttribute('loading', this.getLoadingBehavior());
+    this.setHostAttribute('fetchpriority', this.getFetchPriority());
+    // The `src` attribute should be set last since other attributes
+    // could affect the image's loading behavior.
+    this.setHostAttribute('src', this.getRewrittenSrc());
+  }
+
+  getLoadingBehavior(): string {
+    return this.priority ? 'eager' : 'lazy';
+  }
+
+  getFetchPriority(): string {
+    return this.priority ? 'high' : 'auto';
   }
 
   getRewrittenSrc(): string {
@@ -116,6 +135,10 @@ export class NgOptimizedImage implements OnInit {
       width: this.width,
     };
     return this.imageLoader(imgConfig);
+  }
+
+  private setHostAttribute(name: string, value: string): void {
+    this.renderer.setAttribute(this.imgElement.nativeElement, name, value);
   }
 }
 
@@ -135,6 +158,10 @@ export class NgOptimizedImageModule {
 // Convert input value to integer.
 function inputToInteger(value: string|number|undefined): number|undefined {
   return typeof value === 'string' ? parseInt(value, 10) : value;
+}
+
+function inputToBoolean(value: unknown): boolean {
+  return value != null && `${value}` !== 'false';
 }
 
 function imgDirectiveDetails(dir: NgOptimizedImage) {
