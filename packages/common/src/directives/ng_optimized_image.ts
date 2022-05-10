@@ -31,6 +31,15 @@ export type ImageLoader = (config: ImageLoaderConfig) => string;
 const noopImageLoader = (config: ImageLoaderConfig) => config.src;
 
 /**
+ * When a Base64-encoded image is passed as an input to the `NgOptimizedImage` directive,
+ * an error is thrown. The image content (as a string) might be very long, thus making
+ * it hard to read an error message if the entire string is included. This const defines
+ * the number of characters that should be included into the error message. The rest
+ * of the content is truncated.
+ */
+const BASE64_IMG_MAX_LENGTH_IN_ERROR = 50;
+
+/**
  * Special token that allows to configure a function that will be used to produce an image URL based
  * on the specified input.
  */
@@ -110,6 +119,8 @@ export class NgOptimizedImage implements OnInit {
   ngOnInit() {
     if (ngDevMode) {
       assertExistingSrc(this);
+      assertNotBase64Image(this);
+      assertNotBlobURL(this);
     }
     this.setHostAttribute('loading', this.getLoadingBehavior());
     this.setHostAttribute('fetchpriority', this.getFetchPriority());
@@ -179,5 +190,36 @@ function assertExistingSrc(dir: NgOptimizedImage) {
         `${imgDirectiveDetails(dir)} detected that the \`src\` is also set (to \`${dir.src}\`). ` +
             `Please remove the \`src\` attribute from this image. The NgOptimizedImage directive will use ` +
             `the \`rawSrc\` to compute the final image URL and set the \`src\` itself.`);
+  }
+}
+
+// Verifies that the `rawSrc` is not a Base64-encoded image.
+function assertNotBase64Image(dir: NgOptimizedImage) {
+  let rawSrc = dir.rawSrc.trim();
+  if (rawSrc.startsWith('data:')) {
+    if (rawSrc.length > BASE64_IMG_MAX_LENGTH_IN_ERROR) {
+      rawSrc = rawSrc.substring(0, BASE64_IMG_MAX_LENGTH_IN_ERROR) + '...';
+    }
+    throw new RuntimeError(
+        RuntimeErrorCode.INVALID_INPUT,
+        `The NgOptimizedImage directive detected that the \`rawSrc\` was set ` +
+            `to a Base64-encoded string (${rawSrc}). Base64-encoded strings are ` +
+            `not supported by the NgOptimizedImage directive. Use a regular \`src\` ` +
+            `attribute (instead of \`rawSrc\`) to disable the NgOptimizedImage ` +
+            `directive for this element.`);
+  }
+}
+
+// Verifies that the `rawSrc` is not a Blob URL.
+function assertNotBlobURL(dir: NgOptimizedImage) {
+  const rawSrc = dir.rawSrc.trim();
+  if (rawSrc.startsWith('blob:')) {
+    throw new RuntimeError(
+        RuntimeErrorCode.INVALID_INPUT,
+        `The NgOptimizedImage directive detected that the \`rawSrc\` was set ` +
+            `to a blob URL (${rawSrc}). Blob URLs are not supported by the ` +
+            `NgOptimizedImage directive. Use a regular \`src\` attribute ` +
+            `(instead of \`rawSrc\`) to disable the NgOptimizedImage directive ` +
+            `for this element.`);
   }
 }
