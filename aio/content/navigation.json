@@ -339,6 +339,11 @@
               "tooltip": "Create a reactive form using FormBuilder, groups, and arrays."
             },
             {
+              "url": "guide/typed-forms",
+              "title": "Strictly Typed Reactive Forms In Depth",
+              "tooltip": "A deep-dive into the reactive forms types."
+            },
+            {
               "url": "guide/form-validation",
               "title": "Validate form input",
               "tooltip": "Validate user's form entries."
