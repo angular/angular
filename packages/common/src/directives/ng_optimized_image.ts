@@ -51,7 +51,7 @@ export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
  * TODO: add Image directive usage notes.
  */
 @Directive({
-  selector: 'img[raw-src]',
+  selector: 'img[rawSrc]',
   host: {
     '[src]': 'getRewrittenSrc()',
   },
@@ -68,7 +68,7 @@ export class NgOptimizedImage implements OnInit {
    * Image name will be processed by the image loader and the final URL will be applied as the `src`
    * property of the image.
    */
-  @Input('raw-src') rawSrc!: string;
+  @Input() rawSrc!: string;
 
   /**
    * The intrinsic width of the image in px.
@@ -96,7 +96,7 @@ export class NgOptimizedImage implements OnInit {
 
   /**
    * Get a value of the `src` if it's set on a host <img> element.
-   * This input is needed to verify that there are no `src` and `raw-src` provided
+   * This input is needed to verify that there are no `src` and `rawSrc` provided
    * at the same time (thus causing an ambiguity on which src to use).
    */
   @Input() src?: string;
@@ -139,7 +139,7 @@ function inputToInteger(value: string|number|undefined): number|undefined {
 
 function imgDirectiveDetails(dir: NgOptimizedImage) {
   return `The NgOptimizedImage directive (activated on an <img> element ` +
-      `with the \`raw-src="${dir.rawSrc}"\`)`;
+      `with the \`rawSrc="${dir.rawSrc}"\`)`;
 }
 
 /***** Assert functions *****/
@@ -151,6 +151,6 @@ function assertExistingSrc(dir: NgOptimizedImage) {
         RuntimeErrorCode.UNEXPECTED_SRC_ATTR,
         `${imgDirectiveDetails(dir)} detected that the \`src\` is also set (to \`${dir.src}\`). ` +
             `Please remove the \`src\` attribute from this image. The NgOptimizedImage directive will use ` +
-            `the \`raw-src\` to compute the final image URL and set the \`src\` itself.`);
+            `the \`rawSrc\` to compute the final image URL and set the \`src\` itself.`);
   }
 }
