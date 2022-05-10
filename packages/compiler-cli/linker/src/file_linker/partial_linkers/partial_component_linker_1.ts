@@ -165,6 +165,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
       template: {
         nodes: template.nodes,
         ngContentSelectors: template.ngContentSelectors,
+        debugSource: null,
       },
       declarationListEmitMode,
       styles: metaObj.has('styles') ? metaObj.getArray('styles').map(entry => entry.getString()) :

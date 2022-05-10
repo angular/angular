@@ -9,6 +9,7 @@
 import {AnimationTriggerNames, compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SchemaMetadata, SelectorMatcher, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
+import {UnifiedModulesHost} from '../../../core/api';
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {absoluteFrom, relative} from '../../../file_system';
@@ -32,7 +33,7 @@ import {NgModuleSymbol} from '../../ng_module';
 
 import {checkCustomElementSelectorForErrors, makeCyclicImportInfo} from './diagnostics';
 import {ComponentAnalysisData, ComponentResolutionData} from './metadata';
-import {_extractTemplateStyleUrls, extractComponentStyleUrls, extractStyleResources, extractTemplate, makeResourceNotFoundError, ParsedTemplateWithSource, parseTemplateDeclaration, preloadAndParseTemplate, ResourceTypeForDiagnostics, StyleUrlMeta, transformDecoratorResources} from './resources';
+import {_extractTemplateStyleUrls, extractComponentStyleUrls, extractStyleResources, extractTemplate, getTemplateDebugSource, makeResourceNotFoundError, ParsedTemplateWithSource, parseTemplateDeclaration, preloadAndParseTemplate, ResourceTypeForDiagnostics, StyleUrlMeta, transformDecoratorResources} from './resources';
 import {ComponentSymbol} from './symbol';
 import {animationTriggerResolver, collectAnimationNames, validateAndFlattenComponentImports} from './util';
 
@@ -59,7 +60,9 @@ export class ComponentDecoratorHandler implements
       private refEmitter: ReferenceEmitter, private depTracker: DependencyTracker|null,
       private injectableRegistry: InjectableClassRegistry,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
-      private annotateForClosureCompiler: boolean, private perf: PerfRecorder) {}
+      private unifiedModulesHost: UnifiedModulesHost|null,
+      private annotateForClosureCompiler: boolean, private generateTemplateDebugSource: boolean,
+      private perf: PerfRecorder) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -410,6 +413,9 @@ export class ComponentDecoratorHandler implements
           template: {
             nodes: template.nodes,
             ngContentSelectors: template.ngContentSelectors,
+            debugSource: this.generateTemplateDebugSource && this.unifiedModulesHost !== null ?
+                getTemplateDebugSource(template.declaration, this.unifiedModulesHost) :
+                null,
           },
           encapsulation,
           interpolation: template.interpolationConfig ?? DEFAULT_INTERPOLATION_CONFIG,

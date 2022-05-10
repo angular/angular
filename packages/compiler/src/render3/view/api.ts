@@ -187,6 +187,11 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
      * element without selector is present.
      */
     ngContentSelectors: string[];
+
+    /**
+     * A string representing the origin of the template that's useful for debugging.
+     */
+    debugSource: string | null;
   };
 
   declarations: DeclarationT[];

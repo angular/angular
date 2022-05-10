@@ -111,5 +111,48 @@ runInEachFileSystem(() => {
       // Check that the relative import has the leading './'.
       expect(jsContents).toContain(`import * as i1 from "./target";`);
     });
+
+    describe('template debug source', () => {
+      beforeEach(() => {
+        env.tsconfig({
+          '_useHostForImportGeneration': true,
+          generateTemplateDebugSource: true,
+        });
+      });
+      it('should be set for external templates', () => {
+        env.write('/app/test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            standalone: true,
+            selector: 'test-cmp',
+            templateUrl: './test.html',
+          })
+          export class TestCmp {}
+        `);
+        env.write('/app/test.html', '<span>Template!</span>');
+
+        env.driveMain();
+        const jsContents = env.getContents('app/test.js');
+        expect(jsContents).toContain('i0.ɵɵTemplateDebugSourceFeature("root/test.html")');
+      });
+
+      it('should be set for external templates', () => {
+        env.write('/app/test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            standalone: true,
+            selector: 'test-cmp',
+            template: '<span>Template!</span>',
+          })
+          export class TestCmp {}
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('app/test.js');
+        expect(jsContents).toContain('i0.ɵɵTemplateDebugSourceFeature("root/test")');
+      });
+    });
   });
 });

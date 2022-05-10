@@ -9,6 +9,7 @@
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, LexerRange, ParsedTemplate, ParseSourceFile, parseTemplate, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
+import {UnifiedModulesHost} from '../../../core/api';
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
 import {absoluteFrom} from '../../../file_system';
 import {DependencyTracker} from '../../../incremental/api';
@@ -561,4 +562,15 @@ export function _extractTemplateStyleUrls(template: ParsedTemplateWithSource): S
   const nodeForError = getTemplateDeclarationNodeForError(template.declaration);
   return template.styleUrls.map(
       url => ({url, source: ResourceTypeForDiagnostics.StylesheetFromTemplate, nodeForError}));
+}
+
+export function getTemplateDebugSource(
+    declaration: TemplateDeclaration, unifiedModulesHost: UnifiedModulesHost): string {
+  if (declaration.isInline) {
+    const sourceFile = declaration.expression.getSourceFile().fileName;
+    return unifiedModulesHost.fileNameToModuleName(sourceFile, sourceFile);
+  } else {
+    const contextFile = declaration.templateUrlExpression.getSourceFile().fileName;
+    return unifiedModulesHost.fileNameToModuleName(declaration.resolvedTemplateUrl, contextFile);
+  }
 }

@@ -196,6 +196,7 @@ export {
   ɵɵsyntheticHostListener,
   ɵɵsyntheticHostProperty,
   ɵɵtemplate,
+  ɵɵTemplateDebugSourceFeature,
   ɵɵtemplateRefExtractor,
   ɵɵtext,
   ɵɵtextInterpolate,

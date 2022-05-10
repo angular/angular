@@ -342,6 +342,16 @@ export interface BazelAndG3Options {
    * Insert JSDoc type annotations needed by Closure Compiler
    */
   annotateForClosureCompiler?: boolean;
+
+  /**
+   * Enables the generation of `TemplateDebugSourceFeature`, which causes components to be annotated
+   * with a `data-debug-source` attribute with a workspace-relative path to the template for that
+   * component.
+   *
+   * Only functional when the `CompilerHost` in use is a `UnifiedModulesHost` (that is, when the
+   * host environment supports generating a workspace-relative path from a file name).
+   */
+  generateTemplateDebugSource?: boolean;
 }
 
 /**

@@ -187,7 +187,10 @@ export class CompilerFacadeImpl implements CompilerFacade {
       ...facade as R3ComponentMetadataFacadeNoPropAndWhitespace,
       ...convertDirectiveFacadeToMetadata(facade),
       selector: facade.selector || this.elementSchemaRegistry.getDefaultComponentElementName(),
-      template,
+      template: {
+        ...template,
+        debugSource: null,
+      },
       declarations: facade.declarations.map(convertDeclarationFacadeToMetadata),
       declarationListEmitMode: DeclarationListEmitMode.Direct,
       styles: [...facade.styles, ...template.styles],
@@ -437,7 +440,10 @@ function convertDeclareComponentFacadeToMetadata(
 
   return {
     ...convertDeclareDirectiveFacadeToMetadata(decl, typeSourceSpan),
-    template,
+    template: {
+      ...template,
+      debugSource: null,
+    },
     styles: decl.styles ?? [],
     declarations,
     viewProviders: decl.viewProviders !== undefined ? new WrappedNodeExpr(decl.viewProviders) :
@@ -509,7 +515,10 @@ function parseJitTemplate(
     const errors = parsed.errors.map(err => err.toString()).join(', ');
     throw new Error(`Errors during JIT compilation of template for ${typeName}: ${errors}`);
   }
-  return {template: parsed, interpolation: interpolationConfig};
+  return {
+    template: parsed,
+    interpolation: interpolationConfig,
+  };
 }
 
 // This seems to be needed to placate TS v3.0 only

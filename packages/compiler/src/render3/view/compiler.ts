@@ -112,13 +112,22 @@ function addFeatures(
   if (meta.lifecycle.usesOnChanges) {
     features.push(o.importExpr(R3.NgOnChangesFeature));
   }
-  // TODO: better way of differentiating component vs directive metadata.
-  if (meta.hasOwnProperty('template') && meta.isStandalone) {
+  if (isComponentMetadata(meta) && meta.isStandalone) {
     features.push(o.importExpr(R3.StandaloneFeature));
+  }
+  if (isComponentMetadata(meta) && meta.template.debugSource !== null) {
+    features.push(
+        o.importExpr(R3.TemplateDebugSourceFeature).callFn([o.literal(meta.template.debugSource)]));
   }
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
   }
+}
+
+function isComponentMetadata(metadata: R3DirectiveMetadata|
+                             R3ComponentMetadata<R3TemplateDependency>):
+    metadata is R3ComponentMetadata<R3TemplateDependency> {
+  return metadata.hasOwnProperty('template');
 }
 
 /**

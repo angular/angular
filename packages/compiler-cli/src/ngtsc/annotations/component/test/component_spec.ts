@@ -85,7 +85,9 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       /* depTracker */ null,
       injectableRegistry,
       /* semanticDepGraphUpdater */ null,
+      /* unifiedModulesHost */ null,
       /* annotateForClosureCompiler */ false,
+      /* generateTemplateDebugSource */ false,
       NOOP_PERF_RECORDER,
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};

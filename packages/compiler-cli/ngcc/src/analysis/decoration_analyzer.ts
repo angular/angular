@@ -110,7 +110,8 @@ export class DecorationAnalyzer {
         /* i18nNormalizeLineEndingsInICUs */ false, this.moduleResolver, this.cycleAnalyzer,
         CycleHandlingStrategy.UseRemoteScoping, this.refEmitter, NOOP_DEPENDENCY_TRACKER,
         this.injectableRegistry,
-        /* semanticDepGraphUpdater */ null, !!this.compilerOptions.annotateForClosureCompiler,
+        /* semanticDepGraphUpdater */ null, /* unifiedModulesHost */ null,
+        !!this.compilerOptions.annotateForClosureCompiler, /* generateTemplateDebugSource */ false,
         NOOP_PERF_RECORDER),
 
     // See the note in ngtsc about why this cast is needed.
