@@ -31,7 +31,6 @@ const UNTRUSTED_USER = 'untrusted-user';
 
 const BASIC_BUILD_INFO = {
   name: 'test_job',
-  status: 'success',
   organization: {name: AIO_GITHUB_ORGANIZATION},
   project: {name: AIO_GITHUB_REPO},
   pipeline: {id: PipelineIds.PIPELINE_INFO_OK},
@@ -114,7 +113,6 @@ circleCiApi.get(pipelineInfoUrl(PipelineIds.PIPELINE_INFO_OK)).reply(200, BASIC_
 // BUILD INFO errors
 circleCiApi.get(buildInfoUrl(BuildNums.BUILD_INFO_ERROR)).replyWithError('BUILD_INFO_ERROR');
 circleCiApi.get(buildInfoUrl(BuildNums.BUILD_INFO_404)).reply(404, 'BUILD_INFO_404');
-circleCiApi.get(buildInfoUrl(BuildNums.BUILD_INFO_BUILD_FAILED)).reply(200, { ...BASIC_BUILD_INFO, status: 'failed' });
 circleCiApi.get(buildInfoUrl(BuildNums.BUILD_INFO_INVALID_GH_ORG)).reply(200, { ...BASIC_BUILD_INFO, organization: { name: 'bad' } });
 circleCiApi.get(buildInfoUrl(BuildNums.BUILD_INFO_INVALID_GH_REPO)).reply(200, { ...BASIC_BUILD_INFO, project: { name: 'bad' } });
 
