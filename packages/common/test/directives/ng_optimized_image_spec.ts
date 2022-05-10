@@ -13,10 +13,10 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('Image directive', () => {
-  it('should set `src` to `raw-src` value if image loader is not provided', () => {
+  it('should set `src` to `rawSrc` value if image loader is not provided', () => {
     setupTestingModule();
 
-    const template = '<img raw-src="path/img.png" width="100" height="50">';
+    const template = '<img rawSrc="path/img.png" width="100" height="50">';
     const fixture = createTestComponent(template);
     fixture.detectChanges();
 
@@ -29,7 +29,7 @@ describe('Image directive', () => {
     const imageLoader = (config: ImageLoaderConfig) => `${config.src}?w=${config.width}`;
     setupTestingModule({imageLoader});
 
-    const template = '<img raw-src="path/img.png" width="150" height="50">';
+    const template = '<img rawSrc="path/img.png" width="150" height="50">';
     const fixture = createTestComponent(template);
     fixture.detectChanges();
 
@@ -39,19 +39,19 @@ describe('Image directive', () => {
   });
 
   describe('setup error handling', () => {
-    it('should throw if both `src` and `raw-src` are present', () => {
+    it('should throw if both `src` and `rawSrc` are present', () => {
       setupTestingModule();
 
-      const template = '<img raw-src="path/img.png" src="path/img2.png" width="100" height="50">';
+      const template = '<img rawSrc="path/img.png" src="path/img2.png" width="100" height="50">';
       expect(() => {
         const fixture = createTestComponent(template);
         fixture.detectChanges();
       })
           .toThrowError(
               'NG02950: The NgOptimizedImage directive (activated on an <img> element with the ' +
-              '`raw-src="path/img.png"`) detected that the `src` is also set (to `path/img2.png`). ' +
+              '`rawSrc="path/img.png"`) detected that the `src` is also set (to `path/img2.png`). ' +
               'Please remove the `src` attribute from this image. The NgOptimizedImage directive will use ' +
-              'the `raw-src` to compute the final image URL and set the `src` itself.');
+              'the `rawSrc` to compute the final image URL and set the `src` itself.');
     });
   });
 });
