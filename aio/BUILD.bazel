@@ -162,6 +162,20 @@ TEST_DEPS = APPLICATION_DEPS + [
     "@aio_npm//puppeteer",
 ]
 
+# All sources, specs, and config files required to serve the app
+# and run e2e tests against it
+E2E_FILES = APPLICATION_FILES + glob(["tests/e2e/**"])
+
+# External dependencies from aio/package.json required by the e2e tests
+E2E_DEPS = APPLICATION_DEPS + [
+    "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium",
+    "@aio_npm//@types/jasmine",
+    "@aio_npm//@types/node",
+    "@aio_npm//jasmine-spec-reporter",
+    "@aio_npm//protractor",
+    "@aio_npm//ts-node",
+]
+
 architect(
     name = "build",
     args = [
@@ -183,6 +197,24 @@ architect_test(
     chdir = package_name(),
     configuration_env_vars = ["NG_BUILD_CACHE"],
     data = TEST_FILES + TEST_DEPS,
+)
+
+architect_test(
+    name = "e2e",
+    args = [
+        "site:e2e",
+        "--no-webdriverUpdate",
+    ],
+    chdir = package_name(),
+    configuration_env_vars = ["NG_BUILD_CACHE"],
+    data = E2E_FILES + E2E_DEPS,
+    env = {
+        "CHROMEDRIVER_BIN": "../$(CHROMEDRIVER)",
+        "CHROME_BIN": "../$(CHROMIUM)",
+    },
+    toolchains = [
+        "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias",
+    ],
 )
 
 # Build and serve the app. Run with ibazel to watch for changes and re-serve.
