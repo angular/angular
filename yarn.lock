@@ -15198,10 +15198,10 @@ ts-node@^10.0.0:
     v8-compile-cache-lib "^3.0.0"
     yn "3.1.1"
 
-tsec@0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.2.2.tgz#d86d771215fb09a5e226f2b252a1c038c7fa17ca"
-  integrity sha512-gKm+nnIKcE9xtrJw2cIJFjfuDGK0AvH3r4RayTEIkUvja/s9z9GPFgcSdEaapm6N10KrmWWcLjsHlKmH2tqzMw==
+tsec@0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.2.4.tgz#6c3461b442b6d84c23783c8a273640dd2173e128"
+  integrity sha512-40HnfeENlKdnqS7aTNNDjJJHY2eI8CKqkWH7GXSwgCathxqJuHAoW+ENrJzHLQM0O5evJRzYXjgcnUI0cJUrsg==
   dependencies:
     glob "^7.1.1"
     minimatch "^3.0.3"
