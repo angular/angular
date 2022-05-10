@@ -1366,6 +1366,18 @@ describe('Typed Class', () => {
         expect(c.value).toEqual({foo: 'bar'});
       });
 
+      it('without distributing union types', () => {
+        const c = fb.group({foo: 'bar' as string | number});
+        {
+          type ControlsType = {foo: FormControl<string|number>};
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+        let fc = c.controls.foo;
+        fc = new FormControl<string|number>('', {initialValueIsDefault: true});
+      });
+
       describe('from objects with FormControls', () => {
         it('from objects with builder FormGroups', () => {
           const c = fb.group({foo: fb.group({baz: 'bar'})});

@@ -48,16 +48,19 @@ export type ControlConfig<T> = [T|FormControlState<T>, (ValidatorFn|(ValidatorFn
  * The flag N, if not never, makes the resulting `FormControl` have N in its type. 
  */
 export type ɵElement<T, N extends null> =
-  T extends FormControl<infer U> ? FormControl<U> :
-  T extends FormGroup<infer U> ? FormGroup<U> :
-  T extends FormArray<infer U> ? FormArray<U> :
-  T extends AbstractControl<infer U> ? AbstractControl<U> :
-  T extends FormControlState<infer U> ? FormControl<U|N> :
-  T extends ControlConfig<infer U> ? FormControl<U|N> :
+  // The `extends` checks are wrapped in arrays in order to prevent TypeScript from applying type unions
+  // through the distributive conditional type. This is the officially recommended solution:
+  // https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types
+  [T] extends [FormControl<infer U>] ? FormControl<U> :
+  [T] extends [FormGroup<infer U>] ? FormGroup<U> :
+  [T] extends [FormArray<infer U>] ? FormArray<U> :
+  [T] extends [AbstractControl<infer U>] ? AbstractControl<U> :
+  [T] extends [FormControlState<infer U>] ? FormControl<U|N> :
+  [T] extends [ControlConfig<infer U>] ? FormControl<U|N> :
   // ControlConfig can be too much for the compiler to infer in the wrapped case. This is
   // not surprising, since it's practically death-by-polymorphism (e.g. the optional validators
   // members that might be arrays). Watch for ControlConfigs that might fall through.
-  T extends Array<infer U|ValidatorFn|ValidatorFn[]|AsyncValidatorFn|AsyncValidatorFn[]> ? FormControl<U|N> :
+  [T] extends [Array<infer U|ValidatorFn|ValidatorFn[]|AsyncValidatorFn|AsyncValidatorFn[]>] ? FormControl<U|N> :
   // Fallthough case: T is not a container type; use it directly as a value.
   FormControl<T|N>;
 
