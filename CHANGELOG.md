@@ -1,3 +1,16 @@
+<a name="13.3.7"></a>
+# 13.3.7 "chiffon-carambola" (2022-05-11)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0bede63d33](https://github.com/angular/components/commit/0bede63d33127d5a9ac0370307486ff50e492e9d) | fix | **datepicker:** add ability to have numeric zero value in input ([#24813](https://github.com/angular/components/pull/24813)) |
+| [7a122f7f03](https://github.com/angular/components/commit/7a122f7f03403e981c6a90522a4a201d79ba405c) | fix | **expansion:** inconsistent spacing for anchor buttons ([#24882](https://github.com/angular/components/pull/24882)) |
+| [e486ed93e4](https://github.com/angular/components/commit/e486ed93e45e6e5e5842d5dfa4e1c1de32823520) | fix | **menu:** focus the first item when opening menu on iOS VoiceOver ([#24733](https://github.com/angular/components/pull/24733)) |
+## Special Thanks
+Dmytro Prokhorov, Kristiyan Kostadinov and Zach Arend
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.13"></a>
 # 14.0.0-next.13 "quartzite-quetzal" (2022-05-04)
 ### cdk
