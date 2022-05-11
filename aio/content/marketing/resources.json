@@ -546,6 +546,11 @@
             "desc": "NGX-YOUI is an Angular UI Library that can be highly customized with content and styles. You can easily integrate with other CSS frameworks and UI Library, such as Tailwind, Bootstrap, PrimeNG, Angular Material etc.",
             "title": "NGX-YOUI",
             "url": "https://ngx-youi.github.io/NGX-YOUI/"
+          },
+          "ngx-cookie-service": {
+            "desc": "NGX Cookie Service is an Angular Library that can be used to read, set and delete browser cookies",
+            "title": "NGX Cookie Service",
+            "url": "https://github.com/stevermeister/ngx-cookie-service"
           }
         }
       }
