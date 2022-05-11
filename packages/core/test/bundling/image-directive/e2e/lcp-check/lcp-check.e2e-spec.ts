@@ -31,6 +31,6 @@ describe('NgOptimizedImage directive', () => {
     const logs = await collectBrowserLogs(logging.Level.WARNING);
     expect(logs.length).toEqual(1);
     // Verify that the error code and the image src are present in the error message.
-    expect(logs[0].message).toMatch(/NG02954.*?a\.png/);
+    expect(logs[0].message).toMatch(/NG02955.*?a\.png/);
   });
 });

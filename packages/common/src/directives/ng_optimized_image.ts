@@ -42,6 +42,18 @@ const noopImageLoader = (config: ImageLoaderConfig) => config.src;
 const BASE64_IMG_MAX_LENGTH_IN_ERROR = 50;
 
 /**
+ * RegExpr to determine whether a src in a srcset is using width descriptors.
+ * Should match something like: "100w, 200w".
+ */
+const VALID_WIDTH_DESCRIPTOR_SRCSET = /^((\s*\d+w\s*(,|$)){1,})$/;
+
+/**
+ * RegExpr to determine whether a src in a srcset is using density descriptors.
+ * Should match something like: "1x, 2x".
+ */
+const VALID_DENSITY_DESCRIPTOR_SRCSET = /^((\s*\d(\.\d)?x\s*(,|$)){1,})$/;
+
+/**
  * Special token that allows to configure a function that will be used to produce an image URL based
  * on the specified input.
  */
@@ -105,7 +117,7 @@ class LCPImageObserver implements OnDestroy {
       const imgRawSrc = this.images.get(imgSrc);
       if (imgRawSrc && !this.alreadyWarned.has(imgSrc)) {
         this.alreadyWarned.add(imgSrc);
-        const directiveDetails = imgDirectiveDetails({rawSrc: imgRawSrc} as any);
+        const directiveDetails = imgDirectiveDetails(imgRawSrc);
         console.warn(formatRuntimeError(
             RuntimeErrorCode.LCP_IMG_MISSING_PRIORITY,
             `${directiveDetails}: the image was detected as the Largest Contentful Paint (LCP) ` +
@@ -164,6 +176,17 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   @Input() rawSrc!: string;
 
   /**
+   * A comma separated list of width or density descriptors.
+   * The image name will be taken from `rawSrc` and combined with the list of width or density
+   * descriptors to generate the final `srcset` property of the image.
+   *
+   * Example:
+   * <img rawSrc="hello.jpg" rawSrcset="100w, 200w" />  =>
+   * <img src="path/hello.jpg" srcset="path/hello.jpg?w=100 100w, path/hello.jpg?w=200 200w" />
+   */
+  @Input() rawSrcset!: string;
+
+  /**
    * The intrinsic width of the image in px.
    */
   @Input()
@@ -201,7 +224,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   /**
    * Get a value of the `src` and `srcset` if they're set on a host <img> element.
    * These inputs are needed to verify that there are no conflicting sources provided
-   * at the same time (thus causing an ambiguity on which src to use) and that images
+   * at the same time (e.g. `src` and `rawSrc` together or `srcset` and `rawSrcset`,
+   * thus causing an ambiguity on which src to use) and that images
    * don't start to load until a lazy loading strategy is set.
    * @internal
    */
@@ -210,7 +234,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() {
     if (ngDevMode) {
-      assertValidRawSrc(this.rawSrc);
+      assertNonEmptyInput('rawSrc', this.rawSrc);
+      assertValidRawSrcset(this.rawSrcset);
       assertNoConflictingSrc(this);
       assertNoConflictingSrcset(this);
       assertNotBase64Image(this);
@@ -229,14 +254,18 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     }
     this.setHostAttribute('loading', this.getLoadingBehavior());
     this.setHostAttribute('fetchpriority', this.getFetchPriority());
-    // The `src` attribute should be set last since other attributes
+    // The `src` and `srcset` attributes should be set last since other attributes
     // could affect the image's loading behavior.
     this.setHostAttribute('src', this.getRewrittenSrc());
+    if (this.rawSrcset) {
+      this.setHostAttribute('srcset', this.getRewrittenSrcset());
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (ngDevMode) {
-      assertNoPostInitInputChange(this, changes, ['rawSrc', 'width', 'height', 'priority']);
+      assertNoPostInitInputChange(
+          this, changes, ['rawSrc', 'rawSrcset', 'width', 'height', 'priority']);
     }
   }
 
@@ -254,6 +283,16 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     // attribute, the image requested may be too small for 2x+ screens.
     const imgConfig = {src: this.rawSrc};
     return this.imageLoader(imgConfig);
+  }
+
+  private getRewrittenSrcset(): string {
+    const widthSrcSet = VALID_WIDTH_DESCRIPTOR_SRCSET.test(this.rawSrcset);
+    const finalSrcs = this.rawSrcset.split(',').filter(src => src !== '').map(srcStr => {
+      srcStr = srcStr.trim();
+      const width = widthSrcSet ? parseFloat(srcStr) : parseFloat(srcStr) * this.width!;
+      return `${this.imageLoader({src: this.rawSrc, width})} ${srcStr}`;
+    });
+    return finalSrcs.join(', ');
   }
 
   ngOnDestroy() {
@@ -329,7 +368,9 @@ function assertNoConflictingSrc(dir: NgOptimizedImage) {
   if (dir.src) {
     throw new RuntimeError(
         RuntimeErrorCode.UNEXPECTED_SRC_ATTR,
-        `${imgDirectiveDetails(dir.rawSrc)} has detected that the \`src\` is also set (to ` +
+        `${
+            imgDirectiveDetails(
+                dir.rawSrc)} has detected that the \`src\` has already been set (to ` +
             `\`${dir.src}\`). Please remove the \`src\` attribute from this image. ` +
             `The NgOptimizedImage directive will use the \`rawSrc\` to compute ` +
             `the final image URL and set the \`src\` itself.`);
@@ -379,16 +420,32 @@ function assertNotBlobURL(dir: NgOptimizedImage) {
   }
 }
 
-// Verifies that the `rawSrc` is set to a non-empty string.
-function assertValidRawSrc(value: unknown) {
+// Verifies that the input is set to a non-empty string.
+function assertNonEmptyInput(name: string, value: unknown) {
   const isString = typeof value === 'string';
   const isEmptyString = isString && value.trim() === '';
   if (!isString || isEmptyString) {
     const extraMessage = isEmptyString ? ' (empty string)' : '';
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
-        `The NgOptimizedImage directive has detected that the \`rawSrc\` has an invalid value: ` +
+        `The NgOptimizedImage directive has detected that the \`${name}\` has an invalid value: ` +
             `expecting a non-empty string, but got: \`${value}\`${extraMessage}.`);
+  }
+}
+
+// Verifies that the `rawSrcset` is in a valid format, e.g. "100w, 200w" or "1x, 2x"
+export function assertValidRawSrcset(value: unknown) {
+  if (value == null) return;
+  assertNonEmptyInput('rawSrcset', value);
+  const isValidSrcset = VALID_WIDTH_DESCRIPTOR_SRCSET.test(value as string) ||
+      VALID_DENSITY_DESCRIPTOR_SRCSET.test(value as string);
+
+  if (!isValidSrcset) {
+    throw new RuntimeError(
+        RuntimeErrorCode.INVALID_INPUT,
+        `The NgOptimizedImage directive has detected that the \`rawSrcset\` has an invalid value: ` +
+            `expecting width descriptors (e.g. "100w, 200w") or density descriptors (e.g. "1x, 2x"), ` +
+            `but got: \`${value}\``);
   }
 }
 
