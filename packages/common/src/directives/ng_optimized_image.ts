@@ -15,8 +15,9 @@ import {RuntimeErrorCode} from '../errors';
  * Config options recognized by the image loader function.
  */
 export interface ImageLoaderConfig {
+  // Name of the image to be added to the image request URL
   src: string;
-  quality?: number;
+  // Width of the requested image (to be used when generating srcset)
   width?: number;
 }
 
@@ -246,13 +247,10 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   }
 
   private getRewrittenSrc(): string {
-    const imgConfig = {
-      src: this.rawSrc,
-      // TODO: if we're going to support responsive serving, we don't want to request the width
-      // based solely on the intrinsic width (e.g. if it's on mobile and the viewport is smaller).
-      // The width would require pre-processing before passing to the image loader function.
-      width: this.width,
-    };
+    // ImageLoaderConfig supports setting a width property. However, we're not setting width here
+    // because if the developer uses rendered width instead of intrinsic width in the HTML width
+    // attribute, the image requested may be too small for 2x+ screens.
+    const imgConfig = {src: this.rawSrc};
     return this.imageLoader(imgConfig);
   }
 

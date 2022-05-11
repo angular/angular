@@ -13,18 +13,6 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('Image directive', () => {
-  it('should set `src` to `rawSrc` value if image loader is not provided', () => {
-    setupTestingModule();
-
-    const template = '<img rawSrc="path/img.png" width="100" height="50">';
-    const fixture = createTestComponent(template);
-    fixture.detectChanges();
-
-    const nativeElement = fixture.nativeElement as HTMLElement;
-    const img = nativeElement.querySelector('img')!;
-    expect(img.src.endsWith('/path/img.png')).toBeTrue();
-  });
-
   it('should set `loading` and `fetchpriority` attributes before `src`', () => {
     // Only run this test in a browser since the Node-based DOM mocks don't
     // allow to override `HTMLImageElement.prototype.setAttribute` easily.
@@ -73,20 +61,6 @@ describe('Image directive', () => {
 
     expect(_fetchpriorityAttrId).toBeGreaterThan(-1);       // was actually set
     expect(_fetchpriorityAttrId).toBeLessThan(_srcAttrId);  // was set after `src`
-  });
-
-
-  it('should use an image loader provided via `IMAGE_LOADER` token', () => {
-    const imageLoader = (config: ImageLoaderConfig) => `${config.src}?w=${config.width}`;
-    setupTestingModule({imageLoader});
-
-    const template = '<img rawSrc="path/img.png" width="150" height="50">';
-    const fixture = createTestComponent(template);
-    fixture.detectChanges();
-
-    const nativeElement = fixture.nativeElement as HTMLElement;
-    const img = nativeElement.querySelector('img')!;
-    expect(img.src.endsWith('/path/img.png?w=150')).toBeTrue();
   });
 
   describe('setup error handling', () => {
@@ -313,6 +287,54 @@ describe('Image directive', () => {
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('fetchpriority')).toBe('auto');
+    });
+  });
+
+  describe('loaders', () => {
+    it('should set `src` to match `rawSrc` if image loader is not provided', () => {
+      setupTestingModule();
+
+      const template = '<img rawSrc="path/img.png" width="100" height="50">';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.src.trim()).toBe('/path/img.png');
+    });
+
+    it('should set `src` using the image loader provided via the `IMAGE_LOADER` token to compose src URL',
+       () => {
+         const imageLoader = (config: ImageLoaderConfig) => `path/${config.src}`;
+         setupTestingModule({imageLoader});
+
+         const template = `
+        <img rawSrc="img.png" width="150" height="50">
+        <img rawSrc="img-2.png" width="150" height="50">
+      `;
+         const fixture = createTestComponent(template);
+         fixture.detectChanges();
+
+         const nativeElement = fixture.nativeElement as HTMLElement;
+         const imgs = nativeElement.querySelectorAll('img')!;
+         expect(imgs[0].src.trim()).toBe('/path/img.png');
+         expect(imgs[1].src.trim()).toBe('/path/img-2.png');
+       });
+
+    it('should set`src` to an image URL that does not include a default width parameter', () => {
+      const imageLoader = (config: ImageLoaderConfig) => {
+        const widthStr = config.width ? `?w=${config.width}` : ``;
+        return `path/${config.src}${widthStr}`;
+      };
+      setupTestingModule({imageLoader});
+
+      const template = '<img rawSrc="img.png" width="150" height="50">';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.src.trim()).toBe('/path/img.png');
     });
   });
 });
