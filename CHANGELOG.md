@@ -1,3 +1,35 @@
+<a name="14.0.0-rc.0"></a>
+# 14.0.0-rc.0 (2022-05-11)
+### bazel
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d48e0ccc01](https://github.com/angular/angular/commit/d48e0ccc0185cf00570191ea29d439d2cf500895) | fix | speed up `d.ts` bundling by configuring worker ([#45900](https://github.com/angular/angular/pull/45900)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e9317aee71](https://github.com/angular/angular/commit/e9317aee71f64f4aadea0529601e589b37f6b46f) | perf | allow `checkNoChanges` mode to be tree-shaken in production ([#45913](https://github.com/angular/angular/pull/45913)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5d13e58aed](https://github.com/angular/angular/commit/5d13e58aed8b7641f0b2d4f0c9015cb90ff4edb5) | fix | Allow NonNullableFormBuilder to be injected. ([#45904](https://github.com/angular/angular/pull/45904)) |
+| [9f6fa5b746](https://github.com/angular/angular/commit/9f6fa5b746cbdd4a71f67728ff6b663ad26c6a29) | fix | Prevent FormBuilder from distributing unions to control types. ([#45942](https://github.com/angular/angular/pull/45942)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [13fad9febe](https://github.com/angular/angular/commit/13fad9febe47c552759381c029b754b0a07c0a57) | fix | Add resource files as roots to their associated projects ([#45601](https://github.com/angular/angular/pull/45601)) |
+### ngcc
+| Commit | Type | Description |
+| -- | -- | -- |
+| [74a2e2e2ec](https://github.com/angular/angular/commit/74a2e2e2ecb81a31c7fbec42d7770937b09e33a4) | fix | cope with packages following APF v14+ ([#45833](https://github.com/angular/angular/pull/45833)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [23c4c9601e](https://github.com/angular/angular/commit/23c4c9601e1bdd8bd2e37d9e0468440a44971b95) | perf | avoid including Testability by default in `bootstrapApplication` ([#45885](https://github.com/angular/angular/pull/45885)) |
+## Special Thanks
+AleksanderBodurri, Andrew Kushnir, Andrew Scott, Cédric Exbrayat, Dylan Hunn, George Kalpakas, JayMartMedia, JoostK, Kristiyan Kostadinov, Paul Gschwendtner, Ted.chang, Thomas Mair, Will 保哥, dario-piotrowicz, mgechev and ᚷᛁᛟᚱᚷᛁ ᛒᚨᛚᚨᚲᚻᚨᛞᛉᛖ
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.7"></a>
 # 13.3.7 (2022-05-11)
 ### core
