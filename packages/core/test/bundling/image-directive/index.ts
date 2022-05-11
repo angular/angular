@@ -19,7 +19,6 @@ import {PlaygroundComponent} from './playground';
   standalone: true,
   imports: [RouterModule],
   template: '<router-outlet></router-outlet>',
-
 })
 export class RootComponent {
 }
