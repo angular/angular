@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT} from '@angular/common';
-import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig, NgOptimizedImageModule} from '@angular/common/src/directives/ng_optimized_image';
+import {assertValidRawSrcset, IMAGE_LOADER, ImageLoader, ImageLoaderConfig, NgOptimizedImageModule} from '@angular/common/src/directives/ng_optimized_image';
 import {RuntimeErrorCode} from '@angular/common/src/errors';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -77,7 +77,7 @@ describe('Image directive', () => {
               `NG0${
                   RuntimeErrorCode
                       .UNEXPECTED_SRC_ATTR}: The NgOptimizedImage directive (activated on an <img> element with the ` +
-              '`rawSrc="path/img.png"`) has detected that the `src` is also set (to `path/img2.png`). ' +
+              '`rawSrc="path/img.png"`) has detected that the `src` has already been set (to `path/img2.png`). ' +
               'Please remove the `src` attribute from this image. The NgOptimizedImage directive will use ' +
               'the `rawSrc` to compute the final image URL and set the `src` itself.');
     });
@@ -242,6 +242,117 @@ describe('Image directive', () => {
               'has an invalid value: expecting a non-empty string, but got: `  ` (empty string).');
     });
 
+    describe('invalid `rawSrcset` values', () => {
+      it('should throw for empty rawSrcSet', () => {
+        const imageLoader = (config: ImageLoaderConfig) => {
+          const width = config.width ? `-${config.width}` : ``;
+          return `path/${config.src}${width}.png`;
+        };
+        setupTestingModule({imageLoader});
+
+        const template = `
+            <img rawSrc="img" rawSrcset="" width="100" height="50">
+          `;
+        expect(() => {
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+        })
+            .toThrowError(
+                `NG0${
+                    RuntimeErrorCode
+                        .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`rawSrcset\` ` +
+                'has an invalid value: expecting a non-empty string, but got: `` (empty string).');
+      });
+
+      it('should throw for invalid rawSrcSet', () => {
+        const imageLoader = (config: ImageLoaderConfig) => {
+          const width = config.width ? `-${config.width}` : ``;
+          return `path/${config.src}${width}.png`;
+        };
+        setupTestingModule({imageLoader});
+
+        const template = `
+            <img rawSrc="img" rawSrcset="100q, 200q" width="100" height="50">
+          `;
+        expect(() => {
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+        })
+            .toThrowError(
+                `NG0${
+                    RuntimeErrorCode
+                        .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`rawSrcset\` has an invalid value: ` +
+                `expecting width descriptors (e.g. "100w, 200w") or density descriptors (e.g. "1x, 2x"), ` +
+                `but got: \`100q, 200q\``);
+      });
+
+      it('should throw if width srcset is missing a comma', () => {
+        expect(() => {
+          assertValidRawSrcset('100w 200w');
+        }).toThrowError();
+      });
+
+      it('should throw if density srcset is missing a comma', () => {
+        expect(() => {
+          assertValidRawSrcset('1x 2x');
+        }).toThrowError();
+      });
+
+      it('should throw if density srcset has too many digits', () => {
+        expect(() => {
+          assertValidRawSrcset('100x, 2x');
+        }).toThrowError();
+      });
+
+      it('should throw if width srcset includes a file name', () => {
+        expect(() => {
+          assertValidRawSrcset('a.png 100w, b.png 200w');
+        }).toThrowError();
+      });
+
+      it('should throw if density srcset includes a file name', () => {
+        expect(() => {
+          assertValidRawSrcset('a.png 1x, b.png 2x');
+        }).toThrowError();
+      });
+
+      it('should throw if srcset starts with a letter', () => {
+        expect(() => {
+          assertValidRawSrcset('a100w, 200w');
+        }).toThrowError();
+      });
+
+      it('should throw if srcset starts with another non-digit', () => {
+        expect(() => {
+          assertValidRawSrcset('--100w, 200w');
+        }).toThrowError();
+      });
+
+      it('should throw if first descriptor in srcset is junk', () => {
+        expect(() => {
+          assertValidRawSrcset('foo, 1x');
+        }).toThrowError();
+      });
+
+      it('should throw if later descriptors in srcset are junk', () => {
+        expect(() => {
+          assertValidRawSrcset('100w, foo');
+        }).toThrowError();
+      });
+
+      it('should throw if srcset has a density descriptor after a width descriptor', () => {
+        expect(() => {
+          assertValidRawSrcset('100w, 1x');
+        }).toThrowError();
+      });
+
+      it('should throw if srcset has a width descriptor after a density descriptor', () => {
+        expect(() => {
+          assertValidRawSrcset('1x, 200w');
+        }).toThrowError();
+      });
+    });
+
     const inputs = [
       ['rawSrc', 'new-img.png'],  //
       ['width', 10],              //
@@ -249,16 +360,16 @@ describe('Image directive', () => {
       ['priority', true]
     ];
     inputs.forEach(([inputName, value]) => {
-      it(`should throw if inputs got changed after directive init (the \`${inputName}\` input)`, () => {
+      it(`should throw if an input changed after directive initialized the input`, () => {
         setupTestingModule();
 
         const template =
             '<img [rawSrc]="rawSrc" [width]="width" [height]="height" [priority]="priority">';
-        expect(() => {
-          // Initial render
-          const fixture = createTestComponent(template);
-          fixture.detectChanges();
+        // Initial render
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
 
+        expect(() => {
           // Update input (expect to throw)
           (fixture.componentInstance as unknown as {[key: string]: unknown})[inputName as string] =
               value;
@@ -337,7 +448,7 @@ describe('Image directive', () => {
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
-      expect(img.src.trim()).toBe('https://somesite.imgix.net/img.png');
+      expect(img.src).toBe('https://somesite.imgix.net/img.png');
     });
 
     it('should set `src` using the image loader provided via the `IMAGE_LOADER` token to compose src URL',
@@ -347,9 +458,9 @@ describe('Image directive', () => {
          setupTestingModule({imageLoader});
 
          const template = `
-        <img rawSrc="img.png" width="150" height="50">
-        <img rawSrc="img-2.png" width="150" height="50">
-      `;
+         <img rawSrc="img.png" width="150" height="50">
+         <img rawSrc="img-2.png" width="150" height="50">
+       `;
          const fixture = createTestComponent(template);
          fixture.detectChanges();
 
@@ -372,7 +483,150 @@ describe('Image directive', () => {
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
-      expect(img.src.trim()).toBe('https://somesite.imgix.net/img.png');
+      expect(img.src).toBe('https://somesite.imgix.net/img.png');
+    });
+
+    describe('`rawSrcset` values', () => {
+      let imageLoader!: ImageLoader;
+
+      beforeEach(() => {
+        imageLoader = (config: ImageLoaderConfig) => {
+          const width = config.width ? `?w=${config.width}` : ``;
+          return `https://somesite.imgix.net/${config.src}${width}`;
+        };
+      });
+
+      it('should NOT set `srcset` if no `rawSrcset` value', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `
+           <img rawSrc="img-100.png" width="100" height="50">
+         `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.src).toBe('https://somesite.imgix.net/img-100.png');
+        expect(img.srcset).toBe('');
+      });
+
+      it('should set the `srcset` using the `rawSrcset` value with width descriptors', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `
+           <img rawSrc="img.png" rawSrcset="100w, 200w" width="100" height="50">
+         `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.src).toBe('https://somesite.imgix.net/img.png');
+        expect(img.srcset)
+            .toBe(
+                'https://somesite.imgix.net/img.png?w=100 100w, https://somesite.imgix.net/img.png?w=200 200w');
+      });
+
+      it('should set the `srcset` using the `rawSrcset` value with density descriptors', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `
+           <img rawSrc="img.png" rawSrcset="1x, 2x" width="100" height="50">
+         `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.src).toBe('https://somesite.imgix.net/img.png');
+        expect(img.srcset)
+            .toBe(
+                'https://somesite.imgix.net/img.png?w=100 1x, https://somesite.imgix.net/img.png?w=200 2x');
+      });
+
+      it('should set the `srcset` if `rawSrcset` has only one src defined', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `
+           <img rawSrc="img.png" rawSrcset="100w" width="100" height="50">
+         `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.src.trim()).toBe('https://somesite.imgix.net/img.png');
+        expect(img.srcset.trim()).toBe('https://somesite.imgix.net/img.png?w=100 100w');
+      });
+
+      it('should set the `srcset` if `rawSrcSet` has extra spaces', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `
+           <img rawSrc="img.png" rawSrcset="  100w,  200w   " width="100" height="50">
+         `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.src).toBe('https://somesite.imgix.net/img.png');
+        expect(img.srcset)
+            .toBe(
+                'https://somesite.imgix.net/img.png?w=100 100w, https://somesite.imgix.net/img.png?w=200 200w');
+      });
+
+      it('should set the `srcset` if `rawSrcSet` has a trailing comma', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `
+           <img rawSrc="img.png" rawSrcset="1x, 2x," width="100" height="50">
+         `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.src).toBe('https://somesite.imgix.net/img.png');
+        expect(img.srcset)
+            .toBe(
+                'https://somesite.imgix.net/img.png?w=100 1x, https://somesite.imgix.net/img.png?w=200 2x');
+      });
+
+      it('should set the `srcset` if `rawSrcSet` has 3+ srcs', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `
+           <img rawSrc="img.png" rawSrcset="100w, 200w, 300w" width="100" height="50">
+         `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.src).toBe('https://somesite.imgix.net/img.png');
+        expect(img.srcset)
+            .toBe(
+                'https://somesite.imgix.net/img.png?w=100 100w, https://somesite.imgix.net/img.png?w=200 200w, https://somesite.imgix.net/img.png?w=300 300w');
+      });
+
+      it('should set the `srcset` if `rawSrcSet` has decimal density descriptors', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `
+           <img rawSrc="img.png" rawSrcset="1x, 2.5x, 3x" width="100" height="50">
+         `;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.src).toBe('https://somesite.imgix.net/img.png');
+        expect(img.srcset)
+            .toBe(
+                'https://somesite.imgix.net/img.png?w=100 1x, https://somesite.imgix.net/img.png?w=250 2.5x, https://somesite.imgix.net/img.png?w=300 3x');
+      });
     });
   });
 });
