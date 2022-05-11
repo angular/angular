@@ -11,7 +11,6 @@ import {IncrementalBuild} from '../../../src/ngtsc/incremental/api';
 import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
 import {NOOP_PERF_RECORDER} from '../../../src/ngtsc/perf';
 import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
-import {isShim} from '../../../src/ngtsc/shims';
 import {CompilationMode, DecoratorHandler, DtsTransformRegistry, HandlerFlags, Trait, TraitCompiler} from '../../../src/ngtsc/transform';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {isDefined} from '../utils';
@@ -29,7 +28,7 @@ export class NgccTraitCompiler extends TraitCompiler {
     super(
         handlers, ngccReflector, NOOP_PERF_RECORDER, new NoIncrementalBuild(),
         /* compileNonExportedClasses */ true, CompilationMode.FULL, new DtsTransformRegistry(),
-        /* semanticDepGraphUpdater */ null, {isShim, isResource: () => false});
+        /* semanticDepGraphUpdater */ null);
   }
 
   get analyzedFiles(): ts.SourceFile[] {

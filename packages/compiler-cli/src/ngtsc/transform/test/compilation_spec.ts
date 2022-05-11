@@ -17,11 +17,6 @@ import {getDeclaration, makeProgram} from '../../testing';
 import {CompilationMode, DetectResult, DtsTransformRegistry, TraitCompiler} from '../../transform';
 import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerPrecedence} from '../src/api';
 
-const fakeSfTypeIdentifier = {
-  isShim: () => false,
-  isResource: () => false
-};
-
 runInEachFileSystem(() => {
   describe('TraitCompiler', () => {
     let _: typeof absoluteFrom;
@@ -54,7 +49,7 @@ runInEachFileSystem(() => {
       const reflectionHost = new TypeScriptReflectionHost(checker);
       const compiler = new TraitCompiler(
           [new FakeDecoratorHandler()], reflectionHost, NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD,
-          true, CompilationMode.FULL, new DtsTransformRegistry(), null, fakeSfTypeIdentifier);
+          true, CompilationMode.FULL, new DtsTransformRegistry(), null);
       const sourceFile = program.getSourceFile('lib.d.ts')!;
       const analysis = compiler.analyzeSync(sourceFile);
 
@@ -143,7 +138,7 @@ runInEachFileSystem(() => {
         const compiler = new TraitCompiler(
             [new PartialDecoratorHandler(), new FullDecoratorHandler()], reflectionHost,
             NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD, true, CompilationMode.PARTIAL,
-            new DtsTransformRegistry(), null, fakeSfTypeIdentifier);
+            new DtsTransformRegistry(), null);
         const sourceFile = program.getSourceFile('test.ts')!;
         compiler.analyzeSync(sourceFile);
         compiler.resolve();
@@ -173,7 +168,7 @@ runInEachFileSystem(() => {
         const compiler = new TraitCompiler(
             [new PartialDecoratorHandler(), new FullDecoratorHandler()], reflectionHost,
             NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD, true, CompilationMode.FULL,
-            new DtsTransformRegistry(), null, fakeSfTypeIdentifier);
+            new DtsTransformRegistry(), null);
         const sourceFile = program.getSourceFile('test.ts')!;
         compiler.analyzeSync(sourceFile);
         compiler.resolve();
