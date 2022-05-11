@@ -2,10 +2,9 @@
 // #docregion imports
 import { Component , OnInit } from '@angular/core';
 import { FormBuilder , FormGroup } from '@angular/forms';
-
+import { Observable } from 'rxjs';
 import { CartService } from '../cart.service';
 import { Product } from '../products';
-import { Observable } from 'rxjs';
 
 // #enddocregion imports
 
@@ -18,7 +17,7 @@ import { Observable } from 'rxjs';
 export class CartComponent implements OnInit {
 
   // #enddocregion inject-form-builder
-  items: Observable<Product[]>;
+  items!: Observable<Product[]>;
 
   checkoutForm: FormGroup;
 
@@ -30,13 +29,11 @@ export class CartComponent implements OnInit {
 // #enddocregion inject-form-builder, checkout-form-group
 
   ngOnInit(): void {
-    // first initialize the checkout-form
     this.checkoutForm = this.formBuilder.group({
         name:  '',
         address: ''
     });
 
-    // get items from cartService
     this.items = this.cartService.getItems();
   }
 
