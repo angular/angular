@@ -54,8 +54,6 @@ ts_devserver(
     static_files = [
         "index.html",
         ":tslib",
-        "a.png",
-        "b.png",
     ],
     deps = [":image-directive"],
 )

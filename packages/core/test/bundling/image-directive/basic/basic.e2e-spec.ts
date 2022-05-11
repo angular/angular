@@ -17,6 +17,6 @@ describe('NgOptimizedImage directive', () => {
     await browser.get('/');
     const imgs = element.all(by.css('img'));
     const src = await imgs.get(0).getAttribute('src');
-    expect(src.endsWith('b.png')).toBe(true);
+    expect(/a\.png/.test(src)).toBe(true);
   });
 });
