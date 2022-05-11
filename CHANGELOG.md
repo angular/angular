@@ -1,3 +1,18 @@
+<a name="13.3.7"></a>
+# 13.3.7 (2022-05-11)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [73bbee2c0d](https://github.com/angular/angular/commit/73bbee2c0d3fbc27d66306c017a67754fa5954c0) | perf | allow `checkNoChanges` mode to be tree-shaken in production ([#45936](https://github.com/angular/angular/pull/45936)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5ca3bcf4f8](https://github.com/angular/angular/commit/5ca3bcf4f8f6be648ebc4891adec5d45de7ead2d) | fix | Add resource files as roots to their associated projects ([#45601](https://github.com/angular/angular/pull/45601)) |
+## Special Thanks
+Andrew Kushnir, Andrew Scott, George Kalpakas, JayMartMedia, JoostK, Paul Gschwendtner, Ted.chang, Thomas Mair, Will 保哥, dario-piotrowicz, mgechev and ᚷᛁᛟᚱᚷᛁ ᛒᚨᛚᚨᚲᚻᚨᛞᛉᛖ
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-next.16"></a>
 # 14.0.0-next.16 (2022-05-04)
 ## Breaking Changes
