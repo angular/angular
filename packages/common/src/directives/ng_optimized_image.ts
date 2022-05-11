@@ -132,12 +132,6 @@ export class NgOptimizedImage implements OnInit, OnChanges {
       assertRequiredNumberInput(this, this.width, 'width');
       assertRequiredNumberInput(this, this.height, 'height');
     }
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (ngDevMode) {
-      assertNoPostInitInputChange(this, changes, ['rawSrc', 'width', 'height', 'priority']);
-    }
     this.setHostAttribute('loading', this.getLoadingBehavior());
     this.setHostAttribute('fetchpriority', this.getFetchPriority());
     // The `src` attribute should be set last since other attributes
@@ -145,15 +139,21 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     this.setHostAttribute('src', this.getRewrittenSrc());
   }
 
-  getLoadingBehavior(): string {
+  ngOnChanges(changes: SimpleChanges) {
+    if (ngDevMode) {
+      assertNoPostInitInputChange(this, changes, ['rawSrc', 'width', 'height', 'priority']);
+    }
+  }
+
+  private getLoadingBehavior(): string {
     return this.priority ? 'eager' : 'lazy';
   }
 
-  getFetchPriority(): string {
+  private getFetchPriority(): string {
     return this.priority ? 'high' : 'auto';
   }
 
-  getRewrittenSrc(): string {
+  private getRewrittenSrc(): string {
     const imgConfig = {
       src: this.rawSrc,
       // TODO: if we're going to support responsive serving, we don't want to request the width
