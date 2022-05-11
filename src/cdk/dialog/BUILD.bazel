@@ -4,6 +4,7 @@ load(
     "ng_module",
     "ng_test_library",
     "ng_web_test_suite",
+    "sass_binary",
 )
 
 package(default_visibility = ["//visibility:public"])
@@ -14,7 +15,7 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    assets = glob(["**/*.html"]),
+    assets = [":dialog-container.css"] + glob(["**/*.html"]),
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/a11y",
@@ -60,4 +61,9 @@ markdown_to_html(
 filegroup(
     name = "source-files",
     srcs = glob(["**/*.ts"]),
+)
+
+sass_binary(
+    name = "dialog_container_scss",
+    src = "dialog-container.scss",
 )

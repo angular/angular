@@ -75,8 +75,24 @@ export class DialogDemo {
       <button (click)="temporarilyHide()">Hide for 2 seconds</button>
     </div>
   `,
-  encapsulation: ViewEncapsulation.None,
-  styles: [`.hidden-dialog { opacity: 0; }`],
+  styles: [
+    `
+    :host {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-width: inherit;
+      min-height: inherit;
+    }
+
+    :host-context(.hidden-dialog) {
+      opacity: 0;
+    }
+  `,
+  ],
   standalone: true,
 })
 export class JazzDialog {

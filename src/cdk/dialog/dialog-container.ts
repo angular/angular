@@ -49,6 +49,7 @@ export function throwDialogContentAlreadyAttachedError() {
 @Component({
   selector: 'cdk-dialog-container',
   templateUrl: './dialog-container.html',
+  styleUrls: ['dialog-container.css'],
   encapsulation: ViewEncapsulation.None,
   // Using OnPush for dialogs caused some G3 sync issues. Disabled until we can track them down.
   // tslint:disable-next-line:validate-decorators

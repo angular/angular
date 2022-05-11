@@ -1,0 +1,13 @@
+.cdk-dialog-container {
+  // The container is a custom node so it'll be `display: inline` by default.
+  display: block;
+
+  // The dialog container should completely fill its parent overlay element.
+  width: 100%;
+  height: 100%;
+
+  // Since the dialog won't stretch to fit the parent, if the height
+  // isn't set, we have to inherit the min and max values explicitly.
+  min-height: inherit;
+  max-height: inherit;
+}
