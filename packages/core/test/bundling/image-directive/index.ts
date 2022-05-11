@@ -18,6 +18,7 @@ import {LcpCheckComponent} from './lcp-check/lcp-check';
   standalone: true,
   imports: [RouterModule],
   template: '<router-outlet></router-outlet>',
+
 })
 export class RootComponent {
 }
