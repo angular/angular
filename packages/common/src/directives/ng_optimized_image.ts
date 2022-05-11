@@ -199,17 +199,20 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * Get a value of the `src` if it's set on a host <img> element.
-   * This input is needed to verify that there are no `src` and `rawSrc` provided
-   * at the same time (thus causing an ambiguity on which src to use).
+   * Get a value of the `src` and `srcset` if they're set on a host <img> element.
+   * These inputs are needed to verify that there are no conflicting sources provided
+   * at the same time (thus causing an ambiguity on which src to use) and that images
+   * don't start to load until a lazy loading strategy is set.
    * @internal
    */
   @Input() src?: string;
+  @Input() srcset?: string;
 
   ngOnInit() {
     if (ngDevMode) {
       assertValidRawSrc(this.rawSrc);
       assertNoConflictingSrc(this);
+      assertNoConflictingSrcset(this);
       assertNotBase64Image(this);
       assertNotBlobURL(this);
       assertRequiredNumberInput(this, this.width, 'width');
@@ -314,9 +317,9 @@ function withLCPImageObserver(
   });
 }
 
-function imgDirectiveDetails(dir: NgOptimizedImage) {
+function imgDirectiveDetails(rawSrc: string) {
   return `The NgOptimizedImage directive (activated on an <img> element ` +
-      `with the \`rawSrc="${dir.rawSrc}"\`)`;
+      `with the \`rawSrc="${rawSrc}"\`)`;
 }
 
 /***** Assert functions *****/
@@ -326,10 +329,22 @@ function assertNoConflictingSrc(dir: NgOptimizedImage) {
   if (dir.src) {
     throw new RuntimeError(
         RuntimeErrorCode.UNEXPECTED_SRC_ATTR,
-        `${imgDirectiveDetails(dir)} has detected that the \`src\` is also set (to ` +
+        `${imgDirectiveDetails(dir.rawSrc)} has detected that the \`src\` is also set (to ` +
             `\`${dir.src}\`). Please remove the \`src\` attribute from this image. ` +
             `The NgOptimizedImage directive will use the \`rawSrc\` to compute ` +
             `the final image URL and set the \`src\` itself.`);
+  }
+}
+
+// Verifies that there is no `srcset` set on a host element.
+function assertNoConflictingSrcset(dir: NgOptimizedImage) {
+  if (dir.srcset) {
+    throw new RuntimeError(
+        RuntimeErrorCode.UNEXPECTED_SRCSET_ATTR,
+        `${imgDirectiveDetails(dir.rawSrc)} has detected that the \`srcset\` has been set. ` +
+            `Please replace the \`srcset\` attribute from this image with \`rawSrcset\`. ` +
+            `The NgOptimizedImage directive uses \`rawSrcset\` to set the \`srcset\` attribute` +
+            `at a time that does not disrupt lazy loading.`);
   }
 }
 
@@ -382,7 +397,8 @@ function assertValidRawSrc(value: unknown) {
 function postInitInputChangeError(dir: NgOptimizedImage, inputName: string): {} {
   return new RuntimeError(
       RuntimeErrorCode.UNEXPECTED_INPUT_CHANGE,
-      `${imgDirectiveDetails(dir)} has detected that the \`${inputName}\` is updated after the ` +
+      `${imgDirectiveDetails(dir.rawSrc)} has detected that the \`${
+          inputName}\` is updated after the ` +
           `initialization. The NgOptimizedImage directive will not react to this input change.`);
 }
 
@@ -422,7 +438,7 @@ function assertRequiredNumberInput(dir: NgOptimizedImage, inputValue: unknown, i
   if (typeof inputValue === 'undefined') {
     throw new RuntimeError(
         RuntimeErrorCode.REQUIRED_INPUT_MISSING,
-        `${imgDirectiveDetails(dir)} has detected that the required \`${inputName}\` ` +
+        `${imgDirectiveDetails(dir.rawSrc)} has detected that the required \`${inputName}\` ` +
             `attribute is missing. Please specify the \`${inputName}\` attribute ` +
             `on the mentioned element.`);
   }
