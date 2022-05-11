@@ -118,37 +118,6 @@ You can control which elements are tab stops with the `tabindex` attribute
 
 <!-- example(dialog-content) -->
 
-### Configuring dialog content via `entryComponents`
-
-Because `MatDialog` instantiates components at run-time, the Angular compiler needs extra
-information to create the necessary `ComponentFactory` for your dialog content component.
-
-For any component loaded into a dialog, you must include your component class in the list of
-`entryComponents` in your NgModule definition so that the Angular compiler knows to create
-the `ComponentFactory` for it.
-
-```ts
-@NgModule({
-  imports: [
-    // ...
-    MatDialogModule
-  ],
-
-  declarations: [
-    AppComponent,
-    ExampleDialogComponent
-  ],
-
-  entryComponents: [
-    ExampleDialogComponent
-  ],
-
-  providers: [],
-  bootstrap: [AppComponent]
-})
-export class AppModule {}
-```
-
 ### Controlling the dialog animation
 You can control the duration of the dialog's enter and exit animations using the
 `enterAnimationDuration` and `exitAnimationDuration` options. If you want to disable the dialog's
