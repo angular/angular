@@ -1,3 +1,29 @@
+<a name="14.0.0-rc.0"></a>
+# 14.0.0-rc.0 "metal-mango" (2022-05-11)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f342375e29](https://github.com/angular/components/commit/f342375e295e57b966964880e71e734d674c0bf2) | fix | **dialog:** add container structural styles ([#24905](https://github.com/angular/components/pull/24905)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [de63e29be4](https://github.com/angular/components/commit/de63e29be45e4c7829c963dd6e78ed68e52475a9) | fix | **core:** noop animations not applying to selector lists ([#24904](https://github.com/angular/components/pull/24904)) |
+| [cf6ddb8d5a](https://github.com/angular/components/commit/cf6ddb8d5a439050d8f8123575b12b9f14ab9609) | fix | **datepicker:** add ability to have numeric zero value in input ([#24813](https://github.com/angular/components/pull/24813)) |
+| [020468dddf](https://github.com/angular/components/commit/020468dddff9715b030a9c42f116b3eda77ff4ef) | fix | **expansion:** inconsistent spacing for anchor buttons ([#24882](https://github.com/angular/components/pull/24882)) |
+| [ba81d87355](https://github.com/angular/components/commit/ba81d873554ff2176bb106c5d4402f6d935480c4) | fix | **menu:** focus the first item when opening menu on iOS VoiceOver ([#24733](https://github.com/angular/components/pull/24733)) |
+### google-maps
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9f27303aad](https://github.com/angular/components/commit/9f27303aadf972e7b2fb7763a5c71a425eeb15ab) | fix | error when minified through closure ([#24897](https://github.com/angular/components/pull/24897)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [00f68c28e5](https://github.com/angular/components/commit/00f68c28e571612d154b68baaa6f4a1e81831f10) | fix | enable easy extension of harnesses ([#24878](https://github.com/angular/components/pull/24878)) |
+## Special Thanks
+Dmytro Prokhorov, Kristiyan Kostadinov, Paul Gschwendtner, Zach Arend, dobrevad and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.7"></a>
 # 13.3.7 "chiffon-carambola" (2022-05-11)
 ### material
