@@ -44,7 +44,7 @@ const CUSTOM_IMGIX_LOADER = (config: ImageLoaderConfig) => {
     </h1>
     <main>
       <div class="spacer"></div>
-      <img rawSrc="hermes.jpeg" width="4030" height="3020">
+      <img rawSrc="hermes.jpeg" rawSrcset="100w, 200w, 1000w" width="4030" height="3020">
     </main>
   `,
   standalone: true,
