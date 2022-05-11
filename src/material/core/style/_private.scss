@@ -22,20 +22,11 @@
 // NOTE: Currently this mixin should only be used with components that do not
 // have any projected content.
 @mixin private-animation-noop() {
-  // @at-root is used to steps outside of the hierarchy of the scss rules. This is
-  // done to allow a class to be added to be added to base of the scss nesting
-  // context.
-  // For example:
-  // .my-root {
-  //   .my-subclass {
-  //      @include mat-private-animation-noop();
-  //    }
-  // }
-  // results in:
-  // ._mat-animation-noopable.my-root .my-subclass { ... }
-  @at-root ._mat-animation-noopable#{&} {
-    transition: none;
-    animation: none;
+  &._mat-animation-noopable {
+    // Use !important here since we don't know what context this mixin will
+    // be included in and MDC can have some really specific selectors.
+    transition: none !important;
+    animation: none !important;
     @content;
   }
 }

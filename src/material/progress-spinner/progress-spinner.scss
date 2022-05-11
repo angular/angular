@@ -1,7 +1,6 @@
 @use '@angular/cdk';
 
 @use '../core/style/variables';
-@use '../core/style/private';
 
 $_default-radius: 45px;
 $_default-circumference: variables.$pi * $_default-radius * 2;
@@ -24,7 +23,6 @@ $_default-circumference: variables.$pi * $_default-radius * 2;
   }
 
   circle {
-    @include private.private-animation-noop();
     fill: transparent;
     transition: stroke-dashoffset 225ms linear;
 
@@ -37,20 +35,25 @@ $_default-circumference: variables.$pi * $_default-radius * 2;
     }
   }
 
-  &.mat-progress-spinner-indeterminate-animation[mode='indeterminate'] {
+  &[mode='indeterminate'] {
     svg {
-      @include private.private-animation-noop();
       animation: mat-progress-spinner-linear-rotate variables.$swift-ease-in-out-duration * 4
           linear infinite;
     }
 
     circle {
-      @include private.private-animation-noop();
       transition-property: stroke;
       // Note: we multiply the duration by 8, because the animation is spread out in 8 stages.
       animation-duration: variables.$swift-ease-in-out-duration * 8;
       animation-timing-function: variables.$ease-in-out-curve-function;
       animation-iteration-count: infinite;
+    }
+  }
+
+  &._mat-animation-noopable {
+    svg, circle {
+      animation: none;
+      transition: none;
     }
   }
 }
