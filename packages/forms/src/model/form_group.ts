@@ -8,7 +8,7 @@
 
 import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
 
-import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertControlPresent, pickAsyncValidators, pickValidators, ɵRawValue, ɵTypedOrUntyped, ɵValue} from './abstract_model';
+import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertControlPresent, pickAsyncValidators, pickValidators, RawValue, Value, ɵTypedOrUntyped} from './abstract_model';
 
 /**
  * FormGroupValue extracts the type of `.value` from a FormGroup's inner object type. The untyped
@@ -19,7 +19,7 @@ import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertC
  * For internal use only.
  */
 export type ɵFormGroupValue<T extends {[K in keyof T]?: AbstractControl<any>}> =
-    ɵTypedOrUntyped<T, Partial<{[K in keyof T]: ɵValue<T[K]>}>, {[key: string]: any}>;
+    ɵTypedOrUntyped<T, Partial<{[K in keyof T]: Value<T[K]>}>, {[key: string]: any}>;
 
 /**
  * FormGroupRawValue extracts the type of `.getRawValue()` from a FormGroup's inner object type. The
@@ -30,7 +30,7 @@ export type ɵFormGroupValue<T extends {[K in keyof T]?: AbstractControl<any>}> 
  * For internal use only.
  */
 export type ɵFormGroupRawValue<T extends {[K in keyof T]?: AbstractControl<any>}> =
-    ɵTypedOrUntyped<T, {[K in keyof T]: ɵRawValue<T[K]>}, {[key: string]: any}>;
+    ɵTypedOrUntyped<T, {[K in keyof T]: RawValue<T[K]>}, {[key: string]: any}>;
 
 /**
  * OptionalKeys returns the union of all optional keys in the object.
@@ -606,7 +606,7 @@ export const UntypedFormGroup: UntypedFormGroupCtor = FormGroup;
 
 export const isFormGroup = (control: unknown): control is FormGroup => control instanceof FormGroup;
 
-export class FormRecord<TControl extends AbstractControl<ɵValue<TControl>, ɵRawValue<TControl>> =
+export class FormRecord<TControl extends AbstractControl<Value<TControl>, RawValue<TControl>> =
                                              AbstractControl> extends
     FormGroup<{[key: string]: TControl}> {}
 
@@ -671,7 +671,7 @@ export interface FormRecord<TControl> {
    *
    * {@see FormGroup#setValue}
    */
-  setValue(value: {[key: string]: ɵValue<TControl>}, options?: {
+  setValue(value: {[key: string]: Value<TControl>}, options?: {
     onlySelf?: boolean,
     emitEvent?: boolean
   }): void;
@@ -683,7 +683,7 @@ export interface FormRecord<TControl> {
    *
    * {@see FormGroup#patchValue}
    */
-  patchValue(value: {[key: string]: ɵValue<TControl>}, options?: {
+  patchValue(value: {[key: string]: Value<TControl>}, options?: {
     onlySelf?: boolean,
     emitEvent?: boolean
   }): void;
@@ -694,7 +694,7 @@ export interface FormRecord<TControl> {
    *
    * {@see FormGroup#reset}
    */
-  reset(value?: {[key: string]: ɵValue<TControl>}, options?: {
+  reset(value?: {[key: string]: Value<TControl>}, options?: {
     onlySelf?: boolean,
     emitEvent?: boolean
   }): void;
@@ -704,7 +704,7 @@ export interface FormRecord<TControl> {
    *
    * {@see FormGroup#getRawValue}
    */
-  getRawValue(): {[key: string]: ɵRawValue<TControl>};
+  getRawValue(): {[key: string]: RawValue<TControl>};
 }
 
 export const isFormRecord = (control: unknown): control is FormRecord =>
