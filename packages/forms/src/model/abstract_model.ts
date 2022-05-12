@@ -166,19 +166,86 @@ export type ɵIsAny<T, Y, N> = 0 extends(1&T) ? Y : N;
 export type ɵTypedOrUntyped<T, Typed, Untyped> = ɵIsAny<T, Untyped, Typed>;
 
 /**
- * Value gives the type of `.value` in an `AbstractControl`.
+ * Value gives the value type corresponding to a control type.
  *
- * For internal use only.
+ * Note that the resulting type will follow the same rules as `.value` on your control, group, or
+ * array, including `undefined` for each group element which might be disabled.
+ *
+ * If you are trying to extract a value type for a data model, you probably want {@see RawValue},
+ * which will not have `undefined` in group keys.
+ *
+ * @usageNotes
+ *
+ * ### `FormControl` value type
+ *
+ * You can extract the value type of a single control:
+ *
+ * ```ts
+ * type NameControl = FormControl<string>;
+ * type NameValue = Value<NameControl>;
+ * ```
+ *
+ * The resulting type is `string`.
+ *
+ * ### `FormGroup` value type
+ *
+ * Imagine you have an interface defining the controls in your group. You can extract the shape of
+ * the values as follows:
+ *
+ * ```ts
+ * interface PartyFormControls {
+ *   address: FormControl<string>;
+ * }
+ *
+ * // Value operates on controls; the object must be wrapped in a FormGroup.
+ * type PartyFormValues = Value<FormGroup<PartyFormControls>>;
+ * ```
+ *
+ * The resulting type is `{address: string|undefined}`.
+ *
+ * ### `FormArray` value type
+ *
+ * You can extract values from FormArrays as well:
+ *
+ * ```ts
+ * type GuestNamesControls = FormArray<FormControl<string>>;
+ *
+ * type NamesValues = Value<GuestNamesControls>;
+ * ```
+ *
+ * The resulting type is `string[]`.
  */
-export type ɵValue<T extends AbstractControl|undefined> =
+export type Value<T extends AbstractControl|undefined> =
     T extends AbstractControl<any, any>? T['value'] : never;
 
 /**
- * RawValue gives the type of `.getRawValue()` in an `AbstractControl`.
+ * RawValue gives the raw value type corresponding to a control type.
  *
- * For internal use only.
+ * Note that the resulting type will follow the same rules as `.getRawValue()` on your control,
+ * group, or array. This means that all controls inside a group will be required, not optional,
+ * regardless of their disabled state.
+ *
+ * You may also wish to use {@see Value}, which will have `undefined` in group keys (which can be disabled).
+ *
+ * @usageNotes
+ *
+ * ### `FormGroup` raw value type
+ *
+ * Imagine you have an interface defining the controls in your group. You can extract the shape of
+ * the raw values as follows:
+ *
+ * ```ts
+ * interface PartyFormControls {
+ *   address: FormControl<string>;
+ * }
+ *
+ * // RawValue operates on controls; the object must be wrapped in a FormGroup.
+ * type PartyFormValues = RawValue<FormGroup<PartyFormControls>>;
+ * ```
+ *
+ * The resulting type is `{address: string}`. (Note the absence of `undefined`.)
  */
-export type ɵRawValue<T extends AbstractControl|undefined> = T extends AbstractControl<any, any>?
+export type RawValue<T extends AbstractControl|undefined> = T extends AbstractControl<any, any>?
     (T['setValue'] extends((v: infer R) => void) ? R : never) :
     never;
 
