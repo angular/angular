@@ -1,14 +1,24 @@
+.example-context-area {
+  display: inline-grid;
+  border: 2px dashed black;
+}
+
+.example-context-area .example-context-area {
+  margin: 100px;
+  width: 200px;
+  height: 100px;
+}
+
 .example-menu {
   display: inline-flex;
   flex-direction: column;
   min-width: 180px;
   max-width: 280px;
-  background-color: rgba(255, 255, 255);
+  background-color: rgb(255, 255, 255);
   padding: 6px 0;
 }
 
-.example-menu-item,
-.example-standalone-trigger {
+.example-menu-item {
   background-color: transparent;
   cursor: pointer;
   border: none;
@@ -30,14 +40,4 @@
 
 .example-menu-item:active {
   background-color: rgb(170, 170, 170);
-}
-
-.example-standalone-item {
-  background-color: rgb(239, 239, 239);
-}
-.example-standalone-item:hover {
-  background-color: rgb(208, 208, 208);
-}
-.example-standalone-item[aria-expanded='true'] {
-  background-color: rgb(208, 208, 208);
 }

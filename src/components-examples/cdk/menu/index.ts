@@ -5,6 +5,7 @@ import {CdkMenuStandaloneStatefulMenuExample} from './cdk-menu-standalone-statef
 import {CdkMenuMenubarExample} from './cdk-menu-menubar/cdk-menu-menubar-example';
 import {CdkMenuInlineExample} from './cdk-menu-inline/cdk-menu-inline-example';
 import {CdkMenuContextExample} from './cdk-menu-context/cdk-menu-context-example';
+import {CdkMenuNestedContextExample} from './cdk-menu-nested-context/cdk-menu-nested-context-example';
 import {CommonModule} from '@angular/common';
 
 export {
@@ -12,6 +13,7 @@ export {
   CdkMenuMenubarExample,
   CdkMenuInlineExample,
   CdkMenuContextExample,
+  CdkMenuNestedContextExample,
   CdkMenuStandaloneStatefulMenuExample,
 };
 
@@ -20,6 +22,7 @@ const EXAMPLES = [
   CdkMenuMenubarExample,
   CdkMenuInlineExample,
   CdkMenuContextExample,
+  CdkMenuNestedContextExample,
   CdkMenuStandaloneStatefulMenuExample,
 ];
 

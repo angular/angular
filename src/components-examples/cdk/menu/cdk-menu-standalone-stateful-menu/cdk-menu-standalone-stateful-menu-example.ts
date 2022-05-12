@@ -7,9 +7,15 @@ import {Component} from '@angular/core';
   templateUrl: 'cdk-menu-standalone-stateful-menu-example.html',
 })
 export class CdkMenuStandaloneStatefulMenuExample {
-  bold = true;
+  bold = false;
   italic = false;
 
   sizes = ['Small', 'Normal', 'Large'];
   selectedSize: string | undefined = 'Normal';
+
+  reset() {
+    this.bold = false;
+    this.italic = false;
+    this.selectedSize = 'Normal';
+  }
 }

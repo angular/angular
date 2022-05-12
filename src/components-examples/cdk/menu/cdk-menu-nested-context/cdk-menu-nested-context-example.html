@@ -1,0 +1,21 @@
+<!-- #docregion triggers -->
+<div class="example-context-area" [cdkContextMenuTriggerFor]="outer">
+  Outer context menu
+  <div class="example-context-area" [cdkContextMenuTriggerFor]="inner">Inner context menu</div>
+</div>
+<!-- #enddocregion triggers -->
+
+<ng-template #outer>
+  <div class="example-menu" cdkMenu>
+    <button class="example-menu-item" cdkMenuItem>Save</button>
+    <button class="example-menu-item" cdkMenuItem>Exit</button>
+  </div>
+</ng-template>
+
+<ng-template #inner>
+  <div class="example-menu" cdkMenu>
+    <button class="example-menu-item" cdkMenuItem>Cut</button>
+    <button class="example-menu-item" cdkMenuItem>Copy</button>
+    <button class="example-menu-item" cdkMenuItem>Paste</button>
+  </div>
+</ng-template>

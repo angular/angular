@@ -19,6 +19,7 @@ import {CdkMenuItem} from './menu-item';
   exportAs: 'cdkMenuItemCheckbox',
   host: {
     'role': 'menuitemcheckbox',
+    '[class.cdk-menu-item-checkbox]': 'true',
   },
   providers: [
     {provide: CdkMenuItemSelectable, useExisting: CdkMenuItemCheckbox},

@@ -89,6 +89,7 @@ export class CdkMenuTrigger extends CdkMenuTriggerBase implements OnDestroy {
     @Optional() private readonly _directionality?: Directionality,
   ) {
     super(injector, viewContainerRef, menuStack);
+    this._setRole();
     this._registerCloseHandler();
     this._subscribeToMenuStackClosed();
     this._subscribeToMouseEnter();
@@ -324,6 +325,15 @@ export class CdkMenuTrigger extends CdkMenuTriggerBase implements OnDestroy {
           this._elementRef.nativeElement.focus();
         }
       });
+    }
+  }
+
+  /** Sets the role attribute for this trigger if needed. */
+  private _setRole() {
+    // If this trigger is part of another menu, the cdkMenuItem directive will handle setting the
+    // role, otherwise this is a standalone trigger, and we should ensure it has role="button".
+    if (!this._parentMenu) {
+      this._elementRef.nativeElement.setAttribute('role', 'button');
     }
   }
 }

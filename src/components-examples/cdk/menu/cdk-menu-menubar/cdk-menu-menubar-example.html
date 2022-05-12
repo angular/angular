@@ -1,5 +1,7 @@
 <div cdkMenuBar>
+  <!-- #docregion file-trigger -->
   <button class="example-menu-bar-item" cdkMenuItem [cdkMenuTriggerFor]="file">File</button>
+  <!-- #enddocregion file-trigger -->
   <button class="example-menu-bar-item" cdkMenuItem [cdkMenuTriggerFor]="edit">Edit</button>
   <button class="example-menu-bar-item" cdkMenuItem [cdkMenuTriggerFor]="format">Format</button>
 </div>
@@ -8,7 +10,7 @@
   <div class="example-menu" cdkMenu>
     <button class="example-menu-item" cdkMenuItem>Share</button>
     <hr />
-    <button class="example-menu-item" cdkMenuItem [cdkMenuTriggerFor]="new">
+    <button class="example-menu-item" cdkMenuItem [cdkMenuTriggerFor]="new_doc">
       New <span>&#10148;</span>
     </button>
     <button class="example-menu-item" cdkMenuItem>Open</button>
@@ -34,19 +36,19 @@
 <ng-template #format >
   <div class="example-menu" cdkMenu>
     <div class="example-menu-group" cdkMenuGroup>
-      <button class="example-menu-item" checked id="bf" cdkMenuItemCheckbox>Bold</button>
-      <button class="example-menu-item" id="if" cdkMenuItemCheckbox>Italic</button>
+      <button cdkMenuItemCheckbox class="example-menu-item" cdkMenuItemChecked>Bold</button>
+      <button cdkMenuItemCheckbox class="example-menu-item">Italic</button>
     </div>
     <hr />
     <div class="example-menu-group" cdkMenuGroup>
-      <button class="example-menu-item" id="small" cdkMenuItemRadio>Small</button>
-      <button class="example-menu-item" checked id="normal" cdkMenuItemRadio>Normal</button>
-      <button class="example-menu-item" id="large" cdkMenuItemRadio>Big</button>
+      <button cdkMenuItemRadio class="example-menu-item">Small</button>
+      <button cdkMenuItemRadio class="example-menu-item" cdkMenuItemChecked>Normal</button>
+      <button cdkMenuItemRadio class="example-menu-item">Big</button>
     </div>
   </div>
 </ng-template>
 
-<ng-template #new>
+<ng-template #new_doc>
   <div class="example-menu" cdkMenu>
     <button class="example-menu-item" cdkMenuItem>Document</button>
     <button class="example-menu-item" cdkMenuItem>From template</button>

@@ -29,6 +29,7 @@ let nextId = 0;
   exportAs: 'cdkMenuItemRadio',
   host: {
     'role': 'menuitemradio',
+    '[class.cdk-menu-item-radio]': 'true',
   },
   providers: [
     {provide: CdkMenuItemSelectable, useExisting: CdkMenuItemRadio},
