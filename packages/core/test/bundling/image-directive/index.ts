@@ -5,28 +5,26 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵIMAGE_LOADER as IMAGE_LOADER, ɵNgOptimizedImage as NgOptimizedImage} from '@angular/common';
-import {Component, NgModule} from '@angular/core';
-import {BrowserModule, platformBrowser} from '@angular/platform-browser';
+
+import {Component, importProvidersFrom} from '@angular/core';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {RouterModule} from '@angular/router';
+
+import {BasicComponent} from './basic/basic';
 
 @Component({
   selector: 'app-root',
-  template: `
-    <img rawSrc="./a.png" width="150" height="150">
-  `,
+  standalone: true,
+  imports: [RouterModule],
+  template: '<router-outlet></router-outlet>',
 })
-class RootComponent {
-  constructor() {}
+export class RootComponent {
 }
 
-@NgModule({
-  declarations: [RootComponent],
-  imports: [BrowserModule, NgOptimizedImage],
-  bootstrap: [RootComponent],
-  providers: [{provide: IMAGE_LOADER, useValue: () => 'b.png'}],
-})
-class ImageDirectiveExampleModule {
-}
+const ROUTES = [
+  {path: '', component: BasicComponent}  //
+];
 
-(window as any).waitForApp =
-    platformBrowser().bootstrapModule(ImageDirectiveExampleModule, {ngZone: 'noop'});
+bootstrapApplication(RootComponent, {
+  providers: [importProvidersFrom(RouterModule.forRoot(ROUTES))],
+});
