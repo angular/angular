@@ -494,7 +494,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
 }
 
 // @public (undocumented)
-export class FormRecord<TControl extends AbstractControl<ɵValue<TControl>, ɵRawValue<TControl>> = AbstractControl> extends FormGroup<{
+export class FormRecord<TControl extends AbstractControl<Value<TControl>, RawValue<TControl>> = AbstractControl> extends FormGroup<{
     [key: string]: TControl;
 }> {
 }
@@ -506,10 +506,10 @@ export interface FormRecord<TControl> {
     }): void;
     contains(controlName: string): boolean;
     getRawValue(): {
-        [key: string]: ɵRawValue<TControl>;
+        [key: string]: RawValue<TControl>;
     };
     patchValue(value: {
-        [key: string]: ɵValue<TControl>;
+        [key: string]: Value<TControl>;
     }, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
@@ -519,7 +519,7 @@ export interface FormRecord<TControl> {
         emitEvent?: boolean;
     }): void;
     reset(value?: {
-        [key: string]: ɵValue<TControl>;
+        [key: string]: Value<TControl>;
     }, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
@@ -528,7 +528,7 @@ export interface FormRecord<TControl> {
         emitEvent?: boolean;
     }): void;
     setValue(value: {
-        [key: string]: ɵValue<TControl>;
+        [key: string]: Value<TControl>;
     }, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
@@ -768,6 +768,9 @@ export class RangeValueAccessor extends BuiltInControlValueAccessor implements C
 }
 
 // @public
+export type RawValue<T extends AbstractControl | undefined> = T extends AbstractControl<any, any> ? (T['setValue'] extends ((v: infer R) => void) ? R : never) : never;
+
+// @public
 export class ReactiveFormsModule {
     static withConfig(opts: {
         warnOnNgModelWithFormControl: 'never' | 'once' | 'always';
@@ -886,6 +889,9 @@ export class Validators {
     static required(control: AbstractControl): ValidationErrors | null;
     static requiredTrue(control: AbstractControl): ValidationErrors | null;
 }
+
+// @public
+export type Value<T extends AbstractControl | undefined> = T extends AbstractControl<any, any> ? T['value'] : never;
 
 // @public (undocumented)
 export const VERSION: Version;
