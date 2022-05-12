@@ -189,6 +189,7 @@ export function getExternalFiles(project: ts.server.Project): string[] {
     return [];  // project has not been initialized
   }
   const typecheckFiles: string[] = [];
+  const resourceFiles: string[] = [];
   for (const scriptInfo of project.getScriptInfos()) {
     if (scriptInfo.scriptKind === ts.ScriptKind.External) {
       // script info for typecheck file is marked as external, see
@@ -196,6 +197,14 @@ export function getExternalFiles(project: ts.server.Project): string[] {
       // packages/language-service/src/language_service.ts
       typecheckFiles.push(scriptInfo.fileName);
     }
+    if (scriptInfo.scriptKind === ts.ScriptKind.Unknown) {
+      // script info for resource file is marked as unknown.
+      // Including these as external files is necessary because otherwise they will get removed from
+      // the project when `updateNonInferredProjectFiles` is called as part of the
+      // `updateProjectIfDirty` cycle.
+      // https://sourcegraph.com/github.com/microsoft/TypeScript@c300fea3250abd7f75920d95a58d9e742ac730ee/-/blob/src/server/editorServices.ts?L2363
+      resourceFiles.push(scriptInfo.fileName);
+    }
   }
-  return typecheckFiles;
+  return [...typecheckFiles, ...resourceFiles];
 }
