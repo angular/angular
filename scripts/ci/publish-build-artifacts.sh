@@ -47,7 +47,7 @@ function publishRepo {
   mkdir -p $REPO_DIR
   (
     cd $REPO_DIR && \
-    git init && \
+    git init -b main && \
     git remote add origin $REPO_URL && \
     # use the remote branch if it exists
     if git ls-remote --exit-code origin ${BRANCH}; then
