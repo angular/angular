@@ -1,0 +1,12 @@
+<ol>
+  <li>
+    <label id="dialog-user-name">What's your name?</label>
+    <input for="dialog-user-name" [(ngModel)]="name">
+  </li>
+  <li>
+    <button (click)="openDialog()">Pick one</button>
+  </li>
+  <li *ngIf="animal">
+    You chose: <i>{{animal}}</i>
+  </li>
+</ol>
