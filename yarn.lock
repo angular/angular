@@ -309,7 +309,6 @@
 
 "@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#f557392bfe7eeccdd39e21853ed7d90e02b2bce7":
   version "0.0.0-6f5ad484efbab50c504a6ae0ea15fd9439888321"
-  uid f557392bfe7eeccdd39e21853ed7d90e02b2bce7
   resolved "https://github.com/angular/dev-infra-private-builds.git#f557392bfe7eeccdd39e21853ed7d90e02b2bce7"
   dependencies:
     "@angular-devkit/build-angular" "14.0.0-next.13"
@@ -15447,10 +15446,10 @@ typescript@4.5.5, typescript@~4.5.2:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.5.tgz#d8c953832d28924a9e3d37c73d729c846c5896f3"
   integrity sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==
 
-typescript@4.7.0-beta:
-  version "4.7.0-beta"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.0-beta.tgz#15952f24d4177479ca3d19f09436ad8c69a30563"
-  integrity sha512-m+CNL8lzHyHDxYYDTI+pm5hw5/bufYVGan2bokPyJY/y9C/4W/PCWMtYZ0vV9fLXbEL57elMeoaz9Evxs8UQ+A==
+typescript@4.7.1-rc:
+  version "4.7.1-rc"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.1-rc.tgz#23a0517d36c56de887b4457f29e2d265647bbd7c"
+  integrity sha512-EQd2NVelDe6ZVc2sO1CSpuSs+RHzY8c2n/kTNQAHw4um/eAXY+ZY4IKoUpNK0wO6C5hN+XcUXR7yqT8VbwwNIQ==
 
 typescript@^3.9.10, typescript@^3.9.5, typescript@^3.9.7:
   version "3.9.10"

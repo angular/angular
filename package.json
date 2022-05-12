@@ -171,7 +171,7 @@
     "tsickle": "0.38.1",
     "tslib": "^2.3.0",
     "tslint": "6.1.3",
-    "typescript": "4.7.0-beta",
+    "typescript": "4.7.1-rc",
     "webtreemap": "^2.0.1",
     "xhr2": "0.2.1",
     "yargs": "^17.2.1"
