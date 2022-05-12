@@ -19,7 +19,7 @@
     "mocha": "^9.0.0",
     "mock-require": "3.0.3",
     "promises-aplus-tests": "^2.1.2",
-    "typescript": "4.7.0-beta"
+    "typescript": "4.7.1-rc"
   },
   "scripts": {
     "closuretest": "./scripts/closure/closure_compiler.sh",
