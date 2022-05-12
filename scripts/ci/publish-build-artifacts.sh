@@ -33,7 +33,8 @@ function publishRepo {
   ARTIFACTS_DIR=$2
 
   BUILD_REPO="${COMPONENT}-builds"
-  REPO_DIR="tmp/${BUILD_REPO}"
+  REPO_DIR="$(pwd)/tmp/${BUILD_REPO}"
+  REPO_URL="https://github.com/angular/${BUILD_REPO}.git"
 
   if [ -n "${CREATE_REPOS:-}" ]; then
     curl -u "$ORG:$TOKEN" https://api.github.com/user/repos \
@@ -44,18 +45,27 @@ function publishRepo {
 
   # create local repo folder and clone build repo into it
   rm -rf $REPO_DIR
-  mkdir -p $REPO_DIR
-  (
-    cd $REPO_DIR && \
-    git init -b main && \
-    git remote add origin $REPO_URL && \
-    # use the remote branch if it exists
-    if git ls-remote --exit-code origin ${BRANCH}; then
-      git fetch origin ${BRANCH} --depth=1 && \
-      git checkout origin/${BRANCH}
-    fi
-    git checkout -b "${BRANCH}"
-  )
+  mkdir -p ${REPO_DIR}
+
+  echo "Starting cloning process of ${REPO_URL} into ${REPO_DIR}.."
+  
+  if [[ $(git ls-remote --heads ${REPO_URL} ${BRANCH}) ]]; then
+    echo "Branch ${BRANCH} already exists. Cloning that branch."
+    git clone ${REPO_URL} ${REPO_DIR} --depth 1 --branch ${BRANCH}
+
+    cd ${REPO_DIR}
+    echo "Cloned repository and switched into the repository directory (${REPO_DIR})."
+  else
+    echo "Branch ${BRANCH} does not exist on ${packageRepo} yet."
+    echo "Cloning default branch and creating branch '${BRANCH}' on top of it."
+
+    git clone ${REPO_URL} ${REPO_DIR} --depth 1
+    cd ${REPO_DIR}
+
+    echo "Cloned repository and switched into directory. Creating new branch now.."
+
+    git checkout -b ${BRANCH}
+  fi
 
   # copy over build artifacts into the repo directory
   rm -rf $REPO_DIR/*
