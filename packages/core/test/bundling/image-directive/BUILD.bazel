@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "app_bundle", "ng_module", "ts_devserver")
+load("//tools:defaults.bzl", "app_bundle", "ng_module", "protractor_web_test_suite", "ts_devserver", "ts_library")
 load("@npm//http-server:index.bzl", "http_server")
 
 package(default_visibility = ["//visibility:public"])
@@ -6,12 +6,14 @@ package(default_visibility = ["//visibility:public"])
 ng_module(
     name = "image-directive",
     srcs = [
+        "basic/basic.ts",
         "index.ts",
     ],
     deps = [
         "//packages/common",
         "//packages/core",
         "//packages/platform-browser",
+        "//packages/router",
     ],
 )
 
@@ -23,6 +25,7 @@ app_bundle(
         "//packages/common",
         "//packages/core",
         "//packages/platform-browser",
+        "//packages/router",
         "@npm//rxjs",
     ],
 )
@@ -40,7 +43,9 @@ genrule(
 
 ts_devserver(
     name = "devserver",
+    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
     entry_module = "@angular/core/test/bundling/image-directive",
+    port = 4200,
     scripts = [
         "//tools/rxjs:rxjs_umd_modules",
     ],
@@ -60,5 +65,27 @@ http_server(
         "index.html",
         ":bundle.debug.min.js",
         ":bundle.min.js",
+    ],
+)
+
+ts_library(
+    name = "img_dir_e2e_tests_lib",
+    testonly = True,
+    srcs = glob(["**/*.e2e-spec.ts"]),
+    tsconfig = ":tsconfig-e2e.json",
+    deps = [
+        "//packages/examples/test-utils",
+        "//packages/private/testing",
+        "@npm//protractor",
+    ],
+)
+
+protractor_web_test_suite(
+    name = "protractor_tests",
+    on_prepare = ":start-server.js",
+    server = ":devserver",
+    deps = [
+        ":img_dir_e2e_tests_lib",
+        "@npm//selenium-webdriver",
     ],
 )
