@@ -10,10 +10,10 @@ import {ɵIMAGE_LOADER as IMAGE_LOADER, ɵNgOptimizedImage as NgOptimizedImage} 
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'app-root',
+  selector: 'basic',
   standalone: true,
   imports: [NgOptimizedImage],
-  template: `<img rawSrc="./a.png" width="150" height="150">`,
+  template: `<img rawSrc="./a.png" width="150" height="150" priority>`,
   providers: [{provide: IMAGE_LOADER, useValue: () => 'b.png'}],
 })
 export class BasicComponent {
