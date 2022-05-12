@@ -391,14 +391,14 @@ export interface MenuStackItem {
 export const PARENT_OR_NEW_INLINE_MENU_STACK_PROVIDER: (orientation: 'vertical' | 'horizontal') => {
     provide: InjectionToken<MenuStack>;
     deps: Optional[][];
-    useFactory: (parentMenuStack?: MenuStack | undefined) => MenuStack;
+    useFactory: (parentMenuStack?: MenuStack) => MenuStack;
 };
 
 // @public
 export const PARENT_OR_NEW_MENU_STACK_PROVIDER: {
     provide: InjectionToken<MenuStack>;
     deps: Optional[][];
-    useFactory: (parentMenuStack?: MenuStack | undefined) => MenuStack;
+    useFactory: (parentMenuStack?: MenuStack) => MenuStack;
 };
 
 // @public

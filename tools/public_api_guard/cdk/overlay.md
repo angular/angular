@@ -462,9 +462,9 @@ export interface ScrollStrategy {
 export class ScrollStrategyOptions {
     constructor(_scrollDispatcher: ScrollDispatcher, _viewportRuler: ViewportRuler, _ngZone: NgZone, document: any);
     block: () => BlockScrollStrategy;
-    close: (config?: CloseScrollStrategyConfig | undefined) => CloseScrollStrategy;
+    close: (config?: CloseScrollStrategyConfig) => CloseScrollStrategy;
     noop: () => NoopScrollStrategy;
-    reposition: (config?: RepositionScrollStrategyConfig | undefined) => RepositionScrollStrategy;
+    reposition: (config?: RepositionScrollStrategyConfig) => RepositionScrollStrategy;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<ScrollStrategyOptions, never>;
     // (undocumented)

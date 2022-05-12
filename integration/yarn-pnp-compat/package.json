@@ -10,25 +10,25 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "~14.0.0-next.16",
+    "@angular/animations": "~14.0.0-rc.0",
     "@angular/cdk": "file:../../dist/releases/cdk",
-    "@angular/common": "~14.0.0-next.16",
-    "@angular/compiler": "~14.0.0-next.16",
-    "@angular/core": "~14.0.0-next.16",
-    "@angular/forms": "~14.0.0-next.16",
+    "@angular/common": "~14.0.0-rc.0",
+    "@angular/compiler": "~14.0.0-rc.0",
+    "@angular/core": "~14.0.0-rc.0",
+    "@angular/forms": "~14.0.0-rc.0",
     "@angular/material": "file:../../dist/releases/material",
-    "@angular/material-experimental": "~14.0.0-next.13",
-    "@angular/platform-browser": "~14.0.0-next.16",
-    "@angular/platform-browser-dynamic": "~14.0.0-next.16",
-    "@angular/router": "~14.0.0-next.16",
+    "@angular/material-experimental": "~14.0.0-rc.0",
+    "@angular/platform-browser": "~14.0.0-rc.0",
+    "@angular/platform-browser-dynamic": "~14.0.0-rc.0",
+    "@angular/router": "~14.0.0-rc.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~14.0.0-next.13",
-    "@angular/cli": "~14.0.0-next.13",
-    "@angular/compiler-cli": "~14.0.0-next.16",
+    "@angular-devkit/build-angular": "~14.0.0-rc.0",
+    "@angular/cli": "~14.0.0-rc.0",
+    "@angular/compiler-cli": "~14.0.0-rc.0",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
     "jasmine-core": "~4.0.0",
@@ -37,7 +37,7 @@
     "karma-coverage": "~2.1.0",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
-    "typescript": "4.7.0-beta"
+    "typescript": "4.7.1-rc"
   },
   "packageManager": "yarn@4.0.0-rc.4"
 }
