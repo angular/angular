@@ -7,10 +7,11 @@
  */
 
 import {Component, importProvidersFrom} from '@angular/core';
-import {bootstrapApplication} from '@angular/platform-browser';
+import {bootstrapApplication, provideProtractorTestingSupport} from '@angular/platform-browser';
 import {RouterModule} from '@angular/router';
 
 import {BasicComponent} from './basic/basic';
+import {LcpCheckComponent} from './lcp-check/lcp-check';
 
 @Component({
   selector: 'app-root',
@@ -22,9 +23,13 @@ export class RootComponent {
 }
 
 const ROUTES = [
-  {path: '', component: BasicComponent}  //
+  {path: '', component: BasicComponent},  //
+  {path: 'lcp-check', component: LcpCheckComponent}
 ];
 
 bootstrapApplication(RootComponent, {
-  providers: [importProvidersFrom(RouterModule.forRoot(ROUTES))],
+  providers: [
+    provideProtractorTestingSupport(),  //
+    importProvidersFrom(RouterModule.forRoot(ROUTES))
+  ],
 });
