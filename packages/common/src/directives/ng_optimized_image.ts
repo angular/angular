@@ -86,9 +86,15 @@ class LCPImageObserver implements OnDestroy {
   // Based on https://web.dev/lcp/#measure-lcp-in-javascript
   private initPerformanceObserver(): PerformanceObserver {
     const observer = new PerformanceObserver((entryList) => {
-      for (const entry of entryList.getEntries()) {
+      const entries = entryList.getEntries();
+      if (entries.length > 0) {
+        // Note: we use the latest entry produced by the `PerformanceObserver` as the best
+        // signal on which element is actually an LCP one. As an example, the first image to load on
+        // a page, by virtue of being the only thing on the page so far, is often a LCP candidate
+        // and gets reported by PerformanceObserver, but isn't necessarily the LCP element.
+        const lcpElement = entries[entries.length - 1];
         // Cast to `any` due to missing `element` on observed type of entry.
-        const imgSrc = (entry as any).element?.src ?? '';
+        const imgSrc = (lcpElement as any).element?.src ?? '';
         const img = this.images.get(imgSrc);
         // Exclude `data:` and `blob:` URLs, since they are not supported by the directive.
         if (img && !img.priority && !imgSrc.startsWith('data:') && !imgSrc.startsWith('blob:')) {

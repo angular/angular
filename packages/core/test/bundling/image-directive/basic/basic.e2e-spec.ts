@@ -8,7 +8,7 @@
 
 import {browser, by, element} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../../../examples/test-utils';
+import {verifyNoBrowserErrors} from '../e2e-util/util';
 
 describe('NgOptimizedImage directive', () => {
   afterEach(verifyNoBrowserErrors);
