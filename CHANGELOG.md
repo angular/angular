@@ -1,3 +1,14 @@
+<a name="13.3.8"></a>
+# 13.3.8 (2022-05-12)
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b4eb9ed884](https://github.com/angular/angular/commit/b4eb9ed884a82ba741abb503c974df7ec0d0048a) | fix | Prevent TSServer from removing templates from project ([#45965](https://github.com/angular/angular/pull/45965)) |
+## Special Thanks
+Andrew Scott, George Kalpakas and Joey Perrott
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.7"></a>
 # 13.3.7 (2022-05-11)
 ### core
