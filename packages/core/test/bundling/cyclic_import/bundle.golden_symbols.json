@@ -414,9 +414,6 @@
     "name": "stringify"
   },
   {
-    "name": "stringifyForError"
-  },
-  {
     "name": "throwProviderNotFoundError"
   },
   {

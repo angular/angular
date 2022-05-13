@@ -48,5 +48,5 @@ export function throwProviderNotFoundError(token: any, injectorName?: string): n
   const injectorDetails = injectorName ? ` in ${injectorName}` : '';
   throw new RuntimeError(
       RuntimeErrorCode.PROVIDER_NOT_FOUND,
-      `No provider for ${stringifyForError(token)} found${injectorDetails}`);
+      ngDevMode && `No provider for ${stringifyForError(token)} found${injectorDetails}`);
 }

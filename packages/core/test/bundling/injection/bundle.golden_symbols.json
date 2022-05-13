@@ -117,9 +117,6 @@
     "name": "injectInjectorOnly"
   },
   {
-    "name": "injectRootLimpMode"
-  },
-  {
     "name": "injectableDefOrInjectorDefFactory"
   },
   {
