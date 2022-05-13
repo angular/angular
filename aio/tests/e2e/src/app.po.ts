@@ -99,8 +99,8 @@ export class SitePage {
   }
 
   async clickDropdownItem(dropdown: ElementFinder, itemName: string){
-    await dropdown.element(by.css('.form-select-button')).click();
-    const menuItem = dropdown.element(by.cssContainingText('.form-select-dropdown li', itemName));
+    await dropdown.element(by.css('mat-select')).click();
+    const menuItem = element(by.cssContainingText('mat-option', itemName));
     await menuItem.click();
   }
 }

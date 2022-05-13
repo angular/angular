@@ -7,7 +7,7 @@ import { HarnessLoader } from '@angular/cdk/testing';
 
 import { MatSelectHarness } from '@angular/material/select/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { MatFormFieldHarness } from "@angular/material/form-field/testing";
+import { MatFormFieldHarness } from '@angular/material/form-field/testing';
 
 const options = [
   { title: 'Option A', value: 'option-a' },
