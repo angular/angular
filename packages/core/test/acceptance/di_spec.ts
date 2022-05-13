@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -3174,6 +3174,158 @@ describe('di', () => {
       const fixture = TestBed.createComponent(WrapperComp);
       fixture.detectChanges();
       expect(fixture.componentInstance.myComp.token).toBe('token with factory');
+    });
+  });
+
+  describe('inject()', () => {
+    it('should work in a directive constructor', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+
+      @Component({
+        standalone: true,
+        selector: 'test-cmp',
+        template: '{{value}}',
+        providers: [{provide: TOKEN, useValue: 'injected value'}],
+      })
+      class TestCmp {
+        value: string;
+        constructor() {
+          this.value = inject(TOKEN);
+        }
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('injected value');
+    });
+
+    it('should work in a service constructor when the service is provided on a directive', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+
+      @Injectable()
+      class Service {
+        value: string;
+        constructor() {
+          this.value = inject(TOKEN);
+        }
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'test-cmp',
+        template: '{{service.value}}',
+        providers: [Service, {provide: TOKEN, useValue: 'injected value'}],
+      })
+      class TestCmp {
+        constructor(readonly service: Service) {}
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('injected value');
+    });
+
+
+    it('should be able to inject special tokens like ChangeDetectorRef', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+
+      @Component({
+        standalone: true,
+        selector: 'test-cmp',
+        template: '{{value}}',
+      })
+      class TestCmp {
+        cdr = inject(ChangeDetectorRef);
+        value = 'before';
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.componentInstance.value = 'after';
+      fixture.componentInstance.cdr.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('after');
+    });
+
+    it('should work in a service constructor', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN', {
+        providedIn: 'root',
+        factory: () => 'injected value',
+      });
+
+      @Injectable({providedIn: 'root'})
+      class Service {
+        value: string;
+        constructor() {
+          this.value = inject(TOKEN);
+        }
+      }
+
+      const service = TestBed.inject(Service);
+      expect(service.value).toEqual('injected value');
+    });
+
+    it('should work in a useFactory definition for a service', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN', {
+        providedIn: 'root',
+        factory: () => 'injected value',
+      });
+
+      @Injectable({
+        providedIn: 'root',
+        useFactory: () => new Service(inject(TOKEN)),
+      })
+      class Service {
+        constructor(readonly value: string) {}
+      }
+
+      expect(TestBed.inject(Service).value).toEqual('injected value');
+    });
+
+    it('should work for field injection', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN', {
+        providedIn: 'root',
+        factory: () => 'injected value',
+      });
+
+      @Injectable({providedIn: 'root'})
+      class Service {
+        value = inject(TOKEN);
+      }
+
+      const service = TestBed.inject(Service);
+      expect(service.value).toEqual('injected value');
+    });
+
+    it('should not give non-node services access to the node context', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+
+      @Injectable({providedIn: 'root'})
+      class Service {
+        value: string;
+        constructor() {
+          this.value = inject(TOKEN, InjectFlags.Optional) ?? 'default value';
+        }
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'test-cmp',
+        template: '{{service.value}}',
+        providers: [{provide: TOKEN, useValue: 'injected value'}],
+      })
+      class TestCmp {
+        service: Service;
+        constructor() {
+          // `Service` is injected starting from the component context, where `inject` is
+          // `ɵɵdirectiveInject` under the hood. However, this should reach the root injector which
+          // should _not_ use `ɵɵdirectiveInject` to inject dependencies of `Service`, so `TOKEN`
+          // should not be visible to `Service`.
+          this.service = inject(Service);
+        }
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('default value');
     });
   });
 

@@ -543,6 +543,9 @@
     "name": "getNullInjector"
   },
   {
+    "name": "getOrCreateInjectable"
+  },
+  {
     "name": "getOrCreateTNode"
   },
   {
@@ -880,6 +883,9 @@
   },
   {
     "name": "ɵɵdefineInjectable"
+  },
+  {
+    "name": "ɵɵdirectiveInject"
   },
   {
     "name": "ɵɵinject"
