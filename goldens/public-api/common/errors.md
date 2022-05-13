@@ -17,6 +17,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     PARENT_NG_SWITCH_NOT_FOUND = 2000,
     // (undocumented)
+    PRIORITY_IMG_MISSING_PRECONNECT_TAG = 2956,
+    // (undocumented)
     REQUIRED_INPUT_MISSING = 2954,
     // (undocumented)
     UNEXPECTED_INPUT_CHANGE = 2953,

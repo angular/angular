@@ -7,12 +7,14 @@
  */
 
 import {CommonModule, DOCUMENT} from '@angular/common';
-import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '@angular/common/src/directives/ng_optimized_image/image_loaders/image_loader';
-import {assertValidRawSrcset, NgOptimizedImageModule} from '@angular/common/src/directives/ng_optimized_image/ng_optimized_image';
 import {RuntimeErrorCode} from '@angular/common/src/errors';
-import {Component} from '@angular/core';
+import {Component, Provider} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {withHead} from '@angular/private/testing';
+
+import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '../../src/directives/ng_optimized_image/image_loaders/image_loader';
+import {assertValidRawSrcset, NgOptimizedImageModule} from '../../src/directives/ng_optimized_image/ng_optimized_image';
 
 describe('Image directive', () => {
   it('should set `loading` and `fetchpriority` attributes before `src`', () => {
@@ -247,7 +249,7 @@ describe('Image directive', () => {
       it('should throw for empty rawSrcSet', () => {
         const imageLoader = (config: ImageLoaderConfig) => {
           const width = config.width ? `-${config.width}` : ``;
-          return `path/${config.src}${width}.png`;
+          return window.location.origin + `/path/${config.src}${width}.png`;
         };
         setupTestingModule({imageLoader});
 
@@ -268,7 +270,7 @@ describe('Image directive', () => {
       it('should throw for invalid rawSrcSet', () => {
         const imageLoader = (config: ImageLoaderConfig) => {
           const width = config.width ? `-${config.width}` : ``;
-          return `path/${config.src}${width}.png`;
+          return window.location.origin + `/path/${config.src}${width}.png`;
         };
         setupTestingModule({imageLoader});
 
@@ -495,6 +497,94 @@ describe('Image directive', () => {
     });
   });
 
+  describe('preconnect detector', () => {
+    it('should log a warning if there is no preconnect link for a priority image',
+       withHead('', () => {
+         setupTestingModule();
+
+         const consoleWarnSpy = spyOn(console, 'warn');
+         const template = '<img rawSrc="a.png" width="100" height="50" priority>';
+         const fixture = createTestComponent(template);
+         fixture.detectChanges();
+
+         expect(consoleWarnSpy.calls.count()).toBe(1);
+         expect(consoleWarnSpy.calls.argsFor(0)[0])
+             .toBe(
+                 'NG02956: The NgOptimizedImage directive (activated on an <img> ' +
+                 'element with the `rawSrc="a.png"`) has detected that this image ' +
+                 'contains the "priority" attribute, but doesn\'t have a corresponding ' +
+                 'preconnect tag. Please add the following element into the <head> of ' +
+                 'the document to optimize loading of this image:' +
+                 '\n  <link rel="preconnect" href="http://localhost">');
+       }));
+
+    it('should not log a warning if there is no preconnect link, but the image is not set as a priority',
+       withHead('', () => {
+         setupTestingModule();
+
+         const consoleWarnSpy = spyOn(console, 'warn');
+         const template = '<img rawSrc="a.png" width="100" height="50">';
+         const fixture = createTestComponent(template);
+         fixture.detectChanges();
+
+         // Expect no warnings in the console.
+         expect(consoleWarnSpy.calls.count()).toBe(0);
+       }));
+
+    it('should log a warning if there is a preconnect, but it doesn\'t match the priority image',
+       withHead('<link rel="preconnect" href="https://localhost:443">', () => {
+         setupTestingModule();
+
+         const consoleWarnSpy = spyOn(console, 'warn');
+         const template = '<img rawSrc="a.png" width="100" height="50" priority>';
+         const fixture = createTestComponent(template);
+         fixture.detectChanges();
+
+         expect(consoleWarnSpy.calls.count()).toBe(1);
+         expect(consoleWarnSpy.calls.argsFor(0)[0])
+             .toBe(
+                 'NG02956: The NgOptimizedImage directive (activated on an ' +
+                 '<img> element with the `rawSrc="a.png"`) has detected that ' +
+                 'this image contains the "priority" attribute, but doesn\'t have ' +
+                 'a corresponding preconnect tag. Please add the following element ' +
+                 'into the <head> of the document to optimize loading of this image:' +
+                 '\n  <link rel="preconnect" href="http://localhost">');
+       }));
+
+    it('should log a warning if there is no matching preconnect link for a priority image, but there is a preload tag',
+       withHead('<link rel="preload" href="http://localhost/a.png" as="image">', () => {
+         setupTestingModule();
+
+         const consoleWarnSpy = spyOn(console, 'warn');
+         const template = '<img rawSrc="a.png" width="100" height="50" priority>';
+         const fixture = createTestComponent(template);
+         fixture.detectChanges();
+
+         expect(consoleWarnSpy.calls.count()).toBe(1);
+         expect(consoleWarnSpy.calls.argsFor(0)[0])
+             .toBe(
+                 'NG02956: The NgOptimizedImage directive (activated on an ' +
+                 '<img> element with the `rawSrc="a.png"`) has detected that ' +
+                 'this image contains the "priority" attribute, but doesn\'t have ' +
+                 'a corresponding preconnect tag. Please add the following element ' +
+                 'into the <head> of the document to optimize loading of this image:' +
+                 '\n  <link rel="preconnect" href="http://localhost">');
+       }));
+
+    it('should not log a warning if there is a matching preconnect link for a priority image (with an extra `/` at the end)',
+       withHead('<link rel="preconnect" href="http://localhost/">', () => {
+         setupTestingModule();
+
+         const consoleWarnSpy = spyOn(console, 'warn');
+         const template = '<img rawSrc="a.png" width="100" height="50" priority>';
+         const fixture = createTestComponent(template);
+         fixture.detectChanges();
+
+         // Expect no warnings in the console.
+         expect(consoleWarnSpy.calls.count()).toBe(0);
+       }));
+  });
+
   describe('loaders', () => {
     it('should set `src` to match `rawSrc` if image loader is not provided', () => {
       setupTestingModule();
@@ -705,8 +795,16 @@ class TestComponent {
 }
 
 function setupTestingModule(config?: {imageLoader: ImageLoader}) {
-  const providers =
-      config?.imageLoader ? [{provide: IMAGE_LOADER, useValue: config?.imageLoader}] : [];
+  const defaultLoader = (config: ImageLoaderConfig) => {
+    const isAbsolute = /^https?:\/\//.test(config.src);
+    return isAbsolute ? config.src : window.location.origin + '/' + config.src;
+  };
+  const loader = config?.imageLoader || defaultLoader;
+  const providers: Provider[] = [
+    {provide: DOCUMENT, useValue: window.document},
+    {provide: IMAGE_LOADER, useValue: loader},
+  ];
+
   TestBed.configureTestingModule({
     declarations: [TestComponent],
     // Note: the `NgOptimizedImage` directive is experimental and is not a part of the
