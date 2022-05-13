@@ -986,6 +986,7 @@ groups:
           'aio/content/examples/setup/**',
           'aio/content/guide/build.md',
           'aio/content/images/guide/build/**',
+          'aio/content/images/guide/cli/**',
           'aio/content/guide/cli-builder.md',
           'aio/content/examples/cli-builder/**',
           'aio/content/guide/deployment.md',
