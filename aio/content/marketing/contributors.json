@@ -783,6 +783,14 @@
     "bio": "Santosh is a GDE for Angular and loves to contribute to Open Source. He is the creator of ng deploy for netlify and core team member for NestJS Addons. He writes for AngularInDepth, mentors for DotNetTricks, organizes Pune Tech Meetup, and conducts free workshops on Angular.",
     "groups": ["GDE"]
   },
+  "selintunc": {
+      "name": "Selin Tunc",
+      "picture": "selin.jpeg",
+      "twitter": "selintunc_",
+      "website": "https://www.linkedin.com/in/selinkaragulletunc",
+      "bio": "Selin is a Software Developer Expert using Angular and Java at Garanti BBVA Technology in Turkey. She is the first woman Angular GDE in Turkey. She spends her spare time with her family, especially her little son, and by keeping herself up-to-date.",
+      "groups": ["GDE"]
+  },
   "shairez": {
     "name": "Shai Reznik",
     "picture": "shaireznik.jpg",
