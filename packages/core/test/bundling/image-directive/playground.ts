@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵIMAGE_LOADER as IMAGE_LOADER, ɵImageLoaderConfig as ImageLoaderConfig, ɵNgOptimizedImageModule as NgOptimizedImageModule, ɵprovideImgixLoader as provideImgixLoader} from '@angular/common';
+import {ɵNgOptimizedImageModule as NgOptimizedImageModule, ɵprovideImgixLoader as provideImgixLoader} from '@angular/common';
 import {Component} from '@angular/core';
 
 @Component({
