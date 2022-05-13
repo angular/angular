@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createEnvironmentInjector, EnvironmentInjector} from '@angular/core';
-import {EmptyError, from, Observable, Observer, of, throwError} from 'rxjs';
+import {EnvironmentInjector} from '@angular/core';
+import {EmptyError, from, Observable, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, last, map, mergeMap, scan, tap} from 'rxjs/operators';
 
 import {CanLoadFn, LoadedRouterConfig, Route, Routes} from './models';
@@ -16,7 +16,7 @@ import {RouterConfigLoader} from './router_config_loader';
 import {navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {forEach, wrapIntoObservable} from './utils/collection';
-import {getOutlet, sortByMatchingOutlets} from './utils/config';
+import {getOrCreateRouteInjectorIfNeeded, getOutlet, sortByMatchingOutlets} from './utils/config';
 import {isImmediateMatch, match, noLeftoversInUrl, split} from './utils/config_matching';
 import {isCanLoad, isFunction, isUrlTree} from './utils/type_guards';
 
@@ -183,17 +183,8 @@ class ApplyRedirects {
       allowRedirects: boolean): Observable<UrlSegmentGroup> {
     return from(routes).pipe(
         concatMap(r => {
-          if (r.providers && !r._injector) {
-            r._injector = createEnvironmentInjector(r.providers, injector, `Route: ${r.path}`);
-          }
-          // We specifically _do not_ want to include the _loadedInjector here. The loaded injector
-          // only applies to the route's children, not the route itself. Note that this distinction
-          // only applies here to any tokens we try to retrieve during this phase. At the moment,
-          // that only includes `canLoad`, which won't run again once the child module is loaded. As
-          // a result, this makes no difference right now, but could in the future if there are more
-          // actions here that need DI (for example, a canMatch guard).
           const expanded$ = this.expandSegmentAgainstRoute(
-              r._injector ?? injector, segmentGroup, routes, r, segments, outlet, allowRedirects);
+              injector, segmentGroup, routes, r, segments, outlet, allowRedirects);
           return expanded$.pipe(catchError((e: any) => {
             if (e instanceof NoMatch) {
               return of(null);
@@ -280,6 +271,8 @@ class ApplyRedirects {
       injector: EnvironmentInjector, rawSegmentGroup: UrlSegmentGroup, route: Route,
       segments: UrlSegment[], outlet: string): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
+      // Only create the Route's `EnvironmentInjector` if it matches the attempted navigation
+      injector = getOrCreateRouteInjectorIfNeeded(route, injector);
       if (route.loadChildren) {
         const loaded$ = route._loadedRoutes ?
             of({routes: route._loadedRoutes, injector: route._loadedInjector}) :
@@ -297,6 +290,8 @@ class ApplyRedirects {
     const {matched, consumedSegments, remainingSegments} = match(rawSegmentGroup, route, segments);
     if (!matched) return noMatch(rawSegmentGroup);
 
+    // Only create the Route's `EnvironmentInjector` if it matches the attempted navigation
+    injector = getOrCreateRouteInjectorIfNeeded(route, injector);
     const childConfig$ = this.getChildConfig(injector, route, segments);
 
     return childConfig$.pipe(mergeMap((routerConfig: LoadedRouterConfig) => {

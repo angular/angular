@@ -6,12 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, Type, ɵisStandalone as isStandalone} from '@angular/core';
+import {createEnvironmentInjector, EnvironmentInjector, Type, ɵisStandalone as isStandalone} from '@angular/core';
 
 import {EmptyOutletComponent} from '../components/empty_outlet';
 import {Route, Routes} from '../models';
 import {ActivatedRouteSnapshot} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
+
+/**
+ * Creates an `EnvironmentInjector` if the `Route` has providers and one does not already exist
+ * and returns the injector. Otherwise, if the `Route` does not have `providers`, returns the
+ * `currentInjector`.
+ *
+ * @param route The route that might have providers
+ * @param currentInjector The parent injector of the `Route`
+ */
+export function getOrCreateRouteInjectorIfNeeded(
+    route: Route, currentInjector: EnvironmentInjector) {
+  if (route.providers && !route._injector) {
+    route._injector =
+        createEnvironmentInjector(route.providers, currentInjector, `Route: ${route.path}`);
+  }
+  return route._injector ?? currentInjector;
+}
 
 export function getLoadedRoutes(route: Route): Route[]|undefined {
   return route._loadedRoutes;
