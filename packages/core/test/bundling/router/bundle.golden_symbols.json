@@ -1248,6 +1248,9 @@
     "name": "getOrCreateNodeInjectorForNode"
   },
   {
+    "name": "getOrCreateRouteInjectorIfNeeded"
+  },
+  {
     "name": "getOrCreateTComponentView"
   },
   {
