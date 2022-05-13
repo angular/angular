@@ -1329,9 +1329,6 @@
     "name": "stringifyCSSSelector"
   },
   {
-    "name": "stringifyForError"
-  },
-  {
     "name": "style"
   },
   {
