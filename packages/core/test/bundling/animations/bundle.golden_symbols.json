@@ -855,6 +855,9 @@
     "name": "getNullInjector"
   },
   {
+    "name": "getOrCreateInjectable"
+  },
+  {
     "name": "getOrCreateNodeInjectorForNode"
   },
   {
@@ -1390,6 +1393,9 @@
   },
   {
     "name": "ɵɵdefineNgModule"
+  },
+  {
+    "name": "ɵɵdirectiveInject"
   },
   {
     "name": "ɵɵelement"

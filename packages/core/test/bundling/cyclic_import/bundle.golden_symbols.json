@@ -27,7 +27,16 @@
     "name": "NG_FACTORY_DEF"
   },
   {
+    "name": "NG_INJECTABLE_DEF"
+  },
+  {
     "name": "NG_PIPE_DEF"
+  },
+  {
+    "name": "NG_PROV_DEF"
+  },
+  {
+    "name": "NOT_FOUND"
   },
   {
     "name": "NO_CHANGE"
@@ -46,6 +55,9 @@
   },
   {
     "name": "ViewEncapsulation"
+  },
+  {
+    "name": "__forward_ref__"
   },
   {
     "name": "_global"
@@ -75,6 +87,9 @@
     "name": "attachPatchData"
   },
   {
+    "name": "bloomHasToken"
+  },
+  {
     "name": "callHook"
   },
   {
@@ -99,6 +114,9 @@
     "name": "createLView"
   },
   {
+    "name": "createNodeInjector"
+  },
+  {
     "name": "createTView"
   },
   {
@@ -109,6 +127,9 @@
   },
   {
     "name": "domRendererFactory3"
+  },
+  {
+    "name": "enterDI"
   },
   {
     "name": "enterView"
@@ -130,6 +151,9 @@
   },
   {
     "name": "findAttrIndexInNode"
+  },
+  {
+    "name": "forwardRef"
   },
   {
     "name": "generateInitialInputs"
@@ -165,6 +189,9 @@
     "name": "getFirstLContainer"
   },
   {
+    "name": "getInjectorIndex"
+  },
+  {
     "name": "getLView"
   },
   {
@@ -180,6 +207,9 @@
     "name": "getNodeInjectable"
   },
   {
+    "name": "getOrCreateInjectable"
+  },
+  {
     "name": "getOrCreateNodeInjectorForNode"
   },
   {
@@ -187,6 +217,18 @@
   },
   {
     "name": "getOrCreateTNode"
+  },
+  {
+    "name": "getOwnDefinition"
+  },
+  {
+    "name": "getParentInjectorIndex"
+  },
+  {
+    "name": "getParentInjectorLocation"
+  },
+  {
+    "name": "getParentInjectorView"
   },
   {
     "name": "getPipeDef"
@@ -211,6 +253,9 @@
   },
   {
     "name": "initTNodeFlags"
+  },
+  {
+    "name": "injectInjectorOnly"
   },
   {
     "name": "insertBloom"
@@ -267,6 +312,12 @@
     "name": "leaveViewLight"
   },
   {
+    "name": "lookupTokenUsingModuleInjector"
+  },
+  {
+    "name": "lookupTokenUsingNodeInjector"
+  },
+  {
     "name": "markAsComponentHost"
   },
   {
@@ -286,6 +337,9 @@
   },
   {
     "name": "nonNull"
+  },
+  {
+    "name": "notFoundValueOrThrow"
   },
   {
     "name": "refreshComponent"
@@ -315,7 +369,13 @@
     "name": "resetPreOrderHookFlags"
   },
   {
+    "name": "resolveForwardRef"
+  },
+  {
     "name": "saveNameToExportMap"
+  },
+  {
+    "name": "searchTokensOnInjector"
   },
   {
     "name": "setBindingRootForHostBindings"
@@ -348,6 +408,18 @@
     "name": "setUpAttributes"
   },
   {
+    "name": "shouldSearchParent"
+  },
+  {
+    "name": "stringify"
+  },
+  {
+    "name": "stringifyForError"
+  },
+  {
+    "name": "throwProviderNotFoundError"
+  },
+  {
     "name": "uniqueIdCounter"
   },
   {
@@ -366,6 +438,9 @@
     "name": "ɵɵdefineComponent"
   },
   {
+    "name": "ɵɵdirectiveInject"
+  },
+  {
     "name": "ɵɵelement"
   },
   {
@@ -373,5 +448,8 @@
   },
   {
     "name": "ɵɵelementStart"
+  },
+  {
+    "name": "ɵɵinject"
   }
 ]
