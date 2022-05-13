@@ -63,8 +63,10 @@ export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
   providedIn: 'root',
 })
 class LCPImageObserver implements OnDestroy {
-  // Map of full image URLs -> image metadata (`raw-src` and `priority`).
-  private images = new Map<string, {rawSrc: string, priority: boolean}>();
+  // Map of full image URLs -> original `rawSrc` values.
+  private images = new Map<string, string>();
+  // Keep track of images for which `console.warn` was produced.
+  private alreadyWarned = new Set<string>();
 
   private window: Window|null = null;
   private observer: PerformanceObserver|null = null;
@@ -87,33 +89,36 @@ class LCPImageObserver implements OnDestroy {
   private initPerformanceObserver(): PerformanceObserver {
     const observer = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
-      if (entries.length > 0) {
-        // Note: we use the latest entry produced by the `PerformanceObserver` as the best
-        // signal on which element is actually an LCP one. As an example, the first image to load on
-        // a page, by virtue of being the only thing on the page so far, is often a LCP candidate
-        // and gets reported by PerformanceObserver, but isn't necessarily the LCP element.
-        const lcpElement = entries[entries.length - 1];
-        // Cast to `any` due to missing `element` on observed type of entry.
-        const imgSrc = (lcpElement as any).element?.src ?? '';
-        const img = this.images.get(imgSrc);
-        // Exclude `data:` and `blob:` URLs, since they are not supported by the directive.
-        if (img && !img.priority && !imgSrc.startsWith('data:') && !imgSrc.startsWith('blob:')) {
-          const directiveDetails = imgDirectiveDetails({rawSrc: img.rawSrc} as any);
-          console.warn(formatRuntimeError(
-              RuntimeErrorCode.LCP_IMG_MISSING_PRIORITY,
-              `${directiveDetails}: the image was detected as the Largest Contentful Paint (LCP) ` +
-                  `element, so its loading should be prioritized for optimal performance. Please ` +
-                  `add the "priority" attribute if this image is above the fold.`));
-        }
+      if (entries.length === 0) return;
+      // Note: we use the latest entry produced by the `PerformanceObserver` as the best
+      // signal on which element is actually an LCP one. As an example, the first image to load on
+      // a page, by virtue of being the only thing on the page so far, is often a LCP candidate
+      // and gets reported by PerformanceObserver, but isn't necessarily the LCP element.
+      const lcpElement = entries[entries.length - 1];
+      // Cast to `any` due to missing `element` on observed type of entry.
+      const imgSrc = (lcpElement as any).element?.src ?? '';
+
+      // Exclude `data:` and `blob:` URLs, since they are not supported by the directive.
+      if (imgSrc.startsWith('data:') || imgSrc.startsWith('blob:')) return;
+
+      const imgRawSrc = this.images.get(imgSrc);
+      if (imgRawSrc && !this.alreadyWarned.has(imgSrc)) {
+        this.alreadyWarned.add(imgSrc);
+        const directiveDetails = imgDirectiveDetails({rawSrc: imgRawSrc} as any);
+        console.warn(formatRuntimeError(
+            RuntimeErrorCode.LCP_IMG_MISSING_PRIORITY,
+            `${directiveDetails}: the image was detected as the Largest Contentful Paint (LCP) ` +
+                `element, so its loading should be prioritized for optimal performance. Please ` +
+                `add the "priority" attribute if this image is above the fold.`));
       }
     });
     observer.observe({type: 'largest-contentful-paint', buffered: true});
     return observer;
   }
 
-  registerImage(rewrittenSrc: string, rawSrc: string, priority: boolean) {
+  registerImage(rewrittenSrc: string, rawSrc: string) {
     if (!this.observer) return;
-    this.images.set(this.getFullUrl(rewrittenSrc), {rawSrc, priority});
+    this.images.set(this.getFullUrl(rewrittenSrc), rawSrc);
   }
 
   unregisterImage(rewrittenSrc: string) {
@@ -125,6 +130,7 @@ class LCPImageObserver implements OnDestroy {
     if (!this.observer) return;
     this.observer.disconnect();
     this.images.clear();
+    this.alreadyWarned.clear();
   }
 }
 
@@ -208,10 +214,15 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertNotBlobURL(this);
       assertRequiredNumberInput(this, this.width, 'width');
       assertRequiredNumberInput(this, this.height, 'height');
-      withLCPImageObserver(
-          this.injector,
-          (observer: LCPImageObserver) =>
-              observer.registerImage(this.getRewrittenSrc(), this.rawSrc, this.priority));
+      if (!this.priority) {
+        // Monitor whether an image is an LCP element only in case
+        // the `priority` attribute is missing. Otherwise, an image
+        // has the necessary settings and no extra checks are required.
+        withLCPImageObserver(
+            this.injector,
+            (observer: LCPImageObserver) =>
+                observer.registerImage(this.getRewrittenSrc(), this.rawSrc));
+      }
     }
     this.setHostAttribute('loading', this.getLoadingBehavior());
     this.setHostAttribute('fetchpriority', this.getFetchPriority());
@@ -246,7 +257,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (ngDevMode) {
+    if (ngDevMode && !this.priority) {
       // An image is only registered in dev mode, try to unregister only in dev mode as well.
       withLCPImageObserver(
           this.injector,
