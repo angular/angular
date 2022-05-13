@@ -12,6 +12,8 @@ import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
 
 import {IMAGE_LOADER, ImageLoader} from './image_loaders/image_loader';
+import {PreconnectLinkChecker} from './preconnect_link_checker';
+import {getUrl, imgDirectiveDetails} from './util';
 
 /**
  * When a Base64-encoded image is passed as an input to the `NgOptimizedImage` directive,
@@ -44,10 +46,8 @@ const VALID_DENSITY_DESCRIPTOR_SRCSET = /^((\s*\d(\.\d)?x\s*(,|$)){1,})$/;
  *
  * Based on https://web.dev/lcp/#measure-lcp-in-javascript.
  */
-@Injectable({
-  providedIn: 'root',
-})
-class LCPImageObserver implements OnDestroy {
+@Injectable({providedIn: 'root'})
+export class LCPImageObserver implements OnDestroy {
   // Map of full image URLs -> original `rawSrc` values.
   private images = new Map<string, string>();
   // Keep track of images for which `console.warn` was produced.
@@ -62,11 +62,6 @@ class LCPImageObserver implements OnDestroy {
       this.window = win;
       this.observer = this.initPerformanceObserver();
     }
-  }
-
-  // Converts relative image URL to a full URL.
-  private getFullUrl(src: string) {
-    return new URL(src, this.window!.location.href).href;
   }
 
   // Inits PerformanceObserver and subscribes to LCP events.
@@ -103,12 +98,12 @@ class LCPImageObserver implements OnDestroy {
 
   registerImage(rewrittenSrc: string, rawSrc: string) {
     if (!this.observer) return;
-    this.images.set(this.getFullUrl(rewrittenSrc), rawSrc);
+    this.images.set(getUrl(rewrittenSrc, this.window!).href, rawSrc);
   }
 
   unregisterImage(rewrittenSrc: string) {
     if (!this.observer) return;
-    this.images.delete(this.getFullUrl(rewrittenSrc));
+    this.images.delete(getUrl(rewrittenSrc, this.window!).href);
   }
 
   ngOnDestroy() {
@@ -139,6 +134,12 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private _width?: number;
   private _height?: number;
   private _priority = false;
+
+  // Calculate the rewritten `src` once and store it.
+  // This is needed to avoid repetitive calculations and make sure the directive cleanup in the
+  // `ngOnDestroy` does not rely on the `IMAGE_LOADER` logic (which in turn can rely on some other
+  // instance that might be already destroyed).
+  private _rewrittenSrc: string|null = null;
 
   /**
    * Name of the source image.
@@ -223,7 +224,10 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertRequiredNumberInput(this, this.width, 'width');
       assertRequiredNumberInput(this, this.height, 'height');
       assertValidLoadingInput(this);
-      if (!this.priority) {
+      if (this.priority) {
+        const checker = this.injector.get(PreconnectLinkChecker);
+        checker.check(this.getRewrittenSrc(), this.rawSrc);
+      } else {
         // Monitor whether an image is an LCP element only in case
         // the `priority` attribute is missing. Otherwise, an image
         // has the necessary settings and no extra checks are required.
@@ -265,8 +269,12 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     // ImageLoaderConfig supports setting a width property. However, we're not setting width here
     // because if the developer uses rendered width instead of intrinsic width in the HTML width
     // attribute, the image requested may be too small for 2x+ screens.
-    const imgConfig = {src: this.rawSrc};
-    return this.imageLoader(imgConfig);
+    if (!this._rewrittenSrc) {
+      const imgConfig = {src: this.rawSrc};
+      // Cache calculated image src to reuse it later in the code.
+      this._rewrittenSrc = this.imageLoader(imgConfig);
+    }
+    return this._rewrittenSrc;
   }
 
   private getRewrittenSrcset(): string {
@@ -280,11 +288,12 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (ngDevMode && !this.priority) {
-      // An image is only registered in dev mode, try to unregister only in dev mode as well.
-      withLCPImageObserver(
-          this.injector,
-          (observer: LCPImageObserver) => observer.unregisterImage(this.getRewrittenSrc()));
+    if (ngDevMode) {
+      if (!this.priority && this._rewrittenSrc !== null) {
+        withLCPImageObserver(
+            this.injector,
+            (observer: LCPImageObserver) => observer.unregisterImage(this._rewrittenSrc!));
+      }
     }
   }
 
@@ -344,11 +353,6 @@ function withLCPImageObserver(
     const observer = injector.get(LCPImageObserver);
     operation(observer);
   });
-}
-
-function imgDirectiveDetails(rawSrc: string) {
-  return `The NgOptimizedImage directive (activated on an <img> element ` +
-      `with the \`rawSrc="${rawSrc}"\`)`;
 }
 
 /***** Assert functions *****/

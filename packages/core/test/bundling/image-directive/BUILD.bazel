@@ -7,6 +7,7 @@ ng_module(
     srcs = [
         "e2e/basic/basic.ts",
         "e2e/lcp-check/lcp-check.ts",
+        "e2e/preconnect-check/preconnect-check.ts",
         "index.ts",
         "playground.ts",
     ],
