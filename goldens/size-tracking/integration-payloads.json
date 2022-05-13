@@ -12,7 +12,7 @@
       "main": "TODO(i): temporarily increase the payload size limit from 17597 - this needs to be investigate further what caused the increase.",
       "main": "Likely there is a missing PURE annotation https://github.com/angular/angular/pull/43344",
       "main": "Tracking issue: https://github.com/angular/angular/issues/43568",
-      "main": 20826,
+      "main": 23891,
       "polyfills": 33848
     }
   },

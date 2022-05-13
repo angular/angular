@@ -46,6 +46,7 @@ import {getFirstLContainer, getLViewParent, getNextLContainer} from '../util/vie
 import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreationMode, resetPreOrderHookFlags, unwrapLView, updateTransplantedViewCount, viewAttachedToChangeDetector} from '../util/view_utils';
 
 import {selectIndexInternal} from './advance';
+import {ɵɵdirectiveInject} from './di';
 import {attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData, LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeDebug, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor} from './lview_debug';
 
 let shouldThrowErrorOnUnknownProperty = false;
@@ -1532,7 +1533,11 @@ function configureViewWithDirective<T>(
   tView.data[directiveIndex] = def;
   const directiveFactory =
       def.factory || ((def as {factory: Function}).factory = getFactoryDef(def.type, true));
-  const nodeInjectorFactory = new NodeInjectorFactory(directiveFactory, isComponentDef(def), null);
+  // Even though `directiveFactory` will already be using `ɵɵdirectiveInject` in its generated code,
+  // we also want to support `inject()` directly from the directive constructor context so we set
+  // `ɵɵdirectiveInject` as the inject implementation here too.
+  const nodeInjectorFactory =
+      new NodeInjectorFactory(directiveFactory, isComponentDef(def), ɵɵdirectiveInject);
   tView.blueprint[directiveIndex] = nodeInjectorFactory;
   lView[directiveIndex] = nodeInjectorFactory;
 
