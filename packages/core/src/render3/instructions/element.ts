@@ -24,7 +24,7 @@ import {setUpAttributes} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
 
 import {setDirectiveInputsWhichShadowsStyling} from './property';
-import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, matchingSchemas, resolveDirectives, saveResolvedLocalsInData} from './shared';
+import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, isHostComponentStandalone, matchingSchemas, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
 let shouldThrowErrorOnUnknownElement = false;
 
@@ -56,7 +56,10 @@ function elementStartFirstCreatePass(
 
   const hasDirectives =
       resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
-  ngDevMode && validateElementIsKnown(native, tNode.value, tView.schemas, hasDirectives);
+  if (ngDevMode) {
+    const hostIsStandalone = isHostComponentStandalone(lView);
+    validateElementIsKnown(native, tNode.value, tView.schemas, hasDirectives, hostIsStandalone);
+  }
 
   if (tNode.attrs !== null) {
     computeStaticStyling(tNode, tNode.attrs, false);
@@ -223,10 +226,11 @@ export function ɵɵelement(
  * @param tagName Name of the tag to check
  * @param schemas Array of schemas
  * @param hasDirectives Boolean indicating that the element matches any directive
+ * @param hostIsStandalone Boolean indicating whether the host is a standalone component
  */
 function validateElementIsKnown(
-    element: RElement, tagName: string|null, schemas: SchemaMetadata[]|null,
-    hasDirectives: boolean): void {
+    element: RElement, tagName: string|null, schemas: SchemaMetadata[]|null, hasDirectives: boolean,
+    hostIsStandalone: boolean): void {
   // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
   // mode where this check happens at compile time. In JIT mode, `schemas` is always present and
   // defined as an array (as an empty array in case `schemas` field is not defined) and we should
@@ -247,15 +251,18 @@ function validateElementIsKnown(
          !customElements.get(tagName));
 
     if (isUnknown && !matchingSchemas(schemas, tagName)) {
+      const schemas = `'${hostIsStandalone ? '@Component' : '@NgModule'}.schemas'`;
       let message = `'${tagName}' is not a known element:\n`;
-      message += `1. If '${
-          tagName}' is an Angular component, then verify that it is part of this module.\n`;
+      message += `1. If '${tagName}' is an Angular component, then verify that it is ${
+          hostIsStandalone ? 'included in the \'@Component.imports\' of this component' :
+                             'a part of this module'}.\n`;
       if (tagName && tagName.indexOf('-') > -1) {
-        message += `2. If '${
-            tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
+        message +=
+            `2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${
+                schemas} of this component to suppress this message.`;
       } else {
         message +=
-            `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+            `2. To allow any element add 'NO_ERRORS_SCHEMA' to the ${schemas} of this component.`;
       }
       if (shouldThrowErrorOnUnknownElement) {
         throw new RuntimeError(RuntimeErrorCode.UNKNOWN_ELEMENT, message);
