@@ -124,7 +124,7 @@ describe('NgModule', () => {
         TestBed.createComponent(MyComp);
       })
           .toThrowError(
-              `Unexpected "MyComp" declaration in "MyModule" NgModule. "MyComp" is marked as standalone and can't be declared in any NgModule - did you intend to import it?`);
+              `Unexpected "MyComp" found in the "declarations" array of the "MyModule" NgModule, "MyComp" is marked as standalone and can't be declared in any NgModule - did you intend to import it instead (by adding it to the "imports" array)?`);
     });
 
     it('should throw when a standalone directive is added to NgModule declarations', () => {
@@ -154,7 +154,7 @@ describe('NgModule', () => {
         TestBed.createComponent(MyComp);
       })
           .toThrowError(
-              `Unexpected "MyDir" declaration in "MyModule" NgModule. "MyDir" is marked as standalone and can't be declared in any NgModule - did you intend to import it?`);
+              `Unexpected "MyDir" found in the "declarations" array of the "MyModule" NgModule, "MyDir" is marked as standalone and can't be declared in any NgModule - did you intend to import it instead (by adding it to the "imports" array)?`);
     });
 
     it('should throw when a standalone pipe is added to NgModule declarations', () => {
@@ -184,8 +184,25 @@ describe('NgModule', () => {
         TestBed.createComponent(MyComp);
       })
           .toThrowError(
-              `Unexpected "MyPipe" declaration in "MyModule" NgModule. "MyPipe" is marked as standalone and can't be declared in any NgModule - did you intend to import it?`);
+              `Unexpected "MyPipe" found in the "declarations" array of the "MyModule" NgModule, "MyPipe" is marked as standalone and can't be declared in any NgModule - did you intend to import it instead (by adding it to the "imports" array)?`);
     });
+
+    it('should throw a testing specific error when a standalone component is added to the configureTestingModule declarations',
+       () => {
+         @Component({
+           selector: 'my-comp',
+           template: '',
+           standalone: true,
+         })
+         class MyComp {
+         }
+
+         expect(() => {
+           TestBed.configureTestingModule({declarations: [MyComp]});
+         })
+             .toThrowError(
+                 `Unexpected "MyComp" found in the "declarations" array of the "TestBed.configureTestingModule" call, "MyComp" is marked as standalone and can't be declared in any NgModule - did you intend to import it instead (by adding it to the "imports" array)?`);
+       });
   });
 
   describe('destroy', () => {

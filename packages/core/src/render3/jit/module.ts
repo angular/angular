@@ -202,6 +202,13 @@ export function isStandalone<T>(type: Type<T>) {
   return def !== null ? def.standalone : false;
 }
 
+export function generateStandaloneInDeclarationsError(type: Type<any>, location: string) {
+  const prefix = `Unexpected "${stringifyForError(type)}" found in the "declarations" array of the`;
+  const suffix = `"${stringifyForError(type)}" is marked as standalone and can't be declared ` +
+      'in any NgModule - did you intend to import it instead (by adding it to the "imports" array)?';
+  return `${prefix} ${location}, ${suffix}`;
+}
+
 function verifySemanticsOfNgModuleDef(
     moduleType: NgModuleType, allowDuplicateDeclarationsInRoot: boolean,
     importingModule?: NgModuleType): void {
@@ -280,10 +287,8 @@ function verifySemanticsOfNgModuleDef(
     type = resolveForwardRef(type);
     const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
     if (def?.standalone) {
-      errors.push(`Unexpected "${stringifyForError(type)}" declaration in "${
-          stringifyForError(moduleType)}" NgModule. "${
-          stringifyForError(
-              type)}" is marked as standalone and can't be declared in any NgModule - did you intend to import it?`);
+      const location = `"${stringifyForError(moduleType)}" NgModule`;
+      errors.push(generateStandaloneInDeclarationsError(type, location));
     }
   }
 
