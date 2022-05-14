@@ -13,7 +13,7 @@ function isAngularCore(path: string): boolean {
 }
 
 function isExternalAngularCore(path: string): boolean {
-  return path.endsWith('@angular/core/core.d.ts');
+  return path.endsWith('@angular/core/core.d.ts') || path.endsWith('@angular/core/index.d.ts');
 }
 
 function isInternalAngularCore(path: string): boolean {
