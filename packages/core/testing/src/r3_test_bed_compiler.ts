@@ -11,6 +11,7 @@ import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive,
 
 import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
 import {ComponentDef, ComponentType} from '../../src/render3';
+import {generateStandaloneInDeclarationsError} from '../../src/render3/jit/module';
 
 import {MetadataOverride} from './metadata_override';
 import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
@@ -24,6 +25,16 @@ enum TestingModuleOverride {
 function isTestingModuleOverride(value: unknown): value is TestingModuleOverride {
   return value === TestingModuleOverride.DECLARATION ||
       value === TestingModuleOverride.OVERRIDE_TEMPLATE;
+}
+
+function assertNoStandaloneComponents(
+    types: Type<any>[], resolver: Resolver<any>, location: string) {
+  types.forEach(type => {
+    const component = resolver.resolve(type);
+    if (component && component.standalone) {
+      throw new Error(generateStandaloneInDeclarationsError(type, location));
+    }
+  });
 }
 
 // Resolvers for Angular decorators
@@ -107,6 +118,10 @@ export class R3TestBedCompiler {
   configureTestingModule(moduleDef: TestModuleMetadata): void {
     // Enqueue any compilation tasks for the directly declared component.
     if (moduleDef.declarations !== undefined) {
+      // Verify that there are no standalone components
+      assertNoStandaloneComponents(
+          moduleDef.declarations, this.resolvers.component,
+          '"TestBed.configureTestingModule" call');
       this.queueTypeArray(moduleDef.declarations, TestingModuleOverride.DECLARATION);
       this.declarations.push(...moduleDef.declarations);
     }
