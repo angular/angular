@@ -9,16 +9,18 @@ import {Injector} from '../../di';
 import {ErrorHandler} from '../../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
+import {Type} from '../../interface/type';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/sanitizer';
-import {assertDefined, assertDomNode, assertEqual, assertGreaterThanOrEqual, assertIndexInRange, assertNotEqual, assertNotSame, assertSame, assertString} from '../../util/assert';
+import {assertDefined, assertDomNode, assertEqual, assertGreaterThanOrEqual, assertIndexInRange, assertNotEqual, assertNotSame, assertSame, assertString, throwError} from '../../util/assert';
 import {escapeCommentText} from '../../util/dom';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {stringify} from '../../util/stringify';
 import {assertFirstCreatePass, assertFirstUpdatePass, assertLContainer, assertLView, assertTNodeForLView, assertTNodeForTView} from '../assert';
 import {attachPatchData, readPatchedLView} from '../context_discovery';
+import {getComponentDef} from '../definition';
 import {getFactoryDef} from '../definition_factory';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
@@ -266,6 +268,23 @@ export function createTNodeAtIndex(
   return tNode;
 }
 
+/**
+ * Checks if the current component is declared inside of a standalone component template.
+ *
+ * @param lView An `LView` that represents a current component that is being rendered.
+ */
+export function isHostComponentStandalone(lView: LView): boolean {
+  !ngDevMode && throwError('Must never be called in production mode');
+
+  const declarationLView = lView[DECLARATION_COMPONENT_VIEW] as LView<Type<unknown>>;
+  const context = declarationLView[CONTEXT];
+
+  // Unable to obtain a context, fall back to the non-standalone scenario.
+  if (!context) return false;
+
+  const componentDef = getComponentDef(context.constructor);
+  return !!(componentDef?.standalone);
+}
 
 /**
  * When elements are created dynamically after a view blueprint is created (e.g. through
