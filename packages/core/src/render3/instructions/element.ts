@@ -7,15 +7,17 @@
  */
 
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
+import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
+import {getComponentDef} from '../definition';
 import {registerPostOrderHooks} from '../hooks';
 import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer_dom';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view';
+import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {appendChild, createElementNode, writeDirectClass, writeDirectStyle} from '../node_manipulation';
 import {decreaseElementDepthCount, getBindingIndex, getCurrentTNode, getElementDepthCount, getLView, getNamespace, getTView, increaseElementDepthCount, isCurrentTNodeParent, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
@@ -54,9 +56,17 @@ function elementStartFirstCreatePass(
   const attrs = getConstant<TAttributes>(tViewConsts, attrsIndex);
   const tNode = getOrCreateTNode(tView, index, TNodeType.Element, name, attrs);
 
-  const hasDirectives =
-      resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
-  ngDevMode && validateElementIsKnown(native, tNode.value, tView.schemas, hasDirectives);
+  if (ngDevMode) {
+    const hasDirectives =
+        resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
+
+    const declarationLView = lView[DECLARATION_COMPONENT_VIEW] as LView<Type<unknown>>;
+    const context = declarationLView[CONTEXT];
+    const def = getComponentDef(context.constructor);
+    const hostIsStandalone = !!(def?.standalone);
+
+    validateElementIsKnown(native, tNode.value, tView.schemas, hasDirectives, hostIsStandalone);
+  }
 
   if (tNode.attrs !== null) {
     computeStaticStyling(tNode, tNode.attrs, false);
@@ -223,10 +233,11 @@ export function ɵɵelement(
  * @param tagName Name of the tag to check
  * @param schemas Array of schemas
  * @param hasDirectives Boolean indicating that the element matches any directive
+ * @param hostIsStandalone Boolean indicating whether the host is a standalone component
  */
 function validateElementIsKnown(
-    element: RElement, tagName: string|null, schemas: SchemaMetadata[]|null,
-    hasDirectives: boolean): void {
+    element: RElement, tagName: string|null, schemas: SchemaMetadata[]|null, hasDirectives: boolean,
+    hostIsStandalone: boolean): void {
   // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
   // mode where this check happens at compile time. In JIT mode, `schemas` is always present and
   // defined as an array (as an empty array in case `schemas` field is not defined) and we should
@@ -247,15 +258,18 @@ function validateElementIsKnown(
          !customElements.get(tagName));
 
     if (isUnknown && !matchingSchemas(schemas, tagName)) {
+      const schemas = `'${hostIsStandalone ? '@Component' : '@NgModule'}.schemas'`;
       let message = `'${tagName}' is not a known element:\n`;
-      message += `1. If '${
-          tagName}' is an Angular component, then verify that it is part of this module.\n`;
+      message += `1. If '${tagName}' is an Angular component, then verify that it is ${
+          hostIsStandalone ? 'included in the \'@Component.imports\' of this component' :
+                             'a part of this module'}.\n`;
       if (tagName && tagName.indexOf('-') > -1) {
-        message += `2. If '${
-            tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
+        message +=
+            `2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${
+                schemas} of this component to suppress this message.`;
       } else {
         message +=
-            `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+            `2. To allow any element add 'NO_ERRORS_SCHEMA' to the ${schemas} of this component.`;
       }
       if (shouldThrowErrorOnUnknownElement) {
         throw new RuntimeError(RuntimeErrorCode.UNKNOWN_ELEMENT, message);
