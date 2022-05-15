@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, Output, OnInit } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output, OnInit, ViewChild } from '@angular/core';
 
 export interface Option {
   title: string;
@@ -10,6 +10,8 @@ export interface Option {
   templateUrl: 'select.component.html'
 })
 export class SelectComponent implements OnInit {
+  static instancesCounter = 0;
+
   @Input() selected: Option;
 
   @Input() options: Option[];
@@ -17,13 +19,34 @@ export class SelectComponent implements OnInit {
   // eslint-disable-next-line @angular-eslint/no-output-native
   @Output() change = new EventEmitter<{option: Option, index: number}>();
 
+  @Output() optionsToggled = new EventEmitter<boolean>();
+
   @Input() showSymbol = false;
 
-  @Input() label: string;
+  @Input() label!: string;
 
   @Input() disabled: boolean;
 
-  showOptions = false;
+  @ViewChild('listBox', { read: ElementRef }) listBox: ElementRef;
+
+  private _showOptions = false;
+
+  get showOptions() {
+    return this._showOptions;
+  }
+
+  set showOptions(showOptions: boolean) {
+    if(!this.disabled) {
+      if(this.showOptions !== showOptions) {
+        this.optionsToggled.emit(showOptions);
+      }
+      this._showOptions = showOptions;
+    }
+  }
+
+  listBoxId = `aio-select-list-box-${SelectComponent.instancesCounter++}`;
+
+  currentOptionIdx = 0;
 
   constructor(private hostElement: ElementRef) {}
 
@@ -39,7 +62,8 @@ export class SelectComponent implements OnInit {
     this.showOptions = false;
   }
 
-  select(option: Option, index: number) {
+  select(index: number) {
+    const option = this.options[index];
     this.selected = option;
     this.change.emit({option, index});
     this.hideOptions();
@@ -53,8 +77,41 @@ export class SelectComponent implements OnInit {
     }
   }
 
-  @HostListener('document:keydown.escape')
-  onKeyDown() {
-    this.hideOptions();
+  handleKeydown(event: KeyboardEvent) {
+    const runOrOpenOptions = (fn: () => void): void => {
+      if(!this.showOptions) {
+        this.showOptions = true;
+        const indexOfSelected =  (this.options ?? []).indexOf(this.selected);
+        this.currentOptionIdx = indexOfSelected > 0 ? indexOfSelected : 0;
+      } else {
+        fn();
+      }
+    };
+    switch(event.key) {
+      case 'ArrowDown':
+        runOrOpenOptions(() =>
+          this.currentOptionIdx = Math.min(this.currentOptionIdx + 1, (this.options?.length ?? 0) - 1)
+        );
+        break;
+      case 'ArrowUp':
+        runOrOpenOptions(() => this.currentOptionIdx = Math.max(this.currentOptionIdx - 1, 0));
+        break;
+      case 'Escape':
+        this.hideOptions();
+        break;
+      case 'Tab':
+        if(this.showOptions) {
+          this.select(this.currentOptionIdx);
+        }
+        break;
+      case 'Enter':
+      case 'Space':
+      case ' ':
+        runOrOpenOptions(() => this.select(this.currentOptionIdx));
+        break;
+    }
+    if(event.key !== 'Tab') {
+      event.preventDefault();
+    }
   }
 }

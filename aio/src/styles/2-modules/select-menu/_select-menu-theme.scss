@@ -18,7 +18,7 @@
         box-shadow: 0 2px 2px rgba(constants.$blue-400, 0.24), 0 0 2px rgba(constants.$blue-400, 0.12);
       }
 
-      &[disabled] {
+      &.disabled {
         color: lightgrey;
       }
     }
@@ -28,7 +28,7 @@
       box-shadow: 0 16px 16px rgba(constants.$black, 0.24), 0 0 16px rgba(constants.$black, 0.12);
 
       li {
-        &:hover {
+        &:hover, &.current {
           background-color: if($is-dark-theme, constants.$darkgray, constants.$blue-grey-50);
           color: f($is-dark-theme, constants.$blue-grey-400, constants.$blue-grey-500);
         }
