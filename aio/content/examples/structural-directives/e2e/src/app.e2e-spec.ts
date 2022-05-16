@@ -6,12 +6,12 @@ describe('Structural Directives', () => {
 
   it('first div should show hero name with *ngIf', async () => {
     const allDivs = element.all(by.tagName('div'));
-    expect(await allDivs.get(0).getText()).toEqual('Dr Nice');
+    expect(await allDivs.get(0).getText()).toEqual('Dr. Nice');
   });
 
   it('first li should show hero name with *ngFor', async () => {
     const allLis = element.all(by.tagName('li'));
-    expect(await allLis.get(0).getText()).toEqual('Dr Nice');
+    expect(await allLis.get(0).getText()).toEqual('Dr. Nice');
   });
 
   it('ngSwitch have two <happy-hero> instances', async () => {

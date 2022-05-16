@@ -11,8 +11,8 @@ export class Hero {
       325
     ),
     new Hero(1, 'Dr Nice',   'happy'),
-    new Hero(2, 'Narco',     'sad' ),
-    new Hero(3, 'Windstorm', 'confused' ),
+    new Hero(2, 'RubberMan', 'sad'),
+    new Hero(3, 'Windstorm', 'confused'),
     new Hero(4, 'Magneta')
   ];
 
