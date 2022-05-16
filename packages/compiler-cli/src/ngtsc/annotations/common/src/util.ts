@@ -380,3 +380,23 @@ export function resolveImportedFile(
   // Figure out what file is being imported.
   return moduleResolver.resolveModule(expr.value.moduleName!, origin.fileName);
 }
+
+
+/**
+ * Determines the most appropriate expression for diagnostic reporting purposes. If `expr` is
+ * contained within `container` then `expr` is used as origin node, otherwise `container` itself is
+ * used.
+ */
+export function getOriginNodeForDiagnostics(
+    expr: ts.Expression, container: ts.Expression): ts.Expression {
+  const nodeSf = expr.getSourceFile();
+  const exprSf = container.getSourceFile();
+
+  if (nodeSf === exprSf && expr.pos >= container.pos && expr.end <= container.end) {
+    // `expr` occurs within the same source file as `container` and is contained within it, so
+    // `expr` is appropriate to use as origin node for diagnostics.
+    return expr;
+  } else {
+    return container;
+  }
+}
