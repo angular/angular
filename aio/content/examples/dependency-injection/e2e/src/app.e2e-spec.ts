@@ -52,7 +52,7 @@ describe('Dependency Injection Tests', () => {
     });
 
     it('Hero displays as expected', async () => {
-      expectedMsg = 'Dr Nice';
+      expectedMsg = 'Dr. Nice';
       expect(await element(by.css('#hero')).getText()).toEqual(expectedMsg);
     });
 
