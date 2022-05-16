@@ -8,6 +8,7 @@
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable, NgZone} from '@angular/core';
+
 import {EventManagerPlugin} from './event_manager';
 
 /**
@@ -15,12 +16,9 @@ import {EventManagerPlugin} from './event_manager';
  */
 const MODIFIER_KEYS = ['alt', 'control', 'meta', 'shift'];
 
-const DOM_KEY_LOCATION_NUMPAD = 3;
-
-// Map to convert some key or keyIdentifier values to what will be returned by getEventKey
+// The following values are here for cross-browser compatibility and to match the W3C standard
+// cf https://www.w3.org/TR/DOM-Level-3-Events-key/
 const _keyMap: {[k: string]: string} = {
-  // The following values are here for cross-browser compatibility and to match the W3C standard
-  // cf https://www.w3.org/TR/DOM-Level-3-Events-key/
   '\b': 'Backspace',
   '\t': 'Tab',
   '\x7F': 'Delete',
@@ -35,29 +33,6 @@ const _keyMap: {[k: string]: string} = {
   'Scroll': 'ScrollLock',
   'Win': 'OS'
 };
-
-// There is a bug in Chrome for numeric keypad keys:
-// https://code.google.com/p/chromium/issues/detail?id=155654
-// 1, 2, 3 ... are reported as A, B, C ...
-const _chromeNumKeyPadMap = {
-  'A': '1',
-  'B': '2',
-  'C': '3',
-  'D': '4',
-  'E': '5',
-  'F': '6',
-  'G': '7',
-  'H': '8',
-  'I': '9',
-  'J': '*',
-  'K': '+',
-  'M': '-',
-  'N': '.',
-  'O': '/',
-  '\x60': '0',
-  '\x90': 'NumLock'
-};
-
 
 /**
  * Retrieves modifiers from key-event objects.
@@ -111,6 +86,15 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     });
   }
 
+  /**
+   * Parses the user provided full keyboard event definition and normalizes it for
+   * later internal use. It ensures the string is all lowercase, converts special
+   * characters to a standard spelling, and orders all the values consistently.
+   *
+   * @param eventName The name of the key event to listen for.
+   * @returns an object with the full, normalized string, and the dom event name
+   * or null in the case when the event doesn't match a keyboard event.
+   */
   static parseEventName(eventName: string): {fullKey: string, domEventName: string}|null {
     const parts: string[] = eventName.toLowerCase().split('.');
 
@@ -122,6 +106,11 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     const key = KeyEventsPlugin._normalizeKey(parts.pop()!);
 
     let fullKey = '';
+    let codeIX = parts.indexOf('code');
+    if (codeIX > -1) {
+      parts.splice(codeIX, 1);
+      fullKey = 'code.';
+    }
     MODIFIER_KEYS.forEach(modifierName => {
       const index: number = parts.indexOf(modifierName);
       if (index > -1) {
@@ -145,25 +134,41 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return result;
   }
 
-  static getEventFullKey(event: KeyboardEvent): string {
-    let fullKey = '';
-    let key = getEventKey(event);
-    key = key.toLowerCase();
-    if (key === ' ') {
-      key = 'space';  // for readability
-    } else if (key === '.') {
-      key = 'dot';  // because '.' is used as a separator in event names
+  /**
+   * Determines whether the actual keys pressed match the configured key code string.
+   * The `fullKeyCode` event is normalized in the `parseEventName` method when the
+   * event is attached to the DOM during the `addEventListener` call. This is unseen
+   * by the end user and is normalized for internal consistency and parsing.
+   *
+   * @param event The keyboard event.
+   * @param fullKeyCode The normalized user defined expected key event string
+   * @returns boolean.
+   */
+  static matchEventFullKeyCode(event: KeyboardEvent, fullKeyCode: string): boolean {
+    let keycode = _keyMap[event.key] || event.key;
+    let key = '';
+    if (fullKeyCode.indexOf('code.') > -1) {
+      keycode = event.code;
+      key = 'code.';
+    }
+    // the keycode could be unidentified so we have to check here
+    if (keycode == null || !keycode) return false;
+    keycode = keycode.toLowerCase();
+    if (keycode === ' ') {
+      keycode = 'space';  // for readability
+    } else if (keycode === '.') {
+      keycode = 'dot';  // because '.' is used as a separator in event names
     }
     MODIFIER_KEYS.forEach(modifierName => {
-      if (modifierName != key) {
+      if (modifierName !== keycode) {
         const modifierGetter = MODIFIER_KEY_GETTERS[modifierName];
         if (modifierGetter(event)) {
-          fullKey += modifierName + '.';
+          key += modifierName + '.';
         }
       }
     });
-    fullKey += key;
-    return fullKey;
+    key += keycode;
+    return key === fullKeyCode;
   }
 
   /**
@@ -173,9 +178,9 @@ export class KeyEventsPlugin extends EventManagerPlugin {
    * @param zone The zone in which the event occurred.
    * @returns A callback function.
    */
-  static eventCallback(fullKey: any, handler: Function, zone: NgZone): Function {
-    return (event: any /** TODO #9100 */) => {
-      if (KeyEventsPlugin.getEventFullKey(event) === fullKey) {
+  static eventCallback(fullKey: string, handler: Function, zone: NgZone): Function {
+    return (event: KeyboardEvent) => {
+      if (KeyEventsPlugin.matchEventFullKeyCode(event, fullKey)) {
         zone.runGuarded(() => handler(event));
       }
     };
@@ -191,28 +196,4 @@ export class KeyEventsPlugin extends EventManagerPlugin {
         return keyName;
     }
   }
-}
-
-function getEventKey(event: any): string {
-  let key = event.key;
-  if (key == null) {
-    key = event.keyIdentifier;
-    // keyIdentifier is defined in the old draft of DOM Level 3 Events implemented by Chrome and
-    // Safari cf
-    // https://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/events.html#Events-KeyboardEvents-Interfaces
-    if (key == null) {
-      return 'Unidentified';
-    }
-    if (key.startsWith('U+')) {
-      key = String.fromCharCode(parseInt(key.substring(2), 16));
-      if (event.location === DOM_KEY_LOCATION_NUMPAD && _chromeNumKeyPadMap.hasOwnProperty(key)) {
-        // There is a bug in Chrome for numeric keypad keys:
-        // https://code.google.com/p/chromium/issues/detail?id=155654
-        // 1, 2, 3 ... are reported as A, B, C ...
-        key = (_chromeNumKeyPadMap as any)[key];
-      }
-    }
-  }
-
-  return _keyMap[key] || key;
 }
