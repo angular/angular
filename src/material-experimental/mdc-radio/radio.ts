@@ -7,7 +7,6 @@
  */
 
 import {
-  AfterViewInit,
   Attribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -18,12 +17,10 @@ import {
   forwardRef,
   Inject,
   InjectionToken,
-  OnDestroy,
   Optional,
   QueryList,
   ViewEncapsulation,
 } from '@angular/core';
-import {MDCRadioAdapter, MDCRadioFoundation} from '@material/radio';
 import {
   MAT_RADIO_DEFAULT_OPTIONS,
   _MatRadioButtonBase,
@@ -107,21 +104,7 @@ export class MatRadioGroup extends _MatRadioGroupBase<MatRadioButton> {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatRadioButton extends _MatRadioButtonBase implements AfterViewInit, OnDestroy {
-  private _radioAdapter: MDCRadioAdapter = {
-    addClass: (className: string) => this._setClass(className, true),
-    removeClass: (className: string) => this._setClass(className, false),
-    setNativeControlDisabled: (disabled: boolean) => {
-      if (this.disabled !== disabled) {
-        this.disabled = disabled;
-        this._changeDetector.markForCheck();
-      }
-    },
-  };
-
-  _radioFoundation = new MDCRadioFoundation(this._radioAdapter);
-  _classes: {[key: string]: boolean} = {};
-
+export class MatRadioButton extends _MatRadioButtonBase {
   constructor(
     @Optional() @Inject(MAT_RADIO_GROUP) radioGroup: MatRadioGroup,
     elementRef: ElementRef,
@@ -144,29 +127,5 @@ export class MatRadioButton extends _MatRadioButtonBase implements AfterViewInit
       _providerOverride,
       tabIndex,
     );
-  }
-
-  override ngAfterViewInit() {
-    super.ngAfterViewInit();
-    this._radioFoundation.init();
-  }
-
-  override ngOnDestroy() {
-    super.ngOnDestroy();
-    this._radioFoundation.destroy();
-  }
-
-  private _setClass(cssClass: string, active: boolean) {
-    this._classes = {...this._classes, [cssClass]: active};
-    this._changeDetector.markForCheck();
-  }
-
-  /**
-   * Overrides the parent function so that the foundation can be set with the current
-   * disabled state.
-   */
-  protected override _setDisabled(value: boolean) {
-    super._setDisabled(value);
-    this._radioFoundation.setDisabled(this.disabled);
   }
 }

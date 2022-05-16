@@ -1,6 +1,6 @@
 <div class="mdc-form-field" #formField
      [class.mdc-form-field--align-end]="labelPosition == 'before'">
-  <div class="mdc-radio" [ngClass]="_classes">
+  <div class="mdc-radio" [class.mdc-radio--disabled]="disabled">
     <!-- Render this element first so the input is on top. -->
     <div class="mat-mdc-radio-touch-target" (click)="_onInputInteraction($event)"></div>
     <input #input class="mdc-radio__native-control" type="radio"
