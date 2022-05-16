@@ -5,7 +5,6 @@
 ```ts
 
 import { _AbstractConstructor } from '@angular/material/core';
-import { AfterViewChecked } from '@angular/core';
 import { AfterViewInit } from '@angular/core';
 import { BooleanInput } from '@angular/cdk/coercion';
 import { CanColor } from '@angular/material/core';
@@ -44,21 +43,63 @@ export function MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY(): MatCheckboxDefaultOption
 export const MAT_CHECKBOX_REQUIRED_VALIDATOR: Provider;
 
 // @public
-export class MatCheckbox extends _MatCheckboxBase implements ControlValueAccessor, AfterViewInit, AfterViewChecked, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple, FocusableOption {
-    constructor(elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _focusMonitor: FocusMonitor, _ngZone: NgZone, tabIndex: string, _animationMode?: string | undefined, _options?: MatCheckboxDefaultOptions | undefined);
+export class MatCheckbox extends _MatCheckboxBase<MatCheckboxChange> implements AfterViewInit, OnDestroy {
+    constructor(elementRef: ElementRef<HTMLElement>, changeDetectorRef: ChangeDetectorRef, _focusMonitor: FocusMonitor, ngZone: NgZone, tabIndex: string, animationMode?: string, options?: MatCheckboxDefaultOptions);
+    // (undocumented)
+    protected _animationClasses: {
+        uncheckedToChecked: string;
+        uncheckedToIndeterminate: string;
+        checkedToUnchecked: string;
+        checkedToIndeterminate: string;
+        indeterminateToChecked: string;
+        indeterminateToUnchecked: string;
+    };
+    // (undocumented)
+    protected _createChangeEvent(isChecked: boolean): MatCheckboxChange;
+    focus(origin?: FocusOrigin, options?: FocusOptions): void;
+    // (undocumented)
+    protected _getAnimationTargetElement(): any;
+    // (undocumented)
+    ngAfterViewInit(): void;
+    // (undocumented)
+    ngOnDestroy(): void;
+    _onInputClick(event: Event): void;
+    // (undocumented)
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatCheckbox, "mat-checkbox", ["matCheckbox"], { "disableRipple": "disableRipple"; "color": "color"; "tabIndex": "tabIndex"; }, {}, never, ["*"], false>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatCheckbox, [null, null, null, null, { attribute: "tabindex"; }, { optional: true; }, { optional: true; }]>;
+}
+
+// @public (undocumented)
+export abstract class _MatCheckboxBase<E> extends _MatCheckboxMixinBase implements AfterViewInit, ControlValueAccessor, CanColor, CanDisable, HasTabIndex, CanDisableRipple, FocusableOption {
+    constructor(idPrefix: string, elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _ngZone: NgZone, tabIndex: string, _animationMode?: string | undefined, _options?: MatCheckboxDefaultOptions | undefined);
+    protected abstract _animationClasses: {
+        uncheckedToChecked: string;
+        uncheckedToIndeterminate: string;
+        checkedToUnchecked: string;
+        checkedToIndeterminate: string;
+        indeterminateToChecked: string;
+        indeterminateToUnchecked: string;
+    };
     // (undocumented)
     _animationMode?: string | undefined;
     ariaDescribedby: string;
     ariaLabel: string;
     ariaLabelledby: string | null;
-    readonly change: EventEmitter<MatCheckboxChange>;
+    readonly change: EventEmitter<E>;
+    // (undocumented)
+    protected _changeDetectorRef: ChangeDetectorRef;
     get checked(): boolean;
     set checked(value: BooleanInput);
+    protected abstract _createChangeEvent(isChecked: boolean): E;
     get disabled(): boolean;
     set disabled(value: BooleanInput);
-    focus(origin?: FocusOrigin, options?: FocusOptions): void;
+    abstract focus(origin?: FocusOrigin): void;
+    protected abstract _getAnimationTargetElement(): HTMLElement | null;
     // (undocumented)
     _getAriaChecked(): 'true' | 'false' | 'mixed';
+    // (undocumented)
+    protected _handleInputClick(): void;
     id: string;
     get indeterminate(): boolean;
     set indeterminate(value: BooleanInput);
@@ -70,16 +111,17 @@ export class MatCheckbox extends _MatCheckboxBase implements ControlValueAccesso
     labelPosition: 'before' | 'after';
     name: string | null;
     // (undocumented)
-    ngAfterViewChecked(): void;
-    // (undocumented)
     ngAfterViewInit(): void;
     // (undocumented)
-    ngOnDestroy(): void;
-    _onInputClick(event: Event): void;
+    protected _ngZone: NgZone;
+    // (undocumented)
+    _onBlur(): void;
     // (undocumented)
     _onInteractionEvent(event: Event): void;
     _onLabelTextChange(): void;
     _onTouched: () => any;
+    // (undocumented)
+    protected _options?: MatCheckboxDefaultOptions | undefined;
     // (undocumented)
     registerOnChange(fn: (value: any) => void): void;
     // (undocumented)
@@ -94,9 +136,9 @@ export class MatCheckbox extends _MatCheckboxBase implements ControlValueAccesso
     // (undocumented)
     writeValue(value: any): void;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatCheckbox, "mat-checkbox", ["matCheckbox"], { "disableRipple": "disableRipple"; "color": "color"; "tabIndex": "tabIndex"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "ariaDescribedby": "aria-describedby"; "id": "id"; "required": "required"; "labelPosition": "labelPosition"; "name": "name"; "value": "value"; "checked": "checked"; "disabled": "disabled"; "indeterminate": "indeterminate"; }, { "change": "change"; "indeterminateChange": "indeterminateChange"; }, never, ["*"], false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatCheckboxBase<any>, never, never, { "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "ariaDescribedby": "aria-describedby"; "id": "id"; "required": "required"; "labelPosition": "labelPosition"; "name": "name"; "value": "value"; "checked": "checked"; "disabled": "disabled"; "indeterminate": "indeterminate"; }, { "change": "change"; "indeterminateChange": "indeterminateChange"; }, never, never, false>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatCheckbox, [null, null, null, null, { attribute: "tabindex"; }, { optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_MatCheckboxBase<any>, never>;
 }
 
 // @public

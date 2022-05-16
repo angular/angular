@@ -97,6 +97,7 @@ describe('MDC-based MatCheckbox', () => {
 
       testComponent.isIndeterminate = true;
       fixture.detectChanges();
+      flush();
 
       expect(inputElement.checked).toBe(false);
       expect(inputElement.indeterminate).toBe(true);
@@ -106,6 +107,7 @@ describe('MDC-based MatCheckbox', () => {
 
       testComponent.isIndeterminate = false;
       fixture.detectChanges();
+      flush();
 
       expect(inputElement.checked).toBe(false);
       expect(inputElement.indeterminate).toBe(false);
@@ -164,6 +166,7 @@ describe('MDC-based MatCheckbox', () => {
     it('should not set indeterminate to false when checked is set programmatically', fakeAsync(() => {
       testComponent.isIndeterminate = true;
       fixture.detectChanges();
+      flush();
 
       expect(checkboxInstance.indeterminate).toBe(true);
       expect(inputElement.indeterminate).toBe(true);

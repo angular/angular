@@ -2,10 +2,11 @@
      [class.mdc-form-field--align-end]="labelPosition == 'before'">
   <div #checkbox class="mdc-checkbox">
     <!-- Render this element first so the input is on top. -->
-    <div class="mat-mdc-checkbox-touch-target" (click)="_onClick()"></div>
-    <input #nativeCheckbox
+    <div class="mat-mdc-checkbox-touch-target" (click)="_onInputClick()"></div>
+    <input #input
            type="checkbox"
            class="mdc-checkbox__native-control"
+           [class.mdc-checkbox--selected]="checked"
            [attr.aria-checked]="_getAriaChecked()"
            [attr.aria-label]="ariaLabel || null"
            [attr.aria-labelledby]="ariaLabelledby"
@@ -18,8 +19,8 @@
            [required]="required"
            [tabIndex]="tabIndex"
            (blur)="_onBlur()"
-           (click)="_onClick()"
-           (change)="$event.stopPropagation()"/>
+           (click)="_onInputClick()"
+           (change)="_onInteractionEvent($event)"/>
     <div class="mdc-checkbox__ripple"></div>
     <div class="mdc-checkbox__background">
       <svg class="mdc-checkbox__checkmark"

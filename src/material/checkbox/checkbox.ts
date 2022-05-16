@@ -9,7 +9,6 @@
 import {FocusableOption, FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
-  AfterViewChecked,
   Attribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -25,6 +24,7 @@ import {
   Output,
   ViewChild,
   ViewEncapsulation,
+  Directive,
   AfterViewInit,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
@@ -88,7 +88,7 @@ export class MatCheckboxChange {
 
 // Boilerplate for applying mixins to MatCheckbox.
 /** @docs-private */
-const _MatCheckboxBase = mixinTabIndex(
+const _MatCheckboxMixinBase = mixinTabIndex(
   mixinColor(
     mixinDisableRipple(
       mixinDisabled(
@@ -100,49 +100,37 @@ const _MatCheckboxBase = mixinTabIndex(
   ),
 );
 
-/**
- * A material design checkbox component. Supports all of the functionality of an HTML5 checkbox,
- * and exposes a similar API. A MatCheckbox can be either checked, unchecked, indeterminate, or
- * disabled. Note that all additional accessibility attributes are taken care of by the component,
- * so there is no need to provide them yourself. However, if you want to omit a label and still
- * have the checkbox be accessible, you may supply an [aria-label] input.
- * See: https://material.io/design/components/selection-controls.html
- */
-@Component({
-  selector: 'mat-checkbox',
-  templateUrl: 'checkbox.html',
-  styleUrls: ['checkbox.css'],
-  exportAs: 'matCheckbox',
-  host: {
-    'class': 'mat-checkbox',
-    '[id]': 'id',
-    '[attr.tabindex]': 'null',
-    '[attr.aria-label]': 'null',
-    '[attr.aria-labelledby]': 'null',
-    '[class.mat-checkbox-indeterminate]': 'indeterminate',
-    '[class.mat-checkbox-checked]': 'checked',
-    '[class.mat-checkbox-disabled]': 'disabled',
-    '[class.mat-checkbox-label-before]': 'labelPosition == "before"',
-    '[class._mat-animation-noopable]': `_animationMode === 'NoopAnimations'`,
-  },
-  providers: [MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR],
-  inputs: ['disableRipple', 'color', 'tabIndex'],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class MatCheckbox
-  extends _MatCheckboxBase
+@Directive()
+export abstract class _MatCheckboxBase<E>
+  extends _MatCheckboxMixinBase
   implements
-    ControlValueAccessor,
     AfterViewInit,
-    AfterViewChecked,
-    OnDestroy,
+    ControlValueAccessor,
     CanColor,
     CanDisable,
     HasTabIndex,
     CanDisableRipple,
     FocusableOption
 {
+  /** Focuses the checkbox. */
+  abstract focus(origin?: FocusOrigin): void;
+
+  /** Creates the change event that will be emitted by the checkbox. */
+  protected abstract _createChangeEvent(isChecked: boolean): E;
+
+  /** Gets the element on which to add the animation CSS classes. */
+  protected abstract _getAnimationTargetElement(): HTMLElement | null;
+
+  /** CSS classes to add when transitioning between the different checkbox states. */
+  protected abstract _animationClasses: {
+    uncheckedToChecked: string;
+    uncheckedToIndeterminate: string;
+    checkedToUnchecked: string;
+    checkedToIndeterminate: string;
+    indeterminateToChecked: string;
+    indeterminateToUnchecked: string;
+  };
+
   /**
    * Attached to the aria-label attribute of the host element. In most cases, aria-labelledby will
    * take precedence so this may be omitted.
@@ -157,10 +145,10 @@ export class MatCheckbox
   /** The 'aria-describedby' attribute is read after the element's label and field type. */
   @Input('aria-describedby') ariaDescribedby: string;
 
-  private _uniqueId: string = `mat-checkbox-${++nextUniqueId}`;
+  private _uniqueId: string;
 
   /** A unique id for the checkbox input. If none is supplied, it will be auto-generated. */
-  @Input() id: string = this._uniqueId;
+  @Input() id: string;
 
   /** Returns the unique id for the visual hidden input. */
   get inputId(): string {
@@ -184,8 +172,7 @@ export class MatCheckbox
   @Input() name: string | null = null;
 
   /** Event emitted when the checkbox's `checked` value changes. */
-  @Output() readonly change: EventEmitter<MatCheckboxChange> =
-    new EventEmitter<MatCheckboxChange>();
+  @Output() readonly change: EventEmitter<E> = new EventEmitter<E>();
 
   /** Event emitted when the checkbox's `indeterminate` value changes. */
   @Output() readonly indeterminateChange: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -212,50 +199,26 @@ export class MatCheckbox
   private _controlValueAccessorChangeFn: (value: any) => void = () => {};
 
   constructor(
+    idPrefix: string,
     elementRef: ElementRef<HTMLElement>,
-    private _changeDetectorRef: ChangeDetectorRef,
-    private _focusMonitor: FocusMonitor,
-    private _ngZone: NgZone,
-    @Attribute('tabindex') tabIndex: string,
-    @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
-    @Optional()
-    @Inject(MAT_CHECKBOX_DEFAULT_OPTIONS)
-    private _options?: MatCheckboxDefaultOptions,
+    protected _changeDetectorRef: ChangeDetectorRef,
+    protected _ngZone: NgZone,
+    tabIndex: string,
+    public _animationMode?: string,
+    protected _options?: MatCheckboxDefaultOptions,
   ) {
     super(elementRef);
     this._options = this._options || defaults;
     this.color = this.defaultColor = this._options.color || defaults.color;
     this.tabIndex = parseInt(tabIndex) || 0;
+    this.id = this._uniqueId = `${idPrefix}${++nextUniqueId}`;
   }
 
   ngAfterViewInit() {
-    this._focusMonitor.monitor(this._elementRef, true).subscribe(focusOrigin => {
-      if (!focusOrigin) {
-        // When a focused element becomes disabled, the browser *immediately* fires a blur event.
-        // Angular does not expect events to be raised during change detection, so any state change
-        // (such as a form control's 'ng-touched') will cause a changed-after-checked error.
-        // See https://github.com/angular/angular/issues/17793. To work around this, we defer
-        // telling the form control it has been touched until the next tick.
-        Promise.resolve().then(() => {
-          this._onTouched();
-          this._changeDetectorRef.markForCheck();
-        });
-      }
-    });
-
     this._syncIndeterminate(this._indeterminate);
   }
 
-  // TODO: Delete next major revision.
-  ngAfterViewChecked() {}
-
-  ngOnDestroy() {
-    this._focusMonitor.stopMonitoring(this._elementRef);
-  }
-
-  /**
-   * Whether the checkbox is checked.
-   */
+  /** Whether the checkbox is checked. */
   @Input()
   get checked(): boolean {
     return this._checked;
@@ -361,9 +324,9 @@ export class MatCheckbox
 
   private _transitionCheckState(newState: TransitionCheckState) {
     let oldState = this._currentCheckState;
-    let element: HTMLElement = this._elementRef.nativeElement;
+    let element = this._getAnimationTargetElement();
 
-    if (oldState === newState) {
+    if (oldState === newState || !element) {
       return;
     }
     if (this._currentAnimationClass.length > 0) {
@@ -384,19 +347,15 @@ export class MatCheckbox
 
       this._ngZone.runOutsideAngular(() => {
         setTimeout(() => {
-          element.classList.remove(animationClass);
+          element!.classList.remove(animationClass);
         }, 1000);
       });
     }
   }
 
   private _emitChangeEvent() {
-    const event = new MatCheckboxChange();
-    event.source = this;
-    event.checked = this.checked;
-
     this._controlValueAccessorChangeFn(this.checked);
-    this.change.emit(event);
+    this.change.emit(this._createChangeEvent(this.checked));
 
     // Assigning the value again here is redundant, but we have to do it in case it was
     // changed inside the `change` listener which will cause the input to be out of sync.
@@ -411,24 +370,8 @@ export class MatCheckbox
     this._controlValueAccessorChangeFn(this.checked);
   }
 
-  /**
-   * Event handler for checkbox input element.
-   * Toggles checked state if element is not disabled.
-   * Do not toggle on (change) event since IE doesn't fire change event when
-   *   indeterminate checkbox is clicked.
-   * @param event
-   */
-  _onInputClick(event: Event) {
+  protected _handleInputClick() {
     const clickAction = this._options?.clickAction;
-
-    // We have to stop propagation for click events on the visual hidden input element.
-    // By default, when a user clicks on a label element, a generated click event will be
-    // dispatched on the associated input element. Since we are using a label element as our
-    // root container, the click event on the `checkbox` will be executed twice.
-    // The real click event will bubble up, and the generated click event also tries to bubble up.
-    // This will lead to multiple click events.
-    // Preventing bubbling for the second event will solve that issue.
-    event.stopPropagation();
 
     // If resetIndeterminate is false, and the current state is indeterminate, do nothing on click
     if (!this.disabled && clickAction !== 'noop') {
@@ -457,20 +400,23 @@ export class MatCheckbox
     }
   }
 
-  /** Focuses the checkbox. */
-  focus(origin?: FocusOrigin, options?: FocusOptions): void {
-    if (origin) {
-      this._focusMonitor.focusVia(this._inputElement, origin, options);
-    } else {
-      this._inputElement.nativeElement.focus(options);
-    }
-  }
-
   _onInteractionEvent(event: Event) {
     // We always have to stop propagation on the change event.
     // Otherwise the change event, from the input element, will bubble up and
     // emit its event object to the `change` output.
     event.stopPropagation();
+  }
+
+  _onBlur() {
+    // When a focused element becomes disabled, the browser *immediately* fires a blur event.
+    // Angular does not expect events to be raised during change detection, so any state change
+    // (such as a form control's 'ng-touched') will cause a changed-after-checked error.
+    // See https://github.com/angular/angular/issues/17793. To work around this, we defer
+    // telling the form control it has been touched until the next tick.
+    Promise.resolve().then(() => {
+      this._onTouched();
+      this._changeDetectorRef.markForCheck();
+    });
   }
 
   private _getAnimationClassForCheckStateTransition(
@@ -482,41 +428,31 @@ export class MatCheckbox
       return '';
     }
 
-    let animSuffix: string = '';
-
     switch (oldState) {
       case TransitionCheckState.Init:
         // Handle edge case where user interacts with checkbox that does not have [(ngModel)] or
         // [checked] bound to it.
         if (newState === TransitionCheckState.Checked) {
-          animSuffix = 'unchecked-checked';
+          return this._animationClasses.uncheckedToChecked;
         } else if (newState == TransitionCheckState.Indeterminate) {
-          animSuffix = 'unchecked-indeterminate';
-        } else {
-          return '';
+          return this._animationClasses.uncheckedToIndeterminate;
         }
         break;
       case TransitionCheckState.Unchecked:
-        animSuffix =
-          newState === TransitionCheckState.Checked
-            ? 'unchecked-checked'
-            : 'unchecked-indeterminate';
-        break;
+        return newState === TransitionCheckState.Checked
+          ? this._animationClasses.uncheckedToChecked
+          : this._animationClasses.uncheckedToIndeterminate;
       case TransitionCheckState.Checked:
-        animSuffix =
-          newState === TransitionCheckState.Unchecked
-            ? 'checked-unchecked'
-            : 'checked-indeterminate';
-        break;
+        return newState === TransitionCheckState.Unchecked
+          ? this._animationClasses.checkedToUnchecked
+          : this._animationClasses.checkedToIndeterminate;
       case TransitionCheckState.Indeterminate:
-        animSuffix =
-          newState === TransitionCheckState.Checked
-            ? 'indeterminate-checked'
-            : 'indeterminate-unchecked';
-        break;
+        return newState === TransitionCheckState.Checked
+          ? this._animationClasses.indeterminateToChecked
+          : this._animationClasses.indeterminateToUnchecked;
     }
 
-    return `mat-checkbox-anim-${animSuffix}`;
+    return '';
   }
 
   /**
@@ -532,6 +468,117 @@ export class MatCheckbox
 
     if (nativeCheckbox) {
       nativeCheckbox.nativeElement.indeterminate = value;
+    }
+  }
+}
+
+/**
+ * A material design checkbox component. Supports all of the functionality of an HTML5 checkbox,
+ * and exposes a similar API. A MatCheckbox can be either checked, unchecked, indeterminate, or
+ * disabled. Note that all additional accessibility attributes are taken care of by the component,
+ * so there is no need to provide them yourself. However, if you want to omit a label and still
+ * have the checkbox be accessible, you may supply an [aria-label] input.
+ * See: https://material.io/design/components/selection-controls.html
+ */
+@Component({
+  selector: 'mat-checkbox',
+  templateUrl: 'checkbox.html',
+  styleUrls: ['checkbox.css'],
+  exportAs: 'matCheckbox',
+  host: {
+    'class': 'mat-checkbox',
+    '[id]': 'id',
+    '[attr.tabindex]': 'null',
+    '[attr.aria-label]': 'null',
+    '[attr.aria-labelledby]': 'null',
+    '[class.mat-checkbox-indeterminate]': 'indeterminate',
+    '[class.mat-checkbox-checked]': 'checked',
+    '[class.mat-checkbox-disabled]': 'disabled',
+    '[class.mat-checkbox-label-before]': 'labelPosition == "before"',
+    '[class._mat-animation-noopable]': `_animationMode === 'NoopAnimations'`,
+  },
+  providers: [MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR],
+  inputs: ['disableRipple', 'color', 'tabIndex'],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class MatCheckbox
+  extends _MatCheckboxBase<MatCheckboxChange>
+  implements AfterViewInit, OnDestroy
+{
+  protected _animationClasses = {
+    uncheckedToChecked: 'mat-checkbox-anim-unchecked-checked',
+    uncheckedToIndeterminate: 'mat-checkbox-anim-unchecked-indeterminate',
+    checkedToUnchecked: 'mat-checkbox-anim-checked-unchecked',
+    checkedToIndeterminate: 'mat-checkbox-anim-checked-indeterminate',
+    indeterminateToChecked: 'mat-checkbox-anim-indeterminate-checked',
+    indeterminateToUnchecked: 'mat-checkbox-anim-indeterminate-unchecked',
+  };
+
+  constructor(
+    elementRef: ElementRef<HTMLElement>,
+    changeDetectorRef: ChangeDetectorRef,
+    private _focusMonitor: FocusMonitor,
+    ngZone: NgZone,
+    @Attribute('tabindex') tabIndex: string,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+    @Optional()
+    @Inject(MAT_CHECKBOX_DEFAULT_OPTIONS)
+    options?: MatCheckboxDefaultOptions,
+  ) {
+    super('mat-checkbox-', elementRef, changeDetectorRef, ngZone, tabIndex, animationMode, options);
+  }
+
+  protected _createChangeEvent(isChecked: boolean) {
+    const event = new MatCheckboxChange();
+    event.source = this;
+    event.checked = isChecked;
+    return event;
+  }
+
+  protected _getAnimationTargetElement() {
+    return this._elementRef.nativeElement;
+  }
+
+  override ngAfterViewInit() {
+    super.ngAfterViewInit();
+
+    this._focusMonitor.monitor(this._elementRef, true).subscribe(focusOrigin => {
+      if (!focusOrigin) {
+        this._onBlur();
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this._focusMonitor.stopMonitoring(this._elementRef);
+  }
+
+  /**
+   * Event handler for checkbox input element.
+   * Toggles checked state if element is not disabled.
+   * Do not toggle on (change) event since IE doesn't fire change event when
+   *   indeterminate checkbox is clicked.
+   * @param event
+   */
+  _onInputClick(event: Event) {
+    // We have to stop propagation for click events on the visual hidden input element.
+    // By default, when a user clicks on a label element, a generated click event will be
+    // dispatched on the associated input element. Since we are using a label element as our
+    // root container, the click event on the `checkbox` will be executed twice.
+    // The real click event will bubble up, and the generated click event also tries to bubble up.
+    // This will lead to multiple click events.
+    // Preventing bubbling for the second event will solve that issue.
+    event.stopPropagation();
+    super._handleInputClick();
+  }
+
+  /** Focuses the checkbox. */
+  focus(origin?: FocusOrigin, options?: FocusOptions): void {
+    if (origin) {
+      this._focusMonitor.focusVia(this._inputElement, origin, options);
+    } else {
+      this._inputElement.nativeElement.focus(options);
     }
   }
 }
