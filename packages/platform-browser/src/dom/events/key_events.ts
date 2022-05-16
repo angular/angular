@@ -8,6 +8,7 @@
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable, NgZone} from '@angular/core';
+
 import {EventManagerPlugin} from './event_manager';
 
 /**
@@ -194,7 +195,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
 }
 
 function getEventKey(event: any): string {
-  let key = event.key;
+  let key = event.code || event.key;
   if (key == null) {
     key = event.keyIdentifier;
     // keyIdentifier is defined in the old draft of DOM Level 3 Events implemented by Chrome and

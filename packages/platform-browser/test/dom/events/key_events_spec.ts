@@ -69,5 +69,44 @@ import {KeyEventsPlugin} from '@angular/platform-browser/src/dom/events/key_even
       expect(() => plugin.addGlobalEventListener('window', 'keyup.control.esc', () => {}))
           .not.toThrowError();
     });
+
+    it('should get key codes', () => {
+      const baseKeyboardEvent = {
+        isTrusted: true,
+        bubbles: true,
+        cancelBubble: false,
+        cancelable: true,
+        composed: true,
+        altKey: false,
+        ctrlKey: false,
+        metaKey: false,
+        shiftKey: false,
+        type: 'keydown'
+      };
+      expect(KeyEventsPlugin.getEventFullKey(new KeyboardEvent(
+                 'keydown', {...baseKeyboardEvent, key: 'ß', code: 'KeyS', altKey: true})))
+          .toEqual('alt.keys');
+      expect(KeyEventsPlugin.getEventFullKey(new KeyboardEvent(
+                 'keydown', {...baseKeyboardEvent, key: 'S', code: 'KeyS', altKey: true})))
+          .toEqual('alt.keys');
+      expect(KeyEventsPlugin.getEventFullKey(new KeyboardEvent(
+                 'keydown', {...baseKeyboardEvent, key: 'F', code: 'KeyF', metaKey: true})))
+          .toEqual('meta.keyf');
+      expect(KeyEventsPlugin.getEventFullKey(new KeyboardEvent(
+                 'keydown', {...baseKeyboardEvent, key: '∫', code: 'KeyB', altKey: true})))
+          .toEqual('alt.keyb');
+      expect(KeyEventsPlugin.getEventFullKey(new KeyboardEvent(
+                 'keydown', {...baseKeyboardEvent, key: 'å', code: 'KeyA', altKey: true})))
+          .toEqual('alt.keya');
+      expect(KeyEventsPlugin.getEventFullKey(new KeyboardEvent(
+                 'keydown', {...baseKeyboardEvent, key: 'ArrowUp', code: 'ArrowUp'})))
+          .toEqual('arrowup');
+      expect(KeyEventsPlugin.getEventFullKey(new KeyboardEvent(
+                 'keydown', {...baseKeyboardEvent, key: 'ArrowDown', code: 'ArrowDown'})))
+          .toEqual('arrowdown');
+      expect(KeyEventsPlugin.getEventFullKey(
+                 new KeyboardEvent('keydown', {...baseKeyboardEvent, key: 'ArrowDown'})))
+          .toEqual('arrowdown');
+    });
   });
 }
