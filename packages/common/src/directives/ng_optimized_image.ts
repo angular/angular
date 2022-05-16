@@ -247,8 +247,9 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   }
 
   private getRewrittenSrc(): string {
-    // Keep width empty here because if developer uses rendered width instead of intrinsic
-    // width in width attribute, the image requested may be too small for 2x+ screens.
+    // ImageLoaderConfig supports setting a width property. However, we're not setting width here
+    // because if the developer uses rendered width instead of intrinsic width in the HTML width
+    // attribute, the image requested may be too small for 2x+ screens.
     const imgConfig = {src: this.rawSrc};
     return this.imageLoader(imgConfig);
   }
