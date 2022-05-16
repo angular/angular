@@ -341,6 +341,55 @@ runInEachFileSystem(() => {
             .toContain('It can be imported using its NgModule');
       });
 
+      it('should error when a standalone component imports a ModuleWithProviders using a foreign function',
+         () => {
+           env.write('test.ts', `
+          import {Component, ModuleWithProviders, NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class TestModule {}
+
+          declare function moduleWithProviders(): ModuleWithProviders<TestModule>;
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div></div>',
+            standalone: true,
+            imports: [moduleWithProviders()],
+          })
+          export class TestCmp {}
+        `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].code).toBe(ngErrorCode(ErrorCode.COMPONENT_UNKNOWN_IMPORT));
+           expect(getSourceCodeForDiagnostic(diags[0])).toEqual('moduleWithProviders()');
+         });
+
+      it('should error when a standalone component imports a ModuleWithProviders', () => {
+        env.write('test.ts', `
+          import {Component, ModuleWithProviders, NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class TestModule {
+            static forRoot(): ModuleWithProviders<TestModule> {
+              return {ngModule: TestModule};
+            }
+          }
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div></div>',
+            standalone: true,
+            imports: [TestModule.forRoot()],
+          })
+          export class TestCmp {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.COMPONENT_UNKNOWN_IMPORT));
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[TestModule.forRoot()]');
+      });
+
       it('should error when a standalone component imports a non-standalone entity, with a specific error when that entity is not exported',
          () => {
            env.write('test.ts', `
