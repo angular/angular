@@ -291,7 +291,7 @@ describe('Image directive', () => {
   });
 
   describe('loaders', () => {
-    it('should set `src` to `rawSrc` value if image loader is not provided', () => {
+    it('should set `src` to match `rawSrc` if image loader is not provided', () => {
       setupTestingModule();
 
       const template = '<img rawSrc="path/img.png" width="100" height="50">';
@@ -303,24 +303,25 @@ describe('Image directive', () => {
       expect(img.src.trim()).toBe('/path/img.png');
     });
 
-    it('should use an image loader provided via `IMAGE_LOADER` token to compose src URL', () => {
-      const imageLoader = (config: ImageLoaderConfig) => `path/${config.src}`;
-      setupTestingModule({imageLoader});
+    it('should set `src` using the image loader provided via the `IMAGE_LOADER` token to compose src URL',
+       () => {
+         const imageLoader = (config: ImageLoaderConfig) => `path/${config.src}`;
+         setupTestingModule({imageLoader});
 
-      const template = `
+         const template = `
         <img rawSrc="img.png" width="150" height="50">
         <img rawSrc="img-2.png" width="150" height="50">
       `;
-      const fixture = createTestComponent(template);
-      fixture.detectChanges();
+         const fixture = createTestComponent(template);
+         fixture.detectChanges();
 
-      const nativeElement = fixture.nativeElement as HTMLElement;
-      const imgs = nativeElement.querySelectorAll('img')!;
-      expect(imgs[0].src.trim()).toBe('/path/img.png');
-      expect(imgs[1].src.trim()).toBe('/path/img-2.png');
-    });
+         const nativeElement = fixture.nativeElement as HTMLElement;
+         const imgs = nativeElement.querySelectorAll('img')!;
+         expect(imgs[0].src.trim()).toBe('/path/img.png');
+         expect(imgs[1].src.trim()).toBe('/path/img-2.png');
+       });
 
-    it('should set no default width', () => {
+    it('should set`src` to an image URL that does not include a default width parameter', () => {
       const imageLoader = (config: ImageLoaderConfig) => {
         const widthStr = config.width ? `?w=${config.width}` : ``;
         return `path/${config.src}${widthStr}`;
