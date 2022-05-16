@@ -294,18 +294,19 @@ describe('Image directive', () => {
     it('should set `src` to match `rawSrc` if image loader is not provided', () => {
       setupTestingModule();
 
-      const template = '<img rawSrc="path/img.png" width="100" height="50">';
+      const template = '<img rawSrc="https://somesite.imgix.net/img.png" width="100" height="50">';
       const fixture = createTestComponent(template);
       fixture.detectChanges();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
-      expect(img.src.trim()).toBe('/path/img.png');
+      expect(img.src.trim()).toBe('https://somesite.imgix.net/img.png');
     });
 
     it('should set `src` using the image loader provided via the `IMAGE_LOADER` token to compose src URL',
        () => {
-         const imageLoader = (config: ImageLoaderConfig) => `path/${config.src}`;
+         const imageLoader = (config: ImageLoaderConfig) =>
+             `https://somesite.imgix.net/${config.src}`;
          setupTestingModule({imageLoader});
 
          const template = `
@@ -317,14 +318,14 @@ describe('Image directive', () => {
 
          const nativeElement = fixture.nativeElement as HTMLElement;
          const imgs = nativeElement.querySelectorAll('img')!;
-         expect(imgs[0].src.trim()).toBe('/path/img.png');
-         expect(imgs[1].src.trim()).toBe('/path/img-2.png');
+         expect(imgs[0].src.trim()).toBe('https://somesite.imgix.net/img.png');
+         expect(imgs[1].src.trim()).toBe('https://somesite.imgix.net/img-2.png');
        });
 
-    it('should set`src` to an image URL that does not include a default width parameter', () => {
+    it('should set `src` to an image URL that does not include a default width parameter', () => {
       const imageLoader = (config: ImageLoaderConfig) => {
         const widthStr = config.width ? `?w=${config.width}` : ``;
-        return `path/${config.src}${widthStr}`;
+        return `https://somesite.imgix.net/${config.src}${widthStr}`;
       };
       setupTestingModule({imageLoader});
 
@@ -334,7 +335,7 @@ describe('Image directive', () => {
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
-      expect(img.src.trim()).toBe('/path/img.png');
+      expect(img.src.trim()).toBe('https://somesite.imgix.net/img.png');
     });
   });
 });
