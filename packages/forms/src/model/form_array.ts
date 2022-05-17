@@ -8,7 +8,7 @@
 
 import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
 
-import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertControlPresent, pickAsyncValidators, pickValidators, RawValue, Value, ɵTypedOrUntyped} from './abstract_model';
+import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertControlPresent, pickAsyncValidators, pickValidators, ɵRawValue, ɵTypedOrUntyped, ɵValue} from './abstract_model';
 
 /**
  * FormArrayValue extracts the type of `.value` from a FormArray's element type, and wraps it in an
@@ -18,7 +18,7 @@ import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertC
  * case falls back to any[].
  */
 export type ɵFormArrayValue<T extends AbstractControl<any>> =
-    ɵTypedOrUntyped<T, Array<Value<T>>, any[]>;
+    ɵTypedOrUntyped<T, Array<ɵValue<T>>, any[]>;
 
 /**
  * FormArrayRawValue extracts the type of `.getRawValue()` from a FormArray's element type, and
@@ -27,7 +27,7 @@ export type ɵFormArrayValue<T extends AbstractControl<any>> =
  * Angular uses this type internally to support Typed Forms; do not use it directly.
  */
 export type ɵFormArrayRawValue<T extends AbstractControl<any>> =
-    ɵTypedOrUntyped<T, Array<RawValue<T>>, any[]>;
+    ɵTypedOrUntyped<T, Array<ɵRawValue<T>>, any[]>;
 
 /**
  * Tracks the value and validity state of an array of `FormControl`,

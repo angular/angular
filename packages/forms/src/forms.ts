@@ -42,7 +42,7 @@ export {NgSelectOption, SelectControlValueAccessor} from './directives/select_co
 export {SelectMultipleControlValueAccessor, ɵNgSelectMultipleOption} from './directives/select_multiple_control_value_accessor';
 export {AsyncValidator, AsyncValidatorFn, CheckboxRequiredValidator, EmailValidator, MaxLengthValidator, MaxValidator, MinLengthValidator, MinValidator, PatternValidator, RequiredValidator, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 export {FormBuilder, NonNullableFormBuilder, UntypedFormBuilder, ɵElement} from './form_builder';
-export {AbstractControl, AbstractControlOptions, FormControlStatus, RawValue, Value, ɵCoerceStrArrToNumArr, ɵGetProperty, ɵNavigate, ɵTokenize, ɵTypedOrUntyped, ɵWriteable} from './model/abstract_model';
+export {AbstractControl, AbstractControlOptions, FormControlStatus, ɵCoerceStrArrToNumArr, ɵGetProperty, ɵNavigate, ɵRawValue, ɵTokenize, ɵTypedOrUntyped, ɵValue, ɵWriteable} from './model/abstract_model';
 export {FormArray, UntypedFormArray, ɵFormArrayRawValue, ɵFormArrayValue} from './model/form_array';
 export {FormControl, FormControlOptions, FormControlState, UntypedFormControl, ɵFormControlCtor} from './model/form_control';
 export {FormGroup, FormRecord, UntypedFormGroup, ɵFormGroupRawValue, ɵFormGroupValue, ɵOptionalKeys} from './model/form_group';
