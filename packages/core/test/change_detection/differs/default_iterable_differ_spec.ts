@@ -31,7 +31,7 @@ type IterableChangeRecord<V> = {
   item: V,
   currentIndex: number|null,
   previousIndex: number|null,
-}
+};
 
 // TODO(vicb): UnmodifiableListView / frozen object when implemented
 {
@@ -305,7 +305,7 @@ type IterableChangeRecord<V> = {
         it('should support a mix of all operations', () => {
           let l = ['a', 'b', 'c', 'c', 'a', 'a', 'b', 'e', 'd'];
           differ.check(l);
-          l = ['d', 'd', 'f', 'b', 'b', 'a', 'a', 'c']
+          l = ['d', 'd', 'f', 'b', 'b', 'a', 'a', 'c'];
           differ.check(l);
           expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
             collection: [
@@ -324,7 +324,7 @@ type IterableChangeRecord<V> = {
         it('should find removal at correct index when replacing an item', () => {
           let l = ['a', 'a', 'a', 'a', 'a'];
           differ.check(l);
-          l = ['a', 'a', 'b', 'a', 'a']
+          l = ['a', 'a', 'b', 'a', 'a'];
           differ.check(l);
           expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
             collection: ['a', 'a', 'b[null->2]', 'a', 'a'],
@@ -337,7 +337,7 @@ type IterableChangeRecord<V> = {
         it('should not find moves when no items have moved', () => {
           let l = ['a', 'a', 'a', 'b', 'b'];
           differ.check(l);
-          l = ['b', 'a', 'a', 'b', 'b']
+          l = ['b', 'a', 'a', 'b', 'b'];
           differ.check(l);
           expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
             collection: ['b[null->0]', 'a', 'a', 'b', 'b'],
@@ -346,7 +346,7 @@ type IterableChangeRecord<V> = {
             removals: ['a[0->null]']
           }));
         });
-      })
+      });
 
       describe('forEachOperation', () => {
         function stringifyItemChange(
