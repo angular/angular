@@ -717,20 +717,26 @@ export class ComponentDecoratorHandler implements
         symbol.usedPipes = declarations.filter(isUsedPipe).map(getSemanticReference);
       }
 
-      // Scan through the directives/pipes actually used in the template and check whether any
-      // import which needs to be generated would create a cycle.
       const cyclesFromDirectives = new Map<UsedDirective, Cycle>();
       const cyclesFromPipes = new Map<UsedPipe, Cycle>();
-      for (const usedDep of declarations) {
-        const cycle = this._checkForCyclicImport(usedDep.importedFile, usedDep.type, context);
-        if (cycle !== null) {
-          switch (usedDep.kind) {
-            case R3TemplateDependencyKind.Directive:
-              cyclesFromDirectives.set(usedDep, cycle);
-              break;
-            case R3TemplateDependencyKind.Pipe:
-              cyclesFromPipes.set(usedDep, cycle);
-              break;
+
+      // Scan through the directives/pipes actually used in the template and check whether any
+      // import which needs to be generated would create a cycle. This check is skipped for
+      // standalone components as the dependencies of a standalone component have already been
+      // imported directly by the user, so Angular won't introduce any imports that aren't already
+      // in the user's program.
+      if (!metadata.isStandalone) {
+        for (const usedDep of declarations) {
+          const cycle = this._checkForCyclicImport(usedDep.importedFile, usedDep.type, context);
+          if (cycle !== null) {
+            switch (usedDep.kind) {
+              case R3TemplateDependencyKind.Directive:
+                cyclesFromDirectives.set(usedDep, cycle);
+                break;
+              case R3TemplateDependencyKind.Pipe:
+                cyclesFromPipes.set(usedDep, cycle);
+                break;
+            }
           }
         }
       }
@@ -740,7 +746,7 @@ export class ComponentDecoratorHandler implements
         // No cycle was detected. Record the imports that need to be created in the cycle detector
         // so that future cyclic import checks consider their production.
         for (const {type, importedFile} of declarations) {
-          this._recordSyntheticImport(importedFile, type, context);
+          this.maybeRecordSyntheticImport(importedFile, type, context);
         }
 
         // Check whether the dependencies arrays in ɵcmp need to be wrapped in a closure.
@@ -932,7 +938,7 @@ export class ComponentDecoratorHandler implements
     return this.cycleAnalyzer.wouldCreateCycle(origin, imported);
   }
 
-  private _recordSyntheticImport(
+  private maybeRecordSyntheticImport(
       importedFile: ImportedFile, expr: Expression, origin: ts.SourceFile): void {
     const imported = resolveImportedFile(this.moduleResolver, importedFile, expr, origin);
     if (imported === null) {
