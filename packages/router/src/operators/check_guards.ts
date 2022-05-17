@@ -15,7 +15,7 @@ import {ActivationStart, ChildActivationStart, Event} from '../events';
 import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanLoadFn, CanMatch, CanMatchFn, Route} from '../models';
 import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
-import {navigationCancelingError} from '../shared';
+import {navigationCancelingError, REDIRECTING_CANCELLATION_REASON} from '../shared';
 import {UrlSegment, UrlSerializer, UrlTree} from '../url_tree';
 import {wrapIntoObservable} from '../utils/collection';
 import {CanActivate, CanDeactivate, getCanActivateChild, getToken} from '../utils/preactivation';
@@ -219,8 +219,8 @@ function redirectIfUrlTree(urlSerializer: UrlSerializer):
       tap((result: UrlTree|boolean) => {
         if (!isUrlTree(result)) return;
 
-        const error: Error&{url?: UrlTree} =
-            navigationCancelingError(`Redirecting to "${urlSerializer.serialize(result)}"`);
+        const error: Error&{url?: UrlTree} = navigationCancelingError(
+            REDIRECTING_CANCELLATION_REASON + urlSerializer.serialize(result));
         error.url = result;
         throw error;
       }),
