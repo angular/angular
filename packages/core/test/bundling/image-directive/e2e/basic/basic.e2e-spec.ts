@@ -8,15 +8,15 @@
 
 import {browser, by, element} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../e2e-util/util';
+import {verifyNoBrowserErrors} from '../util';
 
 describe('NgOptimizedImage directive', () => {
   afterEach(verifyNoBrowserErrors);
 
   it('should render an image with an updated `src`', async () => {
-    await browser.get('/');
+    await browser.get('/e2e/basic');
     const imgs = element.all(by.css('img'));
     const src = await imgs.get(0).getAttribute('src');
-    expect(/a\.png/.test(src)).toBe(true);
+    expect(/b\.png/.test(src)).toBe(true);
   });
 });
