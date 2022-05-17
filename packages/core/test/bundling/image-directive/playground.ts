@@ -14,7 +14,6 @@ const CUSTOM_IMGIX_LOADER = (config: ImageLoaderConfig) => {
   return `https://aurora-project.imgix.net/${config.src}${widthStr}`;
 };
 
-
 @Component({
   selector: 'basic',
   styles: [`
@@ -52,5 +51,5 @@ const CUSTOM_IMGIX_LOADER = (config: ImageLoaderConfig) => {
   imports: [NgOptimizedImage],
   providers: [{provide: IMAGE_LOADER, useValue: CUSTOM_IMGIX_LOADER}],
 })
-export class BasicComponent {
+export class PlaygroundComponent {
 }
