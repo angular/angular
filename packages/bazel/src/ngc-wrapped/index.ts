@@ -23,7 +23,6 @@ type CompilerCliModule =
 // Add devmode for blaze internal
 interface BazelOptions extends ExternalBazelOptions {
   allowedInputs?: string[];
-  devmode?: boolean;
   unusedInputsListPath?: string;
 }
 
