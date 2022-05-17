@@ -93,6 +93,35 @@ runInEachFileSystem(() => {
         expect(dtsCode).toContain('i0.ɵɵPipeDeclaration<TestPipe, "test", true>');
       });
 
+      it('should use existing imports for dependencies', () => {
+        env.write('dep.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            standalone: true,
+            selector: '[dir]',
+          })
+          export class TestDir {}
+        `);
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {TestDir} from './dep';
+
+          @Component({
+            standalone: true,
+            imports: [TestDir],
+            selector: 'test-cmp',
+            template: '<div dir></div>',
+          })
+          export class TestCmp {}
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('dependencies: [TestDir]');
+      });
+
       it('should compile a standalone component even in the presence of cycles', () => {
         env.write('dep.ts', `
           import {Directive, Input} from '@angular/core';
@@ -128,7 +157,7 @@ runInEachFileSystem(() => {
         env.driveMain();
 
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain('dependencies: [i1.TestDir]');
+        expect(jsContents).toContain('dependencies: [TestDir]');
       });
 
       it('should error when a non-standalone component tries to use imports', () => {
