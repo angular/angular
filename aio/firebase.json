@@ -80,6 +80,22 @@
       {"type": 301, "source": "/guide/updating-to-version-12", "destination": "/guide/update-to-latest-version"},
       {"type": 301, "source": "/guide/set-document-title", "destination": "/guide/router#setting-the-page-title"},
 
+      // Move component content to sub-directory
+      {"type": 301, "source": "/guide/component-interaction", "destination": "/guide/component/component-interaction"},
+      {"type": 301, "source": "/guide/component-overview", "destination": "/guide/component/component-overview"},
+      {"type": 301, "source": "/guide/component-styles", "destination": "/guide/component/component-style"},
+      {"type": 301, "source": "/guide/content-projection", "destination": "/guide/component/component-usage#content-to-component-projection"},
+      {"type": 301, "source": "/guide/dynamic-component-loader", "destination": "/guide/component/component-dynamic-load"},
+      {"type": 301, "source": "/guide/elements", "destination": "/guide/component/component-web"},
+      {"type": 301, "source": "/guide/inputs-outputs", "destination": "/guide/component/component-usage#component-data-sharing-and-inheritance"},
+      // {"type": 301, "source": "/guide/inputs-outputs#input", "destination": "/guide/component/component-usage-send-data-to-child"},
+      // {"type": 301, "source": "/guide/inputs-outputs#output", "destination": "/guide/component/component-usage-send-data-to-parent"},
+      // {"type": 301, "source": "/guide/inputs-outputs#sending-data-to-a-child-component", "destination": "/guide/component/component-usage-send-data-to-child"},
+      // {"type": 301, "source": "/guide/inputs-outputs#sending-data-to-a-parent-component", "destination": "/guide/component/component-usage-send-data-to-parent"},
+      // {"type": 301, "source": "/guide/inputs-outputs#using-input-and-output-together", "destination": "/guide/component/component-usage-exchange-data"},
+      {"type": 301, "source": "/guide/lifecycle-hooks", "destination": "/guide/component/component-lifecycle"},
+      {"type": 301, "source": "/guide/view-encapsulation", "destination": "/guide/component/component-encapsulate-style"},
+
       // Renaming of Getting Started topics
       {"type": 301, "source": "/start/data", "destination": "/start/start-data"},
       {"type": 301, "source": "/start/deployment", "destination": "/start/start-deployment"},
@@ -99,7 +115,8 @@
       {"type": 301, "source": "/docs/*/latest/cookbook/index.html", "destination": "/docs"},
       {"type": 301, "source": "/**/cookbook/ts-to-js*", "destination": "https://v2.angular.io/docs/ts/latest/cookbook/ts-to-js.html"},
       {"type": 301, "source": "/docs/*/latest/cookbook/a1-a2-quick-reference.html", "destination": "/guide/ajs-quick-reference"},
-      {"type": 301, "source": "/docs/*/latest/cookbook/component-communication.html", "destination": "/guide/component-interaction"},
+
+      {"type": 301, "source": "/docs/*/latest/cookbook/component-communication.html", "destination": "/guide/component/component-interaction"}, // update from component move
       {"type": 301, "source": "/docs/*/latest/cookbook/dependency-injection.html", "destination": "/guide/dependency-injection-in-action"},
       {"type": 301, "source": "/docs/*/latest/cookbook/:cookbook.html", "destination": "/guide/:cookbook"},
 
@@ -160,7 +177,7 @@
       {"type": 301, "source": "/docs/*/latest/api/upgrade/:package/index/:api-*", "destination": "/api/upgrade/:package/:api"},
       {"type": 301, "source": "/docs/*/latest/glossary", "destination": "/guide/glossary"},
       {"type": 301, "source": "/docs/*/latest/guide/", "destination": "/docs"},
-      {"type": 301, "source": "/docs/*/latest/guide/lifecycle-hooks", "destination": "/guide/lifecycle-hooks"},
+      {"type": 301, "source": "/docs/*/latest/guide/lifecycle-hooks", "destination": "/guide/component/component-lifecycle"}, // update from component move
       {"type": 301, "source": "/docs/*/latest/:rest*", "destination": "/:rest*"},
       {"type": 301, "source": "/docs/latest/:rest*", "destination": "/:rest*"},
       {"type": 301, "source": "/docs/styleguide*", "destination": "/guide/styleguide"},

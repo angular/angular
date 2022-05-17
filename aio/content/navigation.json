@@ -108,11 +108,11 @@
           "tooltip": "Learn about the most common parts of an Angular application."
         },
         {
-          "title": "Components",
-          "tooltip": "Learn more about how to use data binding to build dynamic views",
+          "title": "Components - old",
+          "tooltip": "Building dynamic views with data binding",
           "children": [
             {
-              "url": "guide/component-overview",
+              "url": "guide/component-overview-old",
               "title": "Overview",
               "tooltip": "Overview of how to create Angular components."
             },
@@ -127,12 +127,12 @@
               "tooltip": "Describes how component CSS styles are encapsulated into a component's view."
             },
             {
-              "url": "guide/component-interaction",
+              "url": "guide/component-interaction-old",
               "title": "Component Interaction",
               "tooltip": "Share information between different directives and components."
             },
             {
-              "url": "guide/component-styles",
+              "url": "guide/component-styles-old",
               "title": "Component Styles",
               "tooltip": "Add CSS styles that are specific to a component."
             },
@@ -155,6 +155,130 @@
               "url": "guide/elements",
               "title": "Angular Elements",
               "tooltip": "Convert components to Custom Elements."
+            }
+          ]
+        },
+        {
+          "title": "Components - new",
+          "tooltip": "Build dynamic views with data binding",
+          "children": [
+            {
+              "url": "guide/component/component-overview",
+              "title": "Overview",
+              "tooltip": "Overview of how to create an Angular component"
+            },
+            {
+              "url": "guide/component/component-structure",
+              "title": "Understand the structure a component",
+              "tooltip": "Understand the structure an Angular component"
+            },
+            {
+              "url": "guide/component/component-lifecycle",
+              "title": "Understand the lifecycle of a component",
+              "tooltip": "Understand the lifecycle of an Angular component"
+            },
+            {
+              "url": "guide/component/component-create",
+              "title": "Create a component",
+              "tooltip": "Describes how to create an Angular component"
+            },
+            {
+              "url": "guide/component/component-usage",
+              "title": "Use a component",
+              "tooltip": "Describes how to use an Angular component"
+            },
+            {
+              "url": "guide/component/component-usage-lifecycle-hooks",
+              "title": "Use a lifecycle hook method",
+              "tooltip": "Describes how to use an Angular lifecycle hook method"
+            },
+            {
+              "title": "Component style",
+              "tooltip": "Component style",
+              "children": [
+                {
+                  "url": "guide/component/component-style",
+                  "title": "Style in a component",
+                  "tooltip": "Describes how to use a style definition in an Angular component"
+                },
+                {
+                  "url": "guide/component/component-encapsulate-style",
+                  "title": "Encapsulate style in a view",
+                  "tooltip": "Describes how to encapsulate a style definition in a view"
+                }
+               ]
+            },
+            {
+              "title": "Component data",
+              "tooltip": "Component data",
+              "children": [
+                {
+                  "url": "guide/component/component-usage-send-data-to-child",
+                  "title": "Send data to a child component",
+                  "tooltip": "Use @Input to send data from a parent component to a child component"
+                },
+                {
+                  "url": "guide/component/component-usage-send-data-to-parent",
+                  "title": "Send data to a parent component",
+                  "tooltip": "Use @Output to send data from a child component to a parent component"
+                },
+                {
+                  "url": "guide/component/component-usage-exchange-data",
+                  "title": "Exchange data between to a child component and a parent component",
+                  "tooltip": "Use @Input and @Output to exchange data between a child component and a parent component"
+                }
+              ]
+            },
+            {
+              "title": "Component projection",
+              "tooltip": "Component data",
+              "children": [
+                {
+                  "url": "guide/component/component-usage-single-slot-content-projection",
+                  "title": "Single-slot content projection",
+                  "tooltip": "Project content from one component into another component"
+                },
+                {
+                  "url": "guide/component/component-usage-multi-slot-content-projection",
+                  "title": "Multi-slot content projection",
+                  "tooltip": "Select and project content from one components into another component"
+                },
+                {
+                  "url": "guide/component/component-usage-conditional-content-projection",
+                  "title": "Conditional content projection",
+                  "tooltip": "Project content based on conditions"
+                },
+                {
+                  "url": "guide/component/component-usage-complex-content-projection",
+                  "title": "Project content in more complex environments",
+                  "tooltip": "Project content from an element into a component"
+                }
+              ]
+            },
+            {
+              "url": "guide/component/component-web",
+              "title": "Web component",
+              "tooltip": "Describes how to use an Angular element"
+            },
+            {
+              "url": "guide/component/component-lifecycle",
+              "title": "The lifecycle of a component",
+              "tooltip": "Describes the lifecycle of an Angular component"
+            },
+            {
+              "url": "guide/component/component-example-lifecycle",
+              "title": "Tutorial for a component lifecycle",
+              "tooltip": "Describes how to use an Angular component lifecycle"
+            },
+            {
+              "url": "guide/component/component-dynamic-load",
+              "title": "Dynamically load a component",
+              "tooltip": "Describes how to dynamically load an Angular component"
+            },
+            {
+              "url": "guide/component/component-example",
+              "title": "Examples of component applications",
+              "tooltip": "Explore the example Angular component applications"
             }
           ]
         },
