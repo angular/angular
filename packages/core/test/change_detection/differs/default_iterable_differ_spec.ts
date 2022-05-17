@@ -547,7 +547,7 @@ type IterableChangeRecord<V> = {
         differ.check(l);
         expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['{id: b}[1->0]', '{id: a}[0->1]', '{id: c}'],
-          identityChanges: ['{id: c}', '{id: b}[1->0]', '{id: a}[0->1]'],
+          identityChanges: ['{id: b}[1->0]', '{id: a}[0->1]', '{id: c}'],
           previous: ['{id: a}[0->1]', '{id: b}[1->0]', '{id: c}'],
           moves: ['{id: b}[1->0]', '{id: a}[0->1]']
         }));
@@ -591,8 +591,8 @@ type IterableChangeRecord<V> = {
             '{id: a, color: red}'
           ],
           identityChanges: [
-            '{id: c, color: orange}', '{id: a, color: red}', '{id: b, color: yellow}[1->0]',
-            '{id: a, color: blue}[0->1]'
+            '{id: b, color: yellow}[1->0]', '{id: a, color: blue}[0->1]', '{id: c, color: orange}',
+            '{id: a, color: red}'
           ],
           previous: [
             '{id: a, color: blue}[0->1]', '{id: b, color: yellow}[1->0]', '{id: c, color: orange}',

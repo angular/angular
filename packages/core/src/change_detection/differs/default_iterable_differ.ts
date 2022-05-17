@@ -49,14 +49,11 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   private _removedItems = new _LinkedList<_IterableChangeRecord<V>>();
   /** The list of records moved within the collection, sorted by current index, ascending */
   private _movedItems = new _LinkedList<_IterableChangeRecord<V>>();
-  /**
-   * The list of records with identity changes.
-   * Unmoved items appear first, then moved items, both are sorted by current index, ascending
-   */
+  /** The list of records with object identity changes, sorted by current index, ascending */
   private _identityChanges = new _LinkedList<_IterableChangeRecord<V>>();
   /** Operations performed at each index, if any */
   private _operations: {[key: number]: _Operations|undefined} = {};
-  /** Generates an identity for each item */
+  /** Generates an identity for each item - may be different from object identity */
   private _trackByFn: TrackByFunction<V>;
 
   constructor(trackByFn?: TrackByFunction<V>) {
@@ -210,6 +207,8 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   check(collection: NgIterable<V>): boolean {
     this._reset();
 
+    /** Stores identity changes of unmoved items so they can be sorted with moved items later */
+    const identityChanges = new _Queue<_IterableChangeRecord<V>>();
     /** Stores changed nodes, could contain additions or moves */
     const changedNodes = new _Queue<_Node<_IterableChangeRecord<V>>>();
     /** Stores old records from changed nodes, mapped by trackById, could be deleted or moved */
@@ -246,7 +245,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
       // trackById matches, but object identity has changed
       else if (!Object.is(node.value.item, item)) {
         node.value.item = item;
-        this._identityChanges.addLast(node.value);
+        identityChanges.enqueue(node.value);
       }
       index++;
     });
@@ -276,7 +275,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
 
     this._length = index;
     this._collection = collection;
-    this._findOperations(changedNodes, oldRecords, oldRecordKeys);
+    this._findOperations(changedNodes, oldRecords, oldRecordKeys, identityChanges);
     return this._isDirty();
   }
 
@@ -290,12 +289,16 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
    *     trackByIds, these could be removals or moves. Records must have non-null previous index.
    * @param oldRecordKeys The trackByIds that were added to removalsMap, mapped by index that the
    *     item was removed from. Keys must have been added in order of previous index, ascending.
+   * @param identityChanges Unmoved records that have the same trackById, but different object
+   *     identities. Must be in order of current index, ascending.
    */
   private _findOperations(
       changedNodes: _Queue<_Node<_IterableChangeRecord<V>>>,
-      oldRecords: _QueueMap<any, _IterableChangeRecord<V>>, oldRecordKeys: Map<number, any>): void {
+      oldRecords: _QueueMap<any, _IterableChangeRecord<V>>, oldRecordKeys: Map<number, any>,
+      identityChanges: _Queue<_IterableChangeRecord<V>>): void {
     // Dequeue changedNodes and look for matching old records
     let changedNode: _Node<_IterableChangeRecord<V>>|null = changedNodes.dequeue();
+    let nextIdChange: _IterableChangeRecord<V>|null = identityChanges.dequeue();
     while (changedNode !== null) {
       const trackById = changedNode.value.trackById;
       const currentIndex = changedNode.value.currentIndex!;
@@ -306,6 +309,11 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
         oldRecordKeys.delete(previousIndex);
         // Check for identity change
         if (!Object.is(changedNode.value.item, oldRecord.item)) {
+          // Dequeue any identity changes with smaller index before adding this one
+          while (nextIdChange !== null && nextIdChange.currentIndex! < currentIndex) {
+            this._identityChanges.addLast(nextIdChange);
+            nextIdChange = identityChanges.dequeue();
+          }
           oldRecord.item = changedNode.value.item;
           this._identityChanges.addLast(oldRecord);
         }
@@ -334,6 +342,12 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
       this._removedItems.addLast(removed);
       this._updateOperations(removed.previousIndex!, {remove: true});
       nextRemIndex = remIndexIterator.next();
+    }
+
+    // Dequeue leftover identity changes
+    while (nextIdChange !== null) {
+      this._identityChanges.addLast(nextIdChange);
+      nextIdChange = identityChanges.dequeue();
     }
   }
 
