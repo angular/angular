@@ -9,13 +9,14 @@
 import {HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, ViewportScroller} from '@angular/common';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, ENVIRONMENT_INITIALIZER, Inject, inject, InjectFlags, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, Optional, Provider, SkipSelf, Type, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {of, Subject} from 'rxjs';
+import {filter, map, take} from 'rxjs/operators';
 
 import {EmptyOutletComponent} from './components/empty_outlet';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
-import {Event, stringifyEvent} from './events';
+import {Event, NavigationCancel, NavigationEnd, NavigationError, stringifyEvent} from './events';
 import {Route, Routes} from './models';
 import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
@@ -25,6 +26,7 @@ import {ChildrenOutletContexts} from './router_outlet_context';
 import {PreloadingStrategy, RouterPreloader} from './router_preloader';
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
+import {REDIRECTING_CANCELLATION_REASON} from './shared';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {DefaultUrlSerializer, UrlSerializer, UrlTree} from './url_tree';
 import {flatten} from './utils/collection';
@@ -590,18 +592,63 @@ function provideEnabledBlockingInitialNavigation(): Provider {
             injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
         let initNavigation = false;
 
+        /**
+         * Performs the given action once the router finishes its next/current navigation.
+         *
+         * If the navigation is canceled or errors without a redirect, the navigation is considered
+         * complete. If the `NavigationEnd` event emits, the navigation is also considered complete.
+         */
+        function afterNextNavigation(action: () => void) {
+          const router = injector.get(Router);
+          router.events
+              .pipe(
+                  filter(
+                      (e): e is NavigationEnd|NavigationCancel|NavigationError =>
+                          e instanceof NavigationEnd || e instanceof NavigationCancel ||
+                          e instanceof NavigationError),
+                  map(e => {
+                    if (e instanceof NavigationEnd) {
+                      // Navigation assumed to succeed if we get `ActivationStart`
+                      return true;
+                    }
+                    const newNavigationStarted = router.navigationId !== e.id;
+                    // TODO(atscott): Do not rely on the string reason to determine if cancelation
+                    // is redirecting
+                    const redirectingWithUrlTree = e instanceof NavigationCancel ?
+                        e.reason.indexOf(REDIRECTING_CANCELLATION_REASON) !== -1 :
+                        false;
+                    // Navigation failed, but if we already have a new navigation, wait for the
+                    // result of that one instead.
+                    return newNavigationStarted || redirectingWithUrlTree ? null : false;
+                  }),
+                  filter((result): result is boolean => result !== null),
+                  take(1),
+                  )
+              .subscribe(() => {
+                action();
+              });
+        }
+
         return () => {
           return locationInitialized.then(() => {
             return new Promise(resolve => {
               const router = injector.get(Router);
               const bootstrapDone = injector.get(BOOTSTRAP_DONE);
+              afterNextNavigation(() => {
+                // Unblock APP_INITIALIZER in case the initial navigation was canceled or errored
+                // without a redirect.
+                resolve(true);
+                initNavigation = true;
+              });
 
               router.afterPreactivation = () => {
-                // only the initial navigation should be delayed
+                // Unblock APP_INITIALIZER once we get to `afterPreactivation`. At this point, we
+                // assume activation will complete successfully (even though this is not
+                // guaranteed).
+                resolve(true);
+                // only the initial navigation should be delayed until bootstrapping is done.
                 if (!initNavigation) {
-                  initNavigation = true;
-                  resolve(true);
-                  return bootstrapDone;
+                  return bootstrapDone.closed ? of(void 0) : bootstrapDone;
                   // subsequent navigations should not be delayed
                 } else {
                   return of(void 0);

@@ -111,6 +111,7 @@ export function convertToParamMap(params: Params): ParamMap {
   return new ParamsAsMap(params);
 }
 
+export const REDIRECTING_CANCELLATION_REASON = 'Redirecting to ';
 const NAVIGATION_CANCELING_ERROR = 'ngNavigationCancelingError';
 
 export function navigationCancelingError(message: string|null|false) {
