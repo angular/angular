@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Hero } from './hero';
 
-// #docregion stylelink
 @Component({
   selector: 'app-hero-team',
   template: `
@@ -14,7 +13,6 @@ import { Hero } from './hero';
       </li>
     </ul>`
 })
-// #enddocregion stylelink
 export class HeroTeamComponent {
   @Input() hero!: Hero;
 }

@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Hero } from './hero';
 
-// #docregion inlinestyles
 @Component({
   selector: 'app-hero-controls',
   template: `
@@ -15,7 +14,6 @@ import { Hero } from './hero';
     <button type="button" (click)="activate()">Activate</button>
   `
 })
-// #enddocregion inlinestyles
 export class HeroControlsComponent {
   @Input() hero!: Hero;
 

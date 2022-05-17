@@ -7,16 +7,13 @@ import { AdComponent } from './ad.component';
 
 @Component({
   selector: 'app-ad-banner',
-  // #docregion ad-host
   template: `
     <div class="ad-banner-example">
       <h3>Advertisements</h3>
       <ng-template adHost></ng-template>
     </div>
   `
-  // #enddocregion ad-host
 })
-// #docregion class
 export class AdBannerComponent implements OnInit, OnDestroy {
   @Input() ads: AdItem[] = [];
 
@@ -51,4 +48,3 @@ export class AdBannerComponent implements OnInit, OnDestroy {
     }, 3000);
   }
 }
-// #enddocregion class
