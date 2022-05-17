@@ -10,8 +10,9 @@ import {Component, importProvidersFrom} from '@angular/core';
 import {bootstrapApplication, provideProtractorTestingSupport} from '@angular/platform-browser';
 import {RouterModule} from '@angular/router';
 
-import {BasicComponent} from './basic/basic';
-import {LcpCheckComponent} from './lcp-check/lcp-check';
+import {BasicComponent} from './e2e/basic/basic';
+import {LcpCheckComponent} from './e2e/lcp-check/lcp-check';
+import {PlaygroundComponent} from './playground';
 
 @Component({
   selector: 'app-root',
@@ -24,8 +25,12 @@ export class RootComponent {
 }
 
 const ROUTES = [
-  {path: '', component: BasicComponent},  //
-  {path: 'lcp-check', component: LcpCheckComponent}
+  // Paths that contain components for test/demo purposes:
+  {path: '', component: PlaygroundComponent},
+
+  // Paths below are used for e2e testing:
+  {path: 'e2e/basic', component: BasicComponent},
+  {path: 'e2e/lcp-check', component: LcpCheckComponent}
 ];
 
 bootstrapApplication(RootComponent, {

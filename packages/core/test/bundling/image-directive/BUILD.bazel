@@ -1,14 +1,14 @@
 load("//tools:defaults.bzl", "app_bundle", "ng_module", "protractor_web_test_suite", "ts_devserver", "ts_library")
-load("@npm//http-server:index.bzl", "http_server")
 
 package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "image-directive",
     srcs = [
-        "basic/basic.ts",
+        "e2e/basic/basic.ts",
+        "e2e/lcp-check/lcp-check.ts",
         "index.ts",
-        "lcp-check/lcp-check.ts",
+        "playground.ts",
     ],
     deps = [
         "//packages/common",
@@ -54,26 +54,19 @@ ts_devserver(
     static_files = [
         "index.html",
         ":tslib",
+        "e2e/a.png",
+        "e2e/b.png",
     ],
     deps = [":image-directive"],
-)
-
-http_server(
-    name = "prodserver",
-    data = [
-        "index.html",
-        ":bundle.debug.min.js",
-        ":bundle.min.js",
-    ],
 )
 
 ts_library(
     name = "img_dir_e2e_tests_lib",
     testonly = True,
-    srcs = ["e2e-util/util.ts"] + glob([
-        "**/*.e2e-spec.ts",
+    srcs = ["e2e/util.ts"] + glob([
+        "e2e/**/*.e2e-spec.ts",
     ]),
-    tsconfig = ":e2e-util/tsconfig-e2e.json",
+    tsconfig = ":e2e/tsconfig-e2e.json",
     deps = [
         "//packages/private/testing",
         "@npm//@types/selenium-webdriver",
@@ -83,7 +76,7 @@ ts_library(
 
 protractor_web_test_suite(
     name = "protractor_tests",
-    on_prepare = ":e2e-util/start-server.js",
+    on_prepare = ":e2e/start-server.js",
     server = ":devserver",
     deps = [
         ":img_dir_e2e_tests_lib",
