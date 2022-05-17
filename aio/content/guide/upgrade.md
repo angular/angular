@@ -125,7 +125,7 @@ The component directive example from above looks like this when expressed using 
 <code-example header="hero-detail.component.ts" path="upgrade-module/src/app/upgrade-io/hero-detail.component.ts" region="hero-detail-io"></code-example>
 
 Controller lifecycle hook methods `$onInit()`, `$onDestroy()`, and `$onChanges()` are another convenient feature that AngularJS 1.5 introduces.
-They all have nearly exact [equivalents in Angular][AioGuideLifecycleHooks], so organizing component lifecycle logic around them will ease the eventual Angular upgrade process.
+They all have nearly exact [equivalents in Angular][AioGuideComponentLifecycle], so organizing component lifecycle logic around them will ease the eventual Angular upgrade process.
 
 ## Upgrading with ngUpgrade
 
@@ -1681,25 +1681,38 @@ And for the phone list component, a few adjustments to the router make the `Rout
 <!-- links -->
 
 [AioApiCoreNgzone]: api/core/NgZone "NgZone | Core - API | Angular"
+
 [AioApiCoreOnchanges]: api/core/OnChanges "OnChanges | Core - API | Angular"
 
 [AioGuideAnimations]: guide/animations "Introduction to Angular animations | Angular"
+
 [AioGuideAotCompiler]: guide/aot-compiler "Ahead-of-time (AOT) compilation | Angular"
+
 [AioGuideBuiltInDirectives]: guide/built-in-directives "Built-in directives | Angular"
+
 [AioGuideDependencyInjection]: guide/dependency-injection "Dependency injection in Angular | Angular"
+
 [AioGuideDependencyInjectionProvidersFactoryProviders]: guide/dependency-injection-providers#factory-providers "Using factory providers - Dependency providers | Angular"
+
 [AioGuideGlossaryLazyLoading]: guide/glossary#lazy-loading "lazy loading - Glossary | Angular"
+
 [AioGuideHierarchicalDependencyInjection]: guide/hierarchical-dependency-injection "Hierarchical injectors | Angular"
-[AioGuideLifecycleHooks]: guide/lifecycle-hooks "Lifecycle hooks | Angular"
+
+[AioGuideComponentLifecycle]: guide/component/component-lifecycle "Component Lifecycle | Angular"
+
 [AioGuideNgmodules]: guide/ngmodules "NgModules | Angular"
+
 [AioGuideRouter]: guide/router "Common Routing Tasks | Angular"
+
 [AioGuideTypescriptConfiguration]: guide/typescript-configuration "TypeScript configuration | Angular"
+
 [AioGuideUpgradeBootstrappingHybridApplications]: guide/upgrade#bootstrapping-hybrid-applications "Bootstrapping hybrid applications - Upgrading from AngularJS to Angular | Angular"
 [AioGuideUpgradeFollowTheAngularjsStyleGuide]: guide/upgrade#follow-the-angularjs-style-guide "Follow the AngularJS Style Guide - Upgrading from AngularJS to Angular | Angular"
 [AioGuideUpgradeMakingAngularjsDependenciesInjectableToAngular]: guide/upgrade#making-angularjs-dependencies-injectable-to-angular "Making AngularJS Dependencies Injectable to Angular - Upgrading from AngularJS to Angular | Angular"
 [AioGuideUpgradePreparation]: guide/upgrade#preparation "Preparation - Upgrading from AngularJS to Angular | Angular"
 [AioGuideUpgradeUpgradingWithNgupgrade]: guide/upgrade#upgrading-with-ngupgrade "Upgrading with ngUpgrade - Upgrading from AngularJS to Angular | Angular"
 [AioGuideUpgradeUsingComponentDirectives]: guide/upgrade#using-component-directives "Using Component Directives - Upgrading from AngularJS to Angular | Angular"
+
 [AioGuideUpgradeSetup]: guide/upgrade-setup "Setup for upgrading from AngularJS | Angular"
 
 <!-- external links -->
@@ -1744,4 +1757,4 @@ And for the phone list component, a few adjustments to the router make the `Rout
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-05-17

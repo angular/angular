@@ -1,5 +1,7 @@
 # Introduction to Angular concepts
 
+<!--todo: rework this content to remove focus on tutorial -->
+
 Angular is a platform and framework for building single-page client applications using HTML and TypeScript.
 Angular is written in TypeScript.
 It implements core and optional functionality as a set of TypeScript libraries that you import into your applications.
@@ -162,8 +164,7 @@ The following diagram shows how these basic pieces are related.
 Each of these subjects is introduced in more detail in the following pages.
 
 *   [Introduction to Modules](guide/architecture-modules)
-*   [Introduction to Components](guide/architecture-components)
-    *   [Templates and views](guide/architecture-components#templates-and-views)
+*   [Introduction to Components](guide/architecture-components)<!--*   [Templates and views](guide/architecture-components#templates-and-views)-->
     *   [Component metadata](guide/architecture-components#component-metadata)
     *   [Data binding](guide/architecture-components#data-binding)
     *   [Directives](guide/architecture-components#directives)

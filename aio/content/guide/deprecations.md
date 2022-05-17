@@ -243,7 +243,7 @@ The shadow-dom-piercing descendant combinator is deprecated and support is being
 As such, in v4 we deprecated support in Angular for all three of `/deep/`, `>>>`, and `::ng-deep`.
 Until removal, `::ng-deep` is preferred for broader compatibility with the tools.
 
-For more information, see [/deep/, >>>, and ::ng-deep](guide/component-styles#deprecated-deep--and-ng-deep "Component Styles guide, Deprecated deep and ngdeep") in the Component Styles guide.
+For more information, see [/deep/, >>>, and ::ng-deep][AioGuideComponentStyleDeprecatedDeepAndNgDeep].
 
 <a id="bind-syntax"></a>
 
@@ -643,8 +643,12 @@ If you rely on the behavior that the same object instance should cause change de
 
 <!-- links -->
 
+[AioGuideComponentStyleDeprecatedDeepAndNgDeep]: guide/component/component-style#deep--and-ng-deep "/deep/, &gt;&gt;&gt;, and ::ng-deep - Component style | Angular"
+
 [AioGuideI18nCommonMergeDefineLocalesInTheBuildConfiguration]: guide/i18n-common-merge#define-locales-in-the-build-configuration "Define locales in the build configuration - Common Internationalization task #6: Merge translations into the application | Angular"
+
+<!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-05-17

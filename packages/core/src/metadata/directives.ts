@@ -31,8 +31,9 @@ export interface DirectiveDecorator {
    * how the directive should be processed, instantiated and used at
    * runtime.
    *
-   * Directive classes, like component classes, can implement
-   * [life-cycle hooks](guide/lifecycle-hooks) to influence their configuration and behavior.
+   * Directive classes, like component classes, can implement the
+   * [component lifecycle](guide/component/component-lifecycle) to influence their configuration and
+   * behavior.
    *
    *
    * @usageNotes
@@ -367,8 +368,8 @@ export interface ComponentDecorator {
    *
    * Note that, in addition to these options for configuring a directive,
    * you can control a component's runtime behavior by implementing
-   * life-cycle hooks. For more information, see the
-   * [Lifecycle Hooks](guide/lifecycle-hooks) guide.
+   * life-cycle hooks. To learn more, see
+   * [Component lifecycle](guide/component/component-lifecycle).
    *
    * @usageNotes
    *
@@ -775,7 +776,7 @@ export interface InputDecorator {
    * class App {}
    * ```
    *
-   * @see [Input and Output properties](guide/inputs-outputs)
+   * @see [Input and Output properties](guide/component/component-usage#component-data-sharing-and-inheritance)
    */
   (bindingPropertyName?: string): any;
   new(bindingPropertyName?: string): any;
@@ -819,7 +820,7 @@ export interface OutputDecorator {
    *
    * See `Input` decorator for an example of providing a binding name.
    *
-   * @see [Input and Output properties](guide/inputs-outputs)
+   * @see [Input and Output properties](guide/component/component-usage#component-data-sharing-and-inheritance)
    *
    */
   (bindingPropertyName?: string): any;

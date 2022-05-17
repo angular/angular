@@ -17,7 +17,7 @@ Therefore, using a new ID keeps the text change in sync with translations.
 
 However, some translation systems require a specific form or syntax for the ID.
 To address the requirement, use a custom ID to mark text.
-Most developers don't need to use a custom ID.
+Most developers do not need to use a custom ID.
 If you want to use a unique syntax to convey additional metadata, use a custom ID.
 Additional metadata may include the library, component, or area of the application in which the text appears.
 
@@ -32,7 +32,7 @@ The following example defines the `introductionHeader` custom ID for a variable.
 
 <code-example format="typescript" language="typescript">
 
-variableText1 = &dollar;localize `:&commat;&commat;introductionHeader:Hello i18n!`;
+variableText1 = &dollar;localize &grave:&commat;&commat;introductionHeader:Hello i18n!&grave;
 
 </code-example>
 
@@ -41,7 +41,7 @@ When you specify a custom ID, the extractor generates a translation unit with th
 <code-example header="messages.fr.xlf.html" path="i18n/doc-files/messages.fr.xlf.html" region="custom-id"></code-example>
 
 If you change the text, the extractor does not change the ID.
-As a result, you don't have to take the extra step to update the translation.
+As a result, you do not have to take the extra step to update the translation.
 The drawback of using custom IDs is that if you change the text, your translation may be out-of-sync with the newly changed source text.
 
 #### Use a custom ID with a description
@@ -58,7 +58,7 @@ The following example defines the `introductionHeader` custom ID and description
 
 <code-example format="typescript" language="typescript">
 
-variableText2 = &dollar;localize `:An introduction header for this sample&commat;&commat;introductionHeader:Hello i18n!`;
+variableText2 = &dollar;localize &grave;:An introduction header for this sample&commat;&commat;introductionHeader:Hello i18n!&grave;;
 
 </code-example>
 
@@ -72,7 +72,7 @@ The following example defines the `introductionHeader` custom ID for a variable.
 
 <code-example format="typescript" language="typescript">
 
-variableText3 = &dollar;localize `:site header|An introduction header for this sample&commat;&commat;introductionHeader:Hello i18n!`;
+variableText3 = &dollar;localize &grave;:site header|An introduction header for this sample&commat;&commat;introductionHeader:Hello i18n!&grave;;
 
 </code-example>
 
@@ -103,4 +103,4 @@ Both elements now use the same translation \(`Bonjour`\), because both were defi
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-04-13

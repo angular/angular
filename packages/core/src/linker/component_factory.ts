@@ -83,7 +83,7 @@ export abstract class ComponentRef<C> {
  * Instantiate a factory for a given type of component with `resolveComponentFactory()`.
  * Use the resulting `ComponentFactory.create()` method to create a component of that type.
  *
- * @see [Dynamic Components](guide/dynamic-component-loader)
+ * @see [Example: Dynamically load a component](guide/component/component-dynamic-load)
  *
  * @publicApi
  *

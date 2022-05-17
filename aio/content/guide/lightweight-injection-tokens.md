@@ -78,8 +78,8 @@ If `LibHeaderComponent` is large \(code, template, and styles\), including it un
 The tree-shaking problem arises when a component is used as an injection token.
 There are two cases when that can happen.
 
-*   The token is used in the value position of a [content query](guide/lifecycle-hooks#using-aftercontent-hooks "See more about using content queries.").
-*   The token is used as a type specifier for constructor injection.
+*   The token is used in the value position of a [content query][AioGuideComponentLifecycleTutorialUsingAftercontentHooks]
+*   The token is used as a type specifier for constructor injection
 
 In the following example, both uses of the `OtherComponent` token cause retention of `OtherComponent` \(that is, prevent it from being tree-shaken when it is not used\).
 
@@ -207,8 +207,10 @@ To maintain the relationship between the component and its token while still dis
 
 <!-- links -->
 
+[AioGuideComponentLifecycleTutorialUsingAftercontentHooks]: guide/component/component-example-lifecycle#using-aftercontent-hooks "Using AfterContent hooks - Example: lifecycle hook methods | Angular"
+
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-05-17

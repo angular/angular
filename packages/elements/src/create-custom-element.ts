@@ -18,7 +18,7 @@ import {getComponentInputs, getDefaultAttributeToPropertyInputs} from './utils';
  * that can be used for custom element registration. Implemented and returned
  * by the {@link createCustomElement createCustomElement() function}.
  *
- * @see [Angular Elements Overview](guide/elements "Turning Angular components into custom elements")
+ * @see [Web component](guide/component/component-web)
  *
  * @publicApi
  */
@@ -116,7 +116,7 @@ export interface NgElementConfig {
  * static property to affect all newly created instances, or as a constructor argument for
  * one-off creations.
  *
- * @see [Angular Elements Overview](guide/elements "Turning Angular components into custom elements")
+ * @see [Web component](guide/component/component-web)
  *
  * @param component The component to transform.
  * @param config A configuration that provides initialization information to the created class.

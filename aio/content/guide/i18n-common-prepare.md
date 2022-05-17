@@ -68,7 +68,7 @@ Use the following syntax to assign a meaning, description, and custom ID.
 
 <code-example format="html" language="html">
 
-i18n-{attribute_name}="{meaning}|{description}&commat;&commat;{id}"
+i18n-{attribute_name}="{meaning}&verbar;{description}&commat;&commat;{id}"
 
 </code-example>
 
@@ -89,7 +89,7 @@ To mark the title attribute for translation, complete the following action.
 
 ## Mark text in component code
 
-In component code, the translation source text and the metadata are surrounded by backtick \(<code>&#96;</code>\) characters.
+In component code, the translation source text and the metadata are surrounded by grave accent \(<code>&grave;</code>\) characters.
 
 Use the [`$localize`][AioApiLocalizeInitLocalize] tagged message string to mark a string in your code for translation.
 
@@ -97,7 +97,7 @@ Use the [`$localize`][AioApiLocalizeInitLocalize] tagged message string to mark 
 
 <code-example format="typescript" language="typescript">
 
-&dollar;localize `string_to_translate`;
+&dollar;localize &grave;string_to_translate&grave;;
 
 </code-example>
 
@@ -107,7 +107,7 @@ The i18n metadata is surrounded by colon \(`:`\) characters and prepends the tra
 
 <code-example format="typescript" language="typescript">
 
-&dollar;localize `:{i18n_metadata}:string_to_translate`
+&dollar;localize &grave;:{i18n_metadata}:string_to_translate&grave;
 
 </code-example>
 
@@ -119,7 +119,7 @@ Include [interpolations][AioGuideGlossaryInterpolation] in a [`$localize`][AioAp
 
 <code-example format="typescript" language="typescript">
 
-&dollar;localize `string_to_translate &dollar;{variable_name}`;
+&dollar;localize &grave;string_to_translate ${variable_name}&grave;;
 
 </code-example>
 
@@ -127,7 +127,7 @@ Include [interpolations][AioGuideGlossaryInterpolation] in a [`$localize`][AioAp
 
 <code-example format="typescript" language="typescript">
 
-&dollar;localize `string_to_translate &dollar;{variable_name}:placeholder_name:`;
+&dollar;localize &grave;string_to_translate ${variable_name}:placeholder_name:&grave;;
 
 </code-example>
 
@@ -135,9 +135,9 @@ Include [interpolations][AioGuideGlossaryInterpolation] in a [`$localize`][AioAp
 
 <!--todo: replace with code-example -->
 
-<code-example>
+<code-example format="none" language="none">
 
-{meaning}|{description}&commat;&commat;{custom_id}
+{meaning}&verbar;{description}&commat;&commat;{custom_id}
 
 </code-example>
 
@@ -167,12 +167,12 @@ The following example shows the value of the [`$localize`][AioApiLocalizeInitLoc
 
 <code-example format="typescript" language="typescript">
 
-&dollar;localize `:An introduction header for this sample:Hello i18n!`;
+&dollar;localize &grave;:An introduction header for this sample:Hello i18n!&grave;;
 
 </code-example>
 
 The translator may also need to know the meaning or intent of the text message within this particular application context, in order to translate it the same way as other text with the same meaning.
-Start the `i18n` attribute value with the *meaning* and separate it from the *description* with the `|` character: `{meaning}|{description}`.
+Start the `i18n` attribute value with the *meaning* and separate it from the *description* with the <code>&verbar;</code> character: <code>{meaning}&verbar;{description}</code>.
 
 #### `h1` example
 
@@ -190,15 +190,13 @@ The following code example shows the value of the [`$localize`][AioApiLocalizeIn
 
 <code-example format="typescript" language="typescript">
 
-&dollar;localize `:site header|An introduction header for this sample:Hello i18n!`;
+&dollar;localize &grave;:site header&verbar;An introduction header for this sample:Hello i18n!&grave;;
 
 </code-example>
 
 <div class="callout is-helpful">
 
-<header>
-<a name="how-meanings-control-text-extraction-and-merges"></a> How meanings control text extraction and merges
-</header>
+<header><a name="how-meanings-control-text-extraction-and-merges"></a> How meanings control text extraction and merges</header>
 
 The Angular extraction tool generates a translation unit entry for each `i18n` attribute in a template.
 The Angular extraction tool assigns each translation unit a unique ID based on the *meaning* and *description*.
@@ -231,7 +229,7 @@ An ICU expression includes a component property, an ICU clause, and the case sta
 
 <!--todo: replace with code-example -->
 
-<code-example>
+<code-example format="none" language="none">
 
 { component_property, icu_clause, case_statements }
 
@@ -261,7 +259,7 @@ Use the `plural` clause to mark expressions that may not be meaningful if transl
 
 <!--todo: replace with code-example -->
 
-<code-example>
+<code-example format="none" language="none">
 
 { component_property, plural, pluralization_categories }
 
@@ -271,7 +269,7 @@ After the pluralization category, enter the default text \(English\) surrounded 
 
 <!--todo: replace with code-example -->
 
-<code-example>
+<code-example format="none" language="none">
 
 pluralization_category { }
 
@@ -292,7 +290,7 @@ If none of the pluralization categories match, Angular uses `other` to match the
 
 <!--todo: replace with code-example -->
 
-<code-example>
+<code-example format="none" language="none">
 
 other { default_quantity }
 
@@ -328,7 +326,7 @@ If you want to display the following phrase in English, where `x` is a number.
 
 <!--todo: replace output code-example with screen capture image --->
 
-<code-example>
+<code-example format="none" language="none">
 
 updated x minutes ago
 
@@ -338,7 +336,7 @@ And you also want to display the following phrases based on the cardinality of `
 
 <!--todo: replace output code-example with screen capture image --->
 
-<code-example>
+<code-example format="none" language="none">
 
 updated just now
 
@@ -346,7 +344,7 @@ updated just now
 
 <!--todo: replace output code-example with screen capture image --->
 
-<code-example>
+<code-example format="none" language="none">
 
 updated one minute ago
 
@@ -375,7 +373,7 @@ The `select` clause marks choices for alternate text based on your defined strin
 
 <!--todo: replace with code-example -->
 
-<code-example>
+<code-example format="none" language="none">
 
 { component_property, select, selection_categories }
 
@@ -387,7 +385,7 @@ After the selection category, enter the text \(English\) surrounded by open curl
 
 <!--todo: replace with code-example -->
 
-<code-example>
+<code-example format="none" language="none">
 
 selection_category { text }
 
@@ -399,7 +397,7 @@ If none of the selection categories match, Angular uses `other` to match the sta
 
 <!--todo: replace with code-example -->
 
-<code-example>
+<code-example format="none" language="none">
 
 other { default_value }
 
@@ -411,7 +409,7 @@ If you want to display the following phrase in English.
 
 <!--todo: replace output code-example with screen capture image --->
 
-<code-example>
+<code-example format="none" language="none">
 
 The author is other
 
@@ -421,7 +419,7 @@ And you also want to display the following phrases based on the `gender` propert
 
 <!--todo: replace output code-example with screen capture image --->
 
-<code-example>
+<code-example format="none" language="none">
 
 The author is female
 
@@ -429,7 +427,7 @@ The author is female
 
 <!--todo: replace output code-example with screen capture image --->
 
-<code-example>
+<code-example format="none" language="none">
 
 The author is male
 
@@ -490,4 +488,4 @@ The following code example shows nested clauses based on the `gender` and `minut
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-04-13

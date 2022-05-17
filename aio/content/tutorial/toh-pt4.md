@@ -143,7 +143,7 @@ Reserve the constructor for minimal initialization such as wiring constructor pa
 The constructor shouldn't *do anything*.
 It certainly shouldn't call a function that makes HTTP requests to a remote server as a *real* data service would.
 
-Instead, call `getHeroes()` inside the [*ngOnInit lifecycle hook*](guide/lifecycle-hooks) and let Angular call `ngOnInit()` at an appropriate time *after* constructing a `HeroesComponent` instance.
+Instead, call `getHeroes()` inside the [`ngOnInit` lifecycle hook method][AioGuideComponentLifecycleInitializeAComponentOrDirective] and let Angular call `ngOnInit()` at an appropriate time *after* constructing a `HeroesComponent` instance.
 
 <code-example header="src/app/heroes/heroes.component.ts" path="toh-pt4/src/app/heroes/heroes.component.ts" region="ng-on-init"></code-example>
 
@@ -369,4 +369,12 @@ Here are the code files discussed on this page.
 *   You created a `MessageService` for loosely coupled communication between classes.
 *   The `HeroService` injected into a component is created with another injected service, `MessageService`.
 
-@reviewed 2022-02-28
+<!-- links -->
+
+[AioGuideComponentLifecycleInitializeAComponentOrDirective]: guide/component/component-usage-lifecycle-hooks#initialize-a-component-or-directive "Initialize a component or directive - Use an Angular lifecycle hook method | Angular"
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-05-17

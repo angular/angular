@@ -19,10 +19,10 @@ To get the most out of these developer guides, you should review the following t
 ## Learn about Angular basics
 
 <div class="card-container">
-  <a href="guide/component-overview" class="docs-card" title="Components">
-    <section>Components</section>
-    <p>Learn about Angular components. A component is a key building block of Angular development.</p>
-    <p class="card-footer">Components</p>
+  <a href="guide/component/component-overview" class="docs-card" title="Component">
+    <section>Component</section>
+    <p>Learn about an Angular component. A component is a key building block of Angular development.</p>
+    <p class="card-footer">Component</p>
   </a>
   <a href="guide/template-syntax" class="docs-card" title="Templates">
     <section>Templates</section>
@@ -56,4 +56,4 @@ To get the most out of these developer guides, you should review the following t
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-05-17

@@ -62,7 +62,7 @@ If you do, the lifetime of the provided services should be the same as the lifet
 
 <div class="alert is-helpful">
 
-For more information about lifecycles, see [Hooking into the component lifecycle](guide/lifecycle-hooks "Hooking into the component lifecycle").
+For more information about lifecycles, see [Understand the lifecycle of a component][AioGuideComponentLifecycle].
 
 </div>
 
@@ -168,8 +168,10 @@ If you want to manage NgModule loading and the use of dependencies and services,
 
 <!-- links -->
 
+[AioGuideComponentLifecycle]: guide/component/component-lifecycle "Understand the lifecycle of a component | Angular"
+
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-05-17

@@ -61,10 +61,7 @@ Open the `HeroDetailComponent` class file and import the `Hero` symbol.
 <code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts"
 region="import-hero" header="src/app/hero-detail/hero-detail.component.ts (import Hero)"></code-example>
 
-The `hero` property
-[must be an `Input` property](guide/inputs-outputs "Input and Output properties"),
-annotated with the `@Input()` decorator,
-because the *external* `HeroesComponent` [binds to it](#heroes-component-template) like this.
+The `hero` property must be an [`Input` property][AioGuideComponentUsageSendDataToChild], annotated with the `@Input()` decorator, because the [*external* `HeroesComponent`](#heroes-component-template) binds to it like this.
 
 <code-example path="toh-pt3/src/app/heroes/heroes.component.html" region="hero-detail-binding"></code-example>
 
@@ -157,6 +154,14 @@ Here are the code files discussed on this page.
 
 *   You used a [property binding](guide/property-binding) to give the parent `HeroesComponent` control over the child `HeroDetailComponent`.
 
-*   You used the [`@Input` decorator](guide/inputs-outputs)
-to make the `hero` property available for binding
-by the external `HeroesComponent`.
+*   You used the [`@Input` decorator][AioGuideComponentUsageSendDataToChild] to make the `hero` property available for binding by the external `HeroesComponent`.
+
+<!-- links -->
+
+[AioGuideComponentUsageSendDataToChild]: guide/component/component-usage-send-data-to-child "Send data to a child component | Angular"
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-05-17

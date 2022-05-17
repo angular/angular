@@ -345,7 +345,7 @@ This service lets you navigate back to the previous view.
 
 ### Extract the `id` route parameter
 
-In the `ngOnInit()` [lifecycle hook](guide/lifecycle-hooks#oninit) call `getHero()` and define it as follows.
+In the `ngOnInit()` [lifecycle hook method][AioGuideComponentLifecycleInitializeAComponentOrDirective], call `getHero()` and define it as follows.
 
 <code-example header="src/app/hero-detail/hero-detail.component.ts" path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" region="ngOnInit"></code-example>
 
@@ -475,4 +475,12 @@ Here are the code files discussed on this page.
 *   You used router link parameters to navigate to the detail view of a user-selected hero
 *   You shared the `HeroService` with other components
 
-@reviewed 2022-02-28
+<!-- links -->
+
+[AioGuideComponentLifecycleInitializeAComponentOrDirective]: guide/component/component-usage-lifecycle-hooks#initialize-a-component-or-directive "Initialize a component or directive - Use an Angular lifecycle hook method | Angular"
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-05-13

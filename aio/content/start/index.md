@@ -299,7 +299,7 @@ Since these steps don't use them, the following code examples omit them for brev
 
     </div>
 
-For more information on communication between components, see [Component Interaction](guide/component-interaction "Component interaction").
+For more information on communication between components, see [Component Interaction][AioGuideComponentComponentInteraction].
 
 <a id="whats-next"></a>
 
@@ -312,4 +312,12 @@ To continue exploring Angular and developing this application:
 *   Continue to [In-app navigation](start/start-routing "Getting started: In-app navigation") to create a product details page.
 *   Skip ahead to [Deployment](start/start-deployment "Getting started: Deployment") to move to local development, or deploy your application to Firebase or your own server.
 
-@reviewed 2022-02-28
+<!-- links -->
+
+[AioGuideComponentComponentInteraction]: guide/component/component-interaction "Component interaction | Angular"
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-05-17

@@ -57,7 +57,7 @@ A best practice is to run your project locally before you deploy it. To run your
 1.  To see your application in the browser, go to http://localhost:4200/.
     If the default port 4200 is not available, you can specify another port with the port flag as in the following example:
 
-     <code-example format="shell" language="shell">
+    <code-example format="shell" language="shell">
 
     ng serve --port 4201
 
@@ -99,7 +99,7 @@ You can go deeper by studying more of Angular's features, engaging with the vibr
 
 For a more in-depth tutorial that leads you through building an application locally and exploring many of Angular's most popular features, see [Tour of Heroes](tutorial).
 
-To explore Angular's foundational concepts, see the guides in the Understanding Angular section such as [Angular Components Overview](guide/component-overview) or [Template syntax](guide/template-syntax).
+To explore the foundational concepts in Angular, see [Angular Components Overview][AioGuideComponentComponentOverview] or [Template syntax](guide/template-syntax).
 
 ### Joining the community
 
@@ -113,4 +113,12 @@ To support your UX/UI development, see [Angular Material](https://material.angul
 
 The Angular community also has an extensive [network of third-party tools and libraries](resources "Angular resources list").
 
-@reviewed 2021-09-15
+<!-- links -->
+
+[AioGuideComponentComponentOverview]: guide/component/component-overview "Angular component overview | Angular"
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-05-17

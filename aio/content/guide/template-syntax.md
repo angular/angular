@@ -50,25 +50,27 @@ For more information, see the [Security](guide/security) page.
 
 You might also be interested in the following:
 
-| Topics                                                               | Details |
-|:---                                                                  |:---     |
-| [Interpolation](guide/interpolation)                                 | Learn how to use interpolation and expressions in HTML.                                                                 |
-| [Template statements](guide/template-statements)                     | Respond to events in your templates.                                                                                    |
-| [Binding syntax](guide/binding-syntax)                               | Use binding to coordinate values in your application.                                                                   |
-| [Property binding](guide/property-binding)                           | Set properties of target elements or directive `@Input()` decorators.                                                   |
-| [Attribute, class, and style bindings](guide/attribute-binding)      | Set the value of attributes, classes, and styles.                                                                       |
-| [Event binding](guide/event-binding)                                 | Listen for events and your HTML.                                                                                        |
-| [Two-way binding](guide/two-way-binding)                             | Share data between a class and its template.                                                                            |
-| [Built-in directives](guide/built-in-directives)                     | Listen to and modify the behavior and layout of HTML.                                                                   |
-| [Template reference variables](guide/template-reference-variables)   | Use special variables to reference a DOM element within a template.                                                     |
-| [Inputs and Outputs](guide/inputs-outputs)                           | Share data between the parent context and child directives or components                                                |
-| [Template expression operators](guide/template-expression-operators) | Learn about the pipe operator \(<code>&verbar;</code>\), and protect against `null` or `undefined` values in your HTML. |
-| [SVG in templates](guide/svg-in-templates)                           | Dynamically generate interactive graphics.                                                                              |
+| Topics                                                                                             | Details |
+|:---                                                                                                |:---     |
+| [Interpolation](guide/interpolation)                                                               | Learn how to use interpolation and expressions in HTML.                                                                 |
+| [Template statements](guide/template-statements)                                                   | Respond to events in your templates.                                                                                    |
+| [Binding syntax](guide/binding-syntax)                                                             | Use binding to coordinate values in your application.                                                                   |
+| [Property binding](guide/property-binding)                                                         | Set properties of target elements or directive `@Input()` decorators.                                                   |
+| [Attribute, class, and style bindings](guide/attribute-binding)                                    | Set the value of attributes, classes, and styles.                                                                       |
+| [Event binding](guide/event-binding)                                                               | Listen for events and your HTML.                                                                                        |
+| [Two-way binding](guide/two-way-binding)                                                           | Share data between a class and its template.                                                                            |
+| [Built-in directives](guide/built-in-directives)                                                   | Listen to and modify the behavior and layout of HTML.                                                                   |
+| [Template reference variables](guide/template-reference-variables)                                 | Use special variables to reference a DOM element within a template.                                                     |
+| [Component data sharing and inheritance][AioGuideComponentUsageComponentDataSharingAndInheritance] | Share data between the parent context and child directives or components                                                |
+| [Template expression operators](guide/template-expression-operators)                               | Learn about the pipe operator \(<code>&verbar;</code>\), and protect against `null` or `undefined` values in your HTML. |
+| [SVG in templates](guide/svg-in-templates)                                                         | Dynamically generate interactive graphics.                                                                              |
 
 <!-- links -->
 
-<!-- external links -->
+[AioGuideComponentUsageComponentDataSharingAndInheritance]: guide/component/component-usage#component-data-sharing-and-inheritance "Component data sharing and inheritance - Use an Angular component | Angular"
+
+<!--external links -->
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-05-13

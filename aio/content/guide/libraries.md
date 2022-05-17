@@ -35,14 +35,16 @@ This complexity can pay off, however, when the library is being used in multiple
 
 **NOTE**: <br />
 Libraries are intended to be used by Angular applications.
-To add Angular functionality to non-Angular web applications, use [Angular custom elements](guide/elements).
+To add Angular functionality to non-Angular web applications, use [Angular web component][AioGuideComponentWeb].
 
 </div>
 
 <!-- links -->
 
+[AioGuideComponentWeb]: guide/component/component-web "Web component | Angular"
+
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-05-17

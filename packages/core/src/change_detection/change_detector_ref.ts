@@ -21,8 +21,8 @@ import {ViewRef as R3_ViewRef} from '../render3/view_ref';
  * Use the methods to add and remove views from the tree, initiate change-detection,
  * and explicitly mark views as _dirty_, meaning that they have changed and need to be re-rendered.
  *
- * @see [Using change detection hooks](guide/lifecycle-hooks#using-change-detection-hooks)
- * @see [Defining custom change detection](guide/lifecycle-hooks#defining-custom-change-detection)
+ * @see [Use change detection hooks](guide/component/component-example-lifecycle#use-change-detection-hooks)
+ * @see [Define custom change detection](guide/component/component-example-lifecycle#define-custom-change-detection)
  *
  * @usageNotes
  *

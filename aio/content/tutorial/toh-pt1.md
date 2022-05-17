@@ -41,7 +41,7 @@ You always import the `Component` symbol from the Angular core library and annot
 
 The [CSS element selector](https://developer.mozilla.org/docs/Web/CSS/Type_selectors), `'app-heroes'`, matches the name of the HTML element that identifies this component within a parent component's template.
 
-The `ngOnInit()` is a [lifecycle hook](guide/lifecycle-hooks#oninit).
+The `ngOnInit()` is a [lifecycle hook method][AioGuideComponentLifecycleInitializeAComponentOrDirective].
 Angular calls `ngOnInit()` shortly after creating a component.
 It's a good place to put initialization logic.
 
@@ -225,4 +225,12 @@ Here are the code files discussed on this page.
 *   You imported the `FormsModule` in the `AppModule` so that Angular would recognize and apply the `ngModel` directive.
 *   You learned the importance of declaring components in the `AppModule`.
 
-@reviewed 2022-02-28
+<!-- links -->
+
+[AioGuideComponentLifecycleInitializeAComponentOrDirective]: guide/component/component-usage-lifecycle-hooks#initialize-a-component-or-directive "Initialize a component or directive - Use an Angular lifecycle hook method | Angular"
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-05-17

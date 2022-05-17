@@ -55,7 +55,7 @@ Get started with Angular, learn the fundamentals and explore advanced topics on 
 
 ### Advanced
 
-- [Angular Elements][angularelements]
+- [Angular Elements][AioGuideComponentWeb]
 - [Server Side Rendering][ssr]
 - [Schematics][schematics]
 - [Lazy Loading][lazyloading]
@@ -151,7 +151,7 @@ Join the conversation and help the community.
 [componentstemplates]: https://angular.io/guide/displaying-data
 [forms]: https://angular.io/guide/forms-overview
 [api]: https://angular.io/api
-[angularelements]: https://angular.io/guide/elements
+[AioGuideComponentWeb]: https://angular.io/guide/component/component-web "Web component | Angular"
 [ssr]: https://angular.io/guide/universal
 [schematics]: https://angular.io/guide/schematics
 [lazyloading]: https://angular.io/guide/lazy-loading-ngmodules

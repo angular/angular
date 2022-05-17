@@ -64,7 +64,7 @@ Then provide and inject *both the* **component** *and the service* in the `TestB
 
 <code-example header="app/welcome/welcome.component.spec.ts (class-only setup)" path="testing/src/app/welcome/welcome.component.spec.ts" region="class-only-before-each"></code-example>
 
-Then exercise the component class, remembering to call the [lifecycle hook methods](guide/lifecycle-hooks) as Angular does when running the application.
+Then exercise the component class, remembering to call the [lifecycle hook methods][AioGuideComponentUsageLifecycleHooks] as Angular does when running the application.
 
 <code-example header="app/welcome/welcome.component.spec.ts (class-only tests)" path="testing/src/app/welcome/welcome.component.spec.ts" region="class-only-tests"></code-example>
 
@@ -268,8 +268,10 @@ It's often straightforward and more clear to filter with a standard `HTMLElement
 
 <!-- links -->
 
+[AioGuideComponentUsageLifecycleHooks]: guide/component/component-usage-lifecycle-hooks "Use an Angular lifecycle hook method | Angular"
+
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-05-17

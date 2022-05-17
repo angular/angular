@@ -123,7 +123,7 @@ npm install &commat;angular/elements --save
 
 ## Example: A Popup Service
 
-Previously, when you wanted to add a component to an application at runtime, you had to define a *dynamic component*, and then you would have to load it, attach it to an element in the DOM, and wire up all of the dependencies, change detection, and event handling, as described in [Dynamic Component Loader][AioGuideDynamicComponentLoader].
+Previously, when you wanted to add a component to an application at runtime, you had to define a *dynamic component*, and then you would have to load it, attach it to an element in the DOM, and wire up all of the dependencies, change detection, and event handling, as described in [Dynamic Component Loader][AioGuideComponentDynamicLoad].
 
 Using an Angular custom element makes the process much simpler and more transparent, by providing all of the infrastructure and framework automatically.
 You have to define the kind of event handling you want to use an Angular custom element.
@@ -228,11 +228,11 @@ document.querySelector('my-other-element')  //--&gt; NgElement &amp; WithPropert
 
 [AioCli]: cli "CLI Overview and Command Reference | Angular"
 
-[AioGuideComponentWebBrowserSupportForCustomElements]: guide/component/component-web#browser-support-for-custom-elements "Browser support for custom elements - Web component | Angular"
-
-[AioGuideDynamicComponentLoader]: guide/dynamic-component-loader "Dynamic component loader | Angular"
+[AioGuideComponentDynamicLoad]: guide/component/component-dynamic-load "Example: Dynamically load a component | Angular"
 
 [AioGuideComponentExample]: guide/component/component-example "Example Angular component applications | Angular"
+
+[AioGuideComponentWebBrowserSupportForCustomElements]: guide/component/component-web#browser-support-for-custom-elements "Browser support for custom elements - Web component | Angular"
 
 <!-- external links -->
 

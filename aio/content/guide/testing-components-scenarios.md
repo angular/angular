@@ -59,7 +59,7 @@ Only then does the `<h1>` have the expected title.
 <code-example path="testing/src/app/banner/banner.component.spec.ts" region="expect-h1-default"></code-example>
 
 Delayed change detection is intentional and useful.
-It gives the tester an opportunity to inspect and change the state of the component *before Angular initiates data binding and calls [lifecycle hooks](guide/lifecycle-hooks)*.
+It gives the tester an opportunity to inspect and change the state of the component *before Angular initiates data binding and calls [lifecycle hook methods][AioGuideComponentUsageLifecycleHooks]*.
 
 Here's another test that changes the component's `title` property *before* calling `fixture.detectChanges()`.
 
@@ -1421,8 +1421,10 @@ Explore the options and combinations on your own.
 
 <!-- links -->
 
+[AioGuideComponentUsageLifecycleHooks]: guide/component/component-usage-lifecycle-hooks "Use an Angular lifecycle hook method | Angular"
+
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-05-17

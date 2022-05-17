@@ -55,7 +55,7 @@ When Angular renders this component, the resulting DOM looks like this:
 Angular's component model offers strong encapsulation and an intuitive application structure.
 Components also make your application painless to unit test and can improve the overall readability of your code.
 
-For more information on what to do with components, see the [Components](guide/component-overview) section.
+For more information on what to do with components, see [Angular component overview][AioGuideComponentComponentOverview].
 
 <a id="templates"></a>
 
@@ -201,8 +201,10 @@ To explore Angular's capabilities further, we recommend reading through the sect
 
 <!-- links -->
 
+[AioGuideComponentComponentOverview]: guide/component/component-overview "Angular component overview | Angular"
+
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-05-17

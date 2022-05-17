@@ -65,12 +65,11 @@ You might also be interested in the following:
         <p>Listen to and modify the behavior and layout of HTML.</p>
         <p class="card-footer">Built-in directives</p>
     </a>
-    <a href="guide/inputs-outputs" class="docs-card" title="Inputs and Outputs">
-        <section>Inputs and Outputs</section>
-        <p>Share data between the parent context and child directives or components.</p>
-        <p class="card-footer">Inputs and Outputs</p>
+    <a href="guide/component/component-usage#component-data-sharing-and-inheritance" class="docs-card" title="Component data sharing and inheritance">
+        <section>Component data sharing and inheritance</section>
+        <p>Share data between the parent component (or directive) and child component (or directive).</p>
+        <p class="card-footer">Component data sharing and inheritance</p>
     </a>
 </div>
 
-@reviewed 2022-05-11
- 
+@reviewed 2022-05-17

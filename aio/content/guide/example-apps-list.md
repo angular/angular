@@ -173,7 +173,7 @@ For more information, see [Template reference variables](guide/template-referenc
 <live-example name="ngcontainer"></live-example>
 
 Demonstrates `<ngcontainer>`.
-For more information, see the [ng-container section](guide/built-in-directives#ngcontainer) of [Built-in directives](guide/structural-directives) .
+For more information, see [Hosting a directive without a DOM element](guide/built-in-directives#hosting-a-directive-without-a-dom-element).
 
 ### Pipes
 
@@ -227,28 +227,28 @@ These examples demonstrate features of Angular components.
 <live-example name="component-interaction"></live-example>
 
 Demonstrates how Angular shares data between components.
-For more information, see [Component interaction](guide/component-interaction).
+For more information, see [Component interaction][AioGuideComponentInteraction].
 
 ### Component styles
 
 <live-example name="component-styles"></live-example>
 
 Demonstrates styling in Angular applications.
-For more information, see [Component styles](guide/component-styles).
+For more information, see [Component style][AioGuideComponentStyle].
 
 ### Dynamic component loader
 
 <live-example name="dynamic-component-loader"></live-example>
 
 Demonstrates how to dynamically load components.
-For more information, see [Dynamic component loader](guide/dynamic-component-loader).
+For more information, see [Example: Dynamically load a component][AioGuideComponentDynamicLoad].
 
 ### Elements
 
 <live-example name="elements"></live-example>
 
 Demonstrates using Angular custom elements.
-For more information, see [Angular elements overview](guide/elements).
+For more information, see [Web component][AioGuideComponentWeb].
 
 ### Event binding
 
@@ -262,14 +262,14 @@ For more information, see [Event binding](guide/event-binding).
 <live-example name="inputs-outputs"></live-example>
 
 Demonstrates `@Input()` and `@Output()` in components and directives.
-For more information, see [`@Input()` and `@Output()` properties](guide/inputs-outputs).
+For more information, see [`@Input()` and `@Output()` properties][AioGuideComponentUsageComponentDataSharingAndInheritance].
 
 ### Lifecycle hooks
 
 <live-example name="lifecycle-hooks"></live-example>
 
 Demonstrates Angular lifecycle hooks such as `ngOnInit()` and `ngOnChanges()`.
-For more information, see [Hooking into the component lifecycle](guide/lifecycle-hooks).
+For more information, see [Use an Angular lifecycle hook method][AioGuideComponentUsageLifecycleHooks].
 
 ## Dependency injection
 
@@ -437,8 +437,20 @@ For more information, see [AngularJS to Angular concepts: Quick reference](guide
 
 <!-- links -->
 
+[AioGuideComponentDynamicLoad]: guide/component/component-dynamic-load "Example: Dynamically load a component | Angular"
+
+[AioGuideComponentInteraction]: guide/component/component-interaction "Component interaction | Angular"
+
+[AioGuideComponentUsageLifecycleHooks]: guide/component/component-usage-lifecycle-hooks "Use an Angular lifecycle hook method | Angular"
+
+[AioGuideComponentStyle]: guide/component/component-style "Component style | Angular"
+
+[AioGuideComponentUsageComponentDataSharingAndInheritance]: guide/component/component-usage#component-data-sharing-and-inheritance "Component data sharing and inheritance - Use an Angular component | Angular"
+
+[AioGuideComponentWeb]: guide/component/component-web "Web component | Angular"
+
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-05-17

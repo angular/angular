@@ -47,7 +47,7 @@ By compiling your application using the `ngc` command-line tool, you can bootstr
 
 An Angular [component][AioGuideGlossaryComponent] packaged as a [custom element][AioGuideGlossaryCustomElement].
 
-Learn more in [Angular Elements Overview][AioGuideElements].
+Learn more in [Angular web component][AioGuideComponentWeb].
 
 ## Angular package format (APF)
 
@@ -211,7 +211,7 @@ See [workspace configuration][AioGuideGlossaryWorkspaceConfig]
 
 A way to insert DOM content from outside a component into the view of the component in a designated spot.
 
-To learn more, see [Responding to changes in content][AioGuideLifecycleHooksRespondingToProjectedContentChanges].
+To learn more, see [Responding to changes in content][AioGuideComponentLifecycleTutorialRespondToProjectedContentChanges].
 
 ## custom element
 
@@ -406,7 +406,7 @@ Learn more about the injector hierarchy in [Hierarchical Dependency Injectors][A
 When defining a [directive][AioGuideGlossaryDirective], the `@Input()` decorator on a directive property makes that property available as a *target* of a [property binding][AioGuidePropertyBinding].
 Data values flow into an input property from the data source identified in the [template expression][AioGuideGlossaryTemplateExpression] to the right of the equal sign.
 
-To learn more, see [`@Input()` and `@Output()` decorator functions][AioGuideInputsOutputs].
+To learn more, see [`@Input()` and `@Output()` decorator functions][AioGuideComponentUsageComponentDataSharingAndInheritance].
 
 ## interpolation
 
@@ -483,7 +483,7 @@ Angular runs these hook methods in the following order:
 | 7   | `ngAfterViewChecked`    | After every check of the views of a component.                                                    |
 | 8   | `ngOnDestroy`           | Just before the directive is destroyed.                                                           |
 
-To learn more, see [Lifecycle Hooks][AioGuideLifecycleHooks].
+To learn more, see [Lifecycle Hooks][AioGuideComponentLifecycle].
 
 ## module
 
@@ -559,7 +559,7 @@ The object defines the callbacks for the [subscriber][AioGuideGlossarySubscriber
 When defining a [directive][AioGuideGlossaryDirective], the `@Output{}` decorator on a directive property makes that property available as a *target* of [event binding][AioGuideEventBinding].
 Events stream *out* of this property to the receiver identified in the [template expression][AioGuideGlossaryTemplateExpression] to the right of the equal sign.
 
-To learn more, see [`@Input()` and `@Output()` decorator functions][AioGuideInputsOutputs].
+To learn more, see [`@Input()` and `@Output()` decorator functions][AioGuideComponentUsageComponentDataSharingAndInheritance].
 
 ## pipe
 
@@ -737,14 +737,15 @@ To learn more, see [Introduction to Services and Dependency Injection][AioGuideA
 
 ## standalone
 
-A configuration of [components][AioGuideGlossaryComponent], [directives][AioGuideGlossaryDirective], and [pipes][AioGuideGlossaryPipe] to indicate that this class can be imported directly without declaring it in any [NgModule][AioGuideGlossaryNgmodule].
+A configuration of a [component][AioGuideGlossaryComponent], [directive][AioGuideGlossaryDirective], or [pipe][AioGuideGlossaryPipe] that indicates the class is able to be directly imported without a declaration in any [NgModule][AioGuideGlossaryNgmodule].
 
-Standalone components, directives and pipes mainly differ from non-standalone ones by:
- - having the `standalone` field of their decorator set to `true`.
- - allowing their direct importing without the need to pass through NgModules.
- - specifying their dependencies directly in their decorator.
+Standalone components, directives, and pipes mainly differ in the following ways from non-standalone versions.
 
-To learn more, see the [Standalone components guide][AioGuideStandalone].
+*   Have the `standalone` parameter of the associated decorator set to `true`
+*   Allow direct import without the need to pass through a `NgModule`
+*   Directly specify the associated dependencies in the decorator
+
+To learn more, see [Getting started with standalone components][AioGuideStandalone].
 
 ## structural directive
 
@@ -891,7 +892,7 @@ A parent component can easily change values in its child components because the 
 A failure could occur, however, if a child component tries to change a value in its parent during change detection \(inverting the expected data flow\), because the parent component has already been rendered.
 In development mode, Angular throws the `ExpressionChangedAfterItHasBeenCheckedError` error if your application attempts to do this, rather than silently failing to render the new value.
 
-To avoid this error, a [lifecycle hook][AioGuideLifecycleHooks] method that seeks to make such a change should trigger a new change detection run.
+To avoid this error, a [lifecycle hook][AioGuideComponentLifecycle] method that seeks to make such a change should trigger a new change detection run.
 The new run follows the same direction as before, but succeeds in picking up the new value.
 
 ## Universal
@@ -1018,17 +1019,17 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 
 [AioGuideBuiltInDirectivesDisplayingAndUpdatingPropertiesWithNgmodel]: guide/built-in-directives#displaying-and-updating-properties-with-ngmodel "Displaying and updating properties with ngModel - Built-in directives | Angular"
 
-[AioGuideLifecycleHooks]: guide/lifecycle-hooks "Lifecycle Hooks | Angular"
+[AioGuideComponentLifecycle]: guide/component/component-lifecycle "Component Lifecycle | Angular"
 
-[AioGuideLifecycleHooksRespondingToProjectedContentChanges]: guide/lifecycle-hooks#responding-to-projected-content-changes "Responding to projected content changes - Lifecycle Hooks | Angular"
+[AioGuideComponentLifecycleTutorialRespondToProjectedContentChanges]: guide/component/component-example-lifecycle#respond-to-projected-content-changes "Respond to projected content changes - Example: lifecycle hook methods | Angular"
 
-[AioGuideInputsOutputs]: guide/inputs-outputs "Sharing data between child and parent directives and components | Angular"
+[AioGuideComponentUsageComponentDataSharingAndInheritance]: guide/component/component-usage#component-data-sharing-and-inheritance "Component data sharing and inheritance - Use an Angular component | Angular"
+
+[AioGuideComponentWeb]: guide/component/component-web "Web component | Angular"
 
 [AioGuideCreatingLibrariesIntegratingWithTheCliUsingCodeGenerationSchematics]: guide/creating-libraries#integrating-with-the-cli-using-code-generation-schematics "Integrating with the CLI using code-generation schematics - Creating libraries | Angular"
 
 [AioGuideDependencyInjection]: guide/dependency-injection "Dependency injection in Angular | Angular"
-
-[AioGuideElements]: guide/elements "Angular elements overview | Angular"
 
 [AioGuideEventBinding]: guide/event-binding "Event binding | Angular"
 
@@ -1212,4 +1213,4 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-05-17
