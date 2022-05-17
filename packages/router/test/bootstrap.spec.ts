@@ -77,40 +77,40 @@ describe('bootstrap', () => {
     }
   }));
 
-  // TODO(#44355): bootstrapping fails when the initial navigation fails
-  xit('should complete resolvers when initial navigation fails and initialNavigation = enabledBlocking',
-      async () => {
-        @NgModule({
-          imports: [
-            BrowserModule,
-            RouterModule.forRoot(
-                [{
-                  matcher: () => {
-                    throw new Error('error in matcher');
-                  },
-                  children: []
-                }],
-                {useHash: true, initialNavigation: 'enabledBlocking'})
-          ],
-          declarations: [RootCmp],
-          bootstrap: [RootCmp],
-          providers: [...testProviders],
-          schemas: [CUSTOM_ELEMENTS_SCHEMA]
-        })
-        class TestModule {
-          constructor() {
-            log.push('TestModule');
-          }
-        }
+  it('should complete resolvers when initial navigation fails and initialNavigation = enabledBlocking',
+     async () => {
+       @NgModule({
+         imports: [
+           BrowserModule,
+           RouterModule.forRoot(
+               [{
+                 matcher: () => {
+                   throw new Error('error in matcher');
+                 },
+                 children: []
+               }],
+               {useHash: true, initialNavigation: 'enabledBlocking'})
+         ],
+         declarations: [RootCmp],
+         bootstrap: [RootCmp],
+         providers: [...testProviders],
+         schemas: [CUSTOM_ELEMENTS_SCHEMA]
+       })
+       class TestModule {
+         constructor(router: Router) {
+           log.push('TestModule');
+           router.events.subscribe(e => log.push(e.constructor.name));
+         }
+       }
 
-        await platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
-          const router = res.injector.get(Router);
-          expect(router.navigated).toEqual(false);
-          expect(router.getCurrentNavigation()).toBeNull();
-          expect(log).toContain('TestModule');
-          expect(log).toContain('NavigationError');
-        });
-      });
+       await platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
+         const router = res.injector.get(Router);
+         expect(router.navigated).toEqual(false);
+         expect(router.getCurrentNavigation()).toBeNull();
+         expect(log).toContain('TestModule');
+         expect(log).toContain('NavigationError');
+       });
+     });
 
   it('should wait for redirect when initialNavigation = enabledBlocking', async () => {
     @Injectable({providedIn: 'root'})
