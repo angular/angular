@@ -214,8 +214,10 @@ export type ɵTypedOrUntyped<T, Typed, Untyped> = ɵIsAny<T, Untyped, Typed>;
  * ```
  *
  * The resulting type is `string[]`.
+ *
+ * **Internal: not for public use.**
  */
-export type Value<T extends AbstractControl|undefined> =
+export type ɵValue<T extends AbstractControl|undefined> =
     T extends AbstractControl<any, any>? T['value'] : never;
 
 /**
@@ -244,8 +246,10 @@ export type Value<T extends AbstractControl|undefined> =
  * ```
  *
  * The resulting type is `{address: string}`. (Note the absence of `undefined`.)
+ *
+ *  **Internal: not for public use.**
  */
-export type RawValue<T extends AbstractControl|undefined> = T extends AbstractControl<any, any>?
+export type ɵRawValue<T extends AbstractControl|undefined> = T extends AbstractControl<any, any>?
     (T['setValue'] extends((v: infer R) => void) ? R : never) :
     never;
 
