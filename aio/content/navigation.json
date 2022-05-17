@@ -108,58 +108,7 @@
           "tooltip": "Learn about the most common parts of an Angular application."
         },
         {
-          "title": "Components - old",
-          "tooltip": "Building dynamic views with data binding",
-          "children": [
-            {
-              "url": "guide/component-overview-old",
-              "title": "Overview",
-              "tooltip": "Overview of how to create Angular components."
-            },
-            {
-              "url": "guide/lifecycle-hooks",
-              "title": "Component Lifecycle",
-              "tooltip": "Angular calls lifecycle hook methods on directives and components as it creates, changes, and destroys them."
-            },
-            {
-              "url": "guide/view-encapsulation",
-              "title": "View Encapsulation",
-              "tooltip": "Describes how component CSS styles are encapsulated into a component's view."
-            },
-            {
-              "url": "guide/component-interaction-old",
-              "title": "Component Interaction",
-              "tooltip": "Share information between different directives and components."
-            },
-            {
-              "url": "guide/component-styles-old",
-              "title": "Component Styles",
-              "tooltip": "Add CSS styles that are specific to a component."
-            },
-            {
-              "url": "guide/inputs-outputs",
-              "title": "Sharing data between child and parent directives and components",
-              "tooltip": "Introductory guide to sharing data between parent and child directives or components."
-            },
-            {
-              "url": "guide/content-projection",
-              "title": "Content Projection",
-              "tooltip": "Learn how to create reusable components using Angular's content projection feature."
-            },
-            {
-              "url": "guide/dynamic-component-loader",
-              "title": "Dynamic Components",
-              "tooltip": "Load components dynamically."
-            },
-            {
-              "url": "guide/elements",
-              "title": "Angular Elements",
-              "tooltip": "Convert components to Custom Elements."
-            }
-          ]
-        },
-        {
-          "title": "Components - new",
+          "title": "Component",
           "tooltip": "Build dynamic views with data binding",
           "children": [
             {
