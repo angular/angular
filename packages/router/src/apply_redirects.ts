@@ -13,7 +13,7 @@ import {catchError, concatMap, first, last, map, mergeMap, scan, tap} from 'rxjs
 import {CanLoadFn, LoadedRouterConfig, Route, Routes} from './models';
 import {prioritizedGuardValue} from './operators/prioritized_guard_value';
 import {RouterConfigLoader} from './router_config_loader';
-import {navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
+import {navigationCancelingError, Params, PRIMARY_OUTLET, REDIRECTING_CANCELLATION_REASON} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {forEach, wrapIntoObservable} from './utils/collection';
 import {getOrCreateRouteInjectorIfNeeded, getOutlet, sortByMatchingOutlets} from './utils/config';
@@ -378,7 +378,7 @@ class ApplyRedirects {
               if (!isUrlTree(result)) return;
 
               const error: Error&{url?: UrlTree} = navigationCancelingError(
-                  `Redirecting to "${this.urlSerializer.serialize(result)}"`);
+                  REDIRECTING_CANCELLATION_REASON + this.urlSerializer.serialize(result));
               error.url = result;
               throw error;
             }),
