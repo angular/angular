@@ -276,12 +276,6 @@ The CLI build process runs the pertinent CSS preprocessor.
 When generating a component file with `ng generate component`, the CLI emits an empty CSS styles file \(`.css`\) by default.
 Configure the CLI to default to your preferred CSS preprocessor as explained in the [Workspace configuration guide](guide/workspace-config#generation-schematics).
 
-<div class="alert is-important">
-
-Style strings added to the `@Component.styles` array *must be written in CSS* because the CLI cannot apply a preprocessor to inline styles.
-
-</div>
-
 <!-- links -->
 
 <!-- external links -->
