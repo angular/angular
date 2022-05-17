@@ -46,27 +46,21 @@
   <hr />
 
   <h2>Property binding and interpolation</h2>
-  <!-- #docregion property-binding-interpolation -->
   <p><img alt="Interpolated item" src="{{itemImageUrl}}"> is the <i>interpolated</i> image.</p>
   <p><img alt="Property Bound item" [src]="itemImageUrl"> is the <i>property bound</i> image.</p>
 
   <p><span>"{{interpolationTitle}}" is the <i>interpolated</i> title.</span></p>
   <p>"<span [innerHTML]="propertyTitle"></span>" is the <i>property bound</i> title.</p>
-  <!-- #enddocregion property-binding-interpolation -->
 
   <hr />
 
   <h2>Malicious content</h2>
 
-<!-- #docregion malicious-interpolated -->
   <p><span>"{{evilTitle}}" is the <i>interpolated</i> evil title.</span></p>
-<!-- #enddocregion malicious-interpolated -->
 
-<!-- #docregion malicious-content -->
   <!--
   Angular generates a warning for the following line as it sanitizes them
   WARNING: sanitizing HTML stripped some content (see https://g.co/ng/security#xss).
  -->
   <p>"<span [innerHTML]="evilTitle"></span>" is the <i>property bound</i> evil title.</p>
-<!-- #enddocregion malicious-content -->
 </div>

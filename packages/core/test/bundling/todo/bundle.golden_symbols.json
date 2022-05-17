@@ -783,9 +783,6 @@
     "name": "stringifyCSSSelector"
   },
   {
-    "name": "stringifyForError"
-  },
-  {
     "name": "throwProviderNotFoundError"
   },
   {

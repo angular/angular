@@ -238,7 +238,7 @@ But now you can also encapsulate a style sheet within a specific component.
 [AioGuideArchitectureServicesAndDependencyInjection]: guide/architecture#services-and-dependency-injection "Services and dependency injection - Introduction to Angular concepts | Angular"
 
 [AioGuideAttributeBinding]: guide/attribute-binding "Attribute, class, and style bindings | Angular"
-[AioGuideAttributeBindingBindingToTheStyleAttribute]: guide/attribute-binding#binding-to-the-style-attribute "Binding to the style attribute - Attribute, class, and style bindings | Angular"
+[AioGuideAttributeBindingBindingToTheStyleAttribute]: guide/class-binding "Class and style binding | Angular"
 
 [AioGuideBuiltInDirectives]: guide/built-in-directives "Built-in directives | Angular"
 [AioGuideBuiltInDirectivesDisplayingAndUpdatingPropertiesWithNgmodel]: guide/built-in-directives#displaying-and-updating-properties-with-ngmodel "Displaying and updating properties with ngModel - Built-in directives | Angular"

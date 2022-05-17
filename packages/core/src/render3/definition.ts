@@ -288,6 +288,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
 
     const type = componentDefinition.type;
+    const standalone = componentDefinition.standalone === true;
     const declaredInputs: {[key: string]: string} = {} as any;
     const def: Mutable<ComponentDef<any>, keyof ComponentDef<any>> = {
       type: type,
@@ -309,9 +310,8 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
       directiveDefs: null!,  // assigned in noSideEffects
       pipeDefs: null!,       // assigned in noSideEffects
-      standalone: componentDefinition.standalone === true,
-      dependencies:
-          componentDefinition.standalone === true && componentDefinition.dependencies || null,
+      standalone,
+      dependencies: standalone && componentDefinition.dependencies || null,
       getStandaloneInjector: null,
       selectors: componentDefinition.selectors || EMPTY_ARRAY,
       viewQuery: componentDefinition.viewQuery || null,

@@ -1863,9 +1863,6 @@
     "name": "stringifyCSSSelector"
   },
   {
-    "name": "stringifyForError"
-  },
-  {
     "name": "stripTrailingSlash"
   },
   {

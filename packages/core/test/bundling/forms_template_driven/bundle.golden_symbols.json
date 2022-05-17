@@ -1476,9 +1476,6 @@
     "name": "stringifyCSSSelector"
   },
   {
-    "name": "stringifyForError"
-  },
-  {
     "name": "subscribeTo"
   },
   {
