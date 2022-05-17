@@ -606,10 +606,6 @@ export const UntypedFormGroup: UntypedFormGroupCtor = FormGroup;
 
 export const isFormGroup = (control: unknown): control is FormGroup => control instanceof FormGroup;
 
-export class FormRecord<TControl extends AbstractControl<Value<TControl>, RawValue<TControl>> =
-                                             AbstractControl> extends
-    FormGroup<{[key: string]: TControl}> {}
-
 /**
  * Tracks the value and validity state of a collection of `FormControl` instances, each of which has
  * the same value type.
@@ -629,39 +625,43 @@ export class FormRecord<TControl extends AbstractControl<Value<TControl>, RawVal
  *
  * @publicApi
  */
+export class FormRecord<TControl extends AbstractControl<Value<TControl>, RawValue<TControl>> =
+                                             AbstractControl> extends
+    FormGroup<{[key: string]: TControl}> {}
+
 export interface FormRecord<TControl> {
   /**
    * Registers a control with the records's list of controls.
    *
-   * {@see FormGroup#registerControl}
+   * See `FormGroup#registerControl` for additional information.
    */
   registerControl(name: string, control: TControl): TControl;
 
   /**
    * Add a control to this group.
    *
-   * {@see FormGroup#addControl}
+   * See `FormGroup#addControl` for additional information.
    */
   addControl(name: string, control: TControl, options?: {emitEvent?: boolean}): void;
 
   /**
    * Remove a control from this group.
    *
-   * {@see FormGroup#removeControl}
+   * See `FormGroup#removeControl` for additional information.
    */
   removeControl(name: string, options?: {emitEvent?: boolean}): void;
 
   /**
    * Replace an existing control.
    *
-   * {@see FormGroup#setControl}
+   * See `FormGroup#setControl` for additional information.
    */
   setControl(name: string, control: TControl, options?: {emitEvent?: boolean}): void;
 
   /**
    * Check whether there is an enabled control with the given name in the group.
    *
-   * {@see FormGroup#contains}
+   * See `FormGroup#contains` for additional information.
    */
   contains(controlName: string): boolean;
 
@@ -669,7 +669,7 @@ export interface FormRecord<TControl> {
    * Sets the value of the `FormRecord`. It accepts an object that matches
    * the structure of the group, with control names as keys.
    *
-   * {@see FormGroup#setValue}
+   * See `FormGroup#setValue` for additional information.
    */
   setValue(value: {[key: string]: Value<TControl>}, options?: {
     onlySelf?: boolean,
@@ -681,7 +681,7 @@ export interface FormRecord<TControl> {
    * names as keys, and does its best to match the values to the correct controls
    * in the group.
    *
-   * {@see FormGroup#patchValue}
+   * See `FormGroup#patchValue` for additional information.
    */
   patchValue(value: {[key: string]: Value<TControl>}, options?: {
     onlySelf?: boolean,
@@ -692,7 +692,7 @@ export interface FormRecord<TControl> {
    * Resets the `FormRecord`, marks all descendants `pristine` and `untouched` and sets
    * the value of all descendants to null.
    *
-   * {@see FormGroup#reset}
+   * See `FormGroup#reset` for additional information.
    */
   reset(value?: {[key: string]: Value<TControl>}, options?: {
     onlySelf?: boolean,
@@ -702,7 +702,7 @@ export interface FormRecord<TControl> {
   /**
    * The aggregate value of the `FormRecord`, including any disabled controls.
    *
-   * {@see FormGroup#getRawValue}
+   * See `FormGroup#getRawValue` for additional information.
    */
   getRawValue(): {[key: string]: RawValue<TControl>};
 }
