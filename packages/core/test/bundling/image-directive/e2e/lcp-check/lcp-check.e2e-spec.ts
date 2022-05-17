@@ -10,11 +10,11 @@
 import {browser, by, element} from 'protractor';
 import {logging} from 'selenium-webdriver';
 
-import {collectBrowserLogs} from '../e2e-util/util';
+import {collectBrowserLogs} from '../util';
 
 describe('NgOptimizedImage directive', () => {
   it('should log a warning when a `priority` is missing on an LCP image', async () => {
-    await browser.get('/lcp-check');
+    await browser.get('/e2e/lcp-check');
 
     // Verify that both images were rendered.
     const imgs = element.all(by.css('img'));
