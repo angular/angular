@@ -493,13 +493,13 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
     static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupName, [{ optional: true; host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }]>;
 }
 
-// @public (undocumented)
+// @public
 export class FormRecord<TControl extends AbstractControl<Value<TControl>, RawValue<TControl>> = AbstractControl> extends FormGroup<{
     [key: string]: TControl;
 }> {
 }
 
-// @public
+// @public (undocumented)
 export interface FormRecord<TControl> {
     addControl(name: string, control: TControl, options?: {
         emitEvent?: boolean;

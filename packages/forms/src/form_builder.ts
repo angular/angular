@@ -324,7 +324,7 @@ export class FormBuilder {
 })
 export abstract class NonNullableFormBuilder {
   /**
-   * Similar to {@see FormBuilder#group}, except any implicitly constructed `FormControl`
+   * Similar to `FormBuilder#group`, except any implicitly constructed `FormControl`
    * will be non-nullable (i.e. it will have `initialValueIsDefault` set to true). Note
    * that already-constructed controls will not be altered.
    */
@@ -334,7 +334,7 @@ export abstract class NonNullableFormBuilder {
       ): FormGroup<{[K in keyof T]: ɵElement<T[K], never>}>;
 
   /**
-   * Similar to {@see FormBuilder#array}, except any implicitly constructed `FormControl`
+   * Similar to `FormBuilder#array`, except any implicitly constructed `FormControl`
    * will be non-nullable (i.e. it will have `initialValueIsDefault` set to true). Note
    * that already-constructed controls will not be altered.
    */
@@ -343,7 +343,7 @@ export abstract class NonNullableFormBuilder {
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormArray<ɵElement<T, never>>;
 
   /**
-   * Similar to {@see FormBuilder#control}, except this overridden version of `control` forces
+   * Similar to `FormBuilder#control`, except this overridden version of `control` forces
    * `initialValueIsDefault` to be `true`, resulting in the control always being non-nullable.
    */
   abstract control<T>(
@@ -358,7 +358,7 @@ export abstract class NonNullableFormBuilder {
 @Injectable({providedIn: ReactiveFormsModule})
 export class UntypedFormBuilder extends FormBuilder {
   /**
-   * Like {@see FormBuilder#group}, except the resulting group is untyped.
+   * Like `FormBuilder#group`, except the resulting group is untyped.
    */
   override group(
       controlsConfig: {[key: string]: any},
@@ -381,7 +381,7 @@ export class UntypedFormBuilder extends FormBuilder {
   }
 
   /**
-   * Like {@see FormBuilder#control}, except the resulting control is untyped.
+   * Like `FormBuilder#control`, except the resulting control is untyped.
    */
   override control(
       formState: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
@@ -390,7 +390,7 @@ export class UntypedFormBuilder extends FormBuilder {
   }
 
   /**
-   * Like {@see FormBuilder#array}, except the resulting array is untyped.
+   * Like `FormBuilder#array`, except the resulting array is untyped.
    */
   override array(
       controlsConfig: any[],
