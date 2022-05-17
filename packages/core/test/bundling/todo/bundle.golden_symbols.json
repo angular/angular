@@ -27,9 +27,6 @@
     "name": "InjectFlags"
   },
   {
-    "name": "IterableChangeRecord_"
-  },
-  {
     "name": "IterableDiffers"
   },
   {
@@ -153,7 +150,22 @@
     "name": "_CLEAN_PROMISE"
   },
   {
-    "name": "_DuplicateMap"
+    "name": "_IterableChangeRecord"
+  },
+  {
+    "name": "_LinkedList"
+  },
+  {
+    "name": "_Node"
+  },
+  {
+    "name": "_Operations"
+  },
+  {
+    "name": "_Queue"
+  },
+  {
+    "name": "_QueueMap"
   },
   {
     "name": "__forward_ref__"
@@ -445,9 +457,6 @@
   },
   {
     "name": "getPipeDef"
-  },
-  {
-    "name": "getPreviousIndex"
   },
   {
     "name": "getProjectionNodes"

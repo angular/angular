@@ -364,27 +364,25 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     // (undocumented)
     check(collection: NgIterable<V>): boolean;
     // (undocumented)
-    readonly collection: V[] | Iterable<V> | null;
+    get collection(): V[] | Iterable<V> | null;
     // (undocumented)
     diff(collection: NgIterable<V> | null | undefined): DefaultIterableDiffer<V> | null;
     // (undocumented)
-    forEachAddedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachAddedItem(fn: (record: _IterableChangeRecord<V>) => void): void;
     // (undocumented)
-    forEachIdentityChange(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachIdentityChange(fn: (record: _IterableChangeRecord<V>) => void): void;
     // (undocumented)
-    forEachItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachItem(fn: (record: _IterableChangeRecord<V>) => void): void;
     // (undocumented)
-    forEachMovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachMovedItem(fn: (record: _IterableChangeRecord<V>) => void): void;
     // (undocumented)
-    forEachOperation(fn: (item: IterableChangeRecord<V>, previousIndex: number | null, currentIndex: number | null) => void): void;
+    forEachOperation(fn: (record: IterableChangeRecord<V>, previousIndex: number | null, currentIndex: number | null) => void): void;
     // (undocumented)
-    forEachPreviousItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachPreviousItem(fn: (record: _IterableChangeRecord<V>) => void): void;
     // (undocumented)
-    forEachRemovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
+    forEachRemovedItem(fn: (record: _IterableChangeRecord<V>) => void): void;
     // (undocumented)
-    get isDirty(): boolean;
-    // (undocumented)
-    readonly length: number;
+    get length(): number;
     // (undocumented)
     onDestroy(): void;
 }

@@ -27,6 +27,12 @@ class ComplexItem {
   }
 }
 
+type IterableChangeRecord<V> = {
+  item: V,
+  currentIndex: number|null,
+  previousIndex: number|null,
+}
+
 // TODO(vicb): UnmodifiableListView / frozen object when implemented
 {
   describe('iterable differ', function() {
@@ -209,10 +215,10 @@ class ComplexItem {
         l.unshift('foo');
         differ.check(l);
         expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
-          collection: ['foo[null->0]', 'NaN[0->1]', 'NaN[1->2]'],
-          previous: ['NaN[0->1]', 'NaN[1->2]'],
+          collection: ['foo[null->0]', 'NaN', 'NaN[0->2]'],
+          previous: ['NaN[0->2]', 'NaN'],
           additions: ['foo[null->0]'],
-          moves: ['NaN[0->1]', 'NaN[1->2]']
+          moves: ['NaN[0->2]']
         }));
       });
 
@@ -239,35 +245,6 @@ class ComplexItem {
         }));
       });
 
-
-      it('should support duplicates', () => {
-        const l = ['a', 'a', 'a', 'b', 'b'];
-        differ.check(l);
-
-        l.splice(0, 1);
-        differ.check(l);
-        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
-          collection: ['a', 'a', 'b[3->2]', 'b[4->3]'],
-          previous: ['a', 'a', 'a[2->null]', 'b[3->2]', 'b[4->3]'],
-          moves: ['b[3->2]', 'b[4->3]'],
-          removals: ['a[2->null]']
-        }));
-      });
-
-      it('should support insertions/moves', () => {
-        const l = ['a', 'a', 'b', 'b'];
-        differ.check(l);
-
-        l.splice(0, 0, 'b');
-        differ.check(l);
-        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
-          collection: ['b[2->0]', 'a[0->1]', 'a[1->2]', 'b', 'b[null->4]'],
-          previous: ['a[0->1]', 'a[1->2]', 'b[2->0]', 'b'],
-          additions: ['b[null->4]'],
-          moves: ['b[2->0]', 'a[0->1]', 'a[1->2]']
-        }));
-      });
-
       it('should not report unnecessary moves', () => {
         const l = ['a', 'b', 'c'];
         differ.check(l);
@@ -284,25 +261,52 @@ class ComplexItem {
         }));
       });
 
-      // https://github.com/angular/angular/issues/17852
-      it('support re-insertion', () => {
-        const l = ['a', '*', '*', 'd', '-', '-', '-', 'e'];
-        differ.check(l);
-        l[1] = 'b';
-        l[5] = 'c';
-        differ.check(l);
-        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
-          collection: ['a', 'b[null->1]', '*[1->2]', 'd', '-', 'c[null->5]', '-[5->6]', 'e'],
-          previous: ['a', '*[1->2]', '*[2->null]', 'd', '-', '-[5->6]', '-[6->null]', 'e'],
-          additions: ['b[null->1]', 'c[null->5]'],
-          moves: ['*[1->2]', '-[5->6]'],
-          removals: ['*[2->null]', '-[6->null]'],
-        }));
-      });
+      describe('with duplicates', () => {
+        it('should support insertions', () => {
+          const l = ['a', '*', '*', 'd', '-', '-', '-', 'e'];
+          differ.check(l);
+          l[1] = 'b';
+          l[5] = 'c';
+          differ.check(l);
+          expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
+            collection: ['a', 'b[null->1]', '*', 'd', '-', 'c[null->5]', '-', 'e'],
+            previous: ['a', '*[1->null]', '*', 'd', '-', '-[5->null]', '-', 'e'],
+            additions: ['b[null->1]', 'c[null->5]'],
+            removals: ['*[1->null]', '-[5->null]'],
+          }));
+        });
+
+        it('should support insertions and moves', () => {
+          const l = ['a', 'a', 'b', 'b'];
+          differ.check(l);
+          l.splice(0, 0, 'b');
+          differ.check(l);
+          expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
+            collection: ['b[2->0]', 'a', 'a[0->2]', 'b', 'b[null->4]'],
+            previous: ['a[0->2]', 'a', 'b[2->0]', 'b'],
+            additions: ['b[null->4]'],
+            moves: ['b[2->0]', 'a[0->2]']
+          }));
+        });
+
+        it('should support removals and moves', () => {
+          const l = ['a', 'a', 'a', 'b', 'b'];
+          differ.check(l);
+          l.splice(0, 1);
+          differ.check(l);
+          expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
+            collection: ['a', 'a', 'b[4->2]', 'b'],
+            previous: ['a', 'a', 'a[2->null]', 'b', 'b[4->2]'],
+            moves: ['b[4->2]'],
+            removals: ['a[2->null]']
+          }));
+        });
+      })
 
       describe('forEachOperation', () => {
         function stringifyItemChange(
-            record: any, p: number|null, c: number|null, originalIndex: number) {
+            record: IterableChangeRecord<any>, p: number|null, c: number|null,
+            originalIndex: number|null) {
           const suffix = originalIndex == null ? '' : ' [o=' + originalIndex + ']';
           const value = record.item;
           if (record.currentIndex == null) {
@@ -315,13 +319,11 @@ class ComplexItem {
         }
 
         function modifyArrayUsingOperation(
-            arr: number[], endData: any[], prev: number|null, next: number|null) {
+            arr: number[], item: number, prev: number|null, next: number|null) {
           let value: number = null!;
+          // Either prev or next will not be null
           if (prev == null) {
-            // "next" index is guaranteed to be set since the previous index is
-            // not defined and therefore a new entry is added.
-            value = endData[next!];
-            arr.splice(next!, 0, value);
+            arr.splice(next!, 0, item);
           } else if (next == null) {
             value = arr[prev];
             arr.splice(prev, 1);
@@ -342,15 +344,16 @@ class ComplexItem {
              differ = differ.diff(endData)!;
 
              const operations: string[] = [];
-             differ.forEachOperation((item: any, prev: number|null, next: number|null) => {
-               const value = modifyArrayUsingOperation(startData, endData, prev, next);
-               operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
-             });
+             differ.forEachOperation(
+                 (record: IterableChangeRecord<number>, prev: number|null, next: number|null) => {
+                   modifyArrayUsingOperation(startData, record.item, prev, next);
+                   operations.push(stringifyItemChange(record, prev, next, record.previousIndex));
+                 });
 
              expect(operations).toEqual([
-               'INSERT 6 (VOID -> 0)', 'MOVE 2 (3 -> 1) [o=2]', 'INSERT 7 (VOID -> 2)',
-               'REMOVE 1 (4 -> VOID) [o=1]', 'REMOVE 3 (4 -> VOID) [o=3]',
-               'REMOVE 5 (5 -> VOID) [o=5]', 'INSERT 8 (VOID -> 5)'
+               'INSERT 6 (VOID -> 0)', 'MOVE 0 (1 -> 3) [o=0]', 'REMOVE 1 (1 -> VOID) [o=1]',
+               'INSERT 7 (VOID -> 2)', 'REMOVE 3 (4 -> VOID) [o=3]', 'INSERT 8 (VOID -> 5)',
+               'REMOVE 5 (6 -> VOID) [o=5]'
              ]);
 
              expect(startData).toEqual(endData);
@@ -365,10 +368,11 @@ class ComplexItem {
              differ = differ.diff(endData)!;
 
              const operations: string[] = [];
-             differ.forEachOperation((item: any, prev: number|null, next: number|null) => {
-               modifyArrayUsingOperation(startData, endData, prev, next);
-               operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
-             });
+             differ.forEachOperation(
+                 (record: IterableChangeRecord<number>, prev: number|null, next: number|null) => {
+                   modifyArrayUsingOperation(startData, record.item, prev, next);
+                   operations.push(stringifyItemChange(record, prev, next, record.previousIndex));
+                 });
 
              expect(operations).toEqual([
                'REMOVE 0 (0 -> VOID) [o=0]', 'MOVE 2 (1 -> 0) [o=2]', 'REMOVE 3 (2 -> VOID) [o=3]'
@@ -385,14 +389,15 @@ class ComplexItem {
           differ = differ.diff(endData)!;
 
           const operations: string[] = [];
-          differ.forEachOperation((item: any, prev: number|null, next: number|null) => {
-            modifyArrayUsingOperation(startData, endData, prev, next);
-            operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
-          });
+          differ.forEachOperation(
+              (record: IterableChangeRecord<number>, prev: number|null, next: number|null) => {
+                modifyArrayUsingOperation(startData, record.item, prev, next);
+                operations.push(stringifyItemChange(record, prev, next, record.previousIndex));
+              });
 
           expect(operations).toEqual([
-            'MOVE 3 (2 -> 0) [o=2]', 'MOVE 6 (5 -> 1) [o=5]', 'MOVE 4 (4 -> 2) [o=3]',
-            'INSERT 9 (VOID -> 3)', 'REMOVE 5 (6 -> VOID) [o=4]'
+            'MOVE 3 (2 -> 0) [o=2]', 'MOVE 1 (1 -> 3) [o=0]', 'MOVE 6 (5 -> 1) [o=5]',
+            'MOVE 2 (2 -> 5) [o=1]', 'INSERT 9 (VOID -> 3)', 'REMOVE 5 (5 -> VOID) [o=4]'
           ]);
 
           expect(startData).toEqual(endData);
@@ -406,14 +411,14 @@ class ComplexItem {
           differ = differ.diff(endData)!;
 
           const operations: string[] = [];
-          differ.forEachOperation((item: any, prev: number|null, next: number|null) => {
-            modifyArrayUsingOperation(startData, endData, prev, next);
-            operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
-          });
+          differ.forEachOperation(
+              (record: IterableChangeRecord<number>, prev: number|null, next: number|null) => {
+                modifyArrayUsingOperation(startData, record.item, prev, next);
+                operations.push(stringifyItemChange(record, prev, next, record.previousIndex));
+              });
 
           expect(operations).toEqual([
-            'MOVE 4 (4 -> 0) [o=4]', 'MOVE 1 (2 -> 1) [o=1]', 'MOVE 2 (3 -> 2) [o=2]',
-            'MOVE 3 (4 -> 3) [o=3]', 'INSERT 5 (VOID -> 5)'
+            'MOVE 4 (4 -> 0) [o=4]', 'MOVE 0 (1 -> 4) [o=0]', 'INSERT 5 (VOID -> 5)'
           ]);
 
           expect(startData).toEqual(endData);
@@ -427,16 +432,17 @@ class ComplexItem {
           differ = differ.diff(endData)!;
 
           const operations: string[] = [];
-          differ.forEachOperation((item: any, prev: number|null, next: number|null) => {
-            modifyArrayUsingOperation(startData, endData, prev, next);
-            operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
-          });
+          differ.forEachOperation(
+              (record: IterableChangeRecord<number>, prev: number|null, next: number|null) => {
+                modifyArrayUsingOperation(startData, record.item, prev, next);
+                operations.push(stringifyItemChange(record, prev, next, record.previousIndex));
+              });
 
           expect(operations).toEqual([
-            'MOVE 10 (10 -> 0) [o=10]', 'MOVE 11 (11 -> 1) [o=11]', 'MOVE 1 (3 -> 2) [o=1]',
-            'MOVE 5 (7 -> 3) [o=5]', 'MOVE 7 (9 -> 4) [o=7]', 'MOVE 8 (10 -> 5) [o=8]',
-            'REMOVE 2 (7 -> VOID) [o=2]', 'INSERT 5 (VOID -> 7)', 'REMOVE 4 (9 -> VOID) [o=4]',
-            'REMOVE 9 (10 -> VOID) [o=9]'
+            'MOVE 10 (10 -> 0) [o=10]', 'MOVE 0 (1 -> 6) [o=0]', 'MOVE 11 (11 -> 1) [o=11]',
+            'REMOVE 2 (3 -> VOID) [o=2]', 'MOVE 5 (5 -> 3) [o=5]', 'MOVE 3 (4 -> 8) [o=3]',
+            'REMOVE 4 (4 -> VOID) [o=4]', 'MOVE 7 (6 -> 4) [o=7]', 'MOVE 8 (8 -> 5) [o=8]',
+            'MOVE 6 (7 -> 8) [o=6]', 'INSERT 5 (VOID -> 7)', 'REMOVE 9 (10 -> VOID) [o=9]'
           ]);
 
           expect(startData).toEqual(endData);
@@ -453,10 +459,11 @@ class ComplexItem {
              differ = differ.diff(endData)!;
 
              const operations: string[] = [];
-             differ.forEachOperation((item: any, prev: number|null, next: number|null) => {
-               const value = modifyArrayUsingOperation(startData, endData, prev, next);
-               operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
-             });
+             differ.forEachOperation(
+                 (record: IterableChangeRecord<number>, prev: number|null, next: number|null) => {
+                   modifyArrayUsingOperation(startData, record.item, prev, next);
+                   operations.push(stringifyItemChange(record, prev, next, record.previousIndex));
+                 });
 
              expect(operations).toEqual([]);
            });
@@ -540,23 +547,23 @@ class ComplexItem {
         differ.check(l);
         expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['{id: b}[1->0]', '{id: a}[0->1]', '{id: c}'],
-          identityChanges: ['{id: b}[1->0]', '{id: a}[0->1]', '{id: c}'],
+          identityChanges: ['{id: c}', '{id: b}[1->0]', '{id: a}[0->1]'],
           previous: ['{id: a}[0->1]', '{id: b}[1->0]', '{id: c}'],
           moves: ['{id: b}[1->0]', '{id: a}[0->1]']
         }));
       });
 
-      it('should track duplicate reinsertion normally', () => {
+      it('should track duplicate moves normally', () => {
         let l = buildItemList(['a', 'a']);
         differ.check(l);
 
         l = buildItemList(['b', 'a', 'a']);
         differ.check(l);
         expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
-          collection: ['{id: b}[null->0]', '{id: a}[0->1]', '{id: a}[1->2]'],
-          identityChanges: ['{id: a}[0->1]', '{id: a}[1->2]'],
-          previous: ['{id: a}[0->1]', '{id: a}[1->2]'],
-          moves: ['{id: a}[0->1]', '{id: a}[1->2]'],
+          collection: ['{id: b}[null->0]', '{id: a}', '{id: a}[0->2]'],
+          identityChanges: ['{id: a}', '{id: a}[0->2]'],
+          previous: ['{id: a}[0->2]', '{id: a}'],
+          moves: ['{id: a}[0->2]'],
           additions: ['{id: b}[null->0]']
         }));
       });
@@ -584,8 +591,8 @@ class ComplexItem {
             '{id: a, color: red}'
           ],
           identityChanges: [
-            '{id: b, color: yellow}[1->0]', '{id: a, color: blue}[0->1]', '{id: c, color: orange}',
-            '{id: a, color: red}'
+            '{id: c, color: orange}', '{id: a, color: red}', '{id: b, color: yellow}[1->0]',
+            '{id: a, color: blue}[0->1]'
           ],
           previous: [
             '{id: a, color: blue}[0->1]', '{id: b, color: yellow}[1->0]', '{id: c, color: orange}',

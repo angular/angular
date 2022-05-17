@@ -219,9 +219,6 @@
     "name": "Injector"
   },
   {
-    "name": "IterableChangeRecord_"
-  },
-  {
     "name": "IterableDiffers"
   },
   {
@@ -513,10 +510,25 @@
     "name": "_DOM"
   },
   {
-    "name": "_DuplicateMap"
+    "name": "_IterableChangeRecord"
+  },
+  {
+    "name": "_LinkedList"
+  },
+  {
+    "name": "_Node"
   },
   {
     "name": "_NullComponentFactoryResolver"
+  },
+  {
+    "name": "_Operations"
+  },
+  {
+    "name": "_Queue"
+  },
+  {
+    "name": "_QueueMap"
   },
   {
     "name": "__forward_ref__"
@@ -949,9 +961,6 @@
   },
   {
     "name": "getPlatform"
-  },
-  {
-    "name": "getPreviousIndex"
   },
   {
     "name": "getProjectionNodes"
