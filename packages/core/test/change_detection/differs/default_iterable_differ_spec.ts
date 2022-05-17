@@ -262,7 +262,7 @@ type IterableChangeRecord<V> = {
       });
 
       describe('with duplicates', () => {
-        it('should support insertions', () => {
+        it('should support replacements', () => {
           const l = ['a', '*', '*', 'd', '-', '-', '-', 'e'];
           differ.check(l);
           l[1] = 'b';
@@ -299,6 +299,51 @@ type IterableChangeRecord<V> = {
             previous: ['a', 'a', 'a[2->null]', 'b', 'b[4->2]'],
             moves: ['b[4->2]'],
             removals: ['a[2->null]']
+          }));
+        });
+
+        it('should support a mix of all operations', () => {
+          let l = ['a', 'b', 'c', 'c', 'a', 'a', 'b', 'e', 'd'];
+          differ.check(l);
+          l = ['d', 'd', 'f', 'b', 'b', 'a', 'a', 'c']
+          differ.check(l);
+          expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
+            collection: [
+              'd[8->0]', 'd[null->1]', 'f[null->2]', 'b[1->3]', 'b[6->4]', 'a', 'a[0->6]', 'c[2->7]'
+            ],
+            previous: [
+              'a[0->6]', 'b[1->3]', 'c[2->7]', 'c[3->null]', 'a[4->null]', 'a', 'b[6->4]',
+              'e[7->null]', 'd[8->0]'
+            ],
+            moves: ['d[8->0]', 'b[1->3]', 'b[6->4]', 'a[0->6]', 'c[2->7]'],
+            additions: ['d[null->1]', 'f[null->2]'],
+            removals: ['c[3->null]', 'a[4->null]', 'e[7->null]']
+          }));
+        });
+
+        it('should find removal at correct index when replacing an item', () => {
+          let l = ['a', 'a', 'a', 'a', 'a'];
+          differ.check(l);
+          l = ['a', 'a', 'b', 'a', 'a']
+          differ.check(l);
+          expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
+            collection: ['a', 'a', 'b[null->2]', 'a', 'a'],
+            previous: ['a', 'a', 'a[2->null]', 'a', 'a'],
+            additions: ['b[null->2]'],
+            removals: ['a[2->null]']
+          }));
+        });
+
+        it('should not find moves when no items have moved', () => {
+          let l = ['a', 'a', 'a', 'b', 'b'];
+          differ.check(l);
+          l = ['b', 'a', 'a', 'b', 'b']
+          differ.check(l);
+          expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
+            collection: ['b[null->0]', 'a', 'a', 'b', 'b'],
+            previous: ['a[0->null]', 'a', 'a', 'b', 'b'],
+            additions: ['b[null->0]'],
+            removals: ['a[0->null]']
           }));
         });
       })
@@ -467,6 +512,65 @@ type IterableChangeRecord<V> = {
 
              expect(operations).toEqual([]);
            });
+
+        it('should trigger only two moves when swapping first and last elements', () => {
+          const startData = [0, 1, 2, 3, 4, 5, 6];
+          const endData = [6, 1, 2, 3, 4, 5, 0];
+
+          differ = differ.diff(startData)!;
+          differ = differ.diff(endData)!;
+
+          const operations: string[] = [];
+          differ.forEachOperation(
+              (record: IterableChangeRecord<number>, prev: number|null, next: number|null) => {
+                modifyArrayUsingOperation(startData, record.item, prev, next);
+                operations.push(stringifyItemChange(record, prev, next, record.previousIndex));
+              });
+
+          expect(operations).toEqual(['MOVE 6 (6 -> 0) [o=6]', 'MOVE 0 (1 -> 6) [o=0]']);
+
+          expect(startData).toEqual(endData);
+        });
+
+        describe('with duplicates', () => {
+          it('should delete correct item when replacing', () => {
+            const startData = [0, 0, 0, 0, 0, 0];
+            const endData = [0, 0, 1, 0, 0, 0];
+
+            differ = differ.diff(startData)!;
+            differ = differ.diff(endData)!;
+
+            const operations: string[] = [];
+            differ.forEachOperation(
+                (record: IterableChangeRecord<number>, prev: number|null, next: number|null) => {
+                  modifyArrayUsingOperation(startData, record.item, prev, next);
+                  operations.push(stringifyItemChange(record, prev, next, record.previousIndex));
+                });
+
+            expect(operations).toEqual(['INSERT 1 (VOID -> 2)', 'REMOVE 0 (3 -> VOID) [o=2]']);
+
+            expect(startData).toEqual(endData);
+          });
+
+          it('should not perform moves when no items have moved', () => {
+            const startData = [0, 1, 1, 0];
+            const endData = [1, 1, 1, 0];
+
+            differ = differ.diff(startData)!;
+            differ = differ.diff(endData)!;
+
+            const operations: string[] = [];
+            differ.forEachOperation(
+                (record: IterableChangeRecord<number>, prev: number|null, next: number|null) => {
+                  modifyArrayUsingOperation(startData, record.item, prev, next);
+                  operations.push(stringifyItemChange(record, prev, next, record.previousIndex));
+                });
+
+            expect(operations).toEqual(['INSERT 1 (VOID -> 0)', 'REMOVE 0 (1 -> VOID) [o=0]']);
+
+            expect(startData).toEqual(endData);
+          });
+        });
       });
 
       describe('diff', () => {
