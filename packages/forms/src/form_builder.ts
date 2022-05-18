@@ -45,7 +45,7 @@ export type ControlConfig<T> = [T|FormControlState<T>, (ValidatorFn|(ValidatorFn
 /**
  * FormBuilder accepts values in various container shapes, as well as raw values.
  * Element returns the appropriate corresponding model class, given the container T.
- * The flag N, if not never, makes the resulting `FormControl` have N in its type. 
+ * The flag N, if not never, makes the resulting `FormControl` have N in its type.
  */
 export type ɵElement<T, N extends null> =
   // The `extends` checks are wrapped in arrays in order to prevent TypeScript from applying type unions
@@ -313,8 +313,8 @@ export class FormBuilder {
 
 /**
  * @description
- * `NonNullableFormBuilder` is similar to {@see FormBuilder}, but automatically constructed
- * {@see FormControl} elements have `{initialValueIsDefault: true}` and are non-nullable.
+ * `NonNullableFormBuilder` is similar to {@link FormBuilder}, but automatically constructed
+ * {@link FormControl} elements have `{initialValueIsDefault: true}` and are non-nullable.
  *
  * @publicApi
  */
