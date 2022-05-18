@@ -261,6 +261,28 @@ type IterableChangeRecord<V> = {
         }));
       });
 
+      it('should update length and collection', () => {
+        const l1 = ['a', 'b', 'c'];
+        differ.check(l1);
+        expect(differ.length).toEqual(3);
+        expect(differ.collection).toEqual(l1);
+
+        const l2 = ['a', 'b', 'c', 'd', 'e', 'f'];
+        differ.check(l2);
+        expect(differ.length).toEqual(6);
+        expect(differ.collection).toEqual(l2);
+
+        const l3 = ['a', 'b'];
+        differ.check(l3);
+        expect(differ.length).toEqual(2);
+        expect(differ.collection).toEqual(l3);
+
+        const l4: any[] = [];
+        differ.check(l4);
+        expect(differ.length).toEqual(0);
+        expect(differ.collection).toEqual(l4);
+      });
+
       describe('with duplicates', () => {
         it('should support replacements', () => {
           const l = ['a', '*', '*', 'd', '-', '-', '-', 'e'];
