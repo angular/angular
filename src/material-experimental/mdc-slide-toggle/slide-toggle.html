@@ -6,6 +6,8 @@
     type="button"
     [class.mdc-switch--selected]="checked"
     [class.mdc-switch--unselected]="!checked"
+    [class.mdc-switch--checked]="checked"
+    [class.mdc-switch--disabled]="disabled"
     [tabIndex]="tabIndex"
     [disabled]="disabled"
     [attr.id]="buttonId"
@@ -14,7 +16,8 @@
     [attr.aria-labelledby]="_getAriaLabelledBy()"
     [attr.aria-describedby]="ariaDescribedby"
     [attr.aria-required]="required || null"
-    (click)="_handleClick($event)"
+    [attr.aria-checked]="checked"
+    (click)="_handleClick()"
     #switch>
     <div class="mdc-switch__track"></div>
     <div class="mdc-switch__handle-track">

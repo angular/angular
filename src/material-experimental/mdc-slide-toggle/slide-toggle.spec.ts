@@ -220,7 +220,7 @@ describe('MDC-based MatSlideToggle without forms', () => {
 
       // We fall back to pointing to the label if a value isn't provided.
       expect(buttonElement.getAttribute('aria-labelledby')).toMatch(
-        /mat-mdc-slide-toggle-label-\d+/,
+        /mat-mdc-slide-toggle-\d+-label/,
       );
     }));
 

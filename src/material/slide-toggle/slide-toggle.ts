@@ -24,6 +24,7 @@ import {
   ViewEncapsulation,
   Optional,
   Inject,
+  Directive,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
@@ -46,7 +47,7 @@ import {
 let nextUniqueId = 0;
 
 /** @docs-private */
-export const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
+export const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MatSlideToggle),
   multi: true,
@@ -64,7 +65,7 @@ export class MatSlideToggleChange {
 
 // Boilerplate for applying mixins to MatSlideToggle.
 /** @docs-private */
-const _MatSlideToggleBase = mixinTabIndex(
+const _MatSlideToggleMixinBase = mixinTabIndex(
   mixinColor(
     mixinDisableRipple(
       mixinDisabled(
@@ -76,32 +77,9 @@ const _MatSlideToggleBase = mixinTabIndex(
   ),
 );
 
-/** Represents a slidable "switch" toggle that can be moved between on and off. */
-@Component({
-  selector: 'mat-slide-toggle',
-  exportAs: 'matSlideToggle',
-  host: {
-    'class': 'mat-slide-toggle',
-    '[id]': 'id',
-    // Needs to be removed since it causes some a11y issues (see #21266).
-    '[attr.tabindex]': 'null',
-    '[attr.aria-label]': 'null',
-    '[attr.aria-labelledby]': 'null',
-    '[attr.name]': 'null',
-    '[class.mat-checked]': 'checked',
-    '[class.mat-disabled]': 'disabled',
-    '[class.mat-slide-toggle-label-before]': 'labelPosition == "before"',
-    '[class._mat-animation-noopable]': '_noopAnimations',
-  },
-  templateUrl: 'slide-toggle.html',
-  styleUrls: ['slide-toggle.css'],
-  providers: [MAT_SLIDE_TOGGLE_VALUE_ACCESSOR],
-  inputs: ['disabled', 'disableRipple', 'color', 'tabIndex'],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class MatSlideToggle
-  extends _MatSlideToggleBase
+@Directive()
+export abstract class _MatSlideToggleBase<T>
+  extends _MatSlideToggleMixinBase
   implements
     OnDestroy,
     AfterContentInit,
@@ -111,27 +89,27 @@ export class MatSlideToggle
     HasTabIndex,
     CanDisableRipple
 {
-  private _onChange = (_: any) => {};
+  protected _onChange = (_: any) => {};
   private _onTouched = () => {};
 
-  private _uniqueId: string = `mat-slide-toggle-${++nextUniqueId}`;
+  protected _uniqueId: string;
   private _required: boolean = false;
   private _checked: boolean = false;
+
+  protected abstract _createChangeEvent(isChecked: boolean): T;
+  abstract focus(options?: FocusOptions, origin?: FocusOrigin): void;
 
   /** Whether noop animations are enabled. */
   _noopAnimations: boolean;
 
-  /** Reference to the thumb HTMLElement. */
-  @ViewChild('thumbContainer') _thumbEl: ElementRef;
-
-  /** Reference to the thumb bar HTMLElement. */
-  @ViewChild('toggleBar') _thumbBarEl: ElementRef;
+  /** Whether the slide toggle is currently focused. */
+  _focused: boolean;
 
   /** Name value will be applied to the input element if present. */
   @Input() name: string | null = null;
 
   /** A unique id for the slide-toggle input. If none is supplied, it will be auto-generated. */
-  @Input() id: string = this._uniqueId;
+  @Input() id: string;
 
   /** Whether the label should appear after or before the slide-toggle. Defaults to 'after'. */
   @Input() labelPosition: 'before' | 'after' = 'after';
@@ -164,8 +142,7 @@ export class MatSlideToggle
     this._changeDetectorRef.markForCheck();
   }
   /** An event will be dispatched each time the slide-toggle changes its value. */
-  @Output() readonly change: EventEmitter<MatSlideToggleChange> =
-    new EventEmitter<MatSlideToggleChange>();
+  @Output() readonly change: EventEmitter<T> = new EventEmitter<T>();
 
   /**
    * An event will be dispatched each time the slide-toggle input is toggled.
@@ -179,39 +156,131 @@ export class MatSlideToggle
     return `${this.id || this._uniqueId}-input`;
   }
 
-  /** Reference to the underlying input element. */
-  @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
-
   constructor(
     elementRef: ElementRef,
-    private _focusMonitor: FocusMonitor,
-    private _changeDetectorRef: ChangeDetectorRef,
-    @Attribute('tabindex') tabIndex: string,
-    @Inject(MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS)
+    protected _focusMonitor: FocusMonitor,
+    protected _changeDetectorRef: ChangeDetectorRef,
+    tabIndex: string,
     public defaults: MatSlideToggleDefaultOptions,
-    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+    animationMode: string | undefined,
+    idPrefix: string,
   ) {
     super(elementRef);
     this.tabIndex = parseInt(tabIndex) || 0;
     this.color = this.defaultColor = defaults.color || 'accent';
     this._noopAnimations = animationMode === 'NoopAnimations';
+    this.id = this._uniqueId = `${idPrefix}${++nextUniqueId}`;
   }
 
   ngAfterContentInit() {
     this._focusMonitor.monitor(this._elementRef, true).subscribe(focusOrigin => {
-      if (!focusOrigin) {
+      if (focusOrigin === 'keyboard' || focusOrigin === 'program') {
+        this._focused = true;
+      } else if (!focusOrigin) {
         // When a focused element becomes disabled, the browser *immediately* fires a blur event.
         // Angular does not expect events to be raised during change detection, so any state
-        // change (such as a form control's 'ng-touched') will cause a changed-after-checked
-        // error. See https://github.com/angular/angular/issues/17793. To work around this,
-        // we defer telling the form control it has been touched until the next tick.
-        Promise.resolve().then(() => this._onTouched());
+        // change (such as a form control's ng-touched) will cause a changed-after-checked error.
+        // See https://github.com/angular/angular/issues/17793. To work around this, we defer
+        // telling the form control it has been touched until the next tick.
+        Promise.resolve().then(() => {
+          this._focused = false;
+          this._onTouched();
+          this._changeDetectorRef.markForCheck();
+        });
       }
     });
   }
 
   ngOnDestroy() {
     this._focusMonitor.stopMonitoring(this._elementRef);
+  }
+
+  /** Implemented as part of ControlValueAccessor. */
+  writeValue(value: any): void {
+    this.checked = !!value;
+  }
+
+  /** Implemented as part of ControlValueAccessor. */
+  registerOnChange(fn: any): void {
+    this._onChange = fn;
+  }
+
+  /** Implemented as part of ControlValueAccessor. */
+  registerOnTouched(fn: any): void {
+    this._onTouched = fn;
+  }
+
+  /** Implemented as a part of ControlValueAccessor. */
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+    this._changeDetectorRef.markForCheck();
+  }
+
+  /** Toggles the checked state of the slide-toggle. */
+  toggle(): void {
+    this.checked = !this.checked;
+    this._onChange(this.checked);
+  }
+
+  /**
+   * Emits a change event on the `change` output. Also notifies the FormControl about the change.
+   */
+  protected _emitChangeEvent() {
+    this._onChange(this.checked);
+    this.change.emit(this._createChangeEvent(this.checked));
+  }
+}
+
+/** Represents a slidable "switch" toggle that can be moved between on and off. */
+@Component({
+  selector: 'mat-slide-toggle',
+  exportAs: 'matSlideToggle',
+  host: {
+    'class': 'mat-slide-toggle',
+    '[id]': 'id',
+    // Needs to be removed since it causes some a11y issues (see #21266).
+    '[attr.tabindex]': 'null',
+    '[attr.aria-label]': 'null',
+    '[attr.aria-labelledby]': 'null',
+    '[attr.name]': 'null',
+    '[class.mat-checked]': 'checked',
+    '[class.mat-disabled]': 'disabled',
+    '[class.mat-slide-toggle-label-before]': 'labelPosition == "before"',
+    '[class._mat-animation-noopable]': '_noopAnimations',
+  },
+  templateUrl: 'slide-toggle.html',
+  styleUrls: ['slide-toggle.css'],
+  providers: [MAT_SLIDE_TOGGLE_VALUE_ACCESSOR],
+  inputs: ['disabled', 'disableRipple', 'color', 'tabIndex'],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class MatSlideToggle extends _MatSlideToggleBase<MatSlideToggleChange> {
+  /** Reference to the underlying input element. */
+  @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
+
+  constructor(
+    elementRef: ElementRef,
+    focusMonitor: FocusMonitor,
+    changeDetectorRef: ChangeDetectorRef,
+    @Attribute('tabindex') tabIndex: string,
+    @Inject(MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS)
+    defaults: MatSlideToggleDefaultOptions,
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+  ) {
+    super(
+      elementRef,
+      focusMonitor,
+      changeDetectorRef,
+      tabIndex,
+      defaults,
+      animationMode,
+      'mat-slide-toggle-',
+    );
+  }
+
+  protected _createChangeEvent(isChecked: boolean) {
+    return new MatSlideToggleChange(this, isChecked);
   }
 
   /** Method being called whenever the underlying input emits a change event. */
@@ -250,27 +319,6 @@ export class MatSlideToggle
     event.stopPropagation();
   }
 
-  /** Implemented as part of ControlValueAccessor. */
-  writeValue(value: any): void {
-    this.checked = !!value;
-  }
-
-  /** Implemented as part of ControlValueAccessor. */
-  registerOnChange(fn: any): void {
-    this._onChange = fn;
-  }
-
-  /** Implemented as part of ControlValueAccessor. */
-  registerOnTouched(fn: any): void {
-    this._onTouched = fn;
-  }
-
-  /** Implemented as a part of ControlValueAccessor. */
-  setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
-    this._changeDetectorRef.markForCheck();
-  }
-
   /** Focuses the slide-toggle. */
   focus(options?: FocusOptions, origin?: FocusOrigin): void {
     if (origin) {
@@ -278,20 +326,6 @@ export class MatSlideToggle
     } else {
       this._inputElement.nativeElement.focus(options);
     }
-  }
-
-  /** Toggles the checked state of the slide-toggle. */
-  toggle(): void {
-    this.checked = !this.checked;
-    this._onChange(this.checked);
-  }
-
-  /**
-   * Emits a change event on the `change` output. Also notifies the FormControl about the change.
-   */
-  private _emitChangeEvent() {
-    this._onChange(this.checked);
-    this.change.emit(new MatSlideToggleChange(this, this.checked));
   }
 
   /** Method being called whenever the label text changes. */

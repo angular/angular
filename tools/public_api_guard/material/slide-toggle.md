@@ -26,6 +26,7 @@ import { InjectionToken } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { Provider } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
+import { Type } from '@angular/core';
 
 // @public
 export const MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS: InjectionToken<MatSlideToggleDefaultOptions>;
@@ -34,22 +35,50 @@ export const MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS: InjectionToken<MatSlideToggleDefa
 export const MAT_SLIDE_TOGGLE_REQUIRED_VALIDATOR: Provider;
 
 // @public
-export const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: any;
+export const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: {
+    provide: InjectionToken<readonly ControlValueAccessor[]>;
+    useExisting: Type<any>;
+    multi: boolean;
+};
 
 // @public
-export class MatSlideToggle extends _MatSlideToggleBase implements OnDestroy, AfterContentInit, ControlValueAccessor, CanDisable, CanColor, HasTabIndex, CanDisableRipple {
-    constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, tabIndex: string, defaults: MatSlideToggleDefaultOptions, animationMode?: string);
+export class MatSlideToggle extends _MatSlideToggleBase<MatSlideToggleChange> {
+    constructor(elementRef: ElementRef, focusMonitor: FocusMonitor, changeDetectorRef: ChangeDetectorRef, tabIndex: string, defaults: MatSlideToggleDefaultOptions, animationMode?: string);
+    // (undocumented)
+    protected _createChangeEvent(isChecked: boolean): MatSlideToggleChange;
+    focus(options?: FocusOptions, origin?: FocusOrigin): void;
+    _inputElement: ElementRef<HTMLInputElement>;
+    _onChangeEvent(event: Event): void;
+    _onInputClick(event: Event): void;
+    _onLabelTextChange(): void;
+    // (undocumented)
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatSlideToggle, "mat-slide-toggle", ["matSlideToggle"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "color": "color"; "tabIndex": "tabIndex"; }, {}, never, ["*"], false>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatSlideToggle, [null, null, null, { attribute: "tabindex"; }, null, { optional: true; }]>;
+}
+
+// @public (undocumented)
+export abstract class _MatSlideToggleBase<T> extends _MatSlideToggleMixinBase implements OnDestroy, AfterContentInit, ControlValueAccessor, CanDisable, CanColor, HasTabIndex, CanDisableRipple {
+    constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, tabIndex: string, defaults: MatSlideToggleDefaultOptions, animationMode: string | undefined, idPrefix: string);
     ariaDescribedby: string;
     ariaLabel: string | null;
     ariaLabelledby: string | null;
-    readonly change: EventEmitter<MatSlideToggleChange>;
+    readonly change: EventEmitter<T>;
+    // (undocumented)
+    protected _changeDetectorRef: ChangeDetectorRef;
     get checked(): boolean;
     set checked(value: BooleanInput);
     // (undocumented)
+    protected abstract _createChangeEvent(isChecked: boolean): T;
+    // (undocumented)
     defaults: MatSlideToggleDefaultOptions;
-    focus(options?: FocusOptions, origin?: FocusOrigin): void;
+    protected _emitChangeEvent(): void;
+    // (undocumented)
+    abstract focus(options?: FocusOptions, origin?: FocusOrigin): void;
+    _focused: boolean;
+    // (undocumented)
+    protected _focusMonitor: FocusMonitor;
     id: string;
-    _inputElement: ElementRef<HTMLInputElement>;
     get inputId(): string;
     labelPosition: 'before' | 'after';
     name: string | null;
@@ -58,23 +87,22 @@ export class MatSlideToggle extends _MatSlideToggleBase implements OnDestroy, Af
     // (undocumented)
     ngOnDestroy(): void;
     _noopAnimations: boolean;
-    _onChangeEvent(event: Event): void;
-    _onInputClick(event: Event): void;
-    _onLabelTextChange(): void;
+    // (undocumented)
+    protected _onChange: (_: any) => void;
     registerOnChange(fn: any): void;
     registerOnTouched(fn: any): void;
     get required(): boolean;
     set required(value: BooleanInput);
     setDisabledState(isDisabled: boolean): void;
-    _thumbBarEl: ElementRef;
-    _thumbEl: ElementRef;
     toggle(): void;
     readonly toggleChange: EventEmitter<void>;
+    // (undocumented)
+    protected _uniqueId: string;
     writeValue(value: any): void;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatSlideToggle, "mat-slide-toggle", ["matSlideToggle"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "color": "color"; "tabIndex": "tabIndex"; "name": "name"; "id": "id"; "labelPosition": "labelPosition"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "ariaDescribedby": "aria-describedby"; "required": "required"; "checked": "checked"; }, { "change": "change"; "toggleChange": "toggleChange"; }, never, ["*"], false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatSlideToggleBase<any>, never, never, { "name": "name"; "id": "id"; "labelPosition": "labelPosition"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "ariaDescribedby": "aria-describedby"; "required": "required"; "checked": "checked"; }, { "change": "change"; "toggleChange": "toggleChange"; }, never, never, false>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatSlideToggle, [null, null, null, { attribute: "tabindex"; }, null, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_MatSlideToggleBase<any>, never>;
 }
 
 // @public
