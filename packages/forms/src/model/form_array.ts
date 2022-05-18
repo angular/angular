@@ -38,7 +38,7 @@ export type ɵFormArrayRawValue<T extends AbstractControl<any>> =
  * the controls in a `FormArray` is invalid, the entire array becomes invalid.
  *
  * `FormArray` accepts one generic argument, which is the type of the controls inside.
- * If you need a heterogenous array, use {@see UntypedFormArray}.
+ * If you need a heterogenous array, use {@link UntypedFormArray}.
  *
  * `FormArray` is one of the four fundamental building blocks used to define forms in Angular,
  * along with `FormControl`, `FormGroup`, and `FormRecord`.
