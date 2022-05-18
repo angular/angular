@@ -57,9 +57,7 @@ function elementStartFirstCreatePass(
   if (ngDevMode) {
     const hasDirectives =
         resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
-
     const hostIsStandalone = isHostComponentStandalone(lView);
-
     validateElementIsKnown(native, tNode.value, tView.schemas, hasDirectives, hostIsStandalone);
   }
 

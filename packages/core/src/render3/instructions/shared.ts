@@ -269,18 +269,17 @@ export function createTNodeAtIndex(
 }
 
 /**
- * Checks if the component of a given view is a standalone one or not.
+ * Checks if the current component is declared inside of a standalone component template.
  *
- * @param lView The `LView` containing the view's data
- * @returns `true` if the component owning this view is a standalone one, `false` otherwise
+ * @param lView An `LView` that represents a current component that is being rendered.
  */
 export function isHostComponentStandalone(lView: LView): boolean {
   !ngDevMode && throwError('Must never be called in production mode');
 
   const declarationLView = lView[DECLARATION_COMPONENT_VIEW] as LView<Type<unknown>>;
   const context = declarationLView[CONTEXT];
-  const def = getComponentDef(context.constructor);
-  return !!(def?.standalone);
+  const componentDef = getComponentDef(context.constructor);
+  return !!(componentDef?.standalone);
 }
 
 /**
