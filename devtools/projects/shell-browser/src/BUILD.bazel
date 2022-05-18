@@ -224,10 +224,20 @@ sass_library(
 )
 
 sass_binary(
-    name = "shell_chrome_styles",
+    name = "shell_common_styles",
     src = "styles.scss",
     sourcemap = False,
     deps = [":material_theming"],
+)
+
+sass_binary(
+    name = "shell_firefox_styles",
+    src = "styles/firefox_styles.scss",
+)
+
+sass_binary(
+    name = "shell_chrome_styles",
+    src = "styles/chrome_styles.scss",
 )
 
 ts_library(
@@ -291,6 +301,8 @@ filegroup(
     srcs = [
         ":index.html",
         ":shell_chrome_styles",
+        ":shell_common_styles",
+        ":shell_firefox_styles",
         "//packages/zone.js/bundles:zone.umd.js",
     ],
 )
