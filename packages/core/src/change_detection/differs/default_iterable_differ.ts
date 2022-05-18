@@ -250,6 +250,8 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
       index++;
     });
 
+    const newLength = index;
+
     // Process any remaining nodes if the current list is longer than the new collection
     if (node !== null && index < this._length) {
       let oldNode: _Node<_IterableChangeRecord<V>>|null;
@@ -273,7 +275,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
       }
     }
 
-    this._length = index;
+    this._length = newLength;
     this._collection = collection;
     this._findOperations(changedNodes, oldRecords, oldRecordKeys, identityChanges);
     return this._isDirty();
