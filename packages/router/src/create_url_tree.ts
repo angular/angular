@@ -15,6 +15,8 @@ import {forEach, last, shallowEqual} from './utils/collection';
  * Creates a `UrlTree` relative to an `ActivatedRouteSnapshot`.
  *
  * @publicApi
+ *
+ *
  * @param relativeTo The `ActivatedRouteSnapshot` to apply the commands to
  * @param commands An array of URL fragments with which to construct the new URL tree.
  * If the path is static, can be the literal URL string. For a dynamic path, pass an array of path
@@ -23,6 +25,42 @@ import {forEach, last, shallowEqual} from './utils/collection';
  * @param queryParams The query parameters for the `UrlTree`. `null` if the `UrlTree` does not have
  *     any query parameters.
  * @param fragment The fragment for the `UrlTree`. `null` if the `UrlTree` does not have a fragment.
+ *
+ * @usageNotes
+ *
+ * ```
+ * // create /team/33/user/11
+ * createUrlTree(snapshot, ['/team', 33, 'user', 11], null, null);
+ *
+ * // create /team/33;expand=true/user/11
+ * createUrlTree(snapshot, ['/team', 33, {expand: true}, 'user', 11], null, null);
+ *
+ * // you can collapse static segments like this (this works only with the first passed-in value):
+ * createUrlTree(snapshot, ['/team/33/user', userId], null, null);
+ *
+ * // If the first segment can contain slashes, and you do not want the router to split it,
+ * // you can do the following:
+ * createUrlTree(snapshot, [{segmentPath: '/one/two'}], null, null);
+ *
+ * // create /team/33/(user/11//right:chat)
+ * createUrlTree(snapshot, ['/team', 33, {outlets: {primary: 'user/11', right: 'chat'}}], null,
+ * null);
+ *
+ * // remove the right secondary node
+ * createUrlTree(snapshot, ['/team', 33, {outlets: {primary: 'user/11', right: null}}], null, null);
+ *
+ * // assuming the current URL is for the `/team/33/user/11` and the `ActivatedRouteSnapshot` points
+ * to `user/11`
+ *
+ * // navigate to /team/33/user/11/details
+ * createUrlTree(snapshot, ['details'], null, null);
+ *
+ * // navigate to /team/33/user/22
+ * createUrlTree(snapshot, ['../22'], null, null);
+ *
+ * // navigate to /team/44/user/22
+ * createUrlTree(snapshot, ['../../team/44/user/22'], null, null);
+ * ```
  */
 export function createUrlTreeFromSnapshot(
     relativeTo: ActivatedRouteSnapshot, commands: any[], queryParams: Params|null,
@@ -59,7 +97,9 @@ export function createUrlTreeFromSegmentGroup(
   while (root.parent) {
     root = root.parent;
   }
-  const targetGroup = relativeTo;
+  // There are no commands so the `UrlTree` goes to the same path as the one created from the
+  // `UrlSegmentGroup`. All we need to do is update the `queryParams` and `fragment` without
+  // applying any other logic.
   if (commands.length === 0) {
     return tree(root, root, root, queryParams, fragment);
   }
@@ -70,7 +110,7 @@ export function createUrlTreeFromSegmentGroup(
     return tree(root, root, new UrlSegmentGroup([], {}), queryParams, fragment);
   }
 
-  const position = findStartingPositionForTargetGroup(nav, root, targetGroup);
+  const position = findStartingPositionForTargetGroup(nav, root, relativeTo);
   const newSegmentGroup = position.processChildren ?
       updateSegmentGroupChildren(position.segmentGroup, position.index, nav.commands) :
       updateSegmentGroup(position.segmentGroup, position.index, nav.commands);
@@ -255,6 +295,10 @@ function findStartingPositionForTargetGroup(
   }
 
   if (!target) {
+    // `NaN` is used only to maintain backwards compatibility with incorrectly mocked
+    // `ActivatedRouteSnapshot` in tests. In prior versions of this code, the position here was
+    // determined based on an internal property that was rarely mocked, resulting in `NaN`. In
+    // reality, this code path should _never_ be touched since `target` is not allowed to be falsey.
     return new Position(root, false, NaN);
   }
   if (target.parent === null) {
