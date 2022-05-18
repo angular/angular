@@ -234,12 +234,10 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
       // Mismatch between new collection and current items
       else if (!Object.is(node.value.trackById, itemTrackBy)) {
         // Mark that this record is no longer here, not sure if it's a move or remove yet
-        node.value.previousIndex = node.value.currentIndex;
         oldRecords.enqueue(node.value.trackById, node.value);
         oldRecordKeys.set(index, node.value.trackById);
         // Insert a new record for now, not sure if it's an add or move yet
-        const newRecord = new _IterableChangeRecord<V>(item, itemTrackBy, index);
-        node.value = newRecord;
+        node.value = new _IterableChangeRecord<V>(item, itemTrackBy, index);
         changedNodes.enqueue(node);
       }
       // trackById matches, but object identity has changed
@@ -253,10 +251,10 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     const newLength = index;
 
     // Process any remaining nodes if the current list is longer than the new collection
-    if (node !== null && index < this._length) {
+    if (node !== null && newLength < this._length) {
       let oldNode: _Node<_IterableChangeRecord<V>>|null;
       // If new collection is empty, remove everything including the head
-      if (index === 0) {
+      if (newLength === 0) {
         this._currentItems.clear();
         oldNode = node;
       }
@@ -268,7 +266,6 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
       }
       while (oldNode !== null) {
         // Mark that this record is no longer here, not sure if it's a move or remove yet
-        oldNode.value.previousIndex = oldNode.value.currentIndex;
         oldRecords.enqueue(oldNode.value.trackById, oldNode.value);
         oldRecordKeys.set(index++, oldNode.value.trackById);
         oldNode = oldNode.next;
@@ -396,7 +393,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   }
 }
 
-/** Record of of an item's identity and indices */
+/** Record of an item's identity and indices */
 class _IterableChangeRecord<V> implements IterableChangeRecord<V> {
   previousIndex: number|null = null;
   constructor(public item: V, public trackById: any, public currentIndex: number|null) {}
