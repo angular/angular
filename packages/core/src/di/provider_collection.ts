@@ -42,6 +42,7 @@ export type ImportProvidersSource =
  *
  * @returns The collected providers from the specified list of types.
  * @publicApi
+ * @developerPreview
  */
 export function importProvidersFrom(...sources: ImportProvidersSource[]):
     ImportedNgModuleProviders {

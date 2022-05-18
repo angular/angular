@@ -143,6 +143,7 @@ class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {
  * Create a new environment injector.
  *
  * @publicApi
+ * @developerPreview
  */
 export function createEnvironmentInjector(
     providers: Array<Provider|ImportedNgModuleProviders>, parent: EnvironmentInjector|null = null,
