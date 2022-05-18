@@ -37,6 +37,11 @@ export interface FormControlOptions extends AbstractControlOptions {
    * When a FormControl is reset without an explicit value, its value reverts to
    * its default value.
    */
+  nonNullable?: boolean;
+
+  /**
+   * @deprecated Use `nonNullable` instead.
+   */
   initialValueIsDefault?: boolean;
 }
 
@@ -50,7 +55,7 @@ export interface FormControlOptions extends AbstractControlOptions {
  *
  * `FormControl` takes a single generic argument, which describes the type of its value. This
  * argument always implicitly includes `null` because the control can be reset. To change this
- * behavior, set `initialValueIsDefault` or see the usage notes below.
+ * behavior, set `nonNullable` or see the usage notes below.
  *
  * See [usage examples below](#usage-notes).
  *
@@ -114,7 +119,7 @@ export interface FormControlOptions extends AbstractControlOptions {
  *
  * You might notice that `null` is always added to the type of the control.
  * This is because the control will become `null` if you call `reset`. You can change
- * this  behavior by setting `{initialValueIsDefault: true}`.
+ * this behavior by setting `{nonNullable: true}`.
  *
  * ### Configure the control to update on a blur event
  *
@@ -151,10 +156,10 @@ export interface FormControlOptions extends AbstractControlOptions {
  * ### Reset the control to its initial value
  *
  * If you wish to always reset the control to its initial value (instead of null),
- * you can pass the `initialValueIsDefault` option:
+ * you can pass the `nonNullable` option:
  *
  * ```
- * const control = new FormControl('Nancy', {initialValueIsDefault: true});
+ * const control = new FormControl('Nancy', {nonNullable: true});
  *
  * console.log(control.value); // 'Nancy'
  *
@@ -180,7 +185,7 @@ export interface FormControlOptions extends AbstractControlOptions {
 export interface FormControl<TValue = any> extends AbstractControl<TValue> {
   /**
    * The default value of this FormControl, used whenever the control is reset without an explicit
-   * value. See {@link FormControlOptions#initialValueIsDefault} for more information on configuring
+   * value. See {@link FormControlOptions#nonNullable} for more information on configuring
    * a default value.
    */
   readonly defaultValue: TValue;
@@ -246,7 +251,7 @@ export interface FormControl<TValue = any> extends AbstractControl<TValue> {
   /**
    * Resets the form control, marking it `pristine` and `untouched`, and resetting
    * the value. The new value will be the provided value (if passed), `null`, or the initial value
-   * if `initialValueIsDefault` was set in the constructor via {@link FormControlOptions}.
+   * if `nonNullable` was set in the constructor via {@link FormControlOptions}.
    *
    * ```ts
    * // By default, the control will reset to null.
@@ -254,11 +259,11 @@ export interface FormControl<TValue = any> extends AbstractControl<TValue> {
    * dog.reset(); // dog.value is null
    *
    * // If this flag is set, the control will instead reset to the initial value.
-   * const cat = new FormControl('tabby', {initialValueIsDefault: true});
+   * const cat = new FormControl('tabby', {nonNullable: true});
    * cat.reset(); // cat.value is "tabby"
    *
    * // A value passed to reset always takes precedence.
-   * const fish = new FormControl('finn', {initialValueIsDefault: true});
+   * const fish = new FormControl('finn', {nonNullable: true});
    * fish.reset('bubble'); // fish.value is "bubble"
    * ```
    *
@@ -368,6 +373,11 @@ export interface ɵFormControlCtor {
    *
    * @param asyncValidator A single async validator or array of async validator functions
    */
+  new<T = any>(value: FormControlState<T>|T, opts: FormControlOptions&{nonNullable: true}):
+      FormControl<T>;
+  /**
+   * @deprecated Use `nonNullable` instead.
+   */
   new<T = any>(value: FormControlState<T>|T, opts: FormControlOptions&{
     initialValueIsDefault: true
   }): FormControl<T>;
@@ -421,7 +431,8 @@ export const FormControl: ɵFormControlCtor =
           // `emitEvent` to `true` to allow that during the control creation process.
           emitEvent: !!this.asyncValidator
         });
-        if (isOptionsObj(validatorOrOpts) && validatorOrOpts.initialValueIsDefault) {
+        if (isOptionsObj(validatorOrOpts) &&
+            (validatorOrOpts.nonNullable || validatorOrOpts.initialValueIsDefault)) {
           if (isFormControlState(formState)) {
             this.defaultValue = formState.value;
           } else {

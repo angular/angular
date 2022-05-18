@@ -27,7 +27,8 @@ function isFormControlOptions(options: FormControlOptions|{[key: string]: any}|n
                               undefined): options is FormControlOptions {
   return !!options &&
       (isAbstractControlOptions(options) ||
-       (options as FormControlOptions).initialValueIsDefault !== undefined);
+       (options as FormControlOptions).initialValueIsDefault !== undefined ||
+       (options as FormControlOptions).nonNullable !== undefined);
 }
 
 /**
@@ -85,7 +86,7 @@ export class FormBuilder {
   /**
    * @description
    * Returns a FormBuilder in which automatically constructed @see FormControl} elements
-   * have `{initialValueIsDefault: true}` and are non-nullable.
+   * have `{nonNullable: true}` and are non-nullable.
    *
    * **Constructing non-nullable controls**
    *
@@ -205,9 +206,13 @@ export class FormBuilder {
     return new FormGroup(reducedControls, {asyncValidators, updateOn, validators}) as any;
   }
 
+  /** @deprecated Use `nonNullable` instead. */
   control<T>(formState: T|FormControlState<T>, opts: FormControlOptions&{
     initialValueIsDefault: true
   }): FormControl<T>;
+
+  control<T>(formState: T|FormControlState<T>, opts: FormControlOptions&{nonNullable: true}):
+      FormControl<T>;
 
   control<T>(
       formState: T|FormControlState<T>,
@@ -217,7 +222,7 @@ export class FormBuilder {
   /**
    * @description
    * Construct a new `FormControl` with the given state, validators and options. Set
-   * `{initialValueIsDefault: true}` in the options to get a non-nullable control. Otherwise, the
+   * `{nonNullable: true}` in the options to get a non-nullable control. Otherwise, the
    * control will be nullable. Accepts a single generic argument, which is the type  of the
    * control's value.
    *
@@ -256,7 +261,7 @@ export class FormBuilder {
       newOptions.validators = validatorOrOpts;
       newOptions.asyncValidators = asyncValidator;
     }
-    return new FormControl<T>(formState, {...newOptions, initialValueIsDefault: true});
+    return new FormControl<T>(formState, {...newOptions, nonNullable: true});
   }
 
   /**
@@ -314,7 +319,7 @@ export class FormBuilder {
 /**
  * @description
  * `NonNullableFormBuilder` is similar to {@link FormBuilder}, but automatically constructed
- * {@link FormControl} elements have `{initialValueIsDefault: true}` and are non-nullable.
+ * {@link FormControl} elements have `{nonNullable: true}` and are non-nullable.
  *
  * @publicApi
  */
@@ -325,7 +330,7 @@ export class FormBuilder {
 export abstract class NonNullableFormBuilder {
   /**
    * Similar to `FormBuilder#group`, except any implicitly constructed `FormControl`
-   * will be non-nullable (i.e. it will have `initialValueIsDefault` set to true). Note
+   * will be non-nullable (i.e. it will have `nonNullable` set to true). Note
    * that already-constructed controls will not be altered.
    */
   abstract group<T extends {}>(
@@ -335,7 +340,7 @@ export abstract class NonNullableFormBuilder {
 
   /**
    * Similar to `FormBuilder#array`, except any implicitly constructed `FormControl`
-   * will be non-nullable (i.e. it will have `initialValueIsDefault` set to true). Note
+   * will be non-nullable (i.e. it will have `nonNullable` set to true). Note
    * that already-constructed controls will not be altered.
    */
   abstract array<T>(
@@ -344,7 +349,7 @@ export abstract class NonNullableFormBuilder {
 
   /**
    * Similar to `FormBuilder#control`, except this overridden version of `control` forces
-   * `initialValueIsDefault` to be `true`, resulting in the control always being non-nullable.
+   * `nonNullable` to be `true`, resulting in the control always being non-nullable.
    */
   abstract control<T>(
       formState: T|FormControlState<T>,
