@@ -413,6 +413,44 @@ describe('TestBed with Standalone types', () => {
       const app = fixture.componentInstance;
       expect(app.testCmpCtrl.testField).toBe('overridden');
     });
+
+    it('should allow removing an import via `overrideModule`', () => {
+      const fooToken = new InjectionToken<string>('foo');
+
+      @NgModule({
+        providers: [{provide: fooToken, useValue: 'FOO'}],
+      })
+      class ImportedModule {
+      }
+
+      @NgModule({
+        imports: [ImportedModule],
+      })
+      class ImportingModule {
+      }
+
+      TestBed.configureTestingModule({
+        imports: [ImportingModule],
+      });
+
+      TestBed.overrideModule(ImportingModule, {
+        remove: {
+          imports: [ImportedModule],
+        },
+      });
+
+      expect(TestBed.inject(fooToken, 'BAR')).toBe('BAR');
+
+      // Emulate an end of a test.
+      TestBed.resetTestingModule();
+
+      // Emulate the start of a next test, make sure previous overrides
+      // are not persisted across tests.
+      TestBed.configureTestingModule({
+        imports: [ImportingModule],
+      });
+      expect(TestBed.inject(fooToken, 'BAR')).toBe('FOO');
+    });
   });
 });
 

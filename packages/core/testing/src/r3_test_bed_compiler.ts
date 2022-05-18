@@ -71,9 +71,10 @@ export class R3TestBedCompiler {
 
   // Map that keeps initial version of component/directive/pipe defs in case
   // we compile a Type again, thus overriding respective static fields. This is
-  // required to make sure we restore defs to their initial states between test runs
-  // TODO: we should support the case with multiple defs on a type
-  private initialNgDefs = new Map<Type<any>, [string, PropertyDescriptor|undefined]>();
+  // required to make sure we restore defs to their initial states between test runs.
+  // Note: one class may have multiple defs (for example: ɵmod and ɵinj in case of an
+  // NgModule), store all of them in a map.
+  private initialNgDefs = new Map<Type<any>, Map<string, PropertyDescriptor|undefined>>();
 
   // Array that keeps cleanup operations for initial versions of component/directive/pipe/module
   // defs in case TestBed makes changes to the originals.
@@ -623,10 +624,20 @@ export class R3TestBedCompiler {
     return affectedModules;
   }
 
+  /**
+   * Preserve an original def (such as ɵmod, ɵinj, etc) before applying an override.
+   * Note: one class may have multiple defs (for example: ɵmod and ɵinj in case of
+   * an NgModule). If there is a def in a set already, don't override it, since
+   * an original one should be restored at the end of a test.
+   */
   private maybeStoreNgDef(prop: string, type: Type<any>) {
     if (!this.initialNgDefs.has(type)) {
+      this.initialNgDefs.set(type, new Map());
+    }
+    const currentDefs = this.initialNgDefs.get(type)!;
+    if (!currentDefs.has(prop)) {
       const currentDef = Object.getOwnPropertyDescriptor(type, prop);
-      this.initialNgDefs.set(type, [prop, currentDef]);
+      currentDefs.set(prop, currentDef);
     }
   }
 
@@ -668,20 +679,22 @@ export class R3TestBedCompiler {
       op.object[op.fieldName] = op.originalValue;
     });
     // Restore initial component/directive/pipe defs
-    this.initialNgDefs.forEach((value: [string, PropertyDescriptor|undefined], type: Type<any>) => {
-      const [prop, descriptor] = value;
-      if (!descriptor) {
-        // Delete operations are generally undesirable since they have performance implications
-        // on objects they were applied to. In this particular case, situations where this code
-        // is invoked should be quite rare to cause any noticeable impact, since it's applied
-        // only to some test cases (for example when class with no annotations extends some
-        // @Component) when we need to clear 'ɵcmp' field on a given class to restore
-        // its original state (before applying overrides and running tests).
-        delete (type as any)[prop];
-      } else {
-        Object.defineProperty(type, prop, descriptor);
-      }
-    });
+    this.initialNgDefs.forEach(
+        (defs: Map<string, PropertyDescriptor|undefined>, type: Type<any>) => {
+          defs.forEach((descriptor, prop) => {
+            if (!descriptor) {
+              // Delete operations are generally undesirable since they have performance
+              // implications on objects they were applied to. In this particular case, situations
+              // where this code is invoked should be quite rare to cause any noticeable impact,
+              // since it's applied only to some test cases (for example when class with no
+              // annotations extends some @Component) when we need to clear 'ɵcmp' field on a given
+              // class to restore its original state (before applying overrides and running tests).
+              delete (type as any)[prop];
+            } else {
+              Object.defineProperty(type, prop, descriptor);
+            }
+          });
+        });
     this.initialNgDefs.clear();
     this.moduleProvidersOverridden.clear();
     this.restoreComponentResolutionQueue();
