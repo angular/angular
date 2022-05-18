@@ -1,3 +1,13 @@
+<a name="13.3.9"></a>
+# 13.3.9 (2022-05-18)
+
+This release contains API docs improvements.
+
+## Special Thanks
+4javier, Bob Watson, Evan Lee, George Kalpakas, Joey Perrott, Pavan Kumar Jadda, celinetunc and mariu
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.8"></a>
 # 13.3.8 (2022-05-12)
 ### language-service
