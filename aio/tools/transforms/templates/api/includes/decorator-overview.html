@@ -13,7 +13,15 @@
           <code>{$ option.name $}{%- if option.isOptional  %}?{% endif -%}</code>
         </a>
       </td>
-      <td>{$ option.shortDescription | marked $}</td>
+      <td>
+        {%- if option.developerPreview %}
+        <label class="api-status-label dev-preview" title="This API is in Developer Preview">
+          <a href="{$ github.githubVersionedUrl(versionInfo) $}/guide/releases#developer-preview">developer preview</a>
+        </label>
+        {% endif %}
+
+        {$ option.shortDescription | marked $}
+      </td>
     </tr>
     {%- endfor %}
   </tbody>
