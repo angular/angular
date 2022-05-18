@@ -72,10 +72,10 @@ email.reset();
 console.log(email.value); // null
 ```
 
-TypeScript will enforce that you always handle the possibility that the control has become `null`. If you want to make this control non-nullable, you may use the `initialValueIsDefault` option. This will cause the control to reset to its intial value, instead of `null`:
+TypeScript will enforce that you always handle the possibility that the control has become `null`. If you want to make this control non-nullable, you may use the `nonNullable` option. This will cause the control to reset to its intial value, instead of `null`:
 
 ```ts
-const email = new FormControl('angularrox@gmail.com', {initialValueIsDefault: true});
+const email = new FormControl('angularrox@gmail.com', {nonNullable: true});
 email.reset();
 console.log(email.value); // angularrox@gmail.com
 ```
@@ -125,8 +125,8 @@ Consider again a login form:
 
 ```ts
 const login = new FormGroup({
-    email: new FormControl('', {initialValueIsDefault: true}),
-    password: new FormControl('', {initialValueIsDefault: true}),
+    email: new FormControl('', {nonNullable: true}),
+    password: new FormControl('', {nonNullable: true}),
 });
 ```
 
@@ -149,8 +149,8 @@ interface LoginForm {
 }
 
 const login = new FormGroup<LoginForm>({
-    email: new FormControl('', {initialValueIsDefault: true}),
-    password: new FormControl('', {initialValueIsDefault: true}),
+    email: new FormControl('', {nonNullable: true}),
+    password: new FormControl('', {nonNullable: true}),
 });
 
 login.removeControl('password');
@@ -175,7 +175,7 @@ If you need a `FormGroup` that is both dynamic (open-ended) and heterogenous (th
 
 The `FormBuilder` class has been upgraded to support the new types as well, in the same manner as the above examples.
 
-Additionally, an additional builder is available: `NonNullableFormBuilder`. This type is shorthand for specifying `{initialValueIsDefault: true}` on every control, and can eliminate significant boilerplate from large non-nullable forms. You can access it using the `nonNullable` property on a `FormBuilder`:
+Additionally, an additional builder is available: `NonNullableFormBuilder`. This type is shorthand for specifying `{nonNullable: true}` on every control, and can eliminate significant boilerplate from large non-nullable forms. You can access it using the `nonNullable` property on a `FormBuilder`:
 
 ```ts
 const fb = new FormBuilder();
@@ -185,7 +185,7 @@ const login = fb.nonNullable.group({
 });
 ```
 
-On the above example, both inner controls will be non-nullable (i.e. `initialValueIsDefault` will be set).
+On the above example, both inner controls will be non-nullable (i.e. `nonNullable` will be set).
 
 You can also inject it using the name `NonNullableFormBuilder`.
 
