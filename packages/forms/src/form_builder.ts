@@ -214,6 +214,13 @@ export class FormBuilder {
   control<T>(formState: T|FormControlState<T>, opts: FormControlOptions&{nonNullable: true}):
       FormControl<T>;
 
+  /**
+   * @deprecated When passing an `options` argument, the `asyncValidator` argument has no effect.
+   */
+  control<T>(
+      formState: T|FormControlState<T>, opts: FormControlOptions,
+      asyncValidator: AsyncValidatorFn|AsyncValidatorFn[]): FormControl<T|null>;
+
   control<T>(
       formState: T|FormControlState<T>,
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,

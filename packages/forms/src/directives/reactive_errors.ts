@@ -73,6 +73,22 @@ export const disabledAttrWarning = `
   });
 `;
 
+export const asyncValidatorsDroppedWithOptsWarning = `
+  It looks like you're constructing using a FormControl with both an options argument and an
+  async validators argument. Mixing these arguments will cause your async validators to be dropped.
+  You should either put all your validators in the options object, or in separate validators
+  arguments. For example:
+
+  // Using validators arguments
+  fc = new FormControl(42, Validators.required, myAsyncValidator);
+
+  // Using AbstractControlOptions
+  fc = new FormControl(42, {validators: Validators.required, asyncValidators: myAV});
+
+  // Do NOT mix them: async validators will be dropped!
+  fc = new FormControl(42, {validators: Validators.required}, /* Oops! */ myAsyncValidator);
+`;
+
 export function ngModelWarning(directiveName: string): string {
   return `
   It looks like you're using ngModel on the same form field as ${directiveName}.

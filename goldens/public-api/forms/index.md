@@ -285,6 +285,8 @@ export class FormBuilder {
     control<T>(formState: T | FormControlState<T>, opts: FormControlOptions & {
         nonNullable: true;
     }): FormControl<T>;
+    // @deprecated (undocumented)
+    control<T>(formState: T | FormControlState<T>, opts: FormControlOptions, asyncValidator: AsyncValidatorFn | AsyncValidatorFn[]): FormControl<T | null>;
     // (undocumented)
     control<T>(formState: T | FormControlState<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl<T | null>;
     group<T extends {}>(controls: T, options?: AbstractControlOptions | null): FormGroup<{
