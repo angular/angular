@@ -1,3 +1,28 @@
+<a name="14.0.0-rc.1"></a>
+# 14.0.0-rc.1 (2022-05-18)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a524a50361](https://github.com/angular/angular/commit/a524a50361bb408cf8baf8ff209378a1db967545) | fix | handle standalone components with cycles ([#46029](https://github.com/angular/angular/pull/46029)) |
+| [35f20afcac](https://github.com/angular/angular/commit/35f20afcac4877963e4a3e5d85b67ed8cb000af9) | fix | use existing imports for standalone dependencies ([#46029](https://github.com/angular/angular/pull/46029)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3f7ecec59b](https://github.com/angular/angular/commit/3f7ecec59b894d2a92f4b5643d2a23891938bde8) | fix | set correct context for inject() for component ctors ([#45991](https://github.com/angular/angular/pull/45991)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [018550ed50](https://github.com/angular/angular/commit/018550ed5025de9737794b683eb7c0697d83d430) | fix | Value and RawValue should be part of the public API. ([#45978](https://github.com/angular/angular/pull/45978)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3ae133c69e](https://github.com/angular/angular/commit/3ae133c69e1c78d5ddf772cacf222f909faccd70) | fix | Fix detection of Angular for v14+ projects ([#45998](https://github.com/angular/angular/pull/45998)) |
+| [9cd8e50848](https://github.com/angular/angular/commit/9cd8e50848969673115434d04ea7d866a5d54b41) | fix | Prevent TSServer from removing templates from project ([#45965](https://github.com/angular/angular/pull/45965)) |
+## Special Thanks
+4javier, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Bob Watson, Dylan Hunn, Evan Lee, George Kalpakas, Joey Perrott, Kristiyan Kostadinov, Pavan Kumar Jadda, Roy Dorombozi, Virginia Dooley, celinetunc, ivanwonder and mariu
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.9"></a>
 # 13.3.9 (2022-05-18)
 
