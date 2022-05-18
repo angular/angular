@@ -7,17 +7,15 @@
  */
 
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
-import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
-import {getComponentDef} from '../definition';
 import {registerPostOrderHooks} from '../hooks';
 import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer_dom';
 import {isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
-import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view';
+import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {appendChild, createElementNode, writeDirectClass, writeDirectStyle} from '../node_manipulation';
 import {decreaseElementDepthCount, getBindingIndex, getCurrentTNode, getElementDepthCount, getLView, getNamespace, getTView, increaseElementDepthCount, isCurrentTNodeParent, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
@@ -26,7 +24,7 @@ import {setUpAttributes} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
 
 import {setDirectiveInputsWhichShadowsStyling} from './property';
-import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, matchingSchemas, resolveDirectives, saveResolvedLocalsInData} from './shared';
+import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, isHostComponentStandalone, matchingSchemas, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
 let shouldThrowErrorOnUnknownElement = false;
 
@@ -60,10 +58,7 @@ function elementStartFirstCreatePass(
     const hasDirectives =
         resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
 
-    const declarationLView = lView[DECLARATION_COMPONENT_VIEW] as LView<Type<unknown>>;
-    const context = declarationLView[CONTEXT];
-    const def = getComponentDef(context.constructor);
-    const hostIsStandalone = !!(def?.standalone);
+    const hostIsStandalone = isHostComponentStandalone(lView);
 
     validateElementIsKnown(native, tNode.value, tView.schemas, hasDirectives, hostIsStandalone);
   }
