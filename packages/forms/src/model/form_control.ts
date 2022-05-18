@@ -375,12 +375,21 @@ export interface ɵFormControlCtor {
    */
   new<T = any>(value: FormControlState<T>|T, opts: FormControlOptions&{nonNullable: true}):
       FormControl<T>;
+
   /**
    * @deprecated Use `nonNullable` instead.
    */
   new<T = any>(value: FormControlState<T>|T, opts: FormControlOptions&{
     initialValueIsDefault: true
   }): FormControl<T>;
+
+  /**
+   * @deprecated When passing an `options` argument, the `asyncValidator` argument has no effect.
+   */
+  new<T = any>(
+      value: FormControlState<T>|T, opts: FormControlOptions,
+      asyncValidator: AsyncValidatorFn|AsyncValidatorFn[]): FormControl<T|null>;
+
   new<T = any>(
       value: FormControlState<T>|T,
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
