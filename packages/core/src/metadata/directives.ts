@@ -328,6 +328,8 @@ export interface Directive {
    *
    * More information about standalone components, directives and pipes can be found in [this
    * guide](guide/standalone-components).
+   *
+   * @developerPreview
    */
   standalone?: boolean;
 }
@@ -604,6 +606,8 @@ export interface Component extends Directive {
    *
    * More information about standalone components, directives and pipes can be found in [this
    * guide](guide/standalone-components).
+   *
+   * @developerPreview
    */
   standalone?: boolean;
 
@@ -617,6 +621,8 @@ export interface Component extends Directive {
    *
    * More information about standalone components, directives and pipes can be found in [this
    * guide](guide/standalone-components).
+   *
+   * @developerPreview
    */
   imports?: (Type<any>|any[])[];
 

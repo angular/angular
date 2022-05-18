@@ -91,6 +91,7 @@ export interface ApplicationConfig {
  * @returns A promise that returns an `ApplicationRef` instance once resolved.
  *
  * @publicApi
+ * @developerPreview
  */
 export function bootstrapApplication(
     rootComponent: Type<unknown>, options?: ApplicationConfig): Promise<ApplicationRef> {
