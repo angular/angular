@@ -310,22 +310,22 @@ describe('MatButton', () => {
     });
 
     it('should disable the ripple when the button is disabled', () => {
-      expect(buttonRippleInstance.disabled).toBeFalsy(
-        'Expected an enabled button[mat-button] to have an enabled ripple',
-      );
-      expect(anchorRippleInstance.disabled).toBeFalsy(
-        'Expected an enabled a[mat-button] to have an enabled ripple',
-      );
+      expect(buttonRippleInstance.disabled)
+        .withContext('Expected an enabled button[mat-button] to have an enabled ripple')
+        .toBeFalsy();
+      expect(anchorRippleInstance.disabled)
+        .withContext('Expected an enabled a[mat-button] to have an enabled ripple')
+        .toBeFalsy();
 
       testComponent.isDisabled = true;
       fixture.detectChanges();
 
-      expect(buttonRippleInstance.disabled).toBeTruthy(
-        'Expected a disabled button[mat-button] not to have an enabled ripple',
-      );
-      expect(anchorRippleInstance.disabled).toBeTruthy(
-        'Expected a disabled a[mat-button] not to have an enabled ripple',
-      );
+      expect(buttonRippleInstance.disabled)
+        .withContext('Expected a disabled button[mat-button] not to have an enabled ripple')
+        .toBeTruthy();
+      expect(anchorRippleInstance.disabled)
+        .withContext('Expected a disabled a[mat-button] not to have an enabled ripple')
+        .toBeTruthy();
     });
   });
 
