@@ -31,8 +31,17 @@ import {
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {FocusKeyManager, FocusableOption} from '@angular/cdk/a11y';
 import {ENTER, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
-import {merge, of as observableOf, Subject, timer, fromEvent} from 'rxjs';
-import {take, takeUntil} from 'rxjs/operators';
+import {
+  merge,
+  of as observableOf,
+  Subject,
+  EMPTY,
+  Observer,
+  Observable,
+  timer,
+  fromEvent,
+} from 'rxjs';
+import {take, switchMap, startWith, skip, takeUntil} from 'rxjs/operators';
 import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
@@ -218,7 +227,7 @@ export abstract class MatPaginatedTabHeader
 
     // On dir change or window resize, realign the ink bar and update the orientation of
     // the key manager if the direction has changed.
-    merge(dirChange, resize, this._items.changes)
+    merge(dirChange, resize, this._items.changes, this._itemsResized())
       .pipe(takeUntil(this._destroyed))
       .subscribe(() => {
         // We need to defer this to give the browser some time to recalculate
@@ -244,6 +253,36 @@ export abstract class MatPaginatedTabHeader
       this.indexFocused.emit(newFocusIndex);
       this._setTabFocus(newFocusIndex);
     });
+  }
+
+  /** Sends any changes that could affect the layout of the items. */
+  private _itemsResized(): Observable<void> {
+    if (typeof ResizeObserver !== 'function') {
+      return EMPTY;
+    }
+
+    return this._items.changes.pipe(
+      startWith(this._items),
+      switchMap(
+        (tabItems: QueryList<MatPaginatedTabHeaderItem>) =>
+          new Observable((observer: Observer<void>) =>
+            this._ngZone.runOutsideAngular(() => {
+              const resizeObserver = new ResizeObserver(() => {
+                observer.next();
+              });
+              tabItems.forEach(item => {
+                resizeObserver.observe(item.elementRef.nativeElement);
+              });
+              return () => {
+                resizeObserver.disconnect();
+              };
+            }),
+          ),
+      ),
+      // Skip the first emit since the resize observer emits when an item
+      // is observed for new items when the tab is already inserted
+      skip(1),
+    );
   }
 
   ngAfterContentChecked(): void {
