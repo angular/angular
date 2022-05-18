@@ -56,7 +56,7 @@ export type ɵOptionalKeys<T> = {
  * argument. The key for each child registers the name for the control.
  *
  * `FormGroup` is intended for use cases where the keys are known ahead of time.
- * If you need to dynamically add and remove controls, use {@see FormRecord} instead.
+ * If you need to dynamically add and remove controls, use {@link FormRecord} instead.
  *
  * `FormGroup` accepts an optional type parameter `TControl`, which is an object type with inner
  * control types as values.
@@ -610,7 +610,7 @@ export const isFormGroup = (control: unknown): control is FormGroup => control i
  * Tracks the value and validity state of a collection of `FormControl` instances, each of which has
  * the same value type.
  *
- * `FormRecord` is very similar to {@see FormGroup}, except it can be used with a dynamic keys,
+ * `FormRecord` is very similar to {@link FormGroup}, except it can be used with a dynamic keys,
  * with controls added and removed as needed.
  *
  * `FormRecord` accepts one generic argument, which describes the type of the controls it contains.
