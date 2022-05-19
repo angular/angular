@@ -176,6 +176,40 @@ describe('generateKeywords processor', () => {
     });
   });
 
+  it('should add member doc properties contained in the ignored word list to the search terms', async () => {
+    const processor = createProcessor();
+    const docs = await processor.$process([
+      {
+        docType: 'class',
+        name: 'PublicExport',
+        searchTitle: 'class PublicExport',
+        vFile: { headings: { h2: ['heading A'] } },
+        content: 'Some content with ngClass in it.',
+        members: [
+          { name: 'some' },
+          { name: 'none' },
+          { name: 'get' },
+          { name: 'put' },
+        ],
+        statics: [
+          { name: 'zero' },
+          { name: 'one' },
+          { name: 'next' },
+          { name: 'index' },
+        ],
+      },
+    ]);
+    const keywordsDoc = docs[docs.length - 1];
+    expect(keywordsDoc.data).toEqual({
+      dictionary: 'class publicexport content ngclass some none get put zero on next index head',
+      pages: [
+        jasmine.objectContaining({
+          members: [4, 5, 6, 7, 8, 9, 10, 11]
+        })
+      ]
+    });
+  });
+
   it('should add inherited member doc properties to the search terms', async () => {
     const processor = createProcessor();
     const parentClass =       {
@@ -212,6 +246,60 @@ describe('generateKeywords processor', () => {
     const keywordsDoc = docs[docs.length - 1];
     expect(keywordsDoc.data).toEqual({
       dictionary: 'class child childmember1 childmember2 parentmember1 parentmember2 parentmember3 parentclass interfac parentinterfac',
+      pages: [
+        jasmine.objectContaining({
+          title: 'Child',
+          members: [2, 3, 4, 5, 6]
+        }),
+        jasmine.objectContaining({
+          title: 'ParentClass',
+          members: [4, 5]
+        }),
+        jasmine.objectContaining({
+          title: 'ParentInterface',
+          members: [6]
+        })
+      ]
+    });
+  });
+
+
+  it('should add inherited member doc properties contained in the ignored word list to the search terms', async () => {
+    const processor = createProcessor();
+    const parentClass =       {
+      docType: 'class',
+      name: 'ParentClass',
+      members: [
+        { name: 'one' },
+      ],
+      statics: [
+        { name: 'zero' },
+      ],
+    };
+    const parentInterface = {
+      docType: 'interface',
+      name: 'ParentInterface',
+      members: [
+        { name: 'index' },
+      ]
+    };
+
+    const childClass = {
+      docType: 'class',
+      name: 'Child',
+      members: [
+        { name: 'next' }
+      ],
+      statics: [
+        { name: 'get' }
+      ],
+      extendsClauses: [{ doc: parentClass }],
+      implementsClauses: [{ doc: parentInterface }]
+    };
+    const docs = await processor.$process([childClass, parentClass, parentInterface]);
+    const keywordsDoc = docs[docs.length - 1];
+    expect(keywordsDoc.data).toEqual({
+      dictionary: 'class child next get on zero index parentclass interfac parentinterfac',
       pages: [
         jasmine.objectContaining({
           title: 'Child',
