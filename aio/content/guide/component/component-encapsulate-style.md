@@ -69,7 +69,7 @@ h3[_ngcontent-pmm-6] {
 </code-example>
 
 These styles are post-processed so that each CSS selector is augmented with the appropriate `_nghost` or `_ngcontent` attribute.
-These modified selectors make sure the styles to be applied to the views of the components in an isolated and targeted fashion.
+These modified selectors ensure that the styles to be applied to the views of the components are in an isolated and targeted fashion.
 
 ## Mix encapsulation modes
 
