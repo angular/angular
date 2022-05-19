@@ -344,25 +344,48 @@ runInEachFileSystem(() => {
       it('should error when a standalone component imports a ModuleWithProviders using a foreign function',
          () => {
            env.write('test.ts', `
-          import {Component, ModuleWithProviders, NgModule} from '@angular/core';
+             import {Component, ModuleWithProviders, NgModule} from '@angular/core';
 
-          @NgModule({})
-          export class TestModule {}
+             @NgModule({})
+             export class TestModule {}
 
-          declare function moduleWithProviders(): ModuleWithProviders<TestModule>;
+             declare function moduleWithProviders(): ModuleWithProviders<TestModule>;
 
-          @Component({
-            selector: 'test-cmp',
-            template: '<div></div>',
-            standalone: true,
-            imports: [moduleWithProviders()],
-          })
-          export class TestCmp {}
-        `);
+             @Component({
+               selector: 'test-cmp',
+               template: '<div></div>',
+               standalone: true,
+               imports: [moduleWithProviders()],
+             })
+             export class TestCmpWithLiteralImports {}
+
+             const IMPORTS = [moduleWithProviders()];
+
+             @Component({
+               selector: 'test-cmp',
+               template: '<div></div>',
+               standalone: true,
+               imports: IMPORTS,
+             })
+             export class TestCmpWithReferencedImports {}
+           `);
            const diags = env.driveDiagnostics();
-           expect(diags.length).toBe(1);
+           expect(diags.length).toBe(2);
            expect(diags[0].code).toBe(ngErrorCode(ErrorCode.COMPONENT_UNKNOWN_IMPORT));
+           expect(diags[0].messageText)
+               .toBe(
+                   `'imports' contains a module with providers. Modules with providers are not supported in standalone component imports`);
+           // The import occurs within the array literal, such that the error can be reported for
+           // the specific import that is rejected.
            expect(getSourceCodeForDiagnostic(diags[0])).toEqual('moduleWithProviders()');
+
+           expect(diags[1].code).toBe(ngErrorCode(ErrorCode.COMPONENT_UNKNOWN_IMPORT));
+           expect(diags[1].messageText)
+               .toBe(
+                   `'imports' contains a module with providers. Modules with providers are not supported in standalone component imports`);
+           // The import occurs in a referenced variable, which reports the error on the full
+           // `imports` expression.
+           expect(getSourceCodeForDiagnostic(diags[1])).toEqual('IMPORTS');
          });
 
       it('should error when a standalone component imports a ModuleWithProviders', () => {
@@ -387,6 +410,11 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].code).toBe(ngErrorCode(ErrorCode.COMPONENT_UNKNOWN_IMPORT));
+        expect(diags[0].messageText)
+            .toBe(
+                `'imports' contains a module with providers. Modules with providers are not supported in standalone component imports`);
+        // The static interpreter does not track source locations for locally evaluated functions,
+        // so the error is reported on the full `imports` expression.
         expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[TestModule.forRoot()]');
       });
 
