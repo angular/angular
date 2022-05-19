@@ -585,6 +585,7 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
+          '.pullapprove.yml',
           'packages/upgrade/**',
           'packages/common/upgrade/**',
           'packages/examples/upgrade/**',
