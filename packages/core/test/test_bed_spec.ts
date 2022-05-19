@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ElementRef, ErrorHandler, getNgModuleById, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelementEnd as elementEnd, ɵɵelementStart as elementStart, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
 import {getTestBed, TestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {getNgModuleById} from '../public_api';
 import {TestBedRender3} from '../testing/src/r3_test_bed';
 import {TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from '../testing/src/test_bed_common';
 
@@ -1426,6 +1426,8 @@ describe('TestBed', () => {
      * Function returns a class that represents AOT-compiled version of the following Component:
      *
      * @Component({
+     *  standalone: true|false,
+     *  imports: [...],  // for standalone only
      *  selector: 'comp',
      *  templateUrl: './template.ng.html',
      *  styleUrls: ['./style.css']
@@ -1436,18 +1438,23 @@ describe('TestBed', () => {
      * outside of TestBed) without changing TestBed state and/or Component metadata to compile
      * them via TestBed with external resources.
      */
-    const getAOTCompiledComponent = () => {
+    const getAOTCompiledComponent = (standalone: boolean = false, dependencies: any[] = []) => {
       class ComponentClass {
         static ɵfac = () => new ComponentClass();
         static ɵcmp = defineComponent({
+          standalone,
           type: ComponentClass,
           selectors: [['comp']],
-          decls: 1,
+          decls: 2,
           vars: 0,
+          dependencies,
+          consts: [['dir']],
           template:
               (rf: any, ctx: any) => {
                 if (rf & 1) {
-                  text(0, 'Some template');
+                  elementStart(0, 'div', 0);
+                  text(1, 'Some template');
+                  elementEnd();
                 }
               },
           styles: ['body { margin: 0; }']
@@ -1457,6 +1464,8 @@ describe('TestBed', () => {
           ComponentClass, [{
             type: Component,
             args: [{
+              standalone,
+              imports: dependencies,
               selector: 'comp',
               templateUrl: './template.ng.html',
               styleUrls: ['./style.css'],
@@ -1465,6 +1474,30 @@ describe('TestBed', () => {
           null, null);
       return ComponentClass;
     };
+
+    it('should allow to override a provider used in a dependency of a standalone component', () => {
+      const A = new InjectionToken('A');
+
+      @Directive({
+        selector: '[dir]',
+        providers: [{provide: A, useValue: 'A'}],
+      })
+      class SomeDir {
+        constructor(@Inject(A) private tokenA: string, private elementRef: ElementRef) {}
+
+        ngAfterViewInit() {
+          this.elementRef.nativeElement.innerHTML = this.tokenA;
+        }
+      }
+
+      const SomeComponent = getAOTCompiledComponent(true, [SomeDir]);
+      TestBed.configureTestingModule({imports: [SomeComponent]});
+      TestBed.overrideProvider(A, {useValue: 'Overridden A'});
+      const fixture = TestBed.createComponent(SomeComponent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Overridden A');
+    });
 
     it('should have an ability to override template', () => {
       const SomeComponent = getAOTCompiledComponent();
@@ -1515,7 +1548,8 @@ describe('TestBed', () => {
       });
       const fixture = TestBed.createComponent(TestFixture);
       // The regex avoids any issues with styling attributes.
-      expect(fixture.nativeElement.innerHTML).toMatch(/<comp[^>]*>Some template<\/comp>/);
+      expect(fixture.nativeElement.innerHTML)
+          .toMatch(/<comp[^>]*><div[^>]*>Some template<\/div><\/comp>/);
     });
   });
 
