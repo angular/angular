@@ -6376,7 +6376,7 @@ describe('Integration', () => {
                  [{path: 'user/:name', component: UserCmp}, {path: 'simple', component: SimpleCmp}]
            }]);
 
-           const events: RouterEvent[] = [];
+           const events: Event[] = [];
            router.events.subscribe(e => e instanceof RouterEvent && events.push(e));
 
            // supported URL
@@ -6440,7 +6440,7 @@ describe('Integration', () => {
                  [{path: 'user/:name', component: UserCmp}, {path: 'simple', component: SimpleCmp}]
            }]);
 
-           const events: RouterEvent[] = [];
+           const events: Event[] = [];
            router.events.subscribe(e => e instanceof RouterEvent && events.push(e));
 
            location.simulateHashChange('/include/user/kate(aux:excluded)');
