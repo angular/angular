@@ -35,7 +35,7 @@
         },
         {
           "url": "events",
-          "title": "Events"
+          "title": "Evednts"
         },
         {
           "url": "https://blog.angular.io/",
@@ -210,7 +210,7 @@
                   "url": "guide/property-binding",
                   "title": "Property binding",
                   "tooltip": "Learn how to use property binding."
-                },             
+                },
                 {
                   "url": "guide/two-way-binding",
                   "title": "Two-way binding",
@@ -237,7 +237,7 @@
                   "title": "Transforming data with parameters and chained pipes",
                   "tooltip": "Learn how to use a pipe transform data."
                 }
-             ]
+              ]
             },
             {
               "url": "guide/template-reference-variables",
