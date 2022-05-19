@@ -631,15 +631,14 @@ describe('standalone components, directives and pipes', () => {
   });
 
   describe('unknown template elements', () => {
-    const unknownElErrorRegex =
-        (tag: string) => {
-          const prefix = `'${tag}' is not a known element:`;
-          const message1 = `1. If '${
-              tag}' is an Angular component, then verify that it is included in the '@Component.imports' of this component.`;
-          const message2 = `2. If '${
-              tag}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.`;
-          return new RegExp(`${prefix}\s*\n\s*${message1}\s*\n\s*${message2}`);
-        }
+    const unknownElErrorRegex = (tag: string) => {
+      const prefix = `'${tag}' is not a known element:`;
+      const message1 = `1. If '${
+          tag}' is an Angular component, then verify that it is included in the '@Component.imports' of this component.`;
+      const message2 = `2. If '${
+          tag}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.`;
+      return new RegExp(`${prefix}\s*\n\s*${message1}\s*\n\s*${message2}`);
+    };
 
     it('should warn the user when an unknown element is present', () => {
       const spy = spyOn(console, 'error');
