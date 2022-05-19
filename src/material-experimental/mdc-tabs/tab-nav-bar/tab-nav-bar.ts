@@ -22,7 +22,6 @@ import {
   AfterViewInit,
   NgZone,
   ChangeDetectorRef,
-  OnInit,
   Input,
 } from '@angular/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
@@ -33,18 +32,19 @@ import {
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {
   _MatTabNavBase,
-  _MatTabLinkBase,
+  _MatTabLinkBase as BaseMatTabLink,
   MAT_TABS_CONFIG,
   MatTabsConfig,
 } from '@angular/material/tabs';
-import {DOCUMENT} from '@angular/common';
 import {Directionality} from '@angular/cdk/bidi';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {Platform} from '@angular/cdk/platform';
-import {MatInkBar, MatInkBarItem, MatInkBarFoundation} from '../ink-bar';
+import {MatInkBar, MatInkBarItem, mixinInkBarItem} from '../ink-bar';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+
+const _MatTabLinkBase = mixinInkBarItem(BaseMatTabLink);
 
 /**
  * Navigation component matching the styles of the tab group header.
@@ -140,7 +140,7 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit, After
 @Component({
   selector: '[mat-tab-link], [matTabLink]',
   exportAs: 'matTabLink',
-  inputs: ['disabled', 'disableRipple', 'tabIndex'],
+  inputs: ['disabled', 'disableRipple', 'tabIndex', 'active', 'id'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   templateUrl: 'tab-link.html',
@@ -160,9 +160,7 @@ export class MatTabNav extends _MatTabNavBase implements AfterContentInit, After
     '(keydown)': '_handleKeydown($event)',
   },
 })
-export class MatTabLink extends _MatTabLinkBase implements MatInkBarItem, OnInit, OnDestroy {
-  _foundation = new MatInkBarFoundation(this.elementRef.nativeElement, this._document);
-
+export class MatTabLink extends _MatTabLinkBase implements MatInkBarItem, OnDestroy {
   private readonly _destroyed = new Subject<void>();
 
   constructor(
@@ -171,25 +169,19 @@ export class MatTabLink extends _MatTabLinkBase implements MatInkBarItem, OnInit
     @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalRippleOptions: RippleGlobalOptions | null,
     @Attribute('tabindex') tabIndex: string,
     focusMonitor: FocusMonitor,
-    @Inject(DOCUMENT) private _document: any,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
   ) {
     super(tabNavBar, elementRef, globalRippleOptions, tabIndex, focusMonitor, animationMode);
 
     tabNavBar._fitInkBarToContent.pipe(takeUntil(this._destroyed)).subscribe(fitInkBarToContent => {
-      this._foundation.setFitToContent(fitInkBarToContent);
+      this.fitInkBarToContent = fitInkBarToContent;
     });
-  }
-
-  ngOnInit() {
-    this._foundation.init();
   }
 
   override ngOnDestroy() {
     this._destroyed.next();
     this._destroyed.complete();
     super.ngOnDestroy();
-    this._foundation.destroy();
   }
 }
 
