@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
+import {chain, Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {
   addModuleImportToRootModule,
   getAppModulePath,
@@ -14,8 +14,10 @@ import {
   getProjectMainFile,
   getProjectStyleFile,
   hasNgModuleImport,
+  importsProvidersFrom,
+  addModuleImportToStandaloneBootstrap,
 } from '@angular/cdk/schematics';
-import {getWorkspace} from '@schematics/angular/utility/workspace';
+import {getWorkspace, ProjectDefinition} from '@schematics/angular/utility/workspace';
 import {ProjectType} from '@schematics/angular/utility/workspace-models';
 import {addFontsToIndex} from './fonts/material-fonts';
 import {Schema} from './schema';
@@ -66,41 +68,106 @@ function addAnimationsModule(options: Schema) {
   return async (host: Tree, context: SchematicContext) => {
     const workspace = await getWorkspace(host);
     const project = getProjectFromWorkspace(workspace, options.project);
-    const appModulePath = getAppModulePath(host, getProjectMainFile(project));
 
-    if (options.animations === 'enabled') {
-      // In case the project explicitly uses the NoopAnimationsModule, we should print a warning
-      // message that makes the user aware of the fact that we won't automatically set up
-      // animations. If we would add the BrowserAnimationsModule while the NoopAnimationsModule
-      // is already configured, we would cause unexpected behavior and runtime exceptions.
-      if (hasNgModuleImport(host, appModulePath, noopAnimationsModuleName)) {
-        context.logger.error(
-          `Could not set up "${browserAnimationsModuleName}" ` +
-            `because "${noopAnimationsModuleName}" is already imported.`,
-        );
-        context.logger.info(`Please manually set up browser animations.`);
+    try {
+      addAnimationsModuleToNonStandaloneApp(host, project, context, options);
+    } catch (e) {
+      if (e instanceof SchematicsException && e.message.includes('Bootstrap call not found')) {
+        addAnimationsModuleToStandaloneApp(host, project, context, options);
       } else {
-        addModuleImportToRootModule(
-          host,
-          browserAnimationsModuleName,
-          '@angular/platform-browser/animations',
-          project,
-        );
+        throw e;
       }
-    } else if (
-      options.animations === 'disabled' &&
-      !hasNgModuleImport(host, appModulePath, browserAnimationsModuleName)
-    ) {
-      // Do not add the NoopAnimationsModule module if the project already explicitly uses
-      // the BrowserAnimationsModule.
+    }
+  };
+}
+
+/** Adds the animations module to an app that is bootstrap using the standalone component APIs. */
+function addAnimationsModuleToStandaloneApp(
+  host: Tree,
+  project: ProjectDefinition,
+  context: SchematicContext,
+  options: Schema,
+) {
+  const mainFile = getProjectMainFile(project);
+
+  if (options.animations === 'enabled') {
+    // In case the project explicitly uses the NoopAnimationsModule, we should print a warning
+    // message that makes the user aware of the fact that we won't automatically set up
+    // animations. If we would add the BrowserAnimationsModule while the NoopAnimationsModule
+    // is already configured, we would cause unexpected behavior and runtime exceptions.
+    if (importsProvidersFrom(host, mainFile, noopAnimationsModuleName)) {
+      context.logger.error(
+        `Could not set up "${browserAnimationsModuleName}" ` +
+          `because "${noopAnimationsModuleName}" is already imported.`,
+      );
+      context.logger.info(`Please manually set up browser animations.`);
+    } else {
+      addModuleImportToStandaloneBootstrap(
+        host,
+        mainFile,
+        browserAnimationsModuleName,
+        '@angular/platform-browser/animations',
+      );
+    }
+  } else if (
+    options.animations === 'disabled' &&
+    !importsProvidersFrom(host, mainFile, browserAnimationsModuleName)
+  ) {
+    // Do not add the NoopAnimationsModule module if the project already explicitly uses
+    // the BrowserAnimationsModule.
+    addModuleImportToStandaloneBootstrap(
+      host,
+      mainFile,
+      noopAnimationsModuleName,
+      '@angular/platform-browser/animations',
+    );
+  }
+}
+
+/**
+ * Adds the animations module to an app that is bootstrap
+ * using the non-standalone component APIs.
+ */
+function addAnimationsModuleToNonStandaloneApp(
+  host: Tree,
+  project: ProjectDefinition,
+  context: SchematicContext,
+  options: Schema,
+) {
+  const appModulePath = getAppModulePath(host, getProjectMainFile(project));
+
+  if (options.animations === 'enabled') {
+    // In case the project explicitly uses the NoopAnimationsModule, we should print a warning
+    // message that makes the user aware of the fact that we won't automatically set up
+    // animations. If we would add the BrowserAnimationsModule while the NoopAnimationsModule
+    // is already configured, we would cause unexpected behavior and runtime exceptions.
+    if (hasNgModuleImport(host, appModulePath, noopAnimationsModuleName)) {
+      context.logger.error(
+        `Could not set up "${browserAnimationsModuleName}" ` +
+          `because "${noopAnimationsModuleName}" is already imported.`,
+      );
+      context.logger.info(`Please manually set up browser animations.`);
+    } else {
       addModuleImportToRootModule(
         host,
-        noopAnimationsModuleName,
+        browserAnimationsModuleName,
         '@angular/platform-browser/animations',
         project,
       );
     }
-  };
+  } else if (
+    options.animations === 'disabled' &&
+    !hasNgModuleImport(host, appModulePath, browserAnimationsModuleName)
+  ) {
+    // Do not add the NoopAnimationsModule module if the project already explicitly uses
+    // the BrowserAnimationsModule.
+    addModuleImportToRootModule(
+      host,
+      noopAnimationsModuleName,
+      '@angular/platform-browser/animations',
+      project,
+    );
+  }
 }
 
 /**

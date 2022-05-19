@@ -1,0 +1,42 @@
+{
+  "name": "ng-add-standalone",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "file:../../node_modules/@angular/animations",
+    "@angular/cdk": "file:../../dist/releases/cdk",
+    "@angular/common": "file:../../node_modules/@angular/common",
+    "@angular/compiler": "file:../../node_modules/@angular/compiler",
+    "@angular/core": "file:../../node_modules/@angular/core",
+    "@angular/forms": "file:../../node_modules/@angular/forms",
+    "@angular/material": "file:../../dist/releases/material",
+    "@angular/platform-browser": "file:../../node_modules/@angular/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../node_modules/@angular/platform-browser-dynamic",
+    "@angular/router": "file:../../node_modules/@angular/router",
+    "rxjs": "file:../../node_modules/rxjs",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.11.4"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "file:../../node_modules/@angular-devkit/build-angular",
+    "@angular/cli": "file:../../node_modules/@angular/cli",
+    "@angular/compiler-cli": "file:../../node_modules/@angular/compiler-cli",
+    "@types/jasmine": "~3.9.0",
+    "@types/node": "^12.11.1",
+    "glob": "^7.2.0",
+    "jasmine-core": "~3.9.0",
+    "karma": "~6.3.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage": "~2.0.3",
+    "karma-jasmine": "~4.0.0",
+    "karma-jasmine-html-reporter": "~1.7.0",
+    "typescript": "file:../../node_modules/typescript"
+  }
+}

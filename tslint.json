@@ -178,6 +178,7 @@
       // These CLI-generated projects are not necessarily compliant with the lint
       // rules and they should remain as unmodified as possible.
       "integration/ng-add/**/*",
+      "integration/ng-add-standalone/**/*",
       "integration/ng-update-v13/**/*"
     ]
   }

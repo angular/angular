@@ -9,6 +9,9 @@ integration/ng-update-v13/node_modules
 integration/ng-add/.angular
 integration/ng-add/node_modules
 
+integration/ng-add-standalone/.angular
+integration/ng-add-standalone/node_modules
+
 integration/yarn-pnp-compat/.angular
 integration/yarn-pnp-compat/.yarn/cache
 integration/yarn-pnp-compat/.yarn/unplugged

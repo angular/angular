@@ -227,6 +227,52 @@ describe('ng-add schematic', () => {
       expect(errorOutput.length).toBe(1);
       expect(errorOutput[0]).toMatch(/Could not set up "BrowserAnimationsModule"/);
     });
+
+    it('should add the BrowserAnimationsModule to a bootstrapApplication call', async () => {
+      appTree.delete('/projects/material/src/app/app.module.ts');
+      appTree.overwrite(
+        '/projects/material/src/main.ts',
+        `
+          import { importProvidersFrom } from '@angular/core';
+          import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
+          import { AppComponent } from './app/app.component';
+
+          bootstrapApplication(AppComponent, {
+            providers: [{provide: 'foo', useValue: 1}, importProvidersFrom(BrowserModule)]
+          });
+        `,
+      );
+
+      const tree = await runner
+        .runSchematicAsync('ng-add-setup-project', baseOptions, appTree)
+        .toPromise();
+      const fileContent = getFileContent(tree, '/projects/material/src/main.ts');
+      expect(fileContent).toContain('importProvidersFrom(BrowserModule, BrowserAnimationsModule)');
+    });
+
+    it('should not add BrowserAnimationsModule if NoopAnimationsModule is set up in a bootstrapApplication call', async () => {
+      appTree.delete('/projects/material/src/app/app.module.ts');
+      appTree.overwrite(
+        '/projects/material/src/main.ts',
+        `
+          import { importProvidersFrom } from '@angular/core';
+          import { bootstrapApplication } from '@angular/platform-browser';
+          import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+          import { AppComponent } from './app/app.component';
+
+          bootstrapApplication(AppComponent, {
+            providers: [{provide: 'foo', useValue: 1}, importProvidersFrom(NoopAnimationsModule)]
+          });
+        `,
+      );
+
+      await runner.runSchematicAsync('ng-add-setup-project', baseOptions, appTree).toPromise();
+
+      expect(errorOutput.length).toBe(1);
+      expect(errorOutput[0]).toMatch(
+        /Could not set up "BrowserAnimationsModule" because "NoopAnimationsModule" is already imported/,
+      );
+    });
   });
 
   describe('animations disabled', () => {
