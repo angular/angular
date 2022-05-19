@@ -2,18 +2,15 @@
 
 This guide is about structural directives and provides conceptual information on how such directives work, how Angular interprets their shorthand syntax, and how to add template guard properties to catch template type errors.
 
+Structural directives are directives which change the DOM layout by adding and removing DOM element.
+
+Angular provides a set of built-in structural directives (such as `NgIf`, `NgFor`, `NgSwitch` and others) which are commonly used in all Angular projects. For more information see [Built-in directives](guide/built-in-directives).
+
 <div class="alert is-helpful">
 
 For the example application that this page describes, see the <live-example name="structural-directives"></live-example>.
 
 </div>
-
-## What they are
-
-Structural directives are directives which change the DOM layout by adding and removing DOM element.
-
-Angular provides a set of built-in structural directives (such as `NgIf`, `NgFor`, `NgSwitch` and others) which are commonly used in all Angular projects. For more information see [Built-in directives](guide/built-in-directives).
-
 
 <a id="shorthand"></a>
 <a id="asterisk"></a>
