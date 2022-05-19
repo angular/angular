@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Inject, Injectable, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, ElementRef, Inject, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵ_sanitizeUrl as sanitizeUrl, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
 
@@ -161,9 +161,15 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     }
     this.setHostAttribute('loading', this.getLoadingBehavior());
     this.setHostAttribute('fetchpriority', this.getFetchPriority());
+
+    // Use the `sanitizeUrl` function directly (vs using `DomSanitizer`),
+    // to make the code more tree-shakable (avoid referencing the entire class).
+    // The same function is used when regular `src` is used on an `<img>` element.
+    const src = sanitizeUrl(this.getRewrittenSrc());
+
     // The `src` and `srcset` attributes should be set last since other attributes
     // could affect the image's loading behavior.
-    this.setHostAttribute('src', this.getRewrittenSrc());
+    this.setHostAttribute('src', src);
     if (this.rawSrcset) {
       this.setHostAttribute('srcset', this.getRewrittenSrcset());
     }
@@ -204,7 +210,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     const finalSrcs = this.rawSrcset.split(',').filter(src => src !== '').map(srcStr => {
       srcStr = srcStr.trim();
       const width = widthSrcSet ? parseFloat(srcStr) : parseFloat(srcStr) * this.width!;
-      return `${this.imageLoader({src: this.rawSrc, width})} ${srcStr}`;
+      const imgSrc = sanitizeUrl(this.imageLoader({src: this.rawSrc, width}));
+      return `${imgSrc} ${srcStr}`;
     });
     return finalSrcs.join(', ');
   }
