@@ -690,7 +690,6 @@ describe('standalone components, directives and pipes', () => {
 
     it('should warn the user when an unknown element is present in an instantiated embedded view',
        () => {
-         debugger;
          const spy = spyOn(console, 'error');
          @Component({
            standalone: true,
