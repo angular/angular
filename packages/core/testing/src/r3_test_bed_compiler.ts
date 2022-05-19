@@ -441,7 +441,14 @@ export class R3TestBedCompiler {
       const def = getComponentDef(moduleType);
       const dependencies = maybeUnwrapFn(def.dependencies ?? []);
       for (const dependency of dependencies) {
-        this.applyProviderOverridesToModule(dependency);
+        // Proceed with examining dependencies recursively
+        // when a dependency is a standalone component or an NgModule.
+        // In AOT, the `dependencies` might also contain regular (NgModule-based)
+        // Component, Directive and Pipes. Skip them here, they are handled in a
+        // different location (in the `configureTestingModule` function).
+        if (isStandaloneComponent(dependency) || hasNgModuleDef(dependency)) {
+          this.applyProviderOverridesToModule(dependency);
+        }
       }
     } else {
       const providers = [
@@ -577,7 +584,18 @@ export class R3TestBedCompiler {
         } else if (isStandaloneComponent(value)) {
           this.queueType(value, null);
           const def = getComponentDef(value);
-          queueTypesFromModulesArrayRecur(maybeUnwrapFn(def.dependencies ?? []));
+          const dependencies = maybeUnwrapFn(def.dependencies ?? []);
+          dependencies.forEach((dependency) => {
+            // Note: in AOT, the `dependencies` might also contain regular
+            // (NgModule-based) Component, Directive and Pipes, so we handle
+            // them separately and proceed with recursive process for standalone
+            // Components and NgModules only.
+            if (isStandaloneComponent(dependency) || hasNgModuleDef(dependency)) {
+              queueTypesFromModulesArrayRecur([dependency]);
+            } else {
+              this.queueType(dependency, null);
+            }
+          });
         }
       }
     };
