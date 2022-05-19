@@ -1,4 +1,4 @@
-<h1 class="no-toc">Introduction to the Angular Docs</h1>
+<h1 class="no-toc">Introduction to the Angular</h1>
 
 Angular is an application design framework and development platform for creating efficient and sophisticated single-page apps.
 
