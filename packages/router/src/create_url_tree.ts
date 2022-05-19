@@ -30,41 +30,41 @@ import {forEach, last, shallowEqual} from './utils/collection';
  *
  * ```
  * // create /team/33/user/11
- * createUrlTree(snapshot, ['/team', 33, 'user', 11], null, null);
+ * createUrlTreeFromSnapshot(snapshot, ['/team', 33, 'user', 11]);
  *
  * // create /team/33;expand=true/user/11
- * createUrlTree(snapshot, ['/team', 33, {expand: true}, 'user', 11], null, null);
+ * createUrlTreeFromSnapshot(snapshot, ['/team', 33, {expand: true}, 'user', 11]);
  *
  * // you can collapse static segments like this (this works only with the first passed-in value):
- * createUrlTree(snapshot, ['/team/33/user', userId], null, null);
+ * createUrlTreeFromSnapshot(snapshot, ['/team/33/user', userId]);
  *
  * // If the first segment can contain slashes, and you do not want the router to split it,
  * // you can do the following:
- * createUrlTree(snapshot, [{segmentPath: '/one/two'}], null, null);
+ * createUrlTreeFromSnapshot(snapshot, [{segmentPath: '/one/two'}]);
  *
  * // create /team/33/(user/11//right:chat)
- * createUrlTree(snapshot, ['/team', 33, {outlets: {primary: 'user/11', right: 'chat'}}], null,
- * null);
+ * createUrlTreeFromSnapshot(snapshot, ['/team', 33, {outlets: {primary: 'user/11', right:
+ * 'chat'}}], null, null);
  *
  * // remove the right secondary node
- * createUrlTree(snapshot, ['/team', 33, {outlets: {primary: 'user/11', right: null}}], null, null);
+ * createUrlTreeFromSnapshot(snapshot, ['/team', 33, {outlets: {primary: 'user/11', right: null}}]);
  *
  * // assuming the current URL is for the `/team/33/user/11` and the `ActivatedRouteSnapshot` points
  * to `user/11`
  *
  * // navigate to /team/33/user/11/details
- * createUrlTree(snapshot, ['details'], null, null);
+ * createUrlTreeFromSnapshot(snapshot, ['details']);
  *
  * // navigate to /team/33/user/22
- * createUrlTree(snapshot, ['../22'], null, null);
+ * createUrlTreeFromSnapshot(snapshot, ['../22']);
  *
  * // navigate to /team/44/user/22
- * createUrlTree(snapshot, ['../../team/44/user/22'], null, null);
+ * createUrlTreeFromSnapshot(snapshot, ['../../team/44/user/22']);
  * ```
  */
 export function createUrlTreeFromSnapshot(
-    relativeTo: ActivatedRouteSnapshot, commands: any[], queryParams: Params|null,
-    fragment: string|null): UrlTree {
+    relativeTo: ActivatedRouteSnapshot, commands: any[], queryParams: Params|null = null,
+    fragment: string|null = null): UrlTree {
   const relativeToUrlSegmentGroup = createSegmentGroupFromRoute(relativeTo);
   return createUrlTreeFromSegmentGroup(relativeToUrlSegmentGroup, commands, queryParams, fragment);
 }

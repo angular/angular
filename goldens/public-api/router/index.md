@@ -176,7 +176,7 @@ export class ChildrenOutletContexts {
 export function convertToParamMap(params: Params): ParamMap;
 
 // @public
-export function createUrlTreeFromSnapshot(relativeTo: ActivatedRouteSnapshot, commands: any[], queryParams: Params | null, fragment: string | null): UrlTree;
+export function createUrlTreeFromSnapshot(relativeTo: ActivatedRouteSnapshot, commands: any[], queryParams?: Params | null, fragment?: string | null): UrlTree;
 
 // @public
 export type Data = {
