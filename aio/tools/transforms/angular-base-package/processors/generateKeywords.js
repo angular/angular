@@ -27,6 +27,8 @@ module.exports = function generateKeywordsProcessor(log) {
 
       const dictionary = new Map();
 
+      const emptySet = new Set();
+
       // Keywords to ignore
       const ignoreWords = new Set(this.ignoreWords);
       log.debug('Words to ignore', ignoreWords);
@@ -53,7 +55,7 @@ module.exports = function generateKeywordsProcessor(log) {
           }
         }
 
-        const memberTokens = extractMemberTokens(doc, ignoreWords, dictionary);
+        const memberTokens = extractMemberTokens(doc, dictionary);
 
         // Extract all the keywords from the headings
         let headingTokens = [];
@@ -161,22 +163,22 @@ module.exports = function generateKeywordsProcessor(log) {
         tokens.push(dictionary.get(token));
       }
 
-      function extractMemberTokens(doc, ignoreWords, dictionary) {
+      function extractMemberTokens(doc, dictionary) {
         if (!doc) return [];
 
         let memberContent = [];
 
         if (doc.members) {
-          doc.members.forEach(member => memberContent.push(...tokenize(member.name, ignoreWords, dictionary)));
+          doc.members.forEach(member => memberContent.push(...tokenize(member.name, emptySet, dictionary)));
         }
         if (doc.statics) {
-          doc.statics.forEach(member => memberContent.push(...tokenize(member.name, ignoreWords, dictionary)));
+          doc.statics.forEach(member => memberContent.push(...tokenize(member.name, emptySet, dictionary)));
         }
         if (doc.extendsClauses) {
-          doc.extendsClauses.forEach(clause => memberContent.push(...extractMemberTokens(clause.doc, ignoreWords, dictionary)));
+          doc.extendsClauses.forEach(clause => memberContent.push(...extractMemberTokens(clause.doc, dictionary)));
         }
         if (doc.implementsClauses) {
-          doc.implementsClauses.forEach(clause => memberContent.push(...extractMemberTokens(clause.doc, ignoreWords, dictionary)));
+          doc.implementsClauses.forEach(clause => memberContent.push(...extractMemberTokens(clause.doc, dictionary)));
         }
 
         return memberContent;
