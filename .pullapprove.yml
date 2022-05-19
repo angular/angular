@@ -337,6 +337,7 @@ groups:
           'aio/content/images/guide/providers/**',
           'aio/content/guide/singleton-services.md',
           'aio/content/guide/sharing-ngmodules.md',
+          'aio/content/guide/standalone-components.md',
           'aio/content/guide/structural-directives.md',
           'aio/content/examples/structural-directives/**',
           'aio/content/guide/svg-in-templates.md',
