@@ -210,7 +210,7 @@
                   "url": "guide/property-binding",
                   "title": "Property binding",
                   "tooltip": "Learn how to use property binding."
-                },             
+                },
                 {
                   "url": "guide/two-way-binding",
                   "title": "Two-way binding",
@@ -237,7 +237,7 @@
                   "title": "Transforming data with parameters and chained pipes",
                   "tooltip": "Learn how to use a pipe transform data."
                 }
-             ]
+              ]
             },
             {
               "url": "guide/template-reference-variables",
@@ -825,6 +825,17 @@
               "tooltip": "Information about the Angular Package Format."
             }
           ]
+        }
+      ]
+    },
+    {
+      "title": "Feature preview",
+      "tooltip": "Angular preview features and APIs",
+      "children": [
+        {
+          "url": "guide/standalone-components",
+          "title": "Standalone components",
+          "tooltip": "Standalone components, directives and pipes"
         }
       ]
     },
