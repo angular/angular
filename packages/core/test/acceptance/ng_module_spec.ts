@@ -255,6 +255,90 @@ describe('NgModule', () => {
       expect(spy.calls.mostRecent().args[0])
           .toMatch(/Can't bind to 'unknown-prop' since it isn't a known property of 'div'/);
     });
+
+    it('should log an error on unknown props of `ng-template` if NO_ERRORS_SCHEMA is absent',
+       () => {
+         @Component({
+           selector: 'my-comp',
+           template: `
+              <ng-template *ngIf="condition"></ng-template>
+            `,
+         })
+         class MyComp {
+           condition = true;
+         }
+
+         @NgModule({
+           declarations: [MyComp],
+         })
+         class MyModule {
+         }
+
+         TestBed.configureTestingModule({imports: [MyModule]});
+
+         const spy = spyOn(console, 'error');
+         const fixture = TestBed.createComponent(MyComp);
+         fixture.detectChanges();
+
+         expect(spy.calls.mostRecent().args[0])
+             .toMatch(/Can't bind to 'ngIf' since it isn't a known property of 'ng-template'/);
+       });
+
+    it('should log an error on unknown props of `ng-container` if NO_ERRORS_SCHEMA is absent',
+       () => {
+         @Component({
+           selector: 'my-comp',
+           template: `
+              <ng-container *ngIf="condition"></ng-container>
+            `,
+         })
+         class MyComp {
+           condition = true;
+         }
+
+         @NgModule({
+           declarations: [MyComp],
+         })
+         class MyModule {
+         }
+
+         TestBed.configureTestingModule({imports: [MyModule]});
+
+         const spy = spyOn(console, 'error');
+         const fixture = TestBed.createComponent(MyComp);
+         fixture.detectChanges();
+
+         expect(spy.calls.mostRecent().args[0])
+             .toMatch(/Can't bind to 'ngIf' since it isn't a known property of 'ng-container'/);
+       });
+
+    it('should log an error on unknown props of `ng-content` if NO_ERRORS_SCHEMA is absent', () => {
+      @Component({
+        selector: 'my-comp',
+        template: `
+              <ng-content *ngIf="condition"></ng-content>
+            `,
+      })
+      class MyComp {
+        condition = true;
+      }
+
+      @NgModule({
+        declarations: [MyComp],
+      })
+      class MyModule {
+      }
+
+      TestBed.configureTestingModule({imports: [MyModule]});
+
+      const spy = spyOn(console, 'error');
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      expect(spy.calls.mostRecent().args[0])
+          .toMatch(/Can't bind to 'ngIf' since it isn't a known property of 'ng-content'/);
+    });
+
     it('should throw an error with errorOnUnknownProperties on unknown props if NO_ERRORS_SCHEMA is absent',
        () => {
          @Component({
