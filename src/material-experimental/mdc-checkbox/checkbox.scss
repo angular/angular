@@ -74,6 +74,16 @@
     }
   }
 
+  // Clicking the label toggles the checkbox, but MDC does not include any styles that inform the
+  // user of this. Therefore we add the pointer cursor on top of MDC's styles.
+  label {
+    cursor: pointer;
+  }
+
+  &.mat-mdc-checkbox-disabled label {
+    cursor: default;
+  }
+
   // The MDC styles result in extra padding if the label is present but empty. To fix this we hide
   // the label when it is empty.
   label:empty {
