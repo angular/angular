@@ -372,17 +372,11 @@ runInEachFileSystem(() => {
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(2);
            expect(diags[0].code).toBe(ngErrorCode(ErrorCode.COMPONENT_UNKNOWN_IMPORT));
-           expect(diags[0].messageText)
-               .toBe(
-                   `'imports' contains a module with providers. Modules with providers are not supported in standalone component imports`);
            // The import occurs within the array literal, such that the error can be reported for
            // the specific import that is rejected.
            expect(getSourceCodeForDiagnostic(diags[0])).toEqual('moduleWithProviders()');
 
            expect(diags[1].code).toBe(ngErrorCode(ErrorCode.COMPONENT_UNKNOWN_IMPORT));
-           expect(diags[1].messageText)
-               .toBe(
-                   `'imports' contains a module with providers. Modules with providers are not supported in standalone component imports`);
            // The import occurs in a referenced variable, which reports the error on the full
            // `imports` expression.
            expect(getSourceCodeForDiagnostic(diags[1])).toEqual('IMPORTS');
@@ -410,9 +404,6 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].code).toBe(ngErrorCode(ErrorCode.COMPONENT_UNKNOWN_IMPORT));
-        expect(diags[0].messageText)
-            .toBe(
-                `'imports' contains a module with providers. Modules with providers are not supported in standalone component imports`);
         // The static interpreter does not track source locations for locally evaluated functions,
         // so the error is reported on the full `imports` expression.
         expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[TestModule.forRoot()]');

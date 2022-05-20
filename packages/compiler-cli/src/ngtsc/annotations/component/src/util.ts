@@ -104,7 +104,9 @@ export function validateAndFlattenComponentImports(imports: ResolvedValue, expr:
       }
       diagnostics.push(makeDiagnostic(
           ErrorCode.COMPONENT_UNKNOWN_IMPORT, origin,
-          `'imports' contains a module with providers. Modules with providers are not supported in standalone component imports`));
+          `'imports' contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. ` +
+              `These calls are not used to configure components and are not valid in standalone component imports - ` +
+              `consider importing them in the application bootstrap instead.`));
     } else {
       diagnostics.push(
           createValueHasWrongTypeError(
