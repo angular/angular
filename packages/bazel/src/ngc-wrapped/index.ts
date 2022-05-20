@@ -254,37 +254,8 @@ export function compile({
         }
       };
 
-  // Patch fileExists when resolving modules, so that CompilerHost can ask TypeScript to
-  // resolve non-existing generated files that don't exist on disk, but are
-  // synthetic and added to the `programWithStubs` based on real inputs.
-  const generatedFileModuleResolverHost = Object.create(tsHost);
-  generatedFileModuleResolverHost.fileExists = (fileName: string) => {
-    const match = NGC_GEN_FILES.exec(fileName);
-    if (match) {
-      const [, file, suffix, ext] = match;
-      // Performance: skip looking for files other than .d.ts or .ts
-      if (ext !== '.ts' && ext !== '.d.ts') return false;
-      if (suffix.indexOf('ngstyle') >= 0) {
-        // Look for foo.css on disk
-        fileName = file;
-      } else {
-        // Look for foo.d.ts or foo.ts on disk
-        fileName = file + (ext || '');
-      }
-    }
-    return tsHost.fileExists(fileName);
-  };
-
-  function generatedFileModuleResolver(
-      moduleName: string, containingFile: string,
-      compilerOptions: ts.CompilerOptions): ts.ResolvedModuleWithFailedLookupLocations {
-    return ts.resolveModuleName(
-        moduleName, containingFile, compilerOptions, generatedFileModuleResolverHost);
-  }
-
   if (!bazelHost) {
-    bazelHost = new CompilerHost(
-        files, compilerOpts, bazelOpts, tsHost, fileLoader, generatedFileModuleResolver);
+    bazelHost = new CompilerHost(files, compilerOpts, bazelOpts, tsHost, fileLoader);
   }
 
   if (isInIvyMode) {
@@ -329,8 +300,24 @@ export function compile({
     bazelHost.transformTypesToClosure = true;
   }
 
+  // Patch fileExists when resolving modules, so that CompilerHost can ask TypeScript to
+  // resolve non-existing generated files that don't exist on disk, but are
+  // synthetic and added to the `programWithStubs` based on real inputs.
   const origBazelHostFileExist = bazelHost.fileExists;
   bazelHost.fileExists = (fileName: string) => {
+    const match = NGC_GEN_FILES.exec(fileName);
+    if (match) {
+      const [, file, suffix, ext] = match;
+      // Performance: skip looking for files other than .d.ts or .ts
+      if (ext !== '.ts' && ext !== '.d.ts') return false;
+      if (suffix.indexOf('ngstyle') >= 0) {
+        // Look for foo.css on disk
+        fileName = file;
+      } else {
+        // Look for foo.d.ts or foo.ts on disk
+        fileName = file + (ext || '');
+      }
+    }
     if (NGC_ASSETS.test(fileName)) {
       return tsHost.fileExists(fileName);
     }
