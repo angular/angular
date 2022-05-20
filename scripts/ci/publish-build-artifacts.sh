@@ -48,7 +48,7 @@ function publishRepo {
   mkdir -p ${REPO_DIR}
 
   echo "Starting cloning process of ${REPO_URL} into ${REPO_DIR}.."
-  
+
   (
     if [[ $(git ls-remote --heads ${REPO_URL} ${BRANCH}) ]]; then
       echo "Branch ${BRANCH} already exists. Cloning that branch."
@@ -57,7 +57,7 @@ function publishRepo {
       cd ${REPO_DIR}
       echo "Cloned repository and switched into the repository directory (${REPO_DIR})."
     else
-      echo "Branch ${BRANCH} does not exist on ${packageRepo} yet."
+      echo "Branch ${BRANCH} does not exist on ${BUILD_REPO} yet."
       echo "Cloning default branch and creating branch '${BRANCH}' on top of it."
 
       git clone ${REPO_URL} ${REPO_DIR} --depth 1
