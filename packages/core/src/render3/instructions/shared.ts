@@ -278,6 +278,10 @@ export function isHostComponentStandalone(lView: LView): boolean {
 
   const declarationLView = lView[DECLARATION_COMPONENT_VIEW] as LView<Type<unknown>>;
   const context = declarationLView[CONTEXT];
+
+  // Unable to obtain a context, fall back to the non-standalone scenario.
+  if (!context) return false;
+
   const componentDef = getComponentDef(context.constructor);
   return !!(componentDef?.standalone);
 }
