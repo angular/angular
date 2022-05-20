@@ -7,7 +7,6 @@
  */
 
 import {Directive, ElementRef, Input} from '@angular/core';
-import {ponyfill} from '@material/dom';
 
 /**
  * Internal directive that maintains a MDC floating label. This directive does not
@@ -33,15 +32,38 @@ export class MatFormFieldFloatingLabel {
   /** Whether the label is floating. */
   @Input() floating: boolean = false;
 
-  constructor(private _elementRef: ElementRef) {}
+  constructor(private _elementRef: ElementRef<HTMLElement>) {}
 
   /** Gets the width of the label. Used for the outline notch. */
   getWidth(): number {
-    return ponyfill.estimateScrollWidth(this._elementRef.nativeElement);
+    return estimateScrollWidth(this._elementRef.nativeElement);
   }
 
   /** Gets the HTML element for the floating label. */
   get element(): HTMLElement {
     return this._elementRef.nativeElement;
   }
+}
+
+/**
+ * Estimates the scroll width of an element.
+ * via https://github.com/material-components/material-components-web/blob/c0a11ef0d000a098fd0c372be8f12d6a99302855/packages/mdc-dom/ponyfill.ts
+ */
+function estimateScrollWidth(element: HTMLElement): number {
+  // Check the offsetParent. If the element inherits display: none from any
+  // parent, the offsetParent property will be null (see
+  // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetParent).
+  // This check ensures we only clone the node when necessary.
+  const htmlEl = element as HTMLElement;
+  if (htmlEl.offsetParent !== null) {
+    return htmlEl.scrollWidth;
+  }
+
+  const clone = htmlEl.cloneNode(true) as HTMLElement;
+  clone.style.setProperty('position', 'absolute');
+  clone.style.setProperty('transform', 'translate(-9999px, -9999px)');
+  document.documentElement.appendChild(clone);
+  const scrollWidth = clone.scrollWidth;
+  clone.remove();
+  return scrollWidth;
 }

@@ -22,8 +22,6 @@ ng_module(
         "//src/material-experimental/mdc-core",
         "//src/material/form-field",
         "@npm//@angular/forms",
-        "@npm//@material/line-ripple",
-        "@npm//@material/textfield",
         "@npm//rxjs",
     ],
 )
