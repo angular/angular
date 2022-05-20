@@ -52,18 +52,32 @@ export interface DirectiveDecorator {
    * ### Declaring directives
    *
    * Directives are [declarables](guide/glossary#declarable).
-   * They must be declared by an NgModule
-   * in order to be usable in an app.
+   * They must be declared as [standalone](guide/standalone-components) or by an NgModule in order
+   * to be usable in an app.
    *
-   * A directive must belong to exactly one NgModule. Do not re-declare
-   * a directive imported from another module.
-   * List the directive class in the `declarations` field of an NgModule.
+   * A directive must either be standalone or declared inside exactly one NgModule.
+   * Do not re-declare a standalone directive or a directive imported from another module.
+   *
+   * You can either declare the directive as standalone and import it in the `imports` field of
+   * another standalone component or NgModule:
    *
    * ```ts
-   * declarations: [
-   *  AppComponent,
-   *  MyDirective
-   * ],
+   * @Component({
+   *   standalone: true,
+   *   selector: 'standalone-component',
+   *   template: '<div my-directive></div>',
+   *   imports: [MyDirective]
+   * })
+   * class SomeStandaloneComponent {}
+   * ```
+   *
+   * Or list the directive class in the `declarations` field of an NgModule:
+   *
+   * ```ts
+   * @NgModule({
+   *   declarations: [MyDirective]
+   * })
+   * class SomeNgModule {}
    * ```
    *
    * @Annotation
