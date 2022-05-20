@@ -1053,7 +1053,7 @@ export function elementPropertyInternal<T>(
       validateAgainstEventProperties(propName);
       if (!validateProperty(element, tNode.value, propName, tView.schemas)) {
         // Return here since we only log warnings for unknown properties.
-        handleUnknownPropertyError(propName, tNode.value);
+        handleUnknownPropertyError(propName, tNode);
         return;
       }
       ngDevMode.rendererSetProperty++;
@@ -1072,7 +1072,7 @@ export function elementPropertyInternal<T>(
     // If the node is a container and the property didn't
     // match any of the inputs or schemas we should throw.
     if (ngDevMode && !matchingSchemas(tView.schemas, tNode.value)) {
-      handleUnknownPropertyError(propName, tNode.value);
+      handleUnknownPropertyError(propName, tNode);
     }
   }
 }
@@ -1189,7 +1189,18 @@ export function matchingSchemas(schemas: SchemaMetadata[]|null, tagName: string|
  * @param propName Name of the invalid property.
  * @param tagName Name of the node on which we encountered the property.
  */
-function handleUnknownPropertyError(propName: string, tagName: string): void {
+function handleUnknownPropertyError(propName: string, tNode: TNode): void {
+  let tagName = tNode.value;
+
+  // Special-case a situation when a structural directive is applied to
+  // an `<ng-template>` element, for example: `<ng-template *ngIf="true">`.
+  // In this case the compiler generates the `ɵɵtemplate` instruction with
+  // the `null` as the tagName. The directive matching logic at runtime relies
+  // on this effect (see `isInlineTemplate`), thus using the 'ng-template' as
+  // a default value of the `tNode.value` is not feasible at this moment.
+  if (!tagName && tNode.type === TNodeType.Container) {
+    tagName = 'ng-template';
+  }
   const message = `Can't bind to '${propName}' since it isn't a known property of '${tagName}'.`;
   if (shouldThrowErrorOnUnknownProperty) {
     throw new RuntimeError(RuntimeErrorCode.UNKNOWN_BINDING, message);
