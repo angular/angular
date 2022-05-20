@@ -28,6 +28,7 @@ module.exports = function generateKeywordsProcessor(log) {
       const dictionary = new Map();
 
       const emptySet = new Set();
+
       // Keywords to ignore
       const ignoreWords = new Set(this.ignoreWords);
       log.debug('Words to ignore', ignoreWords);
