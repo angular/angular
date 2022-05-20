@@ -394,6 +394,20 @@ describe('MatNavListHarness', () => {
       expect(items.length).toBe(1);
       expect(await items[0].getHref()).toBe('/somestuff');
     });
+
+    it('should get activated state', async () => {
+      const items = await harness.getItems();
+      const activated = await parallel(() => items.map(item => item.isActivated()));
+      expect(activated).toEqual([false, true, false, false, false]);
+    });
+
+    it('should get item harness by activated state', async () => {
+      const activatedItems = await harness.getItems({activated: true});
+      const activatedItemsText = await parallel(() =>
+        activatedItems.map(item => item.getFullText()),
+      );
+      expect(activatedItemsText).toEqual(['Item 2']);
+    });
   });
 });
 
@@ -587,7 +601,7 @@ class ActionListHarnessTest {
         </a>
         <div matSubheader>Section 1</div>
         <mat-divider></mat-divider>
-        <a mat-list-item href (click)="onClick($event, 'Item 2')">
+        <a mat-list-item activated href (click)="onClick($event, 'Item 2')">
           <span class="test-item-content">Item 2</span>
         </a>
         <a

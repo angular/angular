@@ -34,6 +34,7 @@ export interface ActionListItemHarnessFilters extends BaseListItemHarnessFilters
 
 export interface NavListItemHarnessFilters extends BaseListItemHarnessFilters {
   href?: string | RegExp | null;
+  activated?: boolean;
 }
 
 export interface ListOptionHarnessFilters extends BaseListItemHarnessFilters {
