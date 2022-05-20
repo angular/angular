@@ -51,20 +51,52 @@ export interface DirectiveDecorator {
    *
    * ### Declaring directives
    *
-   * Directives are [declarables](guide/glossary#declarable).
-   * They must be declared by an NgModule
-   * in order to be usable in an app.
+   * In order to make a directive available to other components in your application, you should do
+   * one of the following:
+   *  - either mark the directive as [standalone](guide/standalone-components),
+   *  - or declare it in an NgModule by adding it to the `declarations` and `exports` fields.
    *
-   * A directive must belong to exactly one NgModule. Do not re-declare
-   * a directive imported from another module.
-   * List the directive class in the `declarations` field of an NgModule.
+   * ** Marking a directive as standalone **
+   *
+   * You can add the `standalone: true` flag to the Directive decorator metadata to declare it as
+   * [standalone](guide/standalone-components):
    *
    * ```ts
-   * declarations: [
-   *  AppComponent,
-   *  MyDirective
-   * ],
+   * @Directive({
+   *   standalone: true,
+   *   selector: 'my-directive',
+   * })
+   * class MyDirective {}
    * ```
+   *
+   * When marking a directive as standalone, please make sure that the directive is not already
+   * declared in an NgModule.
+   *
+   *
+   * ** Declaring a directive in an NgModule **
+   *
+   * Another approach is to declare a directive in an NgModule:
+   *
+   * ```ts
+   * @Directive({
+   *   selector: 'my-directive',
+   * })
+   * class MyDirective {}
+   *
+   * @NgModule({
+   *   declarations: [MyDirective, SomeComponent],
+   *   exports: [MyDirective], // making it available outside of this module
+   * })
+   * class SomeNgModule {}
+   * ```
+   *
+   * When declaring a directive in an NgModule, please make sure that:
+   *  - the directive is declared in exactly one NgModule.
+   *  - the directive is not standalone.
+   *  - you do not re-declare a directive imported from another module.
+   *  - the directive is included into the `exports` field as well if you want this directive to be
+   *    accessible for components outside of the NgModule.
+   *
    *
    * @Annotation
    */
