@@ -264,8 +264,8 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     environment:
-      BROWSER_STACK_USERNAME: 'angularteam1'
-      BROWSER_STACK_ACCESS_KEY: 'CaXMeMHD9pr5PHg8N7Jq'
+      BROWSER_STACK_USERNAME: 'angulardevops_uNDx4q'
+      BROWSER_STACK_ACCESS_KEY: 'PXeXP2qrTvRooAFG7DPW'
     steps:
       - checkout_and_rebase
       - *restore_cache
@@ -284,7 +284,7 @@ jobs:
     resource_class: xlarge
     environment:
       SAUCE_USERNAME: 'angular-components'
-      SAUCE_ACCESS_KEY: '63348201a846-eeb9-3ee4-300f-ea990b8a'
+      SAUCE_ACCESS_KEY: '687f2bb5cacc-3bcb-5b64-8e8a-3825fc13'
       # Note: This number should not be too high because otherwise we might run into
       # a rate limit exception.
       KARMA_PARALLEL_BROWSERS: 2
