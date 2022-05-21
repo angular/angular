@@ -163,7 +163,8 @@ function isNotSpreadElement(e: t.Expression|t.SpreadElement): e is t.Expression 
  * Notably in the Babel AST, object patterns (for destructuring) could be of type
  * `t.PrivateName` so we need a distinction between object expressions and patterns.
  */
-function isObjectExpressionPropertyName(n: t.Node): n is t.Identifier|t.StringLiteral|t.NumericLiteral {
+function isObjectExpressionPropertyName(n: t.Node): n is t.Identifier|t.StringLiteral|
+    t.NumericLiteral {
   return t.isIdentifier(n) || t.isStringLiteral(n) || t.isNumericLiteral(n);
 }
 
