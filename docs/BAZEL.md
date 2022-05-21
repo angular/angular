@@ -48,9 +48,18 @@ new as of May 2017 and not very stable yet.
 
 ## Testing Angular
 
-- Test package in node: `yarn bazel test packages/core/test:test`
-- Test package in karma: `yarn bazel test packages/core/test:test_web`
-- Test all packages: `yarn bazel test packages/...`
+- Test package in node: `yarn test packages/core/test:test`
+- Test package in karma: `yarn test packages/core/test:test_web`
+- Test all packages: `yarn test packages/...`
+
+**Note**: The ellipsis in the last command above are not meant to be substituted by a package name, but
+are used by Bazel as a wildcard to execute all tests in the specified path. To execute all the tests for a
+single package, the commands are (exemplary):
+- `yarn test //packages/core/...` for all tests, or
+- `yarn test //packages/core/test:test` for a particular test suite.
+
+**Note**: The first test run will be much slower than future runs. This is because future runs will
+benefit from Bazel's capability to do incremental builds.
 
 You can use [ibazel] to get a "watch mode" that continuously
 keeps the outputs up-to-date as you save sources.
