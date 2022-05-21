@@ -17,6 +17,7 @@
     allowfullscreen></iframe>
   </div>
   {% endif%}
+  {% if doc.videoInformation %}{$ doc.videoInformation | marked $}{% endif%}
 
   <div class="error-description">
     <h2>Description</h2>
