@@ -51,7 +51,7 @@ setSecretVar CI_SECRET_PAYLOAD_FIREBASE_TOKEN "$ANGULAR_PAYLOAD_TOKEN";
 # Define SauceLabs environment variables for CircleCI.
 ####################################################################################################
 setPublicVar SAUCE_USERNAME "angular-framework";
-setSecretVar SAUCE_ACCESS_KEY "0c731274ed5f-cbc9-16f4-021a-9835e39f";
+setSecretVar SAUCE_ACCESS_KEY "955e8871-a9f7-4a30-81cb-a68b00642b3c";
 # TODO(josephperrott): Remove environment variables once all saucelabs tests are via bazel method.
 setPublicVar SAUCE_LOG_FILE /tmp/angular/sauce-connect.log
 setPublicVar SAUCE_READY_FILE /tmp/angular/sauce-connect-ready-file.lock
