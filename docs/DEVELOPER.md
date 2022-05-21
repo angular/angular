@@ -74,24 +74,15 @@ node ./scripts/build/build-packages-dist.js
 
 ## Running Tests Locally
 
-Bazel is used as the primary tool for building and testing Angular. Building and testing are
-incremental with Bazel, and it's possible to only run tests for an individual package instead
-of for all packages. Read more about this in the [BAZEL.md](./BAZEL.md) document.
+Bazel is used as the primary tool for building and testing Angular.
 
-You should execute all test suites before submitting a PR to GitHub.
-- `yarn test //packages/...`
+To see how to run and debug Angular tests locally please refer to the Bazel [Testing Angular](./BAZEL.md#testing-angular) section.
 
-**Note**: The ellipsis in the commands above is not meant to be substituted by a package name, but
-is used by Bazel as a wildcard to execute all tests in the specified path. To execute tests for a
-single package, the commands are (exemplary):
-- `yarn test //packages/core/...` for all tests, or
-- `yarn test //packages/core/test:test_web_firefox` for a particular test suite.
+Note that you should execute all test suites before submitting a PR to GitHub (`yarn test //packages/...`).
 
-**Note**: The first test run will be much slower than future runs. This is because future runs will
-benefit from Bazel's capability to do incremental builds.
+However, affected tests will be executed on our CI infrastructure. So if you forgot to run some affected tests which would fail, GitHub will indicate the error state and present you the failures.
 
-All the tests are executed on our Continuous Integration infrastructure. PRs can only be
-merged if the code is formatted properly and all tests are passing.
+PRs can only be merged if the code is formatted properly and all tests are passing.
 
 <a name="formatting-your-source-code">
 <a name="clang-format"></a>
