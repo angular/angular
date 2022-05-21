@@ -220,6 +220,8 @@ jobs:
       - save_month_to_file
       - init_environment
       - ng-dev-infra/rebase-on-target-branch
+          branch: << pipeline.git.branch >>
+          base_revision: << pipeline.git.base_revision >>
       - run:
           name: Rebase PR on target branch
           # After checkout, rebase on top of target branch.
