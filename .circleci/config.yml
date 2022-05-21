@@ -219,7 +219,7 @@ jobs:
       - checkout
       - save_month_to_file
       - init_environment
-      - ng-dev-infra/rebase-on-target-branch
+      - ng-dev-infra/rebase-on-target-branch:
           branch: << pipeline.git.branch >>
           base_revision: << pipeline.git.base_revision >>
       - run:
