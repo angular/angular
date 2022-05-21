@@ -51,34 +51,52 @@ export interface DirectiveDecorator {
    *
    * ### Declaring directives
    *
-   * Directives are [declarables](guide/glossary#declarable).
-   * They must be declared as [standalone](guide/standalone-components) or by an NgModule in order
-   * to be usable in an app.
+   * In order to make a directive available to other components in your application, you should do
+   * one of the following:
+   *  - either mark the directive as [standalone](guide/standalone-components),
+   *  - or declare it in an NgModule by adding it to the `declarations` and `exports` fields.
    *
-   * A directive must either be standalone or declared inside exactly one NgModule.
-   * Do not re-declare a standalone directive or a directive imported from another module.
+   * ** Marking a directive as standalone **
    *
-   * You can either declare the directive as standalone and import it in the `imports` field of
-   * another standalone component or NgModule:
+   * You can add the `standalone: true` flag to the Directive decorator metadata to declare it as
+   * [standalone](guide/standalone-components):
    *
    * ```ts
-   * @Component({
+   * @Directive({
    *   standalone: true,
-   *   selector: 'standalone-component',
-   *   template: '<div my-directive></div>',
-   *   imports: [MyDirective]
+   *   selector: 'my-directive',
    * })
-   * class SomeStandaloneComponent {}
+   * class MyDirective {}
    * ```
    *
-   * Or list the directive class in the `declarations` field of an NgModule:
+   * When marking a directive as standalone, please make sure that the directive is not already
+   * declared in an NgModule.
+   *
+   *
+   * ** Declaring a directive in an NgModule **
+   *
+   * Another approach is to declare a directive in an NgModule:
    *
    * ```ts
+   * @Directive({
+   *   selector: 'my-directive',
+   * })
+   * class MyDirective {}
+   *
    * @NgModule({
-   *   declarations: [MyDirective]
+   *   declarations: [MyDirective, SomeComponent],
+   *   exports: [MyDirective], // making it available outside of this module
    * })
    * class SomeNgModule {}
    * ```
+   *
+   * When declaring a directive in an NgModule, please make sure that:
+   *  - the directive is declared in exactly one NgModule.
+   *  - the directive is not standalone.
+   *  - you do not re-declare a directive imported from another module.
+   *  - the directive is included into the `exports` field as well if you want this directive to be
+   *    accessible for components outside of the NgModule.
+   *
    *
    * @Annotation
    */
