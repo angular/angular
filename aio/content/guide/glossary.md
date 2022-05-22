@@ -249,15 +249,13 @@ You can declare [components][AioGuideGlossaryComponent], [directives][AioGuideGl
 
 Do not declare the following:
 
-*   A class already declared as standalone.
-*   A class that is already declared in another NgModule.
+*   A class that is already declared in another NgModule
 *   An array of directives imported from another package.
-    For example, do not declare `FORMS_DIRECTIVES` from `@angular/forms`.
-*   NgModule classes.
-*   Service classes.
-*   Non-Angular classes and objects, such as strings, numbers, functions, entity models, configurations, business logic, and helper classes.
+    For example, do not declare `FORMS_DIRECTIVES` from `@angular/forms`
 
-Note that declarables can also be declared as standalone and simply be imported inside other standalone components or existing NgModules, to learn more, see the [Standalone components guide](guide/standalone-components).
+*   NgModule classes
+*   Service classes
+*   Non-Angular classes and objects, such as strings, numbers, functions, entity models, configurations, business logic, and helper classes
 
 ## decorator | decoration
 
