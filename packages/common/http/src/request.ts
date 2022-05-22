@@ -177,7 +177,7 @@ export class HttpRequest<T> {
     withCredentials?: boolean,
   });
   constructor(
-      method: string, readonly url: string, third?: T|{
+      method: string, public url: string, third?: T|{
         headers?: HttpHeaders,
         context?: HttpContext,
         reportProgress?: boolean,
@@ -243,6 +243,10 @@ export class HttpRequest<T> {
     if (!this.context) {
       this.context = new HttpContext();
     }
+
+    // trim the request URL so that the outcome of sending an HTTP request behaves consistently,
+    // regardless of whether or not query parameters are utilized (#45418)
+    this.url = url.trim();
 
     // If no parameters have been passed in, construct a new HttpUrlEncodedParams instance.
     if (!this.params) {

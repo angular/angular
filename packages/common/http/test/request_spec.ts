@@ -187,6 +187,10 @@ const TEST_STRING = `I'm a body!`;
         const req = baseReq.clone({setParams: {'test': 'false'}});
         expect(req.urlWithParams).toEqual('/test?test=false');
       });
+      it('removes trailing whitespaces from the base URL', () => {
+        const httpRequest = new HttpRequest('GET', '/test   ', null, {params});
+        expect(httpRequest.urlWithParams).toEqual('/test?test=true');
+      });
     });
   });
 }
