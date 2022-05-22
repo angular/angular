@@ -780,7 +780,7 @@
     "name": "_randomChar"
   },
   {
-    "name": "_renderCompCount"
+    "name": "componentDefCount"
   },
   {
     "name": "_stripIndexHtml"
