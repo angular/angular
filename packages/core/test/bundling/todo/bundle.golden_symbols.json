@@ -165,7 +165,7 @@
     "name": "_injectImplementation"
   },
   {
-    "name": "_renderCompCount"
+    "name": "componentDefCount"
   },
   {
     "name": "_symbolIterator"
