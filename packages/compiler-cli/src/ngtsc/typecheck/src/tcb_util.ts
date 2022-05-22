@@ -15,7 +15,6 @@ import {getTokenAtPosition} from '../../util/src/typescript';
 import {FullTemplateMapping, SourceLocation, TemplateId, TemplateSourceMapping} from '../api';
 
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
-import {checkIfClassIsExported} from './ts_util';
 import {TypeParameterEmitter} from './type_parameter_emitter';
 
 /**
@@ -73,21 +72,20 @@ export enum TcbInliningRequirement {
 }
 
 export function requiresInlineTypeCheckBlock(
-    node: ClassDeclaration<ts.ClassDeclaration>, env: ReferenceEmitEnvironment,
+    ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, env: ReferenceEmitEnvironment,
     usedPipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
     reflector: ReflectionHost): TcbInliningRequirement {
   // In order to qualify for a declared TCB (not inline) two conditions must be met:
-  // 1) the class must be exported
+  // 1) the class must be suitable to be referenced from `env` (e.g. it must be exported)
   // 2) it must not have contextual generic type bounds
-  if (!checkIfClassIsExported(node)) {
+  if (!env.canReferenceType(ref)) {
     // Condition 1 is false, the class is not exported.
     return TcbInliningRequirement.MustInline;
-  } else if (!checkIfGenericTypeBoundsCanBeEmitted(node, reflector, env)) {
+  } else if (!checkIfGenericTypeBoundsCanBeEmitted(ref.node, reflector, env)) {
     // Condition 2 is false, the class has constrained generic types. It should be checked with an
     // inline TCB if possible, but can potentially use fallbacks to avoid inlining if not.
     return TcbInliningRequirement.ShouldInlineForGenericBounds;
-  } else if (Array.from(usedPipes.values())
-                 .some(pipeRef => !checkIfClassIsExported(pipeRef.node))) {
+  } else if (Array.from(usedPipes.values()).some(pipeRef => !env.canReferenceType(pipeRef))) {
     // If one of the pipes used by the component is not exported, a non-inline TCB will not be able
     // to import it, so this requires an inline TCB.
     return TcbInliningRequirement.MustInline;

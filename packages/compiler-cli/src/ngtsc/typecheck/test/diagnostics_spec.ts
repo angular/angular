@@ -688,6 +688,18 @@ class TestComponent {
           [`TestComponent.html(1, 15): Type 'number' is not assignable to type 'string'.`]);
     });
   });
+
+  // https://github.com/angular/angular/issues/44999
+  it('should not fail for components outside of rootDir', () => {
+    // This test configures a component that is located outside the configured `rootDir`. Such
+    // configuration requires that an inline type-check block is used as the reference emitter does
+    // not allow generating imports outside `rootDir`.
+    const messages =
+        diagnose(`{{invalid}}`, `export class TestComponent {}`, [], [], {}, {rootDir: '/root'});
+
+    expect(messages).toEqual(
+        [`TestComponent.html(1, 3): Property 'invalid' does not exist on type 'TestComponent'.`]);
+  });
 });
 
 function diagnose(
