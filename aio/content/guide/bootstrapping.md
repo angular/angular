@@ -54,16 +54,15 @@ The default application created by the Angular CLI only has one component, `AppC
 ## The `declarations` array
 
 The module's `declarations` array tells Angular which components belong to that module.
-As you create more components, add them to `declarations`.
 
-You must declare every component in exactly one `NgModule` class.
-If you use a component without declaring it, Angular returns an error message.
+Every component must either be [standalone](guide/standalone-components) or declared in exactly one `NgModule`.
+If you use a non-standalone component without declaring it, Angular returns an error message.
 
-The `declarations` array only takes declarables. Declarables are components, [directives](guide/attribute-directives) and [pipes](guide/pipes).
+The `declarations` array only takes declarables. Declarables are [components](guide/components), [directives](guide/attribute-directives) and [pipes](guide/pipes).
 All of a module's declarables must be in the `declarations` array.
-Declarables must belong to exactly one module. The compiler emits an error if you try to declare the same class in more than one module.
+Declarables must be either standalone or belong to exactly one module. The compiler emits an error if you try to declare a standalone entity or the same class in more than one module.
 
-These declared classes are visible within the module but invisible to components in a different module, unless they are exported from this module and the other module imports this one.
+The classes declared in a module are visible within the module but invisible to components in a different module, unless they are exported from this module and the other module imports this one.
 
 An example of what goes into a declarations array follows:
 
@@ -77,7 +76,7 @@ declarations: [
 
 </code-example>
 
-A declarable can only belong to one module, so only declare it in one `@NgModule`.
+A non-standalone declarable can only belong to one module, so only declare it in one `@NgModule`.
 When you need it elsewhere, import the module that contains the declarable you need.
 
 ### Using directives with `@NgModule`
@@ -108,7 +107,7 @@ This example uses `AppModule`, but you'd do it the same way for a feature module
 For more about directives, see [Attribute Directives](guide/attribute-directives) and [Structural Directives](guide/structural-directives).
 You'd also use the same technique for [pipes](guide/pipes) and components.
 
-Remember, components, directives, and pipes belong to one module only.
+Remember, components, directives, and pipes can either be standalone or belong to one module only.
 You only need to declare them once in your application because you share them by importing the necessary modules.
 This saves you time and helps keep your application lean.
 
@@ -116,14 +115,14 @@ This saves you time and helps keep your application lean.
 
 ## The `imports` array
 
-The module's `imports` array appears exclusively in the `@NgModule` metadata object.
-It tells Angular about other NgModules that this particular module needs to function properly.
+The module's `imports` array appears in the `@NgModule`, `@Component`, `@Directive` and `@Pipe` metadata objects.
+It tells Angular about other NgModules or standalone entities that this particular module needs to function properly.
 
 <code-example header="src/app/app.module.ts (excerpt)" path="bootstrapping/src/app/app.module.ts" region="imports"></code-example>
 
 This list of modules are those that export components, directives, or pipes that component templates in this module reference.
 In this case, the component is `AppComponent`, which references components, directives, or pipes in `BrowserModule`, `FormsModule`, or  `HttpClientModule`.
-A component template can reference another component, directive, or pipe when the referenced class is declared in this module, or the class was imported from another module.
+A component template can reference another component, directive, or pipe when the referenced class is declared in this module, the element is standalone, or the class was imported from another module.
 
 <a id="bootstrap-array"></a>
 
