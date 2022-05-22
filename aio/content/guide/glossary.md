@@ -244,19 +244,20 @@ Read about the following forms of binding of the [Template Syntax][AioGuideTempl
 
 ## declarable
 
-A class type that you can add to the `declarations` list of an [NgModule][AioGuideGlossaryNgmodule].
-You can declare [components][AioGuideGlossaryComponent], [directives][AioGuideGlossaryDirective], and [pipes][AioGuideGlossaryPipe].
+A class that you can add to the `declarations` list of an [NgModule][AioGuideGlossaryNgmodule].
+You can declare [components][AioGuideGlossaryComponent], [directives][AioGuideGlossaryDirective], and [pipes][AioGuideGlossaryPipe], unless they have the `standalone` flag in their decorators set to `true`, which makes them standalone. Note: standalone components/directives/pipes are **not** declarables. More info about standalone classes can be found [below][AioGuideGlossaryStandalone].
 
 Do not declare the following:
 
-*   A class that is already declared in another NgModule
+*   A class already declared as [standalone][AioGuideGlossaryStandalone].
+*   A class that is already declared in another NgModule.
 *   An array of directives imported from another package.
-    For example, do not declare `FORMS_DIRECTIVES` from `@angular/forms`
+    For example, do not declare `FORMS_DIRECTIVES` from `@angular/forms`.
+*   NgModule classes.
+*   Service classes.
+*   Non-Angular classes and objects, such as strings, numbers, functions, entity models, configurations, business logic, and helper classes.
 
-*   NgModule classes
-*   Service classes
-*   Non-Angular classes and objects, such as strings, numbers, functions, entity models, configurations, business logic, and helper classes
-
+Note that declarables can also be declared as standalone and simply be imported inside other standalone components or existing NgModules, to learn more, see the [Standalone components guide][AioGuideStandalone].
 ## decorator | decoration
 
 A function that modifies a class or property definition.
@@ -732,6 +733,17 @@ The injectable class is instantiated by a [provider][AioGuideGlossaryProvider].
 
 For To learn more, see [Introduction to Services and Dependency Injection][AioGuideArchitectureServices].
 
+## standalone
+
+A configuration of [components][AioGuideGlossaryComponent], [directives][AioGuideGlossaryDirective], and [pipes][AioGuideGlossaryPipe] to indicate that this class can be imported directly without declaring it in any [NgModule][AioGuideGlossaryNgmodule].
+
+Standalone components, directives and pipes mainly differ from non-standalone ones by:
+ - having the `standalone` field of their decorator set to `true`.
+ - allowing their direct importing without the need to pass through NgModules.
+ - specifying their dependencies directly in their decorator.
+
+To learn more, see the [Standalone components guide][AioGuideStandalone].
+
 ## structural directive
 
 A category of [directive][AioGuideGlossaryDirective] that is responsible for shaping HTML layout by modifying the DOM.
@@ -1093,6 +1105,7 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 [AioGuideGlossaryScopedPackage]: guide/glossary#scoped-package "scoped package - Glossary | Angular"
 [AioGuideGlossaryServerSideRendering]: guide/glossary#server-side-rendering "server-side rendering - Glossary | Angular"
 [AioGuideGlossaryService]: guide/glossary#service "service - Glossary | Angular"
+[AioGuideGlossaryStandalone]: guide/glossary#standalone "standalone - Glossary | Angular"
 [AioGuideGlossaryStructuralDirective]: guide/glossary#structural-directive "structural directive - Glossary | Angular"
 [AioGuideGlossarySubscriber]: guide/glossary#subscriber "subscriber - Glossary | Angular"
 [AioGuideGlossaryT]: guide/glossary#target "T - Glossary | Angular"
@@ -1141,6 +1154,8 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 [AioGuideServiceWorkerIntro]: guide/service-worker-intro "Angular service worker introduction | Angular"
 
 [AioGuideSetupLocal]: guide/setup-local "Setting up the local environment and workspace | Angular"
+
+[AioGuideStandalone]: guide/standalone-components "Getting started with standalone components | Angular"
 
 [AioGuideStructuralDirectives]: guide/structural-directives "Structural directives | Angular"
 
