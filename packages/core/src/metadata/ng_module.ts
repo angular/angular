@@ -110,8 +110,12 @@ export interface NgModule {
   declarations?: Array<Type<any>|any[]>;
 
   /**
-   * The set of NgModules whose exported [declarables](guide/glossary#declarable)
-   * are available to templates in this module.
+   * A set of entities that make [declarables](guide/glossary#declarable)
+   * available to use in this module.
+   *
+   * Such entities are:
+   *  - [standalone](guide/glossary#standalone) components, directives and pipes.
+   *  - NgModules exporting [declarables](guide/glossary#declarable).
    *
    * @usageNotes
    *
@@ -122,14 +126,22 @@ export interface NgModule {
    * it, which makes the declarables from `ModuleB` available
    * wherever `ModuleA` is imported.
    *
+   * Templates can also use standalone entities directly imported in the module.
+   *
    * ### Example
    *
-   * The following example allows MainModule to use anything exported by
-   * `CommonModule`:
+   * The following example allows MainModule to use
+   *  - anything exported by `CommonModule`
+   *  - the `MyStandaloneComponent`
+   *  - the `MyStandalonePipe`
    *
    * ```javascript
    * @NgModule({
-   *   imports: [CommonModule]
+   *   imports: [
+   *     CommonModule,
+   *     MyStandaloneComponent,
+   *     MyStandalonePipe,
+   *   ]
    * })
    * class MainModule {
    * }
@@ -143,9 +155,9 @@ export interface NgModule {
    * NgModule that can be used in the template of any component that is part of an
    * NgModule that imports this NgModule. Exported declarations are the module's public API.
    *
-   * A declarable belongs to one and only one NgModule.
-   * A module can list another module among its exports, in which case all of that module's
-   * public declaration are exported.
+   * A declarable can either be [standalone](guide/standalone-components) or it needs to belong to
+   * one and only one NgModule. A module can list another module among its exports, in which case
+   * all of that module's public declaration are exported.
    *
    * @usageNotes
    *
