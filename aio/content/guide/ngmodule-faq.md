@@ -24,10 +24,10 @@ Add only [declarable](guide/bootstrapping#the-declarations-array) classes to an 
 
 Do *not* declare the following:
 
+*   Components, directives and pipes marked as [standalone](guide/standalone-components).
 *   A class that's already declared in another module, whether an application module, &commat;NgModule, or third-party module.
 *   An array of directives imported from another module.
     For example, don't declare `FORMS_DIRECTIVES` from `@angular/forms` because the `FormsModule` already declares it.
-
 *   Module classes.
 *   Service classes.
 *   Non-Angular classes and objects, such as strings, numbers, functions, entity models, configurations, business logic, and helper classes.
