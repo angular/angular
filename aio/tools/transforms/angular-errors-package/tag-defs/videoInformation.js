@@ -1,3 +1,3 @@
 module.exports = function() {
-  return {name: 'videoInformation'};
+  return {name: 'videoCaption'};
 };
