@@ -531,7 +531,7 @@ export function getDownlevelDecoratorsTransform(
         const isNgDecorator = isAngularDecorator(decorator, isCore);
 
         // Keep track if we come across an Angular class decorator. This is used
-        // for to determine whether constructor parameters should be captured or not.
+        // to determine whether constructor parameters should be captured or not.
         if (isNgDecorator) {
           hasAngularDecorator = true;
         }
