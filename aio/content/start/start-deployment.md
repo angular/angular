@@ -26,11 +26,7 @@ A best practice is to run your project locally before you deploy it. To run your
 
     <div class="lightbox">
 
-    <div class="lightbox">
-
-<img alt="Download the stackblitz project" src="generated/images/guide/start/download-project.png">
-
-</div>
+    <img alt="Download the stackblitz project" src="generated/images/guide/start/download-project.png">
 
     </div>
 
