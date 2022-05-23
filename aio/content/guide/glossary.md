@@ -735,7 +735,7 @@ For To learn more, see [Introduction to Services and Dependency Injection][AioGu
 
 ## standalone
 
-A version of [components][AioGuideGlossaryComponent], [directives][AioGuideGlossaryDirective], and [pipes][AioGuideGlossaryPipe] which can be used without the need to be declared in an [NgModule][AioGuideGlossaryNgmodule].
+A configuration of [components][AioGuideGlossaryComponent], [directives][AioGuideGlossaryDirective], and [pipes][AioGuideGlossaryPipe] to indicate that this class can be imported directly without declaring it in any [NgModule][AioGuideGlossaryNgmodule].
 
 Standalone components, directives and pipes mainly differ from non-standalone ones by:
  - having the `standalone` field of their decorator set to `true`.
