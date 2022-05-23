@@ -373,7 +373,7 @@ For information on how to build your own custom directives, see [Attribute Direc
 [AioGuideBuiltInDirectivesSettingInlineStylesWithNgstyle]: guide/built-in-directives#setting-inline-styles-with-ngstyle "Setting inline styles with NgStyle - Built-in directives | Angular"
 [AioGuideBuiltInDirectivesSwitchingCasesWithNgswitch]: guide/built-in-directives#switching-cases-with-ngswitch "Switching cases with NgSwitch | Angular"
 
-[AioGuideComponentOverview]: guide/component/component-overview "Angular component overview | Angular"
+[AioGuideComponentOverview]: guide/component/component-overview "Understand Angular components | Angular"
 
 [AioGuideComponentUsageSendDataToChild]: guide/component/component-usage-send-data-to-child "Send data to child component | Angular"
 
