@@ -381,7 +381,7 @@ runInEachFileSystem(() => {
         expect(diags[0].relatedInformation).not.toBeUndefined();
         expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toEqual('TestModule');
         expect(diags[0].relatedInformation![0].messageText)
-            .toContain('It can be imported using its NgModule');
+            .toMatch(/It can be imported using its '.*' NgModule instead./);
       });
 
       it('should error when a standalone component imports a ModuleWithProviders using a foreign function',
@@ -480,14 +480,12 @@ runInEachFileSystem(() => {
            expect(diags[0].code).toBe(ngErrorCode(ErrorCode.COMPONENT_IMPORT_NOT_STANDALONE));
            expect(getSourceCodeForDiagnostic(diags[0])).toEqual('TestDir');
 
-           // The diagnostic produced here should suggest that the directive be imported via its
-           // NgModule instead.
            expect(diags[0].relatedInformation).not.toBeUndefined();
            expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0]))
                .toEqual('TestModule');
            expect(diags[0].relatedInformation![0].messageText)
                .toEqual(
-                   `It's declared in the NgModule 'TestModule', but is not exported. Consider exporting it.`);
+                   `It's declared in the 'TestModule' NgModule, but is not exported. Consider exporting it and importing the NgModule instead.`);
          });
 
       it('should type-check standalone component templates', () => {
