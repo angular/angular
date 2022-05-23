@@ -9,7 +9,7 @@
 import {
   Directive,
   EventEmitter,
-  Inject,
+  inject,
   InjectionToken,
   Injector,
   OnDestroy,
@@ -36,7 +36,19 @@ export const MENU_TRIGGER = new InjectionToken<CdkMenuTriggerBase>('cdk-menu-tri
   },
 })
 export abstract class CdkMenuTriggerBase implements OnDestroy {
-  /** A list of preferred menu positions to be used when constructing the `FlexibleConnectedPositionStrategy` for this trigger's menu. */
+  /** The DI injector for this component. */
+  readonly injector = inject(Injector);
+
+  /** The view container ref for this component */
+  protected readonly viewContainerRef = inject(ViewContainerRef);
+
+  /** The menu stack in which this menu resides. */
+  protected readonly menuStack: MenuStack = inject(MENU_STACK);
+
+  /**
+   * A list of preferred menu positions to be used when constructing the
+   * `FlexibleConnectedPositionStrategy` for this trigger's menu.
+   */
   menuPosition: ConnectedPosition[];
 
   /** Emits when the attached menu is requested to open */
@@ -65,15 +77,6 @@ export abstract class CdkMenuTriggerBase implements OnDestroy {
 
   /** The injector to use for the child menu opened by this trigger. */
   private _childMenuInjector?: Injector;
-
-  protected constructor(
-    /** The DI injector for this component */
-    protected readonly injector: Injector,
-    /** The view container ref for this component */
-    protected readonly viewContainerRef: ViewContainerRef,
-    /** The menu stack this menu is part of. */
-    @Inject(MENU_STACK) protected readonly menuStack: MenuStack,
-  ) {}
 
   ngOnDestroy() {
     this._destroyOverlay();

@@ -6,16 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  Directive,
-  ElementRef,
-  Inject,
-  Injector,
-  NgZone,
-  OnDestroy,
-  Optional,
-  ViewContainerRef,
-} from '@angular/core';
+import {Directive, ElementRef, inject, InjectFlags, NgZone, OnDestroy} from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {
   ConnectedPosition,
@@ -37,8 +28,8 @@ import {
 import {fromEvent} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {CDK_MENU, Menu} from './menu-interface';
-import {MENU_STACK, MenuStack, PARENT_OR_NEW_MENU_STACK_PROVIDER} from './menu-stack';
-import {MENU_AIM, MenuAim} from './menu-aim';
+import {PARENT_OR_NEW_MENU_STACK_PROVIDER} from './menu-stack';
+import {MENU_AIM} from './menu-aim';
 import {CdkMenuTriggerBase, MENU_TRIGGER} from './menu-trigger-base';
 
 /**
@@ -68,27 +59,26 @@ import {CdkMenuTriggerBase, MENU_TRIGGER} from './menu-trigger-base';
   ],
 })
 export class CdkMenuTrigger extends CdkMenuTriggerBase implements OnDestroy {
-  constructor(
-    /** The DI injector for this component. */
-    injector: Injector,
-    /** The host element. */
-    private readonly _elementRef: ElementRef<HTMLElement>,
-    /** The view container ref for this component. */
-    viewContainerRef: ViewContainerRef,
-    /** The CDK overlay service. */
-    private readonly _overlay: Overlay,
-    /** The Angular zone. */
-    private readonly _ngZone: NgZone,
-    /** The menu stack this trigger belongs to. */
-    @Inject(MENU_STACK) menuStack: MenuStack,
-    /** The parent menu this trigger belongs to. */
-    @Optional() @Inject(CDK_MENU) private readonly _parentMenu?: Menu,
-    /** The menu aim service used by this menu. */
-    @Optional() @Inject(MENU_AIM) private readonly _menuAim?: MenuAim,
-    /** The directionality of the page. */
-    @Optional() private readonly _directionality?: Directionality,
-  ) {
-    super(injector, viewContainerRef, menuStack);
+  /** The host element. */
+  private readonly _elementRef: ElementRef<HTMLElement> = inject(ElementRef);
+
+  /** The CDK overlay service. */
+  private readonly _overlay = inject(Overlay);
+
+  /** The Angular zone. */
+  private readonly _ngZone = inject(NgZone);
+
+  /** The parent menu this trigger belongs to. */
+  private readonly _parentMenu = inject(CDK_MENU, InjectFlags.Optional);
+
+  /** The menu aim service used by this menu. */
+  private readonly _menuAim = inject(MENU_AIM, InjectFlags.Optional);
+
+  /** The directionality of the page. */
+  private readonly _directionality = inject(Directionality, InjectFlags.Optional);
+
+  constructor() {
+    super();
     this._setRole();
     this._registerCloseHandler();
     this._subscribeToMenuStackClosed();
@@ -242,7 +232,7 @@ export class CdkMenuTrigger extends CdkMenuTriggerBase implements OnDestroy {
     return new OverlayConfig({
       positionStrategy: this._getOverlayPositionStrategy(),
       scrollStrategy: this._overlay.scrollStrategies.reposition(),
-      direction: this._directionality,
+      direction: this._directionality || undefined,
     });
   }
 

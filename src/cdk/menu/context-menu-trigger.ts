@@ -6,16 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  Directive,
-  Inject,
-  Injectable,
-  Injector,
-  Input,
-  OnDestroy,
-  Optional,
-  ViewContainerRef,
-} from '@angular/core';
+import {Directive, inject, Injectable, InjectFlags, Input, OnDestroy} from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {
   FlexibleConnectedPositionStrategy,
@@ -78,6 +69,15 @@ export type ContextMenuCoordinates = {x: number; y: number};
   ],
 })
 export class CdkContextMenuTrigger extends CdkMenuTriggerBase implements OnDestroy {
+  /** The CDK overlay service. */
+  private readonly _overlay = inject(Overlay);
+
+  /** The directionality of the page. */
+  private readonly _directionality = inject(Directionality, InjectFlags.Optional);
+
+  /** The app's context menu tracking registry */
+  private readonly _contextMenuTracker = inject(ContextMenuTracker);
+
   /** Whether the context menu is disabled. */
   @Input('cdkContextMenuDisabled')
   get disabled(): boolean {
@@ -88,21 +88,8 @@ export class CdkContextMenuTrigger extends CdkMenuTriggerBase implements OnDestr
   }
   private _disabled = false;
 
-  constructor(
-    /** The DI injector for this component */
-    injector: Injector,
-    /** The view container ref for this component */
-    viewContainerRef: ViewContainerRef,
-    /** The CDK overlay service */
-    private readonly _overlay: Overlay,
-    /** The app's context menu tracking registry */
-    private readonly _contextMenuTracker: ContextMenuTracker,
-    /** The menu stack this menu is part of. */
-    @Inject(MENU_STACK) menuStack: MenuStack,
-    /** The directionality of the current page */
-    @Optional() private readonly _directionality?: Directionality,
-  ) {
-    super(injector, viewContainerRef, menuStack);
+  constructor() {
+    super();
     this._setMenuStackCloseListener();
   }
 
@@ -155,7 +142,7 @@ export class CdkContextMenuTrigger extends CdkMenuTriggerBase implements OnDestr
     return new OverlayConfig({
       positionStrategy: this._getOverlayPositionStrategy(coordinates),
       scrollStrategy: this._overlay.scrollStrategies.reposition(),
-      direction: this._directionality,
+      direction: this._directionality || undefined,
     });
   }
 

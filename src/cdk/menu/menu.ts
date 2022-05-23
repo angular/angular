@@ -9,28 +9,18 @@
 import {
   AfterContentInit,
   Directive,
-  ElementRef,
   EventEmitter,
-  Inject,
-  NgZone,
+  inject,
+  InjectFlags,
   OnDestroy,
-  Optional,
   Output,
-  Self,
 } from '@angular/core';
 import {ESCAPE, hasModifierKey, LEFT_ARROW, RIGHT_ARROW, TAB} from '@angular/cdk/keycodes';
-import {Directionality} from '@angular/cdk/bidi';
 import {takeUntil} from 'rxjs/operators';
 import {CdkMenuGroup} from './menu-group';
 import {CDK_MENU} from './menu-interface';
-import {
-  FocusNext,
-  MENU_STACK,
-  MenuStack,
-  PARENT_OR_NEW_INLINE_MENU_STACK_PROVIDER,
-} from './menu-stack';
-import {MENU_AIM, MenuAim} from './menu-aim';
-import {MENU_TRIGGER, CdkMenuTriggerBase} from './menu-trigger-base';
+import {FocusNext, PARENT_OR_NEW_INLINE_MENU_STACK_PROVIDER} from './menu-stack';
+import {MENU_TRIGGER} from './menu-trigger-base';
 import {CdkMenuBase} from './menu-base';
 
 /**
@@ -56,6 +46,8 @@ import {CdkMenuBase} from './menu-base';
   ],
 })
 export class CdkMenu extends CdkMenuBase implements AfterContentInit, OnDestroy {
+  private _parentTrigger = inject(MENU_TRIGGER, InjectFlags.Optional);
+
   /** Event emitted when the menu is closed. */
   @Output() readonly closed: EventEmitter<void> = new EventEmitter();
 
@@ -65,21 +57,8 @@ export class CdkMenu extends CdkMenuBase implements AfterContentInit, OnDestroy 
   /** Whether the menu is displayed inline (i.e. always present vs a conditional popup that the user triggers with a trigger element). */
   override readonly isInline = !this._parentTrigger;
 
-  constructor(
-    /** The host element. */
-    elementRef: ElementRef<HTMLElement>,
-    /** The Angular zone. */
-    ngZone: NgZone,
-    /** The menu stack this menu is part of. */
-    @Inject(MENU_STACK) menuStack: MenuStack,
-    /** The trigger that opened this menu. */
-    @Optional() @Inject(MENU_TRIGGER) private _parentTrigger?: CdkMenuTriggerBase,
-    /** The menu aim service used by this menu. */
-    @Self() @Optional() @Inject(MENU_AIM) menuAim?: MenuAim,
-    /** The directionality of the page. */
-    @Optional() dir?: Directionality,
-  ) {
-    super(elementRef, ngZone, menuStack, menuAim, dir);
+  constructor() {
+    super();
     this.destroyed.subscribe(this.closed);
     this._parentTrigger?.registerChildMenu(this);
   }

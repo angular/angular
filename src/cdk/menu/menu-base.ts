@@ -12,13 +12,12 @@ import {
   ContentChildren,
   Directive,
   ElementRef,
-  Inject,
+  inject,
+  InjectFlags,
   Input,
   NgZone,
   OnDestroy,
-  Optional,
   QueryList,
-  Self,
 } from '@angular/core';
 import {FocusKeyManager, FocusOrigin} from '@angular/cdk/a11y';
 import {CdkMenuItem} from './menu-item';
@@ -28,7 +27,7 @@ import {mapTo, mergeAll, mergeMap, startWith, switchMap, takeUntil} from 'rxjs/o
 import {MENU_STACK, MenuStack, MenuStackItem} from './menu-stack';
 import {Menu} from './menu-interface';
 import {PointerFocusTracker} from './pointer-focus-tracker';
-import {MENU_AIM, MenuAim} from './menu-aim';
+import {MENU_AIM} from './menu-aim';
 
 /** Counter used to create unique IDs for menus. */
 let nextId = 0;
@@ -54,6 +53,21 @@ export abstract class CdkMenuBase
   extends CdkMenuGroup
   implements Menu, AfterContentInit, OnDestroy
 {
+  /** The menu's native DOM host element. */
+  readonly nativeElement: HTMLElement = inject(ElementRef).nativeElement;
+
+  /** The Angular zone. */
+  protected ngZone = inject(NgZone);
+
+  /** The stack of menus this menu belongs to. */
+  readonly menuStack: MenuStack = inject(MENU_STACK);
+
+  /** The menu aim service used by this menu. */
+  protected readonly menuAim = inject(MENU_AIM, InjectFlags.Optional | InjectFlags.Self);
+
+  /** The directionality (text direction) of the current page. */
+  protected readonly dir = inject(Directionality, InjectFlags.Optional);
+
   /** The id of the menu's host element. */
   @Input() id = `cdk-menu-${nextId++}`;
 
@@ -64,11 +78,11 @@ export abstract class CdkMenuBase
   /** The direction items in the menu flow. */
   orientation: 'horizontal' | 'vertical' = 'vertical';
 
-  /** Whether the menu is displayed inline (i.e. always present vs a conditional popup that the user triggers with a trigger element). */
+  /**
+   * Whether the menu is displayed inline (i.e. always present vs a conditional popup that the
+   * user triggers with a trigger element).
+   */
   isInline = false;
-
-  /** The menu's native DOM host element. */
-  readonly nativeElement: HTMLElement;
 
   /** Handles keyboard events for the menu. */
   protected keyManager: FocusKeyManager<CdkMenuItem>;
@@ -84,22 +98,6 @@ export abstract class CdkMenuBase
 
   /** Whether this menu's menu stack has focus. */
   private _menuStackHasFocus = false;
-
-  protected constructor(
-    /** The host element. */
-    elementRef: ElementRef<HTMLElement>,
-    /** The Angular zone. */
-    protected ngZone: NgZone,
-    /** The stack of menus this menu belongs to. */
-    @Inject(MENU_STACK) readonly menuStack: MenuStack,
-    /** The menu aim service used by this menu. */
-    @Self() @Optional() @Inject(MENU_AIM) protected readonly menuAim?: MenuAim,
-    /** The directionality of the current page. */
-    @Optional() protected readonly dir?: Directionality,
-  ) {
-    super();
-    this.nativeElement = elementRef.nativeElement;
-  }
 
   ngAfterContentInit() {
     if (!this.isInline) {
