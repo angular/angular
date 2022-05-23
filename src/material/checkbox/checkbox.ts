@@ -183,6 +183,9 @@ export abstract class _MatCheckboxBase<E>
   /** The native `<input type="checkbox">` element */
   @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
 
+  /** The native `<label>` element */
+  @ViewChild('label') _labelElement: ElementRef<HTMLInputElement>;
+
   /** Reference to the ripple instance of the checkbox. */
   @ViewChild(MatRipple) ripple: MatRipple;
 

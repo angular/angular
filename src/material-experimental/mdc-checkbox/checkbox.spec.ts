@@ -309,7 +309,20 @@ describe('MDC-based MatCheckbox', () => {
       );
     }));
 
-    it('should not trigger the click event multiple times', fakeAsync(() => {
+    it('should trigger the click once when clicking on the <input/>', fakeAsync(() => {
+      spyOn(testComponent, 'onCheckboxClick');
+
+      expect(inputElement.checked).toBe(false);
+
+      inputElement.click();
+      fixture.detectChanges();
+      flush();
+
+      expect(inputElement.checked).toBe(true);
+      expect(testComponent.onCheckboxClick).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should trigger the click event once when clicking on the label', fakeAsync(() => {
       // By default, when clicking on a label element, a generated click will be dispatched
       // on the associated input element.
       // Since we're using a label element and a visual hidden input, this behavior can led
@@ -1037,7 +1050,7 @@ describe('MatCheckboxDefaultOptions', () => {
 /** Simple component for testing a single checkbox. */
 @Component({
   template: `
-  <div (click)="parentElementClicked = true" (keyup)="parentElementKeyedUp = true">
+  <div (click)="parentElementClicked = true" (keyup)="parentElementKeyedUp = true" (click)="onCheckboxClick($event)">
     <mat-checkbox
         [id]="checkboxId"
         [required]="isRequired"
@@ -1048,7 +1061,6 @@ describe('MatCheckboxDefaultOptions', () => {
         [color]="checkboxColor"
         [disableRipple]="disableRipple"
         [value]="checkboxValue"
-        (click)="onCheckboxClick($event)"
         (change)="onCheckboxChange($event)">
       Simple checkbox
     </mat-checkbox>

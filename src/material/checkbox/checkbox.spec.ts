@@ -296,12 +296,7 @@ describe('MatCheckbox', () => {
       expect(checkboxNativeElement.classList).toContain('mat-checkbox-label-before');
     });
 
-    it('should not trigger the click event multiple times', () => {
-      // By default, when clicking on a label element, a generated click will be dispatched
-      // on the associated input element.
-      // Since we're using a label element and a visual hidden input, this behavior can led
-      // to an issue, where the click events on the checkbox are getting executed twice.
-
+    it('should trigger the click event once when clicking on the label', () => {
       spyOn(testComponent, 'onCheckboxClick');
 
       expect(inputElement.checked).toBe(false);

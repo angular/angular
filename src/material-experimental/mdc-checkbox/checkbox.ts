@@ -116,4 +116,17 @@ export class MatCheckbox
   _onInputClick() {
     super._handleInputClick();
   }
+
+  /**
+   *  Prevent click events that come from the `<label/>` element from bubbling. This prevents the
+   *  click handler on the host from triggering twice when clicking on the `<label/>` element. After
+   *  the click event on the `<label/>` propagates, the browsers dispatches click on the associated
+   *  `<input/>`. By preventing clicks on the label by bubbling, we ensure only one click event
+   *  bubbles when the label is clicked.
+   */
+  _preventBubblingFromLabel(event: MouseEvent) {
+    if (!!event.target && this._labelElement.nativeElement.contains(event.target as HTMLElement)) {
+      event.stopPropagation();
+    }
+  }
 }

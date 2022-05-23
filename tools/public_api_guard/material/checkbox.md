@@ -108,6 +108,7 @@ export abstract class _MatCheckboxBase<E> extends _MatCheckboxMixinBase implemen
     get inputId(): string;
     // (undocumented)
     _isRippleDisabled(): boolean;
+    _labelElement: ElementRef<HTMLInputElement>;
     labelPosition: 'before' | 'after';
     name: string | null;
     // (undocumented)

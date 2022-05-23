@@ -1,5 +1,6 @@
 <div class="mdc-form-field"
-     [class.mdc-form-field--align-end]="labelPosition == 'before'">
+     [class.mdc-form-field--align-end]="labelPosition == 'before'"
+     (click)="_preventBubblingFromLabel($event)">
   <div #checkbox class="mdc-checkbox">
     <!-- Render this element first so the input is on top. -->
     <div class="mat-mdc-checkbox-touch-target" (click)="_onInputClick()"></div>
@@ -38,9 +39,13 @@
       [matRippleDisabled]="disableRipple || disabled"
       [matRippleCentered]="true"></div>
   </div>
+  <!--
+    Avoid putting a click handler on the <label/> to fix duplicate navigation stop on Talk Back
+    (#14385). Putting a click handler on the <label/> caused this bug because the browser produced
+    an unnecessary accessibility tree node.
+  -->
   <label #label
-         [for]="inputId"
-         (click)="$event.stopPropagation()">
+         [for]="inputId">
     <ng-content></ng-content>
   </label>
 </div>
