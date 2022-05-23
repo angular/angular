@@ -26,7 +26,6 @@ ng_module(
         "//src/material/progress-spinner",
         "@npm//@angular/common",
         "@npm//@angular/core",
-        "@npm//@material/circular-progress",
     ],
 )
 
