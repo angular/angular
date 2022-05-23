@@ -113,6 +113,8 @@ The following table shows the stages to manually create a simple Angular compone
 
 ### Add the `@Component()` decorator
 
+To provide Angular-specific information for a component, add a `@Component` decorator on top of the TypeScript class.
+
 1.  Below the `import` statement, add the following `@Component()` decorator.
 
     <code-example header="&lcub;NameOfComponent&rcub;.component.ts: Add &commat;Component decorator" path="component-overview/src/app/component-overview/component-overview.component.ts" region="decorator-skeleton"></code-example>
