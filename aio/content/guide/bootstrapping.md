@@ -1,5 +1,13 @@
 # Launching your app with a root module
 
+<div class="is-helpful alert">
+
+This guide covers the `NgModule`-based bootstrapping process.
+
+If you want to bootstrap an application using a standalone component instead, please refer to [the standalone guide](guide/standalone-components#bootstrapping-an-application-using-a-standalone-component).
+
+</div>
+
 ## Prerequisites
 
 A basic understanding of the following:
@@ -55,12 +63,12 @@ The default application created by the Angular CLI only has one component, `AppC
 
 The module's `declarations` array tells Angular which components belong to that module.
 
-Every component must either be [standalone](guide/standalone-components) or declared in exactly one `NgModule`.
-If you use a non-standalone component without declaring it, Angular returns an error message.
+Note: only non-standalone components can be included into the `declarations` array. See [the standalone guide](guide/standalone-components) for additional info.
+If you use a non-standalone component without declaring it, Angular returns an error.
 
-The `declarations` array only takes declarables. Declarables are [components](guide/components), [directives](guide/attribute-directives) and [pipes](guide/pipes).
+The `declarations` array only takes declarables. Declarables are [components](guide/component-overview), [directives](guide/attribute-directives) and [pipes](guide/pipes).
 All of a module's declarables must be in the `declarations` array.
-Declarables must be either standalone or belong to exactly one module. The compiler emits an error if you try to declare a standalone entity or the same class in more than one module.
+Components, directives and pipes, must be either standalone or belong to exactly one module. The compiler emits an error if you try to declare a standalone entity or the same class in more than one module.
 
 The classes declared in a module are visible within the module but invisible to components in a different module, unless they are exported from this module and the other module imports this one.
 
