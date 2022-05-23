@@ -244,8 +244,8 @@ Read about the following forms of binding of the [Template Syntax][AioGuideTempl
 
 ## declarable
 
-A class type that you can add to the `declarations` list of an [NgModule][AioGuideGlossaryNgmodule].
-You can declare [components][AioGuideGlossaryComponent], [directives][AioGuideGlossaryDirective], and [pipes][AioGuideGlossaryPipe].
+A class that you can add to the `declarations` list of an [NgModule][AioGuideGlossaryNgmodule].
+You can declare [components][AioGuideGlossaryComponent], [directives][AioGuideGlossaryDirective], and [pipes][AioGuideGlossaryPipe], unless they have the `standalone` flag in their decorators set to `true`, which makes them standalone. Note: standalone components/directives/pipes are **not** declarables. More info about standalone classes can be found [below][AioGuideGlossaryStandalone].
 
 Do not declare the following:
 
