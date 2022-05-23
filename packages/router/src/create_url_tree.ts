@@ -49,8 +49,8 @@ import {forEach, last, shallowEqual} from './utils/collection';
  * // remove the right secondary node
  * createUrlTreeFromSnapshot(snapshot, ['/team', 33, {outlets: {primary: 'user/11', right: null}}]);
  *
- * // assuming the current URL is for the `/team/33/user/11` and the `ActivatedRouteSnapshot` points
- * to `user/11`
+ * // For the examples below, assume the current URL is for the `/team/33/user/11` and the
+ * `ActivatedRouteSnapshot` points to `user/11`:
  *
  * // navigate to /team/33/user/11/details
  * createUrlTreeFromSnapshot(snapshot, ['details']);
