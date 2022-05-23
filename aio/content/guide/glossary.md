@@ -731,7 +731,7 @@ The `@Injectable()` metadata allows the service class to be used with the [depen
 The injectable class is instantiated by a [provider][AioGuideGlossaryProvider].
 [Injectors][AioGuideGlossaryInjector] maintain lists of providers and use them to provide service instances when they are required by components or other services.
 
-For To learn more, see [Introduction to Services and Dependency Injection][AioGuideArchitectureServices].
+To learn more, see [Introduction to Services and Dependency Injection][AioGuideArchitectureServices].
 
 ## standalone
 
