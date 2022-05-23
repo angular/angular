@@ -1,19 +1,19 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
-# compiled output
+# Compiled output
 /dist
-/out-tsc
-/src/generated
 /tmp
+/out-tsc
+/bazel-out
+/src/generated
 
-# Cache folder for the Angular CLI.
-.angular/cache
-
-# dependencies
+# Node
 /node_modules
+npm-debug.log
+yarn-error.log
 
 # IDEs and editors
-/.idea
+.idea/
 .project
 .classpath
 .c9/
@@ -21,31 +21,28 @@
 .settings/
 *.sublime-workspace
 
-# IDE - VSCode
+# Visual Studio Code
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+.history/*
 
-# misc
+# Miscellaneous
+/.angular/cache
 /.firebase/
-/.sass-cache
+.sass-cache/
 /connect.lock
 /coverage
 /libpeerconnection.log
-debug.log
 firebase-debug.log
-npm-debug.log
 testem.log
 /typings
-yarn-error.log
 
 # e2e
-/e2e/*.js
-/e2e/*.map
 protractor-results*.txt
 
-# System Files
+# System files
 .DS_Store
 Thumbs.db
