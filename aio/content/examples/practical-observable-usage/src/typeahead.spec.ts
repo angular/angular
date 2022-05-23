@@ -86,12 +86,14 @@ describe('typeahead', () => {
     static install(mockTime = 0): MockClock['tick'] {
       const mocked = new this(mockTime);
 
-      spyOn(global, 'clearInterval').and.callFake(id => mocked.clearTask(id));
-      spyOn(global, 'clearTimeout').and.callFake(id => mocked.clearTask(id));
+      spyOn(global, 'clearInterval').and.callFake(id => mocked.clearTask(id as MockTask['id']));
+      spyOn(global, 'clearTimeout').and.callFake(id => mocked.clearTask(id as MockTask['id']));
       spyOn(global, 'setInterval').and.callFake(
-          (fn, delay, ...args) => mocked.createTask(fn, delay, true, ...args));
+          ((fn: () => unknown, delay: number, ...args: any[]) =>
+            mocked.createTask(fn, delay, true, ...args)) as typeof setInterval);
       spyOn(global, 'setTimeout').and.callFake(
-          (fn, delay, ...args) => mocked.createTask(fn, delay, false, ...args));
+          ((fn: () => unknown, delay: number, ...args: any[]) =>
+            mocked.createTask(fn, delay, false, ...args)) as typeof setTimeout);
 
       spyOn(Date, 'now').and.callFake(() => mocked.now);
 
