@@ -203,10 +203,4 @@ Here are the code files discussed on this page, including the `HeroesComponent` 
 *   You used `*ngIf` to conditionally include or exclude a block of HTML
 *   You can toggle a CSS style class with a `class` binding.
 
-    <code-example format="typescript" language="typescript">
-
-    header="src/app/heroes/heroes.component.html (HeroesComponent's template)"
-
-    </code-example>
-
-@reviewed 2022-02-28
+@reviewed 2022-05-23
