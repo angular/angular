@@ -24,13 +24,11 @@ describe('DashboardComponent', () => {
           providers: [{provide: HeroService, useValue: heroService}]
         })
         .compileComponents();
-  }));
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(DashboardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+  }));
 
   it('should be created', () => {
     expect(component).toBeTruthy();
