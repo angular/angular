@@ -556,7 +556,6 @@ describe('Typed Class', () => {
           'returnIfFound', new FormControl('200 Ellis, San Francisco', {nonNullable: true}));
       c.setControl(
           'returnIfFound', new FormControl('200 Ellis, San Francisco', {nonNullable: true}));
-      // c.removeControl('returnIfFound'); // Not allowed
       c.contains('returnIfFound');
       c.setValue({returnIfFound: '200 Ellis, San Francisco', alex: '1 Main', andrew: '2 Main'});
       c.patchValue({});
@@ -576,6 +575,8 @@ describe('Typed Class', () => {
       c.reset({returnIfFound: '200 Ellis, San Francisco', igor: '300 Page, San Francisco'});
       // @ts-expect-error
       c.removeControl('igor');
+      // @ts-expect-error
+      c.removeControl('returnIfFound');  // Not allowed
     });
 
     it('should have strongly-typed get', () => {
@@ -591,29 +592,39 @@ describe('Typed Class', () => {
       const rv = c.getRawValue();
       {
         type ValueType = {day: number, month: string};
-        let t: ValueType = c.get('venue.date')!.value;
+        let t: ValueType = c.get('venue.date').value;
         let t1 = c.get('venue.date')!.value;
         t1 = null as unknown as ValueType;
       }
       {
         type ValueType = string;
-        let t: ValueType = c.get('venue.date.month')!.value;
-        let t1 = c.get('venue.date.month')!.value;
+        let t: ValueType = c.get('venue.date.month').value;
+        let t1 = c.get('venue.date.month').value;
         t1 = null as unknown as ValueType;
       }
       {
         type ValueType = string;
-        let t: ValueType = c.get(['venue', 'date', 'month'] as const)!.value;
-        let t1 = c.get(['venue', 'date', 'month'] as const)!.value;
+        let t: ValueType = c.get(['venue', 'date', 'month'] as const).value;
+        let t1 = c.get(['venue', 'date', 'month'] as const).value;
         t1 = null as unknown as ValueType;
       }
       {
-        // .get(...) should be `never`, but we use `?` to coerce to undefined so the test passes at
-        // runtime.
-        type ValueType = never|undefined;
-        let t: ValueType = c.get('foobar')?.value;
-        let t1 = c.get('foobar')?.value;
-        t1 = null as unknown as ValueType;
+        type ControlType = AbstractControl<any>|null;
+        let t: ControlType = c.get(['venue', 'date', 'month']);
+        let t1 = c.get(['venue', 'date', 'month']);
+        t1 = null as unknown as ControlType;
+      }
+      {
+        type ControlType = null;
+        let t: ControlType = c.get('foobar');
+        let t1 = c.get('foobar');
+        t1 = null as unknown as ControlType;
+      }
+      {
+        type ControlType = null;
+        let t: ControlType = c.get('foobar.0');
+        let t1 = c.get('foobar.0');
+        t1 = null as unknown as ControlType;
       }
     });
 

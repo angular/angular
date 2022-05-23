@@ -41,8 +41,8 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     }): void;
     get enabled(): boolean;
     readonly errors: ValidationErrors | null;
-    get<P extends string | (readonly (string | number)[])>(path: P): AbstractControl<ɵGetProperty<TRawValue, P>> | null;
-    get<P extends string | Array<string | number>>(path: P): AbstractControl<ɵGetProperty<TRawValue, P>> | null;
+    get<P extends string | (readonly (string | number)[])>(path: P): ɵGetProperty<TRawValue, P>;
+    get<P extends string | Array<string | number>>(path: P): ɵGetProperty<TRawValue, P>;
     getError(errorCode: string, path?: Array<string | number> | string): any;
     getRawValue(): any;
     hasAsyncValidator(validator: AsyncValidatorFn): boolean;

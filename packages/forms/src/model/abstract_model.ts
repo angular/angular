@@ -284,6 +284,16 @@ export type ɵCoerceStrArrToNumArr<S> =
       [Head, ...ɵCoerceStrArrToNumArr<Tail>] :
     [];
 
+export type ɵNavigateNotFound = {__forms_not_found: true};
+export type ɵNavigateUnknownResult = {__forms_unknown_result: true};
+
+/**
+ * Navigate uses branded types to indicate failure cases. This type replaces them with
+ * the appropriate user-visible types.
+ */
+ export type ɵExtractNavigateResult<T> = T extends ɵNavigateNotFound ? null :
+  T extends ɵNavigateUnknownResult ? AbstractControl<any>|null : AbstractControl<T>;
+
 /**
 * Navigate takes a type T and an array K, and returns the type of T[K[0]][K[1]][K[2]]...
 */
@@ -294,10 +304,10 @@ export type ɵNavigate<T, K extends(Array<string|number>)> =
               (Tail extends(string|number)[] ? /* tail(K) must be an array */
               [] extends Tail ? T[Head] : /* base case: K can be split, but Tail is empty */
                   (ɵNavigate<T[Head], Tail>) /* explore T[head(K)] by tail(K) */ :
-              any) /* tail(K) was not an array, give up */ :
-              never) /* head(K) does not index T, give up */ :
-        any) /* K cannot be split, give up */ :
-    any /* T is not indexable, give up */
+                  ɵNavigateUnknownResult) /* tail(K) was not an array, give up */ :
+              ɵNavigateNotFound) /* head(K) does not index T, give up */ :
+            ɵNavigateUnknownResult) /* K cannot be split, give up */ :
+      ɵNavigateUnknownResult /* T is not indexable, give up */
     ;
 
 /**
@@ -320,9 +330,9 @@ export type ɵGetProperty<T, K> =
     // K is a string
     K extends string ? ɵGetProperty<T, ɵCoerceStrArrToNumArr<ɵTokenize<K, '.'>>> :
     // Is is an array
-    ɵWriteable<K> extends Array<string|number> ? ɵNavigate<T, ɵWriteable<K>> :
+    ɵWriteable<K> extends Array<string|number> ? ɵExtractNavigateResult<ɵNavigate<T, ɵWriteable<K>>> :
     // Fall through permissively if we can't calculate the type of K.
-    any;
+    AbstractControl<any>|null;
 
 // clang-format on
 
@@ -1103,8 +1113,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * This signature for get supports strings and `const` arrays (`.get(['foo', 'bar'] as const)`).
    */
-  get<P extends string|(readonly(string|number)[])>(path: P):
-      AbstractControl<ɵGetProperty<TRawValue, P>>|null;
+  get<P extends string|(readonly(string|number)[])>(path: P): ɵGetProperty<TRawValue, P>;
 
   /**
    * Retrieves a child control given the control's name or path.
@@ -1112,8 +1121,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * This signature for `get` supports non-const (mutable) arrays. Inferred type
    * information will not be as robust, so prefer to pass a `readonly` array if possible.
    */
-  get<P extends string|Array<string|number>>(path: P):
-      AbstractControl<ɵGetProperty<TRawValue, P>>|null;
+  get<P extends string|Array<string|number>>(path: P): ɵGetProperty<TRawValue, P>;
 
   /**
    * Retrieves a child control given the control's name or path.
@@ -1145,8 +1153,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * * `this.form.get(['items', 0, 'price']);`
    */
-  get<P extends string|((string | number)[])>(path: P):
-      AbstractControl<ɵGetProperty<TRawValue, P>>|null {
+  get<P extends string|((string | number)[])>(path: P): AbstractControl<any>|null {
     let currPath: Array<string|number>|string = path;
     if (currPath == null) return null;
     if (!Array.isArray(currPath)) currPath = currPath.split('.');
