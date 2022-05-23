@@ -130,7 +130,7 @@ export interface NgModule {
    *
    * ### Example
    *
-   * The following example allows MainModule to use
+   * The following example allows the `MainModule` to use:
    *  - anything exported by `CommonModule`
    *  - the `MyStandaloneComponent`
    *  - the `MyStandalonePipe`
