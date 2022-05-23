@@ -24,6 +24,7 @@ ng_module(
         "//src/cdk/a11y",
         "//src/cdk/bidi",
         "//src/cdk/coercion",
+        "//src/cdk/dialog",
         "//src/cdk/keycodes",
         "//src/cdk/layout",
         "//src/cdk/overlay",

@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OverlayModule} from '@angular/cdk/overlay';
+import {DialogModule} from '@angular/cdk/dialog';
 import {PortalModule} from '@angular/cdk/portal';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
 import {MatBottomSheetContainer} from './bottom-sheet-container';
 
 @NgModule({
-  imports: [OverlayModule, MatCommonModule, PortalModule],
+  imports: [DialogModule, MatCommonModule, PortalModule],
   exports: [MatBottomSheetContainer, MatCommonModule],
   declarations: [MatBottomSheetContainer],
 })
