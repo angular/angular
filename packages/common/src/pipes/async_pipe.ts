@@ -86,7 +86,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
 
   private _subscription: Unsubscribable|Promise<any>|null = null;
   private _obj: Subscribable<any>|Promise<any>|EventEmitter<any>|null = null;
-  private _strategy: SubscriptionStrategy = null!;
+  private _strategy: SubscriptionStrategy|null = null;
 
   constructor(private _ref: ChangeDetectorRef) {}
 
@@ -126,7 +126,8 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
         obj, (value: Object) => this._updateLatestValue(obj, value));
   }
 
-  private _selectStrategy(obj: Subscribable<any>|Promise<any>|EventEmitter<any>): any {
+  private _selectStrategy(obj: Subscribable<any>|Promise<any>|
+                          EventEmitter<any>): SubscriptionStrategy {
     if (ɵisPromise(obj)) {
       return _promiseStrategy;
     }
@@ -139,7 +140,9 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   }
 
   private _dispose(): void {
-    this._strategy.dispose(this._subscription!);
+    // Note: `dispose` is only called if a subscription has been initialized before, indicating
+    // that `this._strategy` is also available.
+    this._strategy!.dispose(this._subscription!);
     this._latestValue = null;
     this._subscription = null;
     this._obj = null;
