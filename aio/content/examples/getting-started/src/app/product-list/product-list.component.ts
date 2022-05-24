@@ -10,7 +10,7 @@ import { products } from '../products';
 // #docregion on-notify
 export class ProductListComponent {
 
-  products = products;
+  products = [...products];
 
   share() {
     window.alert('The product has been shared!');
