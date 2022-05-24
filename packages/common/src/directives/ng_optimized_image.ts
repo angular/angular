@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Inject, Injectable, InjectionToken, Injector, Input, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, ElementRef, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {DOCUMENT} from '../dom_tokens';
 import {RuntimeErrorCode} from '../errors';
@@ -144,7 +144,6 @@ class LCPImageObserver implements OnDestroy {
  * TODO: add Image directive usage notes.
  */
 @Directive({
-  standalone: true,
   selector: 'img[rawSrc]',
 })
 export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
@@ -266,6 +265,22 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private setHostAttribute(name: string, value: string): void {
     this.renderer.setAttribute(this.imgElement.nativeElement, name, value);
   }
+}
+
+
+/**
+ * NgModule that declares and exports the `NgOptimizedImage` directive.
+ * This NgModule is a compatibility layer for apps that use pre-v14
+ * versions of Angular (before the `standalone` flag became available).
+ *
+ * The `NgOptimizedImage` will become a standalone directive in v14 and
+ * this NgModule will be removed.
+ */
+@NgModule({
+  declarations: [NgOptimizedImage],
+  exports: [NgOptimizedImage],
+})
+export class NgOptimizedImageModule {
 }
 
 /***** Helpers *****/

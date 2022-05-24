@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT} from '@angular/common';
-import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig, NgOptimizedImage} from '@angular/common/src/directives/ng_optimized_image';
+import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig, NgOptimizedImageModule} from '@angular/common/src/directives/ng_optimized_image';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -363,7 +363,7 @@ function setupTestingModule(config?: {imageLoader: ImageLoader}) {
     declarations: [TestComponent],
     // Note: the `NgOptimizedImage` directive is experimental and is not a part of the
     // `CommonModule` yet, so it's imported separately.
-    imports: [CommonModule, NgOptimizedImage],
+    imports: [CommonModule, NgOptimizedImageModule],
     providers,
   });
 }
