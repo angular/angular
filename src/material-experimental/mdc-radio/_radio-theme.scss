@@ -25,6 +25,12 @@
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
     $on-surface: rgba(mdc-theme-color.$on-surface, 0.54);
+    $is-dark: map-get($config, is-dark);
+    $active-border-color: if(
+            $is-dark,
+            mat.get-color-from-palette(mat.$gray-palette, 200),
+            mat.get-color-from-palette(mat.$gray-palette, 900)
+    );
 
     .mat-mdc-radio-button {
       @include mdc-form-field.core-styles($query: mdc-helpers.$mat-theme-styles-query);
@@ -33,8 +39,8 @@
         // MDC applies a separate opacity to disabled buttons.
         disabled-selected-icon-color: mdc-theme-color.$on-surface,
         disabled-unselected-icon-color: mdc-theme-color.$on-surface,
-        unselected-focus-icon-color: $on-surface,
-        unselected-hover-icon-color: $on-surface,
+        unselected-focus-icon-color: $active-border-color,
+        unselected-hover-icon-color: $active-border-color,
         unselected-icon-color: $on-surface,
         unselected-pressed-icon-color: $on-surface,
       ));

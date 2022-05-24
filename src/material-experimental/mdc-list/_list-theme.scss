@@ -19,13 +19,13 @@
     @include mdc-list.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
 
     .mat-mdc-list-option {
-      @include list-option-theme.private-list-option-color-override($primary, primary);
+      @include list-option-theme.private-list-option-color-override($config, $primary, primary);
     }
     .mat-mdc-list-option.mat-accent {
-      @include list-option-theme.private-list-option-color-override($accent, secondary);
+      @include list-option-theme.private-list-option-color-override($config, $accent, secondary);
     }
     .mat-mdc-list-option.mat-warn {
-      @include list-option-theme.private-list-option-color-override($warn, error);
+      @include list-option-theme.private-list-option-color-override($config, $warn, error);
     }
   }
 }

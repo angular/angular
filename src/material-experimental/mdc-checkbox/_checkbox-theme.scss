@@ -51,17 +51,17 @@
       // class for accent and warn style, and applying the appropriate overrides below. Since we
       // don't use MDC's ripple, we also need to set the color for our replacement ripple.
       &.mat-primary {
-        @include checkbox-private.private-checkbox-styles-with-color($primary, primary);
+        @include checkbox-private.private-checkbox-styles-with-color($config, $primary, primary);
         @include _selected-ripple-colors($primary, primary);
       }
 
       &.mat-accent {
-        @include checkbox-private.private-checkbox-styles-with-color($accent, secondary);
+        @include checkbox-private.private-checkbox-styles-with-color($config, $accent, secondary);
         @include _selected-ripple-colors($accent, secondary);
       }
 
       &.mat-warn {
-        @include checkbox-private.private-checkbox-styles-with-color($warn, error);
+        @include checkbox-private.private-checkbox-styles-with-color($config, $warn, error);
         @include _selected-ripple-colors($warn, error);
       }
     }

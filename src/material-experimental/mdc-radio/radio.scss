@@ -76,6 +76,14 @@
       transition: none !important;
     }
   }
+
+  // We don't inherit the border focus style from MDC since we don't use their ripple.
+  // Instead we need to replicate it here.
+  .mdc-radio .mdc-radio__native-control:focus:enabled:not(:checked) {
+    & ~ .mdc-radio__background .mdc-radio__outer-circle {
+      border-color: var(--mdc-radio-unselected-focus-icon-color, black);
+    }
+  }
 }
 
 // Element used to provide a larger tap target for users on touch devices.

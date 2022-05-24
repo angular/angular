@@ -90,6 +90,16 @@
     display: none;
   }
 
+  // We don't inherit the border focus style from MDC since we don't use their ripple.
+  // Instead we need to replicate it here.
+  .mdc-checkbox__native-control {
+    &:focus:enabled:not(:checked):not(:indeterminate):not([data-indeterminate=true]) {
+      & ~ .mdc-checkbox__background {
+        border-color: var(--mdc-checkbox-unselected-focus-icon-color, black);
+      }
+    }
+  }
+
   @include _ripple-base-styles();
 }
 
