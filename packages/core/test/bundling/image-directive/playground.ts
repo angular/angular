@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵIMAGE_LOADER as IMAGE_LOADER, ɵImageLoaderConfig as ImageLoaderConfig, ɵNgOptimizedImage as NgOptimizedImage} from '@angular/common';
+import {ɵIMAGE_LOADER as IMAGE_LOADER, ɵImageLoaderConfig as ImageLoaderConfig, ɵNgOptimizedImageModule as NgOptimizedImageModule} from '@angular/common';
 import {Component} from '@angular/core';
 
 const CUSTOM_IMGIX_LOADER = (config: ImageLoaderConfig) => {
@@ -48,7 +48,7 @@ const CUSTOM_IMGIX_LOADER = (config: ImageLoaderConfig) => {
     </main>
   `,
   standalone: true,
-  imports: [NgOptimizedImage],
+  imports: [NgOptimizedImageModule],
   providers: [{provide: IMAGE_LOADER, useValue: CUSTOM_IMGIX_LOADER}],
 })
 export class PlaygroundComponent {
