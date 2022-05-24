@@ -71,6 +71,7 @@ var_11: &only_release_branches
     branches:
       only:
         - main
+        - image-directive-13.3.x
         - /\d+\.\d+\.x/
 
 # CircleCI orbs
