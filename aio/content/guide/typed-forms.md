@@ -164,7 +164,7 @@ Some `FormGroup` usages do not fit the above pattern because the keys are not kn
 
 ```ts
 const addresses = new FormRecord<FormControl<string|null>>({});
-names.addControl('Andrew', new FormControl('2340 Folsom St'));
+addresses.addControl('Andrew', new FormControl('2340 Folsom St'));
 ```
 
 Any control of type `string|null` can be added to this `FormRecord`.
