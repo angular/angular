@@ -15,7 +15,6 @@ interface SubscriptionStrategy {
   createSubscription(async: Subscribable<any>|Promise<any>, updateLatestValue: any): Unsubscribable
       |Promise<any>;
   dispose(subscription: Unsubscribable|Promise<any>): void;
-  onDestroy(subscription: Unsubscribable|Promise<any>): void;
 }
 
 class SubscribableStrategy implements SubscriptionStrategy {
@@ -31,10 +30,6 @@ class SubscribableStrategy implements SubscriptionStrategy {
   dispose(subscription: Unsubscribable): void {
     subscription.unsubscribe();
   }
-
-  onDestroy(subscription: Unsubscribable): void {
-    subscription.unsubscribe();
-  }
 }
 
 class PromiseStrategy implements SubscriptionStrategy {
@@ -45,8 +40,6 @@ class PromiseStrategy implements SubscriptionStrategy {
   }
 
   dispose(subscription: Promise<any>): void {}
-
-  onDestroy(subscription: Promise<any>): void {}
 }
 
 const _promiseStrategy = new PromiseStrategy();
