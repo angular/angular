@@ -124,7 +124,7 @@ Define metadata objects with the following limited syntax:
 |:---                       |:---     |
 | Literal object            | `{cherry: true, apple: true, mincemeat: false}`                        |
 | Literal array             | `['cherries', 'flour', 'sugar']`                                       |
-| Spread in literal array   | `['apples', 'flour', &hellip;the_rest]`                                |
+| Spread in literal array   | `['apples', 'flour', ...]`                                             |
 | Calls                     | `bake(ingredients)`                                                    |
 | New                       | `new Oven()`                                                           |
 | Property access           | `pie.slice`                                                            |

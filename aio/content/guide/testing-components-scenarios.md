@@ -1215,7 +1215,7 @@ Do not re-configure the `TestBed` after calling `compileComponents()`.
 </div>
 
 Calling `compileComponents()` closes the current `TestBed` instance to further configuration.
-You cannot call any more `TestBed` configuration methods, not `configureTestingModule()` nor any of the `override&hellip;` methods.
+You cannot call any more `TestBed` configuration methods, not `configureTestingModule()` nor any of the `override...` methods.
 The `TestBed` throws an error if you try.
 
 Make `compileComponents()` the last step before calling `TestBed.createComponent()`.
