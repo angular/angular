@@ -176,7 +176,7 @@ When you include the directive using the  syntax for two-way data binding, `[(ng
 
 1.  Edit the template file `hero-form.component.html`.
 1.  Find the `<input>` tag next to the **Name** label.
-1.  Add the `ngModel` directive, using two-way data binding syntax `[(ngModel)]="&hellip;"`.
+1.  Add the `ngModel` directive, using two-way data binding syntax `[(ngModel)]="..."`.
 
 <code-example header="src/app/hero-form/hero-form.component.html (excerpt)" path="forms/src/app/hero-form/hero-form.component.html" region="ngModelName-1"></code-example>
 
