@@ -82,18 +82,26 @@ const _subscribableStrategy = new SubscribableStrategy();
  */
 @Pipe({name: 'async', pure: false})
 export class AsyncPipe implements OnDestroy, PipeTransform {
+  private _ref: ChangeDetectorRef|null;
   private _latestValue: any = null;
 
   private _subscription: Unsubscribable|Promise<any>|null = null;
   private _obj: Subscribable<any>|Promise<any>|EventEmitter<any>|null = null;
   private _strategy: SubscriptionStrategy|null = null;
 
-  constructor(private _ref: ChangeDetectorRef) {}
+  constructor(ref: ChangeDetectorRef) {
+    this._ref = ref;
+  }
 
   ngOnDestroy(): void {
     if (this._subscription) {
       this._dispose();
     }
+    // Clear the `ChangeDetectorRef` and its association with the view data, to mitigate
+    // potential memory leaks in Observables that could otherwise cause the view data to
+    // be retained.
+    // https://github.com/angular/angular/issues/17624
+    this._ref = null;
   }
 
   // NOTE(@benlesh): Because Observable has deprecated a few call patterns for `subscribe`,
@@ -151,7 +159,9 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   private _updateLatestValue(async: any, value: Object): void {
     if (async === this._obj) {
       this._latestValue = value;
-      this._ref.markForCheck();
+      // Note: `this._ref` is only cleared in `ngOnDestroy` so is known to be available when a
+      // value is being updated.
+      this._ref!.markForCheck();
     }
   }
 }
