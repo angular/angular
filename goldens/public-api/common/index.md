@@ -33,7 +33,7 @@ export const APP_BASE_HREF: InjectionToken<string>;
 
 // @public
 export class AsyncPipe implements OnDestroy, PipeTransform {
-    constructor(_ref: ChangeDetectorRef);
+    constructor(ref: ChangeDetectorRef);
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
