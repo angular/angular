@@ -158,7 +158,9 @@ Here are the code files discussed on this page.
 
 <!-- links -->
 
-[AioGuideComponentUsageSendDataToChild]: guide/component/component-usage-send-data-to-child "Send data to a child component | Angular"
+[AioGuideComponentUsageSendDataToChild]: guide/component/component-usage-send-data-to-child
+
+<!-- "Send data to a child component | Angular" -->
 
 <!-- external links -->
 

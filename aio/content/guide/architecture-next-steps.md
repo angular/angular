@@ -75,72 +75,143 @@ For some platforms and applications, you might also want to use the Progressive 
 
 <!-- links -->
 
-[AioCli]: cli "CLI Overview and Command Reference | Angular"
+[AioCli]: cli
 
-[AioGuideAccessibility]: guide/accessibility "Accessibility in Angular | Angular"
+<!-- "CLI Overview and Command Reference | Angular" -->
 
-[AioGuideAnimations]: guide/animations "Introduction to Angular animations | Angular"
+[AioGuideAccessibility]: guide/accessibility
 
-[AioGuideAotCompiler]: guide/aot-compiler "Ahead-of-time (AOT) compilation | Angular"
+<!-- "Accessibility in Angular | Angular" -->
 
-[AioGuideBrowserSupport]: guide/browser-support "Browser support | Angular"
+[AioGuideAnimations]: guide/animations
 
-[AioGuideBuild]: guide/build "Building and serving Angular apps | Angular"
+<!-- "Introduction to Angular animations | Angular" -->
 
-[AioGuideCliBuilder]: guide/cli-builder "Angular CLI builders | Angular"
+[AioGuideAotCompiler]: guide/aot-compiler
 
-[AioGuideComponentLifecycle]: guide/component/component-lifecycle "Comonent lifecycle | Angular"
+<!-- "Ahead-of-time (AOT) compilation | Angular" -->
 
-[AioGuideComponentWeb]: guide/component/component-web "Web component | Angular"
+[AioGuideBrowserSupport]: guide/browser-support
 
-[AioGuideDependencyInjection]: guide/dependency-injection "Dependency injection in Angular | Angular"
+<!-- "Browser support | Angular" -->
 
-[AioGuideDeployment]: guide/deployment "Deployment | Angular"
+[AioGuideBuild]: guide/build
 
-[AioGuideFileStructure]: guide/file-structure "Workspace and project file structure | Angular"
+<!-- "Building and serving Angular apps | Angular" -->
 
-[AioGuideFormsOverview]: guide/forms-overview "Introduction to forms in Angular | Angular"
+[AioGuideCliBuilder]: guide/cli-builder
 
-[AioGuideGlossary]: guide/glossary "Glossary | Angular"
-[AioGuideGlossaryComponent]: guide/glossary#component "component - Glossary | Angular"
-[AioGuideGlossaryTemplate]: guide/glossary#template "template - Glossary | Angular"
-[AioGuideGlossaryView]: guide/glossary#view "view - Glossary | Angular"
+<!-- "Angular CLI builders | Angular" -->
 
-[AioGuideHttp]: guide/http "Communicating with backend services using HTTP | Angular"
+[AioGuideComponentLifecycle]: guide/component/component-lifecycle
 
-[AioGuideI18nOverview]: guide/i18n-overview "Angular Internationalization | Angular"
+<!-- "Comonent lifecycle | Angular" -->
 
-[AioGuideLibraries]: guide/libraries "Overview of Angular libraries | Angular"
+[AioGuideComponentWeb]: guide/component/component-web
 
-[AioGuideNgmodules]: guide/ngmodules "NgModules | Angular"
+<!-- "Web component | Angular" -->
 
-[AioGuideObservables]: guide/observables "Using observables to pass values | Angular"
+[AioGuideDependencyInjection]: guide/dependency-injection
 
-[AioGuideNpmPackages]: guide/npm-packages "Workspace npm dependencies | Angular"
+<!-- "Dependency injection in Angular | Angular" -->
 
-[AioGuideRouter]: guide/router "Common Routing Tasks | Angular"
+[AioGuideDeployment]: guide/deployment
 
-[AioGuideSchematics]: guide/schematics "Generating code using schematics | Angular"
+<!-- "Deployment | Angular" -->
 
-[AioGuideSecurity]: guide/security "Security | Angular"
+[AioGuideFileStructure]: guide/file-structure
 
-[AioGuideServiceWorkerIntro]: guide/service-worker-intro "Angular service worker introduction | Angular"
+<!-- "Workspace and project file structure | Angular" -->
 
-[AioGuideTemplateSyntax]: guide/template-syntax "Template syntax | Angular"
+[AioGuideFormsOverview]: guide/forms-overview
 
-[AioGuideTesting]: guide/testing "Testing | Angular"
+<!-- "Introduction to forms in Angular | Angular" -->
 
-[AioGuideTypescriptConfiguration]: guide/typescript-configuration "TypeScript configuration | Angular"
+[AioGuideGlossary]: guide/glossary
 
-[AioGuideUniversal]: guide/universal "Server-side rendering (SSR) with Angular Universal | Angular"
+<!-- "Glossary | Angular" -->
 
-[AioGuideWebWorker]: guide/web-worker "Background processing using web workers | Angular"
+[AioGuideGlossaryComponent]: guide/glossary#component
 
-[AioTutorial]: tutorial "Tour of Heroes app and tutorial | Angular"
+<!-- "component - Glossary | Angular" -->
+
+[AioGuideGlossaryTemplate]: guide/glossary#template
+
+<!-- "template - Glossary | Angular" -->
+
+[AioGuideGlossaryView]: guide/glossary#view
+
+<!-- "view - Glossary | Angular" -->
+
+[AioGuideHttp]: guide/http
+
+<!-- "Communicating with backend services using HTTP | Angular" -->
+
+[AioGuideI18nOverview]: guide/i18n-overview
+
+<!-- "Angular Internationalization | Angular" -->
+
+[AioGuideLibraries]: guide/libraries
+
+<!-- "Overview of Angular libraries | Angular" -->
+
+[AioGuideNgmodules]: guide/ngmodules
+
+<!-- "NgModules | Angular" -->
+
+[AioGuideObservables]: guide/observables
+
+<!-- "Using observables to pass values | Angular" -->
+
+[AioGuideNpmPackages]: guide/npm-packages
+
+<!-- "Workspace npm dependencies | Angular" -->
+
+[AioGuideRouter]: guide/router
+
+<!-- "Common Routing Tasks | Angular" -->
+
+[AioGuideSchematics]: guide/schematics
+
+<!-- "Generating code using schematics | Angular" -->
+
+[AioGuideSecurity]: guide/security
+
+<!-- "Security | Angular" -->
+
+[AioGuideServiceWorkerIntro]: guide/service-worker-intro
+
+<!-- "Angular service worker introduction | Angular" -->
+
+[AioGuideTemplateSyntax]: guide/template-syntax
+
+<!-- "Template syntax | Angular" -->
+
+[AioGuideTesting]: guide/testing
+
+<!-- "Testing | Angular" -->
+
+[AioGuideTypescriptConfiguration]: guide/typescript-configuration
+
+<!-- "TypeScript configuration | Angular" -->
+
+[AioGuideUniversal]: guide/universal
+
+<!-- "Server-side rendering (SSR) with Angular Universal | Angular" -->
+
+[AioGuideWebWorker]: guide/web-worker
+
+<!-- "Background processing using web workers | Angular" -->
+
+[AioTutorial]: tutorial
+
+<!-- "Tour of Heroes app and tutorial | Angular" -->
 
 <!-- external links -->
 
-[NpmjsDocsMain]: https://docs.npmjs.com "npm Docs"
+[NpmjsDocsMain]: https://docs.npmjs.com
+
+<!-- "npm Docs" -->
 
 <!-- end links -->
 

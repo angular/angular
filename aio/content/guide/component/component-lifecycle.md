@@ -24,9 +24,13 @@ To learn more about accessing a [lifecycle hook][AioGuideGlossaryLifecycleHook] 
 
 <!-- links -->
 
-[AioGuideComponentUsageLifecycleHooks]: guide/component/component-usage-lifecycle-hooks "Use lifecycle hook methods | Angular"
+[AioGuideComponentUsageLifecycleHooks]: guide/component/component-usage-lifecycle-hooks
 
-[AioGuideGlossaryLifecycleHook]: guide/glossary#lifecycle-hook "lifecycle hook - Glossary | Angular"
+<!-- "Use lifecycle hook methods | Angular" -->
+
+[AioGuideGlossaryLifecycleHook]: guide/glossary#lifecycle-hook
+
+<!-- "lifecycle hook - Glossary | Angular" -->
 
 <!-- external links -->
 

@@ -182,18 +182,33 @@ Use the `add{nameOfParentProperty}()` method to take a string argument and add t
 
 <!-- links -->
 
-[AioApiCoreEventemitter]: api/core/EventEmitter "EventEmitter | Core - API | Angular"
+[AioApiCoreEventemitter]: api/core/EventEmitter
 
-[AioGuideComponentCreate]: guide/component/component-create "Create an Angular component | Angular"
+<!-- "EventEmitter | Core - API | Angular" -->
 
-[AioGuideGlossaryComponent]: guide/glossary#component "component - Glossary | Angular"
+[AioGuideComponentCreate]: guide/component/component-create
 
-[AioGuideEventBinding]: guide/event-binding "Event binding | Angular"
+<!-- "Create an Angular component | Angular" -->
 
-[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application "Create a workspace and initial application - Setting up the local environment and workspace | Angular"
-[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli "Install the Angular CLI - Setting up the local environment and workspace | Angular"
+[AioGuideGlossaryComponent]: guide/glossary#component
 
-[AioGuideTemplateReferenceVariables]: guide/template-reference-variables "Template variables | Angular"
+<!-- "component - Glossary | Angular" -->
+
+[AioGuideEventBinding]: guide/event-binding
+
+<!-- "Event binding | Angular" -->
+
+[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application
+
+<!-- "Create a workspace and initial application - Setting up the local environment and workspace | Angular" -->
+
+[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli
+
+<!-- "Install the Angular CLI - Setting up the local environment and workspace | Angular" -->
+
+[AioGuideTemplateReferenceVariables]: guide/template-reference-variables
+
+<!-- "Template variables | Angular" -->
 
 <!-- external links -->
 

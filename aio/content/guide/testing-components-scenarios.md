@@ -1421,7 +1421,9 @@ Explore the options and combinations on your own.
 
 <!-- links -->
 
-[AioGuideComponentUsageLifecycleHooks]: guide/component/component-usage-lifecycle-hooks "Use an Angular lifecycle hook method | Angular"
+[AioGuideComponentUsageLifecycleHooks]: guide/component/component-usage-lifecycle-hooks
+
+<!-- "Use an Angular lifecycle hook method | Angular" -->
 
 <!-- external links -->
 

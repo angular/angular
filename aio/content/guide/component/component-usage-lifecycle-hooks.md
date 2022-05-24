@@ -115,25 +115,57 @@ The `ngOnDestroy()` hook method is also the time to notify other parts of the ap
 
 <!-- links -->
 
-[AioGuideComponentCreate]: guide/component/component-create "Create an Angular component | Angular"
+[AioGuideComponentCreate]: guide/component/component-create
 
-[AioGuideComponentLifecycleCleanPriorToInstanceDestruction]: guide/component/component-usage-lifecycle-hooks#clean-prior-to-instance-destruction "Clean prior to instance destruction - Use an Angular lifecycle hook method | Angular"
-[AioGuideComponentLifecycleInitializeAComponentOrDirective]: guide/component/component-usage-lifecycle-hooks#initialize-a-component-or-directive "Initialize a component or directive - Use an Angular lifecycle hook method | Angular"
+<!-- "Create an Angular component | Angular" -->
 
-[AioGuideComponentLifecycle]: guide/component/component-lifecycle "Understand the lifecycle of a component | Angular"
+[AioGuideComponentLifecycleCleanPriorToInstanceDestruction]: guide/component/component-usage-lifecycle-hooks#clean-prior-to-instance-destruction
 
-[AioGuideComponentLifecycleTutorialDefineCustomChangeDetection]: guide/component/component-example-lifecycle#define-custom-change-detection "Define custom change detection - Example: lifecycle hook methods | Angular"
-[AioGuideComponentLifecycleTutorialRespondToViewChanges]: guide/component/component-example-lifecycle#respond-to-view-changes "Respond to view changes - Example: lifecycle hook methods | Angular"
-[AioGuideComponentLifecycleTutorialUseChangeDetectionHooks]: guide/component/component-example-lifecycle#use-change-detection-hooks "Use change detection hooks - Example: lifecycle hook methods | Angular"
+<!-- "Clean prior to instance destruction - Use an Angular lifecycle hook method | Angular" -->
 
-[AioGuideGlossaryComponent]: guide/glossary#component "component - Glossary | Angular"
-[AioGuideGlossaryDirective]: guide/glossary#directive "directive - Glossary | Angular"
-[AioGuideGlossaryLifecycleHook]: guide/glossary#lifecycle-hook "lifecycle hook - Glossary | Angular"
+[AioGuideComponentLifecycleInitializeAComponentOrDirective]: guide/component/component-usage-lifecycle-hooks#initialize-a-component-or-directive
 
-[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application "Create a workspace and initial application - Setting up the local environment and workspace | Angular"
-[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli "Install the Angular CLI - Setting up the local environment and workspace | Angular"
+<!-- "Initialize a component or directive - Use an Angular lifecycle hook method | Angular" -->
 
-[AioTutorialTohPt4CallItInNgoninit]: tutorial/toh-pt4#call-it-in-ngoninit "Call it in ngOnInit() - Add services | Angular"
+[AioGuideComponentLifecycle]: guide/component/component-lifecycle
+
+<!-- "Understand the lifecycle of a component | Angular" -->
+
+[AioGuideComponentLifecycleTutorialDefineCustomChangeDetection]: guide/component/component-example-lifecycle#define-custom-change-detection
+
+<!-- "Define custom change detection - Example: lifecycle hook methods | Angular" -->
+
+[AioGuideComponentLifecycleTutorialRespondToViewChanges]: guide/component/component-example-lifecycle#respond-to-view-changes
+
+<!-- "Respond to view changes - Example: lifecycle hook methods | Angular" -->
+
+[AioGuideComponentLifecycleTutorialUseChangeDetectionHooks]: guide/component/component-example-lifecycle#use-change-detection-hooks
+
+<!-- "Use change detection hooks - Example: lifecycle hook methods | Angular" -->
+
+[AioGuideGlossaryComponent]: guide/glossary#component
+
+<!-- "component - Glossary | Angular" -->
+
+[AioGuideGlossaryDirective]: guide/glossary#directive
+
+<!-- "directive - Glossary | Angular" -->
+
+[AioGuideGlossaryLifecycleHook]: guide/glossary#lifecycle-hook
+
+<!-- "lifecycle hook - Glossary | Angular" -->
+
+[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application
+
+<!-- "Create a workspace and initial application - Setting up the local environment and workspace | Angular" -->
+
+[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli
+
+<!-- "Install the Angular CLI - Setting up the local environment and workspace | Angular" -->
+
+[AioTutorialTohPt4CallItInNgoninit]: tutorial/toh-pt4#call-it-in-ngoninit
+
+<!-- "Call it in ngOnInit() - Add services | Angular" -->
 
 <!-- external links -->
 

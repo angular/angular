@@ -354,42 +354,101 @@ For information on how to build your own custom directives, see [Attribute Direc
 
 <!-- links -->
 
-[AioApiCommonNgforof]: api/common/NgForOf "NgForOf | @angular/common - API | Angular"
-[AioApiCommonNgif]: api/common/NgIf "NgIf | @angular/common - API | Angular"
+[AioApiCommonNgforof]: api/common/NgForOf
 
-[AioApiFormsControlvalueaccessor]: api/forms/ControlValueAccessor "ControlValueAccessor | @angular/forms - API | Angular"
-[AioApiFormsDefaultvalueaccessor]: api/forms/DefaultValueAccessor "DefaultValueAccessor | @angular/forms - API | Angular"
+<!-- "NgForOf | @angular/common - API | Angular" -->
 
-[AioGuideClassBinding]: guide/class-binding "Class and style binding | Angular"
+[AioApiCommonNgif]: api/common/NgIf
 
-[AioGuideAttributeDirectives]: guide/attribute-directives "Attribute directives | Angular"
+<!-- "NgIf | @angular/common - API | Angular" -->
 
-[AioGuideBuiltInDirectivesAddingAndRemovingClassesWithNgclass]: guide/built-in-directives#adding-and-removing-classes-with-ngclass "Adding and removing classes with NgClass - Built-in directives | Angular"
-[AioGuideBuiltInDirectivesAddingOrRemovingAnElementWithNgif]: guide/built-in-directives#adding-or-removing-an-element-with-ngif "Adding or removing an element with NgIf - Built-in directives | Angular"
-[AioGuideBuiltInDirectivesBuiltInAttributeDirectives]: guide/built-in-directives#built-in-attribute-directives "Built-in attribute directives - Built-in directives | Angular"
-[AioGuideBuiltInDirectivesBuiltInStructuralDirectives]: guide/built-in-directives#built-in-structural-directives "Built-in structural directives - Built-in directives| Angular"
-[AioGuideBuiltInDirectivesDisplayingAndUpdatingPropertiesWithNgmodel]: guide/built-in-directives#displaying-and-updating-properties-with-ngmodel "Displaying and updating properties with ngModel - Built-in directives | Angular"
-[AioGuideBuiltInDirectivesListingItemsWithNgfor]: guide/built-in-directives#listing-items-with-ngfor "Listing items with NgFor - Built-in directives | Angular"
-[AioGuideBuiltInDirectivesSettingInlineStylesWithNgstyle]: guide/built-in-directives#setting-inline-styles-with-ngstyle "Setting inline styles with NgStyle - Built-in directives | Angular"
-[AioGuideBuiltInDirectivesSwitchingCasesWithNgswitch]: guide/built-in-directives#switching-cases-with-ngswitch "Switching cases with NgSwitch | Angular"
+[AioApiFormsControlvalueaccessor]: api/forms/ControlValueAccessor
 
-[AioGuideComponentOverview]: guide/component/component-overview "Understand Angular components | Angular"
+<!-- "ControlValueAccessor | @angular/forms - API | Angular" -->
 
-[AioGuideComponentUsageSendDataToChild]: guide/component/component-usage-send-data-to-child "Send data to child component | Angular"
+[AioApiFormsDefaultvalueaccessor]: api/forms/DefaultValueAccessor
 
-[AioGuideEventBinding]: guide/event-binding "Event binding | Angular"
+<!-- "DefaultValueAccessor | @angular/forms - API | Angular" -->
 
-[AioGuideForms]: guide/forms "Building a template-driven form | Angular"
+[AioGuideClassBinding]: guide/class-binding
 
-[AioGuidePropertyBinding]: guide/property-binding "Property binding | Angular"
+<!-- "Class and style binding | Angular" -->
 
-[AioGuideRouter]: guide/router "Common Routing Tasks | Angular"
+[AioGuideAttributeDirectives]: guide/attribute-directives
 
-[AioGuideStructuralDirectives]: guide/structural-directives "Writing structural directives | Angular"
-[AioGuideStructuralDirectivesOneStructuralDirectivePerElement]: guide/structural-directives#one-structural-directive-per-element <!-- "One structural directive per element | Angular" -->
-[AioGuideStructuralDirectivesStructuralDirectiveShorthand]: guide/structural-directives#structural-directive-shorthand "Structural directive shorthand - Writing structural directives | Angular"
+<!-- "Attribute directives | Angular" -->
 
-[AioGuideTwoWayBindingHowTwoWayBindingWorks]: guide/two-way-binding#how-two-way-binding-works "How two-way binding works - Two-way binding | Angular"
+[AioGuideBuiltInDirectivesAddingAndRemovingClassesWithNgclass]: guide/built-in-directives#adding-and-removing-classes-with-ngclass
+
+<!-- "Adding and removing classes with NgClass - Built-in directives | Angular" -->
+
+[AioGuideBuiltInDirectivesAddingOrRemovingAnElementWithNgif]: guide/built-in-directives#adding-or-removing-an-element-with-ngif
+
+<!-- "Adding or removing an element with NgIf - Built-in directives | Angular" -->
+
+[AioGuideBuiltInDirectivesBuiltInAttributeDirectives]: guide/built-in-directives#built-in-attribute-directives
+
+<!-- "Built-in attribute directives - Built-in directives | Angular" -->
+
+[AioGuideBuiltInDirectivesBuiltInStructuralDirectives]: guide/built-in-directives#built-in-structural-directives
+
+<!-- "Built-in structural directives - Built-in directives| Angular" -->
+
+[AioGuideBuiltInDirectivesDisplayingAndUpdatingPropertiesWithNgmodel]: guide/built-in-directives#displaying-and-updating-properties-with-ngmodel
+
+<!-- "Displaying and updating properties with ngModel - Built-in directives | Angular" -->
+
+[AioGuideBuiltInDirectivesListingItemsWithNgfor]: guide/built-in-directives#listing-items-with-ngfor
+
+<!-- "Listing items with NgFor - Built-in directives | Angular" -->
+
+[AioGuideBuiltInDirectivesSettingInlineStylesWithNgstyle]: guide/built-in-directives#setting-inline-styles-with-ngstyle
+
+<!-- "Setting inline styles with NgStyle - Built-in directives | Angular" -->
+
+[AioGuideBuiltInDirectivesSwitchingCasesWithNgswitch]: guide/built-in-directives#switching-cases-with-ngswitch
+
+<!-- "Switching cases with NgSwitch | Angular" -->
+
+[AioGuideComponentOverview]: guide/component/component-overview
+
+<!-- "Understand Angular components | Angular" -->
+
+[AioGuideComponentUsageSendDataToChild]: guide/component/component-usage-send-data-to-child
+
+<!-- "Send data to child component | Angular" -->
+
+[AioGuideEventBinding]: guide/event-binding
+
+<!-- "Event binding | Angular" -->
+
+[AioGuideForms]: guide/forms
+
+<!-- "Building a template-driven form | Angular" -->
+
+[AioGuidePropertyBinding]: guide/property-binding
+
+<!-- "Property binding | Angular" -->
+
+[AioGuideRouter]: guide/router
+
+<!-- "Common Routing Tasks | Angular" -->
+
+[AioGuideStructuralDirectives]: guide/structural-directives
+
+<!-- "Writing structural directives | Angular" -->
+
+[AioGuideStructuralDirectivesOneStructuralDirectivePerElement]: guide/structural-directives#one-structural-directive-per-element
+
+<!-- "One structural directive per element | Angular" -->
+
+[AioGuideStructuralDirectivesStructuralDirectiveShorthand]: guide/structural-directives#structural-directive-shorthand
+
+<!-- "Structural directive shorthand - Writing structural directives | Angular" -->
+
+[AioGuideTwoWayBindingHowTwoWayBindingWorks]: guide/two-way-binding#how-two-way-binding-works
+
+<!-- "How two-way binding works - Two-way binding | Angular" -->
 
 <!-- external links -->
 

@@ -71,11 +71,17 @@ To get the most out of these developer guides, you should review the following t
 
 <!-- links -->
 
-[AioGuideUnderstandingAngularOverview]: guide/understanding-angular-overview "Understanding Angular | Angular"
+[AioGuideUnderstandingAngularOverview]: guide/understanding-angular-overview
 
-[AioGuideWhatIsAngular]: guide/what-is-angular "What is Angular\? | Angular"
+<!-- "Understanding Angular | Angular" -->
 
-[AioStart]: start "Getting started with Angular | Angular"
+[AioGuideWhatIsAngular]: guide/what-is-angular
+
+<!-- "What is Angular\? | Angular" -->
+
+[AioStart]: start
+
+<!-- "Getting started with Angular | Angular" -->
 
 <!-- external links -->
 

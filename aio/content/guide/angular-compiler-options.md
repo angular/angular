@@ -238,7 +238,9 @@ In addition to the configuration file, you can also use [`tsc` command line opti
 
 <!-- links -->
 
-[AioGuideI18nCommonPrepareMarkTextInComponentTemplate]: guide/i18n-common-prepare#mark-text-in-component-template "Mark text in component template - Prepare templates for translations | Angular"
+[AioGuideI18nCommonPrepareMarkTextInComponentTemplate]: guide/i18n-common-prepare#mark-text-in-component-template
+
+<!-- "Mark text in component template - Prepare templates for translations | Angular" -->
 
 <!-- end links -->
 

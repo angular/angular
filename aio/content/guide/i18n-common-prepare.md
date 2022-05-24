@@ -461,30 +461,67 @@ The following code example shows nested clauses based on the `gender` and `minut
 
 <!-- links -->
 
-[AioApiLocalizeInitLocalize]: api/localize/init/$localize "$localize | init - localize - API  | Angular"
+[AioApiLocalizeInitLocalize]: api/localize/init/$localize
 
-[AioGuideGlossaryInterpolation]: guide/glossary#interpolation "interpolation - Glossary | Angular"
+<!-- "$localize | init - localize - API  | Angular" -->
 
-[AioGuideI18nCommonPrepare]: guide/i18n-common-prepare "Prepare templates for translations | Angular"
-[AioGuideI18nCommonPrepareAddHelpfulDescriptionsAndMeanings]: guide/i18n-common-prepare#add-helpful-descriptions-and-meanings "Add helpful descriptions and meanings - Prepare templates for translations | Angular"
-[AioGuideI18nCommonPrepareMarkAlternatesAndNestedExpressions]: guide/i18n-common-prepare#mark-alternates-and-nested-expressions "Mark alternates and nested expressions - Prepare templates for translation | Angular"
-[AioGuideI18nCommonPrepareMarkElementAttributesForTranslations]: guide/i18n-common-prepare#mark-element-attributes-for-translations "Mark element attributes for translations - Prepare templates for translations | Angular"
-[AioGuideI18nCommonPrepareMarkPlurals]: guide/i18n-common-prepare#mark-plurals "Mark plurals - Prepare component for translation | Angular"
-[AioGuideI18nCommonPrepareMarkTextInComponentTemplate]: guide/i18n-common-prepare#mark-text-in-component-template "Mark text in component template - Prepare templates for translations | Angular"
+[AioGuideGlossaryInterpolation]: guide/glossary#interpolation
 
-[AioGuideI18nCommonTranslationFiles]: guide/i18n-common-translation-files "Work with translation files | Angular"
+<!-- "interpolation - Glossary | Angular" -->
 
-[AioGuideI18nOptionalManageMarkedText]: guide/i18n-optional-manage-marked-text "Manage marked text with custom IDs | Angular"
+[AioGuideI18nCommonPrepare]: guide/i18n-common-prepare
+
+<!-- "Prepare templates for translations | Angular" -->
+
+[AioGuideI18nCommonPrepareAddHelpfulDescriptionsAndMeanings]: guide/i18n-common-prepare#add-helpful-descriptions-and-meanings
+
+<!-- "Add helpful descriptions and meanings - Prepare templates for translations | Angular" -->
+
+[AioGuideI18nCommonPrepareMarkAlternatesAndNestedExpressions]: guide/i18n-common-prepare#mark-alternates-and-nested-expressions
+
+<!-- "Mark alternates and nested expressions - Prepare templates for translation | Angular" -->
+
+[AioGuideI18nCommonPrepareMarkElementAttributesForTranslations]: guide/i18n-common-prepare#mark-element-attributes-for-translations
+
+<!-- "Mark element attributes for translations - Prepare templates for translations | Angular" -->
+
+[AioGuideI18nCommonPrepareMarkPlurals]: guide/i18n-common-prepare#mark-plurals
+
+<!-- "Mark plurals - Prepare component for translation | Angular" -->
+
+[AioGuideI18nCommonPrepareMarkTextInComponentTemplate]: guide/i18n-common-prepare#mark-text-in-component-template
+
+<!-- "Mark text in component template - Prepare templates for translations | Angular" -->
+
+[AioGuideI18nCommonTranslationFiles]: guide/i18n-common-translation-files
+
+<!-- "Work with translation files | Angular" -->
+
+[AioGuideI18nOptionalManageMarkedText]: guide/i18n-optional-manage-marked-text
+
+<!-- "Manage marked text with custom IDs | Angular" -->
 
 <!-- external links -->
 
-[GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL14L18]: https://github.com/angular/angular/blob/ecffc3557fe1bff9718c01277498e877ca44588d/packages/core/src/i18n/locale_en.ts#L14-L18 "Line 14 to 18 - angular/packages/core/src/i18n/locale_en.ts | angular/angular | GitHub"
+[GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL14L18]: https://github.com/angular/angular/blob/ecffc3557fe1bff9718c01277498e877ca44588d/packages/core/src/i18n/locale_en.ts#L14-L18
 
-[GithubUnicodeOrgIcuUserguideFormatParseMessages]: https://unicode-org.github.io/icu/userguide/format_parse/messages "ICU Message Format - ICU Documentation | Unicode | GitHub"
+<!-- "Line 14 to 18 - angular/packages/core/src/i18n/locale_en.ts | angular/angular | GitHub" -->
 
-[UnicodeCldrMain]: https://cldr.unicode.org "Unicode CLDR Project"
-[UnicodeCldrIndexCldrSpecPluralRules]: http://cldr.unicode.org/index/cldr-spec/plural-rules "Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode"
-[UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames]: http://cldr.unicode.org/index/cldr-spec/plural-rules#TOC-Choosing-Plural-Category-Names "Choosing Plural Category Names - Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode"
+[GithubUnicodeOrgIcuUserguideFormatParseMessages]: https://unicode-org.github.io/icu/userguide/format_parse/messages
+
+<!-- "ICU Message Format - ICU Documentation | Unicode | GitHub" -->
+
+[UnicodeCldrMain]: https://cldr.unicode.org
+
+<!-- "Unicode CLDR Project" -->
+
+[UnicodeCldrIndexCldrSpecPluralRules]: http://cldr.unicode.org/index/cldr-spec/plural-rules
+
+<!-- "Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode" -->
+
+[UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames]: http://cldr.unicode.org/index/cldr-spec/plural-rules#TOC-Choosing-Plural-Category-Names
+
+<!-- "Choosing Plural Category Names - Plural Rules | CLDR - Unicode Common Locale Data Repository | Unicode" -->
 
 <!-- end links -->
 

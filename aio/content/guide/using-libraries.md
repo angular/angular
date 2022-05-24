@@ -179,24 +179,43 @@ If you do not add the interface for the script-defined extension, your IDE shows
 
 <!-- links -->
 
-[AioCliUpdate]: cli/update "ng update | CLI |Angular"
+[AioCliUpdate]: cli/update
 
-[AioGuideNpmPackages]: guide/npm-packages "Workspace npm dependencies | Angular"
-[AioGuideWorkspaceConfig]: guide/workspace-config "Angular workspace configuration | Angular"
+<!-- "ng update | CLI |Angular" -->
 
-[AioResources]: resources "Explore Angular Resources | Angular"
+[AioGuideNpmPackages]: guide/npm-packages
+
+<!-- "Workspace npm dependencies | Angular" -->
+
+[AioGuideWorkspaceConfig]: guide/workspace-config
+
+<!-- "Angular workspace configuration | Angular" -->
+
+[AioResources]: resources
+
+<!-- "Explore Angular Resources | Angular" -->
 
 <!-- external links -->
 
-[AngularMaterialMain]: https://material.angular.io "Angular Material | Angular"
+[AngularMaterialMain]: https://material.angular.io
 
-[AngularUpdateMain]: https://update.angular.io "Angular Update Guide | Angular"
+<!-- "Angular Material | Angular" -->
 
-[GetbootstrapDocs40GettingStartedIntroduction]: https://getbootstrap.com/docs/4.0/getting-started/introduction "Introduction | Bootstrap"
+[AngularUpdateMain]: https://update.angular.io
 
-[NpmjsMain]: https://www.npmjs.com "npm"
+<!-- "Angular Update Guide | Angular" -->
 
-[YarnpkgMain]: https://yarnpkg.com " Yarn"
+[GetbootstrapDocs40GettingStartedIntroduction]: https://getbootstrap.com/docs/4.0/getting-started/introduction
+
+<!-- "Introduction | Bootstrap" -->
+
+[NpmjsMain]: https://www.npmjs.com
+
+<!-- "npm" -->
+
+[YarnpkgMain]: https://yarnpkg.com
+
+<!-- " Yarn" -->
 
 <!-- end links -->
 

@@ -115,7 +115,9 @@ The Angular community also has an extensive [network of third-party tools and li
 
 <!-- links -->
 
-[AioGuideComponentComponentOverview]: guide/component/component-overview "Understand Angular components | Angular"
+[AioGuideComponentComponentOverview]: guide/component/component-overview
+
+<!-- "Understand Angular components | Angular" -->
 
 <!-- external links -->
 

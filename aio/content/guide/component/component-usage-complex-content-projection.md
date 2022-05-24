@@ -50,12 +50,21 @@ The `ng-container` element does not get rendered in the DOM tree.
 
 <!-- links -->
 
-[AioGuideComponentCreate]: guide/component/component-create "Create an Angular component | Angular"
+[AioGuideComponentCreate]: guide/component/component-create
 
-[AioGuideGlossaryComponent]: guide/glossary#component "component - Glossary | Angular"
+<!-- "Create an Angular component | Angular" -->
 
-[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application "Create a workspace and initial application - Setting up the local environment and workspace | Angular"
-[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli "Install the Angular CLI - Setting up the local environment and workspace | Angular"
+[AioGuideGlossaryComponent]: guide/glossary#component
+
+<!-- "component - Glossary | Angular" -->
+
+[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application
+
+<!-- "Create a workspace and initial application - Setting up the local environment and workspace | Angular" -->
+
+[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli
+
+<!-- "Install the Angular CLI - Setting up the local environment and workspace | Angular" -->
 
 <!-- external links -->
 

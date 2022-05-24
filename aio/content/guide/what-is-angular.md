@@ -201,7 +201,9 @@ To explore Angular's capabilities further, we recommend reading through the sect
 
 <!-- links -->
 
-[AioGuideComponentComponentOverview]: guide/component/component-overview "Understand Angular components | Angular"
+[AioGuideComponentComponentOverview]: guide/component/component-overview
+
+<!-- "Understand Angular components | Angular" -->
 
 <!-- external links -->
 

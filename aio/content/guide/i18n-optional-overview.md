@@ -34,19 +34,39 @@ To prepare your project for translations, you should have a basic understanding 
 
 <!-- links -->
 
-[AioCliMain]: cli "CLI Overview and Command Reference | Angular"
+[AioCliMain]: cli
 
-[AioGuideGlossaryCommandLineInterfaceCli]: guide/glossary#command-line-interface-cli "command-line interface (CLI) - Glossary | Angular"
-[AioGuideGlossaryComponent]: guide/glossary#component "component - Glossary | Angular"
-[AioGuideGlossaryTemplate]: guide/glossary#template "template - Glossary | Angular"
+<!-- "CLI Overview and Command Reference | Angular" -->
 
-[AioGuideI18nOptionalManageMarkedText]: guide/i18n-optional-manage-marked-text "Manage marked text with custom IDs | Angular"
-[AioGuideI18nOptionalImportGlobalVariants]: guide/i18n-optional-import-global-variants "Import global variants of the locale data | Angular"
-[AioGuideI18nOptionalManualRuntimeLocale]: guide/i18n-optional-runtime-source-locale "Set the runtime locale manually | Angular"
+[AioGuideGlossaryCommandLineInterfaceCli]: guide/glossary#command-line-interface-cli
+
+<!-- "command-line interface (CLI) - Glossary | Angular" -->
+
+[AioGuideGlossaryComponent]: guide/glossary#component
+
+<!-- "component - Glossary | Angular" -->
+
+[AioGuideGlossaryTemplate]: guide/glossary#template
+
+<!-- "template - Glossary | Angular" -->
+
+[AioGuideI18nOptionalManageMarkedText]: guide/i18n-optional-manage-marked-text
+
+<!-- "Manage marked text with custom IDs | Angular" -->
+
+[AioGuideI18nOptionalImportGlobalVariants]: guide/i18n-optional-import-global-variants
+
+<!-- "Import global variants of the locale data | Angular" -->
+
+[AioGuideI18nOptionalManualRuntimeLocale]: guide/i18n-optional-runtime-source-locale
+
+<!-- "Set the runtime locale manually | Angular" -->
 
 <!-- external links -->
 
-[W3Xml]: https://www.w3.org/XML "Extensible Markup Language (XML) | W3C"
+[W3Xml]: https://www.w3.org/XML
+
+<!-- "Extensible Markup Language (XML) | W3C" -->
 
 <!-- end links -->
 

@@ -207,30 +207,77 @@ To learn more about the structure for an Angular component, see [Understand the 
 
 <!-- links -->
 
-[AioCliGenerateComponentCommand]: cli/generate#component-command "component - ng generate | CLI | Angular"
-[AioCliNew]: cli/new "ng new | CLI | Angular"
+[AioCliGenerateComponentCommand]: cli/generate#component-command
 
-[AioGuideComponentCreateDeclareTheStyles]: guide/component/component-create#declare-the-styles "Declare the styles - Create an Angular component | Angular"
-[AioGuideComponentCreateDefineTheTemplate]: guide/component/component-create#define-the-template "Define the template - Create an Angular component | Angular"
-[AioGuideComponentCreateManuallyCreateAComponent]: guide/component/component-create#manually-create-a-component "Manually create a component - Create an Angular component | Angular"
-[AioGuideComponentCreateSpecifyTheCssSelector]: guide/component/component-create#specify-the-css-selector "Specify the CSS selector - Create an Angular component | Angular"
-[AioGuideComponentCreateUseTheAngularCliToCreateAComponent]: guide/component/component-create#use-the-angular-cli-to-create-a-component "Use the Angular CLI to create a component - Create an Angular component | Angular"
+<!-- "component - ng generate | CLI | Angular" -->
 
-[AioGuideComponentStructure]: guide/component/component-structure "Understand the structure an Angular component | Angular"
-[AioGuideComponentStructureComponentClass]: guide/component/component-structure#component-class "Component class - Understand the structure an Angular component | Angular"
-[AioGuideComponentStructureSelector]: guide/component/component-structure#selector  "selector - Understand the structure an Angular component | Angular"
-[AioGuideComponentStructureStyleMetadata]: guide/component/component-structure#style-metadata  "Style metadata - Understand the structure an Angular component | Angular"
-[AioGuideComponentStructureTemplateMetadata]: guide/component/component-structure#template-metadata  "Template metadata - Understand the structure an Angular component | Angular"
-[AioGuideComponentStructureComponentMetadata]: guide/component/component-structure#component-metadata  "Component metadata - Understand the structure an Angular component | Angular"
+[AioCliNew]: cli/new
 
-[AioGuideComponentStyle]: guide/component/component-style "Component style | Angular"
+<!-- "ng new | CLI | Angular" -->
 
-[AioGuideComponentUsage]: guide/component/component-usage "Use an Angular component | Angular"
+[AioGuideComponentCreateDeclareTheStyles]: guide/component/component-create#declare-the-styles
 
-[AioGuideGlossaryComponent]: guide/glossary#component "component - Glossary | Angular"
+<!-- "Declare the styles - Create an Angular component | Angular" -->
 
-[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application "Create a workspace and initial application - Setting up the local environment and workspace | Angular"
-[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli "Install the Angular CLI - Setting up the local environment and workspace | Angular"
+[AioGuideComponentCreateDefineTheTemplate]: guide/component/component-create#define-the-template
+
+<!-- "Define the template - Create an Angular component | Angular" -->
+
+[AioGuideComponentCreateManuallyCreateAComponent]: guide/component/component-create#manually-create-a-component
+
+<!-- "Manually create a component - Create an Angular component | Angular" -->
+
+[AioGuideComponentCreateSpecifyTheCssSelector]: guide/component/component-create#specify-the-css-selector
+
+<!-- "Specify the CSS selector - Create an Angular component | Angular" -->
+
+[AioGuideComponentCreateUseTheAngularCliToCreateAComponent]: guide/component/component-create#use-the-angular-cli-to-create-a-component
+
+<!-- "Use the Angular CLI to create a component - Create an Angular component | Angular" -->
+
+[AioGuideComponentStructure]: guide/component/component-structure
+
+<!-- "Understand the structure an Angular component | Angular" -->
+
+[AioGuideComponentStructureComponentClass]: guide/component/component-structure#component-class
+
+<!-- "Component class - Understand the structure an Angular component | Angular" -->
+
+[AioGuideComponentStructureSelector]: guide/component/component-structure#selector 
+
+<!-- "selector - Understand the structure an Angular component | Angular" -->
+
+[AioGuideComponentStructureStyleMetadata]: guide/component/component-structure#style-metadata 
+
+<!-- "Style metadata - Understand the structure an Angular component | Angular" -->
+
+[AioGuideComponentStructureTemplateMetadata]: guide/component/component-structure#template-metadata 
+
+<!-- "Template metadata - Understand the structure an Angular component | Angular" -->
+
+[AioGuideComponentStructureComponentMetadata]: guide/component/component-structure#component-metadata 
+
+<!-- "Component metadata - Understand the structure an Angular component | Angular" -->
+
+[AioGuideComponentStyle]: guide/component/component-style
+
+<!-- "Component style | Angular" -->
+
+[AioGuideComponentUsage]: guide/component/component-usage
+
+<!-- "Use an Angular component | Angular" -->
+
+[AioGuideGlossaryComponent]: guide/glossary#component
+
+<!-- "component - Glossary | Angular" -->
+
+[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application
+
+<!-- "Create a workspace and initial application - Setting up the local environment and workspace | Angular" -->
+
+[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli
+
+<!-- "Install the Angular CLI - Setting up the local environment and workspace | Angular" -->
 
 <!-- external links -->
 

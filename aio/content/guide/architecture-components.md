@@ -243,46 +243,95 @@ For more information, see [Attribute Directives][AioGuideAttributeDirectives] an
 
 <!-- links -->
 
-[AioApiCommonCurrencypipe]: api/common/CurrencyPipe "CurrencyPipe | @angular/common - API | Angular"
+[AioApiCommonCurrencypipe]: api/common/CurrencyPipe
 
-[AioApiCommonDatepipe]: api/common/DatePipe "DatePipe | @angular/common - API | Angular"
+<!-- "CurrencyPipe | @angular/common - API | Angular" -->
 
-[AioApiTypePipe]: api?type=pipe "type=pipe - API List | Angular"
+[AioApiCommonDatepipe]: api/common/DatePipe
 
-[AioGuideArchitectureComponentsDataBinding]: guide/architecture-components#data-binding "Data binding - Introduction to components and templates | Angular"
+<!-- "DatePipe | @angular/common - API | Angular" -->
 
-[AioGuideAttributeDirectives]: guide/attribute-directives "Attribute directives | Angular"
+[AioApiTypePipe]: api?type=pipe
 
-[AioGuideBuiltInDirectivesAddingAndRemovingClassesWithNgclass]: guide/built-in-directives#adding-and-removing-classes-with-ngclass "Adding and removing classes with NgClass - Built-in directives | Angular"
-[AioGuideBuiltInDirectivesAddingOrRemovingAnElementWithNgif]: guide/built-in-directives#adding-or-removing-an-element-with-ngif "Adding or removing an element with NgIf - Built-in directives | Angular"
-[AioGuideBuiltInDirectivesListingItemsWithNgfor]: guide/built-in-directives#listing-items-with-ngfor "Listing items with NgFor - Built-in directives | Angular"
-[AioGuideBuiltInDirectivesSettingInlineStylesWithNgstyle]: guide/built-in-directives#setting-inline-styles-with-ngstyle "Setting inline styles with NgStyle - Built-in directives | Angular"
-[AioGuideBuiltInDirectivesSwitchingCasesWithNgswitch]: guide/built-in-directives#switching-cases-with-ngswitch "Switching cases with NgSwitch - Built-in directives | Angular"
+<!-- "type=pipe - API List | Angular" -->
 
-[AioGuideComponentLifecycle]: guide/component/component-lifecycle "Lifecycle hooks | Angular"
+[AioGuideArchitectureComponentsDataBinding]: guide/architecture-components#data-binding
 
-[AioGuideForms]: guide/forms "Building a template-driven form | Angular"
+<!-- "Data binding - Introduction to components and templates | Angular" -->
 
-[AioGuideGlossaryProvider]: guide/glossary#provider "provider - Glossary | Angular"
-[AioGuideGlossaryView]: guide/glossary#view "view - Glossary | Angular"
+[AioGuideAttributeDirectives]: guide/attribute-directives
 
-[AioGuideInterpolation]: guide/interpolation "Text interpolation | Angular"
+<!-- "Attribute directives | Angular" -->
 
-[AioGuidePipes]: guide/pipes "Transforming Data Using Pipes | Angular"
+[AioGuideBuiltInDirectivesAddingAndRemovingClassesWithNgclass]: guide/built-in-directives#adding-and-removing-classes-with-ngclass
 
-[AioGuidePropertyBinding]: guide/property-binding "Property binding | Angular"
+<!-- "Adding and removing classes with NgClass - Built-in directives | Angular" -->
 
-[AioGuideStructuralDirectives]: guide/structural-directives "Writing structural directives"
+[AioGuideBuiltInDirectivesAddingOrRemovingAnElementWithNgif]: guide/built-in-directives#adding-or-removing-an-element-with-ngif
 
-[AioGuideTemplateSyntax]: guide/template-syntax "Template syntax | Angular"
+<!-- "Adding or removing an element with NgIf - Built-in directives | Angular" -->
 
-[AioGuideUserInputBindingToUserInputEvents]: guide/user-input#binding-to-user-input-events "Binding to user input events - User input | Angular"
+[AioGuideBuiltInDirectivesListingItemsWithNgfor]: guide/built-in-directives#listing-items-with-ngfor
 
-[AioTutorial]: tutorial "Tour of Heroes app and tutorial | Angular"
+<!-- "Listing items with NgFor - Built-in directives | Angular" -->
+
+[AioGuideBuiltInDirectivesSettingInlineStylesWithNgstyle]: guide/built-in-directives#setting-inline-styles-with-ngstyle
+
+<!-- "Setting inline styles with NgStyle - Built-in directives | Angular" -->
+
+[AioGuideBuiltInDirectivesSwitchingCasesWithNgswitch]: guide/built-in-directives#switching-cases-with-ngswitch
+
+<!-- "Switching cases with NgSwitch - Built-in directives | Angular" -->
+
+[AioGuideComponentLifecycle]: guide/component/component-lifecycle
+
+<!-- "Lifecycle hooks | Angular" -->
+
+[AioGuideForms]: guide/forms
+
+<!-- "Building a template-driven form | Angular" -->
+
+[AioGuideGlossaryProvider]: guide/glossary#provider
+
+<!-- "provider - Glossary | Angular" -->
+
+[AioGuideGlossaryView]: guide/glossary#view
+
+<!-- "view - Glossary | Angular" -->
+
+[AioGuideInterpolation]: guide/interpolation
+
+<!-- "Text interpolation | Angular" -->
+
+[AioGuidePipes]: guide/pipes
+
+<!-- "Transforming Data Using Pipes | Angular" -->
+
+[AioGuidePropertyBinding]: guide/property-binding
+
+<!-- "Property binding | Angular" -->
+
+[AioGuideStructuralDirectives]: guide/structural-directives
+
+<!-- "Writing structural directives" -->
+
+[AioGuideTemplateSyntax]: guide/template-syntax
+
+<!-- "Template syntax | Angular" -->
+
+[AioGuideUserInputBindingToUserInputEvents]: guide/user-input#binding-to-user-input-events
+
+<!-- "Binding to user input events - User input | Angular" -->
+
+[AioTutorial]: tutorial
+
+<!-- "Tour of Heroes app and tutorial | Angular" -->
 
 <!-- external links -->
 
-[TypescriptlangDocsHandbook2ClassesHtmlParameterProperties]: https://www.typescriptlang.org/docs/handbook/2/classes.html#parameter-properties "Parameter Properties - Classes | TypeScript"
+[TypescriptlangDocsHandbook2ClassesHtmlParameterProperties]: https://www.typescriptlang.org/docs/handbook/2/classes.html#parameter-properties
+
+<!-- "Parameter Properties - Classes | TypeScript" -->
 
 <!-- end links -->
 

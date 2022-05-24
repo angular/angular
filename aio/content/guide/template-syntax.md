@@ -67,7 +67,9 @@ You might also be interested in the following:
 
 <!-- links -->
 
-[AioGuideComponentUsageComponentDataSharingAndInheritance]: guide/component/component-usage#component-data-sharing-and-inheritance "Component data sharing and inheritance - Use an Angular component | Angular"
+[AioGuideComponentUsageComponentDataSharingAndInheritance]: guide/component/component-usage#component-data-sharing-and-inheritance
+
+<!-- "Component data sharing and inheritance - Use an Angular component | Angular" -->
 
 <!--external links -->
 

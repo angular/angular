@@ -72,17 +72,31 @@ To prepare your project for translations, you should have a basic understanding 
 
 <!-- links -->
 
-[AioCliMain]: cli "CLI Overview and Command Reference | Angular"
+[AioCliMain]: cli
 
-[AioGuideGlossaryCommandLineInterfaceCli]: guide/glossary#command-line-interface-cli "command-line interface (CLI) - Glossary | Angular"
-[AioGuideGlossaryComponent]: guide/glossary#component "component - Glossary | Angular"
-[AioGuideGlossaryTemplate]: guide/glossary#template "template - Glossary | Angular"
+<!-- "CLI Overview and Command Reference | Angular" -->
+
+[AioGuideGlossaryCommandLineInterfaceCli]: guide/glossary#command-line-interface-cli
+
+<!-- "command-line interface (CLI) - Glossary | Angular" -->
+
+[AioGuideGlossaryComponent]: guide/glossary#component
+
+<!-- "component - Glossary | Angular" -->
+
+[AioGuideGlossaryTemplate]: guide/glossary#template
+
+<!-- "template - Glossary | Angular" -->
 
 <!-- external links -->
 
-[ThinkwithgoogleMarketfinderIntlEnUsGuideHowToApproachI18nOverview]: https://marketfinder.thinkwithgoogle.com/intl/en_us/guide/how-to-approach-i18n#overview "Overview - How to approach internationalization | Market Finder | Think with Google"
+[ThinkwithgoogleMarketfinderIntlEnUsGuideHowToApproachI18nOverview]: https://marketfinder.thinkwithgoogle.com/intl/en_us/guide/how-to-approach-i18n#overview
 
-[W3Xml]: https://www.w3.org/XML "Extensible Markup Language (XML) | W3C"
+<!-- "Overview - How to approach internationalization | Market Finder | Think with Google" -->
+
+[W3Xml]: https://www.w3.org/XML
+
+<!-- "Extensible Markup Language (XML) | W3C" -->
 
 <!-- end links -->
 

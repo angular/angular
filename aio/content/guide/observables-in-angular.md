@@ -75,7 +75,9 @@ For example:
 
 <!-- links -->
 
-[AioGuideComponentUsageSendDataToParent]: guide/component/component-usage-send-data-to-parent "Send data to a parent component | Angular"
+[AioGuideComponentUsageSendDataToParent]: guide/component/component-usage-send-data-to-parent
+
+<!-- "Send data to a parent component | Angular" -->
 
 <!-- external links -->
 

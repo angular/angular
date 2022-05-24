@@ -314,7 +314,9 @@ To continue exploring Angular and developing this application:
 
 <!-- links -->
 
-[AioGuideComponentComponentInteraction]: guide/component/component-interaction "Component interaction | Angular"
+[AioGuideComponentComponentInteraction]: guide/component/component-interaction
+
+<!-- "Component interaction | Angular" -->
 
 <!-- external links -->
 

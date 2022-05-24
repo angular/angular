@@ -41,14 +41,25 @@ To learn more about how to combine property and event bindings using the banana-
 
 <!-- links -->
 
-[AioGuideComponentCreate]: guide/component/component-create "Create an Angular component | Angular"
+[AioGuideComponentCreate]: guide/component/component-create
 
-[AioGuideGlossaryComponent]: guide/glossary#component "component - Glossary | Angular"
+<!-- "Create an Angular component | Angular" -->
 
-[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application "Create a workspace and initial application - Setting up the local environment and workspace | Angular"
-[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli "Install the Angular CLI - Setting up the local environment and workspace | Angular"
+[AioGuideGlossaryComponent]: guide/glossary#component
 
-[AioGuideTwoWayBinding]: guide/two-way-binding "Two-way binding | Angular"
+<!-- "component - Glossary | Angular" -->
+
+[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application
+
+<!-- "Create a workspace and initial application - Setting up the local environment and workspace | Angular" -->
+
+[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli
+
+<!-- "Install the Angular CLI - Setting up the local environment and workspace | Angular" -->
+
+[AioGuideTwoWayBinding]: guide/two-way-binding
+
+<!-- "Two-way binding | Angular" -->
 
 <!-- external links -->
 

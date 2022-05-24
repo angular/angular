@@ -222,31 +222,59 @@ document.querySelector('my-other-element')  //--&gt; NgElement &amp; WithPropert
 
 <!-- links -->
 
-[AioApiCoreComponent]: api/core/Component "Component | @angular/core - API | Angular"
+[AioApiCoreComponent]: api/core/Component
 
-[AioApiCoreDirectiveSelector]: api/core/Directive#selector "selector - Directive | @angular/core - API | Angular"
+<!-- "Component | @angular/core - API | Angular" -->
 
-[AioCli]: cli "CLI Overview and Command Reference | Angular"
+[AioApiCoreDirectiveSelector]: api/core/Directive#selector
 
-[AioGuideComponentDynamicLoad]: guide/component/component-dynamic-load "Example: Dynamically load a component | Angular"
+<!-- "selector - Directive | @angular/core - API | Angular" -->
 
-[AioGuideComponentExample]: guide/component/component-example "Example Angular component applications | Angular"
+[AioCli]: cli
 
-[AioGuideComponentWebBrowserSupportForCustomElements]: guide/component/component-web#browser-support-for-custom-elements "Browser support for custom elements - Web component | Angular"
+<!-- "CLI Overview and Command Reference | Angular" -->
+
+[AioGuideComponentDynamicLoad]: guide/component/component-dynamic-load
+
+<!-- "Example: Dynamically load a component | Angular" -->
+
+[AioGuideComponentExample]: guide/component/component-example
+
+<!-- "Example Angular component applications | Angular" -->
+
+[AioGuideComponentWebBrowserSupportForCustomElements]: guide/component/component-web#browser-support-for-custom-elements
+
+<!-- "Browser support for custom elements - Web component | Angular" -->
 
 <!-- external links -->
 
-[MdnDocsWebApiCustomelementregistry]: https://developer.mozilla.org/docs/Web/API/CustomElementRegistry "CustomElementRegistry | MDN"
-[MdnDocsWebApiCustomelementregistryDefine]: https://developer.mozilla.org/docs/Web/API/CustomElementRegistry/define "CustomElementRegistry.define() | MDN"
+[MdnDocsWebApiCustomelementregistry]: https://developer.mozilla.org/docs/Web/API/CustomElementRegistry
 
-[MdnDocsWebApiCustomevent]: https://developer.mozilla.org/docs/Web/API/CustomEvent "CustomEvent | MDN"
+<!-- "CustomElementRegistry | MDN" -->
 
-[MdnDocsWebGuideEventsCreatingAndTriggeringEventsCreatingCustomEvents]: https://developer.mozilla.org/docs/Web/Guide/Events/Creating_and_triggering_events#Creating_custom_events "Creating custom events - Creating and triggering events | MDN"
+[MdnDocsWebApiCustomelementregistryDefine]: https://developer.mozilla.org/docs/Web/API/CustomElementRegistry/define
 
-[MdnDocsWebWebComponents]: https://developer.mozilla.org/docs/Web/Web_Components "Web Components | MDN"
-[MdnDocsWebWebComponentsUsingCustomElements]: https://developer.mozilla.org/docs/Web/Web_Components/Using_custom_elements "Using custom elements | MDN"
+<!-- "CustomElementRegistry.define() | MDN" -->
 
-[YoutubeWatchVZ1glfplvjjyT4s]: https://www.youtube.com/watch?v=Z1gLFPLVJjY&t=4s "Elements in v6 and Beyond - Rob Wormald | YouTube"
+[MdnDocsWebApiCustomevent]: https://developer.mozilla.org/docs/Web/API/CustomEvent
+
+<!-- "CustomEvent | MDN" -->
+
+[MdnDocsWebGuideEventsCreatingAndTriggeringEventsCreatingCustomEvents]: https://developer.mozilla.org/docs/Web/Guide/Events/Creating_and_triggering_events#Creating_custom_events
+
+<!-- "Creating custom events - Creating and triggering events | MDN" -->
+
+[MdnDocsWebWebComponents]: https://developer.mozilla.org/docs/Web/Web_Components
+
+<!-- "Web Components | MDN" -->
+
+[MdnDocsWebWebComponentsUsingCustomElements]: https://developer.mozilla.org/docs/Web/Web_Components/Using_custom_elements
+
+<!-- "Using custom elements | MDN" -->
+
+[YoutubeWatchVZ1glfplvjjyT4s]: https://www.youtube.com/watch?v=Z1gLFPLVJjY&t=4s
+
+<!-- "Elements in v6 and Beyond - Rob Wormald | YouTube" -->
 
 <!-- end links -->
 

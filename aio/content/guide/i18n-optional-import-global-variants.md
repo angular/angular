@@ -21,12 +21,19 @@ The following example imports the global variants for French \(`fr`\).
 
 <!-- links -->
 
-[AioCliMain]: cli "CLI Overview and Command Reference | Angular"
-[AioCliBuild]: cli/build "ng build | CLI | Angular"
+[AioCliMain]: cli
+
+<!-- "CLI Overview and Command Reference | Angular" -->
+
+[AioCliBuild]: cli/build
+
+<!-- "ng build | CLI | Angular" -->
 
 <!-- external links -->
 
-[UnpkgBrowseAngularCommonLocalesGlobal]: https://unpkg.com/browse/@angular/common/locales/global "@angular/common/locales/global | Unpkg"
+[UnpkgBrowseAngularCommonLocalesGlobal]: https://unpkg.com/browse/@angular/common/locales/global
+
+<!-- "@angular/common/locales/global | Unpkg" -->
 
 <!-- end links -->
 

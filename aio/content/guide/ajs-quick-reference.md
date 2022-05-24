@@ -226,44 +226,103 @@ But now you can also encapsulate a style sheet within a specific component.
 
 <!-- links -->
 
-[AioApiCommonDecimalpipe]: api/common/DecimalPipe "DecimalPipe | @angular/common - API | Angular"
-[AioApiCommonJsonpipe]: api/common/JsonPipe "JsonPipe | @angular/common - API | Angular"
+[AioApiCommonDecimalpipe]: api/common/DecimalPipe
 
-[AioGuideAjsQuickReferenceFiltersPipes]: guide/ajs-quick-reference#filterspipes "Filters/pipes - AngularJS to Angular concepts: Quick reference | Angular"
-[AioGuideAjsQuickReferenceTemplateDirectives]: guide/ajs-quick-reference#template-directives "Template directives - AngularJS to Angular concepts: Quick reference | Angular"
+<!-- "DecimalPipe | @angular/common - API | Angular" -->
 
-[AioGuideArchitecture]: guide/architecture "Introduction to Angular concepts | Angular"
-[AioGuideArchitectureComponents]: guide/architecture#components "Components - Introduction to Angular concepts | Angular"
-[AioGuideArchitectureModules]: guide/architecture#modules "Modules - Introduction to Angular concepts | Angular"
-[AioGuideArchitectureServicesAndDependencyInjection]: guide/architecture#services-and-dependency-injection "Services and dependency injection - Introduction to Angular concepts | Angular"
+[AioApiCommonJsonpipe]: api/common/JsonPipe
 
-[AioGuideAttributeBinding]: guide/attribute-binding "Attribute, class, and style bindings | Angular"
-[AioGuideAttributeBindingBindingToTheStyleAttribute]: guide/class-binding "Class and style binding | Angular"
+<!-- "JsonPipe | @angular/common - API | Angular" -->
 
-[AioGuideBuiltInDirectives]: guide/built-in-directives "Built-in directives | Angular"
-[AioGuideBuiltInDirectivesDisplayingAndUpdatingPropertiesWithNgmodel]: guide/built-in-directives#displaying-and-updating-properties-with-ngmodel "Displaying and updating properties with ngModel - Built-in directives | Angular"
-[AioGuideBuiltInDirectivesSettingInlineStylesWithNgstyle]: guide/built-in-directives#setting-inline-styles-with-ngstyle "Setting inline styles with NgStyle - Built-in directives | Angular"
-[AioGuideBuiltInDirectivesSwitchingCasesWithNgswitch]: guide/built-in-directives#switching-cases-with-ngswitch "Switching cases with NgSwitch - Built-in directives | Angular"
+[AioGuideAjsQuickReferenceFiltersPipes]: guide/ajs-quick-reference#filterspipes
 
-[AioGuideEventBinding]: guide/event-binding "Event binding | Angular"
+<!-- "Filters/pipes - AngularJS to Angular concepts: Quick reference | Angular" -->
 
-[AioGuideInterpolation]: guide/interpolation "Text interpolation | Angular"
+[AioGuideAjsQuickReferenceTemplateDirectives]: guide/ajs-quick-reference#template-directives
 
-[AioGuideNgmodules]: guide/ngmodules "NgModules | Angular"
+<!-- "Template directives - AngularJS to Angular concepts: Quick reference | Angular" -->
 
-[AioGuidePipes]: guide/pipes "Transforming Data Using Pipes | Angular"
+[AioGuideArchitecture]: guide/architecture
 
-[AioGuidePropertyBinding]: guide/property-binding "Property binding | Angular"
+<!-- "Introduction to Angular concepts | Angular" -->
 
-[AioGuideRouter]: guide/router "Common Routing Tasks | Angular"
-[AioGuideRouterDefiningABasicRoute]: guide/router#defining-a-basic-route "Defining a basic route - Common Routing Tasks | Angular"
+[AioGuideArchitectureComponents]: guide/architecture#components
 
-[AioGuideStructuralDirectives]: guide/structural-directives "Writing structural directives | Angular"
-[AioGuideStructuralDirectivesStructuralDirectiveShorthand]: guide/structural-directives#structural-directive-shorthand "Structural directive shorthand - Writing structural directives | Angular"
+<!-- "Components - Introduction to Angular concepts | Angular" -->
+
+[AioGuideArchitectureModules]: guide/architecture#modules
+
+<!-- "Modules - Introduction to Angular concepts | Angular" -->
+
+[AioGuideArchitectureServicesAndDependencyInjection]: guide/architecture#services-and-dependency-injection
+
+<!-- "Services and dependency injection - Introduction to Angular concepts | Angular" -->
+
+[AioGuideAttributeBinding]: guide/attribute-binding
+
+<!-- "Attribute, class, and style bindings | Angular" -->
+
+[AioGuideAttributeBindingBindingToTheStyleAttribute]: guide/class-binding
+
+<!-- "Class and style binding | Angular" -->
+
+[AioGuideBuiltInDirectives]: guide/built-in-directives
+
+<!-- "Built-in directives | Angular" -->
+
+[AioGuideBuiltInDirectivesDisplayingAndUpdatingPropertiesWithNgmodel]: guide/built-in-directives#displaying-and-updating-properties-with-ngmodel
+
+<!-- "Displaying and updating properties with ngModel - Built-in directives | Angular" -->
+
+[AioGuideBuiltInDirectivesSettingInlineStylesWithNgstyle]: guide/built-in-directives#setting-inline-styles-with-ngstyle
+
+<!-- "Setting inline styles with NgStyle - Built-in directives | Angular" -->
+
+[AioGuideBuiltInDirectivesSwitchingCasesWithNgswitch]: guide/built-in-directives#switching-cases-with-ngswitch
+
+<!-- "Switching cases with NgSwitch - Built-in directives | Angular" -->
+
+[AioGuideEventBinding]: guide/event-binding
+
+<!-- "Event binding | Angular" -->
+
+[AioGuideInterpolation]: guide/interpolation
+
+<!-- "Text interpolation | Angular" -->
+
+[AioGuideNgmodules]: guide/ngmodules
+
+<!-- "NgModules | Angular" -->
+
+[AioGuidePipes]: guide/pipes
+
+<!-- "Transforming Data Using Pipes | Angular" -->
+
+[AioGuidePropertyBinding]: guide/property-binding
+
+<!-- "Property binding | Angular" -->
+
+[AioGuideRouter]: guide/router
+
+<!-- "Common Routing Tasks | Angular" -->
+
+[AioGuideRouterDefiningABasicRoute]: guide/router#defining-a-basic-route
+
+<!-- "Defining a basic route - Common Routing Tasks | Angular" -->
+
+[AioGuideStructuralDirectives]: guide/structural-directives
+
+<!-- "Writing structural directives | Angular" -->
+
+[AioGuideStructuralDirectivesStructuralDirectiveShorthand]: guide/structural-directives#structural-directive-shorthand
+
+<!-- "Structural directive shorthand - Writing structural directives | Angular" -->
 
 <!-- external links -->
 
-[MdnDocsWebEvents]: https://developer.mozilla.org/docs/Web/Events "Event reference | MDN"
+[MdnDocsWebEvents]: https://developer.mozilla.org/docs/Web/Events
+
+<!-- "Event reference | MDN" -->
 
 <!-- end links -->
 

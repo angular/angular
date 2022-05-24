@@ -111,14 +111,25 @@ For example, your component may be a `Card` component that accepts content provi
 
 <!-- links -->
 
-[AioGuideComponentCreate]: guide/component/component-create "Create an Angular component | Angular"
+[AioGuideComponentCreate]: guide/component/component-create
 
-[AioGuideComponentDynamicLoad]: guide/component/component-dynamic-load "Example: Dynamically load a component | Angular"
+<!-- "Create an Angular component | Angular" -->
 
-[AioGuideGlossaryComponent]: guide/glossary#component "component - Glossary | Angular"
+[AioGuideComponentDynamicLoad]: guide/component/component-dynamic-load
 
-[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application "Create a workspace and initial application - Setting up the local environment and workspace | Angular"
-[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli "Install the Angular CLI - Setting up the local environment and workspace | Angular"
+<!-- "Example: Dynamically load a component | Angular" -->
+
+[AioGuideGlossaryComponent]: guide/glossary#component
+
+<!-- "component - Glossary | Angular" -->
+
+[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application
+
+<!-- "Create a workspace and initial application - Setting up the local environment and workspace | Angular" -->
+
+[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli
+
+<!-- "Install the Angular CLI - Setting up the local environment and workspace | Angular" -->
 
 <!-- external links -->
 

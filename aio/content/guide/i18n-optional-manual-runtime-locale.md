@@ -18,14 +18,23 @@ The following example sets the value of `LOCALE_ID` to `fr` for French.
 
 <!-- links -->
 
-[AioApiCoreLocaleId]: api/core/LOCALE_ID "LOCALE_ID | Core - API | Angular"
+[AioApiCoreLocaleId]: api/core/LOCALE_ID
 
-[AioCliMain]: cli "CLI Overview and Command Reference | Angular"
-[AioCliBuild]: cli/build "ng build | CLI | Angular"
+<!-- "LOCALE_ID | Core - API | Angular" -->
+
+[AioCliMain]: cli
+
+<!-- "CLI Overview and Command Reference | Angular" -->
+
+[AioCliBuild]: cli/build
+
+<!-- "ng build | CLI | Angular" -->
 
 <!-- external links -->
 
-[UnpkgBrowseAngularCommonLocales]: https://unpkg.com/browse/@angular/common/locales/ "@angular/common/locales/ | Unpkg"
+[UnpkgBrowseAngularCommonLocales]: https://unpkg.com/browse/@angular/common/locales
+
+<!-- "@angular/common/locales | Unpkg" -->
 
 <!-- end links -->
 

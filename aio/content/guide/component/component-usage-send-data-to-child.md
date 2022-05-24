@@ -96,18 +96,33 @@ To learn more about the `OnChanges` lifecycle hook, see [Use change detection ho
 
 <!-- links -->
 
-[AioGuideComponentCreate]: guide/component/component-create "Create an Angular component | Angular"
+[AioGuideComponentCreate]: guide/component/component-create
 
-[AioGuideGlossaryComponent]: guide/glossary#component "component - Glossary | Angular"
+<!-- "Create an Angular component | Angular" -->
 
-[AioGuideComponentLifecycleTutorialUseChangeDetectionHooks]: guide/component/component-example-lifecycle#use-change-detection-hooks "Use change detection hooks - Example: lifecycle hook methods | Angular"
+[AioGuideGlossaryComponent]: guide/glossary#component
 
-[AioGuideComponentLifecycle]: guide/component/component-lifecycle "Component Lifecycle | Angular"
+<!-- "component - Glossary | Angular" -->
 
-[AioGuidePropertyBinding]: guide/property-binding "Property binding | Angular"
+[AioGuideComponentLifecycleTutorialUseChangeDetectionHooks]: guide/component/component-example-lifecycle#use-change-detection-hooks
 
-[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application "Create a workspace and initial application - Setting up the local environment and workspace | Angular"
-[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli "Install the Angular CLI - Setting up the local environment and workspace | Angular"
+<!-- "Use change detection hooks - Example: lifecycle hook methods | Angular" -->
+
+[AioGuideComponentLifecycle]: guide/component/component-lifecycle
+
+<!-- "Component Lifecycle | Angular" -->
+
+[AioGuidePropertyBinding]: guide/property-binding
+
+<!-- "Property binding | Angular" -->
+
+[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application
+
+<!-- "Create a workspace and initial application - Setting up the local environment and workspace | Angular" -->
+
+[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli
+
+<!-- "Install the Angular CLI - Setting up the local environment and workspace | Angular" -->
 
 <!-- external links -->
 

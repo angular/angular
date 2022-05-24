@@ -227,7 +227,9 @@ Here are the code files discussed on this page.
 
 <!-- links -->
 
-[AioGuideComponentLifecycleInitializeAComponentOrDirective]: guide/component/component-usage-lifecycle-hooks#initialize-a-component-or-directive "Initialize a component or directive - Use an Angular lifecycle hook method | Angular"
+[AioGuideComponentLifecycleInitializeAComponentOrDirective]: guide/component/component-usage-lifecycle-hooks#initialize-a-component-or-directive
+
+<!-- "Initialize a component or directive - Use an Angular lifecycle hook method | Angular" -->
 
 <!-- external links -->
 

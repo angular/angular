@@ -1680,80 +1680,187 @@ And for the phone list component, a few adjustments to the router make the `Rout
 
 <!-- links -->
 
-[AioApiCoreNgzone]: api/core/NgZone "NgZone | Core - API | Angular"
+[AioApiCoreNgzone]: api/core/NgZone
 
-[AioApiCoreOnchanges]: api/core/OnChanges "OnChanges | Core - API | Angular"
+<!-- "NgZone | Core - API | Angular" -->
 
-[AioGuideAnimations]: guide/animations "Introduction to Angular animations | Angular"
+[AioApiCoreOnchanges]: api/core/OnChanges
 
-[AioGuideAotCompiler]: guide/aot-compiler "Ahead-of-time (AOT) compilation | Angular"
+<!-- "OnChanges | Core - API | Angular" -->
 
-[AioGuideBuiltInDirectives]: guide/built-in-directives "Built-in directives | Angular"
+[AioGuideAnimations]: guide/animations
 
-[AioGuideDependencyInjection]: guide/dependency-injection "Dependency injection in Angular | Angular"
+<!-- "Introduction to Angular animations | Angular" -->
 
-[AioGuideDependencyInjectionProvidersFactoryProviders]: guide/dependency-injection-providers#factory-providers "Using factory providers - Dependency providers | Angular"
+[AioGuideAotCompiler]: guide/aot-compiler
 
-[AioGuideGlossaryLazyLoading]: guide/glossary#lazy-loading "lazy loading - Glossary | Angular"
+<!-- "Ahead-of-time (AOT) compilation | Angular" -->
 
-[AioGuideHierarchicalDependencyInjection]: guide/hierarchical-dependency-injection "Hierarchical injectors | Angular"
+[AioGuideBuiltInDirectives]: guide/built-in-directives
 
-[AioGuideComponentLifecycle]: guide/component/component-lifecycle "Component Lifecycle | Angular"
+<!-- "Built-in directives | Angular" -->
 
-[AioGuideNgmodules]: guide/ngmodules "NgModules | Angular"
+[AioGuideDependencyInjection]: guide/dependency-injection
 
-[AioGuideRouter]: guide/router "Common Routing Tasks | Angular"
+<!-- "Dependency injection in Angular | Angular" -->
 
-[AioGuideTypescriptConfiguration]: guide/typescript-configuration "TypeScript configuration | Angular"
+[AioGuideDependencyInjectionProvidersFactoryProviders]: guide/dependency-injection-providers#factory-providers
 
-[AioGuideUpgradeBootstrappingHybridApplications]: guide/upgrade#bootstrapping-hybrid-applications "Bootstrapping hybrid applications - Upgrading from AngularJS to Angular | Angular"
-[AioGuideUpgradeFollowTheAngularjsStyleGuide]: guide/upgrade#follow-the-angularjs-style-guide "Follow the AngularJS Style Guide - Upgrading from AngularJS to Angular | Angular"
-[AioGuideUpgradeMakingAngularjsDependenciesInjectableToAngular]: guide/upgrade#making-angularjs-dependencies-injectable-to-angular "Making AngularJS Dependencies Injectable to Angular - Upgrading from AngularJS to Angular | Angular"
-[AioGuideUpgradePreparation]: guide/upgrade#preparation "Preparation - Upgrading from AngularJS to Angular | Angular"
-[AioGuideUpgradeUpgradingWithNgupgrade]: guide/upgrade#upgrading-with-ngupgrade "Upgrading with ngUpgrade - Upgrading from AngularJS to Angular | Angular"
-[AioGuideUpgradeUsingComponentDirectives]: guide/upgrade#using-component-directives "Using Component Directives - Upgrading from AngularJS to Angular | Angular"
+<!-- "Using factory providers - Dependency providers | Angular" -->
 
-[AioGuideUpgradeSetup]: guide/upgrade-setup "Setup for upgrading from AngularJS | Angular"
+[AioGuideGlossaryLazyLoading]: guide/glossary#lazy-loading
+
+<!-- "lazy loading - Glossary | Angular" -->
+
+[AioGuideHierarchicalDependencyInjection]: guide/hierarchical-dependency-injection
+
+<!-- "Hierarchical injectors | Angular" -->
+
+[AioGuideComponentLifecycle]: guide/component/component-lifecycle
+
+<!-- "Component Lifecycle | Angular" -->
+
+[AioGuideNgmodules]: guide/ngmodules
+
+<!-- "NgModules | Angular" -->
+
+[AioGuideRouter]: guide/router
+
+<!-- "Common Routing Tasks | Angular" -->
+
+[AioGuideTypescriptConfiguration]: guide/typescript-configuration
+
+<!-- "TypeScript configuration | Angular" -->
+
+[AioGuideUpgradeBootstrappingHybridApplications]: guide/upgrade#bootstrapping-hybrid-applications
+
+<!-- "Bootstrapping hybrid applications - Upgrading from AngularJS to Angular | Angular" -->
+
+[AioGuideUpgradeFollowTheAngularjsStyleGuide]: guide/upgrade#follow-the-angularjs-style-guide
+
+<!-- "Follow the AngularJS Style Guide - Upgrading from AngularJS to Angular | Angular" -->
+
+[AioGuideUpgradeMakingAngularjsDependenciesInjectableToAngular]: guide/upgrade#making-angularjs-dependencies-injectable-to-angular
+
+<!-- "Making AngularJS Dependencies Injectable to Angular - Upgrading from AngularJS to Angular | Angular" -->
+
+[AioGuideUpgradePreparation]: guide/upgrade#preparation
+
+<!-- "Preparation - Upgrading from AngularJS to Angular | Angular" -->
+
+[AioGuideUpgradeUpgradingWithNgupgrade]: guide/upgrade#upgrading-with-ngupgrade
+
+<!-- "Upgrading with ngUpgrade - Upgrading from AngularJS to Angular | Angular" -->
+
+[AioGuideUpgradeUsingComponentDirectives]: guide/upgrade#using-component-directives
+
+<!-- "Using Component Directives - Upgrading from AngularJS to Angular | Angular" -->
+
+[AioGuideUpgradeSetup]: guide/upgrade-setup
+
+<!-- "Setup for upgrading from AngularJS | Angular" -->
 
 <!-- external links -->
 
-[AngularBlogFindingAPathForwardWithAngularjs7e186fdd4429]: https://blog.angular.io/finding-a-path-forward-with-angularjs-7e186fdd4429 "Finding a Path Forward with AngularJS | Angular Blog"
+[AngularBlogFindingAPathForwardWithAngularjs7e186fdd4429]: https://blog.angular.io/finding-a-path-forward-with-angularjs-7e186fdd4429
 
-[AngularjsDocsApiNgFunctionAngularBootstrap]: https://docs.angularjs.org/api/ng/function/angular.bootstrap "angular.bootstrap | API | AngularJS"
-[AngularjsDocsApiNgTypeAngularModule]: https://docs.angularjs.org/api/ng/type/angular.Module "angular.Module | API | AngularJS"
-[AngularjsDocsApiNgTypeAngularModuleComponent]: https://docs.angularjs.org/api/ng/type/angular.Module#component "component(name, options); - angular.Module | API | AngularJS"
-[AngularjsDocsApiNgrouteDirectiveNgview]: https://docs.angularjs.org/api/ngRoute/directive/ngView "ngView | API | AngularJS"
-[AngularjsDocsApiNgrouteProviderRouteprovider]: https://docs.angularjs.org/api/ngRoute/provider/$routeProvider "$routeProvider | API | AngularJS"
-[AngularjsDocsApiNgServiceLocation]: https://docs.angularjs.org/api/ng/service/$location "$location | API | AngularJS"
-[AngularjsDocsTutorial]: https://docs.angularjs.org/tutorial "PhoneCat Tutorial App | Tutorial | AngularJS"
+<!-- "Finding a Path Forward with AngularJS | Angular Blog" -->
 
-[BrowserifyMain]: http://browserify.org "Browserify"
+[AngularjsDocsApiNgFunctionAngularBootstrap]: https://docs.angularjs.org/api/ng/function/angular.bootstrap
 
-[GithubAngularAngularIssues35989]: https://github.com/angular/angular/issues/35989 "Issue 35989: docs(upgrade): correctly document how to use AOT compilation for hybrid apps | angular/angular | GitHub"
-[GithubAngularAngularIssues38366]: https://github.com/angular/angular/issues/38366 " Issue 38366: RFC: Ivy Library Distribution| angular/angular | GitHub"
+<!-- "angular.bootstrap | API | AngularJS" -->
 
-[GithubAngularAngularPhonecat]: https://github.com/angular/angular-phonecat "angular/angular-phonecat | GitHub"
-[GithubAngularAngularPhonecatCommits15Snapshot]: https://github.com/angular/angular-phonecat/commits/1.5-snapshot "angular/angular-phonecat v1.5 | GitHub"
+[AngularjsDocsApiNgTypeAngularModule]: https://docs.angularjs.org/api/ng/type/angular.Module
 
-[GithubAngularQuickstart]: https://github.com/angular/quickstart "angular/quickstart | GitHub"
+<!-- "angular.Module | API | AngularJS" -->
 
-[GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMd]: https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md "Angular 1 Style Guide | johnpapa/angular-styleguide | GitHub"
-[GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMdFoldersByFeatureStructure]: https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#folders-by-feature-structure "Folders-by-Feature Structure - Angular 1 Style Guide | johnpapa/angular-styleguide | GitHub"
-[GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMdModularity]: https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#modularity "Modularity - Angular 1 Style Guide | johnpapa/angular-styleguide | GitHub"
-[GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMdOrganizingTests]: https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#organizing-tests "Organizing Tests - Angular 1 Style Guide | johnpapa/angular-styleguide | GitHub"
-[GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMdSingleResponsibility]: https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#single-responsibility "Single Responsibility - Angular 1 Style Guide | johnpapa/angular-styleguide | GitHub"
+[AngularjsDocsApiNgTypeAngularModuleComponent]: https://docs.angularjs.org/api/ng/type/angular.Module#component
 
-[GithubMgechevAngularUmdBundle]: https://github.com/mgechev/angular-umd-bundle "UMD Angular bundle | mgechev/angular-umd-bundle | GitHub"
+<!-- "component(name, options); - angular.Module | API | AngularJS" -->
 
-[GithubMicrosoftTypescriptWikiWhatsNewInTypescriptSupportForUmdModuleDefinitions]: https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#support-for-umd-module-definitions "Support for UMD module definitions - What's new in TypeScript | microsoft/TypeScript | GitHub"
+[AngularjsDocsApiNgrouteDirectiveNgview]: https://docs.angularjs.org/api/ngRoute/directive/ngView
 
-[GithubSystemjsSystemjs]: https://github.com/systemjs/systemjs "systemjs/systemjs | GitHub"
+<!-- "ngView | API | AngularJS" -->
 
-[GithubWebpackMain]: https://webpack.github.io "webpack module bundler | GitHub"
+[AngularjsDocsApiNgrouteProviderRouteprovider]: https://docs.angularjs.org/api/ngRoute/provider/$routeProvider
 
-[NpmjsPackageTypesAngular]: https://www.npmjs.com/package/@types/angular "@types/angular | npm"
+<!-- "$routeProvider | API | AngularJS" -->
 
-[RollupjsMain]: https://rollupjs.org "rollup.js"
+[AngularjsDocsApiNgServiceLocation]: https://docs.angularjs.org/api/ng/service/$location
+
+<!-- "$location | API | AngularJS" -->
+
+[AngularjsDocsTutorial]: https://docs.angularjs.org/tutorial
+
+<!-- "PhoneCat Tutorial App | Tutorial | AngularJS" -->
+
+[BrowserifyMain]: http://browserify.org
+
+<!-- "Browserify" -->
+
+[GithubAngularAngularIssues35989]: https://github.com/angular/angular/issues/35989
+
+<!-- "Issue 35989: docs(upgrade): correctly document how to use AOT compilation for hybrid apps | angular/angular | GitHub" -->
+
+[GithubAngularAngularIssues38366]: https://github.com/angular/angular/issues/38366
+
+<!-- " Issue 38366: RFC: Ivy Library Distribution| angular/angular | GitHub" -->
+
+[GithubAngularAngularPhonecat]: https://github.com/angular/angular-phonecat
+
+<!-- "angular/angular-phonecat | GitHub" -->
+
+[GithubAngularAngularPhonecatCommits15Snapshot]: https://github.com/angular/angular-phonecat/commits/1.5-snapshot
+
+<!-- "angular/angular-phonecat v1.5 | GitHub" -->
+
+[GithubAngularQuickstart]: https://github.com/angular/quickstart
+
+<!-- "angular/quickstart | GitHub" -->
+
+[GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMd]: https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md
+
+<!-- "Angular 1 Style Guide | johnpapa/angular-styleguide | GitHub" -->
+
+[GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMdFoldersByFeatureStructure]: https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#folders-by-feature-structure
+
+<!-- "Folders-by-Feature Structure - Angular 1 Style Guide | johnpapa/angular-styleguide | GitHub" -->
+
+[GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMdModularity]: https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#modularity
+
+<!-- "Modularity - Angular 1 Style Guide | johnpapa/angular-styleguide | GitHub" -->
+
+[GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMdOrganizingTests]: https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#organizing-tests
+
+<!-- "Organizing Tests - Angular 1 Style Guide | johnpapa/angular-styleguide | GitHub" -->
+
+[GithubJohnpapaAngularStyleguideBlobPrimaryA1ReadmeMdSingleResponsibility]: https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#single-responsibility
+
+<!-- "Single Responsibility - Angular 1 Style Guide | johnpapa/angular-styleguide | GitHub" -->
+
+[GithubMgechevAngularUmdBundle]: https://github.com/mgechev/angular-umd-bundle
+
+<!-- "UMD Angular bundle | mgechev/angular-umd-bundle | GitHub" -->
+
+[GithubMicrosoftTypescriptWikiWhatsNewInTypescriptSupportForUmdModuleDefinitions]: https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#support-for-umd-module-definitions
+
+<!-- "Support for UMD module definitions - What's new in TypeScript | microsoft/TypeScript | GitHub" -->
+
+[GithubSystemjsSystemjs]: https://github.com/systemjs/systemjs
+
+<!-- "systemjs/systemjs | GitHub" -->
+
+[GithubWebpackMain]: https://webpack.github.io
+
+<!-- "webpack module bundler | GitHub" -->
+
+[NpmjsPackageTypesAngular]: https://www.npmjs.com/package/@types/angular
+
+<!-- "@types/angular | npm" -->
+
+[RollupjsMain]: https://rollupjs.org
+
+<!-- "rollup.js" -->
 
 <!-- end links -->
 

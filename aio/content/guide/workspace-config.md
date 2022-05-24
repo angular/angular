@@ -503,7 +503,9 @@ These are useful if you only want source maps to map error stack traces in error
 
 <!-- links -->
 
-[AioGuideI18nCommonMerge]: guide/i18n-common-merge "Common Internationalization task #6: Merge translations into the application | Angular"
+[AioGuideI18nCommonMerge]: guide/i18n-common-merge
+
+<!-- "Common Internationalization task #6: Merge translations into the application | Angular" -->
 
 <!-- external links -->
 

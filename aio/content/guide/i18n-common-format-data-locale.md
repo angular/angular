@@ -49,15 +49,33 @@ The locale specified for the `CurrencyPipe` overrides the global `LOCALE_ID` tok
 
 <!-- links -->
 
-[AioApiCommonCurrencypipe]: api/common/CurrencyPipe "CurrencyPipe | Common - API | Angular"
-[AioApiCommonDatepipe]: api/common/DatePipe "DatePipe | Common - API | Angular"
-[AioApiCommonDecimalpipe]: api/common/DecimalPipe "DecimalPipe | Common - API | Angular"
-[AioApiCommonPercentpipe]: api/common/PercentPipe "PercentPipe | Common - API | Angular"
-[AioApiCoreLocaleId]: api/core/LOCALE_ID "LOCALE_ID | Core - API | Angular"
+[AioApiCommonCurrencypipe]: api/common/CurrencyPipe
 
-[AioGuideGlossaryPipe]: guide/glossary#pipe "pipe - Glossary | Angular"
+<!-- "CurrencyPipe | Common - API | Angular" -->
 
-[AioGuideI18nCommonPrepare]: guide/i18n-common-prepare "Prepare templates for translations | Angular"
+[AioApiCommonDatepipe]: api/common/DatePipe
+
+<!-- "DatePipe | Common - API | Angular" -->
+
+[AioApiCommonDecimalpipe]: api/common/DecimalPipe
+
+<!-- "DecimalPipe | Common - API | Angular" -->
+
+[AioApiCommonPercentpipe]: api/common/PercentPipe
+
+<!-- "PercentPipe | Common - API | Angular" -->
+
+[AioApiCoreLocaleId]: api/core/LOCALE_ID
+
+<!-- "LOCALE_ID | Core - API | Angular" -->
+
+[AioGuideGlossaryPipe]: guide/glossary#pipe
+
+<!-- "pipe - Glossary | Angular" -->
+
+[AioGuideI18nCommonPrepare]: guide/i18n-common-prepare
+
+<!-- "Prepare templates for translations | Angular" -->
 
 <!-- external links -->
 

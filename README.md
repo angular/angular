@@ -151,7 +151,10 @@ Join the conversation and help the community.
 [componentstemplates]: https://angular.io/guide/displaying-data
 [forms]: https://angular.io/guide/forms-overview
 [api]: https://angular.io/api
-[AioGuideComponentWeb]: https://angular.io/guide/component/component-web "Web component | Angular"
+[AioGuideComponentWeb]: https://angular.io/guide/component/component-web
+
+<!-- "Web component | Angular" -->
+
 [ssr]: https://angular.io/guide/universal
 [schematics]: https://angular.io/guide/schematics
 [lazyloading]: https://angular.io/guide/lazy-loading-ngmodules

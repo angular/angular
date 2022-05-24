@@ -146,18 +146,41 @@ A template is a block of HTML that tells Angular how to render the component in 
 
 <!-- links -->
 
-[AioGuideComponentLifecycleUseLifecycleHookMethod]: guide/component/component-lifecycle#use-lifecycle-hook-method "Use lifecycle hook method - Component Lifecycle | Angular"
+[AioGuideComponentLifecycleUseLifecycleHookMethod]: guide/component/component-lifecycle#use-lifecycle-hook-method
 
-[AioGuideComponentStyleStylesInComponentMetadata]: guide/component/component-style#styles-in-component-metadata "Styles in component metadata - Component style | Angular"
-[AioGuideComponentStyleStyleFilesInComponentMetadata]: guide/component/component-style#style-files-in-component-metadata "Style files in component metadata - Component style | Angular"
+<!-- "Use lifecycle hook method - Component Lifecycle | Angular" -->
 
-[AioGuideGlossaryComponent]: guide/glossary#component "component - Glossary | Angular"
-[AioGuideGlossaryDirective]: guide/glossary#directive "directive - Glossary | Angular"
-[AioGuideGlossaryProvider]: guide/glossary#provider "provider - Glossary | Angular"
-[AioGuideGlossaryTemplate]: guide/glossary#template "template - Glossary | Angular"
-[AioGuideGlossaryView]: guide/glossary#view "view - Glossary | Angular"
+[AioGuideComponentStyleStylesInComponentMetadata]: guide/component/component-style#styles-in-component-metadata
 
-[AioGuideTemplateSyntax]: guide/template-syntax "Template syntax | Angular"
+<!-- "Styles in component metadata - Component style | Angular" -->
+
+[AioGuideComponentStyleStyleFilesInComponentMetadata]: guide/component/component-style#style-files-in-component-metadata
+
+<!-- "Style files in component metadata - Component style | Angular" -->
+
+[AioGuideGlossaryComponent]: guide/glossary#component
+
+<!-- "component - Glossary | Angular" -->
+
+[AioGuideGlossaryDirective]: guide/glossary#directive
+
+<!-- "directive - Glossary | Angular" -->
+
+[AioGuideGlossaryProvider]: guide/glossary#provider
+
+<!-- "provider - Glossary | Angular" -->
+
+[AioGuideGlossaryTemplate]: guide/glossary#template
+
+<!-- "template - Glossary | Angular" -->
+
+[AioGuideGlossaryView]: guide/glossary#view
+
+<!-- "view - Glossary | Angular" -->
+
+[AioGuideTemplateSyntax]: guide/template-syntax
+
+<!-- "Template syntax | Angular" -->
 
 <!-- external links -->
 

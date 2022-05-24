@@ -65,21 +65,39 @@ To change the source locale of your project for the build, complete the followin
 
 <!-- links -->
 
-[AioGuideI18nCommonFormatDataLocale]: guide/i18n-common-format-data-locale "Format data based on locale | Angular"
-[AioGuideI18nCommonMerge]: guide/i18n-common-merge "Merge translations into the application | Angular"
+[AioGuideI18nCommonFormatDataLocale]: guide/i18n-common-format-data-locale
 
-[AioGuideWorkspaceConfig]: guide/workspace-config "Angular workspace configuration | Angular"
+<!-- "Format data based on locale | Angular" -->
+
+[AioGuideI18nCommonMerge]: guide/i18n-common-merge
+
+<!-- "Merge translations into the application | Angular" -->
+
+[AioGuideWorkspaceConfig]: guide/workspace-config
+
+<!-- "Angular workspace configuration | Angular" -->
 
 <!-- external links -->
 
-[GithubAngularAngularTreeMasterPackagesCommonLocales]: https://github.com/angular/angular/tree/main/packages/common/locales "angular/packages/common/locales | angular/angular | GitHub"
+[GithubAngularAngularTreeMasterPackagesCommonLocales]: https://github.com/angular/angular/tree/main/packages/common/locales
 
-[LocStandardsIso6392]: https://www.loc.gov/standards/iso639-2 "ISO 639-2 Registration Authority | Library of Congress"
+<!-- "angular/packages/common/locales | angular/angular | GitHub" -->
 
-[RfcEditorInfoBcp47]: https://www.rfc-editor.org/info/bcp47 "BCP 47 | RFC Editor"
+[LocStandardsIso6392]: https://www.loc.gov/standards/iso639-2
 
-[UnicodeCldrDevelopmentCoreSpecification]: https://cldr.unicode.org/development/core-specification "Core Specification | Unicode CLDR Project"
-[UnicodeCldrDevelopmentCoreSpecificationHVgyyng33o798]: https://cldr.unicode.org/development/core-specification#h.vgyyng33o798 "Unicode Language and Locale Identifiers - Core Specification | Unicode CLDR Project"
+<!-- "ISO 639-2 Registration Authority | Library of Congress" -->
+
+[RfcEditorInfoBcp47]: https://www.rfc-editor.org/info/bcp47
+
+<!-- "BCP 47 | RFC Editor" -->
+
+[UnicodeCldrDevelopmentCoreSpecification]: https://cldr.unicode.org/development/core-specification
+
+<!-- "Core Specification | Unicode CLDR Project" -->
+
+[UnicodeCldrDevelopmentCoreSpecificationHVgyyng33o798]: https://cldr.unicode.org/development/core-specification#h.vgyyng33o798
+
+<!-- "Unicode Language and Locale Identifiers - Core Specification | Unicode CLDR Project" -->
 
 <!-- end links -->
 

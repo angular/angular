@@ -71,14 +71,23 @@ When a user interacts with your application, Angular uses APIs to create, update
 
 <!-- links -->
 
-[AioGuideGlossaryComponent]: guide/glossary#component "component - Glossary | Angular"
-[AioGuideGlossaryView]: guide/glossary#view "view - Glossary | Angular"
+[AioGuideGlossaryComponent]: guide/glossary#component
 
-[AioGuideTemplateOverview]: guide/template-overview "Understand templates | Angular"
+<!-- "component - Glossary | Angular" -->
+
+[AioGuideGlossaryView]: guide/glossary#view
+
+<!-- "view - Glossary | Angular" -->
+
+[AioGuideTemplateOverview]: guide/template-overview
+
+<!-- "Understand templates | Angular" -->
 
 <!-- external links -->
 
-[TypescriptlangDocsHandbookDecoratorsHtmlDecorators]: https://www.typescriptlang.org/docs/handbook/decorators.html#decorators "Decorators - Decorators | TypeScript"
+[TypescriptlangDocsHandbookDecoratorsHtmlDecorators]: https://www.typescriptlang.org/docs/handbook/decorators.html#decorators
+
+<!-- "Decorators - Decorators | TypeScript" -->
 
 <!-- end links -->
 

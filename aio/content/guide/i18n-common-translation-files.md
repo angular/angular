@@ -237,43 +237,95 @@ The following example displays both translation units after translating.
 
 <!-- links -->
 
-[AioCliMain]: cli "CLI Overview and Command Reference | Angular"
-[AioCliExtractI18n]: cli/extract-i18n "ng extract-i18n | CLI | Angular"
+[AioCliMain]: cli
 
-[AioGuideGlossaryCommandLineInterfaceCli]: guide/glossary#command-line-interface-cli "command-line interface (CLI) - Glossary | Angular"
+<!-- "CLI Overview and Command Reference | Angular" -->
 
-[AioGuideI18nCommonMerge]: guide/i18n-common-merge "Merge translations into the application | Angular"
+[AioCliExtractI18n]: cli/extract-i18n
 
-[AioGuideI18nCommonPrepare]: guide/i18n-common-prepare "Prepare templates for translations | Angular"
-[AioGuideI18nCommonPrepareAddHelpfulDescriptionsAndMeanings]: guide/i18n-common-prepare#add-helpful-descriptions-and-meanings "Add helpful descriptions and meanings - Prepare component for translation | Angular"
+<!-- "ng extract-i18n | CLI | Angular" -->
 
-[AioGuideI18nCommonTranslationFilesCreateATranslationFileForEachLanguage]: guide/i18n-common-translation-files#create-a-translation-file-for-each-language "Create a translation file for each language - Work with translation files | Angular"
-[AioGuideI18nCommonTranslationFilesExtractTheSourceLanguageFile]: guide/i18n-common-translation-files#extract-the-source-language-file "Extract the source language file - Work with translation files | Angular"
-[AioGuideI18nCommonTranslationFilesTranslateAlternateExpressions]: guide/i18n-common-translation-files#translate-alternate-expressions "Translate alternate expressions - Work with translation files | Angular"
-[AioGuideI18nCommonTranslationFilesTranslateEachTranslationFile]: guide/i18n-common-translation-files#translate-each-translation-file "Translate each translation file - Work with translation files | Angular"
-[AioGuideI18nCommonTranslationFilesTranslateNestedExpressions]: guide/i18n-common-translation-files#translate-nested-expressions "Translate nested expressions - Work with translation files | Angular"
-[AioGuideI18nCommonTranslationFilesTranslatePlurals]: guide/i18n-common-translation-files#translate-plurals "Translate plurals - Work with translation files | Angular"
+[AioGuideGlossaryCommandLineInterfaceCli]: guide/glossary#command-line-interface-cli
 
-[AioGuideI18nExample]: guide/i18n-example "Example Angular Internationalization application | Angular"
+<!-- "command-line interface (CLI) - Glossary | Angular" -->
 
-[AioGuideI18nOptionalManageMarkedText]: guide/i18n-optional-manage-marked-text "Manage marked text with custom IDs | Angular"
+[AioGuideI18nCommonMerge]: guide/i18n-common-merge
 
-[AioGuideWorkspaceConfig]: guide/workspace-config "Angular workspace configuration | Angular"
+<!-- "Merge translations into the application | Angular" -->
+
+[AioGuideI18nCommonPrepare]: guide/i18n-common-prepare
+
+<!-- "Prepare templates for translations | Angular" -->
+
+[AioGuideI18nCommonPrepareAddHelpfulDescriptionsAndMeanings]: guide/i18n-common-prepare#add-helpful-descriptions-and-meanings
+
+<!-- "Add helpful descriptions and meanings - Prepare component for translation | Angular" -->
+
+[AioGuideI18nCommonTranslationFilesCreateATranslationFileForEachLanguage]: guide/i18n-common-translation-files#create-a-translation-file-for-each-language
+
+<!-- "Create a translation file for each language - Work with translation files | Angular" -->
+
+[AioGuideI18nCommonTranslationFilesExtractTheSourceLanguageFile]: guide/i18n-common-translation-files#extract-the-source-language-file
+
+<!-- "Extract the source language file - Work with translation files | Angular" -->
+
+[AioGuideI18nCommonTranslationFilesTranslateAlternateExpressions]: guide/i18n-common-translation-files#translate-alternate-expressions
+
+<!-- "Translate alternate expressions - Work with translation files | Angular" -->
+
+[AioGuideI18nCommonTranslationFilesTranslateEachTranslationFile]: guide/i18n-common-translation-files#translate-each-translation-file
+
+<!-- "Translate each translation file - Work with translation files | Angular" -->
+
+[AioGuideI18nCommonTranslationFilesTranslateNestedExpressions]: guide/i18n-common-translation-files#translate-nested-expressions
+
+<!-- "Translate nested expressions - Work with translation files | Angular" -->
+
+[AioGuideI18nCommonTranslationFilesTranslatePlurals]: guide/i18n-common-translation-files#translate-plurals
+
+<!-- "Translate plurals - Work with translation files | Angular" -->
+
+[AioGuideI18nExample]: guide/i18n-example
+
+<!-- "Example Angular Internationalization application | Angular" -->
+
+[AioGuideI18nOptionalManageMarkedText]: guide/i18n-optional-manage-marked-text
+
+<!-- "Manage marked text with custom IDs | Angular" -->
+
+[AioGuideWorkspaceConfig]: guide/workspace-config
+
+<!-- "Angular workspace configuration | Angular" -->
 
 <!-- external links -->
 
-[GithubGoogleAppResourceBundleWikiApplicationresourcebundlespecification]: https://github.com/google/app-resource-bundle/wiki/ApplicationResourceBundleSpecification "ApplicationResourceBundleSpecification | google/app-resource-bundle | GitHub"
+[GithubGoogleAppResourceBundleWikiApplicationresourcebundlespecification]: https://github.com/google/app-resource-bundle/wiki/ApplicationResourceBundleSpecification
 
-[GithubUnicodeOrgCldrStagingChartsLatestSupplementalLanguagePluralRulesHtml]: https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html "Language Plural Rules - CLDR Charts | Unicode | GitHub"
+<!-- "ApplicationResourceBundleSpecification | google/app-resource-bundle | GitHub" -->
 
-[JsonMain]: https://www.json.org "Introducing JSON | JSON"
+[GithubUnicodeOrgCldrStagingChartsLatestSupplementalLanguagePluralRulesHtml]: https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html
 
-[OasisOpenDocsXliffXliffCoreXliffCoreHtml]: http://docs.oasis-open.org/xliff/xliff-core/xliff-core.html "XLIFF Version 1.2 Specification | Oasis Open Docs"
-[OasisOpenDocsXliffXliffCoreV20Cos01XliffCoreV20Cose01Html]: http://docs.oasis-open.org/xliff/xliff-core/v2.0/cos01/xliff-core-v2.0-cos01.html "XLIFF Version 2.0 | Oasis Open Docs"
+<!-- "Language Plural Rules - CLDR Charts | Unicode | GitHub" -->
 
-[UnicodeCldrDevelopmentDevelopmentProcessDesignProposalsXmb]: http://cldr.unicode.org/development/development-process/design-proposals/xmb "XMB | CLDR - Unicode Common Locale Data Repository | Unicode"
+[JsonMain]: https://www.json.org
 
-[WikipediaWikiXliff]: https://en.wikipedia.org/wiki/XLIFF "XLIFF | Wikipedia"
+<!-- "Introducing JSON | JSON" -->
+
+[OasisOpenDocsXliffXliffCoreXliffCoreHtml]: http://docs.oasis-open.org/xliff/xliff-core/xliff-core.html
+
+<!-- "XLIFF Version 1.2 Specification | Oasis Open Docs" -->
+
+[OasisOpenDocsXliffXliffCoreV20Cos01XliffCoreV20Cose01Html]: http://docs.oasis-open.org/xliff/xliff-core/v2.0/cos01/xliff-core-v2.0-cos01.html
+
+<!-- "XLIFF Version 2.0 | Oasis Open Docs" -->
+
+[UnicodeCldrDevelopmentDevelopmentProcessDesignProposalsXmb]: http://cldr.unicode.org/development/development-process/design-proposals/xmb
+
+<!-- "XMB | CLDR - Unicode Common Locale Data Repository | Unicode" -->
+
+[WikipediaWikiXliff]: https://en.wikipedia.org/wiki/XLIFF
+
+<!-- "XLIFF | Wikipedia" -->
 
 <!-- end links -->
 

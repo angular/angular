@@ -282,24 +282,65 @@ If you use this hook, your implementation must be extremely lightweight or the u
 
 <!-- links -->
 
-[AioApiCoreContentchild]: api/core/ContentChild "ContentChild | @angular/core - API | Angular"
-[AioApiCoreSimplechange]: api/core/SimpleChange "SimpleChange | @angular/core - API | Angular"
-[AioApiCoreViewchild]: api/core/ViewChild "ViewChild | @angular/core - API | Angular"
+[AioApiCoreContentchild]: api/core/ContentChild
 
-[AioGuideComponentExample]: guide/component/component-example "Example Angular component applications | Angular"
+<!-- "ContentChild | @angular/core - API | Angular" -->
 
-[AioGuideComponentLifecycleTutorialDefineCustomChangeDetection]: guide/component/component-example-lifecycle#define-custom-change-detection "Define custom change detection - Example: lifecycle hook methods | Angular"
-[AioGuideComponentLifecycleTutorialRespondToViewChanges]: guide/component/component-example-lifecycle#respond-to-view-changes "Respond to view changes - Example: lifecycle hook methods | Angular"
-[AioGuideComponentLifecycleTutorialRespondToProjectedContentChanges]: guide/component/component-example-lifecycle#respond-to-projected-content-changes "Respond to projected content changes - Example: lifecycle hook methods | Angular"
-[AioGuideComponentLifecycleTutorialSequenceAndFrequencyOfAllLifecycleEvents]: guide/component/component-example-lifecycle#sequence-and-frequency-of-all-lifecycle-events "Sequence and frequency of all lifecycle events - Example: lifecycle hook methods | Angular"
-[AioGuideComponentLifecycleTutorialUseComponentAndDirectiveHooksTogether]: guide/component/component-example-lifecycle#use-component-and-directive-hooks-together "Use component and directive hooks together - Example: lifecycle hook methods | Angular"
-[AioGuideComponentLifecycleTutorialUseDirectivesToWatchTheDom]: guide/component/component-example-lifecycle#use-directives-to-watch-the-dom "Use directives to watch the DOM - Example: lifecycle hook methods | Angular"
-[AioGuideComponentLifecycleTutorialUseChangeDetectionHooks]: guide/component/component-example-lifecycle#use-change-detection-hooks "Use change detection hooks - Example: lifecycle hook methods | Angular"
-[AioGuideComponentLifecycleTutorialWaitBeforeUpdatingTheView]: guide/component/component-example-lifecycle#wait-before-updating-the-view "Wait before updating the view - Example: lifecycle hook methods | Angular"
+[AioApiCoreSimplechange]: api/core/SimpleChange
 
-[AioGuideGlossaryUnidirectionalDataFlow]: guide/glossary#unidirectional-data-flow "unidirectional data flow - Glossary | Angular"
-[AioGuideGlossaryView]: guide/glossary#view "view - Glossary | Angular"
-[AioGuideGlossaryViewHierarchy]: guide/glossary#view-hierarchy "view hierarchy - Glossary | Angular"
+<!-- "SimpleChange | @angular/core - API | Angular" -->
+
+[AioApiCoreViewchild]: api/core/ViewChild
+
+<!-- "ViewChild | @angular/core - API | Angular" -->
+
+[AioGuideComponentExample]: guide/component/component-example
+
+<!-- "Example Angular component applications | Angular" -->
+
+[AioGuideComponentLifecycleTutorialDefineCustomChangeDetection]: guide/component/component-example-lifecycle#define-custom-change-detection
+
+<!-- "Define custom change detection - Example: lifecycle hook methods | Angular" -->
+
+[AioGuideComponentLifecycleTutorialRespondToViewChanges]: guide/component/component-example-lifecycle#respond-to-view-changes
+
+<!-- "Respond to view changes - Example: lifecycle hook methods | Angular" -->
+
+[AioGuideComponentLifecycleTutorialRespondToProjectedContentChanges]: guide/component/component-example-lifecycle#respond-to-projected-content-changes
+
+<!-- "Respond to projected content changes - Example: lifecycle hook methods | Angular" -->
+
+[AioGuideComponentLifecycleTutorialSequenceAndFrequencyOfAllLifecycleEvents]: guide/component/component-example-lifecycle#sequence-and-frequency-of-all-lifecycle-events
+
+<!-- "Sequence and frequency of all lifecycle events - Example: lifecycle hook methods | Angular" -->
+
+[AioGuideComponentLifecycleTutorialUseComponentAndDirectiveHooksTogether]: guide/component/component-example-lifecycle#use-component-and-directive-hooks-together
+
+<!-- "Use component and directive hooks together - Example: lifecycle hook methods | Angular" -->
+
+[AioGuideComponentLifecycleTutorialUseDirectivesToWatchTheDom]: guide/component/component-example-lifecycle#use-directives-to-watch-the-dom
+
+<!-- "Use directives to watch the DOM - Example: lifecycle hook methods | Angular" -->
+
+[AioGuideComponentLifecycleTutorialUseChangeDetectionHooks]: guide/component/component-example-lifecycle#use-change-detection-hooks
+
+<!-- "Use change detection hooks - Example: lifecycle hook methods | Angular" -->
+
+[AioGuideComponentLifecycleTutorialWaitBeforeUpdatingTheView]: guide/component/component-example-lifecycle#wait-before-updating-the-view
+
+<!-- "Wait before updating the view - Example: lifecycle hook methods | Angular" -->
+
+[AioGuideGlossaryUnidirectionalDataFlow]: guide/glossary#unidirectional-data-flow
+
+<!-- "unidirectional data flow - Glossary | Angular" -->
+
+[AioGuideGlossaryView]: guide/glossary#view
+
+<!-- "view - Glossary | Angular" -->
+
+[AioGuideGlossaryViewHierarchy]: guide/glossary#view-hierarchy
+
+<!-- "view hierarchy - Glossary | Angular" -->
 
 <!-- external links -->
 

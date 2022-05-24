@@ -207,7 +207,9 @@ To maintain the relationship between the component and its token while still dis
 
 <!-- links -->
 
-[AioGuideComponentLifecycleTutorialUsingAftercontentHooks]: guide/component/component-example-lifecycle#using-aftercontent-hooks "Using AfterContent hooks - Example: lifecycle hook methods | Angular"
+[AioGuideComponentLifecycleTutorialUsingAftercontentHooks]: guide/component/component-example-lifecycle#using-aftercontent-hooks
+
+<!-- "Using AfterContent hooks - Example: lifecycle hook methods | Angular" -->
 
 <!-- external links -->
 

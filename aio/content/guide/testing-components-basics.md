@@ -268,7 +268,9 @@ It's often straightforward and more clear to filter with a standard `HTMLElement
 
 <!-- links -->
 
-[AioGuideComponentUsageLifecycleHooks]: guide/component/component-usage-lifecycle-hooks "Use an Angular lifecycle hook method | Angular"
+[AioGuideComponentUsageLifecycleHooks]: guide/component/component-usage-lifecycle-hooks
+
+<!-- "Use an Angular lifecycle hook method | Angular" -->
 
 <!-- external links -->
 

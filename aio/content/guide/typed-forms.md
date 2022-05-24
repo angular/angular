@@ -193,7 +193,9 @@ You can also inject it using the name `NonNullableFormBuilder`.
 
 <!-- external links -->
 
-[NinjaSquadTypedFormsBlog]: https://blog.ninja-squad.com/2022/04/21/strictly-typed-forms-angular/ "NinjaSquad | Strictly typed forms in Angular"
+[NinjaSquadTypedFormsBlog]: https://blog.ninja-squad.com/2022/04/21/strictly-typed-forms-angular/
+
+<!-- "NinjaSquad | Strictly typed forms in Angular" -->
 
 <!-- end links -->
 

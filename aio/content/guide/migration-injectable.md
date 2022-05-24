@@ -121,7 +121,9 @@ Without explicit value, these providers can behave differently based on the Angu
 
 <!-- links -->
 
-[AioGuideGlossaryDiToken]: guide/glossary#di-token "DI token - Glossary | Angular"
+[AioGuideGlossaryDiToken]: guide/glossary#di-token
+
+<!-- "DI token - Glossary | Angular" -->
 
 <!-- external links -->
 

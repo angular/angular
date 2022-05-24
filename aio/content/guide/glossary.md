@@ -975,241 +975,671 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 
 <!-- links -->
 
-[AioApiCommonDatepipe]: api/common/DatePipe "DatePipe | @angular/common - API | Angular"
+[AioApiCommonDatepipe]: api/common/DatePipe
 
-[AioApiCoreChangedetectorref]: api/core/ChangeDetectorRef "ChangeDetectorRef | @angular/core - API | Angular"
+<!-- "DatePipe | @angular/common - API | Angular" -->
 
-[AioApiCoreProvider]: api/core/Provider "Provider | @angular/core - API | Angular"
+[AioApiCoreChangedetectorref]: api/core/ChangeDetectorRef
 
-[AioApiPlatformBrowserBrowsermodule]: api/platform-browser/BrowserModule "BrowserModule | @angular/platform-browser - API | Angular"
+<!-- "ChangeDetectorRef | @angular/core - API | Angular" -->
 
-[AioApiPlatformServer]: api/platform-server "@angular/platform-server | API | Angular"
+[AioApiCoreProvider]: api/core/Provider
 
-[AioApiRouterResolve]: api/router/Resolve "Resolve | @angular/router - API | Angular"
+<!-- "Provider | @angular/core - API | Angular" -->
 
-[AioCliAdd]: cli/add "ng add | CLI | Angular"
+[AioApiPlatformBrowserBrowsermodule]: api/platform-browser/BrowserModule
 
-[AioCliGenerate]: cli/generate "ng generate | CLI | Angular"
-[AioCliGenerateApplication]: cli/generate#application "application - ng generate | CLI | Angular"
-[AioCliGenerateAppShell]: cli/generate#app-shell "app-shell - ng generate | CLI | Angular"
-[AioCliGenerateLibrary]: cli/generate#library "library - ng generate | CLI | Angular"
+<!-- "BrowserModule | @angular/platform-browser - API | Angular" -->
 
-[AioCliMain]: cli "CLI Overview and Command Reference | Angular"
+[AioApiPlatformServer]: api/platform-server
 
-[AioCliNew]: cli/new "ng new | CLI | Angular"
+<!-- "@angular/platform-server | API | Angular" -->
 
-[AioCliRun]: cli/run "ng run | CLI | Angular"
+[AioApiRouterResolve]: api/router/Resolve
 
-[AioGuideAngularPackageFormat]: guide/angular-package-format "Angular Package Format | Angular"
+<!-- "Resolve | @angular/router - API | Angular" -->
 
-[AioGuideAnimations]: guide/animations "Introduction to Angular animations | Angular"
+[AioCliAdd]: cli/add
 
-[AioGuideArchitecture]: guide/architecture "Introduction to Angular concepts | Angular"
+<!-- "ng add | CLI | Angular" -->
 
-[AioGuideArchitectureServices]: guide/architecture-services "Introduction to services and dependency injection | Angular"
+[AioCliGenerate]: cli/generate
 
-[AioGuideAttributeBinding]: guide/attribute-binding "Attribute binding | Angular"
-[AioGuideAttributeBindingBindingToTheClassAttribute]: guide/class-binding "Class and style binding | Angular"
+<!-- "ng generate | CLI | Angular" -->
 
-[AioGuideAttributeDirectives]: guide/attribute-directives "Attribute directives | Angular"
+[AioCliGenerateApplication]: cli/generate#application
 
-[AioGuideBootstrapping]: guide/bootstrapping "Launching your app with a root module | Angular"
+<!-- "application - ng generate | CLI | Angular" -->
 
-[AioGuideBrowserSupport]: guide/browser-support "Browser support | Angular"
+[AioCliGenerateAppShell]: cli/generate#app-shell
 
-[AioGuideBuiltInDirectivesDisplayingAndUpdatingPropertiesWithNgmodel]: guide/built-in-directives#displaying-and-updating-properties-with-ngmodel "Displaying and updating properties with ngModel - Built-in directives | Angular"
+<!-- "app-shell - ng generate | CLI | Angular" -->
 
-[AioGuideComponentLifecycle]: guide/component/component-lifecycle "Component Lifecycle | Angular"
+[AioCliGenerateLibrary]: cli/generate#library
 
-[AioGuideComponentLifecycleTutorialRespondToProjectedContentChanges]: guide/component/component-example-lifecycle#respond-to-projected-content-changes "Respond to projected content changes - Example: lifecycle hook methods | Angular"
+<!-- "library - ng generate | CLI | Angular" -->
 
-[AioGuideComponentUsageComponentDataSharingAndInheritance]: guide/component/component-usage#component-data-sharing-and-inheritance "Component data sharing and inheritance - Use an Angular component | Angular"
+[AioCliMain]: cli
 
-[AioGuideComponentWeb]: guide/component/component-web "Web component | Angular"
+<!-- "CLI Overview and Command Reference | Angular" -->
 
-[AioGuideCreatingLibrariesIntegratingWithTheCliUsingCodeGenerationSchematics]: guide/creating-libraries#integrating-with-the-cli-using-code-generation-schematics "Integrating with the CLI using code-generation schematics - Creating libraries | Angular"
+[AioCliNew]: cli/new
 
-[AioGuideDependencyInjection]: guide/dependency-injection "Dependency injection in Angular | Angular"
+<!-- "ng new | CLI | Angular" -->
 
-[AioGuideEventBinding]: guide/event-binding "Event binding | Angular"
+[AioCliRun]: cli/run
 
-[AioGuideForms]: guide/forms "Building a template-driven form | Angular"
+<!-- "ng run | CLI | Angular" -->
 
-[AioGuideFileStructure]: guide/file-structure "Workspace and project file structure | Angular"
+[AioGuideAngularPackageFormat]: guide/angular-package-format
 
-[AioGuideFormsOverview]: guide/forms-overview "Introduction to forms in Angular | Angular"
+<!-- "Angular Package Format | Angular" -->
 
-[AioGuideFormValidation]: guide/form-validation "Validating form input | Angular"
-[AioGuideFormValidationAddingCustomValidatorsToReactiveForms]: guide/form-validation#adding-custom-validators-to-reactive-forms "Adding custom validators to reactive forms - Validating form input | Angular"
-[AioGuideFormValidationAddingCustomValidatorsToTemplateDrivenForms]: guide/form-validation#adding-custom-validators-to-template-driven-forms "Adding custom validators to template-driven forms - Validating form input | Angular"
+[AioGuideAnimations]: guide/animations
 
-[AioGuideGlossaryA]: guide/glossary#ahead-of-time-aot-compilation "A - Glossary | Angular"
-[AioGuideGlossaryAheadOfTimeAotCompilation]: guide/glossary#ahead-of-time-aot-compilation "ahead-of-time (AOT) compilation - Glossary | Angular"
-[AioGuideGlossaryAngularElement]: guide/glossary#angular-element "Angular element - Glossary | Angular"
-[AioGuideGlossaryArchitect]: guide/glossary#architect "Architect - Glossary | Angular"
-[AioGuideGlossaryAttributeDirective]: guide/glossary#attribute-directive "attribute directive - Glossary | Angular"
-[AioGuideGlossaryB]: guide/glossary#binding "B - Glossary | Angular"
-[AioGuideGlossaryBuilder]: guide/glossary#builder "builder - Glossary | Angular"
-[AioGuideGlossaryC]: guide/glossary#case-types "C - Glossary | Angular"
-[AioGuideGlossaryChangeDetection]: guide/glossary#change-detection " change detection - Glossary | Angular"
-[AioGuideGlossaryClassDecorator]: guide/glossary#class-decorator "class decorator - Glossary | Angular"
-[AioGuideGlossaryClassFieldDecorator]: guide/glossary#class-field-decorator "class field decorator - Glossary | Angular"
-[AioGuideGlossaryCollection]: guide/glossary#collection "collection - Glossary | Angular"
-[AioGuideGlossaryCommandLineInterfaceCli]: guide/glossary#command-line-interface-cli "command-line interface (CLI) - Glossary | Angular"
-[AioGuideGlossaryComponent]: guide/glossary#component "component - Glossary | Angular"
-[AioGuideGlossaryConfiguration]: guide/glossary#configuration "configuration - Glossary | Angular"
-[AioGuideGlossaryCustomElement]: guide/glossary#custom-element "custom element - Glossary | Angular"
-[AioGuideGlossaryD]: guide/glossary#data-binding "D - Glossary | Angular"
-[AioGuideGlossaryDataBinding]: guide/glossary#data-binding "data binding - Glossary | Angular"
-[AioGuideGlossaryDeclarable]: guide/glossary#declarable "declarable - Glossary | Angular"
-[AioGuideGlossaryDecoratorDecoration]: guide/glossary#decorator--decoration "decorator | decoration - Glossary | Angular"
-[AioGuideGlossaryDependencyInjectionDi]: guide/glossary#dependency-injection-di "dependency injection (DI) - Glossary | Angular"
-[AioGuideGlossaryDirective]: guide/glossary#directive "directive - Glossary | Angular"
-[AioGuideGlossaryDiToken]: guide/glossary#di-token "DI token - Glossary | Angular"
-[AioGuideGlossaryDynamicComponentLoading]: guide/glossary#dynamic-component-loading "dynamic component loading - Glossary | Angular"
-[AioGuideGlossaryE]: guide/glossary#eager-loading "E - Glossary | Angular"
-[AioGuideGlossaryEagerLoading]: guide/glossary#eager-loading "eager loading - Glossary | Angular"
-[AioGuideGlossaryEcmascript]: guide/glossary#ecmascript "ECMAScript - Glossary | Angular"
-[AioGuideGlossaryF]: guide/glossary#form-control "F - Glossary | Angular"
-[AioGuideGlossaryG]: guide/glossary#immutability "G - Glossary | Angular"
-[AioGuideGlossaryH]: guide/glossary#immutability "H - Glossary | Angular"
-[AioGuideGlossaryI]: guide/glossary#immutability "I - Glossary | Angular"
-[AioGuideGlossaryInjectable]: guide/glossary#injectable "injectable - Glossary | Angular"
-[AioGuideGlossaryInjector]: guide/glossary#injector "injector - Glossary | Angular"
-[AioGuideGlossaryInput]: guide/glossary#input "input - Glossary | Angular"
-[AioGuideGlossaryIvy]: guide/glossary#ivy "Ivy - Glossary | Angular"
-[AioGuideGlossaryJ]: guide/glossary#javascript "J - Glossary | Angular"
-[AioGuideGlossaryJustInTimeJitCompilation]: guide/glossary#just-in-time-jit-compilation "just-in-time (JIT) compilation - Glossary | Angular"
-[AioGuideGlossaryK]: guide/glossary#lazy-loading "K - Glossary | Angular"
-[AioGuideGlossaryL]: guide/glossary#lazy-loading "L - Glossary | Angular"
-[AioGuideGlossaryLazyLoading]: guide/glossary#lazy-loading "lazy loading - Glossary | Angular"
-[AioGuideGlossaryLibrary]: guide/glossary#library "library - Glossary | Angular"
-[AioGuideGlossaryM]: guide/glossary#module "M - Glossary | Angular"
-[AioGuideGlossaryModule]: guide/glossary#module "module - Glossary | Angular"
-[AioGuideGlossaryN]: guide/glossary#ngcc "N - Glossary | Angular"
-[AioGuideGlossaryNgmodule]: guide/glossary#ngmodule "NgModule - Glossary | Angular"
-[AioGuideGlossaryNpmPackage]: guide/glossary#npm-package "npm package - Glossary | Angular"
-[AioGuideGlossaryO]: guide/glossary#observable "O - Glossary | Angular"
-[AioGuideGlossaryObservable]: guide/glossary#observable "observable - Glossary | Angular"
-[AioGuideGlossaryObserver]: guide/glossary#observer "observer - Glossary | Angular"
-[AioGuideGlossaryOutput]: guide/glossary#output "output - Glossary | Angular"
-[AioGuideGlossaryP]: guide/glossary#pipe "P - Glossary | Angular"
-[AioGuideGlossaryPipe]: guide/glossary#pipe "pipe - Glossary | Angular"
-[AioGuideGlossaryProject]: guide/glossary#project "project - Glossary | Angular"
-[AioGuideGlossaryProvider]: guide/glossary#provider "provider - Glossary | Angular"
-[AioGuideGlossaryQ]: guide/glossary#reactive-forms "Q - Glossary | Angular"
-[AioGuideGlossaryR]: guide/glossary#reactive-forms "R - Glossary | Angular"
-[AioGuideGlossaryReactiveForms]: guide/glossary#reactive-forms "reactive forms - Glossary | Angular"
-[AioGuideGlossaryRouteGuard]: guide/glossary#route-guard "route guard - Glossary | Angular"
-[AioGuideGlossaryRouter]: guide/glossary#router "router - Glossary | Angular"
-[AioGuideGlossaryRoutingComponent]: guide/glossary#routing-component "routing component - Glossary | Angular"
-[AioGuideGlossaryRule]: guide/glossary#rule "rule - Glossary | Angular"
-[AioGuideGlossaryS]: guide/glossary#schematic "S - Glossary | Angular"
-[AioGuideGlossarySchematic]: guide/glossary#schematic "schematic - Glossary | Angular"
-[AioGuideGlossarySchematicsCli]: guide/glossary#schematics-cli "Schematics CLI - Glossary | Angular"
-[AioGuideGlossaryScopedPackage]: guide/glossary#scoped-package "scoped package - Glossary | Angular"
-[AioGuideGlossaryServerSideRendering]: guide/glossary#server-side-rendering "server-side rendering - Glossary | Angular"
-[AioGuideGlossaryService]: guide/glossary#service "service - Glossary | Angular"
-[AioGuideGlossaryStandalone]: guide/glossary#standalone "standalone - Glossary | Angular"
-[AioGuideGlossaryStructuralDirective]: guide/glossary#structural-directive "structural directive - Glossary | Angular"
-[AioGuideGlossarySubscriber]: guide/glossary#subscriber "subscriber - Glossary | Angular"
-[AioGuideGlossaryT]: guide/glossary#target "T - Glossary | Angular"
-[AioGuideGlossaryTarget]: guide/glossary#target "target - Glossary | Angular"
-[AioGuideGlossaryTemplate]: guide/glossary#template "template - Glossary | Angular"
-[AioGuideGlossaryTemplateDrivenForms]: guide/glossary#template-driven-forms "template-driven forms - Glossary | Angular"
-[AioGuideGlossaryTemplateExpression]: guide/glossary#template-expression "template expression - Glossary | Angular"
-[AioGuideGlossaryToken]: guide/glossary#token "token - Glossary | Angular"
-[AioGuideGlossaryTranspile]: guide/glossary#transpile "transpile - Glossary | Angular"
-[AioGuideGlossaryTree]: guide/glossary#tree "tree - Glossary | Angular"
-[AioGuideGlossaryTypescript]: guide/glossary#typescript "TypeScript - Glossary | Angular"
-[AioGuideGlossaryU]: guide/glossary#unidirectional-data-flow "U - Glossary | Angular"
-[AioGuideGlossaryUniversal]: guide/glossary#universal "Universal - Glossary | Angular"
-[AioGuideGlossaryV]: guide/glossary#view "V - Glossary | Angular"
-[AioGuideGlossaryView]: guide/glossary#view "view - Glossary | Angular"
-[AioGuideGlossaryViewHierarchy]: guide/glossary#view-hierarchy "view hierarchy - Glossary | Angular"
-[AioGuideGlossaryW]: guide/glossary#web-component "W - Glossary | Angular"
-[AioGuideGlossaryWorkspace]: guide/glossary#workspace "workspace - Glossary | Angular"
-[AioGuideGlossaryWorkspaceConfig]: guide/glossary#workspace-configuration "workspace configuration - Glossary | Angular"
-[AioGuideGlossaryX]: guide/glossary#zone "X - Glossary | Angular"
-[AioGuideGlossaryY]: guide/glossary#zone "Y - Glossary | Angular"
-[AioGuideGlossaryZ]: guide/glossary#zone "Z - Glossary | Angular"
+[AioGuideArchitecture]: guide/architecture
 
-[AioGuideHierarchicalDependencyInjection]: guide/hierarchical-dependency-injection "Hierarchical injectors | Angular"
+<!-- "Introduction to Angular concepts | Angular" -->
 
-[AioGuideInterpolation]: guide/interpolation "Text interpolation | Angular"
+[AioGuideArchitectureServices]: guide/architecture-services
+
+<!-- "Introduction to services and dependency injection | Angular" -->
+
+[AioGuideAttributeBinding]: guide/attribute-binding
+
+<!-- "Attribute binding | Angular" -->
+
+[AioGuideAttributeBindingBindingToTheClassAttribute]: guide/class-binding
+
+<!-- "Class and style binding | Angular" -->
+
+[AioGuideAttributeDirectives]: guide/attribute-directives
+
+<!-- "Attribute directives | Angular" -->
+
+[AioGuideBootstrapping]: guide/bootstrapping
+
+<!-- "Launching your app with a root module | Angular" -->
+
+[AioGuideBrowserSupport]: guide/browser-support
+
+<!-- "Browser support | Angular" -->
+
+[AioGuideBuiltInDirectivesDisplayingAndUpdatingPropertiesWithNgmodel]: guide/built-in-directives#displaying-and-updating-properties-with-ngmodel
+
+<!-- "Displaying and updating properties with ngModel - Built-in directives | Angular" -->
+
+[AioGuideComponentLifecycle]: guide/component/component-lifecycle
+
+<!-- "Component Lifecycle | Angular" -->
+
+[AioGuideComponentLifecycleTutorialRespondToProjectedContentChanges]: guide/component/component-example-lifecycle#respond-to-projected-content-changes
+
+<!-- "Respond to projected content changes - Example: lifecycle hook methods | Angular" -->
+
+[AioGuideComponentUsageComponentDataSharingAndInheritance]: guide/component/component-usage#component-data-sharing-and-inheritance
+
+<!-- "Component data sharing and inheritance - Use an Angular component | Angular" -->
+
+[AioGuideComponentWeb]: guide/component/component-web
+
+<!-- "Web component | Angular" -->
+
+[AioGuideCreatingLibrariesIntegratingWithTheCliUsingCodeGenerationSchematics]: guide/creating-libraries#integrating-with-the-cli-using-code-generation-schematics
+
+<!-- "Integrating with the CLI using code-generation schematics - Creating libraries | Angular" -->
+
+[AioGuideDependencyInjection]: guide/dependency-injection
+
+<!-- "Dependency injection in Angular | Angular" -->
+
+[AioGuideEventBinding]: guide/event-binding
+
+<!-- "Event binding | Angular" -->
+
+[AioGuideForms]: guide/forms
+
+<!-- "Building a template-driven form | Angular" -->
+
+[AioGuideFileStructure]: guide/file-structure
+
+<!-- "Workspace and project file structure | Angular" -->
+
+[AioGuideFormsOverview]: guide/forms-overview
+
+<!-- "Introduction to forms in Angular | Angular" -->
+
+[AioGuideFormValidation]: guide/form-validation
+
+<!-- "Validating form input | Angular" -->
+
+[AioGuideFormValidationAddingCustomValidatorsToReactiveForms]: guide/form-validation#adding-custom-validators-to-reactive-forms
+
+<!-- "Adding custom validators to reactive forms - Validating form input | Angular" -->
+
+[AioGuideFormValidationAddingCustomValidatorsToTemplateDrivenForms]: guide/form-validation#adding-custom-validators-to-template-driven-forms
+
+<!-- "Adding custom validators to template-driven forms - Validating form input | Angular" -->
+
+[AioGuideGlossaryA]: guide/glossary#ahead-of-time-aot-compilation
+
+<!-- "A - Glossary | Angular" -->
+
+[AioGuideGlossaryAheadOfTimeAotCompilation]: guide/glossary#ahead-of-time-aot-compilation
+
+<!-- "ahead-of-time (AOT) compilation - Glossary | Angular" -->
+
+[AioGuideGlossaryAngularElement]: guide/glossary#angular-element
+
+<!-- "Angular element - Glossary | Angular" -->
+
+[AioGuideGlossaryArchitect]: guide/glossary#architect
+
+<!-- "Architect - Glossary | Angular" -->
+
+[AioGuideGlossaryAttributeDirective]: guide/glossary#attribute-directive
+
+<!-- "attribute directive - Glossary | Angular" -->
+
+[AioGuideGlossaryB]: guide/glossary#binding
+
+<!-- "B - Glossary | Angular" -->
+
+[AioGuideGlossaryBuilder]: guide/glossary#builder
+
+<!-- "builder - Glossary | Angular" -->
+
+[AioGuideGlossaryC]: guide/glossary#case-types
+
+<!-- "C - Glossary | Angular" -->
+
+[AioGuideGlossaryChangeDetection]: guide/glossary#change-detection
+
+<!-- " change detection - Glossary | Angular" -->
+
+[AioGuideGlossaryClassDecorator]: guide/glossary#class-decorator
+
+<!-- "class decorator - Glossary | Angular" -->
+
+[AioGuideGlossaryClassFieldDecorator]: guide/glossary#class-field-decorator
+
+<!-- "class field decorator - Glossary | Angular" -->
+
+[AioGuideGlossaryCollection]: guide/glossary#collection
+
+<!-- "collection - Glossary | Angular" -->
+
+[AioGuideGlossaryCommandLineInterfaceCli]: guide/glossary#command-line-interface-cli
+
+<!-- "command-line interface (CLI) - Glossary | Angular" -->
+
+[AioGuideGlossaryComponent]: guide/glossary#component
+
+<!-- "component - Glossary | Angular" -->
+
+[AioGuideGlossaryConfiguration]: guide/glossary#configuration
+
+<!-- "configuration - Glossary | Angular" -->
+
+[AioGuideGlossaryCustomElement]: guide/glossary#custom-element
+
+<!-- "custom element - Glossary | Angular" -->
+
+[AioGuideGlossaryD]: guide/glossary#data-binding
+
+<!-- "D - Glossary | Angular" -->
+
+[AioGuideGlossaryDataBinding]: guide/glossary#data-binding
+
+<!-- "data binding - Glossary | Angular" -->
+
+[AioGuideGlossaryDeclarable]: guide/glossary#declarable
+
+<!-- "declarable - Glossary | Angular" -->
+
+[AioGuideGlossaryDecoratorDecoration]: guide/glossary#decorator--decoration
+
+<!-- "decorator | decoration - Glossary | Angular" -->
+
+[AioGuideGlossaryDependencyInjectionDi]: guide/glossary#dependency-injection-di
+
+<!-- "dependency injection (DI) - Glossary | Angular" -->
+
+[AioGuideGlossaryDirective]: guide/glossary#directive
+
+<!-- "directive - Glossary | Angular" -->
+
+[AioGuideGlossaryDiToken]: guide/glossary#di-token
+
+<!-- "DI token - Glossary | Angular" -->
+
+[AioGuideGlossaryDynamicComponentLoading]: guide/glossary#dynamic-component-loading
+
+<!-- "dynamic component loading - Glossary | Angular" -->
+
+[AioGuideGlossaryE]: guide/glossary#eager-loading
+
+<!-- "E - Glossary | Angular" -->
+
+[AioGuideGlossaryEagerLoading]: guide/glossary#eager-loading
+
+<!-- "eager loading - Glossary | Angular" -->
+
+[AioGuideGlossaryEcmascript]: guide/glossary#ecmascript
+
+<!-- "ECMAScript - Glossary | Angular" -->
+
+[AioGuideGlossaryF]: guide/glossary#form-control
+
+<!-- "F - Glossary | Angular" -->
+
+[AioGuideGlossaryG]: guide/glossary#immutability
+
+<!-- "G - Glossary | Angular" -->
+
+[AioGuideGlossaryH]: guide/glossary#immutability
+
+<!-- "H - Glossary | Angular" -->
+
+[AioGuideGlossaryI]: guide/glossary#immutability
+
+<!-- "I - Glossary | Angular" -->
+
+[AioGuideGlossaryInjectable]: guide/glossary#injectable
+
+<!-- "injectable - Glossary | Angular" -->
+
+[AioGuideGlossaryInjector]: guide/glossary#injector
+
+<!-- "injector - Glossary | Angular" -->
+
+[AioGuideGlossaryInput]: guide/glossary#input
+
+<!-- "input - Glossary | Angular" -->
+
+[AioGuideGlossaryIvy]: guide/glossary#ivy
+
+<!-- "Ivy - Glossary | Angular" -->
+
+[AioGuideGlossaryJ]: guide/glossary#javascript
+
+<!-- "J - Glossary | Angular" -->
+
+[AioGuideGlossaryJustInTimeJitCompilation]: guide/glossary#just-in-time-jit-compilation
+
+<!-- "just-in-time (JIT) compilation - Glossary | Angular" -->
+
+[AioGuideGlossaryK]: guide/glossary#lazy-loading
+
+<!-- "K - Glossary | Angular" -->
+
+[AioGuideGlossaryL]: guide/glossary#lazy-loading
+
+<!-- "L - Glossary | Angular" -->
+
+[AioGuideGlossaryLazyLoading]: guide/glossary#lazy-loading
+
+<!-- "lazy loading - Glossary | Angular" -->
+
+[AioGuideGlossaryLibrary]: guide/glossary#library
+
+<!-- "library - Glossary | Angular" -->
+
+[AioGuideGlossaryM]: guide/glossary#module
+
+<!-- "M - Glossary | Angular" -->
+
+[AioGuideGlossaryModule]: guide/glossary#module
+
+<!-- "module - Glossary | Angular" -->
+
+[AioGuideGlossaryN]: guide/glossary#ngcc
+
+<!-- "N - Glossary | Angular" -->
+
+[AioGuideGlossaryNgmodule]: guide/glossary#ngmodule
+
+<!-- "NgModule - Glossary | Angular" -->
+
+[AioGuideGlossaryNpmPackage]: guide/glossary#npm-package
+
+<!-- "npm package - Glossary | Angular" -->
+
+[AioGuideGlossaryO]: guide/glossary#observable
+
+<!-- "O - Glossary | Angular" -->
+
+[AioGuideGlossaryObservable]: guide/glossary#observable
+
+<!-- "observable - Glossary | Angular" -->
+
+[AioGuideGlossaryObserver]: guide/glossary#observer
+
+<!-- "observer - Glossary | Angular" -->
+
+[AioGuideGlossaryOutput]: guide/glossary#output
+
+<!-- "output - Glossary | Angular" -->
+
+[AioGuideGlossaryP]: guide/glossary#pipe
+
+<!-- "P - Glossary | Angular" -->
+
+[AioGuideGlossaryPipe]: guide/glossary#pipe
+
+<!-- "pipe - Glossary | Angular" -->
+
+[AioGuideGlossaryProject]: guide/glossary#project
+
+<!-- "project - Glossary | Angular" -->
+
+[AioGuideGlossaryProvider]: guide/glossary#provider
+
+<!-- "provider - Glossary | Angular" -->
+
+[AioGuideGlossaryQ]: guide/glossary#reactive-forms
+
+<!-- "Q - Glossary | Angular" -->
+
+[AioGuideGlossaryR]: guide/glossary#reactive-forms
+
+<!-- "R - Glossary | Angular" -->
+
+[AioGuideGlossaryReactiveForms]: guide/glossary#reactive-forms
+
+<!-- "reactive forms - Glossary | Angular" -->
+
+[AioGuideGlossaryRouteGuard]: guide/glossary#route-guard
+
+<!-- "route guard - Glossary | Angular" -->
+
+[AioGuideGlossaryRouter]: guide/glossary#router
+
+<!-- "router - Glossary | Angular" -->
+
+[AioGuideGlossaryRoutingComponent]: guide/glossary#routing-component
+
+<!-- "routing component - Glossary | Angular" -->
+
+[AioGuideGlossaryRule]: guide/glossary#rule
+
+<!-- "rule - Glossary | Angular" -->
+
+[AioGuideGlossaryS]: guide/glossary#schematic
+
+<!-- "S - Glossary | Angular" -->
+
+[AioGuideGlossarySchematic]: guide/glossary#schematic
+
+<!-- "schematic - Glossary | Angular" -->
+
+[AioGuideGlossarySchematicsCli]: guide/glossary#schematics-cli
+
+<!-- "Schematics CLI - Glossary | Angular" -->
+
+[AioGuideGlossaryScopedPackage]: guide/glossary#scoped-package
+
+<!-- "scoped package - Glossary | Angular" -->
+
+[AioGuideGlossaryServerSideRendering]: guide/glossary#server-side-rendering
+
+<!-- "server-side rendering - Glossary | Angular" -->
+
+[AioGuideGlossaryService]: guide/glossary#service
+
+<!-- "service - Glossary | Angular" -->
+
+[AioGuideGlossaryStandalone]: guide/glossary#standalone
+
+<!-- "standalone - Glossary | Angular" -->
+
+[AioGuideGlossaryStructuralDirective]: guide/glossary#structural-directive
+
+<!-- "structural directive - Glossary | Angular" -->
+
+[AioGuideGlossarySubscriber]: guide/glossary#subscriber
+
+<!-- "subscriber - Glossary | Angular" -->
+
+[AioGuideGlossaryT]: guide/glossary#target
+
+<!-- "T - Glossary | Angular" -->
+
+[AioGuideGlossaryTarget]: guide/glossary#target
+
+<!-- "target - Glossary | Angular" -->
+
+[AioGuideGlossaryTemplate]: guide/glossary#template
+
+<!-- "template - Glossary | Angular" -->
+
+[AioGuideGlossaryTemplateDrivenForms]: guide/glossary#template-driven-forms
+
+<!-- "template-driven forms - Glossary | Angular" -->
+
+[AioGuideGlossaryTemplateExpression]: guide/glossary#template-expression
+
+<!-- "template expression - Glossary | Angular" -->
+
+[AioGuideGlossaryToken]: guide/glossary#token
+
+<!-- "token - Glossary | Angular" -->
+
+[AioGuideGlossaryTranspile]: guide/glossary#transpile
+
+<!-- "transpile - Glossary | Angular" -->
+
+[AioGuideGlossaryTree]: guide/glossary#tree
+
+<!-- "tree - Glossary | Angular" -->
+
+[AioGuideGlossaryTypescript]: guide/glossary#typescript
+
+<!-- "TypeScript - Glossary | Angular" -->
+
+[AioGuideGlossaryU]: guide/glossary#unidirectional-data-flow
+
+<!-- "U - Glossary | Angular" -->
+
+[AioGuideGlossaryUniversal]: guide/glossary#universal
+
+<!-- "Universal - Glossary | Angular" -->
+
+[AioGuideGlossaryV]: guide/glossary#view
+
+<!-- "V - Glossary | Angular" -->
+
+[AioGuideGlossaryView]: guide/glossary#view
+
+<!-- "view - Glossary | Angular" -->
+
+[AioGuideGlossaryViewHierarchy]: guide/glossary#view-hierarchy
+
+<!-- "view hierarchy - Glossary | Angular" -->
+
+[AioGuideGlossaryW]: guide/glossary#web-component
+
+<!-- "W - Glossary | Angular" -->
+
+[AioGuideGlossaryWorkspace]: guide/glossary#workspace
+
+<!-- "workspace - Glossary | Angular" -->
+
+[AioGuideGlossaryWorkspaceConfig]: guide/glossary#workspace-configuration
+
+<!-- "workspace configuration - Glossary | Angular" -->
+
+[AioGuideGlossaryX]: guide/glossary#zone
+
+<!-- "X - Glossary | Angular" -->
+
+[AioGuideGlossaryY]: guide/glossary#zone
+
+<!-- "Y - Glossary | Angular" -->
+
+[AioGuideGlossaryZ]: guide/glossary#zone
+
+<!-- "Z - Glossary | Angular" -->
+
+[AioGuideHierarchicalDependencyInjection]: guide/hierarchical-dependency-injection
+
+<!-- "Hierarchical injectors | Angular" -->
+
+[AioGuideInterpolation]: guide/interpolation
+
+<!-- "Text interpolation | Angular" -->
 
 <!-- [AioGuideInterpolationTemplateExpressions]: guide/interpolation#template-expressions "Template expressions - Text interpolation | Angular" -->
 
-[AioGuideNgmodules]: guide/ngmodules "NgModules | Angular"
+[AioGuideNgmodules]: guide/ngmodules
 
-[AioGuideNpmPackages]: guide/npm-packages "Workspace npm dependencies | Angular"
+<!-- "NgModules | Angular" -->
 
-[AioGuideObservables]: guide/observables "Using observables to pass values | Angular"
+[AioGuideNpmPackages]: guide/npm-packages
 
-[AioGuidePipes]: guide/pipes "Transforming Data Using Pipes | Angular"
+<!-- "Workspace npm dependencies | Angular" -->
 
-[AioGuidePropertyBinding]: guide/property-binding "Property binding | Angular"
+[AioGuideObservables]: guide/observables
 
-[AioGuideRouter]: guide/router "Common Routing Tasks | Angular"
-[AioGuideRouterPreventingUnauthorizedAccess]: guide/router#preventing-unauthorized-access "Preventing unauthorized access - Common Routing Tasks | Angular"
+<!-- "Using observables to pass values | Angular" -->
 
-[AioGuideRouterTutorialTohResolvePreFetchingComponentData]: guide/router-tutorial-toh#resolve-pre-fetching-component-data "Resolve: pre-fetching component data - Router tutorial: tour of heroes | Angular"
+[AioGuidePipes]: guide/pipes
 
-[AioGuideSchematics]: guide/schematics "Generating code using schematics | Angular"
+<!-- "Transforming Data Using Pipes | Angular" -->
 
-[AioGuideServiceWorkerIntro]: guide/service-worker-intro "Angular service worker introduction | Angular"
+[AioGuidePropertyBinding]: guide/property-binding
 
-[AioGuideSetupLocal]: guide/setup-local "Setting up the local environment and workspace | Angular"
+<!-- "Property binding | Angular" -->
 
-[AioGuideStandalone]: guide/standalone-components "Getting started with standalone components | Angular"
+[AioGuideRouter]: guide/router
 
-[AioGuideStructuralDirectives]: guide/structural-directives "Structural directives | Angular"
+<!-- "Common Routing Tasks | Angular" -->
 
-[AioGuideStyleguide0201]: guide/styleguide#02-01 "Style 02-01 - Angular coding style guide | Angular"
+[AioGuideRouterPreventingUnauthorizedAccess]: guide/router#preventing-unauthorized-access
 
-[AioGuideTemplateReferenceVariables]: guide/template-reference-variables "Template variables | Angular"
-[AioGuideTemplateReferenceVariablesTemplateInputVariable]: guide/template-reference-variables#template-input-variable "Template input variable - Template variables | Angular"
+<!-- "Preventing unauthorized access - Common Routing Tasks | Angular" -->
 
-[AioGuideTemplateSyntax]: guide/template-syntax "Template syntax | Angular"
+[AioGuideRouterTutorialTohResolvePreFetchingComponentData]: guide/router-tutorial-toh#resolve-pre-fetching-component-data
 
-[AioGuideTypescriptConfiguration]: guide/typescript-configuration "TypeScript configuration | Angular"
+<!-- "Resolve: pre-fetching component data - Router tutorial: tour of heroes | Angular" -->
 
-[AioGuideUniversal]: guide/universal "Server-side rendering (SSR) with Angular Universal | Angular"
+[AioGuideSchematics]: guide/schematics
 
-[AioGuideWorkspaceConfig]: guide/workspace-config "Angular workspace configuration | Angular"
-[AioGuideWorkspaceConfigProjectToolConfigurationOptions]: guide/workspace-config#project-tool-configuration-options "Project tool configuration options - Angular workspace configuration | Angular"
+<!-- "Generating code using schematics | Angular" -->
+
+[AioGuideServiceWorkerIntro]: guide/service-worker-intro
+
+<!-- "Angular service worker introduction | Angular" -->
+
+[AioGuideSetupLocal]: guide/setup-local
+
+<!-- "Setting up the local environment and workspace | Angular" -->
+
+[AioGuideStandalone]: guide/standalone-components
+
+<!-- "Getting started with standalone components | Angular" -->
+
+[AioGuideStructuralDirectives]: guide/structural-directives
+
+<!-- "Structural directives | Angular" -->
+
+[AioGuideStyleguide0201]: guide/styleguide#02-01
+
+<!-- "Style 02-01 - Angular coding style guide | Angular" -->
+
+[AioGuideTemplateReferenceVariables]: guide/template-reference-variables
+
+<!-- "Template variables | Angular" -->
+
+[AioGuideTemplateReferenceVariablesTemplateInputVariable]: guide/template-reference-variables#template-input-variable
+
+<!-- "Template input variable - Template variables | Angular" -->
+
+[AioGuideTemplateSyntax]: guide/template-syntax
+
+<!-- "Template syntax | Angular" -->
+
+[AioGuideTypescriptConfiguration]: guide/typescript-configuration
+
+<!-- "TypeScript configuration | Angular" -->
+
+[AioGuideUniversal]: guide/universal
+
+<!-- "Server-side rendering (SSR) with Angular Universal | Angular" -->
+
+[AioGuideWorkspaceConfig]: guide/workspace-config
+
+<!-- "Angular workspace configuration | Angular" -->
+
+[AioGuideWorkspaceConfigProjectToolConfigurationOptions]: guide/workspace-config#project-tool-configuration-options
+
+<!-- "Project tool configuration options - Angular workspace configuration | Angular" -->
 
 <!-- external links -->
 
-[AngularBlogAPlanForVersion80AndIvyB3318dfc19f7]: https://blog.angular.io/a-plan-for-version-8-0-and-ivy-b3318dfc19f7 "A plan for version 8.0 and Ivy | Angular Blog"
+[AngularBlogAPlanForVersion80AndIvyB3318dfc19f7]: https://blog.angular.io/a-plan-for-version-8-0-and-ivy-b3318dfc19f7
 
-[GithubAngularAngularCliTreePrimaryPackagesAngularDevkitBuildAngularSrcBuildersBrowser]: https://github.com/angular/angular-cli/tree/main/packages/angular_devkit/build_angular/src/builders/browser "packages/angular_devkit/build_angular/src/builders/browser | angular/angular-cli | GitHub"
-[GithubAngularAngularCliTreePrimaryPackagesAngularDevkitBuildAngularSrcBuildersKarma]: https://github.com/angular/angular-cli/tree/main/packages/angular_devkit/build_angular/src/builders/karma "packages/angular_devkit/build_angular/src/builders/karma | angular/angular-cli | GitHub"
+<!-- "A plan for version 8.0 and Ivy | Angular Blog" -->
 
-[GithubPalantirTslint]: https://palantir.github.io/tslint "TSLint | Palantir | GitHub"
+[GithubAngularAngularCliTreePrimaryPackagesAngularDevkitBuildAngularSrcBuildersBrowser]: https://github.com/angular/angular-cli/tree/main/packages/angular_devkit/build_angular/src/builders/browser
 
-[GithubTC39ProposalDecorators]: https://github.com/tc39/proposal-decorators "tc39/proposal-decorators | GitHub"
+<!-- "packages/angular_devkit/build_angular/src/builders/browser | angular/angular-cli | GitHub" -->
 
-[GitScmMain]: https://git-scm.com "Git"
+[GithubAngularAngularCliTreePrimaryPackagesAngularDevkitBuildAngularSrcBuildersKarma]: https://github.com/angular/angular-cli/tree/main/packages/angular_devkit/build_angular/src/builders/karma
 
-[GoogleDevelopersWebFundamentalsArchitectureAppShell]: https://developers.google.com/web/fundamentals/architecture/app-shell "The App Shell Model | Web Fundamentals | Google Developers"
+<!-- "packages/angular_devkit/build_angular/src/builders/karma | angular/angular-cli | GitHub" -->
 
-[JsWebpackMain]: https://webpack.js.org "webpack | JS.ORG"
+[GithubPalantirTslint]: https://palantir.github.io/tslint
 
-[MdnDocsWebApiCustomelementregistry]: https://developer.mozilla.org/docs/Web/API/CustomElementRegistry "CustomElementRegistry | MDN"
+<!-- "TSLint | Palantir | GitHub" -->
 
-[NpmjsDocsAboutNpm]: https://docs.npmjs.com/about-npm "About npm | npm"
+[GithubTC39ProposalDecorators]: https://github.com/tc39/proposal-decorators
 
-[RxjsMain]: https://rxjs.dev "RxJS"
+<!-- "tc39/proposal-decorators | GitHub" -->
 
-[TypescriptlangMain]: https://www.typescriptlang.org "TypeScript"
+[GitScmMain]: https://git-scm.com
 
-[WebDevFasterAngularChangeDetection]: https://web.dev/faster-angular-change-detection "Optimize Angular's change detection | web.dev"
+<!-- "Git" -->
 
-[WikipediaWikiDomainSpecificLanguage]: https://en.wikipedia.org/wiki/Domain-specific_language "Domain-specific language | Wikipedia"
-[WikipediaWikiEcmascript]: https://en.wikipedia.org/wiki/ECMAScript "ECMAScript | Wikipedia"
+[GoogleDevelopersWebFundamentalsArchitectureAppShell]: https://developers.google.com/web/fundamentals/architecture/app-shell
 
-[YoutubeWatchV3iqtmusceU]: https://www.youtube.com/watch?v=3IqtmUscE_U "Brian Ford - Zones - NG-Conf 2014 | YouTube"
+<!-- "The App Shell Model | Web Fundamentals | Google Developers" -->
+
+[JsWebpackMain]: https://webpack.js.org
+
+<!-- "webpack | JS.ORG" -->
+
+[MdnDocsWebApiCustomelementregistry]: https://developer.mozilla.org/docs/Web/API/CustomElementRegistry
+
+<!-- "CustomElementRegistry | MDN" -->
+
+[NpmjsDocsAboutNpm]: https://docs.npmjs.com/about-npm
+
+<!-- "About npm | npm" -->
+
+[RxjsMain]: https://rxjs.dev
+
+<!-- "RxJS" -->
+
+[TypescriptlangMain]: https://www.typescriptlang.org
+
+<!-- "TypeScript" -->
+
+[WebDevFasterAngularChangeDetection]: https://web.dev/faster-angular-change-detection
+
+<!-- "Optimize Angular's change detection | web.dev" -->
+
+[WikipediaWikiDomainSpecificLanguage]: https://en.wikipedia.org/wiki/Domain-specific_language
+
+<!-- "Domain-specific language | Wikipedia" -->
+
+[WikipediaWikiEcmascript]: https://en.wikipedia.org/wiki/ECMAScript
+
+<!-- "ECMAScript | Wikipedia" -->
+
+[YoutubeWatchV3iqtmusceU]: https://www.youtube.com/watch?v=3IqtmUscE_U
+
+<!-- "Brian Ford - Zones - NG-Conf 2014 | YouTube" -->
 
 <!-- end links -->
 

@@ -408,42 +408,95 @@ Style strings added to the `styles` metadata must be written in CSS.
 
 <!-- links -->
 
-[AioCliGenerate]: cli/generate "ng generate | CLI | Angular"
+[AioCliGenerate]: cli/generate
 
-[AioGuideComponentCreate]: guide/component/component-create "Create an Angular component | Angular"
+<!-- "ng generate | CLI | Angular" -->
 
-[AioGuideComponentEncapsuleStyle]: guide/component/component-encapsulate-style "Encapsulate style in a view | Angular"
-[AioGuideComponentEncapsuleStyleEmulatedEncapsulation]: guide/component/component-encapsulate-style#emulated-encapsulation "Emulated encapsulation - Encapsulate style in a view | Angular"
+[AioGuideComponentCreate]: guide/component/component-create
 
-[AioGuideComponentExample]: guide/component/component-example "Example Angular component applications | Angular"
+<!-- "Create an Angular component | Angular" -->
 
-[AioGuideComponentStructureStyleMetadata]: guide/component/component-structure#style-metadata  "Style metadata - Understand the structure an Angular component | Angular"
+[AioGuideComponentEncapsuleStyle]: guide/component/component-encapsulate-style
 
-[AioGuideGlossaryComponent]: guide/glossary#component "component - Glossary | Angular"
+<!-- "Encapsulate style in a view | Angular" -->
 
-[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application "Create a workspace and initial application - Setting up the local environment and workspace | Angular"
-[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli "Install the Angular CLI - Setting up the local environment and workspace | Angular"
+[AioGuideComponentEncapsuleStyleEmulatedEncapsulation]: guide/component/component-encapsulate-style#emulated-encapsulation
 
-[AioGuideWorkspaceConfigAssetsConfiguration]: guide/workspace-config#assets-configuration "Assets configuration - Angular workspace configuration | Angular"
-[AioGuideWorkspaceConfigGenerationSchematics]: guide/workspace-config#generation-schematics "Generation schematics - Angular workspace configuration | Angular"
-[AioGuideWorkspaceConfigStylesAndScriptsConfiguration]: guide/workspace-config#styles-and-scripts-configuration "Styles and scripts configuration - Angular workspace configuration | Angular"
+<!-- "Emulated encapsulation - Encapsulate style in a view | Angular" -->
+
+[AioGuideComponentExample]: guide/component/component-example
+
+<!-- "Example Angular component applications | Angular" -->
+
+[AioGuideComponentStructureStyleMetadata]: guide/component/component-structure#style-metadata 
+
+<!-- "Style metadata - Understand the structure an Angular component | Angular" -->
+
+[AioGuideGlossaryComponent]: guide/glossary#component
+
+<!-- "component - Glossary | Angular" -->
+
+[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application
+
+<!-- "Create a workspace and initial application - Setting up the local environment and workspace | Angular" -->
+
+[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli
+
+<!-- "Install the Angular CLI - Setting up the local environment and workspace | Angular" -->
+
+[AioGuideWorkspaceConfigAssetsConfiguration]: guide/workspace-config#assets-configuration
+
+<!-- "Assets configuration - Angular workspace configuration | Angular" -->
+
+[AioGuideWorkspaceConfigGenerationSchematics]: guide/workspace-config#generation-schematics
+
+<!-- "Generation schematics - Angular workspace configuration | Angular" -->
+
+[AioGuideWorkspaceConfigStylesAndScriptsConfiguration]: guide/workspace-config#styles-and-scripts-configuration
+
+<!-- "Styles and scripts configuration - Angular workspace configuration | Angular" -->
 
 <!-- external links -->
 
-[ChromestatusFeature6750456638341120]: https://www.chromestatus.com/feature/6750456638341120 "Feature: Shadow-Piercing descendant combinator, '/deep/' (removed) - Chrome Platform Status"
+[ChromestatusFeature6750456638341120]: https://www.chromestatus.com/feature/6750456638341120
 
-[LesscssMain]: http://lesscss.org "less.js"
+<!-- "Feature: Shadow-Piercing descendant combinator, '/deep/' (removed) - Chrome Platform Status" -->
 
-[MdnMain]: https://developer.mozilla.org "MDN"
-[MdnDocsWebCssImport]: https://developer.mozilla.org/docs/Web/CSS/@import "@import | MDN"
-[MdnDocsWebCssPart]: https://developer.mozilla.org/docs/Web/CSS/::part "::part() | MDN"
-[MdnDocsWebWebComponentsUsingShadowDom]: https://developer.mozilla.org/docs/Web/Web_Components/Using_shadow_DOM "Using Shadow DOM | MDN"
+[LesscssMain]: http://lesscss.org
 
-[SassLangMain]: https://sass-lang.com "Sass"
+<!-- "less.js" -->
 
-[W3cMain]: https://w3.org "W3C"
-[W3CssMain]: https://w3.org/CSS "Cascading Style Sheets | W3C"
-[W3TrCssScoping1]: https://w3.org/TR/css-scoping-1 "CSS Scoping Module Level 1 | W3C"
+[MdnMain]: https://developer.mozilla.org
+
+<!-- "MDN" -->
+
+[MdnDocsWebCssImport]: https://developer.mozilla.org/docs/Web/CSS/@import
+
+<!-- "@import | MDN" -->
+
+[MdnDocsWebCssPart]: https://developer.mozilla.org/docs/Web/CSS/::part
+
+<!-- "::part() | MDN" -->
+
+[MdnDocsWebWebComponentsUsingShadowDom]: https://developer.mozilla.org/docs/Web/Web_Components/Using_shadow_DOM
+
+<!-- "Using Shadow DOM | MDN" -->
+
+[SassLangMain]: https://sass-lang.com
+
+<!-- "Sass" -->
+
+[W3cMain]: https://w3.org
+
+<!-- "W3C" -->
+
+[W3CssMain]: https://w3.org/CSS
+
+<!-- "Cascading Style Sheets | W3C" -->
+
+[W3TrCssScoping1]: https://w3.org/TR/css-scoping-1
+
+<!-- "CSS Scoping Module Level 1 | W3C" -->
 
 <!-- end links -->
 

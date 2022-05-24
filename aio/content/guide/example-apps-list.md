@@ -437,17 +437,29 @@ For more information, see [AngularJS to Angular concepts: Quick reference](guide
 
 <!-- links -->
 
-[AioGuideComponentDynamicLoad]: guide/component/component-dynamic-load "Example: Dynamically load a component | Angular"
+[AioGuideComponentDynamicLoad]: guide/component/component-dynamic-load
 
-[AioGuideComponentInteraction]: guide/component/component-interaction "Component interaction | Angular"
+<!-- "Example: Dynamically load a component | Angular" -->
 
-[AioGuideComponentUsageLifecycleHooks]: guide/component/component-usage-lifecycle-hooks "Use an Angular lifecycle hook method | Angular"
+[AioGuideComponentInteraction]: guide/component/component-interaction
 
-[AioGuideComponentStyle]: guide/component/component-style "Component style | Angular"
+<!-- "Component interaction | Angular" -->
 
-[AioGuideComponentUsageComponentDataSharingAndInheritance]: guide/component/component-usage#component-data-sharing-and-inheritance "Component data sharing and inheritance - Use an Angular component | Angular"
+[AioGuideComponentUsageLifecycleHooks]: guide/component/component-usage-lifecycle-hooks
 
-[AioGuideComponentWeb]: guide/component/component-web "Web component | Angular"
+<!-- "Use an Angular lifecycle hook method | Angular" -->
+
+[AioGuideComponentStyle]: guide/component/component-style
+
+<!-- "Component style | Angular" -->
+
+[AioGuideComponentUsageComponentDataSharingAndInheritance]: guide/component/component-usage#component-data-sharing-and-inheritance
+
+<!-- "Component data sharing and inheritance - Use an Angular component | Angular" -->
+
+[AioGuideComponentWeb]: guide/component/component-web
+
+<!-- "Web component | Angular" -->
 
 <!-- external links -->
 

@@ -643,9 +643,13 @@ If you rely on the behavior that the same object instance should cause change de
 
 <!-- links -->
 
-[AioGuideComponentStyleDeprecatedDeepAndNgDeep]: guide/component/component-style#deep--and-ng-deep "/deep/, &gt;&gt;&gt;, and ::ng-deep - Component style | Angular"
+[AioGuideComponentStyleDeprecatedDeepAndNgDeep]: guide/component/component-style#deep--and-ng-deep
 
-[AioGuideI18nCommonMergeDefineLocalesInTheBuildConfiguration]: guide/i18n-common-merge#define-locales-in-the-build-configuration "Define locales in the build configuration - Common Internationalization task #6: Merge translations into the application | Angular"
+<!-- "/deep/, &gt;&gt;&gt;, and ::ng-deep - Component style | Angular" -->
+
+[AioGuideI18nCommonMergeDefineLocalesInTheBuildConfiguration]: guide/i18n-common-merge#define-locales-in-the-build-configuration
+
+<!-- "Define locales in the build configuration - Common Internationalization task #6: Merge translations into the application | Angular" -->
 
 <!-- external links -->
 

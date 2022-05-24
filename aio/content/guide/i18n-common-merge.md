@@ -178,29 +178,59 @@ Compile once, then translate for each locale.
 
 <!-- links -->
 
-[AioApiLocalizeInitLocalize]: api/localize/init/$localize "$localize | init - localize - API | Angular"
+[AioApiLocalizeInitLocalize]: api/localize/init/$localize
 
-[AioCliMain]: cli "CLI Overview and Command Reference | Angular"
-[AioCliBuild]: cli/build "ng build | CLI | Angular"
+<!-- "$localize | init - localize - API | Angular" -->
 
-[AioGuideBuild]: guide/build "Building and serving Angular apps | Angular"
+[AioCliMain]: cli
 
-[AioGuideGlossaryAheadOfTimeAotCompilation]: guide/glossary#ahead-of-time-aot-compilation "ahead-of-time (AOT) compilation - Glossary | Angular"
+<!-- "CLI Overview and Command Reference | Angular" -->
 
-[AioGuideI18nCommonDeploy]: guide/i18n-common-deploy "Deploy multiple locales | Angular"
+[AioCliBuild]: cli/build
 
-[AioGuideI18nCommonMergeApplySpecificBuildOptionsForJustOneLocale]: guide/i18n-common-merge#apply-specific-build-options-for-just-one-locale "Apply specific build options for just one locale - Merge translations into the application | Angular"
-[AioGuideI18nCommonMergeBuildFromTheCommandLine]: guide/i18n-common-merge#build-from-the-command-line "Build from the command line - Merge translations into the application | Angular"
-[AioGuideI18nCommonMergeDefineLocalesInTheBuildConfiguration]: guide/i18n-common-merge#define-locales-in-the-build-configuration "Define locales in the build configuration - Merge translations into the application | Angular"
-[AioGuideI18nCommonMergeGenerateApplicationVariantsForEachLocale]: guide/i18n-common-merge#generate-application-variants-for-each-locale "Generate application variants for each locale - Merge translations into the application | Angular"
+<!-- "ng build | CLI | Angular" -->
 
-[AioGuideI18nCommonTranslationFilesChangeTheSourceLanguageFileFormat]: guide/i18n-common-translation-files#change-the-source-language-file-format "Change the source language file format - Work with translation files | Angular"
+[AioGuideBuild]: guide/build
 
-[AioGuideWorkspaceConfig]: guide/workspace-config "Angular workspace configuration | Angular"
+<!-- "Building and serving Angular apps | Angular" -->
+
+[AioGuideGlossaryAheadOfTimeAotCompilation]: guide/glossary#ahead-of-time-aot-compilation
+
+<!-- "ahead-of-time (AOT) compilation - Glossary | Angular" -->
+
+[AioGuideI18nCommonDeploy]: guide/i18n-common-deploy
+
+<!-- "Deploy multiple locales | Angular" -->
+
+[AioGuideI18nCommonMergeApplySpecificBuildOptionsForJustOneLocale]: guide/i18n-common-merge#apply-specific-build-options-for-just-one-locale
+
+<!-- "Apply specific build options for just one locale - Merge translations into the application | Angular" -->
+
+[AioGuideI18nCommonMergeBuildFromTheCommandLine]: guide/i18n-common-merge#build-from-the-command-line
+
+<!-- "Build from the command line - Merge translations into the application | Angular" -->
+
+[AioGuideI18nCommonMergeDefineLocalesInTheBuildConfiguration]: guide/i18n-common-merge#define-locales-in-the-build-configuration
+
+<!-- "Define locales in the build configuration - Merge translations into the application | Angular" -->
+
+[AioGuideI18nCommonMergeGenerateApplicationVariantsForEachLocale]: guide/i18n-common-merge#generate-application-variants-for-each-locale
+
+<!-- "Generate application variants for each locale - Merge translations into the application | Angular" -->
+
+[AioGuideI18nCommonTranslationFilesChangeTheSourceLanguageFileFormat]: guide/i18n-common-translation-files#change-the-source-language-file-format
+
+<!-- "Change the source language file format - Work with translation files | Angular" -->
+
+[AioGuideWorkspaceConfig]: guide/workspace-config
+
+<!-- "Angular workspace configuration | Angular" -->
 
 <!-- external links -->
 
-[AngularV8GuideI18nMergeWithTheJitCompiler]: https://v8.angular.io/guide/i18n-common#merge-translations-into-the-app-with-the-jit-compiler "Merge with the JIT compiler - Internationalization (i18n) | Angular v8"
+[AngularV8GuideI18nMergeWithTheJitCompiler]: https://v8.angular.io/guide/i18n-common#merge-translations-into-the-app-with-the-jit-compiler
+
+<!-- "Merge with the JIT compiler - Internationalization (i18n) | Angular v8" -->
 
 <!-- end links -->
 

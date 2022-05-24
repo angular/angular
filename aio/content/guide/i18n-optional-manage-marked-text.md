@@ -95,9 +95,13 @@ Both elements now use the same translation \(`Bonjour`\), because both were defi
 
 <!-- links -->
 
-[AioApiLocalizeInitLocalize]: api/localize/init/$localize "$localize | init - localize - API | Angular"
+[AioApiLocalizeInitLocalize]: api/localize/init/$localize
 
-[AioGuideI18nCommonPrepareHowMeaningsControlTextExtractionAndMerges]: guide/i18n-common-prepare#how-meanings-control-text-extraction-and-merges "How meanings control text extraction and merges - Prepare components for translations | Angular"
+<!-- "$localize | init - localize - API | Angular" -->
+
+[AioGuideI18nCommonPrepareHowMeaningsControlTextExtractionAndMerges]: guide/i18n-common-prepare#how-meanings-control-text-extraction-and-merges
+
+<!-- "How meanings control text extraction and merges - Prepare components for translations | Angular" -->
 
 <!-- external links -->
 

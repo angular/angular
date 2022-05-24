@@ -70,4 +70,162 @@ For information about the deprecation and removal practices of Angular, see [Ang
 | [`SwUpdate#activated`](api/service-worker/SwUpdate#activated) | Return value of [`SwUpdate#activateUpdate`](api/service-worker/SwUpdate#activateUpdate) | The `activated` property is deprecated. Existing usages can migrate to [`SwUpdate#activateUpdate`](api/service-worker/SwUpdate#activateUpdate). |
 | [`SwUpdate#available`](api/service-worker/SwUpdate#available) | [`SwUpdate#versionUpdates`](api/service-worker/SwUpdate#versionUpdates) | The behavior of [`SwUpdate#available`](api/service-worker/SwUpdate#available) can be achieved by filtering for the [`VersionReadyEvent`](api/service-worker/VersionReadyEvent) from [`SwUpdate#versionUpdates`](api/service-worker/SwUpdate#versionUpdates)
 
+<!-- links -->
+
+[AioApiCoreApplicationrefBootstrap]: api/core/ApplicationRef#bootstrap
+
+<!-- "bootstrap - ApplicationRef | Core - API | Angular" -->
+
+[AioApiCoreCompiler]: api/core/Compiler
+
+<!-- "Compiler | Core - API | Angular" -->
+
+[AioApiCoreCompilerfactory]: api/core/CompilerFactory
+
+<!-- "CompilerFactory | Core - API | Angular" -->
+
+[AioApiCoreCreatengmoduleref]: api/core/createNgModuleRef
+
+<!-- "createNgModuleRef | Core - API | Angular" -->
+
+[AioApiCoreGetmodulefactory]: api/core/getModuleFactory
+
+<!-- "getModuleFactory | Core - API | Angular" -->
+
+[AioApiCoreGetngmodulebyid]: api/core/getNgModuleById
+
+<!-- "getNgModuleById | Core - API | Angular" -->
+
+[AioApiCoreModulewithcomponentfactories]: api/core/ModuleWithComponentFactories
+
+<!-- "ModuleWithComponentFactories | Core - API | Angular" -->
+
+[AioApiCoreNgmodulefactory]: api/core/NgModuleFactory
+
+<!-- "NgModuleFactory | Core - API | Angular" -->
+
+[AioApiCorePlatformrefBootstrapmodulefactory]: api/core/PlatformRef#bootstrapModuleFactory
+
+<!-- "bootstrapModuleFactory - PlatformRef | Core - API | Angular" -->
+
+[AioApiCorePlatformrefBootstrapmodule]: api/core/PlatformRef#bootstrapModule
+
+<!-- "bootstrapModule - PlatformRef | Core - API | Angular" -->
+
+[AioApiCoreTestingTestbedInittestenvironment]: api/core/testing/TestBed#inittestenvironment
+
+<!-- "inittestenvironment - TestBed | Testing - Core - API | Angular" -->
+
+[AioApiCoreTestingTestmodulemetadata]: api/core/testing/TestModuleMetadata
+
+<!-- "TestModuleMetadata | Testing - Core - API | Angular" -->
+
+[AioApiCoreViewcontainerrefCreatecomponent]: api/core/ViewContainerRef#createComponent
+
+<!-- "createComponent - ViewContainerRef | Core - API | Angular" -->
+
+[AioApiPlatformServerRendermodulefactory]: api/platform-server/renderModuleFactory
+
+<!-- "renderModuleFactory | Platform server - API | Angular" -->
+
+[AioApiPlatformServerRendermodule]: api/platform-server/renderModule
+
+<!-- "renderModule | Platform server - API | Angular" -->
+
+[AioApiServiceWorkerSwupdateActivated]: api/service-worker/SwUpdate#activated
+
+<!-- "activated - SwUpdate | Service worker - API | Angular" -->
+
+[AioApiServiceWorkerSwupdateActivateupdate]: api/service-worker/SwUpdate#activateUpdate
+
+<!-- "activateUpdate - SwUpdate | Service worker - API | Angular" -->
+
+[AioApiServiceWorkerSwupdateAvailable]: api/service-worker/SwUpdate#available
+
+<!-- "available - SwUpdate | Service worker - API | Angular" -->
+
+[AioApiServiceWorkerSwupdateVersionupdates]: api/service-worker/SwUpdate#versionUpdates
+
+<!-- "versionUpdates - SwUpdate | Service worker - API | Angular" -->
+
+[AioGuideReleasesDeprecationPractices]: guide/releases#deprecation-practices
+
+<!-- "Deprecation practices - Angular versioning and releases | Angular" -->
+
+<!-- external links -->
+
+[AngularBlog76c02f782aa4]: https://blog.angular.io/76c02f782aa4
+
+<!-- "Upcoming improvements to Angular library distribution | Angular Blog" -->
+
+[AngularUpdateMain]: https://update.angular.io
+
+<!-- " Angular Update Guide" -->
+
+[DevThisIsAngularImprovingAngularTestsByEnablingAngularTestingModuleTeardown38kh]: https://dev.to/this-is-angular/improving-angular-tests-by-enabling-angular-testing-module-teardown-38kh
+
+<!-- "Improving Angular tests by enabling Angular testing module teardown | This is Angular | DEV Community" -->
+
+[GithubAngularAngularIssues41840]: https://github.com/angular/angular/issues/41840
+
+<!-- "RFC: Internet Explorer 11 support deprecation and removal #41840 | angular/angular | GitHub" -->
+
+[GithubAngularAngularPull31187]: https://github.com/angular/angular/pull/31187
+
+<!-- "fix(router): Allow question marks in query param values #31187 | angular/angular | GitHub" -->
+
+[GithubAngularAngularPull41730]: https://github.com/angular/angular/pull/41730
+
+<!-- "fix(common): synchronise location mock behavior with the navigators #41730 | angular/angular | GitHub" -->
+
+[GithubAngularAngularPull42952]: https://github.com/angular/angular/pull/42952
+
+<!-- "feat(forms): Give form statuses a more specific type #42952 | angular/angular | GitHub" -->
+
+[GithubAngularAngularPull43087]: https://github.com/angular/angular/pull/43087
+
+<!-- "fix(router): null/undefined routerLink should disable navigation #43087 | angular/angular | GitHub" -->
+
+[GithubAngularAngularPull43496]: https://github.com/angular/angular/pull/43496
+
+<!-- "fix(router): Prevent URL flicker when new navigations cancel ongoing &hellip; #43496 | angular/angular | GitHub" -->
+
+[GithubAngularAngularPull43507]: https://github.com/angular/angular/pull/43507
+
+<!-- "perf(core): remove support for the deprecated WrappedValue #43507 | angular/angular | GitHub" -->
+
+[GithubAngularAngularPull43591]: https://github.com/angular/angular/pull/43591
+
+<!-- "refactor(router): remove support for loadChildren string syntax #43591 | angular/angular | GitHub" -->
+
+[GithubAngularAngularPull43642]: https://github.com/angular/angular/pull/43642
+
+<!-- "feat(core): drop support for TypeScript 4.2 and 4.3 #43642 | angular/angular | GitHub" -->
+
+[GithubAngularAngularPull43668]: https://github.com/angular/angular/pull/43668
+
+<!-- "feat(service-worker): improve ergonomics of the SwUpdate APIs #43668 | angular/angular | GitHub" -->
+
+[GithubAngularAngularPull43740]: https://github.com/angular/angular/pull/43740
+
+<!-- "feat(bazel): expose esm2020 and es2020 conditions in APF package exports #43740 | angular/angular | GitHub" -->
+
+[GithubAngularAngularPull43791]: https://github.com/angular/angular/pull/43791
+
+<!-- "fix(router): reuse route strategy fix #43791 | angular/angular | GitHub" -->
+
+[GithubAngularAngularCliIssues21545]: https://github.com/angular/angular-cli/issues/21545
+
+<!-- "[RFC] Persistent build cache by default #21545 | angular/angular-cli | GitHub" -->
+
+[GithubAngularAngularCliIssues22159]: https://github.com/angular/angular-cli/issues/22159
+
+<!-- "Script imports are modules by default #22159 | angular/angular-cli | GitHub" -->
+
+[GithubAngularAngularIssues20114]: https://github.com/angular/angular/issues/20114
+
+<!-- "RouteReuseStrategy impossible to store/retrieve siblings AND ALSO a non-sibling #20114 | angular/angular | GitHub" -->
+
+<!-- end links -->
+
 @reviewed 2022-05-31

@@ -137,14 +137,25 @@ The following steps demonstrate a typical implementation of conditional content 
 
 <!-- links -->
 
-[AioGuideAttributeDirectivesBuildingAnAttributeDirective]: guide/attribute-directives#building-an-attribute-directive "Building an attribute directive - Attribute directives | Angular"
+[AioGuideAttributeDirectivesBuildingAnAttributeDirective]: guide/attribute-directives#building-an-attribute-directive
 
-[AioGuideComponentCreate]: guide/component/component-create "Create an Angular component | Angular"
+<!-- "Building an attribute directive - Attribute directives | Angular" -->
 
-[AioGuideGlossaryComponent]: guide/glossary#component "component - Glossary | Angular"
+[AioGuideComponentCreate]: guide/component/component-create
 
-[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application "Create a workspace and initial application - Setting up the local environment and workspace | Angular"
-[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli "Install the Angular CLI - Setting up the local environment and workspace | Angular"
+<!-- "Create an Angular component | Angular" -->
+
+[AioGuideGlossaryComponent]: guide/glossary#component
+
+<!-- "component - Glossary | Angular" -->
+
+[AioGuideSetupLocalCreateAWorkspaceAndInitialApplication]: guide/setup-local#create-a-workspace-and-initial-application
+
+<!-- "Create a workspace and initial application - Setting up the local environment and workspace | Angular" -->
+
+[AioGuideSetupLocalInstallTheAngularCli]: guide/setup-local#install-the-angular-cli
+
+<!-- "Install the Angular CLI - Setting up the local environment and workspace | Angular" -->
 
 <!-- external links -->
 

@@ -217,19 +217,33 @@ The following tabs display the example application files.
 
 <!-- links -->
 
-[AioGuideComponentCreate]: guide/component/component-create "Create an Angular component | Angular"
+[AioGuideComponentCreate]: guide/component/component-create
 
-[AioGuideComponentDynamicLoad]: guide/component/component-dynamic-load "Dynamically load a component | Angular"
+<!-- "Create an Angular component | Angular" -->
 
-[AioGuideComponentInteraction]: guide/component/component-interaction "Component interaction | Angular"
+[AioGuideComponentDynamicLoad]: guide/component/component-dynamic-load
 
-[AioGuideComponentLifecycleTutorial]: guide/component/component-example-lifecycle "Example: lifecycle hook methods | Angular"
+<!-- "Dynamically load a component | Angular" -->
 
-[AioGuideComponentStyle]: guide/component/component-style "Component style | Angular"
+[AioGuideComponentInteraction]: guide/component/component-interaction
 
-[AioGuideComponentUsage]: guide/component/component-usage "Use an Angular component | Angular"
+<!-- "Component interaction | Angular" -->
 
-[AioGuideComponentWeb]: guide/component/component-web "Web component | Angular"
+[AioGuideComponentLifecycleTutorial]: guide/component/component-example-lifecycle
+
+<!-- "Example: lifecycle hook methods | Angular" -->
+
+[AioGuideComponentStyle]: guide/component/component-style
+
+<!-- "Component style | Angular" -->
+
+[AioGuideComponentUsage]: guide/component/component-usage
+
+<!-- "Use an Angular component | Angular" -->
+
+[AioGuideComponentWeb]: guide/component/component-web
+
+<!-- "Web component | Angular" -->
 
 <!-- external links -->
 

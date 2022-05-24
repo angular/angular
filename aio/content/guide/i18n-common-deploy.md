@@ -41,11 +41,17 @@ The following example displays an Apache configuration.
 
 <!-- links -->
 
-[AioCliBuild]: cli/build "ng build | CLI | Angular"
+[AioCliBuild]: cli/build
 
-[AioGuideDeployment]: guide/deployment "Deployment | Angular"
+<!-- "ng build | CLI | Angular" -->
 
-[AioGuideWorkspaceConfig]: guide/workspace-config "Angular workspace configuration | Angular"
+[AioGuideDeployment]: guide/deployment
+
+<!-- "Deployment | Angular" -->
+
+[AioGuideWorkspaceConfig]: guide/workspace-config
+
+<!-- "Angular workspace configuration | Angular" -->
 
 <!-- external links -->
 

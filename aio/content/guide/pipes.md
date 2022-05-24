@@ -391,7 +391,9 @@ Due to precedence, if you want a pipe to apply to the result of a ternary, wrap 
 
 <!-- links -->
 
-[AioGuideI18nCommonFormatDataLocale]: guide/i18n-common-format-data-locale "Format data based on locale | Angular"
+[AioGuideI18nCommonFormatDataLocale]: guide/i18n-common-format-data-locale
+
+<!-- "Format data based on locale | Angular" -->
 
 <!-- end links -->
 

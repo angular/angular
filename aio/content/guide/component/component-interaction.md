@@ -279,20 +279,49 @@ Tests select buttons of both the parent `MissionControlComponent` and the `Astro
 
 <!-- links -->
 
-[AioGuideComponentInteraction]: guide/component/component-interaction "Component interaction | Angular"
-[AioGuideComponentInteractionInterceptInputPropertyChangesWithASetter]: guide/component/component-interaction#intercept-input-property-changes-with-a-setter "Intercept input property changes with a setter - Component interaction | Angular"
-[AioGuideComponentInteractionInterceptInputPropertyChangesWithNgonchanges]: guide/component/component-interaction#intercept-input-property-changes-with-ngonchanges "Intercept input property changes with ngOnChanges() - Component interaction | Angular"
-[AioGuideComponentInteractionParentAndChildrenCommunicateUsingAService]: guide/component/component-interaction#parent-and-children-communicate-using-a-service "Parent and children communicate using a service - Component interaction | Angular"
-[AioGuideComponentInteractionParentCallsAnViewchild]: guide/component/component-interaction#parent-calls-an-viewchild "Parent calls an @ViewChild() - Component interaction | Angular"
-[AioGuideComponentInteractionParentInteractsWithChildUsingLocalVariable]: guide/component/component-interaction#parent-interacts-with-child-using-local-variable "Parent interacts with child using local variable - Component interaction | Angular"
-[AioGuideComponentInteractionPassDataFromParentToChildWithInputBinding]: guide/component/component-interaction#pass-data-from-parent-to-child-with-input-binding "Pass data from parent to child with input binding - Component interaction | Angular"
+[AioGuideComponentInteraction]: guide/component/component-interaction
 
-[AioGuideComponentUsageSendDataToChild]: guide/component/component-usage-send-data-to-child "Send data to a child component | Angular"
-[AioGuideComponentUsageSendDataToParent]: guide/component/component-usage-send-data-to-parent "Send data to a parent component | Angular"
+<!-- "Component interaction | Angular" -->
 
-[AioGuideComponentExample]: guide/component/component-example "Example Angular component applications | Angular"
+[AioGuideComponentInteractionInterceptInputPropertyChangesWithASetter]: guide/component/component-interaction#intercept-input-property-changes-with-a-setter
 
-[AioGuideComponentLifecycle]: guide/component/component-lifecycle "Component Lifecycle | Angular"
+<!-- "Intercept input property changes with a setter - Component interaction | Angular" -->
+
+[AioGuideComponentInteractionInterceptInputPropertyChangesWithNgonchanges]: guide/component/component-interaction#intercept-input-property-changes-with-ngonchanges
+
+<!-- "Intercept input property changes with ngOnChanges() - Component interaction | Angular" -->
+
+[AioGuideComponentInteractionParentAndChildrenCommunicateUsingAService]: guide/component/component-interaction#parent-and-children-communicate-using-a-service
+
+<!-- "Parent and children communicate using a service - Component interaction | Angular" -->
+
+[AioGuideComponentInteractionParentCallsAnViewchild]: guide/component/component-interaction#parent-calls-an-viewchild
+
+<!-- "Parent calls an @ViewChild() - Component interaction | Angular" -->
+
+[AioGuideComponentInteractionParentInteractsWithChildUsingLocalVariable]: guide/component/component-interaction#parent-interacts-with-child-using-local-variable
+
+<!-- "Parent interacts with child using local variable - Component interaction | Angular" -->
+
+[AioGuideComponentInteractionPassDataFromParentToChildWithInputBinding]: guide/component/component-interaction#pass-data-from-parent-to-child-with-input-binding
+
+<!-- "Pass data from parent to child with input binding - Component interaction | Angular" -->
+
+[AioGuideComponentUsageSendDataToChild]: guide/component/component-usage-send-data-to-child
+
+<!-- "Send data to a child component | Angular" -->
+
+[AioGuideComponentUsageSendDataToParent]: guide/component/component-usage-send-data-to-parent
+
+<!-- "Send data to a parent component | Angular" -->
+
+[AioGuideComponentExample]: guide/component/component-example
+
+<!-- "Example Angular component applications | Angular" -->
+
+[AioGuideComponentLifecycle]: guide/component/component-lifecycle
+
+<!-- "Component Lifecycle | Angular" -->
 
 <!-- external links -->
 
