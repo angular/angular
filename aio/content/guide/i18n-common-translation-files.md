@@ -140,7 +140,7 @@ The following actions describe the translation process for French.
 
     The `id="introductionHeader"` is a [custom ID][AioGuideI18nOptionalManageMarkedText], but without the `@@` prefix required in the source HTML.
 
-1.  Duplicate the `<source>&hellip; </source>` element in the text node, rename it to `target`, and then replace the content with the French text.
+1.  Duplicate the `<source>... </source>` element in the text node, rename it to `target`, and then replace the content with the French text.
 
     <code-example header="src/locale/messages.fr.xlf (&lt;trans-unit&gt;, after translation)" path="i18n/doc-files/messages.fr.xlf.html" region="translated-hello"></code-example>
 
