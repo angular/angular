@@ -234,6 +234,12 @@ export enum ErrorCode {
   NULLISH_COALESCING_NOT_NULLABLE = 8102,
 
   /**
+   * A known control flow directive (e.g. `*ngIf`) is used in a template,
+   * but the `CommonModule` is not imported.
+   */
+  MISSING_CONTROL_FLOW_DIRECTIVE = 8103,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */

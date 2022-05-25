@@ -13,7 +13,7 @@ import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} f
 import {TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reexport, Reference, ReferenceEmitter, RelativePathStrategy} from '../../imports';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
-import {ClassPropertyMapping, CompoundMetadataReader, MetaKind} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataReader, DirectiveMeta, LocalMetadataRegistry, MetadataReader, MetaKind} from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
 import {TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
@@ -247,6 +247,7 @@ export interface TestDirective extends Partial<Pick<
 export interface TestPipe {
   name: string;
   file?: AbsoluteFsPath;
+  isStandalone?: boolean;
   pipeName: string;
   type: 'pipe';
   code?: string;
@@ -276,7 +277,8 @@ export function tcb(
   const templateUrl = 'synthetic.html';
   const {nodes} = parseTemplate(template, templateUrl);
 
-  const {matcher, pipes} = prepareDeclarations(declarations, decl => getClass(sf, decl.name));
+  const {matcher, pipes} =
+      prepareDeclarations(declarations, decl => getClass(sf, decl.name), new Map());
   const binder = new R3TargetBinder(matcher);
   const boundTarget = binder.bind({template: nodes});
 
@@ -380,6 +382,7 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
     angularCoreDts(),
     angularAnimationsDts(),
   ];
+  const fakeMetadataRegistry = new Map();
 
   for (const target of targets) {
     let contents: string;
@@ -470,7 +473,7 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
             }
           }
           return getClass(declFile, decl.name);
-        });
+        }, fakeMetadataRegistry);
         const binder = new R3TargetBinder(matcher);
         const classRef = new Reference(classDecl);
 
@@ -539,8 +542,15 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
         }
   };
 
+  const fakeMetadataReader = {
+    getDirectiveMetadata(node: Reference<ClassDeclaration>): DirectiveMeta |
+    null {
+      return fakeMetadataRegistry.get(node.debugName) ?? null;
+    }
+  } as MetadataReader;
+
   const typeCheckScopeRegistry =
-      new TypeCheckScopeRegistry(fakeScopeReader, new CompoundMetadataReader([]));
+      new TypeCheckScopeRegistry(fakeScopeReader, new CompoundMetadataReader([fakeMetadataReader]));
 
   const templateTypeChecker = new TemplateTypeCheckerImpl(
       program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost, host,
@@ -559,7 +569,8 @@ function createTypeCheckAdapter(fn: (sf: ts.SourceFile, ctx: TypeCheckContext) =
 
 function prepareDeclarations(
     declarations: TestDeclaration[],
-    resolveDeclaration: (decl: TestDeclaration) => ClassDeclaration<ts.ClassDeclaration>) {
+    resolveDeclaration: (decl: TestDeclaration) => ClassDeclaration<ts.ClassDeclaration>,
+    metadataRegistry: Map<string, TypeCheckableDirectiveMeta>) {
   const matcher = new SelectorMatcher();
   for (const decl of declarations) {
     if (decl.type !== 'directive') {
@@ -567,7 +578,7 @@ function prepareDeclarations(
     }
 
     const selector = CssSelector.parse(decl.selector);
-    const meta: TypeCheckableDirectiveMeta = {
+    const meta = {
       name: decl.name,
       ref: new Reference(resolveDeclaration(decl)),
       exportAs: decl.exportAs || null,
@@ -584,8 +595,11 @@ function prepareDeclarations(
       outputs: ClassPropertyMapping.fromMappedObject(decl.outputs || {}),
       queries: decl.queries || [],
       isStructural: false,
+      isStandalone: !!decl.isStandalone,
+      baseClass: null,
       animationTriggerNames: null,
-    };
+    } as TypeCheckableDirectiveMeta;
+    metadataRegistry.set(decl.name, meta);
     matcher.addSelectables(selector, meta);
   }
 

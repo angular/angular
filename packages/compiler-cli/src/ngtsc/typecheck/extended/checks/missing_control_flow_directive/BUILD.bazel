@@ -1,10 +1,8 @@
 load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
-    name = "extended",
-    srcs = glob(
-        ["**/*.ts"],
-    ),
+    name = "missing_control_flow_directive",
+    srcs = ["index.ts"],
     visibility = ["//packages/compiler-cli/src/ngtsc:__subpackages__"],
     deps = [
         "//packages/compiler",
@@ -12,9 +10,6 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/diagnostics",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/api",
-        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/invalid_banana_in_box",
-        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/missing_control_flow_directive",
-        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/nullish_coalescing_not_nullable",
         "@npm//typescript",
     ],
 )
