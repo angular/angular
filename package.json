@@ -214,16 +214,16 @@
     "tsickle": "0.39.1",
     "tslint": "^6.1.3",
     "tsutils": "^3.21.0",
-    "typescript": "4.7.1-rc",
+    "typescript": "~4.7.2",
     "vrsource-tslint-rules": "6.0.0",
     "yaml": "^1.10.2",
     "yargs": "^17.3.1",
     "zx": "^4.3.0"
   },
   "resolutions": {
-    "@angular/dev-infra-private/typescript": "4.7.1-rc",
+    "@angular/dev-infra-private/typescript": "~4.7.2",
     "browser-sync-client": "2.26.13",
-    "dgeni-packages/typescript": "4.7.1-rc",
+    "dgeni-packages/typescript": "~4.7.2",
     "**/https-proxy-agent": "5.0.0"
   }
 }

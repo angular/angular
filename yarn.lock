@@ -232,7 +232,6 @@
 
 "@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#698a85a3635eff2e296c9966e1d51b4783dfbd07":
   version "0.0.0-405b6f6e874e6e297d00e8100bd0b5d31e00ea96"
-  uid "698a85a3635eff2e296c9966e1d51b4783dfbd07"
   resolved "https://github.com/angular/dev-infra-private-builds.git#698a85a3635eff2e296c9966e1d51b4783dfbd07"
   dependencies:
     "@angular-devkit/build-angular" "14.0.0-rc.1"
@@ -14826,11 +14825,6 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript@4.7.1-rc, typescript@~4.5.4, typescript@~4.6.2:
-  version "4.7.1-rc"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.1-rc.tgz#23a0517d36c56de887b4457f29e2d265647bbd7c"
-  integrity sha512-EQd2NVelDe6ZVc2sO1CSpuSs+RHzY8c2n/kTNQAHw4um/eAXY+ZY4IKoUpNK0wO6C5hN+XcUXR7yqT8VbwwNIQ==
-
 typescript@^3.9.10, typescript@^3.9.5, typescript@^3.9.7:
   version "3.9.10"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.10.tgz#70f3910ac7a51ed6bef79da7800690b19bf778b8"
@@ -14840,6 +14834,11 @@ typescript@~4.5.2:
   version "4.5.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.5.tgz#d8c953832d28924a9e3d37c73d729c846c5896f3"
   integrity sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==
+
+typescript@~4.5.4, typescript@~4.6.2, typescript@~4.7.2:
+  version "4.7.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.2.tgz#1f9aa2ceb9af87cca227813b4310fff0b51593c4"
+  integrity sha512-Mamb1iX2FDUpcTRzltPxgWMKy3fhg0TN378ylbktPGPK/99KbDtMQ4W1hwgsbPAsG3a0xKa1vmw4VKZQbkvz5A==
 
 typescript@~4.6.3:
   version "4.6.3"
