@@ -826,7 +826,9 @@ describe('v9 HammerJS removal', () => {
             BrowserModule,
             HammerModule
           ],
-          providers: [{ provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig }],
+          providers: [
+            { provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig }
+          ],
           bootstrap: [AppComponent]
         })
         export class AppModule { }`);
@@ -888,7 +890,9 @@ describe('v9 HammerJS removal', () => {
             BrowserModule,
             HammerModule
           ],
-          providers: [{ provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig }],
+          providers: [
+            { provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig }
+          ],
           bootstrap: [AppComponent]
         })
         export class AppModule { }`);
@@ -919,8 +923,7 @@ describe('v9 HammerJS removal', () => {
             },
           ],
         })
-        export class AppModule {}
-      `,
+        export class AppModule {}`,
       );
 
       await runMigration();
@@ -939,7 +942,9 @@ describe('v9 HammerJS removal', () => {
               useClass: GestureConfig
             },
           ],
-          imports: [HammerModule],
+          imports: [
+            HammerModule
+          ],
         })
         export class AppModule {}`);
     });
@@ -977,7 +982,9 @@ describe('v9 HammerJS removal', () => {
 
         @NgModule({
           imports: [myHammerModule],
-          providers: [{ provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig }],
+          providers: [
+            { provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig }
+          ],
         })
         export class AppModule {}`);
       // tslint:enable:max-line-length

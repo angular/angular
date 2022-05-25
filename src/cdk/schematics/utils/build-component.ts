@@ -29,10 +29,10 @@ import {buildRelativePath, findModuleFromOptions} from '@schematics/angular/util
 import {parseName} from '@schematics/angular/utility/parse-name';
 import {validateHtmlSelector} from '@schematics/angular/utility/validation';
 import {ProjectType} from '@schematics/angular/utility/workspace-models';
+import {addDeclarationToModule, addExportToModule} from '@schematics/angular/utility/ast-utils';
 import {readFileSync, statSync} from 'fs';
 import {dirname, join, resolve} from 'path';
 import * as ts from 'typescript';
-import {addDeclarationToModule, addExportToModule} from '../utils/vendored-ast-utils';
 import {getProjectFromWorkspace} from './get-project';
 import {getDefaultComponentOptions} from './schematic-options';
 import {ProjectDefinition} from '@angular-devkit/core/src/workspace';

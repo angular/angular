@@ -11,10 +11,11 @@ import {Schema as ComponentOptions} from '@schematics/angular/component/schema';
 import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace} from '@schematics/angular/utility/workspace';
 import {findModuleFromOptions as internalFindModule} from '@schematics/angular/utility/find-module';
+import {addImportToModule} from '@schematics/angular/utility/ast-utils';
+import {getAppModulePath} from '@schematics/angular/utility/ng-ast-utils';
 import {ProjectDefinition} from '@angular-devkit/core/src/workspace';
 import * as ts from 'typescript';
 import {getProjectMainFile} from './project-main-file';
-import {addImportToModule, getAppModulePath} from './vendored-ast-utils';
 
 /** Reads file given path and returns TypeScript source file. */
 export function parseSourceFile(host: Tree, path: string): ts.SourceFile {

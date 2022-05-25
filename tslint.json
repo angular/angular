@@ -159,9 +159,8 @@
       }
     ],
     "no-unescaped-html-tag": true,
-    // Ensures that all rxjs imports come only from `rxjs` and `rxjs/operators`. Also ensures
-    // that no AST utils from `@schematics/angular` are imported. These should be vendored.
-    "import-blacklist": [true, ["^@schematics/angular/.*(ast).*", "^rxjs(?!$|/operators$).*"]]
+    // Ensures that all rxjs imports come only from `rxjs` and `rxjs/operators`.
+    "import-blacklist": [true, ["^rxjs(?!$|/operators$).*"]]
   },
   "linterOptions": {
     "exclude": [

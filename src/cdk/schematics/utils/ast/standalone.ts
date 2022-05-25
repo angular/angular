@@ -9,7 +9,7 @@
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
 import {InsertChange} from '@schematics/angular/utility/change';
 import * as ts from 'typescript';
-import {insertImport} from '../vendored-ast-utils';
+import {insertImport} from '@schematics/angular/utility/ast-utils';
 
 /**
  * Checks whether the providers from a module are being imported in a `bootstrapApplication` call.
