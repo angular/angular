@@ -1,3 +1,23 @@
+<a name="13.3.8"></a>
+# 13.3.8 "lead-lamp" (2022-05-25)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8611a742b](https://github.com/angular/components/commit/8611a742baa0e44bbf88007f30f3d274495e2209) | fix | **tabs:** ensure the ink bar realigns when the tab header items have changed in dimensions ([#24885](https://github.com/angular/components/pull/24885)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7386fe865](https://github.com/angular/components/commit/7386fe865fea4da7f3963fda5cc234d0ae64dad7) | fix | **mdc-checkbox:** Use cursor:pointer for label ([#24927](https://github.com/angular/components/pull/24927)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a7ee8a80b](https://github.com/angular/components/commit/a7ee8a80b8827a3b064ee80850331d0a87182236) | fix | fix focus and hover styles for mdc-checkbox and mdc-radio ([#24930](https://github.com/angular/components/pull/24930)) |
+| [b8fddd60c](https://github.com/angular/components/commit/b8fddd60c019bed995b3f6648e34c4f1a1447e08) | fix | fix style imports and deps for mdc-checkbox and mdc-radio ([#24972](https://github.com/angular/components/pull/24972)) |
+## Special Thanks
+Joey Perrott, Miles Malerba, Vaughan Hilts and Wagner Maciel
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-rc.0"></a>
 # 14.0.0-rc.0 "metal-mango" (2022-05-11)
 ### cdk
