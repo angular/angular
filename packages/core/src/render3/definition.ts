@@ -356,10 +356,14 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
  * @codeGenApi
  */
 export function ɵɵsetComponentScope(
-    type: ComponentType<any>, directives: Type<any>[], pipes: Type<any>[]): void {
+    type: ComponentType<any>, directives: Type<any>[]|(() => Type<any>[]),
+    pipes: Type<any>[]|(() => Type<any>[])): void {
   const def = (type.ɵcmp as ComponentDef<any>);
-  def.directiveDefs = () => directives.map(extractDirectiveDef) as DirectiveDefList;
-  def.pipeDefs = () => pipes.map(getPipeDef) as PipeDefList;
+  def.directiveDefs = () =>
+      (typeof directives === 'function' ? directives() : directives).map(extractDirectiveDef) as
+      DirectiveDefList;
+  def.pipeDefs = () =>
+      (typeof pipes === 'function' ? pipes() : pipes).map(getPipeDef) as PipeDefList;
 }
 
 export function extractDirectiveDef(type: Type<any>): DirectiveDef<any>|ComponentDef<any>|null {
