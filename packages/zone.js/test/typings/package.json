@@ -14,6 +14,6 @@
     "zone.js": "file:../../../../dist/bin/packages/zone.js/npm_package"
   },
   "devDependencies": {
-    "typescript": "4.7.1-rc"
+    "typescript": "~4.7.2"
   }
 }

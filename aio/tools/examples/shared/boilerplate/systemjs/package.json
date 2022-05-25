@@ -63,6 +63,6 @@
     "protractor": "~7.0.0",
     "rollup": "^2.70.1",
     "rollup-plugin-terser": "^7.0.2",
-    "typescript": "~4.6.2"
+    "typescript": "~4.7.2"
   }
 }
