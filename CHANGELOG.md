@@ -1,3 +1,35 @@
+<a name="14.0.0-rc.2"></a>
+# 14.0.0-rc.2 (2022-05-25)
+## Deprecations
+### forms
+- The `initialValueIsDefault` option has been deprecated and replaced with the otherwise-identical `nonNullable` option, for the sake of naming consistency.
+- It is now deprecated to provide *both* `AbstractControlOption`s and an async validators argument to a FormControl. Previously, the async validators would just be silently dropped, resulting in a probably buggy forms. Now, the constructor call is deprecated, and Angular will print a warning in devmode.
+### bazel
+| Commit | Type | Description |
+| -- | -- | -- |
+| [21a04ef5be](https://github.com/angular/angular/commit/21a04ef5be670418b19608227f0540e2b7a96de6) | perf | use allowedInputs to avoid fs.stat ([#46069](https://github.com/angular/angular/pull/46069)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f2e5234e07](https://github.com/angular/angular/commit/f2e5234e078b6d4771d07e8b28b8098f1faeb176) | fix | update unknown tag error for aot standalone components ([#45919](https://github.com/angular/angular/pull/45919)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [701405fa71](https://github.com/angular/angular/commit/701405fa710177ed1c963f61686ebb910e5ec74e) | fix | handle AOT-compiled standalone components in TestBed correctly ([#46052](https://github.com/angular/angular/pull/46052)) |
+| [ddce357d1d](https://github.com/angular/angular/commit/ddce357d1db9694bc69c114deb96e26d2651fb8b) | fix | improve TestBed declarations standalone error message ([#45999](https://github.com/angular/angular/pull/45999)) |
+| [3172b4cc99](https://github.com/angular/angular/commit/3172b4cc9972a7d347b3078484c9adcb15cf270c) | fix | produce proper error message for unknown props on `<ng-template>`s ([#46068](https://github.com/angular/angular/pull/46068)) |
+| [4f1a813596](https://github.com/angular/angular/commit/4f1a813596a40f7885d369eb8917aedcce9dd795) | fix | restore NgModule state correctly after TestBed overrides ([#46049](https://github.com/angular/angular/pull/46049)) |
+| [df339d8abf](https://github.com/angular/angular/commit/df339d8abf979c715c35db813c5a80252a92eba7) | fix | update unknown tag error for jit standalone components ([#45920](https://github.com/angular/angular/pull/45920)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [39be06037d](https://github.com/angular/angular/commit/39be06037daf65ae9298b5bdb4cd50785c16332f) | fix | Add a `nonNullable` option to `FormControl` for consistency. |
+| [2e96cede3e](https://github.com/angular/angular/commit/2e96cede3e2d9ac399c10d3bfe25259b92a5276e) | fix | Warn on FormControls that are constructed with both options and asyncValidators. |
+## Special Thanks
+A. J. Javier, Alex Rickabaugh, Andrew Kushnir, Aristeidis Bampakos, David Schmidt, Doug Parker, Dylan Hunn, George Kalpakas, J Rob Gant, Jan Kuehle, Jerome Kruse, Joey Perrott, JoostK, Kristiyan Kostadinov, Nathan Nontell, Paul Gschwendtner, Pawel Kozlowski, Roopesh Chinnakampalli, Thomas Mair, Tom Raithel, dario-piotrowicz and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.10"></a>
 # 13.3.10 (2022-05-25)
 ## Special Thanks
