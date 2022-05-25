@@ -320,7 +320,7 @@ The following *AfterContent* hooks take action based on changing values in a *co
 
 <a id="no-unidirectional-flow-worries"></a>
 
-<div class="alert is-helpful">
+<div class="callout is-helpful">
 
 <header>No need to wait for content updates</header>
 
