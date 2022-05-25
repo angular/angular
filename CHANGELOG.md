@@ -1,3 +1,10 @@
+<a name="13.3.10"></a>
+# 13.3.10 (2022-05-25)
+## Special Thanks
+A. J. Javier, Aristeidis Bampakos, J Rob Gant, Jerome Kruse, Joey Perrott, Nathan Nontell, Paul Gschwendtner, Roopesh Chinnakampalli, Thomas Mair, Tom Raithel, dario-piotrowicz and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-rc.1"></a>
 # 14.0.0-rc.1 (2022-05-18)
 ### compiler-cli
