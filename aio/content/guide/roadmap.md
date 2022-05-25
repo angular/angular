@@ -41,7 +41,7 @@ A [long-standing feature request](https://github.com/angular/angular/issues/8785
 The feature lets developers augment their own components with additional behaviors without using inheritance.
 The project requires substantial effort in terms of the definition of APIs, semantics, and implementation.
 
-## Better stack traces
+### Better stack traces
 
 The Angular and the Chrome DevTools are working together to enable more readable stack traces for error messages.
 
