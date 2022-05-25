@@ -82,7 +82,7 @@
     "rollup": "^2.70.1",
     "rollup-plugin-terser": "^7.0.2",
     "source-map-explorer": "^1.3.2",
-    "ts-node": "~10.1.0",
-    "typescript": "~4.6.2"
+    "ts-node": "~10.8.0",
+    "typescript": "~4.7.2"
   }
 }
