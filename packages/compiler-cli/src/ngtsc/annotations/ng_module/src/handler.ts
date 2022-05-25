@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, Expression, ExternalExpr, FactoryTarget, InvokeFunctionExpr, LiteralArrayExpr, R3ClassMetadata, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, R3SelectorScopeMode, SchemaMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, Expression, ExternalExpr, FactoryTarget, FunctionExpr, InvokeFunctionExpr, LiteralArrayExpr, R3ClassMetadata, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, R3SelectorScopeMode, ReturnStatement, SchemaMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
@@ -15,7 +15,7 @@ import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticReference, Semant
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
 import {PartialEvaluator, ResolvedValue, SyntheticValue} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
-import {ClassDeclaration, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
+import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {LocalModuleScopeRegistry, ScopeData} from '../../../scope';
 import {getDiagnosticNode} from '../../../scope/src/util';
 import {FactoryTracker} from '../../../shims/api';
@@ -42,6 +42,7 @@ export interface NgModuleAnalysis {
   factorySymbolName: string;
   providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
   providers: ts.Expression|null;
+  remoteScopesMayRequireCycleProtection: boolean;
 }
 
 export interface NgModuleResolution {
@@ -373,6 +374,30 @@ export class NgModuleDecoratorHandler implements
       target: FactoryTarget.NgModule,
     };
 
+    // Remote scoping is used when adding imports to a component file would create a cycle. In such
+    // circumstances the component scope is monkey-patched from the NgModule file instead.
+    //
+    // However, if the NgModule itself has a cycle with the desired component/directive
+    // reference(s), then we need to be careful. This can happen for example if an NgModule imports
+    // a standalone component and the component also imports the NgModule.
+    //
+    // In this case, it'd be tempting to rely on the compiler's cycle detector to automatically put
+    // such circular references behind a function/closure. This requires global knowledge of the
+    // import graph though, and we don't want to depend on such techniques for new APIs like
+    // standalone components.
+    //
+    // Instead, we look for `forwardRef`s in the NgModule dependencies - an explicit signal from the
+    // user that a reference may not be defined until a circular import is resolved. If an NgModule
+    // contains forward-referenced declarations or imports, we assume that remotely scoped
+    // components should also guard against cycles using a closure-wrapped scope.
+    //
+    // The actual detection here is done heuristically. The compiler doesn't actually know whether
+    // any given `Reference` came from a `forwardRef`, but it does know when a `Reference` came from
+    // a `ForeignFunctionResolver` _like_ the `forwardRef` resolver. So we know when it's safe to
+    // not use a closure, and will use one just in case otherwise.
+    const remoteScopesMayRequireCycleProtection =
+        declarationRefs.some(isSyntheticReference) || importRefs.some(isSyntheticReference);
+
     return {
       diagnostics: diagnostics.length > 0 ? diagnostics : undefined,
       analysis: {
@@ -395,6 +420,7 @@ export class NgModuleDecoratorHandler implements
         classMetadata: extractClassMetadata(
             node, this.reflector, this.isCore, this.annotateForClosureCompiler),
         factorySymbolName: node.name.text,
+        remoteScopesMayRequireCycleProtection,
       },
     };
   }
@@ -534,7 +560,8 @@ export class NgModuleDecoratorHandler implements
 
   compileFull(
       node: ClassDeclaration,
-      {inj, mod, fac, classMetadata, declarations}: Readonly<NgModuleAnalysis>,
+      {inj, mod, fac, classMetadata, declarations, remoteScopesMayRequireCycleProtection}:
+          Readonly<NgModuleAnalysis>,
       {injectorImports}: Readonly<NgModuleResolution>): CompileResult[] {
     const factoryFn = compileNgFactoryDefField(fac);
     const ngInjectorDef = compileInjector({
@@ -545,7 +572,8 @@ export class NgModuleDecoratorHandler implements
     const statements = ngModuleDef.statements;
     const metadata = classMetadata !== null ? compileClassMetadata(classMetadata) : null;
     this.insertMetadataStatement(statements, metadata);
-    this.appendRemoteScopingStatements(statements, node, declarations);
+    this.appendRemoteScopingStatements(
+        statements, node, declarations, remoteScopesMayRequireCycleProtection);
 
     return this.compileNgModule(factoryFn, ngInjectorDef, ngModuleDef);
   }
@@ -580,7 +608,8 @@ export class NgModuleDecoratorHandler implements
    */
   private appendRemoteScopingStatements(
       ngModuleStatements: Statement[], node: ClassDeclaration,
-      declarations: Reference<ClassDeclaration>[]): void {
+      declarations: Reference<ClassDeclaration>[],
+      remoteScopesMayRequireCycleProtection: boolean): void {
     const context = getSourceFile(node);
     for (const decl of declarations) {
       const remoteScope = this.scopeRegistry.getRemoteScope(decl.node);
@@ -597,12 +626,19 @@ export class NgModuleDecoratorHandler implements
         });
         const directiveArray = new LiteralArrayExpr(directives);
         const pipesArray = new LiteralArrayExpr(pipes);
+
+        const directiveExpr = remoteScopesMayRequireCycleProtection && directives.length > 0 ?
+            new FunctionExpr([], [new ReturnStatement(directiveArray)]) :
+            directiveArray;
+        const pipesExpr = remoteScopesMayRequireCycleProtection && pipes.length > 0 ?
+            new FunctionExpr([], [new ReturnStatement(pipesArray)]) :
+            pipesArray;
         const componentType = this.refEmitter.emit(decl, context);
         assertSuccessfulReferenceEmit(componentType, node, 'component');
         const declExpr = componentType.expression;
         const setComponentScope = new ExternalExpr(R3Identifiers.setComponentScope);
         const callExpr =
-            new InvokeFunctionExpr(setComponentScope, [declExpr, directiveArray, pipesArray]);
+            new InvokeFunctionExpr(setComponentScope, [declExpr, directiveExpr, pipesExpr]);
 
         ngModuleStatements.push(callExpr.toStmt());
       }
@@ -746,4 +782,8 @@ function makeStandaloneBootstrapDiagnostic(
   return makeDiagnostic(
       ErrorCode.NGMODULE_BOOTSTRAP_IS_STANDALONE,
       getDiagnosticNode(bootstrappedClassRef, rawBootstrapExpr), message, relatedInformation);
+}
+
+function isSyntheticReference(ref: Reference<DeclarationNode>): boolean {
+  return ref.synthetic;
 }

@@ -160,6 +160,49 @@ runInEachFileSystem(() => {
         expect(jsContents).toContain('dependencies: [TestDir]');
       });
 
+      it('should compile a standalone component in a cycle with its module', () => {
+        env.write('module.ts', `
+          import {Component, NgModule, forwardRef} from '@angular/core';
+
+          import {StandaloneCmp} from './component';
+
+          @Component({
+            selector: 'module-cmp',
+            template: '<standalone-cmp></standalone-cmp>',
+          })
+          export class ModuleCmp {}
+
+          @NgModule({
+            declarations: [ModuleCmp],
+            exports: [ModuleCmp],
+            imports: [forwardRef(() => StandaloneCmp)],
+          })
+          export class Module {}
+        `);
+
+        env.write('component.ts', `
+          import {Component, forwardRef} from '@angular/core';
+
+          import {Module} from './module';
+
+          @Component({
+            standalone: true,
+            imports: [forwardRef(() => Module)],
+            selector: 'standalone-cmp',
+            template: '<module-cmp></module-cmp>',
+          })
+          export class StandaloneCmp {}
+        `);
+        env.driveMain();
+
+        const moduleJs = env.getContents('module.js');
+        expect(moduleJs).toContain(
+            'i0.ɵɵsetComponentScope(ModuleCmp, function () { return [i1.StandaloneCmp]; }, []);');
+
+        const cmpJs = env.getContents('component.js');
+        expect(cmpJs).toContain('dependencies: function () { return [Module, i1.ModuleCmp]; }');
+      });
+
       it('should error when a non-standalone component tries to use imports', () => {
         env.write('test.ts', `
               import {Component, Directive} from '@angular/core';

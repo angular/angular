@@ -745,6 +745,13 @@ export class ComponentDecoratorHandler implements
           }
         }
       }
+      // Check whether any usages of standalone components in imports requires the dependencies
+      // array to be wrapped in a closure. This check is technically a heuristic as there's no
+      // direct way to check whether a `Reference` came from a `forwardRef`. Instead, we check if
+      // the reference is `synthetic`, implying it came from _any_ foreign function resolver,
+      // including the `forwardRef` resolver.
+      const standaloneImportMayBeForwardDeclared =
+          analysis.resolvedImports !== null && analysis.resolvedImports.some(ref => ref.synthetic);
 
       const cycleDetected = cyclesFromDirectives.size !== 0 || cyclesFromPipes.size !== 0;
       if (!cycleDetected) {
@@ -757,8 +764,11 @@ export class ComponentDecoratorHandler implements
         // Check whether the dependencies arrays in ɵcmp need to be wrapped in a closure.
         // This is required if any dependency reference is to a declaration in the same file
         // but declared after this component.
-        const wrapDirectivesAndPipesInClosure =
+        const declarationIsForwardDeclared =
             declarations.some(decl => isExpressionForwardReference(decl.type, node.name, context));
+
+        const wrapDirectivesAndPipesInClosure =
+            declarationIsForwardDeclared || standaloneImportMayBeForwardDeclared;
 
         data.declarations = declarations;
         data.declarationListEmitMode = wrapDirectivesAndPipesInClosure ?
