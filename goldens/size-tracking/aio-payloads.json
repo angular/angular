@@ -2,7 +2,7 @@
   "aio": {
     "uncompressed": {
       "runtime": 4325,
-      "main": 453332,
+      "main": 453300,
       "polyfills": 33814,
       "styles": 72183,
       "light-theme": 78276,
