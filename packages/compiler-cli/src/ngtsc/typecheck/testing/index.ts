@@ -719,7 +719,7 @@ export class NoopSchemaChecker implements DomSchemaChecker {
       hostIsStandalone: boolean): void {}
   checkProperty(
       id: string, element: TmplAstElement, name: string, span: ParseSourceSpan,
-      schemas: SchemaMetadata[]): void {}
+      schemas: SchemaMetadata[], hostIsStandalone: boolean): void {}
 }
 
 export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
