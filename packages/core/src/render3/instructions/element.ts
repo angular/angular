@@ -24,7 +24,7 @@ import {setUpAttributes} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
 
 import {setDirectiveInputsWhichShadowsStyling} from './property';
-import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, isHostComponentStandalone, matchingSchemas, resolveDirectives, saveResolvedLocalsInData} from './shared';
+import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, getTemplateLocationDetails, isHostComponentStandalone, matchingSchemas, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
 let shouldThrowErrorOnUnknownElement = false;
 
@@ -57,8 +57,7 @@ function elementStartFirstCreatePass(
   const hasDirectives =
       resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
   if (ngDevMode) {
-    const hostIsStandalone = isHostComponentStandalone(lView);
-    validateElementIsKnown(native, tNode.value, tView.schemas, hasDirectives, hostIsStandalone);
+    validateElementIsKnown(native, lView, tNode.value, tView.schemas, hasDirectives);
   }
 
   if (tNode.attrs !== null) {
@@ -223,14 +222,14 @@ export function ɵɵelement(
  * - the element is allowed by one of the schemas
  *
  * @param element Element to validate
+ * @param lView An `LView` that represents a current component that is being rendered.
  * @param tagName Name of the tag to check
  * @param schemas Array of schemas
  * @param hasDirectives Boolean indicating that the element matches any directive
- * @param hostIsStandalone Boolean indicating whether the host is a standalone component
  */
 function validateElementIsKnown(
-    element: RElement, tagName: string|null, schemas: SchemaMetadata[]|null, hasDirectives: boolean,
-    hostIsStandalone: boolean): void {
+    element: RElement, lView: LView, tagName: string|null, schemas: SchemaMetadata[]|null,
+    hasDirectives: boolean): void {
   // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
   // mode where this check happens at compile time. In JIT mode, `schemas` is always present and
   // defined as an array (as an empty array in case `schemas` field is not defined) and we should
@@ -251,10 +250,13 @@ function validateElementIsKnown(
          !customElements.get(tagName));
 
     if (isUnknown && !matchingSchemas(schemas, tagName)) {
-      const schemas = `'${hostIsStandalone ? '@Component' : '@NgModule'}.schemas'`;
-      let message = `'${tagName}' is not a known element:\n`;
+      const isHostStandalone = isHostComponentStandalone(lView);
+      const templateLocation = getTemplateLocationDetails(lView);
+      const schemas = `'${isHostStandalone ? '@Component' : '@NgModule'}.schemas'`;
+
+      let message = `'${tagName}' is not a known element${templateLocation}:\n`;
       message += `1. If '${tagName}' is an Angular component, then verify that it is ${
-          hostIsStandalone ? 'included in the \'@Component.imports\' of this component' :
+          isHostStandalone ? 'included in the \'@Component.imports\' of this component' :
                              'a part of an @NgModule where this component is declared'}.\n`;
       if (tagName && tagName.indexOf('-') > -1) {
         message +=
