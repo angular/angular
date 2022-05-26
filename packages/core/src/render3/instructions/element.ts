@@ -255,7 +255,7 @@ function validateElementIsKnown(
       let message = `'${tagName}' is not a known element:\n`;
       message += `1. If '${tagName}' is an Angular component, then verify that it is ${
           hostIsStandalone ? 'included in the \'@Component.imports\' of this component' :
-                             'a part of this module'}.\n`;
+                             'a part of an @NgModule where this component is declared'}.\n`;
       if (tagName && tagName.indexOf('-') > -1) {
         message +=
             `2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${
