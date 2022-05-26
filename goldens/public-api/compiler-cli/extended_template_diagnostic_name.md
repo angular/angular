@@ -11,7 +11,9 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     MISSING_CONTROL_FLOW_DIRECTIVE = "missingControlFlowDirective",
     // (undocumented)
-    NULLISH_COALESCING_NOT_NULLABLE = "nullishCoalescingNotNullable"
+    NULLISH_COALESCING_NOT_NULLABLE = "nullishCoalescingNotNullable",
+    // (undocumented)
+    TEXT_ATTRIBUTE_NOT_BINDING = "textAttributeNotBinding"
 }
 
 // (No @packageDocumentation comment for this package)

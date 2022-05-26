@@ -73,6 +73,7 @@ export enum ErrorCode {
     // (undocumented)
     SYMBOL_NOT_EXPORTED = 3001,
     TEMPLATE_PARSE_ERROR = 5002,
+    TEXT_ATTRIBUTE_NOT_BINDING = 8104,
     UNDECORATED_CLASS_USING_ANGULAR_FEATURES = 2007,
     UNDECORATED_PROVIDER = 2005,
     // (undocumented)
