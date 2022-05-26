@@ -2117,6 +2117,33 @@ export declare class AnimationEvent {
 2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.`);
       });
 
+      it('should check for unknown properties in standalone components', () => {
+        env.write('test.ts', `
+          import {Component, NgModule} from '@angular/core';
+          @Component({
+            selector: 'my-comp',
+            template: '...',
+            standalone: true,
+          })
+          export class MyComp {}
+
+          @Component({
+            selector: 'blah',
+            imports: [MyComp],
+            template: '<my-comp [foo]="true"></my-comp>',
+            standalone: true,
+          })
+          export class FooCmp {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toMatch(`Can't bind to 'foo' since it isn't a known property of 'my-comp'.
+1. If 'my-comp' is an Angular component and it has 'foo' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'my-comp' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.`);
+      });
+
       it('should have a descriptive error for unknown elements that contain a dash', () => {
         env.write('test.ts', `
         import {Component, NgModule} from '@angular/core';
