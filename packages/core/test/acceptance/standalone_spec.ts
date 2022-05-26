@@ -632,7 +632,8 @@ describe('standalone components, directives and pipes', () => {
 
   describe('unknown template elements', () => {
     const unknownElErrorRegex = (tag: string) => {
-      const prefix = `'${tag}' is not a known element:`;
+      const prefix =
+          `'${tag}' is not a known element \\(used in the 'AppCmp' component template\\):`;
       const message1 = `1. If '${
           tag}' is an Angular component, then verify that it is included in the '@Component.imports' of this component.`;
       const message2 = `2. If '${
