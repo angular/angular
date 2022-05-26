@@ -61,7 +61,7 @@ export interface DomSchemaChecker {
    */
   checkProperty(
       id: string, element: TmplAstElement, name: string, span: ParseSourceSpan,
-      schemas: SchemaMetadata[]): void;
+      schemas: SchemaMetadata[], hostIsStandalone: boolean): void;
 }
 
 /**
@@ -110,25 +110,30 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
 
   checkProperty(
       id: TemplateId, element: TmplAstElement, name: string, span: ParseSourceSpan,
-      schemas: SchemaMetadata[]): void {
+      schemas: SchemaMetadata[], hostIsStandalone: boolean): void {
     if (!REGISTRY.hasProperty(element.name, name, schemas)) {
       const mapping = this.resolver.getSourceMapping(id);
 
+      const decorator = hostIsStandalone ? '@Component' : '@NgModule';
+      const schemas = `'${decorator}.schemas'`;
       let errorMsg =
           `Can't bind to '${name}' since it isn't a known property of '${element.name}'.`;
       if (element.name.startsWith('ng-')) {
-        errorMsg +=
-            `\n1. If '${
-                name}' is an Angular directive, then add 'CommonModule' to the '@NgModule.imports' of this component.` +
-            `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+        errorMsg += `\n1. If '${name}' is an Angular directive, then add 'CommonModule' to the '${
+                        decorator}.imports' of this component.` +
+            `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the ${
+                        schemas} of this component.`;
       } else if (element.name.indexOf('-') > -1) {
         errorMsg +=
             `\n1. If '${element.name}' is an Angular component and it has '${
-                name}' input, then verify that it is part of this module.` +
+                name}' input, then verify that it is ${
+                hostIsStandalone ? 'included in the \'@Component.imports\' of this component' :
+                                   'part of this module'}.` +
             `\n2. If '${
-                element
-                    .name}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.` +
-            `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
+                element.name}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${
+                schemas} of this component to suppress this message.` +
+            `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to the ${
+                schemas} of this component.`;
       }
 
       const diag = makeTemplateDiagnostic(

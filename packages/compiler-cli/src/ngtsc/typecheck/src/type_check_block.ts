@@ -866,7 +866,8 @@ class TcbDomSchemaCheckerOp extends TcbOp {
           // A direct binding to a property.
           const propertyName = ATTR_TO_PROP[binding.name] || binding.name;
           this.tcb.domSchemaChecker.checkProperty(
-              this.tcb.id, this.element, propertyName, binding.sourceSpan, this.tcb.schemas);
+              this.tcb.id, this.element, propertyName, binding.sourceSpan, this.tcb.schemas,
+              this.tcb.hostIsStandalone);
         }
       }
     }
