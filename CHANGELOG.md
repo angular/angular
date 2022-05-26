@@ -1,3 +1,27 @@
+<a name="14.0.0-rc.1"></a>
+# 14.0.0-rc.1 "sapphire-screwdriver" (2022-05-25)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3d4b33996](https://github.com/angular/components/commit/3d4b339961c8fc9d1f0f1a69b4c3bd72c68fe268) | fix | **menu:** update docs to reflect current implementation and add ([#24884](https://github.com/angular/components/pull/24884)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ee23ac2aa](https://github.com/angular/components/commit/ee23ac2aa00d78d31f0dbf0ad04abb0dc3ba3a3d) | fix | **schematics:** support standalone components in ng-add ([#24931](https://github.com/angular/components/pull/24931)) |
+| [2deaab862](https://github.com/angular/components/commit/2deaab86227c696c3f51f6888fb57bc17a83e7ca) | fix | **tabs:** ensure the ink bar realigns when the tab header items have changed in dimensions ([#24885](https://github.com/angular/components/pull/24885)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [24883d6f6](https://github.com/angular/components/commit/24883d6f615f2415871d3c4dd15fb1288ac7b33e) | fix | **mdc-checkbox:** Use cursor:pointer for label ([#24927](https://github.com/angular/components/pull/24927)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2d395fb0f](https://github.com/angular/components/commit/2d395fb0f6eaaf70d61d5effd1adf4c863572783) | fix | fix focus and hover styles for mdc-checkbox and mdc-radio ([#24930](https://github.com/angular/components/pull/24930)) |
+## Special Thanks
+Arthur Ming, Jeremy Elbourn, Joey Perrott, Kristiyan Kostadinov, Miles Malerba, Vaughan Hilts and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.8"></a>
 # 13.3.8 "lead-lamp" (2022-05-25)
 ### material
