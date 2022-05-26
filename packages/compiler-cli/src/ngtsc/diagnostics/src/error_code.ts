@@ -240,6 +240,23 @@ export enum ErrorCode {
   MISSING_CONTROL_FLOW_DIRECTIVE = 8103,
 
   /**
+   * A text attribute is not interpreted as a binding but likely intended to be.
+   *
+   * For example:
+   * ```
+   * <div
+   *   attr.x="value"
+   *   class.blue="true"
+   *   style.margin-right.px="5">
+   * </div>
+   * ```
+   *
+   * All of the above attributes will just be static text attributes and will not be interpreted as
+   * bindings by the compiler.
+   */
+  TEXT_ATTRIBUTE_NOT_BINDING = 8104,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */

@@ -12,6 +12,7 @@ import {TemplateCheckFactory} from './api';
 import {factory as invalidBananaInBoxFactory} from './checks/invalid_banana_in_box';
 import {factory as missingControlFlowDirectiveFactory} from './checks/missing_control_flow_directive';
 import {factory as nullishCoalescingNotNullableFactory} from './checks/nullish_coalescing_not_nullable';
+import {factory as textAttributeNotBindingFactory} from './checks/text_attribute_not_binding';
 
 export {ExtendedTemplateCheckerImpl} from './src/extended_template_checker';
 
@@ -20,4 +21,5 @@ export const ALL_DIAGNOSTIC_FACTORIES:
       invalidBananaInBoxFactory,
       nullishCoalescingNotNullableFactory,
       missingControlFlowDirectiveFactory,
+      textAttributeNotBindingFactory,
     ];
