@@ -1,4 +1,7 @@
 .demo-listbox {
+  display: inline-block;
+  width: 200px;
+  margin-right: 10px;
   list-style-type: none;
   border: 1px solid black;
   cursor: default;
@@ -11,4 +14,8 @@
 
 .demo-listbox .cdk-option-selected {
   background: cornflowerblue;
+}
+
+.demo-listbox.ng-invalid {
+  box-shadow: 0 0 0 4px red;
 }

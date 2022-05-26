@@ -71,7 +71,7 @@ export interface SelectionChange<T> {
 
 // @public
 export class SelectionModel<T> {
-    constructor(_multiple?: boolean, initiallySelectedValues?: T[], _emitChanges?: boolean);
+    constructor(_multiple?: boolean, initiallySelectedValues?: T[], _emitChanges?: boolean, _compareWith?: ((o1: T, o2: T) => boolean) | undefined);
     readonly changed: Subject<SelectionChange<T>>;
     clear(): void;
     deselect(...values: T[]): void;
@@ -81,6 +81,8 @@ export class SelectionModel<T> {
     isSelected(value: T): boolean;
     select(...values: T[]): void;
     get selected(): T[];
+    // (undocumented)
+    setSelection(...values: T[]): void;
     sort(predicate?: (a: T, b: T) => number): void;
     toggle(value: T): void;
 }

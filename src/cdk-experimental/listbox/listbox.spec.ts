@@ -1,881 +1,682 @@
-import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import {Component, DebugElement, ViewChild} from '@angular/core';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {Component, Type} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {CdkListbox, CdkListboxModule, CdkOption, ListboxSelectionChangeEvent} from './index';
-import {
-  createKeyboardEvent,
-  dispatchKeyboardEvent,
-  dispatchMouseEvent,
-} from '../../cdk/testing/private';
-import {A, DOWN_ARROW, END, HOME, SPACE} from '@angular/cdk/keycodes';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {CdkCombobox, CdkComboboxModule} from '@angular/cdk-experimental/combobox';
+import {CdkListbox, CdkListboxModule, CdkOption, ListboxValueChangeEvent} from './index';
+import {dispatchKeyboardEvent, dispatchMouseEvent} from '../../cdk/testing/private';
+import {B, DOWN_ARROW, END, HOME, SPACE, UP_ARROW} from '@angular/cdk/keycodes';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {CommonModule} from '@angular/common';
+
+async function setupComponent<T, O = string>(component: Type<T>, imports: any[] = []) {
+  await TestBed.configureTestingModule({
+    imports: [CdkListboxModule, ...imports],
+    declarations: [component],
+  }).compileComponents();
+  const fixture = TestBed.createComponent(component);
+  fixture.detectChanges();
+
+  const listboxDebugEl = fixture.debugElement.query(By.directive(CdkListbox));
+  const optionDebugEls = fixture.debugElement.queryAll(By.directive(CdkOption));
+
+  return {
+    fixture,
+    testComponent: fixture.componentInstance,
+    listbox: listboxDebugEl.injector.get<CdkListbox<O>>(CdkListbox),
+    listboxEl: listboxDebugEl.nativeElement as HTMLElement,
+    options: optionDebugEls.map(el => el.injector.get<CdkOption<O>>(CdkOption)),
+    optionEls: optionDebugEls.map(el => el.nativeElement as HTMLElement),
+  };
+}
 
 describe('CdkOption and CdkListbox', () => {
-  describe('selection state change', () => {
-    let fixture: ComponentFixture<ListboxWithOptions>;
-
-    let testComponent: ListboxWithOptions;
-
-    let listbox: DebugElement;
-    let listboxInstance: CdkListbox<unknown>;
-    let listboxElement: HTMLElement;
-
-    let options: DebugElement[];
-    let optionInstances: CdkOption[];
-    let optionElements: HTMLElement[];
-
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkListboxModule],
-        declarations: [ListboxWithOptions],
-      }).compileComponents();
-    }));
-
-    beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ListboxWithOptions);
-      fixture.detectChanges();
-
-      testComponent = fixture.debugElement.componentInstance;
-
-      listbox = fixture.debugElement.query(By.directive(CdkListbox));
-      listboxInstance = listbox.injector.get<CdkListbox<unknown>>(CdkListbox);
-      listboxElement = listbox.nativeElement;
-
-      options = fixture.debugElement.queryAll(By.directive(CdkOption));
-      optionInstances = options.map(o => o.injector.get<CdkOption>(CdkOption));
-      optionElements = options.map(o => o.nativeElement);
-    }));
-
-    it('should generate a unique optionId for each option', () => {
-      let optionIds: string[] = [];
-      for (const instance of optionInstances) {
-        expect(optionIds.indexOf(instance.id)).toBe(-1);
-        optionIds.push(instance.id);
-
-        expect(instance.id).toMatch(/cdk-option-\d+/);
+  describe('id', () => {
+    it('should generate unique ids', async () => {
+      const {listbox, listboxEl, options, optionEls} = await setupComponent(ListboxWithOptions);
+      const optionIds = new Set(optionEls.map(option => option.id));
+      expect(optionIds.size).toBe(options.length);
+      for (let i = 0; i < options.length; i++) {
+        expect(options[i].id).toBe(optionEls[i].id);
+        expect(options[i].id).toMatch(/cdk-option-\d+/);
       }
+      expect(listbox.id).toEqual(listboxEl.id);
+      expect(listbox.id).toMatch(/cdk-listbox-\d+/);
     });
 
-    it('should have set the selected input of the options to null by default', () => {
-      for (const option of optionElements) {
-        expect(option.hasAttribute('aria-selected')).toBeFalse();
-      }
-    });
-
-    it('should update aria-selected when selected is changed programmatically', () => {
-      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
-      optionInstances[1].selected = true;
+    it('should not overwrite user given ids', async () => {
+      const {testComponent, fixture, listboxEl, optionEls} = await setupComponent(
+        ListboxWithOptions,
+      );
+      testComponent.listboxId = 'my-listbox';
+      testComponent.appleId = 'my-apple';
       fixture.detectChanges();
-
-      expect(optionElements[1].getAttribute('aria-selected')).toBe('true');
-    });
-
-    it('should update selected option on click event', () => {
-      let selectedOptions = optionInstances.filter(option => option.selected);
-
-      expect(selectedOptions.length).toBe(0);
-      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionInstances[0].selected).toBeFalse();
-      expect(fixture.componentInstance.changedOption).toBeUndefined();
-
-      dispatchMouseEvent(optionElements[0], 'click');
-      fixture.detectChanges();
-
-      selectedOptions = optionInstances.filter(option => option.selected);
-      expect(selectedOptions.length).toBe(1);
-      expect(optionElements[0].getAttribute('aria-selected')).toBe('true');
-      expect(optionInstances[0].selected).toBeTrue();
-      expect(fixture.componentInstance.changedOption).toBeDefined();
-      expect(fixture.componentInstance.changedOption.id).toBe(optionInstances[0].id);
-    });
-
-    it('should update selected option on space or enter key press', () => {
-      let selectedOptions = optionInstances.filter(option => option.selected);
-
-      expect(selectedOptions.length).toBe(0);
-      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionInstances[0].selected).toBeFalse();
-      expect(fixture.componentInstance.changedOption).toBeUndefined();
-
-      listboxInstance.setActiveOption(optionInstances[0]);
-      dispatchKeyboardEvent(listboxElement, 'keydown', SPACE);
-      fixture.detectChanges();
-
-      selectedOptions = optionInstances.filter(option => option.selected);
-      expect(selectedOptions.length).toBe(1);
-      expect(optionElements[0].getAttribute('aria-selected')).toBe('true');
-      expect(optionInstances[0].selected).toBeTrue();
-      expect(fixture.componentInstance.changedOption).toBeDefined();
-      expect(fixture.componentInstance.changedOption.id).toBe(optionInstances[0].id);
-    });
-
-    it('should update active option on home and end key press', () => {
-      listboxInstance.setActiveOption(optionInstances[1]);
-      fixture.detectChanges();
-
-      expect(listboxInstance._listKeyManager.activeItem).toBe(optionInstances[1]);
-
-      dispatchKeyboardEvent(listboxElement, 'keydown', HOME);
-      fixture.detectChanges();
-
-      expect(listboxInstance._listKeyManager.activeItem).toBe(optionInstances[0]);
-
-      dispatchKeyboardEvent(listboxElement, 'keydown', END);
-      fixture.detectChanges();
-
-      expect(listboxInstance._listKeyManager.activeItem).toBe(optionInstances[3]);
-    });
-
-    it('should be able to toggle listbox disabled state', () => {
-      expect(listboxInstance.disabled).toBeFalse();
-      expect(listboxElement.getAttribute('aria-disabled')).toBe('false');
-
-      testComponent.isListboxDisabled = true;
-      fixture.detectChanges();
-
-      expect(listboxInstance.disabled).toBeTrue();
-      expect(listboxElement.getAttribute('aria-disabled')).toBe('true');
-    });
-
-    it('should toggle option disabled state', () => {
-      expect(optionInstances[0].disabled).toBeFalse();
-      expect(optionElements[0].getAttribute('aria-disabled')).toBe('false');
-
-      testComponent.isPurpleDisabled = true;
-      fixture.detectChanges();
-
-      expect(optionInstances[0].disabled).toBeTrue();
-      expect(optionElements[0].getAttribute('aria-disabled')).toBe('true');
-    });
-
-    it('should toggle option aria-disabled state on listbox disabled state change', () => {
-      optionInstances[0].disabled = true;
-      fixture.detectChanges();
-
-      expect(listboxInstance.disabled).toBeFalse();
-      expect(optionInstances[0].disabled).toBeTrue();
-      expect(optionElements[0].hasAttribute('tabindex')).toBeFalse();
-      expect(optionElements[1].getAttribute('aria-disabled')).toBe('false');
-      expect(optionElements[1].getAttribute('tabindex')).toBe('-1');
-
-      testComponent.isListboxDisabled = true;
-      fixture.detectChanges();
-
-      expect(listboxInstance.disabled).toBeTrue();
-      expect(optionInstances[0].disabled).toBeTrue();
-      expect(optionElements[0].hasAttribute('tabindex')).toBeFalse();
-      expect(optionElements[1].getAttribute('aria-disabled')).toBe('true');
-      expect(optionElements[1].hasAttribute('tabindex')).toBeFalse();
-    });
-
-    it('should not toggle selected on click of a disabled option', () => {
-      let selectedOptions = optionInstances.filter(option => option.selected);
-
-      expect(selectedOptions.length).toBe(0);
-      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionInstances[0].selected).toBeFalse();
-      expect(fixture.componentInstance.changedOption).toBeUndefined();
-
-      testComponent.isPurpleDisabled = true;
-      fixture.detectChanges();
-      dispatchMouseEvent(optionElements[0], 'click');
-      fixture.detectChanges();
-
-      selectedOptions = optionInstances.filter(option => option.selected);
-      expect(selectedOptions.length).toBe(0);
-      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionInstances[0].selected).toBeFalse();
-      expect(fixture.componentInstance.changedOption).toBeUndefined();
-    });
-
-    it('should not toggle selected on click in a disabled listbox', () => {
-      let selectedOptions = optionInstances.filter(option => option.selected);
-
-      expect(selectedOptions.length).toBe(0);
-      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionInstances[0].selected).toBeFalse();
-      expect(fixture.componentInstance.changedOption).toBeUndefined();
-
-      testComponent.isListboxDisabled = true;
-      fixture.detectChanges();
-      dispatchMouseEvent(optionElements[0], 'click');
-      fixture.detectChanges();
-
-      selectedOptions = optionInstances.filter(option => option.selected);
-      expect(selectedOptions.length).toBe(0);
-      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionInstances[0].selected).toBeFalse();
-      expect(fixture.componentInstance.changedOption).toBeUndefined();
-    });
-
-    it('should change active item using type ahead', fakeAsync(() => {
-      expect(listboxInstance._listKeyManager.activeItem).toBeNull();
-      expect(listboxInstance._listKeyManager.activeItemIndex).toBe(-1);
-
-      dispatchKeyboardEvent(listboxElement, 'keydown', A);
-      fixture.detectChanges();
-      tick(200);
-
-      expect(listboxInstance._listKeyManager.activeItem).toEqual(optionInstances[2]);
-      expect(listboxInstance._listKeyManager.activeItemIndex).toBe(2);
-    }));
-
-    it('should not handle space or enter on a disabled listbox', () => {
-      let selectedOptions = optionInstances.filter(option => option.selected);
-
-      expect(selectedOptions.length).toBe(0);
-      expect(fixture.componentInstance.changedOption).toBeUndefined();
-
-      listboxInstance.setActiveOption(optionInstances[0]);
-      testComponent.isListboxDisabled = true;
-      fixture.detectChanges();
-
-      dispatchKeyboardEvent(listboxElement, 'keydown', SPACE);
-      fixture.detectChanges();
-
-      selectedOptions = optionInstances.filter(option => option.selected);
-      expect(selectedOptions.length).toBe(0);
-      expect(fixture.componentInstance.changedOption).toBeUndefined();
-    });
-
-    it('should not handle type ahead on a disabled listbox', fakeAsync(() => {
-      expect(listboxInstance._listKeyManager.activeItem).toBeNull();
-      expect(listboxInstance._listKeyManager.activeItemIndex).toBe(-1);
-
-      testComponent.isListboxDisabled = true;
-      fixture.detectChanges();
-
-      dispatchKeyboardEvent(listboxElement, 'keydown', A);
-      fixture.detectChanges();
-      tick(200);
-
-      expect(listboxInstance._listKeyManager.activeItem).toBeNull();
-      expect(listboxInstance._listKeyManager.activeItemIndex).toBe(-1);
-    }));
-
-    it('should not select a disabled option using space or enter', () => {
-      let selectedOptions = optionInstances.filter(option => option.selected);
-
-      expect(selectedOptions.length).toBe(0);
-      expect(fixture.componentInstance.changedOption).toBeUndefined();
-
-      listboxInstance.setActiveOption(optionInstances[0]);
-      testComponent.isPurpleDisabled = true;
-      fixture.detectChanges();
-
-      dispatchKeyboardEvent(listboxElement, 'keydown', SPACE);
-      fixture.detectChanges();
-
-      selectedOptions = optionInstances.filter(option => option.selected);
-      expect(selectedOptions.length).toBe(0);
-      expect(fixture.componentInstance.changedOption).toBeUndefined();
-    });
-
-    it('should update active item upon arrow key presses', () => {
-      expect(listboxInstance._listKeyManager.activeItem).toBeNull();
-      expect(listboxInstance._listKeyManager.activeItemIndex).toBe(-1);
-
-      dispatchKeyboardEvent(listboxElement, 'keydown', DOWN_ARROW);
-      fixture.detectChanges();
-
-      expect(listboxInstance._listKeyManager.activeItem).toEqual(optionInstances[0]);
-      expect(listboxInstance._listKeyManager.activeItemIndex).toBe(0);
-
-      dispatchKeyboardEvent(listboxElement, 'keydown', DOWN_ARROW);
-      fixture.detectChanges();
-
-      expect(listboxInstance._listKeyManager.activeItem).toEqual(optionInstances[1]);
-      expect(listboxInstance._listKeyManager.activeItemIndex).toBe(1);
-    });
-
-    it('should skip disabled options when navigating with arrow keys', () => {
-      expect(listboxInstance._listKeyManager.activeItem).toBeNull();
-      expect(listboxInstance._listKeyManager.activeItemIndex).toBe(-1);
-
-      testComponent.isSolarDisabled = true;
-      dispatchKeyboardEvent(listboxElement, 'keydown', DOWN_ARROW);
-      fixture.detectChanges();
-
-      expect(listboxInstance._listKeyManager.activeItem).toEqual(optionInstances[0]);
-      expect(listboxInstance._listKeyManager.activeItemIndex).toBe(0);
-
-      dispatchKeyboardEvent(listboxElement, 'keydown', DOWN_ARROW);
-      fixture.detectChanges();
-
-      expect(listboxInstance._listKeyManager.activeItem).toEqual(optionInstances[2]);
-      expect(listboxInstance._listKeyManager.activeItemIndex).toBe(2);
-    });
-
-    it('should update selected option on click event', () => {
-      let selectedOptions = optionInstances.filter(option => option.selected);
-
-      expect(selectedOptions.length).toBe(0);
-      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionInstances[0].selected).toBeFalse();
-      expect(fixture.componentInstance.changedOption).toBeUndefined();
-
-      dispatchMouseEvent(optionElements[0], 'click');
-      fixture.detectChanges();
-
-      selectedOptions = optionInstances.filter(option => option.selected);
-      expect(selectedOptions.length).toBe(1);
-      expect(optionElements[0].getAttribute('aria-selected')).toBe('true');
-      expect(optionInstances[0].selected).toBeTrue();
-      expect(fixture.componentInstance.changedOption).toBeDefined();
-      expect(fixture.componentInstance.changedOption.id).toBe(optionInstances[0].id);
-    });
-
-    it('should focus and toggle the next item when pressing SHIFT + DOWN_ARROW', () => {
-      let selectedOptions = optionInstances.filter(option => option.selected);
-      const downKeyEvent = createKeyboardEvent('keydown', DOWN_ARROW, undefined, {shift: true});
-
-      expect(selectedOptions.length).toBe(0);
-      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionInstances[0].selected).toBeFalse();
-      expect(fixture.componentInstance.changedOption).toBeUndefined();
-
-      listboxInstance.setActiveOption(optionInstances[0]);
-      listboxInstance._keydown(downKeyEvent);
-      fixture.detectChanges();
-
-      selectedOptions = optionInstances.filter(option => option.selected);
-      expect(selectedOptions.length).toBe(1);
-      expect(optionElements[1].getAttribute('aria-selected')).toBe('true');
-      expect(optionInstances[1].selected).toBeTrue();
-      expect(fixture.componentInstance.changedOption).toBeDefined();
-      expect(fixture.componentInstance.changedOption.id).toBe(optionInstances[1].id);
+      expect(listboxEl.id).toBe('my-listbox');
+      expect(optionEls[0].id).toBe('my-apple');
     });
   });
 
-  describe('with multiple selection', () => {
-    let fixture: ComponentFixture<ListboxMultiselect>;
+  describe('tabindex', () => {
+    it('should use tabindex=0 for focusable elements, tabindex=-1 for non-focusable elements', async () => {
+      const {fixture, listbox, listboxEl, optionEls} = await setupComponent(ListboxWithOptions);
+      expect(listboxEl.getAttribute('tabindex')).toBe('0');
+      expect(optionEls[0].getAttribute('tabindex')).toBe('-1');
 
-    let testComponent: ListboxMultiselect;
-    let listbox: DebugElement;
-    let listboxInstance: CdkListbox<unknown>;
-
-    let options: DebugElement[];
-    let optionInstances: CdkOption[];
-    let optionElements: HTMLElement[];
-
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkListboxModule],
-        declarations: [ListboxMultiselect],
-      }).compileComponents();
-    }));
-
-    beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ListboxMultiselect);
+      listbox.focus();
       fixture.detectChanges();
 
-      testComponent = fixture.debugElement.componentInstance;
-      listbox = fixture.debugElement.query(By.directive(CdkListbox));
-      listboxInstance = listbox.injector.get<CdkListbox<unknown>>(CdkListbox);
+      expect(listboxEl.getAttribute('tabindex')).toBe('-1');
+      expect(optionEls[0].getAttribute('tabindex')).toBe('0');
+    });
 
-      options = fixture.debugElement.queryAll(By.directive(CdkOption));
-      optionInstances = options.map(o => o.injector.get<CdkOption>(CdkOption));
-      optionElements = options.map(o => o.nativeElement);
-    }));
-
-    it('should select all options using the select all method', () => {
-      let selectedOptions = optionInstances.filter(option => option.selected);
-      testComponent.isMultiselectable = true;
+    it('should respect user given tabindex for focusable elements', async () => {
+      const {testComponent, fixture, listbox, listboxEl, optionEls} = await setupComponent(
+        ListboxWithOptions,
+      );
+      testComponent.listboxTabindex = 10;
+      testComponent.appleTabindex = 20;
       fixture.detectChanges();
 
-      expect(selectedOptions.length).toBe(0);
-      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionInstances[0].selected).toBeFalse();
-      expect(fixture.componentInstance.changedOption).toBeUndefined();
+      expect(listboxEl.getAttribute('tabindex')).toBe('10');
+      expect(optionEls[0].getAttribute('tabindex')).toBe('-1');
 
-      listboxInstance.setAllSelected(true);
+      listbox.focus();
       fixture.detectChanges();
 
-      selectedOptions = optionInstances.filter(option => option.selected);
-      expect(selectedOptions.length).toBe(4);
+      expect(listboxEl.getAttribute('tabindex')).toBe('-1');
+      expect(optionEls[0].getAttribute('tabindex')).toBe('20');
+    });
 
-      for (const option of optionElements) {
-        expect(option.getAttribute('aria-selected')).toBe('true');
+    it('should use listbox tabindex for focusable options', async () => {
+      const {testComponent, fixture, listbox, optionEls} = await setupComponent(ListboxWithOptions);
+      testComponent.listboxTabindex = 10;
+      fixture.detectChanges();
+
+      expect(optionEls[0].getAttribute('tabindex')).toBe('-1');
+
+      listbox.focus();
+      fixture.detectChanges();
+
+      expect(optionEls[0].getAttribute('tabindex')).toBe('10');
+    });
+  });
+
+  describe('selection', () => {
+    it('should be empty initially', async () => {
+      const {fixture, listbox, options, optionEls} = await setupComponent(ListboxWithOptions);
+      expect(listbox.value).toEqual([]);
+      for (let i = 0; i < options.length; i++) {
+        expect(options[i].isSelected()).toBeFalse();
+        expect(optionEls[i].hasAttribute('aria-selected')).toBeFalse();
       }
-
-      expect(fixture.componentInstance.changedOption).toBeDefined();
-      expect(fixture.componentInstance.changedOption.id).toBe(optionInstances[3].id);
-    });
-
-    it('should deselect previously selected when multiple is false', () => {
-      let selectedOptions = optionInstances.filter(option => option.selected);
-
-      expect(selectedOptions.length).toBe(0);
-      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionInstances[0].selected).toBeFalse();
       expect(fixture.componentInstance.changedOption).toBeUndefined();
-
-      dispatchMouseEvent(optionElements[0], 'click');
-      fixture.detectChanges();
-
-      selectedOptions = optionInstances.filter(option => option.selected);
-      expect(selectedOptions.length).toBe(1);
-      expect(optionElements[0].getAttribute('aria-selected')).toBe('true');
-      expect(optionInstances[0].selected).toBeTrue();
-      expect(fixture.componentInstance.changedOption.id).toBe(optionInstances[0].id);
-
-      dispatchMouseEvent(optionElements[2], 'click');
-      fixture.detectChanges();
-
-      selectedOptions = optionInstances.filter(option => option.selected);
-      expect(selectedOptions.length).toBe(1);
-      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionInstances[0].selected).toBeFalse();
-      expect(optionElements[2].getAttribute('aria-selected')).toBe('true');
-      expect(optionInstances[2].selected).toBeTrue();
-
-      /** Expect first option to be most recently changed because it was deselected. */
-      expect(fixture.componentInstance.changedOption.id).toBe(optionInstances[0].id);
     });
 
-    it('should allow multiple selection when multiple is true', () => {
-      let selectedOptions = optionInstances.filter(option => option.selected);
+    it('should update when selection is changed programmatically', async () => {
+      const {fixture, listbox, options, optionEls} = await setupComponent(ListboxWithOptions);
+      options[1].select();
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['orange']);
+      expect(options[1].isSelected()).toBeTrue();
+      expect(optionEls[1].getAttribute('aria-selected')).toBe('true');
+      expect(fixture.componentInstance.changedOption).toBeUndefined();
+    });
+
+    it('should update on option clicked', async () => {
+      const {fixture, listbox, options, optionEls} = await setupComponent(ListboxWithOptions);
+      optionEls[0].click();
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['apple']);
+      expect(options[0].isSelected()).toBeTrue();
+      expect(optionEls[0].getAttribute('aria-selected')).toBe('true');
+      expect(fixture.componentInstance.changedOption?.id).toBe(options[0].id);
+    });
+
+    it('should update on option activated via keyboard', async () => {
+      const {fixture, listbox, listboxEl, options, optionEls} = await setupComponent(
+        ListboxWithOptions,
+      );
+      listbox.focus();
+      dispatchKeyboardEvent(listboxEl, 'keydown', SPACE);
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['apple']);
+      expect(options[0].isSelected()).toBeTrue();
+      expect(optionEls[0].getAttribute('aria-selected')).toBe('true');
+      expect(fixture.componentInstance.changedOption?.id).toBe(options[0].id);
+    });
+
+    it('should deselect previously selected option in single-select listbox', async () => {
+      const {fixture, listbox, options, optionEls} = await setupComponent(ListboxWithOptions);
+      dispatchMouseEvent(optionEls[0], 'click');
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['apple']);
+      expect(options[0].isSelected()).toBeTrue();
+
+      dispatchMouseEvent(optionEls[2], 'click');
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['banana']);
+      expect(options[0].isSelected()).toBeFalse();
+    });
+
+    it('should select all options programmatically in multi-select listbox', async () => {
+      const {testComponent, fixture, listbox} = await setupComponent(ListboxWithOptions);
       testComponent.isMultiselectable = true;
-
-      expect(selectedOptions.length).toBe(0);
-      expect(fixture.componentInstance.changedOption).toBeUndefined();
-
-      dispatchMouseEvent(optionElements[0], 'click');
       fixture.detectChanges();
 
-      selectedOptions = optionInstances.filter(option => option.selected);
-      expect(selectedOptions.length).toBe(1);
-      expect(optionElements[0].getAttribute('aria-selected')).toBe('true');
-      expect(optionInstances[0].selected).toBeTrue();
-      expect(fixture.componentInstance.changedOption.id).toBe(optionInstances[0].id);
-
-      dispatchMouseEvent(optionElements[2], 'click');
+      listbox.setAllSelected(true);
       fixture.detectChanges();
 
-      selectedOptions = optionInstances.filter(option => option.selected);
-      expect(selectedOptions.length).toBe(2);
-      expect(optionElements[0].getAttribute('aria-selected')).toBe('true');
-      expect(optionInstances[0].selected).toBeTrue();
-      expect(optionElements[2].getAttribute('aria-selected')).toBe('true');
-      expect(optionInstances[2].selected).toBeTrue();
-      expect(fixture.componentInstance.changedOption.id).toBe(optionInstances[2].id);
+      expect(listbox.value).toEqual(['apple', 'orange', 'banana', 'peach']);
     });
 
-    it('should deselect all options when multiple switches to false', () => {
-      let selectedOptions = optionInstances.filter(option => option.selected);
+    it('should add to selection in multi-select listbox', async () => {
+      const {testComponent, fixture, listbox, options, optionEls} = await setupComponent(
+        ListboxWithOptions,
+      );
       testComponent.isMultiselectable = true;
-
-      expect(selectedOptions.length).toBe(0);
-      expect(fixture.componentInstance.changedOption).toBeUndefined();
-
-      dispatchMouseEvent(optionElements[0], 'click');
+      optionEls[0].click();
       fixture.detectChanges();
 
-      selectedOptions = optionInstances.filter(option => option.selected);
-      expect(selectedOptions.length).toBe(1);
-      expect(optionElements[0].getAttribute('aria-selected')).toBe('true');
-      expect(optionInstances[0].selected).toBeTrue();
-      expect(fixture.componentInstance.changedOption.id).toBe(optionInstances[0].id);
+      expect(listbox.value).toEqual(['apple']);
+      expect(options[0].isSelected()).toBeTrue();
+
+      optionEls[2].click();
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['apple', 'banana']);
+      expect(options[0].isSelected()).toBeTrue();
+    });
+
+    it('should deselect all options when switching to single-selection with invalid selection', async () => {
+      const {testComponent, fixture, listbox} = await setupComponent(ListboxWithOptions);
+      testComponent.isMultiselectable = true;
+      fixture.detectChanges();
+      listbox.setAllSelected(true);
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['apple', 'orange', 'banana', 'peach']);
 
       testComponent.isMultiselectable = false;
       fixture.detectChanges();
 
-      selectedOptions = optionInstances.filter(option => option.selected);
-      expect(selectedOptions.length).toBe(0);
-      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionInstances[0].selected).toBeFalse();
-      expect(fixture.componentInstance.changedOption.id).toBe(optionInstances[0].id);
-    });
-  });
-
-  describe('with aria active descendant', () => {
-    let fixture: ComponentFixture<ListboxActiveDescendant>;
-
-    let testComponent: ListboxActiveDescendant;
-
-    let listbox: DebugElement;
-    let listboxInstance: CdkListbox<unknown>;
-    let listboxElement: HTMLElement;
-
-    let options: DebugElement[];
-    let optionInstances: CdkOption[];
-    let optionElements: HTMLElement[];
-
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkListboxModule],
-        declarations: [ListboxActiveDescendant],
-      }).compileComponents();
-    }));
-
-    beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ListboxActiveDescendant);
-      fixture.detectChanges();
-
-      testComponent = fixture.debugElement.componentInstance;
-
-      listbox = fixture.debugElement.query(By.directive(CdkListbox));
-      listboxInstance = listbox.injector.get<CdkListbox<unknown>>(CdkListbox);
-      listboxElement = listbox.nativeElement;
-
-      options = fixture.debugElement.queryAll(By.directive(CdkOption));
-      optionInstances = options.map(o => o.injector.get<CdkOption>(CdkOption));
-      optionElements = options.map(o => o.nativeElement);
-    }));
-
-    it('should update aria active descendant when enabled', () => {
-      expect(listboxElement.hasAttribute('aria-activedescendant')).toBeFalse();
-
-      listboxInstance.setActiveOption(optionInstances[0]);
-      fixture.detectChanges();
-
-      expect(listboxElement.hasAttribute('aria-activedescendant')).toBeTrue();
-      expect(listboxElement.getAttribute('aria-activedescendant')).toBe(optionElements[0].id);
-
-      listboxInstance.setActiveOption(optionInstances[2]);
-      fixture.detectChanges();
-
-      expect(listboxElement.hasAttribute('aria-activedescendant')).toBeTrue();
-      expect(listboxElement.getAttribute('aria-activedescendant')).toBe(optionElements[2].id);
+      expect(listbox.value).toEqual([]);
     });
 
-    it('should update aria active descendant via arrow keys', () => {
-      expect(listboxElement.hasAttribute('aria-activedescendant')).toBeFalse();
-
-      dispatchKeyboardEvent(listboxElement, 'keydown', DOWN_ARROW);
+    it('should preserve selection when switching to single-selection with valid selection', async () => {
+      const {testComponent, fixture, listbox, optionEls} = await setupComponent(ListboxWithOptions);
+      testComponent.isMultiselectable = true;
+      fixture.detectChanges();
+      optionEls[0].click();
       fixture.detectChanges();
 
-      expect(listboxElement.hasAttribute('aria-activedescendant')).toBeTrue();
-      expect(listboxElement.getAttribute('aria-activedescendant')).toBe(optionElements[0].id);
+      expect(listbox.value).toEqual(['apple']);
 
-      dispatchKeyboardEvent(listboxElement, 'keydown', DOWN_ARROW);
+      testComponent.isMultiselectable = false;
       fixture.detectChanges();
 
-      expect(listboxElement.hasAttribute('aria-activedescendant')).toBeTrue();
-      expect(listboxElement.getAttribute('aria-activedescendant')).toBe(optionElements[1].id);
+      expect(listbox.value).toEqual(['apple']);
     });
 
-    it('should place focus on options and not set active descendant', () => {
-      testComponent.isActiveDescendant = false;
-      fixture.detectChanges();
-
-      expect(listboxElement.hasAttribute('aria-activedescendant')).toBeFalse();
-
-      dispatchKeyboardEvent(listboxElement, 'keydown', DOWN_ARROW);
-      fixture.detectChanges();
-
-      expect(listboxElement.hasAttribute('aria-activedescendant')).toBeFalse();
-      expect(document.activeElement).toEqual(optionElements[0]);
-      dispatchKeyboardEvent(listboxElement, 'keydown', DOWN_ARROW);
-      fixture.detectChanges();
-
-      expect(listboxElement.hasAttribute('aria-activedescendant')).toBeFalse();
-      expect(document.activeElement).toEqual(optionElements[1]);
-    });
-  });
-
-  describe('with control value accessor implemented', () => {
-    let fixture: ComponentFixture<ListboxControlValueAccessor>;
-    let testComponent: ListboxControlValueAccessor;
-
-    let listbox: DebugElement;
-    let listboxInstance: CdkListbox<string>;
-
-    let options: DebugElement[];
-    let optionInstances: CdkOption[];
-    let optionElements: HTMLElement[];
-
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkListboxModule, FormsModule, ReactiveFormsModule],
-        declarations: [ListboxControlValueAccessor],
-      }).compileComponents();
-    }));
-
-    beforeEach(() => {
-      fixture = TestBed.createComponent(ListboxControlValueAccessor);
-      fixture.detectChanges();
-
-      testComponent = fixture.debugElement.componentInstance;
-
-      listbox = fixture.debugElement.query(By.directive(CdkListbox));
-      listboxInstance = listbox.injector.get<CdkListbox<string>>(CdkListbox);
-
-      options = fixture.debugElement.queryAll(By.directive(CdkOption));
-      optionInstances = options.map(o => o.injector.get<CdkOption>(CdkOption));
-      optionElements = options.map(o => o.nativeElement);
-    });
-
-    it('should be able to set the disabled state via setDisabledState', () => {
-      expect(listboxInstance.disabled)
-        .withContext('Expected the selection list to be enabled.')
-        .toBe(false);
-      expect(optionInstances.every(option => !option.disabled))
-        .withContext('Expected every list option to be enabled.')
-        .toBe(true);
-
-      listboxInstance.setDisabledState(true);
-      fixture.detectChanges();
-
-      expect(listboxInstance.disabled)
-        .withContext('Expected the selection list to be disabled.')
-        .toBe(true);
-      for (const option of optionElements) {
-        expect(option.getAttribute('aria-disabled')).toBe('true');
-      }
-    });
-
-    it('should be able to select options via writeValue', () => {
-      expect(optionInstances.every(option => !option.disabled))
-        .withContext('Expected every list option to be enabled.')
-        .toBe(true);
-
-      listboxInstance.writeValue('arc');
-      fixture.detectChanges();
-
-      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionElements[1].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionElements[3].hasAttribute('aria-selected')).toBeFalse();
-
-      expect(optionInstances[2].selected).toBeTrue();
-      expect(optionElements[2].getAttribute('aria-selected')).toBe('true');
-    });
-
-    it('should be select multiple options by their values', () => {
-      expect(optionInstances.every(option => !option.disabled))
-        .withContext('Expected every list option to be enabled.')
-        .toBe(true);
-
+    it('should allow programmatically toggling options', async () => {
+      const {testComponent, fixture, listbox, options} = await setupComponent(ListboxWithOptions);
       testComponent.isMultiselectable = true;
       fixture.detectChanges();
 
-      listboxInstance.writeValue(['arc', 'stasis']);
+      options[0].toggle();
+      listbox.toggle(options[1]);
       fixture.detectChanges();
 
-      const selectedValues = listboxInstance.getSelectedValues();
-      expect(selectedValues.length).toBe(2);
-      expect(selectedValues[0]).toBe('arc');
-      expect(selectedValues[1]).toBe('stasis');
+      expect(options[0].isSelected()).toBeTrue();
+      expect(options[1].isSelected()).toBeTrue();
 
-      expect(optionElements[0].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionElements[1].hasAttribute('aria-selected')).toBeFalse();
+      options[0].toggle();
+      listbox.toggle(options[1]);
+      fixture.detectChanges();
 
-      expect(optionInstances[2].selected).toBeTrue();
-      expect(optionElements[2].getAttribute('aria-selected')).toBe('true');
-      expect(optionInstances[3].selected).toBeTrue();
-      expect(optionElements[3].getAttribute('aria-selected')).toBe('true');
+      expect(options[0].isSelected()).toBeFalse();
+      expect(options[1].isSelected()).toBeFalse();
     });
 
-    it('should be able to disable options from the control', () => {
-      expect(testComponent.listbox.disabled).toBeFalse();
-      expect(optionInstances.every(option => !option.disabled))
-        .withContext('Expected every list option to be enabled.')
-        .toBe(true);
-
-      testComponent.form.disable();
-      fixture.detectChanges();
-
-      expect(testComponent.listbox.disabled).toBeTrue();
-      for (const option of optionElements) {
-        expect(option.getAttribute('aria-disabled')).toBe('true');
-      }
-    });
-
-    it('should be able to toggle disabled state after form control is disabled', () => {
-      expect(testComponent.listbox.disabled).toBeFalse();
-      expect(optionInstances.every(option => !option.disabled))
-        .withContext('Expected every list option to be enabled.')
-        .toBe(true);
-
-      testComponent.form.disable();
-      fixture.detectChanges();
-
-      expect(testComponent.listbox.disabled).toBeTrue();
-      for (const option of optionElements) {
-        expect(option.getAttribute('aria-disabled')).toBe('true');
-      }
-
-      listboxInstance.disabled = false;
-      fixture.detectChanges();
-
-      expect(testComponent.listbox.disabled).toBeFalse();
-      expect(optionInstances.every(option => !option.disabled))
-        .withContext('Expected every list option to be enabled.')
-        .toBe(true);
-    });
-
-    it('should be able to select options via setting the value in form control', () => {
-      expect(optionInstances.every(option => option.selected)).toBeFalse();
-
+    it('should allow programmatically selecting and deselecting options', async () => {
+      const {testComponent, fixture, listbox, options} = await setupComponent(ListboxWithOptions);
       testComponent.isMultiselectable = true;
       fixture.detectChanges();
 
-      testComponent.form.setValue(['purple', 'arc']);
+      options[0].select();
+      listbox.select(options[1]);
       fixture.detectChanges();
 
-      expect(optionElements[0].getAttribute('aria-selected')).toBe('true');
-      expect(optionElements[2].getAttribute('aria-selected')).toBe('true');
-      expect(optionInstances[0].selected).toBeTrue();
-      expect(optionInstances[2].selected).toBeTrue();
+      expect(options[0].isSelected()).toBeTrue();
+      expect(options[1].isSelected()).toBeTrue();
 
-      testComponent.form.setValue(null);
+      options[0].deselect();
+      listbox.deselect(options[1]);
       fixture.detectChanges();
 
-      expect(optionInstances.every(option => option.selected)).toBeFalse();
+      expect(options[0].isSelected()).toBeFalse();
+      expect(options[1].isSelected()).toBeFalse();
     });
 
-    it('should only select the first matching option if multiple is not enabled', () => {
-      expect(optionInstances.every(option => option.selected)).toBeFalse();
+    // TODO(mmalerba): Fix this case.
+    //  Currently banana gets booted because the option isn't loaded yet,
+    //  but then when the option loads the value is already lost.
+    // it('should allow binding to listbox value', async () => {
+    //   const {testComponent, fixture, listbox, options} = await setupComponent(ListboxWithBoundValue);
+    //   expect(listbox.value).toEqual(['banana']);
+    //   expect(options[2].isSelected()).toBeTrue();
+    //
+    //   testComponent.value = ['orange'];
+    //   fixture.detectChanges();
+    //
+    //   expect(listbox.value).toEqual(['orange']);
+    //   expect(options[1].isSelected()).toBeTrue();
+    // });
+  });
 
-      testComponent.form.setValue(['solar', 'arc']);
+  describe('disabled state', () => {
+    it('should be able to toggle listbox disabled state', async () => {
+      const {fixture, testComponent, listbox, listboxEl, options, optionEls} = await setupComponent(
+        ListboxWithOptions,
+      );
+      testComponent.isListboxDisabled = true;
       fixture.detectChanges();
 
-      expect(optionElements[1].getAttribute('aria-selected')).toBe('true');
-      expect(optionElements[2].hasAttribute('aria-selected')).toBeFalse();
-      expect(optionInstances[1].selected).toBeTrue();
-      expect(optionInstances[2].selected).toBeFalse();
+      expect(listbox.disabled).toBeTrue();
+      expect(listboxEl.getAttribute('aria-disabled')).toBe('true');
+
+      for (let i = 0; i < options.length; i++) {
+        expect(options[i].disabled).toBeTrue();
+        expect(optionEls[i].getAttribute('aria-disabled')).toBe('true');
+      }
     });
 
-    it('should deselect an option selected via form control once its value changes', () => {
-      const option = optionInstances[1];
-      const element = optionElements[1];
-
-      testComponent.form.setValue(['solar']);
+    it('should toggle option disabled state', async () => {
+      const {fixture, testComponent, options, optionEls} = await setupComponent(ListboxWithOptions);
+      testComponent.isAppleDisabled = true;
       fixture.detectChanges();
 
-      expect(element.getAttribute('aria-selected')).toBe('true');
-      expect(option.selected).toBeTrue();
-
-      option.value = 'new-value';
-      fixture.detectChanges();
-
-      expect(element.hasAttribute('aria-selected')).toBeFalse();
-      expect(option.selected).toBeFalse();
+      expect(options[0].disabled).toBeTrue();
+      expect(optionEls[0].getAttribute('aria-disabled')).toBe('true');
     });
 
-    it('should maintain the form control on listbox destruction', function () {
-      testComponent.form.setValue(['solar']);
+    it('should not change selection on click of a disabled option', async () => {
+      const {fixture, testComponent, listbox, optionEls} = await setupComponent(ListboxWithOptions);
+      testComponent.isAppleDisabled = true;
       fixture.detectChanges();
 
-      expect(testComponent.form.value).toEqual(['solar']);
-
-      testComponent.showListbox = false;
+      optionEls[0].click();
       fixture.detectChanges();
 
-      expect(testComponent.form.value).toEqual(['solar']);
+      expect(listbox.value).toEqual([]);
+      expect(fixture.componentInstance.changedOption).toBeUndefined();
+    });
+
+    it('should not change selection on click in a disabled listbox', async () => {
+      const {fixture, testComponent, listbox, optionEls} = await setupComponent(ListboxWithOptions);
+      testComponent.isListboxDisabled = true;
+      fixture.detectChanges();
+
+      optionEls[0].click();
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual([]);
+      expect(fixture.componentInstance.changedOption).toBeUndefined();
+    });
+
+    it('should not change selection on keyboard activation in a disabled listbox', async () => {
+      const {fixture, testComponent, listbox, listboxEl} = await setupComponent(ListboxWithOptions);
+      listbox.focus();
+      fixture.detectChanges();
+
+      testComponent.isListboxDisabled = true;
+      fixture.detectChanges();
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', SPACE);
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual([]);
+      expect(fixture.componentInstance.changedOption).toBeUndefined();
+    });
+
+    it('should not change selection on click of a disabled option', async () => {
+      const {fixture, testComponent, listbox, listboxEl} = await setupComponent(ListboxWithOptions);
+      listbox.focus();
+      fixture.detectChanges();
+
+      testComponent.isAppleDisabled = true;
+      fixture.detectChanges();
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', SPACE);
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual([]);
+      expect(fixture.componentInstance.changedOption).toBeUndefined();
+    });
+
+    it('should not handle type ahead on a disabled listbox', async (...args: unknown[]) => {
+      const {fixture, testComponent, listboxEl, options} = await setupComponent(ListboxWithOptions);
+      await fakeAsync(() => {
+        testComponent.isListboxDisabled = true;
+        fixture.detectChanges();
+
+        dispatchKeyboardEvent(listboxEl, 'keydown', B);
+        fixture.detectChanges();
+        tick(200);
+
+        for (let option of options) {
+          expect(option.isActive()).toBeFalse();
+        }
+      })(args);
+    });
+
+    it('should skip disabled options when navigating with arrow keys', async () => {
+      const {testComponent, fixture, listbox, listboxEl, options} = await setupComponent(
+        ListboxWithOptions,
+      );
+      testComponent.isOrangeDisabled = true;
+      listbox.focus();
+      fixture.detectChanges();
+
+      expect(options[0].isActive()).toBeTrue();
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+
+      expect(options[2].isActive()).toBeTrue();
     });
   });
 
-  describe('inside a combobox', () => {
-    let fixture: ComponentFixture<ListboxInsideCombobox>;
-    let testComponent: ListboxInsideCombobox;
-
-    let listbox: DebugElement;
-    let listboxInstance: CdkListbox<unknown>;
-    let listboxElement: HTMLElement;
-
-    let combobox: DebugElement;
-    let comboboxInstance: CdkCombobox<string>;
-    let comboboxElement: HTMLElement;
-
-    let options: DebugElement[];
-    let optionInstances: CdkOption[];
-    let optionElements: HTMLElement[];
-
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CdkListboxModule, CdkComboboxModule],
-        declarations: [ListboxInsideCombobox],
-      }).compileComponents();
-    }));
-
-    beforeEach(() => {
-      fixture = TestBed.createComponent(ListboxInsideCombobox);
+  describe('compare with', () => {
+    it('should allow custom function to compare option values', async () => {
+      const {fixture, listbox, options} = await setupComponent<
+        ListboxWithObjectValues,
+        {name: string}
+      >(ListboxWithObjectValues, [CommonModule]);
+      listbox.value = [{name: 'Banana'}];
       fixture.detectChanges();
 
-      testComponent = fixture.debugElement.componentInstance;
+      expect(options[2].isSelected()).toBeTrue();
 
-      combobox = fixture.debugElement.query(By.directive(CdkCombobox));
-      comboboxInstance = combobox.injector.get<CdkCombobox<string>>(CdkCombobox);
-      comboboxElement = combobox.nativeElement;
+      listbox.value = [{name: 'Orange', extraStuff: true} as any];
+      fixture.detectChanges();
+
+      expect(options[1].isSelected()).toBeTrue();
+    });
+  });
+
+  describe('keyboard navigation', () => {
+    it('should update active item on arrow key presses', async () => {
+      const {fixture, listbox, listboxEl, options} = await setupComponent(ListboxWithOptions);
+      listbox.focus();
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+
+      expect(options[1].isActive()).toBeTrue();
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', UP_ARROW);
+      fixture.detectChanges();
+
+      expect(options[0].isActive()).toBeTrue();
     });
 
-    it('should update combobox value on selection of an option', () => {
-      expect(comboboxInstance.value).toBeUndefined();
-      expect(comboboxInstance.isOpen()).toBeFalse();
-
-      dispatchMouseEvent(comboboxElement, 'click');
+    it('should update active option on home and end key press', async () => {
+      const {fixture, listbox, listboxEl, options, optionEls} = await setupComponent(
+        ListboxWithOptions,
+      );
+      listbox.focus();
+      dispatchKeyboardEvent(listboxEl, 'keydown', END);
       fixture.detectChanges();
 
-      listbox = fixture.debugElement.query(By.directive(CdkListbox));
-      listboxInstance = listbox.injector.get<CdkListbox<unknown>>(CdkListbox);
+      expect(options[options.length - 1].isActive()).toBeTrue();
+      expect(optionEls[options.length - 1].classList).toContain('cdk-option-active');
 
-      options = fixture.debugElement.queryAll(By.directive(CdkOption));
-      optionInstances = options.map(o => o.injector.get<CdkOption>(CdkOption));
-      optionElements = options.map(o => o.nativeElement);
-
-      expect(comboboxInstance.isOpen()).toBeTrue();
-
-      dispatchMouseEvent(optionElements[0], 'click');
+      dispatchKeyboardEvent(listboxEl, 'keydown', HOME);
       fixture.detectChanges();
 
-      expect(comboboxInstance.isOpen()).toBeFalse();
-      expect(comboboxInstance.value).toBe('purple');
+      expect(options[0].isActive()).toBeTrue();
+      expect(optionEls[0].classList).toContain('cdk-option-active');
     });
 
-    it('should update combobox value on selection via keyboard', () => {
-      expect(comboboxInstance.value).toBeUndefined();
-      expect(comboboxInstance.isOpen()).toBeFalse();
+    it('should change active item using type ahead', async (...args: unknown[]) => {
+      const {fixture, listbox, listboxEl, options} = await setupComponent(ListboxWithOptions);
+      await fakeAsync(() => {
+        listbox.focus();
+        fixture.detectChanges();
 
-      dispatchMouseEvent(comboboxElement, 'click');
-      fixture.detectChanges();
+        dispatchKeyboardEvent(listboxEl, 'keydown', B);
+        fixture.detectChanges();
+        tick(200);
 
-      listbox = fixture.debugElement.query(By.directive(CdkListbox));
-      listboxInstance = listbox.injector.get<CdkListbox<unknown>>(CdkListbox);
-      listboxElement = listbox.nativeElement;
-
-      options = fixture.debugElement.queryAll(By.directive(CdkOption));
-      optionInstances = options.map(o => o.injector.get<CdkOption>(CdkOption));
-      optionElements = options.map(o => o.nativeElement);
-
-      expect(comboboxInstance.isOpen()).toBeTrue();
-
-      listboxInstance.setActiveOption(optionInstances[1]);
-      dispatchKeyboardEvent(listboxElement, 'keydown', SPACE);
-      fixture.detectChanges();
-
-      expect(comboboxInstance.isOpen()).toBeFalse();
-      expect(comboboxInstance.value).toBe('solar');
+        expect(options[2].isActive()).toBeTrue();
+      })(args);
     });
 
-    it('should not close panel if listbox is in multiple mode', () => {
-      expect(comboboxInstance.value).toBeUndefined();
-      expect(comboboxInstance.isOpen()).toBeFalse();
+    it('should allow custom type ahead label', async (...args: unknown[]) => {
+      const {fixture, listbox, listboxEl, options} = await setupComponent(
+        ListboxWithCustomTypeahead,
+      );
+      await fakeAsync(() => {
+        listbox.focus();
+        fixture.detectChanges();
 
-      dispatchMouseEvent(comboboxElement, 'click');
+        dispatchKeyboardEvent(listboxEl, 'keydown', B);
+        fixture.detectChanges();
+        tick(200);
+
+        expect(options[2].isActive()).toBeTrue();
+      })(args);
+    });
+
+    it('should focus and toggle the next item when pressing SHIFT + DOWN_ARROW', async () => {
+      const {fixture, listbox, listboxEl, options} = await setupComponent(ListboxWithOptions);
+      listbox.focus();
       fixture.detectChanges();
 
-      listbox = fixture.debugElement.query(By.directive(CdkListbox));
-      listboxInstance = listbox.injector.get<CdkListbox<unknown>>(CdkListbox);
-      listboxElement = listbox.nativeElement;
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW, undefined, {shift: true});
+      fixture.detectChanges();
 
+      expect(listbox.value).toEqual(['orange']);
+      expect(fixture.componentInstance.changedOption?.id).toBe(options[1].id);
+    });
+
+    // TODO(mmalerba): ensure all keys covered
+  });
+
+  describe('with roving tabindex', () => {
+    it('should shift focus on keyboard navigation', async () => {
+      const {fixture, listbox, listboxEl, optionEls} = await setupComponent(ListboxWithOptions);
+      listbox.focus();
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(optionEls[0]);
+      expect(listboxEl.hasAttribute('aria-activedescendant')).toBeFalse();
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(optionEls[1]);
+      expect(listboxEl.hasAttribute('aria-activedescendant')).toBeFalse();
+    });
+
+    it('should focus first option on listbox focus', async () => {
+      const {fixture, listbox, optionEls} = await setupComponent(ListboxWithOptions);
+      listbox.focus();
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(optionEls[0]);
+    });
+
+    it('should focus listbox if no focusable options available', async () => {
+      const {fixture, listbox, listboxEl} = await setupComponent(ListboxWithNoOptions);
+
+      listbox.focus();
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(listboxEl);
+    });
+  });
+
+  describe('with aria-activedescendant', () => {
+    it('should update active descendant on keyboard navigation', async () => {
+      const {testComponent, fixture, listbox, listboxEl, optionEls} = await setupComponent(
+        ListboxWithOptions,
+      );
+      testComponent.isActiveDescendant = true;
+      fixture.detectChanges();
+      listbox.focus();
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+
+      expect(listboxEl.getAttribute('aria-activedescendant')).toBe(optionEls[0].id);
+      expect(document.activeElement).toBe(listboxEl);
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+
+      expect(listboxEl.getAttribute('aria-activedescendant')).toBe(optionEls[1].id);
+      expect(document.activeElement).toBe(listboxEl);
+    });
+
+    it('should not activate an option on listbox focus', async () => {
+      const {testComponent, fixture, listbox, options} = await setupComponent(ListboxWithOptions);
+      testComponent.isActiveDescendant = true;
+      fixture.detectChanges();
+      listbox.focus();
+      fixture.detectChanges();
+
+      for (let option of options) {
+        expect(option.isActive()).toBeFalse();
+      }
+    });
+
+    it('should focus listbox and make option active on option focus', async () => {
+      const {testComponent, fixture, listboxEl, options, optionEls} = await setupComponent(
+        ListboxWithOptions,
+      );
+      testComponent.isActiveDescendant = true;
+      fixture.detectChanges();
+      optionEls[2].focus();
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(listboxEl);
+      expect(options[2].isActive()).toBeTrue();
+    });
+  });
+
+  describe('with FormControl', () => {
+    it('should reflect disabled state of the FormControl', async () => {
+      const {testComponent, fixture, listbox} = await setupComponent(ListboxWithFormControl, [
+        ReactiveFormsModule,
+      ]);
+      testComponent.formControl.disable();
+      fixture.detectChanges();
+
+      expect(listbox.disabled).toBeTrue();
+    });
+
+    it('should update when FormControl value changes', async () => {
+      const {testComponent, fixture, options} = await setupComponent(ListboxWithFormControl, [
+        ReactiveFormsModule,
+      ]);
+      testComponent.formControl.setValue(['banana']);
+      fixture.detectChanges();
+
+      expect(options[2].isSelected()).toBeTrue();
+    });
+
+    it('should update FormControl when selection changes', async () => {
+      const {testComponent, fixture, optionEls} = await setupComponent(ListboxWithFormControl, [
+        ReactiveFormsModule,
+      ]);
+      const spy = jasmine.createSpy();
+      const subscription = testComponent.formControl.valueChanges.subscribe(spy);
+      fixture.detectChanges();
+
+      expect(spy).not.toHaveBeenCalled();
+
+      optionEls[1].click();
+      fixture.detectChanges();
+
+      expect(spy).toHaveBeenCalledWith(['orange']);
+      subscription.unsubscribe();
+    });
+
+    it('should update multi-select listbox when FormControl value changes', async () => {
+      const {testComponent, fixture, options} = await setupComponent(ListboxWithFormControl, [
+        ReactiveFormsModule,
+      ]);
       testComponent.isMultiselectable = true;
       fixture.detectChanges();
-
-      options = fixture.debugElement.queryAll(By.directive(CdkOption));
-      optionInstances = options.map(o => o.injector.get<CdkOption>(CdkOption));
-      optionElements = options.map(o => o.nativeElement);
-
-      expect(comboboxInstance.isOpen()).toBeTrue();
-
-      listboxInstance.setActiveOption(optionInstances[1]);
-      dispatchKeyboardEvent(listboxElement, 'keydown', SPACE);
-      testComponent.combobox.updateAndClose(testComponent.listbox.getSelectedValues());
+      testComponent.formControl.setValue(['orange', 'banana']);
       fixture.detectChanges();
 
-      expect(comboboxInstance.isOpen()).toBeFalse();
-      expect(comboboxInstance.value).toEqual(['solar']);
+      expect(options[1].isSelected()).toBeTrue();
+      expect(options[2].isSelected()).toBeTrue();
+    });
+
+    it('should update FormControl when multi-selection listbox changes', async () => {
+      const {testComponent, fixture, optionEls} = await setupComponent(ListboxWithFormControl, [
+        ReactiveFormsModule,
+      ]);
+      testComponent.isMultiselectable = true;
+      fixture.detectChanges();
+      const spy = jasmine.createSpy();
+      const subscription = testComponent.formControl.valueChanges.subscribe(spy);
+      fixture.detectChanges();
+
+      expect(spy).not.toHaveBeenCalled();
+
+      optionEls[1].click();
+      fixture.detectChanges();
+      expect(spy).toHaveBeenCalledWith(['orange']);
+
+      optionEls[2].click();
+      fixture.detectChanges();
+      expect(spy).toHaveBeenCalledWith(['orange', 'banana']);
+      subscription.unsubscribe();
+    });
+
+    it('should have FormControl error multiple values selected in single-select listbox', async () => {
+      const {testComponent, fixture} = await setupComponent(ListboxWithFormControl, [
+        ReactiveFormsModule,
+      ]);
+      testComponent.formControl.setValue(['orange', 'banana']);
+      fixture.detectChanges();
+
+      expect(testComponent.formControl.hasError('cdkListboxMultipleValues')).toBeTrue();
+      expect(testComponent.formControl.hasError('cdkListboxInvalidValues')).toBeFalse();
+    });
+
+    it('should have FormControl error when non-option value selected', async () => {
+      const {testComponent, fixture} = await setupComponent(ListboxWithFormControl, [
+        ReactiveFormsModule,
+      ]);
+      testComponent.isMultiselectable = true;
+      testComponent.formControl.setValue(['orange', 'dragonfruit', 'mango']);
+      fixture.detectChanges();
+
+      expect(testComponent.formControl.hasError('cdkListboxInvalidValues')).toBeTrue();
+      expect(testComponent.formControl.hasError('cdkListboxMultipleValues')).toBeFalse();
+      expect(testComponent.formControl.errors?.['cdkListboxInvalidValues']).toEqual({
+        'values': ['dragonfruit', 'mango'],
+      });
+    });
+
+    it('should have multiple FormControl errors when multiple non-option values selected in single-select listbox', async () => {
+      const {testComponent, fixture} = await setupComponent(ListboxWithFormControl, [
+        ReactiveFormsModule,
+      ]);
+      testComponent.formControl.setValue(['dragonfruit', 'mango']);
+      fixture.detectChanges();
+
+      expect(testComponent.formControl.hasError('cdkListboxInvalidValues')).toBeTrue();
+      expect(testComponent.formControl.hasError('cdkListboxMultipleValues')).toBeTrue();
+      expect(testComponent.formControl.errors?.['cdkListboxInvalidValues']).toEqual({
+        'values': ['dragonfruit', 'mango'],
+      });
     });
   });
 });
@@ -883,131 +684,101 @@ describe('CdkOption and CdkListbox', () => {
 @Component({
   template: `
     <div cdkListbox
-         [disabled]="isListboxDisabled"
-         (selectionChange)="onSelectionChange($event)">
-      <div cdkOption
-          [disabled]="isPurpleDisabled">
-        Purple
+         [id]="listboxId"
+         [tabindex]="listboxTabindex"
+         [cdkListboxMultiple]="isMultiselectable"
+         [cdkListboxDisabled]="isListboxDisabled"
+         [cdkListboxUseActiveDescendant]="isActiveDescendant"
+         (cdkListboxValueChange)="onSelectionChange($event)">
+      <div cdkOption="apple"
+          [cdkOptionDisabled]="isAppleDisabled"
+          [id]="appleId"
+          [tabindex]="appleTabindex">
+        Apple
       </div>
-      <div cdkOption
-           [disabled]="isSolarDisabled">
-        Solar
-      </div>
-      <div cdkOption>Arc</div>
-      <div cdkOption>Stasis</div>
-    </div>`,
+      <div cdkOption="orange" [cdkOptionDisabled]="isOrangeDisabled">Orange</div>
+      <div cdkOption="banana">Banana</div>
+      <div cdkOption="peach">Peach</div>
+    </div>
+  `,
 })
 class ListboxWithOptions {
   changedOption: CdkOption;
-  isListboxDisabled: boolean = false;
-  isPurpleDisabled: boolean = false;
-  isSolarDisabled: boolean = false;
+  isListboxDisabled = false;
+  isAppleDisabled = false;
+  isOrangeDisabled = false;
+  isMultiselectable = false;
+  isActiveDescendant = false;
+  listboxId: string;
+  listboxTabindex: number;
+  appleId: string;
+  appleTabindex: number;
 
-  onSelectionChange(event: ListboxSelectionChangeEvent<unknown>) {
+  onSelectionChange(event: ListboxValueChangeEvent<unknown>) {
     this.changedOption = event.option;
   }
 }
+
+@Component({
+  template: `<div cdkListbox></div>`,
+})
+class ListboxWithNoOptions {}
 
 @Component({
   template: `
     <div cdkListbox
-         [multiple]="isMultiselectable"
-         (selectionChange)="onSelectionChange($event)">
-      <div cdkOption>Purple</div>
-      <div cdkOption>Solar</div>
-      <div cdkOption>Arc</div>
-      <div cdkOption>Stasis</div>
-    </div>`,
-})
-class ListboxMultiselect {
-  changedOption: CdkOption;
-  isMultiselectable: boolean = false;
-
-  onSelectionChange(event: ListboxSelectionChangeEvent<unknown>) {
-    this.changedOption = event.option;
-  }
-}
-
-@Component({
-  template: `
-    <div cdkListbox
-         [useActiveDescendant]="isActiveDescendant">
-      <div cdkOption>Purple</div>
-      <div cdkOption>Solar</div>
-      <div cdkOption>Arc</div>
-      <div cdkOption>Stasis</div>
-    </div>`,
-})
-class ListboxActiveDescendant {
-  changedOption: CdkOption;
-  isActiveDescendant: boolean = true;
-  focusedOption: string;
-
-  onSelectionChange(event: ListboxSelectionChangeEvent<unknown>) {
-    this.changedOption = event.option;
-  }
-
-  onFocus(option: string) {
-    this.focusedOption = option;
-  }
-}
-
-@Component({
-  template: `
-    <select cdkListbox
-         [disabled]="isDisabled"
-         [multiple]="isMultiselectable"
-         (selectionChange)="onSelectionChange($event)"
-         [formControl]="form"
-         *ngIf="showListbox"   ngDefaultControl>
-      <option cdkOption [value]="'purple'">Purple</option>
-      <option cdkOption [value]="'solar'">Solar</option>
-      <option cdkOption [value]="'arc'">Arc</option>
-      <option cdkOption [value]="'stasis'">Stasis</option>
-    </select>`,
-})
-class ListboxControlValueAccessor {
-  form = new FormControl<string[]>([]);
-  changedOption: CdkOption<string>;
-  isDisabled: boolean = false;
-  isMultiselectable: boolean = false;
-  showListbox: boolean = true;
-  @ViewChild(CdkListbox) listbox: CdkListbox<string>;
-
-  onSelectionChange(event: ListboxSelectionChangeEvent<string>) {
-    this.changedOption = event.option;
-  }
-}
-
-@Component({
-  template: `
-    <button cdkCombobox #toggleCombobox class="example-combobox"
-            [cdkComboboxTriggerFor]="panel"
-            [openActions]="'click'">
-      No Value
-    </button>
-
-    <ng-template #panel>
-      <select cdkListbox
-              [disabled]="isDisabled"
-              [multiple]="isMultiselectable"
-              (selectionChange)="onSelectionChange($event)">
-        <option cdkOption [value]="'purple'">Purple</option>
-        <option cdkOption [value]="'solar'">Solar</option>
-        <option cdkOption [value]="'arc'">Arc</option>
-        <option cdkOption [value]="'stasis'">Stasis</option>
-      </select>
-    </ng-template>
+         [formControl]="formControl"
+         [cdkListboxMultiple]="isMultiselectable"
+         [cdkListboxUseActiveDescendant]="isActiveDescendant">
+      <div cdkOption="apple">Apple</div>
+      <div cdkOption="orange">Orange</div>
+      <div cdkOption="banana">Banana</div>
+      <div cdkOption="peach">Peach</div>
+    </div>
   `,
 })
-class ListboxInsideCombobox {
-  changedOption: CdkOption<string>;
-  isDisabled: boolean = false;
-  isMultiselectable: boolean = false;
-  @ViewChild(CdkListbox) listbox: CdkListbox<string>;
-  @ViewChild(CdkCombobox) combobox: CdkCombobox;
+class ListboxWithFormControl {
+  formControl = new FormControl();
+  isMultiselectable = false;
+  isActiveDescendant = false;
+}
 
-  onSelectionChange(event: ListboxSelectionChangeEvent<string>) {
-    this.changedOption = event.option;
-  }
+@Component({
+  template: `
+    <ul cdkListbox>
+      <li cdkOption="apple" cdkOptionTypeaheadLabel="apple">🍎</li>
+      <li cdkOption="orange" cdkOptionTypeaheadLabel="orange">🍊</li>
+      <li cdkOption="banana" cdkOptionTypeaheadLabel="banana">🍌</li>
+      <li cdkOption="peach" cdkOptionTypeaheadLabel="peach">🍑</li>
+    </ul>
+  `,
+})
+class ListboxWithCustomTypeahead {}
+
+// @Component({
+//   template: `
+//     <div cdkListbox
+//          [cdkListboxValue]="value">
+//       <div cdkOption="apple">Apple</div>
+//       <div cdkOption="orange">Orange</div>
+//       <div cdkOption="banana">Banana</div>
+//       <div cdkOption="peach">Peach</div>
+//     </div>
+//   `,
+// })
+// class ListboxWithBoundValue {
+//   value = ['banana'];
+// }
+
+@Component({
+  template: `
+    <div cdkListbox [cdkListboxCompareWith]="fruitCompare">
+      <div *ngFor="let fruit of fruits" [cdkOption]="fruit">{{fruit.name}}</div>
+    </div>
+  `,
+})
+class ListboxWithObjectValues {
+  fruits = [{name: 'Apple'}, {name: 'Orange'}, {name: 'Banana'}, {name: 'Peach'}];
+
+  fruitCompare = (a: {name: string}, b: {name: string}) => a.name === b.name;
 }

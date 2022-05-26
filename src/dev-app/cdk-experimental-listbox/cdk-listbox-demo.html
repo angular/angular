@@ -1,15 +1,85 @@
-<ul cdkListbox class="demo-listbox"
-    [multiple]="multiSelectable"
-    [useActiveDescendant]="activeDescendant"
-    [formControl]="formControl" ngDefaultControl>
-  <li cdkOption>Apple</li>
-  <li cdkOption>Orange</li>
-  <li cdkOption>Grapefruit</li>
-  <li cdkOption>Peach</li>
+<h2>formControl</h2>
+<ul #fruitForm="ngForm"
+    cdkListbox
+    class="demo-listbox"
+    [cdkListboxMultiple]="multiSelectable"
+    [cdkListboxUseActiveDescendant]="activeDescendant"
+    [cdkListboxCompareWith]="compare"
+    [formControl]="fruitControl">
+  <li cdkOption="apple">Apple</li>
+  <li cdkOption="orange">Orange</li>
+  <li cdkOption="grapefruit">Grapefruit</li>
+  <li cdkOption="peach">Peach</li>
+  <li cdkOption="kiwi">Kiwi</li>
 </ul>
+<select [multiple]="multiSelectable" [formControl]="nativeFruitControl">
+  <option value="apple">Apple</option>
+  <option value="orange">Orange</option>
+  <option value="grapefruit">Grapefruit</option>
+  <option value="peach">Peach</option>
+</select>
+<div>
+  Errors: {{fruitForm.errors | json}}
+</div>
 
-<button (click)="disableForm()">Disable Form</button>
+<h2>ngModel</h2>
+<ul #fruitModel="ngModel"
+    cdkListbox
+    class="demo-listbox"
+    [cdkListboxMultiple]="multiSelectable"
+    [cdkListboxUseActiveDescendant]="activeDescendant"
+    [cdkListboxCompareWith]="compare"
+    [cdkListboxDisabled]="fruitControl.disabled"
+    [(ngModel)]="fruit">
+  <li cdkOption="apple">Apple</li>
+  <li cdkOption="orange">Orange</li>
+  <li cdkOption="grapefruit">Grapefruit</li>
+  <li cdkOption="peach">Peach</li>
+</ul>
+<select [multiple]="multiSelectable" [(ngModel)]="nativeFruit">
+  <option value="apple">Apple</option>
+  <option value="orange">Orange</option>
+  <option value="grapefruit">Grapefruit</option>
+  <option value="peach">Peach</option>
+</select>
+<div>
+  Errors: {{fruitModel.errors | json}}
+</div>
+
+<h2>value binding</h2>
+<ul cdkListbox
+    class="demo-listbox"
+    [cdkListboxMultiple]="multiSelectable"
+    [cdkListboxUseActiveDescendant]="activeDescendant"
+    [cdkListboxCompareWith]="compare"
+    [cdkListboxDisabled]="fruitControl.disabled"
+    [cdkListboxValue]="fruit"
+    (cdkListboxValueChange)="fruit = $event.value">
+  <li cdkOption="apple">Apple</li>
+  <li cdkOption="orange">Orange</li>
+  <li cdkOption="grapefruit">Grapefruit</li>
+  <li cdkOption="peach">Peach</li>
+</ul>
+<select [multiple]="multiSelectable" (change)="onNativeFruitChange($event)">
+  <option value="apple" [selected]="nativeFruit?.includes('apple')">Apple</option>
+  <option value="orange" [selected]="nativeFruit?.includes('orange')">Orange</option>
+  <option value="grapefruit" [selected]="nativeFruit?.includes('grapefruit')">Grapefruit</option>
+  <option value="peach" [selected]="nativeFruit?.includes('peach')">Peach</option>
+</select>
+
+<p>
+  Listbox Control Value: {{fruitControl.value | json}}
+</p>
+<p>
+  Native Select Control Value: {{nativeFruitControl.value | json}}
+</p>
+
+<button (click)="toggleFormDisabled()">Disable Listbox: {{fruitControl.disabled ? 'Yes' : 'No'}}</button>
 <br>
-<button (click)="toggleMultiple()">Toggle Multiple</button>
+<button (click)="toggleMultiple()">Toggle Multiple: {{multiSelectable ? 'Multiple' : 'Single'}}</button>
 <br>
-<button (click)="toggleActiveDescendant()">Toggle Active Descendant</button>
+<button (click)="toggleActiveDescendant()">Toggle Active Descendant: {{
+  activeDescendant ? 'Active Descendant' : 'Roving Tabindex'
+}}</button>
+<br>
+<button (click)="toggleDumbCompare()">Compare With: {{this.compare ? 'Apple === Orange' : 'Standard'}}</button>
