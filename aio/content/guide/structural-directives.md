@@ -161,6 +161,8 @@ To verify that the directive works, click the button to change the value of `con
 
 <img alt="UnlessDirective in action" src="generated/images/guide/structural-directives/unless-anim.gif">
 
+</div>
+
 ## Structural directive syntax reference
 
 When you write your own structural directives, use the following syntax:
