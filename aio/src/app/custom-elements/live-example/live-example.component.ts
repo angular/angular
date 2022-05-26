@@ -1,4 +1,5 @@
 /* eslint-disable  @angular-eslint/component-selector */
+import { CommonModule } from '@angular/common';
 import { AfterContentInit, AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
@@ -8,6 +9,35 @@ import { AttrMap, boolFromValue, getAttrs, getAttrValue } from 'app/shared/attri
 const LIVE_EXAMPLE_BASE = CONTENT_URL_PREFIX + 'live-examples/';
 const ZIP_BASE = CONTENT_URL_PREFIX + 'zips/';
 
+///// EmbeddedStackblitzComponent ///
+/**
+ * Hides the <iframe> so we can test LiveExampleComponent without actually triggering
+ * a call to stackblitz to load the iframe
+ */
+@Component({
+  standalone: true,
+  selector: 'aio-embedded-stackblitz',
+  template: '<iframe #iframe frameborder="0" width="100%" height="100%"></iframe>',
+  styles: [ 'iframe { min-height: 400px; }' ],
+})
+export class EmbeddedStackblitzComponent implements AfterViewInit {
+  @Input() src: string;
+
+  @ViewChild('iframe', { static: true }) iframe: ElementRef;
+
+  ngAfterViewInit() {
+    // DEVELOPMENT TESTING ONLY
+    // this.src = 'https://angular.io/resources/live-examples/quickstart/ts/stackblitz.json';
+
+    if (this.iframe) {
+      // security: the `src` is always authored by the documentation team
+      // and is considered to be safe
+      this.iframe.nativeElement.src = this.src;
+    }
+  }
+}
+
+///// LiveExampleComponent ///
 /**
  * Angular.io Live Example Embedded Component
  *
@@ -51,8 +81,10 @@ const ZIP_BASE = CONTENT_URL_PREFIX + 'zips/';
  *   // ~/resources/live-examples/toh-pt1/minimal.stackblitz.json
  */
 @Component({
+  standalone: true,
   selector: 'live-example',
-  templateUrl: 'live-example.component.html'
+  templateUrl: 'live-example.component.html',
+  imports: [ CommonModule, EmbeddedStackblitzComponent ],
 })
 export class LiveExampleComponent implements AfterContentInit {
 
@@ -126,32 +158,5 @@ export class LiveExampleComponent implements AfterContentInit {
   private getZip(exampleDir: string, stackblitzName: string) {
     const zipName = exampleDir.split('/')[0];
     return `${ZIP_BASE}${exampleDir}/${stackblitzName}${zipName}.zip`;
-  }
-}
-
-///// EmbeddedStackblitzComponent ///
-/**
- * Hides the <iframe> so we can test LiveExampleComponent without actually triggering
- * a call to stackblitz to load the iframe
- */
-@Component({
-  selector: 'aio-embedded-stackblitz',
-  template: '<iframe #iframe frameborder="0" width="100%" height="100%"></iframe>',
-  styles: [ 'iframe { min-height: 400px; }' ]
-})
-export class EmbeddedStackblitzComponent implements AfterViewInit {
-  @Input() src: string;
-
-  @ViewChild('iframe', { static: true }) iframe: ElementRef;
-
-  ngAfterViewInit() {
-    // DEVELOPMENT TESTING ONLY
-    // this.src = 'https://angular.io/resources/live-examples/quickstart/ts/stackblitz.json';
-
-    if (this.iframe) {
-      // security: the `src` is always authored by the documentation team
-      // and is considered to be safe
-      this.iframe.nativeElement.src = this.src;
-    }
   }
 }

@@ -7,7 +7,7 @@ describe('DistTagComponent', () => {
   let actualMode: string;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ declarations: [DistTagComponent] });
+    TestBed.configureTestingModule({ imports: [DistTagComponent] });
     actualMode = environment.mode;
   });
 

@@ -1,7 +1,9 @@
 /* eslint-disable  @angular-eslint/component-selector */
+import { CommonModule } from '@angular/common';
 import { Component, HostBinding, ElementRef, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { fromInnerHTML } from 'app/shared/security';
 import { CodeComponent } from './code.component';
+import { CodeModule } from './code.module';
 
 /**
  * An embeddable code block that displays nicely formatted code.
@@ -15,6 +17,7 @@ import { CodeComponent } from './code.component';
  * ```
  */
 @Component({
+  standalone: true,
   selector: 'code-example',
   template: `
     <!-- Content projection is used to get the content HTML provided to this component -->
@@ -31,6 +34,7 @@ import { CodeComponent } from './code.component';
               [header]="header">
     </aio-code>
   `,
+  imports: [ CodeModule, CommonModule ],
 })
 export class CodeExampleComponent implements AfterViewInit {
   classes: { 'headed-code': boolean, 'simple-code': boolean };

@@ -6,7 +6,6 @@ import { MockPrettyPrinter } from 'testing/pretty-printer.service';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { CodeTabsComponent } from './code-tabs.component';
-import { CodeTabsModule } from './code-tabs.module';
 import { PrettyPrinter } from './pretty-printer.service';
 
 describe('CodeTabsComponent', () => {
@@ -17,7 +16,7 @@ describe('CodeTabsComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ HostComponent ],
-      imports: [ CodeTabsModule, NoopAnimationsModule ],
+      imports: [ CodeTabsComponent, NoopAnimationsModule ],
       schemas: [ NO_ERRORS_SCHEMA ],
       providers: [
        { provide: Logger, useClass: MockLogger },

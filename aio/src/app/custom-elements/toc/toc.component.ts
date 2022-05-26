@@ -1,16 +1,19 @@
+import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { asapScheduler, combineLatest, Subject } from 'rxjs';
 import { startWith, subscribeOn, takeUntil } from 'rxjs/operators';
 
 import { ScrollService } from 'app/shared/scroll.service';
+import { IconsModule } from 'app/shared/icons/icons.module';
 import { TocItem, TocService } from 'app/shared/toc.service';
 
 type TocType = 'None' | 'Floating' | 'EmbeddedSimple' | 'EmbeddedExpandable';
 
 @Component({
+  standalone: true,
   selector: 'aio-toc',
   templateUrl: 'toc.component.html',
-  styles: []
+  imports: [ CommonModule, IconsModule ],
 })
 export class TocComponent implements OnInit, AfterViewInit, OnDestroy {
 

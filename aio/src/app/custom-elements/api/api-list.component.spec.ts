@@ -6,7 +6,6 @@ import { ApiItem, ApiSection, ApiService } from './api.service';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
 import { MockLogger } from 'testing/logger.service';
-import { ApiListModule } from './api-list.module';
 
 describe('ApiListComponent', () => {
   let component: ApiListComponent;
@@ -15,12 +14,17 @@ describe('ApiListComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ ApiListModule ],
+      imports: [ ApiListComponent ],
       providers: [
         { provide: ApiService, useClass: TestApiService },
         { provide: Logger, useClass: MockLogger },
         { provide: LocationService, useClass: TestLocationService }
-      ]
+      ],
+    });
+    TestBed.overrideComponent(ApiListComponent, {
+      remove: {
+        providers: [ ApiService ],
+      },
     });
 
     fixture = TestBed.createComponent(ApiListComponent);

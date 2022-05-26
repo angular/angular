@@ -1,71 +1,63 @@
 import { InjectionToken, Type } from '@angular/core';
-import { LoadChildrenCallback } from '@angular/router';
 
-// Modules containing custom elements must be set up as lazy-loaded routes (loadChildren)
-// TODO(andrewjs): This is a hack, Angular should have first-class support for preparing a module
-// that contains custom elements.
-export const ELEMENT_MODULE_LOAD_CALLBACKS_AS_ROUTES = [
+export type LoadComponent = () => Promise<Type<unknown>>;
+
+// Components that should be mapped to custom elements must be set up as lazy-loaded routes
+// (`loadComponent`).
+export const ELEMENT_COMPONENT_LOAD_CALLBACKS_AS_ROUTES: {selector: string, loadComponent: LoadComponent}[] = [
   {
     selector: 'aio-announcement-bar',
-    loadChildren: () => import('./announcement-bar/announcement-bar.module').then(m => m.AnnouncementBarModule)
+    loadComponent: () => import('./announcement-bar/announcement-bar.component').then(m => m.AnnouncementBarComponent)
   },
   {
     selector: 'aio-api-list',
-    loadChildren: () => import('./api/api-list.module').then(m => m.ApiListModule)
+    loadComponent: () => import('./api/api-list.component').then(m => m.ApiListComponent)
   },
   {
     selector: 'aio-contributor-list',
-    loadChildren: () => import('./contributor/contributor-list.module').then(m => m.ContributorListModule)
+    loadComponent: () => import('./contributor/contributor-list.component').then(m => m.ContributorListComponent)
   },
   {
     selector: 'aio-file-not-found-search',
-    loadChildren: () => import('./search/file-not-found-search.module').then(m => m.FileNotFoundSearchModule)
+    loadComponent: () => import('./search/file-not-found-search.component').then(m => m.FileNotFoundSearchComponent)
   },
   {
     selector: 'aio-angular-dist-tag',
-    loadChildren: () => import('./dist-tag/dist-tag.module').then(m => m.DistTagModule)
+    loadComponent: () => import('./dist-tag/dist-tag.component').then(m => m.DistTagComponent)
   },
   {
     selector: 'aio-resource-list',
-    loadChildren: () => import('./resource/resource-list.module').then(m => m.ResourceListModule)
+    loadComponent: () => import('./resource/resource-list.component').then(m => m.ResourceListComponent)
   },
   {
     selector: 'aio-toc',
-    loadChildren: () => import('./toc/toc.module').then(m => m.TocModule)
+    loadComponent: () => import('./toc/toc.component').then(m => m.TocComponent)
   },
   {
     selector: 'code-example',
-    loadChildren: () => import('./code/code-example.module').then(m => m.CodeExampleModule)
+    loadComponent: () => import('./code/code-example.component').then(m => m.CodeExampleComponent)
   },
   {
     selector: 'code-tabs',
-    loadChildren: () => import('./code/code-tabs.module').then(m => m.CodeTabsModule)
+    loadComponent: () => import('./code/code-tabs.component').then(m => m.CodeTabsComponent)
   },
   {
     selector: 'live-example',
-    loadChildren: () => import('./live-example/live-example.module').then(m => m.LiveExampleModule)
+    loadComponent: () => import('./live-example/live-example.component').then(m => m.LiveExampleComponent)
   },
   {
     selector: 'aio-events',
-    loadChildren: () => import('./events/events.module').then(m => m.EventsModule)
+    loadComponent: () => import('./events/events.component').then(m => m.EventsComponent)
   }
 ];
 
-/**
- * Interface expected to be implemented by all modules that declare a component that can be used as
- * a custom element.
- */
-export interface WithCustomElementComponent {
-  customElementComponent: Type<any>;
-}
-
-/** Injection token to provide the element path modules. */
-export const ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN = new InjectionToken<
-  Map<string, LoadChildrenCallback>
+/** Injection token to provide the custom element components paths. */
+export const ELEMENT_COMPONENT_LOAD_CALLBACKS_TOKEN = new InjectionToken<
+  Map<string, LoadComponent>
 >('aio/elements-map');
 
-/** Map of possible custom element selectors to their lazy-loadable module paths. */
-export const ELEMENT_MODULE_LOAD_CALLBACKS = new Map<string, LoadChildrenCallback>();
-ELEMENT_MODULE_LOAD_CALLBACKS_AS_ROUTES.forEach(route => {
-  ELEMENT_MODULE_LOAD_CALLBACKS.set(route.selector, route.loadChildren);
+/** Map of possible custom element selectors to their lazy-loadable component paths. */
+export const ELEMENT_COMPONENT_LOAD_CALLBACKS = new Map<string, LoadComponent>();
+ELEMENT_COMPONENT_LOAD_CALLBACKS_AS_ROUTES.forEach(route => {
+  ELEMENT_COMPONENT_LOAD_CALLBACKS.set(route.selector, route.loadComponent);
 });

@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 
 import { Category } from './resource.model';
@@ -5,8 +6,11 @@ import { ResourceService } from './resource.service';
 import { LocationService } from 'app/shared/location.service';
 
 @Component({
+  standalone: true,
   selector: 'aio-resource-list',
-  templateUrl: 'resource-list.component.html'
+  templateUrl: 'resource-list.component.html',
+  imports: [ CommonModule ],
+  providers: [ ResourceService ],
 })
 export class ResourceListComponent implements OnInit {
 

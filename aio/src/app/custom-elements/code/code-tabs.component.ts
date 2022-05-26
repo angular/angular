@@ -1,7 +1,11 @@
 /* eslint-disable  @angular-eslint/component-selector */
+import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
 import { fromInnerHTML } from 'app/shared/security';
 import { CodeComponent } from './code.component';
+import { CodeModule } from './code.module';
 
 export interface TabInfo {
   class: string;
@@ -22,6 +26,7 @@ export interface TabInfo {
  * The optional `linenums` attribute is the default `linenums` for each code pane.
  */
 @Component({
+  standalone: true,
   selector: 'code-tabs',
   template: `
     <!-- Use content projection so that the provided HTML's code-panes can be split into tabs -->
@@ -44,6 +49,7 @@ export interface TabInfo {
       </mat-tab-group>
     </mat-card>
   `,
+  imports: [ CodeModule, CommonModule, MatCardModule, MatTabsModule ],
 })
 export class CodeTabsComponent implements OnInit, AfterViewInit {
   tabs: TabInfo[];

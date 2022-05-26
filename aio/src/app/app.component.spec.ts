@@ -5,6 +5,7 @@ import { ComponentFixture, fakeAsync, flushMicrotasks, inject, TestBed, tick } f
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatSidenav } from '@angular/material/sidenav';
 import { By, Title } from '@angular/platform-browser';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ElementsLoader } from 'app/custom-elements/elements-loader';
 import { DocumentService } from 'app/documents/document.service';
 import { CookiesPopupComponent } from 'app/layout/cookies-popup/cookies-popup.component';
@@ -1356,7 +1357,7 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
   const mockLocationService = new MockLocationService(initialUrl);
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
-    imports: [ AppModule ],
+    imports: [ AppModule, NoopAnimationsModule ],
     providers: [
       { provide: APP_BASE_HREF, useValue: '/' },
       { provide: ElementsLoader, useClass: TestElementsLoader },

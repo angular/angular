@@ -1,5 +1,7 @@
+import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { IconsModule } from 'app/shared/icons/icons.module';
 import { Logger } from 'app/shared/logger.service';
 import { MockLogger } from 'testing/logger.service';
 import { AnnouncementBarComponent } from './announcement-bar.component';
@@ -20,9 +22,13 @@ describe('AnnouncementBarComponent', () => {
 
   beforeEach(() => {
     const injector = TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      declarations: [AnnouncementBarComponent],
+      imports: [AnnouncementBarComponent, HttpClientTestingModule],
       providers: [{ provide: Logger, useClass: MockLogger }]
+    });
+    TestBed.overrideModule(IconsModule, {
+      remove: {
+        imports: [ HttpClientModule ],
+      },
     });
 
     httpMock = injector.inject(HttpTestingController);

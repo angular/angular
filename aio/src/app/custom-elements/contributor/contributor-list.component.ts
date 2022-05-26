@@ -1,9 +1,12 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { ContributorComponent } from './contributor.component';
 import { ContributorGroup } from './contributors.model';
 import { ContributorService } from './contributor.service';
 import { LocationService } from 'app/shared/location.service';
 
 @Component({
+  standalone: true,
   selector: 'aio-contributor-list',
   template: `
     <div class="flex-center group-buttons">
@@ -19,6 +22,8 @@ import { LocationService } from 'app/shared/location.service';
       </div>
     </section>
   `,
+  imports: [ CommonModule, ContributorComponent ],
+  providers: [ ContributorService ]
 })
 export class ContributorListComponent implements OnInit {
   private groups: ContributorGroup[];

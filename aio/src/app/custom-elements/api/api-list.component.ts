@@ -1,20 +1,21 @@
 /*
-* API List & Filter Component
-*
-* A page that displays a formatted list of the public Angular API entities.
-* Clicking on a list item triggers navigation to the corresponding API entity document.
-* Can add/remove API entity links based on filter settings.
-*/
+ * API List & Filter Component
+ *
+ * A page that displays a formatted list of the public Angular API entities.
+ * Clicking on a list item triggers navigation to the corresponding API entity document.
+ * Can add/remove API entity links based on filter settings.
+ */
 
+import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
 import { combineLatest, Observable, ReplaySubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { LocationService } from 'app/shared/location.service';
-import { ApiItem, ApiSection, ApiService } from './api.service';
-
 import { Option } from 'app/shared/select/select.component';
-import { map } from 'rxjs/operators';
+import { SharedModule } from 'app/shared/shared.module';
+import { ApiItem, ApiSection, ApiService } from './api.service';
 
 class SearchCriteria {
   query = '';
@@ -23,8 +24,11 @@ class SearchCriteria {
 }
 
 @Component({
+  standalone: true,
   selector: 'aio-api-list',
   templateUrl: './api-list.component.html',
+  imports: [ CommonModule, SharedModule ],
+  providers: [ ApiService ],
 })
 export class ApiListComponent implements OnInit {
 

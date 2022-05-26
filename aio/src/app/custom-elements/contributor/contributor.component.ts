@@ -1,9 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-
-import { Contributor } from './contributors.model';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
+import { IconsModule } from 'app/shared/icons/icons.module';
+import { Contributor } from './contributors.model';
 
 @Component({
+  standalone: true,
   selector: 'aio-contributor',
   template: `
     <div [ngClass]="{ 'flipped': person.isFlipped }" class="contributor-card">
@@ -36,7 +38,8 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
             <p class="contributor-bio">{{person.bio}}</p>
         </button>
     </div>
-  `
+  `,
+  imports: [ CommonModule, IconsModule ],
 })
 export class ContributorComponent {
   @Input() person: Contributor;

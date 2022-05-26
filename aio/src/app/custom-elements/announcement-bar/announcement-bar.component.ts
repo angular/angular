@@ -1,7 +1,9 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
 import { Logger } from 'app/shared/logger.service';
+import { SharedModule } from 'app/shared/shared.module';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 const announcementsPath = CONTENT_URL_PREFIX + 'announcements.json';
 
@@ -42,6 +44,7 @@ export interface Announcement {
  * verified members of the Angular team.
  */
 @Component({
+  standalone: true,
   selector: 'aio-announcement-bar',
   template: `
   <div class="homepage-container" *ngIf="announcement">
@@ -50,7 +53,8 @@ export interface Announcement {
       <p [innerHTML]="announcement.message"></p>
       <a class="button" [href]="announcement.linkUrl">Learn More</a>
     </div>
-  </div>`
+  </div>`,
+  imports: [ CommonModule, SharedModule ],
 })
 export class AnnouncementBarComponent implements OnInit {
   announcement: Announcement;

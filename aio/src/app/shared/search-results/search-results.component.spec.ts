@@ -2,6 +2,7 @@ import { DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { SearchResult } from 'app/search/interfaces';
+import { IconsModule } from 'app/shared/icons/icons.module';
 import { SearchResultsComponent } from './search-results.component';
 
 describe('SearchResultsComponent', () => {
@@ -76,6 +77,7 @@ describe('SearchResultsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [ IconsModule ],
       declarations: [ SearchResultsComponent ]
     });
   });

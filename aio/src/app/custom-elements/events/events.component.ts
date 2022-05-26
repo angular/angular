@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 
 import { EventsService } from './events.service';
@@ -34,8 +35,11 @@ export interface Event {
 }
 
 @Component({
+  standalone: true,
   selector: 'aio-events',
-  templateUrl: 'events.component.html'
+  templateUrl: 'events.component.html',
+  imports: [ CommonModule ],
+  providers: [ EventsService ],
 })
 export class EventsComponent implements OnInit {
 

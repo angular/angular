@@ -49,7 +49,8 @@ describe('LiveExampleComponent', () => {
   //////// tests ////////
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ HostComponent, LiveExampleComponent, EmbeddedStackblitzComponent ],
+      imports: [ LiveExampleComponent, EmbeddedStackblitzComponent ],
+      declarations: [ HostComponent ],
       providers: [
         { provide: Location, useClass: TestLocation }
       ]

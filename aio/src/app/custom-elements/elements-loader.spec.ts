@@ -1,8 +1,8 @@
-import { Component, NgModule, Type } from '@angular/core';
+import { Component, Type } from '@angular/core';
 import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 
 import { ElementsLoader } from './elements-loader';
-import { ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN, WithCustomElementComponent } from './element-registry';
+import { ELEMENT_COMPONENT_LOAD_CALLBACKS_TOKEN, LoadComponent } from './element-registry';
 
 
 interface Deferred {
@@ -18,11 +18,11 @@ describe('ElementsLoader', () => {
       providers: [
         ElementsLoader,
         {
-          provide: ELEMENT_MODULE_LOAD_CALLBACKS_TOKEN,
-          useValue: new Map<string, () => Promise<Type<WithCustomElementComponent>>>([
-            ['element-a-selector', async () => createFakeCustomElementModule('element-a-module')],
-            ['element-b-selector', async () => createFakeCustomElementModule('element-b-module')],
-            ['element-c-selector', async () => createFakeCustomElementModule('element-c-module')],
+          provide: ELEMENT_COMPONENT_LOAD_CALLBACKS_TOKEN,
+          useValue: new Map<string, LoadComponent>([
+            ['element-a-selector', async () => createFakeCustomElementComponent('element-a-module')],
+            ['element-b-selector', async () => createFakeCustomElementComponent('element-b-module')],
+            ['element-c-selector', async () => createFakeCustomElementComponent('element-c-module')],
           ]),
         },
       ]
@@ -225,27 +225,14 @@ describe('ElementsLoader', () => {
 
 // TEST CLASSES/HELPERS
 
-class FakeCustomElementModule implements WithCustomElementComponent {
-  static readonly modulePath: string;
-  customElementComponent: Type<any>;
-}
-
-function createFakeComponent(inputName: string): Type<any> {
+function createFakeCustomElementComponent(componentPath: string): Type<any> {
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  @Component({inputs: [inputName]})
-  class FakeComponent {}
-
-  return FakeComponent;
-}
-
-function createFakeCustomElementModule(modulePath: string): typeof FakeCustomElementModule {
-  @NgModule({})
-  class FakeModule extends FakeCustomElementModule {
-    static override readonly modulePath = modulePath;
-    override customElementComponent = createFakeComponent(modulePath);
+  @Component({inputs: [componentPath]})
+  class FakeComponent {
+    static readonly componentPath = componentPath;
   }
 
-  return FakeModule;
+  return FakeComponent;
 }
 
 function returnPromisesFromSpy(spy: jasmine.Spy): Deferred[] {

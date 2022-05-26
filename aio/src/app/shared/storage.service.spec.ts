@@ -5,7 +5,7 @@ import { WindowToken } from './window';
 [
   ['localStorage', LocalStorage] as const,
   ['sessionStorage', SessionStorage] as const,
-].forEach(([storagePropName, storageToken]) => {
+].forEach(([storagePropName, storageToken]) => describe(storagePropName, () => {
   let getStorageSpy: jasmine.Spy;
   let injector: Injector;
 
@@ -34,4 +34,4 @@ import { WindowToken } from './window';
 
     expect(injector.get(storageToken)).toBeInstanceOf(NoopStorage);
   });
-});
+}));

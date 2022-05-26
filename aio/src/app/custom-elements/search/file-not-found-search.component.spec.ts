@@ -6,6 +6,7 @@ import { MockLocationService } from 'testing/location.service';
 import { SearchResults } from 'app/search/interfaces';
 import { SearchResultsComponent } from 'app/shared/search-results/search-results.component';
 import { SearchService } from 'app/search/search.service';
+import { SharedModule } from 'app/shared/shared.module';
 import { FileNotFoundSearchComponent } from './file-not-found-search.component';
 
 
@@ -17,7 +18,7 @@ describe('FileNotFoundSearchComponent', () => {
   beforeEach(() => {
 
     TestBed.configureTestingModule({
-      declarations: [ FileNotFoundSearchComponent, SearchResultsComponent ],
+      imports: [ FileNotFoundSearchComponent, SharedModule ],
       providers: [
         { provide: LocationService, useValue: new MockLocationService('base/initial-url?some-query') },
         SearchService

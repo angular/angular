@@ -4,8 +4,8 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { unwrapHtmlForSink } from 'safevalues';
 import { concatHtmls } from 'safevalues/builders/html_builders';
+import { svg } from '../security';
 import { CustomIconRegistry, SvgIconInfo } from './custom-icon-registry';
-import { svg } from './security';
 
 describe('CustomIconRegistry', () => {
   const fakeHttpClient: HttpClient = {} as any;

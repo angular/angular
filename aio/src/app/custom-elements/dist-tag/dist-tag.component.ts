@@ -5,6 +5,7 @@ import { environment } from 'environments/environment';
  * Display the dist-tag of Angular for installing from npm at the point these docs are generated.
  */
 @Component({
+  standalone: true,
   selector: 'aio-angular-dist-tag',
   template: '{{tag}}',
 })
