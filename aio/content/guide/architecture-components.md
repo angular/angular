@@ -80,7 +80,7 @@ Your template can use *data binding* to coordinate the application and DOM data,
 
 For example, here is a template for the Tutorial's `HeroListComponent`.
 
-<code-exampleheader="src/app/hero-list.component.html" path="architecture/src/app/hero-list.component.html" ></code-example>
+<code-example header="src/app/hero-list.component.html" path="architecture/src/app/hero-list.component.html" ></code-example>
 
 This template uses typical HTML elements like `<h2>` and  `<p>`, and also includes Angular template-syntax elements, `*ngFor`, `{{hero.name}}`, `(click)`, `[hero]`, and `<app-hero-detail>`.
 The template-syntax elements tell Angular how to render the HTML to the screen, using program logic and data.
