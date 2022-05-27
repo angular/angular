@@ -8,7 +8,6 @@
 
 import {Directive, ElementRef, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
 
-import {DOCUMENT} from '../dom_tokens';
 import {RuntimeErrorCode} from '../errors';
 
 /**
@@ -80,17 +79,11 @@ class LCPImageObserver implements OnDestroy {
   private images = new Map<string, string>();
   // Keep track of images for which `console.warn` was produced.
   private alreadyWarned = new Set<string>();
+  // Whether there was an attempt to init `PerformanceObserver` already.
+  private initialized = false;
 
   private window: Window|null = null;
   private observer: PerformanceObserver|null = null;
-
-  constructor(@Inject(DOCUMENT) doc: Document) {
-    const win = doc.defaultView;
-    if (typeof win !== 'undefined' && typeof PerformanceObserver !== 'undefined') {
-      this.window = win;
-      this.observer = this.initPerformanceObserver();
-    }
-  }
 
   // Converts relative image URL to a full URL.
   private getFullUrl(src: string) {
@@ -129,7 +122,15 @@ class LCPImageObserver implements OnDestroy {
     return observer;
   }
 
-  registerImage(rewrittenSrc: string, rawSrc: string) {
+  registerImage(rewrittenSrc: string, rawSrc: string, doc: Document) {
+    if (!this.initialized) {
+      this.initialized = true;
+      const win = doc.defaultView;
+      if (typeof win !== 'undefined' && typeof PerformanceObserver !== 'undefined') {
+        this.window = win;
+        this.observer = this.initPerformanceObserver();
+      }
+    }
     if (!this.observer) return;
     this.images.set(this.getFullUrl(rewrittenSrc), rawSrc);
   }
@@ -248,8 +249,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         // has the necessary settings and no extra checks are required.
         withLCPImageObserver(
             this.injector,
-            (observer: LCPImageObserver) =>
-                observer.registerImage(this.getRewrittenSrc(), this.rawSrc));
+            (observer: LCPImageObserver) => observer.registerImage(
+                this.getRewrittenSrc(), this.rawSrc, this.imgElement.nativeElement.ownerDocument));
       }
     }
     this.setHostAttribute('loading', this.getLoadingBehavior());
