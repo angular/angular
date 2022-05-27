@@ -55,7 +55,7 @@ export function injectInjectorOnly<T>(token: ProviderToken<T>, flags = InjectFla
     null {
   if (_currentInjector === undefined) {
     const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-        `inject() must be called from an injection context` :
+        `inject() must be called from an injection context (a constructor, a factory function or a field initializer)` :
         '';
     throw new RuntimeError(RuntimeErrorCode.MISSING_INJECTION_CONTEXT, errorMessage);
   } else if (_currentInjector === null) {
