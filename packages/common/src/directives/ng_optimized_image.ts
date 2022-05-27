@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DOCUMENT} from '@angular/common';
 import {Directive, ElementRef, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
 
-import {DOCUMENT} from '../dom_tokens';
 import {RuntimeErrorCode} from '../errors';
 
 /**
@@ -84,7 +84,10 @@ class LCPImageObserver implements OnDestroy {
   private window: Window|null = null;
   private observer: PerformanceObserver|null = null;
 
-  constructor(@Inject(DOCUMENT) doc: Document) {
+  constructor(injector: Injector) {
+    // Retrieve the `DOCUMENT` token inside a constructor (vs injecting it
+    // as an argument) to avoid accessing it before its initialization.
+    const doc = injector.get(DOCUMENT);
     const win = doc.defaultView;
     if (typeof win !== 'undefined' && typeof PerformanceObserver !== 'undefined') {
       this.window = win;

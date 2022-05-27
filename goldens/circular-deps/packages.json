@@ -4,6 +4,13 @@
     "packages/animations/browser/src/render/shared.ts"
   ],
   [
+    "packages/common/index.ts",
+    "packages/common/public_api.ts",
+    "packages/common/src/common.ts",
+    "packages/common/src/private_export.ts",
+    "packages/common/src/directives/ng_optimized_image.ts"
+  ],
+  [
     "packages/compiler-cli/ngcc/src/packages/configuration.ts",
     "packages/compiler-cli/ngcc/src/packages/entry_point.ts"
   ],
