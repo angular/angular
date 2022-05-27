@@ -7,7 +7,8 @@
  */
 
 import {CommonModule, DOCUMENT} from '@angular/common';
-import {assertValidRawSrcset, IMAGE_LOADER, ImageLoader, ImageLoaderConfig, NgOptimizedImageModule} from '@angular/common/src/directives/ng_optimized_image';
+import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '@angular/common/src/directives/ng_optimized_image/image_loaders/image_loader';
+import {assertValidRawSrcset, NgOptimizedImageModule} from '@angular/common/src/directives/ng_optimized_image/ng_optimized_image';
 import {RuntimeErrorCode} from '@angular/common/src/errors';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';

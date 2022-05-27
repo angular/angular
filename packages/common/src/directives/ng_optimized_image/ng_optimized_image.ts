@@ -6,31 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, ElementRef, Inject, Injectable, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
 
-import {DOCUMENT} from '../dom_tokens';
-import {RuntimeErrorCode} from '../errors';
+import {DOCUMENT} from '../../dom_tokens';
+import {RuntimeErrorCode} from '../../errors';
 
-/**
- * Config options recognized by the image loader function.
- */
-export interface ImageLoaderConfig {
-  // Name of the image to be added to the image request URL
-  src: string;
-  // Width of the requested image (to be used when generating srcset)
-  width?: number;
-}
-
-/**
- * Represents an image loader function.
- */
-export type ImageLoader = (config: ImageLoaderConfig) => string;
-
-/**
- * Noop image loader that does no transformation to the original src and just returns it as is.
- * This loader is used as a default one if more specific logic is not provided in an app config.
- */
-const noopImageLoader = (config: ImageLoaderConfig) => config.src;
+import {IMAGE_LOADER, ImageLoader} from './image_loaders/image_loader';
 
 /**
  * When a Base64-encoded image is passed as an input to the `NgOptimizedImage` directive,
@@ -52,15 +33,6 @@ const VALID_WIDTH_DESCRIPTOR_SRCSET = /^((\s*\d+w\s*(,|$)){1,})$/;
  * Should match something like: "1x, 2x".
  */
 const VALID_DENSITY_DESCRIPTOR_SRCSET = /^((\s*\d(\.\d)?x\s*(,|$)){1,})$/;
-
-/**
- * Special token that allows to configure a function that will be used to produce an image URL based
- * on the specified input.
- */
-export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
-  providedIn: 'root',
-  factory: () => noopImageLoader,
-});
 
 /**
  * Contains the logic to detect whether an image with the `NgOptimizedImage` directive
