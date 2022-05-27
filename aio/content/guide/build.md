@@ -6,7 +6,7 @@ This page discusses build-specific configuration options for Angular projects.
 
 ## Configuring application environments
 
-You can define different named build configurations for your project, such as *stage* and *production*, with different defaults.
+You can define different named build configurations for your project, such as *staging* and *production*, with different defaults.
 
 Each named configuration can have defaults for any of the options that apply to the various [builder targets](guide/glossary#target), such as `build`, `serve`, and `test`.
 The [Angular CLI](cli) `build`, `serve`, and `test` commands can then replace files with appropriate versions for your intended target environment.
@@ -30,7 +30,7 @@ For example:
           environment.prod.ts
         </div>
         <div class="file">
-          environment.stage.ts
+          environment.staging.ts
         </div>
     </div>
 </div>
