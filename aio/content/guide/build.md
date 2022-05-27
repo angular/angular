@@ -102,7 +102,7 @@ The following application structure configures build targets for production and 
               environment.prod.ts
             </div>
             <div class="file">
-              environment.prod.ts
+              environment.staging.ts
             </div>
         </div>
     </div>
