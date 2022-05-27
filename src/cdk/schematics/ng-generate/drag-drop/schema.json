@@ -7,6 +7,9 @@
     "path": {
       "type": "string",
       "format": "path",
+      "$default": {
+        "$source": "workingDirectory"
+      },
       "description": "The path to create the component.",
       "visible": false
     },
