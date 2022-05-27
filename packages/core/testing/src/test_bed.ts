@@ -107,7 +107,10 @@ export const TestBed: TestBedStatic = TestBedRender3;
 export const getTestBed: () => TestBed = _getTestBedRender3;
 
 /**
- * Allows injecting dependencies in `beforeEach()` and `it()`.
+ * Allows injecting dependencies in `beforeEach()` and `it()`. Note: this function
+ * (imported from the `@angular/core/testing` package) can **only** be used to inject dependencies
+ * in tests. To inject dependencies in your application code, use the [`inject`](api/core/inject)
+ * function from the `@angular/core` package instead.
  *
  * Example:
  *

@@ -597,8 +597,11 @@ export interface Inject {
 // @public
 export const Inject: InjectDecorator;
 
-// @public
-export const inject: typeof ɵɵinject;
+// @public (undocumented)
+export function inject<T>(token: ProviderToken<T>): T;
+
+// @public (undocumented)
+export function inject<T>(token: ProviderToken<T>, flags?: InjectFlags): T | null;
 
 // @public
 export interface Injectable {

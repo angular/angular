@@ -66,10 +66,7 @@ export function injectInjectorOnly<T>(token: ProviderToken<T>, flags = InjectFla
 }
 
 /**
- * Generated instruction: Injects a token from the currently active injector.
- *
- * Must be used in the context of a factory function such as one defined for an
- * `InjectionToken`. Throws an error if not called from such a context.
+ * Generated instruction: injects a token from the currently active injector.
  *
  * (Additional documentation moved to `inject`, as it is the public API, and an alias for this
  * instruction)
@@ -109,30 +106,90 @@ Please check that 1) the type for the parameter at index ${
 }
 
 /**
- * Injects a token from the currently active injector.
- *
- * Must be used in the context of a factory function such as one defined for an
- * `InjectionToken`. Throws an error if not called from such a context.
- *
- * Within such a factory function, using this function to request injection of a dependency
- * is faster and more type-safe than providing an additional array of dependencies
- * (as has been common with `useFactory` providers).
- *
- * @param token The injection token for the dependency to be injected.
- * @param flags Optional flags that control how injection is executed.
- * The flags correspond to injection strategies that can be specified with
- * parameter decorators `@Host`, `@Self`, `@SkipSef`, and `@Optional`.
- * @returns the injected value if injection is successful, `null` otherwise.
- *
- * @usageNotes
- *
- * ### Example
- *
- * {@example core/di/ts/injector_spec.ts region='ShakableInjectionToken'}
+ * @param token A token that represents a dependency that should be injected.
+ * @returns the injected value if operation is successful, `null` otherwise.
+ * @throws if called outside of a supported context.
  *
  * @publicApi
  */
-export const inject = ɵɵinject;
+export function inject<T>(token: ProviderToken<T>): T;
+/**
+ * @param token A token that represents a dependency that should be injected.
+ * @param flags Control how injection is executed. The flags correspond to injection strategies that
+ *     can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and `@Optional`.
+ * @returns the injected value if operation is successful, `null` otherwise.
+ * @throws if called outside of a supported context.
+ *
+ * @publicApi
+ */
+export function inject<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
+/**
+ * Injects a token from the currently active injector.
+ * `inject` is only supported during instantiation of a dependency by the DI system. It can be used
+ * during:
+ * - Construction (via the `constructor`) of a class being instantiated by the DI system, such
+ * as an `@Injectable` or `@Component`.
+ * - In the initializer for fields of such classes.
+ * - In the factory function specified for `useFactory` of a `Provider` or an `@Injectable`.
+ * - In the `factory` function specified for an `InjectionToken`.
+ *
+ * @param token A token that represents a dependency that should be injected.
+ * @param flags Optional flags that control how injection is executed.
+ * The flags correspond to injection strategies that can be specified with
+ * parameter decorators `@Host`, `@Self`, `@SkipSef`, and `@Optional`.
+ * @returns the injected value if operation is successful, `null` otherwise.
+ * @throws if called outside of a supported context.
+ *
+ * @usageNotes
+ * In practice the `inject()` calls are allowed in a constructor, a constructor parameter and a
+ * field initializer:
+ *
+ * ```typescript
+ * @Injectable({providedIn: 'root'})
+ * export class Car {
+ *   radio: Radio|undefined;
+ *   // OK: field initializer
+ *   spareTyre = inject(Tyre);
+ *
+ *   constructor() {
+ *     // OK: constructor body
+ *     this.radio = inject(Radio);
+ *   }
+ * }
+ * ```
+ *
+ * It is also legal to call `inject` from a provider's factory:
+ *
+ * ```typescript
+ * providers: [
+ *   {provide: Car, useFactory: () => {
+ *     // OK: a class factory
+ *     const engine = inject(Engine);
+ *     return new Car(engine);
+ *   }}
+ * ]
+ * ```
+ *
+ * Calls to the `inject()` function outside of the class creation context will result in error. Most
+ * notably, calls to `inject()` are disallowed after a class instance was created, in methods
+ * (including lifecycle hooks):
+ *
+ * ```typescript
+ * @Component({ ... })
+ * export class CarComponent {
+ *   ngOnInit() {
+ *     // ERROR: too late, the component instance was already created
+ *     const engine = inject(Engine);
+ *     engine.start();
+ *   }
+ * }
+ * ```
+ *
+ * @publicApi
+ */
+export function inject<T>(token: ProviderToken<T>, flags = InjectFlags.Default): T|null {
+  return ɵɵinject(token, flags);
+}
 
 export function injectArgs(types: (ProviderToken<any>|any[])[]): any[] {
   const args: any[] = [];

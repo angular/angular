@@ -942,9 +942,6 @@
     "name": "initTNodeFlags"
   },
   {
-    "name": "inject"
-  },
-  {
     "name": "injectArgs"
   },
   {
