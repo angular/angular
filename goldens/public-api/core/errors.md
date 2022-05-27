@@ -49,7 +49,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MISSING_GENERATED_DEF = 906,
     // (undocumented)
-    MISSING_INJECTION_CONTEXT = 203,
+    MISSING_INJECTION_CONTEXT = -203,
     // (undocumented)
     MULTIPLE_COMPONENTS_MATCH = -300,
     // (undocumented)
