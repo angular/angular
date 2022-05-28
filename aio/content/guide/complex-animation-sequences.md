@@ -37,7 +37,7 @@ The first argument of `query()` is a [css selector](https://developer.mozilla.or
 |:---                        |:---     |
 | `:enter` <br /> `:leave`   | For entering/leaving elements.               |
 | `:animating`               | For elements currently animating.            |
-| `@*` <br /> `@triggerName` | For elements with any —or a specific—trigger. |
+| `@*` <br /> `@triggerName` | For elements with any—or a specific—trigger. |
 | `:self`                    | The animating element itself.                |
 
 <div class="callout is-helpful">

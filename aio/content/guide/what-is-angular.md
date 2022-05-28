@@ -82,13 +82,13 @@ When the application loads the component and its template, the user sees the fol
 
 </code-example>
 
-Notice the use of double curly braces--they instruct Angular to interpolate the contents within them.
+Notice the use of double curly braces—they instruct Angular to interpolate the contents within them.
 
 Angular also supports property bindings, to help you set values for properties and attributes of HTML elements and pass values to your application's presentation logic.
 
 <code-example format="html" language="html" path="what-is-angular/src/app/hello-world-bindings/hello-world-bindings.component.html" region="bindings"></code-example>
 
-Notice the use of the square brackets--that syntax indicates that you're binding the property or attribute to a value in the component class.
+Notice the use of the square brackets—that syntax indicates that you're binding the property or attribute to a value in the component class.
 
 Declare event listeners to listen for and respond to user actions such as keystrokes, mouse movements, clicks, and touches.
 You declare an event listener by specifying the event name in parentheses:
