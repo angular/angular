@@ -49,8 +49,8 @@ menu directives to build your custom menu. A typical menu consists of the follow
 - `cdkMenuItem` - added to each item in the menu
 
 <!-- example({
-  "example": "cdk-menu-standalone-trigger",
-  "file": "cdk-menu-standalone-trigger-example.html"
+  "example": "cdk-menu-standalone-menu",
+  "file": "cdk-menu-standalone-menu-example.html"
   }) -->
 
 Most menu interactions consist of two parts: a trigger and a menu panel.
@@ -62,14 +62,14 @@ item to make it a trigger for a submenu. When adding this directive, be sure to 
 the template containing the menu it should open. Users can toggle the associated menu using a mouse
 or keyboard.
 
-<!-- example({"example":"cdk-menu-standalone-trigger",
-              "file":"cdk-menu-standalone-trigger-example.html", 
+<!-- example({"example":"cdk-menu-standalone-menu",
+              "file":"cdk-menu-standalone-menu-example.html",
               "region":"trigger"}) -->
 
 When creating a submenu trigger, add both `cdkMenuItem` and `cdkMenuTriggerFor` like so,
 
 <!-- example({"example":"cdk-menu-menubar",
-              "file":"cdk-menu-menubar-example.html", 
+              "file":"cdk-menu-menubar-example.html",
               "region":"file-trigger"}) -->
 
 #### Menu content
@@ -154,13 +154,13 @@ The `cdkMenuItem` directive allows users to navigate menu items via keyboard.
 You can add a custom action to a menu item with the `cdkMenuItemTriggered` output.
 
 <!-- example({"example":"cdk-menu-standalone-stateful-menu",
-              "file":"cdk-menu-standalone-stateful-menu-example.html", 
+              "file":"cdk-menu-standalone-stateful-menu-example.html",
               "region":"reset-item"}) -->
 
 You can create nested menus by using a menu item as the trigger for another menu.
 
 <!-- example({"example":"cdk-menu-menubar",
-              "file":"cdk-menu-menubar-example.html", 
+              "file":"cdk-menu-menubar-example.html",
               "region":"file-trigger"}) -->
 
 #### Menu Item Checkboxes
@@ -174,7 +174,7 @@ Checkbox items do not track their own state. You must bind the checked state usi
 don't bind the state it will reset when the menu is closed and re-opened.
 
 <!-- example({"example":"cdk-menu-standalone-stateful-menu",
-              "file":"cdk-menu-standalone-stateful-menu-example.html", 
+              "file":"cdk-menu-standalone-stateful-menu-example.html",
               "region":"bold-item"}) -->
 
 #### Menu Item Radios
@@ -188,7 +188,7 @@ As with checkbox items, radio items do not track their own state, but you can tr
 selection will reset when the menu is closed and reopened.
 
 <!-- example({"example":"cdk-menu-standalone-stateful-menu",
-              "file":"cdk-menu-standalone-stateful-menu-example.html", 
+              "file":"cdk-menu-standalone-stateful-menu-example.html",
               "region":"size-items"}) -->
 
 #### Groups
