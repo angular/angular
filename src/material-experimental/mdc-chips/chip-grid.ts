@@ -7,7 +7,7 @@
  */
 
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-import {TAB} from '@angular/cdk/keycodes';
+import {hasModifierKey, TAB} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   AfterViewInit,
@@ -18,7 +18,6 @@ import {
   DoCheck,
   ElementRef,
   EventEmitter,
-  Inject,
   Input,
   OnDestroy,
   Optional,
@@ -34,20 +33,19 @@ import {
   NgForm,
   Validators,
 } from '@angular/forms';
-import {DOCUMENT} from '@angular/common';
 import {
   CanUpdateErrorState,
   ErrorStateMatcher,
   mixinErrorState,
 } from '@angular/material-experimental/mdc-core';
 import {MatFormFieldControl} from '@angular/material-experimental/mdc-form-field';
-import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {MatChipTextControl} from './chip-text-control';
-import {Observable, Subject} from 'rxjs';
-import {startWith, takeUntil} from 'rxjs/operators';
+import {Observable, Subject, merge} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 import {MatChipEvent} from './chip';
 import {MatChipRow} from './chip-row';
 import {MatChipSet} from './chip-set';
+import {Directionality} from '@angular/cdk/bidi';
 
 /** Change event object that is emitted when the chip grid value has changed. */
 export class MatChipGridChange {
@@ -72,10 +70,9 @@ class MatChipGridBase extends MatChipSet {
   readonly stateChanges = new Subject<void>();
 
   constructor(
-    liveAnnouncer: LiveAnnouncer,
-    document: any,
     elementRef: ElementRef,
     changeDetectorRef: ChangeDetectorRef,
+    dir: Directionality,
     public _defaultErrorStateMatcher: ErrorStateMatcher,
     public _parentForm: NgForm,
     public _parentFormGroup: FormGroupDirective,
@@ -86,7 +83,7 @@ class MatChipGridBase extends MatChipSet {
      */
     public ngControl: NgControl,
   ) {
-    super(liveAnnouncer, document, elementRef, changeDetectorRef);
+    super(elementRef, changeDetectorRef, dir);
   }
 }
 const _MatChipGridMixinBase = mixinErrorState(MatChipGridBase);
@@ -115,7 +112,6 @@ const _MatChipGridMixinBase = mixinErrorState(MatChipGridBase);
     '[class.mat-mdc-chip-list-required]': 'required',
     '(focus)': 'focus()',
     '(blur)': '_blur()',
-    '(keydown)': '_keydown($event)',
   },
   providers: [{provide: MatFormFieldControl, useExisting: MatChipGrid}],
   encapsulation: ViewEncapsulation.None,
@@ -253,11 +249,6 @@ export class MatChipGrid
     return this._getChipStream(chip => chip._onBlur);
   }
 
-  /** Combined stream of all of the child chips' focus events. */
-  get chipFocusChanges(): Observable<MatChipEvent> {
-    return this._getChipStream(chip => chip._onFocus);
-  }
-
   /** Emits when the chip grid value has been changed by the user. */
   @Output() readonly change: EventEmitter<MatChipGridChange> =
     new EventEmitter<MatChipGridChange>();
@@ -277,20 +268,18 @@ export class MatChipGrid
   override _chips: QueryList<MatChipRow>;
 
   constructor(
-    liveAnnouncer: LiveAnnouncer,
-    @Inject(DOCUMENT) document: any,
     elementRef: ElementRef,
     changeDetectorRef: ChangeDetectorRef,
+    @Optional() dir: Directionality,
     @Optional() parentForm: NgForm,
     @Optional() parentFormGroup: FormGroupDirective,
     defaultErrorStateMatcher: ErrorStateMatcher,
     @Optional() @Self() ngControl: NgControl,
   ) {
     super(
-      liveAnnouncer,
-      document,
       elementRef,
       changeDetectorRef,
+      dir,
       defaultErrorStateMatcher,
       parentForm,
       parentFormGroup,
@@ -301,23 +290,20 @@ export class MatChipGrid
     }
   }
 
-  override ngAfterContentInit() {
-    super.ngAfterContentInit();
-
-    this._chips.changes.pipe(startWith(null), takeUntil(this._destroyed)).subscribe(() => {
-      // Check to see if we have a destroyed chip and need to refocus
-      this._updateFocusForDestroyedChips();
-      this.stateChanges.next();
-    });
-
+  ngAfterContentInit() {
     this.chipBlurChanges.pipe(takeUntil(this._destroyed)).subscribe(() => {
       this._blur();
       this.stateChanges.next();
     });
+
+    merge(this.chipFocusChanges, this._chips.changes)
+      .pipe(takeUntil(this._destroyed))
+      .subscribe(() => this.stateChanges.next());
   }
 
   override ngAfterViewInit() {
     super.ngAfterViewInit();
+
     if (!this._chipInput && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('mat-chip-grid must be used in combination with matChipInputFor.');
     }
@@ -362,16 +348,12 @@ export class MatChipGrid
       return;
     }
 
-    if (this._chips.length > 0) {
-      // MDC sets the tabindex directly on the DOM node when the user is navigating which means
-      // that we may end up with a `0` value from a previous interaction. We reset it manually
-      // here to ensure that the state is correct.
-      this._chips.forEach(chip => chip.primaryAction._updateTabindex(-1));
-      this._chips.first.focus();
-    } else {
+    if (!this._chips.length || this._chips.first.disabled) {
       // Delay until the next tick, because this can cause a "changed after checked"
       // error if the input does something on focus (e.g. opens an autocomplete).
       Promise.resolve().then(() => this._chipInput.focus());
+    } else if (this._chips.length) {
+      this._keyManager.setFirstItemActive();
     }
 
     this.stateChanges.next();
@@ -432,20 +414,18 @@ export class MatChipGrid
 
   /** When blurred, mark the field as touched when focus moved outside the chip grid. */
   _blur() {
-    if (this.disabled) {
-      return;
+    if (!this.disabled) {
+      // Check whether the focus moved to chip input.
+      // If the focus is not moved to chip input, mark the field as touched. If the focus moved
+      // to chip input, do nothing.
+      // Timeout is needed to wait for the focus() event trigger on chip input.
+      setTimeout(() => {
+        if (!this.focused) {
+          this._propagateChanges();
+          this._markAsTouched();
+        }
+      });
     }
-
-    // Check whether the focus moved to chip input.
-    // If the focus is not moved to chip input, mark the field as touched. If the focus moved
-    // to chip input, do nothing.
-    // Timeout is needed to wait for the focus() event trigger on chip input.
-    setTimeout(() => {
-      if (!this.focused) {
-        this._propagateChanges();
-        this._markAsTouched();
-      }
-    });
   }
 
   /**
@@ -460,9 +440,29 @@ export class MatChipGrid
   }
 
   /** Handles custom keyboard events. */
-  _keydown(event: KeyboardEvent) {
-    if (event.keyCode === TAB && (event.target as HTMLElement).id !== this._chipInput.id) {
-      this._allowFocusEscape();
+  override _handleKeydown(event: KeyboardEvent) {
+    if (event.keyCode === TAB) {
+      if (
+        this._chipInput.focused &&
+        hasModifierKey(event, 'shiftKey') &&
+        this._chips.length &&
+        !this._chips.last.disabled
+      ) {
+        event.preventDefault();
+
+        if (this._keyManager.activeItem) {
+          this._keyManager.setActiveItem(this._keyManager.activeItem);
+        } else {
+          this._focusLastChip();
+        }
+      } else {
+        // Use the super method here since it doesn't check for the input
+        // focused state. This allows focus to escape if there's only one
+        // disabled chip left in the list.
+        super._allowFocusEscape();
+      }
+    } else if (!this._chipInput.focused) {
+      super._handleKeydown(event);
     }
 
     this.stateChanges.next();
@@ -470,7 +470,7 @@ export class MatChipGrid
 
   _focusLastChip() {
     if (this._chips.length) {
-      this._chips.last.primaryAction.focus();
+      this._chips.last.focus();
     }
   }
 
@@ -489,22 +489,5 @@ export class MatChipGrid
     this._onTouched();
     this._changeDetectorRef.markForCheck();
     this.stateChanges.next();
-  }
-
-  /**
-   * If the amount of chips changed, we need to focus the next closest chip.
-   */
-  private _updateFocusForDestroyedChips() {
-    // Move focus to the closest chip. If no other chips remain, focus the chip-grid itself.
-    if (this._lastDestroyedChipIndex != null) {
-      if (this._chips.length) {
-        const newChipIndex = Math.min(this._lastDestroyedChipIndex, this._chips.length - 1);
-        this._chips.toArray()[newChipIndex].focus();
-      } else {
-        this.focus();
-      }
-    }
-
-    this._lastDestroyedChipIndex = null;
   }
 }

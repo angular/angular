@@ -147,8 +147,10 @@
       <mat-form-field class="demo-has-chip-list">
         <mat-label>New Contributor...</mat-label>
         <mat-chip-grid #chipGrid1 [(ngModel)]="selectedPeople" required [disabled]="disableInputs">
-          <mat-chip-row *ngFor="let person of people"
+          <!-- Disable the third chip to test focus management with a disabled chip. -->
+          <mat-chip-row *ngFor="let person of people; let index = index"
                    [editable]="editable"
+                   [disabled]="index === 2"
                    (removed)="remove(person)"
                    (edited)="edit(person, $event)">
             {{person.name}}

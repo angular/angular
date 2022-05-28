@@ -22,7 +22,6 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {MDCChipActionType} from '@material/chips';
 import {Observable} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
 import {MatChip, MatChipEvent} from './chip';
@@ -143,15 +142,7 @@ export class MatChipListbox
    * is a value from an option. The second is a value from the selection. A boolean
    * should be returned.
    */
-  @Input()
-  get compareWith(): (o1: any, o2: any) => boolean {
-    return this._compareWith;
-  }
-  set compareWith(fn: (o1: any, o2: any) => boolean) {
-    this._compareWith = fn;
-    this._initializeSelection();
-  }
-  private _compareWith = (o1: any, o2: any) => o1 === o2;
+  @Input() compareWith: (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 === o2;
 
   /** Whether this chip listbox is required. */
   @Input()
@@ -166,11 +157,6 @@ export class MatChipListbox
   /** Combined stream of all of the child chips' selection change events. */
   get chipSelectionChanges(): Observable<MatChipSelectionChange> {
     return this._getChipStream<MatChipSelectionChange, MatChipOption>(chip => chip.selectionChange);
-  }
-
-  /** Combined stream of all of the child chips' focus events. */
-  get chipFocusChanges(): Observable<MatChipEvent> {
-    return this._getChipStream(chip => chip._onFocus);
   }
 
   /** Combined stream of all of the child chips' blur events. */
@@ -200,23 +186,23 @@ export class MatChipListbox
   })
   override _chips: QueryList<MatChipOption>;
 
-  override ngAfterContentInit() {
-    super.ngAfterContentInit();
-
+  ngAfterContentInit() {
     this._chips.changes.pipe(startWith(null), takeUntil(this._destroyed)).subscribe(() => {
       // Update listbox selectable/multiple properties on chips
       this._syncListboxProperties();
-
-      // Reset chips selected/deselected status
-      this._initializeSelection();
-
-      // Check to see if we have a destroyed chip and need to refocus
-      this._updateFocusForDestroyedChips();
     });
 
     this.chipBlurChanges.pipe(takeUntil(this._destroyed)).subscribe(() => this._blur());
     this.chipSelectionChanges.pipe(takeUntil(this._destroyed)).subscribe(event => {
       if (event.isUserInput) {
+        if (!this.multiple && event.selected) {
+          this._chips.forEach(chip => {
+            if (chip !== event.source) {
+              chip.deselect();
+            }
+          });
+        }
+
         this._propagateChanges();
       }
     });
@@ -233,14 +219,12 @@ export class MatChipListbox
 
     const firstSelectedChip = this._getFirstSelectedChip();
 
-    if (firstSelectedChip) {
+    if (firstSelectedChip && !firstSelectedChip.disabled) {
       firstSelectedChip.focus();
     } else if (this._chips.length > 0) {
-      // MDC sets the tabindex directly on the DOM node when the user is navigating which means
-      // that we may end up with a `0` value from a previous interaction. We reset it manually
-      // here to ensure that the state is correct.
-      this._chips.forEach(chip => chip.primaryAction._updateTabindex(-1));
-      this._chips.first.primaryAction.focus();
+      this._keyManager.setFirstItemActive();
+    } else {
+      this._elementRef.nativeElement.focus();
     }
   }
 
@@ -330,21 +314,6 @@ export class MatChipListbox
   }
 
   /**
-   * Initializes the chip listbox selection state to reflect any chips that were preselected.
-   */
-  private _initializeSelection() {
-    setTimeout(() => {
-      // Defer setting the value in order to avoid the "Expression
-      // has changed after it was checked" errors from Angular.
-      this._chips.forEach((chip, index) => {
-        if (chip.selected) {
-          this._chipSetFoundation.setChipSelected(index, MDCChipActionType.PRIMARY, true);
-        }
-      });
-    });
-  }
-
-  /**
    * Deselects every chip in the listbox.
    * @param skip Chip that should not be deselected.
    */
@@ -360,9 +329,9 @@ export class MatChipListbox
    * Finds and selects the chip based on its value.
    * @returns Chip that has the corresponding value.
    */
-  private _selectValue(value: any, isUserInput: boolean = true): MatChip | undefined {
+  private _selectValue(value: any, isUserInput: boolean): MatChip | undefined {
     const correspondingChip = this._chips.find(chip => {
-      return chip.value != null && this._compareWith(chip.value, value);
+      return chip.value != null && this.compareWith(chip.value, value);
     });
 
     if (correspondingChip) {
@@ -394,23 +363,5 @@ export class MatChipListbox
     } else {
       return this.selected;
     }
-  }
-
-  /**
-   * If the amount of chips changed, we need to update the
-   * key manager state and focus the next closest chip.
-   */
-  private _updateFocusForDestroyedChips() {
-    // Move focus to the closest chip. If no other chips remain, focus the chip-listbox itself.
-    if (this._lastDestroyedChipIndex != null) {
-      if (this._chips.length) {
-        const newChipIndex = Math.min(this._lastDestroyedChipIndex, this._chips.length - 1);
-        this._chips.toArray()[newChipIndex].focus();
-      } else {
-        this.focus();
-      }
-    }
-
-    this._lastDestroyedChipIndex = null;
   }
 }

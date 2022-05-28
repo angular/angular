@@ -3,13 +3,11 @@ import {waitForAsync, ComponentFixture, TestBed, fakeAsync, flush} from '@angula
 import {dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing/private';
 import {By} from '@angular/platform-browser';
 import {SPACE, ENTER} from '@angular/cdk/keycodes';
-import {MDCChipAnimation, MDCChipCssClasses} from '@material/chips/chip';
 import {MatChip, MatChipsModule} from './index';
 
 describe('MDC-based Chip Remove', () => {
   let fixture: ComponentFixture<TestChip>;
   let testChip: TestChip;
-  let chipInstance: MatChip;
   let chipNativeElement: HTMLElement;
 
   beforeEach(waitForAsync(() => {
@@ -28,27 +26,7 @@ describe('MDC-based Chip Remove', () => {
 
     const chipDebugElement = fixture.debugElement.query(By.directive(MatChip))!;
     chipNativeElement = chipDebugElement.nativeElement;
-    chipInstance = chipDebugElement.componentInstance;
   }));
-
-  function triggerRemoveSequence() {
-    // At the time of writing, MDC's removal sequence requires the following to happen:
-    // 1. Button is clicked, triggering the animation.
-    // 2. Before the animation has finished, the `--hidden` class is added.
-    // 3. Animation callback fires at some point. It doesn't really matter for the test,
-    // but it does queue up some `requestAnimationFrame` calls that we need to flush.
-    // 4. `transitionend` callback fires and finishes the removal sequence if the
-    // `--hidden` class exists.
-    fixture.detectChanges();
-    (chipInstance as any)._handleAnimationend({
-      animationName: MDCChipAnimation.EXIT,
-      target: chipNativeElement,
-    });
-    flush();
-    (chipInstance as any)._handleTransitionend({target: chipNativeElement});
-    flush();
-    fixture.detectChanges();
-  }
 
   describe('basic behavior', () => {
     it('should apply a CSS class to the remove icon', fakeAsync(() => {
@@ -71,19 +49,10 @@ describe('MDC-based Chip Remove', () => {
       fixture.detectChanges();
 
       chipNativeElement.querySelector('button')!.click();
-      triggerRemoveSequence();
+      fixture.detectChanges();
+      flush();
 
       expect(testChip.didRemove).toHaveBeenCalled();
-    }));
-
-    it('should not start MDC exit animation if parent chip is disabled', fakeAsync(() => {
-      testChip.removable = true;
-      testChip.disabled = true;
-      fixture.detectChanges();
-
-      chipNativeElement.querySelector('button')!.click();
-
-      expect(chipNativeElement.classList.contains(MDCChipCssClasses.HIDDEN)).toBe(false);
     }));
 
     it('should not make the element aria-hidden when it is focusable', fakeAsync(() => {
@@ -100,7 +69,8 @@ describe('MDC-based Chip Remove', () => {
       fixture.detectChanges();
 
       const event = dispatchKeyboardEvent(buttonElement, 'keydown', SPACE);
-      triggerRemoveSequence();
+      fixture.detectChanges();
+      flush();
 
       expect(event.defaultPrevented).toBe(true);
     }));
@@ -112,7 +82,8 @@ describe('MDC-based Chip Remove', () => {
       fixture.detectChanges();
 
       const event = dispatchKeyboardEvent(buttonElement, 'keydown', ENTER);
-      triggerRemoveSequence();
+      fixture.detectChanges();
+      flush();
 
       expect(event.defaultPrevented).toBe(true);
     }));
@@ -125,7 +96,8 @@ describe('MDC-based Chip Remove', () => {
     it('should prevent the default click action', fakeAsync(() => {
       const buttonElement = chipNativeElement.querySelector('button')!;
       const event = dispatchMouseEvent(buttonElement, 'click');
-      triggerRemoveSequence();
+      fixture.detectChanges();
+      flush();
 
       expect(event.defaultPrevented).toBe(true);
     }));

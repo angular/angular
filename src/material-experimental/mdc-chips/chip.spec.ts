@@ -194,7 +194,7 @@ describe('MDC-based MatChip', () => {
       <div *ngIf="shouldShow">
         <mat-chip [removable]="removable"
                  [color]="color" [disabled]="disabled"
-                 (focus)="chipFocus($event)" (destroyed)="chipDestroy($event)"
+                 (destroyed)="chipDestroy($event)"
                  (removed)="chipRemove($event)" [value]="value" [disableRipple]="rippleDisabled">
           {{name}}
         </mat-chip>
@@ -211,7 +211,6 @@ class SingleChip {
   value: any;
   rippleDisabled: boolean = false;
 
-  chipFocus: (event?: MatChipEvent) => void = () => {};
   chipDestroy: (event?: MatChipEvent) => void = () => {};
   chipRemove: (event?: MatChipEvent) => void = () => {};
 }
