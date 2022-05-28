@@ -49,25 +49,8 @@ import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreation
 
 import {selectIndexInternal} from './advance';
 import {ɵɵdirectiveInject} from './di';
+import {handleUnknownPropertyError} from './element_validation';
 import {attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData, LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeDebug, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor} from './lview_debug';
-
-let shouldThrowErrorOnUnknownProperty = false;
-
-/**
- * Sets a strict mode for JIT-compiled components to throw an error on unknown properties,
- * instead of just logging the error.
- * (for AOT-compiled ones this check happens at build time).
- */
-export function ɵsetUnknownPropertyStrictMode(shouldThrow: boolean) {
-  shouldThrowErrorOnUnknownProperty = shouldThrow;
-}
-
-/**
- * Gets the current value of the strict mode.
- */
-export function ɵgetUnknownPropertyStrictMode() {
-  return shouldThrowErrorOnUnknownProperty;
-}
 
 /**
  * A permanent marker promise which signifies that the current CD tree is
@@ -266,62 +249,6 @@ export function createTNodeAtIndex(
     }
   }
   return tNode;
-}
-
-/**
- * WARNING: this is a **dev-mode only** function (thus should always be guarded by the `ngDevMode`)
- * and must **not** be used in production bundles. The function makes megamorphic reads, which might
- * be too slow for production mode and also it relies on the constructor function being available.
- *
- * Gets a reference to the host component def (where a current component is declared).
- *
- * @param lView An `LView` that represents a current component that is being rendered.
- */
-function getDeclarationComponentDef(lView: LView): ComponentDef<unknown>|null {
-  !ngDevMode && throwError('Must never be called in production mode');
-
-  const declarationLView = lView[DECLARATION_COMPONENT_VIEW] as LView<Type<unknown>>;
-  const context = declarationLView[CONTEXT];
-
-  // Unable to obtain a context.
-  if (!context) return null;
-
-  return context.constructor ? getComponentDef(context.constructor) : null;
-}
-
-/**
- * WARNING: this is a **dev-mode only** function (thus should always be guarded by the `ngDevMode`)
- * and must **not** be used in production bundles. The function makes megamorphic reads, which might
- * be too slow for production mode.
- *
- * Checks if the current component is declared inside of a standalone component template.
- *
- * @param lView An `LView` that represents a current component that is being rendered.
- */
-export function isHostComponentStandalone(lView: LView): boolean {
-  !ngDevMode && throwError('Must never be called in production mode');
-
-  const componentDef = getDeclarationComponentDef(lView);
-  // Treat host component as non-standalone if we can't obtain the def.
-  return !!(componentDef?.standalone);
-}
-
-/**
- * WARNING: this is a **dev-mode only** function (thus should always be guarded by the `ngDevMode`)
- * and must **not** be used in production bundles. The function makes megamorphic reads, which might
- * be too slow for production mode.
- *
- * Constructs a string describing the location of the host component template. The function is used
- * in dev mode to produce error messages.
- *
- * @param lView An `LView` that represents a current component that is being rendered.
- */
-export function getTemplateLocationDetails(lView: LView): string {
-  !ngDevMode && throwError('Must never be called in production mode');
-
-  const hostComponentDef = getDeclarationComponentDef(lView);
-  const componentClassName = hostComponentDef?.type?.name;
-  return componentClassName ? ` (used in the '${componentClassName}' component template)` : '';
 }
 
 /**
@@ -1229,65 +1156,6 @@ export function matchingSchemas(schemas: SchemaMetadata[]|null, tagName: string|
  */
 export const KNOWN_CONTROL_FLOW_DIRECTIVES =
     new Set(['ngIf', 'ngFor', 'ngSwitch', 'ngSwitchCase', 'ngSwitchDefault']);
-
-/**
- * Logs or throws an error that a property is not supported on an element.
- *
- * @param propName Name of the invalid property.
- * @param tNode A `TNode` that represents a current component that is being rendered.
- * @param lView An `LView` that represents a current component that is being rendered.
- */
-function handleUnknownPropertyError(propName: string, tNode: TNode, lView: LView): void {
-  let tagName = tNode.value;
-
-  // Special-case a situation when a structural directive is applied to
-  // an `<ng-template>` element, for example: `<ng-template *ngIf="true">`.
-  // In this case the compiler generates the `ɵɵtemplate` instruction with
-  // the `null` as the tagName. The directive matching logic at runtime relies
-  // on this effect (see `isInlineTemplate`), thus using the 'ng-template' as
-  // a default value of the `tNode.value` is not feasible at this moment.
-  if (!tagName && tNode.type === TNodeType.Container) {
-    tagName = 'ng-template';
-  }
-
-  const isHostStandalone = isHostComponentStandalone(lView);
-  const templateLocation = getTemplateLocationDetails(lView);
-
-  let message = `Can't bind to '${propName}' since it isn't a known property of '${tagName}'${
-      templateLocation}.`;
-
-  const schemas = `'${isHostStandalone ? '@Component' : '@NgModule'}.schemas'`;
-  const importLocation = isHostStandalone ?
-      'included in the \'@Component.imports\' of this component' :
-      'a part of an @NgModule where this component is declared';
-  if (KNOWN_CONTROL_FLOW_DIRECTIVES.has(propName)) {
-    // Most likely this is a control flow directive (such as `*ngIf`) used in
-    // a template, but the `CommonModule` is not imported.
-    message += `\nIf the '${propName}' is an Angular control flow directive, ` +
-        `please make sure that the 'CommonModule' is ${importLocation}.`;
-  } else {
-    // May be an Angular component, which is not imported/declared?
-    message += `\n1. If '${tagName}' is an Angular component and it has the ` +
-        `'${propName}' input, then verify that it is ${importLocation}.`;
-    // May be a Web Component?
-    if (tagName && tagName.indexOf('-') > -1) {
-      message += `\n2. If '${tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' ` +
-          `to the ${schemas} of this component to suppress this message.`;
-      message += `\n3. To allow any property add 'NO_ERRORS_SCHEMA' to ` +
-          `the ${schemas} of this component.`;
-    } else {
-      // If it's expected, the error can be suppressed by the `NO_ERRORS_SCHEMA` schema.
-      message += `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to ` +
-          `the ${schemas} of this component.`;
-    }
-  }
-
-  if (shouldThrowErrorOnUnknownProperty) {
-    throw new RuntimeError(RuntimeErrorCode.UNKNOWN_BINDING, message);
-  } else {
-    console.error(formatRuntimeError(RuntimeErrorCode.UNKNOWN_BINDING, message));
-  }
-}
 
 /**
  * Instantiate a root component.
