@@ -49,7 +49,7 @@ import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreation
 
 import {selectIndexInternal} from './advance';
 import {ɵɵdirectiveInject} from './di';
-import {handleUnknownPropertyError} from './element_validation';
+import {handleUnknownPropertyError, validateElementProperty} from './element_validation';
 import {attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData, LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeDebug, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor} from './lview_debug';
 
 /**
@@ -1016,9 +1016,9 @@ export function elementPropertyInternal<T>(
 
     if (ngDevMode) {
       validateAgainstEventProperties(propName);
-      if (!validateProperty(element, tNode.value, propName, tView.schemas)) {
+
+      if (!validateElementProperty(element, tNode.value, propName, tView.schemas, tNode, lView)) {
         // Return here since we only log warnings for unknown properties.
-        handleUnknownPropertyError(propName, tNode, lView);
         return;
       }
       ngDevMode.rendererSetProperty++;
@@ -1092,42 +1092,6 @@ export function setNgReflectProperties(
       setNgReflectProperty(lView, element, type, dataValue[i + 1] as string, value);
     }
   }
-}
-
-/**
- * Validates that the property of the element is known at runtime and returns
- * false if it's not the case.
- * This check is relevant for JIT-compiled components (for AOT-compiled
- * ones this check happens at build time).
- *
- * The property is considered known if either:
- * - it's a known property of the element
- * - the element is allowed by one of the schemas
- * - the property is used for animations
- *
- * @param element Element to validate
- * @param tagName Name of the tag to check
- * @param propName Name of the property to check
- * @param schemas Array of schemas
- */
-function validateProperty(
-    element: RElement|RComment, tagName: string|null, propName: string,
-    schemas: SchemaMetadata[]|null): boolean {
-  // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
-  // mode where this check happens at compile time. In JIT mode, `schemas` is always present and
-  // defined as an array (as an empty array in case `schemas` field is not defined) and we should
-  // execute the check below.
-  if (schemas === null) return true;
-
-  // The property is considered valid if the element matches the schema, it exists on the element,
-  // or it is synthetic, and we are in a browser context (web worker nodes should be skipped).
-  if (matchingSchemas(schemas, tagName) || propName in element || isAnimationProp(propName)) {
-    return true;
-  }
-
-  // Note: `typeof Node` returns 'function' in most browsers, but on IE it is 'object' so we
-  // need to account for both here, while being careful with `typeof null` also returning 'object'.
-  return typeof Node === 'undefined' || Node === null || !(element instanceof Node);
 }
 
 /**
