@@ -6,27 +6,38 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusKeyManager} from '@angular/cdk/a11y';
-import {Directionality} from '@angular/cdk/bidi';
+import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
+import {DOCUMENT} from '@angular/common';
 import {
+  AfterContentInit,
   AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ContentChildren,
   ElementRef,
+  Inject,
   Input,
   OnDestroy,
-  Optional,
   QueryList,
   ViewEncapsulation,
 } from '@angular/core';
 import {HasTabIndex, mixinTabIndex} from '@angular/material-experimental/mdc-core';
+import {
+  MDCChipSetFoundation,
+  MDCChipSetAdapter,
+  MDCChipFoundation,
+  MDCChipEvents,
+  ChipAnimationEvent,
+  ChipInteractionEvent,
+  ChipNavigationEvent,
+  MDCChipActionType,
+} from '@material/chips';
 import {merge, Observable, Subject} from 'rxjs';
 import {startWith, switchMap, takeUntil} from 'rxjs/operators';
 import {MatChip, MatChipEvent} from './chip';
-import {MatChipAction} from './chip-action';
+import {emitCustomEvent} from './emit-event';
 
 /**
  * Boilerplate for applying mixins to MatChipSet.
@@ -53,7 +64,6 @@ const _MatChipSetMixinBase = mixinTabIndex(MatChipSetBase);
   styleUrls: ['chip-set.css'],
   host: {
     'class': 'mat-mdc-chip-set mdc-evolution-chip-set',
-    '(keydown)': '_handleKeydown($event)',
     '[attr.role]': 'role',
   },
   encapsulation: ViewEncapsulation.None,
@@ -61,13 +71,17 @@ const _MatChipSetMixinBase = mixinTabIndex(MatChipSetBase);
 })
 export class MatChipSet
   extends _MatChipSetMixinBase
-  implements AfterViewInit, HasTabIndex, OnDestroy
+  implements AfterContentInit, AfterViewInit, HasTabIndex, OnDestroy
 {
-  /** Index of the last destroyed chip that had focus. */
-  private _lastDestroyedFocusedChipIndex: number | null = null;
+  /**
+   * When a chip is destroyed, we store the index of the destroyed chip until the chips
+   * query list notifies about the update. This is necessary because we cannot determine an
+   * appropriate chip that should receive focus until the array of chips updated completely.
+   */
+  protected _lastDestroyedChipIndex: number | null = null;
 
-  /** Used to manage focus within the chip list. */
-  protected _keyManager: FocusKeyManager<MatChipAction>;
+  /** The MDC foundation containing business logic for MDC chip-set. */
+  protected _chipSetFoundation: MDCChipSetFoundation;
 
   /** Subject that emits when the component has been destroyed. */
   protected _destroyed = new Subject<void>();
@@ -75,15 +89,58 @@ export class MatChipSet
   /** Role to use if it hasn't been overwritten by the user. */
   protected _defaultRole = 'presentation';
 
-  /** Combined stream of all of the child chips' focus events. */
-  get chipFocusChanges(): Observable<MatChipEvent> {
-    return this._getChipStream(chip => chip._onFocus);
-  }
-
   /** Combined stream of all of the child chips' remove events. */
   get chipDestroyedChanges(): Observable<MatChipEvent> {
     return this._getChipStream(chip => chip.destroyed);
   }
+
+  /**
+   * Implementation of the MDC chip-set adapter interface.
+   * These methods are called by the chip set foundation.
+   */
+  protected _chipSetAdapter: MDCChipSetAdapter = {
+    announceMessage: message => this._liveAnnouncer.announce(message),
+    emitEvent: (eventName, eventDetail) => {
+      emitCustomEvent(this._elementRef.nativeElement, this._document, eventName, eventDetail, true);
+    },
+    getAttribute: name => this._elementRef.nativeElement.getAttribute(name),
+    getChipActionsAtIndex: index => this._chipFoundation(index)?.getActions() || [],
+    getChipCount: () => this._chips.length,
+    getChipIdAtIndex: index => this._chipFoundation(index)?.getElementID() || '',
+    getChipIndexById: id => {
+      return this._chips.toArray().findIndex(chip => chip._getFoundation().getElementID() === id);
+    },
+    isChipFocusableAtIndex: (index, actionType) => {
+      return this._chipFoundation(index)?.isActionFocusable(actionType) || false;
+    },
+    isChipSelectableAtIndex: (index, actionType) => {
+      return this._chipFoundation(index)?.isActionSelectable(actionType) || false;
+    },
+    isChipSelectedAtIndex: (index, actionType) => {
+      return this._chipFoundation(index)?.isActionSelected(actionType) || false;
+    },
+    removeChipAtIndex: index => this._chips.toArray()[index]?.remove(),
+    setChipFocusAtIndex: (index, action, behavior) => {
+      this._chipFoundation(index)?.setActionFocus(action, behavior);
+    },
+    setChipSelectedAtIndex: (index, actionType, isSelected) => {
+      // Setting the trailing action as deselected ends up deselecting the entire chip.
+      // This is working as expected, but it's not something we want so we only apply the
+      // selected state to the primary chip.
+      if (actionType === MDCChipActionType.PRIMARY) {
+        this._chipFoundation(index)?.setActionSelected(actionType, isSelected);
+      }
+    },
+    startChipAnimationAtIndex: (index, animation) => {
+      this._chipFoundation(index)?.startAnimation(animation);
+    },
+  };
+
+  /**
+   * Map from class to whether the class is enabled.
+   * Enabled classes are set on the MDC chip-set div.
+   */
+  _mdcClasses: {[key: string]: boolean} = {};
 
   /** Whether the chip set is disabled. */
   @Input()
@@ -129,27 +186,56 @@ export class MatChipSet
   })
   _chips: QueryList<MatChip>;
 
-  /** Flat list of all the actions contained within the chips. */
-  _chipActions = new QueryList<MatChipAction>();
-
   constructor(
+    private _liveAnnouncer: LiveAnnouncer,
+    @Inject(DOCUMENT) private _document: any,
     protected _elementRef: ElementRef<HTMLElement>,
     protected _changeDetectorRef: ChangeDetectorRef,
-    @Optional() private _dir: Directionality,
   ) {
     super(_elementRef);
+    const element = _elementRef.nativeElement;
+    this._chipSetFoundation = new MDCChipSetFoundation(this._chipSetAdapter);
+    element.addEventListener(MDCChipEvents.ANIMATION, this._handleChipAnimation);
+    element.addEventListener(MDCChipEvents.INTERACTION, this._handleChipInteraction);
+    element.addEventListener(MDCChipEvents.NAVIGATION, this._handleChipNavigation);
   }
 
   ngAfterViewInit() {
-    this._setUpFocusManagement();
-    this._trackChipSetChanges();
-    this._trackDestroyedFocusedChip();
+    this._chipSetFoundation.init();
+  }
+
+  ngAfterContentInit() {
+    this._chips.changes.pipe(startWith(null), takeUntil(this._destroyed)).subscribe(() => {
+      if (this.disabled) {
+        // Since this happens after the content has been
+        // checked, we need to defer it to the next tick.
+        Promise.resolve().then(() => {
+          this._syncChipsState();
+        });
+      }
+    });
+
+    this.chipDestroyedChanges.pipe(takeUntil(this._destroyed)).subscribe((event: MatChipEvent) => {
+      const chip = event.chip;
+      const chipIndex = this._chips.toArray().indexOf(event.chip);
+
+      // In case the chip that will be removed is currently focused, we temporarily store
+      // the index in order to be able to determine an appropriate sibling chip that will
+      // receive focus.
+      if (this._isValidIndex(chipIndex) && chip._hasFocus()) {
+        this._lastDestroyedChipIndex = chipIndex;
+      }
+    });
   }
 
   ngOnDestroy() {
-    this._chipActions.destroy();
+    const element = this._elementRef.nativeElement;
+    element.removeEventListener(MDCChipEvents.ANIMATION, this._handleChipAnimation);
+    element.removeEventListener(MDCChipEvents.INTERACTION, this._handleChipInteraction);
+    element.removeEventListener(MDCChipEvents.NAVIGATION, this._handleChipNavigation);
     this._destroyed.next();
     this._destroyed.complete();
+    this._chipSetFoundation.destroy();
   }
 
   /** Checks whether any of the chips is focused. */
@@ -170,13 +256,6 @@ export class MatChipSet
   /** Dummy method for subclasses to override. Base chip set cannot be focused. */
   focus() {}
 
-  /** Handles keyboard events on the chip set. */
-  _handleKeydown(event: KeyboardEvent) {
-    if (this._originatesFromChip(event)) {
-      this._keyManager.onKeydown(event);
-    }
-  }
-
   /**
    * Utility to ensure all indexes are valid.
    *
@@ -185,6 +264,11 @@ export class MatChipSet
    */
   protected _isValidIndex(index: number): boolean {
     return index >= 0 && index < this._chips.length;
+  }
+
+  /** Checks whether an event comes from inside a chip element. */
+  protected _originatesFromChip(event: Event): boolean {
+    return this._checkForClassInHierarchy(event, 'mdc-evolution-chip');
   }
 
   /**
@@ -218,110 +302,34 @@ export class MatChipSet
     );
   }
 
-  /** Checks whether an event comes from inside a chip element. */
-  protected _originatesFromChip(event: Event): boolean {
+  protected _checkForClassInHierarchy(event: Event, className: string) {
     let currentElement = event.target as HTMLElement | null;
 
     while (currentElement && currentElement !== this._elementRef.nativeElement) {
       // Null check the classList, because IE and Edge don't support it on all elements.
-      if (currentElement.classList && currentElement.classList.contains('mdc-evolution-chip')) {
+      if (currentElement.classList && currentElement.classList.contains(className)) {
         return true;
       }
+
       currentElement = currentElement.parentElement;
     }
+
     return false;
   }
 
-  /** Sets up the chip set's focus management logic. */
-  private _setUpFocusManagement() {
-    // Create a flat `QueryList` containing the actions of all of the chips.
-    // This allows us to navigate both within the chip and move to the next/previous
-    // one using the existing `ListKeyManager`.
-    this._chips.changes.pipe(startWith(this._chips)).subscribe((chips: QueryList<MatChip>) => {
-      const actions: MatChipAction[] = [];
-      chips.forEach(chip => chip._getActions().forEach(action => actions.push(action)));
-      this._chipActions.reset(actions);
-      this._chipActions.notifyOnChanges();
-    });
-
-    this._keyManager = new FocusKeyManager(this._chipActions)
-      .withVerticalOrientation()
-      .withHorizontalOrientation(this._dir ? this._dir.value : 'ltr')
-      .withHomeAndEnd()
-      // Skip non-interactive and disabled actions since the user can't do anything with them.
-      .skipPredicate(action => !action.isInteractive || action.disabled);
-
-    // Keep the manager active index in sync so that navigation picks
-    // up from the current chip if the user clicks into the list directly.
-    this.chipFocusChanges.pipe(takeUntil(this._destroyed)).subscribe(({chip}) => {
-      const action = chip._getSourceAction(document.activeElement as Element);
-
-      if (action) {
-        this._keyManager.updateActiveItem(action);
-      }
-    });
-
-    this._dir?.change
-      .pipe(takeUntil(this._destroyed))
-      .subscribe(direction => this._keyManager.withHorizontalOrientation(direction));
+  private _chipFoundation(index: number): MDCChipFoundation | undefined {
+    return this._chips.toArray()[index]?._getFoundation();
   }
 
-  /** Listens to changes in the chip set and syncs up the state of the individual chips. */
-  private _trackChipSetChanges() {
-    this._chips.changes.pipe(startWith(null), takeUntil(this._destroyed)).subscribe(() => {
-      if (this.disabled) {
-        // Since this happens after the content has been
-        // checked, we need to defer it to the next tick.
-        Promise.resolve().then(() => this._syncChipsState());
-      }
+  private _handleChipAnimation = (event: Event) => {
+    this._chipSetFoundation.handleChipAnimation(event as ChipAnimationEvent);
+  };
 
-      this._redirectDestroyedChipFocus();
-    });
-  }
+  private _handleChipInteraction = (event: Event) => {
+    this._chipSetFoundation.handleChipInteraction(event as ChipInteractionEvent);
+  };
 
-  /** Starts tracking the destroyed chips in order to capture the focused one. */
-  private _trackDestroyedFocusedChip() {
-    this.chipDestroyedChanges.pipe(takeUntil(this._destroyed)).subscribe((event: MatChipEvent) => {
-      const chipArray = this._chips.toArray();
-      const chipIndex = chipArray.indexOf(event.chip);
-
-      // If the focused chip is destroyed, save its index so that we can move focus to the next
-      // chip. We only save the index here, rather than move the focus immediately, because we want
-      // to wait until the chip is removed from the chip list before focusing the next one. This
-      // allows us to keep focus on the same index if the chip gets swapped out.
-      if (this._isValidIndex(chipIndex) && event.chip._hasFocus()) {
-        this._lastDestroyedFocusedChipIndex = chipIndex;
-      }
-    });
-  }
-
-  /**
-   * Finds the next appropriate chip to move focus to,
-   * if the currently-focused chip is destroyed.
-   */
-  private _redirectDestroyedChipFocus() {
-    if (this._lastDestroyedFocusedChipIndex == null) {
-      return;
-    }
-
-    if (this._chips.length) {
-      const newIndex = Math.min(this._lastDestroyedFocusedChipIndex, this._chips.length - 1);
-      const chipToFocus = this._chips.toArray()[newIndex];
-
-      if (chipToFocus.disabled) {
-        // If we're down to one disabled chip, move focus back to the set.
-        if (this._chips.length === 1) {
-          this.focus();
-        } else {
-          this._keyManager.setPreviousItemActive();
-        }
-      } else {
-        chipToFocus.focus();
-      }
-    } else {
-      this.focus();
-    }
-
-    this._lastDestroyedFocusedChipIndex = null;
-  }
+  private _handleChipNavigation = (event: Event) => {
+    this._chipSetFoundation.handleChipNavigation(event as ChipNavigationEvent);
+  };
 }

@@ -21,7 +21,7 @@ import {
   Output,
 } from '@angular/core';
 import {MatFormField, MAT_FORM_FIELD} from '@angular/material-experimental/mdc-form-field';
-import {MatChipsDefaultOptions, MAT_CHIPS_DEFAULT_OPTIONS} from './tokens';
+import {MatChipsDefaultOptions, MAT_CHIPS_DEFAULT_OPTIONS} from './chip-default-options';
 import {MatChipGrid} from './chip-grid';
 import {MatChipTextControl} from './chip-text-control';
 
@@ -213,6 +213,10 @@ export class MatChipInput implements MatChipTextControl, AfterContentInit, OnCha
 
   /** Checks to see if the (chipEnd) event needs to be emitted. */
   _emitChipEnd(event?: KeyboardEvent) {
+    if (!this.inputElement.value && !!event) {
+      this._chipGrid._keydown(event);
+    }
+
     if (!event || this._isSeparatorKey(event)) {
       this.chipEnd.emit({
         input: this.inputElement,

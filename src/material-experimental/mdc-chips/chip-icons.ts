@@ -6,10 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ENTER, SPACE} from '@angular/cdk/keycodes';
-import {Directive} from '@angular/core';
+import {Directive, InjectionToken} from '@angular/core';
+import {MDCChipActionAdapter, MDCChipTrailingActionFoundation} from '@material/chips';
 import {MatChipAction} from './chip-action';
-import {MAT_CHIP_AVATAR, MAT_CHIP_REMOVE, MAT_CHIP_TRAILING_ICON} from './tokens';
+
+/**
+ * Injection token that can be used to reference instances of `MatChipAvatar`. It serves as
+ * alternative token to the actual `MatChipAvatar` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+export const MAT_CHIP_AVATAR = new InjectionToken<MatChipAvatar>('MatChipAvatar');
 
 /**
  * Directive to add CSS classes to chip leading icon.
@@ -24,6 +30,15 @@ import {MAT_CHIP_AVATAR, MAT_CHIP_REMOVE, MAT_CHIP_TRAILING_ICON} from './tokens
   providers: [{provide: MAT_CHIP_AVATAR, useExisting: MatChipAvatar}],
 })
 export class MatChipAvatar {}
+
+/**
+ * Injection token that can be used to reference instances of `MatChipTrailingIcon`. It serves as
+ * alternative token to the actual `MatChipTrailingIcon` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+export const MAT_CHIP_TRAILING_ICON = new InjectionToken<MatChipTrailingIcon>(
+  'MatChipTrailingIcon',
+);
 
 /**
  * Directive to add CSS classes to and configure attributes for chip trailing icon.
@@ -45,8 +60,17 @@ export class MatChipTrailingIcon extends MatChipAction {
    */
   override isInteractive = false;
 
-  override _isPrimary = false;
+  protected override _createFoundation(adapter: MDCChipActionAdapter) {
+    return new MDCChipTrailingActionFoundation(adapter);
+  }
 }
+
+/**
+ * Injection token that can be used to reference instances of `MatChipRemove`. It serves as
+ * alternative token to the actual `MatChipRemove` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+export const MAT_CHIP_REMOVE = new InjectionToken<MatChipRemove>('MatChipRemove');
 
 /**
  * Directive to remove the parent chip when the trailing icon is clicked or
@@ -76,21 +100,19 @@ export class MatChipTrailingIcon extends MatChipAction {
   providers: [{provide: MAT_CHIP_REMOVE, useExisting: MatChipRemove}],
 })
 export class MatChipRemove extends MatChipAction {
-  override _isPrimary = false;
+  protected override _createFoundation(adapter: MDCChipActionAdapter) {
+    return new MDCChipTrailingActionFoundation(adapter);
+  }
 
-  override _handleClick(event: MouseEvent): void {
-    if (!this.disabled) {
-      event.stopPropagation();
-      event.preventDefault();
-      this._parentChip.remove();
-    }
+  override _handleClick(event: MouseEvent) {
+    // Some consumers bind `click` events directly on the chip
+    // which will also pick up clicks on the remove button.
+    event.stopPropagation();
+    super._handleClick(event);
   }
 
   override _handleKeydown(event: KeyboardEvent) {
-    if ((event.keyCode === ENTER || event.keyCode === SPACE) && !this.disabled) {
-      event.stopPropagation();
-      event.preventDefault();
-      this._parentChip.remove();
-    }
+    event.stopPropagation();
+    super._handleKeydown(event);
   }
 }

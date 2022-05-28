@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ENTER} from '@angular/cdk/keycodes';
+import {Directionality} from '@angular/cdk/bidi';
+import {BACKSPACE, DELETE, ENTER} from '@angular/cdk/keycodes';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {
   AfterViewInit,
@@ -33,8 +34,6 @@ import {
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {MatChip, MatChipEvent} from './chip';
 import {MatChipEditInput} from './chip-edit-input';
-import {takeUntil} from 'rxjs/operators';
-import {MAT_CHIP} from './tokens';
 
 /** Represents an event fired on an individual `mat-chip` when it is edited. */
 export interface MatChipEditedEvent extends MatChipEvent {
@@ -50,7 +49,7 @@ export interface MatChipEditedEvent extends MatChipEvent {
   selector: 'mat-chip-row, mat-basic-chip-row',
   templateUrl: 'chip-row.html',
   styleUrls: ['chip.css'],
-  inputs: ['color', 'disabled', 'disableRipple', 'tabIndex'],
+  inputs: ['color', 'disableRipple', 'tabIndex'],
   host: {
     'class': 'mat-mdc-chip mat-mdc-chip-row mdc-evolution-chip',
     '[class.mat-mdc-chip-with-avatar]': 'leadingIcon',
@@ -69,12 +68,12 @@ export interface MatChipEditedEvent extends MatChipEvent {
     '[attr.aria-label]': 'null',
     '[attr.role]': 'role',
     '(mousedown)': '_mousedown($event)',
-    '(dblclick)': '_doubleclick($event)',
+    '(keydown)': '_keydown($event)',
+    '(dblclick)': '_doubleclick()',
+    '(focusin)': '_focusin($event)',
+    '(focusout)': '_focusout($event)',
   },
-  providers: [
-    {provide: MatChip, useExisting: MatChipRow},
-    {provide: MAT_CHIP, useExisting: MatChipRow},
-  ],
+  providers: [{provide: MatChip, useExisting: MatChipRow}],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -95,12 +94,19 @@ export class MatChipRow extends MatChip implements AfterViewInit {
 
   _isEditing = false;
 
+  /**
+   * Timeout used to give some time between `focusin` and `focusout`
+   * in order to determine whether focus has left the chip.
+   */
+  private _focusoutTimeout: number | null;
+
   constructor(
     changeDetectorRef: ChangeDetectorRef,
     elementRef: ElementRef,
     ngZone: NgZone,
     focusMonitor: FocusMonitor,
     @Inject(DOCUMENT) _document: any,
+    @Optional() dir: Directionality,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
     @Optional()
     @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
@@ -113,22 +119,48 @@ export class MatChipRow extends MatChip implements AfterViewInit {
       ngZone,
       focusMonitor,
       _document,
+      dir,
       animationMode,
       globalRippleOptions,
       tabIndex,
     );
 
     this.role = 'row';
-    this._onBlur.pipe(takeUntil(this.destroyed)).subscribe(() => {
-      if (this._isEditing) {
-        this._onEditFinish();
-      }
-    });
   }
 
   override _hasTrailingIcon() {
     // The trailing icon is hidden while editing.
     return !this._isEditing && super._hasTrailingIcon();
+  }
+
+  /**
+   * Emits a blur event when one of the gridcells loses focus, unless focus moved
+   * to the other gridcell.
+   */
+  _focusout() {
+    if (this._focusoutTimeout) {
+      clearTimeout(this._focusoutTimeout);
+    }
+
+    // Wait to see if focus moves to the other gridcell
+    this._focusoutTimeout = window.setTimeout(() => {
+      if (this._isEditing) {
+        this._onEditFinish();
+      }
+
+      this._hasFocusInternal = false;
+      this._onBlur.next({chip: this});
+    });
+  }
+
+  /** Records that the chip has focus when one of the gridcells is focused. */
+  _focusin() {
+    if (this._focusoutTimeout) {
+      clearTimeout(this._focusoutTimeout);
+      this._focusoutTimeout = null;
+    }
+
+    this._hasFocusInternal = true;
   }
 
   /** Sends focus to the first gridcell when the user clicks anywhere inside the chip. */
@@ -142,36 +174,41 @@ export class MatChipRow extends MatChip implements AfterViewInit {
     }
   }
 
-  override _handleKeydown(event: KeyboardEvent): void {
-    if (event.keyCode === ENTER && !this.disabled) {
-      if (this._isEditing) {
-        event.preventDefault();
-        this._onEditFinish();
-      } else if (this.editable) {
-        this._startEditing(event);
-      }
-    } else if (this._isEditing) {
-      // Stop the event from reaching the chip set in order to avoid navigating.
-      event.stopPropagation();
-    } else {
-      super._handleKeydown(event);
-    }
-  }
-
-  _doubleclick(event: MouseEvent) {
-    if (!this.disabled && this.editable) {
-      this._startEditing(event);
-    }
-  }
-
-  private _startEditing(event: Event) {
-    if (
-      !this.primaryAction ||
-      (this.removeIcon && this._getSourceAction(event.target as Node) === this.removeIcon)
-    ) {
+  /** Handles custom key presses. */
+  _keydown(event: KeyboardEvent): void {
+    if (this.disabled) {
       return;
     }
 
+    switch (event.keyCode) {
+      case ENTER:
+        if (this._isEditing) {
+          event.preventDefault();
+          // Wrap in a timeout so the timing is consistent as when it is emitted in `focusout`.
+          setTimeout(() => this._onEditFinish());
+        } else if (this.editable) {
+          this._startEditing();
+        }
+        break;
+      case DELETE:
+      case BACKSPACE:
+        if (!this._isEditing) {
+          // Remove the focused chip
+          this.remove();
+          // Always prevent so page navigation does not occur
+          event.preventDefault();
+        }
+        break;
+    }
+  }
+
+  _doubleclick() {
+    if (!this.disabled && this.editable) {
+      this._startEditing();
+    }
+  }
+
+  private _startEditing() {
     // The value depends on the DOM so we need to extract it before we flip the flag.
     const value = this.value;
 
@@ -185,10 +222,6 @@ export class MatChipRow extends MatChip implements AfterViewInit {
   }
 
   private _onEditFinish() {
-    this._isEditing = false;
-    this.primaryAction.isInteractive = true;
-    this.edited.emit({chip: this, value: this._getEditInput().getValue()});
-
     // If the edit input is still focused or focus was returned to the body after it was destroyed,
     // return focus to the chip contents.
     if (
@@ -197,6 +230,9 @@ export class MatChipRow extends MatChip implements AfterViewInit {
     ) {
       this.primaryAction.focus();
     }
+    this.edited.emit({chip: this, value: this._getEditInput().getValue()});
+    this.primaryAction.isInteractive = true;
+    this._isEditing = false;
   }
 
   /**

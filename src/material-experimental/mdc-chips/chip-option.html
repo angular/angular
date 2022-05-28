@@ -11,7 +11,9 @@
     [disabled]="disabled"
     [attr.aria-selected]="ariaSelected"
     [attr.aria-label]="ariaLabel"
-    role="option">
+    role="option"
+    (blur)="_blur()"
+    (focus)="focus()">
     <span class="mdc-evolution-chip__graphic mat-mdc-chip-graphic" *ngIf="_hasLeadingGraphic()">
       <ng-content select="mat-chip-avatar, [matChipAvatar]"></ng-content>
       <span class="mdc-evolution-chip__checkmark">
