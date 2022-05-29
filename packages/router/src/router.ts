@@ -1365,11 +1365,11 @@ export class Router {
           this.navigated = true;
           this.lastSuccessfulId = t.id;
           this.currentPageId = t.targetPageId;
+          this.titleStrategy?.updateTitle(this.routerState.snapshot);
           (this.events as Subject<Event>)
               .next(new NavigationEnd(
                   t.id, this.serializeUrl(t.extractedUrl), this.serializeUrl(this.currentUrlTree)));
           this.lastSuccessfulNavigation = this.currentNavigation;
-          this.titleStrategy?.updateTitle(this.routerState.snapshot);
           t.resolve(true);
         },
         e => {
