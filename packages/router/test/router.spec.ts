@@ -7,10 +7,15 @@
  */
 
 import {Location} from '@angular/common';
-import {inject, TestBed} from '@angular/core/testing';
+import {Component, Injectable} from '@angular/core';
+import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {Title} from '@angular/platform-browser';
+import {NavigationEnd} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 import {of} from 'rxjs';
+import {filter, first} from 'rxjs/operators';
 
+import {DefaultTitleStrategy, TitleStrategy} from '../src';
 import {ChildActivationStart} from '../src/events';
 import {Routes} from '../src/models';
 import {checkGuards as checkGuardsOperator} from '../src/operators/check_guards';
@@ -698,6 +703,41 @@ describe('Router', () => {
         });
       });
     });
+  });
+
+  describe('titleStrategy', () => {
+    @Injectable()
+    class TestTitleStrategy extends DefaultTitleStrategy {
+      override buildTitle(snapshot: RouterStateSnapshot): string|undefined {
+        return 'test title';
+      }
+    }
+    @Component({template: ''})
+    class BlankComponent {
+    }
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [RouterTestingModule.withRoutes([{path: 'test', component: BlankComponent}])],
+        providers: [{provide: TitleStrategy, useClass: TestTitleStrategy}]
+      });
+    });
+
+    it('should update page title using provided strategy', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         const title = TestBed.inject(Title);
+         let titleOnNavigationEnd = '';
+
+         title.setTitle('initial title');
+
+         router.events.pipe(filter(event => event instanceof NavigationEnd), first())
+             .subscribe(() => titleOnNavigationEnd = title.getTitle());
+
+         router.navigateByUrl('/test');
+         tick();
+
+         expect(titleOnNavigationEnd).toEqual('test title');
+       }));
   });
 });
 
