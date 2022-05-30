@@ -24,7 +24,6 @@ import {
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {ThemePalette} from '@angular/material-experimental/mdc-core';
 import {By} from '@angular/platform-browser';
-import {numbers} from '@material/list';
 import {
   MatListModule,
   MatListOption,
@@ -34,6 +33,8 @@ import {
 } from './index';
 
 describe('MDC-based MatSelectionList without forms', () => {
+  const typeaheadInterval = 200;
+
   describe('with list option', () => {
     let fixture: ComponentFixture<SelectionListWithListOptions>;
     let listOptions: DebugElement[];
@@ -445,13 +446,13 @@ describe('MDC-based MatSelectionList without forms', () => {
 
       dispatchEvent(firstOption, createKeyboardEvent('keydown', 83, 's'));
       fixture.detectChanges();
-      tick(numbers.TYPEAHEAD_BUFFER_CLEAR_TIMEOUT_MS);
+      tick(typeaheadInterval);
 
       expect(getFocusIndex()).toBe(1);
 
       dispatchEvent(firstOption, createKeyboardEvent('keydown', 68, 'd'));
       fixture.detectChanges();
-      tick(numbers.TYPEAHEAD_BUFFER_CLEAR_TIMEOUT_MS);
+      tick(typeaheadInterval);
 
       expect(getFocusIndex()).toBe(4);
     }));
@@ -462,7 +463,7 @@ describe('MDC-based MatSelectionList without forms', () => {
 
       dispatchKeyboardEvent(listOptions[0].nativeElement, 'keydown', D, 'd');
       fixture.detectChanges();
-      tick(numbers.TYPEAHEAD_BUFFER_CLEAR_TIMEOUT_MS);
+      tick(typeaheadInterval);
 
       expect(getFocusIndex()).toBe(4);
     }));
@@ -475,7 +476,7 @@ describe('MDC-based MatSelectionList without forms', () => {
 
       dispatchKeyboardEvent(listOptions[0].nativeElement, 'keydown', A, 'a');
       fixture.detectChanges();
-      tick(numbers.TYPEAHEAD_BUFFER_CLEAR_TIMEOUT_MS);
+      tick(typeaheadInterval);
 
       expect(getFocusIndex()).toBe(3);
     }));
@@ -493,13 +494,13 @@ describe('MDC-based MatSelectionList without forms', () => {
 
       dispatchKeyboardEvent(testListItem, 'keydown', D, 'd');
       fixture.detectChanges();
-      tick(numbers.TYPEAHEAD_BUFFER_CLEAR_TIMEOUT_MS / 2); // Tick only half the typeahead timeout.
+      tick(typeaheadInterval / 2); // Tick only half the typeahead timeout.
 
       dispatchKeyboardEvent(testListItem, 'keydown', SPACE);
       fixture.detectChanges();
       // Tick the buffer timeout again as a new key has been pressed that resets
       // the buffer timeout.
-      tick(numbers.TYPEAHEAD_BUFFER_CLEAR_TIMEOUT_MS);
+      tick(typeaheadInterval);
 
       expect(getFocusIndex()).toBe(4);
       expect(model.isEmpty()).toBe(true);

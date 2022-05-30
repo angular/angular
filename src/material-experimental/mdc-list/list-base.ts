@@ -125,7 +125,7 @@ export abstract class MatListItemBase implements AfterViewInit, OnDestroy, Rippl
     return this.disableRipple || !!this.rippleConfig.disabled;
   }
 
-  protected constructor(
+  constructor(
     public _elementRef: ElementRef<HTMLElement>,
     protected _ngZone: NgZone,
     private _listBase: MatListBase,
@@ -164,15 +164,6 @@ export abstract class MatListItemBase implements AfterViewInit, OnDestroy, Rippl
     if (this._rippleRenderer !== null) {
       this._rippleRenderer._removeTriggerEvents();
     }
-  }
-
-  /** Gets the label for the list item. This is used for the typeahead. */
-  _getItemLabel(): string {
-    const titleElement = this._titles?.get(0)?._elementRef.nativeElement;
-    // If there is no explicit title element, the unscoped text content
-    // is treated as the list item title.
-    const labelEl = titleElement ?? this._unscopedContent?.nativeElement;
-    return labelEl ? labelEl.textContent ?? '' : '';
   }
 
   /** Whether the list item has icons or avatars. */
