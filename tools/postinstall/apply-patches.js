@@ -55,6 +55,10 @@ function applyPatches() {
   // Switches the devmode output for Angular Bazel to ES2020 target and module.
   applyPatch(path.join(__dirname, './devmode-es2020-bazel.patch'));
 
+  // Similar to the `rxjs` performance improvement below, see:
+  // https://github.com/angular/angular/pull/46187.
+  shelljs.rm('-rf', ['node_modules/@angular/common/locales']);
+
   // More info in https://github.com/angular/angular/pull/33786
   shelljs.rm('-rf', [
     'node_modules/rxjs/add/',
