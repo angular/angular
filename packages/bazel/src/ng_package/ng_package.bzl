@@ -301,9 +301,9 @@ def _ng_package_impl(ctx):
     fesm2015 = []
     type_files = []
 
-    # We collect all ESM2020 source
-    unscoped_esm2020_depsets = []
-    unscoped_type_definition_depsets = []
+    # List of unscoped direct and transitive ESM sources that are provided
+    # by all entry-points.
+    unscoped_all_entry_point_esm2020 = []
 
     # We infer the entry points to be:
     # - ng_module rules in the deps (they have an "angular" provider)
@@ -319,23 +319,6 @@ def _ng_package_impl(ctx):
         if not dep.label.package.startswith(owning_package):
             fail("Unexpected dependency. %s is defined outside of %s." % (dep, owning_package))
 
-        # Collect ESM2020 source files from the dependency, including transitive sources which
-        # are not directly defined in the entry-point. This is necessary to allow for
-        # entry-points to rely on sub-targets (which can be done for incrementality).
-        if JSEcmaScriptModuleInfo in dep:
-            unscoped_esm2020_depsets.append(dep[JSEcmaScriptModuleInfo].sources)
-
-        # Collect the type definitions files for the entry-point.
-        if DeclarationInfo in dep:
-            unscoped_type_definition_depsets.append(dep[DeclarationInfo].transitive_declarations)
-
-    # Note: Using `to_list()` is expensive but we cannot get around this here as
-    # we need to filter out generated files and need to be able to iterate through
-    # JavaScript and typing files in order to detect entry-point index and typing files.
-    unscoped_esm2020 = depset(transitive = unscoped_esm2020_depsets).to_list()
-    unscoped_type_definitions = depset(transitive = unscoped_type_definition_depsets).to_list()
-
-    for dep in ctx.attr.deps:
         # Module name of the current entry-point. eg. @angular/core/testing
         module_name = ""
 
@@ -347,6 +330,19 @@ def _ng_package_impl(ctx):
 
         # Whether this dependency is for the primary entry-point of the package.
         is_primary_entry_point = entry_point == ""
+
+        # Collect ESM2020 and type definition source files from the dependency, including
+        # transitive sources which are not directly defined in the entry-point. This is
+        # necessary to allow for entry-points to rely on sub-targets (as a perf improvement).
+        unscoped_esm2020_depset = dep[JSEcmaScriptModuleInfo].sources
+        unscoped_types_depset = dep[DeclarationInfo].transitive_declarations
+
+        # Note: Using `to_list()` is expensive but we cannot get around this here as
+        # we need to filter out generated files and need to be able to iterate through
+        # JavaScript files in order to capture the `esm2020/` in the APF, and to be able
+        # to detect entry-point index files when no flat module metadata is available.
+        unscoped_esm2020 = unscoped_esm2020_depset.to_list()
+        unscoped_all_entry_point_esm2020.extend(unscoped_esm2020)
 
         # Extract the "module_name" from either "ts_library" or "ng_module". Both
         # set the "module_name" in the provider struct.
@@ -379,11 +375,16 @@ def _ng_package_impl(ctx):
                 "guessing `index.mjs` as main file of the entry-point",
             )
 
+            # Note: Using `to_list()` is expensive but we cannot get around this here as
+            # we need to filter out generated files and need to be able to iterate through
+            # typing files in order to determine the entry-point type file.
+            unscoped_types = unscoped_types_depset.to_list()
+
             # In case the dependency is built through the "ts_library" rule, or the "ng_module"
             # rule does not generate a flat module bundle, we determine the index file and
             # typings entry-point through the most reasonable defaults (i.e. "package/index").
             es2020_entry_point = _find_matching_file(unscoped_esm2020, "%s/index.mjs" % entry_point_package)
-            typings_entry_point = _find_matching_file(unscoped_type_definitions, "%s/index.d.ts" % entry_point_package)
+            typings_entry_point = _find_matching_file(unscoped_types, "%s/index.d.ts" % entry_point_package)
             guessed_paths = True
 
         bundle_name = "%s.mjs" % (primary_bundle_name if is_primary_entry_point else entry_point)
@@ -408,7 +409,7 @@ def _ng_package_impl(ctx):
                 output_file = typings_file,
                 entry_point = typings_entry_point,
                 license_banner_file = ctx.file.license_banner,
-                types = depset(transitive = unscoped_type_definition_depsets),
+                types = unscoped_types_depset,
             )
 
         type_files.append(typings_file)
@@ -426,8 +427,8 @@ def _ng_package_impl(ctx):
 
         # Note: For creating the bundles, we use all the ESM2020 sources that have been
         # collected from the dependencies. This allows for bundling of code that is not
-        # necessarily part of the owning package (using the `externals` attribute)
-        rollup_inputs = depset(unscoped_esm2020)
+        # necessarily part of the owning package (with respect to the `externals` attribute)
+        rollup_inputs = unscoped_esm2020_depset
         esm2020_config = _write_rollup_config(ctx, ctx.bin_dir.path, filename = "_%s.rollup_esm2020.conf.js")
         esm2015_config = _write_rollup_config(ctx, ctx.bin_dir.path, filename = "_%s.rollup_esm2015.conf.js", downlevel_to_es2015 = True)
 
@@ -457,7 +458,7 @@ def _ng_package_impl(ctx):
 
     # Filter ESM2020 JavaScript inputs to files which are part of the owning package. The
     # packager should not copy external files into the package.
-    esm2020 = _filter_esm_files_to_include(unscoped_esm2020, owning_package)
+    esm2020 = _filter_esm_files_to_include(unscoped_all_entry_point_esm2020, owning_package)
 
     packager_inputs = (
         static_files +
@@ -566,7 +567,7 @@ _NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
     "deps": attr.label_list(
         doc = """ Targets that produce production JavaScript outputs, such as `ts_library`.""",
         aspects = _NG_PACKAGE_DEPS_ASPECTS,
-        providers = [JSEcmaScriptModuleInfo],
+        providers = [JSEcmaScriptModuleInfo, DeclarationInfo],
         cfg = partial_compilation_transition,
     ),
     "readme_md": attr.label(allow_single_file = [".md"]),
