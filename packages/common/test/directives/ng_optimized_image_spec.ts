@@ -435,7 +435,7 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              'NG02951: The NgOptimizedImage directive has detected that the `loading` ' +
+              'NG02952: The NgOptimizedImage directive has detected that the `loading` ' +
               'attribute was used on an image that was marked "priority". ' +
               'Images marked "priority" are always eagerly loaded and this behavior ' +
               'cannot be overwritten by using the "loading" attribute.');
@@ -462,7 +462,7 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              'NG02951: The NgOptimizedImage directive has detected that the `loading` ' +
+              'NG02952: The NgOptimizedImage directive has detected that the `loading` ' +
               'attribute has an invalid value: expecting "lazy", "eager", or "auto"' +
               ' but got: `fast`.');
     });
