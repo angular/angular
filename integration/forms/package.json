@@ -8,8 +8,7 @@
     "pretest": "ng version",
     "test": "ng test && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production",
     "lint": "ng lint",
-    "e2e": "ng e2e --port 0",
-    "postinstall": "ngcc --properties es2015 --create-ivy-entry-points"
+    "e2e": "ng e2e --port 0"
   },
   "private": true,
   "dependencies": {
