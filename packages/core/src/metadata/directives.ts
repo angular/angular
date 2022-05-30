@@ -325,6 +325,9 @@ export interface Directive {
    * Angular directives marked as `standalone` do not need to be declared in an NgModule. Such
    * directives don't depend on any "intermediate context" of an NgModule (ex. configured
    * providers).
+   *
+   * More information about standalone components, directives and pipes can be found in [this
+   * guide](guide/standalone-components).
    */
   standalone?: boolean;
 }
@@ -598,6 +601,9 @@ export interface Component extends Directive {
    * Angular components marked as `standalone` do not need to be declared in an NgModule. Such
    * components directly manage their own template dependencies (components, directives and pipes
    * used in a template) via the imports property.
+   *
+   * More information about standalone components, directives and pipes can be found in [this
+   * guide](guide/standalone-components).
    */
   standalone?: boolean;
 
@@ -608,6 +614,9 @@ export interface Component extends Directive {
    *
    * This property is only available for standalone components - specifying it for components
    * declared in an NgModule generates a compilation error.
+   *
+   * More information about standalone components, directives and pipes can be found in [this
+   * guide](guide/standalone-components).
    */
   imports?: (Type<any>|any[])[];
 
@@ -617,6 +626,9 @@ export interface Component extends Directive {
    *
    * This property is only available for standalone components - specifying it for components
    * declared in an NgModule generates a compilation error.
+   *
+   * More information about standalone components, directives and pipes can be found in [this
+   * guide](guide/standalone-components).
    */
   schemas?: SchemaMetadata[];
 }
@@ -694,6 +706,9 @@ export interface Pipe {
   /**
    * Angular pipes marked as `standalone` do not need to be declared in an NgModule. Such
    * pipes don't depend on any "intermediate context" of an NgModule (ex. configured providers).
+   *
+   * More information about standalone components, directives and pipes can be found in [this
+   * guide](guide/standalone-components).
    */
   standalone?: boolean;
 }
