@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, OnDestroy} from '@angular/core';
+import {Inject, Injectable, OnDestroy, APP_ID, inject} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
 import {addAriaReferencedId, getAriaReferenceIds, removeAriaReferencedId} from './aria-reference';
 
@@ -74,6 +74,7 @@ export class AriaDescriber implements OnDestroy {
     private _platform?: Platform,
   ) {
     this._document = _document;
+    this._id = inject(APP_ID) + '-' + nextId++;
   }
 
   /**
@@ -97,7 +98,7 @@ export class AriaDescriber implements OnDestroy {
 
     if (typeof message !== 'string') {
       // We need to ensure that the element has an ID.
-      setMessageId(message);
+      setMessageId(message, this._id);
       this._messageRegistry.set(key, {messageElement: message, referenceCount: 0});
     } else if (!this._messageRegistry.has(key)) {
       this._createMessageElement(message, role);
@@ -162,7 +163,7 @@ export class AriaDescriber implements OnDestroy {
    */
   private _createMessageElement(message: string, role?: string) {
     const messageElement = this._document.createElement('div');
-    setMessageId(messageElement);
+    setMessageId(messageElement, this._id);
     messageElement.textContent = message;
 
     if (role) {
@@ -297,8 +298,8 @@ function getKey(message: string | Element, role?: string): string | Element {
 }
 
 /** Assigns a unique ID to an element, if it doesn't have one already. */
-function setMessageId(element: HTMLElement) {
+function setMessageId(element: HTMLElement, serviceId: string) {
   if (!element.id) {
-    element.id = `${CDK_DESCRIBEDBY_ID_PREFIX}-${nextId++}`;
+    element.id = `${CDK_DESCRIBEDBY_ID_PREFIX}-${serviceId}-${nextId++}`;
   }
 }
