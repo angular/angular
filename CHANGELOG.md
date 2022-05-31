@@ -1,3 +1,19 @@
+<a name="14.0.0-rc.2"></a>
+# 14.0.0-rc.2 "plastic-ball" (2022-05-31)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4edfaedcaf](https://github.com/angular/components/commit/4edfaedcaf982e10bc41699abb932c4a8ab4941b) | fix | **a11y:** ensure that aria describer ID is unique ([#24982](https://github.com/angular/components/pull/24982)) |
+| [84ff8d806a](https://github.com/angular/components/commit/84ff8d806a0224eedad4ba4ef7ed048c6d20f336) | fix | **schematics:** use `workingDirectory` smart provider in path option |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [faed61cc7d](https://github.com/angular/components/commit/faed61cc7d1d4c310bb43ed4b41eb0ada6b23030) | fix | **schematics:** use `workingDirectory` smart provider in path option |
+## Special Thanks
+Alan Agius, Kristiyan Kostadinov, Paul Gschwendtner and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-rc.1"></a>
 # 14.0.0-rc.1 "sapphire-screwdriver" (2022-05-25)
 ### cdk
