@@ -1,3 +1,13 @@
+<a name="13.3.11"></a>
+# 13.3.11 (2022-05-31)
+
+This release contains API docs improvements.
+
+## Special Thanks
+Andrew Scott, Billy Lando, George Kalpakas, Ian Gregory, Matt Shaffer, Rune Andersen Hartvig, dario-piotrowicz and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.10"></a>
 # 13.3.10 (2022-05-25)
 ## Special Thanks
