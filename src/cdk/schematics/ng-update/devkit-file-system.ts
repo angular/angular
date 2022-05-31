@@ -53,10 +53,13 @@ export class DevkitFileSystem extends FileSystem {
     try {
       this._tree.get(dirPath);
     } catch (e) {
-      // Note: We do not use an `instanceof` check here. It could happen that the devkit version
-      // used by the CLI is different than the one we end up loading. This can happen depending
-      // on how Yarn/NPM hoists the NPM packages / whether there are multiple versions installed.
-      if (e instanceof Error && e.constructor.name === 'PathIsDirectoryException') {
+      // Note: We do not use an `instanceof` check here. It could happen that
+      // the devkit version used by the CLI is different than the one we end up
+      // loading. This can happen depending on how Yarn/NPM hoists the NPM
+      // packages / whether there are multiple versions installed. Typescript
+      // throws a compilation error if the type isn't specified and we can't
+      // check the type, so we have to cast the error output to any.
+      if ((e as any).constructor.name === 'PathIsDirectoryException') {
         return true;
       }
     }
