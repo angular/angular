@@ -40,7 +40,36 @@ export type ImportProvidersSource =
  * another environment injector (such as a route injector). They should not be used in component
  * providers.
  *
- * @returns The collected providers from the specified list of types.
+ * More information about standalone components can be found in [this
+ * guide](guide/standalone-components).
+ *
+ * @usageNotes
+ * The results of the `importProvidersFrom` call can be used in the `bootstrapApplication` call:
+ *
+ * ```typescript
+ * await bootstrapApplication(RootComponent, {
+ *   providers: [
+ *     importProvidersFrom(NgModuleOne, NgModuleTwo)
+ *   ]
+ * });
+ * ```
+ *
+ * You can also use the `importProvidersFrom` results in the `providers` field of a route, when a
+ * standalone component is used:
+ *
+ * ```typescript
+ * export const ROUTES: Route[] = [
+ *   {
+ *     path: 'foo',
+ *     providers: [
+ *       importProvidersFrom(NgModuleOne, NgModuleTwo)
+ *     ],
+ *     component: YourStandaloneComponent
+ *   }
+ * ];
+ * ```
+ *
+ * @returns Collected providers from the specified list of types.
  * @publicApi
  */
 export function importProvidersFrom(...sources: ImportProvidersSource[]):
