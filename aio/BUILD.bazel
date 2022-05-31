@@ -150,6 +150,7 @@ TEST_FILES = APPLICATION_FILES + [
 
 # External dependencies from aio/package.json required to test the docs app
 TEST_DEPS = APPLICATION_DEPS + [
+    "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium",
     "@aio_npm//@types/jasmine",
     "@aio_npm//@types/node",
     "@aio_npm//assert",
@@ -160,6 +161,7 @@ TEST_DEPS = APPLICATION_DEPS + [
     "@aio_npm//karma-jasmine",
     "@aio_npm//karma-jasmine-html-reporter",
     "@aio_npm//puppeteer",
+    "@aio_npm//timezone-mock",
 ]
 
 # All sources, specs, and config files required to serve the app
@@ -197,6 +199,12 @@ architect_test(
     chdir = package_name(),
     configuration_env_vars = ["NG_BUILD_CACHE"],
     data = TEST_FILES + TEST_DEPS,
+    env = {
+        "CHROME_BIN": "../$(CHROMIUM)",
+    },
+    toolchains = [
+        "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias",
+    ],
 )
 
 architect_test(
