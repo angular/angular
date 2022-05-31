@@ -34,9 +34,12 @@ export interface ApplicationConfig {
 }
 
 /**
- * Bootstraps an instance of an Angular application and renders a root component.
+ * Bootstraps an instance of an Angular application and renders a standalone component as the
+ * application's root component. More information about standalone components can be found in [this
+ * guide](guide/standalone-components).
  *
- * Note: the root component passed into this function *must* be a standalone one (should have the
+ * @usageNotes
+ * The root component passed into this function *must* be a standalone one (should have the
  * `standalone: true` flag in the `@Component` decorator config).
  *
  * ```typescript
@@ -49,19 +52,41 @@ export interface ApplicationConfig {
  * const appRef: ApplicationRef = await bootstrapApplication(RootComponent);
  * ```
  *
- * Note: this bootstrap method doesn't include [Testability](api/core/Testability) by default.
- * You can add [Testability](api/core/Testability) by getting the list of necessary providers
- * using `provideProtractorTestingSupport()` function and add them into the `options.providers`
- * array. Example:
+ * You can add the list of providers that should be available in the application injector by
+ * specifying the `providers` field in an object passed as the second argument:
+ *
+ * ```typescript
+ * await bootstrapApplication(RootComponent, {
+ *   providers: [
+ *     {provide: BACKEND_URL, useValue: 'https://yourdomain.com/api'}
+ *   ]
+ * });
+ * ```
+ *
+ * The `importProvidersFrom` helper method can be used to collect all providers from any
+ * existing NgModule (and transitively from all NgModules that it imports):
+ *
+ * ```typescript
+ * await bootstrapApplication(RootComponent, {
+ *   providers: [
+ *     importProvidersFrom(SomeNgModule)
+ *   ]
+ * });
+ * ```
+ *
+ * Note: the `bootstrapApplication` method doesn't include [Testability](api/core/Testability) by
+ * default. You can add [Testability](api/core/Testability) by getting the list of necessary
+ * providers using `provideProtractorTestingSupport()` function and adding them into the `providers`
+ * array, for example:
  *
  * ```typescript
  * import {provideProtractorTestingSupport} from '@angular/platform-browser';
  *
- * await bootstrapApplication(RootComponent, providers: [provideProtractorTestingSupport()]);
+ * await bootstrapApplication(RootComponent, {providers: [provideProtractorTestingSupport()]});
  * ```
  *
- * @param rootComponent A reference to a Standalone Component that should be rendered.
- * @param options Additional configuration for the bootstrap operation, see `ApplicationConfig` for
+ * @param rootComponent A reference to a standalone component that should be rendered.
+ * @param options Extra configuration for the bootstrap operation, see `ApplicationConfig` for
  *     additional info.
  * @returns A promise that returns an `ApplicationRef` instance once resolved.
  *
