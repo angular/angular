@@ -90,6 +90,8 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   private _strategy: SubscriptionStrategy|null = null;
 
   constructor(ref: ChangeDetectorRef) {
+    // Assign `ref` into `this._ref` manually instead of declaring `_ref` in the constructor
+    // parameter list, as the type of `this._ref` includes `null` unlike the type of `ref`.
     this._ref = ref;
   }
 
