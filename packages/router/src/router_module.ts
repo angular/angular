@@ -315,20 +315,21 @@ export interface ExtraOptions {
    *
    * ```typescript
    * class AppModule {
-   *   constructor(router: Router, viewportScroller: ViewportScroller) {
-   *     router.events.pipe(
-   *       filter((e: Event): e is Scroll => e instanceof Scroll)
+   *   movieData: any;
+   *
+   *   constructor(private router: Router, private viewportScroller: ViewportScroller, cdr:
+   * ChangeDetectorRef) {
+   *   router.events.pipe( filter((e: Event): e is Scroll => e instanceof Scroll)
    *     ).subscribe(e => {
-   *       if (e.position) {
-   *         // backward navigation
-   *         viewportScroller.scrollToPosition(e.position);
-   *       } else if (e.anchor) {
-   *         // anchor navigation
-   *         viewportScroller.scrollToAnchor(e.anchor);
-   *       } else {
-   *         // forward navigation
-   *         viewportScroller.scrollToPosition([0, 0]);
-   *       }
+   *       fetch('http://example.com/movies.json').then(response => {
+   *         this.movieData = response.json();
+   *         cdr.detectChanges();
+   *
+   *         if (e.position) {
+   *           // traversal in browser history
+   *           viewportScroller.scrollToPosition(e.position);
+   *         }
+   *       });
    *     });
    *   }
    * }
