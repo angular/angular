@@ -52,12 +52,13 @@ For more information, see [Workspace and project file structure](guide/file-stru
 ## CLI configuration options
 
 The following configuration properties are a set of options that customize the Angular CLI.
+<!--github.com/angular/angular/issues/46199: Create a link for persistent disk cache (cli/cache)-->
 
 | Property              | Details                                                                                       | Value type                                              |
 |:---                   |:---                                                                                           |:---                                                     |
 | `analytics`           | Share anonymous [usage data](cli/usage-analytics-gathering) with the Angular Team.            | `boolean` &verbar; `ci`                                 |
 | `analyticsSharing`    | A set of analytics sharing options.                                                           | [Analytics sharing options](#analytics-sharing-options) |
-| `cache`               | Control [persistent disk cache](cli/cache) used by [Angular CLI Builders](guide/cli-builder). | [Cache options](#cache-options)                         |
+| `cache`               | Control **persistent disk cache** used by [Angular CLI Builders](guide/cli-builder). | [Cache options](#cache-options)                         |
 | `schematicCollections`| A list of default schematics collections to use.                                              | `string[]`                                              |
 | `packageManager`      | The preferred package manager tool to use.                                                    | `npm` &verbar; `cnpm` &verbar; `pnpm` &verbar;`yarn`    |
 | `warnings`            | Control CLI specific console warnings.                                                        | [Warnings options](#warnings-options)                   |
