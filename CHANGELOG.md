@@ -1,3 +1,21 @@
+<a name="14.0.0-rc.3"></a>
+# 14.0.0-rc.3 (2022-05-31)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [724e88e042](https://github.com/angular/angular/commit/724e88e042b1a89691d48879673b5e1b161c3d9a) | fix | preserve `forwardRef` for component scopes ([#46139](https://github.com/angular/angular/pull/46139)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [35653ce337](https://github.com/angular/angular/commit/35653ce337b59336ebb06f07dfed027e5037ed06) | fix | add more details to the MISSING_INJECTION_CONTEXT error ([#46166](https://github.com/angular/angular/pull/46166)) |
+| [0bc77f4cab](https://github.com/angular/angular/commit/0bc77f4cabb3fe76accb120f7aba57ebfee9262b) | fix | better error message when unknown property is present ([#46147](https://github.com/angular/angular/pull/46147)) |
+| [ba9f30c9a6](https://github.com/angular/angular/commit/ba9f30c9a6af19b34d13962303ec96997c7c3d56) | fix | include component name into unknown element/property error message ([#46160](https://github.com/angular/angular/pull/46160)) |
+| [560188bf12](https://github.com/angular/angular/commit/560188bf126f259328477773cabb367587a257d5) | fix | update unknown property error to account for standalone components in AOT ([#46159](https://github.com/angular/angular/pull/46159)) |
+## Special Thanks
+Alex Rickabaugh, Andrew Kushnir, Billy Lando, George Kalpakas, Ian Gregory, Matt Shaffer, Paul Gschwendtner, Pawel Kozlowski, Rune Andersen Hartvig, dario-piotrowicz and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.11"></a>
 # 13.3.11 (2022-05-31)
 ## Special Thanks
