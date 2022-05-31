@@ -97,7 +97,7 @@ As a result, that new tab can be running a different version of the application 
 
 <div class="alert is-important">
 
-**IMPORTANT**: </br />
+**IMPORTANT**: <br />
 This guarantee is **stronger** than that provided by the normal web deployment model.
 Without a service worker, there is no guarantee that code lazily loaded later in a running application is from the same version as the initial code for the application.
 
