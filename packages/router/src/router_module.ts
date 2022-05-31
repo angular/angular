@@ -317,16 +317,16 @@ export interface ExtraOptions {
    * class AppModule {
    *   movieData: any;
    *
-   *   constructor(private router: Router, private viewportScroller: ViewportScroller, cdr:
-   * ChangeDetectorRef) {
-   *   router.events.pipe( filter((e: Event): e is Scroll => e instanceof Scroll)
+   *   constructor(private router: Router, private viewportScroller: ViewportScroller,
+   * changeDetectorRef: ChangeDetectorRef) {
+   *   router.events.pipe(filter((event: Event): event is Scroll => event instanceof Scroll)
    *     ).subscribe(e => {
    *       fetch('http://example.com/movies.json').then(response => {
    *         this.movieData = response.json();
-   *         cdr.detectChanges();
+   *         // update the template with the data before restoring scroll
+   *         changeDetectorRef.detectChanges();
    *
    *         if (e.position) {
-   *           // traversal in browser history
    *           viewportScroller.scrollToPosition(e.position);
    *         }
    *       });
