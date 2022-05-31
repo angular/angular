@@ -408,7 +408,7 @@ class _Scanner {
 
 function isIdentifierStart(code: number): boolean {
   return (chars.$a <= code && code <= chars.$z) || (chars.$A <= code && code <= chars.$Z) ||
-      (code == chars.$_) || (code == chars.$$);
+      (code == chars.$_) || (code == chars.$$) || chars.isNonAscii(code);
 }
 
 export function isIdentifier(input: string): boolean {
@@ -425,7 +425,7 @@ export function isIdentifier(input: string): boolean {
 
 function isIdentifierPart(code: number): boolean {
   return chars.isAsciiLetter(code) || chars.isDigit(code) || (code == chars.$_) ||
-      (code == chars.$$);
+      (code == chars.$$) || chars.isNonAscii(code);
 }
 
 function isExponentStart(code: number): boolean {

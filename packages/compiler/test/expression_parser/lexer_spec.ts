@@ -75,6 +75,12 @@ function expectErrorToken(token: Token, index: any, end: number, message: string
         expectIdentifierToken(tokens[0], 0, 1, 'j');
       });
 
+      it('should tokenize a non-ascii identifier', () => {
+        const tokens: number[] = lex('我的');
+        expect(tokens.length).toEqual(1);
+        expectIdentifierToken(tokens[0], 0, 2, '我的');
+      });
+
       it('should tokenize "this"', () => {
         const tokens: number[] = lex('this');
         expect(tokens.length).toEqual(1);
@@ -89,10 +95,25 @@ function expectErrorToken(token: Token, index: any, end: number, message: string
         expectIdentifierToken(tokens[2], 2, 3, 'k');
       });
 
+
+      it('should tokenize a dotted non-ascii identifier', () => {
+        const tokens: number[] = lex('我的.属性');
+        expect(tokens.length).toEqual(3);
+        expectIdentifierToken(tokens[0], 0, 2, '我的');
+        expectCharacterToken(tokens[1], 2, 3, '.');
+        expectIdentifierToken(tokens[2], 3, 5, '属性');
+      });
+
       it('should tokenize a private identifier', () => {
         const tokens: number[] = lex('#a');
         expect(tokens.length).toEqual(1);
         expectPrivateIdentifierToken(tokens[0], 0, 2, '#a');
+      });
+
+      it('should tokenize a private non-ascii identifier', () => {
+        const tokens: number[] = lex('#我的');
+        expect(tokens.length).toEqual(1);
+        expectPrivateIdentifierToken(tokens[0], 0, 3, '#我的');
       });
 
       it('should tokenize a property access with private identifier', () => {
@@ -101,6 +122,14 @@ function expectErrorToken(token: Token, index: any, end: number, message: string
         expectIdentifierToken(tokens[0], 0, 1, 'j');
         expectCharacterToken(tokens[1], 1, 2, '.');
         expectPrivateIdentifierToken(tokens[2], 2, 4, '#k');
+      });
+
+      it('should tokenize a property access with private non-ascii identifier', () => {
+        const tokens: number[] = lex('我的.#属性');
+        expect(tokens.length).toEqual(3);
+        expectIdentifierToken(tokens[0], 0, 2, '我的');
+        expectCharacterToken(tokens[1], 2, 3, '.');
+        expectPrivateIdentifierToken(tokens[2], 3, 6, '#属性');
       });
 
       it('should throw an invalid character error when a hash character is discovered but ' +
