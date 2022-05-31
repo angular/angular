@@ -1,3 +1,10 @@
+<a name="13.3.11"></a>
+# 13.3.11 (2022-05-31)
+## Special Thanks
+Andrew Scott, Billy Lando, George Kalpakas, Ian Gregory, Matt Shaffer, Rune Andersen Hartvig, dario-piotrowicz and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-rc.2"></a>
 # 14.0.0-rc.2 (2022-05-25)
 ## Deprecations
