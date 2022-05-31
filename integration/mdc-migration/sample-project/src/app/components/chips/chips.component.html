@@ -1,0 +1,30 @@
+<h2>Chips example</h2>
+
+<mat-chip-list aria-label="Dog selection" #dogChipList>
+    <mat-chip>
+        <mat-chip-avatar>
+            <img src="https://material.angular.io/assets/img/examples/shiba1.jpg" alt="Photo of a Shiba Inu"/>
+        </mat-chip-avatar>
+        Dog one
+    </mat-chip>
+    <mat-chip color="primary">Dog two</mat-chip>
+    <mat-chip color="accent">Dog three</mat-chip>
+</mat-chip-list>
+
+
+<mat-form-field class="example-chip-list" appearance="fill">
+    <mat-label>Favorite Fruits</mat-label>
+    <mat-chip-list #fruitChipList aria-label="Fruit selection">
+        <mat-chip *ngFor="let fruit of fruits" (removed)="remove(fruit)">
+            {{fruit.name}}
+            <button matChipRemove>
+                <mat-icon>cancel</mat-icon>
+            </button>
+        </mat-chip>
+        <input placeholder="New fruit..."
+            [matChipInputFor]="fruitChipList"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            [matChipInputAddOnBlur]="addOnBlur"
+            (matChipInputTokenEnd)="add($event)">
+    </mat-chip-list>
+</mat-form-field>

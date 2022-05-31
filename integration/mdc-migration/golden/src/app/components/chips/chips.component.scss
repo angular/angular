@@ -1,0 +1,11 @@
+.mat-mdc-chip {
+  background-color: lavender;
+  /* TODO: The following rule targets internal classes of chips that may no longer apply for the MDC version. */
+
+  .mat-chip-avatar {
+    outline: 1px solid black;
+  }
+}
+
+
+.mat-mdc-chip-grid { padding: 8px; }
