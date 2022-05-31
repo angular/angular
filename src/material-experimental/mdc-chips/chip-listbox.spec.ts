@@ -1,6 +1,11 @@
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {END, HOME, LEFT_ARROW, RIGHT_ARROW, SPACE, TAB} from '@angular/cdk/keycodes';
-import {dispatchFakeEvent, dispatchKeyboardEvent, MockNgZone} from '../../cdk/testing/private';
+import {
+  dispatchFakeEvent,
+  dispatchKeyboardEvent,
+  MockNgZone,
+  patchElementFocus,
+} from '../../cdk/testing/private';
 import {
   Component,
   DebugElement,
@@ -187,6 +192,7 @@ describe('MDC-based MatChipListbox', () => {
           const midItem = chips.get(2)!;
 
           // Focus the middle item
+          patchElementFocus(midItem.primaryAction!._elementRef.nativeElement);
           midItem.focus();
 
           // Destroy the middle item
@@ -199,6 +205,7 @@ describe('MDC-based MatChipListbox', () => {
 
         it('should focus the previous item', () => {
           // Focus the last item
+          patchElementFocus(chips.last.primaryAction!._elementRef.nativeElement);
           chips.last.focus();
 
           // Destroy the last item
@@ -227,18 +234,19 @@ describe('MDC-based MatChipListbox', () => {
           expect(chipListboxNativeElement.contains(document.activeElement)).toBe(false);
         }));
 
-        it('should focus the listbox if the last focused item is removed', () => {
+        it('should focus the listbox if the last focused item is removed', fakeAsync(() => {
           testComponent.chips = [0];
           fixture.detectChanges();
 
           spyOn(chipListboxInstance, 'focus');
+          patchElementFocus(chips.last.primaryAction!._elementRef.nativeElement);
           chips.last.focus();
 
           testComponent.chips.pop();
           fixture.detectChanges();
 
           expect(chipListboxInstance.focus).toHaveBeenCalled();
-        });
+        }));
       });
     });
 
@@ -393,6 +401,7 @@ describe('MDC-based MatChipListbox', () => {
         expect(document.activeElement).toBe(primaryActions[1]);
 
         directionality.value = 'rtl';
+        directionality.change.next('rtl');
         fixture.detectChanges();
 
         dispatchKeyboardEvent(primaryActions[1], 'keydown', RIGHT_ARROW);

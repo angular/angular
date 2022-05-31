@@ -15,7 +15,7 @@ import {
   MatRippleModule,
 } from '@angular/material-experimental/mdc-core';
 import {MatChip} from './chip';
-import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './chip-default-options';
+import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './tokens';
 import {MatChipEditInput} from './chip-edit-input';
 import {MatChipGrid} from './chip-grid';
 import {MatChipAvatar, MatChipRemove, MatChipTrailingIcon} from './chip-icons';

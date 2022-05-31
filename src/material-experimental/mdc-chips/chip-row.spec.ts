@@ -127,7 +127,7 @@ describe('MDC-based Row Chips', () => {
 
           spyOn(testComponent, 'chipRemove');
 
-          chipInstance._keydown(DELETE_EVENT);
+          chipInstance._handleKeydown(DELETE_EVENT);
           fixture.detectChanges();
 
           expect(testComponent.chipRemove).toHaveBeenCalled();
@@ -138,7 +138,7 @@ describe('MDC-based Row Chips', () => {
 
           spyOn(testComponent, 'chipRemove');
 
-          chipInstance._keydown(BACKSPACE_EVENT);
+          chipInstance._handleKeydown(BACKSPACE_EVENT);
           fixture.detectChanges();
 
           expect(testComponent.chipRemove).toHaveBeenCalled();
@@ -156,7 +156,7 @@ describe('MDC-based Row Chips', () => {
 
           spyOn(testComponent, 'chipRemove');
 
-          chipInstance._keydown(DELETE_EVENT);
+          chipInstance._handleKeydown(DELETE_EVENT);
           fixture.detectChanges();
 
           expect(testComponent.chipRemove).not.toHaveBeenCalled();
@@ -168,7 +168,7 @@ describe('MDC-based Row Chips', () => {
           spyOn(testComponent, 'chipRemove');
 
           // Use the delete to remove the chip
-          chipInstance._keydown(BACKSPACE_EVENT);
+          chipInstance._handleKeydown(BACKSPACE_EVENT);
           fixture.detectChanges();
 
           expect(testComponent.chipRemove).not.toHaveBeenCalled();
@@ -266,8 +266,8 @@ describe('MDC-based Row Chips', () => {
         expect(testComponent.chipDestroy).not.toHaveBeenCalled();
       });
 
-      it('should stop editing on focusout', fakeAsync(() => {
-        dispatchFakeEvent(primaryAction, 'focusout', true);
+      it('should stop editing on blur', fakeAsync(() => {
+        chipInstance._onBlur.next();
         flush();
         expect(testComponent.chipEdit).toHaveBeenCalled();
       }));
@@ -307,16 +307,6 @@ describe('MDC-based Row Chips', () => {
       it('should focus the chip content if the edit input has focus on completion', fakeAsync(() => {
         const chipValue = 'chip value';
         editInputInstance.setValue(chipValue);
-        dispatchKeyboardEvent(getEditInput(), 'keydown', ENTER);
-        fixture.detectChanges();
-        flush();
-        expect(document.activeElement).toBe(primaryAction);
-      }));
-
-      it('should focus the chip content if the body has focus on completion', fakeAsync(() => {
-        const chipValue = 'chip value';
-        editInputInstance.setValue(chipValue);
-        (document.activeElement as HTMLElement).blur();
         dispatchKeyboardEvent(getEditInput(), 'keydown', ENTER);
         fixture.detectChanges();
         flush();

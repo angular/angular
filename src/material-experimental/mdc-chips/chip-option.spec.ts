@@ -312,7 +312,7 @@ describe('MDC-based Option Chips', () => {
       <div *ngIf="shouldShow">
         <mat-chip-option [selectable]="selectable"
                  [color]="color" [selected]="selected" [disabled]="disabled"
-                 (focus)="chipFocus($event)" (destroyed)="chipDestroy($event)"
+                 (destroyed)="chipDestroy($event)"
                  (selectionChange)="chipSelectionChange($event)">
           <span class="avatar" matChipAvatar></span>
           {{name}}
@@ -329,7 +329,6 @@ class SingleChip {
   selectable: boolean = true;
   shouldShow: boolean = true;
 
-  chipFocus: (event?: MatChipEvent) => void = () => {};
   chipDestroy: (event?: MatChipEvent) => void = () => {};
   chipSelectionChange: (event?: MatChipSelectionChange) => void = () => {};
 }

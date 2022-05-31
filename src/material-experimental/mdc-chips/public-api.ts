@@ -14,7 +14,7 @@ export * from './chip-listbox';
 export * from './chip-grid';
 export * from './module';
 export * from './chip-input';
-export * from './chip-default-options';
+export * from './tokens';
 export * from './chip-icons';
 export * from './chip-text-control';
 export * from './chip-edit-input';

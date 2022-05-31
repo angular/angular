@@ -16,6 +16,7 @@ import {
   dispatchFakeEvent,
   dispatchKeyboardEvent,
   MockNgZone,
+  patchElementFocus,
   typeInElement,
 } from '@angular/cdk/testing/private';
 import {
@@ -34,7 +35,6 @@ import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field'
 import {MatInputModule} from '@angular/material-experimental/mdc-input';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MDCChipAnimation} from '@material/chips';
 import {MatChipEvent, MatChipGrid, MatChipInputEvent, MatChipRow, MatChipsModule} from './index';
 
 describe('MDC-based MatChipGrid', () => {
@@ -199,6 +199,7 @@ describe('MDC-based MatChipGrid', () => {
           // Destroy the middle item
           testComponent.chips.splice(2, 1);
           fixture.detectChanges();
+          flush();
 
           // Should not have focus
           expect(chipGridNativeElement.contains(document.activeElement)).toBe(false);
@@ -208,6 +209,7 @@ describe('MDC-based MatChipGrid', () => {
           testComponent.chips = [0];
 
           spyOn(chipGridInstance, 'focus');
+          patchElementFocus(chips.last.primaryAction!._elementRef.nativeElement);
           chips.last.focus();
 
           testComponent.chips.pop();
@@ -216,27 +218,22 @@ describe('MDC-based MatChipGrid', () => {
           expect(chipGridInstance.focus).toHaveBeenCalled();
         });
 
-        it(
-          'should move focus to the last chip when the focused chip was deleted inside a ' +
-            'component with animations',
-          fakeAsync(() => {
-            fixture.destroy();
-            TestBed.resetTestingModule();
+        it('should move focus to the last chip when the focused chip was deleted inside a component with animations', fakeAsync(() => {
+          fixture.destroy();
+          TestBed.resetTestingModule();
 
-            fixture = createComponent(StandardChipGridWithAnimations, BrowserAnimationsModule);
+          fixture = createComponent(StandardChipGridWithAnimations, BrowserAnimationsModule);
 
-            chips.last.focus();
-            fixture.detectChanges();
+          patchElementFocus(chips.last.primaryAction!._elementRef.nativeElement);
+          chips.last.focus();
+          fixture.detectChanges();
 
-            expect(document.activeElement).toBe(primaryActions[primaryActions.length - 1]);
+          dispatchKeyboardEvent(chips.last._elementRef.nativeElement, 'keydown', BACKSPACE);
+          fixture.detectChanges();
+          tick(500);
 
-            dispatchKeyboardEvent(chips.last._elementRef.nativeElement, 'keydown', BACKSPACE);
-            fixture.detectChanges();
-            tick(500);
-
-            expect(document.activeElement).toBe(primaryActions[primaryActions.length - 2]);
-          }),
-        );
+          expect(document.activeElement).toBe(primaryActions[primaryActions.length - 2]);
+        }));
       });
 
       it('should have a focus indicator', () => {
@@ -394,6 +391,7 @@ describe('MDC-based MatChipGrid', () => {
           expect(document.activeElement).toBe(primaryActions[1]);
 
           directionality.value = 'rtl';
+          directionality.change.next('rtl');
           fixture.detectChanges();
 
           dispatchKeyboardEvent(primaryActions[1], 'keydown', RIGHT_ARROW);
@@ -562,14 +560,7 @@ describe('MDC-based MatChipGrid', () => {
       // associated chip remove element.
       trailingActions[2].click();
       fixture.detectChanges();
-      (chip as any)._handleAnimationend({
-        animationName: MDCChipAnimation.EXIT,
-        target: chip._elementRef.nativeElement,
-      });
       flush();
-      (chip as any)._handleTransitionend({target: chip._elementRef.nativeElement});
-      flush();
-      fixture.detectChanges();
 
       expect(document.activeElement).toBe(primaryActions[3]);
     }));
@@ -589,7 +580,6 @@ describe('MDC-based MatChipGrid', () => {
         .map(chip => chip.nativeElement);
 
       nativeChipGrid = fixture.debugElement.query(By.css('mat-chip-grid'))!.nativeElement;
-
       nativeInput = fixture.nativeElement.querySelector('input');
     });
 
@@ -730,18 +720,21 @@ describe('MDC-based MatChipGrid', () => {
 
     it('should blur the form field when the active chip is blurred', fakeAsync(() => {
       const formField: HTMLElement = fixture.nativeElement.querySelector('.mat-mdc-form-field');
+      const firstAction = nativeChips[0].querySelector('.mat-mdc-chip-action') as HTMLElement;
 
-      dispatchFakeEvent(nativeChips[0], 'focusin');
+      patchElementFocus(firstAction);
+      firstAction.focus();
       fixture.detectChanges();
 
       expect(formField.classList).toContain('mat-focused');
 
-      dispatchFakeEvent(nativeChips[0], 'focusout');
+      firstAction.blur();
       fixture.detectChanges();
-      tick();
       fixture.detectChanges();
       zone.simulateZoneExit();
       fixture.detectChanges();
+      flush();
+
       expect(formField.classList).not.toContain('mat-focused');
     }));
 
