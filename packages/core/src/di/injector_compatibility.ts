@@ -125,8 +125,13 @@ export function inject<T>(token: ProviderToken<T>): T;
 export function inject<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
 /**
  * Injects a token from the currently active injector.
- * The injection context for this function is available during the class creation and
- * initialization, as well as in a factory function, such as one defined for an `InjectionToken`.
+ * `inject` is only supported during instantiation of a dependency by the DI system. It can be used
+ * during:
+ * - Construction (via the `constructor`) of a class being instantiated by the DI system, such
+ * as an `@Injectable` or `@Component`.
+ * - In the initializer for fields of such classes.
+ * - In the factory function specified for `useFactory` of a `Provider` or an `@Injectable`.
+ * - In the `factory` function specified for an `InjectionToken`.
  *
  * @param token A token that represents a dependency that should be injected.
  * @param flags Optional flags that control how injection is executed.
@@ -146,8 +151,7 @@ export function inject<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
  *   // OK: field initializer
  *   spareTyre = inject(Tyre);
  *
- *   // OK: constructor parameter
- *   constructor(readonly engine: Engine = inject(Engine)) {
+ *   constructor() {
  *     // OK: constructor body
  *     this.radio = inject(Radio);
  *   }
@@ -166,31 +170,15 @@ export function inject<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
  * ]
  * ```
  *
- * The `inject()` calls might be wrapped in an intermediate function and will work correctly as long
- * as a wrapper function is used in one of the allowed contexts:
- *
- * ```typescript
- * function getAndLog<T>(token: ProviderToken<T>): T {
- *   const instance = inject(token);
- *   console.log('Getting', token.toString());
- *   return instance;
- * }
- *
- * @Injectable({providedIn: 'root'})
- * export class Car {
- *   constructor(readonly engine: Engine = getAndLog(Engine)) {
- *   }
- * }
- * ```
- *
  * Calls to the `inject()` function outside of the class creation context will result in error. Most
- * notably, calls to `inject()` are disallowed after a class instance was created, in methods:
+ * notably, calls to `inject()` are disallowed after a class instance was created, in methods
+ * (including lifecycle hooks):
  *
  * ```typescript
- * @Injectable({providedIn: 'root'})
- * export class Car {
- *   start() {
- *     // ERROR: too late, the Car instance was already created and fully initialized
+ * @Component({ ... })
+ * export class CarComponent {
+ *   ngOnInit() {
+ *     // ERROR: too late, the component instance was already created
  *     const engine = inject(Engine);
  *     engine.start();
  *   }
