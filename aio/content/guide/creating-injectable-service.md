@@ -1,5 +1,7 @@
 # Creating an injectable service
 
+In this example, we want to add a new service to our application, which was created earlier with the [ng new](cli) command. 
+
 To generate a new `HeroService` class in the `src/app/heroes` folder, follow these steps: 
 
 1. Run this [Angular CLI](cli) command:
