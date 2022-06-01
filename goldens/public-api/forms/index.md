@@ -159,7 +159,7 @@ export interface AsyncValidatorFn {
 export class CheckboxControlValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
     writeValue(value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<CheckboxControlValueAccessor, "input[type=checkbox][formControlName],input[type=checkbox][formControl],input[type=checkbox][ngModel]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CheckboxControlValueAccessor, "input[type=checkbox][formControlName],input[type=checkbox][formControl],input[type=checkbox][ngModel],input[type=checkbox][ngCheckboxControl]", never, {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<CheckboxControlValueAccessor, never>;
 }
@@ -723,7 +723,7 @@ export class NumberValueAccessor extends BuiltInControlValueAccessor implements 
     registerOnChange(fn: (_: number | null) => void): void;
     writeValue(value: number): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NumberValueAccessor, "input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NumberValueAccessor, "input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel],input[type=number][ngNumberControl]", never, {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NumberValueAccessor, never>;
 }
@@ -752,7 +752,7 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
     value: any;
     writeValue(value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RadioControlValueAccessor, "input[type=radio][formControlName],input[type=radio][formControl],input[type=radio][ngModel]", never, { "name": "name"; "formControlName": "formControlName"; "value": "value"; }, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RadioControlValueAccessor, "input[type=radio][formControlName],input[type=radio][formControl],input[type=radio][ngModel],input[type=radio][ngRadioControl]", never, { "name": "name"; "formControlName": "formControlName"; "value": "value"; }, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RadioControlValueAccessor, never>;
 }
@@ -762,7 +762,7 @@ export class RangeValueAccessor extends BuiltInControlValueAccessor implements C
     registerOnChange(fn: (_: number | null) => void): void;
     writeValue(value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RangeValueAccessor, "input[type=range][formControlName],input[type=range][formControl],input[type=range][ngModel]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RangeValueAccessor, "input[type=range][formControlName],input[type=range][formControl],input[type=range][ngModel],input[type=range][ngRangeControl]", never, {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RangeValueAccessor, never>;
 }
@@ -799,7 +799,7 @@ export class SelectControlValueAccessor extends BuiltInControlValueAccessor impl
     value: any;
     writeValue(value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SelectControlValueAccessor, "select:not([multiple])[formControlName],select:not([multiple])[formControl],select:not([multiple])[ngModel]", never, { "compareWith": "compareWith"; }, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SelectControlValueAccessor, "select:not([multiple])[formControlName],select:not([multiple])[formControl],select:not([multiple])[ngModel],select:not([multiple])[ngSelectControl]", never, { "compareWith": "compareWith"; }, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<SelectControlValueAccessor, never>;
 }
@@ -811,7 +811,7 @@ export class SelectMultipleControlValueAccessor extends BuiltInControlValueAcces
     value: any;
     writeValue(value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SelectMultipleControlValueAccessor, "select[multiple][formControlName],select[multiple][formControl],select[multiple][ngModel]", never, { "compareWith": "compareWith"; }, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SelectMultipleControlValueAccessor, "select[multiple][formControlName],select[multiple][formControl],select[multiple][ngModel],select[multiple][ngSelectMultipleControl]", never, { "compareWith": "compareWith"; }, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<SelectMultipleControlValueAccessor, never>;
 }

@@ -42,7 +42,7 @@ export const RANGE_VALUE_ACCESSOR: StaticProvider = {
  */
 @Directive({
   selector:
-      'input[type=range][formControlName],input[type=range][formControl],input[type=range][ngModel]',
+      'input[type=range][formControlName],input[type=range][formControl],input[type=range][ngModel],input[type=range][ngRangeControl]',
   host: {
     '(change)': 'onChange($event.target.value)',
     '(input)': 'onChange($event.target.value)',

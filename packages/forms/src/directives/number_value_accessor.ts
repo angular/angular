@@ -42,7 +42,7 @@ export const NUMBER_VALUE_ACCESSOR: any = {
  */
 @Directive({
   selector:
-      'input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel]',
+      'input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel],input[type=number][ngNumberControl]',
   host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [NUMBER_VALUE_ACCESSOR]
 })
