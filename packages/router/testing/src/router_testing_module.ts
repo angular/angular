@@ -43,7 +43,7 @@ export function setupTestingRouterInternal(
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
     compiler: Compiler, injector: Injector, routes: Route[][],
-    opts?: ExtraOptions|UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy,
+    opts?: ExtraOptions|UrlHandlingStrategy|null, urlHandlingStrategy?: UrlHandlingStrategy,
     routeReuseStrategy?: RouteReuseStrategy, titleStrategy?: TitleStrategy) {
   const router =
       new Router(null!, urlSerializer, contexts, location, injector, compiler, flatten(routes));
