@@ -136,12 +136,7 @@ export class RouterModule {
           deps: [[Router, new Optional(), new SkipSelf()]]
         },
         {provide: ROUTER_CONFIGURATION, useValue: config ? config : {}},
-        {
-          provide: LocationStrategy,
-          useFactory: provideLocationStrategy,
-          deps:
-              [PlatformLocation, [new Inject(APP_BASE_HREF), new Optional()], ROUTER_CONFIGURATION]
-        },
+        config?.useHash ? provideHashLocationStrategy() : providePathLocationStrategy(),
         {
           provide: RouterScroller,
           useFactory: createRouterScroller,
@@ -187,10 +182,12 @@ export function createRouterScroller(
   return new RouterScroller(router, viewportScroller, config);
 }
 
-export function provideLocationStrategy(
-    platformLocationStrategy: PlatformLocation, baseHref: string, options: ExtraOptions = {}) {
-  return options.useHash ? new HashLocationStrategy(platformLocationStrategy, baseHref) :
-                           new PathLocationStrategy(platformLocationStrategy, baseHref);
+function provideHashLocationStrategy(): Provider {
+  return {provide: LocationStrategy, useClass: HashLocationStrategy};
+}
+
+function providePathLocationStrategy(): Provider {
+  return {provide: LocationStrategy, useClass: PathLocationStrategy};
 }
 
 export function provideForRootGuard(router: Router): any {
