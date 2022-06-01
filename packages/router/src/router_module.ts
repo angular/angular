@@ -314,7 +314,7 @@ export interface ExtraOptions {
    * in the following example.
    *
    * ```typescript
-   * class AppModule {
+   * class AppComponent {
    *   movieData: any;
    *
    *   constructor(private router: Router, private viewportScroller: ViewportScroller,
