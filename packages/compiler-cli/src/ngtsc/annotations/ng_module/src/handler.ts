@@ -131,7 +131,7 @@ export class NgModuleDecoratorHandler implements
       private scopeRegistry: LocalModuleScopeRegistry,
       private referencesRegistry: ReferencesRegistry, private isCore: boolean,
       private refEmitter: ReferenceEmitter, private factoryTracker: FactoryTracker|null,
-      private annotateForClosureCompiler: boolean,
+      private annotateForClosureCompiler: boolean, private onlyPublishPublicTypings: boolean,
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -274,19 +274,31 @@ export class NgModuleDecoratorHandler implements
       typeContext = typeNode.getSourceFile();
     }
 
+
+    const exportedNodes = new Set(exportRefs.map(ref => ref.node));
+    const declarations: R3Reference[] = [];
+    const exportedDeclarations: Expression[] = [];
+
     const bootstrap = bootstrapRefs.map(
         bootstrap => this._toR3Reference(
             bootstrap.getOriginForDiagnostics(meta, node.name), bootstrap, valueContext,
             typeContext));
-    const declarations = declarationRefs.map(
-        decl => this._toR3Reference(
-            decl.getOriginForDiagnostics(meta, node.name), decl, valueContext, typeContext));
+
+    for (const ref of declarationRefs) {
+      const decl = this._toR3Reference(
+          ref.getOriginForDiagnostics(meta, node.name), ref, valueContext, typeContext);
+      declarations.push(decl);
+      if (exportedNodes.has(ref.node)) {
+        exportedDeclarations.push(decl.type);
+      }
+    }
     const imports = importRefs.map(
         imp => this._toR3Reference(
             imp.getOriginForDiagnostics(meta, node.name), imp, valueContext, typeContext));
     const exports = exportRefs.map(
         exp => this._toR3Reference(
             exp.getOriginForDiagnostics(meta, node.name), exp, valueContext, typeContext));
+
 
     const isForwardReference = (ref: R3Reference) =>
         isExpressionForwardReference(ref.value, node.name!, valueContext);
@@ -304,8 +316,12 @@ export class NgModuleDecoratorHandler implements
       adjacentType,
       bootstrap,
       declarations,
+      publicDeclarationTypes: this.onlyPublishPublicTypings ? exportedDeclarations : null,
       exports,
       imports,
+      // Imported types are generally private, so include them unless restricting the .d.ts emit to
+      // only public types.
+      includeImportTypes: !this.onlyPublishPublicTypings,
       containsForwardDecls,
       id,
       // Use `ɵɵsetNgModuleScope` to patch selector scopes onto the generated definition in a
