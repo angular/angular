@@ -45,6 +45,8 @@ export function toR3NgModuleMeta<TExpression>(
     adjacentType: wrappedType,
     bootstrap: [],
     declarations: [],
+    publicDeclarationTypes: null,
+    includeImportTypes: true,
     imports: [],
     exports: [],
     selectorScopeMode: supportJit ? R3SelectorScopeMode.Inline : R3SelectorScopeMode.Omit,

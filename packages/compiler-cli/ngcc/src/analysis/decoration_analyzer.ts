@@ -141,7 +141,7 @@ export class DecorationAnalyzer {
         this.reflectionHost, this.evaluator, this.fullMetaReader, this.fullRegistry,
         this.scopeRegistry, this.referencesRegistry, this.isCore, this.refEmitter,
         /* factoryTracker */ null, !!this.compilerOptions.annotateForClosureCompiler,
-        this.injectableRegistry, NOOP_PERF_RECORDER),
+        /* onlyPublishPublicTypings */ false, this.injectableRegistry, NOOP_PERF_RECORDER),
   ];
   compiler = new NgccTraitCompiler(this.handlers, this.reflectionHost);
   migrations: Migration[] = [

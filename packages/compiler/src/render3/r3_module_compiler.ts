@@ -82,9 +82,20 @@ export interface R3NgModuleMetadata {
   declarations: R3Reference[];
 
   /**
+   * Those declarations which should be visible to downstream consumers. If not specified, all
+   * declarations are made visible to downstream consumers.
+   */
+  publicDeclarationTypes: o.Expression[]|null;
+
+  /**
    * An array of expressions representing the imports of the module.
    */
   imports: R3Reference[];
+
+  /**
+   * Whether or not to include `imports` in generated type declarations.
+   */
+  includeImportTypes: boolean;
 
   /**
    * An array of expressions representing the exports of the module.
@@ -248,10 +259,14 @@ export function compileNgModuleDeclarationExpression(meta: R3DeclareNgModuleFaca
 }
 
 export function createNgModuleType(
-    {type: moduleType, declarations, imports, exports}: R3NgModuleMetadata): o.ExpressionType {
+    {type: moduleType, declarations, exports, imports, includeImportTypes, publicDeclarationTypes}:
+        R3NgModuleMetadata): o.ExpressionType {
   return new o.ExpressionType(o.importExpr(R3.NgModuleDeclaration, [
-    new o.ExpressionType(moduleType.type), tupleTypeOf(declarations), tupleTypeOf(imports),
-    tupleTypeOf(exports)
+    new o.ExpressionType(moduleType.type),
+    publicDeclarationTypes === null ? tupleTypeOf(declarations) :
+                                      tupleOfTypes(publicDeclarationTypes),
+    includeImportTypes ? tupleTypeOf(imports) : o.NONE_TYPE,
+    tupleTypeOf(exports),
   ]));
 }
 
@@ -307,4 +322,9 @@ function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement|nul
 function tupleTypeOf(exp: R3Reference[]): o.Type {
   const types = exp.map(ref => o.typeofExpr(ref.type));
   return exp.length > 0 ? o.expressionType(o.literalArr(types)) : o.NONE_TYPE;
+}
+
+function tupleOfTypes(types: o.Expression[]): o.Type {
+  const typeofTypes = types.map(type => o.typeofExpr(type));
+  return types.length > 0 ? o.expressionType(o.literalArr(typeofTypes)) : o.NONE_TYPE;
 }
