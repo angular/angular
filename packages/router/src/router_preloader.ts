@@ -8,9 +8,9 @@
 
 import {Compiler, createEnvironmentInjector, EnvironmentInjector, Injectable, OnDestroy} from '@angular/core';
 import {from, Observable, of, Subscription} from 'rxjs';
-import {catchError, concatMap, filter, map, mapTo, mergeAll, mergeMap, tap} from 'rxjs/operators';
+import {catchError, concatMap, filter, mergeAll, mergeMap} from 'rxjs/operators';
 
-import {Event, NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
+import {Event, NavigationEnd} from './events';
 import {LoadedRouterConfig, Route, Routes} from './models';
 import {Router} from './router';
 import {RouterConfigLoader} from './router_config_loader';
@@ -38,6 +38,7 @@ export abstract class PreloadingStrategy {
  *
  * @publicApi
  */
+@Injectable({providedIn: 'root'})
 export class PreloadAllModules implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> {
     return fn().pipe(catchError(() => of(null)));
@@ -53,6 +54,7 @@ export class PreloadAllModules implements PreloadingStrategy {
  *
  * @publicApi
  */
+@Injectable({providedIn: 'root'})
 export class NoPreloading implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> {
     return of(null);
