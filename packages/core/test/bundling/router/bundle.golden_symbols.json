@@ -42,6 +42,9 @@
     "name": "ArgumentOutOfRangeError"
   },
   {
+    "name": "BOOTSTRAP_DONE"
+  },
+  {
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
@@ -235,6 +238,9 @@
   },
   {
     "name": "HashLocationStrategy"
+  },
+  {
+    "name": "INITIAL_NAVIGATION"
   },
   {
     "name": "INITIAL_VALUE"
@@ -538,9 +544,6 @@
   },
   {
     "name": "RouterEvent"
-  },
-  {
-    "name": "RouterInitializer"
   },
   {
     "name": "RouterLink"
@@ -1143,9 +1146,6 @@
     "name": "getAllRouteGuards"
   },
   {
-    "name": "getAppInitializer"
-  },
-  {
     "name": "getBeforeNodeForView"
   },
   {
@@ -1696,6 +1696,9 @@
   },
   {
     "name": "provideForRootGuard"
+  },
+  {
+    "name": "provideInitialNavigation"
   },
   {
     "name": "provideRoutes"
