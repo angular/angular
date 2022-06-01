@@ -9,5 +9,5 @@
 
 export {ɵEmptyOutletComponent} from './components/empty_outlet';
 export {RestoredState as ɵRestoredState} from './router';
-export {assignExtraOptionsToRouter as ɵassignExtraOptionsToRouter, ROUTER_PROVIDERS as ɵROUTER_PROVIDERS} from './router_module';
+export {assignExtraOptionsToRouter as ɵassignExtraOptionsToRouter, providePreloading as ɵprovidePreloading, ROUTER_PROVIDERS as ɵROUTER_PROVIDERS} from './router_module';
 export {flatten as ɵflatten} from './utils/collection';

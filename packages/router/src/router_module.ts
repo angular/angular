@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, ENVIRONMENT_INITIALIZER, Inject, inject, Injectable, InjectFlags, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, OnDestroy, Optional, Provider, SkipSelf} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, ENVIRONMENT_INITIALIZER, Inject, inject, Injectable, InjectFlags, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, OnDestroy, Optional, Provider, SkipSelf, Type} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 import {of, Subject} from 'rxjs';
 
@@ -22,7 +22,7 @@ import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, Router} from './router';
 import {RouterConfigLoader, ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
-import {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
+import {PreloadingStrategy, RouterPreloader} from './router_preloader';
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
 import {UrlHandlingStrategy} from './url_handling_strategy';
@@ -52,6 +52,8 @@ export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>('ROUTER_CON
  */
 export const ROUTER_FORROOT_GUARD = new InjectionToken<void>('ROUTER_FORROOT_GUARD');
 
+const ROUTER_PRELOADER = new InjectionToken<RouterPreloader>('');
+
 export const ROUTER_PROVIDERS: Provider[] = [
   Location,
   {provide: UrlSerializer, useClass: DefaultUrlSerializer},
@@ -66,9 +68,6 @@ export const ROUTER_PROVIDERS: Provider[] = [
   },
   ChildrenOutletContexts,
   {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
-  RouterPreloader,
-  NoPreloading,
-  PreloadAllModules,
   RouterConfigLoader,
 ];
 
@@ -138,11 +137,7 @@ export class RouterModule {
         {provide: ROUTER_CONFIGURATION, useValue: config ? config : {}},
         config?.useHash ? provideHashLocationStrategy() : providePathLocationStrategy(),
         provideRouterScroller(),
-        {
-          provide: PreloadingStrategy,
-          useExisting: config && config.preloadingStrategy ? config.preloadingStrategy :
-                                                             NoPreloading
-        },
+        config?.preloadingStrategy ? providePreloading(config.preloadingStrategy) : [],
         {provide: NgProbeToken, multi: true, useFactory: routerNgProbeToken},
         provideRouterInitializer(),
       ],
@@ -575,7 +570,6 @@ export class RouterInitializer implements OnDestroy {
 
   bootstrapListener(bootstrappedComponentRef: ComponentRef<any>): void {
     const opts = this.injector.get(ROUTER_CONFIGURATION);
-    const preloader = this.injector.get(RouterPreloader);
     const routerScroller: RouterScroller|null =
         this.injector.get(ROUTER_SCROLLER, null, InjectFlags.Optional);
     const router = this.injector.get(Router);
@@ -590,7 +584,7 @@ export class RouterInitializer implements OnDestroy {
       router.initialNavigation();
     }
 
-    preloader.setUpPreloading();
+    this.injector.get(ROUTER_PRELOADER, null, InjectFlags.Optional)?.setUpPreloading();
     routerScroller?.init();
     router.resetRootComponentType(ref.componentTypes[0]);
     this.resultOfPreactivationDone.next(void 0);
@@ -653,4 +647,12 @@ function provideTracing(): Provider[] {
   } else {
     return [];
   }
+}
+
+export function providePreloading(preloadingStrategy: Type<PreloadingStrategy>): Provider[] {
+  return [
+    RouterPreloader,
+    {provide: ROUTER_PRELOADER, useExisting: RouterPreloader},
+    {provide: PreloadingStrategy, useExisting: preloadingStrategy},
+  ];
 }
