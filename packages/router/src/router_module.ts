@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, ENVIRONMENT_INITIALIZER, Inject, inject, Injectable, InjectFlags, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, OnDestroy, Optional, Provider, SkipSelf, Type} from '@angular/core';
-import {Title} from '@angular/platform-browser';
+import {HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, ViewportScroller} from '@angular/common';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, ENVIRONMENT_INITIALIZER, Inject, inject, InjectFlags, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, Optional, Provider, SkipSelf, Type} from '@angular/core';
 import {of, Subject} from 'rxjs';
 
 import {EmptyOutletComponent} from './components/empty_outlet';
@@ -42,17 +41,19 @@ const ROUTER_DIRECTIVES =
  *
  * @publicApi
  */
-export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>('ROUTER_CONFIGURATION', {
-  providedIn: 'root',
-  factory: () => ({}),
-});
+export const ROUTER_CONFIGURATION =
+    new InjectionToken<ExtraOptions>(NG_DEV_MODE ? 'router config' : 'ROUTER_CONFIGURATION', {
+      providedIn: 'root',
+      factory: () => ({}),
+    });
 
 /**
  * @docsNotRequired
  */
-export const ROUTER_FORROOT_GUARD = new InjectionToken<void>('ROUTER_FORROOT_GUARD');
+export const ROUTER_FORROOT_GUARD = new InjectionToken<void>(
+    NG_DEV_MODE ? 'router duplicate forRoot guard' : 'ROUTER_FORROOT_GUARD');
 
-const ROUTER_PRELOADER = new InjectionToken<RouterPreloader>('');
+const ROUTER_PRELOADER = new InjectionToken<RouterPreloader>(NG_DEV_MODE ? 'router preloader' : '');
 
 export const ROUTER_PROVIDERS: Provider[] = [
   Location,
@@ -139,6 +140,7 @@ export class RouterModule {
         provideRouterScroller(),
         config?.preloadingStrategy ? providePreloading(config.preloadingStrategy) : [],
         {provide: NgProbeToken, multi: true, useFactory: routerNgProbeToken},
+        config?.initialNavigation ? provideInitialNavigation(config) : [],
         provideRouterInitializer(),
       ],
     };
@@ -511,119 +513,123 @@ export function rootRoute(router: Router): ActivatedRoute {
   return router.routerState.root;
 }
 
-/**
- * Router initialization requires two steps:
- *
- * First, we start the navigation in a `APP_INITIALIZER` to block the bootstrap if
- * a resolver or a guard executes asynchronously.
- *
- * Next, we actually run activation in a `BOOTSTRAP_LISTENER`, using the
- * `afterPreactivation` hook provided by the router.
- * The router navigation starts, reaches the point when preactivation is done, and then
- * pauses. It waits for the hook to be resolved. We then resolve it only in a bootstrap listener.
- */
-@Injectable()
-export class RouterInitializer implements OnDestroy {
-  private initNavigation = false;
-  private destroyed = false;
-  private resultOfPreactivationDone = new Subject<void>();
-
-  constructor(private injector: Injector) {}
-
-  appInitializer(): Promise<any> {
-    const p: Promise<any> = this.injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
-    return p.then(() => {
-      // If the injector was destroyed, the DI lookups below will fail.
-      if (this.destroyed) {
-        return Promise.resolve(true);
-      }
-
-      let resolve: Function = null!;
-      const res = new Promise(r => resolve = r);
-      const router = this.injector.get(Router);
-      const opts = this.injector.get(ROUTER_CONFIGURATION);
-
-      if (opts.initialNavigation === 'disabled') {
-        router.setUpLocationChangeListener();
-        resolve(true);
-      } else if (opts.initialNavigation === 'enabledBlocking') {
-        router.afterPreactivation = () => {
-          // only the initial navigation should be delayed
-          if (!this.initNavigation) {
-            this.initNavigation = true;
-            resolve(true);
-            return this.resultOfPreactivationDone;
-
-            // subsequent navigations should not be delayed
-          } else {
-            return of(void 0);
-          }
-        };
-        router.initialNavigation();
-      } else {
-        resolve(true);
-      }
-
-      return res;
-    });
-  }
-
-  bootstrapListener(bootstrappedComponentRef: ComponentRef<any>): void {
-    const opts = this.injector.get(ROUTER_CONFIGURATION);
-    const routerScroller: RouterScroller|null =
-        this.injector.get(ROUTER_SCROLLER, null, InjectFlags.Optional);
-    const router = this.injector.get(Router);
-    const ref = this.injector.get<ApplicationRef>(ApplicationRef);
+export function getBootstrapListener() {
+  const injector = inject(Injector);
+  return (bootstrappedComponentRef: ComponentRef<unknown>) => {
+    const ref = injector.get(ApplicationRef);
 
     if (bootstrappedComponentRef !== ref.components[0]) {
       return;
     }
 
+    const router = injector.get(Router);
+    const bootstrapDone = injector.get(BOOTSTRAP_DONE);
+
     // Default case
-    if (opts.initialNavigation === 'enabledNonBlocking' || opts.initialNavigation === undefined) {
+    if (injector.get(INITIAL_NAVIGATION, null, InjectFlags.Optional) === null) {
       router.initialNavigation();
     }
 
-    this.injector.get(ROUTER_PRELOADER, null, InjectFlags.Optional)?.setUpPreloading();
-    routerScroller?.init();
+    injector.get(ROUTER_PRELOADER, null, InjectFlags.Optional)?.setUpPreloading();
+    injector.get(ROUTER_SCROLLER, null, InjectFlags.Optional)?.init();
     router.resetRootComponentType(ref.componentTypes[0]);
-    this.resultOfPreactivationDone.next(void 0);
-    this.resultOfPreactivationDone.complete();
-  }
-
-  ngOnDestroy() {
-    this.destroyed = true;
-  }
+    bootstrapDone.next();
+    bootstrapDone.complete();
+  };
 }
 
-export function getAppInitializer(r: RouterInitializer) {
-  return r.appInitializer.bind(r);
-}
-
-export function getBootstrapListener(r: RouterInitializer) {
-  return r.bootstrapListener.bind(r);
-}
-
+// TODO(atscott): This should not be in the public API
 /**
  * A [DI token](guide/glossary/#di-token) for the router initializer that
  * is called after the app is bootstrapped.
  *
  * @publicApi
  */
-export const ROUTER_INITIALIZER =
-    new InjectionToken<(compRef: ComponentRef<any>) => void>('Router Initializer');
+export const ROUTER_INITIALIZER = new InjectionToken<(compRef: ComponentRef<any>) => void>(
+    NG_DEV_MODE ? 'Router Initializer' : '');
 
-export function provideRouterInitializer(): ReadonlyArray<Provider> {
+function provideInitialNavigation(config: Pick<ExtraOptions, 'initialNavigation'>): Provider[] {
   return [
-    RouterInitializer,
+    config.initialNavigation === 'disabled' ? provideDisabledInitialNavigation() : [],
+    config.initialNavigation === 'enabledBlocking' ? provideEnabledBlockingInitialNavigation() : [],
+  ];
+}
+
+function provideRouterInitializer(): ReadonlyArray<Provider> {
+  return [
+    // ROUTER_INITIALIZER token should be removed. It's public API but shouldn't be. We can just
+    // have `getBootstrapListener` directly attached to APP_BOOTSTRAP_LISTENER.
+    {provide: ROUTER_INITIALIZER, useFactory: getBootstrapListener},
+    {provide: APP_BOOTSTRAP_LISTENER, multi: true, useExisting: ROUTER_INITIALIZER},
+  ];
+}
+
+/**
+ * A subject used to indicate that the bootstrapping phase is done. When initial navigation is
+ * `enabledBlocking`, the first navigation waits until bootstrapping is finished before continuing
+ * to the activation phase.
+ */
+const BOOTSTRAP_DONE =
+    new InjectionToken<Subject<void>>(NG_DEV_MODE ? 'bootstrap done indicator' : '', {
+      factory: () => {
+        return new Subject<void>();
+      }
+    });
+
+function provideEnabledBlockingInitialNavigation(): Provider {
+  return [
+    {provide: INITIAL_NAVIGATION, useValue: 'enabledBlocking'},
     {
       provide: APP_INITIALIZER,
       multi: true,
-      useFactory: getAppInitializer,
-      deps: [RouterInitializer]
+      deps: [Injector],
+      useFactory: (injector: Injector) => {
+        const locationInitialized: Promise<any> =
+            injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
+        let initNavigation = false;
+
+        return () => {
+          return locationInitialized.then(() => {
+            return new Promise(resolve => {
+              const router = injector.get(Router);
+              const bootstrapDone = injector.get(BOOTSTRAP_DONE);
+
+              router.afterPreactivation = () => {
+                // only the initial navigation should be delayed
+                if (!initNavigation) {
+                  initNavigation = true;
+                  resolve(true);
+                  return bootstrapDone;
+                  // subsequent navigations should not be delayed
+                } else {
+                  return of(void 0);
+                }
+              };
+              router.initialNavigation();
+            });
+          });
+        };
+      }
     },
-    {provide: ROUTER_INITIALIZER, useFactory: getBootstrapListener, deps: [RouterInitializer]},
-    {provide: APP_BOOTSTRAP_LISTENER, multi: true, useExisting: ROUTER_INITIALIZER},
+  ];
+}
+
+const INITIAL_NAVIGATION =
+    new InjectionToken<'disabled'|'enabledBlocking'>(NG_DEV_MODE ? 'initial navigation' : '');
+
+function provideDisabledInitialNavigation(): Provider[] {
+  return [
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      useFactory: () => {
+        const router = inject(Router);
+        return () => {
+          router.setUpLocationChangeListener();
+        };
+      }
+    },
+    {provide: INITIAL_NAVIGATION, useValue: 'disabled'}
   ];
 }
 
