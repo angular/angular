@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, ENVIRONMENT_INITIALIZER, Inject, inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, OnDestroy, Optional, Provider, SkipSelf} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, ENVIRONMENT_INITIALIZER, Inject, inject, Injectable, InjectFlags, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, OnDestroy, Optional, Provider, SkipSelf} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 import {of, Subject} from 'rxjs';
 
@@ -23,7 +23,7 @@ import {ErrorHandler, Router} from './router';
 import {RouterConfigLoader, ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
-import {RouterScroller} from './router_scroller';
+import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {DefaultUrlSerializer, UrlSerializer, UrlTree} from './url_tree';
@@ -137,11 +137,7 @@ export class RouterModule {
         },
         {provide: ROUTER_CONFIGURATION, useValue: config ? config : {}},
         config?.useHash ? provideHashLocationStrategy() : providePathLocationStrategy(),
-        {
-          provide: RouterScroller,
-          useFactory: createRouterScroller,
-          deps: [Router, ViewportScroller, ROUTER_CONFIGURATION]
-        },
+        provideRouterScroller(),
         {
           provide: PreloadingStrategy,
           useExisting: config && config.preloadingStrategy ? config.preloadingStrategy :
@@ -174,12 +170,19 @@ export class RouterModule {
   }
 }
 
-export function createRouterScroller(
-    router: Router, viewportScroller: ViewportScroller, config: ExtraOptions): RouterScroller {
-  if (config.scrollOffset) {
-    viewportScroller.setOffset(config.scrollOffset);
-  }
-  return new RouterScroller(router, viewportScroller, config);
+export function provideRouterScroller(): Provider {
+  return {
+    provide: ROUTER_SCROLLER,
+    useFactory: () => {
+      const router = inject(Router);
+      const viewportScroller = inject(ViewportScroller);
+      const config: ExtraOptions = inject(ROUTER_CONFIGURATION);
+      if (config.scrollOffset) {
+        viewportScroller.setOffset(config.scrollOffset);
+      }
+      return new RouterScroller(router, viewportScroller, config);
+    },
+  };
 }
 
 function provideHashLocationStrategy(): Provider {
@@ -573,7 +576,8 @@ export class RouterInitializer implements OnDestroy {
   bootstrapListener(bootstrappedComponentRef: ComponentRef<any>): void {
     const opts = this.injector.get(ROUTER_CONFIGURATION);
     const preloader = this.injector.get(RouterPreloader);
-    const routerScroller = this.injector.get(RouterScroller);
+    const routerScroller: RouterScroller|null =
+        this.injector.get(ROUTER_SCROLLER, null, InjectFlags.Optional);
     const router = this.injector.get(Router);
     const ref = this.injector.get<ApplicationRef>(ApplicationRef);
 
@@ -587,7 +591,7 @@ export class RouterInitializer implements OnDestroy {
     }
 
     preloader.setUpPreloading();
-    routerScroller.init();
+    routerScroller?.init();
     router.resetRootComponentType(ref.componentTypes[0]);
     this.resultOfPreactivationDone.next(void 0);
     this.resultOfPreactivationDone.complete();
