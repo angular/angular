@@ -27,7 +27,7 @@ use the desired font, or to an alias previously registered with
 
 Fonts can also display icons by defining a CSS class for each icon glyph, which typically uses a
 `:before` selector to cause the icon to appear.
-[FontAwesome](https://fortawesome.github.io/Font-Awesome/examples/) uses this approach to display
+[Font Awesome](https://fontawesome.com/icons) uses this approach to display
 its icons. To use such a font, set the `fontSet` input to the font's CSS class (either the class
 itself or an alias registered with `MatIconRegistry.registerFontClassAlias`), and set the `fontIcon`
 input to the class for the specific icon to show.
