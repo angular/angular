@@ -873,7 +873,7 @@ describe('completions', () => {
 
   describe('pipe scope', () => {
     it('should complete a pipe binding', () => {
-      const {templateFile} = setup(`{{ foo | some¦ }}`, '', SOME_PIPE);
+      const {templateFile} = setup(`{{ foo | some }}`, '', SOME_PIPE);
       templateFile.moveCursorToText('some¦');
       const completions = templateFile.getCompletionsAtPosition();
       expectContain(
