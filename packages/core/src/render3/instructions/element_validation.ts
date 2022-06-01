@@ -12,7 +12,7 @@ import {SchemaMetadata} from '../../metadata';
 import {throwError} from '../../util/assert';
 import {getComponentDef} from '../definition';
 import {ComponentDef} from '../interfaces/definition';
-import {TNode, TNodeType} from '../interfaces/node';
+import {TNodeType} from '../interfaces/node';
 import {RComment, RElement} from '../interfaces/renderer_dom';
 import {CONTEXT, DECLARATION_COMPONENT_VIEW, LView} from '../interfaces/view';
 import {isAnimationProp} from '../util/attrs_utils';
@@ -133,25 +133,20 @@ export function validateElementIsKnown(
  * - the property is used for animations
  *
  * @param element Element to validate
- * @param tagName Name of the tag to check
  * @param propName Name of the property to check
  * @param schemas Array of schemas
- * @param tNode `TNode` the element which presents the property
+ * @param tagName Name of the tag to check
+ * @param nodeType nodeType Type of the node hosting the property
  * @param lView An `LView` that represents a current component that is being rendered
  */
-export function validateElementProperty(
-    element: RElement|RComment,
-    tagName: string|null,
-    propName: string,
-    schemas: SchemaMetadata[]|null,
-    tNode: TNode,
-    lView: LView,
-    ): boolean {
-  const propertyIsValid = isPropertyValid(element, tagName, propName, schemas);
-  if (!propertyIsValid) {
-    handleUnknownPropertyError(propName, tNode, lView);
+export function validatePropertyIsKnown(
+    element: RElement|RComment, propName: string, schemas: SchemaMetadata[]|null,
+    tagName: string|null, nodeType: TNodeType, lView: LView): boolean {
+  const isValid = isPropertyValid(element, propName, tagName, schemas);
+  if (!isValid) {
+    handleUnknownPropertyError(propName, tagName, nodeType, lView);
   }
-  return propertyIsValid;
+  return isValid;
 }
 
 /**
@@ -166,12 +161,12 @@ export function validateElementProperty(
  * - the property is used for animations
  *
  * @param element Element to validate
- * @param tagName Name of the tag to check
  * @param propName Name of the property to check
+ * @param tagName Name of the tag hosting the property
  * @param schemas Array of schemas
  */
 function isPropertyValid(
-    element: RElement|RComment, tagName: string|null, propName: string,
+    element: RElement|RComment, propName: string, tagName: string|null,
     schemas: SchemaMetadata[]|null): boolean {
   // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
   // mode where this check happens at compile time. In JIT mode, `schemas` is always present and
@@ -194,19 +189,19 @@ function isPropertyValid(
  * Logs or throws an error that a property is not supported on an element.
  *
  * @param propName Name of the invalid property
- * @param tNode A `TNode` that represents a current component that is being rendered
- * @param lView An `LView` that represents a current component that is being rendered
+ * @param tagName Name of the tag hosting the property
+ * @param nodeType Type of the node hosting the property
+ * @param lView An `LView` that represents a current component
  */
-export function handleUnknownPropertyError(propName: string, tNode: TNode, lView: LView): void {
-  let tagName = tNode.value;
-
+export function handleUnknownPropertyError(
+    propName: string, tagName: string|null, nodeType: TNodeType, lView: LView): void {
   // Special-case a situation when a structural directive is applied to
   // an `<ng-template>` element, for example: `<ng-template *ngIf="true">`.
   // In this case the compiler generates the `ɵɵtemplate` instruction with
   // the `null` as the tagName. The directive matching logic at runtime relies
   // on this effect (see `isInlineTemplate`), thus using the 'ng-template' as
   // a default value of the `tNode.value` is not feasible at this moment.
-  if (!tagName && tNode.type === TNodeType.Container) {
+  if (!tagName && nodeType === TNodeType.Container) {
     tagName = 'ng-template';
   }
 

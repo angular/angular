@@ -49,7 +49,7 @@ import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreation
 
 import {selectIndexInternal} from './advance';
 import {ɵɵdirectiveInject} from './di';
-import {handleUnknownPropertyError, validateElementProperty} from './element_validation';
+import {handleUnknownPropertyError, validatePropertyIsKnown} from './element_validation';
 import {attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData, LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeDebug, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor} from './lview_debug';
 
 /**
@@ -1017,8 +1017,10 @@ export function elementPropertyInternal<T>(
     if (ngDevMode) {
       validateAgainstEventProperties(propName);
 
-      if (!validateElementProperty(element, tNode.value, propName, tView.schemas, tNode, lView)) {
-        // Return here since we only log warnings for unknown properties.
+      if (!validatePropertyIsKnown(
+              element, propName, tView.schemas, tNode.value, tNode.type, lView)) {
+        // Return here since we only log warnings for unknown properties by default
+        // (unless throwing an error in this situation is requested).
         return;
       }
       ngDevMode.rendererSetProperty++;
@@ -1037,7 +1039,7 @@ export function elementPropertyInternal<T>(
     // If the node is a container and the property didn't
     // match any of the inputs or schemas we should throw.
     if (ngDevMode && !matchingSchemas(tView.schemas, tNode.value)) {
-      handleUnknownPropertyError(propName, tNode, lView);
+      handleUnknownPropertyError(propName, tNode.value, tNode.type, lView);
     }
   }
 }
