@@ -10,6 +10,7 @@
 // correctly implementing its interfaces for backwards compatibility.
 import {Injector} from '../di/injector';
 import {Type} from '../interface/type';
+import {Renderer2, RendererType2} from '../render';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDefined, assertIndexInRange} from '../util/assert';
 
@@ -23,7 +24,7 @@ import {addToViewTree, CLEAN_PROMISE, createLView, createTView, getOrCreateTComp
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
-import {domRendererFactory3, Renderer3, RendererFactory3} from './interfaces/renderer';
+import {ProceduralRenderer3, Renderer3, RendererFactory3} from './interfaces/renderer';
 import {RElement} from './interfaces/renderer_dom';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
 import {writeDirectClass, writeDirectStyle} from './node_manipulation';
@@ -38,9 +39,6 @@ import {getRootContext} from './util/view_traversal_utils';
 
 /** Options that control how the component should be bootstrapped. */
 export interface CreateComponentOptions {
-  /** Which renderer factory to use. */
-  rendererFactory?: RendererFactory3;
-
   /** A custom sanitizer instance */
   sanitizer?: Sanitizer;
 
@@ -95,6 +93,16 @@ export const NULL_INJECTOR: Injector = {
   }
 };
 
+class LightRendererFactory3 implements RendererFactory3 {
+  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null):
+      ProceduralRenderer3 {
+    return null as any as Renderer2;
+  }
+
+  begin() {}
+  end() {}
+}
+
 /**
  * Bootstraps a Component into an existing host element and returns an instance
  * of the component.
@@ -116,7 +124,7 @@ export function renderComponent<T>(
   ngDevMode && publishDefaultGlobalUtils();
   ngDevMode && assertComponentType(componentType);
 
-  const rendererFactory = opts.rendererFactory || domRendererFactory3;
+  const rendererFactory = new LightRendererFactory3()
   const sanitizer = opts.sanitizer || null;
   const componentDef = getComponentDef<T>(componentType)!;
   if (componentDef.type != componentType) (componentDef as {type: Type<any>}).type = componentType;

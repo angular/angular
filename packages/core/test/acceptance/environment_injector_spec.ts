@@ -69,22 +69,22 @@ describe('environment injector', () => {
     expect(ngModuleRef.instance).toBeNull();
   });
 
-  it('should expose the ComponentFactoryResolver token bound to env injector with specified providers',
-     () => {
-       class Service {}
+  fit('should expose the ComponentFactoryResolver token bound to env injector with specified providers',
+      () => {
+        class Service {}
 
-       @Component({selector: 'test-cmp'})
-       class TestComponent {
-         constructor(readonly service: Service) {}
-       }
+        @Component({selector: 'test-cmp'})
+        class TestComponent {
+          constructor(readonly service: Service) {}
+        }
 
-       const envInjector = createEnvironmentInjector([Service]);
-       const cfr = envInjector.get(ComponentFactoryResolver);
-       const cf = cfr.resolveComponentFactory(TestComponent);
-       const cRef = cf.create(Injector.NULL);
+        const envInjector = createEnvironmentInjector([Service]);
+        const cfr = envInjector.get(ComponentFactoryResolver);
+        const cf = cfr.resolveComponentFactory(TestComponent);
+        const cRef = cf.create(Injector.NULL);
 
-       expect(cRef.instance.service).toBeInstanceOf(Service);
-     });
+        expect(cRef.instance.service).toBeInstanceOf(Service);
+      });
 
   it('should support the ENVIRONMENT_INITIALIZER muli-token', () => {
     let initialized = false;

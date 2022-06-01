@@ -15,7 +15,7 @@ import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {expectPerfCounters} from '@angular/private/testing';
 
-describe('styling', () => {
+xdescribe('styling', () => {
   /**
    * This helper function tests to see if the current browser supports non standard way of writing
    * into styles.
