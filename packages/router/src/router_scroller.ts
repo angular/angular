@@ -7,11 +7,13 @@
  */
 
 import {ViewportScroller} from '@angular/common';
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable, InjectionToken, OnDestroy} from '@angular/core';
 import {Unsubscribable} from 'rxjs';
 
 import {NavigationEnd, NavigationStart, Scroll} from './events';
 import {Router} from './router';
+
+export const ROUTER_SCROLLER = new InjectionToken<RouterScroller>('');
 
 @Injectable()
 export class RouterScroller implements OnDestroy {
