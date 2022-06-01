@@ -49,7 +49,7 @@ import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreation
 
 import {selectIndexInternal} from './advance';
 import {ɵɵdirectiveInject} from './di';
-import {handleUnknownPropertyError, validatePropertyIsKnown} from './element_validation';
+import {handleUnknownPropertyError, matchingSchemas, validatePropertyIsKnown} from './element_validation';
 import {attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData, LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeDebug, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor} from './lview_debug';
 
 /**
@@ -1095,33 +1095,6 @@ export function setNgReflectProperties(
     }
   }
 }
-
-/**
- * Returns true if the tag name is allowed by specified schemas.
- * @param schemas Array of schemas
- * @param tagName Name of the tag
- */
-export function matchingSchemas(schemas: SchemaMetadata[]|null, tagName: string|null): boolean {
-  if (schemas !== null) {
-    for (let i = 0; i < schemas.length; i++) {
-      const schema = schemas[i];
-      if (schema === NO_ERRORS_SCHEMA ||
-          schema === CUSTOM_ELEMENTS_SCHEMA && tagName && tagName.indexOf('-') > -1) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
-/**
- * The set of known control flow directives.
- * We use this set to produce a more precises error message with a note
- * that the `CommonModule` should also be included.
- */
-export const KNOWN_CONTROL_FLOW_DIRECTIVES =
-    new Set(['ngIf', 'ngFor', 'ngSwitch', 'ngSwitchCase', 'ngSwitchDefault']);
 
 /**
  * Instantiate a root component.

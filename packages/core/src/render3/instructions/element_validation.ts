@@ -8,7 +8,7 @@
 
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type} from '../../interface/type';
-import {SchemaMetadata} from '../../metadata';
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata';
 import {throwError} from '../../util/assert';
 import {getComponentDef} from '../definition';
 import {ComponentDef} from '../interfaces/definition';
@@ -16,8 +16,6 @@ import {TNodeType} from '../interfaces/node';
 import {RComment, RElement} from '../interfaces/renderer_dom';
 import {CONTEXT, DECLARATION_COMPONENT_VIEW, LView} from '../interfaces/view';
 import {isAnimationProp} from '../util/attrs_utils';
-
-import {KNOWN_CONTROL_FLOW_DIRECTIVES, matchingSchemas} from './shared';
 
 let shouldThrowErrorOnUnknownElement = false;
 
@@ -298,4 +296,31 @@ function getTemplateLocationDetails(lView: LView): string {
   const hostComponentDef = getDeclarationComponentDef(lView);
   const componentClassName = hostComponentDef?.type?.name;
   return componentClassName ? ` (used in the '${componentClassName}' component template)` : '';
+}
+
+/**
+ * The set of known control flow directives.
+ * We use this set to produce a more precises error message with a note
+ * that the `CommonModule` should also be included.
+ */
+export const KNOWN_CONTROL_FLOW_DIRECTIVES =
+    new Set(['ngIf', 'ngFor', 'ngSwitch', 'ngSwitchCase', 'ngSwitchDefault']);
+
+/**
+ * Returns true if the tag name is allowed by specified schemas.
+ * @param schemas Array of schemas
+ * @param tagName Name of the tag
+ */
+export function matchingSchemas(schemas: SchemaMetadata[]|null, tagName: string|null): boolean {
+  if (schemas !== null) {
+    for (let i = 0; i < schemas.length; i++) {
+      const schema = schemas[i];
+      if (schema === NO_ERRORS_SCHEMA ||
+          schema === CUSTOM_ELEMENTS_SCHEMA && tagName && tagName.indexOf('-') > -1) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
