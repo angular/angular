@@ -20,7 +20,6 @@ import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/
 import {stringify} from '../../util/stringify';
 import {assertFirstCreatePass, assertFirstUpdatePass, assertLContainer, assertLView, assertTNodeForLView, assertTNodeForTView} from '../assert';
 import {attachPatchData, readPatchedLView} from '../context_discovery';
-import {getComponentDef} from '../definition';
 import {getFactoryDef} from '../definition_factory';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
