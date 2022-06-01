@@ -408,6 +408,10 @@ export class NavigationStart extends RouterEvent {
 export class NoPreloading implements PreloadingStrategy {
     // (undocumented)
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NoPreloading, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<NoPreloading>;
 }
 
 // @public
@@ -443,6 +447,10 @@ export type Params = {
 export class PreloadAllModules implements PreloadingStrategy {
     // (undocumented)
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<PreloadAllModules, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<PreloadAllModules>;
 }
 
 // @public
