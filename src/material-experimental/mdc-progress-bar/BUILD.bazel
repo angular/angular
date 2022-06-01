@@ -21,11 +21,9 @@ ng_module(
     ),
     assets = [":progress_bar_scss"] + glob(["**/*.html"]),
     deps = [
-        "//src/cdk/bidi",
         "//src/material-experimental/mdc-core",
         "//src/material/progress-bar",
         "@npm//@angular/core",
-        "@npm//@material/linear-progress",
     ],
 )
 

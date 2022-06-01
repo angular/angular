@@ -96,20 +96,24 @@ describe('MDC-based MatProgressBar', () => {
         expect(getBufferValue()).toBe(100);
 
         progressComponent.value = 40;
+        fixture.detectChanges();
         expect(primaryStyles.transform).toBe('scaleX(0.4)');
         expect(getBufferValue()).toBe(100);
 
         progressComponent.value = 35;
         progressComponent.bufferValue = 55;
+        fixture.detectChanges();
         expect(primaryStyles.transform).toBe('scaleX(0.35)');
         expect(getBufferValue()).toBe(100);
 
         progressComponent.mode = 'buffer';
+        fixture.detectChanges();
         expect(primaryStyles.transform).toBe('scaleX(0.35)');
         expect(getBufferValue()).toEqual(55);
 
         progressComponent.value = 60;
         progressComponent.bufferValue = 60;
+        fixture.detectChanges();
         expect(primaryStyles.transform).toBe('scaleX(0.6)');
         expect(getBufferValue()).toEqual(60);
       });
@@ -239,30 +243,31 @@ describe('MDC-based MatProgressBar', () => {
         expect(animationEndSpy).not.toHaveBeenCalled();
 
         // On animation end, output should be emitted.
-        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend');
+        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend', true);
         expect(animationEndSpy).toHaveBeenCalledWith({value: 40});
       });
     });
 
     describe('animation trigger on buffer setting', () => {
       let fixture: ComponentFixture<BufferProgressBar>;
+      let progressElement: DebugElement;
       let progressComponent: MatProgressBar;
       let primaryValueBar: DebugElement;
 
       beforeEach(() => {
         fixture = createComponent(BufferProgressBar);
 
-        const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'))!;
+        progressElement = fixture.debugElement.query(By.css('mat-progress-bar'))!;
         progressComponent = progressElement.componentInstance;
         primaryValueBar = progressElement.query(By.css('.mdc-linear-progress__primary-bar'))!;
       });
 
       it('should bind on transitionend eventListener on primaryBarValue', () => {
-        spyOn(primaryValueBar.nativeElement, 'addEventListener');
+        spyOn(progressElement.nativeElement, 'addEventListener');
         fixture.detectChanges();
 
-        expect(primaryValueBar.nativeElement.addEventListener).toHaveBeenCalled();
-        expect(primaryValueBar.nativeElement.addEventListener.calls.mostRecent().args[0]).toBe(
+        expect(progressElement.nativeElement.addEventListener).toHaveBeenCalled();
+        expect(progressElement.nativeElement.addEventListener.calls.mostRecent().args[0]).toBe(
           'transitionend',
         );
       });
@@ -277,7 +282,7 @@ describe('MDC-based MatProgressBar', () => {
         expect(animationEndSpy).not.toHaveBeenCalled();
 
         // On animation end, output should be emitted.
-        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend');
+        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend', true);
         expect(animationEndSpy).toHaveBeenCalledWith({value: 40});
       });
 
@@ -292,7 +297,7 @@ describe('MDC-based MatProgressBar', () => {
         expect(animationEndSpy).not.toHaveBeenCalled();
 
         // On animation end, output should be emitted.
-        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend');
+        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend', true);
         expect(animationEndSpy).toHaveBeenCalledWith({value: 40});
       });
 
@@ -306,7 +311,7 @@ describe('MDC-based MatProgressBar', () => {
         progressComponent.value = 30;
         progressComponent.bufferValue = 60;
         // On animation end, output should be emitted.
-        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend');
+        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend', true);
 
         expect(appRef.tick).not.toHaveBeenCalled();
 
@@ -315,7 +320,7 @@ describe('MDC-based MatProgressBar', () => {
         progressComponent.value = 40;
         progressComponent.bufferValue = 70;
         // On animation end, output should be emitted.
-        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend');
+        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend', true);
 
         expect(appRef.tick).toHaveBeenCalled();
         expect(animationEndSpy).toHaveBeenCalledWith({value: 40});

@@ -3,10 +3,15 @@
   More context in the issue: https://github.com/angular/components/issues/22165.
 -->
 <div class="mdc-linear-progress__buffer" aria-hidden="true">
-  <div class="mdc-linear-progress__buffer-bar"></div>
+  <div
+    class="mdc-linear-progress__buffer-bar"
+    [style.flex-basis]="_getBufferBarFlexBasis()"></div>
   <div class="mdc-linear-progress__buffer-dots"></div>
 </div>
-<div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar" aria-hidden="true">
+<div
+  class="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
+  aria-hidden="true"
+  [style.transform]="_getPrimaryBarTransform()">
   <span class="mdc-linear-progress__bar-inner"></span>
 </div>
 <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar" aria-hidden="true">

@@ -19,6 +19,7 @@ import {
   EventEmitter,
   AfterViewInit,
   OnDestroy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {CanColor, mixinColor} from '@angular/material-experimental/mdc-core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
@@ -27,20 +28,12 @@ import {
   MAT_PROGRESS_BAR_DEFAULT_OPTIONS,
   ProgressAnimationEnd,
 } from '@angular/material/progress-bar';
-import {
-  MDCLinearProgressAdapter,
-  MDCLinearProgressFoundation,
-  WithMDCResizeObserver,
-} from '@material/linear-progress';
-import {Subscription, fromEvent, Observable} from 'rxjs';
-import {filter} from 'rxjs/operators';
-import {Directionality} from '@angular/cdk/bidi';
 
 // Boilerplate for applying mixins to MatProgressBar.
 /** @docs-private */
 const _MatProgressBarBase = mixinColor(
   class {
-    constructor(public _elementRef: ElementRef) {}
+    constructor(public _elementRef: ElementRef<HTMLElement>) {}
   },
   'primary',
 );
@@ -57,10 +50,12 @@ export type ProgressBarMode = 'determinate' | 'indeterminate' | 'buffer' | 'quer
     // set tab index to -1 so screen readers will read the aria-label
     // Note: there is a known issue with JAWS that does not read progressbar aria labels on FireFox
     'tabindex': '-1',
-    '[attr.aria-valuenow]': '(mode === "indeterminate" || mode === "query") ? null : value',
+    '[attr.aria-valuenow]': '_isIndeterminate() ? null : value',
     '[attr.mode]': 'mode',
     'class': 'mat-mdc-progress-bar mdc-linear-progress',
     '[class._mat-animation-noopable]': '_isNoopAnimation',
+    '[class.mdc-linear-progress--animation-ready]': '!_isNoopAnimation',
+    '[class.mdc-linear-progress--indeterminate]': '_isIndeterminate()',
   },
   inputs: ['color'],
   templateUrl: 'progress-bar.html',
@@ -75,7 +70,7 @@ export class MatProgressBar
   constructor(
     elementRef: ElementRef<HTMLElement>,
     private _ngZone: NgZone,
-    @Optional() dir?: Directionality,
+    private _changeDetectorRef: ChangeDetectorRef,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
     @Optional()
     @Inject(MAT_PROGRESS_BAR_DEFAULT_OPTIONS)
@@ -83,12 +78,6 @@ export class MatProgressBar
   ) {
     super(elementRef);
     this._isNoopAnimation = _animationMode === 'NoopAnimations';
-    if (dir) {
-      this._dirChangeSubscription = dir.change.subscribe(() => {
-        this._syncFoundation();
-        this._foundation?.restartAnimation();
-      });
-    }
 
     if (defaults) {
       if (defaults.color) {
@@ -98,56 +87,6 @@ export class MatProgressBar
       this.mode = defaults.mode || this.mode;
     }
   }
-
-  /** Implements all of the logic of the MDC progress bar. */
-  private _foundation: MDCLinearProgressFoundation | undefined;
-
-  /** Adapter used by MDC to interact with the DOM. */
-  private _adapter: MDCLinearProgressAdapter = {
-    addClass: (className: string) => this._elementRef.nativeElement.classList.add(className),
-    forceLayout: () => this._elementRef.nativeElement.offsetWidth,
-    removeAttribute: (name: string) => this._elementRef.nativeElement.removeAttribute(name),
-    setAttribute: (name: string, value: string) => {
-      if (name !== 'aria-valuenow') {
-        this._elementRef.nativeElement.setAttribute(name, value);
-      }
-    },
-    hasClass: (className: string) => this._elementRef.nativeElement.classList.contains(className),
-    removeClass: (className: string) => this._elementRef.nativeElement.classList.remove(className),
-    setPrimaryBarStyle: (styleProperty: string, value: string) => {
-      (this._primaryBar.style as any)[styleProperty] = value;
-    },
-    setBufferBarStyle: (styleProperty: string, value: string) => {
-      (this._bufferBar.style as any)[styleProperty] = value;
-    },
-    setStyle: (styleProperty: string, value: string) => {
-      (this._elementRef.nativeElement.style as any)[styleProperty] = value;
-    },
-    getWidth: () => this._elementRef.nativeElement.offsetWidth,
-    attachResizeObserver: callback => {
-      const resizeObserverConstructor =
-        typeof window !== 'undefined' &&
-        (window as unknown as WithMDCResizeObserver).ResizeObserver;
-
-      if (resizeObserverConstructor) {
-        return this._ngZone.runOutsideAngular(() => {
-          const observer = new resizeObserverConstructor(callback);
-
-          // Internal client users found production errors where `observe` was not a function
-          // on the constructed `observer`. This should not happen, but adding this check for this
-          // edge case.
-          if (typeof observer.observe === 'function') {
-            observer.observe(this._elementRef.nativeElement);
-            return observer;
-          }
-
-          return null;
-        });
-      }
-
-      return null;
-    },
-  };
 
   /** Flag that indicates whether NoopAnimations mode is set to true. */
   _isNoopAnimation = false;
@@ -159,7 +98,7 @@ export class MatProgressBar
   }
   set value(v: number) {
     this._value = clamp(v || 0);
-    this._syncFoundation();
+    this._changeDetectorRef.markForCheck();
   }
   private _value = 0;
 
@@ -170,12 +109,9 @@ export class MatProgressBar
   }
   set bufferValue(v: number) {
     this._bufferValue = clamp(v || 0);
-    this._syncFoundation();
+    this._changeDetectorRef.markForCheck();
   }
   private _bufferValue = 0;
-
-  private _primaryBar: HTMLElement;
-  private _bufferBar: HTMLElement;
 
   /**
    * Event emitted when animation of the primary progress bar completes. This event will not
@@ -183,12 +119,6 @@ export class MatProgressBar
    * animations (indeterminate and query).
    */
   @Output() readonly animationEnd = new EventEmitter<ProgressAnimationEnd>();
-
-  /** Reference to animation end subscription to be unsubscribed on destroy. */
-  private _animationEndSubscription = Subscription.EMPTY;
-
-  /** Subscription to when the layout direction changes. */
-  private _dirChangeSubscription = Subscription.EMPTY;
 
   /**
    * Mode of the progress bar.
@@ -205,63 +135,51 @@ export class MatProgressBar
     // Note that we don't technically need a getter and a setter here,
     // but we use it to match the behavior of the existing mat-progress-bar.
     this._mode = value;
-    this._syncFoundation();
+    this._changeDetectorRef.markForCheck();
   }
   private _mode: ProgressBarMode = 'determinate';
 
   ngAfterViewInit() {
-    const element = this._elementRef.nativeElement;
-
-    this._primaryBar = element.querySelector('.mdc-linear-progress__primary-bar') as HTMLElement;
-    this._bufferBar = element.querySelector('.mdc-linear-progress__buffer-bar') as HTMLElement;
-
-    this._foundation = new MDCLinearProgressFoundation(this._adapter);
-    this._foundation.init();
-    this._syncFoundation();
-
     // Run outside angular so change detection didn't get triggered on every transition end
     // instead only on the animation that we care about (primary value bar's transitionend)
     this._ngZone.runOutsideAngular(() => {
-      this._animationEndSubscription = (
-        fromEvent(this._primaryBar, 'transitionend') as Observable<TransitionEvent>
-      )
-        .pipe(filter((e: TransitionEvent) => e.target === this._primaryBar))
-        .subscribe(() => {
-          if (this.animationEnd.observers.length === 0) {
-            return;
-          }
-
-          if (this.mode === 'determinate' || this.mode === 'buffer') {
-            this._ngZone.run(() => this.animationEnd.next({value: this.value}));
-          }
-        });
+      this._elementRef.nativeElement.addEventListener('transitionend', this._transitionendHandler);
     });
   }
 
   ngOnDestroy() {
-    if (this._foundation) {
-      this._foundation.destroy();
-    }
-    this._animationEndSubscription.unsubscribe();
-    this._dirChangeSubscription.unsubscribe();
+    this._elementRef.nativeElement.removeEventListener('transitionend', this._transitionendHandler);
   }
 
-  /** Syncs the state of the progress bar with the MDC foundation. */
-  private _syncFoundation() {
-    const foundation = this._foundation;
-
-    if (foundation) {
-      const mode = this.mode;
-      foundation.setDeterminate(mode !== 'indeterminate' && mode !== 'query');
-
-      // Divide by 100 because MDC deals with values between 0 and 1.
-      foundation.setProgress(this.value / 100);
-
-      if (mode === 'buffer') {
-        foundation.setBuffer(this.bufferValue / 100);
-      }
-    }
+  /** Gets the transform style that should be applied to the primary bar. */
+  _getPrimaryBarTransform(): string {
+    return `scaleX(${this._isIndeterminate() ? 1 : this.value / 100})`;
   }
+
+  /** Gets the `flex-basis` value that should be applied to the buffer bar. */
+  _getBufferBarFlexBasis(): string {
+    return `${this.mode === 'buffer' ? this.bufferValue : 100}%`;
+  }
+
+  /** Returns whether the progress bar is indeterminate. */
+  _isIndeterminate(): boolean {
+    return this.mode === 'indeterminate' || this.mode === 'query';
+  }
+
+  /** Event handler for `transitionend` events. */
+  private _transitionendHandler = (event: TransitionEvent) => {
+    if (
+      this.animationEnd.observers.length === 0 ||
+      !event.target ||
+      !(event.target as HTMLElement).classList.contains('mdc-linear-progress__primary-bar')
+    ) {
+      return;
+    }
+
+    if (this.mode === 'determinate' || this.mode === 'buffer') {
+      this._ngZone.run(() => this.animationEnd.next({value: this.value}));
+    }
+  };
 }
 
 /** Clamps a value to be between two numbers, by default 0 and 100. */
