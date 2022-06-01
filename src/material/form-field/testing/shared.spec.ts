@@ -266,7 +266,7 @@ export function runHarnessTests(
       <span matTextSuffix *ngIf="isMdc">suffix_text</span>
     </mat-form-field>
 
-    <mat-form-field appearance="standard" color="warn" id="with-errors">
+    <mat-form-field [appearance]="isMdc ? 'fill' : 'standard'" color="warn" id="with-errors">
       <span class="custom-control">Custom control harness</span>
       <input matInput [formControl]="requiredControl">
 
