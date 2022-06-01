@@ -1673,7 +1673,7 @@ export function setElementAttribute(
     ngDevMode && ngDevMode.rendererSetAttribute++;
     const strValue =
         sanitizer == null ? renderStringify(value) : sanitizer(value, tagName || '', name);
-    renderer.setAttribute(element, name, strValue, namespace);
+    renderer.setAttribute(element, name, strValue.toString(), namespace);
   }
 }
 

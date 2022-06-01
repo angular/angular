@@ -24,7 +24,7 @@ import {addToViewTree, CLEAN_PROMISE, createLView, createTView, getOrCreateTComp
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
-import {ProceduralRenderer3, Renderer3, RendererFactory3} from './interfaces/renderer';
+import {Renderer3, RendererFactory3} from './interfaces/renderer';
 import {RElement} from './interfaces/renderer_dom';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
 import {writeDirectClass, writeDirectStyle} from './node_manipulation';
@@ -94,8 +94,7 @@ export const NULL_INJECTOR: Injector = {
 };
 
 class LightRendererFactory3 implements RendererFactory3 {
-  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null):
-      ProceduralRenderer3 {
+  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null) {
     return null as any as Renderer2;
   }
 

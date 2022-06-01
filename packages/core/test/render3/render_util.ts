@@ -36,7 +36,7 @@ import {NG_ELEMENT_ID} from '../../src/render3/fields';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, renderComponent as _renderComponent, RenderFlags, tick, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵProvidersFeature} from '../../src/render3/index';
 import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
-import {domRendererFactory3, ProceduralRenderer3, Renderer3, RendererFactory3, RendererStyleFlags3} from '../../src/render3/interfaces/renderer';
+import {Renderer3, RendererFactory3, RendererStyleFlags3} from '../../src/render3/interfaces/renderer';
 import {LView, LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view';
 import {destroyLView} from '../../src/render3/node_manipulation';
 import {getRootView} from '../../src/render3/util/view_traversal_utils';
@@ -205,7 +205,7 @@ export class ComponentFixture<T extends {}> extends BaseFixture {
       scheduler: this.requestAnimationFrame,
       injector: opts.injector,
       sanitizer: opts.sanitizer,
-      rendererFactory: opts.rendererFactory || domRendererFactory3,
+      rendererFactory: opts.rendererFactory,
       playerHandler: opts.playerHandler
     });
   }
@@ -235,12 +235,8 @@ export class ComponentFixture<T extends {}> extends BaseFixture {
 export const document = ((typeof global == 'object' && global || window) as any).document;
 export let containerEl: HTMLElement = null!;
 let hostView: LView|null;
-const isRenderer2 =
-    typeof process == 'object' && process.argv[3] && process.argv[3] === '--r=renderer2';
 // tslint:disable-next-line:no-console
-console.log(`Running tests with ${!isRenderer2 ? 'document' : 'Renderer2'} renderer...`);
-const testRendererFactory: RendererFactory3 =
-    isRenderer2 ? getRendererFactory2(document) : domRendererFactory3;
+const testRendererFactory: RendererFactory3 = getRendererFactory2(document);
 
 export const requestAnimationFrame:
     {(fn: () => void): void; flush(): void; queue: (() => void)[];} = function(fn: () => void) {
@@ -445,7 +441,6 @@ export function getDirectiveOnNode(nodeIndex: number, dirIndex: number = 0) {
 
 
 // Verify that DOM is a type of render. This is here for error checking only and has no use.
-export const renderer: Renderer3 = null as any as Document;
 export const element: RElement = null as any as HTMLElement;
 export const text: RText = null as any as Text;
 
@@ -478,7 +473,7 @@ export class MockRendererFactory implements RendererFactory3 {
   }
 }
 
-class MockRenderer implements ProceduralRenderer3 {
+class MockRenderer implements Renderer3 {
   public spies: {[methodName: string]: any} = {};
 
   constructor(spyOnMethods: string[]) {
@@ -486,6 +481,10 @@ class MockRenderer implements ProceduralRenderer3 {
       this.spies[methodName] = spyOn(this as any, methodName).and.callThrough();
     });
   }
+  get data(): {[key: string]: any;} {
+    throw new Error('Method not implemented.');
+  }
+  destroyNode(node: any) {};
 
   destroy(): void {}
   createComment(value: string): RComment {

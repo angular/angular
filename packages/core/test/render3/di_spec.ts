@@ -15,7 +15,6 @@ import {ɵɵdefineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomHashBitOrFactory as bloomHash, bloomHasToken, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
 import {ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵtext} from '../../src/render3/index';
 import {TNodeType} from '../../src/render3/interfaces/node';
-import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
 import {LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view';
 import {enterView, leaveView} from '../../src/render3/state';
 
@@ -136,7 +135,7 @@ describe('di', () => {
     it('should inject the Renderer2 used by the application', () => {
       const rendererFactory = getRendererFactory2(document);
       const fixture = new ComponentFixture(MyComp, {rendererFactory: rendererFactory});
-      expect(isProceduralRenderer(fixture.component.renderer)).toBeTruthy();
+      expect(fixture.component.renderer).toBeInstanceOf(Renderer2);
     });
 
     it('should throw when injecting Renderer2 but the application is using Renderer3', () => {

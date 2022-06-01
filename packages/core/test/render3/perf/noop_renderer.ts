@@ -7,7 +7,7 @@
  */
 import {RComment, RElement, RNode, RText} from '@angular/core/src/render3/interfaces/renderer_dom';
 
-import {ProceduralRenderer3, Renderer3, RendererFactory3, RendererStyleFlags3} from '../../../src/render3/interfaces/renderer';
+import {Renderer3, RendererFactory3, RendererStyleFlags3} from '../../../src/render3/interfaces/renderer';
 
 export class MicroBenchmarkRenderNode implements RNode, RComment, RText {
   tagName?: string;
@@ -26,7 +26,7 @@ export class MicroBenchmarkRenderNode implements RNode, RComment, RText {
   className: string = '';
 }
 
-export class MicroBenchmarkRenderer implements ProceduralRenderer3 {
+export class MicroBenchmarkRenderer implements Renderer3 {
   destroy(): void {
     throw new Error('Method not implemented.');
   }
@@ -39,7 +39,7 @@ export class MicroBenchmarkRenderer implements ProceduralRenderer3 {
   createText(value: string): RText {
     return new MicroBenchmarkRenderNode();
   }
-  destroyNode?: ((node: RNode) => void)|null|undefined;
+  destroyNode: ((node: RNode) => void)|null|undefined;
   appendChild(parent: RElement, newChild: RNode): void {}
   insertBefore(parent: RNode, newChild: RNode, refChild: RNode|null): void {}
   removeChild(parent: RElement, oldChild: RNode, isHostElement?: boolean|undefined): void {}
