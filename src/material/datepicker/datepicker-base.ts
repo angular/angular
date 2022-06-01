@@ -8,7 +8,16 @@
 
 import {Directionality} from '@angular/cdk/bidi';
 import {BooleanInput, coerceBooleanProperty, coerceStringArray} from '@angular/cdk/coercion';
-import {ESCAPE, hasModifierKey, UP_ARROW} from '@angular/cdk/keycodes';
+import {
+  DOWN_ARROW,
+  ESCAPE,
+  hasModifierKey,
+  LEFT_ARROW,
+  PAGE_DOWN,
+  PAGE_UP,
+  RIGHT_ARROW,
+  UP_ARROW,
+} from '@angular/cdk/keycodes';
 import {
   Overlay,
   OverlayConfig,
@@ -655,6 +664,25 @@ export abstract class MatDatepickerBase<
         event.preventDefault();
       }
       this.close();
+    });
+
+    // The `preventDefault` call happens inside the calendar as well, however focus moves into
+    // it inside a timeout which can give browsers a chance to fire off a keyboard event in-between
+    // that can scroll the page (see #24969). Always block default actions of arrow keys for the
+    // entire overlay so the page doesn't get scrolled by accident.
+    overlayRef.keydownEvents().subscribe(event => {
+      const keyCode = event.keyCode;
+
+      if (
+        keyCode === UP_ARROW ||
+        keyCode === DOWN_ARROW ||
+        keyCode === LEFT_ARROW ||
+        keyCode === RIGHT_ARROW ||
+        keyCode === PAGE_UP ||
+        keyCode === PAGE_DOWN
+      ) {
+        event.preventDefault();
+      }
     });
 
     this._componentRef = overlayRef.attach(portal);

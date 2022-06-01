@@ -1,5 +1,14 @@
 import {Directionality} from '@angular/cdk/bidi';
-import {DOWN_ARROW, ENTER, ESCAPE, RIGHT_ARROW, UP_ARROW} from '@angular/cdk/keycodes';
+import {
+  DOWN_ARROW,
+  ENTER,
+  ESCAPE,
+  LEFT_ARROW,
+  PAGE_DOWN,
+  PAGE_UP,
+  RIGHT_ARROW,
+  UP_ARROW,
+} from '@angular/cdk/keycodes';
 import {Overlay} from '@angular/cdk/overlay';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
@@ -604,6 +613,24 @@ describe('MatDatepicker', () => {
         flush();
 
         expect(document.querySelector('.mat-datepicker-content')).toBeNull();
+      }));
+
+      it('should prevent the default action of navigation keys before the focus timeout has elapsed', fakeAsync(() => {
+        testComponent.datepicker.open();
+        fixture.detectChanges();
+
+        // Do the assertions before flushing the delays since we want
+        // to check specifically what happens before they have fired.
+        [UP_ARROW, DOWN_ARROW, LEFT_ARROW, RIGHT_ARROW, PAGE_UP, PAGE_DOWN].forEach(keyCode => {
+          const event = dispatchKeyboardEvent(document.body, 'keydown', keyCode);
+          fixture.detectChanges();
+          expect(event.defaultPrevented)
+            .withContext(`Expected default action to be prevented for key code ${keyCode}`)
+            .toBe(true);
+        });
+
+        tick();
+        flush();
       }));
     });
 
