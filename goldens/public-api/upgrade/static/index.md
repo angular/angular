@@ -75,7 +75,7 @@ export class UpgradeModule {
     injector: Injector,
     ngZone: NgZone,
     platformRef: PlatformRef);
-    bootstrap(element: Element, modules?: string[], config?: any): void;
+    bootstrap(element: Element, modules?: string[], config?: any): any;
     injector: Injector;
     ngZone: NgZone;
     // (undocumented)

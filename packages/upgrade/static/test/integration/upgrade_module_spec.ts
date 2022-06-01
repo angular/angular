@@ -125,6 +125,29 @@ withEachNg1Version(() => {
 
         expect(bootstrapSpy).toHaveBeenCalledOnceWith(element, jasmine.any(Array), config);
       });
+
+      it('should forward the return value of `angular.bootstrap()`', async () => {
+        // Set up spies.
+        const bootstrapSpy = spyOn(getAngularJSGlobal(), 'bootstrap').and.callThrough();
+
+        // Define `Ng2Module`.
+        @NgModule({
+          imports: [BrowserModule, UpgradeModule],
+        })
+        class Ng2Module {
+          ngDoBootstrap() {}
+        }
+
+        // Bootstrap the ng2 app.
+        const appRef = await platformBrowserDynamic().bootstrapModule(Ng2Module);
+        const upgrade = appRef.injector.get(UpgradeModule);
+
+        // Bootstrap the hybrid app.
+        const retValue = upgrade.bootstrap(html(`<ng2></ng2>`), []);
+
+        expect(retValue).toBe(bootstrapSpy.calls.mostRecent().returnValue);
+        expect(retValue).toBe(upgrade.$injector);  // In most cases, it will be the ng1 injector.
+      });
     });
   });
 });
