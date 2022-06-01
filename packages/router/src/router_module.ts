@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, OnDestroy, Optional, Provider, SkipSelf} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, ENVIRONMENT_INITIALIZER, Inject, inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, OnDestroy, Optional, Provider, SkipSelf} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 import {of, Subject} from 'rxjs';
 
@@ -29,6 +29,8 @@ import {UrlHandlingStrategy} from './url_handling_strategy';
 import {DefaultUrlSerializer, UrlSerializer, UrlTree} from './url_tree';
 import {flatten} from './utils/collection';
 
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
+
 /**
  * The directives defined in the `RouterModule`.
  */
@@ -40,7 +42,10 @@ const ROUTER_DIRECTIVES =
  *
  * @publicApi
  */
-export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>('ROUTER_CONFIGURATION');
+export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>('ROUTER_CONFIGURATION', {
+  providedIn: 'root',
+  factory: () => ({}),
+});
 
 /**
  * @docsNotRequired
@@ -64,7 +69,6 @@ export const ROUTER_PROVIDERS: Provider[] = [
   RouterPreloader,
   NoPreloading,
   PreloadAllModules,
-  {provide: ROUTER_CONFIGURATION, useValue: {enableTracing: false}},
   RouterConfigLoader,
 ];
 
@@ -124,6 +128,7 @@ export class RouterModule {
       ngModule: RouterModule,
       providers: [
         ROUTER_PROVIDERS,
+        NG_DEV_MODE ? (config?.enableTracing ? provideTracing() : []) : [],
         provideRoutes(routes),
         {
           provide: ROUTER_FORROOT_GUARD,
@@ -189,7 +194,7 @@ export function provideLocationStrategy(
 }
 
 export function provideForRootGuard(router: Router): any {
-  if ((typeof ngDevMode === 'undefined' || ngDevMode) && router) {
+  if (NG_DEV_MODE && router) {
     throw new Error(
         `RouterModule.forRoot() called twice. Lazy loaded modules should use RouterModule.forChild() instead.`);
   }
@@ -474,17 +479,6 @@ export function setupRouter(
 
   assignExtraOptionsToRouter(opts, router);
 
-  if ((typeof ngDevMode === 'undefined' || ngDevMode) && opts.enableTracing) {
-    router.events.subscribe((e: Event) => {
-      // tslint:disable:no-console
-      console.group?.(`Router Event: ${(<any>e.constructor).name}`);
-      console.log(stringifyEvent(e));
-      console.log(e);
-      console.groupEnd?.();
-      // tslint:enable:no-console
-    });
-  }
-
   return router;
 }
 
@@ -636,4 +630,26 @@ export function provideRouterInitializer(): ReadonlyArray<Provider> {
     {provide: ROUTER_INITIALIZER, useFactory: getBootstrapListener, deps: [RouterInitializer]},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useExisting: ROUTER_INITIALIZER},
   ];
+}
+
+function provideTracing(): Provider[] {
+  if (NG_DEV_MODE) {
+    return [{
+      provide: ENVIRONMENT_INITIALIZER,
+      multi: true,
+      useFactory: () => {
+        const router = inject(Router);
+        return () => router.events.subscribe((e: Event) => {
+          // tslint:disable:no-console
+          console.group?.(`Router Event: ${(<any>e.constructor).name}`);
+          console.log(stringifyEvent(e));
+          console.log(e);
+          console.groupEnd?.();
+          // tslint:enable:no-console
+        });
+      }
+    }];
+  } else {
+    return [];
+  }
 }
