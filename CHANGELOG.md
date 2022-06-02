@@ -1,3 +1,14 @@
+<a name="13.3.9"></a>
+# 13.3.9 "metal-plumber" (2022-06-02)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2443607fbf](https://github.com/angular/components/commit/2443607fbf0cd3fb61deb3c3452d34b7f4d6ad15) | fix | **datepicker:** page scrolling for fast keyboard repeat ([#24991](https://github.com/angular/components/pull/24991)) |
+## Special Thanks
+Kristiyan Kostadinov
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0-rc.2"></a>
 # 14.0.0-rc.2 "plastic-ball" (2022-05-31)
 ### cdk
