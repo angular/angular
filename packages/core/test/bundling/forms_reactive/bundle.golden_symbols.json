@@ -729,9 +729,6 @@
     "name": "deepForEach"
   },
   {
-    "name": "defaultErrorLogger"
-  },
-  {
     "name": "defaultIterableDiffersFactory"
   },
   {

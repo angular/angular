@@ -282,9 +282,6 @@
     "name": "createTView"
   },
   {
-    "name": "defaultErrorLogger"
-  },
-  {
     "name": "defaultIterableDiffersFactory"
   },
   {
