@@ -3,42 +3,30 @@ const fs = require('fs-extra');
 const glob = require('glob');
 const shelljs = require('shelljs');
 
-const {EXAMPLES_BASE_PATH, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH} = require("./constants");
+const {BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, EXAMPLES_BASE_PATH} = require("./constants");
 const exampleBoilerPlate = require('./example-boilerplate');
 
 describe('example-boilerplate tool', () => {
   describe('add', () => {
     const sharedDir = path.resolve(__dirname, 'shared');
-    const exampleFolders = [`${EXAMPLES_BASE_PATH}/a/b`, `${EXAMPLES_BASE_PATH}/c/d`];
+    const exampleFolder = 'a';
 
     beforeEach(() => {
-      spyOn(fs, 'ensureSymlinkSync');
-      spyOn(fs, 'existsSync').and.returnValue(true);
       spyOn(shelljs, 'exec');
       spyOn(exampleBoilerPlate, 'copyDirectoryContents');
-      spyOn(exampleBoilerPlate, 'getFoldersContaining').and.returnValue(exampleFolders);
       spyOn(exampleBoilerPlate, 'loadJsonFile').and.returnValue({});
-    });
-
-    it('should process all the example folders', () => {
-      const examplesDir = path.resolve(__dirname, '../../content/examples');
-      exampleBoilerPlate.add();
-      expect(exampleBoilerPlate.getFoldersContaining)
-          .toHaveBeenCalledWith(examplesDir, 'example-config.json', 'node_modules');
     });
 
     it('should copy all the source boilerplate files for systemjs', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
       exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'systemjs' });
 
-      exampleBoilerPlate.add();
+      exampleBoilerPlate.add(exampleFolder);
 
-      expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(4);
+      expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(2);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-        [`${boilerplateDir}/systemjs`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/a/b`, jasmine.any(Function)],
-        [`${boilerplateDir}/common`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/a/b`, jasmine.any(Function)],
-        [`${boilerplateDir}/systemjs`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/c/d`, jasmine.any(Function)],
-        [`${boilerplateDir}/common`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/c/d`, jasmine.any(Function)],
+        [`${boilerplateDir}/systemjs`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
+        [`${boilerplateDir}/common`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
       ]);
     });
 
@@ -46,14 +34,12 @@ describe('example-boilerplate tool', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
       exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'cli' });
 
-      exampleBoilerPlate.add();
+      exampleBoilerPlate.add(exampleFolder);
 
-      expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(4);
+      expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(2);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-        [`${boilerplateDir}/cli`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/a/b`, jasmine.any(Function)],
-        [`${boilerplateDir}/common`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/a/b`, jasmine.any(Function)],
-        [`${boilerplateDir}/cli`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/c/d`, jasmine.any(Function)],
-        [`${boilerplateDir}/common`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/c/d`, jasmine.any(Function)],
+        [`${boilerplateDir}/cli`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
+        [`${boilerplateDir}/common`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
       ]);
     });
 
@@ -61,14 +47,12 @@ describe('example-boilerplate tool', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
       exampleBoilerPlate.loadJsonFile.and.returnValue({});
 
-      exampleBoilerPlate.add();
+      exampleBoilerPlate.add(exampleFolder);
 
-      expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(4);
+      expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(2);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-        [`${boilerplateDir}/cli`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/a/b`, jasmine.any(Function)],
-        [`${boilerplateDir}/common`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/a/b`, jasmine.any(Function)],
-        [`${boilerplateDir}/cli`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/c/d`, jasmine.any(Function)],
-        [`${boilerplateDir}/common`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/c/d`, jasmine.any(Function)],
+        [`${boilerplateDir}/cli`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
+        [`${boilerplateDir}/common`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
       ]);
     });
 
@@ -76,16 +60,13 @@ describe('example-boilerplate tool', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
       exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'i18n' });
 
-      exampleBoilerPlate.add();
+      exampleBoilerPlate.add(exampleFolder);
 
-      expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(6);
+      expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(3);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-        [`${boilerplateDir}/cli`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/a/b`, jasmine.any(Function)],
-        [`${boilerplateDir}/i18n`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/a/b`, jasmine.any(Function)],
-        [`${boilerplateDir}/common`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/a/b`, jasmine.any(Function)],
-        [`${boilerplateDir}/cli`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/c/d`, jasmine.any(Function)],
-        [`${boilerplateDir}/i18n`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/c/d`, jasmine.any(Function)],
-        [`${boilerplateDir}/common`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/c/d`, jasmine.any(Function)],
+        [`${boilerplateDir}/cli`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
+        [`${boilerplateDir}/i18n`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
+        [`${boilerplateDir}/common`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
       ]);
     });
 
@@ -93,26 +74,23 @@ describe('example-boilerplate tool', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
       exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'universal' });
 
-      exampleBoilerPlate.add();
+      exampleBoilerPlate.add(exampleFolder);
 
-      expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(6);
+      expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(3);
       expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-        [`${boilerplateDir}/cli`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/a/b`, jasmine.any(Function)],
-        [`${boilerplateDir}/universal`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/a/b`, jasmine.any(Function)],
-        [`${boilerplateDir}/common`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/a/b`, jasmine.any(Function)],
-        [`${boilerplateDir}/cli`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/c/d`, jasmine.any(Function)],
-        [`${boilerplateDir}/universal`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/c/d`, jasmine.any(Function)],
-        [`${boilerplateDir}/common`, `${BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH}/c/d`, jasmine.any(Function)],
+        [`${boilerplateDir}/cli`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
+        [`${boilerplateDir}/universal`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
+        [`${boilerplateDir}/common`, BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH, jasmine.any(Function)],
       ]);
     });
 
-    it('should not copy boilerplate files that are match `overrideBoilerplate` in the example-config.json file', () => {
+    it('should not copy boilerplate files that match `overrideBoilerplate` in the example-config.json file', () => {
       const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
       exampleBoilerPlate.loadJsonFile.and.returnValue({
         'overrideBoilerplate': [ 'c/d' ]
       });
 
-      exampleBoilerPlate.add();
+      exampleBoilerPlate.add(exampleFolder);
 
       const isPathIgnored = exampleBoilerPlate.copyDirectoryContents.calls.first().args[2];
       expect(isPathIgnored(`${boilerplateDir}/cli/a/b`)).toBe(false);
@@ -120,64 +98,9 @@ describe('example-boilerplate tool', () => {
     });
 
     it('should try to load the example config file', () => {
-      exampleBoilerPlate.add();
-      expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledTimes(exampleFolders.length);
-      expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledWith(path.resolve(`${EXAMPLES_BASE_PATH}/a/b/example-config.json`));
-      expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledWith(path.resolve(`${EXAMPLES_BASE_PATH}/c/d/example-config.json`));
-    });
-  });
-
-  describe('remove', () => {
-    it('should run `git clean`', () => {
-      spyOn(shelljs, 'exec');
-      exampleBoilerPlate.remove();
-      expect(shelljs.exec).toHaveBeenCalledWith('git clean -xdfq', {cwd: path.resolve(__dirname, '../../content/examples') });
-    });
-  });
-
-  describe('listOverrides', () => {
-    const exampleFolders = [`${EXAMPLES_BASE_PATH}/a/b`, `${EXAMPLES_BASE_PATH}/c/d`, `${EXAMPLES_BASE_PATH}/e/f`];
-    beforeEach(() => {
-      spyOn(exampleBoilerPlate, 'getFoldersContaining').and.returnValue(exampleFolders);
-      spyOn(console, 'log');
-    });
-
-    it('should list all files that are overridden in examples', () => {
-      spyOn(exampleBoilerPlate, 'loadJsonFile').and.returnValues(
-        {"overrideBoilerplate": ["angular.json", "tsconfig.json"]}, // a/b/example-config.json
-        {"overrideBoilerplate": []}, // c/d/example-config.json
-        {}, // e/f/example-config.json
-      );
-      exampleBoilerPlate.listOverrides();
-      expect(exampleBoilerPlate.getFoldersContaining)
-          .toHaveBeenCalledWith(EXAMPLES_BASE_PATH, 'example-config.json', 'node_modules');
-      expect(console.log).toHaveBeenCalledWith('Boilerplate files that have been overridden in examples:');
-      expect(console.log).toHaveBeenCalledWith(' - a/b/angular.json');
-      expect(console.log).toHaveBeenCalledWith(' - a/b/tsconfig.json');
-      expect(console.log).toHaveBeenCalledWith(`(All these paths are relative to ${EXAMPLES_BASE_PATH}.)`);
-      expect(console.log).toHaveBeenCalledWith('If you are updating the boilerplate files then also consider updating these too.');
-    });
-
-    it('should display a helpful message if there are no overridden files', () => {
-      spyOn(exampleBoilerPlate, 'loadJsonFile').and.returnValues(
-        {"overrideBoilerplate": null}, // a/b/example-config.json
-        {"overrideBoilerplate": []}, // c/d/example-config.json
-        {}, // e/f/example-config.json
-      );
-      exampleBoilerPlate.listOverrides();
-      expect(exampleBoilerPlate.getFoldersContaining)
-          .toHaveBeenCalledWith(EXAMPLES_BASE_PATH, 'example-config.json', 'node_modules');
-      expect(console.log).toHaveBeenCalledWith('No boilerplate files have been overridden in examples.');
-      expect(console.log).toHaveBeenCalledWith('You are safe to update the boilerplate files.');
-    });
-  });
-
-  describe('getFoldersContaining', () => {
-    it('should use glob.sync', () => {
-      spyOn(glob, 'sync').and.returnValue(['a/b/config.json', 'c/d/config.json']);
-      const result = exampleBoilerPlate.getFoldersContaining('base/path', 'config.json', 'node_modules');
-      expect(glob.sync).toHaveBeenCalledWith(path.resolve('base/path/**/config.json'), { ignore: [path.resolve('base/path/**/node_modules/**')] });
-      expect(result).toEqual(['a/b', 'c/d']);
+      exampleBoilerPlate.add(exampleFolder);
+      expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledTimes(1);
+      expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledWith(path.resolve(`${exampleFolder}/example-config.json`));
     });
   });
 
@@ -330,6 +253,53 @@ describe('example-boilerplate tool', () => {
 
         // Skip `sub-dir-1` and all its contents.
       ]);
+    });
+  });
+
+  describe('listOverrides', () => {
+    const examplesDir = EXAMPLES_BASE_PATH;
+    const exampleFolders = [`${examplesDir}/a/b`, `${examplesDir}/c/d`, `${examplesDir}/e/f`];
+    beforeEach(() => {
+      spyOn(exampleBoilerPlate, 'getFoldersContaining').and.returnValue(exampleFolders);
+      spyOn(console, 'log');
+    });
+
+    it('should list all files that are overridden in examples', () => {
+      spyOn(exampleBoilerPlate, 'loadJsonFile').and.returnValues(
+        {"overrideBoilerplate": ["angular.json", "tsconfig.json"]}, // a/b/example-config.json
+        {"overrideBoilerplate": []}, // c/d/example-config.json
+        {}, // e/f/example-config.json
+      );
+      exampleBoilerPlate.listOverrides();
+      expect(exampleBoilerPlate.getFoldersContaining)
+          .toHaveBeenCalledWith(examplesDir, 'example-config.json', 'node_modules');
+      expect(console.log).toHaveBeenCalledWith('Boilerplate files that have been overridden in examples:');
+      expect(console.log).toHaveBeenCalledWith(' - a/b/angular.json');
+      expect(console.log).toHaveBeenCalledWith(' - a/b/tsconfig.json');
+      expect(console.log).toHaveBeenCalledWith(`(All these paths are relative to ${examplesDir}.)`);
+      expect(console.log).toHaveBeenCalledWith('If you are updating the boilerplate files then also consider updating these too.');
+    });
+
+    it('should display a helpful message if there are no overridden files', () => {
+      spyOn(exampleBoilerPlate, 'loadJsonFile').and.returnValues(
+        {"overrideBoilerplate": null}, // a/b/example-config.json
+        {"overrideBoilerplate": []}, // c/d/example-config.json
+        {}, // e/f/example-config.json
+      );
+      exampleBoilerPlate.listOverrides();
+      expect(exampleBoilerPlate.getFoldersContaining)
+          .toHaveBeenCalledWith(examplesDir, 'example-config.json', 'node_modules');
+      expect(console.log).toHaveBeenCalledWith('No boilerplate files have been overridden in examples.');
+      expect(console.log).toHaveBeenCalledWith('You are safe to update the boilerplate files.');
+    });
+  });
+
+  describe('getFoldersContaining', () => {
+    it('should use glob.sync', () => {
+      spyOn(glob, 'sync').and.returnValue(['a/b/config.json', 'c/d/config.json']);
+      const result = exampleBoilerPlate.getFoldersContaining('base/path', 'config.json', 'node_modules');
+      expect(glob.sync).toHaveBeenCalledWith(path.resolve('base/path/**/config.json'), { ignore: [path.resolve('base/path/**/node_modules/**')] });
+      expect(result).toEqual(['a/b', 'c/d']);
     });
   });
 

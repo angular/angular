@@ -70,7 +70,6 @@ The file is expected to contain a JSON object with zero or more of the following
   Default: `true`
 - `"overrideBoilerplate": string[]`: A list of paths to boilerplate files that are overridden by custom files in this example.
   Commonly this is used when a boilerplate file is referenced in a guide and so needs to have doc-regions added.
-  When adding such overrides, ensure that the file is "unignored" by adding an appropriate negation pattern to the `content/examples/.gitignore` file.
 
 **SystemJS-only properties:**
 - `build: string`: The npm script to run in order to build the example app.
