@@ -1,3 +1,158 @@
+<a name="14.0.0"></a>
+# 14.0.0 "cotton-peanut" (2022-06-02)
+## Breaking Changes
+### cdk
+- The deprecated `angular/cdk/testing/protractor` entry-point has been removed.
+### material
+- `MatChipInputEvent.chipInput` is now a required property.
+- Previously the `mixinErrorState` mixin function defined
+  a class member for `stateChanges`. This is no longer the case, and consumers
+  need to provide the `stateChanges` class member themselves.
+- * `mat-list-item-avatar` CSS class has been renamed to `mat-list-item-with-avatar`.
+  * `MatSelectionListChange.option` has been removed. Use `MatSelectionListChange.options` instead.
+  * `MatSelectionList.tabIndex` input has been removed.
+  * `tabIndex` parameter of the `MatSelectionList` constructor has been removed.
+  * `_focusMonitor` parameter of the `MatSelectionList` constructor is now required.
+  * `getHarnessLoaderForContent` has been removed from the various test item harnesses. Use `getChildLoader(MatListItemSection.CONTENT)` instead.
+- * `CdkStepper._orientation` has been removed. Use `CdkStepper.orientation` instead.
+  * The `_document` parameter from the `CdkStepper` constructor has been removed.
+  * The `_document` parameter from the `MatStepper` constructor has been removed.
+  * `MatVerticalStepper` has been removed. Use `MatStepper` instead.
+  * `MatHorizontalStepper` has been removed. Use `MatStepper` instead.
+## Deprecations
+### material
+- `mat.define-dark-theme` no longer accepts `$primary`, `$accent` and `$warn`.
+    Pass a single config map instead.
+- `mat.define-light-theme` no longer accepts `$primary`, `$accent` and `$warn`.
+    Pass a single config map instead.
+- Custom Material themes should no longer access `primary`, `accent`, `warn`,
+    `is-dark`, `foreground` and `background` from the theme map, but instead use the actual `color`
+    configuration (`mat.get-color-config($theme)`).
+- Passing a color configuration directly to a `-theme` mixin
+    is not supported. Pass the theme container object instead or use the dedicated
+    `-color` mixins.
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7d0bca7bd3](https://github.com/angular/components/commit/7d0bca7bd39e97ff6b033f97d05a811dfdac25db) | feat | **a11y:** add input to control the duration of the aria live directive ([#15275](https://github.com/angular/components/pull/15275)) |
+| [feaf50b43a](https://github.com/angular/components/commit/feaf50b43a9debfbd6dfe8949ff69cce7853b455) | feat | **a11y:** HighContrastModeDetector need not support `IE11` ([#24462](https://github.com/angular/components/pull/24462)) |
+| [c6a1d1519e](https://github.com/angular/components/commit/c6a1d1519e1cf6677c161d8794b6af108fa996ed) | feat | **dialog:** move experimental CDK dialog into stable ([#24804](https://github.com/angular/components/pull/24804)) |
+| [49c1921316](https://github.com/angular/components/commit/49c1921316282c561adb6694b699cd3c6ab0e5ac) | feat | **drag-drop:** adding method to set drag position ([#24769](https://github.com/angular/components/pull/24769)) |
+| [ca6b9fa209](https://github.com/angular/components/commit/ca6b9fa209ee3233c506a23943d0c5dacd2ac2dc) | feat | **drag-drop:** expose native event objects in custom events ([#17077](https://github.com/angular/components/pull/17077)) |
+| [653457eaf4](https://github.com/angular/components/commit/653457eaf48faab99227f37bc2fe104d9f308787) | feat | **menu:** move experimental CDK menu into stable ([#24826](https://github.com/angular/components/pull/24826)) |
+| [c296084073](https://github.com/angular/components/commit/c296084073bfbb35aac21063afa85ae69527b0b6) | feat | **overlay:** add start and end positions to GlobalPositionStrategy ([#12007](https://github.com/angular/components/pull/12007)) |
+| [f91b98fff3](https://github.com/angular/components/commit/f91b98fff3beff70b2537f8b3da635518ef403ef) | feat | **portal:** allow specifying injector for template portal ([#24554](https://github.com/angular/components/pull/24554)) |
+| [508b7ac460](https://github.com/angular/components/commit/508b7ac460be647a0479421864bcb00e74d60094) | feat | **table:** allow text column to be centered ([#24133](https://github.com/angular/components/pull/24133)) |
+| [64606fa65b](https://github.com/angular/components/commit/64606fa65bd0d307a87d8a64b7db0da90105102c) | feat | **testing:** add methods `getOptionalHarness` and `hasHarness` ([#24355](https://github.com/angular/components/pull/24355)) |
+| [4edfaedcaf](https://github.com/angular/components/commit/4edfaedcaf982e10bc41699abb932c4a8ab4941b) | fix | **a11y:** ensure that aria describer ID is unique ([#24982](https://github.com/angular/components/pull/24982)) |
+| [f342375e29](https://github.com/angular/components/commit/f342375e295e57b966964880e71e734d674c0bf2) | fix | **dialog:** add container structural styles ([#24905](https://github.com/angular/components/pull/24905)) |
+| [8946ce2b8f](https://github.com/angular/components/commit/8946ce2b8f4faa256e25d16048c3871560b808a0) | fix | **menu:** allow scrolling while menu is open |
+| [3d4b339961](https://github.com/angular/components/commit/3d4b339961c8fc9d1f0f1a69b4c3bd72c68fe268) | fix | **menu:** update docs to reflect current implementation and add ([#24884](https://github.com/angular/components/pull/24884)) |
+| [f8dadb3246](https://github.com/angular/components/commit/f8dadb3246c778a3916db72ead9033ebb32bc814) | fix | **overlay:** disable backdrop animation when noop animations are enabled ([#24687](https://github.com/angular/components/pull/24687)) |
+| [3a7ee5ad01](https://github.com/angular/components/commit/3a7ee5ad01cbc3e6e58667bfc271031e93624cbe) | fix | **schematics:** remove instanceof check since it was always false when checking if a directory exists ([#24999](https://github.com/angular/components/pull/24999)) |
+| [84ff8d806a](https://github.com/angular/components/commit/84ff8d806a0224eedad4ba4ef7ed048c6d20f336) | fix | **schematics:** use `workingDirectory` smart provider in path option |
+| [ee452de497](https://github.com/angular/components/commit/ee452de497098a3aa2ce10041d5249abe1fcecff) | perf | **a11y:** avoid triggering change detection if there are no subscribers to stream ([#15077](https://github.com/angular/components/pull/15077)) |
+| [2575b00808](https://github.com/angular/components/commit/2575b008083f4736ed48877604b0165c03bd9175) | refactor | **testing:** remove deprecated protractor harness environment ([#24304](https://github.com/angular/components/pull/24304)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [00cf4a2f26](https://github.com/angular/components/commit/00cf4a2f269ece56b0f0e14520019cca642d5f2f) | feat | **autocomplete:** add clear method to test harness ([#24752](https://github.com/angular/components/pull/24752)) |
+| [b90d9420fa](https://github.com/angular/components/commit/b90d9420fa65671f1cebe6feb094099b85547bbd) | feat | **autocomplete:** add the ability to auto-select the active option while navigating ([#20699](https://github.com/angular/components/pull/20699)) |
+| [60bbd194b3](https://github.com/angular/components/commit/60bbd194b3fdd957f73994d7c44d509cb68c6ea5) | feat | **autocomplete:** test harness should throw when options are requested but panel is closed ([#24494](https://github.com/angular/components/pull/24494)) |
+| [06e65c6b5d](https://github.com/angular/components/commit/06e65c6b5d1f7886653d280e97a87c8af57c30e8) | feat | **chips:** update chip-list describedby to match input ([#24292](https://github.com/angular/components/pull/24292)) |
+| [5a8ebb1da1](https://github.com/angular/components/commit/5a8ebb1da12343d4dcb7c37160356fec744c2ba3) | feat | **dialog:** add support for explicit injector ([#24580](https://github.com/angular/components/pull/24580)) |
+| [8ef3125285](https://github.com/angular/components/commit/8ef3125285b3e5a4eb0b0f2974acaf3873e5eead) | feat | **dialog:** add the ability to control the animation duration ([#13466](https://github.com/angular/components/pull/13466)) |
+| [9946bb34bb](https://github.com/angular/components/commit/9946bb34bb76328ad104c520aa8021784a1c48bb) | feat | **form-field:** add color to default options ([#24438](https://github.com/angular/components/pull/24438)) ([#24440](https://github.com/angular/components/pull/24440)) |
+| [426afa07e1](https://github.com/angular/components/commit/426afa07e1112e7dbf7b62f063d56a43b92ace28) | feat | **icon:** add default options ([#23638](https://github.com/angular/components/pull/23638)) |
+| [6c7cc8ae87](https://github.com/angular/components/commit/6c7cc8ae87ce4a4ae4ba3447fdca5f34c2e5b503) | feat | **icon:** allow multiple classes in setDefaultFontSetClass ([#10484](https://github.com/angular/components/pull/10484)) |
+| [856c01639f](https://github.com/angular/components/commit/856c01639fbf968cb33885807ffaf6d3f3bf5423) | feat | **menu:** allow for menu to be conditionally removed from trigger ([#24437](https://github.com/angular/components/pull/24437)) |
+| [a55a8368b3](https://github.com/angular/components/commit/a55a8368b30cf8e9ba787ad3530a8c9b66182d7b) | feat | **paginator:** Add `isNextPageEnabled` and `isPreviousPageEnabled` methods to `MatPaginatorHarness` ([#24784](https://github.com/angular/components/pull/24784)) |
+| [5fc655b4a0](https://github.com/angular/components/commit/5fc655b4a0e7fbb5ead46ab2d7453dd24779bd1e) | feat | **paginator:** add input for configuring the underlying select ([#13705](https://github.com/angular/components/pull/13705)) |
+| [ca1aaae7e2](https://github.com/angular/components/commit/ca1aaae7e2a700442e8c651468cb07d63397bbd2) | feat | **progress-spinner:** add color to default options ([#24356](https://github.com/angular/components/pull/24356)) |
+| [38334d6bc8](https://github.com/angular/components/commit/38334d6bc85bdc7935af04c24d9e085c7bcab780) | feat | **schematics:** add option not to include animations module in ng-add ([#22559](https://github.com/angular/components/pull/22559)) |
+| [1aa5a20647](https://github.com/angular/components/commit/1aa5a206472f523a1ae189acc77a5abe15d71d5e) | feat | **select:** allow user-defined aria-describedby ([#24644](https://github.com/angular/components/pull/24644)) |
+| [5846195007](https://github.com/angular/components/commit/5846195007b44a7ddd61155a225132802848e101) | feat | **slide-toggle:** Add `disabled` predicate to MatSlideToggleHarness ([#24761](https://github.com/angular/components/pull/24761)) |
+| [0d162a4132](https://github.com/angular/components/commit/0d162a413202fc7ed309aca748bf138845a1ba68) | feat | **sort:** default arrow position in MatSortDefaultOptions ([#23609](https://github.com/angular/components/pull/23609)) |
+| [cc6112298d](https://github.com/angular/components/commit/cc6112298d85ae40164717a5ec267a3128a0c10e) | feat | **stepper:** add input for controlling the animation duration ([#17133](https://github.com/angular/components/pull/17133)) |
+| [fc5f8b0266](https://github.com/angular/components/commit/fc5f8b0266c299af981fe8198981ef1cac87df49) | feat | **stepper:** add the ability to control the position of the header in a horizontal stepper ([#15509](https://github.com/angular/components/pull/15509)) |
+| [c3188c84ef](https://github.com/angular/components/commit/c3188c84ef140f0f9e3366516d9004b46ed8da71) | feat | **tabs:** add the ability to keep content inside the DOM while off-screen ([#20393](https://github.com/angular/components/pull/20393)) |
+| [cad0872208](https://github.com/angular/components/commit/cad087220848b2cd2c252520bac26a42d8b279aa) | feat | **tabs:** add the ability to keep content inside the DOM while off-screen ([#24299](https://github.com/angular/components/pull/24299)) |
+| [f42fee0de7](https://github.com/angular/components/commit/f42fee0de7b7f97fd17cb2bdc1eb99b1e4ad4756) | feat | **tabs:** Throw error in MDC tabs if [tabPanel] input is not provided ([#24517](https://github.com/angular/components/pull/24517)) |
+| [cb206be37d](https://github.com/angular/components/commit/cb206be37dc989cb79ca716ae514768b823ee45c) | fix | **autocomplete:** always emit closed event ([#24642](https://github.com/angular/components/pull/24642)) |
+| [0b52561840](https://github.com/angular/components/commit/0b52561840325929c81a59d78bbd01d0f26cdb24) | fix | **card:** use more specific selector for divider override ([#23531](https://github.com/angular/components/pull/23531)) |
+| [47517b65e0](https://github.com/angular/components/commit/47517b65e0501fd85fcb1bf97c92ebb1185cc304) | fix | **card:** use more specific selector for divider override ([#23531](https://github.com/angular/components/pull/23531)) |
+| [f05e65a02b](https://github.com/angular/components/commit/f05e65a02b636d7c3d4e181f65ac0d7e94e091fd) | fix | **chips:** allow for role to be overwritten on chip list and chip ([#15794](https://github.com/angular/components/pull/15794)) |
+| [d67dad6b1b](https://github.com/angular/components/commit/d67dad6b1b77692a15762bcbdbd5e9ea94f1a34e) | fix | **chips:** Make `MatChipInputEvent.chipInput` required. ([#23692](https://github.com/angular/components/pull/23692)) |
+| [de63e29be4](https://github.com/angular/components/commit/de63e29be45e4c7829c963dd6e78ed68e52475a9) | fix | **core:** noop animations not applying to selector lists ([#24904](https://github.com/angular/components/pull/24904)) |
+| [dbb6dc09b4](https://github.com/angular/components/commit/dbb6dc09b452c126ddf612c1731595615e505e27) | fix | **core:** resolve memory leak by removing event listeners from the ripple element ([#24663](https://github.com/angular/components/pull/24663)) |
+| [e03a77065d](https://github.com/angular/components/commit/e03a77065d81c5af62b60f351aa11a1444cad7bc) | fix | **core:** ripples not being clipped on safari in shadow dom ([#24029](https://github.com/angular/components/pull/24029)) |
+| [e86be88125](https://github.com/angular/components/commit/e86be8812551551d0711a7621d7b5bb840c58845) | fix | **core:** ripples persisting when container is removed from DOM while fading-in ([#24482](https://github.com/angular/components/pull/24482)) |
+| [7e67602799](https://github.com/angular/components/commit/7e67602799d97a3a0159d5c0e84d69a66eaf31af) | fix | **datepicker:** expose `datepicker-date-range-colors` mixin |
+| [5603d9b7f1](https://github.com/angular/components/commit/5603d9b7f1f9f3987d7a5a98e95156b47e293881) | fix | **datepicker:** fix failing unit test in multiyear view ([#24418](https://github.com/angular/components/pull/24418)) |
+| [15774a9235](https://github.com/angular/components/commit/15774a9235f933a61b9db86b682977b70fe69ec8) | fix | **datepicker:** update active date on focusing a cell ([#24384](https://github.com/angular/components/pull/24384)) |
+| [f16548462e](https://github.com/angular/components/commit/f16548462eb2949d10df4370277513dcf8519eba) | fix | **dialog:** provide defaults for dialog animation ([#24591](https://github.com/angular/components/pull/24591)) |
+| [599d1b445f](https://github.com/angular/components/commit/599d1b445f21fad2cec6a95bec824a409d55bb80) | fix | **dialog:** Use `align` as `@Input()` in `MatDialogActions` ([#24328](https://github.com/angular/components/pull/24328)) |
+| [575332c929](https://github.com/angular/components/commit/575332c9296c28776376f4b4f7fb39c9743761aa) | fix | **dialog:** use quoted keys in the animation state object ([#24594](https://github.com/angular/components/pull/24594)) |
+| [64c2d311b4](https://github.com/angular/components/commit/64c2d311b43a29dc1495ff294c65dfe8ef0e0ffb) | fix | **expansion:** picking up lazy content from child component ([#14477](https://github.com/angular/components/pull/14477)) |
+| [025a534483](https://github.com/angular/components/commit/025a53448342fbda9c2e57819026bafc5ca6f8c9) | fix | **icon:** clip overflowing icon elements ([#12429](https://github.com/angular/components/pull/12429)) |
+| [6b2b51844a](https://github.com/angular/components/commit/6b2b51844a9c86add1bd6628d5ec8a621e606073) | fix | **input:** preserve native placeholder on non-legacy appearances ([#20936](https://github.com/angular/components/pull/20936)) |
+| [44293522e9](https://github.com/angular/components/commit/44293522e98bbd975e5fba2551421af32631f2de) | fix | **menu:** account for menu padding different from the default ([#16169](https://github.com/angular/components/pull/16169)) |
+| [0a465281f6](https://github.com/angular/components/commit/0a465281f62a4cf740f788fdd864b946c3a13be1) | fix | **menu:** use narrower value for aria-haspopup on trigger element ([#15219](https://github.com/angular/components/pull/15219)) |
+| [ff12d09c1d](https://github.com/angular/components/commit/ff12d09c1d7049bb18acdb515204bc0efc9ed7f2) | fix | **schematics:** remove usages of deprecated defaultProject option ([#24641](https://github.com/angular/components/pull/24641)) |
+| [ee23ac2aa0](https://github.com/angular/components/commit/ee23ac2aa00d78d31f0dbf0ad04abb0dc3ba3a3d) | fix | **schematics:** support standalone components in ng-add ([#24931](https://github.com/angular/components/pull/24931)) |
+| [faed61cc7d](https://github.com/angular/components/commit/faed61cc7d1d4c310bb43ed4b41eb0ada6b23030) | fix | **schematics:** use `workingDirectory` smart provider in path option |
+| [8dfbbed549](https://github.com/angular/components/commit/8dfbbed549621546d72dda341aa268cbb44fed97) | fix | **table:** accessibility improvements on table examples |
+| [e917541cb5](https://github.com/angular/components/commit/e917541cb53f492bf75e31d8376132e0aba4ea58) | fix | **tabs:** allow coercing of booleans for all inputs ([#24377](https://github.com/angular/components/pull/24377)) |
+| [f30609c925](https://github.com/angular/components/commit/f30609c9259ec5b2cabf52abaa051cac6fbe0bc5) | refactor | **core:** deprecate legacy theming API ([#24835](https://github.com/angular/components/pull/24835)) |
+| [bab3b989f9](https://github.com/angular/components/commit/bab3b989f9265c0798bdacee4d931828497ee3bc) | refactor | **core:** no longer define `stateChanges` in `mixinErrorState` ([#22875](https://github.com/angular/components/pull/22875)) |
+| [2fc6b9281d](https://github.com/angular/components/commit/2fc6b9281dfaebe78b76b46831830d723b7d2c97) | refactor | **list:** remove deprecated APIs for version 13 ([#23327](https://github.com/angular/components/pull/23327)) |
+| [db126b5797](https://github.com/angular/components/commit/db126b579760263ea8de30689c54c4d32fa2137a) | refactor | **stepper:** remove deprecated APIs for version 13 ([#23328](https://github.com/angular/components/pull/23328)) |
+### google-maps
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9f27303aad](https://github.com/angular/components/commit/9f27303aadf972e7b2fb7763a5c71a425eeb15ab) | fix | error when minified through closure ([#24897](https://github.com/angular/components/pull/24897)) |
+### cdk-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c176670ce3](https://github.com/angular/components/commit/c176670ce39a158dc394709157a7e203d7dfdb5e) | feat | **combobox:** glue together combobox and listbox with DI instead of a panel directive ([#24637](https://github.com/angular/components/pull/24637)) |
+| [4cc6b04a25](https://github.com/angular/components/commit/4cc6b04a25901a99c3c86abdad7c834c7fd2ad21) | feat | **menu:** allow configuration of typeahead and menu position ([#24600](https://github.com/angular/components/pull/24600)) |
+| [dc020c7ac2](https://github.com/angular/components/commit/dc020c7ac238307b45e586bebbbd765f3b652b97) | feat | **menu:** Use DI instead of CdkMenuPanel to connect menus ([#24558](https://github.com/angular/components/pull/24558)) |
+| [b8ccf036cb](https://github.com/angular/components/commit/b8ccf036cb1d97302f84c831a44a2a4c7e98274f) | fix | **menu:** API, code, and docs cleanup pass ([#24745](https://github.com/angular/components/pull/24745)) |
+| [f384cb52cd](https://github.com/angular/components/commit/f384cb52cda9e528c505466062d4671fa3757e4e) | fix | **menu:** close standalone menu when focus leaves |
+| [9531b68a5c](https://github.com/angular/components/commit/9531b68a5cfe2ed9eb58b15c70d7be8d7bf195b1) | fix | **menu:** don't steal focus on hover |
+| [b4b8b202c0](https://github.com/angular/components/commit/b4b8b202c0f7dca2e6efb409235b18e5a2205d47) | fix | **menu:** fix issue where left/right on standalone menu closes it ([#24696](https://github.com/angular/components/pull/24696)) |
+| [79b2337949](https://github.com/angular/components/commit/79b2337949a8c0893858fba3740b3adfbb49c158) | fix | **menu:** move shared menu logic to base class ([#24645](https://github.com/angular/components/pull/24645)) |
+| [c8eb797711](https://github.com/angular/components/commit/c8eb79771127660648f20e8072a3b062616fe37f) | fix | **menu:** refocus trigger after closeAll |
+| [26e6c1fd2e](https://github.com/angular/components/commit/26e6c1fd2e0af36d11f83c4d95ce3abd991458e3) | fix | **menu:** simplify radio and checkbox item APIs ([#24720](https://github.com/angular/components/pull/24720)) |
+| [5d1d36c453](https://github.com/angular/components/commit/5d1d36c453808dec3cb90a2d638d123df19d4624) | fix | **menu:** stop inline menu triggers capturing focus |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [353a5482e3](https://github.com/angular/components/commit/353a5482e3811b8d684669973bfa02b4ac2ca0f6) | feat | **mdc-dialog:** switch to new theming api ([#23620](https://github.com/angular/components/pull/23620)) |
+| [0163ad2697](https://github.com/angular/components/commit/0163ad2697567652cbaa5d004767527ab803f20c) | feat | **mdc-dialog:** switch to new theming api ([#23620](https://github.com/angular/components/pull/23620)) ([#24521](https://github.com/angular/components/pull/24521)) |
+| [3e1080931e](https://github.com/angular/components/commit/3e1080931e62226874e1253528f35878b3228af9) | feat | **mdc-list:** add support for marking the act… ([#24433](https://github.com/angular/components/pull/24433)) |
+| [1b7d47cfed](https://github.com/angular/components/commit/1b7d47cfedb4b00570bcd1f7069f4f6d4f1b3afd) | feat | **mdc-tabs:** default to stretched tabs ([#23406](https://github.com/angular/components/pull/23406)) |
+| [c3bb3a9e5b](https://github.com/angular/components/commit/c3bb3a9e5b16485ad3a6263bed0e9aa7ff45dca1) | fix | **mdc-core:** avoid style conflicts between MDC list and MDC option |
+| [f6310fbcf6](https://github.com/angular/components/commit/f6310fbcf66c0f88c5f47c61f264c76f93301ca9) | fix | **mdc-dialog:** expose `dialog-legacy-padding` mixin |
+| [3a94415b28](https://github.com/angular/components/commit/3a94415b286ea220912f301000535cbf102112df) | fix | **mdc-dialog:** implement delayFocusTrap option ([#24727](https://github.com/angular/components/pull/24727)) |
+| [94ec04156c](https://github.com/angular/components/commit/94ec04156c1330f5c063b5e2ecb7fcaff65736ab) | fix | **mdc-dialog:** reduce amount of generated CSS |
+| [b3c957941a](https://github.com/angular/components/commit/b3c957941a14555eb7adaeb10af3db4f80c0e10a) | fix | **mdc-form-field:** incorrect alignment with border-box alignment ([#24222](https://github.com/angular/components/pull/24222)) |
+| [766a01e4ef](https://github.com/angular/components/commit/766a01e4efb52e51936d932c43e7a3e0a73660c8) | fix | **mdc-list:** avoid style conflicts with MDC list |
+| [02d6e7d77a](https://github.com/angular/components/commit/02d6e7d77ae77feae7d52c929b0dff74f6624c1a) | fix | **mdc-tabs:** CSS applied to wrong element when preserveContent is enabled ([#24346](https://github.com/angular/components/pull/24346)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ea081feabf](https://github.com/angular/components/commit/ea081feabfc30e8be9c520099ab58a5f04c7859a) | feat | Add a harness filter option for checked checkboxes, radios, and slide-toggles ([#24625](https://github.com/angular/components/pull/24625)) |
+| [00f68c28e5](https://github.com/angular/components/commit/00f68c28e571612d154b68baaa6f4a1e81831f10) | fix | enable easy extension of harnesses ([#24878](https://github.com/angular/components/pull/24878)) |
+### ripple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [65fb5f4491](https://github.com/angular/components/commit/65fb5f44911b3839c1f40ab87cf380381e030434) | fix | not fading out on touch devices ([#12488](https://github.com/angular/components/pull/12488)) |
+## Special Thanks
+Alan Agius, Amy Sorto, Andrew Seguin, Arthur Ming, Artur Androsovych, Diego Bonura, Jean-Philippe, Jeremy Elbourn, Jeri Peier, Joey Perrott, Kristiyan Kostadinov, Mario Härtwig, Martin Forstner, Miles Malerba, Paul Gschwendtner, Richie Foreman, Robin (Robert) Thomas, Ruslan Lekhman, Victor Vieira, Wagner Maciel, Zach Arend, Zack Elliott, dobrevad, peinearydevelopment, renovate[bot] and tomicarsk6
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="13.3.9"></a>
 # 13.3.9 "metal-plumber" (2022-06-02)
 ### material
@@ -6,46 +161,6 @@
 | [2443607fbf](https://github.com/angular/components/commit/2443607fbf0cd3fb61deb3c3452d34b7f4d6ad15) | fix | **datepicker:** page scrolling for fast keyboard repeat ([#24991](https://github.com/angular/components/pull/24991)) |
 ## Special Thanks
 Kristiyan Kostadinov
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.0.0-rc.2"></a>
-# 14.0.0-rc.2 "plastic-ball" (2022-05-31)
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4edfaedcaf](https://github.com/angular/components/commit/4edfaedcaf982e10bc41699abb932c4a8ab4941b) | fix | **a11y:** ensure that aria describer ID is unique ([#24982](https://github.com/angular/components/pull/24982)) |
-| [84ff8d806a](https://github.com/angular/components/commit/84ff8d806a0224eedad4ba4ef7ed048c6d20f336) | fix | **schematics:** use `workingDirectory` smart provider in path option |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [faed61cc7d](https://github.com/angular/components/commit/faed61cc7d1d4c310bb43ed4b41eb0ada6b23030) | fix | **schematics:** use `workingDirectory` smart provider in path option |
-## Special Thanks
-Alan Agius, Kristiyan Kostadinov, Paul Gschwendtner and renovate[bot]
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.0.0-rc.1"></a>
-# 14.0.0-rc.1 "sapphire-screwdriver" (2022-05-25)
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [3d4b33996](https://github.com/angular/components/commit/3d4b339961c8fc9d1f0f1a69b4c3bd72c68fe268) | fix | **menu:** update docs to reflect current implementation and add ([#24884](https://github.com/angular/components/pull/24884)) |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ee23ac2aa](https://github.com/angular/components/commit/ee23ac2aa00d78d31f0dbf0ad04abb0dc3ba3a3d) | fix | **schematics:** support standalone components in ng-add ([#24931](https://github.com/angular/components/pull/24931)) |
-| [2deaab862](https://github.com/angular/components/commit/2deaab86227c696c3f51f6888fb57bc17a83e7ca) | fix | **tabs:** ensure the ink bar realigns when the tab header items have changed in dimensions ([#24885](https://github.com/angular/components/pull/24885)) |
-### material-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [24883d6f6](https://github.com/angular/components/commit/24883d6f615f2415871d3c4dd15fb1288ac7b33e) | fix | **mdc-checkbox:** Use cursor:pointer for label ([#24927](https://github.com/angular/components/pull/24927)) |
-### multiple
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2d395fb0f](https://github.com/angular/components/commit/2d395fb0f6eaaf70d61d5effd1adf4c863572783) | fix | fix focus and hover styles for mdc-checkbox and mdc-radio ([#24930](https://github.com/angular/components/pull/24930)) |
-## Special Thanks
-Arthur Ming, Jeremy Elbourn, Joey Perrott, Kristiyan Kostadinov, Miles Malerba, Vaughan Hilts and renovate[bot]
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -69,32 +184,6 @@ Joey Perrott, Miles Malerba, Vaughan Hilts and Wagner Maciel
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="14.0.0-rc.0"></a>
-# 14.0.0-rc.0 "metal-mango" (2022-05-11)
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [f342375e29](https://github.com/angular/components/commit/f342375e295e57b966964880e71e734d674c0bf2) | fix | **dialog:** add container structural styles ([#24905](https://github.com/angular/components/pull/24905)) |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [de63e29be4](https://github.com/angular/components/commit/de63e29be45e4c7829c963dd6e78ed68e52475a9) | fix | **core:** noop animations not applying to selector lists ([#24904](https://github.com/angular/components/pull/24904)) |
-| [cf6ddb8d5a](https://github.com/angular/components/commit/cf6ddb8d5a439050d8f8123575b12b9f14ab9609) | fix | **datepicker:** add ability to have numeric zero value in input ([#24813](https://github.com/angular/components/pull/24813)) |
-| [020468dddf](https://github.com/angular/components/commit/020468dddff9715b030a9c42f116b3eda77ff4ef) | fix | **expansion:** inconsistent spacing for anchor buttons ([#24882](https://github.com/angular/components/pull/24882)) |
-| [ba81d87355](https://github.com/angular/components/commit/ba81d873554ff2176bb106c5d4402f6d935480c4) | fix | **menu:** focus the first item when opening menu on iOS VoiceOver ([#24733](https://github.com/angular/components/pull/24733)) |
-### google-maps
-| Commit | Type | Description |
-| -- | -- | -- |
-| [9f27303aad](https://github.com/angular/components/commit/9f27303aadf972e7b2fb7763a5c71a425eeb15ab) | fix | error when minified through closure ([#24897](https://github.com/angular/components/pull/24897)) |
-### multiple
-| Commit | Type | Description |
-| -- | -- | -- |
-| [00f68c28e5](https://github.com/angular/components/commit/00f68c28e571612d154b68baaa6f4a1e81831f10) | fix | enable easy extension of harnesses ([#24878](https://github.com/angular/components/pull/24878)) |
-## Special Thanks
-Dmytro Prokhorov, Kristiyan Kostadinov, Paul Gschwendtner, Zach Arend, dobrevad and renovate[bot]
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="13.3.7"></a>
 # 13.3.7 "chiffon-carambola" (2022-05-11)
 ### material
@@ -105,27 +194,6 @@ Dmytro Prokhorov, Kristiyan Kostadinov, Paul Gschwendtner, Zach Arend, dobrevad 
 | [e486ed93e4](https://github.com/angular/components/commit/e486ed93e45e6e5e5842d5dfa4e1c1de32823520) | fix | **menu:** focus the first item when opening menu on iOS VoiceOver ([#24733](https://github.com/angular/components/pull/24733)) |
 ## Special Thanks
 Dmytro Prokhorov, Kristiyan Kostadinov and Zach Arend
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.0.0-next.13"></a>
-# 14.0.0-next.13 "quartzite-quetzal" (2022-05-04)
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [8946ce2b8f](https://github.com/angular/components/commit/8946ce2b8f4faa256e25d16048c3871560b808a0) | fix | **menu:** allow scrolling while menu is open |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [00cf4a2f26](https://github.com/angular/components/commit/00cf4a2f269ece56b0f0e14520019cca642d5f2f) | feat | **autocomplete:** add clear method to test harness ([#24752](https://github.com/angular/components/pull/24752)) |
-| [08851de204](https://github.com/angular/components/commit/08851de2044c5485d7831e15fa87fa033c3d79c6) | fix | **menu:** add constructor overloads for non-deprecated signatures ([#24860](https://github.com/angular/components/pull/24860)) |
-### material-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [30f51814a5](https://github.com/angular/components/commit/30f51814a536440722ae9351d2c27fe1919ba8e9) | fix | **mdc-snack-bar:** avoid multiple snack bars on the page if opened in quick succession ([#24757](https://github.com/angular/components/pull/24757)) |
-| [f86faf534a](https://github.com/angular/components/commit/f86faf534a3d779037abd39e6dc79022c571a9d9) | fix | **mdc-table:** add inherit background to rows ([#24867](https://github.com/angular/components/pull/24867)) |
-## Special Thanks
-Andrew Seguin, Daniil Dubrava, Jeremy Elbourn, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner and Wagner Maciel
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -142,43 +210,6 @@ Andrew Seguin, Daniil Dubrava, Jeremy Elbourn, Kristiyan Kostadinov, Miles Maler
 | [d6f9db37b0](https://github.com/angular/components/commit/d6f9db37b074fcd11133146e67b8966f5c867291) | fix | **mdc-table:** add inherit background to rows ([#24867](https://github.com/angular/components/pull/24867)) |
 ## Special Thanks
 Andrew Seguin, Daniil Dubrava, Jeremy Elbourn, Kristiyan Kostadinov and Paul Gschwendtner
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.0.0-next.12"></a>
-# 14.0.0-next.12 "plastic-keyboard" (2022-04-28)
-## Deprecations
-### material
-- `mat.define-dark-theme` no longer accepts `$primary`, `$accent` and `$warn`.
-    Pass a single config map instead.
-- `mat.define-light-theme` no longer accepts `$primary`, `$accent` and `$warn`.
-  Pass a single config map instead.
-- Custom Material themes should no longer access `primary`, `accent`, `warn`,
-  `is-dark`, `foreground` and `background` from the theme map, but instead use the actual `color`
-  configuration (`mat.get-color-config($theme)`).
-- Passing a color configuration directly to a `-theme` mixin
-  is not supported. Pass the theme container object instead or use the dedicated
-  `-color` mixins.
-### material-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ce67406f4a](https://github.com/angular/components/commit/ce67406f4ac6ed7a4ed9bb7be4299edea1cc72bd) | fix | **mdc-slider:** remove pointerdown passive eve… ([#24766](https://github.com/angular/components/pull/24766)) |
-| [d3428ba5a2](https://github.com/angular/components/commit/d3428ba5a20a6780c90f68403806f8e8acc41414) | fix | **mdc-snack-bar:** avoid querying the DOM on each change detection ([#24770](https://github.com/angular/components/pull/24770)) |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4e5e286e9e](https://github.com/angular/components/commit/4e5e286e9ebdefdc13222611c36a42f0685277f4) | fix | **autocomplete:** outside click in Angular zone. ([#24817](https://github.com/angular/components/pull/24817)) |
-| [8dfbbed549](https://github.com/angular/components/commit/8dfbbed549621546d72dda341aa268cbb44fed97) | fix | **table:** accessibility improvements on table examples |
-| [f30609c925](https://github.com/angular/components/commit/f30609c9259ec5b2cabf52abaa051cac6fbe0bc5) | refactor | **core:** deprecate legacy theming API ([#24835](https://github.com/angular/components/pull/24835)) |
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c6a1d1519e](https://github.com/angular/components/commit/c6a1d1519e1cf6677c161d8794b6af108fa996ed) | feat | **dialog:** move experimental CDK dialog into stable ([#24804](https://github.com/angular/components/pull/24804)) |
-| [49c1921316](https://github.com/angular/components/commit/49c1921316282c561adb6694b699cd3c6ab0e5ac) | feat | **drag-drop:** adding method to set drag position ([#24769](https://github.com/angular/components/pull/24769)) |
-| [653457eaf4](https://github.com/angular/components/commit/653457eaf48faab99227f37bc2fe104d9f308787) | feat | **menu:** move experimental CDK menu into stable ([#24826](https://github.com/angular/components/pull/24826)) |
-| [0faba6e5fc](https://github.com/angular/components/commit/0faba6e5fcb3ebed7fad497fb5938bde47827c9a) | fix | **overlay:** animations interrupted on repeat insertions ([#24815](https://github.com/angular/components/pull/24815)) |
-## Special Thanks
-Andrew Seguin, Diego Bonura, Egor Volvachev, Jesse Beder, Kirill Cherkashin, Kristiyan Kostadinov, Martin Forstner, Paul Gschwendtner, Ruslan Lekhman, Sukka, Wagner Maciel, Zach Arend and renovate[bot]
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -202,22 +233,6 @@ Egor Volvachev, Jesse Beder, Kirill Cherkashin, Kristiyan Kostadinov, Paul Gschw
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="14.0.0-next.11"></a>
-# 14.0.0-next.11 "madras-macaque" (2022-04-20)
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c04f941fe](https://github.com/angular/components/commit/c04f941fe0cbe18022c97f1481254f3510db5ded) | fix | **portal:** prevent calling `ApplicationRef.detachView` on destroyed instance ([#24775](https://github.com/angular/components/pull/24775)) |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a55a8368b](https://github.com/angular/components/commit/a55a8368b30cf8e9ba787ad3530a8c9b66182d7b) | feat | **paginator:** Add `isNextPageEnabled` and `isPreviousPageEnabled` methods to `MatPaginatorHarness` ([#24784](https://github.com/angular/components/pull/24784)) |
-| [1aa5a2064](https://github.com/angular/components/commit/1aa5a206472f523a1ae189acc77a5abe15d71d5e) | feat | **select:** allow user-defined aria-describedby ([#24644](https://github.com/angular/components/pull/24644)) |
-## Special Thanks
-Andrew Kushnir, Kristiyan Kostadinov, Paul Gschwendtner, Richie Foreman, Robin (Robert) Thomas, Zach Arend and renovate[bot]
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="13.3.4"></a>
 # 13.3.4 "adamantium-albatross" (2022-04-20)
 ### cdk
@@ -226,46 +241,6 @@ Andrew Kushnir, Kristiyan Kostadinov, Paul Gschwendtner, Richie Foreman, Robin (
 | [eef47579f](https://github.com/angular/components/commit/eef47579fd5a1e2f1f9423a6ba5bc2a4955142cc) | fix | **portal:** prevent calling `ApplicationRef.detachView` on destroyed instance ([#24775](https://github.com/angular/components/pull/24775)) |
 ## Special Thanks
 Andrew Kushnir, Kristiyan Kostadinov, Paul Gschwendtner and Zach Arend
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.0.0-next.10"></a>
-# 14.0.0-next.10 "organza-oatmeal" (2022-04-13)
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [38946e6680](https://github.com/angular/components/commit/38946e6680be75816e7dab043ab954df016df0ed) | fix | **a11y:** visually hidden element affecting scrolling ([#24620](https://github.com/angular/components/pull/24620)) |
-| [f8dadb3246](https://github.com/angular/components/commit/f8dadb3246c778a3916db72ead9033ebb32bc814) | fix | **overlay:** disable backdrop animation when noop animations are enabled ([#24687](https://github.com/angular/components/pull/24687)) |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [5846195007](https://github.com/angular/components/commit/5846195007b44a7ddd61155a225132802848e101) | feat | **slide-toggle:** Add `disabled` predicate to MatSlideToggleHarness ([#24761](https://github.com/angular/components/pull/24761)) |
-| [1e9092a5b7](https://github.com/angular/components/commit/1e9092a5b71f7dc0932dcce8479c3e43cbed24e9) | fix | **checkbox:** add the boolean property coercion for checked input ([#20645](https://github.com/angular/components/pull/20645)) |
-| [366053093e](https://github.com/angular/components/commit/366053093edc35c84429e9c64a35f331fe3607b9) | fix | **chips:** prevent default behavior on remove button ([#24722](https://github.com/angular/components/pull/24722)) |
-| [6f9743c24c](https://github.com/angular/components/commit/6f9743c24c6dbc986f2ebf66f3f25dd46dc88221) | fix | **datepicker:** avoid rerender when min/maxDate changes to different time on the same day ([#24434](https://github.com/angular/components/pull/24434)) |
-| [fa12442042](https://github.com/angular/components/commit/fa12442042795787da21b5cb1bf2bad4d8c5945d) | fix | **list:** wrong order of arguments when calling custom compareWith function ([#24743](https://github.com/angular/components/pull/24743)) |
-| [333f3a4f57](https://github.com/angular/components/commit/333f3a4f57b389350e05bbf12918f18e13dadfb1) | fix | **select:** empty space read out by VoiceOver on Chrome ([#24741](https://github.com/angular/components/pull/24741)) |
-| [9243266128](https://github.com/angular/components/commit/9243266128400b6bd63ae5afda098feebc4a7b7e) | fix | **snack-bar:** update generic types for openFromComponent ([#24634](https://github.com/angular/components/pull/24634)) |
-| [0a4fdb287a](https://github.com/angular/components/commit/0a4fdb287a3881adbe6507581f785cdc24e564fb) | fix | **tabs:** wrong scroll distance if selected tab is removed ([#24118](https://github.com/angular/components/pull/24118)) |
-| [b1d20f99ef](https://github.com/angular/components/commit/b1d20f99efb5d8680400b73fd274c8a2eab8b6b5) | perf | **progress-bar:** do not run change detection if there are no `animationEnd` listeners ([#24673](https://github.com/angular/components/pull/24673)) |
-### cdk-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b8ccf036cb](https://github.com/angular/components/commit/b8ccf036cb1d97302f84c831a44a2a4c7e98274f) | fix | **menu:** API, code, and docs cleanup pass ([#24745](https://github.com/angular/components/pull/24745)) |
-| [f384cb52cd](https://github.com/angular/components/commit/f384cb52cda9e528c505466062d4671fa3757e4e) | fix | **menu:** close standalone menu when focus leaves |
-| [9531b68a5c](https://github.com/angular/components/commit/9531b68a5cfe2ed9eb58b15c70d7be8d7bf195b1) | fix | **menu:** don't steal focus on hover |
-| [c8eb797711](https://github.com/angular/components/commit/c8eb79771127660648f20e8072a3b062616fe37f) | fix | **menu:** refocus trigger after closeAll |
-| [26e6c1fd2e](https://github.com/angular/components/commit/26e6c1fd2e0af36d11f83c4d95ce3abd991458e3) | fix | **menu:** simplify radio and checkbox item APIs ([#24720](https://github.com/angular/components/pull/24720)) |
-| [5d1d36c453](https://github.com/angular/components/commit/5d1d36c453808dec3cb90a2d638d123df19d4624) | fix | **menu:** stop inline menu triggers capturing focus |
-### material-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c3bb3a9e5b](https://github.com/angular/components/commit/c3bb3a9e5b16485ad3a6263bed0e9aa7ff45dca1) | fix | **mdc-core:** avoid style conflicts between MDC list and MDC option |
-| [3a94415b28](https://github.com/angular/components/commit/3a94415b286ea220912f301000535cbf102112df) | fix | **mdc-dialog:** implement delayFocusTrap option ([#24727](https://github.com/angular/components/pull/24727)) |
-| [94ec04156c](https://github.com/angular/components/commit/94ec04156c1330f5c063b5e2ecb7fcaff65736ab) | fix | **mdc-dialog:** reduce amount of generated CSS |
-| [766a01e4ef](https://github.com/angular/components/commit/766a01e4efb52e51936d932c43e7a3e0a73660c8) | fix | **mdc-list:** avoid style conflicts with MDC list |
-## Special Thanks
-Amy Sorto, Artur Androsovych, Georgian Stan, Klemen Oslaj, Kristiyan Kostadinov, Michael Doner, Miles Malerba, Pascal Weyrich, Richie Foreman, RobStrader, Zach Arend and renovate[bot]
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -288,49 +263,6 @@ Amy Sorto, Artur Androsovych, Georgian Stan, Klemen Oslaj, Kristiyan Kostadinov,
 | [ca30f426a9](https://github.com/angular/components/commit/ca30f426a9729d30ff540ac4630c25ec7801bd4f) | perf | **progress-bar:** do not run change detection if there are no `animationEnd` listeners ([#24673](https://github.com/angular/components/pull/24673)) |
 ## Special Thanks
 Artur Androsovych, Georgian Stan, Klemen Oslaj, Kristiyan Kostadinov, Michael Doner, Pascal Weyrich, Paul Gschwendtner, RobStrader and Zach Arend
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.0.0-next.9"></a>
-# 14.0.0-next.9 "plastic-headphones" (2022-03-30)
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b372f68302](https://github.com/angular/components/commit/b372f683020cd00692b592fdfc4baf89cab4cabe) | fix | **a11y:** live announcer promise never resolved if new announcement comes in ([#24700](https://github.com/angular/components/pull/24700)) |
-| [5b4bcf5cae](https://github.com/angular/components/commit/5b4bcf5caebb57e986b6b60b2c06345c89bbd51d) | fix | **testing:** entering negative number values not working with reactive forms ([#24656](https://github.com/angular/components/pull/24656)) |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [5a8ebb1da1](https://github.com/angular/components/commit/5a8ebb1da12343d4dcb7c37160356fec744c2ba3) | feat | **dialog:** add support for explicit injector ([#24580](https://github.com/angular/components/pull/24580)) |
-| [cb206be37d](https://github.com/angular/components/commit/cb206be37dc989cb79ca716ae514768b823ee45c) | fix | **autocomplete:** always emit closed event ([#24642](https://github.com/angular/components/pull/24642)) |
-| [938d7870a7](https://github.com/angular/components/commit/938d7870a78391f6db491091b07359ea1b39124c) | fix | **button-toggle:** ripples not clipping correctly in safari ([#12311](https://github.com/angular/components/pull/12311)) |
-| [73dde84325](https://github.com/angular/components/commit/73dde8432573dcc99d2c3ac83b55d26aa9559735) | fix | **chips:** ripple not clipped on safari ([#21495](https://github.com/angular/components/pull/21495)) |
-| [dbb6dc09b4](https://github.com/angular/components/commit/dbb6dc09b452c126ddf612c1731595615e505e27) | fix | **core:** resolve memory leak by removing event listeners from the ripple element ([#24663](https://github.com/angular/components/pull/24663)) |
-| [5770eba622](https://github.com/angular/components/commit/5770eba622853c9d03d5341ebab4b1fa6f00ffa8) | fix | **core:** unable to override tag selectors inside .mat-typography ([#14617](https://github.com/angular/components/pull/14617)) |
-| [7e67602799](https://github.com/angular/components/commit/7e67602799d97a3a0159d5c0e84d69a66eaf31af) | fix | **datepicker:** expose `datepicker-date-range-colors` mixin |
-| [460b25cad9](https://github.com/angular/components/commit/460b25cad996447e6a48175265159d27bb33a133) | fix | **list:** not working correctly when list item is used as a button ([#13617](https://github.com/angular/components/pull/13617)) |
-| [a76f30107e](https://github.com/angular/components/commit/a76f30107ec70fcbee1c8ec87026307a55cd0494) | fix | **menu:** clicks on disabled item closing the menu ([#19183](https://github.com/angular/components/pull/19183)) |
-| [81ff8c8daa](https://github.com/angular/components/commit/81ff8c8daa9a8f4d127936f930ff590bce1cab3f) | fix | **radio:** set tabindex based on selected state ([#18081](https://github.com/angular/components/pull/18081)) |
-| [99f1f38caa](https://github.com/angular/components/commit/99f1f38caa6e1c7f34ebf4de494a190942efc329) | fix | **snack-bar:** ensure that the snack bar always runs inside the NgZone ([#24611](https://github.com/angular/components/pull/24611)) |
-| [b9bfaeecb6](https://github.com/angular/components/commit/b9bfaeecb68aea4f42ee074ff80ace03c6d20a79) | fix | **tabs:** focus wrapping back to selected label when using shift + tab ([#14194](https://github.com/angular/components/pull/14194)) |
-| [7c2545c240](https://github.com/angular/components/commit/7c2545c2403510d1167d6bd9ddf89da70bd8abf3) | fix | **tabs:** update tab state when active tab is swapped out ([#24164](https://github.com/angular/components/pull/24164)) |
-### cdk-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b4b8b202c0](https://github.com/angular/components/commit/b4b8b202c0f7dca2e6efb409235b18e5a2205d47) | fix | **menu:** fix issue where left/right on standalone menu closes it ([#24696](https://github.com/angular/components/pull/24696)) |
-| [79b2337949](https://github.com/angular/components/commit/79b2337949a8c0893858fba3740b3adfbb49c158) | fix | **menu:** move shared menu logic to base class ([#24645](https://github.com/angular/components/pull/24645)) |
-### material-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [0163ad2697](https://github.com/angular/components/commit/0163ad2697567652cbaa5d004767527ab803f20c) | feat | **mdc-dialog:** switch to new theming api ([#23620](https://github.com/angular/components/pull/23620)) ([#24521](https://github.com/angular/components/pull/24521)) |
-| [c49f83bad2](https://github.com/angular/components/commit/c49f83bad2b5f47a2a7691e393ff02b3da927a94) | fix | **mdc-button:** extended fab touch target not covering entire button ([#24322](https://github.com/angular/components/pull/24322)) |
-| [e4863652c7](https://github.com/angular/components/commit/e4863652c711359893e3863468d08c77600264b9) | fix | **mdc-chips:** make it easier to customize chip typography ([#24632](https://github.com/angular/components/pull/24632)) |
-| [1bc98ec31e](https://github.com/angular/components/commit/1bc98ec31eab37debe94bb1cee2618805b82c832) | fix | **mdc-chips:** Mirror aria-describedby to matChipInput ([#24551](https://github.com/angular/components/pull/24551)) |
-| [f6310fbcf6](https://github.com/angular/components/commit/f6310fbcf66c0f88c5f47c61f264c76f93301ca9) | fix | **mdc-dialog:** expose `dialog-legacy-padding` mixin |
-| [87ab4f49db](https://github.com/angular/components/commit/87ab4f49dba39e16dc0e5dc005351d487cc169d3) | fix | **mdc-slider:** update layout when container resizes ([#24648](https://github.com/angular/components/pull/24648)) |
-| [75f30fd497](https://github.com/angular/components/commit/75f30fd4975c4b8fbbc439402503563ee99ff594) | fix | **mdc-slider:** use passive event listeners ([#24675](https://github.com/angular/components/pull/24675)) |
-## Special Thanks
-Andrew Seguin, Artur Androsovych, ByzantineFailure, David Gonzalez, Dilyorbek, Kristiyan Kostadinov, Mario Härtwig, Miles Malerba, Naveen, Paul Gschwendtner, Raí Siqueira, Shivam Sethi, Wagner Maciel, Zach Arend, peinearydevelopment and renovate[bot]
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -366,45 +298,6 @@ Artur Androsovych, ByzantineFailure, David Gonzalez, Dilyorbek, Kristiyan Kostad
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="14.0.0-next.8"></a>
-# 14.0.0-next.8 "aerogel-airplane" (2022-03-24)
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [fb03164b3](https://github.com/angular/components/commit/fb03164b3fad76c3873074d0bfea9ae335605c38) | fix | **schematics:** mark `ng-add` schematics as hidden |
-| [ee452de49](https://github.com/angular/components/commit/ee452de497098a3aa2ce10041d5249abe1fcecff) | perf | **a11y:** avoid triggering change detection if there are no subscribers to stream ([#15077](https://github.com/angular/components/pull/15077)) |
-| [ad33d7a1b](https://github.com/angular/components/commit/ad33d7a1b8cbd8b81e3bcf2916218bdb63c92011) | perf | **scrolling:** do not run change detection if there are no `viewChange` listeners ([#23987](https://github.com/angular/components/pull/23987)) |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ff0119648](https://github.com/angular/components/commit/ff0119648b4a65c501df2277414ff2be7aff8028) | fix | **autocomplete:** re-enter the Angular zone when the `NgZone.onStable` emits ([#24569](https://github.com/angular/components/pull/24569)) |
-| [937160675](https://github.com/angular/components/commit/93716067541daf3a0a47c137f6b287f47a347e2e) | fix | **checkbox:** model value not updated when using toggle method ([#11902](https://github.com/angular/components/pull/11902)) |
-| [6b2b51844](https://github.com/angular/components/commit/6b2b51844a9c86add1bd6628d5ec8a621e606073) | fix | **input:** preserve native placeholder on non-legacy appearances ([#20936](https://github.com/angular/components/pull/20936)) |
-| [063841933](https://github.com/angular/components/commit/0638419339f2438e99d368d4fb657c71952651a4) | fix | **input:** resolve memory leak on iOS ([#24599](https://github.com/angular/components/pull/24599)) |
-| [35018812c](https://github.com/angular/components/commit/35018812c9b8acade3deb4c0d41943092d8a9f62) | fix | **schematics:** mark `ng-add` schematics as hidden |
-| [ff12d09c1](https://github.com/angular/components/commit/ff12d09c1d7049bb18acdb515204bc0efc9ed7f2) | fix | **schematics:** remove usages of deprecated defaultProject option ([#24641](https://github.com/angular/components/pull/24641)) |
-| [0276784b4](https://github.com/angular/components/commit/0276784b4d58fd80365fb8ffb6b23b2f92bec1f1) | fix | **select:** NVDA reading out table when opening select on Chrome ([#23446](https://github.com/angular/components/pull/23446)) |
-| [5f4148f35](https://github.com/angular/components/commit/5f4148f3516e5284669fce02bdfc136c7ef91b29) | fix | **select:** value set through property not being propagated to value accessor ([#10246](https://github.com/angular/components/pull/10246)) |
-| [d250b1775](https://github.com/angular/components/commit/d250b17755f2198d4336a78b783e5e2976cf1581) | perf | **icon:** remove IE workaround ([#24514](https://github.com/angular/components/pull/24514)) |
-### cdk-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c176670ce](https://github.com/angular/components/commit/c176670ce39a158dc394709157a7e203d7dfdb5e) | feat | **combobox:** glue together combobox and listbox with DI instead of a panel directive ([#24637](https://github.com/angular/components/pull/24637)) |
-| [4cc6b04a2](https://github.com/angular/components/commit/4cc6b04a25901a99c3c86abdad7c834c7fd2ad21) | feat | **menu:** allow configuration of typeahead and menu position ([#24600](https://github.com/angular/components/pull/24600)) |
-### material-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [12b5387ea](https://github.com/angular/components/commit/12b5387ea19cc3cd953f3517693dd4d223c3811f) | fix | **mdc-chips:** replace innerText w/ textContent ([#24635](https://github.com/angular/components/pull/24635)) |
-### multiple
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ea081feab](https://github.com/angular/components/commit/ea081feabfc30e8be9c520099ab58a5f04c7859a) | feat | Add a harness filter option for checked checkboxes, radios, and slide-toggles ([#24625](https://github.com/angular/components/pull/24625)) |
-| [764030d04](https://github.com/angular/components/commit/764030d04f0097fe8215ce96cc32610778bf3ace) | fix | memory leak when forcing focus ([#24520](https://github.com/angular/components/pull/24520)) |
-## Special Thanks
-Alan Agius, Artur Androsovych, CommanderRoot, Jeremy Elbourn, Joey Perrott, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Wagner Maciel and tomicarsk6
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="13.3.1"></a>
 # 13.3.1 "pearl-necklace" (2022-03-23)
 ### cdk
@@ -435,42 +328,6 @@ Alan Agius, Artur Androsovych, CommanderRoot, Jeremy Elbourn, Joey Perrott, Kris
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="14.0.0-next.7"></a>
-# 14.0.0-next.7 "baize-bison" (2022-03-16)
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [45fae71ea](https://github.com/angular/components/commit/45fae71ea083b37f2e18f0e60dfadfce27472ed4) | fix | **drag-drop:** only block dragstart event on event targets ([#24581](https://github.com/angular/components/pull/24581)) |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [8ef312528](https://github.com/angular/components/commit/8ef3125285b3e5a4eb0b0f2974acaf3873e5eead) | feat | **dialog:** add the ability to control the animation duration ([#13466](https://github.com/angular/components/pull/13466)) |
-| [cc6112298](https://github.com/angular/components/commit/cc6112298d85ae40164717a5ec267a3128a0c10e) | feat | **stepper:** add input for controlling the animation duration ([#17133](https://github.com/angular/components/pull/17133)) |
-| [fc5f8b026](https://github.com/angular/components/commit/fc5f8b0266c299af981fe8198981ef1cac87df49) | feat | **stepper:** add the ability to control the position of the header in a horizontal stepper ([#15509](https://github.com/angular/components/pull/15509)) |
-| [f42fee0de](https://github.com/angular/components/commit/f42fee0de7b7f97fd17cb2bdc1eb99b1e4ad4756) | feat | **tabs:** Throw error in MDC tabs if [tabPanel] input is not provided ([#24517](https://github.com/angular/components/pull/24517)) |
-| [0f15d1983](https://github.com/angular/components/commit/0f15d19831c17133bf2ebaf99bf7c4483c27a17f) | fix | **badge:** ensure overflow visible ([#24602](https://github.com/angular/components/pull/24602)) |
-| [0b5256184](https://github.com/angular/components/commit/0b52561840325929c81a59d78bbd01d0f26cdb24) | fix | **card:** use more specific selector for divider override ([#23531](https://github.com/angular/components/pull/23531)) |
-| [47517b65e](https://github.com/angular/components/commit/47517b65e0501fd85fcb1bf97c92ebb1185cc304) | fix | **card:** use more specific selector for divider override ([#23531](https://github.com/angular/components/pull/23531)) |
-| [6b4f2bfa9](https://github.com/angular/components/commit/6b4f2bfa91cabff1adfb3910593ee714c406884c) | fix | **datepicker:** fix Voiceover losing focus on PageDown ([#24399](https://github.com/angular/components/pull/24399)) |
-| [14f5b6e06](https://github.com/angular/components/commit/14f5b6e067cedb24fd55d502a37d641e86730d74) | fix | **datepicker:** use cdk-visually-hidden on calendar header ([#24523](https://github.com/angular/components/pull/24523)) |
-| [f16548462](https://github.com/angular/components/commit/f16548462eb2949d10df4370277513dcf8519eba) | fix | **dialog:** provide defaults for dialog animation ([#24591](https://github.com/angular/components/pull/24591)) |
-| [575332c92](https://github.com/angular/components/commit/575332c9296c28776376f4b4f7fb39c9743761aa) | fix | **dialog:** use quoted keys in the animation state object ([#24594](https://github.com/angular/components/pull/24594)) |
-| [025a53448](https://github.com/angular/components/commit/025a53448342fbda9c2e57819026bafc5ca6f8c9) | fix | **icon:** clip overflowing icon elements ([#12429](https://github.com/angular/components/pull/12429)) |
-| [9e06e4ab0](https://github.com/angular/components/commit/9e06e4ab0fb4e2dad3e59bc1c6638c5c0d815ea0) | fix | **tabs:** avoid timeouts in background tabs ([#24000](https://github.com/angular/components/pull/24000)) |
-### cdk-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [dc020c7ac](https://github.com/angular/components/commit/dc020c7ac238307b45e586bebbbd765f3b652b97) | feat | **menu:** Use DI instead of CdkMenuPanel to connect menus ([#24558](https://github.com/angular/components/pull/24558)) |
-### material-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [6982ca7ec](https://github.com/angular/components/commit/6982ca7ec42d4ef0b35b150d87e7d402c1131536) | fix | **mdc-core:** add app background color ([#22992](https://github.com/angular/components/pull/22992)) |
-| [356618d0c](https://github.com/angular/components/commit/356618d0c962cb2aec8f21bca949542b3a563df9) | fix | **mdc-radio:** add hover indication ([#24595](https://github.com/angular/components/pull/24595)) |
-## Special Thanks
-Andrew Seguin, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Zach Arend, Zack Elliott and renovate[bot]
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="13.3.0"></a>
 # 13.3.0 "aluminum-armadillo" (2022-03-16)
 ### cdk
@@ -491,50 +348,6 @@ Andrew Seguin, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Zach Aren
 | [15a0676d5](https://github.com/angular/components/commit/15a0676d535a354875e1262cbaa5d23d19ee19e4) | fix | **mdc-radio:** add hover indication ([#24595](https://github.com/angular/components/pull/24595)) |
 ## Special Thanks
 Andrew Seguin, Kristiyan Kostadinov, Paul Gschwendtner and Zach Arend
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.0.0-next.6"></a>
-# 14.0.0-next.6 "clay-cup" (2022-03-09)
-## Breaking Changes
-### material
-* `mat-list-item-avatar` CSS class has been renamed to `mat-list-item-with-avatar`.
-* `MatSelectionListChange.option` has been removed. Use `MatSelectionListChange.options` instead.
-* `MatSelectionList.tabIndex` input has been removed.
-* `tabIndex` parameter of the `MatSelectionList` constructor has been removed.
-* `_focusMonitor` parameter of the `MatSelectionList` constructor is now required.
-* `getHarnessLoaderForContent` has been removed from the various test item harnesses. Use `getChildLoader(MatListItemSection.CONTENT)` instead.
-### material-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [1b7d47cfed](https://github.com/angular/components/commit/1b7d47cfedb4b00570bcd1f7069f4f6d4f1b3afd) | feat | **mdc-tabs:** default to stretched tabs ([#23406](https://github.com/angular/components/pull/23406)) |
-| [557f8bc7ce](https://github.com/angular/components/commit/557f8bc7ce935c776f11fc87c26b14b7289a2102) | fix | **mdc-card:** remove extra margin if header doesn't have an avatar ([#19072](https://github.com/angular/components/pull/19072)) |
-| [1a03257394](https://github.com/angular/components/commit/1a032573944f8df808f0f1744086b5baeb7b8143) | fix | **mdc-slider:** fix a few null pointer exceptions ([#23659](https://github.com/angular/components/pull/23659)) |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [60bbd194b3](https://github.com/angular/components/commit/60bbd194b3fdd957f73994d7c44d509cb68c6ea5) | feat | **autocomplete:** test harness should throw when options are requested but panel is closed ([#24494](https://github.com/angular/components/pull/24494)) |
-| [899d0e1a0b](https://github.com/angular/components/commit/899d0e1a0b7a2ee10def8ecc3d212399b717fac4) | fix | **button:** avoid setting a tabindex on all link buttons ([#22901](https://github.com/angular/components/pull/22901)) |
-| [92863cca96](https://github.com/angular/components/commit/92863cca9676478a1b9ace37794e51ab7aa919fa) | fix | **dialog:** don't wait for animation before moving focus ([#24121](https://github.com/angular/components/pull/24121)) |
-| [c12347cafb](https://github.com/angular/components/commit/c12347cafb18e900d19f613ce91afcca970d66d1) | fix | **expansion:** able to tab into descendants with visibility while closed ([#24045](https://github.com/angular/components/pull/24045)) |
-| [723a821e67](https://github.com/angular/components/commit/723a821e67ea1867f0bc9f0d718f1ab0640ab00b) | fix | **select:** disabled state out of sync when swapping form group with a disabled one ([#17872](https://github.com/angular/components/pull/17872)) |
-| [5db1df0fe8](https://github.com/angular/components/commit/5db1df0fe8ed27f985c1fb0ad92e142b2a5ee54f) | fix | **slide-toggle:** clear name from host node ([#15505](https://github.com/angular/components/pull/15505)) |
-| [a5ab8e9adf](https://github.com/angular/components/commit/a5ab8e9adf728b908e581720cb7b8ddf8d7c6f01) | fix | **tooltip:** decouple removal logic from change detection ([#19432](https://github.com/angular/components/pull/19432)) |
-| [2fc6b9281d](https://github.com/angular/components/commit/2fc6b9281dfaebe78b76b46831830d723b7d2c97) | refactor | **list:** remove deprecated APIs for version 13 ([#23327](https://github.com/angular/components/pull/23327)) |
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [f91b98fff3](https://github.com/angular/components/commit/f91b98fff3beff70b2537f8b3da635518ef403ef) | feat | **portal:** allow specifying injector for template portal ([#24554](https://github.com/angular/components/pull/24554)) |
-| [508b7ac460](https://github.com/angular/components/commit/508b7ac460be647a0479421864bcb00e74d60094) | feat | **table:** allow text column to be centered ([#24133](https://github.com/angular/components/pull/24133)) |
-| [bbe6355556](https://github.com/angular/components/commit/bbe63555560df252b8f98cfa87adf443201e4cb5) | fix | **overlay:** backdrop timeouts not being cleared in some cases ([#23972](https://github.com/angular/components/pull/23972)) |
-| [552103b69e](https://github.com/angular/components/commit/552103b69ed55b7e4d13a36862aa44073f968647) | fix | **testing:** dispatch mouseover and mouseout events in UnitTestElement ([#24490](https://github.com/angular/components/pull/24490)) |
-| [f592a43e62](https://github.com/angular/components/commit/f592a43e62e0ae3fa08daf0acb86e5c5351764e9) | fix | **testing:** require at least one argument for locator functions ([#23619](https://github.com/angular/components/pull/23619)) |
-### multiple
-| Commit | Type | Description |
-| -- | -- | -- |
-| [5edcc6860e](https://github.com/angular/components/commit/5edcc6860e539f1ee883efae6df2bad044e53428) | fix | don't block child component animations on open ([#24529](https://github.com/angular/components/pull/24529)) |
-## Special Thanks
-Amy Sorto, Andrew Seguin, Jeri Peier, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner and renovate[bot]
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -566,55 +379,6 @@ Amy Sorto, Andrew Seguin, Jeri Peier, Kristiyan Kostadinov, Miles Malerba, Paul 
 | [6ee0089ce6](https://github.com/angular/components/commit/6ee0089ce609152a482c9ea5cbb2375ba9a84f22) | fix | don't block child component animations on open ([#24529](https://github.com/angular/components/pull/24529)) |
 ## Special Thanks
 Andrew Seguin, Jeri Peier, Kristiyan Kostadinov and Paul Gschwendtner
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.0.0-next.5"></a>
-# 14.0.0-next.5 "jersey-jughandle" (2022-03-02)
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [7d0bca7bd3](https://github.com/angular/components/commit/7d0bca7bd39e97ff6b033f97d05a811dfdac25db) | feat | **a11y:** add input to control the duration of the aria live directive ([#15275](https://github.com/angular/components/pull/15275)) |
-| [ca6b9fa209](https://github.com/angular/components/commit/ca6b9fa209ee3233c506a23943d0c5dacd2ac2dc) | feat | **drag-drop:** expose native event objects in custom events ([#17077](https://github.com/angular/components/pull/17077)) |
-| [c296084073](https://github.com/angular/components/commit/c296084073bfbb35aac21063afa85ae69527b0b6) | feat | **overlay:** add start and end positions to GlobalPositionStrategy ([#12007](https://github.com/angular/components/pull/12007)) |
-| [37be099b47](https://github.com/angular/components/commit/37be099b4716d2fe23a0095ec9f6c89eecf25513) | fix | **drag-drop:** error if preview dimensions are accessed too early ([#24498](https://github.com/angular/components/pull/24498)) |
-| [caf88cc4d9](https://github.com/angular/components/commit/caf88cc4d91233dbc38f89544c1c072d689b99f1) | fix | **testing:** TestElement sendKeys method should throw if no keys have been specified ([#18271](https://github.com/angular/components/pull/18271)) |
-| [3d2aefb3b1](https://github.com/angular/components/commit/3d2aefb3b1b37d11fdaafdd87f1a4337cb73bc29) | perf | **overlay:** add event listeners for overlay dispatchers outside of zone ([#24408](https://github.com/angular/components/pull/24408)) |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b90d9420fa](https://github.com/angular/components/commit/b90d9420fa65671f1cebe6feb094099b85547bbd) | feat | **autocomplete:** add the ability to auto-select the active option while navigating ([#20699](https://github.com/angular/components/pull/20699)) |
-| [426afa07e1](https://github.com/angular/components/commit/426afa07e1112e7dbf7b62f063d56a43b92ace28) | feat | **icon:** add default options ([#23638](https://github.com/angular/components/pull/23638)) |
-| [6c7cc8ae87](https://github.com/angular/components/commit/6c7cc8ae87ce4a4ae4ba3447fdca5f34c2e5b503) | feat | **icon:** allow multiple classes in setDefaultFontSetClass ([#10484](https://github.com/angular/components/pull/10484)) |
-| [856c01639f](https://github.com/angular/components/commit/856c01639fbf968cb33885807ffaf6d3f3bf5423) | feat | **menu:** allow for menu to be conditionally removed from trigger ([#24437](https://github.com/angular/components/pull/24437)) |
-| [5fc655b4a0](https://github.com/angular/components/commit/5fc655b4a0e7fbb5ead46ab2d7453dd24779bd1e) | feat | **paginator:** add input for configuring the underlying select ([#13705](https://github.com/angular/components/pull/13705)) |
-| [38334d6bc8](https://github.com/angular/components/commit/38334d6bc85bdc7935af04c24d9e085c7bcab780) | feat | **schematics:** add option not to include animations module in ng-add ([#22559](https://github.com/angular/components/pull/22559)) |
-| [b7ee958d8b](https://github.com/angular/components/commit/b7ee958d8ba21c8f4479ec3cfcafdb0287727f1e) | fix | **autocomplete:** auto-highlighted first option not display correctly if the floating label is disabled ([#14507](https://github.com/angular/components/pull/14507)) |
-| [5825faf67f](https://github.com/angular/components/commit/5825faf67fa838495bd9d59023aa433e99101ac3) | fix | **autocomplete:** don't block default arrow keys when using modifiers ([#11987](https://github.com/angular/components/pull/11987)) |
-| [16dea18b53](https://github.com/angular/components/commit/16dea18b53e4cc5433b40bf37fb3318869b201c1) | fix | **autocomplete:** reopen panel on input click ([#16020](https://github.com/angular/components/pull/16020)) |
-| [175937ef57](https://github.com/angular/components/commit/175937ef57e20c209eab9c749676d2fc82f66c2c) | fix | **button-toggle:** use solid border color ([#14253](https://github.com/angular/components/pull/14253)) |
-| [02e9ab0224](https://github.com/angular/components/commit/02e9ab02243825b4ee8898cae38fd18390327e0c) | fix | **checkbox:** inconsistent disabled color ([#23083](https://github.com/angular/components/pull/23083)) |
-| [f20122a499](https://github.com/angular/components/commit/f20122a4998f65c46452dc680adaec49cea7c0f5) | fix | **checkbox:** incorrect text color when placed inside an overlay with a dark theme ([#19054](https://github.com/angular/components/pull/19054)) |
-| [f05e65a02b](https://github.com/angular/components/commit/f05e65a02b636d7c3d4e181f65ac0d7e94e091fd) | fix | **chips:** allow for role to be overwritten on chip list and chip ([#15794](https://github.com/angular/components/pull/15794)) |
-| [e86be88125](https://github.com/angular/components/commit/e86be8812551551d0711a7621d7b5bb840c58845) | fix | **core:** ripples persisting when container is removed from DOM while fading-in ([#24482](https://github.com/angular/components/pull/24482)) |
-| [09a906ad85](https://github.com/angular/components/commit/09a906ad8500f980660b2d9a606934727ea05d30) | fix | **datepicker:** matDatepickerParse error not being added on first invalid value ([#11524](https://github.com/angular/components/pull/11524)) |
-| [a8ec63c54d](https://github.com/angular/components/commit/a8ec63c54d52767be86cb42abe1ee980354ef5ae) | fix | **datepicker:** use aria-live over cdkAriaLive on period button ([#24398](https://github.com/angular/components/pull/24398)) |
-| [e1f4ba98dd](https://github.com/angular/components/commit/e1f4ba98dd389bb08a2b2c721c70d6436b48e486) | fix | **dialog:** use passed in ComponentFactoryResolver to resolve dialog content ([#17710](https://github.com/angular/components/pull/17710)) |
-| [64c2d311b4](https://github.com/angular/components/commit/64c2d311b43a29dc1495ff294c65dfe8ef0e0ffb) | fix | **expansion:** picking up lazy content from child component ([#14477](https://github.com/angular/components/pull/14477)) |
-| [44293522e9](https://github.com/angular/components/commit/44293522e98bbd975e5fba2551421af32631f2de) | fix | **menu:** account for menu padding different from the default ([#16169](https://github.com/angular/components/pull/16169)) |
-| [dc4fbcf66f](https://github.com/angular/components/commit/dc4fbcf66fe1a9d598029bfc1b308650fa353f21) | fix | **menu:** focus lost if active item is removed ([#14039](https://github.com/angular/components/pull/14039)) |
-| [0a465281f6](https://github.com/angular/components/commit/0a465281f62a4cf740f788fdd864b946c3a13be1) | fix | **menu:** use narrower value for aria-haspopup on trigger element ([#15219](https://github.com/angular/components/pull/15219)) |
-| [7480e3b78d](https://github.com/angular/components/commit/7480e3b78dc6a25d844db31f23e711da7d00fcdd) | fix | **progress-spinner:** unable to change mode on spinner directive ([#14514](https://github.com/angular/components/pull/14514)) |
-| [229dd6e174](https://github.com/angular/components/commit/229dd6e1748991b014d4e41005be2a74dda7167e) | fix | **sort:** remove role from header when disabled ([#24477](https://github.com/angular/components/pull/24477)) |
-| [0dfc490988](https://github.com/angular/components/commit/0dfc4909883af35d89c11d8bfcd73263578cd1cd) | fix | **tooltip:** don't hide when pointer moves to tooltip ([#24475](https://github.com/angular/components/pull/24475)) |
-### material-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [353a5482e3](https://github.com/angular/components/commit/353a5482e3811b8d684669973bfa02b4ac2ca0f6) | feat | **mdc-dialog:** switch to new theming api ([#23620](https://github.com/angular/components/pull/23620)) |
-| [3021cf5fb6](https://github.com/angular/components/commit/3021cf5fb69cba4a502e7bacd8e0dca2eb99e2a6) | fix | **mdc-button:** density styles being overwritten by structural styles ([#22736](https://github.com/angular/components/pull/22736)) |
-| [50efb926d0](https://github.com/angular/components/commit/50efb926d0d41484c7b6e8f591bb8dd2cff9da2d) | fix | **mdc-chips:** expose avatar harness ([#24499](https://github.com/angular/components/pull/24499)) |
-## Special Thanks
-Amy Sorto, Andrew Seguin, Artur Androsovych, Jeri Peier, Kristiyan Kostadinov, Paul Gschwendtner, Ruslan Lekhman, Yousaf Nawaz and Zach Arend
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -652,60 +416,6 @@ Andrew Seguin, Artur Androsovych, Jeri Peier, Kristiyan Kostadinov, Paul Gschwen
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="14.0.0-next.4"></a>
-# 14.0.0-next.4 "metal-harness" (2022-02-23)
-## Breaking Changes
-### material
-- Previously the `mixinErrorState` mixin function defined
-a class member for `stateChanges`. This is no longer the case, and consumers
-need to provide the `stateChanges` class member themselves.
-
-- * `CdkStepper._orientation` has been removed. Use `CdkStepper.orientation` instead.
-* The `_document` parameter from the `CdkStepper` constructor has been removed.
-* The `_document` parameter from the `MatStepper` constructor has been removed.
-* `MatVerticalStepper` has been removed. Use `MatStepper` instead.
-* `MatHorizontalStepper` has been removed. Use `MatStepper` instead.
-### material-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [3e1080931e](https://github.com/angular/components/commit/3e1080931e62226874e1253528f35878b3228af9) | feat | **mdc-list:** add support for marking the act… ([#24433](https://github.com/angular/components/pull/24433)) |
-| [4c0a4603d9](https://github.com/angular/components/commit/4c0a4603d93d77646c135b979cce76a1f80b2246) | fix | **mdc-dialog:** align change detection with non-MDC version ([#24451](https://github.com/angular/components/pull/24451)) |
-| [f6cdc96994](https://github.com/angular/components/commit/f6cdc96994b093305dd98c696ddf369fe5a92f19) | fix | **mdc-list:** fix typo in action-list css class ([#24448](https://github.com/angular/components/pull/24448)) |
-| [dbcd1404bb](https://github.com/angular/components/commit/dbcd1404bb1484b49cf5bfd094650a8e7e27c439) | fix | **mdc-list:** use body-1 rather than subtitle-1 typography for list items ([#24417](https://github.com/angular/components/pull/24417)) |
-| [f5d74daf1d](https://github.com/angular/components/commit/f5d74daf1d9adf833f223253835244529af664cc) | fix | **mdc-select:** target correct element with typography ([#24258](https://github.com/angular/components/pull/24258)) |
-| [ea6fdb91c1](https://github.com/angular/components/commit/ea6fdb91c1283630898c132f79a14326f5a2ff21) | perf | **mdc-table:** reduce bundle size ([#24309](https://github.com/angular/components/pull/24309)) |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [9946bb34bb](https://github.com/angular/components/commit/9946bb34bb76328ad104c520aa8021784a1c48bb) | feat | **form-field:** add color to default options ([#24438](https://github.com/angular/components/pull/24438)) ([#24440](https://github.com/angular/components/pull/24440)) |
-| [0d162a4132](https://github.com/angular/components/commit/0d162a413202fc7ed309aca748bf138845a1ba68) | feat | **sort:** default arrow position in MatSortDefaultOptions ([#23609](https://github.com/angular/components/pull/23609)) |
-| [c0ed5ce5de](https://github.com/angular/components/commit/c0ed5ce5de2fcd36ba249a869a8a8e57d33d9b8d) | fix | **autocomplete:** closing immediately when input is focused programmatically ([#21081](https://github.com/angular/components/pull/21081)) |
-| [7e9916bc9e](https://github.com/angular/components/commit/7e9916bc9ea4b4360f099b395891a50ab297e026) | fix | **autocomplete:** use narrow value for aria-haspopup ([#15361](https://github.com/angular/components/pull/15361)) |
-| [b703cb36a8](https://github.com/angular/components/commit/b703cb36a875d124a526f1b4404ecc153ae36b14) | fix | **button-toggle:** unable to override elevation and high contrast styling applied incorrectly ([#14722](https://github.com/angular/components/pull/14722)) |
-| [ab39847567](https://github.com/angular/components/commit/ab398475678d7bab1d9fba84536efd8165966564) | fix | **checkbox:** clear static aria attributes from host nodes ([#17092](https://github.com/angular/components/pull/17092)) |
-| [19b89342a3](https://github.com/angular/components/commit/19b89342a3eda66add24da32fe074c7320b8d991) | fix | **form-field:** use correct color for form fields in high contrast mode ([#24422](https://github.com/angular/components/pull/24422)) |
-| [e0b76ed029](https://github.com/angular/components/commit/e0b76ed029939a7bb8246410b0170cfdbf35da25) | fix | **radio:** clicks not propagating to wrapper elements ([#24459](https://github.com/angular/components/pull/24459)) |
-| [f80403c97d](https://github.com/angular/components/commit/f80403c97d9a6e21eba8557268e39a7dbe8e7f98) | fix | **radio:** not checked on first click if partially visible ([#19505](https://github.com/angular/components/pull/19505)) |
-| [1d5175b313](https://github.com/angular/components/commit/1d5175b3135a0c6864d6bbb69ad2d20864a2722f) | fix | **select:** arrow highlighted state not updating in Safari ([#15281](https://github.com/angular/components/pull/15281)) |
-| [dddfbd1ea6](https://github.com/angular/components/commit/dddfbd1ea69349ec5ac4d1021825e3137ea54525) | fix | **sidenav:** prevent focus from entering hidden sidenav if child element has a visibility |
-| [d9ad68acda](https://github.com/angular/components/commit/d9ad68acdab665446e1c4e2c7c66b522c004d026) | fix | **tabs:** use buttons for paginator also tab-header and mdc ([#24338](https://github.com/angular/components/pull/24338)) |
-| [bab3b989f9](https://github.com/angular/components/commit/bab3b989f9265c0798bdacee4d931828497ee3bc) | refactor | **core:** no longer define `stateChanges` in `mixinErrorState` ([#22875](https://github.com/angular/components/pull/22875)) |
-| [db126b5797](https://github.com/angular/components/commit/db126b579760263ea8de30689c54c4d32fa2137a) | refactor | **stepper:** remove deprecated APIs for version 13 ([#23328](https://github.com/angular/components/pull/23328)) |
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [feaf50b43a](https://github.com/angular/components/commit/feaf50b43a9debfbd6dfe8949ff69cce7853b455) | feat | **a11y:** HighContrastModeDetector need not support `IE11` ([#24462](https://github.com/angular/components/pull/24462)) |
-| [3e1de9dd29](https://github.com/angular/components/commit/3e1de9dd298ec2379776a6debb0e49a45f350a4a) | fix | **drag-drop:** incorrectly sorting element inside dialog with blocked scrolling ([#14806](https://github.com/angular/components/pull/14806)) |
-| [761f5fde28](https://github.com/angular/components/commit/761f5fde28ffc547e1d700906f3f82f5187ed526) | fix | **drag-drop:** stop pointer events on placeholder ([#24404](https://github.com/angular/components/pull/24404)) |
-### ripple
-| Commit | Type | Description |
-| -- | -- | -- |
-| [65fb5f4491](https://github.com/angular/components/commit/65fb5f44911b3839c1f40ab87cf380381e030434) | fix | not fading out on touch devices ([#12488](https://github.com/angular/components/pull/12488)) |
-## Special Thanks
-Alireza Ebrahimkhani, Andrew Seguin, Arthur Ming, Jeri Peier, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Ruslan Lekhman and renovate[bot]
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="13.2.4"></a>
 # 13.2.4 "plastic-mug" (2022-02-23)
 ### cdk
@@ -739,27 +449,6 @@ Alireza Ebrahimkhani, Arthur Ming, Jeri Peier, Kristiyan Kostadinov, Miles Maler
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="14.0.0-next.3"></a>
-# 14.0.0-next.3 "sapphire-sneakers" (2022-02-16)
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [06e65c6b5](https://github.com/angular/components/commit/06e65c6b5d1f7886653d280e97a87c8af57c30e8) | feat | **chips:** update chip-list describedby to match input ([#24292](https://github.com/angular/components/pull/24292)) |
-| [ca1aaae7e](https://github.com/angular/components/commit/ca1aaae7e2a700442e8c651468cb07d63397bbd2) | feat | **progress-spinner:** add color to default options ([#24356](https://github.com/angular/components/pull/24356)) |
-| [5603d9b7f](https://github.com/angular/components/commit/5603d9b7f1f9f3987d7a5a98e95156b47e293881) | fix | **datepicker:** fix failing unit test in multiyear view ([#24418](https://github.com/angular/components/pull/24418)) |
-| [15774a923](https://github.com/angular/components/commit/15774a9235f933a61b9db86b682977b70fe69ec8) | fix | **datepicker:** update active date on focusing a cell ([#24384](https://github.com/angular/components/pull/24384)) |
-| [599d1b445](https://github.com/angular/components/commit/599d1b445f21fad2cec6a95bec824a409d55bb80) | fix | **dialog:** Use `align` as `@Input()` in `MatDialogActions` ([#24328](https://github.com/angular/components/pull/24328)) |
-| [f868e33a5](https://github.com/angular/components/commit/f868e33a5a13f32ffad6e3ee50460e3ca1b7f82b) | fix | **menu:** position classes not update when window is resized ([#24385](https://github.com/angular/components/pull/24385)) |
-| [e917541cb](https://github.com/angular/components/commit/e917541cb53f492bf75e31d8376132e0aba4ea58) | fix | **tabs:** allow coercing of booleans for all inputs ([#24377](https://github.com/angular/components/pull/24377)) |
-### cdk-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [d8ff80a44](https://github.com/angular/components/commit/d8ff80a4436139de61a78020fbcc1316c5374a0d) | fix | **column-resize:** Fix bug in hover logic introduced by IE cleanup ([#24396](https://github.com/angular/components/pull/24396)) |
-## Special Thanks
-Jean-Philippe, Jeri Peier, Karl Seamon, Kristiyan Kostadinov, Paul Gschwendtner, Robin (Robert) Thomas, Ruslan Lekhman, Wagner Maciel, Zach Arend and Zack Elliott
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="13.2.3"></a>
 # 13.2.3 "platinum-pen" (2022-02-16)
 ### material
@@ -772,36 +461,6 @@ Jean-Philippe, Jeri Peier, Karl Seamon, Kristiyan Kostadinov, Paul Gschwendtner,
 | [8c632ee87](https://github.com/angular/components/commit/8c632ee8781e5c60b46e4255e034218d03e54a68) | fix | **column-resize:** Fix bug in hover logic introduced by IE cleanup ([#24396](https://github.com/angular/components/pull/24396)) |
 ## Special Thanks
 Karl Seamon, Kristiyan Kostadinov, Paul Gschwendtner, Zach Arend and Zack Elliott
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.0.0-next.2"></a>
-# 14.0.0-next.2 "ferrous-squirrel" (2022-02-09)
-## Breaking Changes
-### material
-- `MatChipInputEvent.chipInput` is now a required property.
-### material-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [3523adf71](https://github.com/angular/components/commit/3523adf71eca4c29b8c8cff1bf90c6f1d15d88ca) | fix | **mdc-checkbox:** add missing classes for checked ([#24350](https://github.com/angular/components/pull/24350)) |
-| [02d6e7d77](https://github.com/angular/components/commit/02d6e7d77ae77feae7d52c929b0dff74f6624c1a) | fix | **mdc-tabs:** CSS applied to wrong element when preserveContent is enabled ([#24346](https://github.com/angular/components/pull/24346)) |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [d67dad6b1](https://github.com/angular/components/commit/d67dad6b1b77692a15762bcbdbd5e9ea94f1a34e) | fix | **chips:** Make `MatChipInputEvent.chipInput` required. ([#23692](https://github.com/angular/components/pull/23692)) |
-| [1c9173196](https://github.com/angular/components/commit/1c917319642822881532be91c699122976bf10c3) | fix | **datepicker:** fix improper focus trapping with VoiceOver and ChromeVox ([#24300](https://github.com/angular/components/pull/24300)) |
-| [7a6549fb1](https://github.com/angular/components/commit/7a6549fb11a108f351aa4bf2a3686a75bdbc642c) | fix | **datepicker:** remove abbr from day of week header ([#24106](https://github.com/angular/components/pull/24106)) |
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [64606fa65](https://github.com/angular/components/commit/64606fa65bd0d307a87d8a64b7db0da90105102c) | feat | **testing:** add methods `getOptionalHarness` and `hasHarness` ([#24355](https://github.com/angular/components/pull/24355)) |
-| [5221b79d5](https://github.com/angular/components/commit/5221b79d57c92a75f8e3f5b4cf66bd93814a5d54) | fix | **scrolling:** fix scrolling in appendOnly mode ([#24153](https://github.com/angular/components/pull/24153)) |
-### material-experiental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [dd59b4a10](https://github.com/angular/components/commit/dd59b4a10cb30639fc00039f76d920cb60fa3020) | fix | **mdc-list:** update material-components-web to pick up multi-select list keyboard support ([#24354](https://github.com/angular/components/pull/24354)) |
-## Special Thanks
-Alan Agius, Artur Androsovych, Chabbey François, Joey Perrott, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Zach Arend and renovate[bot]
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -826,43 +485,6 @@ Alan Agius, Artur Androsovych, Chabbey François, Joey Perrott, Kristiyan Kostad
 | [70bec6054](https://github.com/angular/components/commit/70bec605400eed85d439c15e0cc902522260d03b) | fix | **mdc-list:** update material-components-web to pick up multi-select list keyboard support ([#24354](https://github.com/angular/components/pull/24354)) |
 ## Special Thanks
 Alan Agius, Artur Androsovych, Chabbey François, Joey Perrott, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Zach Arend and renovate[bot]
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.0.0-next.1"></a>
-# 14.0.0-next.1 "denim-dinosaur" (2022-02-02)
-## Breaking Changes
-### cdk
-- The deprecated `angular/cdk/testing/protractor` entry-point has been removed.
-### material-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [f0f9cbecf5](https://github.com/angular/components/commit/f0f9cbecf5afb7dff226a0a79df727f439324f85) | fix | **mdc-button:** align outline color with spec ([#24249](https://github.com/angular/components/pull/24249)) |
-| [5a0002739a](https://github.com/angular/components/commit/5a0002739a720c7480cb284b55f168f404046dc2) | perf | **mdc-list:** reduce bundle size ([#24291](https://github.com/angular/components/pull/24291)) |
-### cdk-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [75cda48da1](https://github.com/angular/components/commit/75cda48da100335f875ad6ba87db25ab01d0e972) | fix | **menu:** keep context menus open when mouse is released ([#24308](https://github.com/angular/components/pull/24308)) |
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c3188c84ef](https://github.com/angular/components/commit/c3188c84ef140f0f9e3366516d9004b46ed8da71) | feat | **tabs:** add the ability to keep content inside the DOM while off-screen ([#20393](https://github.com/angular/components/pull/20393)) |
-| [cad0872208](https://github.com/angular/components/commit/cad087220848b2cd2c252520bac26a42d8b279aa) | feat | **tabs:** add the ability to keep content inside the DOM while off-screen ([#24299](https://github.com/angular/components/pull/24299)) |
-| [1933225833](https://github.com/angular/components/commit/1933225833a17d1c4246ca2afe5dac6b0ecc4060) | fix | **datepicker:** content overflowing when large custom header is provided ([#24255](https://github.com/angular/components/pull/24255)) |
-| [a74d92e33d](https://github.com/angular/components/commit/a74d92e33df365558eaf54661db32de379d68885) | fix | **menu:** adjust overlay size when amount of items changes ([#21457](https://github.com/angular/components/pull/21457)) |
-| [c1f25bcdbe](https://github.com/angular/components/commit/c1f25bcdbea56556ee27d4153fd44dc3a95567fe) | fix | **slider:** Ticks updated wrongly if the max property 0 ([#24218](https://github.com/angular/components/pull/24218)) |
-| [e8919bcf4b](https://github.com/angular/components/commit/e8919bcf4b614fde6f6614fcaaf799b97f9702b5) | fix | **tabs:** use buttons for paginator ([#14640](https://github.com/angular/components/pull/14640)) |
-### cdk
-| Commit | Type | Description |
-| -- | -- | -- |
-| [781a45a2b6](https://github.com/angular/components/commit/781a45a2b6e7bd0ea38e7023fc4f492b02a0014f) | fix | **a11y:** allow for multiple browser-generated description containers ([#23507](https://github.com/angular/components/pull/23507)) |
-| [2575b00808](https://github.com/angular/components/commit/2575b008083f4736ed48877604b0165c03bd9175) | refactor | **testing:** remove deprecated protractor harness environment ([#24304](https://github.com/angular/components/pull/24304)) |
-### multiple
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c46ece07b3](https://github.com/angular/components/commit/c46ece07b348bad43e54fbad9d10e4fb9aab367f) | perf | Remove IE 11 cruft from table, column-resize, and popover-edit. ([#23900](https://github.com/angular/components/pull/23900)) |
-## Special Thanks
-Amy Sorto, Dmytro Mezhenskyi, Joey Perrott, Karl Seamon, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Zach Arend, Zack Elliott and ram
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -894,21 +516,6 @@ Amy Sorto, Dmytro Mezhenskyi, Joey Perrott, Karl Seamon, Kristiyan Kostadinov, M
 | [b32d8d1624](https://github.com/angular/components/commit/b32d8d16244babdb57f4fad07ed3ccf1615f8c6f) | perf | Remove IE 11 cruft from table, column-resize, and popover-edit. ([#23900](https://github.com/angular/components/pull/23900)) |
 ## Special Thanks
 Dmytro Mezhenskyi, Joey Perrott, Karl Seamon, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Zach Arend and ram
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.0.0-next.0"></a>
-# 14.0.0-next.0 "moss-mansion" (2022-01-26)
-### material
-| Commit | Type | Description |
-| -- | -- | -- |
-| [e03a77065d](https://github.com/angular/components/commit/e03a77065d81c5af62b60f351aa11a1444cad7bc) | fix | **core:** ripples not being clipped on safari in shadow dom ([#24029](https://github.com/angular/components/pull/24029)) |
-### material-experimental
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b3c957941a](https://github.com/angular/components/commit/b3c957941a14555eb7adaeb10af3db4f80c0e10a) | fix | **mdc-form-field:** incorrect alignment with border-box alignment ([#24222](https://github.com/angular/components/pull/24222)) |
-## Special Thanks
-Andrew Seguin, Joey Perrott, Kristiyan Kostadinov and Miles Malerba
 
 <!-- CHANGELOG SPLIT MARKER -->
 
