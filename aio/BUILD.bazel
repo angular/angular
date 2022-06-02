@@ -41,54 +41,28 @@ npm_package_bin(
     tool = "@aio_npm//dgeni/bin:dgeni",
 )
 
-# Generate example boilerplate files
-npm_package_bin(
-    name = "example-boilerplate",
-    args = ["add"],
-    env = {
-        "BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH": "$(@D)",
-    },
-    output_dir = True,
-    tool = "//aio/tools/examples:example-boilerplate",
-)
-
-# Combine example source files with generated boilerplate files
+# Copy stackblitz live examples to expected assets location
 copy_to_directory(
-    name = "examples",
-    # Prevent sorting so that boilerplate overwrites example sources
-    # buildifier: do not sort
-    srcs = [
-        "//aio/content/examples",
-        ":example-boilerplate",
-    ],
-    replace_prefixes = {
-        "content/examples": "",
-        "example-boilerplate": "",
-    },
-)
-
-# Generate stackblitz live examples
-npm_package_bin(
     name = "stackblitz",
-    args = [
-        "$(RULEDIR)/examples",
-        "$(@D)",
+    srcs = ["//aio/content/examples:all-stackblitz"],
+    replace_prefixes = {
+        "examples": "generated/live-examples",
+    },
+    root_paths = [
+        "aio/content",
     ],
-    data = [":examples"],
-    output_dir = True,
-    tool = "//aio/tools/stackblitz-builder:generate-stackblitz",
 )
 
-# Generate example zips
-npm_package_bin(
+# Copy example zips to expected assets location
+copy_to_directory(
     name = "example-zips",
-    args = [
-        "$(RULEDIR)/examples",
-        "$(@D)",
+    srcs = ["//aio/content/examples:all-example-zips"],
+    replace_prefixes = {
+        "examples": "generated/zips",
+    },
+    root_paths = [
+        "aio/content",
     ],
-    data = [":examples"],
-    output_dir = True,
-    tool = "//aio/tools/example-zipper:generate-example-zips",
 )
 
 # All source and configuration files required to build the docs app
