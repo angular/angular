@@ -1,3 +1,25 @@
+## [0.11.6](https://github.com/angular/angular/compare/zone.js-0.11.5...zone.js-0.11.6) (2022-06-02)
+
+### Bug Fixes
+
+- **zone.js:** check if `process` is defined when patching the `GlobalErrors.install` ([#45392](https://github.com/angular/angular/issues/45392)) ([c7bcc1b](https://github.com/angular/angular/commit/c7bcc1b50182e5378756aa4528a24075b5be026e)), closes [#42260](https://github.com/angular/angular/issues/42260)
+- **zone.js:** in TaskTrackingZoneSpec track a periodic task until it is cancelled ([#45391](https://github.com/angular/angular/issues/45391)) ([f19b36f](https://github.com/angular/angular/commit/f19b36f462803b3b3b9410391c039649541b10bc))
+- **zone.js:** read `Symbol.species` safely ([#45369](https://github.com/angular/angular/issues/45369)) ([e2eaac3](https://github.com/angular/angular/commit/e2eaac34b06a558145be41853f1d3585c1108880))
+- **zone.js:** should ignore multiple resolve call ([#45283](https://github.com/angular/angular/issues/45283)) ([aebf165](https://github.com/angular/angular/commit/aebf165359ad6de5a8bacd9cb91651fc4175aaad)), closes [#44913](https://github.com/angular/angular/issues/44913)
+- **zone.js:** swallow the error when the element callback is not patchable ([#45400](https://github.com/angular/angular/issues/45400)) ([4ea70e3](https://github.com/angular/angular/commit/4ea70e36b998208302183f78088637f3de86323d)), closes [lwc/engine-core/src/framework/base-bridge-element.ts#L180-L186](https://github.com/lwc/engine-core/src/framework/base-bridge-element.ts/issues/L180-L186) [#42546](https://github.com/angular/angular/issues/42546)
+
+### BREAKING CHANGES
+
+- **zone.js:** in TaskTrackingZoneSpec track a periodic task until it is cancelled
+
+The breaking change is scoped only to the plugin
+`zone.js/plugins/task-tracking`. If you used `TaskTrackingZoneSpec` and
+checked the pending macroTasks e.g. using `(this.ngZone as any)._inner ._parent._properties.TaskTrackingZone.getTasksFor('macroTask')`, then
+its behavior slightly changed for periodic macrotasks. For example,
+previously the `setInterval` macrotask was no longer tracked after its
+callback was executed for the first time. Now it's tracked until
+the task is explicitly cancelled, e.g with `clearInterval(id)`.
+
 ## [0.11.5](https://github.com/angular/angular/compare/zone.js-0.11.4...zone.js-0.11.5) (2022-03-03)
 
 ### Bug Fixes
