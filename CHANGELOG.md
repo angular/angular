@@ -1,5 +1,8 @@
 <a name="14.0.0"></a>
 # 14.0.0 (2022-06-02)
+
+[Blog post "Angular v14 is now available"](http://goo.gle/angular-v14).
+
 ## Breaking Changes
 ### animations
 - The `AnimationDriver.getParentElement` method has become required, so any
