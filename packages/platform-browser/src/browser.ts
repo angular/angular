@@ -24,6 +24,7 @@ const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 /**
  * Set of config options available during the bootstrap operation via `bootstrapApplication` call.
  *
+ * @developerPreview
  * @publicApi
  */
 export interface ApplicationConfig {
@@ -114,6 +115,7 @@ export function bootstrapApplication(
  * @returns An array of providers required to setup Testability for an application and make it
  *     available for testing using Protractor.
  *
+ * @developerPreview
  * @publicApi
  */
 export function provideProtractorTestingSupport(): Provider[] {
