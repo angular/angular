@@ -11,22 +11,32 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const EXAMPLE_CONFIG_NAME = 'example-config.json';
 
 export class ExampleZipper {
-  constructor(sourceDirName, outputDirName) {
+  constructor(exampleDirName, outputDirName) {
     this.examplesPackageJson = path.join(__dirname, '../examples/shared/package.json');
     this.examplesSystemjsConfig = path.join(__dirname, '../examples/shared/boilerplate/systemjs/src/systemjs.config.js');
     this.examplesSystemjsLoaderConfig = path.join(__dirname, '../examples/shared/boilerplate/systemjs/src/systemjs-angular-loader.js');
     this.exampleTsconfig = path.join(__dirname, '../examples/shared/boilerplate/systemjs/src/tsconfig.json');
 
-    let gpathStackblitz = path.join(sourceDirName, '**/*stackblitz.json');
-    let gpathZipper = path.join(sourceDirName, '**/zipper.json');
-    let configFileNames = globbySync([gpathStackblitz, gpathZipper], {
-      ignore: ['**/node_modules/**'],
+    const configFileNames = this._findConfigurationFileNames(exampleDirName);
+    if (configFileNames.length == 0) {
+      throw new Error(`Missing zip configuration file(s) from example directory ${this.examplePath}. Did you forget to include a stackblitz.json/zipper.json?`);
+    }
+
+    configFileNames.forEach((configFileName) => {
+      this._zipExample(configFileName, exampleDirName, outputDirName);
+    });
+  }
+
+  _findConfigurationFileNames(exampleDirName) {
+    const gpathStackblitz = path.join(exampleDirName, '*stackblitz.json');
+    const gpathZipper = path.join(exampleDirName, 'zipper.json');
+
+    const configFileNames = globbySync([gpathStackblitz, gpathZipper], {
       dot: true // Include subpaths that begin with '.' when using a wildcard inclusion.
                 // Needed to include the bazel .cache folder on Linux.
     });
-    configFileNames.forEach((configFileName) => {
-      this._zipExample(configFileName, sourceDirName, outputDirName);
-    });
+
+    return configFileNames;
   }
 
   _changeTypeRoots(tsconfig) {
@@ -77,7 +87,7 @@ export class ExampleZipper {
     let json = this._loadJson(configFileName);
     const basePath = json.basePath || '';
     const jsonFileName = configFileName.replace(/^.*[\\\/]/, '');
-    let relativeDirName = path.dirname(path.relative(sourceDirName, configFileName));
+    let relativeDirName = path.basename(sourceDirName);
     let exampleZipName;
     const exampleType = this._getExampleType(path.join(sourceDirName, relativeDirName));
     if (relativeDirName.indexOf('/') !== -1) { // Special example
@@ -87,7 +97,7 @@ export class ExampleZipper {
     }
 
     const exampleDirName = path.dirname(configFileName);
-    const outputFileName = path.join(outputDirName, relativeDirName, exampleZipName + '.zip');
+    const outputFileName = path.join(outputDirName, exampleZipName + '.zip');
     let defaultIncludes = ['**/*.ts', '**/*.js', '**/*.es6', '**/*.css', '**/*.html', '**/*.md', '**/*.json', '**/*.png', '**/*.svg'];
     let alwaysIncludes = [
       '.editorconfig',
