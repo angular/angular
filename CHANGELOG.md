@@ -153,16 +153,6 @@
 | [7a81481fb2](https://github.com/angular/angular/commit/7a81481fb29e94b550db7ad68270eccf26bb2743) | perf | Remove generic objects in favor of Maps ([#44482](https://github.com/angular/angular/pull/44482)) |
 | [6642e3c8fd](https://github.com/angular/angular/commit/6642e3c8fd7d3b5ed22710667b2c41a46f14eda8) | perf | remove no longer needed CssKeyframes classes ([#44903](https://github.com/angular/angular/pull/44903)) |
 | [59559fdbac](https://github.com/angular/angular/commit/59559fdbacc00bee380b1e88c79d08b6e856ebbe) | refactor | make `AnimationDriver.getParentElement` required ([#45114](https://github.com/angular/angular/pull/45114)) |
-### bazel
-| Commit | Type | Description |
-| -- | -- | -- |
-| [636909fba7](https://github.com/angular/angular/commit/636909fba73e25b75489c6e050bda1b880e62885) | feat | allow for generated `package.json` files in `ng_package` ([#45470](https://github.com/angular/angular/pull/45470)) |
-| [28e835b4bb](https://github.com/angular/angular/commit/28e835b4bbd9271cbc7abe2a0e42ff273b1e7e84) | feat | report error when dependency does not provide JS sources in `ng_package` ([#45470](https://github.com/angular/angular/pull/45470)) |
-| [68597bb0ca](https://github.com/angular/angular/commit/68597bb0ca958445655653a0a3cb206c01c7e0b3) | feat | speed up dev-turnaround by bundling types only when packaging ([#45405](https://github.com/angular/angular/pull/45405)) |
-| [f8a1ea0c11](https://github.com/angular/angular/commit/f8a1ea0c117aa97f45b7696d2b0c9b5679e09b9f) | fix | do not error if files part of `srcs` are outside of package ([#45622](https://github.com/angular/angular/pull/45622)) |
-| [4b2e98d55d](https://github.com/angular/angular/commit/4b2e98d55dde4f6040a021a6ebd35d29fb5f8fdf) | fix | remove unnecessary file extractions from `ng_package` ([#45470](https://github.com/angular/angular/pull/45470)) |
-| [d48e0ccc01](https://github.com/angular/angular/commit/d48e0ccc0185cf00570191ea29d439d2cf500895) | fix | speed up `d.ts` bundling by configuring worker ([#45900](https://github.com/angular/angular/pull/45900)) |
-| [21a04ef5be](https://github.com/angular/angular/commit/21a04ef5be670418b19608227f0540e2b7a96de6) | perf | use allowedInputs to avoid fs.stat ([#46069](https://github.com/angular/angular/pull/46069)) |
 ### common
 | Commit | Type | Description |
 | -- | -- | -- |
@@ -225,7 +215,7 @@
 | [701405fa71](https://github.com/angular/angular/commit/701405fa710177ed1c963f61686ebb910e5ec74e) | fix | handle AOT-compiled standalone components in TestBed correctly ([#46052](https://github.com/angular/angular/pull/46052)) |
 | [ddce357d1d](https://github.com/angular/angular/commit/ddce357d1db9694bc69c114deb96e26d2651fb8b) | fix | improve TestBed declarations standalone error message ([#45999](https://github.com/angular/angular/pull/45999)) |
 | [ba9f30c9a6](https://github.com/angular/angular/commit/ba9f30c9a6af19b34d13962303ec96997c7c3d56) | fix | include component name into unknown element/property error message ([#46160](https://github.com/angular/angular/pull/46160)) |
-| [9fa6f5a552](https://github.com/angular/angular/commit/9fa6f5a552b7780ce32aa5a60273d4008a7b6afb) | fix | incorrectly inserting elements inside <template> element ([#43429](https://github.com/angular/angular/pull/43429)) |
+| [9fa6f5a552](https://github.com/angular/angular/commit/9fa6f5a552b7780ce32aa5a60273d4008a7b6afb) | fix | incorrectly inserting elements inside `<template>` element ([#43429](https://github.com/angular/angular/pull/43429)) |
 | [d5719c2e0f](https://github.com/angular/angular/commit/d5719c2e0fb237be71d658444bbfe2410e05086a) | fix | input coercion ([#42803](https://github.com/angular/angular/pull/42803)) |
 | [be161bef79](https://github.com/angular/angular/commit/be161bef798ac5309df8390e3c2bba2cf84cb530) | fix | memory leak in event listeners inside embedded views ([#43075](https://github.com/angular/angular/pull/43075)) |
 | [fa755b2a54](https://github.com/angular/angular/commit/fa755b2a541274336541e8870852e73718ad62d4) | fix | prevent `BrowserModule` providers from being loaded twice ([#45826](https://github.com/angular/angular/pull/45826)) |
@@ -238,11 +228,11 @@
 | [df339d8abf](https://github.com/angular/angular/commit/df339d8abf979c715c35db813c5a80252a92eba7) | fix | update unknown tag error for jit standalone components ([#45920](https://github.com/angular/angular/pull/45920)) |
 | [aafac7228f](https://github.com/angular/angular/commit/aafac7228f3d18bb720e85d2b889df446122f4c7) | fix | verify standalone component imports in JiT ([#45777](https://github.com/angular/angular/pull/45777)) |
 | [e9317aee71](https://github.com/angular/angular/commit/e9317aee71f64f4aadea0529601e589b37f6b46f) | perf | allow `checkNoChanges` mode to be tree-shaken in production ([#45913](https://github.com/angular/angular/pull/45913)) |
-| [071c8af8ba](https://github.com/angular/angular/commit/071c8af8ba89163270f17657c0c7f1c944f186f7) | perf | avoid storing LView in __ngContext__ ([#45051](https://github.com/angular/angular/pull/45051)) |
+| [071c8af8ba](https://github.com/angular/angular/commit/071c8af8ba89163270f17657c0c7f1c944f186f7) | perf | avoid storing LView in `__ngContext__` ([#45051](https://github.com/angular/angular/pull/45051)) |
 | [a96c4827c4](https://github.com/angular/angular/commit/a96c4827c4f62e1d665d8544a3e66c51d2644c88) | perf | make `Compiler`, `ApplicationRef` and `ApplicationInitStatus` tree-shakable ([#45102](https://github.com/angular/angular/pull/45102)) |
 | [45d98e7ca5](https://github.com/angular/angular/commit/45d98e7ca5accf918e2602cbc17805e11e18896b) | perf | make `IterableDiffers` and `KeyValueDiffers` tree-shakable ([#45094](https://github.com/angular/angular/pull/45094)) |
 | [1e60fe0a3e](https://github.com/angular/angular/commit/1e60fe0a3eeb6bd46997f7eeb4825351cfbe3c44) | perf | make `LOCALE_ID` and other tokens from `ApplicationModule` tree-shakable ([#45102](https://github.com/angular/angular/pull/45102)) |
-| [88f1168506](https://github.com/angular/angular/commit/88f1168506befd0665125da1fca2a719cb27dbb5) | perf | only track LViews that are referenced in __ngContext__ ([#45172](https://github.com/angular/angular/pull/45172)) |
+| [88f1168506](https://github.com/angular/angular/commit/88f1168506befd0665125da1fca2a719cb27dbb5) | perf | only track LViews that are referenced in `__ngContext__` ([#45172](https://github.com/angular/angular/pull/45172)) |
 | [9add714b13](https://github.com/angular/angular/commit/9add714b13740db621eb2b200d72be74cc7eb630) | refactor | remove deprecated `aotSummaries` fields in TestBed config ([#45487](https://github.com/angular/angular/pull/45487)) |
 ### devtools tabs
 | Commit | Type | Description |
@@ -265,7 +255,7 @@
 | [b36dec6b5b](https://github.com/angular/angular/commit/b36dec6b5b05de0d40581726c59db9f962a97124) | fix | not picking up disabled state if group is swapped out and disabled ([#43499](https://github.com/angular/angular/pull/43499)) |
 | [9f6fa5b746](https://github.com/angular/angular/commit/9f6fa5b746cbdd4a71f67728ff6b663ad26c6a29) | fix | Prevent FormBuilder from distributing unions to control types. ([#45942](https://github.com/angular/angular/pull/45942)) |
 | [aa7b857be8](https://github.com/angular/angular/commit/aa7b857be89a62e6dcfe62c418acf0823525d265) | fix | Property renaming safe code ([#45271](https://github.com/angular/angular/pull/45271)) |
-| [cae1e44608](https://github.com/angular/angular/commit/cae1e44608227ac80682401190c6d28ef39b3269) | fix | Update the typed forms migration to use FormArray<T> instead of FormArray<T[]>. ([#44933](https://github.com/angular/angular/pull/44933)) |
+| [cae1e44608](https://github.com/angular/angular/commit/cae1e44608227ac80682401190c6d28ef39b3269) | fix | Update the typed forms migration to use `FormArray<T>` instead of `x`. ([#44933](https://github.com/angular/angular/pull/44933)) |
 | [d336ba96d9](https://github.com/angular/angular/commit/d336ba96d922363235688f54d8af108ef7ab01f0) | fix | Update the typed forms migration. ([#45281](https://github.com/angular/angular/pull/45281)) |
 | [018550ed50](https://github.com/angular/angular/commit/018550ed5025de9737794b683eb7c0697d83d430) | fix | Value and RawValue should be part of the public API. ([#45978](https://github.com/angular/angular/pull/45978)) |
 | [2e96cede3e](https://github.com/angular/angular/commit/2e96cede3e2d9ac399c10d3bfe25259b92a5276e) | fix | Warn on FormControls that are constructed with both options and asyncValidators. |
