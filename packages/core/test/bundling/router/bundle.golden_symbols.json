@@ -996,9 +996,6 @@
     "name": "defaultErrorHandler"
   },
   {
-    "name": "defaultErrorLogger"
-  },
-  {
     "name": "defaultIfEmpty"
   },
   {

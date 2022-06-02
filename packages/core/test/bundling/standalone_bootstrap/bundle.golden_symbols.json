@@ -432,9 +432,6 @@
     "name": "deepForEach"
   },
   {
-    "name": "defaultErrorLogger"
-  },
-  {
     "name": "defaultScheduler"
   },
   {
