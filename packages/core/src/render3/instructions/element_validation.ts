@@ -120,34 +120,6 @@ export function validateElementIsKnown(
 }
 
 /**
- * Validates that the property of the element is known at runtime, if it's not the case
- * produces an return false (otherwise returns true with no errors).
- * This check is relevant for JIT-compiled components (for AOT-compiled
- * ones this check happens at build time).
- *
- * The property is considered known if either:
- * - it's a known property of the element
- * - the element is allowed by one of the schemas
- * - the property is used for animations
- *
- * @param element Element to validate
- * @param propName Name of the property to check
- * @param schemas Array of schemas
- * @param tagName Name of the tag to check
- * @param nodeType nodeType Type of the node hosting the property
- * @param lView An `LView` that represents a current component that is being rendered
- */
-export function validatePropertyIsKnown(
-    element: RElement|RComment, propName: string, schemas: SchemaMetadata[]|null,
-    tagName: string|null, nodeType: TNodeType, lView: LView): boolean {
-  const isValid = isPropertyValid(element, propName, tagName, schemas);
-  if (!isValid) {
-    handleUnknownPropertyError(propName, tagName, nodeType, lView);
-  }
-  return isValid;
-}
-
-/**
  * Validates that the property of the element is known at runtime and returns
  * false if it's not the case.
  * This check is relevant for JIT-compiled components (for AOT-compiled
@@ -163,7 +135,7 @@ export function validatePropertyIsKnown(
  * @param tagName Name of the tag hosting the property
  * @param schemas Array of schemas
  */
-function isPropertyValid(
+export function isPropertyValid(
     element: RElement|RComment, propName: string, tagName: string|null,
     schemas: SchemaMetadata[]|null): boolean {
   // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
