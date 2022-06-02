@@ -27,6 +27,7 @@ import {INJECTOR_DEF_TYPES} from './internal_tokens';
 /**
  * A source of providers for the `importProvidersFrom` function.
  *
+ * @developerPreview
  * @publicApi
  */
 export type ImportProvidersSource =
