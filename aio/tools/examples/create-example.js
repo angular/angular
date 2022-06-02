@@ -4,8 +4,9 @@ const ignore = require('ignore');
 const path = require('canonical-path');
 const shelljs = require('shelljs');
 const yargs = require('yargs');
+const buildozer = require('@bazel/buildozer');
 
-const {EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, SHARED_PATH, STACKBLITZ_CONFIG_FILENAME} =
+const {EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, PROJECT_ROOT, SHARED_PATH, STACKBLITZ_CONFIG_FILENAME} =
     require('./constants');
 const BASIC_SOURCE_PATH = path.resolve(SHARED_PATH, 'example-scaffold');
 
@@ -32,12 +33,14 @@ if (require.main === module) {
   createEmptyExample(exampleName, examplePath);
 
   const sourcePath =
-      options.source !== undefined ? path.resolve(options.source) : BASIC_SOURCE_PATH;
+      options.source !== undefined ? path.resolve(EXAMPLES_BASE_PATH, options.source) : BASIC_SOURCE_PATH;
   console.log('Copying files from', sourcePath);
   copyExampleFiles(sourcePath, examplePath, exampleName);
 
+  buildozer.runWithOptions([{commands: [`set name ${exampleName}`], targets: [`//aio/content/examples/${exampleName}:%docs_example`]}], {cwd: PROJECT_ROOT});
+
   console.log(`The new "${exampleName}" example has been created.`);
-  console.log('Now run "yarn boilerplate:add" to set it up for development.');
+  console.log(`To include this example, add a "${exampleName}" entry in aio/content/examples/examples.bzl`)
   console.log(
       'You can find more info on working with docs examples in aio/tools/examples/README.md.')
 }

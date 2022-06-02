@@ -331,20 +331,6 @@ Unless otherwise commented, all code snippets in this page are from sample sourc
 <div class="alert is-important">
 
 The documentation tooling reports an error if the file identified in the path does not exist or is in the [`.git-ignore` file](https://github.com/angular/angular/blob/main/aio/content/examples/.gitignore).
-Most `.js` files are in `.git-ignore`.
-
-To include an ignored code file in your project and display it in a guide, remove it from `.git-ignore`.
-Update the `content/examples/.gitignore` as follows:
-
-<code-example header="content/examples/.gitignore">
-
-&num; my-guide
-!my-guide/src/something.js
-!my-guide/more-javascript*.js
-
-</code-example>
-
-</div>
 
 <a id="region"></a>
 
