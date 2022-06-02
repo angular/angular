@@ -21,6 +21,7 @@ import {
   ChangeDetectorRef,
   Component,
   ComponentRef,
+  Directive,
   ElementRef,
   EmbeddedViewRef,
   NgZone,
@@ -34,45 +35,11 @@ import {matSnackBarAnimations} from './snack-bar-animations';
 import {MatSnackBarConfig} from './snack-bar-config';
 
 /**
- * Internal interface for a snack bar container.
+ * Base class for snack bar containers.
  * @docs-private
  */
-export interface _SnackBarContainer {
-  snackBarConfig: MatSnackBarConfig;
-  readonly _onAnnounce: Subject<any>;
-  readonly _onExit: Subject<any>;
-  readonly _onEnter: Subject<any>;
-  enter: () => void;
-  exit: () => Observable<void>;
-  attachTemplatePortal: <C>(portal: TemplatePortal<C>) => EmbeddedViewRef<C>;
-  attachComponentPortal: <T>(portal: ComponentPortal<T>) => ComponentRef<T>;
-}
-
-/**
- * Internal component that wraps user-provided snack bar content.
- * @docs-private
- */
-@Component({
-  selector: 'snack-bar-container',
-  templateUrl: 'snack-bar-container.html',
-  styleUrls: ['snack-bar-container.css'],
-  // In Ivy embedded views will be change detected from their declaration place, rather than
-  // where they were stamped out. This means that we can't have the snack bar container be OnPush,
-  // because it might cause snack bars that were opened from a template not to be out of date.
-  // tslint:disable-next-line:validate-decorators
-  changeDetection: ChangeDetectionStrategy.Default,
-  encapsulation: ViewEncapsulation.None,
-  animations: [matSnackBarAnimations.snackBarState],
-  host: {
-    'class': 'mat-snack-bar-container',
-    '[@state]': '_animationState',
-    '(@state.done)': 'onAnimationEnd($event)',
-  },
-})
-export class MatSnackBarContainer
-  extends BasePortalOutlet
-  implements OnDestroy, _SnackBarContainer
-{
+@Directive()
+export abstract class _MatSnackBarContainerBase extends BasePortalOutlet implements OnDestroy {
   /** The number of milliseconds to wait before announcing the snack bar's content. */
   private readonly _announceDelay: number = 150;
 
@@ -108,7 +75,7 @@ export class MatSnackBarContainer
 
   constructor(
     private _ngZone: NgZone,
-    private _elementRef: ElementRef<HTMLElement>,
+    protected _elementRef: ElementRef<HTMLElement>,
     private _changeDetectorRef: ChangeDetectorRef,
     private _platform: Platform,
     /** The snack bar configuration. */
@@ -141,15 +108,17 @@ export class MatSnackBarContainer
   /** Attach a component portal as content to this snack bar container. */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     this._assertNotAttached();
-    this._applySnackBarClasses();
-    return this._portalOutlet.attachComponentPortal(portal);
+    const result = this._portalOutlet.attachComponentPortal(portal);
+    this._afterPortalAttached();
+    return result;
   }
 
   /** Attach a template portal as content to this snack bar container. */
   attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C> {
     this._assertNotAttached();
-    this._applySnackBarClasses();
-    return this._portalOutlet.attachTemplatePortal(portal);
+    const result = this._portalOutlet.attachTemplatePortal(portal);
+    this._afterPortalAttached();
+    return result;
   }
 
   /**
@@ -159,8 +128,9 @@ export class MatSnackBarContainer
    */
   override attachDomPortal = (portal: DomPortal) => {
     this._assertNotAttached();
-    this._applySnackBarClasses();
-    return this._portalOutlet.attachDomPortal(portal);
+    const result = this._portalOutlet.attachDomPortal(portal);
+    this._afterPortalAttached();
+    return result;
   };
 
   /** Handle end of animations, updating the state of the snackbar. */
@@ -234,8 +204,11 @@ export class MatSnackBarContainer
     });
   }
 
-  /** Applies the various positioning and user-configured CSS classes to the snack bar. */
-  private _applySnackBarClasses() {
+  /**
+   * Called after the portal contents have been attached. Can be
+   * used to modify the DOM once it's guaranteed to be in place.
+   */
+  protected _afterPortalAttached() {
     const element: HTMLElement = this._elementRef.nativeElement;
     const panelClasses = this.snackBarConfig.panelClass;
 
@@ -246,14 +219,6 @@ export class MatSnackBarContainer
       } else {
         element.classList.add(panelClasses);
       }
-    }
-
-    if (this.snackBarConfig.horizontalPosition === 'center') {
-      element.classList.add('mat-snack-bar-center');
-    }
-
-    if (this.snackBarConfig.verticalPosition === 'top') {
-      element.classList.add('mat-snack-bar-top');
     }
   }
 
@@ -296,6 +261,41 @@ export class MatSnackBarContainer
           }
         }, this._announceDelay);
       });
+    }
+  }
+}
+
+/**
+ * Internal component that wraps user-provided snack bar content.
+ * @docs-private
+ */
+@Component({
+  selector: 'snack-bar-container',
+  templateUrl: 'snack-bar-container.html',
+  styleUrls: ['snack-bar-container.css'],
+  // In Ivy embedded views will be change detected from their declaration place, rather than
+  // where they were stamped out. This means that we can't have the snack bar container be OnPush,
+  // because it might cause snack bars that were opened from a template not to be out of date.
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default,
+  encapsulation: ViewEncapsulation.None,
+  animations: [matSnackBarAnimations.snackBarState],
+  host: {
+    'class': 'mat-snack-bar-container',
+    '[@state]': '_animationState',
+    '(@state.done)': 'onAnimationEnd($event)',
+  },
+})
+export class MatSnackBarContainer extends _MatSnackBarContainerBase {
+  protected override _afterPortalAttached() {
+    super._afterPortalAttached();
+
+    if (this.snackBarConfig.horizontalPosition === 'center') {
+      this._elementRef.nativeElement.classList.add('mat-snack-bar-center');
+    }
+
+    if (this.snackBarConfig.verticalPosition === 'top') {
+      this._elementRef.nativeElement.classList.add('mat-snack-bar-top');
     }
   }
 }

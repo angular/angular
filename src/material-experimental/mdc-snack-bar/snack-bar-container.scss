@@ -4,7 +4,9 @@
 @use '../mdc-helpers/mdc-helpers';
 
 @include mdc-helpers.disable-fallback-declarations {
-  @include mdc-snackbar.core-styles($query: mdc-helpers.$mat-base-styles-query);
+  // Include the styles without the animations since we
+  // reuse the same animation as the non-MDC version.
+  @include mdc-snackbar.core-styles($query: mdc-helpers.$mat-base-styles-without-animation-query);
 }
 
 // MDC sets the position as fixed and sets the container on the bottom center of the page (or
@@ -15,10 +17,6 @@
 
   @include cdk.high-contrast(active, off) {
     border: solid 1px;
-  }
-
-  &._mat-animation-noopable .mdc-snackbar__surface {
-    transition: none;
   }
 }
 

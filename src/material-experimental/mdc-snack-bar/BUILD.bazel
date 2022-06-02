@@ -25,7 +25,6 @@ ng_module(
         "//src/material-experimental/mdc-core",
         "//src/material/snack-bar",
         "@npm//@angular/core",
-        "@npm//@material/snackbar",
     ],
 )
 

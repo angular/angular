@@ -26,7 +26,7 @@ import {
 import {takeUntil} from 'rxjs/operators';
 import {TextOnlySnackBar, SimpleSnackBar} from './simple-snack-bar';
 import {MAT_SNACK_BAR_DATA, MatSnackBarConfig} from './snack-bar-config';
-import {MatSnackBarContainer, _SnackBarContainer} from './snack-bar-container';
+import {MatSnackBarContainer, _MatSnackBarContainerBase} from './snack-bar-container';
 import {MatSnackBarModule} from './snack-bar-module';
 import {MatSnackBarRef} from './snack-bar-ref';
 
@@ -57,7 +57,7 @@ export abstract class _MatSnackBarBase implements OnDestroy {
   protected abstract simpleSnackBarComponent: Type<TextOnlySnackBar>;
 
   /** The container component that attaches the provided template or component. */
-  protected abstract snackBarContainerComponent: Type<_SnackBarContainer>;
+  protected abstract snackBarContainerComponent: Type<_MatSnackBarContainerBase>;
 
   /** The CSS class to apply for handset mode. */
   protected abstract handsetCssClass: string;
@@ -161,7 +161,7 @@ export abstract class _MatSnackBarBase implements OnDestroy {
   private _attachSnackBarContainer(
     overlayRef: OverlayRef,
     config: MatSnackBarConfig,
-  ): _SnackBarContainer {
+  ): _MatSnackBarContainerBase {
     const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
     const injector = Injector.create({
       parent: userInjector || this._injector,
@@ -173,7 +173,8 @@ export abstract class _MatSnackBarBase implements OnDestroy {
       config.viewContainerRef,
       injector,
     );
-    const containerRef: ComponentRef<_SnackBarContainer> = overlayRef.attach(containerPortal);
+    const containerRef: ComponentRef<_MatSnackBarContainerBase> =
+      overlayRef.attach(containerPortal);
     containerRef.instance.snackBarConfig = config;
     return containerRef.instance;
   }

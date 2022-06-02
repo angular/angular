@@ -81,7 +81,7 @@ export abstract class _MatSnackBarBase implements OnDestroy {
     openFromComponent<T, D = any>(component: ComponentType<T>, config?: MatSnackBarConfig<D>): MatSnackBarRef<T>;
     openFromTemplate(template: TemplateRef<any>, config?: MatSnackBarConfig): MatSnackBarRef<EmbeddedViewRef<any>>;
     protected abstract simpleSnackBarComponent: Type<TextOnlySnackBar>;
-    protected abstract snackBarContainerComponent: Type<_SnackBarContainer>;
+    protected abstract snackBarContainerComponent: Type<_MatSnackBarContainerBase>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<_MatSnackBarBase, [null, null, null, null, { optional: true; skipSelf: true; }, null]>;
     // (undocumented)
@@ -102,14 +102,27 @@ export class MatSnackBarConfig<D = any> {
 }
 
 // @public
-export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy, _SnackBarContainer {
+export class MatSnackBarContainer extends _MatSnackBarContainerBase {
+    // (undocumented)
+    protected _afterPortalAttached(): void;
+    // (undocumented)
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatSnackBarContainer, "snack-bar-container", never, {}, {}, never, never, false>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBarContainer, never>;
+}
+
+// @public
+export abstract class _MatSnackBarContainerBase extends BasePortalOutlet implements OnDestroy {
     constructor(_ngZone: NgZone, _elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _platform: Platform,
     snackBarConfig: MatSnackBarConfig);
+    protected _afterPortalAttached(): void;
     _animationState: string;
     attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;
     // @deprecated
     attachDomPortal: (portal: DomPortal) => void;
     attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C>;
+    // (undocumented)
+    protected _elementRef: ElementRef<HTMLElement>;
     enter(): void;
     exit(): Observable<void>;
     _live: AriaLivePoliteness;
@@ -122,9 +135,9 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy,
     _role?: 'status' | 'alert';
     snackBarConfig: MatSnackBarConfig;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatSnackBarContainer, "snack-bar-container", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatSnackBarContainerBase, never, never, {}, {}, never, never, false>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBarContainer, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_MatSnackBarContainerBase, never>;
 }
 
 // @public
@@ -147,12 +160,12 @@ export class MatSnackBarModule {
 
 // @public
 export class MatSnackBarRef<T> {
-    constructor(containerInstance: _SnackBarContainer, _overlayRef: OverlayRef);
+    constructor(containerInstance: _MatSnackBarContainerBase, _overlayRef: OverlayRef);
     afterDismissed(): Observable<MatSnackBarDismiss>;
     afterOpened(): Observable<void>;
     // @deprecated
     closeWithAction(): void;
-    containerInstance: _SnackBarContainer;
+    containerInstance: _MatSnackBarContainerBase;
     dismiss(): void;
     _dismissAfter(duration: number): void;
     dismissWithAction(): void;
@@ -179,26 +192,6 @@ export class SimpleSnackBar implements TextOnlySnackBar {
     static ɵcmp: i0.ɵɵComponentDeclaration<SimpleSnackBar, "simple-snack-bar", never, {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<SimpleSnackBar, never>;
-}
-
-// @public
-export interface _SnackBarContainer {
-    // (undocumented)
-    attachComponentPortal: <T>(portal: ComponentPortal<T>) => ComponentRef<T>;
-    // (undocumented)
-    attachTemplatePortal: <C>(portal: TemplatePortal<C>) => EmbeddedViewRef<C>;
-    // (undocumented)
-    enter: () => void;
-    // (undocumented)
-    exit: () => Observable<void>;
-    // (undocumented)
-    readonly _onAnnounce: Subject<any>;
-    // (undocumented)
-    readonly _onEnter: Subject<any>;
-    // (undocumented)
-    readonly _onExit: Subject<any>;
-    // (undocumented)
-    snackBarConfig: MatSnackBarConfig;
 }
 
 // @public
