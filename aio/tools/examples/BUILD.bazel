@@ -6,10 +6,10 @@ package(default_visibility = ["//visibility:public"])
 EXAMPLE_BOILERPLATE_SRCS = [
     "example-boilerplate.js",
     "constants.js",
-] + glob(["shared/**"])
+    "//aio/tools/examples/shared",
+]
 
 EXAMPLE_BOILERPLATE_DEPS = [
-    "//aio/content/examples",
     "@aio_npm//canonical-path",
     "@aio_npm//fs-extra",
     "@aio_npm//ignore",
@@ -35,7 +35,7 @@ CREATE_EXAMPLE_SRCS = [
 ] + glob(["shared/**"])
 
 CREATE_EXAMPLE_DEPS = [
-    "//aio/content/examples",
+    "@aio_npm//@bazel/buildozer",
     "@aio_npm//canonical-path",
     "@aio_npm//fs-extra",
     "@aio_npm//ignore",

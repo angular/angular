@@ -7,8 +7,8 @@ import jsdom from 'jsdom';
 import regionExtractor from 'aio/tools/examples-package/services/region-parser.js';
 
 export class StackblitzBuilder {
-  constructor(basePath, destPath) {
-    this.basePath = basePath;
+  constructor(examplePath, destPath) {
+    this.examplePath = examplePath;
     this.destPath = destPath;
     this.copyrights = this._buildCopyrightStrings();
     this._boilerplatePackageJsons = {};
@@ -16,14 +16,11 @@ export class StackblitzBuilder {
 
   build() {
     this._checkForOutdatedConfig();
+    const fileNames = this._getConfigFileNames();
+    if (fileNames.length == 0) {
+      throw new Error(`Missing stackblitz configuration file(s) from example directory ${this.examplePath}. Did you forget to include a stackblitz.json?`);
+    }
 
-    // When testing it sometimes helps to look a just one example directory like so:
-    // const stackblitzPaths = path.join(this.basePath, '**/testing/*stackblitz.json');
-    const stackblitzPaths = path.join(this.basePath, '**/*stackblitz.json');
-    const fileNames = globbySync(stackblitzPaths, { ignore: ['**/node_modules/**'],
-      dot: true // Include subpaths that begin with '.' when using a wildcard inclusion.
-                // Needed to include the bazel .cache folder on Linux.
-    });
     let failed = false;
     fileNames.forEach((configFileName) => {
       try {
@@ -37,6 +34,15 @@ export class StackblitzBuilder {
     if (failed) {
       process.exit(1);
     }
+  }
+
+  _getConfigFileNames() {
+    const stackblitzPaths = path.join(this.examplePath, '*stackblitz.json');
+    const fileNames = globbySync(stackblitzPaths, {
+      dot: true // Include subpaths that begin with '.' when using a wildcard inclusion.
+                // Needed to include the bazel .cache folder on Linux.
+    });
+    return fileNames;
   }
 
   _getExampleType(exampleDir) {
@@ -80,8 +86,7 @@ export class StackblitzBuilder {
   _buildStackblitzFrom(configFileName) {
     // replace ending 'stackblitz.json' with 'stackblitz.html' to create output file name;
     const outputFileName = configFileName.replace(/stackblitz\.json$/, 'stackblitz.html');
-    const partPath = path.dirname(path.relative(this.basePath, outputFileName));
-    const outputFilePath = path.join(this.destPath, partPath, path.basename(outputFileName));
+    const outputFilePath = path.join(this.destPath, path.basename(outputFileName));
     const config = this._initConfigAndCollectFileNames(configFileName);
     const postData = this._createPostData(config, configFileName);
 
@@ -95,7 +100,7 @@ export class StackblitzBuilder {
 
   _checkForOutdatedConfig() {
     // Ensure that nobody is trying to use the old config filenames (i.e. `plnkr.json`).
-    const plunkerPaths = path.join(this.basePath, '**/*plnkr.json');
+    const plunkerPaths = path.join(this.examplePath, '**/*plnkr.json');
     const fileNames = globbySync(plunkerPaths, { ignore: ['**/node_modules/**'],
       dot: true // Include subpaths that begin with '.' when using a wildcard inclusion.
                 // Needed to include the bazel .cache folder on Linux.
