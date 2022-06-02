@@ -115,6 +115,7 @@
     "@angular/cli": "15.0.0-rc.0",
     "@angular/compiler-cli": "15.0.0-rc.0",
     "@bazel/bazelisk": "^1.7.5",
+    "@bazel/buildozer": "^5.1.0",
     "@bazel/jasmine": "^5.4.1",
     "@bazel/typescript": "5.3.1",
     "@bazel/runfiles": "5.4.2",

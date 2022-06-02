@@ -1073,6 +1073,7 @@ groups:
           'aio/tests/**/{*,.*}',
           'aio/tools/**/{*,.*}',
           'aio/tools/examples/shared/boilerplate/cli/.vscode/**/{*,.*}',
+          'aio/content/BUILD.bazel',
           'aio/content/images/guide/contributors-guide/**/{*,.*}',
           'aio/content/guide/contributors-guide-overview.md',
           'aio/content/guide/docs-style-guide.md',
