@@ -731,7 +731,7 @@ describe('pipe', () => {
               const fixture = TestBed.createComponent(TestComponent);
               fixture.detectChanges();
             }).toThrowError(expectedThrowRegex);
-          })
+          });
 
           it('should throw an error if a pipe is not found inside an inline template', () => {
             @Component({
