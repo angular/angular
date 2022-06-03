@@ -14,6 +14,7 @@ import {Type} from '../interface/type';
 import {getFactoryDef} from './definition_factory';
 import {setIncludeViewProviders} from './di';
 import {store, ɵɵdirectiveInject} from './instructions/all';
+import {isHostComponentStandalone} from './instructions/shared';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
 import {pureFunction1Internal, pureFunction2Internal, pureFunction3Internal, pureFunction4Internal, pureFunctionVInternal} from './pure_function';
@@ -83,13 +84,28 @@ function getPipeDef(name: string, registry: PipeDefList|null): PipeDef<any>|unde
     }
   }
   if (ngDevMode) {
-    const lView = getLView();
-    const declarationLView = lView[DECLARATION_COMPONENT_VIEW] as LView<Type<unknown>>;
-    const context = declarationLView[CONTEXT];
-    const component = context ? ` in the '${context.constructor.name}' component` : '';
-    throw new RuntimeError(
-        RuntimeErrorCode.PIPE_NOT_FOUND, `The pipe '${name}' could not be found${component}!`);
+    throw new RuntimeError(RuntimeErrorCode.PIPE_NOT_FOUND, getPipeNotFoundErrorMessage(name));
   }
+}
+
+/**
+ * Generates a helpful error message for the user when a pipe is not found.
+ *
+ * @param name Name of the missing pipe
+ * @returns The error message
+ */
+function getPipeNotFoundErrorMessage(name: string) {
+  const lView = getLView();
+  const declarationLView = lView[DECLARATION_COMPONENT_VIEW] as LView<Type<unknown>>;
+  const context = declarationLView[CONTEXT];
+  const hostIsStandalone = isHostComponentStandalone(lView);
+  const componentInfoMessage = context ? ` in the '${context.constructor.name}' component` : '';
+  const verifyMessage = `Verify that it is ${
+      hostIsStandalone ? 'included in the \'@Component.imports\' of this component' :
+                         'declared or imported in this module'}`;
+  const errorMessage =
+      `The pipe '${name}' could not be found${componentInfoMessage}. ${verifyMessage}`;
+  return errorMessage;
 }
 
 /**
