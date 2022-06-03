@@ -1032,6 +1032,14 @@ describe('Typed Class', () => {
         }
       });
 
+      it('from objects with optional keys', () => {
+        const controls = {name: fb.control('')};
+        const foo:
+            FormGroup<{name: FormControl<string|null>; address?: FormControl<string|null>;}> =
+                fb.group<{name: FormControl<string|null>; address?: FormControl<string|null>;}>(
+                    controls);
+      });
+
       it('from objects with FormControlState', () => {
         const c = fb.group({foo: {value: 'bar', disabled: false}});
         {
