@@ -1,0 +1,11 @@
+.mat-paginator {
+  background: lavender;
+}
+
+::ng-deep.mat-paginator .mat-paginator-container{
+  justify-content: flex-start;
+}
+
+.mat-paginator-increment {
+  padding: 4px;
+}

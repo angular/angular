@@ -7,11 +7,13 @@ import {MatChipsModule} from '@angular/material/chips';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatPaginatorModule} from '@angular/material/paginator';
 import {ChipsComponent} from './components/chips/chips.component';
 import {MenuComponent} from './components/menu/menu.component';
+import {PaginatorComponent} from './components/paginator/paginator.component';
 
 @NgModule({
-  declarations: [AppComponent, ChipsComponent, MenuComponent],
+  declarations: [AppComponent, ChipsComponent, MenuComponent, PaginatorComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -19,6 +21,7 @@ import {MenuComponent} from './components/menu/menu.component';
     MatFormFieldModule,
     MatIconModule,
     MatMenuModule,
+    MatPaginatorModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
