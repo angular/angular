@@ -549,9 +549,6 @@
     "name": "_randomChar"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "_symbolIterator"
   },
   {
@@ -655,6 +652,9 @@
   },
   {
     "name": "collectStylingFromTAttrs"
+  },
+  {
+    "name": "componentDefCount"
   },
   {
     "name": "compose"
