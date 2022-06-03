@@ -1,4 +1,4 @@
-import {error, FatalReleaseActionError} from '@angular/dev-infra-private/ng-dev';
+import {error, ReleasePrecheckError} from '@angular/dev-infra-private/ng-dev';
 import {SemVer} from 'semver';
 import {join} from 'path';
 import {existsSync, readFileSync} from 'fs';
@@ -34,7 +34,7 @@ export async function assertValidFrameworkPeerDependency(newVersion: SemVer) {
       ),
     );
     error(chalk.red(`      Please manually update the version range ` + `in: ${bzlConfigPath}`));
-    throw new FatalReleaseActionError();
+    throw new ReleasePrecheckError();
   }
 }
 
@@ -50,7 +50,7 @@ function _extractAngularVersionPlaceholderOrThrow(): string {
           `the Angular peerDependency placeholder value. Looked for: ${bzlConfigPath}`,
       ),
     );
-    throw new FatalReleaseActionError();
+    throw new ReleasePrecheckError();
   }
 
   const configFileContent = readFileSync(bzlConfigPath, 'utf8');
@@ -63,7 +63,7 @@ function _extractAngularVersionPlaceholderOrThrow(): string {
           `Looked in: ${bzlConfigPath}`,
       ),
     );
-    throw new FatalReleaseActionError();
+    throw new ReleasePrecheckError();
   }
   return matches[1];
 }
