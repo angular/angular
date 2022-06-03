@@ -8,7 +8,7 @@
 
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type} from '../../interface/type';
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata';
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
 import {throwError} from '../../util/assert';
 import {getComponentDef} from '../definition';
 import {ComponentDef} from '../interfaces/definition';
