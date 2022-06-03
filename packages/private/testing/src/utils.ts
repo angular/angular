@@ -10,15 +10,14 @@ import {ɵresetJitOptions as resetJitOptions} from '@angular/core';
 /**
  * Wraps a function in a new function which sets up document and HTML for running a test.
  *
- * This function is intended to wrap an existing testing function. The wrapper
- * adds HTML to the `body` element of the `document` and subsequently tears it down.
+ * This function wraps an existing testing function. The wrapper adds HTML to the `body` element of
+ * the `document` and subsequently tears it down.
  *
- * This function is intended to be used with `async await` and `Promise`s. If the wrapped
- * function returns a promise (or is `async`) then the teardown is delayed until that `Promise`
- * is resolved.
+ * This function can be used with `async await` and `Promise`s. If the wrapped function returns a
+ * promise (or is `async`) then the teardown is delayed until that `Promise` is resolved.
  *
- * On `node` this function detects if `document` is present and if not it will create one by
- * loading `domino` and installing it.
+ * In the NodeJS environment this function detects if `document` is present and if not, it creates
+ * one by loading `domino` and installing it.
  *
  * Example:
  *
@@ -32,14 +31,51 @@ import {ɵresetJitOptions as resetJitOptions} from '@angular/core';
  * });
  * ```
  *
- * @param html HTML which should be inserted into `body` of the `document`.
+ * @param html HTML which should be inserted into the `body` of the `document`.
  * @param blockFn function to wrap. The function can return promise or be `async`.
- * @publicApi
  */
 export function withBody<T extends Function>(html: string, blockFn: T): T {
+  return wrapTestFn(() => document.body, html, blockFn);
+}
+
+/**
+ * Wraps a function in a new function which sets up document and HTML for running a test.
+ *
+ * This function wraps an existing testing function. The wrapper adds HTML to the `head` element of
+ * the `document` and subsequently tears it down.
+ *
+ * This function can be used with `async await` and `Promise`s. If the wrapped function returns a
+ * promise (or is `async`) then the teardown is delayed until that `Promise` is resolved.
+ *
+ * In the NodeJS environment this function detects if `document` is present and if not, it creates
+ * one by loading `domino` and installing it.
+ *
+ * Example:
+ *
+ * ```
+ * describe('something', () => {
+ *   it('should do something', withHead('<link rel="preconnect" href="...">', async () => {
+ *     // ...
+ *   }));
+ * });
+ * ```
+ *
+ * @param html HTML which should be inserted into the `head` of the `document`.
+ * @param blockFn function to wrap. The function can return promise or be `async`.
+ */
+export function withHead<T extends Function>(html: string, blockFn: T): T {
+  return wrapTestFn(() => document.head, html, blockFn);
+}
+
+/**
+ * Wraps provided function (which typically contains the code of a test) into a new function that
+ * performs the necessary setup of the environment.
+ */
+function wrapTestFn<T extends Function>(
+    elementGetter: () => HTMLElement, html: string, blockFn: T): T {
   return function(done: DoneFn) {
     if (typeof blockFn === 'function') {
-      document.body.innerHTML = html;
+      elementGetter().innerHTML = html;
       const blockReturn = blockFn();
       if (blockReturn instanceof Promise) {
         blockReturn.then(done, done.fail);
