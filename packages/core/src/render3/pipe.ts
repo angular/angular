@@ -91,7 +91,7 @@ function getPipeDef(name: string, registry: PipeDefList|null): PipeDef<any>|unde
 /**
  * Generates a helpful error message for the user when a pipe is not found.
  *
- * @param name Name of non-found pipe
+ * @param name Name of the missing pipe
  * @returns The error message
  */
 function getPipeNotFoundErrorMessage(name: string) {
@@ -100,10 +100,11 @@ function getPipeNotFoundErrorMessage(name: string) {
   const context = declarationLView[CONTEXT];
   const hostIsStandalone = isHostComponentStandalone(lView);
   const componentInfoMessage = context ? ` in the '${context.constructor.name}' component` : '';
-  const verifyMessage = `verify that it is ${
-      hostIsStandalone ? 'imported by the component' : 'declared or imported in this module'}`;
+  const verifyMessage = `Verify that it is ${
+      hostIsStandalone ? 'included in the \'@Component.imports\' of this component' :
+                         'declared or imported in this module'}`;
   const errorMessage =
-      `The pipe '${name}' could not be found${componentInfoMessage}, ${verifyMessage}`;
+      `The pipe '${name}' could not be found${componentInfoMessage}. ${verifyMessage}`;
   return errorMessage;
 }
 

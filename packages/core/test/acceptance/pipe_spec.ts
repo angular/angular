@@ -709,13 +709,10 @@ describe('pipe', () => {
 
   [false, true].forEach(componentIsStandalone => {
     const expectedThrowRegex = new RegExp(
-        'The pipe \'testMissingPipe\' could not be found in the \'TestComponent\' component,' +
-        (componentIsStandalone ? ' verify that it is imported by the component' :
-                                 ' verify that it is declared or imported in this module'));
-
-    function getTestModuleMetadata(...components: Function[]) {
-      return componentIsStandalone ? {implements: components} : {declarations: components};
-    }
+        'The pipe \'testMissingPipe\' could not be found in the \'TestComponent\' component.' +
+        (componentIsStandalone ?
+             ' Verify that it is included in the \'@Component.imports\' of this component' :
+             ' Verify that it is declared or imported in this module'));
 
     describe(
         `missing pipe detection logic (inside ${
@@ -726,7 +723,9 @@ describe('pipe', () => {
             class TestComponent {
             }
 
-            TestBed.configureTestingModule(getTestModuleMetadata(TestComponent));
+            if (!componentIsStandalone) {
+              TestBed.configureTestingModule({declarations: [TestComponent]});
+            }
 
             expect(() => {
               const fixture = TestBed.createComponent(TestComponent);
@@ -747,7 +746,9 @@ describe('pipe', () => {
               value: string = 'test';
             }
 
-            TestBed.configureTestingModule(getTestModuleMetadata(TestComponent));
+            if (!componentIsStandalone) {
+              TestBed.configureTestingModule({declarations: [TestComponent]});
+            }
 
             expect(() => {
               const fixture = TestBed.createComponent(TestComponent);
@@ -776,10 +777,9 @@ describe('pipe', () => {
               value: string = 'test';
             }
 
-            const testModuleMetadata = componentIsStandalone ?
-                getTestModuleMetadata(TestComponent) :
-                getTestModuleMetadata(TestComponent, TestChildComponent);
-            TestBed.configureTestingModule(testModuleMetadata);
+            if (!componentIsStandalone) {
+              TestBed.configureTestingModule({declarations: [TestComponent, TestChildComponent]});
+            }
 
             expect(() => {
               const fixture = TestBed.createComponent(TestComponent);
@@ -811,10 +811,10 @@ describe('pipe', () => {
                  value: string = 'test';
                }
 
-               const testModuleMetadata = componentIsStandalone ?
-                   getTestModuleMetadata(TestComponent) :
-                   getTestModuleMetadata(TestComponent, TestChildComponent);
-               TestBed.configureTestingModule(testModuleMetadata);
+               if (!componentIsStandalone) {
+                 TestBed.configureTestingModule(
+                     {declarations: [TestComponent, TestChildComponent]});
+               }
 
                expect(() => {
                  const fixture = TestBed.createComponent(TestComponent);
@@ -831,7 +831,9 @@ describe('pipe', () => {
               value: string = 'test';
             }
 
-            TestBed.configureTestingModule(getTestModuleMetadata(TestComponent));
+            if (!componentIsStandalone) {
+              TestBed.configureTestingModule({declarations: [TestComponent]});
+            }
 
             expect(() => {
               const fixture = TestBed.createComponent(TestComponent);
@@ -850,7 +852,9 @@ describe('pipe', () => {
                  isVisible: boolean = true;
                }
 
-               TestBed.configureTestingModule(getTestModuleMetadata(TestComponent));
+               if (!componentIsStandalone) {
+                 TestBed.configureTestingModule({declarations: [TestComponent]});
+               }
 
                expect(() => {
                  const fixture = TestBed.createComponent(TestComponent);
