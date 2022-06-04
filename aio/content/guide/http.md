@@ -762,6 +762,8 @@ The original response continues untouched back up through the chain of intercept
 
 Data services, such as `PackageSearchService`, are unaware that some of their `HttpClient` requests actually return cached responses.
 
+</div>
+  
 <a id="cache-refresh"></a>
 
 ### Using interceptors to request multiple values
