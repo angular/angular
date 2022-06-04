@@ -102,7 +102,7 @@
     occurs.
   
   With this change, there is no exact replacement for the old value of
-  `initialUrl` because it was enver intended to be exposed.
+  `initialUrl` because it was never intended to be exposed.
   `Router.url` is likely the best replacement for this.
   In more specific use-cases, tracking the `finalUrl` between successful
   navigations can also be used as a replacement.
