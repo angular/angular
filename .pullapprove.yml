@@ -997,7 +997,6 @@ groups:
           'aio/content/guide/web-worker.md',
           'aio/content/guide/workspace-config.md',
           'aio/content/guide/migration-solution-style-tsconfig.md',
-          'aio/content/guide/migration-update-module-and-target-compiler-options.md',
           'aio/content/guide/migration-update-libraries-tslib.md',
           ])
     reviewers:
