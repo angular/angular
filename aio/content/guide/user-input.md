@@ -142,7 +142,7 @@ Type something in the input box, and watch the display update with each keystrok
 
 </div>
 
-<div class="alert is-helpful">
+<div class="callout is-helpful">
 
 <header>This won't work at all unless you bind to an event.</header>
 
