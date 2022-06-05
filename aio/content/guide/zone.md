@@ -442,7 +442,7 @@ Instead, you can opt to trigger change detection on your own.
 
 <div class="callout is-helpful">
 
-<header>Disabling <code>Zone</code></header>
+<header>Disabling Zone</header>
 
 **If you disable `Zone`, you will need to trigger all change detection at the correct timing yourself, which requires comprehensive knowledge of change detection**.
 
