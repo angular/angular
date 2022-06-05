@@ -309,7 +309,6 @@
 
 "@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#896abf3bcff5a8513def1b86e019818c997cd90a":
   version "0.0.0-d9ebdd25b15708c18acc99ac1bfb8101d765f703"
-  uid "896abf3bcff5a8513def1b86e019818c997cd90a"
   resolved "https://github.com/angular/dev-infra-private-builds.git#896abf3bcff5a8513def1b86e019818c997cd90a"
   dependencies:
     "@angular-devkit/build-angular" "14.0.0-rc.1"
@@ -2051,6 +2050,24 @@
   version "7.24.1"
   resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.24.1.tgz#cbbe32a5f4f32717b60f593cdc172b99e5c76fae"
   integrity sha512-RjcKRvKRAtTK4z8UdC2qYsvgTYHEYvdsqF4QGoX4mNAVo7s6Jj4zcHtSrMEQMTUHujZbSd5+ihI5ktISp338mQ==
+  dependencies:
+    "@microsoft/api-extractor-model" "7.17.3"
+    "@microsoft/tsdoc" "0.14.1"
+    "@microsoft/tsdoc-config" "~0.16.1"
+    "@rushstack/node-core-library" "3.45.5"
+    "@rushstack/rig-package" "0.3.11"
+    "@rushstack/ts-command-line" "4.11.0"
+    colors "~1.2.1"
+    lodash "~4.17.15"
+    resolve "~1.17.0"
+    semver "~7.3.0"
+    source-map "~0.6.1"
+    typescript "~4.6.3"
+
+"@microsoft/api-extractor@^7.24.2":
+  version "7.24.2"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.24.2.tgz#4abb24319fa77884dab6d807388056e9cd85488e"
+  integrity sha512-QWZh9aQZvBAdRVK+Go8NiW8YNMN//OGiNqgA3iZ2sEy8imUqkRBCybXgmw2HkEYyPnn55CFoMKvnAHvV9+4B/A==
   dependencies:
     "@microsoft/api-extractor-model" "7.17.3"
     "@microsoft/tsdoc" "0.14.1"
@@ -13974,7 +13991,6 @@ sass@1.51.0:
 
 "sauce-connect@https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz":
   version "0.0.0"
-  uid e5d7f82ad98251a653d1b0537f1103e49eda5e11
   resolved "https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz#e5d7f82ad98251a653d1b0537f1103e49eda5e11"
 
 saucelabs@7.1.3, saucelabs@^1.5.0, saucelabs@^4.6.3:
