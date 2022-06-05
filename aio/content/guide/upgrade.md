@@ -1171,7 +1171,7 @@ That is pretty exciting!
 You're not running any actual Angular components yet.
 That is next.
 
-<div class="alert is-helpful">
+<div class="callout is-helpful">
 
 <header>Why declare *angular* as *angular.IAngularStatic*?</header>
 
@@ -1183,7 +1183,7 @@ If you used `import * as angular from 'angular'` instead, you'd also have to loa
 This is a considerable effort and it often isn't worth it, especially since you are in the process of moving your code to Angular.
 Instead, declare `angular` as `angular.IAngularStatic` to indicate it is a global variable and still have full typing support.
 
-<div class="alert is-important">
+<div class="callout is-important">
 
 <header>Manually create a UMD bundle for your Angular application</header>
 

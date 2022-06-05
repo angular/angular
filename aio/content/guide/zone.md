@@ -440,7 +440,7 @@ By default, `Zone` is loaded and works without additional configuration.
 However, you don't necessarily have to use `Zone` to make Angular work.
 Instead, you can opt to trigger change detection on your own.
 
-<div class="alert is-helpful">
+<div class="callout is-helpful">
 
 <header>Disabling <code>Zone</code></header>
 

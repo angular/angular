@@ -39,7 +39,7 @@ The `ModuleInjector` can be configured in one of two ways:
 *   Using the `@Injectable()` `providedIn` property to refer to `@NgModule()`, or `root`
 *   Using the `@NgModule()` `providers` array
 
-<div class="is-helpful alert">
+<div class="callout is-helpful">
 
 <header>Tree-shaking and <code>&commat;Injectable()</code></header>
 
@@ -110,7 +110,7 @@ You have the option to create `ModuleInjector`s whenever a dynamically loaded co
 
 All requests forward up to the root injector, whether you configured it with the `bootstrapModule()` method, or registered all providers with `root` in their own services.
 
-<div class="alert is-helpful">
+<div class="callout is-helpful">
 
 <header><code>&commat;Injectable()</code> vs. <code>&commat;NgModule()</code></header>
 
