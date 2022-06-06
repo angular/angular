@@ -30,23 +30,7 @@
   - change the component's view encapsulation to the `None` or `ShadowDom`
   - define keyframes rules in global stylesheets (e.g styles.css)
   - define keyframes rules programmatically in code.
-- Keyframes names are now prefixed with the component's "scope name".
-  For example, the following keyframes rule in a component definition,
-  whose "scope name" is host-my-cmp:
-  
-     @keyframes foo { ... }
-  
-  will become:
-  
-     @keyframes host-my-cmp_foo { ... }
-  
-  Any TypeScript/JavaScript code which relied on the names of keyframes rules
-  will no longer match.
-  
-  The recommended solutions in this case are to either:
-  - change the component's view encapsulation to the `None` or `ShadowDom`
-  - define keyframes rules in global stylesheets (e.g styles.css)
-  - define keyframes rules programmatically in code.
+
 ### core
 - Support for Node.js v12 has been removed as it will become EOL on 2022-04-30. Please use Node.js v14.15 or later.
 - TypeScript versions older than 4.6 are no longer supported.
