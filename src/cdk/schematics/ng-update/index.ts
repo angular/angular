@@ -104,6 +104,16 @@ export function updateToV14(): Rule {
   );
 }
 
+/** Entry point for the migration schematics with target of Angular CDK 15.0.0 */
+export function updateToV15(): Rule {
+  return createMigrationSchematicRule(
+    TargetVersion.V15,
+    cdkMigrations,
+    cdkUpgradeData,
+    onMigrationComplete,
+  );
+}
+
 /** Function that will be called when the migration completed. */
 function onMigrationComplete(
   context: SchematicContext,

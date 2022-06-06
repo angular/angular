@@ -126,6 +126,16 @@ export function updateToV14(): Rule {
   );
 }
 
+/** Entry point for the migration schematics with target of Angular Material v15 */
+export function updateToV15(): Rule {
+  return createMigrationSchematicRule(
+    TargetVersion.V15,
+    materialMigrations,
+    materialUpgradeData,
+    onMigrationComplete,
+  );
+}
+
 /** Function that will be called when the migration completed. */
 function onMigrationComplete(
   context: SchematicContext,

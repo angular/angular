@@ -46,6 +46,11 @@
       "description": "Updates the Angular CDK to v14",
       "factory": "./ng-update/index#updateToV14"
     },
+    "migration-v15": {
+      "version": "15.0.0-0",
+      "description": "Updates the Angular CDK to v15",
+      "factory": "./ng-update/index#updateToV15"
+    },
     "ng-post-update": {
       "description": "Prints out results after ng-update.",
       "factory": "./ng-update/index#postUpdate",
