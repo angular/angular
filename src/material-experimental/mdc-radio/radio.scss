@@ -54,6 +54,10 @@
     // TODO(crisbeto): this should be included by MDC's `theme-styles`, but it isn't currently.
     @include mdc-radio-theme.focus-indicator-color(
       var(--mat-mdc-radio-checked-ripple-color, transparent));
+
+    .mat-ripple-element {
+      background-color: var(--mat-mdc-radio-checked-ripple-color, transparent);
+    }
   }
 
   // This is necessary because we do not depend on MDC's ripple, but have our own that should be
