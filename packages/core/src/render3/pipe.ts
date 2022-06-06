@@ -14,7 +14,7 @@ import {Type} from '../interface/type';
 import {getFactoryDef} from './definition_factory';
 import {setIncludeViewProviders} from './di';
 import {store, ɵɵdirectiveInject} from './instructions/all';
-import {isHostComponentStandalone} from './instructions/shared';
+import {isHostComponentStandalone} from './instructions/element_validation';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
 import {pureFunction1Internal, pureFunction2Internal, pureFunction3Internal, pureFunction4Internal, pureFunctionVInternal} from './pure_function';

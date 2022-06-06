@@ -7,10 +7,9 @@
  */
 import {Injector} from '../../di';
 import {ErrorHandler} from '../../error_handler';
-import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../../errors';
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
-import {Type} from '../../interface/type';
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
+import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/sanitizer';
