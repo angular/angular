@@ -244,7 +244,7 @@ function getDeclarationComponentDef(lView: LView): ComponentDef<unknown>|null {
  *
  * @param lView An `LView` that represents a current component that is being rendered.
  */
-function isHostComponentStandalone(lView: LView): boolean {
+export function isHostComponentStandalone(lView: LView): boolean {
   !ngDevMode && throwError('Must never be called in production mode');
 
   const componentDef = getDeclarationComponentDef(lView);
