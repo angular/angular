@@ -16,6 +16,14 @@ A locale determines the formatting and parsing of the following details.
 *   Measurement units including date and time, numbers, and currencies
 *   Translated names including time zones, languages, and countries
 
+For a quick introduction to localization and internationalization watch this video:
+
+<div class="video-container">
+
+<iframe allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0" src="https://www.youtube.com/embed/KNTN-nsbV7M"></iframe>
+
+</div>
+
 ## Learn about Angular internationalization
 
 <div class="card-container">
@@ -42,4 +50,4 @@ A locale determines the formatting and parsing of the following details.
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-06-06
