@@ -696,19 +696,18 @@ describe('Image directive', () => {
     it('should set `src` to match `rawSrc` if image loader is not provided', () => {
       setupTestingModule();
 
-      const template = '<img rawSrc="https://somesite.imgix.net/img.png" width="100" height="50">';
+      const template = `<img rawSrc="${IMG_BASE_URL}/img.png" width="100" height="50">`;
       const fixture = createTestComponent(template);
       fixture.detectChanges();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
-      expect(img.src).toBe('https://somesite.imgix.net/img.png');
+      expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
     });
 
     it('should set `src` using the image loader provided via the `IMAGE_LOADER` token to compose src URL',
        () => {
-         const imageLoader = (config: ImageLoaderConfig) =>
-             `https://somesite.imgix.net/${config.src}`;
+         const imageLoader = (config: ImageLoaderConfig) => `${IMG_BASE_URL}/${config.src}`;
          setupTestingModule({imageLoader});
 
          const template = `
@@ -720,14 +719,14 @@ describe('Image directive', () => {
 
          const nativeElement = fixture.nativeElement as HTMLElement;
          const imgs = nativeElement.querySelectorAll('img')!;
-         expect(imgs[0].src.trim()).toBe('https://somesite.imgix.net/img.png');
-         expect(imgs[1].src.trim()).toBe('https://somesite.imgix.net/img-2.png');
+         expect(imgs[0].src.trim()).toBe(`${IMG_BASE_URL}/img.png`);
+         expect(imgs[1].src.trim()).toBe(`${IMG_BASE_URL}/img-2.png`);
        });
 
     it('should set `src` to an image URL that does not include a default width parameter', () => {
       const imageLoader = (config: ImageLoaderConfig) => {
         const widthStr = config.width ? `?w=${config.width}` : ``;
-        return `https://somesite.imgix.net/${config.src}${widthStr}`;
+        return `${IMG_BASE_URL}/${config.src}${widthStr}`;
       };
       setupTestingModule({imageLoader});
 
@@ -737,7 +736,7 @@ describe('Image directive', () => {
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
-      expect(img.src).toBe('https://somesite.imgix.net/img.png');
+      expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
     });
 
     describe('`rawSrcset` values', () => {
@@ -746,7 +745,7 @@ describe('Image directive', () => {
       beforeEach(() => {
         imageLoader = (config: ImageLoaderConfig) => {
           const width = config.width ? `?w=${config.width}` : ``;
-          return `https://somesite.imgix.net/${config.src}${width}`;
+          return `${IMG_BASE_URL}/${config.src}${width}`;
         };
       });
 
@@ -761,7 +760,7 @@ describe('Image directive', () => {
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
-        expect(img.src).toBe('https://somesite.imgix.net/img-100.png');
+        expect(img.src).toBe(`${IMG_BASE_URL}/img-100.png`);
         expect(img.srcset).toBe('');
       });
 
@@ -776,10 +775,9 @@ describe('Image directive', () => {
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
-        expect(img.src).toBe('https://somesite.imgix.net/img.png');
+        expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
         expect(img.srcset)
-            .toBe(
-                'https://somesite.imgix.net/img.png?w=100 100w, https://somesite.imgix.net/img.png?w=200 200w');
+            .toBe(`${IMG_BASE_URL}/img.png?w=100 100w, ${IMG_BASE_URL}/img.png?w=200 200w`);
       });
 
       it('should set the `srcset` using the `rawSrcset` value with density descriptors', () => {
@@ -793,10 +791,9 @@ describe('Image directive', () => {
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
-        expect(img.src).toBe('https://somesite.imgix.net/img.png');
+        expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
         expect(img.srcset)
-            .toBe(
-                'https://somesite.imgix.net/img.png?w=100 1x, https://somesite.imgix.net/img.png?w=200 2x');
+            .toBe(`${IMG_BASE_URL}/img.png?w=100 1x, ${IMG_BASE_URL}/img.png?w=200 2x`);
       });
 
       it('should set the `srcset` if `rawSrcset` has only one src defined', () => {
@@ -810,8 +807,8 @@ describe('Image directive', () => {
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
-        expect(img.src.trim()).toBe('https://somesite.imgix.net/img.png');
-        expect(img.srcset.trim()).toBe('https://somesite.imgix.net/img.png?w=100 100w');
+        expect(img.src.trim()).toBe(`${IMG_BASE_URL}/img.png`);
+        expect(img.srcset.trim()).toBe(`${IMG_BASE_URL}/img.png?w=100 100w`);
       });
 
       it('should set the `srcset` if `rawSrcSet` has extra spaces', () => {
@@ -825,10 +822,9 @@ describe('Image directive', () => {
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
-        expect(img.src).toBe('https://somesite.imgix.net/img.png');
+        expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
         expect(img.srcset)
-            .toBe(
-                'https://somesite.imgix.net/img.png?w=100 100w, https://somesite.imgix.net/img.png?w=200 200w');
+            .toBe(`${IMG_BASE_URL}/img.png?w=100 100w, ${IMG_BASE_URL}/img.png?w=200 200w`);
       });
 
       it('should set the `srcset` if `rawSrcSet` has a trailing comma', () => {
@@ -842,10 +838,9 @@ describe('Image directive', () => {
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
-        expect(img.src).toBe('https://somesite.imgix.net/img.png');
+        expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
         expect(img.srcset)
-            .toBe(
-                'https://somesite.imgix.net/img.png?w=100 1x, https://somesite.imgix.net/img.png?w=200 2x');
+            .toBe(`${IMG_BASE_URL}/img.png?w=100 1x, ${IMG_BASE_URL}/img.png?w=200 2x`);
       });
 
       it('should set the `srcset` if `rawSrcSet` has 3+ srcs', () => {
@@ -859,10 +854,12 @@ describe('Image directive', () => {
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
-        expect(img.src).toBe('https://somesite.imgix.net/img.png');
+        expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
         expect(img.srcset)
             .toBe(
-                'https://somesite.imgix.net/img.png?w=100 100w, https://somesite.imgix.net/img.png?w=200 200w, https://somesite.imgix.net/img.png?w=300 300w');
+                `${IMG_BASE_URL}/img.png?w=100 100w, ` +
+                `${IMG_BASE_URL}/img.png?w=200 200w, ` +
+                `${IMG_BASE_URL}/img.png?w=300 300w`);
       });
 
       it('should set the `srcset` if `rawSrcSet` has decimal density descriptors', () => {
@@ -876,16 +873,25 @@ describe('Image directive', () => {
 
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
-        expect(img.src).toBe('https://somesite.imgix.net/img.png');
+        expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
         expect(img.srcset)
             .toBe(
-                'https://somesite.imgix.net/img.png?w=100 1x, https://somesite.imgix.net/img.png?w=250 2.5x, https://somesite.imgix.net/img.png?w=300 3x');
+                `${IMG_BASE_URL}/img.png?w=100 1x, ` +
+                `${IMG_BASE_URL}/img.png?w=250 2.5x, ` +
+                `${IMG_BASE_URL}/img.png?w=300 3x`);
       });
     });
   });
 });
 
 // Helpers
+
+// Base URL that can be used in tests to construct absolute URLs.
+const IMG_BASE_URL = {
+  // Use `toString` here to delay referencing the `window` until the tests
+  // execution starts, otherwise the `window` might not be defined in Node env.
+  toString: () => window.location.origin
+};
 
 const ANGULAR_LOGO_BASE64 =
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==';
