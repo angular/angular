@@ -28,3 +28,13 @@ export function imgDirectiveDetails(rawSrc: string) {
 export function deepForEach<T>(input: (T|any[])[], fn: (value: T) => void): void {
   input.forEach(value => Array.isArray(value) ? deepForEach(value, fn) : fn(value));
 }
+
+// Given a URL, extract the hostname part.
+// If a URL is a relative one - the URL is returned as is.
+export function extractHostname(url: string): string {
+  if (isAbsoluteURL(url)) {
+    const instance = new URL(url);
+    return instance.hostname;
+  }
+  return url;
+}

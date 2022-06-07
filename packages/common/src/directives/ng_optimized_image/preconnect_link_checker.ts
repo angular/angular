@@ -11,7 +11,8 @@ import {Inject, Injectable, InjectionToken, Optional, ɵformatRuntimeError as fo
 import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
 
-import {deepForEach, getUrl, imgDirectiveDetails, isAbsoluteURL} from './util';
+import {assertDevMode} from './asserts';
+import {deepForEach, extractHostname, getUrl, imgDirectiveDetails} from './util';
 
 // Set of origins that are always excluded from the preconnect checks.
 const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
@@ -58,6 +59,7 @@ export class PreconnectLinkChecker {
   constructor(
       @Inject(DOCUMENT) private doc: Document,
       @Optional() @Inject(PRECONNECT_CHECK_BLOCKLIST) blocklist: Array<string|string[]>|null) {
+    assertDevMode('preconnect link checker');
     const win = doc.defaultView;
     if (typeof win !== 'undefined') {
       this.window = win;
@@ -70,14 +72,7 @@ export class PreconnectLinkChecker {
   private pupulateBlocklist(origins: Array<string|string[]>) {
     if (Array.isArray(origins)) {
       deepForEach(origins, origin => {
-        // If an origin is an absolute URLs, extract the hostname only.
-        // Otherwise, just use the value as is (assuming it's a hostname
-        // without a protocol).
-        if (isAbsoluteURL(origin)) {
-          const url = new URL(origin);
-          origin = url.hostname;
-        }
-        this.blocklist.add(origin);
+        this.blocklist.add(extractHostname(origin));
       });
     } else {
       throw new RuntimeError(
