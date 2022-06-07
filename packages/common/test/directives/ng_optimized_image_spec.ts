@@ -15,6 +15,7 @@ import {withHead} from '@angular/private/testing';
 
 import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '../../src/directives/ng_optimized_image/image_loaders/image_loader';
 import {assertValidRawSrcset, NgOptimizedImageModule} from '../../src/directives/ng_optimized_image/ng_optimized_image';
+import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
 describe('Image directive', () => {
   it('should set `loading` and `fetchpriority` attributes before `src`', () => {
@@ -498,9 +499,14 @@ describe('Image directive', () => {
   });
 
   describe('preconnect detector', () => {
+    const imageLoader = () => {
+      // We need something different from the `localhost` (as we don't want to produce
+      // a preconnect warning for local environments).
+      return 'https://angular.io/assets/images/logos/angular/angular.svg';
+    };
     it('should log a warning if there is no preconnect link for a priority image',
        withHead('', () => {
-         setupTestingModule();
+         setupTestingModule({imageLoader});
 
          const consoleWarnSpy = spyOn(console, 'warn');
          const template = '<img rawSrc="a.png" width="100" height="50" priority>';
@@ -515,12 +521,12 @@ describe('Image directive', () => {
                  'contains the "priority" attribute, but doesn\'t have a corresponding ' +
                  'preconnect tag. Please add the following element into the <head> of ' +
                  'the document to optimize loading of this image:' +
-                 '\n  <link rel="preconnect" href="http://localhost">');
+                 '\n  <link rel="preconnect" href="https://angular.io">');
        }));
 
     it('should not log a warning if there is no preconnect link, but the image is not set as a priority',
        withHead('', () => {
-         setupTestingModule();
+         setupTestingModule({imageLoader});
 
          const consoleWarnSpy = spyOn(console, 'warn');
          const template = '<img rawSrc="a.png" width="100" height="50">';
@@ -532,8 +538,8 @@ describe('Image directive', () => {
        }));
 
     it('should log a warning if there is a preconnect, but it doesn\'t match the priority image',
-       withHead('<link rel="preconnect" href="https://localhost:443">', () => {
-         setupTestingModule();
+       withHead('<link rel="preconnect" href="http://angular.io">', () => {
+         setupTestingModule({imageLoader});
 
          const consoleWarnSpy = spyOn(console, 'warn');
          const template = '<img rawSrc="a.png" width="100" height="50" priority>';
@@ -548,32 +554,34 @@ describe('Image directive', () => {
                  'this image contains the "priority" attribute, but doesn\'t have ' +
                  'a corresponding preconnect tag. Please add the following element ' +
                  'into the <head> of the document to optimize loading of this image:' +
-                 '\n  <link rel="preconnect" href="http://localhost">');
+                 '\n  <link rel="preconnect" href="https://angular.io">');
        }));
 
     it('should log a warning if there is no matching preconnect link for a priority image, but there is a preload tag',
-       withHead('<link rel="preload" href="http://localhost/a.png" as="image">', () => {
-         setupTestingModule();
+       withHead(
+           '<link rel="preload" href="https://angular.io/assets/images/logos/angular/angular.svg" as="image">',
+           () => {
+             setupTestingModule({imageLoader});
 
-         const consoleWarnSpy = spyOn(console, 'warn');
-         const template = '<img rawSrc="a.png" width="100" height="50" priority>';
-         const fixture = createTestComponent(template);
-         fixture.detectChanges();
+             const consoleWarnSpy = spyOn(console, 'warn');
+             const template = '<img rawSrc="a.png" width="100" height="50" priority>';
+             const fixture = createTestComponent(template);
+             fixture.detectChanges();
 
-         expect(consoleWarnSpy.calls.count()).toBe(1);
-         expect(consoleWarnSpy.calls.argsFor(0)[0])
-             .toBe(
-                 'NG02956: The NgOptimizedImage directive (activated on an ' +
-                 '<img> element with the `rawSrc="a.png"`) has detected that ' +
-                 'this image contains the "priority" attribute, but doesn\'t have ' +
-                 'a corresponding preconnect tag. Please add the following element ' +
-                 'into the <head> of the document to optimize loading of this image:' +
-                 '\n  <link rel="preconnect" href="http://localhost">');
-       }));
+             expect(consoleWarnSpy.calls.count()).toBe(1);
+             expect(consoleWarnSpy.calls.argsFor(0)[0])
+                 .toBe(
+                     'NG02956: The NgOptimizedImage directive (activated on an ' +
+                     '<img> element with the `rawSrc="a.png"`) has detected that ' +
+                     'this image contains the "priority" attribute, but doesn\'t have ' +
+                     'a corresponding preconnect tag. Please add the following element ' +
+                     'into the <head> of the document to optimize loading of this image:' +
+                     '\n  <link rel="preconnect" href="https://angular.io">');
+           }));
 
     it('should not log a warning if there is a matching preconnect link for a priority image (with an extra `/` at the end)',
-       withHead('<link rel="preconnect" href="http://localhost/">', () => {
-         setupTestingModule();
+       withHead('<link rel="preconnect" href="https://angular.io/">', () => {
+         setupTestingModule({imageLoader});
 
          const consoleWarnSpy = spyOn(console, 'warn');
          const template = '<img rawSrc="a.png" width="100" height="50" priority>';
@@ -583,6 +591,105 @@ describe('Image directive', () => {
          // Expect no warnings in the console.
          expect(consoleWarnSpy.calls.count()).toBe(0);
        }));
+
+    ['localhost', '127.0.0.1', '0.0.0.0'].forEach(blocklistedHostname => {
+      it(`should not log a warning if an origin domain is blocklisted ` +
+             `(checking ${blocklistedHostname})`,
+         withHead('', () => {
+           const imageLoader = () => {
+             return `http://${blocklistedHostname}/a.png`;
+           };
+           setupTestingModule({imageLoader});
+
+           const consoleWarnSpy = spyOn(console, 'warn');
+           const template = '<img rawSrc="a.png" width="100" height="50" priority>';
+           const fixture = createTestComponent(template);
+           fixture.detectChanges();
+
+           // Expect no warnings in the console.
+           expect(consoleWarnSpy.calls.count()).toBe(0);
+         }));
+    });
+
+    describe('PRECONNECT_CHECK_BLOCKLIST token', () => {
+      it(`should allow passing host names`, withHead('', () => {
+           const providers = [
+             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'angular.io', multi: true},
+           ];
+           setupTestingModule({imageLoader, extraProviders: providers});
+
+           const consoleWarnSpy = spyOn(console, 'warn');
+           const template = '<img rawSrc="a.png" width="100" height="50" priority>';
+           const fixture = createTestComponent(template);
+           fixture.detectChanges();
+
+           // Expect no warnings in the console.
+           expect(consoleWarnSpy.calls.count()).toBe(0);
+         }));
+
+      it(`should allow passing origins`, withHead('', () => {
+           const providers = [
+             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://angular.io', multi: true},
+           ];
+           setupTestingModule({imageLoader, extraProviders: providers});
+
+           const consoleWarnSpy = spyOn(console, 'warn');
+           const template = '<img rawSrc="a.png" width="100" height="50" priority>';
+           const fixture = createTestComponent(template);
+           fixture.detectChanges();
+
+           // Expect no warnings in the console.
+           expect(consoleWarnSpy.calls.count()).toBe(0);
+         }));
+
+      it(`should allow passing arrays of host names`, withHead('', () => {
+           const providers = [
+             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: ['https://angular.io'], multi: true},
+           ];
+           setupTestingModule({imageLoader, extraProviders: providers});
+
+           const consoleWarnSpy = spyOn(console, 'warn');
+           const template = '<img rawSrc="a.png" width="100" height="50" priority>';
+           const fixture = createTestComponent(template);
+           fixture.detectChanges();
+
+           // Expect no warnings in the console.
+           expect(consoleWarnSpy.calls.count()).toBe(0);
+         }));
+
+      it(`should allow passing nested arrays of host names`, withHead('', () => {
+           const providers = [
+             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [['https://angular.io']], multi: true},
+           ];
+           setupTestingModule({imageLoader, extraProviders: providers});
+
+           const consoleWarnSpy = spyOn(console, 'warn');
+           const template = '<img rawSrc="a.png" width="100" height="50" priority>';
+           const fixture = createTestComponent(template);
+           fixture.detectChanges();
+
+           // Expect no warnings in the console.
+           expect(consoleWarnSpy.calls.count()).toBe(0);
+         }));
+
+      it(`should throw when PRECONNECT_CHECK_BLOCKLIST is not a multi provider`,
+         withHead('', () => {
+           const providers = [
+             {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://angular.io'},
+           ];
+           setupTestingModule({imageLoader, extraProviders: providers});
+
+           const template = '<img rawSrc="a.png" width="100" height="50" priority>';
+           expect(() => {
+             const fixture = createTestComponent(template);
+             fixture.detectChanges();
+           })
+               .toThrowError(
+                   'NG02957: The blocklist for the preconnect check was not ' +
+                   'provided as an array. Check that the `PRECONNECT_CHECK_BLOCKLIST` token ' +
+                   'is configured as a `multi: true` provider.');
+         }));
+    });
   });
 
   describe('loaders', () => {
@@ -794,15 +901,17 @@ class TestComponent {
   priority = false;
 }
 
-function setupTestingModule(config?: {imageLoader: ImageLoader}) {
+function setupTestingModule(config?: {imageLoader?: ImageLoader, extraProviders?: any[]}) {
   const defaultLoader = (config: ImageLoaderConfig) => {
     const isAbsolute = /^https?:\/\//.test(config.src);
     return isAbsolute ? config.src : window.location.origin + '/' + config.src;
   };
   const loader = config?.imageLoader || defaultLoader;
+  const extraProviders = config?.extraProviders || [];
   const providers: Provider[] = [
     {provide: DOCUMENT, useValue: window.document},
     {provide: IMAGE_LOADER, useValue: loader},
+    ...extraProviders,
   ];
 
   TestBed.configureTestingModule({

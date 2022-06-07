@@ -10,7 +10,9 @@
 import {browser} from 'protractor';
 import {logging} from 'selenium-webdriver';
 
-export async function collectBrowserLogs(minLoggingLevel: logging.Level): Promise<logging.Entry[]> {
+export async function collectBrowserLogs(
+    loggingLevel: logging.Level,
+    collectMoreSevereErrors: boolean = false): Promise<logging.Entry[]> {
   const browserLog = await browser.manage().logs().get('browser');
   const collectedLogs: logging.Entry[] = [];
 
@@ -32,7 +34,8 @@ export async function collectBrowserLogs(minLoggingLevel: logging.Level): Promis
 
     console.log('>> ' + msg, logEntry);
 
-    if (logEntry.level.value >= minLoggingLevel.value) {
+    if ((!collectMoreSevereErrors && logEntry.level.value === loggingLevel.value) ||
+        (collectMoreSevereErrors && logEntry.level.value >= loggingLevel.value)) {
       collectedLogs.push(logEntry);
     }
   });
@@ -40,6 +43,7 @@ export async function collectBrowserLogs(minLoggingLevel: logging.Level): Promis
 }
 
 export async function verifyNoBrowserErrors() {
-  const logs = await collectBrowserLogs(logging.Level.INFO);
+  const logs =
+      await collectBrowserLogs(logging.Level.INFO, true /* collect more severe errors too */);
   expect(logs).toEqual([]);
 }
