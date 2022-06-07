@@ -6,12 +6,34 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, NgZone, ɵformatRuntimeError as formatRuntimeError} from '@angular/core';
+import {Inject, Injectable, InjectionToken, Optional, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
 
-import {getUrl, imgDirectiveDetails} from './util';
+import {deepForEach, getUrl, imgDirectiveDetails, isAbsoluteURL} from './util';
+
+// Set of origins that are always excluded from the preconnect checks.
+const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
+
+/**
+ * Multi-provider injection token to configure which origins should be excluded
+ * from the preconnect checks. If can either be a single string or an array of strings
+ * to represent a group of origins, for example:
+ *
+ * ```typescript
+ *  {provide: PRECONNECT_CHECK_BLOCKLIST, multi: true, useValue: 'https://your-domain.com'}
+ * ```
+ *
+ * or:
+ *
+ * ```typescript
+ *  {provide: PRECONNECT_CHECK_BLOCKLIST, multi: true,
+ *   useValue: ['https://your-domain-1.com', 'https://your-domain-2.com']}
+ * ```
+ */
+export const PRECONNECT_CHECK_BLOCKLIST =
+    new InjectionToken<Array<string|string[]>>('PRECONNECT_CHECK_BLOCKLIST');
 
 /**
  * Contains the logic to detect whether an image, marked with the "priority" attribute
@@ -31,10 +53,37 @@ export class PreconnectLinkChecker {
 
   private window: Window|null = null;
 
-  constructor(@Inject(DOCUMENT) private doc: Document, private ngZone: NgZone) {
+  private blocklist = new Set<string>(INTERNAL_PRECONNECT_CHECK_BLOCKLIST);
+
+  constructor(
+      @Inject(DOCUMENT) private doc: Document,
+      @Optional() @Inject(PRECONNECT_CHECK_BLOCKLIST) blocklist: Array<string|string[]>|null) {
     const win = doc.defaultView;
     if (typeof win !== 'undefined') {
       this.window = win;
+    }
+    if (blocklist) {
+      this.pupulateBlocklist(blocklist);
+    }
+  }
+
+  private pupulateBlocklist(origins: Array<string|string[]>) {
+    if (Array.isArray(origins)) {
+      deepForEach(origins, origin => {
+        // If an origin is an absolute URLs, extract the hostname only.
+        // Otherwise, just use the value as is (assuming it's a hostname
+        // without a protocol).
+        if (isAbsoluteURL(origin)) {
+          const url = new URL(origin);
+          origin = url.hostname;
+        }
+        this.blocklist.add(origin);
+      });
+    } else {
+      throw new RuntimeError(
+          RuntimeErrorCode.INVALID_PRECONNECT_CHECK_BLOCKLIST,
+          `The blocklist for the preconnect check was not provided as an array. ` +
+              `Check that the \`PRECONNECT_CHECK_BLOCKLIST\` token is configured as a \`multi: true\` provider.`);
     }
   }
 
@@ -42,7 +91,7 @@ export class PreconnectLinkChecker {
     if (!this.window) return;
 
     const imgUrl = getUrl(rewrittenSrc, this.window);
-    if (this.alreadySeen.has(imgUrl.origin)) return;
+    if (this.blocklist.has(imgUrl.hostname) || this.alreadySeen.has(imgUrl.origin)) return;
 
     // Register this origin as seen, so we don't check it again later.
     this.alreadySeen.add(imgUrl.origin);
