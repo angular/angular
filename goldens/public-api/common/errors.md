@@ -21,6 +21,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     REQUIRED_INPUT_MISSING = 2954,
     // (undocumented)
+    UNEXPECTED_DEV_MODE_CHECK_IN_PROD_MODE = 2958,
+    // (undocumented)
     UNEXPECTED_INPUT_CHANGE = 2953,
     // (undocumented)
     UNEXPECTED_SRC_ATTR = 2950,
