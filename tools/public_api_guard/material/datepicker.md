@@ -525,7 +525,9 @@ export class MatDatepickerIntl {
     calendarLabel: string;
     readonly changes: Subject<void>;
     closeCalendarLabel: string;
+    endDateLabel: string;
     formatYearRange(start: string, end: string): string;
+    formatYearRangeLabel(start: string, end: string): string;
     nextMonthLabel: string;
     nextMultiYearLabel: string;
     nextYearLabel: string;
@@ -533,6 +535,7 @@ export class MatDatepickerIntl {
     prevMonthLabel: string;
     prevMultiYearLabel: string;
     prevYearLabel: string;
+    startDateLabel: string;
     switchToMonthViewLabel: string;
     switchToMultiYearViewLabel: string;
     // (undocumented)
