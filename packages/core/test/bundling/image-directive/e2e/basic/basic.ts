@@ -14,7 +14,10 @@ import {Component} from '@angular/core';
   standalone: true,
   imports: [NgOptimizedImageModule],
   template: `<img rawSrc="/e2e/a.png" width="150" height="150" priority>`,
-  providers: [{provide: IMAGE_LOADER, useValue: () => '/e2e/b.png'}],
+  providers: [{
+    provide: IMAGE_LOADER,
+    useValue: () => 'https://angular.io/assets/images/logos/angular/angular.svg'
+  }],
 })
 export class BasicComponent {
 }

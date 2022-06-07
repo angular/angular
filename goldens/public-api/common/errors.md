@@ -11,6 +11,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_PIPE_ARGUMENT = 2100,
     // (undocumented)
+    INVALID_PRECONNECT_CHECK_BLOCKLIST = 2957,
+    // (undocumented)
     LCP_IMG_MISSING_PRIORITY = 2955,
     // (undocumented)
     NG_FOR_MISSING_DIFFER = -2200,
@@ -20,6 +22,8 @@ export const enum RuntimeErrorCode {
     PRIORITY_IMG_MISSING_PRECONNECT_TAG = 2956,
     // (undocumented)
     REQUIRED_INPUT_MISSING = 2954,
+    // (undocumented)
+    UNEXPECTED_DEV_MODE_CHECK_IN_PROD_MODE = 2958,
     // (undocumented)
     UNEXPECTED_INPUT_CHANGE = 2953,
     // (undocumented)

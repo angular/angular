@@ -16,7 +16,7 @@ describe('NgOptimizedImage directive', () => {
     await browser.get('/e2e/basic');
     const imgs = element.all(by.css('img'));
     const src = await imgs.get(0).getAttribute('src');
-    expect(/b\.png/.test(src)).toBe(true);
+    expect(/angular\.svg/.test(src)).toBe(true);
 
     // Since there are no preconnect tags on a page,
     // we expect a log in a console that mentions that.

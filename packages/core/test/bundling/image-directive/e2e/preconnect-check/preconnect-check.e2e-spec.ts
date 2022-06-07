@@ -38,7 +38,7 @@ describe('NgOptimizedImage directive', () => {
     expect(logs[0].message).toMatch(/NG02956.*?a\.png/);
   });
 
-  it('should not produce any logs when a preconect tag is present', async () => {
+  it('should not produce any warnings in the console when a preconect tag is present', async () => {
     await browser.get('/e2e/preconnect-check?preconnect');
 
     await verifyImagesPresent(element);
