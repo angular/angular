@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, ɵNgOptimizedImageModule as NgOptimizedImageModule} from '@angular/common';
+import {DOCUMENT, ɵIMAGE_LOADER as IMAGE_LOADER, ɵNgOptimizedImageModule as NgOptimizedImageModule} from '@angular/common';
 import {Component, Inject} from '@angular/core';
 
 @Component({
@@ -18,6 +18,10 @@ import {Component, Inject} from '@angular/core';
     <img rawSrc="/e2e/b.png" width="50" height="50" priority>
     <img rawSrc="/e2e/c.png" width="50" height="50">
   `,
+  providers: [{
+    provide: IMAGE_LOADER,
+    useValue: (config: {src: string}) => `https://angular.io/assets/images/${config.src}`
+  }],
 })
 export class PreconnectCheckComponent {
   constructor(@Inject(DOCUMENT) private doc: Document) {
@@ -34,7 +38,7 @@ export class PreconnectCheckComponent {
     const url = new URL(win.location.href).searchParams;
     const preconnect = url.get('preconnect');
     if (preconnect !== null) {
-      const link = this.createLinkElement('preconnect', win.location.origin);
+      const link = this.createLinkElement('preconnect', 'https://angular.io');
       this.doc.head.appendChild(link);
     }
   }
