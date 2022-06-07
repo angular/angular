@@ -11,6 +11,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_PIPE_ARGUMENT = 2100,
     // (undocumented)
+    INVALID_PRECONNECT_CHECK_BLOCKLIST = 2957,
+    // (undocumented)
     LCP_IMG_MISSING_PRIORITY = 2955,
     // (undocumented)
     PARENT_NG_SWITCH_NOT_FOUND = 2000,
