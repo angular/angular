@@ -11,6 +11,7 @@ import {Directive, ElementRef, Inject, Injectable, Injector, Input, NgModule, Ng
 import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
 
+import {assertDevMode} from './asserts';
 import {IMAGE_LOADER, ImageLoader} from './image_loaders/image_loader';
 import {PreconnectLinkChecker} from './preconnect_link_checker';
 import {getUrl, imgDirectiveDetails} from './util';
@@ -57,6 +58,7 @@ export class LCPImageObserver implements OnDestroy {
   private observer: PerformanceObserver|null = null;
 
   constructor(@Inject(DOCUMENT) doc: Document) {
+    assertDevMode('LCP checker');
     const win = doc.defaultView;
     if (typeof win !== 'undefined' && typeof PerformanceObserver !== 'undefined') {
       this.window = win;
