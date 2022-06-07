@@ -7,8 +7,10 @@
  */
 
 import {IMAGE_LOADER, ImageLoader, PRECONNECT_CHECK_BLOCKLIST} from '@angular/common/src/directives/ng_optimized_image';
+import {provideCloudinaryLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/cloudinary_loader';
+import {provideImageKitLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imagekit_loader';
 import {provideImgixLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imgix_loader';
-import {RuntimeErrorCode} from '@angular/common/src/errors';
+import {isValidPath} from '@angular/common/src/directives/ng_optimized_image/image_loaders/loader_utils';
 import {createEnvironmentInjector, ValueProvider} from '@angular/core';
 
 describe('Built-in image directive loaders', () => {
@@ -18,78 +20,55 @@ describe('Built-in image directive loaders', () => {
       return injector.get(IMAGE_LOADER);
     }
 
-    function invalidPathError(path: string): string {
-      return `NG0${RuntimeErrorCode.INVALID_INPUT}: ImgixLoader has detected ` +
-          `an invalid path: expecting a path like https://somepath.imgix.net/` +
-          `but got: \`${path}\``;
-    }
-
-    describe('invalid paths', () => {
-      it('should throw when a path is empty', () => {
-        const path = '';
-        expect(() => provideImgixLoader(path)).toThrowError(invalidPathError(path));
-      });
-
-      it('should throw when a path is not a URL', () => {
-        const path = 'wellhellothere';
-        expect(() => provideImgixLoader(path)).toThrowError(invalidPathError(path));
-      });
-
-      it('should throw when a path is missing a scheme', () => {
-        const path = 'somepath.imgix.net';
-        expect(() => provideImgixLoader(path)).toThrowError(invalidPathError(path));
-      });
-
-      it('should throw when a path is malformed', () => {
-        const path = 'somepa\th.imgix.net? few';
-        expect(() => provideImgixLoader(path)).toThrowError(invalidPathError(path));
-      });
-    });
-
     it('should construct an image loader with the given path', () => {
-      const loader = createImgixLoader('https://somesite.imgix.net');
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(path);
       const config = {src: 'img.png'};
-      expect(loader(config)).toBe('https://somesite.imgix.net/img.png?auto=format');
+      expect(loader(config)).toBe(`${path}/img.png?auto=format`);
     });
 
     it('should handle a trailing forward slash on the path', () => {
-      const loader = createImgixLoader('https://somesite.imgix.net/');
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(`${path}/`);
       const config = {src: 'img.png'};
-      expect(loader(config)).toBe('https://somesite.imgix.net/img.png?auto=format');
+      expect(loader(config)).toBe(`${path}/img.png?auto=format`);
     });
 
-    it('should handle a leading forward slash on the src', () => {
-      const loader = createImgixLoader('https://somesite.imgix.net');
+    it('should handle a leading forward slash on the image src', () => {
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(path);
       const config = {src: '/img.png'};
-      expect(loader(config)).toBe('https://somesite.imgix.net/img.png?auto=format');
+      expect(loader(config)).toBe(`${path}/img.png?auto=format`);
     });
 
     it('should construct an image loader with the given path', () => {
-      const loader = createImgixLoader('https://somesite.imgix.net');
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(path);
       const config = {src: 'img.png', width: 100};
-      expect(loader(config)).toBe('https://somesite.imgix.net/img.png?auto=format&w=100');
+      expect(loader(config)).toBe(`${path}/img.png?auto=format&w=100`);
     });
 
     describe('options', () => {
       it('should configure PRECONNECT_CHECK_BLOCKLIST token by default', () => {
-        const providers = provideImgixLoader('https://somesite.imgix.net');
+        const path = 'https://somesite.imgix.net';
+        const providers = provideImgixLoader(path);
         expect(providers.length).toBe(2);
 
         const valueProvider = providers[1] as ValueProvider;
         expect(valueProvider.multi).toBeTrue();
-        expect(valueProvider.useValue).toEqual(['https://somesite.imgix.net']);
+        expect(valueProvider.useValue).toEqual([path]);
         expect(valueProvider.provide).toBe(PRECONNECT_CHECK_BLOCKLIST);
       });
 
       it('should configure PRECONNECT_CHECK_BLOCKLIST when the ensurePreconnect was specified',
          () => {
-           const providers =
-               provideImgixLoader('https://somesite.imgix.net', {ensurePreconnect: true});
+           const path = 'https://somesite.imgix.net';
+           const providers = provideImgixLoader(path, {ensurePreconnect: true});
            expect(providers.length).toBe(2);
 
            const valueProvider = providers[1] as ValueProvider;
            expect(valueProvider.multi).toBeTrue();
-           expect(valueProvider.useValue).toEqual(['https://somesite.imgix.net']);
+           expect(valueProvider.useValue).toEqual([path]);
            expect(valueProvider.provide).toBe(PRECONNECT_CHECK_BLOCKLIST);
          });
 
@@ -99,6 +78,108 @@ describe('Built-in image directive loaders', () => {
                provideImgixLoader('https://somesite.imgix.net', {ensurePreconnect: false});
            expect(providers.length).toBe(1);
          });
+    });
+  });
+
+  describe('Cloudinary loader', () => {
+    function createCloudinaryLoader(path: string): ImageLoader {
+      const injector = createEnvironmentInjector([provideCloudinaryLoader(path)]);
+      return injector.get(IMAGE_LOADER);
+    }
+
+    it('should construct an image loader with the given path', () => {
+      const path = 'https://somesite.imgix.net/mysite';
+      const loader = createCloudinaryLoader(path);
+      expect(loader({src: 'img.png'})).toBe(`${path}/image/upload/f_auto,q_auto/img.png`);
+      expect(loader({
+        src: 'marketing/img-2.png'
+      })).toBe(`${path}/image/upload/f_auto,q_auto/marketing/img-2.png`);
+    });
+
+    describe('input validation', () => {
+      it('should throw if the path is invalid', () => {
+        expect(() => provideCloudinaryLoader('my-cloudinary-account'))
+            .toThrowError(
+                `NG02952: CloudinaryLoader has detected an invalid path: ` +
+                `expecting a path matching one of the following formats: ` +
+                `https://res.cloudinary.com/mysite, https://mysite.cloudinary.com, ` +
+                `or https://subdomain.mysite.com - but got: \`my-cloudinary-account\``);
+      });
+
+      it('should handle a trailing forward slash on the path', () => {
+        const path = 'https://somesite.imgix.net/mysite';
+        const loader = createCloudinaryLoader(`${path}/`);
+        expect(loader({src: 'img.png'})).toBe(`${path}/image/upload/f_auto,q_auto/img.png`);
+      });
+
+      it('should handle a leading forward slash on the image src', () => {
+        const path = 'https://somesite.imgix.net/mysite';
+        const loader = createCloudinaryLoader(path);
+        expect(loader({src: '/img.png'})).toBe(`${path}/image/upload/f_auto,q_auto/img.png`);
+      });
+    });
+  });
+
+  describe('ImageKit loader', () => {
+    function createImageKitLoader(path: string): ImageLoader {
+      const injector = createEnvironmentInjector([provideImageKitLoader(path)]);
+      return injector.get(IMAGE_LOADER);
+    }
+
+    it('should construct an image loader with the given path', () => {
+      const path = 'https://ik.imageengine.io/imagetest';
+      const loader = createImageKitLoader(path);
+      expect(loader({src: 'img.png'})).toBe(`${path}/tr:q-auto/img.png`);
+      expect(loader({src: 'marketing/img-2.png'})).toBe(`${path}/tr:q-auto/marketing/img-2.png`);
+    });
+
+    describe('input validation', () => {
+      it('should throw if the path is invalid', () => {
+        expect(() => provideImageKitLoader('my-imagekit-account'))
+            .toThrowError(
+                `NG02952: ImageKitLoader has detected an invalid path: ` +
+                `expecting a path matching one of the following formats: ` +
+                `https://ik.imagekit.io/mysite or https://subdomain.mysite.com - ` +
+                `but got: \`my-imagekit-account\``);
+      });
+
+      it('should handle a trailing forward slash on the path', () => {
+        const path = 'https://ik.imageengine.io/imagetest';
+        const loader = createImageKitLoader(`${path}/`);
+        expect(loader({src: 'img.png'})).toBe(`${path}/tr:q-auto/img.png`);
+      });
+
+      it('should handle a leading forward slash on the image src', () => {
+        const path = 'https://ik.imageengine.io/imagetest';
+        const loader = createImageKitLoader(path);
+        expect(loader({src: '/img.png'})).toBe(`${path}/tr:q-auto/img.png`);
+      });
+    });
+  });
+
+  describe('loader utils', () => {
+    describe('path validation', () => {
+      it('should identify valid paths', () => {
+        expect(isValidPath('https://cdn.imageprovider.com/image-test')).toBe(true);
+        expect(isValidPath('https://cdn.imageprovider.com')).toBe(true);
+        expect(isValidPath('https://imageprovider.com')).toBe(true);
+      });
+
+      it('should reject empty paths', () => {
+        expect(isValidPath('')).toBe(false);
+      });
+
+      it('should reject path if it is not a URL', () => {
+        expect(isValidPath('myaccount')).toBe(false);
+      });
+
+      it('should reject path if it does not include a protocol', () => {
+        expect(isValidPath('myaccount.imageprovider.com')).toBe(false);
+      });
+
+      it('should reject path if is malformed', () => {
+        expect(isValidPath('somepa\th.imageprovider.com? few')).toBe(false);
+      });
     });
   });
 });
