@@ -131,8 +131,9 @@ export type LoadChildren = LoadChildrenCallback;
  *
  * How to handle query parameters in a router link.
  * One of:
- * - `merge` : Merge new with current parameters.
- * - `preserve` : Preserve current parameters.
+ * - `"merge"` : Merge new parameters with current parameters.
+ * - `"preserve"` : Preserve current parameters.
+ * - `""` : Replace current parameters with new parameters. This is the default behavior.
  *
  * @see `UrlCreationOptions#queryParamsHandling`
  * @see `RouterLink`
