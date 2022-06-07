@@ -416,7 +416,7 @@ export class NgClass implements DoCheck {
 export class NgComponentOutlet implements OnChanges, OnDestroy {
     constructor(_viewContainerRef: ViewContainerRef);
     // (undocumented)
-    ngComponentOutlet: Type<any>;
+    ngComponentOutlet: Type<any> | null;
     // (undocumented)
     ngComponentOutletContent?: any[][];
     // (undocumented)
