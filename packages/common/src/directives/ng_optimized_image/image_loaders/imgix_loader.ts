@@ -12,6 +12,7 @@ import {RuntimeErrorCode} from '../../../errors';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../preconnect_link_checker';
 
 import {IMAGE_LOADER, ImageLoaderConfig} from './image_loader';
+import {isValidPath, normalizePath, normalizeSrc} from './loader_utils';
 
 /**
  * Function that generates a built-in ImageLoader for Imgix and turns it
@@ -24,7 +25,9 @@ import {IMAGE_LOADER, ImageLoaderConfig} from './image_loader';
 export function provideImgixLoader(path: string, options: {ensurePreconnect?: boolean} = {
   ensurePreconnect: true
 }) {
-  ngDevMode && assertValidPath(path);
+  if (ngDevMode && !isValidPath(path)) {
+    throwInvalidPathError(path);
+  }
   path = normalizePath(path);
 
   const providers: Provider[] = [{
@@ -45,32 +48,10 @@ export function provideImgixLoader(path: string, options: {ensurePreconnect?: bo
   return providers;
 }
 
-function assertValidPath(path: unknown) {
-  const isString = typeof path === 'string';
-
-  if (!isString || path.trim() === '') {
-    throwInvalidPathError(path);
-  }
-
-  try {
-    const url = new URL(path);
-  } catch {
-    throwInvalidPathError(path);
-  }
-}
-
 function throwInvalidPathError(path: unknown): never {
   throw new RuntimeError(
       RuntimeErrorCode.INVALID_INPUT,
       `ImgixLoader has detected an invalid path: ` +
           `expecting a path like https://somepath.imgix.net/` +
           `but got: \`${path}\``);
-}
-
-function normalizePath(path: string) {
-  return path[path.length - 1] === '/' ? path.slice(0, -1) : path;
-}
-
-function normalizeSrc(src: string) {
-  return src[0] === '/' ? src.slice(1) : src;
 }
