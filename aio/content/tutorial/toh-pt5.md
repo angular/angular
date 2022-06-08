@@ -319,7 +319,7 @@ Here's the class after pruning away the dead code.
 Previously, the parent `HeroesComponent` set the `HeroDetailComponent.hero` property and the `HeroDetailComponent` displayed the hero.
 
 `HeroesComponent` doesn't do that anymore.
-Now the router creates the `HeroDetailComponent` in response to a URL such as `~/detail/11`.
+Now the router creates the `HeroDetailComponent` in response to a URL such as `~/detail/12`.
 
 The `HeroDetailComponent` needs a new way to obtain the hero-to-display.
 This section explains the following:
@@ -389,7 +389,7 @@ You'll be able to re-implement `getHero()` as a real `Http` request without havi
 The browser refreshes and the application is working again.
 You can click a hero in the dashboard or in the heroes list and navigate to that hero's detail view.
 
-If you paste `localhost:4200/detail/11` in the browser address bar, the router navigates to the detail view for the hero with `id: 11`, "Dr Nice".
+If you paste `localhost:4200/detail/12` in the browser address bar, the router navigates to the detail view for the hero with `id: 12`, "Dr Nice".
 
 <a id="goback"></a>
 
