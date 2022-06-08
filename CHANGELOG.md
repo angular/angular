@@ -1,3 +1,18 @@
+<a name="14.1.0-next.0"></a>
+# 14.1.0-next.0 (2022-06-08)
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [53ca936366](https://github.com/angular/angular/commit/53ca936366fb908278571bae5fcc7fa08b19a5a0) | feat | Add ability to create `UrlTree` from any `ActivatedRouteSnapshot` ([#45877](https://github.com/angular/angular/pull/45877)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e9cb0454dc](https://github.com/angular/angular/commit/e9cb0454dce2113cfd5ba11deeca6cdcf47d47f0) | feat | more closely align `UpgradeModule#bootstrap()` with `angular.bootstrap()` ([#46214](https://github.com/angular/angular/pull/46214)) |
+## Special Thanks
+AleksanderBodurri, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, George Kalpakas, Jessica Janiuk, Joey Perrott, Keith Li, SyedAhm3r, mariu and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.1"></a>
 # 14.0.1 (2022-06-08)
 ### bazel
