@@ -772,9 +772,9 @@ describe('CdkVirtualScrollViewport', () => {
         spyOn(dispatcher, 'register').and.callThrough();
         spyOn(dispatcher, 'deregister').and.callThrough();
         finishInit(fixture);
-        expect(dispatcher.register).toHaveBeenCalledWith(testComponent.viewport);
+        expect(dispatcher.register).toHaveBeenCalledWith(testComponent.viewport.scrollable);
         fixture.destroy();
-        expect(dispatcher.deregister).toHaveBeenCalledWith(testComponent.viewport);
+        expect(dispatcher.deregister).toHaveBeenCalledWith(testComponent.viewport.scrollable);
       }),
     ));
 
@@ -1086,6 +1086,76 @@ describe('CdkVirtualScrollViewport', () => {
       expect(viewport.getOffsetToRenderedContentStart()).toBe(0);
     }));
   });
+
+  describe('with custom scrolling element', () => {
+    let fixture: ComponentFixture<VirtualScrollWithCustomScrollingElement>;
+    let testComponent: VirtualScrollWithCustomScrollingElement;
+    let viewport: CdkVirtualScrollViewport;
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [ScrollingModule],
+        declarations: [VirtualScrollWithCustomScrollingElement],
+      }).compileComponents();
+    }));
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(VirtualScrollWithCustomScrollingElement);
+      testComponent = fixture.componentInstance;
+      viewport = testComponent.viewport;
+    });
+
+    it('should measure viewport offset', fakeAsync(() => {
+      finishInit(fixture);
+
+      expect(viewport.measureViewportOffset('top'))
+        .withContext('with scrolling-element padding-top: 50 offset should be 50')
+        .toBe(50);
+    }));
+
+    it('should measure scroll offset', fakeAsync(() => {
+      finishInit(fixture);
+      triggerScroll(viewport, 100);
+      fixture.detectChanges();
+      flush();
+
+      expect(viewport.measureScrollOffset('top'))
+        .withContext('should be 50 (actual scroll offset - viewport offset)')
+        .toBe(50);
+    }));
+  });
+
+  describe('with scrollable window', () => {
+    let fixture: ComponentFixture<VirtualScrollWithScrollableWindow>;
+    let testComponent: VirtualScrollWithScrollableWindow;
+    let viewport: CdkVirtualScrollViewport;
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [ScrollingModule],
+        declarations: [VirtualScrollWithScrollableWindow],
+      }).compileComponents();
+    }));
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(VirtualScrollWithScrollableWindow);
+      testComponent = fixture.componentInstance;
+      viewport = testComponent.viewport;
+    });
+
+    it('should measure scroll offset', fakeAsync(() => {
+      finishInit(fixture);
+      viewport.scrollToOffset(100 + 8); // the +8 is due to a horizontal scrollbar
+      dispatchFakeEvent(window, 'scroll', true);
+      tick();
+      fixture.detectChanges();
+      flush();
+
+      expect(viewport.measureScrollOffset('top'))
+        .withContext('should be 50 (actual scroll offset - viewport offset)')
+        .toBe(50);
+    }));
+  });
 });
 
 /** Finish initializing the virtual scroll component at the beginning of a test. */
@@ -1109,7 +1179,7 @@ function triggerScroll(viewport: CdkVirtualScrollViewport, offset?: number) {
   if (offset !== undefined) {
     viewport.scrollToOffset(offset);
   }
-  dispatchFakeEvent(viewport.elementRef.nativeElement, 'scroll');
+  dispatchFakeEvent(viewport.scrollable.getElementRef().nativeElement, 'scroll');
   animationFrameScheduler.flush();
 }
 
@@ -1385,6 +1455,91 @@ class DelayedInitializationVirtualScroll {
   encapsulation: ViewEncapsulation.None,
 })
 class VirtualScrollWithAppendOnly {
+  @ViewChild(CdkVirtualScrollViewport, {static: true}) viewport: CdkVirtualScrollViewport;
+  itemSize = 50;
+  items = Array(20000)
+    .fill(0)
+    .map((_, i) => i);
+}
+
+@Component({
+  template: `
+    <div cdkVirtualScrollingElement class="scrolling-element">
+      <cdk-virtual-scroll-viewport itemSize="50">
+        <div class="item" *cdkVirtualFor="let item of items">{{item}}</div>
+      </cdk-virtual-scroll-viewport>
+    </div>
+  `,
+  styles: [
+    `
+        .cdk-virtual-scroll-content-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cdk-virtual-scroll-viewport {
+            width: 200px;
+            height: 200px;
+            background-color: #f5f5f5;
+        }
+
+        .item {
+            width: 100%;
+            height: 50px;
+            box-sizing: border-box;
+            border: 1px dashed #ccc;
+        }
+
+        .scrolling-element {
+            padding-top: 50px;
+        }
+    `,
+  ],
+  encapsulation: ViewEncapsulation.None,
+})
+class VirtualScrollWithCustomScrollingElement {
+  @ViewChild(CdkVirtualScrollViewport, {static: true}) viewport: CdkVirtualScrollViewport;
+  itemSize = 50;
+  items = Array(20000)
+    .fill(0)
+    .map((_, i) => i);
+}
+
+@Component({
+  template: `
+    <div class="before-virtual-viewport"></div>
+    <cdk-virtual-scroll-viewport scrollWindow itemSize="50">
+      <div class="item" *cdkVirtualFor="let item of items">{{item}}</div>
+    </cdk-virtual-scroll-viewport>
+  `,
+  styles: [
+    `
+        .cdk-virtual-scroll-content-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cdk-virtual-scroll-viewport {
+            width: 200px;
+            height: 200px;
+            background-color: #f5f5f5;
+        }
+
+        .item {
+            width: 100%;
+            height: 50px;
+            box-sizing: border-box;
+            border: 1px dashed #ccc;
+        }
+
+        .before-virtual-viewport {
+            height: 50px;
+        }
+    `,
+  ],
+  encapsulation: ViewEncapsulation.None,
+})
+class VirtualScrollWithScrollableWindow {
   @ViewChild(CdkVirtualScrollViewport, {static: true}) viewport: CdkVirtualScrollViewport;
   itemSize = 50;
   items = Array(20000)

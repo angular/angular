@@ -38,6 +38,7 @@ import {VIRTUAL_SCROLL_STRATEGY, VirtualScrollStrategy} from './virtual-scroll-s
 import {ViewportRuler} from './viewport-ruler';
 import {CdkVirtualScrollRepeater} from './virtual-scroll-repeater';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
+import {CdkVirtualScrollable, VIRTUAL_SCROLLABLE} from './virtual-scrollable';
 
 /** Checks if the given ranges are equal. */
 function rangesEqual(r1: ListRange, r2: ListRange): boolean {
@@ -67,11 +68,15 @@ const SCROLL_SCHEDULER =
   providers: [
     {
       provide: CdkScrollable,
-      useExisting: CdkVirtualScrollViewport,
+      useFactory: (
+        virtualScrollable: CdkVirtualScrollable | null,
+        viewport: CdkVirtualScrollViewport,
+      ) => virtualScrollable || viewport,
+      deps: [CdkVirtualScrollable, CdkVirtualScrollViewport],
     },
   ],
 })
-export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, OnDestroy {
+export class CdkVirtualScrollViewport extends CdkVirtualScrollable implements OnInit, OnDestroy {
   /** Emits when the viewport is detached from a CdkVirtualForOf. */
   private readonly _detachedSubject = new Subject<void>();
 
@@ -83,6 +88,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   get orientation() {
     return this._orientation;
   }
+
   set orientation(orientation: 'horizontal' | 'vertical') {
     if (this._orientation !== orientation) {
       this._orientation = orientation;
@@ -179,6 +185,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
     @Optional() dir: Directionality,
     scrollDispatcher: ScrollDispatcher,
     viewportRuler: ViewportRuler,
+    @Optional() @Inject(VIRTUAL_SCROLLABLE) public scrollable: CdkVirtualScrollable,
   ) {
     super(elementRef, scrollDispatcher, ngZone, dir);
 
@@ -189,11 +196,18 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
     this._viewportChanges = viewportRuler.change().subscribe(() => {
       this.checkViewportSize();
     });
+
+    if (!this.scrollable) {
+      // No scrollable is provided, so the virtual-scroll-viewport needs to become a scrollable
+      this.elementRef.nativeElement.classList.add('cdk-virtual-scrollable');
+      this.scrollable = this;
+    }
   }
 
   override ngOnInit() {
-    super.ngOnInit();
-
+    if (this.scrollable === this) {
+      super.ngOnInit();
+    }
     // It's still too early to measure the viewport at this point. Deferring with a promise allows
     // the Viewport to be rendered with the correct size before we measure. We run this outside the
     // zone to avoid causing more change detection cycles. We handle the change detection loop
@@ -203,7 +217,8 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
         this._measureViewportSize();
         this._scrollStrategy.attach(this);
 
-        this.elementScrolled()
+        this.scrollable
+          .elementScrolled()
           .pipe(
             // Start off with a fake scroll event so we properly detect our initial position.
             startWith(null),
@@ -277,6 +292,10 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   /** Get the current rendered range of items. */
   getRenderedRange(): ListRange {
     return this._renderedRange;
+  }
+
+  measureBoundingClientRectWithScrollOffset(from: 'left' | 'top' | 'right' | 'bottom'): number {
+    return this.getElementRef().nativeElement.getBoundingClientRect()[from];
   }
 
   /**
@@ -361,7 +380,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
     } else {
       options.top = offset;
     }
-    this.scrollTo(options);
+    this.scrollable.scrollTo(options);
   }
 
   /**
@@ -374,16 +393,52 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   }
 
   /**
-   * Gets the current scroll offset from the start of the viewport (in pixels).
+   * Gets the current scroll offset from the start of the scrollable (in pixels).
    * @param from The edge to measure the offset from. Defaults to 'top' in vertical mode and 'start'
    *     in horizontal mode.
    */
   override measureScrollOffset(
     from?: 'top' | 'left' | 'right' | 'bottom' | 'start' | 'end',
   ): number {
-    return from
-      ? super.measureScrollOffset(from)
-      : super.measureScrollOffset(this.orientation === 'horizontal' ? 'start' : 'top');
+    // This is to break the call cycle
+    let measureScrollOffset: InstanceType<typeof CdkVirtualScrollable>['measureScrollOffset'];
+    if (this.scrollable == this) {
+      measureScrollOffset = (_from: NonNullable<typeof from>) => super.measureScrollOffset(_from);
+    } else {
+      measureScrollOffset = (_from: NonNullable<typeof from>) =>
+        this.scrollable.measureScrollOffset(_from);
+    }
+
+    return Math.max(
+      0,
+      measureScrollOffset(from ?? (this.orientation === 'horizontal' ? 'start' : 'top')) -
+        this.measureViewportOffset(),
+    );
+  }
+
+  /**
+   * Measures the offset of the viewport from the scrolling container
+   * @param from The edge to measure from.
+   */
+  measureViewportOffset(from?: 'top' | 'left' | 'right' | 'bottom' | 'start' | 'end') {
+    let fromRect: 'left' | 'top' | 'right' | 'bottom';
+    const LEFT = 'left';
+    const RIGHT = 'right';
+    const isRtl = this.dir?.value == 'rtl';
+    if (from == 'start') {
+      fromRect = isRtl ? RIGHT : LEFT;
+    } else if (from == 'end') {
+      fromRect = isRtl ? LEFT : RIGHT;
+    } else if (from) {
+      fromRect = from;
+    } else {
+      fromRect = this.orientation === 'horizontal' ? 'left' : 'top';
+    }
+
+    const scrollerClientRect = this.scrollable.measureBoundingClientRectWithScrollOffset(fromRect);
+    const viewportClientRect = this.elementRef.nativeElement.getBoundingClientRect()[fromRect];
+
+    return viewportClientRect - scrollerClientRect;
   }
 
   /** Measure the combined size of all of the rendered items. */
@@ -412,9 +467,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
 
   /** Measure the viewport size. */
   private _measureViewportSize() {
-    const viewportEl = this.elementRef.nativeElement;
-    this._viewportSize =
-      this.orientation === 'horizontal' ? viewportEl.clientWidth : viewportEl.clientHeight;
+    this._viewportSize = this.scrollable.measureViewportSize(this.orientation);
   }
 
   /** Queue up change detection to run. */

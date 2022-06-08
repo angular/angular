@@ -27,14 +27,18 @@
 }
 
 
-// Scrolling container.
+// viewport
 cdk-virtual-scroll-viewport {
   display: block;
   position: relative;
-  overflow: auto;
-  contain: strict;
   transform: translateZ(0);
+}
+
+// Scrolling container.
+.cdk-virtual-scrollable {
+  overflow: auto;
   will-change: scroll-position;
+  contain: strict;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -69,19 +73,14 @@ cdk-virtual-scroll-viewport {
 // set if it were rendered all at once. This ensures that the scrollable content region is the
 // correct size.
 .cdk-virtual-scroll-spacer {
-  position: absolute;
-  top: 0;
-  left: 0;
   height: 1px;
-  width: 1px;
   transform-origin: 0 0;
+  flex: 0 0 auto; // prevents spacer from collapsing if display: flex is applied
 
   // Note: We can't put `will-change: transform;` here because it causes Safari to not update the
   // viewport's `scrollHeight` when the spacer's transform changes.
 
   [dir='rtl'] & {
-    right: 0;
-    left: auto;
     transform-origin: 100% 0;
   }
 }

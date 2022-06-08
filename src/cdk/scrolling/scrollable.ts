@@ -45,9 +45,9 @@ export type ExtendedScrollToOptions = _XAxis & _YAxis & ScrollOptions;
   selector: '[cdk-scrollable], [cdkScrollable]',
 })
 export class CdkScrollable implements OnInit, OnDestroy {
-  private readonly _destroyed = new Subject<void>();
+  protected readonly _destroyed = new Subject<void>();
 
-  private _elementScrolled: Observable<Event> = new Observable((observer: Observer<Event>) =>
+  protected _elementScrolled: Observable<Event> = new Observable((observer: Observer<Event>) =>
     this.ngZone.runOutsideAngular(() =>
       fromEvent(this.elementRef.nativeElement, 'scroll')
         .pipe(takeUntil(this._destroyed))

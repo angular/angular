@@ -15,3 +15,6 @@ export * from './virtual-for-of';
 export * from './virtual-scroll-strategy';
 export * from './virtual-scroll-viewport';
 export * from './virtual-scroll-repeater';
+export * from './virtual-scrollable';
+export * from './virtual-scrollable-element';
+export * from './virtual-scrollable-window';
