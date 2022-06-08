@@ -618,8 +618,8 @@ export const isFormGroup = (control: unknown): control is FormGroup => control i
  * @usageNotes
  *
  * ```
- * let numbers = new FormRecord({bill: '415-123-456'});
- * numbers.addControl('bob', '415-234-567');
+ * let numbers = new FormRecord({bill: new FormControl('415-123-456')});
+ * numbers.addControl('bob', new FormControl('415-234-567'));
  * numbers.removeControl('bill');
  * ```
  *
