@@ -1,6 +1,6 @@
 # Add navigation with routing
 
-There are new requirements for the Tour of Heroes app:
+The Tour of Heroes application has new requirements:
 
 *   Add a *Dashboard* view
 *   Add the ability to navigate between the *Heroes* and *Dashboard* views
@@ -13,7 +13,7 @@ For the sample application that this page describes, see the <live-example></liv
 
 </div>
 
-When you're done, users will be able to navigate the application like this:
+When you're done, users can navigate the application like this:
 
 <div class="lightbox">
 
@@ -23,12 +23,12 @@ When you're done, users will be able to navigate the application like this:
 
 ## Add the `AppRoutingModule`
 
-In Angular, the best practice is to load and configure the router in a separate, top-level module
-that is dedicated to routing and imported by the root `AppModule`.
+In Angular, the best practice is to load and configure the router in a separate, top-level module.
+The router is dedicated to routing and imported by the root `AppModule`.
 
-By convention, the module class name is `AppRoutingModule` and it belongs in the `app-routing.module.ts` in the `src/app` folder.
+By convention, the module class name is `AppRoutingModule` and it belongs in the `app-routing.module.ts` in the `src/app` directory.
 
-Use the CLI to generate it.
+Run `ng generate` to create the application routing module.
 
 <code-example format="shell" language="shell">
 
@@ -40,12 +40,12 @@ ng generate module app-routing --flat --module=app
 
 | Parameter      | Details |
 |:---            |:---     |
-| `--flat`       | Puts the file in `src/app` instead of its own folder.                   |
-| `--module=app` | Tells the CLI to register it in the `imports` array of the `AppModule`. |
+| `--flat`       | Puts the file in `src/app` instead of its own directory.                   |
+| `--module=app` | Tells `ng generate` to register it in the `imports` array of the `AppModule`. |
 
 </div>
 
-The generated file looks like this:
+The file that `ng generate` creates looks like this:
 
 <code-example header="src/app/app-routing.module.ts (generated)" path="toh-pt5/src/app/app-routing.module.0.ts"></code-example>
 
@@ -53,8 +53,8 @@ Replace it with the following:
 
 <code-example header="src/app/app-routing.module.ts (updated)" path="toh-pt5/src/app/app-routing.module.1.ts"></code-example>
 
-First, the `app-routing.module.ts` file imports `RouterModule` and `Routes` so the application can have routing functionality.
-The next import, `HeroesComponent`, will give the Router somewhere to go once you configure the routes.
+First, the `app-routing.module.ts` file imports `RouterModule` and `Routes` so the application can have routing capability.
+The next import, `HeroesComponent`, gives the Router somewhere to go once you configure the routes.
 
 Notice that the `CommonModule` references and `declarations` array are unnecessary, so are no longer part of `AppRoutingModule`.
 The following sections explain the rest of the `AppRoutingModule` in more detail.
@@ -92,7 +92,7 @@ The `forRoot()` method supplies the service providers and directives needed for 
 
 </div>
 
-Next, `AppRoutingModule` exports `RouterModule` so it will be available throughout the application.
+Next, `AppRoutingModule` exports `RouterModule` to be available throughout the application.
 
 <code-example header="src/app/app-routing.module.ts (exports array)" path="toh-pt5/src/app/app-routing.module.ts" region="export-routermodule"></code-example>
 
@@ -102,7 +102,7 @@ Open the `AppComponent` template and replace the `<app-heroes>` element with a `
 
 <code-example header="src/app/app.component.html (router-outlet)" path="toh-pt5/src/app/app.component.html" region="outlet"></code-example>
 
-The `AppComponent` template no longer needs `<app-heroes>` because the application will only display the `HeroesComponent` when the user navigates to it.
+The `AppComponent` template no longer needs `<app-heroes>` because the application only displays the `HeroesComponent` when the user navigates to it.
 
 The `<router-outlet>` tells the router where to display routed views.
 
@@ -110,19 +110,13 @@ The `<router-outlet>` tells the router where to display routed views.
 
 The `RouterOutlet` is one of the router directives that became available to the `AppComponent` because `AppModule` imports `AppRoutingModule` which exported `RouterModule`.
 The `ng generate` command you ran at the start of this tutorial added this import because of the `--module=app` flag.
-If you manually created `app-routing.module.ts` or used a tool other than the CLI to do so, you'll need to import `AppRoutingModule` into `app.module.ts` and add it to the `imports` array of the `NgModule`.
+If you didn't use the `ng generate` command to create `app-routing.module.ts`, import `AppRoutingModule` into `app.module.ts` and add it to the `imports` array of the `NgModule`.
 
 </div>
 
 #### Try it
 
-You should still be running with this CLI command.
-
-<code-example format="shell" language="shell">
-
-ng serve
-
-</code-example>
+If you're not still serving your application, run `ng serve` to see your application in the browser.
 
 The browser should refresh and display the application title but not the list of heroes.
 
@@ -138,7 +132,7 @@ The browser should refresh and display the application title but not the list of
 
 <a id="routerlink"></a>
 
-## Add a navigation link (`routerLink`)
+## Add a navigation link using `routerLink`
 
 Ideally, users should be able to click a link to navigate rather than pasting a route URL into the address bar.
 
@@ -164,10 +158,10 @@ Make this and future navigation links look better by adding private CSS styles t
 
 ## Add a dashboard view
 
-Routing makes more sense when there are multiple views.
-So far there's only the heroes view.
+Routing makes more sense when your application has more than one view, yet
+the *Tour of Heroes* application has only the heroes view.
 
-Add a `DashboardComponent` using the CLI:
+To add a `DashboardComponent`, run `ng generate` as shown here:
 
 <code-example format="shell" language="shell">
 
@@ -175,9 +169,9 @@ ng generate component dashboard
 
 </code-example>
 
-The CLI generates the files for the `DashboardComponent` and declares it in `AppModule`.
+`ng generate` creates the files for the `DashboardComponent` and declares it in `AppModule`.
 
-Replace the default file content in these three files as follows:
+Replace the default content in these files as shown here:
 
 <code-tabs>
     <code-pane header="src/app/dashboard/dashboard.component.html" path="toh-pt5/src/app/dashboard/dashboard.component.1.html"></code-pane>
@@ -189,15 +183,15 @@ The  *template* presents a grid of hero name links.
 
 *   The `*ngFor` repeater creates as many links as are in the component's `heroes` array.
 *   The links are styled as colored blocks by the `dashboard.component.css`.
-*   The links don't go anywhere yet but [they will shortly](#hero-details).
+*   The links don't go anywhere yet.
 
-The *class* is similar to the `HeroesComponent` class.
+The *class* is like the `HeroesComponent` class.
 
 *   It defines a `heroes` array property
 *   The constructor expects Angular to inject the `HeroService` into a private `heroService` property
 *   The `ngOnInit()` lifecycle hook calls `getHeroes()`
 
-This `getHeroes()` returns the sliced list of heroes at positions 1 and 5, returning only four of the Top Heroes \(2nd, 3rd, 4th, and 5th\).
+This `getHeroes()` returns the sliced list of heroes at positions 1 and 5, returning only Heroes two, three, four, and five.
 
 <code-example header="src/app/dashboard/dashboard.component.ts" path="toh-pt5/src/app/dashboard/dashboard.component.ts" region="getHeroes"></code-example>
 
@@ -229,7 +223,7 @@ After the browser refreshes, the router loads the `DashboardComponent` and the b
 
 ### Add dashboard link to the shell
 
-The user should be able to navigate back and forth between the `DashboardComponent` and the `HeroesComponent` by clicking links in the navigation area near the top of the page.
+The user should be able to navigate between the `DashboardComponent` and the `HeroesComponent` by clicking links in the navigation area near the top of the page.
 
 Add a dashboard navigation link to the `AppComponent` shell template, just above the *Heroes* link.
 
@@ -250,17 +244,17 @@ The user should be able to get to these details in three ways.
 1.  By clicking a hero in the heroes list.
 1.  By pasting a "deep link" URL into the browser address bar that identifies the hero to display.
 
-In this section, you'll enable navigation to the `HeroDetailComponent` and liberate it from the `HeroesComponent`.
+This section enables navigation to the `HeroDetailComponent` and liberate it from the `HeroesComponent`.
 
 ### Delete *hero details* from `HeroesComponent`
 
-When the user clicks a hero item in the `HeroesComponent`, the application should navigate to the `HeroDetailComponent`, replacing the heroes list view with the hero detail view.
+When the user clicks a hero in `HeroesComponent`, the application should navigate to the `HeroDetailComponent`, replacing the heroes list view with the hero detail view.
 The heroes list view should no longer show hero details as it does now.
 
-Open the `HeroesComponent` template \(`heroes/heroes.component.html`\) and delete the `<app-hero-detail>` element from the bottom.
+Open the `heroes/heroes.component.html` and delete the `<app-hero-detail>` element from the bottom.
 
 Clicking a hero item now does nothing.
-You'll [fix that shortly](#heroes-component-links) after you enable routing to the `HeroDetailComponent`.
+You can fix that after you enable routing to the `HeroDetailComponent`.
 
 ### Add a *hero detail* route
 
@@ -274,7 +268,7 @@ Then add a *parameterized* route to the `routes` array that matches the path pat
 
 <code-example header="src/app/app-routing.module.ts" path="toh-pt5/src/app/app-routing.module.ts" region="detail-route"></code-example>
 
-The colon \(`:`\) character in the `path` indicates that `:id` is a placeholder for a specific hero `id`.
+The colon `:` character in the `path` indicates that `:id` is a placeholder for a specific hero `id`.
 
 At this point, all application routes are in place.
 
@@ -298,35 +292,37 @@ The hero items in the `HeroesComponent` are `<li>` elements whose click events a
 
 <code-example header="src/app/heroes/heroes.component.html (list with onSelect)" path="toh-pt4/src/app/heroes/heroes.component.html" region="list"></code-example>
 
-Strip the `<li>` back to just its `*ngFor`, wrap the badge and name in an anchor \(`<a>`\) element, and add a `routerLink` attribute to the anchor that is the same as in the dashboard template
+Remove the `<li>` back to just its `*ngFor`. 
+Wrap the badge and name in an anchor `<a>` element. 
+Add a `routerLink` attribute to the anchor that's the same as in the dashboard template.
 
 <code-example header="src/app/heroes/heroes.component.html (list with links)" path="toh-pt5/src/app/heroes/heroes.component.html" region="list"></code-example>
 
-You'll have to fix the private stylesheet \(`heroes.component.css`\) to make the list look as it did before.
+Be sure to fix the private style sheet in `heroes.component.css` to make the list look as it did before.
 Revised styles are in the [final code review](#heroescomponent) at the bottom of this guide.
 
-#### Remove dead code (optional)
+#### Remove dead code - optional
 
 While the `HeroesComponent` class still works, the `onSelect()` method and `selectedHero` property are no longer used.
 
-It's nice to tidy up and you'll be grateful to yourself later.
+It's nice to tidy things up for your future self.
 Here's the class after pruning away the dead code.
 
 <code-example header="src/app/heroes/heroes.component.ts (cleaned up)" path="toh-pt5/src/app/heroes/heroes.component.ts" region="class"></code-example>
 
 ## Routable `HeroDetailComponent`
 
-Previously, the parent `HeroesComponent` set the `HeroDetailComponent.hero` property and the `HeroDetailComponent` displayed the hero.
+The parent `HeroesComponent` used to set the `HeroDetailComponent.hero` property and the `HeroDetailComponent` displayed the hero.
 
 `HeroesComponent` doesn't do that anymore.
 Now the router creates the `HeroDetailComponent` in response to a URL such as `~/detail/12`.
 
-The `HeroDetailComponent` needs a new way to obtain the hero-to-display.
+The `HeroDetailComponent` needs a new way to get the hero to display.
 This section explains the following:
 
 *   Get the route that created it
 *   Extract the `id` from the route
-*   Acquire the hero with that `id` from the server using the `HeroService`
+*   Get the hero with that `id` from the server using the `HeroService`
 
 Add the following imports:
 
@@ -342,10 +338,10 @@ The [`ActivatedRoute`](api/router/ActivatedRoute) holds information about the ro
 This component is interested in the route's parameters extracted from the URL.
 The "id" parameter is the `id` of the hero to display.
 
-The [`HeroService`](tutorial/toh-pt4) gets hero data from the remote server and this component will use it to get the hero-to-display.
+The [`HeroService`](tutorial/toh-pt4) gets hero data from the remote server and this component uses it to get the hero-to-display.
 
 The [`location`](api/common/Location) is an Angular service for interacting with the browser.
-You'll use it [later](#goback) to navigate back to the view that navigated here.
+This service lets you navigate back to the previous view.
 
 ### Extract the `id` route parameter
 
@@ -382,20 +378,20 @@ The backtick \( <code>&grave;</code> \) characters define a JavaScript [template
 Like [`getHeroes()`](tutorial/toh-pt4#observable-heroservice), `getHero()` has an asynchronous signature.
 It returns a *mock hero* as an `Observable`, using the RxJS `of()` function.
 
-You'll be able to re-implement `getHero()` as a real `Http` request without having to change the `HeroDetailComponent` that calls it.
+You can rewrite `getHero()` as a real `Http` request without having to change the `HeroDetailComponent` that calls it.
 
 #### Try it
 
 The browser refreshes and the application is working again.
 You can click a hero in the dashboard or in the heroes list and navigate to that hero's detail view.
 
-If you paste `localhost:4200/detail/12` in the browser address bar, the router navigates to the detail view for the hero with `id: 12`, "Dr Nice".
+If you paste `localhost:4200/detail/12` in the browser address bar, the router navigates to the detail view for the hero with `id: 12`, **Dr Nice**.
 
 <a id="goback"></a>
 
 ### Find the way back
 
-By clicking the browser's back button, you can go back to the hero list or dashboard view, depending upon which sent you to the detail view.
+By clicking the browser's back button, you can go back to the previous page. This could be the hero list or dashboard view, depending upon which sent you to the detail view.
 
 It would be nice to have a button on the `HeroDetail` view that can do that.
 
@@ -404,14 +400,14 @@ Add a *go back* button to the bottom of the component template and bind it to th
 <code-example header="src/app/hero-detail/hero-detail.component.html (back button)" path="toh-pt5/src/app/hero-detail/hero-detail.component.html" region="back-button"></code-example>
 
 Add a `goBack()` *method* to the component class that navigates backward one step in the browser's history stack
-using the `Location` service that you [injected previously](#hero-detail-ctor).
+using the `Location` service that you [used to inject](#hero-detail-ctor).
 
 <code-example header="src/app/hero-detail/hero-detail.component.ts (goBack)" path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" region="goBack"></code-example>
 
 Refresh the browser and start clicking.
-Users can navigate around the app, from the dashboard to hero details and back, from heroes list to the mini detail to the hero details and back to the heroes again.
+Users can now navigate around the application using the new buttons.
 
-The details will look better when you add the private CSS styles to `hero-detail.component.css` as listed in one of the ["final code review"](#final-code-review) tabs below.
+The details look better when you add the private CSS styles to `hero-detail.component.css` as listed in one of the ["final code review"](#final-code-review) tabs below.
 
 ## Final code review
 
@@ -475,8 +471,8 @@ Here are the code files discussed on this page.
 *   You configured the router in an `AppRoutingModule`
 *   You defined routes, a redirect route, and a parameterized route
 *   You used the `routerLink` directive in anchor elements
-*   You refactored a tightly-coupled master/detail view into a routed detail view
+*   You refactored a tightly coupled main/detail view into a routed detail view
 *   You used router link parameters to navigate to the detail view of a user-selected hero
-*   You shared the `HeroService` among multiple components
+*   You shared the `HeroService` with other components
 
 @reviewed 2022-02-28
