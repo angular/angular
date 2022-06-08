@@ -7,11 +7,11 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {IMAGE_LOADER} from '@angular/common/src/directives/ng_optimized_image/image_loaders/image_loader';
 import {provideImgixLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imgix_loader';
 import {NgOptimizedImageModule} from '@angular/common/src/directives/ng_optimized_image/ng_optimized_image';
+import {PRECONNECT_CHECK_BLOCKLIST} from '@angular/common/src/directives/ng_optimized_image/preconnect_link_checker';
 import {RuntimeErrorCode} from '@angular/common/src/errors';
-import {Component} from '@angular/core';
+import {Component, ValueProvider} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -57,6 +57,37 @@ describe('Built-in image directive loaders', () => {
                 `expecting a path like https://somepath.imgix.net/` +
                 `but got: \`somepa\th.imgix.net? few\``);
       });
+    });
+
+    describe('options', () => {
+      it('should configure PRECONNECT_CHECK_BLOCKLIST token by default', () => {
+        const providers = provideImgixLoader('https://somesite.imgix.net');
+        expect(providers.length).toBe(2);
+
+        const valueProvider = providers[1] as ValueProvider;
+        expect(valueProvider.multi).toBeTrue();
+        expect(valueProvider.useValue).toEqual(['https://somesite.imgix.net']);
+        expect(valueProvider.provide).toBe(PRECONNECT_CHECK_BLOCKLIST);
+      });
+
+      it('should configure PRECONNECT_CHECK_BLOCKLIST when the ensurePreconnect was specified',
+         () => {
+           const providers =
+               provideImgixLoader('https://somesite.imgix.net', {ensurePreconnect: true});
+           expect(providers.length).toBe(2);
+
+           const valueProvider = providers[1] as ValueProvider;
+           expect(valueProvider.multi).toBeTrue();
+           expect(valueProvider.useValue).toEqual(['https://somesite.imgix.net']);
+           expect(valueProvider.provide).toBe(PRECONNECT_CHECK_BLOCKLIST);
+         });
+
+      it('should NOT configure PRECONNECT_CHECK_BLOCKLIST disabled with the ensurePreconnect option',
+         () => {
+           const providers =
+               provideImgixLoader('https://somesite.imgix.net', {ensurePreconnect: false});
+           expect(providers.length).toBe(1);
+         });
     });
 
     it('should construct an image loader with the given path', () => {
