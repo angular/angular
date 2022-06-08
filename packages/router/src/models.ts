@@ -506,7 +506,7 @@ export interface Route {
    * - `paramsOrQueryParamsChange` : Run when path, matrix, or query parameters change.
    * - `pathParamsOrQueryParamsChange` : Rerun guards and resolvers when the path params
    * change or query params have changed. This does not include matrix parameters.
-   * 
+   *
    */
   runGuardsAndResolvers?: RunGuardsAndResolvers;
 
