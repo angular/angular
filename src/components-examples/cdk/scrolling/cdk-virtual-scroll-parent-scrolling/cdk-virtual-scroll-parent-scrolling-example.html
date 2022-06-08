@@ -1,0 +1,7 @@
+<div class="example-viewport" cdkVirtualScrollingElement>
+  <div class="example-header">Content before</div>
+  <cdk-virtual-scroll-viewport itemSize="50">
+    <div *cdkVirtualFor="let item of items" class="example-item">{{item}}</div>
+  </cdk-virtual-scroll-viewport>
+  <div class="example-footer">Content after</div>
+</div>

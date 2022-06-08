@@ -16,6 +16,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {BehaviorSubject} from 'rxjs';
+import {CdkScrollingExamplesModule} from '@angular/components-examples/cdk/scrolling';
 
 type State = {
   name: string;
@@ -38,6 +39,7 @@ type State = {
     MatInputModule,
     MatSelectModule,
     ScrollingModule,
+    CdkScrollingExamplesModule,
   ],
 })
 export class VirtualScrollDemo implements OnDestroy {

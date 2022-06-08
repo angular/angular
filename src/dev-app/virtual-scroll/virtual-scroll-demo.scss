@@ -53,3 +53,14 @@
 .demo-td {
   border: 1px solid gray;
 }
+
+.demo-resize-example {
+  display: flex;
+  width: 500px;
+  height: 500px;
+}
+
+cdk-virtual-scroll-window-scrolling-example {
+  display: block;
+  width: 500px;
+}

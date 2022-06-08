@@ -179,24 +179,10 @@
   </div>
 </cdk-virtual-scroll-viewport>
 
-<h2>Custom virtual scroller</h2>
+<h2>Virtual scroller with scrolling parent</h2>
+<cdk-virtual-scroll-parent-scrolling-example class="demo-resize-example">
+</cdk-virtual-scroll-parent-scrolling-example>
 
-<div class="demo-viewport" cdkVirtualScrollingElement>
-  <p>Content before virtual scrolling items</p>
-  <cdk-virtual-scroll-viewport itemSize="50">
-    <div *cdkVirtualFor="let size of fixedSizeData; let i = index" class="demo-item"
-         [style.height.px]="size">
-      Item #{{i}} - ({{size}}px)
-    </div>
-  </cdk-virtual-scroll-viewport>
-  <p>Content after virtual scrolling items</p>
-</div>
-
-<h2>Window virtual scroller</h2>
-
-<cdk-virtual-scroll-viewport scrollWindow itemSize="50">
-  <div *cdkVirtualFor="let size of fixedSizeData; let i = index" class="demo-item"
-       [style.height.px]="size">
-    Item #{{i}} - ({{size}}px)
-  </div>
-</cdk-virtual-scroll-viewport>
+<h2>Virtual scroller with scrolling window</h2>
+<cdk-virtual-scroll-window-scrolling-example [shouldRun]="true">
+</cdk-virtual-scroll-window-scrolling-example>

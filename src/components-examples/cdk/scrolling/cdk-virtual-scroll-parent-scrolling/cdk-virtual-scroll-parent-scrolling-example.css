@@ -1,0 +1,16 @@
+.example-viewport {
+  flex: 1;
+  width: 200px;
+  min-height: 200px;
+  border: 1px solid black;
+}
+
+.example-item {
+  height: 50px;
+}
+
+.example-header,
+.example-footer {
+  height: 100px;
+  background: lightgray;
+}

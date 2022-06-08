@@ -1,0 +1,9 @@
+<ng-container *ngIf="shouldRun">
+  <div class="example-header">Content before</div>
+  <cdk-virtual-scroll-viewport scrollWindow itemSize="50">
+    <div *cdkVirtualFor="let item of items" class="example-item">{{item}}</div>
+  </cdk-virtual-scroll-viewport>
+  <div class="example-footer">Content after</div>
+</ng-container>
+
+<div *ngIf="!shouldRun">Please open on StackBlitz to see result</div>

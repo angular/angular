@@ -128,3 +128,21 @@ to the list as the user scrolls without removing rendered views. The `appendOnly
 views that are already rendered persist in the DOM after they scroll out of view.
 
 <!-- example(cdk-virtual-scroll-append-only) -->
+
+### Separate viewport and scrolling element
+The virtual scroll viewport itself acts as the scrolling element by default. However, there may be
+some cases where you want to have the viewport scroll one of its parent elements. For example,
+if you want to have some non-virtualized content that the user can scroll through before or after
+the virtualized content.
+
+To configure a `cdk-vritual-scroll-viewport` to use one of its parent elements as the scrolling
+element, apply `cdkVirtualScrollingElement` to the scrolling parent element.
+
+<!-- example(cdk-virtual-scroll-parent-scrolling) -->
+
+Another common scenario is using the window itself as the scrolling element. This often a better
+user experience on mobile devices, as it allows the browser chrome to scroll away. To use the
+window as the scrolling element, add the `scrollWindow` attribute to the 
+`cdk-virtual-scroll-viewport`.
+
+<!-- example(cdk-virtual-scroll-window-scrolling) -->
