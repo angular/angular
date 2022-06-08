@@ -16,7 +16,7 @@ import {NgModuleRef} from './ng_module_factory';
 import {ViewRef} from './view_ref';
 
 /**
- * Represents a component created by a `ComponentFactory`.
+ * Represents a component created by the `createComponent` method of ViewContainerRef class or by the depreciated `ComponentFactory` class .
  * Provides access to the component instance and related objects,
  * and provides the means of destroying the instance.
  *
