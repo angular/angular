@@ -5,7 +5,7 @@ package(default_visibility = ["//visibility:public"])
 ts_library(
     name = "browser",
     testonly = 1,
-    srcs = ["init_browser_spec.ts"],
+    srcs = ["init_browser_tests.ts"],
     deps = [
         "//packages/compiler",
         "//packages/core/testing",
@@ -17,7 +17,7 @@ ts_library(
 ts_library(
     name = "node",
     testonly = 1,
-    srcs = ["init_node_spec.ts"],
+    srcs = ["init_node_tests.ts"],
     deps = [
         "//packages/compiler",
         "//packages/core/testing",
@@ -31,7 +31,7 @@ ts_library(
 ts_library(
     name = "node_no_angular",
     testonly = 1,
-    srcs = ["init_node_no_angular_spec.ts"],
+    srcs = ["init_node_no_angular_tests.ts"],
     deps = [
         "//packages:types",
     ],

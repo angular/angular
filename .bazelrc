@@ -38,6 +38,8 @@ test --incompatible_strict_action_env
 # and https://github.com/bazelbuild/bazel/commit/03246077f948f2790a83520e7dccc2625650e6df
 build --nobuild_runfile_links
 
+build --enable_runfiles
+
 ###############################
 # Release support             #
 # Turn on these settings with #
