@@ -1,3 +1,14 @@
+<a name="14.0.1"></a>
+# 14.0.1 (2022-06-08)
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dde0b7f4b3](https://github.com/angular/angular/commit/dde0b7f4b3bc658b67a97644c8655252803be663) | fix | allow FormBuilder.group(...) to accept optional fields. ([#46253](https://github.com/angular/angular/pull/46253)) |
+## Special Thanks
+Adrien Crivelli, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dylan Hunn, Fabrizio Fallico, George Kalpakas, Jelle Bruisten, JoostK, Kristiyan Kostadinov, Krzysztof Platis, Paul Gschwendtner, Phalgun Vaddepalli, San Leen, dario-piotrowicz, mgechev and wellWINeo
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0"></a>
 # 14.0.0 (2022-06-02)
 
