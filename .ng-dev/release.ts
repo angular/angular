@@ -30,7 +30,7 @@ export const release: ReleaseConfig = {
     return buildTargetPackages('dist/release-output', false, 'Release', /* isRelease */ true);
   },
   releaseNotes: {
-    hiddenScopes: ['aio', 'dev-infra', 'docs-infra', 'zone.js', 'devtools'],
+    hiddenScopes: ['aio', 'bazel', 'dev-infra', 'docs-infra', 'zone.js', 'devtools'],
   },
   releasePrLabels: ['comp: build & ci', 'action: merge', 'PullApprove: disable'],
 };
