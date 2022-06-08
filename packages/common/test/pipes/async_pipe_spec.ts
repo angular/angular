@@ -224,6 +224,18 @@ import {Subscribable, Unsubscribable} from 'rxjs';
               done();
             }, timer);
           });
+
+          it('should ignore signals after the pipe has been destroyed', done => {
+            pipe.transform(promise);
+            expect(pipe.transform(promise)).toBe(null);
+            pipe.ngOnDestroy();
+            resolve(message);
+
+            setTimeout(() => {
+              expect(pipe.transform(promise)).toBe(null);
+              done();
+            }, timer);
+          });
         });
       });
     });

@@ -342,7 +342,7 @@
     "name": "_randomChar"
   },
   {
-    "name": "_renderCompCount"
+    "name": "componentDefCount"
   },
   {
     "name": "_wrapInTimeout"
@@ -430,9 +430,6 @@
   },
   {
     "name": "deepForEach"
-  },
-  {
-    "name": "defaultErrorLogger"
   },
   {
     "name": "defaultScheduler"

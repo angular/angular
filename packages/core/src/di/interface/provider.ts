@@ -364,6 +364,7 @@ export interface ModuleWithProviders<T> {
  * @see `importProvidersFrom`
  *
  * @publicApi
+ * @developerPreview
  */
 export interface ImportedNgModuleProviders {
   ɵproviders: Provider[];

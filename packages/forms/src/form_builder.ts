@@ -52,11 +52,26 @@ export type ɵElement<T, N extends null> =
   // The `extends` checks are wrapped in arrays in order to prevent TypeScript from applying type unions
   // through the distributive conditional type. This is the officially recommended solution:
   // https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types
+  //
+  // Identify FormControl container types.
   [T] extends [FormControl<infer U>] ? FormControl<U> :
+  // Or FormControl containers that are optional in their parent group.
+  [T] extends [FormControl<infer U>|undefined] ? FormControl<U> :
+  // FormGroup containers.
   [T] extends [FormGroup<infer U>] ? FormGroup<U> :
+  // Optional FormGroup containers.
+  [T] extends [FormGroup<infer U>|undefined] ? FormGroup<U> :
+  // FormArray containers.
   [T] extends [FormArray<infer U>] ? FormArray<U> :
+  // Optional FormArray containers.
+  [T] extends [FormArray<infer U>|undefined] ? FormArray<U> :
+  // Otherwise unknown AbstractControl containers.
   [T] extends [AbstractControl<infer U>] ? AbstractControl<U> :
+  // Optional AbstractControl containers.
+  [T] extends [AbstractControl<infer U>|undefined] ? AbstractControl<U> :
+  // FormControlState object container, which produces a nullable control.
   [T] extends [FormControlState<infer U>] ? FormControl<U|N> :
+  // A ControlConfig tuple, which produces a nullable control.
   [T] extends [ControlConfig<infer U>] ? FormControl<U|N> :
   // ControlConfig can be too much for the compiler to infer in the wrapped case. This is
   // not surprising, since it's practically death-by-polymorphism (e.g. the optional validators

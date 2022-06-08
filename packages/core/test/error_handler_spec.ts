@@ -7,7 +7,7 @@
  */
 
 import {ErrorHandler} from '../src/error_handler';
-import {ERROR_LOGGER, wrappedError} from '../src/util/errors';
+import {wrappedError} from '../src/util/errors';
 
 class MockConsole {
   res: any[][] = [];
@@ -16,7 +16,6 @@ class MockConsole {
   }
 }
 
-(function() {
 function errorToString(error: any) {
   const logger = new MockConsole();
   const errorHandler = new ErrorHandler();
@@ -56,19 +55,4 @@ describe('ErrorHandler', () => {
       expect(e).toContain('custom');
     });
   });
-
-  it('should use the error logger on the error', () => {
-    const err = new Error('test');
-    const console = new MockConsole();
-    const errorHandler = new ErrorHandler();
-    (errorHandler as any)._console = console as any;
-    const logger = jasmine.createSpy('logger');
-    (err as any)[ERROR_LOGGER] = logger;
-
-    errorHandler.handleError(err);
-
-    expect(console.res).toEqual([]);
-    expect(logger).toHaveBeenCalledWith(console, 'ERROR', err);
-  });
 });
-})();

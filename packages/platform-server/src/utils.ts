@@ -136,6 +136,7 @@ export function renderModule<T>(
  * @returns A Promise, that returns serialized (to a string) rendered page, once resolved.
  *
  * @publicApi
+ * @developerPreview
  */
 export function renderApplication<T>(rootComponent: Type<T>, options: {
   appId: string,

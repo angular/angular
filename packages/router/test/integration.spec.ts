@@ -4489,6 +4489,37 @@ describe('Integration', () => {
            expect(location.path()).toEqual('/lazy/loaded');
            expect(canLoadRunCount).toEqual(1);
          })));
+
+      it('cancels guard execution when a new navigation happens', fakeAsync(() => {
+           @Injectable({providedIn: 'root'})
+           class DelayedGuard {
+             static delayedExecutions = 0;
+             static canLoadCalls = 0;
+             canLoad() {
+               DelayedGuard.canLoadCalls++;
+               return of(true).pipe(delay(1000), tap(() => {
+                                      DelayedGuard.delayedExecutions++;
+                                    }));
+             }
+           }
+           const router = TestBed.inject(Router);
+           router.resetConfig([
+             {path: 'a', canLoad: [DelayedGuard], loadChildren: () => [], component: SimpleCmp},
+             {path: 'team/:id', component: TeamCmp},
+           ]);
+           const fixture = createRoot(router, RootCmp);
+
+           router.navigateByUrl('/a');
+           tick(10);
+           // The delayed guard should have started
+           expect(DelayedGuard.canLoadCalls).toEqual(1);
+           router.navigateByUrl('/team/1');
+           advance(fixture, 1000);
+           expect(fixture.nativeElement.innerHTML).toContain('team');
+           // The delayed guard should not execute the delayed condition because a new navigation
+           // cancels the current one and unsubscribes from intermediate results.
+           expect(DelayedGuard.delayedExecutions).toEqual(0);
+         }));
     });
 
     describe('should run CanLoad guards concurrently', () => {

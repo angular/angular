@@ -17,12 +17,13 @@ import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
 
 import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefList, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeTypesOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
+import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
 import {TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList} from './interfaces/projection';
 
 
-let _renderCompCount = 0;
+/** Counter used to generate unique IDs for component definitions. */
+let componentDefCount = 0;
 
 
 /**
@@ -318,7 +319,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       features: componentDefinition.features as DirectiveDefFeature[] || null,
       data: componentDefinition.data || {},
       encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
-      id: 'c',
+      id: `c${componentDefCount++}`,
       styles: componentDefinition.styles || EMPTY_ARRAY,
       _: null,
       setInput: null,
@@ -327,7 +328,6 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     };
     const dependencies = componentDefinition.dependencies;
     const feature = componentDefinition.features;
-    def.id += _renderCompCount++;
     def.inputs = invertObject(componentDefinition.inputs, declaredInputs),
     def.outputs = invertObject(componentDefinition.outputs),
     feature && feature.forEach((fn) => fn(def));

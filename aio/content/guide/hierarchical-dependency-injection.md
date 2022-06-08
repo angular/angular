@@ -39,9 +39,9 @@ The `ModuleInjector` can be configured in one of two ways:
 *   Using the `@Injectable()` `providedIn` property to refer to `@NgModule()`, or `root`
 *   Using the `@NgModule()` `providers` array
 
-<div class="is-helpful alert">
+<div class="callout is-helpful">
 
-<header>Tree-shaking and <code>&commat;Injectable()</code></header>
+<header>Tree-shaking and &commat;Injectable()</header>
 
 Using the `@Injectable()` `providedIn` property is preferable to the `@NgModule()` `providers` array because with `@Injectable()` `providedIn`, optimization tools can perform tree-shaking, which removes services that your application isn't using and results in smaller bundle sizes.
 
@@ -110,9 +110,9 @@ You have the option to create `ModuleInjector`s whenever a dynamically loaded co
 
 All requests forward up to the root injector, whether you configured it with the `bootstrapModule()` method, or registered all providers with `root` in their own services.
 
-<div class="alert is-helpful">
+<div class="callout is-helpful">
 
-<header><code>&commat;Injectable()</code> vs. <code>&commat;NgModule()</code></header>
+<header>&commat;Injectable() vs. &commat;NgModule()</header>
 
 If you configure an app-wide provider in the `@NgModule()` of `AppModule`, it overrides one configured for `root` in the `@Injectable()` metadata.
 You can do this to configure a non-default provider of a service that is shared with multiple applications.

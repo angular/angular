@@ -4,7 +4,7 @@ This guide is about structural directives and provides conceptual information on
 
 Structural directives are directives which change the DOM layout by adding and removing DOM element.
 
-Angular provides a set of built-in structural directives (such as `NgIf`, `NgFor`, `NgSwitch` and others) which are commonly used in all Angular projects. For more information see [Built-in directives](guide/built-in-directives).
+Angular provides a set of built-in structural directives (such as `NgIf`, `NgForOf`, `NgSwitch` and others) which are commonly used in all Angular projects. For more information see [Built-in directives](guide/built-in-directives).
 
 <div class="alert is-helpful">
 

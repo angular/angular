@@ -103,10 +103,13 @@ export function formatRuntimeError<T extends number = RuntimeErrorCode>(
   // generate a link to the error details page on angular.io.
   const fullCode = `NG0${Math.abs(code)}`;
 
-  let errorMessage = `${fullCode}${message ? ': ' + message : ''}`;
+  let errorMessage = `${fullCode}${message ? ': ' + message.trim() : ''}`;
 
   if (ngDevMode && code < 0) {
-    errorMessage = `${errorMessage}. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/${fullCode}`;
+    const addPeriodSeparator = !errorMessage.match(/[.,;!?]$/);
+    const separator = addPeriodSeparator ? '.' : '';
+    errorMessage =
+        `${errorMessage}${separator} Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/${fullCode}`;
   }
   return errorMessage;
 }

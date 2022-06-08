@@ -549,9 +549,6 @@
     "name": "_randomChar"
   },
   {
-    "name": "_renderCompCount"
-  },
-  {
     "name": "_symbolIterator"
   },
   {
@@ -657,6 +654,9 @@
     "name": "collectStylingFromTAttrs"
   },
   {
+    "name": "componentDefCount"
+  },
+  {
     "name": "compose"
   },
   {
@@ -727,9 +727,6 @@
   },
   {
     "name": "deepForEach"
-  },
-  {
-    "name": "defaultErrorLogger"
   },
   {
     "name": "defaultIterableDiffersFactory"

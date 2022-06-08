@@ -1142,7 +1142,7 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 
 [AioGuideSetupLocal]: guide/setup-local "Setting up the local environment and workspace | Angular"
 
-[AioGuideStructuralDirectives]: guide/structural-directives "Writing structural directives | Angular"
+[AioGuideStructuralDirectives]: guide/structural-directives "Structural directives | Angular"
 
 [AioGuideStyleguide0201]: guide/styleguide#02-01 "Style 02-01 - Angular coding style guide | Angular"
 

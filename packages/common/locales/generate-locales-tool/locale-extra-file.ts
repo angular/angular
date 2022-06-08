@@ -19,15 +19,23 @@ export function generateLocaleExtra(locale: string, localeData: CldrLocaleData) 
   return `${fileHeader}
 const u = undefined;
 
-export default ${generateDayPeriodsSupplementalString(locale, localeData)};
+export default ${generateLocaleExtraDataArrayCode(locale, localeData)};
 `;
 }
 
-
 /**
- * Collect up the day period rules, and extended day period data.
+ * Generates the "extra" locale data array (in JS-code as a string) for the given locale.
+ *
+ * The array follows the data and indices as specified in the `ExtraLocaleDataIndex`
+ * enum from `packages/core/src/i18n/locale_data_api.ts`.
+ *
+ * Extra data currently consists of day period names and rules. The non-extra locale
+ * data by default only contains the universal `AM/PM` day period names.
+ *
+ * NOTE: Instances of `undefined` in the array have been replaced with the `u` identifier.
+ *       This identifier is used to shorten the generated code of unprocessed locale files.
  */
-export function generateDayPeriodsSupplementalString(locale: string, localeData: CldrLocaleData) {
+export function generateLocaleExtraDataArrayCode(locale: string, localeData: CldrLocaleData) {
   const dayPeriods = getDayPeriodsNoAmPm(localeData);
   const dayPeriodRules = getDayPeriodRules(localeData);
 

@@ -27,6 +27,7 @@ import {INJECTOR_DEF_TYPES} from './internal_tokens';
 /**
  * A source of providers for the `importProvidersFrom` function.
  *
+ * @developerPreview
  * @publicApi
  */
 export type ImportProvidersSource =
@@ -71,6 +72,7 @@ export type ImportProvidersSource =
  *
  * @returns Collected providers from the specified list of types.
  * @publicApi
+ * @developerPreview
  */
 export function importProvidersFrom(...sources: ImportProvidersSource[]):
     ImportedNgModuleProviders {

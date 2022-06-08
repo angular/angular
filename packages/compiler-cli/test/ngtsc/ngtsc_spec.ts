@@ -476,6 +476,67 @@ function allTests(os: string) {
       }
     });
 
+    it('should only list public declarations in NgModule .d.ts when requested', () => {
+      env.tsconfig({
+        onlyPublishPublicTypingsForNgModules: true,
+      });
+      env.write('test.ts', `
+            import {Directive, NgModule} from '@angular/core';
+
+            @Directive({selector: 'internal'})
+            export class InternalDir {}
+
+            @Directive({selector: 'external'})
+            export class ExternalDir {}
+
+            @NgModule({
+              declarations: [InternalDir, ExternalDir],
+              exports: [ExternalDir],
+            })
+            export class Module {}
+          `);
+
+      env.driveMain();
+      const dtsContents = env.getContents('test.d.ts');
+      expect(dtsContents)
+          .toContain(
+              'static ɵmod: i0.ɵɵNgModuleDeclaration<Module, ' +
+              '[typeof ExternalDir], never, [typeof ExternalDir]>');
+    });
+
+    it('should not list imports in NgModule .d.ts when requested', () => {
+      env.tsconfig({
+        onlyPublishPublicTypingsForNgModules: true,
+      });
+      env.write('test.ts', `
+            import {Directive, NgModule} from '@angular/core';
+
+            @Directive({selector: 'internal'})
+            export class InternalDir {}
+
+            @NgModule({
+              declarations: [InternalDir],
+              exports: [InternalDir],
+            })
+            export class DepModule {}
+
+            @Directive({selector: 'external'})
+            export class ExternalDir {}
+
+            @NgModule({
+              imports: [DepModule],
+            })
+            export class Module {}
+          `);
+
+      env.driveMain();
+      const dtsContents = env.getContents('test.d.ts');
+      expect(dtsContents)
+          .toContain(
+              'static ɵmod: i0.ɵɵNgModuleDeclaration<Module, ' +
+              'never, never, never>');
+    });
+
     // This test triggers the Tsickle compiler which asserts that the file-paths
     // are valid for the real OS. When on non-Windows systems it doesn't like paths
     // that start with `C:`.
@@ -7328,10 +7389,11 @@ function allTests(os: string) {
            expect(diags.length).toBe(0);
          });
 
-      // TODO(alxhub): this test never worked correctly, as it used to declare a constructor with a
-      // body, which real declaration files don't have. Without the body, the ReflectionHost used to
-      // not return any constructor data, preventing an error from showing. That bug was fixed, but
-      // the error for declaration files is disabled until g3 can be updated.
+      // TODO(alxhub): this test never worked correctly, as it used to declare a constructor
+      // with a body, which real declaration files don't have. Without the body, the
+      // ReflectionHost used to not return any constructor data, preventing an error from
+      // showing. That bug was fixed, but the error for declaration files is disabled until g3
+      // can be updated.
       xit('should error when an undecorated class with a non-trivial constructor in a declaration file is provided via useClass',
           () => {
             env.write('node_modules/@angular/core/testing/index.d.ts', `

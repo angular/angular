@@ -549,7 +549,7 @@
     "name": "_randomChar"
   },
   {
-    "name": "_renderCompCount"
+    "name": "componentDefCount"
   },
   {
     "name": "_testabilityGetter"
@@ -715,9 +715,6 @@
   },
   {
     "name": "deepForEach"
-  },
-  {
-    "name": "defaultErrorLogger"
   },
   {
     "name": "defaultScheduler"

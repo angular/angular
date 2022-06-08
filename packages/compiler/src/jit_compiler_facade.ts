@@ -131,7 +131,9 @@ export class CompilerFacadeImpl implements CompilerFacade {
       adjacentType: new WrappedNodeExpr(facade.type),
       bootstrap: facade.bootstrap.map(wrapReference),
       declarations: facade.declarations.map(wrapReference),
+      publicDeclarationTypes: null,  // only needed for types in AOT
       imports: facade.imports.map(wrapReference),
+      includeImportTypes: true,
       exports: facade.exports.map(wrapReference),
       selectorScopeMode: R3SelectorScopeMode.Inline,
       containsForwardDecls: false,
