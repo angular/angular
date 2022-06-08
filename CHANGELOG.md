@@ -1,3 +1,19 @@
+<a name="14.0.1"></a>
+# 14.0.1 (2022-06-08)
+### bazel
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b00d237c0e](https://github.com/angular/angular/commit/b00d237c0ef726bdc262d81bcc3a3cb33181dbd9) | fix | update API extractor version ([#46259](https://github.com/angular/angular/pull/46259)) |
+| [9a0a7bac21](https://github.com/angular/angular/commit/9a0a7bac21decae7662a8a2ec9488f60daa97e10) | perf | reduce input files for `ng_package` rollup and type bundle actions ([#46187](https://github.com/angular/angular/pull/46187)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dde0b7f4b3](https://github.com/angular/angular/commit/dde0b7f4b3bc658b67a97644c8655252803be663) | fix | allow FormBuilder.group(...) to accept optional fields. ([#46253](https://github.com/angular/angular/pull/46253)) |
+## Special Thanks
+Adrien Crivelli, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dylan Hunn, Fabrizio Fallico, George Kalpakas, Jelle Bruisten, JoostK, Kristiyan Kostadinov, Krzysztof Platis, Paul Gschwendtner, Phalgun Vaddepalli, San Leen, dario-piotrowicz, mgechev and wellWINeo
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.0"></a>
 # 14.0.0 (2022-06-02)
 
