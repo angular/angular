@@ -9,4 +9,4 @@
 // Increase the timeout for specs as Saucelabs devices can be slow.
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
 
-import '../testing/init_browser_spec';
+import '../testing/init_browser_tests';
