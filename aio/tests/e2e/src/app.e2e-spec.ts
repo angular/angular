@@ -78,7 +78,7 @@ describe('site App', () => {
   it('should show the tutorial index page at `/tutorial` after jitterbugging through features', async () => {
     // check that we can navigate directly to the tutorial page
     await page.navigateTo('tutorial');
-    expect(await page.getDocViewerText()).toMatch(/Tour of Heroes App and Tutorial/i);
+    expect(await page.getDocViewerText()).toMatch(/Tour of Heroes application and tutorial/i);
 
     // navigate to a different page
     await page.click(page.getTopMenuLink('features'));

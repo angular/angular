@@ -1,18 +1,17 @@
 # Create a new project
 
-You begin by creating an initial application using the Angular CLI.
-Throughout this tutorial, you'll modify and extend that starter application to create the Tour of Heroes application.
+Use the `ng new` command to start creating your **Tour of Heroes** application.
 
-In this part of the tutorial, you'll do the following:
+This tutorial:
 
-1.  Set up your environment.
-1.  Create a new workspace and initial application project.
-1.  Serve the application.
-1.  Make changes to the application.
+1.  Sets up your environment.
+2.  Creates a new workspace and initial application project.
+3.  Serves the application.
+4.  Makes changes to the new application.
 
 <div class="alert is-helpful">
 
-For the sample application that this page describes, see the <live-example></live-example>.
+To view the application's code, see the <live-example></live-example>.
 
 </div>
 
@@ -23,16 +22,15 @@ To set up your development environment, follow the instructions in [Local Enviro
 ## Create a new workspace and an initial application
 
 You develop applications in the context of an Angular [workspace](guide/glossary#workspace).
-A workspace contains the files for one or more [projects](guide/glossary#project).
-A project is the set of files that comprise an application or a library.
-For this tutorial, you will create a new workspace.
+A _workspace_ contains the files for one or more [projects](guide/glossary#project).
+A _project_ is the set of files that make up an application or a library.
 
-To create a new workspace and an initial application project:
+To create a new workspace and an initial project:
 
-1.  Ensure that you are not already in an Angular workspace folder.
-    For example, if you have previously created the Getting Started workspace, change to the parent of that folder.
+1.  Ensure that you aren't already in an Angular workspace directory.
+    For example, if you're in the Getting Started workspace from an earlier exercise, navigate to its parent.
 
-1.  Run the CLI command `ng new` and provide the name `angular-tour-of-heroes`, as shown here:
+2.  Run `ng new` followed by the application name as shown here:
 
     <code-example format="shell" language="shell">
 
@@ -40,19 +38,19 @@ To create a new workspace and an initial application project:
 
     </code-example>
 
-1.  The `ng new` command prompts you for information about features to include in the initial application project.
+3.  `ng new` prompts you for information about features to include in the initial project.
     Accept the defaults by pressing the Enter or Return key.
 
-The Angular CLI installs the necessary Angular `npm` packages and other dependencies.
+`ng new` installs the necessary `npm` packages and other dependencies that Angular requires.
 This can take a few minutes.
 
-It also creates the following workspace and starter project files:
+`ng new` also creates the following workspace and starter project files:
 
-*   A new workspace, with a root folder named `angular-tour-of-heroes`
-*   An initial skeleton app project in the `src/app` subfolder
+*   A new workspace, with a root directory named `angular-tour-of-heroes`
+*   An initial skeleton application project in the `src/app` subdirectory
 *   Related configuration files
 
-The initial app project contains a simple Welcome application, ready to run.
+The initial application project contains a simple application that's ready to run.
 
 ## Serve the application
 
@@ -67,8 +65,12 @@ ng serve --open
 
 <div class="alert is-helpful">
 
-The `ng serve` command builds the app, starts the development server,
-watches the source files, and rebuilds the application as you make changes to those files.
+The `ng serve` command:
+
+* Builds the application
+* Starts the development server
+* Watches the source files
+* Rebuilds the application as you make changes
 
 The `--open` flag opens a browser to `http://localhost:4200`.
 
@@ -86,9 +88,9 @@ They display data on the screen, listen for user input, and take action based on
 
 ## Make changes to the application
 
-Open the project in your favorite editor or IDE and navigate to the `src/app` folder to make some changes to the starter application.
+Open the project in your favorite editor or IDE. Navigate to the `src/app` directory to edit the starter application.
 
-You'll find the implementation of the shell `AppComponent` distributed over three files:
+Note that the implementation of the shell `AppComponent` distributed over three files:
 
 | Files                | Details |
 |:---                  |:---     |
@@ -98,11 +100,11 @@ You'll find the implementation of the shell `AppComponent` distributed over thre
 
 ### Change the application title
 
-Open the component class file \(`app.component.ts`\) and change the value of the `title` property to 'Tour of Heroes'.
+Open the `app.component.ts` and change the `title` property value to 'Tour of Heroes'.
 
 <code-example header="app.component.ts (class title property)" path="toh-pt0/src/app/app.component.ts" region="set-title"></code-example>
 
-Open the component template file \(`app.component.html`\) and delete the default template generated by the Angular CLI.
+Open `app.component.html` and delete the default template that `ng new` created.
 Replace it with the following line of HTML.
 
 <code-example header="app.component.html (template)" path="toh-pt0/src/app/app.component.html"></code-example>
@@ -117,7 +119,7 @@ The browser refreshes and displays the new application title.
 ### Add application styles
 
 Most apps strive for a consistent look across the application.
-The CLI generated an empty `styles.css` for this purpose.
+`ng new` created an empty `styles.css` for this purpose.
 Put your application-wide styles there.
 
 Open `src/styles.css` and add the code below to the file.
@@ -136,7 +138,7 @@ Here are the code files discussed on this page.
 
 ## Summary
 
-*   You created the initial application structure using the Angular CLI
+*   You created the initial application structure using `ng new`.
 *   You learned that Angular components display data
 *   You used the double curly braces of interpolation to display the application title
 
