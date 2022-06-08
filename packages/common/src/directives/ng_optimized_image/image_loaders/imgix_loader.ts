@@ -9,6 +9,7 @@
 import {Provider, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../../errors';
+import {PRECONNECT_CHECK_BLOCKLIST} from '../preconnect_link_checker';
 
 import {IMAGE_LOADER, ImageLoaderConfig} from './image_loader';
 
@@ -20,11 +21,13 @@ import {IMAGE_LOADER, ImageLoaderConfig} from './image_loader';
  * e.g. https://somepath.imgix.net or https://images.mysite.com
  * @returns Provider that provides an ImageLoader function
  */
-export function provideImgixLoader(path: string): Provider {
+export function provideImgixLoader(path: string, options: {ensurePreconnect?: boolean} = {
+  ensurePreconnect: true
+}) {
   ngDevMode && assertValidPath(path);
   path = normalizePath(path);
 
-  return {
+  const providers: Provider[] = [{
     provide: IMAGE_LOADER,
     useValue: (config: ImageLoaderConfig) => {
       const url = new URL(`${path}/${normalizeSrc(config.src)}`);
@@ -33,7 +36,13 @@ export function provideImgixLoader(path: string): Provider {
       config.width && url.searchParams.set('w', config.width.toString());
       return url.href;
     }
-  };
+  }];
+
+  if (ngDevMode && Boolean(options.ensurePreconnect) === true) {
+    providers.push({provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [path], multi: true});
+  }
+
+  return providers;
 }
 
 function assertValidPath(path: unknown) {
