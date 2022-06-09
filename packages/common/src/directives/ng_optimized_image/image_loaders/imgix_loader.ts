@@ -20,11 +20,15 @@ import {isValidPath, normalizePath, normalizeSrc} from './loader_utils';
  *
  * @param path path to the desired Imgix origin,
  * e.g. https://somepath.imgix.net or https://images.mysite.com
- * @returns Provider that provides an ImageLoader function
+ * @param options An object that allows to provide extra configuration:
+ * - `ensurePreconnect`: boolean flag indicating whether the NgOptimizedImage directive
+ *                       should verify that there is a corresponding `<link rel="preconnect">`
+ *                       present in the document's `<head>`.
+ * @returns Set of providers to configure the Imgix loader.
  */
 export function provideImgixLoader(path: string, options: {ensurePreconnect?: boolean} = {
   ensurePreconnect: true
-}) {
+}): Provider[] {
   if (ngDevMode && !isValidPath(path)) {
     throwInvalidPathError(path);
   }
@@ -42,7 +46,11 @@ export function provideImgixLoader(path: string, options: {ensurePreconnect?: bo
   }];
 
   if (ngDevMode && Boolean(options.ensurePreconnect) === true) {
-    providers.push({provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [path], multi: true});
+    providers.push({
+      provide: PRECONNECT_CHECK_BLOCKLIST,
+      useValue: [path],
+      multi: true,
+    });
   }
 
   return providers;

@@ -9,6 +9,7 @@
 import {Provider, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../../errors';
+import {PRECONNECT_CHECK_BLOCKLIST} from '../preconnect_link_checker';
 
 import {IMAGE_LOADER, ImageLoaderConfig} from './image_loader';
 import {isValidPath, normalizePath, normalizeSrc} from './loader_utils';
@@ -22,15 +23,21 @@ import {isValidPath, normalizePath, normalizeSrc} from './loader_utils';
  * https://res.cloudinary.com/mysite
  * https://mysite.cloudinary.com
  * https://subdomain.mysite.com
- * @returns Provider that provides an ImageLoader function
+ * @param options An object that allows to provide extra configuration:
+ * - `ensurePreconnect`: boolean flag indicating whether the NgOptimizedImage directive
+ *                       should verify that there is a corresponding `<link rel="preconnect">`
+ *                       present in the document's `<head>`.
+ * @returns Set of providers to configure the Cloudinary loader.
  */
-export function provideCloudinaryLoader(path: string): Provider {
+export function provideCloudinaryLoader(path: string, options: {ensurePreconnect?: boolean} = {
+  ensurePreconnect: true
+}): Provider[] {
   if (ngDevMode && !isValidPath(path)) {
     throwInvalidPathError(path);
   }
   path = normalizePath(path);
 
-  return {
+  const providers: Provider[] = [{
     provide: IMAGE_LOADER,
     useValue: (config: ImageLoaderConfig) => {
       // Example of a Cloudinary image URL:
@@ -42,7 +49,17 @@ export function provideCloudinaryLoader(path: string): Provider {
       const url = `${path}/image/upload/${params}/${normalizeSrc(config.src)}`;
       return url;
     }
-  };
+  }];
+
+  if (ngDevMode && Boolean(options.ensurePreconnect) === true) {
+    providers.push({
+      provide: PRECONNECT_CHECK_BLOCKLIST,
+      useValue: [path],
+      multi: true,
+    });
+  }
+
+  return providers;
 }
 
 function throwInvalidPathError(path: unknown): never {
