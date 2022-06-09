@@ -3,6 +3,8 @@ import {BrowserModule} from '@angular/platform-browser';
 
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ReactiveFormsModule} from '@angular/forms';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -12,6 +14,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatSelectModule} from '@angular/material/select';
+import {AutocompleteComponent} from './components/autocomplete/autocomplete.component';
 import {ChipsComponent} from './components/chips/chips.component';
 import {FormFieldComponent} from './components/form-field/form-field.component';
 import {InputComponent} from './components/input/input.component';
@@ -23,6 +26,7 @@ import {SelectComponent} from './components/select/select.component';
 
 @NgModule({
   declarations: [
+    AutocompleteComponent,
     AppComponent,
     ChipsComponent,
     FormFieldComponent,
@@ -36,6 +40,7 @@ import {SelectComponent} from './components/select/select.component';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    MatAutocompleteModule,
     MatChipsModule,
     MatFormFieldModule,
     MatIconModule,
@@ -45,6 +50,7 @@ import {SelectComponent} from './components/select/select.component';
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatSelectModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
