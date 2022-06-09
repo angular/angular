@@ -1,0 +1,10 @@
+.example-form .mat-mdc-input-element {
+  color: midnightblue;
+}
+
+
+/* TODO: The following rule targets internal classes of input that may no longer apply for the MDC version. */
+
+.mat-input-server {
+  color: red;
+}
