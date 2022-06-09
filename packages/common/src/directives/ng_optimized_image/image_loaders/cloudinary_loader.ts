@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../../errors';
-import {PRECONNECT_CHECK_BLOCKLIST} from '../preconnect_link_checker';
-import {isValidPath, normalizePath, normalizeSrc} from '../util';
+import {normalizeSrc} from '../util';
 
-import {IMAGE_LOADER, ImageLoaderConfig} from './image_loader';
+import {createImageLoader, ImageLoaderConfig} from './image_loader';
 
 /**
  * Function that generates a built-in ImageLoader for Cloudinary
@@ -29,37 +28,20 @@ import {IMAGE_LOADER, ImageLoaderConfig} from './image_loader';
  *                       present in the document's `<head>`.
  * @returns Set of providers to configure the Cloudinary loader.
  */
-export function provideCloudinaryLoader(path: string, options: {ensurePreconnect?: boolean} = {
-  ensurePreconnect: true
-}): Provider[] {
-  if (ngDevMode && !isValidPath(path)) {
-    throwInvalidPathError(path);
-  }
-  path = normalizePath(path);
+export const provideCloudinaryLoader =
+    createImageLoader(cloudinaryLoaderFactory, throwInvalidPathError);
 
-  const providers: Provider[] = [{
-    provide: IMAGE_LOADER,
-    useValue: (config: ImageLoaderConfig) => {
-      // Example of a Cloudinary image URL:
-      // https://res.cloudinary.com/mysite/image/upload/c_scale,f_auto,q_auto,w_600/marketing/tile-topics-m.png
-      let params = `f_auto,q_auto`;  // sets image format and quality to "auto"
-      if (config.width) {
-        params += `,w_${config.width}`;
-      }
-      const url = `${path}/image/upload/${params}/${normalizeSrc(config.src)}`;
-      return url;
+function cloudinaryLoaderFactory(path: string) {
+  return (config: ImageLoaderConfig) => {
+    // Example of a Cloudinary image URL:
+    // https://res.cloudinary.com/mysite/image/upload/c_scale,f_auto,q_auto,w_600/marketing/tile-topics-m.png
+    let params = `f_auto,q_auto`;  // sets image format and quality to "auto"
+    if (config.width) {
+      params += `,w_${config.width}`;
     }
-  }];
-
-  if (ngDevMode && Boolean(options.ensurePreconnect) === true) {
-    providers.push({
-      provide: PRECONNECT_CHECK_BLOCKLIST,
-      useValue: [path],
-      multi: true,
-    });
-  }
-
-  return providers;
+    const url = `${path}/image/upload/${params}/${normalizeSrc(config.src)}`;
+    return url;
+  };
 }
 
 function throwInvalidPathError(path: unknown): never {
