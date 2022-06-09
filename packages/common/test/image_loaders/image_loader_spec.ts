@@ -7,6 +7,7 @@
  */
 
 import {IMAGE_LOADER, ImageLoader, PRECONNECT_CHECK_BLOCKLIST} from '@angular/common/src/directives/ng_optimized_image';
+import {provideCloudflareLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/cloudflare_loader';
 import {provideCloudinaryLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/cloudinary_loader';
 import {provideImageKitLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imagekit_loader';
 import {provideImgixLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imgix_loader';
@@ -244,6 +245,23 @@ describe('Built-in image directive loaders', () => {
       it('should reject path if is malformed', () => {
         expect(isValidPath('somepa\th.imageprovider.com? few')).toBe(false);
       });
+    });
+  });
+
+  describe('Cloudflare loader', () => {
+    function createCloudflareLoader(path: string): ImageLoader {
+      const injector = createEnvironmentInjector([provideCloudflareLoader(path)]);
+      return injector.get(IMAGE_LOADER);
+    }
+    it('should construct an image loader with the given path', () => {
+      const loader = createCloudflareLoader('https://mysite.com');
+      let config = {src: 'img.png'};
+      expect(loader(config)).toBe('https://mysite.com/cdn-cgi/image/format=auto/img.png');
+    });
+    it('should construct an image loader with the given path', () => {
+      const loader = createCloudflareLoader('https://mysite.com');
+      const config = {src: 'img.png', width: 100};
+      expect(loader(config)).toBe('https://mysite.com/cdn-cgi/image/format=auto,width=100/img.png');
     });
   });
 });
