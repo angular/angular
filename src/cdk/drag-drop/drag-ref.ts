@@ -25,11 +25,11 @@ import {
   extendStyles,
   toggleNativeDragInteractions,
   toggleVisibility,
-} from './drag-styling';
-import {getTransformTransitionDurationInMs} from './transition-duration';
-import {getMutableClientRect, adjustClientRect} from './client-rect';
-import {ParentPositionTracker} from './parent-position-tracker';
-import {deepCloneNode} from './clone-node';
+} from './dom/styling';
+import {getTransformTransitionDurationInMs} from './dom/transition-duration';
+import {getMutableClientRect, adjustClientRect} from './dom/client-rect';
+import {ParentPositionTracker} from './dom/parent-position-tracker';
+import {deepCloneNode} from './dom/clone-node';
 
 /** Object that can be used to configure the behavior of DragRef. */
 export interface DragRefConfig {

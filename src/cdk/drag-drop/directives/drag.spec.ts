@@ -30,7 +30,7 @@ import {of as observableOf} from 'rxjs';
 import {DragDropModule} from '../drag-drop-module';
 import {CdkDragDrop, CdkDragEnter, CdkDragStart} from '../drag-events';
 import {Point, DragRef, PreviewContainer} from '../drag-ref';
-import {extendStyles} from '../drag-styling';
+import {extendStyles} from '../dom/styling';
 import {moveItemInArray} from '../drag-utils';
 
 import {CdkDrag} from './drag';
