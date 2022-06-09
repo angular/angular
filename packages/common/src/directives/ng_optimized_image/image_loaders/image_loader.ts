@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '@angular/core';
+import {InjectionToken, Provider} from '@angular/core';
+
+import {PRECONNECT_CHECK_BLOCKLIST} from '../preconnect_link_checker';
+import {isValidPath, normalizePath, normalizeSrc} from '../util';
 
 /**
  * Config options recognized by the image loader function.
@@ -37,3 +40,24 @@ export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
   providedIn: 'root',
   factory: () => noopImageLoader,
 });
+
+export function createImageLoader(
+    urlFn: (path: string) => ImageLoader,
+    invalidPathFn: (path: unknown) => void,
+) {
+  return function provideImageLoader(
+      path: string, options: {ensurePreconnect?: boolean} = {ensurePreconnect: true}) {
+    if (ngDevMode && !isValidPath(path)) {
+      invalidPathFn(path);
+    }
+    path = normalizePath(path);
+
+    const providers: Provider[] = [{provide: IMAGE_LOADER, useValue: urlFn(path)}];
+
+    if (ngDevMode && Boolean(options.ensurePreconnect) === true) {
+      providers.push({provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [path], multi: true});
+    }
+
+    return providers;
+  };
+}
