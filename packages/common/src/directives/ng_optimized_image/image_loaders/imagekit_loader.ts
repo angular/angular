@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../../errors';
-import {PRECONNECT_CHECK_BLOCKLIST} from '../preconnect_link_checker';
-import {isValidPath, normalizePath, normalizeSrc} from '../util';
+import {normalizeSrc} from '../util';
 
-import {IMAGE_LOADER, ImageLoaderConfig} from './image_loader';
+import {createImageLoader, ImageLoaderConfig} from './image_loader';
 
 /**
  * Function that generates a built-in ImageLoader for ImageKit
@@ -28,37 +27,20 @@ import {IMAGE_LOADER, ImageLoaderConfig} from './image_loader';
  *                       present in the document's `<head>`.
  * @returns Set of providers to configure the ImageKit loader.
  */
-export function provideImageKitLoader(path: string, options: {ensurePreconnect?: boolean} = {
-  ensurePreconnect: true
-}): Provider[] {
-  if (ngDevMode && !isValidPath(path)) {
-    throwInvalidPathError(path);
-  }
-  path = normalizePath(path);
+export const provideImageKitLoader =
+    createImageLoader(imagekitLoaderFactory, throwInvalidPathError);
 
-  const providers: Provider[] = [{
-    provide: IMAGE_LOADER,
-    useValue: (config: ImageLoaderConfig) => {
-      // Example of an ImageKit image URL:
-      // https://ik.imagekit.io/demo/tr:w-300,h-300/medium_cafe_B1iTdD0C.jpg
-      let params = `tr:q-auto`;  // applies the "auto quality" transformation
-      if (config.width) {
-        params += `,w-${config.width?.toString()}`;
-      }
-      const url = `${path}/${params}/${normalizeSrc(config.src)}`;
-      return url;
+export function imagekitLoaderFactory(path: string) {
+  return (config: ImageLoaderConfig) => {
+    // Example of an ImageKit image URL:
+    // https://ik.imagekit.io/demo/tr:w-300,h-300/medium_cafe_B1iTdD0C.jpg
+    let params = `tr:q-auto`;  // applies the "auto quality" transformation
+    if (config.width) {
+      params += `,w-${config.width?.toString()}`;
     }
-  }];
-
-  if (ngDevMode && Boolean(options.ensurePreconnect) === true) {
-    providers.push({
-      provide: PRECONNECT_CHECK_BLOCKLIST,
-      useValue: [path],
-      multi: true,
-    });
-  }
-
-  return providers;
+    const url = `${path}/${params}/${normalizeSrc(config.src)}`;
+    return url;
+  };
 }
 
 function throwInvalidPathError(path: unknown): never {

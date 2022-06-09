@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../../errors';
-import {PRECONNECT_CHECK_BLOCKLIST} from '../preconnect_link_checker';
-import {isValidPath, normalizePath, normalizeSrc} from '../util';
+import {normalizeSrc} from '../util';
 
-import {IMAGE_LOADER, ImageLoaderConfig} from './image_loader';
+import {createImageLoader, ImageLoaderConfig} from './image_loader';
 
 /**
  * Function that generates a built-in ImageLoader for Imgix and turns it
@@ -26,34 +25,16 @@ import {IMAGE_LOADER, ImageLoaderConfig} from './image_loader';
  *                       present in the document's `<head>`.
  * @returns Set of providers to configure the Imgix loader.
  */
-export function provideImgixLoader(path: string, options: {ensurePreconnect?: boolean} = {
-  ensurePreconnect: true
-}): Provider[] {
-  if (ngDevMode && !isValidPath(path)) {
-    throwInvalidPathError(path);
-  }
-  path = normalizePath(path);
+export const provideImgixLoader = createImageLoader(imgixLoaderFactory, throwInvalidPathError);
 
-  const providers: Provider[] = [{
-    provide: IMAGE_LOADER,
-    useValue: (config: ImageLoaderConfig) => {
-      const url = new URL(`${path}/${normalizeSrc(config.src)}`);
-      // This setting ensures the smallest allowable format is set.
-      url.searchParams.set('auto', 'format');
-      config.width && url.searchParams.set('w', config.width.toString());
-      return url.href;
-    }
-  }];
-
-  if (ngDevMode && Boolean(options.ensurePreconnect) === true) {
-    providers.push({
-      provide: PRECONNECT_CHECK_BLOCKLIST,
-      useValue: [path],
-      multi: true,
-    });
-  }
-
-  return providers;
+function imgixLoaderFactory(path: string) {
+  return (config: ImageLoaderConfig) => {
+    const url = new URL(`${path}/${normalizeSrc(config.src)}`);
+    // This setting ensures the smallest allowable format is set.
+    url.searchParams.set('auto', 'format');
+    config.width && url.searchParams.set('w', config.width.toString());
+    return url.href;
+  };
 }
 
 function throwInvalidPathError(path: unknown): never {
