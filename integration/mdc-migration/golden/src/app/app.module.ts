@@ -12,6 +12,7 @@ import {MatPaginatorModule} from '@angular/material-experimental/mdc-paginator';
 import {MatProgressBarModule} from '@angular/material-experimental/mdc-progress-bar';
 import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
 import {ChipsComponent} from './components/chips/chips.component';
+import {FormFieldComponent} from './components/form-field/form-field.component';
 import {InputComponent} from './components/input/input.component';
 import {MenuComponent} from './components/menu/menu.component';
 import {PaginatorComponent} from './components/paginator/paginator.component';
@@ -22,6 +23,7 @@ import {ProgressBarComponent} from './components/progress-bar/progress-bar.compo
   declarations: [
     AppComponent,
     ChipsComponent,
+    FormFieldComponent,
     InputComponent,
     MenuComponent,
     PaginatorComponent,
