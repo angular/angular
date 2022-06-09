@@ -10,7 +10,7 @@ import {IMAGE_LOADER, ImageLoader, PRECONNECT_CHECK_BLOCKLIST} from '@angular/co
 import {provideCloudinaryLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/cloudinary_loader';
 import {provideImageKitLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imagekit_loader';
 import {provideImgixLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imgix_loader';
-import {isValidPath} from '@angular/common/src/directives/ng_optimized_image/image_loaders/loader_utils';
+import {isValidPath} from '@angular/common/src/directives/ng_optimized_image/util';
 import {createEnvironmentInjector, ValueProvider} from '@angular/core';
 
 describe('Built-in image directive loaders', () => {

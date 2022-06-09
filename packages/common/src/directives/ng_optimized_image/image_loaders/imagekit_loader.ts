@@ -10,9 +10,9 @@ import {Provider, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../../errors';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../preconnect_link_checker';
+import {isValidPath, normalizePath, normalizeSrc} from '../util';
 
 import {IMAGE_LOADER, ImageLoaderConfig} from './image_loader';
-import {isValidPath, normalizePath, normalizeSrc} from './loader_utils';
 
 /**
  * Function that generates a built-in ImageLoader for ImageKit
@@ -44,7 +44,7 @@ export function provideImageKitLoader(path: string, options: {ensurePreconnect?:
       let params = `tr:q-auto`;  // applies the "auto quality" transformation
       if (config.width) {
         params += `,w-${config.width?.toString()}`;
-      };
+      }
       const url = `${path}/${params}/${normalizeSrc(config.src)}`;
       return url;
     }
