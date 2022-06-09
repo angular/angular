@@ -8,12 +8,20 @@ import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field'
 import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material-experimental/mdc-menu';
 import {MatPaginatorModule} from '@angular/material-experimental/mdc-paginator';
+import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
 import {ChipsComponent} from './components/chips/chips.component';
 import {MenuComponent} from './components/menu/menu.component';
 import {PaginatorComponent} from './components/paginator/paginator.component';
+import {ProgressSpinnerComponent} from './components/progress-spinner/progress-spinner.component';
 
 @NgModule({
-  declarations: [AppComponent, ChipsComponent, MenuComponent, PaginatorComponent],
+  declarations: [
+    AppComponent,
+    ChipsComponent,
+    MenuComponent,
+    PaginatorComponent,
+    ProgressSpinnerComponent,
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -22,6 +30,7 @@ import {PaginatorComponent} from './components/paginator/paginator.component';
     MatIconModule,
     MatMenuModule,
     MatPaginatorModule,
+    MatProgressSpinnerModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
