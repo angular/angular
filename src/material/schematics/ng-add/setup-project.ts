@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {chain, Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
+import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {
   addModuleImportToRootModule,
   getAppModulePath,
@@ -72,7 +72,7 @@ function addAnimationsModule(options: Schema) {
     try {
       addAnimationsModuleToNonStandaloneApp(host, project, context, options);
     } catch (e) {
-      if (e instanceof SchematicsException && e.message.includes('Bootstrap call not found')) {
+      if ((e as {message?: string}).message?.includes('Bootstrap call not found')) {
         addAnimationsModuleToStandaloneApp(host, project, context, options);
       } else {
         throw e;
