@@ -15,15 +15,18 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
             <div class="contributor-image"
                  [style.background-image]="'url('+pictureBase+(person.picture || noPicture)+')'">
                  <div class="contributor-info">
-                     <button *ngIf="person.bio" mat-button class="info-item">
+                     <button *ngIf="person.bio" mat-button class="info-item"
+                        attr.aria-label="view bio of {{person.name}}">
                          View Bio
                      </button>
                      <a *ngIf="person.twitter" mat-icon-button class="info-item icon"
+                         attr.aria-label="twitter of {{person.name}}"
                          href="https://twitter.com/{{person.twitter}}"
                          target="_blank" (click)="$event.stopPropagation()">
                          <mat-icon svgIcon="logos:twitter"></mat-icon>
                      </a>
                      <a *ngIf="person.website" mat-icon-button class="info-item icon"
+                         attr.aria-label="website of {{person.name}}"
                          href="{{person.website}}" target="_blank" (click)="$event.stopPropagation()">
                          <mat-icon class="link-icon">link</mat-icon>
                      </a>
