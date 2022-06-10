@@ -6,9 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵRuntimeError as RuntimeError} from '@angular/core';
-
-import {RuntimeErrorCode} from '../../../errors';
 import {normalizeSrc} from '../util';
 
 import {createImageLoader, ImageLoaderConfig} from './image_loader';
@@ -28,8 +25,14 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  *                       present in the document's `<head>`.
  * @returns Set of providers to configure the Cloudinary loader.
  */
-export const provideCloudinaryLoader =
-    createImageLoader(cloudinaryLoaderFactory, throwInvalidPathError);
+export const provideCloudinaryLoader = createImageLoader(
+    cloudinaryLoaderFactory,
+    ngDevMode ?
+        [
+          'https://res.cloudinary.com/mysite', 'https://mysite.cloudinary.com',
+          'https://subdomain.mysite.com'
+        ] :
+        undefined);
 
 function cloudinaryLoaderFactory(path: string) {
   return (config: ImageLoaderConfig) => {
@@ -42,12 +45,4 @@ function cloudinaryLoaderFactory(path: string) {
     const url = `${path}/image/upload/${params}/${normalizeSrc(config.src)}`;
     return url;
   };
-}
-
-function throwInvalidPathError(path: unknown): never {
-  throw new RuntimeError(
-      RuntimeErrorCode.INVALID_INPUT,
-      `CloudinaryLoader has detected an invalid path: ` +
-          `expecting a path matching one of the following formats: https://res.cloudinary.com/mysite, https://mysite.cloudinary.com, or https://subdomain.mysite.com - ` +
-          `but got: \`${path}\``);
 }

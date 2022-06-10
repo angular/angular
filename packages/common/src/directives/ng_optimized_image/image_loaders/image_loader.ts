@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, Provider} from '@angular/core';
+import {InjectionToken, Provider, ɵRuntimeError as RuntimeError} from '@angular/core';
 
+import {RuntimeErrorCode} from '../../../errors';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../preconnect_link_checker';
-import {isValidPath, normalizePath, normalizeSrc} from '../util';
+import {isValidPath, normalizePath} from '../util';
 
 /**
  * Config options recognized by the image loader function.
@@ -41,14 +42,11 @@ export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
   factory: () => noopImageLoader,
 });
 
-export function createImageLoader(
-    urlFn: (path: string) => ImageLoader,
-    invalidPathFn: (path: unknown) => void,
-) {
+export function createImageLoader(urlFn: (path: string) => ImageLoader, exampleUrls?: string[]) {
   return function provideImageLoader(
       path: string, options: {ensurePreconnect?: boolean} = {ensurePreconnect: true}) {
     if (ngDevMode && !isValidPath(path)) {
-      invalidPathFn(path);
+      throwInvalidPathError(path, exampleUrls || []);
     }
     path = normalizePath(path);
 
@@ -60,4 +58,13 @@ export function createImageLoader(
 
     return providers;
   };
+}
+
+function throwInvalidPathError(path: unknown, exampleUrls: string[]): never {
+  const exampleUrlsMsg = exampleUrls.join(' or ');
+  throw new RuntimeError(
+      RuntimeErrorCode.INVALID_INPUT,
+      `Image loader has detected an invalid path. ` +
+          `Expecting a path matching one of the following formats: ${exampleUrlsMsg}` +
+          ` - but got: \`${path}\``);
 }
