@@ -1,0 +1,16 @@
+.mat-select {
+  padding: 4px;
+}
+
+.select-example ::ng-deep.mat-select-value {
+  color: darkblue;
+}
+
+
+.mat-select-panel {
+  padding: 4px;
+
+  .mat-option {
+    padding: 4px;
+  }
+}

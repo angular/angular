@@ -11,6 +11,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatSelectModule} from '@angular/material/select';
 import {ChipsComponent} from './components/chips/chips.component';
 import {FormFieldComponent} from './components/form-field/form-field.component';
 import {InputComponent} from './components/input/input.component';
@@ -18,6 +19,7 @@ import {MenuComponent} from './components/menu/menu.component';
 import {PaginatorComponent} from './components/paginator/paginator.component';
 import {ProgressSpinnerComponent} from './components/progress-spinner/progress-spinner.component';
 import {ProgressBarComponent} from './components/progress-bar/progress-bar.component';
+import {SelectComponent} from './components/select/select.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +31,7 @@ import {ProgressBarComponent} from './components/progress-bar/progress-bar.compo
     PaginatorComponent,
     ProgressBarComponent,
     ProgressSpinnerComponent,
+    SelectComponent,
   ],
   imports: [
     BrowserModule,
@@ -41,6 +44,7 @@ import {ProgressBarComponent} from './components/progress-bar/progress-bar.compo
     MatPaginatorModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
