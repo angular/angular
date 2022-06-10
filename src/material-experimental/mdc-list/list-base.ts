@@ -38,6 +38,37 @@ import {
 
 @Directive({
   host: {
+    '[class.mat-mdc-list-non-interactive]': '_isNonInteractive',
+    '[attr.aria-disabled]': 'disabled',
+  },
+})
+/** @docs-private */
+export abstract class MatListBase {
+  _isNonInteractive: boolean = true;
+
+  /** Whether ripples for all list items is disabled. */
+  @Input()
+  get disableRipple(): boolean {
+    return this._disableRipple;
+  }
+  set disableRipple(value: BooleanInput) {
+    this._disableRipple = coerceBooleanProperty(value);
+  }
+  private _disableRipple: boolean = false;
+
+  /** Whether all list items are disabled. */
+  @Input()
+  get disabled(): boolean {
+    return this._disabled;
+  }
+  set disabled(value: BooleanInput) {
+    this._disabled = coerceBooleanProperty(value);
+  }
+  private _disabled = false;
+}
+
+@Directive({
+  host: {
     '[class.mdc-list-item--disabled]': 'disabled',
     '[attr.aria-disabled]': 'disabled',
   },
@@ -272,37 +303,6 @@ export abstract class MatListItemBase implements AfterViewInit, OnDestroy, Rippl
       .filter(node => node.nodeType !== node.COMMENT_NODE)
       .some(node => !!(node.textContent && node.textContent.trim()));
   }
-}
-
-@Directive({
-  host: {
-    '[class.mat-mdc-list-non-interactive]': '_isNonInteractive',
-    '[attr.aria-disabled]': 'disabled',
-  },
-})
-/** @docs-private */
-export abstract class MatListBase {
-  _isNonInteractive: boolean = true;
-
-  /** Whether ripples for all list items is disabled. */
-  @Input()
-  get disableRipple(): boolean {
-    return this._disableRipple;
-  }
-  set disableRipple(value: BooleanInput) {
-    this._disableRipple = coerceBooleanProperty(value);
-  }
-  private _disableRipple: boolean = false;
-
-  /** Whether all list items are disabled. */
-  @Input()
-  get disabled(): boolean {
-    return this._disabled;
-  }
-  set disabled(value: BooleanInput) {
-    this._disabled = coerceBooleanProperty(value);
-  }
-  private _disabled = false;
 }
 
 /**
