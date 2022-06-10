@@ -69,9 +69,9 @@ describe('Built-in image directive loaders', () => {
       it('should throw if the path is invalid', () => {
         expect(() => provideCloudinaryLoader('my-cloudinary-account'))
             .toThrowError(
-                `NG02952: CloudinaryLoader has detected an invalid path: ` +
-                `expecting a path matching one of the following formats: ` +
-                `https://res.cloudinary.com/mysite, https://mysite.cloudinary.com, ` +
+                `NG02952: Image loader has detected an invalid path. ` +
+                `Expecting a path matching one of the following formats: ` +
+                `https://res.cloudinary.com/mysite or https://mysite.cloudinary.com ` +
                 `or https://subdomain.mysite.com - but got: \`my-cloudinary-account\``);
       });
 
@@ -106,8 +106,8 @@ describe('Built-in image directive loaders', () => {
       it('should throw if the path is invalid', () => {
         expect(() => provideImageKitLoader('my-imagekit-account'))
             .toThrowError(
-                `NG02952: ImageKitLoader has detected an invalid path: ` +
-                `expecting a path matching one of the following formats: ` +
+                `NG02952: Image loader has detected an invalid path. ` +
+                `Expecting a path matching one of the following formats: ` +
                 `https://ik.imagekit.io/mysite or https://subdomain.mysite.com - ` +
                 `but got: \`my-imagekit-account\``);
       });
