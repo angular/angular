@@ -167,6 +167,22 @@ describe('Image directive', () => {
               'on the mentioned element.');
     });
 
+    it('should throw if `width` is 0', () => {
+      setupTestingModule();
+
+      const template = '<img rawSrc="img.png" width="0" height="10">';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              `NG0${
+                  RuntimeErrorCode
+                      .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`width\` ` +
+              'has an invalid value: expecting a number that represents the width ' +
+              'in pixels, but got: `0`.');
+    });
+
     it('should throw if `width` has an invalid value', () => {
       setupTestingModule();
 
@@ -198,6 +214,22 @@ describe('Image directive', () => {
               'element with the `rawSrc="img.png"`) has detected that the required ' +
               '`height` attribute is missing. Please specify the `height` attribute ' +
               'on the mentioned element.');
+    });
+
+    it('should throw if `height` is 0', () => {
+      setupTestingModule();
+
+      const template = '<img rawSrc="img.png" width="10" height="0">';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              `NG0${
+                  RuntimeErrorCode
+                      .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`height\` ` +
+              'has an invalid value: expecting a number that represents the height ' +
+              'in pixels, but got: `0`.');
     });
 
     it('should throw if `height` has an invalid value', () => {
