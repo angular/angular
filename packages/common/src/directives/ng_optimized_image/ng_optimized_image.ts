@@ -37,6 +37,11 @@ const VALID_WIDTH_DESCRIPTOR_SRCSET = /^((\s*\d+w\s*(,|$)){1,})$/;
 const VALID_DENSITY_DESCRIPTOR_SRCSET = /^((\s*\d(\.\d)?x\s*(,|$)){1,})$/;
 
 /**
+ * Used to determine whether two aspect ratios are similar in value.
+ */
+const ASPECT_RATIO_TOLERANCE = .1;
+
+/**
  * ** EXPERIMENTAL **
  *
  * TODO: add Image directive description.
@@ -86,7 +91,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    */
   @Input()
   set width(value: string|number|undefined) {
-    ngDevMode && assertValidNumberInput(value, 'width');
+    ngDevMode && assertGreaterThanZeroNumber(value, 'width');
     this._width = inputToInteger(value);
   }
   get width(): number|undefined {
@@ -98,7 +103,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    */
   @Input()
   set height(value: string|number|undefined) {
-    ngDevMode && assertValidNumberInput(value, 'height');
+    ngDevMode && assertGreaterThanZeroNumber(value, 'height');
     this._height = inputToInteger(value);
   }
   get height(): number|undefined {
@@ -146,6 +151,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertRequiredNumberInput(this, this.width, 'width');
       assertRequiredNumberInput(this, this.height, 'height');
       assertValidLoadingInput(this);
+      assertNoImageDistortion(this, this.imgElement, this.renderer);
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.check(this.getRewrittenSrc(), this.rawSrc);
@@ -400,17 +406,76 @@ function assertNoPostInitInputChange(
   });
 }
 
-// Verifies that a specified input has a correct type (number).
-function assertValidNumberInput(inputValue: unknown, inputName: string) {
-  const isValid = typeof inputValue === 'number' ||
-      (typeof inputValue === 'string' && /^\d+$/.test(inputValue.trim()));
-  if (!isValid) {
+// Verifies that a specified input is a number greater than 0.
+function assertGreaterThanZeroNumber(inputValue: unknown, inputName: string) {
+  const validNumber = typeof inputValue === 'number' && inputValue > 0;
+  const validString =
+      typeof inputValue === 'string' && /^\d+$/.test(inputValue.trim()) && parseInt(inputValue) > 0;
+  if (!validNumber && !validString) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
         `The NgOptimizedImage directive has detected that the \`${inputName}\` has an invalid ` +
             `value: expecting a number that represents the ${inputName} in pixels, but got: ` +
             `\`${inputValue}\`.`);
   }
+}
+
+// Verifies that the rendered image is not visually distorted. Effectively this is checking:
+// - Whether the "width" and "height" attributes reflect the actual dimensions of the image.
+// - Whether image styling is "correct" (see below for a longer explanation).
+function assertNoImageDistortion(
+    dir: NgOptimizedImage, element: ElementRef<any>, renderer: Renderer2) {
+  const img = element.nativeElement;
+  const removeListenerFn = renderer.listen(img, 'load', () => {
+    removeListenerFn();
+    const renderedWidth = parseFloat(img.clientWidth);
+    const renderedHeight = parseFloat(img.clientHeight);
+    const renderedAspectRatio = renderedWidth / renderedHeight;
+    const nonZeroRenderedDimensions = renderedWidth !== 0 && renderedHeight !== 0;
+
+    const intrinsicWidth = parseFloat(img.naturalWidth);
+    const intrinsicHeight = parseFloat(img.naturalHeight);
+    const intrinsicAspectRatio = intrinsicWidth / intrinsicHeight;
+
+    const suppliedWidth = dir.width!;
+    const suppliedHeight = dir.height!;
+    const suppliedAspectRatio = suppliedWidth / suppliedHeight;
+
+    // Tolerance is used to account for the impact of subpixel rendering.
+    // Due to subpixel rendering, the rendered, intrinsic, and supplied
+    // aspect ratios of a correctly configured image may not exactly match.
+    // For example, a `width=4030 height=3020` image might have a rendered
+    // size of "1062w, 796.48h". (An aspect ratio of 1.334... vs. 1.333...)
+    const inaccurateDimensions =
+        Math.abs(suppliedAspectRatio - intrinsicAspectRatio) > ASPECT_RATIO_TOLERANCE;
+    const stylingDistortion = nonZeroRenderedDimensions &&
+        Math.abs(intrinsicAspectRatio - renderedAspectRatio) > ASPECT_RATIO_TOLERANCE;
+    if (inaccurateDimensions) {
+      console.warn(
+          RuntimeErrorCode.INVALID_INPUT,
+          `${imgDirectiveDetails(dir.rawSrc)} has detected that the aspect ratio of the ` +
+              `image does not match the aspect ratio indicated by the width and height attributes. ` +
+              `Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h (aspect-ratio: ${
+                  intrinsicAspectRatio}). ` +
+              `Supplied width and height attributes: ${suppliedWidth}w x ${
+                  suppliedHeight}h (aspect-ratio: ${suppliedAspectRatio}). ` +
+              `To fix this, update the width and height attributes.`);
+    } else {
+      if (stylingDistortion) {
+        console.warn(
+            RuntimeErrorCode.INVALID_INPUT,
+            `${imgDirectiveDetails(dir.rawSrc)} has detected that the aspect ratio of the ` +
+                `rendered image does not match the image's intrinsic aspect ratio. ` +
+                `Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h (aspect-ratio: ${
+                    intrinsicAspectRatio}). ` +
+                `Rendered image size: ${renderedWidth}w x ${renderedHeight}h (aspect-ratio: ${
+                    renderedAspectRatio}). ` +
+                `This issue can occur if "width" and "height" attributes are added to an image ` +
+                `without updating the corresponding image styling. In most cases, ` +
+                `adding "height: auto" or "width: auto" to the image styling will fix this issue.`);
+      }
+    }
+  });
 }
 
 // Verifies that a specified input is set.

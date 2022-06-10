@@ -23,7 +23,7 @@ import {Component} from '@angular/core';
     <br>
 
     <!-- 'a.png' should be treated as an LCP element -->
-    <img rawSrc="/e2e/a.png" width="1500" height="2500">
+    <img rawSrc="/e2e/a.png" width="2500" height="2500">
 
     <br>
 
