@@ -222,32 +222,6 @@ describe('Built-in image directive loaders', () => {
     });
   });
 
-  describe('loader utils', () => {
-    describe('path validation', () => {
-      it('should identify valid paths', () => {
-        expect(isValidPath('https://cdn.imageprovider.com/image-test')).toBe(true);
-        expect(isValidPath('https://cdn.imageprovider.com')).toBe(true);
-        expect(isValidPath('https://imageprovider.com')).toBe(true);
-      });
-
-      it('should reject empty paths', () => {
-        expect(isValidPath('')).toBe(false);
-      });
-
-      it('should reject path if it is not a URL', () => {
-        expect(isValidPath('myaccount')).toBe(false);
-      });
-
-      it('should reject path if it does not include a protocol', () => {
-        expect(isValidPath('myaccount.imageprovider.com')).toBe(false);
-      });
-
-      it('should reject path if is malformed', () => {
-        expect(isValidPath('somepa\th.imageprovider.com? few')).toBe(false);
-      });
-    });
-  });
-
   describe('Cloudflare loader', () => {
     function createCloudflareLoader(path: string): ImageLoader {
       const injector = createEnvironmentInjector([provideCloudflareLoader(path)]);
@@ -262,6 +236,30 @@ describe('Built-in image directive loaders', () => {
       const loader = createCloudflareLoader('https://mysite.com');
       const config = {src: 'img.png', width: 100};
       expect(loader(config)).toBe('https://mysite.com/cdn-cgi/image/format=auto,width=100/img.png');
+    });
+  });
+
+  describe('loader utils', () => {
+    it('should identify valid paths', () => {
+      expect(isValidPath('https://cdn.imageprovider.com/image-test')).toBe(true);
+      expect(isValidPath('https://cdn.imageprovider.com')).toBe(true);
+      expect(isValidPath('https://imageprovider.com')).toBe(true);
+    });
+
+    it('should reject empty paths', () => {
+      expect(isValidPath('')).toBe(false);
+    });
+
+    it('should reject path if it is not a URL', () => {
+      expect(isValidPath('myaccount')).toBe(false);
+    });
+
+    it('should reject path if it does not include a protocol', () => {
+      expect(isValidPath('myaccount.imageprovider.com')).toBe(false);
+    });
+
+    it('should reject path if is malformed', () => {
+      expect(isValidPath('somepa\th.imageprovider.com? few')).toBe(false);
     });
   });
 });
