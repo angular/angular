@@ -54,7 +54,7 @@ export function createImageLoader(
 
     const providers: Provider[] = [{provide: IMAGE_LOADER, useValue: urlFn(path)}];
 
-    if (ngDevMode && Boolean(options.ensurePreconnect) === true) {
+    if (ngDevMode && options.ensurePreconnect === false) {
       providers.push({provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [path], multi: true});
     }
 
