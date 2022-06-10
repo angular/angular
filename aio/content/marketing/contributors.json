@@ -506,6 +506,14 @@
     "bio": "I am Senior Software Development Consultant in ThoughtWorks and GDE in Angular. Graduated in Computer Science from Federal University of Bahia, I have been worked with software development for more than 11 years. Since 2017, I started with Angular Framework and I went deep into front-end ecosystem and became more specialized in this area. I participate in a computer science community, Campinas Front-end, that promotes events in this area. In the end of 2016, I started to do technical talks. The passion for science is the engine that drives me to seek answers to the problems that computing aims to solve. Besides that, sharing knowledge and experiences is the path I choose to democratize the technology for all.",
     "groups": ["GDE"]
   },
+  "kevindavila": {
+    "name": "Kevin Davila",
+    "picture": "kevindavila.jpg",
+    "twitter": "kevindaviladev",
+    "website": "https://github.com/kevindaviladev",
+    "bio": "Kevin is a Google Developer Expert with a passion for web development. Share content and knowledge with everyone and be ready to learn as much as possible. Lover of Angular, Postgresql and frogs.",
+    "groups": ["GDE"]
+  },
   "kevinyang": {
     "name": "Kevin Yang",
     "picture": "kevinyang.jpg",
