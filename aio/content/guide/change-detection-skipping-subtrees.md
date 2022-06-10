@@ -9,7 +9,7 @@ If you are confident that a part of the application is not affected by a state c
 
 ## Using OnPush
 
-OnPush change detection instructs Angular that to only run change detection automatically for a component subtree when:
+OnPush change detection instructs Angular to run change detection for a component subtree **only** when:
 * The root component of the subtree receives new inputs as the result of a template binding. Angular compares the current and past value of the input with `==`
 * Angular handles an event _(e.g. using event binding, output binding, or `@HostListener`)_ in the subtree's root component or any of its children wether they are using OnPush change detection or not.
 
