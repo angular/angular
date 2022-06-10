@@ -30,7 +30,7 @@ function cloudflareLoaderFactory(path: string) {
   return (config: ImageLoaderConfig) => {
     let params = `format=auto`;
     if (config.width) {
-      params += `,width=${config.width.toString()}`;
+      params += `,width=${config.width}`;
     }
     const url = `${path}/cdn-cgi/image/${params}/${normalizeSrc(config.src)}`;
     return url;

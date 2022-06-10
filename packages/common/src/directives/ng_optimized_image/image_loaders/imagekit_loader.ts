@@ -36,7 +36,7 @@ export function imagekitLoaderFactory(path: string) {
     // https://ik.imagekit.io/demo/tr:w-300,h-300/medium_cafe_B1iTdD0C.jpg
     let params = `tr:q-auto`;  // applies the "auto quality" transformation
     if (config.width) {
-      params += `,w-${config.width?.toString()}`;
+      params += `,w-${config.width}`;
     }
     const url = `${path}/${params}/${normalizeSrc(config.src)}`;
     return url;

@@ -32,7 +32,9 @@ function imgixLoaderFactory(path: string) {
     const url = new URL(`${path}/${normalizeSrc(config.src)}`);
     // This setting ensures the smallest allowable format is set.
     url.searchParams.set('auto', 'format');
-    config.width && url.searchParams.set('w', config.width.toString());
+    if (config.width) {
+      url.searchParams.set('w', config.width.toString());
+    }
     return url.href;
   };
 }
