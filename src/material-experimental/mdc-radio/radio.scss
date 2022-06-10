@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use '@angular/cdk';
 @use '@angular/material' as mat;
 @use '@material/radio/radio' as mdc-radio;
 @use '@material/radio/radio-theme' as mdc-radio-theme;
@@ -70,6 +69,12 @@
     .mat-ripple-element {
       opacity: mdc-radio-theme.$ripple-opacity;
     }
+
+    // Radio components have to set `border-radius: 50%` in order to support density scaling
+    // which will clip a square focus indicator so we have to turn it into a circle.
+    &::before {
+      border-radius: 50%;
+    }
   }
 
   &._mat-animation-noopable {
@@ -88,6 +93,12 @@
       border-color: var(--mdc-radio-unselected-focus-icon-color, black);
     }
   }
+
+  // For radios render the focus indicator when we know
+  // the hidden input is focused (slightly different for each control).
+  &.cdk-focused .mat-mdc-focus-indicator::before {
+    content: '';
+  }
 }
 
 // Element used to provide a larger tap target for users on touch devices.
@@ -105,16 +116,3 @@
   }
 }
 
-// Note that this creates a square box around the circle, however it's consistent with
-// how IE/Edge treat native radio buttons in high contrast mode. We can't turn the border
-// into a dotted one, because it's too thick which causes the circles to look off.
-@include cdk.high-contrast(active, 'off') {
-  .mat-mdc-radio-button:not(.mat-radio-disabled) {
-    &.cdk-keyboard-focused,
-    &.cdk-program-focused {
-      .mat-radio-ripple {
-        outline: solid 3px;
-      }
-    }
-  }
-}

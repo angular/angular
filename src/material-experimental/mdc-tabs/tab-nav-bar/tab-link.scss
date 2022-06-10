@@ -20,6 +20,12 @@
   .mat-mdc-tab-header.mat-mdc-tab-nav-bar-stretch-tabs & {
     flex-grow: 1;
   }
+
+  // For the tab-link element, default inset/offset values are necessary to ensure that
+  // the focus indicator is sufficiently contrastive and renders appropriately.
+  &::before {
+    margin: 5px;
+  }
 }
 
 @media (mat.$private-xsmall) {

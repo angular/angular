@@ -2,6 +2,7 @@
 
 @use './button-base';
 @use '../core/style/layout-common';
+@use '../core/style/focus-indicators';
 
 // TODO(jelbourn): Measure perf benefits for translate3d and will-change.
 // TODO(jelbourn): Figure out if anchor hover underline actually happens in any browser.
@@ -155,16 +156,31 @@
   }
 }
 
+// For the button element, default inset/offset values are necessary to ensure that
+// the focus indicator is sufficiently contrastive and renders appropriately.
+.mat-flat-button,
+.mat-raised-button,
+.mat-fab,
+.mat-mini-fab {
+  &::before {
+    $border-width:
+      var(--mat-focus-indicator-border-width, #{focus-indicators.$default-border-width});
+    $offset: calc(#{$border-width} + 2px);
+    margin: calc(#{$offset} * -1);
+  }
+}
+
+.mat-stroked-button::before {
+  $border-width:
+    var(--mat-focus-indicator-border-width, #{focus-indicators.$default-border-width});
+  $offset: calc(#{$border-width} + 3px);
+  margin: calc(#{$offset} * -1);
+}
+
 // Add an outline to make buttons more visible in high contrast mode. Stroked buttons
 // don't need a special look in high-contrast mode, because those already have an outline.
 @include cdk.high-contrast(active, off) {
   .mat-button, .mat-flat-button, .mat-raised-button, .mat-icon-button, .mat-fab, .mat-mini-fab {
     outline: solid 1px;
-  }
-
-  .mat-button-base {
-    &.cdk-keyboard-focused, &.cdk-program-focused {
-      outline: solid 3px;
-    }
   }
 }

@@ -59,11 +59,6 @@ $legacy-border-radius: 2px !default;
   &.cdk-keyboard-focused {
     .mat-button-toggle-focus-overlay {
       opacity: 1;
-
-      // In high contrast mode `opacity: 1` will show the overlay as solid so we fall back 0.5.
-      @include cdk.high-contrast(active, off) {
-        opacity: 0.5;
-      }
     }
   }
 }
@@ -80,10 +75,6 @@ $legacy-border-radius: 2px !default;
   // TODO(paul): support `program` as well. See https://github.com/angular/components/issues/9889
   &.cdk-keyboard-focused:not(.mat-button-toggle-disabled) .mat-button-toggle-focus-overlay {
     opacity: 0.12;
-
-    @include cdk.high-contrast(active, off) {
-      opacity: 0.5;
-    }
   }
 
   // On touch devices the hover state will linger on the element after the user has tapped.

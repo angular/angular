@@ -27,12 +27,6 @@ $tab-animation-duration: 500ms !default;
     &:not(.mat-tab-disabled) {
       opacity: 1;
     }
-
-    @include cdk.high-contrast(active, off) {
-      $outline-width: 2px;
-      outline: dotted $outline-width;
-      outline-offset: -$outline-width; // Not supported on IE, but looks better everywhere else.
-    }
   }
 
   &.mat-tab-disabled {

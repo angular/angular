@@ -1,6 +1,4 @@
 @use 'sass:map';
-@use 'sass:math';
-@use '@angular/cdk';
 @use '@angular/material' as mat;
 @use '@material/switch/switch' as mdc-switch;
 @use '@material/switch/switch-theme' as mdc-switch-theme;
@@ -54,8 +52,16 @@
   }
 
   // Needs a little more specificity so the :hover styles don't override it.
-  &.mat-mdc-slide-toggle-focused .mdc-switch #{mdc-switch.$ripple-target}::after {
-    opacity: map.get(mdc-ripple.$dark-ink-opacities, focus);
+  &.mat-mdc-slide-toggle-focused {
+    .mdc-switch #{mdc-switch.$ripple-target}::after {
+      opacity: map.get(mdc-ripple.$dark-ink-opacities, focus);
+    }
+
+    // For slide-toggles render the focus indicator when we know
+    // the hidden input is focused (slightly different for each control).
+    .mat-mdc-focus-indicator::before {
+      content: '';
+    }
   }
 
   // We use an Angular Material ripple rather than an MDC ripple due to size concerns, so we need to
@@ -63,14 +69,10 @@
   .mat-ripple-element {
     opacity: map.get(mdc-ripple.$dark-ink-opacities, press);
   }
-}
 
-
-@include cdk.high-contrast(active, off) {
-  .mat-mdc-slide-toggle-focused .mdc-switch__track {
-    // Usually 1px would be enough, but MDC reduces the opacity on the
-    // element so we need to make this a bit more prominent.
-    outline: solid 2px;
-    outline-offset: math.div(map.get(mdc-switch-theme.$light-theme, track-height), 2);
+  // Slide-toggle components have to set `border-radius: 50%` in order to support density scaling
+  // which will clip a square focus indicator so we have to turn it into a circle.
+  .mat-mdc-focus-indicator::before {
+    border-radius: 50%;
   }
 }

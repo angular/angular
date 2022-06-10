@@ -221,18 +221,16 @@ $bar-track-width: $bar-width - $thumb-size;
   }
 }
 
+// Slide-toggles render focus indicators when the
+// associated visually-hidden input is focused.
+.mat-slide-toggle-input:focus ~ .mat-slide-toggle-thumb-container .mat-focus-indicator::before {
+  content: '';
+}
+
 // Custom styling to make the slide-toggle usable in high contrast mode.
 @include cdk.high-contrast(active, off) {
   .mat-slide-toggle-thumb,
   .mat-slide-toggle-bar {
     border: 1px solid;
-  }
-
-  // As a focus indication in high contrast mode, we add a dotted outline to the slide-toggle
-  // bar. Since the bar element does not have any padding, we need to specify an outline offset
-  // because otherwise the opaque thumb element will hide the outline.
-  .mat-slide-toggle.cdk-keyboard-focused .mat-slide-toggle-bar {
-    outline: 2px dotted;
-    outline-offset: math.div($height - $bar-height, 2);
   }
 }

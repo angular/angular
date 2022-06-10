@@ -1,4 +1,3 @@
-@use '@angular/cdk';
 @use '@angular/material' as mat;
 @use '@material/checkbox/checkbox' as mdc-checkbox;
 @use '@material/checkbox/checkbox-theme' as mdc-checkbox-theme;
@@ -49,11 +48,6 @@
     .mdc-checkbox__native-control:not([disabled]):focus ~ .mdc-checkbox__ripple {
       opacity: map.get(mdc-ripple.$dark-ink-opacities, hover) +
         map.get(mdc-ripple.$dark-ink-opacities, focus);
-
-      @include cdk.high-contrast(active, off) {
-        outline: solid 3px;
-        opacity: 1;
-      }
     }
   }
 
@@ -124,4 +118,16 @@
   @include mdc-touch-target.touch-target(
     $set-width: true,
     $query: mdc-helpers.$mat-base-styles-query);
+}
+
+// Checkbox components have to set `border-radius: 50%` in order to support density scaling
+// which will clip a square focus indicator so we have to turn it into a circle.
+.mat-mdc-checkbox-ripple::before {
+  border-radius: 50%;
+}
+
+// For checkboxes render the focus indicator when we know
+// the hidden input is focused (slightly different for each control).
+.mdc-checkbox__native-control:focus ~ .mat-mdc-focus-indicator::before {
+  content: '';
 }

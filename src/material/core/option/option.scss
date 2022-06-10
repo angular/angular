@@ -31,22 +31,12 @@
     }
   }
 
+  // For options, render the focus indicator when the class .mat-active is present.
+  &.mat-active::before {
+    content: '';
+  }
+
   @include cdk.high-contrast(active, off) {
-    $high-contrast-border-width: 1px;
-
-    // Add a margin to offset the border that we're adding to active option, in order
-    // to avoid the options shifting as the user is moving through the list.
-    margin: 0 $high-contrast-border-width;
-
-    &.mat-active {
-      // We use a border here, rather than an outline, because the outline will be cut off
-      // by the `overflow: hidden` on the panel wrapping the options, whereas a border
-      // will push the element inwards. This could be done using `outline-offset: -1px`,
-      // however the property isn't supported on IE11.
-      border: solid $high-contrast-border-width currentColor;
-      margin: 0;
-    }
-
     // Fade out the option when it is disabled so that it can be distinguished from the enabled
     // options. Note that ideally we'd use `color: GreyText` here which is what the browser uses
     // for disabled buttons, but we can't because Firefox doesn't recognize it.

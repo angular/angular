@@ -40,11 +40,6 @@
   @include cdk.high-contrast(active, off) {
     outline: solid 1px;
 
-    &.cdk-focused {
-      // Use 2px here since the dotted outline is a little thinner.
-      outline: dotted 2px;
-    }
-
     .mdc-evolution-chip__checkmark-path {
       // SVG colors won't be changed in high contrast mode and since the checkmark is white
       // by default, it'll blend in with the background in black-on-white mode. Override the
@@ -180,24 +175,41 @@
     left: 0;
     pointer-events: none;
   }
+
+  // For the chip element, default inset/offset values are necessary to ensure that
+  // the focus indicator is sufficiently contrastive and renders appropriately.
+  .mat-mdc-focus-indicator::before {
+    $default-border-width: mat.$focus-indicators-private-default-border-width;
+    $border-width: var(--mat-mdc-focus-indicator-border-width, #{$default-border-width});
+    $offset: calc(#{$border-width} + 2px);
+    margin: calc(#{$offset} * -1);
+  }
 }
 
 .mat-mdc-chip-remove {
+  // Fades out the trailing icon slightly so that it can become darker when focused.
+  // The MDC theming has variables for this, but the focus/hover states don't seem to work.
+  opacity: 0.54;
+
+  &:focus {
+    opacity: 1;
+  }
+
+  &::before {
+    $default-border-width: mat.$focus-indicators-private-default-border-width;
+    $offset: var(--mat-mdc-focus-indicator-border-width, #{$default-border-width});
+    margin: calc(#{$offset} * -1);
+
+    // MDC sets a padding a on the chip button which stretches out the focus indicator.
+    left: 8px;
+    right: 8px;
+  }
+
   .mat-icon {
     width: inherit;
     height: inherit;
     font-size: inherit;
     box-sizing: content-box;
-  }
-}
-
-// Fades out the trailing icon slightly so that it can become darker when focused.
-// The MDC theming has variables for this, but the focus/hover states don't seem to work.
-.mat-mdc-chip-remove {
-  opacity: 0.54;
-
-  &:focus {
-    opacity: 1;
   }
 }
 
@@ -214,4 +226,9 @@
   @include cdk.high-contrast(active, off) {
     outline-width: 3px;
   }
+}
+
+// In the chips the individual actions have focus so we target a different element.
+.mat-mdc-chip-action:focus .mat-mdc-focus-indicator::before {
+  content: '';
 }

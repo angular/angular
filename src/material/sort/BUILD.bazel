@@ -40,6 +40,7 @@ sass_binary(
     src = "sort-header.scss",
     deps = [
         "//src/cdk:sass_lib",
+        "//src/material/core:core_scss_lib",
     ],
 )
 

@@ -1,8 +1,5 @@
 @use '@angular/cdk';
-
-@use '../core/style/layout-common';
 @use './expansion-variables';
-@use './expansion-mixins';
 
 .mat-expansion-panel-header {
   display: flex;
@@ -81,19 +78,6 @@
 }
 
 @include cdk.high-contrast(active, off) {
-  @include expansion-mixins.private-expansion-focus {
-    &::before {
-      // These styles are identical to the ones generated for all
-      // `.mat-focus-indicator` when strong focus indication is enabled.
-      // We have to repeat them, because strong focus is opt-in.
-      @include layout-common.fill();
-      box-sizing: border-box;
-      pointer-events: none;
-      border: 3px solid;
-      border-radius: 4px;
-      content: '';
-    }
-  }
   .mat-expansion-panel-content {
     border-top: 1px solid;
     border-top-left-radius: 0;

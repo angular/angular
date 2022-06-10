@@ -312,14 +312,10 @@ mat-action-list {
 }
 
 @include cdk.high-contrast(active, off) {
-  .mat-selection-list:focus {
-    outline-style: dotted;
-  }
-
   .mat-list-option,
   .mat-nav-list .mat-list-item,
   mat-action-list .mat-list-item {
-    &:hover, &:focus {
+    &:hover {
       outline: dotted 1px;
       z-index: 1;
     }

@@ -11,9 +11,3 @@
     outline: solid 1px;
   }
 }
-
-@include cdk.high-contrast(active, off) {
-  .mat-mdc-button-base:focus {
-    outline: solid 3px;
-  }
-}

@@ -58,9 +58,17 @@
 // The MDC-based list items already use the `::before` pseudo element for the standard
 // focus/selected/hover state. Hence, we need to have a separate list-item spanning
 // element that can be used for strong focus indicators.
-.mat-mdc-list-item > .mat-mdc-focus-indicator {
-  @include mat.private-fill();
-  pointer-events: none;
+.mat-mdc-list-item {
+  & > .mat-mdc-focus-indicator {
+    @include mat.private-fill();
+    pointer-events: none;
+  }
+
+  // For list items, render the focus indicator when the parent
+  // listem item is focused.
+  &:focus > .mat-mdc-focus-indicator::before {
+    content: '';
+  }
 }
 
 .mat-mdc-list-item.mdc-list-item--with-three-lines {

@@ -1,6 +1,7 @@
 @use '@angular/cdk';
 
 @use '../core/style/layout-common';
+@use '../core/style/focus-indicators';
 
 $calendar-padding: 8px !default;
 $calendar-header-divider-width: 1px !default;
@@ -19,7 +20,6 @@ $calendar-prev-next-icon-border-width: 2px;
 $calendar-prev-next-icon-margin: 15.5px;
 $calendar-prev-icon-transform: translateX(2px) rotate(-45deg);
 $calendar-next-icon-transform: translateX(-2px) rotate(45deg);
-
 
 .mat-calendar {
   display: block;
@@ -126,3 +126,17 @@ $calendar-next-icon-transform: translateX(-2px) rotate(45deg);
   }
 }
 
+// For the calendar element, default inset/offset values are necessary to ensure that
+// the focus indicator is sufficiently contrastive and renders appropriately.
+.mat-calendar-body-cell-content::before {
+  $border-width:
+    var(--mat-focus-indicator-border-width, #{focus-indicators.$default-border-width});
+  $offset: calc(#{$border-width} + 3px);
+  margin: calc(#{$offset} * -1);
+}
+
+// For calendar cells, render the focus indicator when the parent cell is
+// focused.
+.mat-calendar-body-cell:focus .mat-focus-indicator::before {
+  content: '';
+}

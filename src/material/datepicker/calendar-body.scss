@@ -219,17 +219,6 @@ $calendar-range-end-body-cell-size:
     outline: dotted 1px;
   }
 
-  .cdk-keyboard-focused .mat-calendar-body-active,
-  .cdk-program-focused .mat-calendar-body-active {
-    & > .mat-calendar-body-cell-content {
-      outline: dotted 2px;
-
-      &.mat-calendar-body-selected {
-        outline: solid 3px;
-      }
-    }
-  }
-
   // These backgrounds need to be removed, because they'll block the date ranges.
   .mat-calendar-body-cell::before,
   .mat-calendar-body-cell::after,

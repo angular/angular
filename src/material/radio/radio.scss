@@ -210,16 +210,13 @@ $ripple-radius: 20px;
   z-index: -1;
 }
 
-@include cdk.high-contrast(active, off) {
-  .mat-radio-button:not(.mat-radio-disabled) {
-    &.cdk-keyboard-focused,
-    &.cdk-program-focused {
-      .mat-radio-ripple {
-        outline: solid 3px;
-      }
-    }
-  }
+// Radio renders focus indicators when the
+// associated visually-hidden input is focused.
+.mat-radio-input:focus ~ .mat-focus-indicator::before {
+  content: '';
+}
 
+@include cdk.high-contrast(active, off) {
   .mat-radio-disabled {
     opacity: 0.5;
   }

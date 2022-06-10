@@ -204,12 +204,6 @@ $_mark-stroke-size: math.div(2, 15) * checkbox-common.$size !default;
     z-index: 1;
     pointer-events: none;
   }
-
-  &.cdk-keyboard-focused .mat-checkbox-ripple {
-    @include cdk.high-contrast(active, off) {
-      outline: solid 3px;
-    }
-  }
 }
 
 .mat-checkbox-layout {
@@ -517,4 +511,10 @@ $_mark-stroke-size: math.div(2, 15) * checkbox-common.$size !default;
   // Visual improvement to properly show browser popups when being required.
   bottom: 0;
   left: 50%;
+}
+
+// Checkboxes render focus indicators when the
+// associated visually-hidden input is focused.
+.mat-checkbox-input:focus ~ .mat-focus-indicator::before {
+  content: '';
 }

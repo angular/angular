@@ -34,4 +34,15 @@ $mat-slider-horizontal-margin: 8px !default;
       transition: none;
     }
   }
+
+  // Slider components have to set `border-radius: 50%` in order to support density scaling
+  // which will clip a square focus indicator so we have to turn it into a circle.
+  .mat-mdc-focus-indicator::before {
+    border-radius: 50%;
+  }
+}
+
+// In the MDC slider the focus indicator is inside the thumb.
+.mdc-slider__thumb--focused .mat-mdc-focus-indicator::before {
+  content: '';
 }

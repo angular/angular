@@ -1,0 +1,86 @@
+@use 'sass:map';
+@use '@angular/cdk';
+@use '../style/layout-common';
+
+// Private sass variables that will be used as reference throughout component stylesheets.
+$default-border-width: 3px;
+$default-border-style: solid;
+$default-border-color: transparent;
+$default-border-radius: 4px;
+
+// Mixin that renders the focus indicator structural styles.
+@mixin private-structural-styling($prefix) {
+  .#{$prefix}-focus-indicator {
+    position: relative;
+
+    &::before {
+      @include layout-common.fill();
+      box-sizing: border-box;
+      pointer-events: none;
+      display: var(--#{$prefix}-focus-indicator-display, none); // Hide the indicator by default.
+      border: var(
+          --#{$prefix}-focus-indicator-border-width,
+          #{$default-border-width}
+        )
+        var(
+          --#{$prefix}-focus-indicator-border-style,
+          #{$default-border-style}
+        )
+        var(
+          --#{$prefix}-focus-indicator-border-color,
+          #{$default-border-color}
+        );
+      border-radius: var(
+        --#{$prefix}-focus-indicator-border-radius,
+        #{$default-border-radius}
+      );
+    }
+
+    // By default, render the focus indicator when the focus indicator host element takes focus.
+    // Defining a pseudo element's content will cause it to render.
+    &:focus::before {
+      content: '';
+    }
+  }
+
+  // Enable the indicator in high contrast mode.
+  @include cdk.high-contrast(active, off) {
+    @include private-customize-focus-indicators((display: block), $prefix);
+  }
+}
+
+// Generates CSS variable declarations from a map.
+@mixin _output-variables($map) {
+  @each $key, $value in $map {
+    @if ($value) {
+      --#{$key}: #{$value};
+    }
+  }
+}
+
+// Mixin that dedups CSS variables for the strong-focus-indicators mixin.
+@mixin private-customize-focus-indicators($config, $prefix) {
+  $border-style: map.get($config, border-style);
+  $border-width: map.get($config, border-width);
+  $border-radius: map.get($config, border-radius);
+  $border-color: map.get($config, border-color);
+  $display: map.get($config, display);
+  $map: (
+    '#{$prefix}-focus-indicator-border-style': $border-style,
+    '#{$prefix}-focus-indicator-border-width': $border-width,
+    '#{$prefix}-focus-indicator-border-radius': $border-radius,
+    '#{$prefix}-focus-indicator-border-color': $border-color,
+    '#{$prefix}-focus-indicator-display': $display,
+  );
+
+  @if (&) {
+    @include _output-variables($map);
+  }
+  @else {
+    // We use `html` here instead of `:root`, because the
+    // latter causes some issues with internal tooling.
+    html {
+      @include _output-variables($map);
+    }
+  }
+}

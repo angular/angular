@@ -49,6 +49,10 @@
   .mat-mdc-focus-indicator {
     @include mat.private-fill();
   }
+
+  &:focus .mat-mdc-focus-indicator::before {
+    content: '';
+  }
 }
 
 // MDC's disabled buttons define a default cursor with pointer-events none. However, they select

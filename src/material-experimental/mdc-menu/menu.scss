@@ -84,7 +84,7 @@ mat-menu {
     // from closing, but clicks on child nodes still propagate which is inconsistent (see #16694).
     // In order to keep the behavior consistent and prevent the menu from closing, we add an overlay
     // on top of the content that will catch all the clicks while disabled.
-    &::before {
+    &::after {
       display: block;
       position: absolute;
       content: '';
@@ -124,12 +124,6 @@ mat-menu {
     // We need to move the item 1px down, because Firefox seems to have
     // an issue rendering the top part of the outline (see #21524).
     margin-top: $outline-width;
-
-    &.cdk-program-focused,
-    &.cdk-keyboard-focused,
-    &-highlighted {
-      outline: dotted $outline-width;
-    }
   }
 }
 

@@ -11,11 +11,14 @@
   box-sizing: content-box;
   -webkit-tap-highlight-color: transparent;
 
+  // Stepper headers have the focus indicator as a descendant,
+  // because `::before` is used for other styling.
+  &:focus .mat-focus-indicator::before {
+    content: '';
+  }
+
   @include cdk.high-contrast(active, off) {
     outline: solid 1px;
-    &.cdk-keyboard-focused, &.cdk-program-focused {
-      outline: solid 3px;
-    }
 
     &[aria-selected='true'] {
       .mat-step-label {

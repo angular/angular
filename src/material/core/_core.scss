@@ -2,7 +2,7 @@
 
 // Core styles that can be used to apply material design treatments to any element.
 @use './ripple/ripple';
-@use './focus-indicators/focus-indicators';
+@use './style/focus-indicators';
 @use './typography/all-typography';
 
 // Mixin that renders all of the core styles that are not theme-dependent.
@@ -13,21 +13,6 @@
   @include cdk.overlay();
   @include cdk.text-field-autosize();
   @include cdk.text-field-autofill();
-
-  @include focus-indicators.private-strong-focus-indicators-positioning();
-  @include _mdc-core();
-}
-
-// Mixin that renders all of the core MDC styles. Private mixin included with `mat-core`.
-@mixin _mdc-core() {
-  @include _mdc-strong-focus-indicators-positioning();
-}
-
-// Mixin that ensures focus indicator host elements are positioned so that the focus indicator
-// pseudo element within is positioned relative to the host. Private mixin included within
-// `_mat-mdc-core`.
-@mixin _mdc-strong-focus-indicators-positioning() {
-  .mat-mdc-focus-indicator {
-    position: relative;
-  }
+  @include focus-indicators.private-structural-styling('mat');
+  @include focus-indicators.private-structural-styling('mat-mdc');
 }

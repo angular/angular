@@ -1,104 +1,15 @@
-@use '@angular/material' as mat;
 @use 'sass:map';
+@use '@angular/material' as mat;
 
-/// Mixin that turns on strong focus indicators.
-///
-/// @example
-///   .my-app {
-///     @include mat-mdc-strong-focus-indicators($config);
-///   }
 @mixin strong-focus-indicators($config: ()) {
   // Default focus indicator config.
   $default-config: (
-    border-style: solid,
-    border-width: 3px,
-    border-radius: 4px,
+    border-color: black,
+    display: block,
   );
 
   // Merge default config with user config.
   $config: map.merge($default-config, $config);
-  $border-style: map.get($config, border-style);
-  $border-width: map.get($config, border-width);
-  $border-radius: map.get($config, border-radius);
 
-  // Base styles for focus indicators.
-  .mat-mdc-focus-indicator::before {
-    @include mat.private-fill();
-    box-sizing: border-box;
-    pointer-events: none;
-    border: $border-width $border-style transparent;
-    border-radius: $border-radius;
-
-    .cdk-high-contrast-active & {
-      display: none;
-    }
-  }
-
-  // By default, all focus indicators are flush with the bounding box of their
-  // host element. For particular elements (listed below), default inset/offset
-  // values are necessary to ensure that the focus indicator is sufficiently
-  // contrastive and renders appropriately.
-
-  .mat-mdc-unelevated-button .mat-mdc-focus-indicator::before,
-  .mat-mdc-raised-button .mat-mdc-focus-indicator::before,
-  .mdc-fab .mat-mdc-focus-indicator::before,
-  .mat-mdc-chip-action-label .mat-mdc-focus-indicator::before {
-    margin: -($border-width + 2px);
-  }
-
-  .mat-mdc-outlined-button .mat-mdc-focus-indicator::before {
-    margin: -($border-width + 3px);
-  }
-
-  .mat-mdc-focus-indicator.mat-mdc-chip-remove::before {
-    margin: -$border-width;
-  }
-
-  // MDC sets a padding a on the button which stretches out the focus indicator.
-  .mat-mdc-focus-indicator.mat-mdc-chip-remove::before {
-    left: 8px;
-    right: 8px;
-  }
-
-  .mat-mdc-focus-indicator.mat-mdc-tab::before,
-  .mat-mdc-focus-indicator.mat-mdc-tab-link::before {
-    margin: 5px;
-  }
-
-  // These components have to set `border-radius: 50%` in order to support density scaling
-  // which will clip a square focus indicator so we have to turn it into a circle.
-  .mat-mdc-checkbox-ripple.mat-mdc-focus-indicator::before,
-  .mat-radio-ripple.mat-mdc-focus-indicator::before,
-  .mat-mdc-slider .mat-mdc-focus-indicator::before,
-  .mat-mdc-slide-toggle .mat-mdc-focus-indicator::before {
-    border-radius: 50%;
-  }
-
-  // Render the focus indicator on focus. Defining a pseudo element's
-  // content will cause it to render.
-
-  // For checkboxes, radios and slide toggles, render the focus indicator when we know
-  // the hidden input is focused (slightly different for each control).
-  .mdc-checkbox__native-control:focus ~ .mat-mdc-focus-indicator::before,
-  .mat-mdc-slide-toggle-focused .mat-mdc-focus-indicator::before,
-  .mat-mdc-radio-button.cdk-focused .mat-mdc-focus-indicator::before,
-
-  // In the chips the individual actions have focus so we target a different element.
-  .mat-mdc-chip-action:focus .mat-mdc-focus-indicator::before,
-
-  // For buttons and list items, render the focus indicator when the parent
-  // button or list item is focused.
-  .mat-mdc-button-base:focus .mat-mdc-focus-indicator::before,
-  .mat-mdc-list-item:focus > .mat-mdc-focus-indicator::before,
-
-  // For options, render the focus indicator when the class .mat-mdc-option-active is present.
-  .mat-mdc-focus-indicator.mat-mdc-option-active::before,
-
-  // In the MDC slider the focus indicator is inside the thumb.
-  .mdc-slider__thumb--focused .mat-mdc-focus-indicator::before,
-
-    // For all other components, render the focus indicator on focus.
-  .mat-mdc-focus-indicator:focus::before {
-    content: '';
-  }
+  @include mat.focus-indicators-private-private-customize-focus-indicators($config, 'mat-mdc');
 }
