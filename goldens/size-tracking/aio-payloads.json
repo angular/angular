@@ -12,7 +12,7 @@
   "aio-local": {
     "uncompressed": {
       "runtime": 4325,
-      "main": 456412,
+      "main": 456957,
       "polyfills": 33922,
       "styles": 72829,
       "light-theme": 78276,
