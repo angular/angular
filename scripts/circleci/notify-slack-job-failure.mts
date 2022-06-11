@@ -11,17 +11,15 @@ import {
   assertValidGithubConfig,
 } from '@angular/dev-infra-private/ng-dev';
 
-if (process.env.CIRCLE_PR_NUMBER) {
+if (process.env.CIRCLE_PR_NUMBER !== undefined) {
   console.info('Skipping notifications for pull requests.');
   process.exit(0);
 }
 
-const {
-  CIRCLE_JOB: jobName,
-  CIRCLE_BRANCH: branchName,
-  CIRCLE_BUILD_URL: jobUrl,
-  SLACK_COMPONENTS_CI_FAILURES_WEBHOOK_URL: webhookUrl,
-} = process.env;
+const jobName = process.env.CIRCLE_JOB!;
+const branchName = process.env.CIRCLE_BRANCH!;
+const jobUrl = process.env.CIRCLE_BUILD_URL!;
+const webhookUrl = process.env.SLACK_COMPONENTS_CI_FAILURES_WEBHOOK_URL!;
 
 const {github} = await getConfig([assertValidGithubConfig]);
 const isPublishBranch = isVersionBranch(branchName) || branchName === github.mainBranchName;
@@ -35,7 +33,7 @@ if (isPublishBranch === false) {
 const {echo, set} = require('shelljs');
 
 const text = `\`${jobName}\` failed in branch: ${branchName}: ${jobUrl}`;
-const payload = {text};
+const payload: {text: string; channel?: string} = {text};
 const [channelName] = process.argv.slice(2);
 
 set('-e');

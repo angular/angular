@@ -128,7 +128,7 @@ var_20: &slack_notify_on_failure
   run:
     name: 'Notifying team about job failure'
     when: on_fail
-    command: node ./scripts/circleci/notify-slack-job-failure.mjs
+    command: yarn ci-notify-slack-failure
 
 # Branch filter that only matches the main branch.
 var_21: &only_main_branch_filter
@@ -509,7 +509,7 @@ jobs:
           name: Running size integration tests (failures are reported in Slack only).
           command: |
             # If the size integration tests fail, report the failure to a dedicated #components-ci-size-tracking Slack channel.
-            yarn integration-tests:size-test || node ./scripts/circleci/notify-slack-job-failure.mjs components-ci-size-tracking
+            yarn integration-tests:size-test || yarn ci-notify-slack-failure components-ci-size-tracking
       - *slack_notify_on_failure
 
   # ----------------------------------------------------------------------------

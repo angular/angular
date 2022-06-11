@@ -51,6 +51,7 @@
     "tsc": "node ./node_modules/typescript/bin/tsc",
     "ci-push-deploy-docs-app": "ts-node --esm --project scripts/tsconfig.json scripts/docs-deploy/deploy-ci-push.mts",
     "ci-docs-monitor-test": "ts-node --esm --project scripts/tsconfig.json scripts/docs-deploy/monitoring/ci-test.mts",
+    "ci-notify-slack-failure": "ts-node --esm --project scripts/tsconfig.json scripts/circleci/notify-slack-job-failure.mts",
     "prepare": "husky install"
   },
   "version": "14.1.0-next.0",
