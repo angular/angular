@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Inject, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵ_sanitizeUrl as sanitizeUrl, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, ElementRef, Inject, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵ_sanitizeUrl as sanitizeUrl, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
 
@@ -451,7 +451,7 @@ function assertNoImageDistortion(
     const stylingDistortion = nonZeroRenderedDimensions &&
         Math.abs(intrinsicAspectRatio - renderedAspectRatio) > ASPECT_RATIO_TOLERANCE;
     if (inaccurateDimensions) {
-      console.warn(
+      console.warn(formatRuntimeError(
           RuntimeErrorCode.INVALID_INPUT,
           `${imgDirectiveDetails(dir.rawSrc)} has detected that the aspect ratio of the ` +
               `image does not match the aspect ratio indicated by the width and height attributes. ` +
@@ -459,10 +459,10 @@ function assertNoImageDistortion(
                   intrinsicAspectRatio}). ` +
               `Supplied width and height attributes: ${suppliedWidth}w x ${
                   suppliedHeight}h (aspect-ratio: ${suppliedAspectRatio}). ` +
-              `To fix this, update the width and height attributes.`);
+              `To fix this, update the width and height attributes.`));
     } else {
       if (stylingDistortion) {
-        console.warn(
+        console.warn(formatRuntimeError(
             RuntimeErrorCode.INVALID_INPUT,
             `${imgDirectiveDetails(dir.rawSrc)} has detected that the aspect ratio of the ` +
                 `rendered image does not match the image's intrinsic aspect ratio. ` +
@@ -472,7 +472,7 @@ function assertNoImageDistortion(
                     renderedAspectRatio}). ` +
                 `This issue can occur if "width" and "height" attributes are added to an image ` +
                 `without updating the corresponding image styling. In most cases, ` +
-                `adding "height: auto" or "width: auto" to the image styling will fix this issue.`);
+                `adding "height: auto" or "width: auto" to the image styling will fix this issue.`));
       }
     }
   });
