@@ -5,11 +5,11 @@
  * will be a noop when running for forked builds (i.e. PRs).
  */
 
-const {
+import {
   isVersionBranch,
   getConfig,
   assertValidGithubConfig,
-} = require('@angular/dev-infra-private/ng-dev');
+} from '@angular/dev-infra-private/ng-dev';
 
 if (process.env.CIRCLE_PR_NUMBER) {
   console.info('Skipping notifications for pull requests.');
@@ -23,7 +23,7 @@ const {
   SLACK_COMPONENTS_CI_FAILURES_WEBHOOK_URL: webhookUrl,
 } = process.env;
 
-const {github} = getConfig([assertValidGithubConfig]);
+const {github} = await getConfig([assertValidGithubConfig]);
 const isPublishBranch = isVersionBranch(branchName) || branchName === github.mainBranchName;
 
 // We don't want to spam the CI failures channel with e.g. Renovate branch failures.

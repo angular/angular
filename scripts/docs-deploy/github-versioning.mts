@@ -7,14 +7,14 @@ import {
   getNextBranchName,
 } from '@angular/dev-infra-private/ng-dev';
 
-import {githubAccessToken} from './utils';
+import {githubAccessToken} from './utils.mjs';
 
-export function getReleaseRepoWithApi(): ReleaseRepoWithApi {
+export async function getReleaseRepoWithApi(): Promise<ReleaseRepoWithApi> {
   const githubClient =
     githubAccessToken !== undefined
       ? new AuthenticatedGithubClient(githubAccessToken)
       : new GithubClient();
-  const {github} = getConfig([assertValidGithubConfig]);
+  const {github} = await getConfig([assertValidGithubConfig]);
 
   return {
     api: githubClient,

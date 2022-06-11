@@ -5,7 +5,7 @@ import {NeedsPrefix} from './needs-prefix';
 const parseSelector = require('stylelint/lib/utils/parseSelector');
 const ruleName = 'material/no-prefixes';
 const messages = utils.ruleMessages(ruleName, {
-  property: (property: string, browsers: string) => {
+  property: (property, browsers) => {
     return `Unprefixed property "${property}" needs a prefix for browsers ${browsers}.`;
   },
   value: (property, value) => `Unprefixed value in "${property}: ${value}".`,
@@ -16,8 +16,8 @@ const messages = utils.ruleMessages(ruleName, {
 
 /** Config options for the rule. */
 interface Options {
-  browsers: string[];
-  filePattern: string;
+  browsers?: string[];
+  filePattern?: string;
 }
 
 /**
@@ -25,7 +25,11 @@ interface Options {
  */
 const plugin = createPlugin(ruleName, (isEnabled: boolean, {filePattern, browsers}: Options) => {
   return (root, result) => {
-    if (!isEnabled || (filePattern && !minimatch(root.source.input.file, filePattern))) {
+    if (
+      !isEnabled ||
+      !browsers ||
+      (filePattern && !minimatch(root.source!.input.file!, filePattern))
+    ) {
       return;
     }
 

@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "strict": true,
-    "target": "es2015",
-    "module": "commonjs",
+    "target": "es2020",
+    "module": "Node16",
     "esModuleInterop": true,
     "noEmit": true,
     "skipLibCheck": true,

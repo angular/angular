@@ -1,12 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import {fileURLToPath} from 'url';
 
-import {InstallOptions, installDepsForDocsSite} from './docs-deps-install';
+import {InstallOptions, installDepsForDocsSite} from './docs-deps-install.mjs';
 
 import {$} from 'zx';
 
 /** Absolute path to the `angular/components` project root. */
-export const projectDir = path.join(__dirname, '../..');
+export const projectDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
 /** Interface describing a site target for the docs-app. */
 export class SiteTarget {

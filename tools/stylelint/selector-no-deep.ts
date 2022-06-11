@@ -19,7 +19,7 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean) => {
 
     root.walkRules(rule => {
       if (
-        rule.parent.type === 'rule' &&
+        rule.parent?.type === 'rule' &&
         isStandardSyntaxRule(rule) &&
         isStandardSyntaxSelector(rule.selector) &&
         rule.selector.includes('/deep/')

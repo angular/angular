@@ -23,7 +23,7 @@ const themeMixinRegex = /^(density|color|typography|theme)\((.*)\)$/;
  */
 const plugin = createPlugin(ruleName, (isEnabled: boolean, _options, context) => {
   return (root, result) => {
-    const componentName = getComponentNameFromPath(root.source.input.file);
+    const componentName = getComponentNameFromPath(root.source!.input.file!);
 
     if (!componentName || !isEnabled) {
       return;
@@ -234,7 +234,7 @@ function stripNewlinesAndIndentation(value: string): string {
  * The `<..>` character sequency is a placeholder that will allow for arbitrary
  * content.
  */
-function anyPattern(pattern): RegExp {
+function anyPattern(pattern: string): RegExp {
   const regex = new RegExp(
     `^${sanitizeForRegularExpression(pattern).replace(/<\\.\\.>/g, '.*?')}$`,
   );

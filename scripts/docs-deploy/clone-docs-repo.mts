@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import {$} from 'zx';
-import {projectDir} from './utils';
+import {projectDir} from './utils.mjs';
 
 /** Git repository HTTP url pointing to the docs repository. */
 export const docsRepoUrl = 'https://github.com/angular/material.angular.io.git';

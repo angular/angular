@@ -11,7 +11,7 @@ const messages = utils.ruleMessages(ruleName, {
 
 /** Config options for the rule. */
 interface RuleOptions {
-  filePattern: string;
+  filePattern?: string;
 }
 
 /**
@@ -27,16 +27,16 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, options: RuleOptions)
       return;
     }
 
-    const filePattern = new RegExp(options.filePattern);
-    const fileName = basename(root.source.input.file);
+    const filePattern = options.filePattern ? new RegExp(options.filePattern) : null;
+    const fileName = basename(root.source!.input.file!);
 
-    if (!filePattern.test(fileName)) {
+    if (filePattern !== null && !filePattern.test(fileName)) {
       return;
     }
 
     root.walkRules(rule => {
       if (
-        rule.parent.type === 'rule' &&
+        rule.parent?.type === 'rule' &&
         isStandardSyntaxRule(rule) &&
         isStandardSyntaxSelector(rule.selector) &&
         hasInvalidAmpersandUsage(rule.selector)

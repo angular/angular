@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 
 import {
-  fetchActiveReleaseTrains,
+  ActiveReleaseTrains,
   getBranchesForMajorVersions,
   getVersionForVersionBranch,
   isVersionBranch,
 } from '@angular/dev-infra-private/ng-dev';
-import {firebaseConfig, sites} from './utils';
+import {firebaseConfig, sites} from './utils.mjs';
 
-import {buildAndDeployWithSnapshots} from './snapshot-deploy';
-import {getReleaseRepoWithApi} from './github-versioning';
-import {updateVersionsFile} from './update-versions-file';
+import {buildAndDeployWithSnapshots} from './snapshot-deploy.mjs';
+import {getReleaseRepoWithApi} from './github-versioning.mjs';
+import {updateVersionsFile} from './update-versions-file.mjs';
 
 async function main() {
   if (process.env.CIRCLE_PR_NUMBER !== undefined) {
@@ -23,8 +23,8 @@ async function main() {
     throw new Error('Deployment script is unable to determine CI branch.');
   }
 
-  const repo = getReleaseRepoWithApi();
-  const active = await fetchActiveReleaseTrains(repo);
+  const repo = await getReleaseRepoWithApi();
+  const active = await ActiveReleaseTrains.fetch(repo);
   const description = `${branchName} - ${process.env.CIRCLE_SHA1!}`;
   const {projectId, serviceKey} = firebaseConfig;
 
@@ -109,9 +109,9 @@ async function main() {
   ]);
 }
 
-if (require.main === module) {
-  main().catch(e => {
-    console.error(e);
-    process.exitCode = 1;
-  });
+try {
+  await main();
+} catch (e) {
+  console.error(e);
+  process.exitCode = 1;
 }

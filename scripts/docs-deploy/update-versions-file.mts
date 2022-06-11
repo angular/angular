@@ -8,7 +8,7 @@ import {
   getConfig,
 } from '@angular/dev-infra-private/ng-dev';
 
-import {sites} from './utils';
+import {sites} from './utils.mjs';
 
 interface VersionEntry {
   url: string;
@@ -35,7 +35,7 @@ const hardcodedOldMajorsWithoutLtsTag = [5, 6, 7, 8, 9, 10, 11];
  */
 export async function updateVersionsFile(docsRepoDir: string, active: ActiveReleaseTrains) {
   const versionFilePath = path.join(docsRepoDir, relativeVersionFilePath);
-  const {release} = getConfig([assertValidReleaseConfig]);
+  const {release} = await getConfig([assertValidReleaseConfig]);
   const ltsBranches = await fetchLongTermSupportBranchesFromNpm(release);
 
   const versions: VersionList = [

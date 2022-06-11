@@ -3,8 +3,8 @@ import {basename, join} from 'path';
 
 const ruleName = 'material/no-unused-import';
 const messages = utils.ruleMessages(ruleName, {
-  expected: (namespace: string) => `Namespace ${namespace} is not being used.`,
-  invalid: (rule: string) =>
+  expected: namespace => `Namespace ${namespace} is not being used.`,
+  invalid: rule =>
     `Failed to extract namespace from ${rule}. material/no-unused-` +
     `imports Stylelint rule likely needs to be updated.`,
 });

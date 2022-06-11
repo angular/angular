@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 
 import {$} from 'zx';
-import {SiteTarget} from './utils';
+import {SiteTarget} from './utils.mjs';
 
 interface Deployment {
   projectId: string;

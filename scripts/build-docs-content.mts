@@ -1,17 +1,15 @@
-#!/usr/bin/env node
-
 /**
  * Script that builds the docs content NPM package and moves it into a conveniently
  * accessible distribution directory (the project `dist/` directory).
  */
 
-import {cd, chmod, cp, exec, mkdir, rm, set} from 'shelljs';
-
+import sh from 'shelljs';
 import {BuiltPackage} from '@angular/dev-infra-private/ng-dev';
-import {join} from 'path';
+import {fileURLToPath} from 'url';
+import {join, dirname} from 'path';
 
 /** Path to the project directory. */
-const projectDir = join(__dirname, '../');
+const projectDir = join(dirname(fileURLToPath(import.meta.url)), '../');
 
 /** Path to the distribution directory. */
 const distDir = join(projectDir, 'dist/');
@@ -32,38 +30,33 @@ const bazelCmd = process.env.BAZEL || `yarn -s bazel`;
  */
 export function buildDocsContentPackage(): BuiltPackage {
   // ShellJS should exit if a command fails.
-  set('-e');
+  sh.set('-e');
 
   // Go to project directory.
-  cd(projectDir);
+  sh.cd(projectDir);
 
   /** Path to the bazel bin output directory. */
-  const bazelBinPath = exec(`${bazelCmd} info bazel-bin`).stdout.trim();
+  const bazelBinPath = sh.exec(`${bazelCmd} info bazel-bin`).stdout.trim();
 
   /** Path where the NPM package is built into by Bazel. */
   const bazelBinOutDir = join(bazelBinPath, 'src/components-examples/npm_package');
 
   // Clean the output directory to ensure that the docs-content package
   // will not contain outdated files from previous builds.
-  rm('-rf', outputDir);
-  mkdir('-p', distDir);
+  sh.rm('-rf', outputDir);
+  sh.mkdir('-p', distDir);
 
   // Build the docs-content package with the snapshot-build mode. That will help
   // determining which commit is associated with the built docs-content.
-  exec(`${bazelCmd} build src/components-examples:npm_package --config=snapshot-build`);
+  sh.exec(`${bazelCmd} build src/components-examples:npm_package --config=snapshot-build`);
 
   // Copy the package output into the dist path. Also update the permissions
   // as Bazel by default marks files in the bazel-out as readonly.
-  cp('-R', bazelBinOutDir, outputDir);
-  chmod('-R', 'u+w', outputDir);
+  sh.cp('-R', bazelBinOutDir, outputDir);
+  sh.chmod('-R', 'u+w', outputDir);
 
   return {
     name: '@angular/components-examples',
     outputPath: outputDir,
   };
-}
-
-if (require.main === module) {
-  const builtPackage = buildDocsContentPackage();
-  console.info(`Built docs-content into: ${builtPackage.outputPath}`);
 }

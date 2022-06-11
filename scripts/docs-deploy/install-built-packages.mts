@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as url from 'url';
 
 import {BuiltPackage} from '@angular/dev-infra-private/ng-dev';
-import {getPackageJsonOfProject} from './utils';
+import {getPackageJsonOfProject} from './utils.mjs';
 
 export async function installBuiltPackagesInRepo(repoPath: string, builtPackages: BuiltPackage[]) {
   const {parsed: packageJson, path: packageJsonPath} = await getPackageJsonOfProject(repoPath);

@@ -52,7 +52,6 @@ ts_library(
         "@npm//@bazel/runfiles",
         "@npm//@types/jasmine",
         "@npm//@types/node",
-        "@npm//@types/sass",
         "@npm//postcss",
         "@npm//sass",
     ],

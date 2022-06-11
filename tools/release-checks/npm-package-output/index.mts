@@ -1,12 +1,11 @@
-import {SemVer} from 'semver';
-import {checkReleasePackage} from './check-package';
-import {BuiltPackage, error, ReleasePrecheckError} from '@angular/dev-infra-private/ng-dev';
-import chalk from 'chalk';
+import semver from 'semver';
+import {checkReleasePackage} from './check-package.mjs';
+import {BuiltPackage, Log, ReleasePrecheckError} from '@angular/dev-infra-private/ng-dev';
 
 /** Asserts that the given built packages are valid for public consumption. */
 export async function assertValidNpmPackageOutput(
   builtPackages: BuiltPackage[],
-  currentVersion: SemVer,
+  currentVersion: semver.SemVer,
 ) {
   let passing = true;
 
@@ -15,7 +14,7 @@ export async function assertValidNpmPackageOutput(
   }
 
   if (!passing) {
-    error(chalk.red(`  ✘   NPM package output does not pass all release validations.`));
+    Log.error(`  ✘   NPM package output does not pass all release validations.`);
     throw new ReleasePrecheckError();
   }
 }

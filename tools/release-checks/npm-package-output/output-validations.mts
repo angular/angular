@@ -1,7 +1,7 @@
 import {existsSync, readFileSync} from 'fs';
-import {sync as glob} from 'glob';
+import glob from 'glob';
 import {basename, dirname, isAbsolute, join} from 'path';
-import * as semver from 'semver';
+import semver from 'semver';
 
 import ts from 'typescript';
 
@@ -147,7 +147,7 @@ export function checkMaterialPackage(packagePath: string): string[] {
   const newThemingFilePath = join(packagePath, '_index.scss');
   const failures: string[] = [];
 
-  if (glob('*.css', {cwd: prebuiltThemesPath}).length === 0) {
+  if (glob.sync('*.css', {cwd: prebuiltThemesPath}).length === 0) {
     failures.push('No prebuilt themes could be found.');
   }
 
@@ -166,7 +166,7 @@ export function checkMaterialPackage(packagePath: string): string[] {
  * Checks whether the prebuilt CDK files are part of the release output.
  */
 export function checkCdkPackage(packagePath: string): string[] {
-  const prebuiltFiles = glob('*-prebuilt.css', {cwd: packagePath}).map(path => basename(path));
+  const prebuiltFiles = glob.sync('*-prebuilt.css', {cwd: packagePath}).map(path => basename(path));
   const newApiFilePath = join(packagePath, '_index.scss');
   const failures = ['overlay', 'a11y', 'text-field']
     .filter(name => !prebuiltFiles.includes(`${name}-prebuilt.css`))

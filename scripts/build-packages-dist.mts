@@ -1,24 +1,23 @@
-#!/usr/bin/env node
-
 /**
  * Script that builds the release output of all packages which have the "release-package
- * bazel tag set. The script builds all those packages and copies the release output to the
+ * Bazel tag set. The script builds all those packages and copies the release output to the
  * distribution folder within the project.
  */
 
 import {execSync} from 'child_process';
-import {join} from 'path';
+import {join, dirname} from 'path';
 import {BuiltPackage} from '@angular/dev-infra-private/ng-dev';
-import {chmod, cp, mkdir, rm, set, test} from 'shelljs';
+import {fileURLToPath} from 'url';
+import sh from 'shelljs';
 
 // ShellJS should exit if a command fails.
-set('-e');
+sh.set('-e');
 
 /** Name of the Bazel tag that will be used to find release package targets. */
 const releaseTargetTag = 'release-package';
 
 /** Path to the project directory. */
-const projectDir = join(__dirname, '../');
+const projectDir = join(dirname(fileURLToPath(import.meta.url)), '../');
 
 /** Command that runs Bazel. */
 const bazelCmd = process.env.BAZEL || `yarn -s bazel`;
@@ -30,18 +29,6 @@ const queryPackagesCmd =
 
 /** Path for the default distribution output directory. */
 const defaultDistPath = join(projectDir, 'dist/releases');
-
-// Export the methods for building the release packages. These
-// can be consumed by the release tool.
-exports.performNpmReleaseBuild = performNpmReleaseBuild;
-exports.performDefaultSnapshotBuild = performDefaultSnapshotBuild;
-
-if (module === require.main) {
-  // We always build as a snapshot bu8ild, unless the script is invoked directly by the
-  // release publish script. The snapshot release configuration ensures that the current
-  // Git `HEAD` sha is included for the version placeholders.
-  performDefaultSnapshotBuild();
-}
 
 /** Builds the release packages for NPM. */
 export function performNpmReleaseBuild(): BuiltPackage[] {
@@ -82,9 +69,9 @@ function buildReleasePackages(distPath: string, isSnapshotBuild: boolean): Built
   // do this to ensure that the version placeholders are properly populated.
   packageNames.forEach(pkgName => {
     const outputPath = getBazelOutputPath(pkgName);
-    if (test('-d', outputPath)) {
-      chmod('-R', 'u+w', outputPath);
-      rm('-rf', outputPath);
+    if (sh.test('-d', outputPath)) {
+      sh.chmod('-R', 'u+w', outputPath);
+      sh.rm('-rf', outputPath);
     }
   });
 
@@ -92,16 +79,16 @@ function buildReleasePackages(distPath: string, isSnapshotBuild: boolean): Built
 
   // Delete the distribution directory so that the output is guaranteed to be clean. Re-create
   // the empty directory so that we can copy the release packages into it later.
-  rm('-rf', distPath);
-  mkdir('-p', distPath);
+  sh.rm('-rf', distPath);
+  sh.mkdir('-p', distPath);
 
   // Copy the package output into the specified distribution folder.
   packageNames.forEach(pkgName => {
     const outputPath = getBazelOutputPath(pkgName);
     const targetFolder = getDistPath(pkgName);
     console.log(`> Copying package output to "${targetFolder}"`);
-    cp('-R', outputPath, targetFolder);
-    chmod('-R', 'u+w', targetFolder);
+    sh.cp('-R', outputPath, targetFolder);
+    sh.chmod('-R', 'u+w', targetFolder);
   });
 
   return packageNames.map(pkg => {

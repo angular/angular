@@ -116,7 +116,9 @@ function analyzeExamples(sourceFiles: string[], baseDir: string): AnalyzedExampl
         title: primaryComponent.title.trim(),
         additionalComponents: [],
         files: [],
-        module: null,
+        // The `module` field will be set in a separate step below. We need to set
+        // it here as we are setting it later in a side-effect iteration.
+        module: null!,
       };
 
       // For consistency, we expect the example component selector to match

@@ -24,7 +24,7 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options?) => {
 
     const options = _options as RuleOptions;
     const filePattern = new RegExp(options.filePattern);
-    const fileName = basename(root.source.input.file);
+    const fileName = basename(root.source!.input.file!);
 
     if (!filePattern.test(fileName)) {
       return;

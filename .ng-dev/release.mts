@@ -1,8 +1,8 @@
-import {SemVer} from 'semver';
+import semver from 'semver';
 import {ReleaseConfig} from '@angular/dev-infra-private/ng-dev';
-import {assertValidFrameworkPeerDependency} from '../tools/release-checks/check-framework-peer-dependency';
-import {assertValidUpdateMigrationCollections} from '../tools/release-checks/check-migration-collections';
-import {assertValidNpmPackageOutput} from '../tools/release-checks/npm-package-output';
+import {assertValidFrameworkPeerDependency} from '../tools/release-checks/check-framework-peer-dependency.mjs';
+import {assertValidUpdateMigrationCollections} from '../tools/release-checks/check-migration-collections.mjs';
+import {assertValidNpmPackageOutput} from '../tools/release-checks/npm-package-output/index.mjs';
 
 /**
  * Packages that will be published as part of the project.
@@ -46,11 +46,11 @@ export const release: ReleaseConfig = {
   buildPackages: async () => {
     // The `performNpmReleaseBuild` function is loaded at runtime as loading of the
     // script results in an invocation of Bazel for any `yarn ng-dev` command.
-    const {performNpmReleaseBuild} = await import('../scripts/build-packages-dist');
+    const {performNpmReleaseBuild} = await import('../scripts/build-packages-dist.mjs');
     return performNpmReleaseBuild();
   },
   prereleaseCheck: async (newVersionStr, builtPackagesWithInfo) => {
-    const newVersion = new SemVer(newVersionStr);
+    const newVersion = new semver.SemVer(newVersionStr);
 
     await assertValidFrameworkPeerDependency(newVersion);
     await assertValidUpdateMigrationCollections(newVersion);

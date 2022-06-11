@@ -3,10 +3,10 @@ import {dirname, relative, join} from 'path';
 
 const ruleName = 'material/cross-package-import-validation';
 const messages = utils.ruleMessages(ruleName, {
-  forbidden: (targetPackage: string, importPath: string) =>
+  forbidden: (targetPackage, importPath) =>
     `Relative reference to separate NPM package "${targetPackage}" is not allowed. ` +
     `Use a module specifier instead of "${importPath}".`,
-  noDeepCrossPackageModuleImport: (importSpecifier: string) =>
+  noDeepCrossPackageModuleImport: importSpecifier =>
     `Deep cross-package module imports are not allowed ("${importSpecifier}").`,
 });
 
@@ -21,7 +21,7 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean) => {
       return;
     }
 
-    const filePath = root.source.input.file;
+    const filePath = root.source!.input.file!;
 
     // We skip non-theme files and legacy theming Sass files (like `.import.scss`).
     if (
@@ -34,7 +34,7 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean) => {
 
     root.walkAtRules(rule => {
       if (rule.name === 'use' || rule.name === 'import' || rule.name === 'forward') {
-        const [_, specifier] = rule.params.match(specifierRegex);
+        const [_, specifier] = rule.params.match(specifierRegex)!;
 
         // Ensure no deep imports for cross-package `@angular/` imports.
         if (/@angular\/[^/]+\//.test(specifier)) {
@@ -52,13 +52,13 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean) => {
           return;
         }
 
-        const currentPath = convertToProjectRelativePosixPath(root.source.input.file);
+        const currentPath = convertToProjectRelativePosixPath(root.source!.input.file!);
         const targetPath = convertToProjectRelativePosixPath(
-          join(dirname(root.source.input.file), specifier),
+          join(dirname(root.source!.input.file!), specifier),
         );
 
-        const owningFilePackage = currentPath.match(packageNameRegex)[1];
-        const targetFilePackage = targetPath.match(packageNameRegex)[1];
+        const owningFilePackage = currentPath.match(packageNameRegex)![1];
+        const targetFilePackage = targetPath.match(packageNameRegex)![1];
 
         if (owningFilePackage !== targetFilePackage) {
           utils.report({

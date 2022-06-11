@@ -1,11 +1,11 @@
-import {DeploymentInfo, deployToSite, isProductionDeployment} from './deploy-to-site';
+import {DeploymentInfo, deployToSite, isProductionDeployment} from './deploy-to-site.mjs';
 
-import {buildDocsContentPackage} from '../build-docs-content';
-import {cloneDocsRepositoryForMajor} from './clone-docs-repo';
-import {installBuiltPackagesInRepo} from './install-built-packages';
-import {installDepsAndBuildDocsSite} from './utils';
-import {performDefaultSnapshotBuild} from '../build-packages-dist';
-import {runMonitoringTests} from './monitoring/index';
+import {buildDocsContentPackage} from '../build-docs-content.mjs';
+import {cloneDocsRepositoryForMajor} from './clone-docs-repo.mjs';
+import {installBuiltPackagesInRepo} from './install-built-packages.mjs';
+import {installDepsAndBuildDocsSite} from './utils.mjs';
+import {performDefaultSnapshotBuild} from '../build-packages-dist.mjs';
+import {runMonitoringTests} from './monitoring/index.mjs';
 
 export type DeploymentConfig = {
   /**

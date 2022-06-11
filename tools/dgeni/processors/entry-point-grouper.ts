@@ -24,22 +24,22 @@ export class EntryPointDoc {
   docType = 'entry-point';
 
   /** Name of the component group. */
-  name: string;
+  name: string = '';
 
   /** Display name of the entry-point. */
-  displayName: string;
+  displayName: string = '';
 
   /** Module import path for the entry-point. */
-  moduleImportPath: string;
+  moduleImportPath: string = '';
 
   /** Name of the package, either material or cdk */
-  packageName: string;
+  packageName: string = '';
 
   /** Display name of the package. */
-  packageDisplayName: string;
+  packageDisplayName: string = '';
 
   /** Unique id for the entry-point. */
-  id: string;
+  id: string = '';
 
   /** Known aliases for the entry-point. This is only needed for the `computeIdsProcessor`. */
   aliases: string[] = [];

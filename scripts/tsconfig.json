@@ -3,7 +3,7 @@
     "outDir": "../dist/dev-infra-scripts",
     "target": "es2020",
     "lib": ["es2020"],
-    "moduleResolution": "node",
+    "module": "Node16",
     "types": ["node"],
     "strict": true,
     "noEmit": true,

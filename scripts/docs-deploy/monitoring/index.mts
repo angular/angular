@@ -1,11 +1,11 @@
 import {$, cd} from 'zx';
 
-import {ProductionDeployment} from '../deploy-to-site';
-import {cloneDocsRepositoryForMajor} from '../clone-docs-repo';
-import {fetchActiveReleaseTrains} from '@angular/dev-infra-private/ng-dev';
-import {getReleaseRepoWithApi} from '../github-versioning';
-import {installDepsForDocsSite} from '../docs-deps-install';
-import {sites} from '../utils';
+import {ProductionDeployment} from '../deploy-to-site.mjs';
+import {cloneDocsRepositoryForMajor} from '../clone-docs-repo.mjs';
+import {ActiveReleaseTrains} from '@angular/dev-infra-private/ng-dev';
+import {getReleaseRepoWithApi} from '../github-versioning.mjs';
+import {installDepsForDocsSite} from '../docs-deps-install.mjs';
+import {sites} from '../utils.mjs';
 
 /**
  * Runs monitoring tests for the given docs repository, ensuring that the
@@ -19,8 +19,8 @@ export async function runMonitorTests(docsRepoDir: string, remoteUrl: string) {
 
 /** Runs the monitoring tests for the stable release train. */
 export async function runMonitorTestsForStable() {
-  const repo = getReleaseRepoWithApi();
-  const active = await fetchActiveReleaseTrains(repo);
+  const repo = await getReleaseRepoWithApi();
+  const active = await ActiveReleaseTrains.fetch(repo);
   const stableMajor = active.latest.version.major;
   const docsRepoDir = await cloneDocsRepositoryForMajor(stableMajor);
 
