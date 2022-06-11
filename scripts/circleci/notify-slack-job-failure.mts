@@ -5,6 +5,7 @@
  * will be a noop when running for forked builds (i.e. PRs).
  */
 
+import sh from 'shelljs';
 import {
   isVersionBranch,
   getConfig,
@@ -30,13 +31,11 @@ if (isPublishBranch === false) {
   process.exit(0);
 }
 
-const {echo, set} = require('shelljs');
-
 const text = `\`${jobName}\` failed in branch: ${branchName}: ${jobUrl}`;
 const payload: {text: string; channel?: string} = {text};
 const [channelName] = process.argv.slice(2);
 
-set('-e');
+sh.set('-e');
 
 // If an explicit channel has been specified, override the default
 // webhook channel to the specified one.
@@ -44,7 +43,7 @@ if (channelName !== undefined) {
   payload.channel = channelName;
 }
 
-echo(JSON.stringify(payload, null, 2)).exec(
+sh.echo(JSON.stringify(payload, null, 2)).exec(
   `curl -d@- -H "Content-Type: application/json" ${webhookUrl}`,
 );
 console.info('Notified Slack about job failure.');
