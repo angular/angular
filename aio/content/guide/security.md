@@ -3,7 +3,7 @@
 This topic describes Angular's built-in protections against common web-application vulnerabilities and attacks such as cross-site scripting attacks.
 It doesn't cover application-level security, such as authentication and authorization.
 
-For more information about the attacks and mitigations described below, see [OWASP Guide Project](https://www.owasp.org/index.php/Category:OWASP_Guide_Project).
+For more information about the attacks and mitigations described below, see [OWASP Guide Project](https://owasp.org/www-project-web-security-testing-guide/).
 
 You can run the <live-example></live-example> in Stackblitz and download the code from there.
 
