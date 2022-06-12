@@ -132,10 +132,14 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   /**
    * Function that can be used to customize the logic of how the position of the drag item
    * is limited while it's being dragged. Gets called with a point containing the current position
-   * of the user's pointer on the page and should return a point describing where the item should
-   * be rendered.
+   * of the user's pointer on the page, a reference to the item being dragged and its dimenstions.
+   * Should return a point describing where the item should be rendered.
    */
-  @Input('cdkDragConstrainPosition') constrainPosition?: (point: Point, dragRef: DragRef) => Point;
+  @Input('cdkDragConstrainPosition') constrainPosition?: (
+    userPointerPosition: Point,
+    dragRef: DragRef,
+    dimensions: ClientRect,
+  ) => Point;
 
   /** Class to be added to the preview element. */
   @Input('cdkDragPreviewClass') previewClass: string | string[];

@@ -1081,8 +1081,12 @@ describe('CdkDrag', () => {
       expect(spy).toHaveBeenCalledWith(
         jasmine.objectContaining({x: 300, y: 300}),
         jasmine.any(DragRef),
+        jasmine.anything(),
       );
-      expect(dragElement.style.transform).toBe('translate3d(50px, 50px, 0px)');
+
+      const elementRect = dragElement.getBoundingClientRect();
+      expect(Math.floor(elementRect.top)).toBe(50);
+      expect(Math.floor(elementRect.left)).toBe(50);
     }));
 
     it('should throw if drag item is attached to an ng-container', fakeAsync(() => {
@@ -3680,6 +3684,7 @@ describe('CdkDrag', () => {
       expect(spy).toHaveBeenCalledWith(
         jasmine.objectContaining({x: 200, y: 200}),
         jasmine.any(DragRef),
+        jasmine.anything(),
       );
       expect(Math.floor(previewRect.top)).toBe(50);
       expect(Math.floor(previewRect.left)).toBe(50);
