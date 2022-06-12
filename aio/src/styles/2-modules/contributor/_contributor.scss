@@ -2,181 +2,125 @@
 
 aio-contributor-list {
   .contributor-group {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+    --columns: 2;
+    display: grid;
+    grid-template-columns: repeat(var(--columns), 1fr);
+    justify-items: stretch;
 
-  @media handheld and (max-width: 480px), screen and (max-width: 900px) {
-    .grid-fluid {
-      margin-left: 20px;
-      margin-right: 20px;
-      float: none;
-      display: block;
-      width: auto;
+    @media (max-width: 75rem) {
+      --columns: 1;
     }
   }
 }
 
 aio-contributor {
-  margin: 8px;
-  border-radius: 4px;
-  box-shadow: 0 2px 2px rgba(10, 16, 20, 0.24), 0 0 2px rgba(10, 16, 20, 0.12);
+  display: grid;
 
-  @media not all and (prefers-reduced-motion) {
-    transition: all .3s;
-  }
+  .contributor-card {
+    margin: 3.5rem;
+    display: grid;
+    grid-template-columns: 10rem 1fr;
+    grid-template-rows: min-content 1fr min-content;
+    padding: 3rem 3rem 0 3rem;
+    border-radius: 5px;
 
-  @media (hover) {
-    &:focus-within,
-    &:hover {
-      transform: translate3d(0,-3px,0);
-      box-shadow: 0 8px 8px rgba(10, 16, 20, 0.24), 0 0 8px rgba(10, 16, 20, 0.12);
-
-      .contributor-image {
-        transform: scale(1.05);
-      }
-
-      .contributor-info {
-        opacity: 1;
-      }
+    &.no-image {
+      grid-template-columns: 0 1fr;
     }
-  }
 
-  .contributor-info {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-content: center;
-    /* There is no point in hiding this if we can't hover to show it. */
-    @media (hover) { opacity: 0; }
-    border-radius: 50%;
+    $angular-shape-polygon: polygon(50% 0, 99% 18%, 89% 78%, 50% 100%, 11% 78%, 3% 17%);
 
-    .info-item {
+    .contributor-image-wrapper {
+      grid-column: 1 / 2;
+      grid-row: 1 / 5;
+      width: 14rem;
+      height: 14rem;
+      position: relative;
+      top: -5rem;
+      left: -5rem;
+      clip-path: $angular-shape-polygon;
+    }
+
+    .contributor-image {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: calc(100% - 4px);
+      height: calc(100% - 4px);
+      clip-path: $angular-shape-polygon;
+    }
+
+    .contributor-social-links {
       display: flex;
-      @include mixins.font-size(14);
-      font-size: clamp(10px, 1.4rem, 30px);
-      font-weight: 500;
-      margin: 0.8rem;
-      padding: 0.5rem;
-      width: 100%;
-      justify-content: center;
+      grid-column: 1;
+      grid-row: 2;
+      align-self: end;
 
-      &:hover {
-        text-decoration: none;
-      }
-
-      &.icon {
-        $size: 23px;
-        min-width: $size;
-        width: $size;
+      a {
+        display: inline-block;
+        margin-right: 1.5rem;
+        margin-bottom: 1rem;
+        display: flex;
+        overflow: hidden;
 
         mat-icon {
-          height: $size;
-          width: $size;
-          font-size: $size;
+          $icon-size: 3rem;
+          font-size: $icon-size;
+          height: $icon-size;
+          width: $icon-size;
 
-          &[svgicon] {
-            svg {
-              height: 100%;
-              width: 100%;
-            }
+          svg {
+            height: $icon-size;
+            width: $icon-size;
           }
 
           &.link-icon {
-            transform: rotateZ(45deg);
+            transform: rotate(45deg);
           }
         }
       }
+      margin-bottom: 0.5rem;
     }
 
-    button {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-    }
-  }
-
-  .contributor-card {
-    width: 25rem;
-    height: 27rem;
-    max-width: 310px;
-    max-height: 340px;
-    transform-style:preserve-3d;
-
-    @media not all and (prefers-reduced-motion) {
-      transition:transform ease 500ms;
+    .contributor-title {
+      margin-top: 0;
+      grid-column: 2;
     }
 
-    h3 {
-      margin: 0.8rem 0;
-      text-align: center;
+    .contributor-bio {
+      grid-column: 2;
+      margin-bottom: 2rem;
     }
 
-    .card-front, .card-back {
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      box-sizing: border-box;
-      justify-content: center;
-      align-items: center;
-      border: none;
-      background: transparent;
-      padding: 0 1.5rem;
-    }
+    @media (max-width: 45rem) {
+      grid-template-columns: 1fr;
+      &.no-image {
+        grid-template-columns: 1fr;
+      }
+      grid-template-rows: min-content 1fr;
 
-    .card-back {
-      padding: 16px 24px;
-      transform:rotateY(180deg);
-
-      section {
-        display: none;
+      .contributor-image-wrapper {
+        grid-column: 1;
+        grid-row: 1;
+        left: 0;
+        justify-self: center;
+        margin-bottom: -3rem;
       }
 
-      p {
-        margin: 0.8rem 0;
-        @include mixins.font-size(12);
-        @include mixins.line-height(14);
-        text-align: left;
+      .contributor-title {
+        text-align: center;
+      }
+
+      .contributor-social-links {
+        grid-row: 4;
+        justify-content: space-evenly;
+      }
+
+      .contributor-social-links,
+      .contributor-title,
+      .contributor-bio {
+        grid-column: 1;
       }
     }
-
-    &.flipped {
-      transform:rotateY(180deg);
-
-      .card-front {
-        display: none;
-      }
-    }
-  }
-
-  .contributor-image {
-    border-radius: 50%;
-    $size: 16.8rem;
-    height: $size;
-    width: $size;
-    $min-size: 105px;
-    min-height: $min-size;
-    min-width: $min-size;
-    $max-size: 230px;
-    max-height: $max-size;
-    max-width: $max-size;
-    background-size: cover;
-    background-position: center;
-    margin: 0.8rem auto;
-  }
-
-  p {
-    cursor: pointer;
-    @include mixins.font-size(14);
-    @include mixins.line-height(18);
-    margin: 8px 16px;
-    text-overflow: ellipsis;
-    overflow-y: auto;
-    font-weight: 400;
   }
 }
