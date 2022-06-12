@@ -4,7 +4,7 @@
       "runtime": 4325,
       "main": 456483,
       "polyfills": 33814,
-      "styles": 72829,
+      "styles": 72047,
       "light-theme": 78276,
       "dark-theme": 78381
     }
@@ -14,7 +14,7 @@
       "runtime": 4325,
       "main": 456957,
       "polyfills": 33922,
-      "styles": 72829,
+      "styles": 72047,
       "light-theme": 78276,
       "dark-theme": 78381
     }
