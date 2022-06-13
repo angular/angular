@@ -123,8 +123,7 @@ export class TestMainComponent implements OnDestroy {
   }
 
   private _assignRelativeCoordinates(event: MouseEvent, obj: {x: number; y: number}) {
-    const {top, left} = this.clickTestElement.nativeElement.getBoundingClientRect();
-    obj.x = Math.round(event.clientX - left);
-    obj.y = Math.round(event.clientY - top);
+    obj.x = Math.round(event.offsetX);
+    obj.y = Math.round(event.offsetY);
   }
 }
