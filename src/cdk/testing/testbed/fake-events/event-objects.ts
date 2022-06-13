@@ -19,6 +19,8 @@ export function createMouseEvent(
   type: string,
   clientX = 0,
   clientY = 0,
+  offsetX = 1,
+  offsetY = 1,
   button = 0,
   modifiers: ModifierKeys = {},
 ) {
@@ -50,8 +52,13 @@ export function createMouseEvent(
 
   // The `MouseEvent` constructor doesn't allow us to pass these properties into the constructor.
   // Override them to `1`, because they're used for fake screen reader event detection.
-  defineReadonlyEventProperty(event, 'offsetX', 1);
-  defineReadonlyEventProperty(event, 'offsetY', 1);
+  if (offsetX != null) {
+    defineReadonlyEventProperty(event, 'offsetX', offsetX);
+  }
+
+  if (offsetY != null) {
+    defineReadonlyEventProperty(event, 'offsetY', offsetY);
+  }
 
   return event;
 }
@@ -70,9 +77,11 @@ export function createPointerEvent(
   type: string,
   clientX = 0,
   clientY = 0,
+  offsetX?: number,
+  offsetY?: number,
   options: PointerEventInit = {isPrimary: true},
 ) {
-  return new PointerEvent(type, {
+  const event = new PointerEvent(type, {
     bubbles: true,
     cancelable: true,
     composed: true, // Required for shadow DOM events.
@@ -81,6 +90,16 @@ export function createPointerEvent(
     clientY,
     ...options,
   });
+
+  if (offsetX != null) {
+    defineReadonlyEventProperty(event, 'offsetX', offsetX);
+  }
+
+  if (offsetY != null) {
+    defineReadonlyEventProperty(event, 'offsetY', offsetY);
+  }
+
+  return event;
 }
 
 /**

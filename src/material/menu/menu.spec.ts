@@ -432,7 +432,7 @@ describe('MatMenu', () => {
     focusMonitor.monitor(triggerEl, false);
 
     // Trigger a fake right click.
-    dispatchEvent(triggerEl, createMouseEvent('mousedown', 50, 100, 2));
+    dispatchEvent(triggerEl, createMouseEvent('mousedown', 50, 100, undefined, undefined, 2));
 
     // A click without a left button mousedown before it is considered a keyboard open.
     triggerEl.click();

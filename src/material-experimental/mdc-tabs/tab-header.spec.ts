@@ -493,7 +493,10 @@ describe('MDC-based MatTabHeader', () => {
       it('should not scroll when pressing the right mouse button', fakeAsync(() => {
         expect(header.scrollDistance).withContext('Expected to start off not scrolled.').toBe(0);
 
-        dispatchEvent(nextButton, createMouseEvent('mousedown', undefined, undefined, 2));
+        dispatchEvent(
+          nextButton,
+          createMouseEvent('mousedown', undefined, undefined, undefined, undefined, 2),
+        );
         fixture.detectChanges();
         tick(3000);
 

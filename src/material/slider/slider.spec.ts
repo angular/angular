@@ -1778,7 +1778,7 @@ function dispatchMousedownEventSequence(
   const y = dimensions.top + dimensions.height * percentage;
 
   dispatchMouseenterEvent(sliderElement);
-  dispatchEvent(sliderElement, createMouseEvent('mousedown', x, y, button));
+  dispatchEvent(sliderElement, createMouseEvent('mousedown', x, y, undefined, undefined, button));
 }
 
 /**

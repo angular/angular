@@ -56,10 +56,15 @@ export function dispatchMouseEvent(
   type: string,
   clientX = 0,
   clientY = 0,
+  offsetX?: number,
+  offsetY?: number,
   button?: number,
   modifiers?: ModifierKeys,
 ): MouseEvent {
-  return dispatchEvent(node, createMouseEvent(type, clientX, clientY, button, modifiers));
+  return dispatchEvent(
+    node,
+    createMouseEvent(type, clientX, clientY, offsetX, offsetY, button, modifiers),
+  );
 }
 
 /**
@@ -71,9 +76,14 @@ export function dispatchPointerEvent(
   type: string,
   clientX = 0,
   clientY = 0,
+  offsetX?: number,
+  offsetY?: number,
   options?: PointerEventInit,
 ): PointerEvent {
-  return dispatchEvent(node, createPointerEvent(type, clientX, clientY, options)) as PointerEvent;
+  return dispatchEvent(
+    node,
+    createPointerEvent(type, clientX, clientY, offsetX, offsetY, options),
+  ) as PointerEvent;
 }
 
 /**
