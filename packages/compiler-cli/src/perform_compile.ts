@@ -221,6 +221,7 @@ export function performCompilation({
   gatherDiagnostics = defaultGatherDiagnostics,
   customTransformers,
   emitFlags = api.EmitFlags.Default,
+  forceEmit = false,
   modifiedResourceFiles = null
 }: {
   rootNames: string[],
@@ -232,6 +233,7 @@ export function performCompilation({
   gatherDiagnostics?: (program: api.Program) => ReadonlyArray<ts.Diagnostic>,
   customTransformers?: api.CustomTransformers,
   emitFlags?: api.EmitFlags,
+  forceEmit?: boolean,
   modifiedResourceFiles?: Set<string>| null,
 }): PerformCompilationResult {
   let program: api.Program|undefined;
@@ -256,8 +258,8 @@ export function performCompilation({
     }
 
     if (!hasErrors(allDiagnostics)) {
-      emitResult =
-          program!.emit({emitCallback, mergeEmitResultsCallback, customTransformers, emitFlags});
+      emitResult = program!.emit(
+          {emitCallback, mergeEmitResultsCallback, customTransformers, emitFlags, forceEmit});
       allDiagnostics.push(...emitResult.diagnostics);
       return {diagnostics: allDiagnostics, program, emitResult};
     }

@@ -250,14 +250,21 @@ export interface Program {
    *
    * Angular structural information is required to emit files.
    */
-  emit({emitFlags, cancellationToken, customTransformers, emitCallback, mergeEmitResultsCallback}?:
-           {
-             emitFlags?: EmitFlags,
-             cancellationToken?: ts.CancellationToken,
-             customTransformers?: CustomTransformers,
-             emitCallback?: TsEmitCallback,
-             mergeEmitResultsCallback?: TsMergeEmitResultsCallback
-           }): ts.EmitResult;
+  emit({
+    emitFlags,
+    forceEmit,
+    cancellationToken,
+    customTransformers,
+    emitCallback,
+    mergeEmitResultsCallback,
+  }?: {
+    emitFlags?: EmitFlags,
+    forceEmit?: boolean,
+    cancellationToken?: ts.CancellationToken,
+    customTransformers?: CustomTransformers,
+    emitCallback?: TsEmitCallback,
+    mergeEmitResultsCallback?: TsMergeEmitResultsCallback
+  }): ts.EmitResult;
 
   /**
    * @internal
