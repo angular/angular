@@ -755,6 +755,22 @@ describe('Image directive', () => {
          expect(imgs[1].src.trim()).toBe(`${IMG_BASE_URL}/img-2.png`);
        });
 
+    it('should pass absolute URLs defined in the `rawSrc` to custom image loaders provided via the `IMAGE_LOADER` token',
+       () => {
+         const imageLoader = (config: ImageLoaderConfig) => `${config.src}?rewritten=true`;
+         setupTestingModule({imageLoader});
+
+         const template = `
+            <img rawSrc="${IMG_BASE_URL}/img.png" width="150" height="50">
+          `;
+         const fixture = createTestComponent(template);
+         fixture.detectChanges();
+
+         const nativeElement = fixture.nativeElement as HTMLElement;
+         const imgs = nativeElement.querySelectorAll('img')!;
+         expect(imgs[0].src.trim()).toBe(`${IMG_BASE_URL}/img.png?rewritten=true`);
+       });
+
     it('should set `src` to an image URL that does not include a default width parameter', () => {
       const imageLoader = (config: ImageLoaderConfig) => {
         const widthStr = config.width ? `?w=${config.width}` : ``;

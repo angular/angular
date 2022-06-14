@@ -9,6 +9,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_INPUT = 2952,
     // (undocumented)
+    INVALID_LOADER_ARGUMENTS = 2959,
+    // (undocumented)
     INVALID_PIPE_ARGUMENT = 2100,
     // (undocumented)
     INVALID_PRECONNECT_CHECK_BLOCKLIST = 2957,
