@@ -10,7 +10,7 @@ import {InjectionToken, Provider, ɵRuntimeError as RuntimeError} from '@angular
 
 import {RuntimeErrorCode} from '../../../errors';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../preconnect_link_checker';
-import {isValidPath, normalizePath} from '../util';
+import {isAbsoluteURL, isValidPath, normalizePath} from '../util';
 
 /**
  * Config options recognized by the image loader function.
@@ -50,7 +50,14 @@ export function createImageLoader(urlFn: (path: string) => ImageLoader, exampleU
     }
     path = normalizePath(path);
 
-    const providers: Provider[] = [{provide: IMAGE_LOADER, useValue: urlFn(path)}];
+    const loaderFn = (config: ImageLoaderConfig) => {
+      if (ngDevMode && isAbsoluteURL(config.src)) {
+        throwUnexpectedAbsoluteUrlError(path, config.src);
+      }
+      const loader = urlFn(path);
+      return loader(config);
+    };
+    const providers: Provider[] = [{provide: IMAGE_LOADER, useValue: loaderFn}];
 
     if (ngDevMode && options.ensurePreconnect === false) {
       providers.push({provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [path], multi: true});
@@ -63,8 +70,18 @@ export function createImageLoader(urlFn: (path: string) => ImageLoader, exampleU
 function throwInvalidPathError(path: unknown, exampleUrls: string[]): never {
   const exampleUrlsMsg = exampleUrls.join(' or ');
   throw new RuntimeError(
-      RuntimeErrorCode.INVALID_INPUT,
+      RuntimeErrorCode.INVALID_LOADER_ARGUMENTS,
       `Image loader has detected an invalid path. ` +
           `Expecting a path matching one of the following formats: ${exampleUrlsMsg}` +
           ` - but got: \`${path}\``);
+}
+
+function throwUnexpectedAbsoluteUrlError(path: string, url: string): never {
+  throw new RuntimeError(
+      RuntimeErrorCode.INVALID_LOADER_ARGUMENTS,
+      `Image loader has detected an absolute URL used for one of the \`rawSrc\` ` +
+          `attributes on an \`<img>\` tag: ${url}. The absolute URLs are not ` +
+          `supported by this image loader. Please update the \`rawSrc\` attribute ` +
+          `of that \`<img>\` tag to use a path relative to the base URL configured ` +
+          `for this loader (\`${path}\`).`);
 }
