@@ -77,8 +77,8 @@
 .mat-mdc-extended-fab {
   @include mdc-fab.extended_($query: mdc-helpers.$mat-base-styles-query);
 
-  // stylelint-disable-next-line selector-class-pattern
-  .mat-icon, .material-icons {
+  & > .mat-icon,
+  & > .material-icons {  // stylelint-disable-line selector-class-pattern
     @include mdc-fab.extended-icon-padding(
       mdc-fab.$extended-icon-padding,
       mdc-fab.$extended-label-padding

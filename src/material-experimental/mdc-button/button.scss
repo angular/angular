@@ -69,7 +69,7 @@
 // However, Angular Material expects a `mat-icon` instead. The following
 // mixins will style the icons appropriately.
 .mat-mdc-button {
-  .mat-icon {
+  & > .mat-icon {
     @include mdc-button-base.icon();
   }
   .mdc-button__label + .mat-icon {
@@ -81,7 +81,7 @@
 .mat-mdc-raised-button,
 .mat-mdc-outlined-button {
   // Icons inside contained buttons have different styles due to increased button padding
-  .mat-icon {
+  & > .mat-icon {
     @include mdc-button-base.icon();
     @include mdc-button-base.icon-contained();
   }
