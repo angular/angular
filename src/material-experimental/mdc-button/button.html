@@ -4,12 +4,12 @@
     [class.mdc-fab__ripple]="_isFab"
     [class.mdc-icon-button__ripple]="_isIconButton"></span>
 
-<ng-content select=".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd])">
+<ng-content select=".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd]), [matButtonIcon]:not([iconPositionEnd])">
 </ng-content>
 
 <span class="mdc-button__label"><ng-content></ng-content></span>
 
-<ng-content select=".material-icons[iconPositionEnd], mat-icon[iconPositionEnd]">
+<ng-content select=".material-icons[iconPositionEnd], mat-icon[iconPositionEnd], [matButtonIcon][iconPositionEnd]">
 </ng-content>
 
 <!--
