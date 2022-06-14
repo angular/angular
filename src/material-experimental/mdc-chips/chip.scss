@@ -45,7 +45,7 @@
       // by default, it'll blend in with the background in black-on-white mode. Override the
       // color to ensure that it's visible. We need !important, because the theme styles are
       // very specific.
-      stroke: #000 !important;
+      stroke: CanvasText !important;
     }
   }
 
