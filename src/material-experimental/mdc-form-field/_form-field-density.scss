@@ -84,16 +84,12 @@
 
   // For the outline appearance, we re-create the active floating label transform. This is
   // necessary because the transform for docked floating labels can be updated to account for
-  // the width of prefix container. We need to re-create these styles with `!important` because
-  // the horizontal adjustment for the label is applied through inline styles, and we want to
-  // make sure that the label can still float as expected. It should be okay using `!important`
-  // because it's unlikely that developers commonly overwrite the floating label transform.
+  // the width of prefix container.
   .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-notched-outline--upgraded
   .mdc-floating-label--float-above {
-    $outlined-label-floating-position-y: mdc-textfield.get-outlined-label-position-y($height);
-    // This transform has been extracted from the MDC text-field styles. We can't access it
-    // through a variable because MDC generates this label transform through a mixin.
-    transform: translateY(-$outlined-label-floating-position-y) scale(0.75) !important;
+    --mat-mdc-form-field-label-transform: translateY(
+            -#{mdc-textfield.get-outlined-label-position-y($height)}) scale(0.75);
+    transform: var(--mat-mdc-form-field-label-transform);
   }
 
   // Add vertical spacing to the infix to ensure that outlined form fields have their controls

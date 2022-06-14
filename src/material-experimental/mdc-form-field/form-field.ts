@@ -676,9 +676,13 @@ export class MatFormField
       ((iconPrefixContainer ? iconPrefixContainerWidth - WRAPPER_HORIZONTAL_PADDING : 0) +
         textPrefixContainerWidth);
 
-    // Update the transform the floating label to account for the prefix container. Note
-    // that we do not want to overwrite the default transform for docked floating labels.
-    floatingLabel.style.transform = `${FLOATING_LABEL_DEFAULT_DOCKED_TRANSFORM} translateX(${labelHorizontalOffset}px)`;
+    // Update the translateX of the floating label to account for the prefix container,
+    // but allow the CSS to override this setting via a CSS variable when the label is
+    // floating.
+    floatingLabel.style.transform = `var(
+        --mat-mdc-form-field-label-transform,
+        ${FLOATING_LABEL_DEFAULT_DOCKED_TRANSFORM} translateX(${labelHorizontalOffset}px
+    )`;
   }
 
   /** Checks whether the form field is attached to the DOM. */
