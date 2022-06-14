@@ -5,6 +5,7 @@ import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatButtonModule} from '@angular/material/button';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -23,11 +24,13 @@ import {PaginatorComponent} from './components/paginator/paginator.component';
 import {ProgressSpinnerComponent} from './components/progress-spinner/progress-spinner.component';
 import {ProgressBarComponent} from './components/progress-bar/progress-bar.component';
 import {SelectComponent} from './components/select/select.component';
+import {ButtonComponent} from './components/button/button.component';
 
 @NgModule({
   declarations: [
     AutocompleteComponent,
     AppComponent,
+    ButtonComponent,
     ChipsComponent,
     FormFieldComponent,
     InputComponent,
@@ -41,6 +44,7 @@ import {SelectComponent} from './components/select/select.component';
     BrowserModule,
     BrowserAnimationsModule,
     MatAutocompleteModule,
+    MatButtonModule,
     MatChipsModule,
     MatFormFieldModule,
     MatIconModule,

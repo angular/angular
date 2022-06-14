@@ -29,6 +29,7 @@ $sample-project-theme: mat.define-light-theme((
 ));
 
 @include mat.autocomplete-theme($sample-project-theme);
+@include mat.button-theme($sample-project-theme);
 @include mat.chips-theme($sample-project-theme);
 @include mat.form-field-theme($sample-project-theme);
 @include mat.menu-theme($sample-project-theme);
