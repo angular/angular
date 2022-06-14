@@ -504,56 +504,6 @@ describe('Image directive', () => {
     });
   });
 
-  describe('sanitization', () => {
-    // Loader function that just returns provided `src`.
-    const noopLoader = (config: ImageLoaderConfig) => config.src;
-
-    it('should apply sanitization to the `rawSrc` with a static value', () => {
-      setupTestingModule({imageLoader: noopLoader});
-
-      const template =
-          '<img rawSrc="javascript:alert(`Unsafe code execution`)" width="50" height="50">';
-      const fixture = createTestComponent(template);
-      fixture.detectChanges();
-
-      const img = fixture.nativeElement.querySelector('img')!;
-      // The `src` looks like this: 'unsafe:javascript:alert(`Unsafe code execution`)'
-      expect(img.src.startsWith('unsafe:')).toBe(true);
-    });
-
-    it('should apply sanitization to the `rawSrc` when used as a binding', () => {
-      setupTestingModule({imageLoader: noopLoader});
-
-      const template =
-          '<img [rawSrc]="\'javascript:alert(`Unsafe code execution`)\'" width="50" height="50">';
-      const fixture = createTestComponent(template);
-      fixture.detectChanges();
-
-      const img = fixture.nativeElement.querySelector('img')!;
-      // The `src` looks like this: 'unsafe:javascript:alert(`Unsafe code execution`)'
-      expect(img.src.startsWith('unsafe:')).toBe(true);
-    });
-
-    it('should apply sanitization to the `rawSrcset` value', () => {
-      setupTestingModule({imageLoader: noopLoader});
-
-      const template =
-          `<img rawSrc="javascript:alert(\`Unsafe code execution\`)" rawSrcset="100w, 200w" width="100" height="50">`;
-      const fixture = createTestComponent(template);
-      fixture.detectChanges();
-
-      const nativeElement = fixture.nativeElement as HTMLElement;
-      const img = nativeElement.querySelector('img')!;
-
-      // The `src` looks like this: 'unsafe:javascript:alert(`Unsafe code execution`)'
-      expect(img.src.startsWith('unsafe:')).toBe(true);
-      expect(img.srcset)
-          .toBe(
-              'unsafe:javascript:alert(`Unsafe code execution`) 100w, ' +
-              'unsafe:javascript:alert(`Unsafe code execution`) 200w');
-    });
-  });
-
   describe('fetch priority', () => {
     it('should be "high" for priority images', () => {
       setupTestingModule();
