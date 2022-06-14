@@ -68,6 +68,9 @@ export class HttpHeaders {
       };
     } else {
       this.lazyInit = () => {
+        if (typeof ngDevMode === 'undefined' || ngDevMode) {
+          assertValidHeaders(headers);
+        }
         this.headers = new Map<string, string[]>();
         Object.keys(headers).forEach(name => {
           let values: string|string[] = headers[name];
@@ -256,5 +259,21 @@ export class HttpHeaders {
     this.init();
     Array.from(this.normalizedNames.keys())
         .forEach(key => fn(this.normalizedNames.get(key)!, this.headers.get(key)!));
+  }
+}
+
+/**
+ * Verifies that the headers object has the right shape: the values
+ * must be either strings or arrays. Throws an error if an invalid
+ * header value is present.
+ */
+function assertValidHeaders(headers: Record<string, unknown>):
+    asserts headers is Record<string, string|string[]> {
+  for (const [key, value] of Object.entries(headers)) {
+    if (typeof value !== 'string' && !Array.isArray(value)) {
+      throw new Error(
+          `Unexpected value of the \`${key}\` header provided. ` +
+          `Expecting either a string or an array, but got: \`${value}\`.`);
+    }
   }
 }
