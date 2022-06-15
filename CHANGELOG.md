@@ -1,3 +1,23 @@
+<a name="14.0.2"></a>
+# 14.0.2 (2022-06-15)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ef5cba3df7](https://github.com/angular/angular/commit/ef5cba3df783691433fe918f8f3c05878784c0f8) | fix | allow null in ngComponentOutlet ([#46280](https://github.com/angular/angular/pull/46280)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8ecfd71fd7](https://github.com/angular/angular/commit/8ecfd71fd7a44628500668fbb59fdc08de8b8140) | fix | don't emit empty providers array ([#46301](https://github.com/angular/angular/pull/46301)) |
+| [b92c1a6ada](https://github.com/angular/angular/commit/b92c1a6adada5923b1fd69e24560ae5bfd67dd5a) | fix | use inline type-check blocks for components outside `rootDir` ([#46096](https://github.com/angular/angular/pull/46096)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3fd8948b4a](https://github.com/angular/angular/commit/3fd8948b4a04dc504be3d4dd751a5554673423bb) | fix | Resolve forwardRef declarations for jit ([#46334](https://github.com/angular/angular/pull/46334)) |
+## Special Thanks
+Alex Rickabaugh, Andrew Scott, Badawi7, Daniel Schmitz, Derek Cormier, JoostK, Kevin Davila, Kristiyan Kostadinov, Paul Draper, Paul Gschwendtner, Tom Eustace, Totati, Younes Jaaidi, alefra, dario-piotrowicz, markostanimirovic, mgechev, piyush132000, sten-bone and vivekkoya
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.0-next.0"></a>
 # 14.1.0-next.0 (2022-06-08)
 ### router
