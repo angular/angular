@@ -1,0 +1,12 @@
+.example-card { color: gray; }
+
+
+.mat-mdc-card .example-card {
+  padding-left: 24px;
+}
+
+/* TODO: The following rule targets internal classes of card that may no longer apply for the MDC version. */
+
+.mat-card-flat {
+  margin: 4px;
+}

@@ -6,6 +6,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatAutocompleteModule} from '@angular/material-experimental/mdc-autocomplete';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {MatCardModule} from '@angular/material-experimental/mdc-card';
 import {MatChipsModule} from '@angular/material-experimental/mdc-chips';
 import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -16,6 +17,7 @@ import {MatProgressBarModule} from '@angular/material-experimental/mdc-progress-
 import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
 import {MatSelectModule} from '@angular/material-experimental/mdc-select';
 import {AutocompleteComponent} from './components/autocomplete/autocomplete.component';
+import {CardComponent} from './components/card/card.component';
 import {ChipsComponent} from './components/chips/chips.component';
 import {FormFieldComponent} from './components/form-field/form-field.component';
 import {InputComponent} from './components/input/input.component';
@@ -31,6 +33,7 @@ import {ButtonComponent} from './components/button/button.component';
     AutocompleteComponent,
     AppComponent,
     ButtonComponent,
+    CardComponent,
     ChipsComponent,
     FormFieldComponent,
     InputComponent,
@@ -45,6 +48,7 @@ import {ButtonComponent} from './components/button/button.component';
     BrowserAnimationsModule,
     MatAutocompleteModule,
     MatButtonModule,
+    MatCardModule,
     MatChipsModule,
     MatFormFieldModule,
     MatIconModule,
