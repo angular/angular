@@ -61,7 +61,7 @@ table below.
 
 ### Define a level
 
-You can define a typography level with the `define-typography-config` Sass function. This function
+You can define a typography level with the `define-typography-level` Sass function. This function
 accepts, in order, CSS values for `font-size`, `line-height`, `font-weight`, `font-family`, and
 `letter-spacing`. You can also specify the parameters by name, as demonstrated in the example below.
 
