@@ -73,7 +73,7 @@ class MyDialog {}
 
 <!-- example(cdk-dialog-styling) -->
 
-#### Providing a custom dialog contaier
+#### Providing a custom dialog container
 If you want more control over the dialog's behavior and styling, you can provide your own dialog
 container component using the `container` option in `DialogConfig`. This approach requires more
 code up-front, but it allows you to customize the DOM structure and behavior of the container
