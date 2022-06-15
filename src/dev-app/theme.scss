@@ -32,10 +32,12 @@ $candy-app-theme: mat.define-light-theme((
 @include experimental.popover-edit-theme($candy-app-theme);
 
 .demo-strong-focus {
-  // Include base styles for strong focus indicators.
-  $indicators-config: (border-color: mat.get-color-from-palette($candy-app-primary));
-  @include mat.strong-focus-indicators($indicators-config);
-  @include experimental.mdc-strong-focus-indicators($indicators-config);
+  // Note: we can theme the indicators directly through `strong-focus-indicators` as well.
+  // Use the theme so we have some coverage over the entire API surface.
+  @include mat.strong-focus-indicators();
+  @include mat.strong-focus-indicators-theme($candy-app-theme);
+  @include experimental.mdc-strong-focus-indicators();
+  @include experimental.mdc-strong-focus-indicators-theme($candy-app-theme);
 }
 
 // Include the alternative theme styles inside of a block with a CSS class. You can make this
@@ -57,9 +59,8 @@ $candy-app-theme: mat.define-light-theme((
 
   // Include the dark theme colors for focus indicators.
   &.demo-strong-focus {
-    $indicators-config: (border-color: mat.get-color-from-palette($dark-primary));
-    @include mat.strong-focus-indicators($indicators-config);
-    @include experimental.mdc-strong-focus-indicators($indicators-config);
+    @include mat.strong-focus-indicators-theme($dark-colors);
+    @include experimental.mdc-strong-focus-indicators-theme($dark-colors);
   }
 }
 

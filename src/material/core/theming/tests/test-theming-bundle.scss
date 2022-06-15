@@ -24,3 +24,5 @@ $theme: mat.define-light-theme((
 @include mat.all-component-colors($theme);
 @include mat.core-theme($theme);
 @include mat.button-theme($theme);
+@include mat.strong-focus-indicators();
+@include mat.strong-focus-indicators-theme($theme);

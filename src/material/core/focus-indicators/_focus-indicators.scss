@@ -1,5 +1,5 @@
 @use 'sass:map';
-@use '../style/focus-indicators';
+@use './private';
 
 @mixin strong-focus-indicators($config: ()) {
   // Default focus indicator config.
@@ -11,5 +11,5 @@
   // Merge default config with user config.
   $config: map.merge($default-config, $config);
 
-  @include focus-indicators.private-customize-focus-indicators($config, 'mat');
+  @include private.customize-focus-indicators($config, 'mat');
 }

@@ -1,6 +1,6 @@
 @use '@angular/cdk';
 
-@use '../core/style/focus-indicators';
+@use '../core/focus-indicators/private';
 
 $header-arrow-margin: 6px;
 $header-arrow-container-size: 12px;
@@ -33,8 +33,7 @@ $header-arrow-hint-opacity: 0.38;
   // For the sort-header element, default inset/offset values are necessary to ensure that
   // the focus indicator is sufficiently contrastive and renders appropriately.
   &::before {
-    $border-width:
-      var(--mat-focus-indicator-border-width, #{focus-indicators.$default-border-width});
+    $border-width: var(--mat-focus-indicator-border-width, #{private.$default-border-width});
     $offset: calc(#{$border-width} + 2px);
     margin: calc(#{$offset} * -1);
   }

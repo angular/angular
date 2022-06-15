@@ -9,7 +9,7 @@ $default-border-color: transparent;
 $default-border-radius: 4px;
 
 // Mixin that renders the focus indicator structural styles.
-@mixin private-structural-styling($prefix) {
+@mixin structural-styling($prefix) {
   .#{$prefix}-focus-indicator {
     position: relative;
 
@@ -45,7 +45,7 @@ $default-border-radius: 4px;
 
   // Enable the indicator in high contrast mode.
   @include cdk.high-contrast(active, off) {
-    @include private-customize-focus-indicators((display: block), $prefix);
+    @include customize-focus-indicators((display: block), $prefix);
   }
 }
 
@@ -59,7 +59,7 @@ $default-border-radius: 4px;
 }
 
 // Mixin that dedups CSS variables for the strong-focus-indicators mixin.
-@mixin private-customize-focus-indicators($config, $prefix) {
+@mixin customize-focus-indicators($config, $prefix) {
   $border-style: map.get($config, border-style);
   $border-width: map.get($config, border-width);
   $border-radius: map.get($config, border-radius);

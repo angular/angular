@@ -3,8 +3,8 @@
 @use '../core/style/variables';
 @use '../core/style/elevation';
 @use '../core/style/layout-common';
-@use '../core/style/private';
-@use '../core/style/focus-indicators';
+@use '../core/style/private' as style-private;
+@use '../core/focus-indicators/private' as focus-indicators-private;
 
 $chip-min-height: 32px;
 $chip-vertical-padding: 7px;
@@ -41,7 +41,7 @@ $chip-remove-size: 18px;
   // the focus indicator is sufficiently contrastive and renders appropriately.
   &::before {
     $border-width:
-      var(--mat-focus-indicator-border-width, #{focus-indicators.$default-border-width});
+      var(--mat-focus-indicator-border-width, #{focus-indicators-private.$default-border-width});
     $offset: calc(#{$border-width} + 2px);
     margin: calc(#{$offset} * -1);
   }
@@ -49,7 +49,7 @@ $chip-remove-size: 18px;
 
 .mat-standard-chip {
   @include elevation.elevation-transition;
-  @include private.private-animation-noop;
+  @include style-private.private-animation-noop;
   display: inline-flex;
   padding: $chip-vertical-padding $chip-horizontal-padding;
   border-radius: 16px;

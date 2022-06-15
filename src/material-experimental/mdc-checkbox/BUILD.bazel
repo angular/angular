@@ -49,7 +49,6 @@ sass_binary(
     ],
     deps = [
         ":mdc_checkbox_scss_lib",
-        "//src/cdk:sass_lib",
         "//src/material:sass_lib",
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",

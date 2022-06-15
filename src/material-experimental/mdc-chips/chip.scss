@@ -179,7 +179,7 @@
   // For the chip element, default inset/offset values are necessary to ensure that
   // the focus indicator is sufficiently contrastive and renders appropriately.
   .mat-mdc-focus-indicator::before {
-    $default-border-width: mat.$focus-indicators-private-default-border-width;
+    $default-border-width: mat.$private-strong-focus-indicators-default-border-width;
     $border-width: var(--mat-mdc-focus-indicator-border-width, #{$default-border-width});
     $offset: calc(#{$border-width} + 2px);
     margin: calc(#{$offset} * -1);
@@ -196,7 +196,7 @@
   }
 
   &::before {
-    $default-border-width: mat.$focus-indicators-private-default-border-width;
+    $default-border-width: mat.$private-strong-focus-indicators-default-border-width;
     $offset: var(--mat-mdc-focus-indicator-border-width, #{$default-border-width});
     margin: calc(#{$offset} * -1);
 
@@ -228,7 +228,8 @@
   }
 }
 
-// In the chips the individual actions have focus so we target a different element.
+// The chip has multiple focus targets so we have to put the indicator on
+// a separate element, rather than on the focusable element itself.
 .mat-mdc-chip-action:focus .mat-mdc-focus-indicator::before {
   content: '';
 }

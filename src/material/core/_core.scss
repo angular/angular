@@ -2,7 +2,7 @@
 
 // Core styles that can be used to apply material design treatments to any element.
 @use './ripple/ripple';
-@use './style/focus-indicators';
+@use './focus-indicators/private';
 @use './typography/all-typography';
 
 // Mixin that renders all of the core styles that are not theme-dependent.
@@ -13,6 +13,6 @@
   @include cdk.overlay();
   @include cdk.text-field-autosize();
   @include cdk.text-field-autofill();
-  @include focus-indicators.private-structural-styling('mat');
-  @include focus-indicators.private-structural-styling('mat-mdc');
+  @include private.structural-styling('mat');
+  @include private.structural-styling('mat-mdc');
 }

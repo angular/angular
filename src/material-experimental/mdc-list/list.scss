@@ -59,7 +59,7 @@
 // focus/selected/hover state. Hence, we need to have a separate list-item spanning
 // element that can be used for strong focus indicators.
 .mat-mdc-list-item {
-  & > .mat-mdc-focus-indicator {
+  > .mat-mdc-focus-indicator {
     @include mat.private-fill();
     pointer-events: none;
   }

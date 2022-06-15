@@ -70,8 +70,6 @@
       opacity: mdc-radio-theme.$ripple-opacity;
     }
 
-    // Radio components have to set `border-radius: 50%` in order to support density scaling
-    // which will clip a square focus indicator so we have to turn it into a circle.
     &::before {
       border-radius: 50%;
     }

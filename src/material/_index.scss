@@ -32,12 +32,12 @@
 @forward './table/table-flex-styles' show private-table-flex-styles;
 @forward './core/style/menu-common' as private-menu-common-*;
 @forward './core/style/button-common' as private-button-common-*;
-@forward './core/style/focus-indicators' as focus-indicators-private-*;
 
 // Structural
 @forward './core/core' show core;
 @forward './core/ripple/ripple' show ripple;
 @forward './core/focus-indicators/focus-indicators' show strong-focus-indicators;
+@forward './core/focus-indicators/private' as private-strong-focus-indicators-*;
 @forward './core/style/elevation' show elevation, overridable-elevation, elevation-transition;
 
 // Theme bundles

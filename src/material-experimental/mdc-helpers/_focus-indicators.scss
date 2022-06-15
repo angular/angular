@@ -11,5 +11,5 @@
   // Merge default config with user config.
   $config: map.merge($default-config, $config);
 
-  @include mat.focus-indicators-private-private-customize-focus-indicators($config, 'mat-mdc');
+  @include mat.private-strong-focus-indicators-customize-focus-indicators($config, 'mat-mdc');
 }

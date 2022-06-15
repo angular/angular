@@ -48,7 +48,6 @@ sass_binary(
     name = "expansion_panel_scss",
     src = "expansion-panel.scss",
     deps = [
-        "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )

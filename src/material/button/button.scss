@@ -2,7 +2,7 @@
 
 @use './button-base';
 @use '../core/style/layout-common';
-@use '../core/style/focus-indicators';
+@use '../core/focus-indicators/private';
 
 // TODO(jelbourn): Measure perf benefits for translate3d and will-change.
 // TODO(jelbourn): Figure out if anchor hover underline actually happens in any browser.
@@ -163,16 +163,14 @@
 .mat-fab,
 .mat-mini-fab {
   &::before {
-    $border-width:
-      var(--mat-focus-indicator-border-width, #{focus-indicators.$default-border-width});
+    $border-width: var(--mat-focus-indicator-border-width, #{private.$default-border-width});
     $offset: calc(#{$border-width} + 2px);
     margin: calc(#{$offset} * -1);
   }
 }
 
 .mat-stroked-button::before {
-  $border-width:
-    var(--mat-focus-indicator-border-width, #{focus-indicators.$default-border-width});
+  $border-width: var(--mat-focus-indicator-border-width, #{private.$default-border-width});
   $offset: calc(#{$border-width} + 3px);
   margin: calc(#{$offset} * -1);
 }
