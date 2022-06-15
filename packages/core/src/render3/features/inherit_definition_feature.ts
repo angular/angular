@@ -41,12 +41,12 @@ export function ɵɵInheritDefinitionFeature(definition: DirectiveDef<any>|Compo
       superDef = superType.ɵcmp || superType.ɵdir;
     } else {
       if (superType.ɵcmp) {
-        const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-            `Directives cannot inherit Components. Directive ${
-                stringifyForError(definition.type)} is attempting to extend component ${
-                stringifyForError(superType)}` :
-            '';
-        throw new RuntimeError(RuntimeErrorCode.INVALID_INHERITANCE, errorMessage);
+        throw new RuntimeError(
+            RuntimeErrorCode.INVALID_INHERITANCE,
+            ngDevMode &&
+                `Directives cannot inherit Components. Directive ${
+                    stringifyForError(definition.type)} is attempting to extend component ${
+                    stringifyForError(superType)}`);
       }
       // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
       superDef = superType.ɵdir;
