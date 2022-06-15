@@ -138,10 +138,10 @@ export class NgProbeToken {
  */
 export function createPlatform(injector: Injector): PlatformRef {
   if (_platformInjector && !_platformInjector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
-    const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-        'There can be only one platform. Destroy the previous one to create a new one.' :
-        '';
-    throw new RuntimeError(RuntimeErrorCode.MULTIPLE_PLATFORMS, errorMessage);
+    throw new RuntimeError(
+        RuntimeErrorCode.MULTIPLE_PLATFORMS,
+        ngDevMode &&
+            'There can be only one platform. Destroy the previous one to create a new one.');
   }
   publishDefaultGlobalUtils();
   _platformInjector = injector;
@@ -281,9 +281,7 @@ export function assertPlatform(requiredToken: any): PlatformRef {
   const platform = getPlatform();
 
   if (!platform) {
-    const errorMessage =
-        (typeof ngDevMode === 'undefined' || ngDevMode) ? 'No platform exists!' : '';
-    throw new RuntimeError(RuntimeErrorCode.PLATFORM_NOT_FOUND, errorMessage);
+    throw new RuntimeError(RuntimeErrorCode.PLATFORM_NOT_FOUND, ngDevMode && 'No platform exists!');
   }
 
   if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -426,10 +424,9 @@ export class PlatformRef {
       const moduleRef = <InternalNgModuleRef<M>>moduleFactory.create(ngZoneInjector);
       const exceptionHandler: ErrorHandler|null = moduleRef.injector.get(ErrorHandler, null);
       if (!exceptionHandler) {
-        const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-            'No ErrorHandler. Is platform module (BrowserModule) included?' :
-            '';
-        throw new RuntimeError(RuntimeErrorCode.ERROR_HANDLER_NOT_FOUND, errorMessage);
+        throw new RuntimeError(
+            RuntimeErrorCode.ERROR_HANDLER_NOT_FOUND,
+            ngDevMode && 'No ErrorHandler. Is platform module (BrowserModule) included?');
       }
       ngZone!.runOutsideAngular(() => {
         const subscription = ngZone!.onError.subscribe({
@@ -488,12 +485,12 @@ export class PlatformRef {
     } else if (moduleRef.instance.ngDoBootstrap) {
       moduleRef.instance.ngDoBootstrap(appRef);
     } else {
-      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-          `The module ${stringify(moduleRef.instance.constructor)} was bootstrapped, ` +
-              `but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
-              `Please define one of these.` :
-          '';
-      throw new RuntimeError(RuntimeErrorCode.BOOTSTRAP_COMPONENTS_NOT_FOUND, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.BOOTSTRAP_COMPONENTS_NOT_FOUND,
+          ngDevMode &&
+              `The module ${stringify(moduleRef.instance.constructor)} was bootstrapped, ` +
+                  `but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
+                  `Please define one of these.`);
     }
     this._modules.push(moduleRef);
   }
@@ -519,10 +516,9 @@ export class PlatformRef {
    */
   destroy() {
     if (this._destroyed) {
-      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-          'The platform has already been destroyed!' :
-          '';
-      throw new RuntimeError(RuntimeErrorCode.PLATFORM_ALREADY_DESTROYED, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.PLATFORM_ALREADY_DESTROYED,
+          ngDevMode && 'The platform has already been destroyed!');
     }
     this._modules.slice().forEach(module => module.destroy());
     this._destroyListeners.forEach(listener => listener());
@@ -975,10 +971,9 @@ export class ApplicationRef {
   tick(): void {
     NG_DEV_MODE && this.warnIfDestroyed();
     if (this._runningTick) {
-      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-          'ApplicationRef.tick is called recursively' :
-          '';
-      throw new RuntimeError(RuntimeErrorCode.RECURSIVE_APPLICATION_REF_TICK, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.RECURSIVE_APPLICATION_REF_TICK,
+          ngDevMode && 'ApplicationRef.tick is called recursively');
     }
 
     try {
@@ -1076,7 +1071,7 @@ export class ApplicationRef {
     if (this._destroyed) {
       throw new RuntimeError(
           RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
-          NG_DEV_MODE && 'This instance of the `ApplicationRef` has already been destroyed.');
+          ngDevMode && 'This instance of the `ApplicationRef` has already been destroyed.');
     }
 
     // This is a temporary type to represent an instance of an R3Injector, which can be destroyed.

@@ -288,9 +288,9 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
 
   attachToViewContainerRef() {
     if (this._appRef) {
-      const errorMessage =
-          ngDevMode ? 'This view is already attached directly to the ApplicationRef!' : '';
-      throw new RuntimeError(RuntimeErrorCode.VIEW_ALREADY_ATTACHED, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.VIEW_ALREADY_ATTACHED,
+          ngDevMode && 'This view is already attached directly to the ApplicationRef!');
     }
     this._attachedToViewContainer = true;
   }
@@ -302,8 +302,9 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
 
   attachToAppRef(appRef: ViewRefTracker) {
     if (this._attachedToViewContainer) {
-      const errorMessage = ngDevMode ? 'This view is already attached to a ViewContainer!' : '';
-      throw new RuntimeError(RuntimeErrorCode.VIEW_ALREADY_ATTACHED, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.VIEW_ALREADY_ATTACHED,
+          ngDevMode && 'This view is already attached to a ViewContainer!');
     }
     this._appRef = appRef;
   }
