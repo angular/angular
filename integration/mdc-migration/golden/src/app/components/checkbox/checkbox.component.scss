@@ -1,0 +1,12 @@
+.mat-mdc-checkbox {
+  padding-right: 16px;
+}
+
+/* TODO: The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
+
+::ng-deep .mat-checkbox-disabled .mat-checkbox-label {
+  color: slategray;
+}
+/* TODO: The following rule targets internal classes of checkbox that may no longer apply for the MDC version. */
+
+.mat-checkbox-label { font-size: 16px; }

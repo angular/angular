@@ -7,6 +7,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -25,6 +26,7 @@ import {MatTableModule} from '@angular/material/table';
 import {AutocompleteComponent} from './components/autocomplete/autocomplete.component';
 import {ButtonComponent} from './components/button/button.component';
 import {CardComponent} from './components/card/card.component';
+import {CheckboxComponent} from './components/checkbox/checkbox.component';
 import {ChipsComponent} from './components/chips/chips.component';
 import {FormFieldComponent} from './components/form-field/form-field.component';
 import {InputComponent} from './components/input/input.component';
@@ -46,6 +48,7 @@ import {TableComponent} from './components/table/table.component';
     AppComponent,
     ButtonComponent,
     CardComponent,
+    CheckboxComponent,
     ChipsComponent,
     FormFieldComponent,
     InputComponent,
@@ -67,6 +70,7 @@ import {TableComponent} from './components/table/table.component';
     MatAutocompleteModule,
     MatButtonModule,
     MatCardModule,
+    MatCheckboxModule,
     MatChipsModule,
     MatFormFieldModule,
     MatIconModule,

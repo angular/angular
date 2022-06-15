@@ -1,0 +1,8 @@
+.mat-checkbox {
+  padding-right: 16px;
+}
+
+::ng-deep .mat-checkbox-disabled .mat-checkbox-label {
+  color: slategray;
+}
+.mat-checkbox-label { font-size: 16px; }
