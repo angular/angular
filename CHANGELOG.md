@@ -1,3 +1,28 @@
+<a name="14.1.0-next.1"></a>
+# 14.1.0-next.1 (2022-06-15)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8b9c32d4dc](https://github.com/angular/angular/commit/8b9c32d4dccca5417adce1ca6067adf0805d6d08) | fix | allow null in ngComponentOutlet ([#46280](https://github.com/angular/angular/pull/46280)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [131d029da1](https://github.com/angular/angular/commit/131d029da16b7d486cdc200f00160b9a11871fb2) | feat | detect missing control flow directive imports in standalone components ([#46146](https://github.com/angular/angular/pull/46146)) |
+| [04acc6b14d](https://github.com/angular/angular/commit/04acc6b14d502597a98537019822f1a1217c9a61) | fix | don't emit empty providers array ([#46301](https://github.com/angular/angular/pull/46301)) |
+| [f35f4751b5](https://github.com/angular/angular/commit/f35f4751b54dcb9e65f2d72aeea87651314159e8) | fix | use inline type-check blocks for components outside `rootDir` ([#46096](https://github.com/angular/angular/pull/46096)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b1a3dec58d](https://github.com/angular/angular/commit/b1a3dec58d0dc21d76f757d4085c7581d89dc7dd) | fix | Resolve forwardRef declarations for jit ([#46334](https://github.com/angular/angular/pull/46334)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [de058bba99](https://github.com/angular/angular/commit/de058bba9979f68de2320118b537e6be4dbb888d) | feat | Add CanMatch guard to control whether a Route should match ([#46021](https://github.com/angular/angular/pull/46021)) |
+## Special Thanks
+Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Badawi7, Daniel Schmitz, Derek Cormier, Jessica Janiuk, JiaLiPassion, JoostK, Kevin Davila, Kristiyan Kostadinov, Paul Draper, Paul Gschwendtner, Tom Eustace, Totati, Younes Jaaidi, alefra, dario-piotrowicz, markostanimirovic, mgechev, piyush132000, sten-bone and vivekkoya
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.2"></a>
 # 14.0.2 (2022-06-15)
 ### common
