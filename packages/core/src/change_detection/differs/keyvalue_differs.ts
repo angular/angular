@@ -183,9 +183,8 @@ export class KeyValueDiffers {
     if (factory) {
       return factory;
     }
-    const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-        `Cannot find a differ supporting object '${kv}'` :
-        '';
-    throw new RuntimeError(RuntimeErrorCode.NO_SUPPORTING_DIFFER_FACTORY, errorMessage);
+    throw new RuntimeError(
+        RuntimeErrorCode.NO_SUPPORTING_DIFFER_FACTORY,
+        ngDevMode && `Cannot find a differ supporting object '${kv}'`);
   }
 }

@@ -54,10 +54,10 @@ export function injectInjectorOnly<T>(token: ProviderToken<T>, flags?: InjectFla
 export function injectInjectorOnly<T>(token: ProviderToken<T>, flags = InjectFlags.Default): T|
     null {
   if (_currentInjector === undefined) {
-    const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-        `inject() must be called from an injection context (a constructor, a factory function or a field initializer)` :
-        '';
-    throw new RuntimeError(RuntimeErrorCode.MISSING_INJECTION_CONTEXT, errorMessage);
+    throw new RuntimeError(
+        RuntimeErrorCode.MISSING_INJECTION_CONTEXT,
+        ngDevMode &&
+            `inject() must be called from an injection context (a constructor, a factory function or a field initializer)`);
   } else if (_currentInjector === null) {
     return injectRootLimpMode(token, undefined, flags);
   } else {
@@ -197,10 +197,9 @@ export function injectArgs(types: (ProviderToken<any>|any[])[]): any[] {
     const arg = resolveForwardRef(types[i]);
     if (Array.isArray(arg)) {
       if (arg.length === 0) {
-        const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-            'Arguments array must have arguments.' :
-            '';
-        throw new RuntimeError(RuntimeErrorCode.INVALID_DIFFER_INPUT, errorMessage);
+        throw new RuntimeError(
+            RuntimeErrorCode.INVALID_DIFFER_INPUT,
+            ngDevMode && 'Arguments array must have arguments.');
       }
       let type: Type<any>|undefined = undefined;
       let flags: InjectFlags = InjectFlags.Default;
