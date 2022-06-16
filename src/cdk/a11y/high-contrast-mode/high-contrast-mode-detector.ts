@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {inject, Inject, Injectable, OnDestroy} from '@angular/core';
+import {BreakpointObserver} from '@angular/cdk/layout';
 import {Platform} from '@angular/cdk/platform';
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable} from '@angular/core';
+import {Subscription} from 'rxjs';
 
 /** Set of possible high-contrast mode backgrounds. */
 export const enum HighContrastMode {
@@ -38,16 +40,26 @@ export const HIGH_CONTRAST_MODE_ACTIVE_CSS_CLASS = 'cdk-high-contrast-active';
  * browser extension.
  */
 @Injectable({providedIn: 'root'})
-export class HighContrastModeDetector {
+export class HighContrastModeDetector implements OnDestroy {
   /**
    * Figuring out the high contrast mode and adding the body classes can cause
    * some expensive layouts. This flag is used to ensure that we only do it once.
    */
   private _hasCheckedHighContrastMode: boolean;
   private _document: Document;
+  private _breakpointSubscription: Subscription;
 
   constructor(private _platform: Platform, @Inject(DOCUMENT) document: any) {
     this._document = document;
+
+    this._breakpointSubscription = inject(BreakpointObserver)
+      .observe('(forced-colors: active)')
+      .subscribe(() => {
+        if (this._hasCheckedHighContrastMode) {
+          this._hasCheckedHighContrastMode = false;
+          this._applyBodyHighContrastModeCssClasses();
+        }
+      });
   }
 
   /** Gets the current high-contrast-mode for the page. */
@@ -86,6 +98,10 @@ export class HighContrastModeDetector {
         return HighContrastMode.BLACK_ON_WHITE;
     }
     return HighContrastMode.NONE;
+  }
+
+  ngOnDestroy(): void {
+    this._breakpointSubscription.unsubscribe();
   }
 
   /** Applies CSS classes indicating high-contrast mode to document body (browser-only). */

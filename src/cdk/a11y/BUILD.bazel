@@ -20,6 +20,7 @@ ng_module(
         "//src:dev_mode_types",
         "//src/cdk/coercion",
         "//src/cdk/keycodes",
+        "//src/cdk/layout",
         "//src/cdk/observers",
         "//src/cdk/platform",
         "@npm//@angular/core",

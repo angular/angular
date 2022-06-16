@@ -6,27 +6,34 @@ import {
   WHITE_ON_BLACK_CSS_CLASS,
 } from './high-contrast-mode-detector';
 import {Platform} from '@angular/cdk/platform';
-import {inject} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
+import {Provider} from '@angular/core';
+import {A11yModule} from '../a11y-module';
+import {DOCUMENT} from '@angular/common';
 
 describe('HighContrastModeDetector', () => {
-  let fakePlatform: Platform;
+  function getDetector(document: unknown, platform?: Platform) {
+    const providers: Provider[] = [{provide: DOCUMENT, useValue: document}];
 
-  beforeEach(inject([Platform], (p: Platform) => {
-    fakePlatform = p;
-  }));
+    if (platform) {
+      providers.push({provide: Platform, useValue: platform});
+    }
+
+    TestBed.configureTestingModule({imports: [A11yModule], providers});
+    return TestBed.inject(HighContrastModeDetector);
+  }
 
   it('should detect NONE for non-browser platforms', () => {
-    fakePlatform.isBrowser = false;
-    const detector = new HighContrastModeDetector(fakePlatform, {});
+    const detector = getDetector(getFakeDocument(''), {isBrowser: false} as Platform);
+
     expect(detector.getHighContrastMode())
       .withContext('Expected high-contrast mode `NONE` on non-browser platforms')
       .toBe(HighContrastMode.NONE);
   });
 
   it('should not apply any css classes for non-browser platforms', () => {
-    fakePlatform.isBrowser = false;
     const fakeDocument = getFakeDocument('');
-    const detector = new HighContrastModeDetector(fakePlatform, fakeDocument);
+    const detector = getDetector(fakeDocument, {isBrowser: false} as Platform);
     detector._applyBodyHighContrastModeCssClasses();
     expect(fakeDocument.body.className)
       .withContext('Expected body not to have any CSS classes in non-browser platforms')
@@ -34,24 +41,21 @@ describe('HighContrastModeDetector', () => {
   });
 
   it('should detect WHITE_ON_BLACK when backgrounds are coerced to black', () => {
-    const detector = new HighContrastModeDetector(fakePlatform, getFakeDocument('rgb(0,0,0)'));
+    const detector = getDetector(getFakeDocument('rgb(0,0,0)'));
     expect(detector.getHighContrastMode())
       .withContext('Expected high-contrast mode `WHITE_ON_BLACK`')
       .toBe(HighContrastMode.WHITE_ON_BLACK);
   });
 
   it('should detect BLACK_ON_WHITE when backgrounds are coerced to white ', () => {
-    const detector = new HighContrastModeDetector(
-      fakePlatform,
-      getFakeDocument('rgb(255,255,255)'),
-    );
+    const detector = getDetector(getFakeDocument('rgb(255,255,255)'));
     expect(detector.getHighContrastMode())
       .withContext('Expected high-contrast mode `BLACK_ON_WHITE`')
       .toBe(HighContrastMode.BLACK_ON_WHITE);
   });
 
   it('should detect NONE when backgrounds are not coerced ', () => {
-    const detector = new HighContrastModeDetector(fakePlatform, getFakeDocument('rgb(1,2,3)'));
+    const detector = getDetector(getFakeDocument('rgb(1,2,3)'));
     expect(detector.getHighContrastMode())
       .withContext('Expected high-contrast mode `NONE`')
       .toBe(HighContrastMode.NONE);
@@ -59,7 +63,7 @@ describe('HighContrastModeDetector', () => {
 
   it('should apply css classes for BLACK_ON_WHITE high-contrast mode', () => {
     const fakeDocument = getFakeDocument('rgb(255,255,255)');
-    const detector = new HighContrastModeDetector(fakePlatform, fakeDocument);
+    const detector = getDetector(fakeDocument);
     detector._applyBodyHighContrastModeCssClasses();
     expect(fakeDocument.body.classList).toContain(HIGH_CONTRAST_MODE_ACTIVE_CSS_CLASS);
     expect(fakeDocument.body.classList).toContain(BLACK_ON_WHITE_CSS_CLASS);
@@ -67,7 +71,7 @@ describe('HighContrastModeDetector', () => {
 
   it('should apply css classes for WHITE_ON_BLACK high-contrast mode', () => {
     const fakeDocument = getFakeDocument('rgb(0,0,0)');
-    const detector = new HighContrastModeDetector(fakePlatform, fakeDocument);
+    const detector = getDetector(fakeDocument);
     detector._applyBodyHighContrastModeCssClasses();
     expect(fakeDocument.body.classList).toContain(HIGH_CONTRAST_MODE_ACTIVE_CSS_CLASS);
     expect(fakeDocument.body.classList).toContain(WHITE_ON_BLACK_CSS_CLASS);
@@ -75,7 +79,7 @@ describe('HighContrastModeDetector', () => {
 
   it('should not apply any css classes when backgrounds are not coerced', () => {
     const fakeDocument = getFakeDocument('');
-    const detector = new HighContrastModeDetector(fakePlatform, fakeDocument);
+    const detector = getDetector(fakeDocument);
     detector._applyBodyHighContrastModeCssClasses();
     expect(fakeDocument.body.className)
       .withContext('Expected body not to have any CSS classes in non-browser platforms')
@@ -88,6 +92,7 @@ function getFakeDocument(fakeComputedBackgroundColor: string) {
   return {
     body: document.createElement('body'),
     createElement: (tag: string) => document.createElement(tag),
+    querySelectorAll: (selector: string) => document.querySelectorAll(selector),
     defaultView: {
       getComputedStyle: () => ({backgroundColor: fakeComputedBackgroundColor}),
     },
