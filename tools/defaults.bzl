@@ -318,7 +318,7 @@ def protractor_web_test_suite(name, deps, **kwargs):
     spec_bundle(
         name = "%s_bundle" % name,
         deps = deps,
-        platform = "node",
+        platform = "cjs-legacy",
         external = ["protractor", "selenium-webdriver"],
     )
 
@@ -349,8 +349,8 @@ def node_integration_test(setup_chromium = False, node_repository = "nodejs", **
     # If Chromium should be configured, add it to the runfiles and expose its binaries
     # through test environment variables. The variables are auto-detected by e.g. Karma.
     if setup_chromium:
-        data += ["@npm//@angular/dev-infra-private/bazel/browsers/chromium"]
-        toolchains += ["@npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias"]
+        data.append("@npm//@angular/dev-infra-private/bazel/browsers/chromium")
+        toolchains.append("@npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias")
         environment.update({
             "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
             "CHROME_BIN": "$(CHROMIUM)",
@@ -396,7 +396,7 @@ def ng_web_test_suite(deps = [], static_css = [], exclude_init_script = False, *
     # loads the given CSS file.
     for css_label in static_css:
         css_id = "static-css-file-%s" % (css_label.replace("/", "_").replace(":", "-"))
-        bootstrap += [":%s" % css_id]
+        bootstrap.append(":%s" % css_id)
 
         native.genrule(
             name = css_id,

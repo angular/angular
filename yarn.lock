@@ -327,9 +327,9 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#136fa6e336fd635db4e16cd582e1fd9b6cf444a6":
-  version "0.0.0-a5c2fb281ba9b0fa3b8d30d10f50bc909415b8e4"
-  resolved "https://github.com/angular/dev-infra-private-builds.git#136fa6e336fd635db4e16cd582e1fd9b6cf444a6"
+"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#f2f440e6c5ae7ca7e98a51f3f476fda5612dd948":
+  version "0.0.0-a84eef14d3990a24765684f12b89470ae1b9a3eb"
+  resolved "https://github.com/angular/dev-infra-private-builds.git#f2f440e6c5ae7ca7e98a51f3f476fda5612dd948"
   dependencies:
     "@angular-devkit/build-angular" "14.1.0-next.0"
     "@angular/benchpress" "0.3.0"
@@ -349,10 +349,10 @@
     "@types/tmp" "^0.2.1"
     "@types/uuid" "^8.3.1"
     "@types/yargs" "^17.0.0"
+    "@yarnpkg/lockfile" "^1.1.0"
     browser-sync "^2.27.7"
     clang-format "1.8.0"
     prettier "2.6.2"
-    protobufjs "^6.11.3"
     protractor "^7.0.0"
     selenium-webdriver "4.2.0"
     send "^0.18.0"
@@ -4255,7 +4255,7 @@
   resolved "https://registry.yarnpkg.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@yarnpkg/lockfile@1.1.0":
+"@yarnpkg/lockfile@1.1.0", "@yarnpkg/lockfile@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@yarnpkg/lockfile/-/lockfile-1.1.0.tgz#e77a97fbd345b76d83245edcd17d393b1b41fb31"
   integrity sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==
@@ -13339,25 +13339,6 @@ protobufjs@6.8.8:
     "@protobufjs/utf8" "^1.1.0"
     "@types/long" "^4.0.0"
     "@types/node" "^10.1.0"
-    long "^4.0.0"
-
-protobufjs@^6.11.3:
-  version "6.11.3"
-  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-6.11.3.tgz#637a527205a35caa4f3e2a9a4a13ddffe0e7af74"
-  integrity sha512-xL96WDdCZYdU7Slin569tFX712BxsxslWwAfAhCYjQKGTq7dAU91Lomy6nLLhh/dyGhk/YH4TwTSRxTzhuHyZg==
-  dependencies:
-    "@protobufjs/aspromise" "^1.1.2"
-    "@protobufjs/base64" "^1.1.2"
-    "@protobufjs/codegen" "^2.0.4"
-    "@protobufjs/eventemitter" "^1.1.0"
-    "@protobufjs/fetch" "^1.1.0"
-    "@protobufjs/float" "^1.0.2"
-    "@protobufjs/inquire" "^1.1.0"
-    "@protobufjs/path" "^1.1.2"
-    "@protobufjs/pool" "^1.1.0"
-    "@protobufjs/utf8" "^1.1.0"
-    "@types/long" "^4.0.1"
-    "@types/node" ">=13.7.0"
     long "^4.0.0"
 
 protractor@^7.0.0:
