@@ -241,6 +241,14 @@
     "bio": "Dan Wahlin founded Wahlin Consulting which provides consulting and onsite/online training services on Web technologies such as JavaScript, Angular, TypeScript, Node.js, C#, ASP.NET Core, Web API, and Docker. He’s also published many developer courses on Pluralsight.com and Udemy.com. Dan is a Google GDE, Docker Captain, and Microsoft MVP and Regional Director and speaks at conferences and user groups around the world.  Dan has written several books on Web technologies, hundreds of technical articles and blog posts (https://blog.codewithdan.com) and runs the 'Code with Dan Web Weekly Newsletter' - a great way to stay up on the latest technologies. Follow Dan on Twitter @DanWahlin.",
     "groups": ["GDE"]
   },
+  "danywalls": {
+    "name": "Dany Paredes",
+    "picture": "danyparedes.jpg",
+    "twitter": "danywalls",
+    "website": "https://www.danywalls.com",
+    "bio": "Dany is a Google Developer Expert on Angular and loves sharing content and writing articles about Angular, Typescript, and Testing. In his spare time, he watches NBA games and enjoys the Beach.",
+    "groups": ["GDE"]
+  },
   "deborah": {
     "name": "Deborah Kurata",
     "picture": "deborah.jpg",
