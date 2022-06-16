@@ -1,3 +1,31 @@
+<a name="14.1.0-next.1"></a>
+# 14.1.0-next.1 "wool-window" (2022-06-16)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [176213d705](https://github.com/angular/components/commit/176213d705f25def682644e29824b340ca1637b6) | feat | **scrolling:** make scroller element configurable for virtual scrolling ([#24394](https://github.com/angular/components/pull/24394)) |
+| [bc81e7ddc5](https://github.com/angular/components/commit/bc81e7ddc56c093e83fefb4e80f8ebaa3c306a20) | fix | **a11y:** re-apply the high contrast mode class when the forced-colors media query changes ([#25088](https://github.com/angular/components/pull/25088)) |
+| [2c956c020c](https://github.com/angular/components/commit/2c956c020cfd88d709c27805c01d81a6b7ac8fcc) | fix | **drag-drop:** constrainPosition not working as expected ([#25061](https://github.com/angular/components/pull/25061)) |
+| [1d15ea77d8](https://github.com/angular/components/commit/1d15ea77d817e65b8d318f801051441845cd7fe1) | fix | **testing:** simulate offsetX and offsetY in mouse events |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1256c6cf26](https://github.com/angular/components/commit/1256c6cf262f77a1c1fedbb6fb015d93923c7c85) | feat | **core:** use strong focus indicators in high contrast mode |
+| [799cf7cf27](https://github.com/angular/components/commit/799cf7cf27bd882398a42ff65c48a241a3af50d5) | fix | **datepicker:** add i18n strings ([#25024](https://github.com/angular/components/pull/25024)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [864f92e0f4](https://github.com/angular/components/commit/864f92e0f480cb49465d2cad07713592416f8019) | feat | **mdc-button:** support custom leading/trailing icons ([#24987](https://github.com/angular/components/pull/24987)) |
+| [59d75c3eb1](https://github.com/angular/components/commit/59d75c3eb19d320eebb8f93308a165f47b4701ae) | fix | **mdc-button:** don't apply styles to icons within the text label ([#24929](https://github.com/angular/components/pull/24929)) |
+| [d755c66cdb](https://github.com/angular/components/commit/d755c66cdb830ea7ce444d26f3f2e402a1264850) | fix | **mdc-chips:** checkmark blending into background in high contrast mode ([#25072](https://github.com/angular/components/pull/25072)) |
+| [4aaa6eb5fd](https://github.com/angular/components/commit/4aaa6eb5fdb367f9d887e24eb5690b580df4c007) | fix | **mdc-core:** consolidate mdc theming code under mdc-core ([#25084](https://github.com/angular/components/pull/25084)) |
+| [7c91dcf32b](https://github.com/angular/components/commit/7c91dcf32bd2f05aaaff4c5f4b58ee7ee0a6ddb9) | fix | **mdc-form-field:** replace !important with CSS var ([#24964](https://github.com/angular/components/pull/24964)) |
+| [503f12f039](https://github.com/angular/components/commit/503f12f039bd82d369b69fd2182a5d4489f25a75) | fix | **mdc-list:** don't access class before initialization ([#25049](https://github.com/angular/components/pull/25049)) |
+## Special Thanks
+Amy Sorto, Jackie Chu, Jenny Johnson, Kristiyan Kostadinov, Maxi, Miles Malerba, Paul Gschwendtner, Zach Arend, antuxity and atrawally
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.2"></a>
 # 14.0.2 "corduroy-collar" (2022-06-16)
 ### cdk
