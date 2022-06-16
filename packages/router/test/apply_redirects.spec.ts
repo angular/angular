@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, NgModuleRef} from '@angular/core';
+import {EnvironmentInjector, Injectable, NgModuleRef} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Observable, of} from 'rxjs';
 import {delay, tap} from 'rxjs/operators';
@@ -228,6 +228,41 @@ describe('applyRedirects', () => {
       }
     });
   });
+
+  it('should support CanMatch providers on the route', () => {
+    @Injectable({providedIn: 'root'})
+    class CanMatchGuard {
+      canMatch() {
+        return true;
+      }
+    }
+
+    const routes = [
+      {
+        path: 'a',
+        component: ComponentA,
+        canMatch: [CanMatchGuard],
+        providers: [CanMatchGuard],
+      },
+      {
+        path: 'a',
+        component: ComponentA,
+        providers: [],
+      }
+    ];
+    applyRedirects(testModule.injector, null!, serializer, tree('a'), routes).subscribe({
+      next: () => {
+        // The 'a' segment matched, so we needed to create the injector for the `Route`
+        expect(getProvidersInjector(routes[0])).toBeDefined();
+        // The second `Route` did not match because the first did so we should not create an
+        // injector for it
+        expect(getProvidersInjector(routes[1])).not.toBeDefined();
+      },
+      error: () => {
+        throw 'Should not be reached';
+      }
+    });
+  })
 
   describe('lazy loading', () => {
     it('should load config on demand', () => {

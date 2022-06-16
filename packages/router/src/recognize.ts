@@ -173,7 +173,7 @@ export class Recognizer {
     let matchResult: Observable<{
       snapshot: ActivatedRouteSnapshot,
       consumedSegments: UrlSegment[],
-      remainingSegments: UrlSegment[]
+      remainingSegments: UrlSegment[],
     }|null>;
 
     if (route.path === '**') {
@@ -219,9 +219,8 @@ export class Recognizer {
         return of(null);
       }
       const {snapshot, consumedSegments, remainingSegments} = result;
-      // Only create the Route's `EnvironmentInjector` if it matches the attempted
-      // navigation
-      injector = getOrCreateRouteInjectorIfNeeded(route, injector);
+      // If the route has an injector created from providers, we should start using that.
+      injector = route._injector ?? injector;
       const childInjector = route._loadedInjector ?? injector;
       const childConfig: Route[] = getChildConfig(route);
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '@angular/core';
+import {EnvironmentInjector, Injector} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -16,7 +16,7 @@ import {defaultUrlMatcher, PRIMARY_OUTLET} from '../shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer} from '../url_tree';
 
 import {forEach} from './collection';
-import {getOutlet} from './config';
+import {getOrCreateRouteInjectorIfNeeded, getOutlet} from './config';
 
 export interface MatchResult {
   matched: boolean;
@@ -35,12 +35,16 @@ const noMatch: MatchResult = {
 };
 
 export function matchWithChecks(
-    segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[], injector: Injector,
-    urlSerializer: UrlSerializer): Observable<MatchResult> {
+    segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[],
+    injector: EnvironmentInjector, urlSerializer: UrlSerializer): Observable<MatchResult> {
   const result = match(segmentGroup, route, segments);
   if (!result.matched) {
     return of(result);
   }
+
+  // Only create the Route's `EnvironmentInjector` if it matches the attempted
+  // navigation
+  injector = getOrCreateRouteInjectorIfNeeded(route, injector);
   return runCanMatchGuards(injector, route, segments, urlSerializer)
       .pipe(
           map((v) => v === true ? result : {...noMatch}),
