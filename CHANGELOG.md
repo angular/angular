@@ -1,3 +1,24 @@
+<a name="14.0.2"></a>
+# 14.0.2 "corduroy-collar" (2022-06-16)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [08c3867ba6](https://github.com/angular/components/commit/08c3867ba67ef74ee0280e8929e3ba9f8f8a134e) | fix | **a11y:** re-apply the high contrast mode class when the forced-colors media query changes ([#25088](https://github.com/angular/components/pull/25088)) |
+| [59268fa5bf](https://github.com/angular/components/commit/59268fa5bfb646302c4c9c97fab3f1d0faa233fb) | fix | **drag-drop:** constrainPosition not working as expected ([#25061](https://github.com/angular/components/pull/25061)) |
+| [732969079d](https://github.com/angular/components/commit/732969079dbbecc4e888ff11b0663e30687ac049) | fix | **testing:** simulate offsetX and offsetY in mouse events |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5aec60c9ca](https://github.com/angular/components/commit/5aec60c9cae002531459b0b7b71b5bad041d22dc) | fix | **mdc-button:** don't apply styles to icons within the text label ([#24929](https://github.com/angular/components/pull/24929)) |
+| [d0082e3422](https://github.com/angular/components/commit/d0082e3422f5c67533edf7199af4c0bce85f90d8) | fix | **mdc-chips:** checkmark blending into background in high contrast mode ([#25072](https://github.com/angular/components/pull/25072)) |
+| [2388fe77e5](https://github.com/angular/components/commit/2388fe77e5ccab3cf98e7189f56f88e779e9e02f) | fix | **mdc-core:** consolidate mdc theming code under mdc-core ([#25084](https://github.com/angular/components/pull/25084)) |
+| [7de5f5432b](https://github.com/angular/components/commit/7de5f5432b6df82727b63fad925f47bc36ef2aa2) | fix | **mdc-form-field:** replace !important with CSS var ([#24964](https://github.com/angular/components/pull/24964)) |
+| [8f7394aa3b](https://github.com/angular/components/commit/8f7394aa3bc6af0f154e8c28f25ab6b669bc31bc) | fix | **mdc-list:** don't access class before initialization ([#25049](https://github.com/angular/components/pull/25049)) |
+## Special Thanks
+Jenny Johnson, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner and antuxity
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.0-next.0"></a>
 # 14.1.0-next.0 "air-binding" (2022-06-07)
 ### cdk-experimental
