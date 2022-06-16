@@ -907,6 +907,13 @@ export interface CanMatch {
       Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 }
 
+/**
+ * The signature of a function used as a `CanMatch` guard on a `Route`.
+ *
+ * @publicApi
+ * @see `CanMatch`
+ * @see `Route`
+ */
 export type CanMatchFn = (route: Route, segments: UrlSegment[]) =>
     Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean;
 

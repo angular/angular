@@ -262,7 +262,7 @@ describe('applyRedirects', () => {
         throw 'Should not be reached';
       }
     });
-  })
+  });
 
   describe('lazy loading', () => {
     it('should load config on demand', () => {
