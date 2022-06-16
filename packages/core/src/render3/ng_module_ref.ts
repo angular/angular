@@ -142,11 +142,19 @@ class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {
 /**
  * Create a new environment injector.
  *
+ * Learn more about environment injectors in
+ * [this guide](guide/standalone-components#environment-injectors).
+ *
+ * @param providers An array of providers.
+ * @param parent A parent environment injector.
+ * @param debugName An optional name for this injector instance, which will be used in error
+ *     messages.
+ *
  * @publicApi
  * @developerPreview
  */
 export function createEnvironmentInjector(
-    providers: Array<Provider|ImportedNgModuleProviders>, parent: EnvironmentInjector|null = null,
+    providers: Array<Provider|ImportedNgModuleProviders>, parent: EnvironmentInjector,
     debugName: string|null = null): EnvironmentInjector {
   const adapter = new EnvironmentNgModuleRefAdapter(providers, parent, debugName);
   return adapter.injector;

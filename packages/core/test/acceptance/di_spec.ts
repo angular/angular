@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -210,7 +210,8 @@ describe('importProvidersFrom', () => {
        expect(hasProviderWithToken(providers, C)).toBe(true);
        expect(hasProviderWithToken(providers, D)).toBe(true);
 
-       const injector = createEnvironmentInjector(providers);
+       const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+       const injector = createEnvironmentInjector(providers, parentEnvInjector);
 
        // Verify that overridden token A has the right value.
        expect(injector.get(A)).toBe('Overridden A');
