@@ -174,7 +174,6 @@ export class DomSanitizerImpl extends DomSanitizer {
         }
         throw new Error('unsafe value used in a script context');
       case SecurityContext.URL:
-        const type = getSanitizationBypassType(value);
         if (allowSanitizationBypassOrThrow(value, BypassType.Url)) {
           return unwrapSafeValue(value);
         }
