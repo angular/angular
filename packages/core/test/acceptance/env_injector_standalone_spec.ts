@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, createEnvironmentInjector, importProvidersFrom, InjectionToken, NgModule} from '@angular/core';
+import {Component, createEnvironmentInjector, EnvironmentInjector, importProvidersFrom, InjectionToken, NgModule} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 
 import {internalImportProvidersFrom} from '../../src/di/provider_collection';
 
@@ -22,8 +23,9 @@ describe('environment injector and standalone components', () => {
     class StandaloneComponent {
     }
 
-    const envInjector =
-        createEnvironmentInjector(internalImportProvidersFrom(false, StandaloneComponent));
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    const envInjector = createEnvironmentInjector(
+        internalImportProvidersFrom(false, StandaloneComponent), parentEnvInjector);
     expect(envInjector.get(ModuleService)).toBeInstanceOf(ModuleService);
   });
 
@@ -42,7 +44,9 @@ describe('environment injector and standalone components', () => {
     class AppModule {
     }
 
-    const envInjector = createEnvironmentInjector([importProvidersFrom(AppModule)]);
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    const envInjector =
+        createEnvironmentInjector([importProvidersFrom(AppModule)], parentEnvInjector);
     expect(envInjector.get(ModuleService)).toBeInstanceOf(ModuleService);
   });
 
@@ -68,7 +72,9 @@ describe('environment injector and standalone components', () => {
     class AppModule {
     }
 
-    const envInjector = createEnvironmentInjector([importProvidersFrom(AppModule)]);
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    const envInjector =
+        createEnvironmentInjector([importProvidersFrom(AppModule)], parentEnvInjector);
     const services = envInjector.get(ModuleService) as ModuleService[];
 
     expect(services.length).toBe(1);
@@ -90,7 +96,8 @@ describe('environment injector and standalone components', () => {
         ]
       ]
     ];
-    const envInjector = createEnvironmentInjector(providers);
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    const envInjector = createEnvironmentInjector(providers, parentEnvInjector);
     expect(envInjector.get(A)).toBe('A');
     expect(envInjector.get(B)).toBe('B');
     expect(envInjector.get(C)).toBe('C');

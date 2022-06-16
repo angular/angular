@@ -8,13 +8,15 @@
 
 import {Component, ComponentFactoryResolver, createEnvironmentInjector, ENVIRONMENT_INITIALIZER, EnvironmentInjector, InjectionToken, INJECTOR, Injector, NgModuleRef} from '@angular/core';
 import {R3Injector} from '@angular/core/src/di/r3_injector';
+import {TestBed} from '@angular/core/testing';
 
 describe('environment injector', () => {
   it('should create and destroy an environment injector', () => {
     class Service {}
 
     let destroyed = false;
-    const envInjector = createEnvironmentInjector([Service]) as R3Injector;
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    const envInjector = createEnvironmentInjector([Service], parentEnvInjector) as R3Injector;
     envInjector.onDestroy(() => destroyed = true);
 
     const service = envInjector.get(Service);
@@ -27,38 +29,45 @@ describe('environment injector', () => {
   it('should see providers from a parent EnvInjector', () => {
     class Service {}
 
-    const envInjector = createEnvironmentInjector([], createEnvironmentInjector([Service]));
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    const envInjector =
+        createEnvironmentInjector([], createEnvironmentInjector([Service], parentEnvInjector));
     expect(envInjector.get(Service)).toBeInstanceOf(Service);
   });
 
   it('should shadow providers from the parent EnvInjector', () => {
     const token = new InjectionToken('token');
 
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
     const envInjector = createEnvironmentInjector(
         [{provide: token, useValue: 'child'}],
-        createEnvironmentInjector([{provide: token, useValue: 'parent'}]));
+        createEnvironmentInjector([{provide: token, useValue: 'parent'}], parentEnvInjector));
     expect(envInjector.get(token)).toBe('child');
   });
 
   it('should expose the Injector token', () => {
-    const envInjector = createEnvironmentInjector([]);
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    const envInjector = createEnvironmentInjector([], parentEnvInjector);
     expect(envInjector.get(Injector)).toBe(envInjector);
     expect(envInjector.get(INJECTOR)).toBe(envInjector);
   });
 
   it('should expose the EnvInjector token', () => {
-    const envInjector = createEnvironmentInjector([]);
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    const envInjector = createEnvironmentInjector([], parentEnvInjector);
     expect(envInjector.get(EnvironmentInjector)).toBe(envInjector);
   });
 
   it('should expose the same object as both the Injector and EnvInjector token', () => {
-    const envInjector = createEnvironmentInjector([]);
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    const envInjector = createEnvironmentInjector([], parentEnvInjector);
     expect(envInjector.get(Injector)).toBe(envInjector.get(EnvironmentInjector));
   });
 
   it('should expose the NgModuleRef token', () => {
     class Service {}
-    const envInjector = createEnvironmentInjector([Service]);
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    const envInjector = createEnvironmentInjector([Service], parentEnvInjector);
 
     const ngModuleRef = envInjector.get(NgModuleRef);
 
@@ -78,7 +87,8 @@ describe('environment injector', () => {
          constructor(readonly service: Service) {}
        }
 
-       const envInjector = createEnvironmentInjector([Service]);
+       const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+       const envInjector = createEnvironmentInjector([Service], parentEnvInjector);
        const cfr = envInjector.get(ComponentFactoryResolver);
        const cf = cfr.resolveComponentFactory(TestComponent);
        const cRef = cf.create(Injector.NULL);
@@ -88,17 +98,21 @@ describe('environment injector', () => {
 
   it('should support the ENVIRONMENT_INITIALIZER muli-token', () => {
     let initialized = false;
-    createEnvironmentInjector([{
-      provide: ENVIRONMENT_INITIALIZER,
-      useValue: () => initialized = true,
-      multi: true,
-    }]);
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    createEnvironmentInjector(
+        [{
+          provide: ENVIRONMENT_INITIALIZER,
+          useValue: () => initialized = true,
+          multi: true,
+        }],
+        parentEnvInjector);
 
     expect(initialized).toBeTrue();
   });
 
   it('should adopt environment-scoped providers', () => {
-    const injector = createEnvironmentInjector([]);
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    const injector = createEnvironmentInjector([], parentEnvInjector);
     const EnvScopedToken = new InjectionToken('env-scoped token', {
       providedIn: 'environment' as any,
       factory: () => true,
