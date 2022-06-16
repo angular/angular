@@ -15,7 +15,7 @@ import {runCanLoadGuards} from './operators/check_guards';
 import {RouterConfigLoader} from './router_config_loader';
 import {navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
 import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
-import {forEach, wrapIntoObservable} from './utils/collection';
+import {forEach} from './utils/collection';
 import {getOrCreateRouteInjectorIfNeeded, getOutlet, sortByMatchingOutlets} from './utils/config';
 import {isImmediateMatch, match, matchWithChecks, noLeftoversInUrl, split} from './utils/config_matching';
 
@@ -289,9 +289,8 @@ class ApplyRedirects {
             switchMap(({matched, consumedSegments, remainingSegments}) => {
               if (!matched) return noMatch(rawSegmentGroup);
 
-              // Only create the Route's `EnvironmentInjector` if it matches the attempted
-              // navigation
-              injector = getOrCreateRouteInjectorIfNeeded(route, injector);
+              // If the route has an injector created from providers, we should start using that.
+              injector = route._injector ?? injector;
               const childConfig$ = this.getChildConfig(injector, route, segments);
 
               return childConfig$.pipe(mergeMap((routerConfig: LoadedRouterConfig) => {
