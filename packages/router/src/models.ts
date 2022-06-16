@@ -835,7 +835,7 @@ export type CanDeactivateFn<T> =
  * class CanMatchTeamSection implements CanMatch {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
  *
- *   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean>|Promise<boolean>|boolean {
+ *   canMatch(route: Route, segments: UrlSegment[]): Observable<boolean>|Promise<boolean>|boolean {
  *     return this.permissions.canAccess(this.currentUser, route, segments);
  *   }
  * }
@@ -873,6 +873,8 @@ export type CanDeactivateFn<T> =
  * You can alternatively provide an in-line function with the `canMatch` signature:
  *
  * ```
+ * const CAN_MATCH_TEAM_SECTION = new InjectionToken('CanMatchTeamSection');
+ *
  * @NgModule({
  *   imports: [
  *     RouterModule.forRoot([
@@ -880,7 +882,7 @@ export type CanDeactivateFn<T> =
  *         path: 'team/:id',
  *         component: TeamComponent,
  *         loadChildren: () => import('./team').then(mod => mod.TeamModule),
- *         canMatch: ['canMatchTeamSection']
+ *         canMatch: [CAN_MATCH_TEAM_SECTION]
  *       },
  *       {
  *         path: '**',
@@ -890,7 +892,7 @@ export type CanDeactivateFn<T> =
  *   ],
  *   providers: [
  *     {
- *       provide: 'canMatchTeamSection',
+ *       provide: CAN_MATCH_TEAM_SECTION,
  *       useValue: (route: Route, segments: UrlSegment[]) => true
  *     }
  *   ]
