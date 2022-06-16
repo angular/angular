@@ -91,6 +91,22 @@ aio-nav-menu {
       }
     }
 
+    a.vertical-menu-item {
+      &[href^="http:"],
+      &[href^="https:"] {
+        .vertical-menu-item-text {
+          display: inline-flex;
+          align-items: center;
+          &::after {
+            content: "\e89e"; // codepoint for "open_in_new"
+            margin-left: 0.3rem;
+            line-height: normal;
+            font-family: "Material Icons";
+          }
+        }
+      }
+    }
+
     button.vertical-menu-item {
       border: none;
       background-color: transparent;
