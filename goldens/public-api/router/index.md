@@ -142,6 +142,9 @@ export interface CanMatch {
 }
 
 // @public
+export type CanMatchFn = (route: Route, segments: UrlSegment[]) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean;
+
+// @public
 export class ChildActivationEnd {
     constructor(
     snapshot: ActivatedRouteSnapshot);
