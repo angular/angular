@@ -4,7 +4,7 @@
 @use 'sass:color';
 @use 'sass:map';
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);

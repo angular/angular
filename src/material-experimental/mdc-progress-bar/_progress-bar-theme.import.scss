@@ -1,6 +1,6 @@
-@forward '../mdc-helpers/mdc-helpers.import';
-@forward '../mdc-helpers/mdc-helpers';
+@forward '../mdc-core/mdc-helpers/mdc-helpers.import';
+@forward '../mdc-core/mdc-helpers/mdc-helpers';
 @forward 'progress-bar-theme' hide color, density, theme, typography;
 @forward 'progress-bar-theme' as mat-mdc-progress-bar-* hide mat-mdc-progress-bar-color;
 
-@import '../mdc-helpers/mdc-helpers';
+@import '../mdc-core/mdc-helpers/mdc-helpers';

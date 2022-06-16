@@ -1,5 +1,5 @@
-@forward '../mdc-helpers/mdc-helpers.import';
-@forward '../mdc-helpers/mdc-helpers';
+@forward '../mdc-core/mdc-helpers/mdc-helpers.import';
+@forward '../mdc-core/mdc-helpers/mdc-helpers';
 @forward 'menu-theme' as mat-mdc-menu-*;
 
-@import '../mdc-helpers/mdc-helpers';
+@import '../mdc-core/mdc-helpers/mdc-helpers';

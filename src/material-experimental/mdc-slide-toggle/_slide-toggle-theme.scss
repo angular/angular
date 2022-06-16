@@ -5,7 +5,7 @@
 @use '@material/theme/color-palette' as mdc-color-palette;
 @use '@material/form-field' as mdc-form-field;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 // Generates all color mapping for the properties that only change based on the theme.
 @function _get-theme-base-map($is-dark) {

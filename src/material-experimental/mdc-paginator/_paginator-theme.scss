@@ -3,7 +3,7 @@
 @use '@material/typography' as mdc-typography;
 @use 'sass:map';
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './paginator-variables';
 
 @mixin color($config-or-theme) {

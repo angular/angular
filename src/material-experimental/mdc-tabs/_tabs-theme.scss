@@ -8,7 +8,7 @@
 @use '@material/tab/mixins' as mdc-tab-mixins;
 @use '@material/tab-bar' as mdc-tab-bar;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);

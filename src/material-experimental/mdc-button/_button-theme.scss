@@ -8,7 +8,7 @@
 @use '@material/button/button-outlined-theme' as mdc-button-outlined-theme;
 @use '@material/theme/theme-color' as mdc-theme-color;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './button-theme-private';
 
 @mixin _button-variant($color) {

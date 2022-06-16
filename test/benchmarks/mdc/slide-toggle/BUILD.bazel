@@ -18,5 +18,5 @@ component_benchmark(
     ],
     ng_srcs = [":app.module.ts"],
     prefix = "",
-    styles = ["//src/material-experimental/mdc-theming:indigo_pink_prebuilt"],
+    styles = ["//src/material-experimental/mdc-core/theming:indigo_pink_prebuilt"],
 )

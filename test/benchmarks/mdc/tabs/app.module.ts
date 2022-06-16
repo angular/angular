@@ -27,7 +27,7 @@ import {threeTabs, tenTabs, twentyTabs} from './fake-tab-data';
     <mat-tab-group *ngIf="areTwentyTabsVisible">${twentyTabs}</mat-tab-group>
   `,
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['//src/material-experimental/mdc-theming/prebuilt/indigo-pink.css'],
+  styleUrls: ['//src/material-experimental/mdc-core/theming/prebuilt/indigo-pink.css'],
 })
 export class TabsBenchmarkApp {
   areThreeTabsVisible = false;

@@ -4,7 +4,7 @@
 @use '@material/radio/radio-theme' as mdc-radio-theme;
 @use '@material/radio/radio' as mdc-radio;
 @use '@material/form-field' as mdc-form-field;
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin _color-palette($color-palette) {
   @include mdc-radio-theme.theme((

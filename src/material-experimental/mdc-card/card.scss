@@ -1,6 +1,6 @@
 @use 'sass:math';
 @use '@material/card' as mdc-card;
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 // TODO(jelbourn): move header and title-group styles to their own files.
 

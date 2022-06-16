@@ -40,7 +40,7 @@ import {MatRadioModule} from '@angular/material-experimental/mdc-radio';
     </mat-radio-group>
   `,
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['//src/material-experimental/mdc-theming/prebuilt/indigo-pink.css'],
+  styleUrls: ['//src/material-experimental/mdc-core/theming/prebuilt/indigo-pink.css'],
 })
 export class RadioBenchmarkApp {
   isTwoVisible = false;

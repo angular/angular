@@ -1,6 +1,6 @@
 @forward '../../material/core/theming/theming.import';
-@forward '../mdc-helpers/mdc-helpers.import';
-@forward '../mdc-helpers/mdc-helpers';
+@forward '../mdc-core/mdc-helpers/mdc-helpers.import';
+@forward '../mdc-core/mdc-helpers/mdc-helpers';
 @forward 'form-field-sizing';
 @forward 'form-field-native-select' hide private-form-field-native-select,
 private-form-field-native-select-color;
@@ -24,7 +24,7 @@ $mat-mdc-mdc-text-field-outlined-idle-border, $mat-mdc-mdc-text-field-placeholde
 @forward 'form-field-theme' hide color, density, theme, typography;
 @forward 'form-field-theme' as mat-mdc-form-field-* hide mat-mdc-form-field-text-field-color-styles;
 
-@import '../mdc-helpers/mdc-helpers';
+@import '../mdc-core/mdc-helpers/mdc-helpers';
 @import 'form-field-density';
 @import 'form-field-subscript';
 @import 'form-field-focus-overlay';

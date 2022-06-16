@@ -4,7 +4,7 @@
 @use '@material/icon-button/icon-button-theme' as mdc-icon-button-theme;
 @use '@material/theme/theme-color' as mdc-theme-color;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './button-theme-private';
 
 @mixin color($config-or-theme) {

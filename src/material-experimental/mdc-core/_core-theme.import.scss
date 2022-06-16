@@ -1,6 +1,6 @@
 @forward '../../material/core/theming/theming.import';
-@forward '../mdc-helpers/mdc-helpers.import';
-@forward '../mdc-helpers/mdc-helpers';
+@forward './mdc-helpers/mdc-helpers.import';
+@forward './mdc-helpers/mdc-helpers';
 @forward 'option/option-theme' as mat-mdc-*;
 @forward 'option/optgroup-theme' as mat-mdc-optgroup-*;
 @forward 'core-theme' as mat-mdc-core-*;

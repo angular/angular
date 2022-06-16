@@ -32,7 +32,7 @@ import {MatInputModule} from '@angular/material-experimental/mdc-input';
     </mat-form-field>
   `,
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['//src/material-experimental/mdc-theming/prebuilt/indigo-pink.css'],
+  styleUrls: ['//src/material-experimental/mdc-core/theming/prebuilt/indigo-pink.css'],
 })
 export class FormFieldBenchmarkApp {
   isInputVisible = false;

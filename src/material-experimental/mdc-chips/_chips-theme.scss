@@ -7,7 +7,7 @@
 @use 'sass:color';
 @use 'sass:map';
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 // Customizes the appearance of a chip. Note that ideally we would be doing this using the
 // `theme-styles` mixin, however it has the following problems:

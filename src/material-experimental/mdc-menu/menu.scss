@@ -5,7 +5,7 @@
 @use '@material/list/evolution-mixins' as mdc-list-mixins;
 @use '@material/list/evolution-variables' as mdc-list-variables;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-menu-surface.core-styles($query: structure);

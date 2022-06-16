@@ -4,7 +4,7 @@
 @use '@material/list/evolution-variables' as mdc-list-variables;
 @use '@material/checkbox/checkbox-theme' as mdc-checkbox-theme;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use '../mdc-checkbox/checkbox-private';
 @use './list-option-trailing-avatar-compat';
 

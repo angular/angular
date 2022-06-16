@@ -3,15 +3,15 @@ load("//tools:defaults.bzl", "sass_library")
 package(default_visibility = ["//visibility:public"])
 
 filegroup(
-    name = "mdc-density",
-    srcs = [":all_density"],
+    name = "color",
+    srcs = [":all_color"],
 )
 
 sass_library(
-    name = "all_density",
-    srcs = ["_all-density.scss"],
+    name = "all_color",
+    srcs = ["_all-color.scss"],
     deps = [
         "//src/material:sass_lib",
-        "//src/material-experimental/mdc-theming:all_themes",
+        "//src/material-experimental/mdc-core/theming:all_themes",
     ],
 )

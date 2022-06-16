@@ -3,7 +3,7 @@
 @use '@material/list/evolution-variables' as mdc-list-variables;
 @use 'sass:map';
 
-@use '../../mdc-helpers/mdc-helpers';
+@use '../mdc-helpers/mdc-helpers';
 
 .mat-mdc-option {
   @include mdc-list-mixins.item-base;

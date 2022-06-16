@@ -25,7 +25,7 @@ import {
   selector: 'app-root',
   templateUrl: './app.module.html',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['//src/material-experimental/mdc-theming/prebuilt/indigo-pink.css'],
+  styleUrls: ['//src/material-experimental/mdc-core/theming/prebuilt/indigo-pink.css'],
 })
 export class TableBenchmarkApp {
   fiveCols = fiveCols;

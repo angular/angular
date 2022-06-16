@@ -3,7 +3,7 @@
 @use '@angular/material' as mat;
 @use '@material/theme/theme-color' as mdc-theme-color;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 // Width of the Material Design form-field select arrow.
 $mat-form-field-select-arrow-width: 10px;

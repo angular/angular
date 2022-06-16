@@ -6,7 +6,7 @@
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/typography/typography' as mdc-typography;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './form-field-density';
 @use './form-field-subscript';
 @use './form-field-focus-overlay';

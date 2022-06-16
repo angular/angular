@@ -1,6 +1,6 @@
 @forward '../../material/core/style/private.import';
-@forward '../mdc-helpers/mdc-helpers.import';
-@forward '../mdc-helpers/mdc-helpers';
+@forward '../mdc-core/mdc-helpers/mdc-helpers.import';
+@forward '../mdc-core/mdc-helpers/mdc-helpers';
 @forward '../../material/core/style/vendor-prefixes.import';
 @forward '../../cdk/a11y/index.import';
 @forward 'tabs-common' hide paginated-tab-header, paginated-tab-header-container,
@@ -11,4 +11,4 @@ paginated-tab-header-item-wrapper, tab, tab-ripple;
 @import '../../material/core/style/private';
 @import '../../material/core/style/vendor-prefixes';
 @import '../../cdk/a11y';
-@import '../mdc-helpers/mdc-helpers';
+@import '../mdc-core/mdc-helpers/mdc-helpers';

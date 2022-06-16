@@ -2,7 +2,7 @@
 @use '@material/menu-surface/mixins' as mdc-menu-surface;
 @use '@material/list/evolution-mixins' as mdc-list;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);

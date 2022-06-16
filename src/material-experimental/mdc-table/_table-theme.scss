@@ -4,7 +4,7 @@
 @use '@material/data-table/data-table' as mdc-data-table;
 @use '@material/data-table' as mdc-data-table-theme;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);

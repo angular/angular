@@ -21,5 +21,5 @@ component_benchmark(
         "fake-tab-data.ts",
     ],
     prefix = "",
-    styles = ["//src/material-experimental/mdc-theming:indigo_pink_prebuilt"],
+    styles = ["//src/material-experimental/mdc-core/theming:indigo_pink_prebuilt"],
 )

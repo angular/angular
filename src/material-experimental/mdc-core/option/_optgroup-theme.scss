@@ -1,7 +1,7 @@
 @use '@material/theme/theme' as mdc-theme;
 @use '@angular/material' as mat;
 
-@use '../../mdc-helpers/mdc-helpers';
+@use '../mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);

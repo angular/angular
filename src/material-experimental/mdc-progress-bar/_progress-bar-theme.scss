@@ -3,7 +3,7 @@
 @use '@material/linear-progress' as mdc-linear-progress;
 @use 'sass:color';
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin _palette-styles($color) {
   // TODO(crisbeto): the buffer color should come from somewhere in MDC, however at the time of

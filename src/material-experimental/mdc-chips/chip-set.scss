@@ -1,5 +1,5 @@
 @use '@material/chips/chip-set' as mdc-chip-set;
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @include mdc-chip-set.core-styles($query: mdc-helpers.$mat-base-styles-query);
 

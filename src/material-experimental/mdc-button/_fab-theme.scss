@@ -4,7 +4,7 @@
 @use '@material/fab/fab-theme' as mdc-fab-theme;
 @use '@material/theme/theme-color' as mdc-theme-color;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './button-theme-private';
 
 @mixin _fab-variant($foreground, $background) {

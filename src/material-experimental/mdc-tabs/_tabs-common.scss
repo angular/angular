@@ -4,7 +4,7 @@
 @use '@material/tab-indicator' as mdc-tab-indicator;
 @use 'sass:map';
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 $mat-tab-animation-duration: 500ms !default;
 

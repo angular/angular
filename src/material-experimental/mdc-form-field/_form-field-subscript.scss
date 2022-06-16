@@ -6,7 +6,7 @@
 @use '@material/textfield/variables' as mdc-textfield-variables;
 
 @use './form-field-sizing';
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin private-form-field-subscript() {
   // Wrapper for the hints and error messages.

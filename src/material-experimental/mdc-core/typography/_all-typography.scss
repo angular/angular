@@ -2,7 +2,7 @@
 @use '@material/typography' as mdc-typography;
 @use 'sass:map';
 
-@use '../mdc-theming/all-theme';
+@use '../theming/all-theme';
 @use '../mdc-helpers/mdc-helpers';
 
 /// Generates an Angular Material typography config based on values from the official Material

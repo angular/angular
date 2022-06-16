@@ -3,7 +3,7 @@ load("//tools:defaults.bzl", "sass_binary", "sass_library")
 package(default_visibility = ["//visibility:public"])
 
 filegroup(
-    name = "mdc-theming",
+    name = "theming",
     srcs = [
         ":all_themes",
         ":deeppurple_amber_prebuilt",

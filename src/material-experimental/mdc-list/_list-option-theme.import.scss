@@ -1,5 +1,5 @@
-@forward '../mdc-helpers/mdc-helpers.import';
-@forward '../mdc-helpers/mdc-helpers';
+@forward '../mdc-core/mdc-helpers/mdc-helpers.import';
+@forward '../mdc-core/mdc-helpers/mdc-helpers';
 @forward '../mdc-checkbox/checkbox-theme' hide color, density, private-checkbox-styles-with-color,
 theme, typography;
 @forward '../mdc-checkbox/checkbox-theme' as mat-mdc-* hide $mat-mdc-mdc-checkbox-border-color,

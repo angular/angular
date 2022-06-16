@@ -1,6 +1,6 @@
 @use '@material/dialog' as mdc-dialog;
 @use '@material/dialog/dialog-theme' as mdc-dialog-theme;
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './mdc-dialog-structure-overrides';
 
 // Theme map with values for variables that will be overriden in the theme.

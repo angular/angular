@@ -2,7 +2,7 @@
 @use '@angular/material' as mat;
 @use '@material/touch-target' as mdc-touch-target;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 // Adds styles necessary to provide stateful interactions with the button. This includes providing
 // content for the state container's ::before and ::after so that they can be given a background

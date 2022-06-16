@@ -6,7 +6,7 @@
 @use '@material/typography' as mdc-typography;
 @use '@material/ripple' as mdc-ripple;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);

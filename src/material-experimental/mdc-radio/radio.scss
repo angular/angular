@@ -6,7 +6,7 @@
 @use '@material/touch-target' as mdc-touch-target;
 @use '@material/ripple' as mdc-ripple;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-radio.static-styles($query: mdc-helpers.$mat-base-styles-query);

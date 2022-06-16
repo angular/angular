@@ -1,8 +1,8 @@
-@forward '../mdc-helpers/mdc-helpers.import';
-@forward '../mdc-helpers/mdc-helpers';
+@forward '../mdc-core/mdc-helpers/mdc-helpers.import';
+@forward '../mdc-core/mdc-helpers/mdc-helpers';
 @forward 'chips-theme' hide color, density, theme, typography;
 @forward 'chips-theme' as mat-mdc-chips-* hide $mat-mdc-chips-mdc-chips-fill-color-default,
 $mat-mdc-chips-mdc-chips-icon-color, $mat-mdc-chips-mdc-chips-ink-color-default,
 mat-mdc-chips-selected-color;
 
-@import '../mdc-helpers/mdc-helpers';
+@import '../mdc-core/mdc-helpers/mdc-helpers';

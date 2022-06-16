@@ -1,7 +1,7 @@
 @use '@angular/cdk';
 @use '@material/circular-progress' as mdc-circular-progress;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-circular-progress.core-styles($query: mdc-helpers.$mat-base-styles-query);

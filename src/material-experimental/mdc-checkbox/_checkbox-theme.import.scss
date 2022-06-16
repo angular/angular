@@ -1,5 +1,5 @@
-@forward '../mdc-helpers/mdc-helpers.import';
-@forward '../mdc-helpers/mdc-helpers';
+@forward '../mdc-core/mdc-helpers/mdc-helpers.import';
+@forward '../mdc-core/mdc-helpers/mdc-helpers';
 @forward 'checkbox-theme' hide color, density, private-checkbox-styles-with-color, theme,
 typography;
 @forward 'checkbox-theme' as mat-mdc-* hide $mat-mdc-mdc-checkbox-border-color,
@@ -12,4 +12,4 @@ mat-mdc-checkbox-background-focus-indicator-checked-color,
 mat-mdc-checkbox-background-focus-indicator-color,
 mat-mdc-checkbox-private-checkbox-styles-with-color;
 
-@import '../mdc-helpers/mdc-helpers';
+@import '../mdc-core/mdc-helpers/mdc-helpers';

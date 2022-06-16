@@ -6,7 +6,7 @@
 @use '@material/touch-target' as mdc-touch-target;
 @use 'sass:map';
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './checkbox-private';
 
 @include mdc-helpers.disable-fallback-declarations {

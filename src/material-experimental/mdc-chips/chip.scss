@@ -3,7 +3,7 @@
 @use '@material/chips/chip' as mdc-chip;
 @use '@material/chips/chip-theme' as mdc-chip-theme;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @include mdc-chip.without-ripple-styles($query: mdc-helpers.$mat-base-styles-query);
 

@@ -3,7 +3,7 @@
 @use '@material/tooltip/tooltip';
 @use '@material/tooltip' as tooltip-theme;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);

@@ -1,5 +1,5 @@
 @use '@material/slider/slider' as mdc-slider;
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-slider.without-ripple($query: mdc-helpers.$mat-base-styles-query);

@@ -9,7 +9,7 @@
 @use './form-field-native-select';
 @use './mdc-text-field-textarea-overrides';
 @use './mdc-text-field-structure-overrides';
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 // Base styles for MDC text-field, notched-outline, floating label and line-ripple.
 @include mdc-helpers.disable-fallback-declarations {

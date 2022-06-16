@@ -1,6 +1,6 @@
 @use '@angular/material' as mat;
 
-@use '../mdc-theming/all-theme';
+@use '../theming/all-theme';
 
 @mixin all-mdc-component-densities($config-or-theme) {
   // In case a theme object has been passed instead of a configuration for

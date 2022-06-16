@@ -4,7 +4,7 @@
 @use '@material/list/evolution-mixins' as mdc-list;
 @use '@material/typography' as mdc-typography;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 // Gets the color to use for some text that is highlighted while a select has focus.
 @function _get-mdc-focused-text-color($palette) {

@@ -1,7 +1,7 @@
 @forward '../../../material/core/theming/theming.import';
-@forward '../../mdc-helpers/mdc-helpers.import';
-@forward '../../mdc-helpers/mdc-helpers';
+@forward '../mdc-helpers/mdc-helpers.import';
+@forward '../mdc-helpers/mdc-helpers';
 @forward 'option-theme' as mat-mdc-option-*;
 
-@import '../../mdc-helpers/mdc-helpers';
+@import '../mdc-helpers/mdc-helpers';
 @import '../../../material/core/theming/theming';

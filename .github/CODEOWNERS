@@ -103,12 +103,9 @@
 /src/material-experimental/mdc-card/**             @mmalerba
 /src/material-experimental/mdc-checkbox/**         @mmalerba
 /src/material-experimental/mdc-chips/**            @mmalerba
-/src/material-experimental/mdc-color/**            @andrewseguin @devversion
 /src/material-experimental/mdc-core/**             @crisbeto
-/src/material-experimental/mdc-density/**          @devversion
 /src/material-experimental/mdc-dialog/**           @devversion
 /src/material-experimental/mdc-form-field/**       @devversion @mmalerba
-/src/material-experimental/mdc-helpers/**          @mmalerba
 /src/material-experimental/mdc-input/**            @devversion @mmalerba
 /src/material-experimental/mdc-list/**             @mmalerba @devversion
 /src/material-experimental/mdc-menu/**             @crisbeto
@@ -123,8 +120,6 @@
 /src/material-experimental/mdc-tabs/**             @crisbeto
 /src/material-experimental/mdc-tooltip/**          @crisbeto
 /src/material-experimental/mdc-table/**            @andrewseguin
-/src/material-experimental/mdc-theming/**          @mmalerba
-/src/material-experimental/mdc-typography/**       @mmalerba
 /src/material-experimental/menubar/**              @jelbourn
 /src/material-experimental/popover-edit/**         @andrewseguin
 /src/material-experimental/selection/**            @andrewseguin

@@ -3,7 +3,7 @@ load("//tools:defaults.bzl", "sass_library")
 package(default_visibility = ["//visibility:public"])
 
 filegroup(
-    name = "mdc-typography",
+    name = "typography",
     srcs = [":all_typography"],
 )
 
@@ -12,6 +12,6 @@ sass_library(
     srcs = ["_all-typography.scss"],
     deps = [
         "//src/material:sass_lib",
-        "//src/material-experimental/mdc-theming:all_themes",
+        "//src/material-experimental/mdc-core/theming:all_themes",
     ],
 )

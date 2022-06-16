@@ -1,7 +1,7 @@
 @use 'sass:map';
 @use '@material/list/evolution-mixins' as mdc-list-mixins;
 @use '@material/list/evolution-variables' as mdc-list-variables;
-@use '../../mdc-helpers/mdc-helpers';
+@use '../mdc-helpers/mdc-helpers';
 
 .mat-mdc-optgroup-label {
   @include mdc-list-mixins.item-base;

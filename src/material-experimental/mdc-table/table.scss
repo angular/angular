@@ -1,6 +1,6 @@
 @use '@angular/material' as mat;
 @use '@material/data-table/data-table' as mdc-data-table;
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-data-table.table-styles(

@@ -47,7 +47,7 @@ component by following these steps:
 
 5. Ensure color and typography styles for `@angular/material-experimental` are set up. Either
    use a custom theme and use the `mat-mdc-dialog-theme` mixin, or use a prebuilt theme
-   from `@angular/material-experimental/mdc-theming/prebuilt`.
+   from `@angular/material-experimental/mdc-core/theming/prebuilt`.
 
 ## API differences
 

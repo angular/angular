@@ -1,7 +1,7 @@
 @use '@angular/cdk';
 @use '@material/snackbar' as mdc-snackbar;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @include mdc-helpers.disable-fallback-declarations {
   // Include the styles without the animations since we

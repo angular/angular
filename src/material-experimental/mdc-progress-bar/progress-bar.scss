@@ -1,5 +1,5 @@
 @use '@material/linear-progress' as mdc-linear-progress;
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-linear-progress.core-styles($query: mdc-helpers.$mat-base-styles-query);

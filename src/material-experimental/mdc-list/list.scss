@@ -1,7 +1,7 @@
 @use '@angular/material' as mat;
 @use '@material/list/evolution-mixins' as mdc-list;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @include mdc-helpers.disable-fallback-declarations {
   @include mdc-list.without-ripple($query: mdc-helpers.$mat-base-styles-query);

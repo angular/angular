@@ -3,7 +3,7 @@
 @use '@material/density/functions' as density-functions;
 @use '@material/list/evolution-mixins' as mdc-list;
 @use '@material/list/evolution-variables' as mdc-list-variables;
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 // For compatibility with the non-MDC selection list, we support avatars that are
 // shown at the end of the list option. This is not supported by the MDC list as the

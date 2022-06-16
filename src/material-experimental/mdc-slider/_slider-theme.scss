@@ -5,7 +5,7 @@
 @use '@material/slider/slider-theme';
 @use '@material/theme/variables' as theme-variables;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);

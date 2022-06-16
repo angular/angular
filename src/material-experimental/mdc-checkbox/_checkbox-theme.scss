@@ -7,7 +7,7 @@
 @use 'sass:map';
 @use 'sass:color';
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './checkbox-private';
 
 // Apply ripple colors to the MatRipple element and the MDC ripple element when the

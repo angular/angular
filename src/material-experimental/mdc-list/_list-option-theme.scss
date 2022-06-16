@@ -1,6 +1,6 @@
 @use '@material/checkbox' as mdc-checkbox;
 @use '../mdc-checkbox/checkbox-private';
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './list-option-trailing-avatar-compat';
 
 // Mixin that overrides the selected item and checkbox colors for list options. By

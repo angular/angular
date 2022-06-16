@@ -2,7 +2,7 @@
 @use '@material/fab' as mdc-fab;
 @use '@material/elevation/elevation-theme' as mdc-elevation-theme;
 
-@use '../mdc-helpers/mdc-helpers';
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './button-base';
 
 @include mdc-helpers.disable-fallback-declarations {
