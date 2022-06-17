@@ -14,11 +14,11 @@ import {BEFORE_APP_SERIALIZED} from './tokens';
 
 export function serializeTransferStateFactory(
     doc: Document, appId: string, transferStore: TransferState) {
-  return () => {
+  return async () => {
     const script = doc.createElement('script');
     script.id = appId + '-state';
     script.setAttribute('type', 'application/json');
-    script.textContent = escapeHtml(transferStore.toJson());
+    script.textContent = escapeHtml(await transferStore.toJsonAsync());
     doc.body.appendChild(script);
   };
 }

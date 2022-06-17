@@ -124,12 +124,13 @@ export class TransferState {
   /**
    * Register a callback to provide the value for a key when `toJson` is called.
    */
-  onSerialize<T>(key: StateKey<T>, callback: () => T): void {
+  onSerialize<T>(key: StateKey<T>, callback: () => (T | Promise<T>)): void {
     this.onSerializeCallbacks[key] = callback;
   }
 
   /**
    * Serialize the current state of the store to JSON.
+   * @deprecated use `toJsonAsync()`
    */
   toJson(): string {
     // Call the onSerialize callbacks and put those values into the store.
@@ -138,10 +139,27 @@ export class TransferState {
         try {
           this.store[key] = this.onSerializeCallbacks[key]();
         } catch (e) {
-          console.warn('Exception in onSerialize callback: ', e);
+          console.warn(`Exception in onSerialize callback on key "${key}": `, e);
         }
       }
     }
+    return JSON.stringify(this.store);
+  }
+
+  /**
+   * Resolve all serialize callbacks as promise and serialize the current state of the store to JSON.
+   */
+  async toJsonAsync(): Promise<string> {
+    // Call the onSerialize callbacks and put those values into the store.
+    await Promise.all(Object.entries(this.onSerializeCallbacks).map(async ([key,callback]) => {
+      if (this.onSerializeCallbacks.hasOwnProperty(key)) {
+        try {
+          this.store[key] = await Promise.resolve(callback());
+        } catch (e) {
+          console.warn(`Exception in onSerialize callback on key "${key}": `, e);
+        }
+      }
+    }));
     return JSON.stringify(this.store);
   }
 }
