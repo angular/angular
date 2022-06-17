@@ -21,16 +21,14 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  * @returns Set of providers to configure the Imgix loader.
  */
 export const provideImgixLoader =
-    createImageLoader(imgixLoaderFactory, ngDevMode ? ['https://somepath.imgix.net/'] : undefined);
+    createImageLoader(createImgixURL, ngDevMode ? ['https://somepath.imgix.net/'] : undefined);
 
-function imgixLoaderFactory(path: string) {
-  return (config: ImageLoaderConfig) => {
-    const url = new URL(`${path}/${config.src}`);
-    // This setting ensures the smallest allowable format is set.
-    url.searchParams.set('auto', 'format');
-    if (config.width) {
-      url.searchParams.set('w', config.width.toString());
-    }
-    return url.href;
-  };
+function createImgixURL(path: string, config: ImageLoaderConfig) {
+  const url = new URL(`${path}/${config.src}`);
+  // This setting ensures the smallest allowable format is set.
+  url.searchParams.set('auto', 'format');
+  if (config.width) {
+    url.searchParams.set('w', config.width.toString());
+  }
+  return url.href;
 }
