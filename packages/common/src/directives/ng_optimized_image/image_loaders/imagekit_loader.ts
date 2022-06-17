@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {normalizeSrc} from '../util';
-
 import {createImageLoader, ImageLoaderConfig} from './image_loader';
 
 /**
@@ -36,7 +34,6 @@ export function imagekitLoaderFactory(path: string) {
     if (config.width) {
       params += `,w-${config.width}`;
     }
-    const url = `${path}/${params}/${normalizeSrc(config.src)}`;
-    return url;
+    return `${path}/${params}/${config.src}`;
   };
 }

@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {normalizeSrc} from '../util';
-
 import {createImageLoader, ImageLoaderConfig} from './image_loader';
 
 /**
@@ -27,7 +25,7 @@ export const provideImgixLoader =
 
 function imgixLoaderFactory(path: string) {
   return (config: ImageLoaderConfig) => {
-    const url = new URL(`${path}/${normalizeSrc(config.src)}`);
+    const url = new URL(`${path}/${config.src}`);
     // This setting ensures the smallest allowable format is set.
     url.searchParams.set('auto', 'format');
     if (config.width) {
