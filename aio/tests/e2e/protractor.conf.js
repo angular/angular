@@ -4,6 +4,29 @@
 
 const { SpecReporter, StacktraceOption } = require('jasmine-spec-reporter');
 const path = require('path')
+const os = require('os');
+
+if (os.platform() === 'win32') {
+  /*
+    For some unknown reason, the symlinked copy of chromium under runfiles won't run under
+    karma on Windows. Instead, modify the CHROME_BIN env var to point to the chrome binary
+    under external/ in the execroot.
+
+    CHROME_BIN is set to the make var $(CHROMIUM) in aio/BUILD.bazel, which points to chrome
+    under runfiles and thus starts with ../. Because we run architect with a chdir into aio,
+    $(CHROMIUM) additionally has a second ../.
+
+    First, back out of
+        bazel-out/x64_windows-fastbuild/bin/aio/e2e.bat.runfiles/angular/aio
+    Then go into
+        external/
+    and then into
+        org_chromium_chromium_windows/chrome-win
+    to cancel out the leading ../../
+  */
+  process.env.CHROME_BIN = `../../../../../../../external/org_chromium_chromium_windows/chrome-win/${process.env.CHROME_BIN}`;
+}
+
 /**
  * @type { import("protractor").Config }
  */
