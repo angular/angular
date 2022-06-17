@@ -6,7 +6,7 @@ module.exports = function getImageDimensions() {
     let error;
     for (const basePath of basePaths) {
       try {
-        return sizeOf(resolve(basePath, path));
+        return sizeOf(join(basePath, path));
       } catch (e) {
         // Fall back to next basePath if not found
         error = e;
