@@ -441,7 +441,13 @@ export class R3TestBedCompiler {
    * and all imported NgModules and standalone components recursively.
    */
   private applyProviderOverridesInScope(type: Type<any>): void {
-    if (this.scopesWithOverriddenProviders.has(type)) {
+    const hasScope = isStandaloneComponent(type) || isNgModule(type);
+
+    // The function can be re-entered recursively while inspecting dependencies
+    // of an NgModule or a standalone component. Exit early if we come across a
+    // type that can not have a scope (directive or pipe) or the type is already
+    // processed earlier.
+    if (!hasScope || this.scopesWithOverriddenProviders.has(type)) {
       return;
     }
     this.scopesWithOverriddenProviders.add(type);
@@ -461,14 +467,7 @@ export class R3TestBedCompiler {
       const def = getComponentDef(type);
       const dependencies = maybeUnwrapFn(def.dependencies ?? []);
       for (const dependency of dependencies) {
-        // Proceed with examining dependencies recursively
-        // when a dependency is a standalone component or an NgModule.
-        // In AOT, the `dependencies` might also contain regular (NgModule-based)
-        // Component, Directive and Pipes. Skip them here, they are handled in a
-        // different location (in the `configureTestingModule` function).
-        if (isStandaloneComponent(dependency) || hasNgModuleDef(dependency)) {
-          this.applyProviderOverridesInScope(dependency);
-        }
+        this.applyProviderOverridesInScope(dependency);
       }
     } else {
       const providers = [
@@ -878,6 +877,10 @@ function getComponentDef(value: Type<unknown>): ComponentDef<unknown>|null {
 
 function hasNgModuleDef<T>(value: Type<T>): value is NgModuleType<T> {
   return value.hasOwnProperty('ɵmod');
+}
+
+function isNgModule<T>(value: Type<T>): boolean {
+  return hasNgModuleDef(value);
 }
 
 function maybeUnwrapFn<T>(maybeFn: (() => T)|T): T {
