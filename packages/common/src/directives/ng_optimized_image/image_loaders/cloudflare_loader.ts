@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {normalizeSrc} from '../util';
-
 import {createImageLoader, ImageLoaderConfig} from './image_loader';
 
 /**
@@ -30,7 +28,6 @@ function cloudflareLoaderFactory(path: string) {
     if (config.width) {
       params += `,width=${config.width}`;
     }
-    const url = `${path}/cdn-cgi/image/${params}/${normalizeSrc(config.src)}`;
-    return url;
+    return `${path}/cdn-cgi/image/${params}/${config.src}`;
   };
 }

@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {normalizeSrc} from '../util';
-
 import {createImageLoader, ImageLoaderConfig} from './image_loader';
 
 /**
@@ -42,7 +40,6 @@ function cloudinaryLoaderFactory(path: string) {
     if (config.width) {
       params += `,w_${config.width}`;
     }
-    const url = `${path}/image/upload/${params}/${normalizeSrc(config.src)}`;
-    return url;
+    return `${path}/image/upload/${params}/${config.src}`;
   };
 }
