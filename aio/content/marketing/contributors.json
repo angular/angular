@@ -145,6 +145,14 @@
     "picture": "bonnie.jpg",
     "bio": "Bonnie has been specializing in Angular since 2013. She is the founder of ngHouston Angular Meetup and a regular panelist on Angular Air. She is also the very proud parent component of @thelittlestdev!"
   },
+  "bezael": {
+    "name": "Bezael Perez",
+    "picture": "bezael_perez.jpg",
+    "twitter": "bezaelperez",
+    "website": "https://medium.com/@bezael",
+    "bio": "Bezael is an Angular Developer and a GDE. He is a technical content creator on Youtube and Udemy. He has spoken at over 50 conferences internationally. He enjoys gaming, basketball, and soccer",
+    "groups": ["GDE"]
+  },
   "blove": {
     "name": "Brian Love",
     "picture": "brian-love.jpg",
