@@ -219,7 +219,7 @@ export class AppVersion implements UpdateSource {
     const urlWithoutQueryOrHash = url.replace(/[?#].*$/, '');
 
     return this.navigationUrls.include.some(regex => regex.test(urlWithoutQueryOrHash)) &&
-        !this.navigationUrls.exclude.some(regex => regex.test(urlWithoutQueryOrHash));
+        !this.navigationUrls.exclude.every(regex => regex.test(urlWithoutQueryOrHash));
   }
 
   /**
