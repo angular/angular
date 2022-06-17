@@ -147,11 +147,12 @@ export class TransferState {
   }
 
   /**
-   * Resolve all serialize callbacks as promise and serialize the current state of the store to JSON.
+   * Resolve all serialize callbacks as promise and serialize the current state of the store to
+   * JSON.
    */
   async toJsonAsync(): Promise<string> {
     // Call the onSerialize callbacks and put those values into the store.
-    await Promise.all(Object.entries(this.onSerializeCallbacks).map(async ([key,callback]) => {
+    await Promise.all(Object.entries(this.onSerializeCallbacks).map(async ([key, callback]) => {
       if (this.onSerializeCallbacks.hasOwnProperty(key)) {
         try {
           this.store[key] = await Promise.resolve(callback());
