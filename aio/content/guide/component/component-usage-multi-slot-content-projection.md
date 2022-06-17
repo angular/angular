@@ -4,7 +4,7 @@ A component is able to use multiple slots.
 Each slot is able to specify a CSS selector that determines the content that goes into each slot.
 This pattern is referred to as *multi-slot content projection*.
 With this pattern, you must specify where you want the projected content to appear.
-You accomplish this task by using the `select` attribute of `<ng-content>`.
+You complete this task by using the `select` attribute of the `ng-content` element tag.
 
 ## Prerequisites
 
@@ -18,8 +18,8 @@ Before you work with multi-slot content projection in an Angular [component][Aio
 
 To create a component that uses multi-slot content projection, complete the following tasks.
 
-1.  In the template for your component, add an `<ng-content>` element where you want the projected content to appear.
-1.  Add a `select` attribute to the `<ng-content>` elements.
+1.  In the template for your component, add an `ng-content` element tag where you want the projected content to appear.
+1.  Add a `select` attribute to the `ng-content` element tags.
     Angular supports [selectors][MdnDocsWebCssCssSelectors] for any combination of tag name, attribute, CSS class, and the `:not` pseudo-class.
 
     In the following code example, the component uses an `ng-content` element to display a message.

@@ -122,11 +122,6 @@
               "tooltip": "Understand the structure an Angular component"
             },
             {
-              "url": "guide/component/component-lifecycle",
-              "title": "Understand the lifecycle of a component",
-              "tooltip": "Understand the lifecycle of an Angular component"
-            },
-            {
               "url": "guide/component/component-create",
               "title": "Create a component",
               "tooltip": "Describes how to create an Angular component"
@@ -137,9 +132,20 @@
               "tooltip": "Describes how to use an Angular component"
             },
             {
-              "url": "guide/component/component-usage-lifecycle-hooks",
               "title": "Use a lifecycle hook method",
-              "tooltip": "Describes how to use an Angular lifecycle hook method"
+              "tooltip": "Describes how to use an Angular lifecycle hook method",
+              "children": [
+                {
+                  "url": "guide/component/component-usage-lifecycle-hooks",
+                  "title": "Use a lifecycle hook method",
+                  "tooltip": "Describes how to use an Angular lifecycle hook method"
+                },
+                {
+                  "url": "guide/lifecycle-hook/lifecycle-hook-method-use-change-detection",
+                  "title": "Use the Change detection lifecycle hook method",
+                  "tooltip": "Describes how to use the change detection lifecycle hook method"
+                }
+              ]
             },
             {
               "title": "Component style",
@@ -203,11 +209,6 @@
                   "tooltip": "Project content from an element into a component"
                 }
               ]
-            },
-            {
-              "url": "guide/component/component-web",
-              "title": "Web component",
-              "tooltip": "Describes how to use an Angular element"
             },
             {
               "url": "guide/component/component-lifecycle",
@@ -358,6 +359,27 @@
               "url": "guide/dependency-injection-providers",
               "title": "DI Providers",
               "tooltip": "More about the different kinds of providers."
+            }
+          ]
+        },
+        {
+          "title": "Angular element",
+          "tooltip": "Describes how to use an Angular custom element",
+          "children": [
+            {
+              "url": "guide/element/custom-element",
+              "title": "overview",
+              "tooltip": "Overview of how to create and use an Angular custom element"
+            },
+            {
+              "url": "guide/element/element-create",
+              "title": "Create a custom element",
+              "tooltip": "Describes how to create an Angular custom element"
+            },
+            {
+              "url": "guide/element/element-usage",
+              "title": "Use a custom element",
+              "tooltip": "Describes how to use an Angular custom element"
             }
           ]
         }

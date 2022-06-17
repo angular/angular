@@ -2,27 +2,37 @@
 
 A [component][AioGuideGlossaryComponent] is the main building block for an Angular application.
 
-A component is a TypeScript class that is defined using the the `@Component()` decorator.
+A component is a TypeScript class defined using the `@Component()` decorator.
 
 <div class="alert is-helpful">
 
-The `@Component` decorator is a [decorator][TypescriptlangDocsHandbookDecoratorsHtmlDecorators] that augments your TypeScript class with additional Angular-specific information.
-The Angular-specific information defines how the Angular framework renders the component in the document object model \(DOM\).
+The `@Component` statement is a [decorator][TypescriptlangDocsHandbookDecoratorsHtmlDecorators] that augments your TypeScript class with Angular-specific information.
+The information defines how the Angular framework renders the component in the document object model \(DOM\).
 
 </div>
 
 Every Angular application has at least one component.
 The component that connects the hierarchy of one or more components with the document object model \(DOM\) of the page is referenced as the *root component*.
 
-A component contains the data and logic metadata for your Angular application
-A component contains the metadata for an associated HTML [template][AioGuideTemplateOverview].
+A component contains the following information.
 
-Angular uses a component and the associated HTML [template][AioGuideTemplateOverview] to render a collection of DOM elements.
-The collection of DOM elements define an Angular [view][AioGuideGlossaryView].
-An Angular [view][AioGuideGlossaryView] is the portion of a browser screen.
-A component and the associated HTML template define and control an Angular [view][AioGuideGlossaryView].
+*   The data and logic metadata for your Angular application
+*   The metadata for an associated HTML [template][AioGuideTemplateOverview]
 
-When a user interacts with your application, Angular uses APIs to create, update, and remove [components][AioGuideGlossaryComponent].
+The Angular framework uses a [component][AioGuideGlossaryComponent] and the associated HTML [template][AioGuideTemplateOverview] to complete the following actions.
+
+*   Render the HTML template in the DOM structure
+*   Update the rendered DOM structure
+*   Remove a component and the associated DOM structure
+
+The Angular framework updates your component when a user interacts with your application.
+
+<div class="alert is-helpful">
+
+**TIP**: <br />
+To simplify interactions with a part of the browser screen, the Angular framework may specify a [view][AioGuideGlossaryView].
+
+</div>
 
 ## Learn about Angular components
 
@@ -54,7 +64,7 @@ When a user interacts with your application, Angular uses APIs to create, update
     </a>
     <a href="api/core/Component" class="docs-card" title="Component API reference">
         <section>Component API reference</section>
-        <p>Review additional options to use when you create a component.</p>
+        <p>Review more options to use when you create a component.</p>
         <p class="card-footer">Component API reference</p>
     </a>
     <a href="guide/template-overview" class="docs-card" title="Understand templates">

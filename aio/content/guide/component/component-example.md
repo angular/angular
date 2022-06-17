@@ -72,8 +72,9 @@ The following tabs display the example application files.
     <code-pane header="content-projection/src/app/app.component.html" path="content-projection/src/app/app.component.html" region="ng-template"></code-pane>
     <code-pane header="content-projection/src/app/app.component.html" path="content-projection/src/app/app.component.html" region="ngprojectas"></code-pane>
     <code-pane header="content-projection/src/app/app.component.html" path="content-projection/src/app/app.component.html" region="single-slot"></code-pane>
-    <code-pane header="content-projection/src/app/app.component.ts" path="content-projection/src/app/app.component.ts" region="contentchild"></code-pane>
-    <code-pane header="content-projection/src/app/app.component.ts" path="content-projection/src/app/app.component.ts" region="zippycontentdirective"></code-pane>
+    <code-pane header="content-projection/src/app/app.component.ts" path="content-projection/src/app/app.component.ts"></code-pane>
+    <code-pane header="content-projection/src/app/example-zippy.component.ts" path="content-projection/src/app/example-zippy.component.ts" region="contentchild"></code-pane>
+    <code-pane header="content-projection/src/app/example-zippy.component.ts" path="content-projection/src/app/example-zippy.component.ts" region="zippycontentdirective"></code-pane>
     <code-pane header="content-projection/src/app/example-zippy.template.html" path="content-projection/src/app/example-zippy.template.html" region="ng-container"></code-pane>
     <code-pane header="content-projection/src/app/example-zippy.template.html" path="content-projection/src/app/example-zippy.template.html" region="ngif"></code-pane>
     <code-pane header="content-projection/src/app/zippy-basic/zippy-basic.component.ts" path="content-projection/src/app/zippy-basic/zippy-basic.component.ts" ></code-pane>
@@ -241,9 +242,9 @@ The following tabs display the example application files.
 
 <!-- "Use an Angular component | Angular" -->
 
-[AioGuideComponentWeb]: guide/component/component-web
+[AioGuideElementCustomElement]: guide/element/custom-element
 
-<!-- "Web component | Angular" -->
+<!-- "Understand custom element | Angular" -->
 
 <!-- external links -->
 

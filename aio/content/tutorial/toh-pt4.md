@@ -42,7 +42,7 @@ The command generates a skeleton `HeroService` class in `src/app/hero.service.ts
 ### `@Injectable()` services
 
 Notice that the new service imports the Angular `Injectable` symbol and annotates the class with the `@Injectable()` decorator. This marks the class as one that participates in the *dependency injection system*.
-The `HeroService` class is going to provide an injectable service, and it can also have its own injected dependencies. 
+The `HeroService` class is going to provide an injectable service, and it can also have its own injected dependencies.
 It doesn't have any dependencies yet.
 
 The `@Injectable()` decorator accepts a metadata object for the service, the same way the `@Component()` decorator did for your component classes.
@@ -143,7 +143,7 @@ Reserve the constructor for minimal initialization such as wiring constructor pa
 The constructor shouldn't *do anything*.
 It certainly shouldn't call a function that makes HTTP requests to a remote server as a *real* data service would.
 
-Instead, call `getHeroes()` inside the [`ngOnInit` lifecycle hook method][AioGuideComponentLifecycleInitializeAComponentOrDirective] and let Angular call `ngOnInit()` at an appropriate time *after* constructing a `HeroesComponent` instance.
+Instead, call `getHeroes()` inside the [`ngOnInit` lifecycle hook method][AioGuideComponentLifecycleInitializeAComponent] and let Angular call `ngOnInit()` at an appropriate time *after* constructing a `HeroesComponent` instance.
 
 <code-example header="src/app/heroes/heroes.component.ts" path="toh-pt4/src/app/heroes/heroes.component.ts" region="ng-on-init"></code-example>
 
@@ -166,7 +166,7 @@ synchronous, because that would block the browser as it waits to return data.
 
 `HeroService.getHeroes()` must have an *asynchronous signature* of some kind.
 
-In this tutorial, `HeroService.getHeroes()` returns an `Observable` so that it can 
+In this tutorial, `HeroService.getHeroes()` returns an `Observable` so that it can
 use the Angular `HttpClient.get` method to fetch the heroes
 and have [`HttpClient.get()`](guide/http) return an `Observable`.
 
@@ -263,7 +263,7 @@ Open `MessageService` and replace its contents with the following.
 
 The service exposes its cache of `messages` and two methods:
 
-* One to `add()` a message to the cache. 
+* One to `add()` a message to the cache.
 * Another to `clear()` the cache.
 
 <a id="inject-message-service"></a>
@@ -371,9 +371,9 @@ Here are the code files discussed on this page.
 
 <!-- links -->
 
-[AioGuideComponentLifecycleInitializeAComponentOrDirective]: guide/component/component-usage-lifecycle-hooks#initialize-a-component-or-directive
+[AioGuideComponentLifecycleInitializeAComponent]: guide/component/component-usage-lifecycle-hooks#initialize-a-component
 
-<!-- "Initialize a component or directive - Use an Angular lifecycle hook method | Angular" -->
+<!-- "Initialize a component - Use an Angular lifecycle hook method | Angular" -->
 
 <!-- external links -->
 

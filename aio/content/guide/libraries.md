@@ -41,9 +41,9 @@ To add Angular functionality to non-Angular web applications, use [Angular web c
 
 <!-- links -->
 
-[AioGuideComponentWeb]: guide/component/component-web
+[AioGuideElementCustomElement]: guide/element/custom-element
 
-<!-- "Web component | Angular" -->
+<!-- "Understand custom element | Angular" -->
 
 <!-- external links -->
 

@@ -49,8 +49,8 @@ Project HTML into the component.
 <div class="alert is-helpful">
 
 **NOTE**: <br/>
-The `<ng-content>` element is a placeholder that does not create a real DOM element.
-Custom attributes applied to `<ng-content>` are ignored.
+The `ng-content` element tag is a placeholder that does not create a real DOM element.
+Custom attributes applied to `ng-content` element tag are ignored.
 
 </div>
 

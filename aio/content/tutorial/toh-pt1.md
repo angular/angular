@@ -41,7 +41,7 @@ You always import the `Component` symbol from the Angular core library and annot
 
 The [CSS element selector](https://developer.mozilla.org/docs/Web/CSS/Type_selectors), `'app-heroes'`, matches the name of the HTML element that identifies this component within a parent component's template.
 
-The `ngOnInit()` is a [lifecycle hook method][AioGuideComponentLifecycleInitializeAComponentOrDirective].
+The `ngOnInit()` is a [lifecycle hook method][AioGuideComponentLifecycleInitializeAComponent].
 Angular calls `ngOnInit()` shortly after creating a component.
 It's a good place to put initialization logic.
 
@@ -171,7 +171,7 @@ Open `app.module.ts` and import the `FormsModule` symbol from the `@angular/form
 <code-example path="toh-pt1/src/app/app.module.ts" header="app.module.ts (FormsModule symbol import)"
  region="formsmodule-js-import"></code-example>
 
-Add `FormsModule` to the  `imports` array in `@NgModule`. 
+Add `FormsModule` to the  `imports` array in `@NgModule`.
 The `imports` array contains the list of external modules that the application needs.
 
 <code-example header="app.module.ts (@NgModule imports)" path="toh-pt1/src/app/app.module.ts" region="ng-imports"></code-example>
@@ -227,9 +227,9 @@ Here are the code files discussed on this page.
 
 <!-- links -->
 
-[AioGuideComponentLifecycleInitializeAComponentOrDirective]: guide/component/component-usage-lifecycle-hooks#initialize-a-component-or-directive
+[AioGuideComponentLifecycleInitializeAComponent]: guide/component/component-usage-lifecycle-hooks#initialize-a-component
 
-<!-- "Initialize a component or directive - Use an Angular lifecycle hook method | Angular" -->
+<!-- "Initialize a component - Use an Angular lifecycle hook method | Angular" -->
 
 <!-- external links -->
 

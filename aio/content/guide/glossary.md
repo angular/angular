@@ -1081,9 +1081,9 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 
 <!-- "Component data sharing and inheritance - Use an Angular component | Angular" -->
 
-[AioGuideComponentWeb]: guide/component/component-web
+[AioGuideElementCustomElement]: guide/element/custom-element
 
-<!-- "Web component | Angular" -->
+<!-- "Understand custom element | Angular" -->
 
 [AioGuideCreatingLibrariesIntegratingWithTheCliUsingCodeGenerationSchematics]: guide/creating-libraries#integrating-with-the-cli-using-code-generation-schematics
 

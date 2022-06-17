@@ -292,8 +292,8 @@ The hero items in the `HeroesComponent` are `<li>` elements whose click events a
 
 <code-example header="src/app/heroes/heroes.component.html (list with onSelect)" path="toh-pt4/src/app/heroes/heroes.component.html" region="list"></code-example>
 
-Remove the `<li>` back to just its `*ngFor`. 
-Wrap the badge and name in an anchor `<a>` element. 
+Remove the `<li>` back to just its `*ngFor`.
+Wrap the badge and name in an anchor `<a>` element.
 Add a `routerLink` attribute to the anchor that's the same as in the dashboard template.
 
 <code-example header="src/app/heroes/heroes.component.html (list with links)" path="toh-pt5/src/app/heroes/heroes.component.html" region="list"></code-example>
@@ -345,7 +345,7 @@ This service lets you navigate back to the previous view.
 
 ### Extract the `id` route parameter
 
-In the `ngOnInit()` [lifecycle hook method][AioGuideComponentLifecycleInitializeAComponentOrDirective], call `getHero()` and define it as follows.
+In the `ngOnInit()` [lifecycle hook method][AioGuideComponentLifecycleInitializeAComponent], call `getHero()` and define it as follows.
 
 <code-example header="src/app/hero-detail/hero-detail.component.ts" path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" region="ngOnInit"></code-example>
 
@@ -477,9 +477,9 @@ Here are the code files discussed on this page.
 
 <!-- links -->
 
-[AioGuideComponentLifecycleInitializeAComponentOrDirective]: guide/component/component-usage-lifecycle-hooks#initialize-a-component-or-directive
+[AioGuideComponentLifecycleInitializeAComponent]: guide/component/component-usage-lifecycle-hooks#initialize-a-component
 
-<!-- "Initialize a component or directive - Use an Angular lifecycle hook method | Angular" -->
+<!-- "Initialize a component - Use an Angular lifecycle hook method | Angular" -->
 
 <!-- external links -->
 

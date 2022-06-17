@@ -1,11 +1,18 @@
 # Use an Angular lifecycle hook method
 
-Use a [lifecycle hook method][AioGuideGlossaryLifecycleHook] to tap into key events in the lifecycle of a component or directive, and complete the following actions.
+Use a [lifecycle hook method][AioGuideGlossaryLifecycleHook] to tap into a key event in the lifecycle of a component or directive, and complete the following actions.
 
 *   Initialize new instances
-*   Initiate change detection
-*   Respond to updates during change detection
+*   Interact with lifecycle hook method
 *   Clean up before deletion of instances
+
+<div class="alert is-helpful">
+
+**NOTE**: <br />
+The information in this topic applies to either an Angular [component][AioGuideGlossaryComponent] or an Angular [directive][AioGuideGlossaryDirective].
+To reduce confusion, only [component][AioGuideGlossaryComponent] is used.
+
+</div>
 
 ## Prerequisites
 
@@ -13,20 +20,26 @@ Before you work with a lifecycle hook method in an Angular [component][AioGuideG
 
 1.  [Install the Angular CLI][AioGuideSetupLocalInstallTheAngularCli].
 1.  [Create an Angular workspace][AioGuideSetupLocalCreateAWorkspaceAndInitialApplication] with your initial application.
-1.  [Create an Angular component][AioGuideComponentCreate] or an Angular directive.
+1.  [Create an Angular component][AioGuideComponentCreate].
 
 ### Respond to lifecycle events
 
-Implement one or more of the *lifecycle hook* interfaces in the Angular `core` library to respond to events in the lifecycle of a component or directive.
-The hook interface gives you the opportunity to act on the instance of a component or directive at a specific moment.
-For example, when Angular creates, updates, or destroys an instance.
+Create and use a lifecycle hook interface to respond to events in the lifecycle of a component.
+A lifecycle hook interface is imported from the Angular `core` library.
+Use a lifecycle hook interface to act on the instance of a component at a specific moment.
+The specific moments include when the Angular framework creates, updates, or destroys an instance.
 
 Each interface defines the prototype for a single hook method.
-The name of each method is the interface name prefixed with `ng`.
-For example, the `OnInit` interface has the `ngOnInit()` hook method.
-If you implement the method in your component or directive class, Angular runs the method after the first time it checks the input properties for the component or directive.
+The name of each method is the name of the interface prefixed with `ng`.
+One example is the `OnInit` interface that has the `ngOnInit` hook method.
+After you create a method in your component class and use it, the Angular framework completes the following tasks.
 
-<code-example format="typescript" header="Add ngOnInit() hook method" language="typescript">
+1.  Check the input properties for your component.
+1.  Run the requested method.
+
+<code-example format="typescript" header="Add ngOnInit hook method" language="typescript">
+
+import { Component, OnInit } from '&commat;angular/core';
 
 &commat;Component({
   selector: '{name-of-css-selector}',
@@ -45,15 +58,19 @@ export class &lcub;NameOfComponent&rcub;Component implements OnInit {
 
 </code-example>
 
-You do not have to implement all \(or any\) of the lifecycle hook methods, just the ones that you need.
+You do not have to create and use any or all lifecycle hook methods, just the ones that you need.
 
 #### Lifecycle hook event sequence
 
-After Angular runs the associated constructor to instantiate a component or directive, Angular runs the hook methods you implemented.
-Angular implements the the hook methods at the appropriate point in the lifecycle.
-To learn more about the Angular lifecycle, see [Understand the lifecycle of a component][AioGuideComponentLifecycle].
+The Angular framework completes the following actions.
 
-Angular runs hook methods to perform the several kinds of operations in the following sequence.
+1.  Run the associated constructor to instantiate a component.
+1.  Run the lifecycle hook method that you implemented.
+1.  Implement the lifecycle hook method at the appropriate point in the lifecycle.
+
+To learn more, see [Understand the lifecycle of a component][AioGuideComponentLifecycle].
+
+The Angular framework runs each lifecycle hook method in the following sequence.
 
 <code-example format="none" header="Lifecycle hook method sequence" hideCopy language="none">
 
@@ -78,40 +95,45 @@ ngOnDestroy()
 
 </code-example>
 
-| Hook method               | Purpose |
-|:---                       |:---     |
-| `ngOnChanges()`           | Respond when Angular sets or resets data-bound input properties. The method receives a `SimpleChanges` object of current and previous property values. <br /> **NOTE**: <br /> This happens very frequently, so any operation you perform here impacts performance significantly. <br /> To learn more, see [Using change detection hooks][AioGuideComponentLifecycleTutorialUseChangeDetectionHooks]. |
-| `ngOnInit()`              | Initialize the directive or component after Angular first displays the data-bound properties and sets the input properties of the directive or component. To learn more, see [Initialize a component or directive][AioGuideComponentLifecycleInitializeAComponentOrDirective].                                                                                                                         |
-| `ngDoCheck()`             | Detect and act upon changes that Angular does not detect. To learn more, see [Define custom change detection][AioGuideComponentLifecycleTutorialDefineCustomChangeDetection].                                                                                                                                                                                                                          |
-| `ngAfterContentInit()`    | Respond after Angular projects external content into the view of the component, or into the view for a directive. <br /> To learn more, see [Responding to changes in content][AioGuideLifecycleHooksRespondingToProjectedContentChanges].                                                                                                                                                             |
-| `ngAfterContentChecked()` | Respond after Angular checks the content projected into the directive or component. <br /> To learn more, see [Respond to projected content changes][AioGuideLifecycleHooksRespondingToProjectedContentChanges].                                                                                                                                                                                       |
-| `ngAfterViewInit()`       | Respond after Angular initializes the views and child views of the component or the view that contains the directive. <br /> To learn more, see [Respond to view changes][AioGuideComponentLifecycleTutorialRespondToViewChanges].                                                                                                                                                                     |
-| `ngAfterViewChecked()`    | Respond after Angular checks the views and child views of the component or the view that contains the directive.                                                                                                                                                                                                                                                                                       |
-| `ngOnDestroy()`           | Cleanup just before Angular destroys the directive or component. Unsubscribe Observables and detach event handlers to avoid memory leaks. To learn more, see [Clean prior to instance destruction][AioGuideComponentLifecycleCleanPriorToInstanceDestruction].                                                                                                                                         |                                                                                                                                                                                                                                  |
+##### Lifecycle hook method list
 
-### Initialize a component or directive
+The following table
 
-Use the `ngOnInit()` hook method to perform the following initialization tasks.
+| Hook method             | Purpose |
+|:---                     |:---     |
+| `ngOnChanges`           | Respond when the Angular framework sets or resets data-bound input properties. The method receives a `SimpleChanges` object of the current and previous property values. <br /> **NOTE**: <br /> The action happens frequently, so any operation you perform here impacts performance significantly. <br /> To learn more, see [Using change detection hooks][AioGuideComponentLifecycleTutorialUseChangeDetectionHooks]. |
+| `ngOnInit`              | Initialize the component after the Angular framework first displays the data-bound properties and sets the input properties of the component. To learn more, see [Initialize a component][AioGuideComponentLifecycleInitializeAComponent].                                                                                                                         |
+| `ngDoCheck`             | Detect and act upon changes that the Angular framework does not detect. To learn more, see [Define custom change detection][AioGuideComponentLifecycleTutorialDefineCustomChangeDetection].                                                                                                                                                                                                                          |
+| `ngAfterContentInit`    | Respond after the Angular framework projects external content into the rendered DOM structure associated the following requesting code. <ul> <li>the component</li> <li>the descendants of the component</li> </ul>                                                                        <br /> To learn more, see [Responding to changes in content][AioGuideLifecycleHooksRespondingToProjectedContentChanges].                                                                                                                                                             |
+| `ngAfterContentChecked` | Respond after the Angular framework checks the content projected into the component. <br /> To learn more, see [Respond to projected content changes][AioGuideLifecycleHooksRespondingToProjectedContentChanges].                                                                                                                                                                                       |
+| `ngAfterViewInit`       | Respond after the Angular framework initializes the rendered DOM structure associated the following requesting code. <ul> <li>the component</li> <li>the descendants of the component</li> </ul> To learn more, see [Respond to view changes][AioGuideComponentLifecycleTutorialRespondToViewChanges].                                                                                                                                                                     |
+| `ngAfterViewChecked`    | Respond after the Angular framework checks the rendered DOM structure associated the following requesting code. <ul> <li>the component</li> <li>the descendants of the component</li> </ul>                                                                                                                                                                                                                                                                                       |
+| `ngOnDestroy`           | Clean-up just before the Angular framework destroys the component. Unsubscribe `Observables` and detach event handlers to avoid memory leaks. To learn more, see [Clean before instance destruction][AioGuideComponentLifecycleCleanBeforeInstanceDestruction].                                                                                                                                         |                                                                                                                                                                                                                                  |
+
+### Initialize a component
+
+
+Use the `ngOnInit` hook method to perform the following initialization tasks.
 
 | Task                                                         | Details |
 |:---                                                          |:---     |
-| Perform complex initializations outside of the constructor   | Components should be cheap and safe to construct. Do not fetch data in a component constructor. Do not worry that a new component tries to contact a remote server when created under test, or before you decide to display it. <br /> An `ngOnInit()` hook method is a good place for a component to fetch the initial data. For an example, see the [Tour of Heroes tutorial][AioTutorialTohPt4CallItInNgoninit].                                                                                                                                                                  |
-| Set up the component after Angular sets the input properties | Constructors should do no more than set the initial local variables to simple values. <br /> The data-bound input properties of a directive are set after construction. If you need to initialize the directive based on those properties, set them you run the `ngOnInit()` hook method. <div class="alert is-helpful"> The `ngOnChanges()` hook method is your first opportunity to access those properties. Angular runs the `ngOnChanges()` hook method before the `ngOnInit()` hook method, but also many times after that. It only runs `ngOnInit()` hook method once. </div> |
+| Perform complex initializations outside of the constructor   | Components should be cheap and safe to construct. Do not fetch data in a component constructor. Do not worry that a new component tries to contact a remote server when created under test, or before you decide to display it. <br /> An `ngOnInit` hook method is a good place for a component to fetch the initial data. For an example, see the [Tour of Heroes tutorial][AioTutorialTohPt4CallItInNgoninit].                                                                                                                                                                  |
+| Set up the component after the Angular framework sets the input properties | Constructors should do no more than set the initial local variables to simple values. <br /> The data-bound input properties of a directive are set after construction. If you need to initialize the directive based on those properties, set them you run the `ngOnInit` hook method. <div class="alert is-helpful"> The `ngOnChanges` hook method is your first opportunity to access those properties. The Angular framework runs the `ngOnChanges` hook method before the `ngOnInit` hook method, but also many times after that. It only runs `ngOnInit` hook method once. </div> |
 
-### Clean prior to instance destruction
+### Clean before instance destruction
 
-Put cleaning logic in the `ngOnDestroy()` hook method.
+Put cleaning logic in the `ngOnDestroy` hook method.
 
 *   Unsubscribe from Observables and DOM events
 *   Stop interval timers
 *   Unregister all callbacks that the directive registered with global or application services
 
-The cleaning logic that must run before Angular destroys the directive.
+The cleaning logic that must run before the Angular framework destroys the component.
 
-This is the place to free a resource that is not automatically garbage-collected.
-You risk memory leaks if you neglect to do so.
+The time before the Angular framework destroys a component is when you should free a resource that is not automatically garbage-collected.
+You risk memory leaks if you neglect to free a unused resource.
 
-The `ngOnDestroy()` hook method is also the time to notify other parts of the application that the component is being removed.
+The `ngOnDestroy` hook method is also the time to notify other parts of the application that the component is being removed.
 
 <!-- links -->
 
@@ -119,13 +141,13 @@ The `ngOnDestroy()` hook method is also the time to notify other parts of the ap
 
 <!-- "Create an Angular component | Angular" -->
 
-[AioGuideComponentLifecycleCleanPriorToInstanceDestruction]: guide/component/component-usage-lifecycle-hooks#clean-prior-to-instance-destruction
+[AioGuideComponentLifecycleCleanBeforeInstanceDestruction]: guide/component/component-usage-lifecycle-hooks#clean-before-instance-destruction
 
-<!-- "Clean prior to instance destruction - Use an Angular lifecycle hook method | Angular" -->
+<!-- "Clean before instance destruction - Use an Angular lifecycle hook method | Angular" -->
 
 [AioGuideComponentLifecycleInitializeAComponentOrDirective]: guide/component/component-usage-lifecycle-hooks#initialize-a-component-or-directive
 
-<!-- "Initialize a component or directive - Use an Angular lifecycle hook method | Angular" -->
+<!-- "Initialize a component - Use an Angular lifecycle hook method | Angular" -->
 
 [AioGuideComponentLifecycle]: guide/component/component-lifecycle
 

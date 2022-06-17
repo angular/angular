@@ -457,9 +457,9 @@ For more information, see [AngularJS to Angular concepts: Quick reference](guide
 
 <!-- "Component data sharing and inheritance - Use an Angular component | Angular" -->
 
-[AioGuideComponentWeb]: guide/component/component-web
+[AioGuideElementCustomElement]: guide/element/custom-element
 
-<!-- "Web component | Angular" -->
+<!-- "Understand custom element | Angular" -->
 
 <!-- external links -->
 

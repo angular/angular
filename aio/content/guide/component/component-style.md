@@ -65,7 +65,7 @@ styles: ['h1 { font-weight: normal; }'],
 The `h1` style does not apply to the following locations.
 
 *   `h1` elements located elsewhere in the Angular application
-*    Any component that is nested in the component
+*    Any component nested in the component
 
 The scoping restriction is a styling modularity feature.
 
@@ -90,7 +90,8 @@ The following table lists the special CSS selectors.
 
 ### `:host`
 
-Every component contains a CSS selector that is the value of the `selector` property.
+Every component contains a CSS selector.
+The CSS selector is the value of the `selector` property.
 The value of the `selector` property is used to locate elements in HTML template that match it.
 Each instance of the element tag is the host element.
 The host element is the element into which the component view is rendered.
@@ -133,7 +134,7 @@ In the following code example, the content of the host becomes bold when the `ac
 
 Combine the `:host` pseudo-class with other selectors.
 Add CSS selectors after the `:host` statement to target child elements.
-For example, use `:host h2` to target all `<h2>` elements inside the view of a component.
+For example, use `:host h2` to target all `h2` element tags inside the rendered DOM structure of a component.
 
 <div class="alert is-important">
 
@@ -146,10 +147,10 @@ To avoid this behavior and to accurately target the outer context, use the `:hos
 ### `:host-context`
 
 To apply styles to elements within the template of a component based on a specific condition in an element tag that is an ancestor of the host element.
-For example, a CSS theme class applied to the `<body>` element tag for the document and you want to change how your component matches the appearance.
+For example, a CSS theme class applied to the `body` element tag for the rendered DOM structure and you want to change how your component matches the appearance.
 
 The `:host-context()` pseudo-class selector works like the function form of the `:host()` pseudo-class selector.
-The `:host-context()` pseudo-class selector looks for the specified CSS class in the ancestors of the host element for the component, up to the document root.
+The `:host-context()` pseudo-class selector looks for the specified CSS class in the ancestors of the host element for the component, up to the root of the rendered DOM structure.
 The `:host-context()` pseudo-class selector is only useful when combined with another CSS selector.
 
 The following example italicizes all text inside a component, but only if some *ancestor* element tag of the host element has the `active` CSS class.
@@ -182,7 +183,7 @@ If you apply the `::ng-deep` pseudo-class selector to a CSS rule, view encapsula
 If you apply the `::ng-deep` pseudo-class selector to a CSS rule, it becomes a global style.
 Always place the `::ng-deep` pseudo-class selector after the `:host` pseudo-class selector, otherwise the CSS rule bleeds into other components.
 
-In the following code example, the CSS rule targets all `<h3>` elements that are located in the host element and any associated child elements.
+In the following code example, the CSS rule targets all `h3` element tags that are located in the host element and any associated child elements.
 
 <code-example header="&lcub;NameOfComponent&rcub;.component.css: Add ::ng-deep pseudo-class selector" path="component-styles/src/app/hero-details.component.css" region="deep"></code-example>
 
@@ -202,7 +203,7 @@ Angular allows you to add styles to a component in the following ways
 | Actions                   | Details |
 |:---                       |:---     |
 | In the component metadata | Use the [`styles`](#styles-in-component-metadata) or [`styleUrls`](#style-files-in-component-metadata) metadata in the component |
-| In the HTML template      | Use the [`<style>`](#template-inline-styles) or [`<link>`](#template-link-tags) element tag in the HTML template                 |
+| In the HTML template      | Use the [`style`](#template-inline-styles) or [`link`](#template-link-tags) element tag in the HTML template                 |
 | In a CSS file             | Use [CSS `@imports`](#css-imports) in the style definition                                                                       |
 
 The scoping rules outlined earlier apply to each of these loading patterns.
@@ -238,9 +239,9 @@ The styles are not inherited by any child components nested within the template 
 </div>
 
 Use the `--inline-style` flag to specify the use of inline styles.
-The following Angular CLI command defines an empty `styles` array.
+The following command defines an empty `styles` array.
 
-<code-example format="shell" header="ng generate component Angular CLI command: Add empty inline style" language="shell">
+<code-example format="shell" header="ng generate component command: Add empty inline style" language="shell">
 
 ng generate component &lcub;NameOfComponent&rcub; --inline-style
 
@@ -269,18 +270,18 @@ You can specify more than one styles file or even a combination of `styles` and 
 
 </div>
 
-By default, when you run the following Angular CLI command, the Angular CLI creates a component with an empty CSS styles file.
+By default, when you run the following command, the Angular framework creates a component with an empty CSS styles file.
 
-<code-example format="shell" header="ng generate component Angular CLI command" language="shell">
+<code-example format="shell" header="ng generate component command" language="shell">
 
 ng generate component &lcub;NameOfComponent&rcub;
 
 </code-example>
 
 Use the `--style` flag to specify the type of external styles file.
-The following Angular CLI command specifies a CSS style type to create an empty styles file that uses the CSS style type and add the file path to the `styleUrls` metadata.
+The following command specifies a CSS style type to create an empty styles file that uses the CSS style type and add the file path to the `styleUrls` metadata.
 
-<code-example format="shell" header="ng generate component Angular CLI command: Add empty inline CSS styles file" language="shell">
+<code-example format="shell" header="ng generate component command: Add empty inline CSS styles file" language="shell">
 
 ng generate component &lcub;NameOfComponent&rcub; --style css
 
@@ -288,7 +289,7 @@ ng generate component &lcub;NameOfComponent&rcub; --style css
 
 ### Template inline styles
 
-Add the CSS styles inside `<style>` elements to embed CSS styles directly into the HTML template.
+Add the CSS styles inside `style` element tags to embed CSS styles directly into the HTML template.
 
 <code-example format="typescript" header="&lcub;NameOfComponent&rcub;.component.ts: Add inline styles in template metadata" language="typescript">
 
@@ -314,7 +315,7 @@ export class &lcub;NameOfComponent&rcub;Component {
 
 ### Template link tags
 
-Use `<link>` elements to directly reference external CSS styles in the HTML template.
+Use `link` element tags to directly reference external CSS styles in the HTML template.
 
 <code-example format="typescript" header="&lcub;NameOfComponent&rcub;.component.ts: Add referenced styles in template metadata" language="typescript">
 
@@ -334,17 +335,17 @@ export class &lcub;NameOfComponent&rcub;Component {
 
 <div class="alert is-critical">
 
-The Angular CLI requires that all linked style files must must be accessible on the same server.
+The Angular framework requires that all linked style files must be accessible on the same server.
 To learn more about linked files in an Angular project, see [Assets configuration][AioGuideWorkspaceConfigAssetsConfiguration].
 
-Specify the URI path value, relative to one of the following locations, in the `href` attribute of the `<link>` element tag.
+Specify the URI path value, relative to one of the following locations, in the `href` attribute of the `link` element tag.
 
 | Locations                     | Examples |
 |:---                           |:---      |
 | The Angular application root  | `/{path/to/file}.css`                                 |
 | The component TypeScript file | `./{path/to/file}.css` <br /> `../{path/to/file}.css` |
 
-After you add the styles file, the Angular CLI includes the stylesheet.
+After you add the styles file, the Angular framework adds the stylesheet.
 
 </div>
 
@@ -361,7 +362,7 @@ In the following code example, the file path is to the imported styles file is r
 
 ### External and global style files
 
-Add each external asset and each external styles file to the `angular.json` file in order to successfully build with the Angular CLI.
+Add each external asset and each external styles file to the `angular.json` file to successfully build with the Angular CLI.
 
 Register each global styles file in the `styles` section.
 By default, the `styles` section is pre-configured with the global `styles.css` file.
@@ -370,7 +371,7 @@ To learn more about the global `styles.css` file, see [Styles configuration guid
 
 ### Non-CSS style files
 
-The Angular CLI requires that all of your styles files are written in one of the following formats.
+The Angular framework requires that all of your styles files are written in one of the following formats.
 
 | Formats              | Extensions |
 |:---                  |:---        |
@@ -395,13 +396,13 @@ export class &lcub;NameOfComponent&rcub;Component {
 
 </code-example>
 
-The Angular CLI build process detects and runs the relevent CSS pre-processor for an external styles file.
-To learn more about how to configure the Angular CLI in order to default to your preferred CSS preprocessor, see [Generation schematics][AioGuideWorkspaceConfigGenerationSchematics].
+The Angular framework build process detects and runs the relevent CSS pre-processor for an external styles file.
+To learn more about how to configure the Angular CLI to set the default to your preferred CSS preprocessor, see [Generation schematics][AioGuideWorkspaceConfigGenerationSchematics].
 
 <div class="alert is-important">
 
 **IMPORTANT**: <br />
-The Angular CLI does not apply a pre-processor to inline styles.
+The Angular framework does not apply a pre-processor to inline styles.
 Style strings added to the `styles` metadata must be written in CSS.
 
 </div>
@@ -428,7 +429,7 @@ Style strings added to the `styles` metadata must be written in CSS.
 
 <!-- "Example Angular component applications | Angular" -->
 
-[AioGuideComponentStructureStyleMetadata]: guide/component/component-structure#style-metadata 
+[AioGuideComponentStructureStyleMetadata]: guide/component/component-structure#style-metadata
 
 <!-- "Style metadata - Understand the structure an Angular component | Angular" -->
 

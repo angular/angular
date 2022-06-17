@@ -209,7 +209,7 @@
 /guide/content-projection --> /guide/component/component-usage#content-to-component-projection
 /guide/dynamic-component-loader --> /guide/component/component-dynamic-load
 /guide/displaying-data --> /start#template-syntax
-/guide/elements --> /guide/component/component-web
+/guide/elements --> /guide/element/custom-element
 /guide/i18n --> /guide/i18n-overview
 /guide/inputs-outputs --> /guide/component/component-usage#component-data-sharing-and-inheritance
 /guide/learning-angular --> /start

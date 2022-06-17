@@ -25,14 +25,14 @@ Use a helper directive to mark valid insertion points in the HTML template.
 
 <code-example format="typescript" header="{NameOfDirective}Directive.directive.ts" language="typescript">
 
-import { Directive, ViewContainerRef } from '&commat;angular/core';
+import &lcub; Directive, ViewContainerRef &rcub; from '&commat;angular/core';
 
-&commat;Directive({
-  selector: '[{name-of-directive-css-selector}]',
-})
-export class {nameOfDirective}Directive {
-  constructor(public viewContainerRef: ViewContainerRef) { }
-}
+&commat;Directive(&lcub;
+  selector: '[&lcub;name-of-directive-css-selector&rcub;]',
+&rcub;)
+export class &lcub;nameOfDirective&rcub;Directive &lcub;
+  constructor(public viewContainerRef: ViewContainerRef) &lcub; &rcub;
+&rcub;
 
 </code-example>
 
@@ -56,30 +56,30 @@ Apply the `{NameOfDirective}Directive` directive to the `ng-template` element.
 
 Now, Angular knows where to dynamically load your component.
 
-<code-example format="typescript" header="&lcub;NameOfComponent&rcub;.component.ts: Add {name-of-directive-css-selector} to ng-template" language="typescript">
+<code-example format="typescript" header="{NameOfComponent}.component.ts: Add {name-of-directive-css-selector} to ng-template" language="typescript">
 
-&commat;Component({
-  selector: '{name-of-css-selector}',
+&commat;Component(&lcub;
+  selector: '&lcub;name-of-css-selector&rcub;',
   template: &grave;
     &lt;div&gt;
       &lt;h3&gt;Heading 3&lt;/h3&gt;
-      &lt;ng-template {name-of-directive-css-selector}&gt;&lt;/ng-template&gt;
+      &lt;ng-template &lcub;name-of-directive-css-selector&rcub;&gt;&lt;/ng-template&gt;
     &lt;/div&gt;
   &grave;,
-})
-export class &lcub;NameOfComponent&rcub;Component implements OnInit, OnDestroy {
-  &commat;Input() {nameOfVariable}: &lcub;NameOfComponent&rcub;Item[] = [];
+&rcub;)
+export class &lcub;NameOfComponent&rcub;Component implements OnInit, OnDestroy &lcub;
+  &commat;Input() &lcub;nameOfVariable&rcub;: &lcub;NameOfComponent&rcub;Item[] = [];
 
   current&lcub;NameOfComponent&rcub;Index = -1;
 
-  &commat;ViewChild({NameOfDirective}Directive, {static: true}) {name-of-directive-css-selector}!: {NameOfDirective}Directive;
+  &commat;ViewChild(&lcub;NameOfDirective&rcub;Directive, &lcub;static: true&rcub;) &lcub;name-of-directive-css-selector&rcub;!: &lcub;NameOfDirective&rcub;Directive;
   interval: number&verbar;undefined;
 
-  ngOnInit(): void {
+  ngOnInit(): void &lcub;
     this.loadComponent();
-    this.get{PluralNameOfComponent}();
-  }
-}
+    this.get&lcub;PluralNameOfComponent&rcub;();
+  &rcub;
+&rcub;
 
 </code-example>
 

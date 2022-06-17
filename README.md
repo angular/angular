@@ -55,8 +55,7 @@ Get started with Angular, learn the fundamentals and explore advanced topics on 
 
 ### Advanced
 
-- [Angular Elements][AioGuideComponentWeb]
-- [Server Side Rendering][ssr]
+- [Angular Elements][AioGuideElementCustomElement]- [Server Side Rendering][ssr]
 - [Schematics][schematics]
 - [Lazy Loading][lazyloading]
 - [Animations][animations]
@@ -151,9 +150,9 @@ Join the conversation and help the community.
 [componentstemplates]: https://angular.io/guide/displaying-data
 [forms]: https://angular.io/guide/forms-overview
 [api]: https://angular.io/api
-[AioGuideComponentWeb]: https://angular.io/guide/component/component-web
+[AioGuideElementCustomElement]: guide/element/custom-element
 
-<!-- "Web component | Angular" -->
+<!-- "Understand custom element | Angular" -->
 
 [ssr]: https://angular.io/guide/universal
 [schematics]: https://angular.io/guide/schematics

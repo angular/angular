@@ -10,7 +10,6 @@ import { HeroService } from './hero.service';
   providers:  [ HeroService ]
 })
 // #enddocregion providers
-// #docregion class
 export class HeroListComponent implements OnInit {
   // #enddocregion metadata
   heroes: Hero[] = [];

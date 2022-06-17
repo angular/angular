@@ -107,9 +107,9 @@ For some platforms and applications, you might also want to use the Progressive 
 
 <!-- "Comonent lifecycle | Angular" -->
 
-[AioGuideComponentWeb]: guide/component/component-web
+[AioGuideElementCustomElement]: guide/element/custom-element
 
-<!-- "Web component | Angular" -->
+<!-- "Understand custom element | Angular" -->
 
 [AioGuideDependencyInjection]: guide/dependency-injection
 

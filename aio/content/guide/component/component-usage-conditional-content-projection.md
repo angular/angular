@@ -1,6 +1,6 @@
 # Conditional content projection
 
-If your component needs to conditionally render content, or render content multiple times, you should configure that component to accept an `ng-template` element that contains the content you want to conditionally render.
+If your component needs to conditionally render content, or render content several times, you should configure that component to accept an `ng-template` element that contains the content you want to conditionally render.
 
 Use of an `ng-content` element in these cases is not recommended, because when the consumer of a component supplies the content.
 That content supplied by the consumer is always initialized, even if the component does not define an `ng-content` element or if that `ng-content` element is inside of an `ngIf` statement.
@@ -20,7 +20,7 @@ Before you work with multi-slot content projection in an Angular [component][Aio
 
 To create a component that uses conditional content projection, complete the following tasks.
 
-The following steps demonstrate a typical implementation of conditional content projection using `ng-template`.
+The following actions show a typical implementation of conditional content projection using `ng-template`.
 
 1.  In the template where you want to project content, use the CSS selector of the component to specify the HTML content.
     Content that uses the `{ValueOfSelect}` attribute is projected into the `ng-content` element with the `select` attribute set to `{ValueOfSelect}`.
@@ -54,7 +54,7 @@ The following steps demonstrate a typical implementation of conditional content 
 
 ## Add `<ng-container>` to template
 
-1.  In the template that accepts an `ng-template` element, use an `<ng-container>` element to render the template.
+1.  In the template that accepts an `ng-template` element, use an `ng-container` element tag to render the template.
 
     <code-example format="html" header="Create ng-container" language="html">
 
@@ -75,7 +75,7 @@ The following steps demonstrate a typical implementation of conditional content 
 
     </div>
 
-1.  In the template that accepts an `ng-template` element, wrap the `<ng-container>` element in another element, such as a `div` element.
+1.  In the template that accepts an `ng-template` element, wrap the `ng-container` element tag in another element, such as a `div` element.
 
     <code-example format="html" header="Wrap ng-container" language="html">
 
@@ -85,7 +85,7 @@ The following steps demonstrate a typical implementation of conditional content 
 
     </code-example>
 
-1.  In the template that accepts an `ng-template` element, apply conditional logic to the parent element of the `<ng-container>` element.
+1.  In the template that accepts an `ng-template` element, apply conditional logic to the parent element of the `ng-container` element tag.
 
     <code-example format="html" header="Wrap ng-container" language="html">
 

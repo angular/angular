@@ -14,23 +14,23 @@ The sample code is also used to illustrate specific tasks in the following secti
 
 | Component                                                                                | Details |
 |:---                                                                                      |:---     |
-| [Peek-a-boo][AioGuideComponentLifecycleTutorialSequenceAndFrequencyOfAllLifecycleEvents] | Demonstrates every lifecycle hook. Each hook method writes to the on-screen log.                                                                                                                                                           |
-| [Spy][AioGuideComponentLifecycleTutorialUseDirectivesToWatchTheDom]                      | Shows how to use lifecycle hooks with a custom directive. The `SpyDirective` directive implements the `ngOnInit()` and `ngOnDestroy()` hook methods. The hook methods watch and report when an element goes in or out of the current view. |
-| [OnChanges][AioGuideComponentLifecycleTutorialUseChangeDetectionHooks]                   | Demonstrates how Angular runs the `ngOnChanges()` hook method every time one of the component input properties changes, and shows how to interpret the `changes` object passed to the hook method.                                         |
-| [DoCheck][AioGuideComponentLifecycleTutorialDefineCustomChangeDetection]                 | Implements the `ngDoCheck()` hook method with custom change detection. Watch the hook post changes to a log to see how often Angular runs this hook.                                                                                       |
-| [AfterView][AioGuideComponentLifecycleTutorialRespondToViewChanges]                      | Shows what Angular means by a [view][AioGuideGlossaryView]. Demonstrates the `ngAfterViewInit()` and `ngAfterViewChecked()` hook methods.                                                                                                  |
-| [AfterContent][AioGuideComponentLifecycleTutorialRespondToProjectedContentChanges]       | Shows how to project external content into a component and how to distinguish projected content from a component's view children. Demonstrates the `ngAfterContentInit()` and `ngAfterContentChecked()` hook methods.                      |
-| [Counter][AioGuideComponentLifecycleTutorialUseComponentAndDirectiveHooksTogether]       | Demonstrates a combination of a component and a directive, each with an associated set of hook methods.                                                                                                                                    |
+| [Peek-a-boo][AioGuideComponentExampleLifecycleSequenceAndFrequencyOfAllLifecycleEvents] | Demonstrates every lifecycle hook. Each hook method writes to the on-screen log.                                                                                                                                                           |
+| [Spy][AioGuideComponentExampleLifecycleUseDirectivesToWatchTheDom]                      | Shows how to use lifecycle hooks with a custom directive. The `SpyDirective` directive implements the `ngOnInit()` and `ngOnDestroy()` hook methods. The hook methods watch and report when an element goes in or out of the current view. |
+| [OnChanges][AioGuideComponentExampleLifecycleUseChangeDetectionHooks]                   | Demonstrates how Angular runs the `ngOnChanges()` hook method every time one of the component input properties changes, and shows how to interpret the `changes` object passed to the hook method.                                         |
+| [DoCheck][AioGuideComponentExampleLifecycleDefineCustomChangeDetection]                 | Implements the `ngDoCheck()` hook method with custom change detection. Watch the hook post changes to a log to see how often Angular runs this hook.                                                                                       |
+| [AfterView][AioGuideComponentExampleLifecycleRespondToViewChanges]                      | Shows what Angular means by a [view][AioGuideGlossaryView]. Demonstrates the `ngAfterViewInit()` and `ngAfterViewChecked()` hook methods.                                                                                                  |
+| [AfterContent][AioGuideComponentExampleLifecycleRespondToProjectedContentChanges]       | Shows how to project external content into a component and how to distinguish projected content from a component's view children. Demonstrates the `ngAfterContentInit()` and `ngAfterContentChecked()` hook methods.                      |
+| [Counter][AioGuideComponentExampleLifecycleUseComponentAndDirectiveHooksTogether]       | Demonstrates a combination of a component and a directive, each with an associated set of hook methods.                                                                                                                                    |
 
 ## General examples
 
-The following examples demonstrate the request sequence and relative frequency of the various lifecycle events, and how the hooks can be used separately or together for components and directives.
+The following examples show the request sequence and relative frequency of the various lifecycle events, and how the hooks can be used separately or together for components and directives.
 
 ### Sequence and frequency of all lifecycle events
 
-To show how Angular runs the hooks in the expected order, the `PeekABooComponent` component demonstrates all of the hooks in one component.
+To show how Angular runs the hooks in the expected order, the `PeekABooComponent` component demonstrates all lifecycle hook methods in one component.
 
-In practice, you rarely implement all of the interfaces to match the Lifecycle Hooks demo.
+In practice, you rarely create and use all interfaces to described in the Lifecycle Hooks demo.
 
 The following screen capture shows the state of the log after the user selects the **Create...** button and then the **Destroy...** button.
 
@@ -44,6 +44,12 @@ The sequence of log messages for the interfaces follows the prescribed hook meth
 
 `OnChanges`, `OnInit`, `DoCheck`&nbsp;\(3x\), `AfterContentInit`, `AfterContentChecked`&nbsp;\(3x\), `AfterViewInit`, `AfterViewChecked`&nbsp;\(3x\), and `OnDestroy`.
 
+<code-tabs>
+    <code-pane header="peek-a-boo-parent.component.ts">import { Component } from '&commat;angular/core'; &NewLine; &NewLine;import { LoggerService } from './logger.service'; &NewLine; &NewLine;&commat;Component({ &NewLine; &nbsp;selector: 'peek-a-boo-parent', &NewLine; &nbsp;template: &grave; &NewLine; &nbsp;&lt;hr /&gt; &NewLine; &nbsp;&lt;div class="parent"&gt; &NewLine; &nbsp; &nbsp;&lt;h2&gt;Peek-A-Boo&lt;/h2&gt; &NewLine; &NewLine; &nbsp; &nbsp;&lt;button type="button" (click)="toggleChild()"&gt; &NewLine; &nbsp; &nbsp; &nbsp;{{hasChild ? 'Destroy' : 'Create'}} PeekABooComponent &NewLine; &nbsp; &nbsp;&lt;/button&gt; &NewLine; &nbsp; &nbsp;&lt;button type="button" (click)="updateHero()" [hidden]="!hasChild"&gt;Update Hero&lt;/button&gt; &NewLine; &NewLine; &nbsp; &nbsp;&lt;div class="info"&gt; &NewLine; &nbsp; &nbsp; &nbsp;&lt;peek-a-boo *ngIf="hasChild" [name]="heroName"&gt;&lt;/peek-a-boo&gt; &NewLine; &NewLine; &nbsp; &nbsp; &nbsp;&lt;h3&gt;Lifecycle Hook Log&lt;/h3&gt; &NewLine; &nbsp; &nbsp; &nbsp;&lt;div *ngFor="let msg of hookLog" class="log"&gt;{{msg}}&lt;/div&gt; &NewLine; &nbsp; &nbsp;&lt;/div&gt; &NewLine; &nbsp;&lt;/div&gt; &NewLine; &nbsp;&grave;, &NewLine; &nbsp;providers:  [ LoggerService ] &NewLine;}) &NewLine;export class PeekABooParentComponent { &NewLine; &NewLine; &nbsp;hasChild = false; &NewLine; &nbsp;hookLog: string[] = []; &NewLine; &NewLine; &nbsp;heroName = 'Windstorm'; &NewLine; &nbsp;private logger: LoggerService; &NewLine; &NewLine; &nbsp;constructor(logger: LoggerService) { &NewLine; &nbsp; &nbsp;this.logger = logger; &NewLine; &nbsp; &nbsp;this.hookLog = logger.logs; &NewLine; &nbsp;} &NewLine; &NewLine; &nbsp;toggleChild() { &NewLine; &nbsp; &nbsp;this.hasChild = !this.hasChild; &NewLine; &nbsp; &nbsp;if (this.hasChild) { &NewLine; &nbsp; &nbsp; &nbsp;this.heroName = 'Windstorm'; &NewLine; &nbsp; &nbsp; &nbsp;this.logger.clear(); // clear log on create &NewLine; &nbsp; &nbsp;} &NewLine; &nbsp; &nbsp;this.hookLog = this.logger.logs; &NewLine; &nbsp; &nbsp;this.logger.tick(); &NewLine; &nbsp;} &NewLine; &NewLine; &nbsp;updateHero() { &NewLine; &nbsp; &nbsp;this.heroName += '!'; &NewLine; &nbsp; &nbsp;this.logger.tick(); &NewLine; &nbsp;} &NewLine;} </code-pane>
+    <code-pane header="peek-a-boo.component.ts">import { &NewLine; &nbsp;AfterContentChecked, &NewLine; &nbsp;AfterContentInit, &NewLine; &nbsp;AfterViewChecked, &NewLine; &nbsp;AfterViewInit, &NewLine; &nbsp;Component, &NewLine; &nbsp;DoCheck, &NewLine; &nbsp;Input, &NewLine; &nbsp;OnChanges, &NewLine; &nbsp;OnDestroy, &NewLine; &nbsp;OnInit, &NewLine; &nbsp;SimpleChanges &NewLine;} from '&commat;angular/core'; &NewLine; &NewLine;import { LoggerService } from './logger.service'; &NewLine;import { PeekABooDirective } from './peek-a-boo.directive'; &NewLine; &NewLine;&commat;Component({ &NewLine; &nbsp;selector: 'peek-a-boo', &NewLine; &nbsp;template: '&lt;p&gt;Now you see my hero, {{name}}&lt;/p&gt;' &NewLine;}) &NewLine;// Don't have to mention the interfaces for Lifecycle Hook methods &NewLine;// unless you want to type and tool support. &NewLine;export class PeekABooComponent extends PeekABooDirective implements &NewLine; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; OnChanges, OnInit, DoCheck, &NewLine; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; AfterContentInit, AfterContentChecked, &NewLine; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; AfterViewInit, AfterViewChecked, &NewLine; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; OnDestroy { &NewLine; &nbsp;&commat;Input() name = ''; &NewLine; &NewLine; &nbsp;private verb = 'initialized'; &NewLine; &NewLine; &nbsp;constructor(logger: LoggerService) { &NewLine; &nbsp; &nbsp;super(logger); &NewLine; &NewLine; &nbsp; &nbsp;const is = this.name ? 'is' : 'is not'; &NewLine; &nbsp; &nbsp;this.logIt(&grave;name &dollar;{is} known at construction&grave;); &NewLine; &nbsp;} &NewLine; &NewLine; &nbsp;// only run when there an &grave;&commat;input&grave; variable is set by parent. &NewLine; &nbsp;ngOnChanges(changes: SimpleChanges) { &NewLine; &nbsp; &nbsp;const changesMsgs: string[] = []; &NewLine; &nbsp; &nbsp;for (const propName in changes) { &NewLine; &nbsp; &nbsp; &nbsp;if (propName === 'name') { &NewLine; &nbsp; &nbsp; &nbsp; &nbsp;const name = changes['name'].currentValue; &NewLine; &nbsp; &nbsp; &nbsp; &nbsp;changesMsgs.push(&grave;name &dollar;{this.verb} to "&dollar;{name}"&grave;); &NewLine; &nbsp; &nbsp; &nbsp;} else { &NewLine; &nbsp; &nbsp; &nbsp; &nbsp;changesMsgs.push(propName + ' ' + this.verb); &NewLine; &nbsp; &nbsp; &nbsp;} &NewLine; &nbsp; &nbsp;} &NewLine; &nbsp; &nbsp;this.logIt(&grave;OnChanges: &dollar;{changesMsgs.join('; ')}&grave;); &NewLine; &nbsp; &nbsp;this.verb = 'changed'; // next time it is a change &NewLine; &nbsp;} &NewLine; &NewLine; &nbsp;// **WARNING**: Frequently run. &NewLine; &nbsp;// Run in every change detection cycle to the rendered DOM structure &NewLine; &nbsp;ngDoCheck() { this.logIt('DoCheck'); } &NewLine; &NewLine; &nbsp;ngAfterContentInit() { this.logIt('AfterContentInit'); } &NewLine; &NewLine; &nbsp;// **WARNING**: Frequently run. &NewLine; &nbsp;// Run in every change detection cycle to the rendered DOM structure &NewLine; &nbsp;ngAfterContentChecked() { this.logIt('AfterContentChecked'); } &NewLine; &NewLine; &nbsp;ngAfterViewInit() { this.logIt('AfterViewInit'); } &NewLine; &NewLine; &nbsp;// **WARNING**: Frequently run. &NewLine; &nbsp;// Run in every change detection cycle to the rendered DOM structure &NewLine; &nbsp;ngAfterViewChecked() { this.logIt('AfterViewChecked'); } &NewLine; &NewLine; &nbsp;ngOnDestroy() { this.logIt('OnDestroy'); } &NewLine;} </code-pane>
+    <code-pane header="peek-a-boo.directive.ts">import { Directive, OnInit } from '@angular/core';&NewLine;import { LoggerService } from './logger.service';&NewLine; &NewLine;let nextId = 1;&NewLine; &NewLine;&commat;Directive({ &NewLine; &nbsp;selector: '[appPeekABoo]' &NewLine;}) &NewLine;export class PeekABooDirective implements OnInit { &NewLine; &nbsp;constructor(private logger: LoggerService) { } &NewLine; &NewLine; &nbsp;// implement OnInit's &grave;ngOnInit&grave; method &NewLine; &nbsp;ngOnInit() { &NewLine; &nbsp; &nbsp;this.logIt('OnInit'); &NewLine; &nbsp;} &NewLine; &NewLine; &nbsp;logIt(msg: string) { &NewLine; &nbsp; &nbsp;this.logger.log(&grave;#&dollar;{nextId++} &dollar;{msg}&grave;); &NewLine; &nbsp;} &NewLine;} </code-pane>
+</code-tabs>
+
 <div class="alert is-helpful">
 
 **NOTE**: <br />
@@ -54,10 +60,10 @@ The input properties are available to the `onInit()` hook method for further ini
 
 Had the user selected the **Update Hero** button, the log would show another `OnChanges` interface and two more triplets of the `DoCheck`, `AfterContentChecked`, and `AfterViewChecked` interfaces.
 
-<div class="alert is-helpful">
+<div class="alert is-important">
 
-**NOTE**: <br />
-These three hook methods fire often, so it is important to keep the logic as lean as possible.
+**IMPORTANT**: <br />
+The three hook methods run often, so keep your logic as lean.
 
 </div>
 
@@ -71,15 +77,16 @@ This template applies the `SpyDirective` to a `div` element in the `ngFor` *hero
 The example does not perform any initialization or clean-up.
 It just tracks the appearance and disappearance of an element in the view by recording when the directive is instantiated and destroyed.
 
-A spy directive like this can provide insight into a DOM object that you cannot change directly.
-You cannot touch the implementation of a built-in `div` element, or modify a third party component.
-You can, however watch these elements with a directive.
+A spy directive like this can provide insight into a DOM object that you are not able to change directly.
+You are not able to touch the implementation of a built-in `div` element, or change a third-party component.
+You are able to watch the elements with a directive.
 
 The directive defines the `ngOnInit()` and `ngOnDestroy()` hook methods that log messages to the parent using an injected `LoggerService`.
 
 <code-example header="src/app/spy.directive.ts" path="lifecycle-hooks/src/app/spy.directive.ts" region="spy-directive"></code-example>
 
-Apply the spy to any built-in or component element, and see that it is initialized and destroyed at the same time as that element.
+Apply the spy to any built-in or component element.
+Verify that the spy is initialized and destroyed at the same time as that element.
 The following code example shows the spy is attached to the repeated hero `div` element.
 
 <code-example header="src/app/spy.component.html" path="lifecycle-hooks/src/app/spy.component.html" region="template"></code-example>
@@ -128,8 +135,8 @@ The log entries appear as the string value of the *power* property changes.
 
 <div class="alert is-helpful">
 
-**NOTE**: <br />
-However, that the `ngOnChanges()` hook method does not catch changes to `hero.name`.
+**IMPORTANT**: <br />
+The `ngOnChanges()` hook method does not catch changes to `hero.name`.
 
 </div>
 
@@ -166,7 +173,7 @@ In this example, the `doSomething()` method updates the screen when the hero nam
 <code-example header="AfterViewComponent (doSomething)" path="lifecycle-hooks/src/app/after-view.component.ts" region="do-something"></code-example>
 
 Both the `ngAfterViewInit()` and `ngAfterViewChecked()` hook methods fire after the view of the component is composed.
-If you modify the hook method to immediately update the data-bound `comment` property of the component, Angular throws an error.
+If you change the hook method to immediately update the data-bound `comment` property of the component, Angular throws an error.
 
 The `LoggerService.tick_then()` statement postpones the log update for one turn of the JavaScript cycle of the browser, which triggers a new change-detection cycle.
 
@@ -174,7 +181,7 @@ The `LoggerService.tick_then()` statement postpones the log update for one turn 
 
 When you run the *AfterView* sample, notice how frequently Angular runs the `ngAfterViewChecked()` hook method.
 Often when there are no changes of interest.
-Be very careful about how much logic or computation you put into one of these methods.
+Be careful about how much logic or computation you put into one of these methods.
 
 <div class="lightbox">
 
@@ -198,7 +205,7 @@ AngularJS developers know this technique as *transclusion*.
 
 The *AfterContent* sample explores the `AfterContentInit()` and `AfterContentChecked()` hook methods that Angular runs *after* Angular projects external content into the component.
 
-Consider this variation on the ["AfterView"][AioGuideComponentLifecycleTutorialRespondToViewChanges] example.
+Consider this variation on the ["AfterView"][AioGuideComponentExampleLifecycleRespondToViewChanges] example.
 This time, instead of including the child view within the template, it imports the content from the parent of the `AfterContentComponent` component.
 The following is the template of the parent.
 
@@ -227,13 +234,13 @@ In this case, the projected content is the `app-child` element from the parent.
 
 </div>
 
-#### Using AfterContent hooks
+#### Use `AfterContent` hooks
 
-*AfterContent* hooks are similar to the *AfterView* hooks.
+The *AfterContent* hook method and *AfterView* hook method are similar.
 The key difference is in the child component.
 
-*   The *AfterView* hooks concern `ViewChildren`, the child components whose elements appear *within* the template of the component
-*   The *AfterContent* hooks concern `ContentChildren`, the child components that Angular projected into the component
+*   The *AfterView* hook method concern `ViewChildren`, the child components whose elements appear *within* the template of the component
+*   The *AfterContent* hook method concern `ContentChildren`, the child components that Angular projected into the component
 
 The following *AfterContent* hooks take action based on changing values in a *content child*, which can only be reached by querying for them using the property decorated with [@ContentChild][AioApiCoreContentchild].
 
@@ -244,25 +251,30 @@ The following *AfterContent* hooks take action based on changing values in a *co
 <header>No need to wait for content updates</header>
 
 The `doSomething()` method of this component immediately updates the data-bound `comment` property of the component.
-There is no need to [delay the update to ensure proper rendering][AioGuideComponentLifecycleTutorialWaitBeforeUpdatingTheView].
+There is no need to [delay the update to ensure proper rendering][AioGuideComponentExampleLifecycleWaitBeforeUpdatingTheView].
 
 Angular uns both `AfterContent` hook methods before running either of the `AfterView` hook methods.
 Angular completes composition of the projected content *before* finishing the composition of the view of this component.
-There is a small window between the `AfterContent...` and `AfterView...` hook methods that lets you modify the host view.
+There is a small window between the `AfterContent...` and `AfterView...` hook methods that lets you change the host view.
 
 </div>
 
 ## Define custom change detection
 
-To monitor changes that occur where `ngOnChanges()` hook method does not check, implement your own change check, as shown in the "DoCheck" example.
+To show the changes that occur where `ngOnChanges()` hook method does not check, create and use your change checker, as shown in the "DoCheck" example.
 This example shows how to use the `ngDoCheck()` hook method to detect and act upon changes that Angular does not otherwise catch.
 
 The following code example shows the "DoCheck" sample extends the "OnChanges" sample with the `ngDoCheck()` hook method.
 
 <code-example header="DoCheckComponent (ngDoCheck)" path="lifecycle-hooks/src/app/do-check.component.ts" region="ng-do-check"></code-example>
 
-This code inspects certain values of interest, capturing and comparing the associated current state against previous values.
-It writes a special message to the log when there are no substantive changes to the `hero` or the `power` so you can see how often your applcation runs the `ngDoCheck()` hook method.
+The code completes the following actions.
+
+1.  Inspects specific values of interest.
+1.  Captures the associated current state.
+1.  Compares the associated current state against previous values.
+
+The Angular framework writes a special message to the log when there are no substantive changes to the `hero` or the `power`, so you are able to see how often your application runs the `ngDoCheck()` hook method.
 The results are illuminating.
 
 <div class="lightbox">
@@ -271,9 +283,9 @@ The results are illuminating.
 
 </div>
 
-While the `ngDoCheck()` hook method can detect when the `name` of the hero has changed, it is very expensive.
-This hook method is run very frequently after every change detection cycle no matter where the change occurred.
-It is run over twenty times in this example before the user can do anything.
+While the `ngDoCheck()` hook method is able to detect when the `name` of the hero has changed, the hook method is resource intensive.
+The hook method is run frequently after every change detection cycle regardless of where the change occurred.
+The hook method is run over twenty times in the example before the user is able to do anything.
 
 The first rendering in Angular of unrelated data on the page triggers most of the initial checks.
 If you move the cursor into another `input` element, a request is triggered.
@@ -298,35 +310,35 @@ If you use this hook, your implementation must be extremely lightweight or the u
 
 <!-- "Example Angular component applications | Angular" -->
 
-[AioGuideComponentLifecycleTutorialDefineCustomChangeDetection]: guide/component/component-example-lifecycle#define-custom-change-detection
+[AioGuideComponentExampleLifecycleDefineCustomChangeDetection]: guide/component/component-example-lifecycle#define-custom-change-detection
 
 <!-- "Define custom change detection - Example: lifecycle hook methods | Angular" -->
 
-[AioGuideComponentLifecycleTutorialRespondToViewChanges]: guide/component/component-example-lifecycle#respond-to-view-changes
+[AioGuideComponentExampleLifecycleRespondToViewChanges]: guide/component/component-example-lifecycle#respond-to-view-changes
 
 <!-- "Respond to view changes - Example: lifecycle hook methods | Angular" -->
 
-[AioGuideComponentLifecycleTutorialRespondToProjectedContentChanges]: guide/component/component-example-lifecycle#respond-to-projected-content-changes
+[AioGuideComponentExampleLifecycleRespondToProjectedContentChanges]: guide/component/component-example-lifecycle#respond-to-projected-content-changes
 
 <!-- "Respond to projected content changes - Example: lifecycle hook methods | Angular" -->
 
-[AioGuideComponentLifecycleTutorialSequenceAndFrequencyOfAllLifecycleEvents]: guide/component/component-example-lifecycle#sequence-and-frequency-of-all-lifecycle-events
+[AioGuideComponentExampleLifecycleSequenceAndFrequencyOfAllLifecycleEvents]: guide/component/component-example-lifecycle#sequence-and-frequency-of-all-lifecycle-events
 
 <!-- "Sequence and frequency of all lifecycle events - Example: lifecycle hook methods | Angular" -->
 
-[AioGuideComponentLifecycleTutorialUseComponentAndDirectiveHooksTogether]: guide/component/component-example-lifecycle#use-component-and-directive-hooks-together
+[AioGuideComponentExampleLifecycleUseComponentAndDirectiveHooksTogether]: guide/component/component-example-lifecycle#use-component-and-directive-hooks-together
 
 <!-- "Use component and directive hooks together - Example: lifecycle hook methods | Angular" -->
 
-[AioGuideComponentLifecycleTutorialUseDirectivesToWatchTheDom]: guide/component/component-example-lifecycle#use-directives-to-watch-the-dom
+[AioGuideComponentExampleLifecycleUseDirectivesToWatchTheDom]: guide/component/component-example-lifecycle#use-directives-to-watch-the-dom
 
 <!-- "Use directives to watch the DOM - Example: lifecycle hook methods | Angular" -->
 
-[AioGuideComponentLifecycleTutorialUseChangeDetectionHooks]: guide/component/component-example-lifecycle#use-change-detection-hooks
+[AioGuideComponentExampleLifecycleUseChangeDetectionHooks]: guide/component/component-example-lifecycle#use-change-detection-hooks
 
 <!-- "Use change detection hooks - Example: lifecycle hook methods | Angular" -->
 
-[AioGuideComponentLifecycleTutorialWaitBeforeUpdatingTheView]: guide/component/component-example-lifecycle#wait-before-updating-the-view
+[AioGuideComponentExampleLifecycleWaitBeforeUpdatingTheView]: guide/component/component-example-lifecycle#wait-before-updating-the-view
 
 <!-- "Wait before updating the view - Example: lifecycle hook methods | Angular" -->
 

@@ -7,7 +7,7 @@ There are two ways to load an Angular component.
     | Fixed                                   | export            |
     | [Dynamic][AioGuideComponentDynamicLoad] | import and export |
 
-A fixed component is the type of loading that is mentioned throughout the docs.
+A fixed component is the loading type mentioned throughout the documentation.
 To learn about dynamically loading a component, see [Example: Dynamically load a component][AioGuideComponentDynamicLoad].
 
 ## Prerequisites

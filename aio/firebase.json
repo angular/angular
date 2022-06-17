@@ -86,7 +86,7 @@
       {"type": 301, "source": "/guide/component-styles", "destination": "/guide/component/component-style"},
       {"type": 301, "source": "/guide/content-projection", "destination": "/guide/component/component-usage#content-to-component-projection"},
       {"type": 301, "source": "/guide/dynamic-component-loader", "destination": "/guide/component/component-dynamic-load"},
-      {"type": 301, "source": "/guide/elements", "destination": "/guide/component/component-web"},
+      {"type": 301, "source": "/guide/elements", "destination": "/guide/element/custom-element"},
       {"type": 301, "source": "/guide/inputs-outputs", "destination": "/guide/component/component-usage#component-data-sharing-and-inheritance"},
       // {"type": 301, "source": "/guide/inputs-outputs#input", "destination": "/guide/component/component-usage-send-data-to-child"},
       // {"type": 301, "source": "/guide/inputs-outputs#output", "destination": "/guide/component/component-usage-send-data-to-parent"},
