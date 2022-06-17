@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {stringify} from '../util/stringify';
+
 import {resolveForwardRef} from './forward_ref';
 
 
@@ -35,7 +37,8 @@ export class ReflectiveKey {
    */
   constructor(public token: Object, public id: number) {
     if (!token) {
-      throw new Error('Token must be defined!');
+      throw new RuntimeError(
+          RuntimeErrorCode.MISSING_INJECTION_TOKEN, ngDevMode && 'Token must be defined!');
     }
     this.displayName = stringify(this.token);
   }
