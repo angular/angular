@@ -4,7 +4,6 @@
 @use '@material/radio/radio-theme' as mdc-radio-theme;
 @use '@material/radio/radio' as mdc-radio;
 @use '@material/form-field' as mdc-form-field;
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin _color-palette($color-palette) {
   @include mdc-radio-theme.theme((
@@ -23,7 +22,7 @@
   $accent: mat.get-color-from-palette(map.get($config, accent));
   $warn: mat.get-color-from-palette(map.get($config, warn));
 
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     $on-surface: rgba(mdc-theme-color.$on-surface, 0.54);
     $is-dark: map-get($config, is-dark);
     $active-border-color: if(
@@ -33,7 +32,7 @@
     );
 
     .mat-mdc-radio-button {
-      @include mdc-form-field.core-styles($query: mdc-helpers.$mat-theme-styles-query);
+      @include mdc-form-field.core-styles($query: mat.$private-mdc-theme-styles-query);
       @include mdc-radio-theme.theme((
         // The disabled colors don't use the `rgba` version, because
         // MDC applies a separate opacity to disabled buttons.
@@ -65,16 +64,16 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-radio.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
-    @include mdc-form-field.core-styles($query: mdc-helpers.$mat-typography-styles-query);
+  @include mat.private-using-mdc-typography($config) {
+    @include mdc-radio.without-ripple($query: mat.$private-mdc-typography-styles-query);
+    @include mdc-form-field.core-styles($query: mat.$private-mdc-typography-styles-query);
   }
 }
 
 @mixin density($config-or-theme) {
   $density-scale: mat.get-density-config($config-or-theme);
   .mat-mdc-radio-button .mdc-radio {
-    @include mdc-radio-theme.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
+    @include mdc-radio-theme.density($density-scale, $query: mat.$private-mdc-base-styles-query);
   }
 
   @include mdc-helpers.if-touch-targets-unsupported($density-scale) {

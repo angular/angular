@@ -3,7 +3,6 @@
 @use '@material/typography' as mdc-typography;
 @use 'sass:map';
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './paginator-variables';
 
 @mixin color($config-or-theme) {
@@ -51,9 +50,9 @@
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
 
-  @include mdc-helpers.mat-using-mdc-typography($config) {
+  @include mat.private-using-mdc-typography($config) {
     .mat-mdc-paginator {
-      @include mdc-typography.typography(caption, $query: mdc-helpers.$mat-typography-styles-query);
+      @include mdc-typography.typography(caption, $query: mat.$private-mdc-typography-styles-query);
     }
 
     .mat-mdc-paginator .mat-mdc-select-value {

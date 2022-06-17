@@ -1,10 +1,9 @@
 @use '@angular/material' as mat;
 @use '@material/list/evolution-mixins' as mdc-list;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
-@include mdc-helpers.disable-fallback-declarations {
-  @include mdc-list.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mat.private-disable-mdc-fallback-declarations {
+  @include mdc-list.without-ripple($query: mat.$private-mdc-base-styles-query);
 }
 
 // MDC expects the list element to be a `<ul>`, since we use `<mat-list>` instead we need to

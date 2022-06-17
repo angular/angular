@@ -1,7 +1,9 @@
 // TODO(mmalerba): this file should be split into separate cohesive partials for things like
 //  "theming", "typography", "core".
 
-@use '@angular/material' as mat;
+@use '../theming/theming';
+@use '../typography/typography';
+@use '../typography/typography-utils';
 @use '@material/feature-targeting' as mdc-feature-targeting;
 @use '@material/typography' as mdc-typography;
 @use '@material/theme/theme-color' as mdc-theme-color;
@@ -10,11 +12,11 @@
 @use 'sass:meta';
 
 // A set of standard queries to use with MDC's queryable mixins.
-$mat-base-styles-query: mdc-feature-targeting.without(mdc-feature-targeting.any(color, typography));
-$mat-base-styles-without-animation-query:
-    mdc-feature-targeting.all($mat-base-styles-query, mdc-feature-targeting.without(animation));
-$mat-theme-styles-query: color;
-$mat-typography-styles-query: typography;
+$mdc-base-styles-query: mdc-feature-targeting.without(mdc-feature-targeting.any(color, typography));
+$mdc-base-styles-without-animation-query:
+    mdc-feature-targeting.all($mdc-base-styles-query, mdc-feature-targeting.without(animation));
+$mdc-theme-styles-query: color;
+$mdc-typography-styles-query: typography;
 
 // Mappings from Angular Material's typography levels to MDC's typography levels.
 $mat-typography-mdc-level-mappings: (
@@ -34,7 +36,7 @@ $mat-typography-mdc-level-mappings: (
 );
 
 // Converts an Angular Material typography level config to an MDC one.
-@function mat-typography-level-config-to-mdc($mat-config, $mat-level) {
+@function typography-level-config-to-mdc($mat-config, $mat-level) {
   $mdc-level: map.get($mat-typography-mdc-level-mappings, $mat-level);
 
   $result-with-nulls: map.merge(
@@ -47,11 +49,11 @@ $mat-typography-mdc-level-mappings: (
           )),
       if($mat-level,
           (
-            font-size: mat.font-size($mat-config, $mat-level),
-            line-height: mat.line-height($mat-config, $mat-level),
-            font-weight: mat.font-weight($mat-config, $mat-level),
-            letter-spacing: mat.letter-spacing($mat-config, $mat-level),
-            font-family: mat.font-family($mat-config, $mat-level),
+            font-size: typography-utils.font-size($mat-config, $mat-level),
+            line-height: typography-utils.line-height($mat-config, $mat-level),
+            font-weight: typography-utils.font-weight($mat-config, $mat-level),
+            letter-spacing: typography-utils.letter-spacing($mat-config, $mat-level),
+            font-family: typography-utils.font-family($mat-config, $mat-level),
             // Angular Material doesn't use text-transform, so disable it.
             text-transform: none,
           ),
@@ -69,23 +71,23 @@ $mat-typography-mdc-level-mappings: (
 }
 
 // Converts an Angular Material typography config to an MDC one.
-@function mat-typography-config-to-mdc($mat-config) {
+@function typography-config-to-mdc($mat-config) {
   $mdc-config: ();
 
   @each $mat-level, $mdc-level in $mat-typography-mdc-level-mappings {
     $mdc-config: map.merge(
         $mdc-config,
-        ($mdc-level: mat-typography-level-config-to-mdc($mat-config, $mat-level)));
+        ($mdc-level: typography-level-config-to-mdc($mat-config, $mat-level)));
   }
 
   @return $mdc-config;
 }
 
 // Converts an MDC typography level config to an Angular Material one.
-@function mat-typography-config-level-from-mdc($mdc-level) {
+@function typography-config-level-from-mdc($mdc-level) {
   $mdc-level-config: map.get(mdc-typography.$styles, $mdc-level);
 
-  @return mat.define-typography-level(
+  @return typography.define-typography-level(
       map.get($mdc-level-config, font-size),
       map.get($mdc-level-config, line-height),
       map.get($mdc-level-config, font-weight),
@@ -95,10 +97,10 @@ $mat-typography-mdc-level-mappings: (
 
 // Configures MDC's global variables to reflect the given theme, applies the given styles,
 // then resets the global variables to prevent unintended side effects.
-@mixin mat-using-mdc-theme($config) {
-  $primary: mat.get-color-from-palette(map.get($config, primary));
-  $accent: mat.get-color-from-palette(map.get($config, accent));
-  $warn: mat.get-color-from-palette(map.get($config, warn));
+@mixin using-mdc-theme($config) {
+  $primary: theming.get-color-from-palette(map.get($config, primary));
+  $accent: theming.get-color-from-palette(map.get($config, accent));
+  $warn: theming.get-color-from-palette(map.get($config, warn));
   $background-palette: map.get($config, background);
 
   // Save the original values.
@@ -120,8 +122,8 @@ $mat-typography-mdc-level-mappings: (
   mdc-theme-color.$secondary: $accent;
   mdc-theme-color.$on-secondary:
       if(mdc-theme-color.contrast-tone(mdc-theme-color.$secondary) == 'dark', #000, #fff);
-  mdc-theme-color.$background: mat.get-color-from-palette($background-palette, background);
-  mdc-theme-color.$surface: mat.get-color-from-palette($background-palette, card);
+  mdc-theme-color.$background: theming.get-color-from-palette($background-palette, background);
+  mdc-theme-color.$surface: theming.get-color-from-palette($background-palette, card);
   mdc-theme-color.$on-surface:
       if(mdc-theme-color.contrast-tone(mdc-theme-color.$surface) == 'dark', #000, #fff);
   mdc-theme-color.$error: $warn;
@@ -168,7 +170,7 @@ $mat-typography-mdc-level-mappings: (
   );
 
   // Apply given rules.
-  @include disable-fallback-declarations {
+  @include disable-mdc-fallback-declarations {
     @content;
   }
 
@@ -187,17 +189,17 @@ $mat-typography-mdc-level-mappings: (
 
 // Configures MDC's global variables to reflect the given typography config,
 // applies the given styles, then resets the global variables to prevent unintended side effects.
-@mixin mat-using-mdc-typography($config) {
+@mixin using-mdc-typography($config) {
   // Save the original values.
   $orig-mdc-typography-styles: mdc-typography.$styles;
 
   // Set new values based on the given Angular Material typography configuration.
   @if $config {
-    mdc-typography.$styles: mat-typography-config-to-mdc($config);
+    mdc-typography.$styles: typography-config-to-mdc($config);
   }
 
   // Apply given rules.
-  @include disable-fallback-declarations {
+  @include disable-mdc-fallback-declarations {
     @content;
   }
 
@@ -206,7 +208,7 @@ $mat-typography-mdc-level-mappings: (
 }
 
 // Disables MDC's CSS custom property fallbacks for the specified mixin content.
-@mixin disable-fallback-declarations {
+@mixin disable-mdc-fallback-declarations {
   $previous-value: mdc-theme-css.$enable-fallback-declarations;
   mdc-theme-css.$enable-fallback-declarations: false;
   @content;

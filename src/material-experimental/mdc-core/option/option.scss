@@ -3,12 +3,11 @@
 @use '@material/list/evolution-variables' as mdc-list-variables;
 @use 'sass:map';
 
-@use '../mdc-helpers/mdc-helpers';
 
 .mat-mdc-option {
   @include mdc-list-mixins.item-base;
   @include mdc-list-mixins.item-spacing(
-    mdc-list-variables.$side-padding, $query: mdc-helpers.$mat-base-styles-query);
+    mdc-list-variables.$side-padding, $query: mat.$private-mdc-base-styles-query);
   @include mat.private-user-select(none);
   cursor: pointer;
 

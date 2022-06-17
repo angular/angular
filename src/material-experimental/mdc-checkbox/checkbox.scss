@@ -6,12 +6,11 @@
 @use '@material/touch-target' as mdc-touch-target;
 @use 'sass:map';
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './checkbox-private';
 
-@include mdc-helpers.disable-fallback-declarations {
-  @include mdc-checkbox.static-styles($query: mdc-helpers.$mat-base-styles-query);
-  @include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mat.private-disable-mdc-fallback-declarations {
+  @include mdc-checkbox.static-styles($query: mat.$private-mdc-base-styles-query);
+  @include mdc-form-field.core-styles($query: mat.$private-mdc-base-styles-query);
 }
 
 // Apply base styles to the MDC ripple to adjust appearance for state changes (hover, focus, press)
@@ -29,7 +28,7 @@
   .mdc-checkbox {
     // MDC theme styles also include structural styles so we have to include the theme at least
     // once here. The values will be overwritten by our own theme file afterwards.
-    @include mdc-helpers.disable-fallback-declarations {
+    @include mat.private-disable-mdc-fallback-declarations {
       @include mdc-checkbox-theme.theme-styles(checkbox-private.$private-checkbox-theme-config);
     }
 
@@ -117,7 +116,7 @@
 .mat-mdc-checkbox-touch-target {
   @include mdc-touch-target.touch-target(
     $set-width: true,
-    $query: mdc-helpers.$mat-base-styles-query);
+    $query: mat.$private-mdc-base-styles-query);
 }
 
 // Checkbox components have to set `border-radius: 50%` in order to support density scaling

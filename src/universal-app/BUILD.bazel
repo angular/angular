@@ -44,9 +44,6 @@ ts_library(
 sass_binary(
     name = "theme_scss",
     src = "theme.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
     deps = [
         "//src/material:sass_lib",
         "//src/material-experimental:sass_lib",

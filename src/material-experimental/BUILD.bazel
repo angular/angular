@@ -22,7 +22,7 @@ sass_library(
     srcs = MATERIAL_EXPERIMENTAL_SCSS_LIBS + [
         "//src/material-experimental/mdc-core/color",
         "//src/material-experimental/mdc-core/density",
-        "//src/material-experimental/mdc-core/mdc-helpers",
+        "//src/material/core:core_scss_lib",
         "//src/material-experimental/mdc-core/theming",
         "//src/material-experimental/mdc-core/typography",
     ],

@@ -24,6 +24,5 @@ ng_module(
 sass_binary(
     name = "mdc_dialog_demo_scss",
     src = "mdc-dialog-demo.scss",
-    include_paths = ["external/npm/node_modules"],
     deps = ["//src/material-experimental:sass_lib"],
 )

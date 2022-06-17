@@ -5,9 +5,8 @@
 @use '@material/list/evolution-mixins' as mdc-list-mixins;
 @use '@material/list/evolution-variables' as mdc-list-variables;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
-@include mdc-helpers.disable-fallback-declarations {
+@include mat.private-disable-mdc-fallback-declarations {
   @include mdc-menu-surface.core-styles($query: structure);
 }
 
@@ -41,10 +40,10 @@ mat-menu {
 }
 
 .mat-mdc-menu-item {
-  @include mdc-helpers.disable-fallback-declarations {
+  @include mat.private-disable-mdc-fallback-declarations {
     @include mdc-list-mixins.item-base;
     @include mdc-list-mixins.item-spacing(
-      mdc-list-variables.$side-padding, $query: mdc-helpers.$mat-base-styles-query);
+      mdc-list-variables.$side-padding, $query: mat.$private-mdc-base-styles-query);
   }
 
   // MDC's menu items are `<li>` nodes which don't need resets, however ours

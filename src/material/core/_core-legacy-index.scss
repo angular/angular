@@ -1,9 +1,8 @@
 @forward 'core' hide core;
 @forward 'core-theme' hide color, theme;
-@forward 'core' as mat-* hide mat-mdc-core, mat-mdc-strong-focus-indicators-positioning;
+@forward 'core' as mat-* hide mat-mdc-core;
 @forward 'core-theme' as mat-* hide mat-color, mat-theme;
-@forward 'core' as mat-core-* hide mat-core-mdc-core,
-mat-core-mdc-strong-focus-indicators-positioning;
+@forward 'core' as mat-core-* hide mat-core-mdc-core;
 @forward 'core-theme' as mat-core-*;
 
 @forward './color/color-legacy-index';

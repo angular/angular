@@ -4,6 +4,8 @@ load("//src/cdk:config.bzl", "CDK_ENTRYPOINTS")
 load("//src/cdk-experimental:config.bzl", "CDK_EXPERIMENTAL_ENTRYPOINTS")
 load("//src/material:config.bzl", "MATERIAL_ENTRYPOINTS", "MATERIAL_TESTING_ENTRYPOINTS")
 load("//src/material-experimental:config.bzl", "MATERIAL_EXPERIMENTAL_ENTRYPOINTS", "MATERIAL_EXPERIMENTAL_TESTING_ENTRYPOINTS")
+load("//tools:defaults.bzl", "npm_sass_library")
+load("//:packages.bzl", "MDC_PACKAGES")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -37,4 +39,9 @@ genrule(
     name = "entry_points_manifest",
     outs = ["entry_points_manifest.json"],
     cmd = "echo '%s' > $@" % entryPoints,
+)
+
+npm_sass_library(
+    name = "mdc_sass_lib",
+    deps = ["@npm//%s" % pkg for pkg in MDC_PACKAGES],
 )

@@ -4,7 +4,6 @@
 
 @use './interactive-list-theme';
 @use './list-option-theme';
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
@@ -12,11 +11,11 @@
   $accent: mat.get-color-from-palette(map.get($config, accent));
   $warn: mat.get-color-from-palette(map.get($config, warn));
 
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     // MDC's state styles are tied in with their ripple. Since we don't use the MDC
     // ripple, we need to add the hover, focus and selected states manually.
     @include interactive-list-theme.private-interactive-list-item-state-colors($config);
-    @include mdc-list.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+    @include mdc-list.without-ripple($query: mat.$private-mdc-theme-styles-query);
 
     .mat-mdc-list-option {
       @include list-option-theme.private-list-option-color-override($config, $primary, primary);
@@ -33,7 +32,7 @@
 @mixin density($config-or-theme) {
   $density-scale: mat.get-density-config($config-or-theme);
 
-  @include mdc-helpers.disable-fallback-declarations {
+  @include mat.private-disable-mdc-fallback-declarations {
     .mat-mdc-list-item {
       @include mdc-list.one-line-item-density($density-scale);
       @include mdc-list.two-line-item-density($density-scale);
@@ -47,8 +46,8 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-list.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
+  @include mat.private-using-mdc-typography($config) {
+    @include mdc-list.without-ripple($query: mat.$private-mdc-typography-styles-query);
     @include list-option-theme.private-list-option-typography-styles();
   }
 

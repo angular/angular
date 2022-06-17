@@ -1,9 +1,9 @@
+@use '@angular/material' as mat;
 @use '@material/typography/typography';
 @use '@material/feature-targeting/feature-targeting';
 @use '@material/density/functions' as density-functions;
 @use '@material/list/evolution-mixins' as mdc-list;
 @use '@material/list/evolution-variables' as mdc-list-variables;
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 // For compatibility with the non-MDC selection list, we support avatars that are
 // shown at the end of the list option. This is not supported by the MDC list as the
@@ -16,7 +16,7 @@
 @mixin core-styles($query) {
   $feat-structure: feature-targeting.create-target($query, structure);
 
-  @include mdc-helpers.disable-fallback-declarations {
+  @include mat.private-disable-mdc-fallback-declarations {
     .mat-mdc-list-option-with-trailing-avatar {
       @include mdc-list.item-end-spacing(16px, $query: $query);
       @include mdc-list.item-end-size(40px, $query: $query);
@@ -49,7 +49,7 @@
     $property-name: height,
   );
 
-  @include mdc-helpers.disable-fallback-declarations {
+  @include mat.private-disable-mdc-fallback-declarations {
     .mat-mdc-list-option-with-trailing-avatar {
       @include mdc-list.one-line-item-height($one-line-tall-height);
       @include mdc-list.two-line-item-height($two-line-tall-height);

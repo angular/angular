@@ -6,7 +6,6 @@
 @use '@material/textfield/variables' as mdc-textfield-variables;
 
 @use './form-field-sizing';
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin private-form-field-subscript() {
   // Wrapper for the hints and error messages.
@@ -78,6 +77,6 @@
   // jumps when hints or errors are displayed.
   .mat-mdc-form-field-subscript-wrapper,
   .mat-mdc-form-field-bottom-align::before {
-    @include mdc-typography.typography(caption, $query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-typography.typography(caption, $query: mat.$private-mdc-typography-styles-query);
   }
 }

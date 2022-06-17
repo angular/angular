@@ -34,22 +34,19 @@ sass_library(
     ],
     deps = [
         ":form_field_partials",
+        "//:mdc_sass_lib",
         "//src/material:sass_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_scss_deps_lib",
+        "//src/material/core:core_scss_lib",
     ],
 )
 
 sass_binary(
     name = "form_field_scss",
     src = "form-field.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
     deps = [
         ":form_field_partials",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_scss_deps_lib",
+        "//:mdc_sass_lib",
+        "//src/material/core:core_scss_lib",
     ],
 )
 
@@ -66,8 +63,8 @@ sass_library(
         "_mdc-text-field-textarea-overrides.scss",
     ],
     deps = [
+        "//:mdc_sass_lib",
         "//src/cdk:sass_lib",
         "//src/material:sass_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_scss_deps_lib",
     ],
 )

@@ -5,10 +5,9 @@
 @use '@material/form-field' as mdc-form-field;
 @use '@material/ripple' as mdc-ripple;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
-@include mdc-helpers.disable-fallback-declarations {
-  @include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mat.private-disable-mdc-fallback-declarations {
+  @include mdc-form-field.core-styles($query: mat.$private-mdc-base-styles-query);
   @include mdc-switch.static-styles-without-ripple;
 }
 
@@ -21,7 +20,7 @@
   .mdc-switch {
     // MDC theme styles also include structural styles so we have to include the theme at least
     // once here. The values will be overwritten by our own theme file afterwards.
-    @include mdc-helpers.disable-fallback-declarations {
+    @include mat.private-disable-mdc-fallback-declarations {
       @include mdc-switch-theme.theme-styles(mdc-switch-theme.$light-theme);
     }
   }

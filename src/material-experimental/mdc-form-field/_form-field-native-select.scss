@@ -3,8 +3,6 @@
 @use '@angular/material' as mat;
 @use '@material/theme/theme-color' as mdc-theme-color;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
-
 // Width of the Material Design form-field select arrow.
 $mat-form-field-select-arrow-width: 10px;
 // Height of the Material Design form-field select arrow.
@@ -75,7 +73,7 @@ $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-widt
 }
 
 @mixin private-form-field-native-select-color($config) {
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     // These values are taken from the MDC select implementation:
     // https://github.com/material-components/material-components-web/blob/master/packages/mdc-select/_select-theme.scss
     $dropdown-icon-color: rgba(mdc-theme-color.prop-value(on-surface), 0.54);

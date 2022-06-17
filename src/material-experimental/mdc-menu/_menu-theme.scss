@@ -6,13 +6,12 @@
 @use '@material/typography' as mdc-typography;
 @use '@material/ripple' as mdc-ripple;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
-  @include mdc-helpers.mat-using-mdc-theme($config) {
-    @include mdc-menu-surface.core-styles(mdc-helpers.$mat-theme-styles-query);
-    @include mdc-list.without-ripple(mdc-helpers.$mat-theme-styles-query);
+  @include mat.private-using-mdc-theme($config) {
+    @include mdc-menu-surface.core-styles(mat.$private-mdc-theme-styles-query);
+    @include mdc-list.without-ripple(mat.$private-mdc-theme-styles-query);
 
     // MDC doesn't appear to have disabled styling for menu
     // items so we have to grey them out ourselves.
@@ -47,19 +46,19 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-menu-surface.core-styles(mdc-helpers.$mat-typography-styles-query);
+  @include mat.private-using-mdc-typography($config) {
+    @include mdc-menu-surface.core-styles(mat.$private-mdc-typography-styles-query);
 
     .mat-mdc-menu-content {
       // Note that we include this private mixin, because the public
       // one adds a bunch of styles that we aren't using for the menu.
-      @include mdc-list.list-base(mdc-helpers.$mat-typography-styles-query);
+      @include mdc-list.list-base(mat.$private-mdc-typography-styles-query);
 
       // MDC uses the `subtitle1` level for list items, but the spec shows `body1` as the correct
       // level.
       &,
       .mat-mdc-menu-item .mdc-list-item__primary-text {
-        @include mdc-typography.typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
+        @include mdc-typography.typography(body1, $query: mat.$private-mdc-typography-styles-query);
       }
     }
   }

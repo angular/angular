@@ -8,7 +8,6 @@
 @use '@material/tab/mixins' as mdc-tab-mixins;
 @use '@material/tab-bar' as mdc-tab-bar;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
@@ -16,7 +15,7 @@
   $accent: mat.get-color-from-palette(map.get($config, accent));
   $warn: mat.get-color-from-palette(map.get($config, warn));
 
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     .mat-mdc-tab, .mat-mdc-tab-link {
       &:not(.mat-mdc-tab-disabled) {
         @include mdc-tab-mixins.text-label-color(rgba(mdc-theme-color.$on-surface, 0.6));
@@ -112,16 +111,16 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-tab.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
-    @include mdc-tab-indicator.core-styles($query: mdc-helpers.$mat-typography-styles-query);
+  @include mat.private-using-mdc-typography($config) {
+    @include mdc-tab.without-ripple($query: mat.$private-mdc-typography-styles-query);
+    @include mdc-tab-indicator.core-styles($query: mat.$private-mdc-typography-styles-query);
   }
 }
 
 @mixin density($config-or-theme) {
   $density-scale: mat.get-density-config($config-or-theme);
   .mat-mdc-tab-header {
-    @include mdc-tab-bar.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
+    @include mdc-tab-bar.density($density-scale, $query: mat.$private-mdc-base-styles-query);
   }
 }
 

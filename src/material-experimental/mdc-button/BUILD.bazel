@@ -35,9 +35,9 @@ sass_library(
     name = "mdc_button_scss_lib",
     srcs = glob(["**/_*.scss"]),
     deps = [
+        "//:mdc_sass_lib",
         "//src/material:sass_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_scss_deps_lib",
+        "//src/material/core:core_scss_lib",
     ],
 )
 
@@ -49,21 +49,17 @@ sass_library(
 sass_binary(
     name = "button_scss",
     src = "button.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
     deps = [
         ":button_base_scss_lib",
+        "//:mdc_sass_lib",
         "//src/material:sass_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_scss_deps_lib",
+        "//src/material/core:core_scss_lib",
     ],
 )
 
 sass_binary(
     name = "button_high_contrast_scss",
     src = "button-high-contrast.scss",
-    include_paths = ["external/npm/node_modules"],
     deps = [
         "//src/cdk:sass_lib",
     ],
@@ -72,28 +68,22 @@ sass_binary(
 sass_binary(
     name = "fab_scss",
     src = "fab.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
     deps = [
         ":button_base_scss_lib",
+        "//:mdc_sass_lib",
         "//src/material:sass_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_scss_deps_lib",
+        "//src/material/core:core_scss_lib",
     ],
 )
 
 sass_binary(
     name = "icon-button_scss",
     src = "icon-button.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
     deps = [
         ":button_base_scss_lib",
+        "//:mdc_sass_lib",
         "//src/material:sass_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_scss_deps_lib",
+        "//src/material/core:core_scss_lib",
     ],
 )
 

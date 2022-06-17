@@ -1,6 +1,6 @@
 @use 'sass:math';
+@use '@angular/material' as mat;
 @use '@material/card' as mdc-card;
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 // TODO(jelbourn): move header and title-group styles to their own files.
 
@@ -10,9 +10,9 @@ $mat-card-header-size: 40px !default;
 // Default padding for text content within a card.
 $mat-card-default-padding: 16px !default;
 
-@include mdc-helpers.disable-fallback-declarations {
+@include mat.private-disable-mdc-fallback-declarations {
   // Include all MDC card styles except for color and typography.
-  @include mdc-card.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+  @include mdc-card.without-ripple($query: mat.$private-mdc-base-styles-query);
 }
 
 // Title text and subtitles text within a card. MDC doesn't have pre-made title sections for cards.

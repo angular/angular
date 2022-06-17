@@ -1,8 +1,5 @@
-@forward '../mdc-core/mdc-helpers/mdc-helpers.import';
-@forward '../mdc-core/mdc-helpers/mdc-helpers';
 @forward 'snack-bar-theme' hide color, density, theme, typography;
 @forward 'snack-bar-theme' as mat-mdc-snack-bar-* hide
 $mat-mdc-snack-bar-mdc-snackbar-dismiss-ink-color, $mat-mdc-snack-bar-mdc-snackbar-fill-color,
 $mat-mdc-snack-bar-mdc-snackbar-label-ink-color;
 
-@import '../mdc-core/mdc-helpers/mdc-helpers';

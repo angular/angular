@@ -127,9 +127,6 @@ devmode_esbuild(
 sass_binary(
     name = "theme",
     src = "theme.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
     deps = [
         "//src/material:sass_lib",
         "//src/material-experimental:sass_lib",

@@ -4,12 +4,11 @@
 @use '@material/icon-button/icon-button-theme' as mdc-icon-button-theme;
 @use '@material/theme/theme-color' as mdc-theme-color;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './button-theme-private';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     $is-dark: map.get($config, is-dark);
     $on-surface: mdc-theme-color.prop-value(on-surface);
     $disabled-color: rgba($on-surface, if($is-dark, 0.5, 0.38));
@@ -42,8 +41,8 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-icon-button.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
+  @include mat.private-using-mdc-typography($config) {
+    @include mdc-icon-button.without-ripple($query: mat.$private-mdc-typography-styles-query);
   }
 }
 
@@ -51,7 +50,7 @@
   $density-scale: mat.get-density-config($config-or-theme);
     // Use `mat-mdc-button-base` to increase the specificity over the button's structural styles.
   .mat-mdc-icon-button.mat-mdc-button-base {
-    @include mdc-icon-button.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
+    @include mdc-icon-button.density($density-scale, $query: mat.$private-mdc-base-styles-query);
     @include button-theme-private.touch-target-density($density-scale);
   }
 }

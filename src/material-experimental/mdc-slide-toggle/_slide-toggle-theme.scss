@@ -5,7 +5,6 @@
 @use '@material/theme/color-palette' as mdc-color-palette;
 @use '@material/form-field' as mdc-form-field;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 // Generates all color mapping for the properties that only change based on the theme.
 @function _get-theme-base-map($is-dark) {
@@ -75,11 +74,11 @@
   $warn: mat.get-color-from-palette(map.get($config, warn));
   $is-dark: map.get($config, is-dark);
 
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     // MDC's switch doesn't support a `color` property. We add support
     // for it by adding a CSS class for accent and warn style.
     .mat-mdc-slide-toggle {
-      @include mdc-form-field.core-styles($query: mdc-helpers.$mat-theme-styles-query);
+      @include mdc-form-field.core-styles($query: mat.$private-mdc-theme-styles-query);
       @include mdc-switch-theme.theme(_get-theme-base-map($is-dark));
 
       &.mat-primary {
@@ -100,8 +99,8 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-form-field.core-styles($query: mdc-helpers.$mat-typography-styles-query);
+  @include mat.private-using-mdc-typography($config) {
+    @include mdc-form-field.core-styles($query: mat.$private-mdc-typography-styles-query);
   }
 }
 

@@ -1,12 +1,12 @@
 @use 'sass:map';
+@use '@angular/material' as mat;
 @use '@material/list/evolution-mixins' as mdc-list-mixins;
 @use '@material/list/evolution-variables' as mdc-list-variables;
-@use '../mdc-helpers/mdc-helpers';
 
 .mat-mdc-optgroup-label {
   @include mdc-list-mixins.item-base;
   @include mdc-list-mixins.item-spacing(
-    mdc-list-variables.$side-padding, $query: mdc-helpers.$mat-base-styles-query);
+    mdc-list-variables.$side-padding, $query: mat.$private-mdc-base-styles-query);
 
   // Set the `min-height` here ourselves, instead of going through
   // the `mdc-list-one-line-item-density` mixin, because it sets a `height`

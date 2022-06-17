@@ -8,7 +8,6 @@
 @use '@material/button/button-outlined-theme' as mdc-button-outlined-theme;
 @use '@material/theme/theme-color' as mdc-theme-color;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './button-theme-private';
 
 @mixin _button-variant($color) {
@@ -39,7 +38,7 @@
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     $is-dark: map.get($config, is-dark);
     $on-surface: mdc-theme-color.prop-value(on-surface);
     $surface: mdc-theme-color.prop-value(surface);
@@ -185,8 +184,8 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-button.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
+  @include mat.private-using-mdc-typography($config) {
+    @include mdc-button.without-ripple($query: mat.$private-mdc-typography-styles-query);
   }
 }
 
@@ -198,7 +197,7 @@
   .mat-mdc-outlined-button {
     // Use `mat-mdc-button-base` to increase the specificity over the button's structural styles.
     &.mat-mdc-button-base {
-      @include mdc-button-theme.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
+      @include mdc-button-theme.density($density-scale, $query: mat.$private-mdc-base-styles-query);
       @include button-theme-private.touch-target-density($density-scale);
     }
   }

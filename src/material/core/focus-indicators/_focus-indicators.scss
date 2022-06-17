@@ -12,4 +12,5 @@
   $config: map.merge($default-config, $config);
 
   @include private.customize-focus-indicators($config, 'mat');
+  @include private.customize-focus-indicators($config, 'mat-mdc');
 }

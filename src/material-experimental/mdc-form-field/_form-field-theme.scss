@@ -6,7 +6,6 @@
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/typography/typography' as mdc-typography;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './form-field-density';
 @use './form-field-subscript';
 @use './form-field-focus-overlay';
@@ -17,7 +16,7 @@
 // Mixin that overwrites the default MDC text-field color styles to be based on
 // the given theme palette. The MDC text-field is styled using `primary` by default.
 @mixin _color-styles($palette-name,
-  $query: mdc-helpers.$mat-theme-styles-query) {
+  $query: mat.$private-mdc-theme-styles-query) {
   $orig-focused-label-color: mdc-textfield.$focused-label-color;
   mdc-textfield.$focused-label-color: rgba(mdc-theme-color.prop-value($palette-name), 0.87);
 
@@ -41,12 +40,12 @@
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     @include mdc-text-field-theme-variable-refresh.private-text-field-refresh-theme-variables() {
-      @include mdc-textfield.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
-      @include mdc-floating-label.core-styles($query: mdc-helpers.$mat-theme-styles-query);
-      @include mdc-notched-outline.core-styles($query: mdc-helpers.$mat-theme-styles-query);
-      @include mdc-line-ripple.core-styles($query: mdc-helpers.$mat-theme-styles-query);
+      @include mdc-textfield.without-ripple($query: mat.$private-mdc-theme-styles-query);
+      @include mdc-floating-label.core-styles($query: mat.$private-mdc-theme-styles-query);
+      @include mdc-notched-outline.core-styles($query: mat.$private-mdc-theme-styles-query);
+      @include mdc-line-ripple.core-styles($query: mat.$private-mdc-theme-styles-query);
       @include form-field-subscript.private-form-field-subscript-color();
       @include form-field-focus-overlay.private-form-field-focus-overlay-color();
       @include form-field-native-select.private-form-field-native-select-color($config);
@@ -65,11 +64,11 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-textfield.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
-    @include mdc-floating-label.core-styles($query: mdc-helpers.$mat-typography-styles-query);
-    @include mdc-notched-outline.core-styles($query: mdc-helpers.$mat-typography-styles-query);
-    @include mdc-line-ripple.core-styles($query: mdc-helpers.$mat-typography-styles-query);
+  @include mat.private-using-mdc-typography($config) {
+    @include mdc-textfield.without-ripple($query: mat.$private-mdc-typography-styles-query);
+    @include mdc-floating-label.core-styles($query: mat.$private-mdc-typography-styles-query);
+    @include mdc-notched-outline.core-styles($query: mat.$private-mdc-typography-styles-query);
+    @include mdc-line-ripple.core-styles($query: mat.$private-mdc-typography-styles-query);
     @include form-field-subscript.private-form-field-subscript-typography($config);
 
     // MDC uses `subtitle1` for the input value, placeholder and floating label. The spec
@@ -77,7 +76,7 @@
     // Note: Form controls inherit the typography from the parent form field.
     .mat-mdc-form-field,
     .mat-mdc-floating-label {
-      @include mdc-typography.typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
+      @include mdc-typography.typography(body1, $query: mat.$private-mdc-typography-styles-query);
     }
 
     // Above, we updated the floating label to use the `body1` typography level. The MDC notched

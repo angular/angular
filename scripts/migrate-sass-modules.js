@@ -66,7 +66,6 @@ migrate('material/core/**/_*.scss', materialPrefixes, true);
 commentOutMdc('material-experimental/**/*.scss');
 
 // Migrate all of the MDC partials.
-migrate('material-experimental/mdc-core/mdc-helpers/**/_*.scss', mdcPrefixes, true);
 migrate('material-experimental/mdc-core/**/_*.scss', mdcPrefixes, true, ['**/_core.scss']);
 migrate('material-experimental/**/_*.scss', mdcPrefixes, true);
 

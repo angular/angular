@@ -1,15 +1,14 @@
 @use '@angular/material' as mat;
 @use '@material/circular-progress' as mdc-circular-progress;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin _palette-styles($color) {
-  @include mdc-circular-progress.color($color, $query: mdc-helpers.$mat-theme-styles-query);
+  @include mdc-circular-progress.color($color, $query: mat.$private-mdc-theme-styles-query);
 }
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     .mat-mdc-progress-spinner {
       @include _palette-styles(primary);
 

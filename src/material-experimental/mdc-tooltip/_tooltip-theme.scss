@@ -3,12 +3,11 @@
 @use '@material/tooltip/tooltip';
 @use '@material/tooltip' as tooltip-theme;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
-  @include mdc-helpers.mat-using-mdc-theme($config) {
-    @include tooltip.core-styles($query: mdc-helpers.$mat-theme-styles-query);
+  @include mat.private-using-mdc-theme($config) {
+    @include tooltip.core-styles($query: mat.$private-mdc-theme-styles-query);
     // We are defining our own tooltip background color because of concerns
     // surrounding the 0.6 background color opacity of the MDC tooltip styles.
     @include tooltip-theme.fill-color(
@@ -20,8 +19,8 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include tooltip.core-styles($query: mdc-helpers.$mat-typography-styles-query);
+  @include mat.private-using-mdc-typography($config) {
+    @include tooltip.core-styles($query: mat.$private-mdc-typography-styles-query);
   }
 }
 

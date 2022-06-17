@@ -1,8 +1,8 @@
+@use '@angular/material' as mat;
 @use '@material/slider/slider' as mdc-slider;
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
-@include mdc-helpers.disable-fallback-declarations {
-  @include mdc-slider.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mat.private-disable-mdc-fallback-declarations {
+  @include mdc-slider.without-ripple($query: mat.$private-mdc-base-styles-query);
 }
 
 $mat-slider-min-size: 128px !default;

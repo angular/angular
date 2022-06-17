@@ -48,9 +48,6 @@ sass_library(
 sass_binary(
     name = "indigo_pink_prebuilt",
     src = "prebuilt/indigo-pink.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
     deps = [
         ":all_themes",
         "//src/material:sass_lib",
@@ -60,9 +57,6 @@ sass_binary(
 sass_binary(
     name = "deeppurple_amber_prebuilt",
     src = "prebuilt/deeppurple-amber.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
     deps = [
         ":all_themes",
         "//src/material:sass_lib",
@@ -72,9 +66,6 @@ sass_binary(
 sass_binary(
     name = "pink_bluegrey_prebuilt",
     src = "prebuilt/pink-bluegrey.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
     deps = [
         ":all_themes",
         "//src/material:sass_lib",
@@ -84,9 +75,6 @@ sass_binary(
 sass_binary(
     name = "purple_green_prebuilt",
     src = "prebuilt/purple-green.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
     deps = [
         ":all_themes",
         "//src/material:sass_lib",

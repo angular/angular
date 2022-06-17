@@ -7,7 +7,6 @@
 @use 'sass:map';
 @use 'sass:color';
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './checkbox-private';
 
 // Apply ripple colors to the MatRipple element and the MDC ripple element when the
@@ -34,9 +33,9 @@
   $accent: mat.get-color-from-palette(map.get($config, accent));
   $warn: mat.get-color-from-palette(map.get($config, warn));
 
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     .mat-mdc-checkbox {
-      @include mdc-form-field.core-styles($query: mdc-helpers.$mat-theme-styles-query);
+      @include mdc-form-field.core-styles($query: mat.$private-mdc-theme-styles-query);
       @include mat.ripple-color((
         foreground: (
           base: mdc-theme-color.prop-value(on-surface)
@@ -71,20 +70,20 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-checkbox.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
-    @include mdc-form-field.core-styles($query: mdc-helpers.$mat-typography-styles-query);
+  @include mat.private-using-mdc-typography($config) {
+    @include mdc-checkbox.without-ripple($query: mat.$private-mdc-typography-styles-query);
+    @include mdc-form-field.core-styles($query: mat.$private-mdc-typography-styles-query);
   }
 }
 
 @mixin density($config-or-theme) {
   $density-scale: mat.get-density-config($config-or-theme);
 
-  @include mdc-helpers.disable-fallback-declarations {
+  @include mat.private-disable-mdc-fallback-declarations {
     .mat-mdc-checkbox .mdc-checkbox {
       @include mdc-checkbox-theme.density(
         $density-scale,
-        $query: mdc-helpers.$mat-base-styles-query
+        $query: mat.$private-mdc-base-styles-query
       );
     }
 

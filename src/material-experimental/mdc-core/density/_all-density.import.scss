@@ -1,6 +1,4 @@
 @forward '../../../material/core/theming/theming.import';
-@forward '../mdc-helpers/mdc-helpers.import';
-@forward '../mdc-helpers/mdc-helpers';
 @forward '../../../material/core/core.import';
 @forward '../../mdc-button/button-theme' hide color, density, theme, typography;
 @forward '../../mdc-button/button-theme' as mat-mdc-* hide $mat-mdc-mat-button-state-target,

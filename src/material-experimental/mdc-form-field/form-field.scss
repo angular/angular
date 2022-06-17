@@ -1,3 +1,4 @@
+@use '@angular/material' as mat;
 @use '@material/textfield' as mdc-textfield;
 @use '@material/floating-label' as mdc-floating-label;
 @use '@material/notched-outline' as mdc-notched-outline;
@@ -9,18 +10,17 @@
 @use './form-field-native-select';
 @use './mdc-text-field-textarea-overrides';
 @use './mdc-text-field-structure-overrides';
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 // Base styles for MDC text-field, notched-outline, floating label and line-ripple.
-@include mdc-helpers.disable-fallback-declarations {
+@include mat.private-disable-mdc-fallback-declarations {
   @include mdc-textfield.without-ripple(
-    $query: mdc-helpers.$mat-base-styles-without-animation-query);
+    $query: mat.$private-mdc-base-styles-without-animation-query);
   @include mdc-floating-label.core-styles(
-    $query: mdc-helpers.$mat-base-styles-without-animation-query);
+    $query: mat.$private-mdc-base-styles-without-animation-query);
   @include mdc-notched-outline.core-styles(
-    $query: mdc-helpers.$mat-base-styles-without-animation-query);
+    $query: mat.$private-mdc-base-styles-without-animation-query);
   @include mdc-line-ripple.core-styles(
-    $query: mdc-helpers.$mat-base-styles-without-animation-query);
+    $query: mat.$private-mdc-base-styles-without-animation-query);
 }
 
 // MDC text-field overwrites.
@@ -122,7 +122,7 @@
 // In order to make it possible for developers to disable animations for form-fields,
 // we only activate the animation styles if animations are not explicitly disabled.
 .mat-mdc-form-field:not(.mat-form-field-no-animations) {
-  @include mdc-helpers.disable-fallback-declarations {
+  @include mat.private-disable-mdc-fallback-declarations {
     @include mdc-textfield.without-ripple($query: animation);
     @include mdc-floating-label.core-styles($query: animation);
     @include mdc-notched-outline.core-styles($query: animation);

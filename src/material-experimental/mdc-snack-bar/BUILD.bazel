@@ -32,9 +32,9 @@ sass_library(
     name = "mdc_snack_bar_scss_lib",
     srcs = glob(["**/_*.scss"]),
     deps = [
+        "//:mdc_sass_lib",
         "//src/material:sass_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_scss_deps_lib",
+        "//src/material/core:core_scss_lib",
     ],
 )
 
@@ -46,13 +46,10 @@ sass_binary(
 sass_binary(
     name = "snack_bar_container_scss",
     src = "snack-bar-container.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
     deps = [
+        "//:mdc_sass_lib",
         "//src/cdk:sass_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_scss_deps_lib",
+        "//src/material/core:core_scss_lib",
     ],
 )
 

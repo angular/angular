@@ -7,7 +7,8 @@
     "paths": {
       "@angular/cdk": ["../cdk"],
       "@angular/cdk/*": ["../cdk/*"],
-      "@angular/material/*": ["./*"]
+      "@angular/material/*": ["./*"],
+      "@material/*": ["../../node_modules/@material/*/index.d.ts"]
     }
   },
   "include": ["./**/*.ts", "../dev-mode-types.d.ts"]

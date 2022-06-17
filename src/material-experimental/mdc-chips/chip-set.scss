@@ -1,7 +1,7 @@
+@use '@angular/material' as mat;
 @use '@material/chips/chip-set' as mdc-chip-set;
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
-@include mdc-chip-set.core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-chip-set.core-styles($query: mat.$private-mdc-base-styles-query);
 
 // Ensures that the internal chip container spans the entire outer container width, if the
 // outer container width is customized. This is used by some wrapper components in g3.

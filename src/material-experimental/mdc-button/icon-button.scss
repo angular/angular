@@ -3,15 +3,14 @@
 @use '@material/icon-button/icon-button' as mdc-icon-button;
 @use '@material/icon-button/icon-button-theme' as mdc-icon-button-theme;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './button-base';
 
-@include mdc-helpers.disable-fallback-declarations {
-  @include mdc-icon-button.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mat.private-disable-mdc-fallback-declarations {
+  @include mdc-icon-button.without-ripple($query: mat.$private-mdc-base-styles-query);
 }
 
 .mat-mdc-icon-button {
-  @include mdc-helpers.disable-fallback-declarations {
+  @include mat.private-disable-mdc-fallback-declarations {
     $theme-overrides: button-base.mat-private-button-remove-ripple((
       icon-color: inherit,
       // We don't change the color on focus/hover so exclude

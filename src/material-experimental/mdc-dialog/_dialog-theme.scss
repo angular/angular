@@ -5,12 +5,10 @@
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/typography' as mdc-typography;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
-
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
 
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     .mat-mdc-dialog-container {
       $surface: mdc-theme-color.$surface;
       $on-surface: mdc-theme-color.$on-surface;
@@ -32,7 +30,7 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-helpers.mat-using-mdc-typography($config) {
+  @include mat.private-using-mdc-typography($config) {
     .mat-mdc-dialog-container {
       $styles: mdc-typography.$styles;
       $headline6: map.get($styles, headline6);

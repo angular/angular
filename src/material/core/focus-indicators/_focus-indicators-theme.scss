@@ -10,14 +10,20 @@ $_prefix: 'mat';
   @if meta.type-of($config-or-theme-or-color) == 'color' {
     @include private.customize-focus-indicators((
       border-color: $config-or-theme-or-color
-    ), $_prefix);
+    ), 'mat');
+    @include private.customize-focus-indicators((
+        border-color: $config-or-theme-or-color
+    ), 'mat-mdc');
   }
   @else {
     $config: theming.get-color-config($config-or-theme-or-color);
     $border-color: theming.get-color-from-palette(map.get($config, primary));
     @include private.customize-focus-indicators((
       border-color: $border-color
-    ), $_prefix);
+    ), 'mat');
+    @include private.customize-focus-indicators((
+      border-color: $border-color
+    ), 'mat-mdc');
   }
 }
 
@@ -26,7 +32,10 @@ $_prefix: 'mat';
   @if meta.type-of($theme-or-color-config-or-color) == 'color' {
     @include private.customize-focus-indicators((
       border-color: $theme-or-color-config-or-color
-    ), $_prefix);
+    ), 'mat');
+    @include private.customize-focus-indicators((
+      border-color: $theme-or-color-config-or-color
+    ), 'mat-mdc');
   }
   @else {
     $theme: theming.private-legacy-get-theme($theme-or-color-config-or-color);

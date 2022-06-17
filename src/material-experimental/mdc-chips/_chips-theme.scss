@@ -7,8 +7,6 @@
 @use 'sass:color';
 @use 'sass:map';
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
-
 // Customizes the appearance of a chip. Note that ideally we would be doing this using the
 // `theme-styles` mixin, however it has the following problems:
 // 1. Some of MDC's base styles have **very** high specificity. E.g. setting the background of a
@@ -49,7 +47,7 @@
   $foreground: map.get($config, foreground);
   $is-dark: map.get($config, is-dark);
 
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     .mat-mdc-standard-chip {
       @include _chip-variant(
         color.mix(mdc-theme-color.prop-value(on-surface), mdc-theme-color.prop-value(surface), 12%),
@@ -78,13 +76,13 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-chip-set.core-styles($query: mdc-helpers.$mat-typography-styles-query);
-  @include mdc-helpers.mat-using-mdc-typography($config) {
+  @include mdc-chip-set.core-styles($query: mat.$private-mdc-typography-styles-query);
+  @include mat.private-using-mdc-typography($config) {
     // Note that we don't go through MDC's typography mixin, because it assigns the styles to
     // an inner element which makes it difficult for clients to customize. Instead we apply the
     // same styles ourselves to the root.
     .mat-mdc-standard-chip {
-      @include mdc-typography.typography(body2, $query: mdc-helpers.$mat-typography-styles-query);
+      @include mdc-typography.typography(body2, $query: mat.$private-mdc-typography-styles-query);
     }
   }
 }
@@ -92,7 +90,7 @@
 @mixin density($config-or-theme) {
   $density-scale: mat.get-density-config($config-or-theme);
   .mat-mdc-chip {
-    @include mdc-chip-theme.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
+    @include mdc-chip-theme.density($density-scale, $query: mat.$private-mdc-base-styles-query);
   }
 }
 

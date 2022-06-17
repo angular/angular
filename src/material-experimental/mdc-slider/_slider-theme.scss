@@ -5,12 +5,11 @@
 @use '@material/slider/slider-theme';
 @use '@material/theme/variables' as theme-variables;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
-  @include mdc-helpers.mat-using-mdc-theme($config) {
-    @include mdc-slider.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+  @include mat.private-using-mdc-theme($config) {
+    @include mdc-slider.without-ripple($query: mat.$private-mdc-theme-styles-query);
 
     .mat-mdc-slider {
       &.mat-primary, &.mat-accent, &.mat-warn {
@@ -22,11 +21,11 @@
         @include slider-theme.value-indicator-color(
           $color: $indicator-color,
           $opacity: $indicator-opacity,
-          $query: mdc-helpers.$mat-theme-styles-query
+          $query: mat.$private-mdc-theme-styles-query
         );
         @include slider-theme.value-indicator-text-color(
           $color: $indicator-text-color,
-          $query: mdc-helpers.$mat-theme-styles-query
+          $query: mat.$private-mdc-theme-styles-query
         );
       }
 
@@ -48,8 +47,8 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-slider.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
+  @include mat.private-using-mdc-typography($config) {
+    @include mdc-slider.without-ripple($query: mat.$private-mdc-typography-styles-query);
   }
 }
 
@@ -80,35 +79,35 @@
       default: $color,
       disabled: on-surface,
     ),
-    $query: mdc-helpers.$mat-theme-styles-query
+    $query: mat.$private-mdc-theme-styles-query
   );
   @include slider-theme.track-active-color(
     $color-or-map: (
       default: $color,
       disabled: on-surface,
     ),
-    $query: mdc-helpers.$mat-theme-styles-query
+    $query: mat.$private-mdc-theme-styles-query
   );
   @include slider-theme.track-inactive-color(
     $color-or-map: (
       default: $color,
       disabled: on-surface,
     ),
-    $query: mdc-helpers.$mat-theme-styles-query
+    $query: mat.$private-mdc-theme-styles-query
   );
   @include slider-theme.tick-mark-active-color(
     $color-or-map: (
       default: $on-color,
       disabled: surface,
     ),
-    $query: mdc-helpers.$mat-theme-styles-query
+    $query: mat.$private-mdc-theme-styles-query
   );
   @include slider-theme.tick-mark-inactive-color(
     $color-or-map: (
       default: $color,
       disabled: on-surface,
     ),
-    $query: mdc-helpers.$mat-theme-styles-query
+    $query: mat.$private-mdc-theme-styles-query
   );
   $ripple-color: map.get(theme-variables.$property-values, $color);
   @include mat.ripple-color((

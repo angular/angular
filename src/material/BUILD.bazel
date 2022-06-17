@@ -25,14 +25,31 @@ sass_library(
         "_index.scss",
         "_theming.scss",
     ],
-    deps = ["//src/material/core:theming_scss_lib"],
+    deps = [
+        "//src/material/core:core_scss_lib",
+        "//src/material/core:theming_scss_lib",
+        "//src/material/legacy-core:legacy_core_scss_lib",
+    ],
+)
+
+# Generate the material `package.json` by adding all MDC dependencies
+# from the project root to the `package-base.json` file. This is done to avoid
+# duplication and make the update process of MDC dependencies more obvious.
+# Note that we need to explicitly reference all individual `@material/` dependencies as
+# our code imports from the individual dependencies (and not from the kitchen-sink package)
+genrule(
+    name = "package_json",
+    srcs = ["package-base.json"],
+    outs = ["package.json"],
+    cmd = "$(execpath //tools/mdc-deps:add-to-package-json) $< > $@",
+    exec_tools = ["//tools/mdc-deps:add-to-package-json"],
 )
 
 # Creates the @angular/material package published to npm.
 ng_package(
     name = "npm_package",
     srcs = [
-        "package.json",
+        ":package_json",
         ":sass_lib",
         "//src/material/core:theming_scss_lib",
         "//src/material/prebuilt-themes:deeppurple-amber",

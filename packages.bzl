@@ -29,8 +29,7 @@ NO_STAMP_NPM_PACKAGE_SUBSTITUTIONS = dict(NPM_PACKAGE_SUBSTITUTIONS, **{
 })
 
 # List of MDC packages (used for package externals and for Sass target deps)
-# *Note*: Keep in sync with `/src/material-experimental/package.json` and `/package.json`.
-# TODO: Potentially auto-insert these into the `material-experimental` `package.json`.
+# *Note*: Keep in sync with `/package.json`.
 MDC_PACKAGES = [
     "@material/animation",
     "@material/auto-init",

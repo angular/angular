@@ -72,9 +72,10 @@ def _getDefaultTsConfig(testonly):
     else:
         return _DEFAULT_TSCONFIG_BUILD
 
-def sass_binary(sourcemap = False, **kwargs):
+def sass_binary(sourcemap = False, include_paths = [], **kwargs):
     _sass_binary(
         sourcemap = sourcemap,
+        include_paths = include_paths + ["external/npm/node_modules"],
         compiler = "//tools/sass:compiler",
         **kwargs
     )

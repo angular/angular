@@ -1,5 +1,4 @@
 // Structural
-@forward './mdc-core/mdc-helpers/focus-indicators' as mdc-* show mdc-strong-focus-indicators;
 @forward './mdc-core/elevation' as mdc-* show mdc-elevation, mdc-overridable-elevation;
 
 // Theme bundles
@@ -18,8 +17,6 @@
 // MDC-related themes
 @forward './mdc-core/core-theme' as mdc-core-* show mdc-core-theme, mdc-core-color,
   mdc-core-density, mdc-core-typography;
-@forward './mdc-core/mdc-helpers/focus-indicators-theme' as mdc-strong-focus-indicators-* show
-  mdc-strong-focus-indicators-color, mdc-strong-focus-indicators-theme;
 @forward './mdc-core/option/option-theme' as mdc-option-* show mdc-option-color,
   mdc-option-typography, mdc-option-density, mdc-option-theme;
 @forward './mdc-core/option/optgroup-theme' as mdc-optgroup-* show mdc-optgroup-color,

@@ -4,7 +4,6 @@
 @use '@material/fab/fab-theme' as mdc-fab-theme;
 @use '@material/theme/theme-color' as mdc-theme-color;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './button-theme-private';
 
 @mixin _fab-variant($foreground, $background) {
@@ -18,7 +17,7 @@
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     $on-surface: mdc-theme-color.prop-value(on-surface);
     $is-dark: map.get($config, is-dark);
 
@@ -63,8 +62,8 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-fab.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
+  @include mat.private-using-mdc-typography($config) {
+    @include mdc-fab.without-ripple($query: mat.$private-mdc-typography-styles-query);
   }
 }
 

@@ -113,3 +113,8 @@
   tooltip-typography;
 @forward './tree/tree-theme' as tree-* show tree-theme, tree-color, tree-typography;
 
+// MDC Helpers
+@forward './core/mdc-helpers/mdc-helpers' as private-* show private-using-mdc-theme,
+  private-using-mdc-typography, private-disable-mdc-fallback-declarations,
+  $private-mdc-base-styles-query, $private-mdc-base-styles-without-animation-query,
+  $private-mdc-theme-styles-query, $private-mdc-typography-styles-query;

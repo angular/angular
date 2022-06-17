@@ -27,21 +27,18 @@ sass_library(
     name = "mdc_card_scss_lib",
     srcs = glob(["**/_*.scss"]),
     deps = [
+        "//:mdc_sass_lib",
         "//src/material:sass_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_scss_deps_lib",
+        "//src/material/core:core_scss_lib",
     ],
 )
 
 sass_binary(
     name = "card_scss",
     src = "card.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
     deps = [
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_scss_deps_lib",
+        "//:mdc_sass_lib",
+        "//src/material/core:core_scss_lib",
     ],
 )
 

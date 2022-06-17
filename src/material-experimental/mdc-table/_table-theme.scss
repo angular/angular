@@ -4,7 +4,6 @@
 @use '@material/data-table/data-table' as mdc-data-table;
 @use '@material/data-table' as mdc-data-table-theme;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
@@ -17,7 +16,7 @@
   $orig-row-text-color: mdc-data-table-theme.$row-text-color;
   $orig-stroke-color: mdc-data-table-theme.$stroke-color;
 
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     mdc-data-table-theme.$selected-row-fill-color: rgba(mdc-theme-color.prop-value(primary), 0.04);
     mdc-data-table-theme.$divider-color: rgba(mdc-theme-color.prop-value(on-surface), 0.12);
     mdc-data-table-theme.$row-hover-fill-color: rgba(mdc-theme-color.prop-value(on-surface), 0.04);
@@ -25,7 +24,7 @@
     mdc-data-table-theme.$row-text-color: rgba(mdc-theme-color.prop-value(on-surface), 0.87);
     mdc-data-table-theme.$stroke-color: rgba(mdc-theme-color.prop-value(on-surface), 0.12);
 
-    @include mdc-data-table.table-styles($query: mdc-helpers.$mat-theme-styles-query);
+    @include mdc-data-table.table-styles($query: mat.$private-mdc-theme-styles-query);
   }
 
   // Restore original values of MDC global variables.
@@ -45,8 +44,8 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-data-table.table-styles($query: mdc-helpers.$mat-typography-styles-query);
+  @include mat.private-using-mdc-typography($config) {
+    @include mdc-data-table.table-styles($query: mat.$private-mdc-typography-styles-query);
   }
 }
 
@@ -54,7 +53,7 @@
   $density-scale: mat.get-density-config($config-or-theme);
   .mat-mdc-table {
     @include mdc-data-table-theme.density($density-scale,
-      $query: mdc-helpers.$mat-base-styles-query);
+      $query: mat.$private-mdc-base-styles-query);
   }
 }
 

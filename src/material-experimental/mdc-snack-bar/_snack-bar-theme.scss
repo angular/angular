@@ -4,7 +4,6 @@
 @use 'sass:color';
 @use 'sass:map';
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
@@ -13,7 +12,7 @@
   $orig-label-ink-color: mdc-snackbar.$label-ink-color;
   $orig-dismiss-ink-color: mdc-snackbar.$dismiss-ink-color;
 
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     mdc-snackbar.$fill-color: color.mix(
       mdc-theme-color.prop-value(on-surface),
       mdc-theme-color.prop-value(surface),
@@ -28,7 +27,7 @@
       mdc-theme-color.text-emphasis(high)
     );
 
-    @include mdc-snackbar.core-styles($query: mdc-helpers.$mat-theme-styles-query);
+    @include mdc-snackbar.core-styles($query: mat.$private-mdc-theme-styles-query);
   }
 
   mdc-snackbar.$fill-color: $orig-fill-color;
@@ -53,8 +52,8 @@
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
-  @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-snackbar.core-styles($query: mdc-helpers.$mat-typography-styles-query);
+  @include mat.private-using-mdc-typography($config) {
+    @include mdc-snackbar.core-styles($query: mat.$private-mdc-typography-styles-query);
   }
 }
 

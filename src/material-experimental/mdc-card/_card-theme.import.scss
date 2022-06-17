@@ -1,7 +1,3 @@
-@forward '../mdc-core/mdc-helpers/mdc-helpers.import';
-@forward '../mdc-core/mdc-helpers/mdc-helpers';
 @forward 'card-theme' hide color, density, theme, typography;
 @forward 'card-theme' as mat-mdc-card-* hide $mat-mdc-card-mdc-card-action-icon-color,
 $mat-mdc-card-mdc-card-outline-color;
-
-@import '../mdc-core/mdc-helpers/mdc-helpers';

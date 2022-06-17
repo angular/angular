@@ -33,21 +33,18 @@ sass_library(
     name = "mdc_progress_spinner_scss_lib",
     srcs = glob(["**/_*.scss"]),
     deps = [
+        "//:mdc_sass_lib",
         "//src/material:sass_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_scss_deps_lib",
+        "//src/material/core:core_scss_lib",
     ],
 )
 
 sass_binary(
     name = "progress_spinner_scss",
     src = "progress-spinner.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
     deps = [
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_scss_deps_lib",
+        "//:mdc_sass_lib",
+        "//src/material/core:core_scss_lib",
     ],
 )
 

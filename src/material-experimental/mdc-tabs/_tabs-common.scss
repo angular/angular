@@ -4,15 +4,14 @@
 @use '@material/tab-indicator' as mdc-tab-indicator;
 @use 'sass:map';
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 $mat-tab-animation-duration: 500ms !default;
 
 // Combines the various structural styles we need for the tab group and tab nav bar.
 @mixin structural-styles {
-  @include mdc-helpers.disable-fallback-declarations {
-    @include mdc-tab.static-styles($query: mdc-helpers.$mat-base-styles-query);
-    @include mdc-tab-indicator.core-styles($query: mdc-helpers.$mat-base-styles-query);
+  @include mat.private-disable-mdc-fallback-declarations {
+    @include mdc-tab.static-styles($query: mat.$private-mdc-base-styles-query);
+    @include mdc-tab-indicator.core-styles($query: mat.$private-mdc-base-styles-query);
   }
 
   .mat-mdc-tab-ripple {
@@ -29,7 +28,7 @@ $mat-tab-animation-duration: 500ms !default;
   &.mdc-tab {
     // This is usually included by MDC's tab bar, however we don't
     // use it because we implement our own pagination.
-    @include mdc-tab.height(mdc-tab.$height, mdc-helpers.$mat-base-styles-query);
+    @include mdc-tab.height(mdc-tab.$height, mat.$private-mdc-base-styles-query);
 
     // MDC's tabs stretch to fit the header by default, whereas stretching on our current ones
     // is an opt-in behavior. Also technically we don't need to combine the two classes, but

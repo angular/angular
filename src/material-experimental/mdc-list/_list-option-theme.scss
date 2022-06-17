@@ -1,6 +1,6 @@
+@use '@angular/material' as mat;
 @use '@material/checkbox' as mdc-checkbox;
 @use '../mdc-checkbox/checkbox-private';
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './list-option-trailing-avatar-compat';
 
 // Mixin that overrides the selected item and checkbox colors for list options. By
@@ -18,11 +18,11 @@
 
 @mixin private-list-option-typography-styles() {
   @include list-option-trailing-avatar-compat.core-styles(
-      $query: mdc-helpers.$mat-typography-styles-query);
+      $query: mat.$private-mdc-typography-styles-query);
 
   .mat-mdc-list-option {
     .mdc-list-item__start, .mdc-list-item__end {
-      @include mdc-checkbox.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
+      @include mdc-checkbox.without-ripple($query: mat.$private-mdc-typography-styles-query);
     }
   }
 }

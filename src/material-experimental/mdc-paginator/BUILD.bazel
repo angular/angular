@@ -32,18 +32,15 @@ sass_library(
     name = "mdc_paginator_scss_lib",
     srcs = glob(["**/_*.scss"]),
     deps = [
+        "//:mdc_sass_lib",
         "//src/material:sass_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_helpers_scss_lib",
-        "//src/material-experimental/mdc-core/mdc-helpers:mdc_scss_deps_lib",
+        "//src/material/core:core_scss_lib",
     ],
 )
 
 sass_binary(
     name = "mdc_paginator_scss",
     src = "paginator.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
     deps = [
         "//src/cdk:sass_lib",
         "//src/material-experimental/mdc-form-field:mdc_form_field_scss_lib",

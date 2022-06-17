@@ -37,8 +37,6 @@ $candy-app-theme: mat.define-light-theme((
   // Use the theme so we have some coverage over the entire API surface.
   @include mat.strong-focus-indicators();
   @include mat.strong-focus-indicators-theme($candy-app-theme);
-  @include experimental.mdc-strong-focus-indicators();
-  @include experimental.mdc-strong-focus-indicators-theme($candy-app-theme);
 }
 
 // Include the alternative theme styles inside of a block with a CSS class. You can make this
@@ -62,7 +60,6 @@ $candy-app-theme: mat.define-light-theme((
   // Include the dark theme colors for focus indicators.
   &.demo-strong-focus {
     @include mat.strong-focus-indicators-theme($dark-colors);
-    @include experimental.mdc-strong-focus-indicators-theme($dark-colors);
   }
 }
 

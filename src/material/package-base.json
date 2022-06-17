@@ -6,12 +6,7 @@
     "type": "git",
     "url": "https://github.com/angular/components.git"
   },
-  "keywords": [
-    "angular",
-    "material",
-    "material design",
-    "components"
-  ],
+  "keywords": ["angular", "material", "material design", "components"],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/angular/components/issues"

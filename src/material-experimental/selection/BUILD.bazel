@@ -26,9 +26,4 @@ sass_library(
 sass_binary(
     name = "selection_column_scss",
     src = "selection-column.scss",
-    include_paths = [
-        "external/npm/node_modules",
-    ],
-    deps = [
-    ],
 )

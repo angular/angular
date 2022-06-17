@@ -6,18 +6,17 @@
 @use '@material/touch-target' as mdc-touch-target;
 @use '@material/ripple' as mdc-ripple;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
-@include mdc-helpers.disable-fallback-declarations {
-  @include mdc-radio.static-styles($query: mdc-helpers.$mat-base-styles-query);
-  @include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mat.private-disable-mdc-fallback-declarations {
+  @include mdc-radio.static-styles($query: mat.$private-mdc-base-styles-query);
+  @include mdc-form-field.core-styles($query: mat.$private-mdc-base-styles-query);
 }
 
 .mat-mdc-radio-button {
   .mdc-radio {
     // MDC theme styles also include structural styles so we have to include the theme at least
     // once here. The values will be overwritten by our own theme file afterwards.
-    @include mdc-helpers.disable-fallback-declarations {
+    @include mat.private-disable-mdc-fallback-declarations {
       @include mdc-radio-theme.theme-styles(map.merge(mdc-radio-theme.$light-theme, (
         // Exclude the styles we don't need.
         selected-focus-state-layer-color: null,
@@ -101,10 +100,10 @@
 
 // Element used to provide a larger tap target for users on touch devices.
 .mat-mdc-radio-touch-target {
-  @include mdc-helpers.disable-fallback-declarations {
+  @include mat.private-disable-mdc-fallback-declarations {
     @include mdc-touch-target.touch-target(
       $set-width: true,
-      $query: mdc-helpers.$mat-base-styles-query);
+      $query: mat.$private-mdc-base-styles-query);
   }
 
   [dir='rtl'] & {

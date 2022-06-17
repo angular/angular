@@ -3,7 +3,6 @@
 @use 'sass:map';
 
 @use '../theming/all-theme';
-@use '../mdc-helpers/mdc-helpers';
 
 /// Generates an Angular Material typography config based on values from the official Material
 /// Design spec implementation (MDC Web). All arguments are optional, but may be passed to override
@@ -28,19 +27,19 @@
 /// @return {Map} A map containing font settings for each of the levels in the Material Design spec.
 @function define-mdc-typography-config(
   $font-family: mdc-typography.$font-family,
-  $headline-1:  mdc-helpers.mat-typography-config-level-from-mdc(headline1),
-  $headline-2:  mdc-helpers.mat-typography-config-level-from-mdc(headline2),
-  $headline-3:  mdc-helpers.mat-typography-config-level-from-mdc(headline3),
-  $headline-4:  mdc-helpers.mat-typography-config-level-from-mdc(headline4),
-  $headline-5:  mdc-helpers.mat-typography-config-level-from-mdc(headline5),
-  $headline-6:  mdc-helpers.mat-typography-config-level-from-mdc(headline6),
-  $subtitle-1:  mdc-helpers.mat-typography-config-level-from-mdc(subtitle1),
-  $subtitle-2:  mdc-helpers.mat-typography-config-level-from-mdc(subtitle2),
-  $body-1:      mdc-helpers.mat-typography-config-level-from-mdc(body1),
-  $body-2:      mdc-helpers.mat-typography-config-level-from-mdc(body2),
-  $caption:     mdc-helpers.mat-typography-config-level-from-mdc(caption),
-  $button:      mdc-helpers.mat-typography-config-level-from-mdc(button),
-  $overline:    mdc-helpers.mat-typography-config-level-from-mdc(overline),
+  $headline-1:  mat.private-typography-config-level-from-mdc(headline1),
+  $headline-2:  mat.private-typography-config-level-from-mdc(headline2),
+  $headline-3:  mat.private-typography-config-level-from-mdc(headline3),
+  $headline-4:  mat.private-typography-config-level-from-mdc(headline4),
+  $headline-5:  mat.private-typography-config-level-from-mdc(headline5),
+  $headline-6:  mat.private-typography-config-level-from-mdc(headline6),
+  $subtitle-1:  mat.private-typography-config-level-from-mdc(subtitle1),
+  $subtitle-2:  mat.private-typography-config-level-from-mdc(subtitle2),
+  $body-1:      mat.private-typography-config-level-from-mdc(body1),
+  $body-2:      mat.private-typography-config-level-from-mdc(body2),
+  $caption:     mat.private-typography-config-level-from-mdc(caption),
+  $button:      mat.private-typography-config-level-from-mdc(button),
+  $overline:    mat.private-typography-config-level-from-mdc(overline),
 ) {
   // Declare an initial map with all of the levels.
   $config: (

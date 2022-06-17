@@ -5,12 +5,10 @@
 @use '@material/ripple' as mdc-ripple;
 @use '@angular/material' as mat;
 
-@use '../mdc-helpers/mdc-helpers';
-
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
 
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     .mat-mdc-option {
       // Since this will usually be rendered in an overlay,
       // we have explicitly set the default color.
@@ -30,21 +28,21 @@
     .mat-primary {
       .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
         @include mdc-list-mixins.list-primary-text-ink-color(primary,
-          $query: mdc-helpers.$mat-theme-styles-query);
+          $query: mat.$private-mdc-theme-styles-query);
       }
     }
 
     .mat-accent {
       .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
         @include mdc-list-mixins.list-primary-text-ink-color(secondary,
-          $query: mdc-helpers.$mat-theme-styles-query);
+          $query: mat.$private-mdc-theme-styles-query);
       }
     }
 
     .mat-warn {
       .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
         @include mdc-list-mixins.list-primary-text-ink-color(error,
-          $query: mdc-helpers.$mat-theme-styles-query);
+          $query: mat.$private-mdc-theme-styles-query);
       }
     }
   }
@@ -54,11 +52,11 @@
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
 
-  @include mdc-helpers.mat-using-mdc-typography($config) {
+  @include mat.private-using-mdc-typography($config) {
     // MDC uses the `subtitle1` level for list items, but
     // the spec shows `body1` as the correct level.
     .mat-mdc-option {
-      @include mdc-typography.typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
+      @include mdc-typography.typography(body1, $query: mat.$private-mdc-typography-styles-query);
     }
   }
 }

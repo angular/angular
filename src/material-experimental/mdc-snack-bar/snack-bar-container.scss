@@ -1,12 +1,12 @@
+@use '@angular/material' as mat;
 @use '@angular/cdk';
 @use '@material/snackbar' as mdc-snackbar;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 
-@include mdc-helpers.disable-fallback-declarations {
+@include mat.private-disable-mdc-fallback-declarations {
   // Include the styles without the animations since we
   // reuse the same animation as the non-MDC version.
-  @include mdc-snackbar.core-styles($query: mdc-helpers.$mat-base-styles-without-animation-query);
+  @include mdc-snackbar.core-styles($query: mat.$private-mdc-base-styles-without-animation-query);
 }
 
 // MDC sets the position as fixed and sets the container on the bottom center of the page (or

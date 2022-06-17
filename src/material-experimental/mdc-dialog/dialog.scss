@@ -1,6 +1,6 @@
+@use '@angular/material' as mat;
 @use '@material/dialog' as mdc-dialog;
 @use '@material/dialog/dialog-theme' as mdc-dialog-theme;
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './mdc-dialog-structure-overrides';
 
 // Theme map with values for variables that will be overriden in the theme.
@@ -35,8 +35,8 @@ $mat-dialog-content-max-height: 65vh !default;
 // don't expose this value as variable.
 $mat-dialog-button-horizontal-margin: 8px !default;
 
-@include mdc-helpers.disable-fallback-declarations {
-  @include mdc-dialog.core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mat.private-disable-mdc-fallback-declarations {
+  @include mdc-dialog.core-styles($query: mat.$private-mdc-base-styles-query);
 }
 
 @include mdc-dialog-structure-overrides.private-dialog-structure-overrides(
@@ -45,7 +45,7 @@ $mat-dialog-button-horizontal-margin: 8px !default;
 .mat-mdc-dialog-container {
   // Apply the theming slots to the container using an initial set of
   // values that will be overridden in the theme styles.
-  @include mdc-helpers.disable-fallback-declarations {
+  @include mat.private-disable-mdc-fallback-declarations {
     @include mdc-dialog-theme.theme-styles($_dialog-initial-theme);
   }
 

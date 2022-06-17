@@ -8,11 +8,10 @@
 @use '@material/button/button-protected-theme' as mdc-button-protected-theme;
 @use '@material/button/button-outlined-theme' as mdc-button-outlined-theme;
 
-@use '../mdc-core/mdc-helpers/mdc-helpers';
 @use './button-base';
 
-@include mdc-helpers.disable-fallback-declarations {
-  @include mdc-button.static-styles-without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mat.private-disable-mdc-fallback-declarations {
+  @include mdc-button.static-styles-without-ripple($query: mat.$private-mdc-base-styles-query);
 
   // Keys to exclude from the MDC theme config, allowing us to drop styles we don't need.
   $override-keys: button-base.mat-private-button-remove-ripple((

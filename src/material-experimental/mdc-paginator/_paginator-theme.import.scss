@@ -1,9 +1,6 @@
-@forward '../mdc-core/mdc-helpers/mdc-helpers.import';
-@forward '../mdc-core/mdc-helpers/mdc-helpers';
 @forward 'paginator-variables' as mat-mdc-paginator-*;
 @forward 'paginator-theme' as mat-mdc-paginator-*;
 
 @import '../../material/core/theming/theming';
 @import '../../material/core/density/private/compatibility';
-@import '../mdc-core/mdc-helpers/mdc-helpers';
 @import './paginator-variables';

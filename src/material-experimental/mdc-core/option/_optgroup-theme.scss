@@ -1,12 +1,10 @@
 @use '@material/theme/theme' as mdc-theme;
 @use '@angular/material' as mat;
 
-@use '../mdc-helpers/mdc-helpers';
-
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
 
-  @include mdc-helpers.mat-using-mdc-theme($config) {
+  @include mat.private-using-mdc-theme($config) {
     .mat-mdc-optgroup-label {
       // Since this will usually be rendered in an overlay,
       // we have to explicitly set the default color.

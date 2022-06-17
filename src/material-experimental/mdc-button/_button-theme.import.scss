@@ -1,6 +1,4 @@
-@forward '../mdc-core/mdc-helpers/mdc-helpers.import';
 @forward '../../material/core/ripple/ripple.import';
-@forward '../mdc-core/mdc-helpers/mdc-helpers';
 @forward 'button-theme' hide color, density, theme, typography;
 @forward 'button-theme' as mat-mdc-* hide $mat-mdc-mat-button-state-target, mat-mdc-color,
 mat-mdc-density, mat-mdc-mat-button-apply-disabled-style, mat-mdc-mat-button-disabled-background,
@@ -13,4 +11,3 @@ mat-mdc-button-mat-button-disabled-color, mat-mdc-button-mat-button-ripple-ink-c
 @forward 'icon-button-theme' as mat-mdc-icon-button-*;
 
 @import '../../material/core/ripple/ripple';
-@import '../mdc-core/mdc-helpers/mdc-helpers';
