@@ -24,7 +24,7 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  * @returns Set of providers to configure the Cloudinary loader.
  */
 export const provideCloudinaryLoader = createImageLoader(
-    cloudinaryLoaderFactory,
+    createCloudinaryURL,
     ngDevMode ?
         [
           'https://res.cloudinary.com/mysite', 'https://mysite.cloudinary.com',
@@ -32,14 +32,12 @@ export const provideCloudinaryLoader = createImageLoader(
         ] :
         undefined);
 
-function cloudinaryLoaderFactory(path: string) {
-  return (config: ImageLoaderConfig) => {
-    // Example of a Cloudinary image URL:
-    // https://res.cloudinary.com/mysite/image/upload/c_scale,f_auto,q_auto,w_600/marketing/tile-topics-m.png
-    let params = `f_auto,q_auto`;  // sets image format and quality to "auto"
-    if (config.width) {
-      params += `,w_${config.width}`;
-    }
-    return `${path}/image/upload/${params}/${config.src}`;
-  };
+function createCloudinaryURL(path: string, config: ImageLoaderConfig) {
+  // Example of a Cloudinary image URL:
+  // https://res.cloudinary.com/mysite/image/upload/c_scale,f_auto,q_auto,w_600/marketing/tile-topics-m.png
+  let params = `f_auto,q_auto`;  // sets image format and quality to "auto"
+  if (config.width) {
+    params += `,w_${config.width}`;
+  }
+  return `${path}/image/upload/${params}/${config.src}`;
 }

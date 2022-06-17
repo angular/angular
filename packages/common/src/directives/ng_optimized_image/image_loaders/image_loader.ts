@@ -42,23 +42,21 @@ export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
   factory: () => noopImageLoader,
 });
 
-export function createImageLoader(urlFn: (path: string) => ImageLoader, exampleUrls?: string[]) {
+export function createImageLoader(
+    buildUrlFn: (path: string, config: ImageLoaderConfig) => string, exampleUrls?: string[]) {
   return function provideImageLoader(
       path: string, options: {ensurePreconnect?: boolean} = {ensurePreconnect: true}) {
     if (ngDevMode && !isValidPath(path)) {
       throwInvalidPathError(path, exampleUrls || []);
     }
     path = normalizePath(path);
-    const createURLFn = urlFn(path);
 
     const loaderFn = (config: ImageLoaderConfig) => {
       if (ngDevMode && isAbsoluteURL(config.src)) {
         throwUnexpectedAbsoluteUrlError(path, config.src);
       }
 
-      config.src = normalizeSrc(config.src);
-
-      return createURLFn(config);
+      return buildUrlFn(path, {...config, src: normalizeSrc(config.src)});
     };
     const providers: Provider[] = [{provide: IMAGE_LOADER, useValue: loaderFn}];
 

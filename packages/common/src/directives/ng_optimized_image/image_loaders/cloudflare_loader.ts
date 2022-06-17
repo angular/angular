@@ -19,15 +19,13 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  * @returns Provider that provides an ImageLoader function
  */
 export const provideCloudflareLoader = createImageLoader(
-    cloudflareLoaderFactory,
+    createCloudflareURL,
     ngDevMode ? ['https://<ZONE>/cdn-cgi/image/<OPTIONS>/<SOURCE-IMAGE>'] : undefined);
 
-function cloudflareLoaderFactory(path: string) {
-  return (config: ImageLoaderConfig) => {
-    let params = `format=auto`;
-    if (config.width) {
-      params += `,width=${config.width}`;
-    }
-    return `${path}/cdn-cgi/image/${params}/${config.src}`;
-  };
+function createCloudflareURL(path: string, config: ImageLoaderConfig) {
+  let params = `format=auto`;
+  if (config.width) {
+    params += `,width=${config.width}`;
+  }
+  return `${path}/cdn-cgi/image/${params}/${config.src}`;
 }
