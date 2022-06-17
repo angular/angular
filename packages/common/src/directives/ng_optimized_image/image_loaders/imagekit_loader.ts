@@ -23,17 +23,15 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  * @returns Set of providers to configure the ImageKit loader.
  */
 export const provideImageKitLoader = createImageLoader(
-    imagekitLoaderFactory,
+    createImagekitURL,
     ngDevMode ? ['https://ik.imagekit.io/mysite', 'https://subdomain.mysite.com'] : undefined);
 
-export function imagekitLoaderFactory(path: string) {
-  return (config: ImageLoaderConfig) => {
-    // Example of an ImageKit image URL:
-    // https://ik.imagekit.io/demo/tr:w-300,h-300/medium_cafe_B1iTdD0C.jpg
-    let params = `tr:q-auto`;  // applies the "auto quality" transformation
-    if (config.width) {
-      params += `,w-${config.width}`;
-    }
-    return `${path}/${params}/${config.src}`;
-  };
+export function createImagekitURL(path: string, config: ImageLoaderConfig) {
+  // Example of an ImageKit image URL:
+  // https://ik.imagekit.io/demo/tr:w-300,h-300/medium_cafe_B1iTdD0C.jpg
+  let params = `tr:q-auto`;  // applies the "auto quality" transformation
+  if (config.width) {
+    params += `,w-${config.width}`;
+  }
+  return `${path}/${params}/${config.src}`;
 }
