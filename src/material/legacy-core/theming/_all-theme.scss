@@ -1,0 +1,18 @@
+@use '../../core/theming/theming';
+
+// Add legacy theme imports here, e.g.:
+// @use '../../<legacy-component>/<legacy-component>-theme';
+
+// Create a theme.
+@mixin all-legacy-component-themes($theme-or-color-config) {
+  $dedupe-key: 'angular-material-legacy-theme';
+  @include theming.private-check-duplicate-theme-styles($theme-or-color-config, $dedupe-key) {
+    // Add legacy theme includes here, e.g.:
+    // @include <legacy-component>-theme.theme($theme-or-color-config);
+  }
+}
+
+// @deprecated Use `all-legacy-component-themes`.
+@mixin angular-material-legacy-theme($theme-or-color-config) {
+  @include all-legacy-component-themes($theme-or-color-config);
+}

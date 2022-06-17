@@ -1,0 +1,31 @@
+@use '../../../core/theming/theming';
+
+// Add legacy theme imports here, e.g.:
+// @use '../../../<legacy-component>/<legacy-component>-theme';
+
+// Includes all of the density styles.
+@mixin all-legacy-component-densities($config-or-theme) {
+  // In case a theme object has been passed instead of a configuration for
+  // the density system, extract the density config from the theme object.
+  $config: if(theming.private-is-theme-object($config-or-theme),
+      theming.get-density-config($config-or-theme), $config-or-theme);
+
+  @if $config == null {
+    @error 'No density configuration specified.';
+  }
+
+  // TODO: COMP-309: Do not use individual mixins. Instead, use the all-theme mixin and only
+  // specify a `density` config while setting `color` and `typography` to `null`. This is currently
+  // not possible as it would introduce a circular dependency for density because the `mat-core`
+  // mixin that is transitively loaded by the `all-theme` file, imports `all-density` which
+  // would then load `all-theme` again. This ultimately results a circular dependency.
+
+  // Add legacy density includes here, e.g.:
+  // @include <legacy-component>-theme.density($config);
+}
+
+
+// @deprecated Use `all-legacy-component-densities`.
+@mixin angular-material-legacy-density($config-or-theme) {
+  @include all-legacy-component-densities($config-or-theme);
+}

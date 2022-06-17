@@ -1,0 +1,6 @@
+@forward 'core' hide core;
+@forward 'core' as mat-legacy-* hide mat-legacy-mdc-core, mat-legacy-mdc-strong-focus-indicators-positioning;
+@forward 'core' as mat-legacy-core-legacy-* hide mat-legacy-core-mdc-core,
+mat-legacy-core-mdc-strong-focus-indicators-positioning;
+
+@import './typography/all-typography';

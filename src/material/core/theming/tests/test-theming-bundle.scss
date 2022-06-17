@@ -22,6 +22,9 @@ $theme: mat.define-light-theme((
 @include mat.all-component-themes($theme);
 @include mat.all-component-typographies();
 @include mat.all-component-colors($theme);
+@include mat.all-legacy-component-themes($theme);
+@include mat.all-legacy-component-typographies();
+@include mat.all-legacy-component-colors($theme);
 @include mat.core-theme($theme);
 @include mat.button-theme($theme);
 @include mat.strong-focus-indicators();

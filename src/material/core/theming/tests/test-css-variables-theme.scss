@@ -1,6 +1,7 @@
 @use 'sass:map';
 @use 'sass:meta';
 @use '../all-theme';
+@use '../../../legacy-core/theming/all-theme' as legacy-all-theme;
 @use '../palette';
 @use '../theming';
 
@@ -31,4 +32,5 @@
     )
   ));
   @include all-theme.all-component-themes(replace-all-values($theme, var(--test-var)));
+  @include legacy-all-theme.all-legacy-component-themes(replace-all-values($theme, var(--test-var)));
 }

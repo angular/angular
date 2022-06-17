@@ -1,0 +1,90 @@
+load("//src/material:config.bzl", "MATERIAL_SCSS_LIBS")
+load(
+    "//tools:defaults.bzl",
+    "markdown_to_html",
+    "ng_module",
+    "sass_binary",
+    "sass_library",
+)
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "legacy-core",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    assets = [
+        # TODO: add component targets CSS here.
+    ] + glob(["**/*.html"]),
+)
+
+ALL_THEMING_FILES = [
+    # The `_core.scss` file needs to be added here too because it depends
+    # on the `_all-typography` file.
+    "_core.scss",
+    "color/_all-color.scss",
+    "color/_all-color.import.scss",
+    "density/private/_all-density.scss",
+    "density/private/_all-density.import.scss",
+    "theming/_all-theme.scss",
+    "theming/_all-theme.import.scss",
+    "typography/_all-typography.scss",
+    "typography/_all-typography.import.scss",
+]
+
+sass_library(
+    name = "legacy_core_scss_lib",
+    srcs = glob(
+        ["**/_*.scss"],
+        exclude = ALL_THEMING_FILES,
+    ),
+    deps = [
+        "//src/cdk:sass_lib",
+    ],
+)
+
+sass_library(
+    name = "theming_scss_lib",
+    srcs = ALL_THEMING_FILES,
+    deps = MATERIAL_SCSS_LIBS + [
+        "//src/cdk:sass_lib",
+    ],
+)
+
+sass_binary(
+    name = "indigo_pink_prebuilt",
+    src = "theming/prebuilt/indigo-pink.scss",
+    deps = [":theming_scss_lib"],
+)
+
+sass_binary(
+    name = "deeppurple-amber_prebuilt",
+    src = "theming/prebuilt/deeppurple-amber.scss",
+    deps = [":theming_scss_lib"],
+)
+
+sass_binary(
+    name = "pink-bluegrey_prebuilt",
+    src = "theming/prebuilt/pink-bluegrey.scss",
+    deps = [":theming_scss_lib"],
+)
+
+sass_binary(
+    name = "purple-green_prebuilt",
+    src = "theming/prebuilt/purple-green.scss",
+    deps = [":theming_scss_lib"],
+)
+
+markdown_to_html(
+    name = "overview",
+    srcs = [
+        "legacy-core.md",
+    ],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
+)

@@ -41,6 +41,21 @@
     },
     "./prebuilt-themes/*": {
       "style": "./prebuilt-themes/*.css"
+    },
+    "./legacy-prebuilt-themes/indigo-pink.css": {
+      "style": "./legacy-prebuilt-themes/indigo-pink.css"
+    },
+    "./legacy-prebuilt-themes/deeppurple-amber.css": {
+      "style": "./legacy-prebuilt-themes/deeppurple-amber.css"
+    },
+    "./legacy-prebuilt-themes/pink-bluegrey.css": {
+      "style": "./legacy-prebuilt-themes/pink-bluegrey.css"
+    },
+    "./legacy-prebuilt-themes/purple-green.css": {
+      "style": "./legacy-prebuilt-themes/purple-green.css"
+    },
+    "./legacy-prebuilt-themes/*": {
+      "style": "./legacy-prebuilt-themes/*.css"
     }
   },
   "peerDependencies": {

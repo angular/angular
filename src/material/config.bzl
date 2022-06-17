@@ -16,6 +16,7 @@ entryPoints = [
     "chips",
     "chips/testing",
     "core",
+    "legacy-core",
     "core/testing",
     "datepicker",
     "datepicker/testing",

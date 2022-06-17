@@ -16,6 +16,7 @@
 
 // Private/Internal
 @forward './core/density/private/all-density' as private-* show private-all-component-densities;
+@forward './legacy-core/density/private/all-density' as private-* show private-all-legacy-component-densities;
 @forward './core/theming/theming' show private-check-duplicate-theme-styles,
   private-legacy-get-theme, private-is-theme-object;
   @forward './core/style/layout-common' as private-* show private-fill;
@@ -44,6 +45,9 @@
 @forward './core/theming/all-theme' show all-component-themes;
 @forward './core/color/all-color' show all-component-colors;
 @forward './core/typography/all-typography' show all-component-typographies;
+@forward './legacy-core/theming/all-theme' show all-legacy-component-themes;
+@forward './legacy-core/color/all-color' show all-legacy-component-colors;
+@forward './legacy-core/typography/all-typography' show all-legacy-component-typographies;
 
 // Component themes
 @forward './core/core-theme' as core-* show core-color, core-theme;

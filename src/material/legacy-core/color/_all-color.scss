@@ -1,0 +1,25 @@
+@use '../theming/all-theme';
+@use '../../core/theming/theming';
+
+// Includes all of the color styles.
+@mixin all-legacy-component-colors($config-or-theme) {
+  // In case a theme object has been passed instead of a configuration for
+  // the color system, extract the color config from the theme object.
+  $config: if(theming.private-is-theme-object($config-or-theme),
+      theming.get-color-config($config-or-theme), $config-or-theme);
+
+  @if $config == null {
+    @error 'No color configuration specified.';
+  }
+
+  @include all-theme.all-legacy-component-themes((
+    color: $config,
+    typography: null,
+    density: null,
+  ));
+}
+
+// @deprecated Use `all-legacy-component-colors`.
+@mixin angular-material-legacy-color($config-or-theme) {
+  @include all-legacy-component-colors($config-or-theme);
+}

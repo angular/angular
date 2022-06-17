@@ -1,0 +1,36 @@
+package(default_visibility = ["//visibility:public"])
+
+# We use these genrules to put the prebuilt themes into the bazel-generated npm
+# package in the right spot. The *right* thing to do would be to move them, but
+# we would need to update references for Google apps.
+
+## **NOTE**: When adding/removing prebuilt themes from here, make sure to update
+# the `material/package.json` exports field.
+
+genrule(
+    name = "indigo-pink",
+    srcs = ["//src/material/legacy-core:theming/prebuilt/indigo-pink.css"],
+    outs = ["legacy-indigo-pink.css"],
+    cmd = "cp $< $@",
+)
+
+genrule(
+    name = "deeppurple-amber",
+    srcs = ["//src/material/legacy-core:theming/prebuilt/deeppurple-amber.css"],
+    outs = ["legacy-deeppurple-amber.css"],
+    cmd = "cp $< $@",
+)
+
+genrule(
+    name = "pink-bluegrey",
+    srcs = ["//src/material/legacy-core:theming/prebuilt/pink-bluegrey.css"],
+    outs = ["legacy-pink-bluegrey.css"],
+    cmd = "cp $< $@",
+)
+
+genrule(
+    name = "purple-green",
+    srcs = ["//src/material/legacy-core:theming/prebuilt/purple-green.css"],
+    outs = ["legacy-purple-green.css"],
+    cmd = "cp $< $@",
+)

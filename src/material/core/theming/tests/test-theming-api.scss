@@ -1,8 +1,12 @@
 @use 'sass:map';
 @use '../../density/private/all-density';
+@use '../../../legacy-core/density/private/all-density' as legacy-all-density;
 @use '../../color/all-color';
+@use '../../../legacy-core/color/all-color' as legacy-all-color;
 @use '../../typography/all-typography';
+@use '../../../legacy-core/typography/all-typography' as legacy-all-typography;
 @use '../all-theme';
+@use '../../../legacy-core/theming/all-theme' as legacy-all-theme;
 @use '../../typography/typography';
 @use '../palette';
 @use '../theming';
@@ -184,6 +188,19 @@ $dark-theme-only-typography: theming.define-dark-theme((typography: $typography-
   @include all-theme.all-component-themes($dark-theme-only-density);
   @include all-theme.all-component-themes($light-theme-only-typography);
   @include all-theme.all-component-themes($dark-theme-only-typography);
+
+  @include legacy-all-theme.all-legacy-component-themes($legacy-light-theme);
+  @include legacy-all-theme.all-legacy-component-themes($legacy-light-theme-default-warn);
+  @include legacy-all-theme.all-legacy-component-themes($legacy-dark-theme);
+  @include legacy-all-theme.all-legacy-component-themes($legacy-dark-theme-default-warn);
+  @include legacy-all-theme.all-legacy-component-themes($new-api-light-theme);
+  @include legacy-all-theme.all-legacy-component-themes($new-api-light-theme-default-warn);
+  @include legacy-all-theme.all-legacy-component-themes($new-api-dark-theme);
+  @include legacy-all-theme.all-legacy-component-themes($new-api-dark-theme-default-warn);
+  @include legacy-all-theme.all-legacy-component-themes($light-theme-only-density);
+  @include legacy-all-theme.all-legacy-component-themes($dark-theme-only-density);
+  @include legacy-all-theme.all-legacy-component-themes($light-theme-only-typography);
+  @include legacy-all-theme.all-legacy-component-themes($dark-theme-only-typography);
 }
 
 // Custom theme mixin used by the custom theme backwards compatibility test.
@@ -249,19 +266,27 @@ $dark-theme-only-typography: theming.define-dark-theme((typography: $typography-
 
   @each $theme in $test-themes {
     @include all-typography.all-component-typographies($theme);
+    @include legacy-all-typography.all-legacy-component-typographies($theme);
     @include all-color.all-component-colors($theme);
+    @include legacy-all-color.all-legacy-component-colors($theme);
     @include all-density.all-component-densities($theme);
+    @include legacy-all-density.all-legacy-component-densities($theme);
   }
 
   @include all-typography.all-component-typographies(
     map.get($light-theme-only-typography, typography));
   @include all-typography.all-component-typographies($light-theme-only-typography);
+  @include legacy-all-typography.all-legacy-component-typographies(
+          map.get($light-theme-only-typography, typography));
+  @include legacy-all-typography.all-legacy-component-typographies($light-theme-only-typography);
 
   @include all-density.all-component-densities(map.get($light-theme-only-density, density));
   @include all-density.all-component-densities($light-theme-only-density);
+  @include legacy-all-density.all-legacy-component-densities(map.get($light-theme-only-density, density));
+  @include legacy-all-density.all-legacy-component-densities($light-theme-only-density);
 
-  @include all-color.all-component-colors(map.get($new-api-dark-theme, color));
-  @include all-color.all-component-colors($new-api-dark-theme);
+  @include legacy-all-color.all-legacy-component-colors(map.get($new-api-dark-theme, color));
+  @include legacy-all-color.all-legacy-component-colors($new-api-dark-theme);
 }
 
 @mixin test-individual-system-mixins-unwrap() {
@@ -272,6 +297,8 @@ $dark-theme-only-typography: theming.define-dark-theme((typography: $typography-
 
   @include all-theme.all-component-themes($new-api-dark-theme);
   @include all-theme.all-component-themes(map.get($new-api-dark-theme, color));
+  @include legacy-all-theme.all-legacy-component-themes($new-api-dark-theme);
+  @include legacy-all-theme.all-legacy-component-themes(map.get($new-api-dark-theme, color));
 }
 
 // Include all tests. Sass will throw if one of the tests fails.

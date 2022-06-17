@@ -1,0 +1,22 @@
+@use '../all-theme';
+@use '../../core';
+@use '../../../core/theming/palette';
+@use '../../../core/theming/theming';
+
+
+// Include non-theme styles for core.
+@include core.core();
+
+// Define a theme.
+$primary: theming.define-palette(palette.$indigo-palette);
+$accent:  theming.define-palette(palette.$pink-palette, A200, A100, A400);
+
+$theme: theming.define-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent
+  )
+));
+
+// Include all theme styles for the components.
+@include all-theme.all-legacy-component-themes($theme);

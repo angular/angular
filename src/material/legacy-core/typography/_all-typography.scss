@@ -1,0 +1,30 @@
+@use '../../core/typography/typography';
+@use '../../core/theming/theming';
+
+// Add legacy theme imports here, e.g.:
+// @use '../../<legacy-component>/<legacy-component>-theme';
+
+// Includes all of the typographic styles.
+@mixin all-legacy-component-typographies($config-or-theme: null) {
+  $config: if(theming.private-is-theme-object($config-or-theme),
+      theming.get-typography-config($config-or-theme), $config-or-theme);
+
+  // If no actual color configuration has been specified, create a default one.
+  @if not $config {
+    $config: typography.define-typography-config();
+  }
+
+  // TODO: COMP-309: Do not use individual mixins. Instead, use the all-theme mixin and only
+  // specify a `typography` config while setting `color` and `density` to `null`. This is currently
+  // not possible as it would introduce a circular dependency for typography because the `mat-core`
+  // mixin that is transitively loaded by the `all-theme` file, imports `all-typography` which
+  // would then load `all-theme` again. This ultimately results a circular dependency.
+
+  // Add legacy typography includes here, e.g.:
+  // @include <legacy-component>-theme.typography($config);
+}
+
+// @deprecated Use `all-legacy-component-typographies`.
+@mixin angular-material-legacy-typography($config-or-theme: null) {
+  @include all-legacy-component-typographies($config-or-theme);
+}

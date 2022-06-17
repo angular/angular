@@ -1,0 +1,7 @@
+// Core styles that can be used to apply material design treatments to any element.
+@use './typography/all-typography';
+
+// Mixin that renders all of the core styles that are not theme-dependent.
+@mixin core($typography-config: null) {
+  @include all-typography.all-legacy-component-typographies($typography-config);
+}
