@@ -29,7 +29,8 @@ import {COMMON_PIPES} from './pipes/index';
  * @publicApi
  */
 @NgModule({
-  declarations: [COMMON_DIRECTIVES, COMMON_PIPES],
+  imports: [COMMON_PIPES],
+  declarations: [COMMON_DIRECTIVES],
   exports: [COMMON_DIRECTIVES, COMMON_PIPES],
 })
 export class CommonModule {

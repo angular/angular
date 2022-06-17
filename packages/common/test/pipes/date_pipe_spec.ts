@@ -9,7 +9,8 @@
 import {DatePipe} from '@angular/common';
 import localeEn from '@angular/common/locales/en';
 import localeEnExtra from '@angular/common/locales/extra/en';
-import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
+import {Component, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 
 {
   describe('DatePipe', () => {
@@ -110,6 +111,24 @@ import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
         expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '+0100'))
             .toEqual('Jan 11, 2017');
       });
+    });
+
+    it('should be available as a standalone pipe', () => {
+      @Component({
+        selector: 'test-component',
+        imports: [DatePipe],
+        template: '{{ value | date }}',
+        standalone: true,
+      })
+      class TestComponent {
+        value = '2017-01-11T10:14:39+0000';
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const content = fixture.nativeElement.textContent;
+      expect(content).toBe('Jan 11, 2017');
     });
   });
 }

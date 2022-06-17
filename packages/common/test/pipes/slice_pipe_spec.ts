@@ -117,5 +117,23 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
            expect(fixture.nativeElement).toHaveText('2,3');
          }));
     });
+
+    it('should be available as a standalone pipe', () => {
+      @Component({
+        selector: 'test-component',
+        imports: [SlicePipe],
+        template: '{{ title | slice:0:5 }}',
+        standalone: true,
+      })
+      class TestComponent {
+        title = 'Hello World!';
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const content = fixture.nativeElement.textContent;
+      expect(content).toBe('Hello');
+    });
   });
 }
