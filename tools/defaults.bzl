@@ -198,9 +198,6 @@ def ng_package(name, srcs = [], deps = [], externals = PKG_EXTERNALS, readme_md 
         # two mappings for `@angular/cdk` and the linker will complain. For a better development
         # experience, we want the mapping to resolve to the direct outputs of the `ts_library`
         # instead of requiring tests and other targets to assemble the NPM package first.
-        # TODO(devversion): consider removing this if `rules_nodejs` allows for duplicate
-        # linker mappings where transitive-determined mappings are skipped on conflicts.
-        # https://github.com/bazelbuild/rules_nodejs/issues/2810.
         package_name = None,
         validate = False,
         readme_md = readme_md,
@@ -233,9 +230,6 @@ def pkg_npm(name, visibility = None, **kwargs):
         # two mappings for `@angular/cdk` and the linker will complain. For a better development
         # experience, we want the mapping to resolve to the direct outputs of the `ts_library`
         # instead of requiring tests and other targets to assemble the NPM package first.
-        # TODO(devversion): consider removing this if `rules_nodejs` allows for duplicate
-        # linker mappings where transitive-determined mappings are skipped on conflicts.
-        # https://github.com/bazelbuild/rules_nodejs/issues/2810.
         package_name = None,
         validate = False,
         substitutions = npmPackageSubstitutions,

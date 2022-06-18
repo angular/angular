@@ -15,7 +15,7 @@
   },
   "scripts": {
     "postinstall": "node tools/postinstall/apply-patches.js",
-    "ng-dev": "yarn ts-node --esm --project .ng-dev/tsconfig.json node_modules/@angular/dev-infra-private/ng-dev/bundles/cli.mjs",
+    "ng-dev": "ts-node --esm --project .ng-dev/tsconfig.json node_modules/@angular/dev-infra-private/ng-dev/bundles/cli.mjs",
     "build": "ts-node --esm --project scripts/tsconfig.json ./scripts/build-packages-dist-main.mts",
     "build-docs-content": "ts-node --esm --project scripts/tsconfig.json ./scripts/build-docs-content-main.mts",
     "build-and-check-release-output": "ts-node --esm --project scripts/tsconfig.json scripts/build-and-check-release-output.mts",
