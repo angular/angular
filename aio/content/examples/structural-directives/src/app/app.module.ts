@@ -5,15 +5,19 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { heroSwitchComponents } from './hero-switch.components';
+import { HeroComponent } from './hero.component';
+import { IfLoadedDirective } from './if-loaded.directive';
 import { UnlessDirective } from './unless.directive';
 
 @NgModule({
-  imports: [ BrowserModule, FormsModule ],
+  imports: [BrowserModule, FormsModule],
   declarations: [
     AppComponent,
     heroSwitchComponents,
-    UnlessDirective
+    HeroComponent,
+    IfLoadedDirective,
+    UnlessDirective,
   ],
-  bootstrap: [ AppComponent ]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
