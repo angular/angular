@@ -1030,6 +1030,7 @@ describe('CdkVirtualScrollViewport', () => {
     let fixture: ComponentFixture<VirtualScrollWithAppendOnly>;
     let testComponent: VirtualScrollWithAppendOnly;
     let viewport: CdkVirtualScrollViewport;
+    let contentWrapperEl: HTMLElement;
 
     beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
@@ -1039,6 +1040,9 @@ describe('CdkVirtualScrollViewport', () => {
       fixture = TestBed.createComponent(VirtualScrollWithAppendOnly);
       testComponent = fixture.componentInstance;
       viewport = testComponent.viewport;
+      contentWrapperEl = fixture.nativeElement.querySelector(
+        '.cdk-virtual-scroll-content-wrapper',
+      ) as HTMLElement;
     }));
 
     it('should not remove item that have already been rendered', fakeAsync(() => {
@@ -1084,6 +1088,21 @@ describe('CdkVirtualScrollViewport', () => {
       flush();
 
       expect(viewport.getOffsetToRenderedContentStart()).toBe(0);
+    }));
+
+    it('should not set a transform when scrolling', fakeAsync(() => {
+      finishInit(fixture);
+      triggerScroll(viewport, 0);
+      fixture.detectChanges();
+      flush();
+
+      expect(contentWrapperEl.style.transform).toBe('translateY(0px)');
+
+      triggerScroll(viewport, testComponent.itemSize * 10);
+      fixture.detectChanges();
+      flush();
+
+      expect(contentWrapperEl.style.transform).toBe('translateY(0px)');
     }));
   });
 
