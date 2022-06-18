@@ -7,8 +7,9 @@
  */
 
 import * as compiler from '@angular/compiler';
-import {TemplateMigrator, Update} from '../../template-migrator';
+import {TemplateMigrator} from '../../template-migrator';
 import {replaceStartTag, replaceEndTag, visitElements} from '../../tree-traversal';
+import {Update} from '../../../../../migration-utilities';
 
 /** Stores a mat-chip-list with the mat-chip elements nested within it. */
 interface ChipMap {
@@ -91,11 +92,11 @@ export class ChipsTemplateMigrator extends TemplateMigrator {
   private _buildTagUpdates(node: compiler.TmplAstElement, tagName: string): Update[] {
     return [
       {
-        location: node.startSourceSpan.start,
+        offset: node.startSourceSpan.start.offset,
         updateFn: html => replaceStartTag(html, node, tagName),
       },
       {
-        location: node.endSourceSpan!.start,
+        offset: node.endSourceSpan!.start.offset,
         updateFn: html => replaceEndTag(html, node, tagName),
       },
     ];

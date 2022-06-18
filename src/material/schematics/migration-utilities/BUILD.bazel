@@ -1,0 +1,36 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "spec_bundle", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "migration-utilities",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    deps = [],
+)
+
+ts_library(
+    name = "unit_tests_lib",
+    testonly = True,
+    srcs = glob(["**/*.spec.ts"] + ["rules/components/test-setup-helper.ts"]),
+    deps = [
+        ":migration-utilities",
+        "@npm//@types/jasmine",
+    ],
+)
+
+spec_bundle(
+    name = "unit_tests_bundle",
+    # Exclude the `node` devkit entry-point to avoid bundling native modules like
+    # `chokidar` and `fsevents`. These rely on native bindings and break with ESBuild.
+    external = ["@angular-devkit/core/node"],
+    platform = "node",
+    deps = [":unit_tests_lib"],
+)
+
+jasmine_node_test(
+    name = "unit_tests",
+    deps = [":unit_tests_bundle"],
+)

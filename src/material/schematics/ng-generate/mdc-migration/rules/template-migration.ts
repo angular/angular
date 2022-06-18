@@ -10,7 +10,7 @@ import {Migration, ResolvedResource} from '@angular/cdk/schematics';
 import {SchematicContext} from '@angular-devkit/schematics';
 import {parseTemplate} from './tree-traversal';
 import {ComponentMigrator} from '.';
-import {Update} from './template-migrator';
+import {Update, writeUpdates} from '../../../migration-utilities';
 
 export class TemplateMigration extends Migration<ComponentMigrator[], SchematicContext> {
   enabled = true;
@@ -22,11 +22,7 @@ export class TemplateMigration extends Migration<ComponentMigrator[], SchematicC
     const updates: Update[] = [];
     migrators.forEach(m => updates.push(...m.getUpdates(ast)));
 
-    updates.sort((a, b) => b.location.offset - a.location.offset);
-    updates.forEach(update => {
-      template.content = update.updateFn(template.content);
-    });
-
-    this.fileSystem.overwrite(template.filePath, template.content);
+    const content = writeUpdates(template.content, updates);
+    this.fileSystem.overwrite(template.filePath, content);
   }
 }
