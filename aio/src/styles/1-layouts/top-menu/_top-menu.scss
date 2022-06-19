@@ -106,22 +106,14 @@ mat-toolbar.app-toolbar {
 
   // TOP MENU
   aio-top-menu {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 80%;
-
     ul {
       display: flex;
-      flex-direction: row;
-      align-items: center;
-      list-style-position: inside;
       padding: 0px;
       margin: 0px;
 
       li {
+        display: flex;
         padding-bottom: 2px;
-        list-style-type: none;
         cursor: pointer;
 
         &:focus {
@@ -132,6 +124,7 @@ mat-toolbar.app-toolbar {
           margin: 0 4px;
           padding: 0px;
           cursor: pointer;
+          display: flex;
 
           .nav-link-inner {
             border-radius: 4px;
@@ -146,7 +139,6 @@ mat-toolbar.app-toolbar {
             .nav-link-inner {
               display: inline-flex;
               align-items: center;
-              line-height: normal;
               &::after {
                 content: "\e89e"; // codepoint for "open_in_new"
                 margin-left: 0.3rem;
