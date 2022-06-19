@@ -41,7 +41,7 @@ The CLI automatically appends `Component`, so if you were to write `first-compon
 
 <div class="alert is-helpful">
 
-<header<code>&lt;base href&gt;</code></header>
+<header><code>&lt;base href&gt;</code></header>
 
 This guide works with a CLI-generated Angular application.
 If you are working manually, make sure that you have `<base href="/">` in the `<head>` of your index.html file.
