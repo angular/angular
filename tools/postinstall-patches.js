@@ -177,21 +177,4 @@ rm('-rf', [
   'node_modules/rxjs/Subscription.*',
 ]);
 
-
-log('\n# patch: dev-infra snapshotting');
-// more info in https://github.com/angular/dev-infra/pull/449
-['node_modules/@angular/dev-infra-private/ng-dev/bundles/cli.js',
- 'node_modules/@angular/dev-infra-private/ng-dev/bundles/cli.js.map',
-].forEach(filePath => {
-  const contents = readFileSync(filePath, 'utf8');
-  const newContents = contents.replace('*[0-9]*.[0-9]*.[0-9]*', '?[0-9]*.[0-9]*.[0-9]*');
-  if (contents !== newContents) {
-    writeFileSync(filePath, newContents, 'utf8');
-    log(`Release tag matcher for snapshots replaced in ${filePath}`);
-  } else {
-    log(`Release tag matcher for snapshots were already replaced in ${filePath}`);
-  }
-});
-
-
 log('===== finished running the postinstall-patches.js script =====');
