@@ -24,6 +24,7 @@
     "/ ": "",
     "postinstall": "node scripts/webdriver-manager-update.js && node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js",
     "prepare": "husky install",
+    "ng-dev": "ts-node --esm --project .ng-dev/tsconfig.json node_modules/@angular/dev-infra-private/ng-dev/bundles/cli.mjs",
     "test": "bazelisk test",
     "test:ci": "bazelisk test -- //... -//devtools/... -//aio/...",
     "test-tsec": "bazelisk test //... --build_tag_filters=tsec --test_tag_filters=tsec",
