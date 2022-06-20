@@ -108,33 +108,36 @@ $legacy-border-radius: 2px !default;
 
 // Overlay to be used as a tint.
 .mat-button-toggle-focus-overlay {
+  @include layout-common.fill;
   border-radius: inherit;
 
   // Disable pointer events to prevent it from hijacking user events.
   pointer-events: none;
   opacity: 0;
-  @include layout-common.fill;
+}
 
+@include cdk.high-contrast(active, off) {
   // Changing the background color for the selected item won't be visible in high contrast mode.
   // We fall back to using the overlay to draw a brighter, semi-transparent tint on top instead.
   // It uses a border, because the browser will render it using a brighter color.
-  @include cdk.high-contrast(active, off) {
-    .mat-button-toggle-checked & {
+  .mat-button-toggle-checked {
+    .mat-button-toggle-focus-overlay {
       border-bottom: solid $legacy-height;
       opacity: 0.5;
       height: 0;
     }
-  }
-}
 
-@include cdk.high-contrast(active, off) {
-  .mat-button-toggle-checked.mat-button-toggle-appearance-standard
-  .mat-button-toggle-focus-overlay {
-    // In high contrast mode, we use a border for the checked state because backgrounds
-    // can either be opaque or transparent. We set the border height to a value that is larger
-    // than usual button toggles are. This allows us to keep this high contrast style in the
-    // base component style, instead of making it dependent on height determined through density.
-    border-bottom: solid 500px;
+    &:hover .mat-button-toggle-focus-overlay {
+      opacity: 0.6;
+    }
+
+    &.mat-button-toggle-appearance-standard .mat-button-toggle-focus-overlay {
+      // In high contrast mode, we use a border for the checked state because backgrounds
+      // can either be opaque or transparent. We set the border height to a value that is larger
+      // than usual button toggles are. This allows us to keep this high contrast style in the
+      // base component style, instead of making it dependent on height determined through density.
+      border-bottom: solid 500px;
+    }
   }
 }
 
