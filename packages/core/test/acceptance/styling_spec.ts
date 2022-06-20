@@ -16,40 +16,6 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {expectPerfCounters} from '@angular/private/testing';
 
 describe('styling', () => {
-  /**
-   * This helper function tests to see if the current browser supports non standard way of writing
-   * into styles.
-   *
-   * This is not the correct way to write to style and is not supported in IE11.
-   * ```
-   * div.style = 'color: white';
-   * ```
-   *
-   * This is the correct way to write to styles:
-   * ```
-   * div.style.cssText = 'color: white';
-   * ```
-   *
-   * Even though writing to `div.style` is not officially supported, it works in all
-   * browsers except IE11.
-   *
-   * This function detects this condition and allows us to skip affected tests.
-   */
-  let _supportsWritingStringsToStyleProperty: boolean|null = null;
-  function supportsWritingStringsToStyleProperty() {
-    if (_supportsWritingStringsToStyleProperty === null) {
-      const div = document.createElement('div');
-      const CSS = 'color: white;';
-      try {
-        (div as any).style = CSS;
-      } catch (e) {
-        _supportsWritingStringsToStyleProperty = false;
-      }
-      _supportsWritingStringsToStyleProperty = (div.style.cssText === CSS);
-    }
-    return _supportsWritingStringsToStyleProperty;
-  }
-
   beforeEach(ngDevModeResetPerfCounters);
 
   describe('apply in prioritization order', () => {
@@ -1405,6 +1371,26 @@ describe('styling', () => {
        expect(element.classList.contains('dir-one')).toBeTruthy();
        expect(element.classList.contains('dir-two')).toBeTruthy();
      });
+
+  it('should not write empty style values to the DOM', () => {
+    @Component({
+      template: `
+          <div
+            [style.color]="null"
+            [style.--bg-color]="undefined"
+            [style.margin]="''"
+            [style.font-size]="'   '"></div>
+        `
+    })
+    class Cmp {
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).toBe('<div></div>');
+  });
 
   describe('NgClass', () => {
     // We had a bug where NgClass would not allocate sufficient slots for host bindings,
