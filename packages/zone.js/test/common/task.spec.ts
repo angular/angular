@@ -907,6 +907,28 @@ describe('task lifecycle', () => {
        }));
   });
 
+  // Test specific to https://github.com/angular/angular/issues/45711
+  it('should not throw an error when the task has been canceled previously and is attemped to be canceled again',
+     () => {
+       testFnWithLoggedTransitionTo(() => {
+         Zone.current.fork({name: 'testCancelZone'}).run(() => {
+           const task =
+               Zone.current.scheduleEventTask('testEventTask', noop, undefined, noop, noop);
+           Zone.current.cancelTask(task);
+           Zone.current.cancelTask(task);
+         });
+         expect(log.map(item => {
+           return {toState: item.toState, fromState: item.fromState};
+         }))
+             .toEqual([
+               {toState: 'scheduling', fromState: 'notScheduled'},
+               {toState: 'scheduled', fromState: 'scheduling'},
+               {toState: 'canceling', fromState: 'scheduled'},
+               {toState: 'notScheduled', fromState: 'canceling'}
+             ]);
+       });
+     });
+
   describe('reschedule zone', () => {
     let callbackLogs: ({pos: string, method: string, zone: string, task: string}|HasTaskState)[];
     const newZone = Zone.root.fork({
