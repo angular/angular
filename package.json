@@ -178,7 +178,7 @@
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
-    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#fb0ce9d4c7f9a15e0351dc30f771993d757dc870",
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#f2ca0a57e8ede868dc51c3b80a0d3ca56d5fdf65",
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^5.0.0",
     "@bazel/ibazel": "^0.16.0",
@@ -208,7 +208,7 @@
     "sauce-connect": "https://saucelabs.com/downloads/sc-4.7.1-linux.tar.gz",
     "semver": "^7.3.5",
     "send": "^0.18.0",
-    "ts-node": "^10.0.0",
+    "ts-node": "^10.8.1",
     "tsec": "0.2.2",
     "tslint-eslint-rules": "5.4.0",
     "tslint-no-toplevel-property-access": "0.0.2",
