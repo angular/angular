@@ -61,12 +61,6 @@ ls('node_modules/@types').filter(f => f.startsWith('babel__')).forEach(pkg => {
   }
 });
 
-// patch tsec 0.2.2 to enable runfiles on windows
-// Note that we need to use tsec 0.2.2 as future versions don't publish this bzl file
-log('\n# patch: tsec to enable using runfiles on windows');
-sed('-i', '@platforms//os:windows": False', '@platforms//os:windows": True',
-    'node_modules/tsec/index.bzl');
-
 log('\n# patch: use local version of @angular/* and zone.js in Starlark files from @angular/dev-infra-private');
 
 const ngDevPatches = new Map();

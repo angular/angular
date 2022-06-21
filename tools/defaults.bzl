@@ -15,6 +15,7 @@ load("@npm//@angular/dev-infra-private/bazel/karma:index.bzl", _karma_web_test =
 load("@npm//@angular/dev-infra-private/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@npm//@angular/dev-infra-private/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
+load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
@@ -588,5 +589,12 @@ def api_golden_test(**kwargs):
 
 def api_golden_test_npm_package(**kwargs):
     _api_golden_test_npm_package(
+        **kwargs
+    )
+
+def tsec_test(**kwargs):
+    """Default values for tsec_test"""
+    _tsec_test(
+        use_runfiles_on_windows = True,  # We explicitly enable runfiles in .bazelrc
         **kwargs
     )
