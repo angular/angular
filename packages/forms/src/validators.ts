@@ -19,8 +19,8 @@ function isEmptyInputValue(value: any): boolean {
    * This avoids falsely rejecting objects that contain a custom length attribute.
    * For example, the object {id: 1, length: 0, width: 0} should not be returned as empty.
    */
-  return value == null ||
-      ((typeof value === 'string' || Array.isArray(value)) && value.length === 0);
+  return (
+      value == null || ((typeof value === 'string' || Array.isArray(value)) && value.length === 0));
 }
 
 function hasValidLength(value: any): boolean {
@@ -155,8 +155,8 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static min(min: number): ValidatorFn {
-    return minValidator(min);
+  static min(min: number, validatorMessage?: string): ValidatorFn {
+    return minValidator(min, validatorMessage);
   }
 
   /**
@@ -179,8 +179,8 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static max(max: number): ValidatorFn {
-    return maxValidator(max);
+  static max(max: number, validatorMessage?: string): ValidatorFn {
+    return maxValidator(max, validatorMessage);
   }
 
   /**
@@ -203,8 +203,8 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static required(control: AbstractControl): ValidationErrors|null {
-    return requiredValidator(control);
+  static required(validatorMessage?: string): ValidatorFn {
+    return requiredValidator(validatorMessage);
   }
 
   /**
@@ -228,8 +228,8 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static requiredTrue(control: AbstractControl): ValidationErrors|null {
-    return requiredTrueValidator(control);
+  static requiredTrue(validatorMessage?: string): ValidatorFn {
+    return requiredTrueValidator(validatorMessage);
   }
 
   /**
@@ -268,8 +268,8 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static email(control: AbstractControl): ValidationErrors|null {
-    return emailValidator(control);
+  static email(validatorMessage?: string): ValidatorFn {
+    return emailValidator(validatorMessage);
   }
 
   /**
@@ -302,8 +302,8 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static minLength(minLength: number): ValidatorFn {
-    return minLengthValidator(minLength);
+  static minLength(minLength: number, validatorMessage?: string): ValidatorFn {
+    return minLengthValidator(minLength, validatorMessage);
   }
 
   /**
@@ -333,8 +333,8 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static maxLength(maxLength: number): ValidatorFn {
-    return maxLengthValidator(maxLength);
+  static maxLength(maxLength: number, validatorMessage?: string): ValidatorFn {
+    return maxLengthValidator(maxLength, validatorMessage);
   }
 
   /**
@@ -386,8 +386,8 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static pattern(pattern: string|RegExp): ValidatorFn {
-    return patternValidator(pattern);
+  static pattern(pattern: string|RegExp, validatorMessage?: string): ValidatorFn {
+    return patternValidator(pattern, validatorMessage);
   }
 
   /**
@@ -438,7 +438,7 @@ export class Validators {
  * Validator that requires the control's value to be greater than or equal to the provided number.
  * See `Validators.min` for additional information.
  */
-export function minValidator(min: number): ValidatorFn {
+export function minValidator(min: number, validatorMessage?: string): ValidatorFn {
   return (control: AbstractControl): ValidationErrors|null => {
     if (isEmptyInputValue(control.value) || isEmptyInputValue(min)) {
       return null;  // don't validate empty values to allow optional controls
@@ -446,7 +446,9 @@ export function minValidator(min: number): ValidatorFn {
     const value = parseFloat(control.value);
     // Controls with NaN values after parsing should be treated as not having a
     // minimum, per the HTML forms spec: https://www.w3.org/TR/html5/forms.html#attr-input-min
-    return !isNaN(value) && value < min ? {'min': {'min': min, 'actual': control.value}} : null;
+    return !isNaN(value) && value < min ?
+        {'min': {'min': min, 'actual': control.value}, 'message': validatorMessage ?? ''} :
+        null;
   };
 }
 
@@ -454,7 +456,7 @@ export function minValidator(min: number): ValidatorFn {
  * Validator that requires the control's value to be less than or equal to the provided number.
  * See `Validators.max` for additional information.
  */
-export function maxValidator(max: number): ValidatorFn {
+export function maxValidator(max: number, validatorMessage?: string): ValidatorFn {
   return (control: AbstractControl): ValidationErrors|null => {
     if (isEmptyInputValue(control.value) || isEmptyInputValue(max)) {
       return null;  // don't validate empty values to allow optional controls
@@ -462,7 +464,9 @@ export function maxValidator(max: number): ValidatorFn {
     const value = parseFloat(control.value);
     // Controls with NaN values after parsing should be treated as not having a
     // maximum, per the HTML forms spec: https://www.w3.org/TR/html5/forms.html#attr-input-max
-    return !isNaN(value) && value > max ? {'max': {'max': max, 'actual': control.value}} : null;
+    return !isNaN(value) && value > max ?
+        {'max': {'max': max, 'actual': control.value}, 'message': validatorMessage ?? ''} :
+        null;
   };
 }
 
@@ -470,8 +474,12 @@ export function maxValidator(max: number): ValidatorFn {
  * Validator that requires the control have a non-empty value.
  * See `Validators.required` for additional information.
  */
-export function requiredValidator(control: AbstractControl): ValidationErrors|null {
-  return isEmptyInputValue(control.value) ? {'required': true} : null;
+export function requiredValidator(validatorMessage?: string): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors|null => {
+    return isEmptyInputValue(control.value) ?
+        {'required': true, 'message': validatorMessage ?? ''} :
+        null;
+  };
 }
 
 /**
@@ -479,26 +487,31 @@ export function requiredValidator(control: AbstractControl): ValidationErrors|nu
  * used for required checkboxes.
  * See `Validators.requiredTrue` for additional information.
  */
-export function requiredTrueValidator(control: AbstractControl): ValidationErrors|null {
-  return control.value === true ? null : {'required': true};
+export function requiredTrueValidator(validatorMessage?: string): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors|null => {
+    return control.value === true ? null : {'required': true, 'message': validatorMessage ?? ''};
+  };
 }
 
 /**
  * Validator that requires the control's value pass an email validation test.
  * See `Validators.email` for additional information.
  */
-export function emailValidator(control: AbstractControl): ValidationErrors|null {
-  if (isEmptyInputValue(control.value)) {
-    return null;  // don't validate empty values to allow optional controls
-  }
-  return EMAIL_REGEXP.test(control.value) ? null : {'email': true};
+export function emailValidator(validatorMessage?: string): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors|null => {
+    if (isEmptyInputValue(control.value)) {
+      return null;  // don't validate empty values to allow optional controls
+    }
+    return EMAIL_REGEXP.test(control.value) ? null :
+                                              {'email': true, 'message': validatorMessage ?? ''};
+  };
 }
 
 /**
  * Validator that requires the length of the control's value to be greater than or equal
  * to the provided minimum length. See `Validators.minLength` for additional information.
  */
-export function minLengthValidator(minLength: number): ValidatorFn {
+export function minLengthValidator(minLength: number, validatorMessage?: string): ValidatorFn {
   return (control: AbstractControl): ValidationErrors|null => {
     if (isEmptyInputValue(control.value) || !hasValidLength(control.value)) {
       // don't validate empty values to allow optional controls
@@ -506,9 +519,11 @@ export function minLengthValidator(minLength: number): ValidatorFn {
       return null;
     }
 
-    return control.value.length < minLength ?
-        {'minlength': {'requiredLength': minLength, 'actualLength': control.value.length}} :
-        null;
+    return control.value.length < minLength ? {
+      'minlength': {'requiredLength': minLength, 'actualLength': control.value.length},
+      'message': validatorMessage ?? '',
+    } :
+                                              null;
   };
 }
 
@@ -516,11 +531,13 @@ export function minLengthValidator(minLength: number): ValidatorFn {
  * Validator that requires the length of the control's value to be less than or equal
  * to the provided maximum length. See `Validators.maxLength` for additional information.
  */
-export function maxLengthValidator(maxLength: number): ValidatorFn {
+export function maxLengthValidator(maxLength: number, validatorMessage?: string): ValidatorFn {
   return (control: AbstractControl): ValidationErrors|null => {
-    return hasValidLength(control.value) && control.value.length > maxLength ?
-        {'maxlength': {'requiredLength': maxLength, 'actualLength': control.value.length}} :
-        null;
+    return hasValidLength(control.value) && control.value.length > maxLength ? {
+      'maxlength': {'requiredLength': maxLength, 'actualLength': control.value.length},
+      'message': validatorMessage ?? '',
+    } :
+                                                                               null;
   };
 }
 
@@ -528,7 +545,7 @@ export function maxLengthValidator(maxLength: number): ValidatorFn {
  * Validator that requires the control's value to match a regex pattern.
  * See `Validators.pattern` for additional information.
  */
-export function patternValidator(pattern: string|RegExp): ValidatorFn {
+export function patternValidator(pattern: string|RegExp, validatorMessage?: string): ValidatorFn {
   if (!pattern) return nullValidator;
   let regex: RegExp;
   let regexStr: string;
@@ -551,8 +568,10 @@ export function patternValidator(pattern: string|RegExp): ValidatorFn {
       return null;  // don't validate empty values to allow optional controls
     }
     const value: string = control.value;
-    return regex.test(value) ? null :
-                               {'pattern': {'requiredPattern': regexStr, 'actualValue': value}};
+    return regex.test(value) ? null : {
+      'pattern': {'requiredPattern': regexStr, 'actualValue': value},
+      'message': validatorMessage ?? '',
+    };
   };
 }
 
@@ -569,7 +588,7 @@ function isPresent(o: any): boolean {
 
 export function toObservable(r: any): Observable<any> {
   const obs = isPromise(r) ? from(r) : r;
-  if (!(isObservable(obs)) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+  if (!isObservable(obs) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
     throw new Error(`Expected validator to return Promise or Observable.`);
   }
   return obs;
@@ -591,7 +610,7 @@ type GenericValidatorFn = (control: AbstractControl) => any;
 
 function executeValidators<V extends GenericValidatorFn>(
     control: AbstractControl, validators: V[]): ReturnType<V>[] {
-  return validators.map(validator => validator(control));
+  return validators.map((validator) => validator(control));
 }
 
 function isValidatorFn<V>(validator: V|Validator|AsyncValidator): validator is V {
@@ -607,10 +626,10 @@ function isValidatorFn<V>(validator: V|Validator|AsyncValidator): validator is V
  *     as well as represented as a validator class.
  */
 export function normalizeValidators<V>(validators: (V|Validator|AsyncValidator)[]): V[] {
-  return validators.map(validator => {
+  return validators.map((validator) => {
     return isValidatorFn<V>(validator) ?
         validator :
-        ((c: AbstractControl) => validator.validate(c)) as unknown as V;
+        (((c: AbstractControl) => validator.validate(c)) as unknown as V);
   });
 }
 
@@ -711,7 +730,11 @@ export function makeValidatorsArray<T extends ValidatorFn|AsyncValidatorFn>(vali
  */
 export function hasValidator<T extends ValidatorFn|AsyncValidatorFn>(
     validators: T|T[]|null, validator: T): boolean {
-  return Array.isArray(validators) ? validators.includes(validator) : validators === validator;
+  const result =
+      Array.isArray(validators) ? validators.includes(validator) : validators === validator;
+  debugger;
+
+  return result;
 }
 
 /**
@@ -739,5 +762,5 @@ export function addValidators<T extends ValidatorFn|AsyncValidatorFn>(
 
 export function removeValidators<T extends ValidatorFn|AsyncValidatorFn>(
     validators: T|T[], currentValidators: T|T[]|null): T[] {
-  return makeValidatorsArray(currentValidators).filter(v => !hasValidator(validators, v));
+  return makeValidatorsArray(currentValidators).filter((v) => !hasValidator(validators, v));
 }

@@ -141,7 +141,7 @@ class CustomValidatorDirective implements Validator {
         form.form = formModel;
 
         loginControlDir = new FormControlName(
-            form, [Validators.required], [asyncValidator('expected')], [defaultAccessor], null);
+            form, [Validators.required()], [asyncValidator('expected')], [defaultAccessor], null);
         loginControlDir.name = 'login';
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
@@ -501,7 +501,7 @@ class CustomValidatorDirective implements Validator {
       };
 
       beforeEach(() => {
-        controlDir = new FormControlDirective([Validators.required], [], [defaultAccessor], null);
+        controlDir = new FormControlDirective([Validators.required()], [], [defaultAccessor], null);
         controlDir.valueAccessor = new DummyControlValueAccessor();
 
         control = new FormControl(null);
@@ -545,7 +545,7 @@ class CustomValidatorDirective implements Validator {
 
       beforeEach(() => {
         ngModel = new NgModel(
-            null!, [Validators.required], [asyncValidator('expected')], [defaultAccessor]);
+            null!, [Validators.required()], [asyncValidator('expected')], [defaultAccessor]);
         ngModel.valueAccessor = new DummyControlValueAccessor();
         control = ngModel.control;
       });
@@ -598,7 +598,7 @@ class CustomValidatorDirective implements Validator {
            ngModel.ngOnChanges({});
            tick();
 
-           expect(ngModel.control.errors).toEqual({'required': true});
+           expect(ngModel.control.errors).toEqual({'required': true, 'message': ''});
 
            ngModel.control.setValue('someValue');
            tick();

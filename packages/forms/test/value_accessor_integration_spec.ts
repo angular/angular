@@ -131,7 +131,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
       it('when value is cleared in the UI', () => {
         const fixture = initTest(FormControlNumberInput);
-        const control = new FormControl(10, Validators.required);
+        const control = new FormControl(10, Validators.required());
         fixture.componentInstance.control = control;
         fixture.detectChanges();
 
@@ -953,7 +953,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
         it('when value is cleared in the UI', () => {
           const fixture = initTest(FormControlNumberInput);
-          const control = new FormControl(10, Validators.required);
+          const control = new FormControl(10, Validators.required());
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 

@@ -20,6 +20,7 @@ function asyncValidator(_: any /** TODO #9100 */) {
 
 describe('Form Builder', () => {
   let b: FormBuilder;
+  const requiredValidator = Validators.required('Required message');
 
   beforeEach(() => {
     b = new FormBuilder();
@@ -128,10 +129,10 @@ describe('Form Builder', () => {
     expect(g.controls['login'].value).toBeNull();
     expect(g.controls['login'].validator).toBe(syncValidator);
     expect(g.controls['login'].asyncValidator).toBe(asyncValidator);
-    g.controls['login'].addValidators(Validators.required);
-    expect(g.controls['login'].hasValidator(Validators.required)).toBe(true);
-    g.controls['login'].removeValidators(Validators.required);
-    expect(g.controls['login'].hasValidator(Validators.required)).toBe(false);
+    g.controls['login'].addValidators(requiredValidator);
+    console.log(expect(g.controls['login'].hasValidator(requiredValidator)).toBe(true));
+    g.controls['login'].removeValidators(requiredValidator);
+    console.log(expect(g.controls['login'].hasValidator(requiredValidator)).toBe(false));
   });
 
   it('should support controls with no validators and whose form state is undefined', () => {
@@ -259,7 +260,7 @@ describe('Form Builder', () => {
     });
 
     it('should default to on change with an options obj', () => {
-      const c = b.control('', {validators: Validators.required});
+      const c = b.control('', {validators: requiredValidator});
       expect(c.updateOn).toEqual('change');
     });
 

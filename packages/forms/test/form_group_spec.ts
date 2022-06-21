@@ -854,14 +854,14 @@ describe('FormGroup', () => {
 
   describe('getError', () => {
     it('should return the error when it is present', () => {
-      const c = new FormControl('', Validators.required);
+      const c = new FormControl('', Validators.required());
       const g = new FormGroup({'one': c});
       expect(c.getError('required')).toEqual(true);
       expect(g.getError('required', ['one'])).toEqual(true);
     });
 
     it('should return null otherwise', () => {
-      const c = new FormControl('not empty', Validators.required);
+      const c = new FormControl('not empty', Validators.required());
       const g = new FormGroup({'one': c});
       expect(c.getError('invalid')).toEqual(null);
       expect(g.getError('required', ['one'])).toEqual(null);
@@ -869,14 +869,14 @@ describe('FormGroup', () => {
     });
 
     it('should be able to traverse group with single string', () => {
-      const c = new FormControl('', Validators.required);
+      const c = new FormControl('', Validators.required());
       const g = new FormGroup({'one': c});
       expect(c.getError('required')).toEqual(true);
       expect(g.getError('required', 'one')).toEqual(true);
     });
 
     it('should be able to traverse group with string delimited by dots', () => {
-      const c = new FormControl('', Validators.required);
+      const c = new FormControl('', Validators.required());
       const g2 = new FormGroup({'two': c});
       const g1 = new FormGroup({'one': g2});
       expect(c.getError('required')).toEqual(true);
@@ -884,7 +884,7 @@ describe('FormGroup', () => {
     });
 
     it('should traverse group with form array using string and numbers', () => {
-      const c = new FormControl('', Validators.required);
+      const c = new FormControl('', Validators.required());
       const g2 = new FormGroup({'two': c});
       const a = new FormArray([g2]);
       const g1 = new FormGroup({'one': a});
@@ -895,14 +895,14 @@ describe('FormGroup', () => {
 
   describe('hasError', () => {
     it('should return true when it is present', () => {
-      const c = new FormControl('', Validators.required);
+      const c = new FormControl('', Validators.required());
       const g = new FormGroup({'one': c});
       expect(c.hasError('required')).toEqual(true);
       expect(g.hasError('required', ['one'])).toEqual(true);
     });
 
     it('should return false otherwise', () => {
-      const c = new FormControl('not empty', Validators.required);
+      const c = new FormControl('not empty', Validators.required());
       const g = new FormGroup({'one': c});
       expect(c.hasError('invalid')).toEqual(false);
       expect(g.hasError('required', ['one'])).toEqual(false);
@@ -910,21 +910,21 @@ describe('FormGroup', () => {
     });
 
     it('should be able to traverse group with single string', () => {
-      const c = new FormControl('', Validators.required);
+      const c = new FormControl('', Validators.required());
       const g = new FormGroup({'one': c});
       expect(c.hasError('required')).toEqual(true);
       expect(g.hasError('required', 'one')).toEqual(true);
     });
 
     it('should be able to traverse group with string delimited by dots', () => {
-      const c = new FormControl('', Validators.required);
+      const c = new FormControl('', Validators.required());
       const g2 = new FormGroup({'two': c});
       const g1 = new FormGroup({'one': g2});
       expect(c.hasError('required')).toEqual(true);
       expect(g1.hasError('required', 'one.two')).toEqual(true);
     });
     it('should traverse group with form array using string and numbers', () => {
-      const c = new FormControl('', Validators.required);
+      const c = new FormControl('', Validators.required());
       const g2 = new FormGroup({'two': c});
       const a = new FormArray([g2]);
       const g1 = new FormGroup({'one': a});
@@ -1634,7 +1634,7 @@ describe('FormGroup', () => {
 
     it('should ignore disabled controls in validation', () => {
       const g = new FormGroup({
-        nested: new FormGroup({one: new FormControl(null, Validators.required)}),
+        nested: new FormGroup({one: new FormControl(null, Validators.required())}),
         two: new FormControl('two')
       });
       expect(g.valid).toBe(false);
@@ -1809,7 +1809,7 @@ describe('FormGroup', () => {
 
       beforeEach(() => {
         logger = [];
-        c = new FormControl('', Validators.required);
+        c = new FormControl('', Validators.required());
         g = new FormGroup({one: c});
         form = new FormGroup({g: g});
       });
@@ -2088,7 +2088,7 @@ describe('FormGroup', () => {
       it('should run the sync validator on stand alone controls and set status to `INVALID`',
          fakeAsync(() => {
            const logs: string[] = [];
-           const c = new FormControl('new!', Validators.required);
+           const c = new FormControl('new!', Validators.required());
 
            attachEventsLogger(c, logs);
 
@@ -2109,7 +2109,7 @@ describe('FormGroup', () => {
       it('should run the sync validator on stand alone controls and set status to `VALID`',
          fakeAsync(() => {
            const logs: string[] = [];
-           const c = new FormControl('', Validators.required);
+           const c = new FormControl('', Validators.required());
 
            attachEventsLogger(c, logs);
 

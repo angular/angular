@@ -1061,7 +1061,7 @@ describe('Typed Class', () => {
       });
 
       it('from objects with ControlConfigs and validators', () => {
-        const c = fb.group({foo: ['bar', Validators.required]});
+        const c = fb.group({foo: ['bar', Validators.required()]});
         {
           type ControlsType = {foo: FormControl<string|null>};
           let t: ControlsType = c.controls;
@@ -1071,7 +1071,7 @@ describe('Typed Class', () => {
       });
 
       it('from objects with ControlConfigs and validator lists', () => {
-        const c = fb.group({foo: ['bar', [Validators.required, Validators.email]]});
+        const c = fb.group({foo: ['bar', [Validators.required(), Validators.email()]]});
         {
           type ControlsType = {foo: FormControl<string|null>};
           let t: ControlsType = c.controls;
@@ -1082,7 +1082,7 @@ describe('Typed Class', () => {
 
       it('from objects with ControlConfigs and explicit types', () => {
         const c: FormGroup<{foo: FormControl<string|null>}> =
-            fb.group({foo: ['bar', [Validators.required, Validators.email]]});
+            fb.group({foo: ['bar', [Validators.required(), Validators.email()]]});
         {
           type ControlsType = {foo: FormControl<string|null>};
           let t: ControlsType = c.controls;
@@ -1241,7 +1241,7 @@ describe('Typed Class', () => {
         }),
         dinnerOptions: fb.array([fb.group({
           food: fb.group({
-            entree: ['Souffle', Validators.required],
+            entree: ['Souffle', Validators.required()],
             dessert: 'also Souffle',
           }),
           price: fb.group({
@@ -1338,7 +1338,7 @@ describe('Typed Class', () => {
       });
 
       it('from objects with ControlConfigs and validators', () => {
-        const c = fb.group({foo: ['bar', Validators.required]});
+        const c = fb.group({foo: ['bar', Validators.required()]});
         {
           type ControlsType = {foo: FormControl<string>};
           let t: ControlsType = c.controls;
@@ -1350,7 +1350,7 @@ describe('Typed Class', () => {
       });
 
       it('from objects with ControlConfigs and validator lists', () => {
-        const c = fb.group({foo: ['bar', [Validators.required, Validators.email]]});
+        const c = fb.group({foo: ['bar', [Validators.required(), Validators.email()]]});
         {
           type ControlsType = {foo: FormControl<string>};
           let t: ControlsType = c.controls;
@@ -1363,7 +1363,7 @@ describe('Typed Class', () => {
 
       it('from objects with ControlConfigs and explicit types', () => {
         const c: FormGroup<{foo: FormControl<string>}> =
-            fb.group({foo: ['bar', [Validators.required, Validators.email]]});
+            fb.group({foo: ['bar', [Validators.required(), Validators.email()]]});
         {
           type ControlsType = {foo: FormControl<string>};
           let t: ControlsType = c.controls;

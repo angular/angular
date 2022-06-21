@@ -227,7 +227,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         });
         fixture.componentInstance.form = form;
         fixture.detectChanges();
-        expect(form.get('login')!.errors).toEqual({required: true});
+        expect(form.get('login')!.errors).toEqual({required: true, message: ''});
 
         const newForm = new FormGroup({
           'login': new FormControl(''),
@@ -238,7 +238,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         fixture.componentInstance.form = newForm;
         fixture.detectChanges();
 
-        expect(newForm.get('login')!.errors).toEqual({required: true});
+        expect(newForm.get('login')!.errors).toEqual({required: true, message: ''});
       });
 
       it('should pick up dir validators from nested form groups', () => {
@@ -1043,7 +1043,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
       it('should work with single fields', () => {
         const fixture = initTest(FormControlComp);
-        const control = new FormControl('', Validators.required);
+        const control = new FormControl('', Validators.required());
         fixture.componentInstance.control = control;
         fixture.detectChanges();
 
@@ -1086,7 +1086,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
       it('should work with single fields that combines async and sync validators', fakeAsync(() => {
            const fixture = initTest(FormControlComp);
            const control =
-               new FormControl('', Validators.required, uniqLoginAsyncValidator('good'));
+               new FormControl('', Validators.required(), uniqLoginAsyncValidator('good'));
            fixture.debugElement.componentInstance.control = control;
            fixture.detectChanges();
 
@@ -1118,7 +1118,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
       it('should work with single fields in parent forms', () => {
         const fixture = initTest(FormGroupComp);
-        const form = new FormGroup({'login': new FormControl('', Validators.required)});
+        const form = new FormGroup({'login': new FormControl('', Validators.required())});
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
@@ -1154,7 +1154,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
       it('should work with formGroup', () => {
         const fixture = initTest(FormGroupComp);
-        const form = new FormGroup({'login': new FormControl('', Validators.required)});
+        const form = new FormGroup({'login': new FormControl('', Validators.required())});
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
@@ -1256,8 +1256,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
       it('should apply submitted status with nested formGroupName', () => {
         const fixture = initTest(NestedFormGroupNameComp);
         const loginControl =
-            new FormControl('', {validators: Validators.required, updateOn: 'change'});
-        const passwordControl = new FormControl('', Validators.required);
+            new FormControl('', {validators: Validators.required(), updateOn: 'change'});
+        const passwordControl = new FormControl('', Validators.required());
         const formGroup = new FormGroup(
             {signin: new FormGroup({login: loginControl, password: passwordControl})},
             {updateOn: 'blur'});
@@ -1300,7 +1300,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
       describe('on blur', () => {
         it('should not update value or validity based on user input until blur', () => {
           const fixture = initTest(FormControlComp);
-          const control = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
+          const control =
+              new FormControl('', {validators: Validators.required(), updateOn: 'blur'});
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
@@ -1323,7 +1324,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         it('should not update parent group value/validity from child until blur', () => {
           const fixture = initTest(FormGroupComp);
           const form = new FormGroup(
-              {login: new FormControl('', {validators: Validators.required, updateOn: 'blur'})});
+              {login: new FormControl('', {validators: Validators.required(), updateOn: 'blur'})});
           fixture.componentInstance.form = form;
           fixture.detectChanges();
 
@@ -1346,7 +1347,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should not wait for blur event to update if value is set programmatically', () => {
           const fixture = initTest(FormControlComp);
-          const control = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
+          const control =
+              new FormControl('', {validators: Validators.required(), updateOn: 'blur'});
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
@@ -1399,7 +1401,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         it('should continue waiting for blur to update if previously blurred', () => {
           const fixture = initTest(FormControlComp);
           const control =
-              new FormControl('Nancy', {validators: Validators.required, updateOn: 'blur'});
+              new FormControl('Nancy', {validators: Validators.required(), updateOn: 'blur'});
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
@@ -1425,7 +1427,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should not use stale pending value if value set programmatically', () => {
           const fixture = initTest(FormControlComp);
-          const control = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
+          const control =
+              new FormControl('', {validators: Validators.required(), updateOn: 'blur'});
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
@@ -1459,7 +1462,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should reset properly', () => {
           const fixture = initTest(FormControlComp);
-          const control = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
+          const control =
+              new FormControl('', {validators: Validators.required(), updateOn: 'blur'});
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
@@ -1527,7 +1531,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         it('should not emit valueChanges or statusChanges until blur', () => {
           const fixture = initTest(FormControlComp);
           const control: FormControl =
-              new FormControl('', {validators: Validators.required, updateOn: 'blur'});
+              new FormControl('', {validators: Validators.required(), updateOn: 'blur'});
           fixture.componentInstance.control = control;
           fixture.detectChanges();
           const values: string[] = [];
@@ -1554,7 +1558,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         it('should not emit valueChanges or statusChanges on blur if value unchanged', () => {
           const fixture = initTest(FormControlComp);
           const control: FormControl =
-              new FormControl('', {validators: Validators.required, updateOn: 'blur'});
+              new FormControl('', {validators: Validators.required(), updateOn: 'blur'});
           fixture.componentInstance.control = control;
           fixture.detectChanges();
           const values: string[] = [];
@@ -1626,7 +1630,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should update on blur with group updateOn', () => {
           const fixture = initTest(FormGroupComp);
-          const control = new FormControl('', Validators.required);
+          const control = new FormControl('', Validators.required());
           const formGroup = new FormGroup({login: control}, {updateOn: 'blur'});
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
@@ -1649,7 +1653,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should update on blur with array updateOn', () => {
           const fixture = initTest(FormArrayComp);
-          const control = new FormControl('', Validators.required);
+          const control = new FormControl('', Validators.required());
           const cityArray = new FormArray([control], {updateOn: 'blur'});
           const formGroup = new FormGroup({cities: cityArray});
           fixture.componentInstance.form = formGroup;
@@ -1676,8 +1680,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         it('should allow child control updateOn blur to override group updateOn', () => {
           const fixture = initTest(NestedFormGroupNameComp);
           const loginControl =
-              new FormControl('', {validators: Validators.required, updateOn: 'change'});
-          const passwordControl = new FormControl('', Validators.required);
+              new FormControl('', {validators: Validators.required(), updateOn: 'change'});
+          const passwordControl = new FormControl('', Validators.required());
           const formGroup = new FormGroup(
               {signin: new FormGroup({login: loginControl, password: passwordControl})},
               {updateOn: 'blur'});
@@ -1714,7 +1718,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         it('should set initial value and validity on init', () => {
           const fixture = initTest(FormGroupComp);
           const form = new FormGroup({
-            login: new FormControl('Nancy', {validators: Validators.required, updateOn: 'submit'})
+            login: new FormControl('Nancy', {validators: Validators.required(), updateOn: 'submit'})
           });
           fixture.componentInstance.form = form;
           fixture.detectChanges();
@@ -1727,8 +1731,9 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should not update value or validity until submit', () => {
           const fixture = initTest(FormGroupComp);
-          const formGroup = new FormGroup(
-              {login: new FormControl('', {validators: Validators.required, updateOn: 'submit'})});
+          const formGroup = new FormGroup({
+            login: new FormControl('', {validators: Validators.required(), updateOn: 'submit'})
+          });
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
@@ -1759,8 +1764,9 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should not update after submit until a second submit', () => {
           const fixture = initTest(FormGroupComp);
-          const formGroup = new FormGroup(
-              {login: new FormControl('', {validators: Validators.required, updateOn: 'submit'})});
+          const formGroup = new FormGroup({
+            login: new FormControl('', {validators: Validators.required(), updateOn: 'submit'})
+          });
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
@@ -1792,8 +1798,9 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should not wait for submit to set value programmatically', () => {
           const fixture = initTest(FormGroupComp);
-          const formGroup = new FormGroup(
-              {login: new FormControl('', {validators: Validators.required, updateOn: 'submit'})});
+          const formGroup = new FormGroup({
+            login: new FormControl('', {validators: Validators.required(), updateOn: 'submit'})
+          });
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
@@ -1852,8 +1859,9 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should reset properly', () => {
           const fixture = initTest(FormGroupComp);
-          const formGroup = new FormGroup(
-              {login: new FormControl('', {validators: Validators.required, updateOn: 'submit'})});
+          const formGroup = new FormGroup({
+            login: new FormControl('', {validators: Validators.required(), updateOn: 'submit'})
+          });
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
@@ -1886,7 +1894,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         it('should not emit valueChanges or statusChanges until submit', () => {
           const fixture = initTest(FormGroupComp);
           const control =
-              new FormControl('', {validators: Validators.required, updateOn: 'submit'});
+              new FormControl('', {validators: Validators.required(), updateOn: 'submit'});
           const formGroup = new FormGroup({login: control});
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
@@ -1923,7 +1931,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         it('should not emit valueChanges or statusChanges on submit if value unchanged', () => {
           const fixture = initTest(FormGroupComp);
           const control =
-              new FormControl('', {validators: Validators.required, updateOn: 'submit'});
+              new FormControl('', {validators: Validators.required(), updateOn: 'submit'});
           const formGroup = new FormGroup({login: control});
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
@@ -2026,7 +2034,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should update on submit with group updateOn', () => {
           const fixture = initTest(FormGroupComp);
-          const control = new FormControl('', Validators.required);
+          const control = new FormControl('', Validators.required());
           const formGroup = new FormGroup({login: control}, {updateOn: 'submit'});
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
@@ -2055,7 +2063,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should update on submit with array updateOn', () => {
           const fixture = initTest(FormArrayComp);
-          const control = new FormControl('', Validators.required);
+          const control = new FormControl('', Validators.required());
           const cityArray = new FormArray([control], {updateOn: 'submit'});
           const formGroup = new FormGroup({cities: cityArray});
           fixture.componentInstance.form = formGroup;
@@ -2082,8 +2090,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         it('should allow child control updateOn submit to override group updateOn', () => {
           const fixture = initTest(NestedFormGroupNameComp);
           const loginControl =
-              new FormControl('', {validators: Validators.required, updateOn: 'change'});
-          const passwordControl = new FormControl('', Validators.required);
+              new FormControl('', {validators: Validators.required(), updateOn: 'change'});
+          const passwordControl = new FormControl('', Validators.required());
           const formGroup = new FormGroup(
               {signin: new FormGroup({login: loginControl, password: passwordControl})},
               {updateOn: 'submit'});
@@ -2290,7 +2298,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
     describe('validations', () => {
       it('required validator should validate checkbox', () => {
         const fixture = initTest(FormControlCheckboxRequiredValidator);
-        const control = new FormControl(false, Validators.requiredTrue);
+        const control = new FormControl(false, Validators.requiredTrue());
         fixture.componentInstance.control = control;
         fixture.detectChanges();
 
@@ -2565,7 +2573,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
       it('should use sync validators defined in the model', () => {
         const fixture = initTest(FormGroupComp);
-        const form = new FormGroup({'login': new FormControl('aa', Validators.required)});
+        const form = new FormGroup({'login': new FormControl('aa', Validators.required())});
         fixture.componentInstance.form = form;
         fixture.detectChanges();
         expect(form.valid).toEqual(true);
@@ -2580,7 +2588,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
       it('should use async validators defined in the model', fakeAsync(() => {
            const fixture = initTest(FormGroupComp);
            const control =
-               new FormControl('', Validators.required, uniqLoginAsyncValidator('expected'));
+               new FormControl('', Validators.required(), uniqLoginAsyncValidator('expected'));
            const form = new FormGroup({'login': control});
            fixture.componentInstance.form = form;
            fixture.detectChanges();
@@ -2607,7 +2615,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
       it('async validator should not override result of sync validator', fakeAsync(() => {
            const fixture = initTest(FormGroupComp);
            const control =
-               new FormControl('', Validators.required, uniqLoginAsyncValidator('expected', 100));
+               new FormControl('', Validators.required(), uniqLoginAsyncValidator('expected', 100));
            fixture.componentInstance.form = new FormGroup({'login': control});
            fixture.detectChanges();
            tick();
@@ -2630,7 +2638,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
       it('should handle async validation changes in parent and child controls', fakeAsync(() => {
            const fixture = initTest(FormGroupComp);
            const control = new FormControl(
-               '', Validators.required, asyncValidator(c => !!c.value && c.value.length > 3, 100));
+               '', Validators.required(),
+               asyncValidator(c => !!c.value && c.value.length > 3, 100));
            const form = new FormGroup(
                {'login': control}, null,
                asyncValidator(c => c.get('login')!.value.includes('angular'), 200));
@@ -2928,7 +2937,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
             expect(input.getAttribute('max')).toEqual('1');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({max: {max: 1, actual: 2}});
+            expect(form.controls.pin.errors).toEqual({max: {max: 1, actual: 2}, message: ''});
 
             fixture.componentInstance.min = 0;
             fixture.componentInstance.max = 0;
@@ -2936,7 +2945,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             expect(input.getAttribute('min')).toEqual('0');
             expect(input.getAttribute('max')).toEqual('0');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({max: {max: 0, actual: 2}});
+            expect(form.controls.pin.errors).toEqual({max: {max: 0, actual: 2}, message: ''});
 
             input.value = 0;
             dispatchEvent(input, 'input');
@@ -2972,7 +2981,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
             expect(input.getAttribute('max')).toEqual('10.05');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({max: {max: 10.05, actual: 10.15}});
+            expect(form.controls.pin.errors)
+                .toEqual({max: {max: 10.05, actual: 10.15}, message: ''});
 
             input.value = 10.01;
             dispatchEvent(input, 'input');
@@ -3005,7 +3015,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.detectChanges();
             expect(input.getAttribute('max')).toEqual('1');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({max: {max: 1, actual: 2}});
+            expect(form.controls.pin.errors).toEqual({max: {max: 1, actual: 2}, message: ''});
           });
 
           it('should validate min', () => {
@@ -3032,7 +3042,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.detectChanges();
             expect(input.getAttribute('min')).toEqual('5');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({min: {min: 5, actual: 2}});
+            expect(form.controls.pin.errors).toEqual({min: {min: 5, actual: 2}, message: ''});
 
             fixture.componentInstance.min = 0;
             input.value = -5;
@@ -3040,7 +3050,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.detectChanges();
             expect(input.getAttribute('min')).toEqual('0');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({min: {min: 0, actual: -5}});
+            expect(form.controls.pin.errors).toEqual({min: {min: 0, actual: -5}, message: ''});
 
             input.value = 0;
             dispatchEvent(input, 'input');
@@ -3077,7 +3087,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.detectChanges();
             expect(input.getAttribute('min')).toEqual('10.4');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({min: {min: 10.40, actual: 10.35}});
+            expect(form.controls.pin.errors)
+                .toEqual({min: {min: 10.40, actual: 10.35}, message: ''});
 
             input.value = 10.45;
             dispatchEvent(input, 'input');
@@ -3110,7 +3121,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             fixture.detectChanges();
             expect(input.getAttribute('min')).toEqual('5');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({min: {min: 5, actual: 2}});
+            expect(form.controls.pin.errors).toEqual({min: {min: 5, actual: 2}, message: ''});
           });
 
           it('should run min/max validation for empty values', () => {
@@ -3162,12 +3173,12 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: -2});
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({min: {min: 1, actual: -2}});
+            expect(form.controls.pin.errors).toEqual({min: {min: 1, actual: -2}, message: ''});
 
             input.value = 20;  // outside [1, 10] range
             dispatchEvent(input, 'input');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({max: {max: 10, actual: 20}});
+            expect(form.controls.pin.errors).toEqual({max: {max: 10, actual: 20}, message: ''});
           });
 
           it('should run min/max validation for negative values', () => {
@@ -3184,7 +3195,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
             expect(input.value).toEqual('-30');
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({min: {min: -20, actual: -30}});
+            expect(form.controls.pin.errors).toEqual({min: {min: -20, actual: -30}, message: ''});
 
             input.value = -15;
             dispatchEvent(input, 'input');
@@ -3196,13 +3207,13 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: -5});
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({max: {max: -10, actual: -5}});
+            expect(form.controls.pin.errors).toEqual({max: {max: -10, actual: -5}, message: ''});
 
             input.value = 0;
             dispatchEvent(input, 'input');
             expect(form.value).toEqual({pin: 0});
             expect(form.valid).toBeFalse();
-            expect(form.controls.pin.errors).toEqual({max: {max: -10, actual: 0}});
+            expect(form.controls.pin.errors).toEqual({max: {max: -10, actual: 0}, message: ''});
           });
         });
 

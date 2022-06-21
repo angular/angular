@@ -21,6 +21,7 @@ function syncValidator(_: any /** TODO #9100 */): any /** TODO #9100 */ {
 }
 
 describe('FormControl', () => {
+  const requiredValidator = Validators.required('Required message');
   it('should default the value to null', () => {
     const c = new FormControl();
     expect(c.value).toBe(null);
@@ -51,7 +52,7 @@ describe('FormControl', () => {
        });
 
     it('should honor boxed value with disabled control when validating', () => {
-      const c = new FormControl({value: '', disabled: true}, Validators.required);
+      const c = new FormControl({value: '', disabled: true}, requiredValidator);
       expect(c.disabled).toBe(true);
       expect(c.valid).toBe(false);
       expect(c.status).toBe('DISABLED');
@@ -78,7 +79,7 @@ describe('FormControl', () => {
     });
 
     it('should default to on change with an options obj', () => {
-      const c = new FormControl('', {validators: Validators.required});
+      const c = new FormControl('', {validators: requiredValidator});
       expect(c.updateOn).toEqual('change');
     });
 
@@ -155,18 +156,18 @@ describe('FormControl', () => {
 
   describe('validator', () => {
     it('should run validator with the initial value', () => {
-      const c = new FormControl('value', Validators.required);
+      const c = new FormControl('value', requiredValidator);
       expect(c.valid).toEqual(true);
     });
 
     it('should rerun the validator when the value changes', () => {
-      const c = new FormControl('value', Validators.required);
+      const c = new FormControl('value', requiredValidator);
       c.setValue(null);
       expect(c.valid).toEqual(false);
     });
 
     it('should support arrays of validator functions if passed', () => {
-      const c = new FormControl('value', [Validators.required, Validators.minLength(3)]);
+      const c = new FormControl('value', [requiredValidator, Validators.minLength(3)]);
       c.setValue('a');
       expect(c.valid).toEqual(false);
 
@@ -175,23 +176,24 @@ describe('FormControl', () => {
     });
 
     it('should support single validator from options obj', () => {
-      const c: FormControl = new FormControl(null, {validators: Validators.required});
+      const c: FormControl = new FormControl(null, {validators: requiredValidator});
       expect(c.valid).toEqual(false);
-      expect(c.errors).toEqual({required: true});
+      expect(c.errors).toEqual({required: true, message: 'Required message'});
 
       c.setValue('value');
       expect(c.valid).toEqual(true);
     });
 
     it('should support multiple validators from options obj', () => {
-      const c: FormControl =
-          new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]});
+      const c: FormControl = new FormControl(
+          null, {validators: [requiredValidator, Validators.minLength(3, 'Min. length message')]});
       expect(c.valid).toEqual(false);
-      expect(c.errors).toEqual({required: true});
+      expect(c.errors).toEqual({required: true, message: 'Required message'});
 
       c.setValue('aa');
       expect(c.valid).toEqual(false);
-      expect(c.errors).toEqual({minlength: {requiredLength: 3, actualLength: 2}});
+      expect(c.errors).toEqual(
+          {minlength: {requiredLength: 3, actualLength: 2}, message: 'Min. length message'});
 
       c.setValue('aaa');
       expect(c.valid).toEqual(true);
@@ -208,15 +210,15 @@ describe('FormControl', () => {
     });
 
     it('should return errors', () => {
-      const c = new FormControl(null, Validators.required);
-      expect(c.errors).toEqual({'required': true});
+      const c = new FormControl(null, requiredValidator);
+      expect(c.errors).toEqual({'required': true, 'message': 'Required message'});
     });
 
     it('should set single validator', () => {
       const c: FormControl = new FormControl(null);
       expect(c.valid).toEqual(true);
 
-      c.setValidators(Validators.required);
+      c.setValidators(requiredValidator);
 
       c.setValue(null);
       expect(c.valid).toEqual(false);
@@ -229,7 +231,7 @@ describe('FormControl', () => {
       const c = new FormControl('');
       expect(c.valid).toEqual(true);
 
-      c.setValidators([Validators.minLength(5), Validators.required]);
+      c.setValidators([Validators.minLength(5), requiredValidator]);
 
       c.setValue('');
       expect(c.valid).toEqual(false);
@@ -245,7 +247,7 @@ describe('FormControl', () => {
       const c = new FormControl('');
       expect(c.valid).toEqual(true);
 
-      c.setValidators([Validators.minLength(5), Validators.required]);
+      c.setValidators([Validators.minLength(5), requiredValidator]);
 
       c.setValue('');
       expect(c.valid).toEqual(false);
@@ -271,7 +273,7 @@ describe('FormControl', () => {
       expect(c.valid).toEqual(true);
 
       // Define new set of validators, overriding previously applied ones.
-      c.validator = Validators.compose([Validators.minLength(5), Validators.required]);
+      c.validator = Validators.compose([Validators.minLength(5), requiredValidator]);
 
       c.setValue('');
       expect(c.valid).toEqual(false);
@@ -293,7 +295,7 @@ describe('FormControl', () => {
     });
 
     it('should clear validators', () => {
-      const c = new FormControl('', Validators.required);
+      const c = new FormControl('', requiredValidator);
       expect(c.valid).toEqual(false);
 
       c.clearValidators();
@@ -304,57 +306,56 @@ describe('FormControl', () => {
     });
 
     it('should add after clearing', () => {
-      const c = new FormControl('', Validators.required);
+      const c = new FormControl('', requiredValidator);
       expect(c.valid).toEqual(false);
 
       c.clearValidators();
       expect(c.validator).toEqual(null);
 
-      c.setValidators([Validators.required]);
+      c.setValidators([requiredValidator]);
       expect(c.validator).not.toBe(null);
     });
 
     it('should check presence of and remove a validator set in the control constructor', () => {
-      const c = new FormControl('', Validators.required);
-      expect(c.hasValidator(Validators.required)).toEqual(true);
+      const c = new FormControl('', requiredValidator);
+      expect(c.hasValidator(requiredValidator)).toEqual(true);
 
-      c.removeValidators(Validators.required);
-      expect(c.hasValidator(Validators.required)).toEqual(false);
+      c.removeValidators(requiredValidator);
+      expect(c.hasValidator(requiredValidator)).toEqual(false);
 
-      c.addValidators(Validators.required);
-      expect(c.hasValidator(Validators.required)).toEqual(true);
+      c.addValidators(requiredValidator);
+      expect(c.hasValidator(requiredValidator)).toEqual(true);
     });
 
     it('should check presence of and remove a validator set with addValidators', () => {
       const c = new FormControl('');
-      expect(c.hasValidator(Validators.required)).toEqual(false);
-      c.addValidators(Validators.required);
-      expect(c.hasValidator(Validators.required)).toEqual(true);
-
-      c.removeValidators(Validators.required);
-      expect(c.hasValidator(Validators.required)).toEqual(false);
+      expect(c.hasValidator(requiredValidator)).toEqual(false);
+      c.addValidators(requiredValidator);
+      expect(c.hasValidator(requiredValidator)).toEqual(true);
+      c.removeValidators(requiredValidator);
+      expect(c.hasValidator(requiredValidator)).toEqual(false);
     });
 
     it('should check presence of and remove multiple validators set at the same time', () => {
       const c = new FormControl('3');
       const minValidator = Validators.min(4);
-      c.addValidators([Validators.required, minValidator]);
-      expect(c.hasValidator(Validators.required)).toEqual(true);
+      c.addValidators([requiredValidator, minValidator]);
+      expect(c.hasValidator(requiredValidator)).toEqual(true);
       expect(c.hasValidator(minValidator)).toEqual(true);
 
-      c.removeValidators([Validators.required, minValidator]);
-      expect(c.hasValidator(Validators.required)).toEqual(false);
+      c.removeValidators([requiredValidator, minValidator]);
+      expect(c.hasValidator(requiredValidator)).toEqual(false);
       expect(c.hasValidator(minValidator)).toEqual(false);
     });
 
     it('should be able to remove a validator added multiple times', () => {
-      const c = new FormControl('', Validators.required);
-      c.addValidators(Validators.required);
-      c.addValidators(Validators.required);
-      expect(c.hasValidator(Validators.required)).toEqual(true);
+      const c = new FormControl('', requiredValidator);
+      c.addValidators(requiredValidator);
+      c.addValidators(requiredValidator);
+      expect(c.hasValidator(requiredValidator)).toEqual(true);
 
-      c.removeValidators(Validators.required);
-      expect(c.hasValidator(Validators.required)).toEqual(false);
+      c.removeValidators(requiredValidator);
+      expect(c.hasValidator(requiredValidator)).toEqual(false);
     });
 
     it('should return false when checking presence of a validator not identical by reference',
@@ -393,10 +394,10 @@ describe('FormControl', () => {
        }));
 
     it('should run the async validator only when the sync validator passes', fakeAsync(() => {
-         const c = new FormControl('', Validators.required, asyncValidator('expected'));
+         const c = new FormControl('', requiredValidator, asyncValidator('expected'));
          tick();
 
-         expect(c.errors).toEqual({'required': true});
+         expect(c.errors).toEqual({'required': true, 'message': 'Required message'});
 
          c.setValue('some value');
          tick();
@@ -456,9 +457,9 @@ describe('FormControl', () => {
 
     it('should support a mix of validators from options obj', fakeAsync(() => {
          const c = new FormControl(
-             '', {validators: Validators.required, asyncValidators: asyncValidator('expected')});
+             '', {validators: requiredValidator, asyncValidators: asyncValidator('expected')});
          tick();
-         expect(c.errors).toEqual({required: true});
+         expect(c.errors).toEqual({required: true, message: 'Required message'});
 
          c.setValue('value');
          expect(c.pending).toBe(true);
@@ -1016,7 +1017,7 @@ describe('FormControl', () => {
     let c: FormControl;
 
     beforeEach(() => {
-      c = new FormControl('old', Validators.required);
+      c = new FormControl('old', requiredValidator);
     });
 
     it('should fire an event after the value has been updated', done => {
@@ -1059,7 +1060,7 @@ describe('FormControl', () => {
        }));
 
     it('should fire an event after the status has been updated to pending', fakeAsync(() => {
-         const c = new FormControl('old', Validators.required, asyncValidator('expected'));
+         const c = new FormControl('old', requiredValidator, asyncValidator('expected'));
 
          const log: any[] /** TODO #9100 */ = [];
          c.valueChanges.subscribe({next: (value: any) => log.push(`value: '${value}'`)});
@@ -1091,7 +1092,7 @@ describe('FormControl', () => {
     it('should update set errors and status before emitting an event', done => {
       c.valueChanges.subscribe((value: any /** TODO #9100 */) => {
         expect(c.valid).toEqual(false);
-        expect(c.errors).toEqual({'required': true});
+        expect(c.errors).toEqual({'required': true, 'message': 'Required message'});
         done();
       });
       c.setValue('');
@@ -1120,12 +1121,12 @@ describe('FormControl', () => {
     });
 
     it('should reset the errors and validity when the value changes', () => {
-      const c = new FormControl('someValue', Validators.required);
+      const c = new FormControl('someValue', requiredValidator);
 
       c.setErrors({'someError': true});
       c.setValue('');
 
-      expect(c.errors).toEqual({'required': true});
+      expect(c.errors).toEqual({'required': true, 'message': 'Required message'});
     });
 
     it('should update the parent group\'s validity', () => {
@@ -1308,7 +1309,7 @@ describe('FormControl', () => {
     });
 
     it('should ignore disabled controls in validation', () => {
-      const c = new FormControl(null, Validators.required);
+      const c = new FormControl(null, requiredValidator);
       const c2 = new FormControl(null);
       const g = new FormGroup({one: c, two: c2});
       expect(g.valid).toBe(false);
@@ -1409,14 +1410,14 @@ describe('FormControl', () => {
 
     describe('disabled errors', () => {
       it('should clear out the errors when disabled', () => {
-        const c = new FormControl('', Validators.required);
-        expect(c.errors).toEqual({required: true});
+        const c = new FormControl('', requiredValidator);
+        expect(c.errors).toEqual({required: true, message: 'Required message'});
 
         c.disable();
         expect(c.errors).toEqual(null);
 
         c.enable();
-        expect(c.errors).toEqual({required: true});
+        expect(c.errors).toEqual({required: true, message: 'Required message'});
       });
 
       it('should clear out async errors when disabled', fakeAsync(() => {
@@ -1440,7 +1441,7 @@ describe('FormControl', () => {
 
       beforeEach(() => {
         logger = [];
-        c = new FormControl('', Validators.required);
+        c = new FormControl('', requiredValidator);
         g = new FormGroup({one: c});
       });
 

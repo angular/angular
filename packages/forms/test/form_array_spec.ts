@@ -955,7 +955,7 @@ describe('FormArray', () => {
     }
 
     function arrayRequiredValidator(c: AbstractControl): ValidationErrors|null {
-      return Validators.required(c.get([0]) as AbstractControl);
+      return Validators.required((''))((c.get([0]) as AbstractControl));
     }
 
     it('should set a single validator', () => {
@@ -979,7 +979,7 @@ describe('FormArray', () => {
     it('should set multiple validators from an array', () => {
       const a = new FormArray([new FormControl()], [simpleValidator, arrayRequiredValidator]);
       expect(a.valid).toBe(false);
-      expect(a.errors).toEqual({'required': true, 'broken': true});
+      expect(a.errors).toEqual({'required': true, 'broken': true, 'message': ''});
 
       a.setValue(['c']);
       expect(a.valid).toBe(false);
@@ -993,7 +993,7 @@ describe('FormArray', () => {
       const a = new FormArray(
           [new FormControl()], {validators: [simpleValidator, arrayRequiredValidator]});
       expect(a.valid).toBe(false);
-      expect(a.errors).toEqual({'required': true, 'broken': true});
+      expect(a.errors).toEqual({'required': true, 'broken': true, 'message': ''});
 
       a.setValue(['c']);
       expect(a.valid).toBe(false);
@@ -1126,7 +1126,7 @@ describe('FormArray', () => {
 
     it('should ignore disabled controls in validation', () => {
       const g = new FormGroup({
-        nested: new FormArray([new FormControl(null, Validators.required)]),
+        nested: new FormArray([new FormControl(null, Validators.required())]),
         two: new FormControl('two')
       });
       expect(g.valid).toBe(false);
@@ -1273,7 +1273,7 @@ describe('FormArray', () => {
 
       beforeEach(() => {
         logger = [];
-        c = new FormControl('', Validators.required);
+        c = new FormControl('', Validators.required());
         a = new FormArray([c]);
         form = new FormGroup({a: a});
       });

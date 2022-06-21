@@ -373,7 +373,7 @@ export class RequiredValidator extends AbstractValidatorDirective {
   override normalizeInput = coerceToBoolean;
 
   /** @internal */
-  override createValidator = (input: boolean): ValidatorFn => requiredValidator;
+  override createValidator = (input: boolean): ValidatorFn => requiredValidator();
 
   /** @nodoc */
   override enabled(input: boolean): boolean {
@@ -411,7 +411,7 @@ export class RequiredValidator extends AbstractValidatorDirective {
 })
 export class CheckboxRequiredValidator extends RequiredValidator {
   /** @internal */
-  override createValidator = (input: unknown): ValidatorFn => requiredTrueValidator;
+  override createValidator = (input: unknown): ValidatorFn => requiredTrueValidator();
 }
 
 /**
@@ -469,7 +469,7 @@ export class EmailValidator extends AbstractValidatorDirective {
   override normalizeInput = coerceToBoolean;
 
   /** @internal */
-  override createValidator = (input: number): ValidatorFn => emailValidator;
+  override createValidator = (input: number): ValidatorFn => emailValidator();
 
   /** @nodoc */
   override enabled(input: boolean): boolean {
