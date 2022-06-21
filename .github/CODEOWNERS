@@ -20,6 +20,7 @@
 /src/material/menu/**                              @crisbeto
 /src/material/paginator/**                         @andrewseguin
 /src/material/prebuilt-themes/**                   @andrewseguin
+/src/material/legacy-prebuilt-themes/**            @andrewseguin
 /src/material/progress-bar/**                      @andrewseguin @crisbeto
 /src/material/progress-spinner/**                  @andrewseguin @crisbeto
 /src/material/radio/**                             @andrewseguin @devversion
@@ -51,6 +52,7 @@
 /src/material/core/gestures/**                     @andrewseguin
 /src/material/core/label/**                        @mmalerba
 /src/material/core/line/**                         @andrewseguin
+/src/material/core/mdc-helpers/**                  @mmalerba
 /src/material/core/option/**                       @crisbeto
 /src/material/core/placeholder/**                  @mmalerba
 /src/material/core/ripple/**                       @devversion
@@ -60,6 +62,11 @@
 /src/material/core/theming/**                      @andrewseguin @jelbourn
 /src/material/core/typography/**                   @crisbeto
 /src/material/core/util/**                         @andrewseguin
+/src/material/legacy-core/*                        @andrewseguin
+/src/material/legacy-core/color/**                 @andrewseguin @devversion
+/src/material/legacy-core/density/**               @devversion
+/src/material/legacy-core/theming/**               @andrewseguin @jelbourn
+/src/material/legacy-core/typography/**            @crisbeto
 
 # Miscellaneous components
 /src/google-maps/**                                @crisbeto

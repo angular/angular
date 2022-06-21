@@ -8,7 +8,10 @@ sass_binary(
     name = "test-css-variables-theme",
     testonly = True,
     src = "test-css-variables-theme.scss",
-    deps = ["//src/material/core:theming_scss_lib"],
+    deps = [
+        "//src/material/core:theming_scss_lib",
+        "//src/material/legacy-core:theming_scss_lib",
+    ],
 )
 
 # Sass binary which is used to ensure that our themes will compile with the legacy and new
@@ -18,7 +21,10 @@ sass_binary(
     name = "test-theming-api",
     testonly = True,
     src = "test-theming-api.scss",
-    deps = ["//src/material/core:theming_scss_lib"],
+    deps = [
+        "//src/material/core:theming_scss_lib",
+        "//src/material/legacy-core:theming_scss_lib",
+    ],
 )
 
 # Sass binary used to ensure that the theming bundle works as expected.

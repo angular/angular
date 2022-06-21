@@ -282,7 +282,8 @@ $dark-theme-only-typography: theming.define-dark-theme((typography: $typography-
 
   @include all-density.all-component-densities(map.get($light-theme-only-density, density));
   @include all-density.all-component-densities($light-theme-only-density);
-  @include legacy-all-density.all-legacy-component-densities(map.get($light-theme-only-density, density));
+  @include legacy-all-density.all-legacy-component-densities(
+          map.get($light-theme-only-density, density));
   @include legacy-all-density.all-legacy-component-densities($light-theme-only-density);
 
   @include legacy-all-color.all-legacy-component-colors(map.get($new-api-dark-theme, color));

@@ -29,6 +29,7 @@ sass_library(
         "//src/material/core:core_scss_lib",
         "//src/material/core:theming_scss_lib",
         "//src/material/legacy-core:legacy_core_scss_lib",
+        "//src/material/legacy-core:theming_scss_lib",
     ],
 )
 

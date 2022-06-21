@@ -7,4 +7,4 @@
  */
 
 // TODO: re-export symbols here.
-export let _: unknown;
+export const _: unknown = undefined;

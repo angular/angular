@@ -84,7 +84,10 @@ sass_binary(
 sass_binary(
     name = "mdc_tab_link_scss",
     src = "tab-nav-bar/tab-link.scss",
-    deps = [":mdc_tabs_scss_lib"],
+    deps = [
+        ":mdc_tabs_scss_lib",
+        "//src/material:sass_lib",
+    ],
 )
 
 ng_test_library(

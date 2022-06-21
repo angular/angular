@@ -16,7 +16,8 @@
 
 // Private/Internal
 @forward './core/density/private/all-density' as private-* show private-all-component-densities;
-@forward './legacy-core/density/private/all-density' as private-* show private-all-legacy-component-densities;
+@forward './legacy-core/density/private/all-density' as private-* show
+  private-all-legacy-component-densities;
 @forward './core/theming/theming' show private-check-duplicate-theme-styles,
   private-legacy-get-theme, private-is-theme-object;
   @forward './core/style/layout-common' as private-* show private-fill;
@@ -116,5 +117,6 @@
 // MDC Helpers
 @forward './core/mdc-helpers/mdc-helpers' as private-* show private-using-mdc-theme,
   private-using-mdc-typography, private-disable-mdc-fallback-declarations,
+  private-typography-config-level-from-mdc,
   $private-mdc-base-styles-query, $private-mdc-base-styles-without-animation-query,
   $private-mdc-theme-styles-query, $private-mdc-typography-styles-query;

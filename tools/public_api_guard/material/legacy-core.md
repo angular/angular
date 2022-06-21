@@ -5,7 +5,7 @@
 ```ts
 
 // @public
-export let _: unknown;
+export const _: unknown;
 
 // (No @packageDocumentation comment for this package)
 

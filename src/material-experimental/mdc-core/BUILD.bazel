@@ -51,6 +51,7 @@ sass_binary(
     src = "option/optgroup.scss",
     deps = [
         "//:mdc_sass_lib",
+        "//src/material:sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )

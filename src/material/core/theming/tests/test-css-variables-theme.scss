@@ -32,5 +32,6 @@
     )
   ));
   @include all-theme.all-component-themes(replace-all-values($theme, var(--test-var)));
-  @include legacy-all-theme.all-legacy-component-themes(replace-all-values($theme, var(--test-var)));
+  @include legacy-all-theme.all-legacy-component-themes(
+          replace-all-values($theme, var(--test-var)));
 }
