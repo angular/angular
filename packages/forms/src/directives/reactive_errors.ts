@@ -68,8 +68,8 @@ export const disabledAttrWarning = `
 
   Example:
   form = new FormGroup({
-    first: new FormControl({value: 'Nancy', disabled: true}, Validators.required),
-    last: new FormControl('Drew', Validators.required)
+    first: new FormControl({value: 'Nancy', disabled: true}, Validators.required()),
+    last: new FormControl('Drew', Validators.required())
   });
 `;
 
@@ -80,13 +80,13 @@ export const asyncValidatorsDroppedWithOptsWarning = `
   arguments. For example:
 
   // Using validators arguments
-  fc = new FormControl(42, Validators.required, myAsyncValidator);
+  fc = new FormControl(42, Validators.required(), myAsyncValidator);
 
   // Using AbstractControlOptions
-  fc = new FormControl(42, {validators: Validators.required, asyncValidators: myAV});
+  fc = new FormControl(42, {validators: Validators.required(), asyncValidators: myAV});
 
   // Do NOT mix them: async validators will be dropped!
-  fc = new FormControl(42, {validators: Validators.required}, /* Oops! */ myAsyncValidator);
+  fc = new FormControl(42, {validators: Validators.required()}, /* Oops! */ myAsyncValidator);
 `;
 
 export function ngModelWarning(directiveName: string): string {

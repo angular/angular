@@ -192,7 +192,7 @@ export class Validators {
    * ### Validate that the field is non-empty
    *
    * ```typescript
-   * const control = new FormControl('', Validators.required);
+   * const control = new FormControl('', Validators.required());
    *
    * console.log(control.errors); // {required: true}
    * ```
@@ -217,7 +217,7 @@ export class Validators {
    * ### Validate that the field value is true
    *
    * ```typescript
-   * const control = new FormControl('some value', Validators.requiredTrue);
+   * const control = new FormControl('some value', Validators.requiredTrue());
    *
    * console.log(control.errors); // {required: true}
    * ```
@@ -257,7 +257,7 @@ export class Validators {
    * ### Validate that the field matches a valid email pattern
    *
    * ```typescript
-   * const control = new FormControl('bad@', Validators.email);
+   * const control = new FormControl('bad@', Validators.email());
    *
    * console.log(control.errors); // {email: true}
    * ```
@@ -472,7 +472,7 @@ export function maxValidator(max: number, validatorMessage?: string): ValidatorF
 
 /**
  * Validator that requires the control have a non-empty value.
- * See `Validators.required` for additional information.
+ * See `Validators.required()` for additional information.
  */
 export function requiredValidator(validatorMessage?: string): ValidatorFn {
   return (control: AbstractControl): ValidationErrors|null => {
@@ -485,7 +485,7 @@ export function requiredValidator(validatorMessage?: string): ValidatorFn {
 /**
  * Validator that requires the control's value be true. This validator is commonly
  * used for required checkboxes.
- * See `Validators.requiredTrue` for additional information.
+ * See `Validators.requiredTrue()` for additional information.
  */
 export function requiredTrueValidator(validatorMessage?: string): ValidatorFn {
   return (control: AbstractControl): ValidationErrors|null => {
@@ -495,7 +495,7 @@ export function requiredTrueValidator(validatorMessage?: string): ValidatorFn {
 
 /**
  * Validator that requires the control's value pass an email validation test.
- * See `Validators.email` for additional information.
+ * See `Validators.email()` for additional information.
  */
 export function emailValidator(validatorMessage?: string): ValidatorFn {
   return (control: AbstractControl): ValidationErrors|null => {

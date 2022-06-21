@@ -93,7 +93,7 @@ built-in validators &mdash;this time, in function form, as in the following exam
 
 <code-example header="reactive/hero-form-reactive.component.ts (validator functions)" path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="form-group"></code-example>
 
-In this example, the `name` control sets up two built-in validators &mdash;`Validators.required` and `Validators.minLength(4)`&mdash; and one custom validator, `forbiddenNameValidator`.
+In this example, the `name` control sets up two built-in validators &mdash;`Validators.required()` and `Validators.minLength(4)`&mdash; and one custom validator, `forbiddenNameValidator`.
 \(For more details see [custom validators](#custom-validators).\)
 
 All of these validators are synchronous, so they are passed as the second argument.

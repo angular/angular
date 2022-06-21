@@ -90,7 +90,7 @@ export interface FormControlOptions extends AbstractControlOptions {
  * The following example initializes the control with a synchronous validator.
  *
  * ```ts
- * const control = new FormControl('', Validators.required);
+ * const control = new FormControl('', Validators.required());
  * console.log(control.value);      // ''
  * console.log(control.status);     // 'INVALID'
  * ```
@@ -99,7 +99,7 @@ export interface FormControlOptions extends AbstractControlOptions {
  *
  * ```ts
  * const control = new FormControl('', {
- *    validators: Validators.required,
+ *    validators: Validators.required(),
  *    asyncValidators: myAsyncValidator
  * });
  * ```

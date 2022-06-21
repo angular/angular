@@ -32,7 +32,7 @@ export class NestedFormGroupComp {
   form = new FormGroup({
     name: new FormGroup({
       first: new FormControl('Nancy', Validators.minLength(2)),
-      last: new FormControl('Drew', Validators.required)
+      last: new FormControl('Drew', Validators.required())
     }),
     email: new FormControl()
   });

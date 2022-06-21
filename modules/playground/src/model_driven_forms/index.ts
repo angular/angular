@@ -144,13 +144,13 @@ export class ReactiveForms {
 
   constructor(fb: UntypedFormBuilder) {
     this.form = fb.group({
-      'firstName': ['', Validators.required],
+      'firstName': ['', Validators.required()],
       'middleName': [''],
-      'lastName': ['', Validators.required],
-      'country': ['Canada', Validators.required],
-      'creditCard': ['', Validators.compose([Validators.required, creditCardValidator])],
-      'amount': [0, Validators.required],
-      'email': ['', Validators.required],
+      'lastName': ['', Validators.required()],
+      'country': ['Canada', Validators.required()],
+      'creditCard': ['', Validators.compose([Validators.required(), creditCardValidator])],
+      'amount': [0, Validators.required()],
+      'email': ['', Validators.required()],
       'comments': ['']
     });
   }

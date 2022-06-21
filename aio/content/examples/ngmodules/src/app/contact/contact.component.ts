@@ -22,7 +22,7 @@ export class ContactComponent implements OnInit {
 
   constructor(
       private contactService: ContactService, userService: UserService, private fb: FormBuilder) {
-    this.contactForm = this.fb.group({name: ['', Validators.required]});
+    this.contactForm = this.fb.group({name: ['', Validators.required()]});
     this.userName = userService.userName;
   }
 

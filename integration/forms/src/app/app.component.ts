@@ -84,7 +84,7 @@ export class ReactiveFormsComponent {
 
   ngOnInit() {
     this.profileForm = new FormGroup({
-      firstName: new FormControl('', Validators.required),
+      firstName: new FormControl('', Validators.required()),
       lastName: new FormControl(''),
       addresses: new FormArray([]),
       subscribed: new FormControl(),
