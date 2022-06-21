@@ -11,6 +11,7 @@ import {MatChipsModule} from '@angular/material/chips';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
+import {MatListModule} from '@angular/material/list';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
@@ -21,6 +22,7 @@ import {CardComponent} from './components/card/card.component';
 import {ChipsComponent} from './components/chips/chips.component';
 import {FormFieldComponent} from './components/form-field/form-field.component';
 import {InputComponent} from './components/input/input.component';
+import {ListComponent} from './components/list/list.component';
 import {MenuComponent} from './components/menu/menu.component';
 import {PaginatorComponent} from './components/paginator/paginator.component';
 import {ProgressSpinnerComponent} from './components/progress-spinner/progress-spinner.component';
@@ -37,6 +39,7 @@ import {ButtonComponent} from './components/button/button.component';
     ChipsComponent,
     FormFieldComponent,
     InputComponent,
+    ListComponent,
     MenuComponent,
     PaginatorComponent,
     ProgressBarComponent,
@@ -53,6 +56,7 @@ import {ButtonComponent} from './components/button/button.component';
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    MatListModule,
     MatMenuModule,
     MatPaginatorModule,
     MatProgressBarModule,
