@@ -15364,10 +15364,10 @@ tsconfig-paths@^3.10.1:
     minimist "^1.2.6"
     strip-bom "^3.0.0"
 
-tsec@0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.2.2.tgz#d86d771215fb09a5e226f2b252a1c038c7fa17ca"
-  integrity sha512-gKm+nnIKcE9xtrJw2cIJFjfuDGK0AvH3r4RayTEIkUvja/s9z9GPFgcSdEaapm6N10KrmWWcLjsHlKmH2tqzMw==
+tsec@0.2.5:
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/tsec/-/tsec-0.2.5.tgz#5943f48c13b15442a858d8d405d6eb9ab8b11f4d"
+  integrity sha512-Tp5AJWwYwifFO/+Puprhe/ooZpLmZctQI1eprkxOqU/nUmPuCvosYh0ky9LLcrvJGOF9NqryID4sBBm/1PBSKg==
   dependencies:
     glob "^7.1.1"
     minimatch "^3.0.3"
