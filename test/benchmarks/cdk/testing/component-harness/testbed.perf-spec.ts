@@ -106,7 +106,10 @@ describe('performance for the testbed harness environment', () => {
     });
   });
 
-  it('should fail intentionally so performance numbers are logged', fail);
+  // Enable this to see performance numbers in the console. Otherwise benchmark
+  // results are either put by benchpress into the runfile directory, or
+  // the `--test_output=streamed` Bazel flag should be used.
+  // it('should fail intentionally so performance numbers are logged', fail);
 });
 
 @Component({

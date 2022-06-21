@@ -7,7 +7,7 @@ component_benchmark(
     name = "benchmark",
     driver = ":card.perf-spec.ts",
     driver_deps = [
-        "@npm//@angular/dev-infra-private",
+        "@npm//@angular/dev-infra-private/bazel/benchmark/driver-utilities",
         "@npm//protractor",
         "@npm//@types/jasmine",
     ],

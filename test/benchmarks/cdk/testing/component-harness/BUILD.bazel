@@ -20,7 +20,7 @@ ts_library(
     srcs = [":protractor-benchmark-utilities.ts"],
     deps = [
         ":constants",
-        "@npm//@angular/dev-infra-private",
+        "@npm//@angular/dev-infra-private/bazel/benchmark/driver-utilities",
         "@npm//@types/node",
     ],
 )
@@ -69,7 +69,7 @@ ng_test_library(
         "//src/cdk/testing/testbed",
         "//src/material/button",
         "//src/material/button/testing",
-        "@npm//@angular/dev-infra-private",
+        "@npm//@angular/dev-infra-private/bazel/benchmark/driver-utilities",
     ],
 )
 
