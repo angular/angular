@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import {updateModuleSpecifier} from './import-operations';
+import {updateModuleSpecifier, updateNamedImport} from './import-operations';
 
 describe('import operations', () => {
   describe('updateModuleSpecifier', () => {
@@ -36,6 +36,51 @@ describe('import operations', () => {
       runUpdateModuleSpecifierTest('multiple named import w/ alias', {
         old: `import { export1, export2 as alias2 } from 'old-module-name';`,
         new: `import { export1, export2 as alias2 } from 'new-module-name';`,
+      });
+    });
+  });
+
+  describe('updateNamedExport', () => {
+    function runUpdateNamedExportTest(
+      description: string,
+      opts: {
+        oldFile: string;
+        newFile: string;
+        oldExport: string;
+        newExport: string;
+      },
+    ): void {
+      const node = createNode(opts.oldFile, ts.SyntaxKind.NamedImports) as ts.NamedImports;
+      const newImport = updateNamedImport(node, {
+        oldExport: opts.oldExport,
+        newExport: opts.newExport,
+      })?.updateFn(opts.oldFile);
+      expect(newImport).withContext(description).toBe(opts.newFile);
+    }
+    it('updates the named exports of import declarations', () => {
+      runUpdateNamedExportTest('named binding', {
+        oldExport: 'oldExport',
+        newExport: 'newExport',
+        oldFile: `import { oldExport } from 'module-name';`,
+        newFile: `import { newExport } from 'module-name';`,
+      });
+      runUpdateNamedExportTest('aliased named binding', {
+        oldExport: 'oldExport',
+        newExport: 'newExport',
+        oldFile: `import { oldExport as alias } from 'module-name';`,
+        newFile: `import { newExport as alias } from 'module-name';`,
+      });
+      runUpdateNamedExportTest('multiple named bindings', {
+        oldExport: 'oldExport1',
+        newExport: 'newExport1',
+        oldFile: `import { oldExport1, export2 } from 'module-name';`,
+        newFile: `import { newExport1, export2 } from 'module-name';`,
+      });
+      runUpdateNamedExportTest('multiple named bindings w/ alias', {
+        oldExport: 'oldExport2',
+        newExport: 'newExport2',
+        oldFile: `import { export1, oldExport2 as alias2 } from 'module-name';`,
+        newFile: `import { export1, newExport2 as alias2 } from 'module-name';`,
       });
     });
   });
