@@ -442,7 +442,7 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - run: node scripts/build/build-packages-dist.js
+      - run: yarn build
 
       # Save the npm packages from //packages/... for other workflow jobs to read
       - persist_to_workspace:

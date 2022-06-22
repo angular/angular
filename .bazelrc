@@ -53,8 +53,8 @@ build:release --workspace_status_command="yarn -s ng-dev release build-env-stamp
 build:release --stamp
 
 # Snapshots should also be stamped with version control information.
-build:snapshot --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
-build:snapshot --stamp
+build:snapshot-build --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
+build:snapshot-build --stamp
 
 ###############################
 # Output                      #

@@ -297,7 +297,7 @@ The `msys64` library and associated tools (like `mkdir`) are required to build A
 
 Make sure you have `C:\msys64\usr\bin` in the "system" `PATH` rather than the "user" `PATH`.
 
-After that, a `git clean -xfd`, `yarn`, and `node scripts\build\build-packages-dist.js` should resolve this issue.
+After that, a `git clean -xfd`, `yarn`, and `yarn build` should resolve this issue.
 
 ### Xcode
 

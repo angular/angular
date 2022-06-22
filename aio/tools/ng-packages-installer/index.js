@@ -16,8 +16,7 @@ const ANGULAR_ROOT_DIR = path.resolve(__dirname, '../../..');
 const ANGULAR_DIST_PACKAGES_DIR = path.join(ANGULAR_ROOT_DIR, 'dist/packages-dist');
 const AIMWA_DIST_PACKAGES_DIR = path.join(ANGULAR_ROOT_DIR, 'dist/angular-in-memory-web-api-dist');
 const ZONEJS_DIST_PACKAGES_DIR = path.join(ANGULAR_ROOT_DIR, 'dist/zone.js-dist');
-const DIST_PACKAGES_BUILD_SCRIPT = path.join(ANGULAR_ROOT_DIR, 'scripts/build/build-packages-dist.js');
-const DIST_PACKAGES_BUILD_CMD = `"${process.execPath}" "${DIST_PACKAGES_BUILD_SCRIPT}"`;
+const DIST_PACKAGES_BUILD_CMD = 'yarn -s build';
 
 /**
  * A tool that can install Angular/Zone.js dependencies for a project from NPM or from the
@@ -181,14 +180,14 @@ class NgPackagesInstaller {
     const canBuild = process.platform !== 'win32';
 
     if (canBuild) {
-      this._log(`Building the local packages with: ${DIST_PACKAGES_BUILD_SCRIPT}`);
-      shelljs.exec(DIST_PACKAGES_BUILD_CMD);
+      this._log(`Building the local packages with: ${DIST_PACKAGES_BUILD_CMD} in ${ANGULAR_ROOT_DIR}`);
+      shelljs.exec(DIST_PACKAGES_BUILD_CMD, {cwd: ANGULAR_ROOT_DIR});
     } else {
       this._warn([
         'Automatically building the local Angular/angular-in-memory-web-api/zone.js packages is currently not ' +
           'supported on Windows.',
         `Please, ensure '${ANGULAR_DIST_PACKAGES_DIR}', '${AIMWA_DIST_PACKAGES_DIR}' and ` +
-          `'${ZONEJS_DIST_PACKAGES_DIR}' exist and are up-to-date (e.g. by running '${DIST_PACKAGES_BUILD_SCRIPT}' ` +
+          `'${ZONEJS_DIST_PACKAGES_DIR}' exist and are up-to-date (e.g. by running "${DIST_PACKAGES_BUILD_CMD}" ` +
           'in Git Bash for Windows, Windows Subsystem for Linux or a Linux docker container or VM).',
         '',
         'Proceeding anyway...',

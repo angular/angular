@@ -25,6 +25,7 @@
     "postinstall": "node scripts/webdriver-manager-update.js && node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js",
     "prepare": "husky install",
     "ng-dev": "ts-node --esm --project .ng-dev/tsconfig.json node_modules/@angular/dev-infra-private/ng-dev/bundles/cli.mjs",
+    "build": "ts-node --esm --project scripts/tsconfig.json scripts/build/build-packages-dist.mts",
     "test": "bazelisk test",
     "test:ci": "bazelisk test -- //... -//devtools/... -//aio/...",
     "test-tsec": "bazelisk test //... --build_tag_filters=tsec --test_tag_filters=tsec",
@@ -36,11 +37,11 @@
     "symbol-extractor:update": "node tools/symbol-extractor/run_all_symbols_extractor_tests.js accept",
     "ts-circular-deps:check": "yarn -s ng-dev ts-circular-deps check --config ./packages/circular-deps-test.conf.js",
     "ts-circular-deps:approve": "yarn -s ng-dev ts-circular-deps approve --config ./packages/circular-deps-test.conf.js",
-    "check-tooling-setup": "yarn tsc --project .ng-dev/tsconfig.json",
+    "check-tooling-setup": "yarn tsc --project .ng-dev/tsconfig.json && yarn tsc --project scripts/tsconfig.json",
     "devtools:devserver": "ibazel run //devtools/src:devserver",
-    "devtools:build:chrome": "bazelisk build --config snapshot --//devtools/projects/shell-browser/src:flag_browser=chrome -- devtools/projects/shell-browser/src:prodapp",
-    "devtools:build:firefox": "bazelisk build --config snapshot --//devtools/projects/shell-browser/src:flag_browser=firefox -- devtools/projects/shell-browser/src:prodapp",
-    "devtools:test": "bazelisk test --config snapshot --//devtools/projects/shell-browser/src:flag_browser=chrome -- //devtools/..."
+    "devtools:build:chrome": "bazelisk build --config snapshot-build --//devtools/projects/shell-browser/src:flag_browser=chrome -- devtools/projects/shell-browser/src:prodapp",
+    "devtools:build:firefox": "bazelisk build --config snapshot-build --//devtools/projects/shell-browser/src:flag_browser=firefox -- devtools/projects/shell-browser/src:prodapp",
+    "devtools:test": "bazelisk test --config snapshot-build --//devtools/projects/shell-browser/src:flag_browser=chrome -- //devtools/..."
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {

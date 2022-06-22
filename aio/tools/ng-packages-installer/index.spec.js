@@ -305,25 +305,20 @@ describe('NgPackagesInstaller', () => {
     };
 
     it('should build the local packages, when not on Windows', () => {
-      const buildScript = path.join(ngRootDir, 'scripts/build/build-packages-dist.js');
-      const buildCmd = `"${process.execPath}" "${buildScript}"`;
+      const buildCmd = 'yarn -s build';
 
       buildDistPackagesOnPlatform('linux');
-      expect(shelljs.exec).toHaveBeenCalledWith(buildCmd);
+      expect(shelljs.exec).toHaveBeenCalledWith(buildCmd, {cwd: ngRootDir});
 
       shelljs.exec.calls.reset();
 
       buildDistPackagesOnPlatform('darwin');
-      expect(shelljs.exec).toHaveBeenCalledWith(buildCmd);
+      expect(shelljs.exec).toHaveBeenCalledWith(buildCmd, {cwd: ngRootDir});
 
       shelljs.exec.calls.reset();
 
       buildDistPackagesOnPlatform('anythingButWindows :(');
-      expect(shelljs.exec).toHaveBeenCalledWith(buildCmd);
-
-      // Ensure that the script does actually exist (e.g. it was not renamed/moved).
-      fs.existsSync.and.callThrough();
-      expect(fs.existsSync(buildScript)).toBe(true);
+      expect(shelljs.exec).toHaveBeenCalledWith(buildCmd, {cwd: ngRootDir});
     });
 
     it('should print a warning, when on Windows', () => {
