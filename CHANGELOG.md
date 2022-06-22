@@ -1,3 +1,34 @@
+<a name="14.1.0-next.2"></a>
+# 14.1.0-next.2 (2022-06-22)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [342effeb7d](https://github.com/angular/angular/commit/342effeb7d4d078ea51a7c345497794a7834b3c0) | fix | reset the start and done fns on player reset ([#46364](https://github.com/angular/angular/pull/46364)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ddd6d66203](https://github.com/angular/angular/commit/ddd6d662038336f9a8e7d68a8b5cda2c3ca1c1d7) | fix | deduplicate imports of standalone components in JIT compiler ([#46439](https://github.com/angular/angular/pull/46439)) |
+| [3d8787c961](https://github.com/angular/angular/commit/3d8787c961176e15a7583d415f778054378ea06e) | fix | handle NgModules with standalone pipes in TestBed correctly ([#46407](https://github.com/angular/angular/pull/46407)) |
+| [bb7c80477b](https://github.com/angular/angular/commit/bb7c80477b1258f48971b67b2eade6a4b41337f2) | fix | make parent injector argument required in `createEnvironmentInjector` ([#46397](https://github.com/angular/angular/pull/46397)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [82acbf919b](https://github.com/angular/angular/commit/82acbf919bae2ddb6a46f41239aa2a101901f089) | feat | improve error message for nullish header ([#46059](https://github.com/angular/angular/pull/46059)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [08d3db232c](https://github.com/angular/angular/commit/08d3db232cb758701c41277996f1b41773f98e0d) | fix | invalid style attribute being generated for null values ([#46433](https://github.com/angular/angular/pull/46433)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [abe3759e24](https://github.com/angular/angular/commit/abe3759e2417c0396d75e226edcef2fae99e363b) | fix | allow to return `UrlTree` from `CanMatchFn` ([#46455](https://github.com/angular/angular/pull/46455)) |
+| [ce20ed067f](https://github.com/angular/angular/commit/ce20ed067f12714ee6488ffe07f1a1c18bb60a15) | fix | Ensure Route injector is created before running CanMatch guards ([#46394](https://github.com/angular/angular/pull/46394)) |
+| [f94c6f433d](https://github.com/angular/angular/commit/f94c6f433dba3924b79f137cfcc49d2dfd4d679c) | fix | Expose CanMatchFn as public API ([#46394](https://github.com/angular/angular/pull/46394)) |
+## Special Thanks
+4javier, Aakash, Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Dany Paredes, Derek Cormier, Dmitrij Kuba, JoostK, Kristiyan Kostadinov, Paul Gschwendtner, Ramesh Thiruchelvam, arturovt, behrooz bozorg chami, dario-piotrowicz, markostanimirovic, renovate[bot] and web-dave
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.3"></a>
 # 14.0.3 (2022-06-22)
 ### animations
