@@ -68,7 +68,7 @@ Declare the `itemImageUrl` property in the class, in this case `AppComponent`.
 
 A common point of confusion is between the attribute, `colspan`, and the property, `colSpan`.  Notice that these two names differ by only a single letter.
 
-To use property binding using colSpan, type the following:
+To use property binding using `colSpan`, type the following:
 
 <code-example path="attribute-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html"></code-example>
 
@@ -80,7 +80,7 @@ To set a property of a directive, type the following:
 
 <code-example path="property-binding/src/app/app.component.html" region="class-binding" header="src/app/app.component.html"></code-example>
 
-To set the model property of a custom component for parent and child components to communicated, type the following:
+To set the model property of a custom component for parent and child components to communicate with each other, type the following:
 
 <code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html"></code-example>
 

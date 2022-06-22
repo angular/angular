@@ -58,7 +58,7 @@ This binding causes the `<tr>` to span two columns.
 
 Sometimes there are differences between the name of property and an attribute.
 
-`colspan` is an attribute of `<tr>`, while `colSpan`  with a capital "S" is a property.
+`colspan` is an attribute of `<td>`, while `colSpan`  with a capital "S" is a property.
 When using attribute binding, use `colspan` with a lowercase "s".
 
 For more information on how to bind to the `colSpan` property, see the [`colspan` and `colSpan`](guide/property-binding#colspan) section of [Property Binding](guide/property-binding).
