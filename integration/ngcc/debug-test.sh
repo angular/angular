@@ -11,7 +11,8 @@ set -u -e -o pipefail
 
 cd "$(dirname "$0")"
 
-node $(pwd)/../../scripts/build/build-packages-dist.js
+# Go to the project directory and build the release packages.
+(cd $(pwd)/../../ && yarn build)
 
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
 # Yarn will cache file://dist URIs and not update Angular code
