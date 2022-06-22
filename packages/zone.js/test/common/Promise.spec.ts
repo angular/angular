@@ -376,28 +376,6 @@ describe(
                });
              });
 
-          it('should not silence rejected promise errors after .finally has been called', done => {
-            Zone.current.fork({name: 'promise-error'}).run(() => {
-              (Zone as any)[Zone.__symbol__('ignoreConsoleErrorUncaughtError')] = false;
-              const originalConsoleError = console.error;
-              const spy = console.error = jasmine.createSpy('console.error');
-              new Promise((resolve, reject) => {
-                throw new Error('promise error');
-              }).finally(() => {
-                // Ensure that uncaught promise `console.error` is called after the `finally` is
-                // called.
-                expect(spy).not.toHaveBeenCalled();
-                setTimeout(() => {
-                  const {args} = spy.calls.mostRecent();
-                  expect(args).toContain('Unhandled Promise rejection:');
-                  expect(args).toContain('promise error');
-                  console.error = originalConsoleError;
-                  done();
-                }, 10);
-              });
-            });
-          });
-
           it('should not output error to console if ignoreConsoleErrorUncaughtError is true',
              (done) => {
                Zone.current.fork({name: 'promise-error'}).run(() => {
