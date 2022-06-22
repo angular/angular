@@ -20,7 +20,7 @@ echo ${RUN_TESTS}
 
 # Build the packages-dist directory.
 # This should be fast on incremental re-build.
-node ../scripts/build/build-packages-dist.js
+yarn build
 
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
 # Yarn will cache file://dist URIs and not update Angular code

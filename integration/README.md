@@ -4,7 +4,7 @@ This directory contains end-to-end tests for Angular. Each directory is a self-c
 that exactly mimics how a user might expect Angular to work, so they allow high-fidelity
 reproductions of real-world issues.
 
-For this to work, we first build the Angular distribution via `./scripts/build/build-packages-dist.js`, then
+For this to work, we first build the Angular distribution via `yarn build`, then
 install the distribution into each app.
 
 To test Angular CLI applications, we use the `cli-hello-world-*` integration tests.
