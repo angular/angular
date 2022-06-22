@@ -16,6 +16,7 @@ import {MatMenuModule} from '@angular/material-experimental/mdc-menu';
 import {MatPaginatorModule} from '@angular/material-experimental/mdc-paginator';
 import {MatProgressBarModule} from '@angular/material-experimental/mdc-progress-bar';
 import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
+import {MatRadioModule} from '@angular/material-experimental/mdc-radio';
 import {MatSelectModule} from '@angular/material-experimental/mdc-select';
 import {AutocompleteComponent} from './components/autocomplete/autocomplete.component';
 import {CardComponent} from './components/card/card.component';
@@ -27,6 +28,7 @@ import {MenuComponent} from './components/menu/menu.component';
 import {PaginatorComponent} from './components/paginator/paginator.component';
 import {ProgressSpinnerComponent} from './components/progress-spinner/progress-spinner.component';
 import {ProgressBarComponent} from './components/progress-bar/progress-bar.component';
+import {RadioComponent} from './components/radio/radio.component';
 import {SelectComponent} from './components/select/select.component';
 import {ButtonComponent} from './components/button/button.component';
 
@@ -44,6 +46,7 @@ import {ButtonComponent} from './components/button/button.component';
     PaginatorComponent,
     ProgressBarComponent,
     ProgressSpinnerComponent,
+    RadioComponent,
     SelectComponent,
   ],
   imports: [
@@ -61,6 +64,7 @@ import {ButtonComponent} from './components/button/button.component';
     MatPaginatorModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
+    MatRadioModule,
     MatSelectModule,
     ReactiveFormsModule,
   ],
