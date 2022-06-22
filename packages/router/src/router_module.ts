@@ -41,17 +41,19 @@ const ROUTER_DIRECTIVES =
  *
  * @publicApi
  */
-export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>('ROUTER_CONFIGURATION', {
-  providedIn: 'root',
-  factory: () => ({}),
-});
+export const ROUTER_CONFIGURATION =
+    new InjectionToken<ExtraOptions>(NG_DEV_MODE ? 'router config' : 'ROUTER_CONFIGURATION', {
+      providedIn: 'root',
+      factory: () => ({}),
+    });
 
 /**
  * @docsNotRequired
  */
-export const ROUTER_FORROOT_GUARD = new InjectionToken<void>('ROUTER_FORROOT_GUARD');
+export const ROUTER_FORROOT_GUARD = new InjectionToken<void>(
+    NG_DEV_MODE ? 'router duplicate forRoot guard' : 'ROUTER_FORROOT_GUARD');
 
-const ROUTER_PRELOADER = new InjectionToken<RouterPreloader>('');
+const ROUTER_PRELOADER = new InjectionToken<RouterPreloader>(NG_DEV_MODE ? 'router preloader' : '');
 
 export const ROUTER_PROVIDERS: Provider[] = [
   Location,
@@ -516,9 +518,6 @@ export function getBootstrapListener() {
   return (bootstrappedComponentRef: ComponentRef<unknown>) => {
     const ref = injector.get(ApplicationRef);
 
-    // TDOO: this used to be after all `injector.get`s, we moved it here
-    // as an early exit. However that might be breaking and if so, we could
-    // just move this check back (and/or investigate why it's breaking :)).
     if (bootstrappedComponentRef !== ref.components[0]) {
       return;
     }
@@ -546,8 +545,8 @@ export function getBootstrapListener() {
  *
  * @publicApi
  */
-export const ROUTER_INITIALIZER =
-    new InjectionToken<(compRef: ComponentRef<any>) => void>('Router Initializer');
+export const ROUTER_INITIALIZER = new InjectionToken<(compRef: ComponentRef<any>) => void>(
+    NG_DEV_MODE ? 'Router Initializer' : '');
 
 function provideInitialNavigation(config: Pick<ExtraOptions, 'initialNavigation'>): Provider[] {
   return [
@@ -558,16 +557,24 @@ function provideInitialNavigation(config: Pick<ExtraOptions, 'initialNavigation'
 
 function provideRouterInitializer(): ReadonlyArray<Provider> {
   return [
+    // ROUTER_INITIALIZER token should be removed. It's public API but shouldn't be. We can just
+    // have `getBootstrapListener` directly attached to APP_BOOTSTRAP_LISTENER.
     {provide: ROUTER_INITIALIZER, useFactory: getBootstrapListener},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useExisting: ROUTER_INITIALIZER},
   ];
 }
 
-const BOOTSTRAP_DONE = new InjectionToken<Subject<void>>('', {
-  factory: () => {
-    return new Subject<void>();
-  }
-});
+/**
+ * A subject used to indicate that the bootstrapping phase is done. When initial navigation is
+ * `enabledBlocking`, the first navigation waits until bootstrapping is finished before continuing
+ * to the activation phase.
+ */
+const BOOTSTRAP_DONE =
+    new InjectionToken<Subject<void>>(NG_DEV_MODE ? 'bootstrap done indicator' : '', {
+      factory: () => {
+        return new Subject<void>();
+      }
+    });
 
 function provideEnabledBlockingInitialNavigation(): Provider {
   return [
@@ -577,30 +584,29 @@ function provideEnabledBlockingInitialNavigation(): Provider {
       multi: true,
       deps: [Injector],
       useFactory: (injector: Injector) => {
-        const p: Promise<any> = injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
+        const locationInitialized: Promise<any> =
+            injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
         let initNavigation = false;
 
         return () => {
-          return p.then(() => {
-            let resolve: Function = null!;
-            const res = new Promise(r => resolve = r);
-            const router = injector.get(Router);
-            const bootstrapDone = injector.get(BOOTSTRAP_DONE);
+          return locationInitialized.then(() => {
+            return new Promise(resolve => {
+              const router = injector.get(Router);
+              const bootstrapDone = injector.get(BOOTSTRAP_DONE);
 
-            router.afterPreactivation = () => {
-              // only the initial navigation should be delayed
-              if (!initNavigation) {
-                initNavigation = true;
-                resolve(true);
-                return bootstrapDone;
-                // subsequent navigations should not be delayed
-              } else {
-                return of(void 0);
-              }
-            };
-            router.initialNavigation();
-
-            return res;
+              router.afterPreactivation = () => {
+                // only the initial navigation should be delayed
+                if (!initNavigation) {
+                  initNavigation = true;
+                  resolve(true);
+                  return bootstrapDone;
+                  // subsequent navigations should not be delayed
+                } else {
+                  return of(void 0);
+                }
+              };
+              router.initialNavigation();
+            });
           });
         };
       }
@@ -608,7 +614,8 @@ function provideEnabledBlockingInitialNavigation(): Provider {
   ];
 }
 
-const INITIAL_NAVIGATION = new InjectionToken<'disabled'|'enabledBlocking'>('');
+const INITIAL_NAVIGATION =
+    new InjectionToken<'disabled'|'enabledBlocking'>(NG_DEV_MODE ? 'initial navigation' : '');
 
 function provideDisabledInitialNavigation(): Provider[] {
   return [
