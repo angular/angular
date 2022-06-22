@@ -427,6 +427,7 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>> extend
     readonly _animationDone: Subject<void>;
     _animationState: 'enter-dropdown' | 'enter-dialog' | 'void';
     _applyPendingSelection(): void;
+    _assignActions(portal: TemplatePortal<any> | null, forceRerender: boolean): void;
     _calendar: MatCalendar<D>;
     _closeButtonFocused: boolean;
     _closeButtonText: string;

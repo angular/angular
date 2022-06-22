@@ -257,6 +257,28 @@ describe('MatDatepickerActions', () => {
     expect(control.value).toBeTruthy();
     expect(onDateChange).toHaveBeenCalledTimes(1);
   }));
+
+  it('should be able to toggle the actions while the datepicker is open', fakeAsync(() => {
+    const fixture = createComponent(DatepickerWithActions);
+    fixture.componentInstance.renderActions = false;
+    fixture.detectChanges();
+
+    fixture.componentInstance.datepicker.open();
+    fixture.detectChanges();
+    tick();
+    flush();
+
+    const content = document.querySelector('.mat-datepicker-content')!;
+    expect(content.querySelector('.mat-datepicker-actions')).toBeFalsy();
+
+    fixture.componentInstance.renderActions = true;
+    fixture.detectChanges();
+    expect(content.querySelector('.mat-datepicker-actions')).toBeTruthy();
+
+    fixture.componentInstance.renderActions = false;
+    fixture.detectChanges();
+    expect(content.querySelector('.mat-datepicker-actions')).toBeFalsy();
+  }));
 });
 
 @Component({
