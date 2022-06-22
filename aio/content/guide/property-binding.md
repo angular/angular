@@ -80,7 +80,7 @@ To set a property of a directive, type the following:
 
 <code-example path="property-binding/src/app/app.component.html" region="class-binding" header="src/app/app.component.html"></code-example>
 
-To set the model property of a custom component for parent and child components to communicate each other, type the following:
+To set the model property of a custom component for parent and child components to communicate with each other, type the following:
 
 <code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html"></code-example>
 
