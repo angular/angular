@@ -9,7 +9,7 @@ import * as i18n from '../../../i18n/i18n_ast';
 import {mapLiteral} from '../../../output/map_util';
 import * as o from '../../../output/output_ast';
 
-import {serializeIcuNode} from './icu_serializer';
+import {Localizer, serializeIcuNode} from './icu_serializer';
 import {i18nMetaToJSDoc} from './meta';
 import {formatI18nPlaceholderName, formatI18nPlaceholderNamesInMap} from './util';
 
@@ -114,7 +114,7 @@ class GetMsgSerializerVisitor implements i18n.Visitor {
   }
 
   visitIcu(icu: i18n.Icu): any {
-    return serializeIcuNode(icu);
+    return serializeIcuNode(icu, Localizer.GetMsg);
   }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder): any {

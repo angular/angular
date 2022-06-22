@@ -69,7 +69,7 @@ function tokenize(text: string): Piece[] {
     const to = from + ERROR_CONTEXT_WIDTH;
     throw Error(
         `Invalid test, no token found for "${text[tokenizedTextEnd]}" ` +
-        `(context = '${text.slice(from, to)}...'`);
+        `(context = '${text.slice(from, to)}...')`);
   }
   // Reset the lastIndex in case we are in a recursive `tokenize()` call.
   TOKEN.lastIndex = lastIndex;

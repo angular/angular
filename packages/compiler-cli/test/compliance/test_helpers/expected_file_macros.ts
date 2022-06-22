@@ -16,7 +16,8 @@ const EXPECTED_FILE_MACROS: [RegExp, (...args: string[]) => string][] = [
     // ], {original_code: {'placeholder': '{{ foo }}'}}, {meta: 'properties'})`
     macroFn(/__i18nMsg__/, stringParam(), arrayParam(), objectParam(), objectParam()),
     (_match, message, placeholders, options, meta) => i18nMsg(
-        message, parsePlaceholders(placeholders), parseOptions(options), parseMetaProperties(meta)),
+        message, parsePlaceholders(placeholders), parseOptions(options), parseMetaProperties(meta),
+        false /* isIcu */),
   ],
   [
     // E.g. `__i18nMsgWithPostprocess__('message', [ ['placeholder', 'pair'] ], { meta: 'props'})`
@@ -26,13 +27,16 @@ const EXPECTED_FILE_MACROS: [RegExp, (...args: string[]) => string][] = [
     (_match, message, placeholders, options, meta, postProcessPlaceholders) =>
         i18nMsgWithPostprocess(
             message, parsePlaceholders(placeholders), parseOptions(options),
-            parseMetaProperties(meta), parsePlaceholders(postProcessPlaceholders)),
+            parseMetaProperties(meta), parsePlaceholders(postProcessPlaceholders),
+            false /* isIcu */),
   ],
   [
-    // E.g. `__i18nIcuMsg__('message string', [ ['placeholder', 'pair'] ])`
-    macroFn(/__i18nIcuMsg__/, stringParam(), arrayParam(), objectParam()),
-    (_match, message, placeholders, options) =>
-        i18nIcuMsg(message, parsePlaceholders(placeholders), parseOptions(options)),
+    // E.g. `__i18nIcuMsg__('message string', [ ['placeholder', 'pair'] ], { meta: 'props' },
+    // [ ['postprocess placeholder', 'pair'] ])`
+    macroFn(/__i18nIcuMsg__/, stringParam(), arrayParam(), objectParam(), arrayParam()),
+    (_match, message, placeholders, options, postprocessPlaceholders) => i18nIcuMsg(
+        message, parsePlaceholders(placeholders), parseOptions(options),
+        parsePlaceholders(postprocessPlaceholders)),
   ],
   [
     // E.g. `__AttributeMarker.Bindings__`
@@ -171,6 +175,11 @@ function getQueryFlag(member: string): number {
 function stringParam() {
   return /'([^']*?[^\\])'/;
 }
+
+// NOTE: This does not match brackets and hence does not know when the input array actually ends. It
+// relies on the next parameter being a different type to stop correctly. As a result, this cannot
+// be used in two adjacent array parameters in the same function. There must be another argument
+// between the two of them.
 function arrayParam() {
   return /(\[.*?\])/;
 }

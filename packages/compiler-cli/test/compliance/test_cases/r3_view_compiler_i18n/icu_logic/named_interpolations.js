@@ -1,7 +1,7 @@
 decls: 2,
 vars: 4,
 consts: function() {
-  __i18nIcuMsg__('{VAR_SELECT, select, male {male {PH_A}} female {female {PH_B}} other {other {PH_WITH_SPACES}}}', [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`], ['PH_A', String.raw`\uFFFD1\uFFFD`], ['PH_B', String.raw`\uFFFD2\uFFFD`], ['PH_WITH_SPACES', String.raw`\uFFFD3\uFFFD`]], {})
+  __i18nIcuMsg__('{VAR_SELECT, select, male {male {$phA}} female {female {$phB}} other {other {$phWithSpaces}}}', [['phA', '{PH_A}'], ['phB', '{PH_B}'], ['phWithSpaces', '{PH_WITH_SPACES}']], {original_code: {'phA': '{{ weight // i18n(ph="PH_A") }}', 'phB': '{{ height // i18n(ph="PH_B") }}', 'phWithSpaces': '{{ age // i18n(ph="PH WITH SPACES") }}'}}, [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`], ['PH_A', String.raw`\uFFFD1\uFFFD`], ['PH_B', String.raw`\uFFFD2\uFFFD`], ['PH_WITH_SPACES', String.raw`\uFFFD3\uFFFD`]])
   return [
     $i18n_0$
   ];

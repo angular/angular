@@ -14,7 +14,7 @@ import {ParseSourceSpan} from '../../../src/parse_util';
 import * as t from '../../../src/render3/r3_ast';
 import {I18nContext} from '../../../src/render3/view/i18n/context';
 import {serializeI18nMessageForGetMsg} from '../../../src/render3/view/i18n/get_msg_utils';
-import {serializeIcuNode} from '../../../src/render3/view/i18n/icu_serializer';
+import {Localizer, serializeIcuNode} from '../../../src/render3/view/i18n/icu_serializer';
 import {serializeI18nMessageForLocalize} from '../../../src/render3/view/i18n/localize_utils';
 import {I18nMeta, i18nMetaToJSDoc, parseI18nMeta} from '../../../src/render3/view/i18n/meta';
 import {formatI18nPlaceholderName} from '../../../src/render3/view/i18n/util';
@@ -399,7 +399,7 @@ describe('serializeI18nMessageForGetMsg', () => {
   it('should serialize ICU with nested HTML for `GetMsg()`', () => {
     expect(serialize('{age, plural, 10 {<b>ten</b>} other {<div class="A">other</div>}}'))
         .toEqual(
-            '{VAR_PLURAL, plural, 10 {{START_BOLD_TEXT}ten{CLOSE_BOLD_TEXT}} other {{START_TAG_DIV}other{CLOSE_TAG_DIV}}}');
+            '{VAR_PLURAL, plural, 10 {{$startBoldText}ten{$closeBoldText}} other {{$startTagDiv}other{$closeTagDiv}}}');
   });
 
   it('should serialize ICU with nested HTML containing further ICUs for `GetMsg()`', () => {
@@ -624,7 +624,7 @@ describe('serializeIcuNode', () => {
   const serialize = (input: string) => {
     const tree = parse(`<div i18n>${input}</div>`);
     const rooti18n = (tree.nodes[0] as t.Element).i18n as i18n.Message;
-    return serializeIcuNode(rooti18n.nodes[0] as i18n.Icu);
+    return serializeIcuNode(rooti18n.nodes[0] as i18n.Icu, Localizer.$Localize);
   };
 
   it('should serialize a simple ICU', () => {

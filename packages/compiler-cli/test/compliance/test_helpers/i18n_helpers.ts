@@ -20,11 +20,13 @@ export function resetMessageIndex(): void {
  * Generate a string that represents expected i18n block content for a simple message.
  */
 export function i18nMsg(
-    message: string, placeholders: Placeholder[], options: Options, meta: Meta): string {
+    message: string, placeholders: Placeholder[], options: Options, meta: Meta,
+    isIcu: boolean): string {
   const varName = `$I18N_${msgIndex++}$`;
   const closurePlaceholders = i18nPlaceholdersToString(placeholders);
   const closureOptions = i18nOptionsToString(options);
-  const locMessageWithPlaceholders = i18nMsgInsertLocalizePlaceholders(message, placeholders);
+  const locMessageWithPlaceholders =
+      i18nMsgInsertLocalizePlaceholders(message, placeholders, isIcu);
   return `
     let ${varName};
     if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
@@ -49,11 +51,11 @@ export interface Options {
  */
 export function i18nMsgWithPostprocess(
     message: string, placeholders: Placeholder[], options: Options, meta: Meta,
-    postprocessPlaceholders: Placeholder[]): string {
+    postprocessPlaceholders: Placeholder[], isIcu: boolean): string {
   const varName = `$I18N_${msgIndex}$`;
   const ppPlaceholders = i18nPlaceholdersToString(postprocessPlaceholders);
   return String.raw`
-        ${i18nMsg(message, placeholders, options, meta)}
+        ${i18nMsg(message, placeholders, options, meta, isIcu)}
         ${varName} = $r3$.ɵɵi18nPostprocess($${varName}$${ppPlaceholders});
       `;
 }
@@ -61,8 +63,11 @@ export function i18nMsgWithPostprocess(
 /**
  * Generates a string that represents expected i18n block content for an ICU.
  */
-export function i18nIcuMsg(message: string, placeholders: Placeholder[], options: Options): string {
-  return i18nMsgWithPostprocess(message, [], options, {}, placeholders);
+export function i18nIcuMsg(
+    message: string, placeholders: Placeholder[], options: Options,
+    postprocessPlaceholders: Placeholder[]): string {
+  return i18nMsgWithPostprocess(
+      message, placeholders, options, {}, postprocessPlaceholders, true /* isIcu */);
 }
 
 /**
@@ -73,7 +78,7 @@ export function i18nIcuMsg(message: string, placeholders: Placeholder[], options
  * - The third (optional) items is the id of the message that this placeholder references.
  *   This is used for matching ICU placeholders to ICU messages.
  */
-export type Placeholder = [name: string, indentifier: string, associatedId: string];
+export type Placeholder = [name: string, identifier: string, associatedId?: string];
 
 /**
  * Describes message metadata object.
@@ -83,7 +88,6 @@ interface Meta {
   meaning?: string;
   id?: string;
 }
-
 
 /**
  * Convert a set of placeholders to a string (as it's expected from compiler).
@@ -104,12 +108,17 @@ function i18nOptionsToString({original_code: originals = {}}: Options = {}): str
 /**
  * Transform a message in a Closure format to a $localize version.
  */
-function i18nMsgInsertLocalizePlaceholders(message: string, placeholders: Placeholder[]): string {
+function i18nMsgInsertLocalizePlaceholders(
+    message: string, placeholders: Placeholder[], isIcu: boolean): string {
   if (placeholders.length > 0) {
     message = message.replace(/{\$(.*?)}/g, function(_, name) {
+      const key = name.replace(/[A-Z]/g, (ch: string) => '_' + ch).toUpperCase();
+
+      // ICU placeholders should just be inlined like `{INTERPOLATION}`.
+      if (isIcu) return `{${key}}`;
+
       const placeholder = placeholders.find((p) => p[0] === name)!;
       // e.g. startDivTag -> START_DIV_TAG
-      const key = name.replace(/[A-Z]/g, (ch: string) => '_' + ch).toUpperCase();
       const associated = placeholder.length === 3 ? `@@${placeholder[2]}` : '';
       return '$' +
           `{${quotedValue(placeholder[1])}}:${key}${associated}:`;

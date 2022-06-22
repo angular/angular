@@ -15,8 +15,8 @@ function MyComponent_span_2_Template(rf, ctx) {
 decls: 3,
 vars: 4,
 consts: function() {
-  __i18nIcuMsg__('{VAR_SELECT, select, male {male {INTERPOLATION}} female {female {INTERPOLATION_1}} other {other}}', [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`], ['INTERPOLATION', String.raw`\uFFFD1\uFFFD`], ['INTERPOLATION_1', String.raw`\uFFFD2\uFFFD`]], {})
-  __i18nIcuMsg__('{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {INTERPOLATION}}}', [['VAR_SELECT', String.raw`\uFFFD0:1\uFFFD`], ['INTERPOLATION', String.raw`\uFFFD1:1\uFFFD`]], {})
+  __i18nIcuMsg__('{VAR_SELECT, select, male {male {$interpolation}} female {female {$interpolation_1}} other {other}}', [['interpolation', '{INTERPOLATION}'], ['interpolation_1', '{INTERPOLATION_1}']], {original_code: {'interpolation': '{{ weight }}', 'interpolation_1': '{{ height }}'}}, [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`], ['INTERPOLATION', String.raw`\uFFFD1\uFFFD`], ['INTERPOLATION_1', String.raw`\uFFFD2\uFFFD`]])
+  __i18nIcuMsg__('{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {$interpolation}}}', [['interpolation', '{INTERPOLATION}']], {original_code: {'interpolation': '{{ otherAge }}'}}, [['VAR_SELECT', String.raw`\uFFFD0:1\uFFFD`], ['INTERPOLATION', String.raw`\uFFFD1:1\uFFFD`]])
   __i18nMsg__(' {$icu} {$startTagSpan} {$icu_1} {$closeTagSpan}', [['startTagSpan', String.raw`\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD`], ['closeTagSpan', String.raw`\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD`], ['icu', '$i18n_0$', '567200399523107034'], ['icu_1', '$i18n_1$', '5762277079421427850']], {original_code: {'startTagSpan': '<span *ngIf="ageVisible">', 'closeTagSpan': '</span>', 'icu': '{gender, select, male {male {{ weight }}} female {female {{ height }}} other {other}}', 'icu_1': '{age, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {{ otherAge }}}}'}}, {})
   return [
     $i18n_2$,

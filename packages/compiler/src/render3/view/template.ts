@@ -13,6 +13,7 @@ import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, Call, Impl
 import {Lexer} from '../../expression_parser/lexer';
 import {Parser} from '../../expression_parser/parser';
 import * as i18n from '../../i18n/i18n_ast';
+import {toPublicName} from '../../i18n/serializers/xmb';
 import * as html from '../../ml_parser/ast';
 import {HtmlParser} from '../../ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../ml_parser/html_whitespaces';
@@ -1025,6 +1026,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const vars = this.i18nBindProps(icu.vars);
     const placeholders = this.i18nBindProps(icu.placeholders);
 
+    // ICU's generate placeholders which map to ICU placeholders like so:
+    // const MSG_FOO = goog.getMsg('Some {$interpolation}', {'interpolation': '{interpolation}'});
+    // This allows JSCompiler to extract these placeholders while still evaluating to the same
+    // expression at runtime. See http://b/214103351#comment32 and http://b/214103351#comment33.
+    const icuPlaceholders = Object.fromEntries(
+        Object.keys(placeholders).map((key) => [key, o.literal(`{${toPublicName(key)}}`)]));
+
     // output ICU directly and keep ICU reference in context
     const message = icu.i18n! as i18n.Message;
 
@@ -1045,11 +1053,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // note: ICU placeholders are replaced with actual values in `i18nPostprocess` function
     // separately, so we do not pass placeholders into `i18nTranslate` function.
     if (isSingleI18nIcu(i18n.meta)) {
-      this.i18nTranslate(message, /* placeholders */ {}, i18n.ref, transformFn);
+      this.i18nTranslate(message, icuPlaceholders, i18n.ref, transformFn);
     } else {
       // output ICU directly and keep ICU reference in context
-      const ref =
-          this.i18nTranslate(message, /* placeholders */ {}, /* ref */ undefined, transformFn);
+      const ref = this.i18nTranslate(message, icuPlaceholders, /* ref */ undefined, transformFn);
       i18n.appendIcu(icuFromI18nMessage(message).name, ref);
     }
 
