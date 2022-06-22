@@ -26,8 +26,10 @@ export const release: ReleaseConfig = {
   buildPackages: async () => {
     // The buildTargetPackages function is loaded at runtime as the loading the script causes an
     // invocation of bazel.
-    const {buildTargetPackages} = require(join(__dirname, '../scripts/build/package-builder'));
-    return buildTargetPackages('dist/release-output', false, 'Release', /* isRelease */ true);
+    const packageBuilder = await import('../scripts/build/package-builder.js');
+
+    return packageBuilder.default.buildTargetPackages(
+      'dist/release-output', 'Release', /* isRelease */ true);
   },
   releaseNotes: {
     hiddenScopes: ['aio', 'bazel', 'dev-infra', 'docs-infra', 'zone.js', 'devtools'],
