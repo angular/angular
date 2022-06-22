@@ -16,7 +16,7 @@ import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, 
 import {EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, map, mapTo, tap} from 'rxjs/operators';
 
-import {CanMatch} from '../src/models';
+import {CanMatch, CanMatchFn} from '../src/models';
 import {forEach} from '../src/utils/collection';
 import {getLoadedRoutes} from '../src/utils/config';
 import {RouterTestingModule} from '../testing';
@@ -4783,6 +4783,28 @@ describe('Integration', () => {
                Promise.resolve(router.createUrlTree(['/team/1']));
            router.resetConfig([
              {path: 'a', canMatch: [ConfigurableGuard], component: SimpleCmp},
+             {path: 'team/:id', component: TeamCmp},
+           ]);
+           const fixture = createRoot(router, RootCmp);
+
+
+           router.navigateByUrl('/a');
+           advance(fixture);
+           expect(fixture.nativeElement.innerHTML).toContain('team');
+         }));
+
+      it('can return UrlTree from CanMatchFn guard', fakeAsync(() => {
+           const canMatchTeamSection = new InjectionToken('CanMatchTeamSection');
+           const canMatchFactory: (router: Router) => CanMatchFn = (router: Router) => () =>
+               router.createUrlTree(['/team/1']);
+
+           TestBed.overrideProvider(
+               canMatchTeamSection, {useFactory: canMatchFactory, deps: [Router]});
+
+           const router = TestBed.inject(Router);
+
+           router.resetConfig([
+             {path: 'a', canMatch: [canMatchTeamSection], component: SimpleCmp},
              {path: 'team/:id', component: TeamCmp},
            ]);
            const fixture = createRoot(router, RootCmp);
