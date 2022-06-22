@@ -66,14 +66,6 @@
         }
       }
 
-      .copy-button {
-        color: constants.$blue-grey-200;
-
-        &:hover {
-          color: constants.$mediumgray;
-        }
-      }
-
       &.lang-sh,
       &.lang-bash {
         .copy-button {
@@ -84,6 +76,10 @@
           }
         }
       }
+    }
+
+    .copy-button {
+      color: if($is-dark-theme, constants.$blue-grey-200, constants.$darkblue);
     }
   }
 
@@ -221,6 +217,10 @@
       .dec {
         color: constants.$codegreen;
       }
+      .copy-button {
+        color: constants.$blue-grey-200;
+      }
     }
+
   }
 }
