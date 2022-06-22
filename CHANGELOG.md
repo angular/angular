@@ -1,3 +1,23 @@
+<a name="14.0.3"></a>
+# 14.0.3 (2022-06-22)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3dd7bb3f8f](https://github.com/angular/angular/commit/3dd7bb3f8fa009e245bfc91aa06a485d0cb27586) | fix | reset the start and done fns on player reset ([#46364](https://github.com/angular/angular/pull/46364)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c086653655](https://github.com/angular/angular/commit/c0866536558fa5abb91e1ba51fa84ea0321e6864) | fix | deduplicate imports of standalone components in JIT compiler ([#46439](https://github.com/angular/angular/pull/46439)) |
+| [5d3b97e1f8](https://github.com/angular/angular/commit/5d3b97e1f8d5d004621df1004e00f128064d73cd) | fix | handle NgModules with standalone pipes in TestBed correctly ([#46407](https://github.com/angular/angular/pull/46407)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6ad7b40a6f](https://github.com/angular/angular/commit/6ad7b40a6fe1b447173a44e7750f2b9abcb6fc0a) | fix | invalid style attribute being generated for null values ([#46433](https://github.com/angular/angular/pull/46433)) |
+## Special Thanks
+4javier, Aakash, Alan Agius, Andrew Kushnir, Aristeidis Bampakos, Dany Paredes, Derek Cormier, JoostK, Kristiyan Kostadinov, Paul Gschwendtner, Ramesh Thiruchelvam, behrooz bozorg chami, dario-piotrowicz, markostanimirovic, renovate[bot] and web-dave
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.0-next.1"></a>
 # 14.1.0-next.1 (2022-06-15)
 ### common
