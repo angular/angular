@@ -51,6 +51,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MISSING_INJECTION_CONTEXT = -203,
     // (undocumented)
+    MISSING_LOCALE_DATA = 701,
+    // (undocumented)
     MULTIPLE_COMPONENTS_MATCH = -300,
     // (undocumented)
     MULTIPLE_PLATFORMS = 400,

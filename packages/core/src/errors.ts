@@ -56,6 +56,7 @@ export const enum RuntimeErrorCode {
 
   // i18n Errors
   INVALID_I18N_STRUCTURE = 700,
+  MISSING_LOCALE_DATA = 701,
 
   // standalone errors
   IMPORT_PROVIDERS_FROM_STANDALONE = 800,
