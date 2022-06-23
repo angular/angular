@@ -37,7 +37,7 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
-import {UntypedFormControl, FormGroupDirective, NgForm} from '@angular/forms';
+import {AbstractControl, FormGroupDirective, NgForm} from '@angular/forms';
 import {ErrorStateMatcher, ThemePalette} from '@angular/material/core';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {Subject, Subscription} from 'rxjs';
@@ -110,10 +110,7 @@ export class MatStep extends CdkStep implements ErrorStateMatcher, AfterContentI
   }
 
   /** Custom error state matcher that additionally checks for validity of interacted form. */
-  isErrorState(
-    control: UntypedFormControl | null,
-    form: FormGroupDirective | NgForm | null,
-  ): boolean {
+  isErrorState(control: AbstractControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const originalErrorState = this._errorStateMatcher.isErrorState(control, form);
 
     // Custom error state checks for the validity of form that is not submitted or touched

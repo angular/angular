@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {UntypedFormControl, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
+import {AbstractControl, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {Subject} from 'rxjs';
 import {ErrorStateMatcher} from '../error/error-options';
 import {AbstractConstructor, Constructor} from './constructor';
@@ -59,7 +59,7 @@ export function mixinErrorState<T extends Constructor<HasErrorState>>(
       const oldState = this.errorState;
       const parent = this._parentFormGroup || this._parentForm;
       const matcher = this.errorStateMatcher || this._defaultErrorStateMatcher;
-      const control = this.ngControl ? (this.ngControl.control as UntypedFormControl) : null;
+      const control = this.ngControl ? (this.ngControl.control as AbstractControl) : null;
       const newState = matcher.isErrorState(control, parent);
 
       if (newState !== oldState) {
