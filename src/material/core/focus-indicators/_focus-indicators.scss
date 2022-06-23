@@ -1,16 +1,6 @@
-@use 'sass:map';
 @use './private';
 
 @mixin strong-focus-indicators($config: ()) {
-  // Default focus indicator config.
-  $default-config: (
-    border-color: black,
-    display: block,
-  );
-
-  // Merge default config with user config.
-  $config: map.merge($default-config, $config);
-
-  @include private.customize-focus-indicators($config, 'mat');
-  @include private.customize-focus-indicators($config, 'mat-mdc');
+  @include private.strong-focus-indicators($config);
+  @include private.mdc-strong-focus-indicators($config);
 }

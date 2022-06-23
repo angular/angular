@@ -1,49 +1,13 @@
-@use 'sass:map';
-@use 'sass:meta';
-@use '../theming/theming';
 @use './private';
-
-$_prefix: 'mat';
 
 // stylelint-disable-next-line material/theme-mixin-api
 @mixin color($config-or-theme-or-color) {
-  @if meta.type-of($config-or-theme-or-color) == 'color' {
-    @include private.customize-focus-indicators((
-      border-color: $config-or-theme-or-color
-    ), 'mat');
-    @include private.customize-focus-indicators((
-        border-color: $config-or-theme-or-color
-    ), 'mat-mdc');
-  }
-  @else {
-    $config: theming.get-color-config($config-or-theme-or-color);
-    $border-color: theming.get-color-from-palette(map.get($config, primary));
-    @include private.customize-focus-indicators((
-      border-color: $border-color
-    ), 'mat');
-    @include private.customize-focus-indicators((
-      border-color: $border-color
-    ), 'mat-mdc');
-  }
+  @include private.strong-focus-indicators-color($config-or-theme-or-color);
+  @include private.mdc-strong-focus-indicators-color($config-or-theme-or-color);
 }
 
 // stylelint-disable-next-line material/theme-mixin-api
 @mixin theme($theme-or-color-config-or-color) {
-  @if meta.type-of($theme-or-color-config-or-color) == 'color' {
-    @include private.customize-focus-indicators((
-      border-color: $theme-or-color-config-or-color
-    ), 'mat');
-    @include private.customize-focus-indicators((
-      border-color: $theme-or-color-config-or-color
-    ), 'mat-mdc');
-  }
-  @else {
-    $theme: theming.private-legacy-get-theme($theme-or-color-config-or-color);
-    @include theming.private-check-duplicate-theme-styles($theme, 'mat-focus-indicators') {
-      $color: theming.get-color-config($theme);
-      @if $color != null {
-        @include color($color);
-      }
-    }
-  }
+  @include private.strong-focus-indicators-theme($theme-or-color-config-or-color);
+  @include private.mdc-strong-focus-indicators-theme($theme-or-color-config-or-color);
 }
