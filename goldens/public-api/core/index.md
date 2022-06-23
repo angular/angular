@@ -300,6 +300,14 @@ export interface ContentChildrenDecorator {
 }
 
 // @public
+export function createComponent<C>(component: Type<C>, options: {
+    hostElement?: Element;
+    environmentInjector: EnvironmentInjector;
+    elementInjector?: Injector;
+    projectableNodes?: Node[][];
+}): ComponentRef<C>;
+
+// @public
 export function createEnvironmentInjector(providers: Array<Provider | ImportedNgModuleProviders>, parent: EnvironmentInjector, debugName?: string | null): EnvironmentInjector;
 
 // @public

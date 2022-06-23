@@ -7,7 +7,8 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {ApplicationRef, Component, ComponentFactoryResolver, ComponentRef, ElementRef, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, RendererFactory2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
+import {ApplicationRef, Component, ComponentFactoryResolver, ComponentRef, createComponent, createEnvironmentInjector, Directive, ElementRef, EmbeddedViewRef, EnvironmentInjector, inject, Injectable, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
+import {stringifyForError} from '@angular/core/src/render3/util/stringify_utils';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -638,5 +639,231 @@ describe('component', () => {
     fixture.detectChanges();
     expect(targetEl.innerHTML).not.toContain('Existing content in slot B');
     expect(targetEl.innerHTML).toContain('DynamicComponent Content');
+  });
+
+  describe('createComponent', () => {
+    it('should create an instance of a standalone component', () => {
+      @Component({
+        standalone: true,
+        template: 'Hello {{ name }}!',
+      })
+      class StandaloneComponent {
+        name = 'Angular';
+      }
+
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const componentRef = createComponent(StandaloneComponent, {hostElement, environmentInjector});
+
+      componentRef.changeDetectorRef.detectChanges();
+      expect(hostElement.textContent).toBe('Hello Angular!');
+
+      // Verify basic change detection works.
+      componentRef.instance.name = 'ZoneJS';
+      componentRef.changeDetectorRef.detectChanges();
+      expect(hostElement.textContent).toBe('Hello ZoneJS!');
+    });
+
+    it('should create an instance of an NgModule-based component', () => {
+      @Component({
+        template: 'Hello {{ name }}!',
+      })
+      class NgModuleBasedComponent {
+        name = 'Angular';
+      }
+
+      @NgModule({
+        declarations: [NgModuleBasedComponent],
+      })
+      class AppModule {
+      }
+
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const componentRef =
+          createComponent(NgModuleBasedComponent, {hostElement, environmentInjector});
+
+      componentRef.changeDetectorRef.detectChanges();
+      expect(hostElement.textContent).toBe('Hello Angular!');
+
+      // Verify basic change detection works.
+      componentRef.instance.name = 'ZoneJS';
+      componentRef.changeDetectorRef.detectChanges();
+      expect(hostElement.textContent).toBe('Hello ZoneJS!');
+    });
+
+    it('should render projected content', () => {
+      @Component({
+        standalone: true,
+        template: `
+          <ng-content></ng-content>|
+          <ng-content></ng-content>|
+          <ng-content></ng-content>
+        `,
+      })
+      class StandaloneComponent {
+      }
+
+      // Helper method to create a `<p>` element
+      const p = (content: string): Element => {
+        const element = document.createElement('p');
+        element.innerHTML = content;
+        return element;
+      };
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const projectableNodes = [[p('1')], [p('2')], [p('3')]];
+      const componentRef = createComponent(
+          StandaloneComponent, {hostElement, environmentInjector, projectableNodes});
+
+      componentRef.changeDetectorRef.detectChanges();
+      expect(hostElement.innerHTML.replace(/\s*/g, '')).toBe('<p>1</p>|<p>2</p>|<p>3</p>');
+    });
+
+    it('should be able to inject tokens from EnvironmentInjector', () => {
+      const A = new InjectionToken('A');
+      @Component({
+        standalone: true,
+        template: 'Token: {{ a }}',
+      })
+      class StandaloneComponent {
+        a = inject(A);
+      }
+
+      const hostElement = document.createElement('div');
+      const parentInjector = TestBed.inject(EnvironmentInjector);
+      const providers = [{provide: A, useValue: 'EnvironmentInjector(A)'}];
+      const environmentInjector = createEnvironmentInjector(providers, parentInjector);
+      const componentRef = createComponent(StandaloneComponent, {hostElement, environmentInjector});
+      componentRef.changeDetectorRef.detectChanges();
+
+      expect(hostElement.textContent).toBe('Token: EnvironmentInjector(A)');
+    });
+
+    it('should be able to use NodeInjector from the node hierarchy', () => {
+      const A = new InjectionToken('A');
+      const B = new InjectionToken('B');
+      @Component({
+        standalone: true,
+        template: '{{ a }} and {{ b }}',
+      })
+      class ChildStandaloneComponent {
+        a = inject(A);
+        b = inject(B);
+      }
+
+      @Component({
+        standalone: true,
+        template: 'Tokens: <div #target></div>',
+        providers: [{provide: A, useValue: 'ElementInjector(A)'}]
+      })
+      class RootStandaloneComponent {
+        @ViewChild('target', {read: ElementRef}) target!: ElementRef;
+        constructor(private injector: Injector) {}
+
+        createChildComponent() {
+          const hostElement = this.target.nativeElement;
+          const parentInjector = this.injector.get(EnvironmentInjector);
+          const providers = [
+            {provide: A, useValue: 'EnvironmentInjector(A)'},
+            {provide: B, useValue: 'EnvironmentInjector(B)'}
+          ];
+          const environmentInjector = createEnvironmentInjector(providers, parentInjector);
+          const childComponentRef = createComponent(
+              ChildStandaloneComponent,
+              {hostElement, elementInjector: this.injector, environmentInjector});
+          childComponentRef.changeDetectorRef.detectChanges();
+        }
+      }
+
+      const fixture = TestBed.createComponent(RootStandaloneComponent);
+      fixture.detectChanges();
+
+      fixture.componentInstance.createChildComponent();
+
+      const rootEl = fixture.nativeElement;
+
+      // Token A is coming from the Element Injector, token B - from the Environment Injector.
+      expect(rootEl.textContent).toBe('Tokens: ElementInjector(A) and EnvironmentInjector(B)');
+    });
+
+    it('should create a host element if none provided', () => {
+      const selector = 'standalone-comp';
+      @Component({
+        selector,
+        standalone: true,
+        template: 'Hello {{ name }}!',
+      })
+      class StandaloneComponent {
+        name = 'Angular';
+      }
+
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const componentRef = createComponent(StandaloneComponent, {environmentInjector});
+      componentRef.changeDetectorRef.detectChanges();
+
+      const hostElement =
+          (componentRef.hostView as EmbeddedViewRef<StandaloneComponent>).rootNodes[0];
+
+      // A host element that matches component's selector.
+      expect(hostElement.tagName.toLowerCase()).toBe(selector);
+
+      expect(hostElement.textContent).toBe('Hello Angular!');
+    });
+
+    it('should fall-back to use a `div` as a host element if none provided ' +
+           'and element selector does not have a tag name',
+       () => {
+         @Component({
+           selector: '.some-class',
+           standalone: true,
+           template: 'Hello {{ name }}!',
+         })
+         class StandaloneComponent {
+           name = 'Angular';
+         }
+
+         const environmentInjector = TestBed.inject(EnvironmentInjector);
+         const componentRef = createComponent(StandaloneComponent, {environmentInjector});
+         componentRef.changeDetectorRef.detectChanges();
+
+         const hostElement =
+             (componentRef.hostView as EmbeddedViewRef<StandaloneComponent>).rootNodes[0];
+
+         // A host element has the `div` tag name, since component's selector doesn't contain
+         // tag name information (only a class name).
+         expect(hostElement.tagName.toLowerCase()).toBe('div');
+
+         expect(hostElement.textContent).toBe('Hello Angular!');
+       });
+
+    describe('error checking', () => {
+      it('should throw when provided class is not a component', () => {
+        class NotAComponent {}
+
+        @Directive()
+        class ADirective {
+        }
+
+        @Injectable()
+        class AnInjectiable {
+        }
+
+        const errorFor = (type: Type<unknown>): string =>
+            `NG0906: The ${stringifyForError(type)} is not an Angular component, ` +
+            `make sure it has the \`@Component\` decorator.`;
+        const hostElement = document.createElement('div');
+        const environmentInjector = TestBed.inject(EnvironmentInjector);
+
+        expect(() => createComponent(NotAComponent, {hostElement, environmentInjector}))
+            .toThrowError(errorFor(NotAComponent));
+
+        expect(() => createComponent(ADirective, {hostElement, environmentInjector}))
+            .toThrowError(errorFor(ADirective));
+
+        expect(() => createComponent(AnInjectiable, {hostElement, environmentInjector}))
+            .toThrowError(errorFor(AnInjectiable));
+      });
+    });
   });
 });
