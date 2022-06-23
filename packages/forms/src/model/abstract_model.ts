@@ -737,6 +737,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * expect(ctrl.hasValidator(minValidator)).toEqual(true)
    * expect(ctrl.hasValidator(Validators.min(3)).toEqual(false)
    * ```
+   *
    * @param validator The validator to check for presence. Compared by function reference.
    * @returns Whether the provided validator was found on this control.
    */
