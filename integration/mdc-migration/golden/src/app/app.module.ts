@@ -18,7 +18,9 @@ import {MatProgressBarModule} from '@angular/material-experimental/mdc-progress-
 import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
 import {MatRadioModule} from '@angular/material-experimental/mdc-radio';
 import {MatSelectModule} from '@angular/material-experimental/mdc-select';
+import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-toggle';
 import {AutocompleteComponent} from './components/autocomplete/autocomplete.component';
+import {ButtonComponent} from './components/button/button.component';
 import {CardComponent} from './components/card/card.component';
 import {ChipsComponent} from './components/chips/chips.component';
 import {FormFieldComponent} from './components/form-field/form-field.component';
@@ -30,7 +32,7 @@ import {ProgressSpinnerComponent} from './components/progress-spinner/progress-s
 import {ProgressBarComponent} from './components/progress-bar/progress-bar.component';
 import {RadioComponent} from './components/radio/radio.component';
 import {SelectComponent} from './components/select/select.component';
-import {ButtonComponent} from './components/button/button.component';
+import {SlideToggleComponent} from './components/slide-toggle/slide-toggle.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +50,7 @@ import {ButtonComponent} from './components/button/button.component';
     ProgressSpinnerComponent,
     RadioComponent,
     SelectComponent,
+    SlideToggleComponent,
   ],
   imports: [
     BrowserModule,
@@ -66,6 +69,7 @@ import {ButtonComponent} from './components/button/button.component';
     MatProgressSpinnerModule,
     MatRadioModule,
     MatSelectModule,
+    MatSlideToggleModule,
     ReactiveFormsModule,
   ],
   providers: [],

@@ -1,0 +1,8 @@
+.mat-mdc-slide-toggle {
+  padding: 4px;
+}
+
+
+/* TODO: The following rule targets internal classes of slide-toggle that may no longer apply for the MDC version. */
+
+.mat-checked .mat-slide-toggle-thumb { color: darkblue; }
