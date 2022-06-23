@@ -44,7 +44,10 @@ import {Directive, DoCheck, ElementRef, Input, KeyValueChanges, KeyValueDiffer, 
  *
  * @publicApi
  */
-@Directive({selector: '[ngStyle]'})
+@Directive({
+  selector: '[ngStyle]',
+  standalone: true,
+})
 export class NgStyle implements DoCheck {
   private _ngStyle: {[key: string]: string}|null = null;
   private _differ: KeyValueDiffer<string, string|number>|null = null;

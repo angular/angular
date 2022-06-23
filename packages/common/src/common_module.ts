@@ -21,16 +21,10 @@ import {COMMON_PIPES} from './pipes/index';
  * Re-exported by `BrowserModule`, which is included automatically in the root
  * `AppModule` when you create a new app with the CLI `new` command.
  *
- * * The `providers` options configure the NgModule's injector to provide
- * localization dependencies to members.
- * * The `exports` options make the declared directives and pipes available for import
- * by other NgModules.
- *
  * @publicApi
  */
 @NgModule({
-  imports: [COMMON_PIPES],
-  declarations: [COMMON_DIRECTIVES],
+  imports: [COMMON_DIRECTIVES, COMMON_PIPES],
   exports: [COMMON_DIRECTIVES, COMMON_PIPES],
 })
 export class CommonModule {
