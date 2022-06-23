@@ -684,13 +684,13 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * // Reference to the RequiredValidator
    * const ctrl = new FormControl<string | null>('', Validators.required);
    * ctrl.removeValidators(Validators.required);
-   * 
+   *
    * // Reference to anonymous function inside MinValidator
    * const minValidator = Validators.min(3);
    * const ctrl = new FormControl<string | null>('', minValidator);
    * expect(ctrl.hasValidator(minValidator)).toEqual(true)
    * expect(ctrl.hasValidator(Validators.min(3)).toEqual(false)
-   * 
+   *
    * ctrl.removeValidators(minValidator);
    * ```
    *
@@ -730,7 +730,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * // Reference to the RequiredValidator
    * const ctrl = new FormControl<number | null>(0, Validators.required);
    * expect(ctrl.hasValidator(Validators.required)).toEqual(true)
-   * 
+   *
    * // Reference to anonymous function inside MinValidator
    * const minValidator = Validators.min(3);
    * const ctrl = new FormControl<number | null>(0, minValidator);
