@@ -77,7 +77,7 @@
     @include mdc-radio-theme.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
   }
 
-  @if ($density-scale == -2 or $density-scale == 'minimum') {
+  @include mdc-helpers.if-touch-targets-unsupported($density-scale) {
     .mat-mdc-radio-touch-target {
       display: none;
     }

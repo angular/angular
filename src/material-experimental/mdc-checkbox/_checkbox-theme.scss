@@ -88,7 +88,7 @@
       );
     }
 
-    @if ($density-scale == -2 or $density-scale == 'minimum') {
+    @include mdc-helpers.if-touch-targets-unsupported($density-scale) {
       .mat-mdc-checkbox-touch-target {
         display: none;
       }

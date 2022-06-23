@@ -7,6 +7,7 @@
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/theme/css' as mdc-theme-css;
 @use 'sass:map';
+@use 'sass:meta';
 
 // A set of standard queries to use with MDC's queryable mixins.
 $mat-base-styles-query: mdc-feature-targeting.without(mdc-feature-targeting.any(color, typography));
@@ -210,4 +211,11 @@ $mat-typography-mdc-level-mappings: (
   mdc-theme-css.$enable-fallback-declarations: false;
   @content;
   mdc-theme-css.$enable-fallback-declarations: $previous-value;
+}
+
+// Excludes the passed-in CSS content if the layout is too dense to supports touch targets.
+@mixin if-touch-targets-unsupported($scale) {
+  @if ($scale == 'minimum' or (meta.type-of($scale) == 'number' and $scale < -1)) {
+    @content;
+  }
 }

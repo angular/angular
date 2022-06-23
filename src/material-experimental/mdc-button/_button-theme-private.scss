@@ -1,6 +1,7 @@
 @use 'sass:map';
 @use '@material/ripple/ripple-theme' as mdc-ripple-theme;
 @use '@material/theme/theme-color' as mdc-theme-color;
+@use '../mdc-core/mdc-helpers/mdc-helpers';
 
 @mixin _ripple-color($color) {
   --mat-mdc-button-persistent-ripple-color: #{$color};
@@ -53,7 +54,7 @@
 
 // Hides the touch target on lower densities.
 @mixin touch-target-density($scale) {
-  @if ($scale == -2 or $scale == 'minimum') {
+  @include mdc-helpers.if-touch-targets-unsupported($scale) {
     .mat-mdc-button-touch-target {
       display: none;
     }
