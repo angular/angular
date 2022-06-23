@@ -87,7 +87,7 @@
       );
     }
 
-    @include mdc-helpers.if-touch-targets-unsupported($density-scale) {
+    @include mat.private-if-touch-targets-unsupported($density-scale) {
       .mat-mdc-checkbox-touch-target {
         display: none;
       }

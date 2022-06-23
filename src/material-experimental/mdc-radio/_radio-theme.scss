@@ -76,7 +76,7 @@
     @include mdc-radio-theme.density($density-scale, $query: mat.$private-mdc-base-styles-query);
   }
 
-  @include mdc-helpers.if-touch-targets-unsupported($density-scale) {
+  @include mat.private-if-touch-targets-unsupported($density-scale) {
     .mat-mdc-radio-touch-target {
       display: none;
     }
