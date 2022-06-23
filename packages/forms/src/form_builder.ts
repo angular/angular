@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, Injectable, InjectionToken} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {ReactiveFormsModule} from './form_providers';
@@ -21,14 +21,6 @@ function isAbstractControlOptions(options: AbstractControlOptions|{[key: string]
       ((options as AbstractControlOptions).asyncValidators !== undefined ||
        (options as AbstractControlOptions).validators !== undefined ||
        (options as AbstractControlOptions).updateOn !== undefined);
-}
-
-function isFormControlOptions(options: FormControlOptions|{[key: string]: any}|null|
-                              undefined): options is FormControlOptions {
-  return !!options &&
-      (isAbstractControlOptions(options) ||
-       (options as FormControlOptions).initialValueIsDefault !== undefined ||
-       (options as FormControlOptions).nonNullable !== undefined);
 }
 
 /**
