@@ -14,6 +14,10 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
   describe('NgStyle', () => {
     let fixture: ComponentFixture<TestComponent>;
 
+    const supportsCssVariables = typeof getComputedStyle !== 'undefined' &&
+        typeof CSS !== 'undefined' && typeof CSS.supports !== 'undefined' &&
+        CSS.supports('color', 'var(--fake-var)');
+
     function getComponent(): TestComponent {
       return fixture.componentInstance;
     }
@@ -191,6 +195,20 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
       fixture.detectChanges();
       expectNativeEl(fixture).toHaveCssStyle({'width': '400px'});
+    });
+
+    it('should handle CSS variables', () => {
+      if (!supportsCssVariables) {
+        return;
+      }
+
+      const template = `<div style="width: var(--width)" [ngStyle]="{'--width': expr}"></div>`;
+      fixture = createTestComponent(template);
+      fixture.componentInstance.expr = '100px';
+      fixture.detectChanges();
+
+      const target: HTMLElement = fixture.nativeElement.querySelector('div');
+      expect(getComputedStyle(target).getPropertyValue('width')).toEqual('100px');
     });
   });
 }
