@@ -263,20 +263,20 @@ export type ɵRawValue<T extends AbstractControl|undefined> = T extends Abstract
 // clang-format off
 
 /**
-* Tokenize splits a string literal S by a delimeter D.
-*/
+ * Tokenize splits a string literal S by a delimeter D.
+ */
 export type ɵTokenize<S extends string, D extends string> =
-    string extends S ? string[] : /* S must be a literal */
-                      S extends `${infer T}${D}${infer U}` ? [T, ...ɵTokenize<U, D>] :
-                      [S] /* Base case */
-    ;
+  string extends S ? string[] : /* S must be a literal */
+    S extends `${infer T}${D}${infer U}` ? [T, ...ɵTokenize<U, D>] :
+      [S] /* Base case */
+  ;
 
 /**
-* CoerceStrArrToNumArr accepts an array of strings, and converts any numeric string to a number.
-*/
+ * CoerceStrArrToNumArr accepts an array of strings, and converts any numeric string to a number.
+ */
 export type ɵCoerceStrArrToNumArr<S> =
-    // Extract the head of the array.
-    S extends [infer Head, ...infer Tail] ?
+// Extract the head of the array.
+  S extends [infer Head, ...infer Tail] ?
     // Using a template literal type, coerce the head to `number` if possible.
     // Then, recurse on the tail.
     Head extends `${number}` ?
@@ -285,20 +285,20 @@ export type ɵCoerceStrArrToNumArr<S> =
     [];
 
 /**
-* Navigate takes a type T and an array K, and returns the type of T[K[0]][K[1]][K[2]]...
-*/
+ * Navigate takes a type T and an array K, and returns the type of T[K[0]][K[1]][K[2]]...
+ */
 export type ɵNavigate<T, K extends(Array<string|number>)> =
-    T extends object ? /* T must be indexable (object or array) */
+  T extends object ? /* T must be indexable (object or array) */
     (K extends [infer Head, ...infer Tail] ? /* Split K into head and tail */
-        (Head extends keyof T ? /* head(K) must index T */
-              (Tail extends(string|number)[] ? /* tail(K) must be an array */
-              [] extends Tail ? T[Head] : /* base case: K can be split, but Tail is empty */
-                  (ɵNavigate<T[Head], Tail>) /* explore T[head(K)] by tail(K) */ :
-              any) /* tail(K) was not an array, give up */ :
-              never) /* head(K) does not index T, give up */ :
-        any) /* K cannot be split, give up */ :
+      (Head extends keyof T ? /* head(K) must index T */
+        (Tail extends(string|number)[] ? /* tail(K) must be an array */
+          [] extends Tail ? T[Head] : /* base case: K can be split, but Tail is empty */
+            (ɵNavigate<T[Head], Tail>) /* explore T[head(K)] by tail(K) */ :
+          any) /* tail(K) was not an array, give up */ :
+        never) /* head(K) does not index T, give up */ :
+      any) /* K cannot be split, give up */ :
     any /* T is not indexable, give up */
-    ;
+  ;
 
 /**
  * ɵWriteable removes readonly from all keys.
@@ -676,6 +676,24 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * validator function as the one that was originally set. If a provided validator is not found,
    * it is ignored.
    *
+   * @usageNotes
+   *
+   * ### Reference to a ValidatorFn
+   *
+   * ```
+   * // Reference to the RequiredValidator
+   * const ctrl = new FormControl<string | null>('', Validators.required);
+   * ctrl.removeValidators(Validators.required);
+   *
+   * // Reference to anonymous function inside MinValidator
+   * const minValidator = Validators.min(3);
+   * const ctrl = new FormControl<string | null>('', minValidator);
+   * expect(ctrl.hasValidator(minValidator)).toEqual(true)
+   * expect(ctrl.hasValidator(Validators.min(3)).toEqual(false)
+   *
+   * ctrl.removeValidators(minValidator);
+   * ```
+   *
    * When you add or remove a validator at run time, you must call
    * `updateValueAndValidity()` for the new validation to take effect.
    *
@@ -703,6 +721,22 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   /**
    * Check whether a synchronous validator function is present on this control. The provided
    * validator must be a reference to the exact same function that was provided.
+   *
+   * @usageNotes
+   *
+   * ### Reference to a ValidatorFn
+   *
+   * ```
+   * // Reference to the RequiredValidator
+   * const ctrl = new FormControl<number | null>(0, Validators.required);
+   * expect(ctrl.hasValidator(Validators.required)).toEqual(true)
+   *
+   * // Reference to anonymous function inside MinValidator
+   * const minValidator = Validators.min(3);
+   * const ctrl = new FormControl<number | null>(0, minValidator);
+   * expect(ctrl.hasValidator(minValidator)).toEqual(true)
+   * expect(ctrl.hasValidator(Validators.min(3)).toEqual(false)
+   * ```
    *
    * @param validator The validator to check for presence. Compared by function reference.
    * @returns Whether the provided validator was found on this control.
