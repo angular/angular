@@ -10,11 +10,11 @@ const TS_FILE_PATH = join(PROJECT_ROOT_DIR, 'src/app/app.component.ts');
 describe('v15 legacy components migration', () => {
   let tree: UnitTestTree;
 
-  /** Writes an array of lines as a single file. */
-  let writeLines: (path: string, lines: string[]) => void;
+  /** Writes an single line file. */
+  let writeLine: (path: string, line: string) => void;
 
-  /** Reads a file and split it into an array where each item is a new line. */
-  let splitFile: (path: string) => string[];
+  /** Reads a file. */
+  let readFile: (path: string) => string;
 
   /** Runs the v15 migration on the test application. */
   let runMigration: () => Promise<{logOutput: string}>;
@@ -23,23 +23,61 @@ describe('v15 legacy components migration', () => {
     const testSetup = await createTestCaseSetup('migration-v15', MIGRATION_PATH, []);
     tree = testSetup.appTree;
     runMigration = testSetup.runFixers;
-    splitFile = (path: string) => tree.readContent(path).split('\n');
-    writeLines = (path: string, lines: string[]) => testSetup.writeFile(path, lines.join('\n'));
+    readFile = (path: string) => tree.readContent(path);
+    writeLine = (path: string, lines: string) => testSetup.writeFile(path, lines);
   });
 
   describe('typescript migrations', () => {
-    it('should do nothing yet', async () => {
-      writeLines(TS_FILE_PATH, [' ']);
+    async function runTypeScriptMigrationTest(ctx: string, opts: {old: string; new: string}) {
+      writeLine(TS_FILE_PATH, opts.old);
       await runMigration();
-      expect(splitFile(TS_FILE_PATH)).toEqual([' ']);
+      expect(readFile(TS_FILE_PATH)).withContext(ctx).toEqual(opts.new);
+    }
+
+    it('updates import declarations', async () => {
+      await runTypeScriptMigrationTest('named binding', {
+        old: `import {MatButton} from '@angular/material/button';`,
+        new: `import {MatLegacyButton as MatButton} from '@angular/material/legacy-button';`,
+      });
+      await runTypeScriptMigrationTest('named binding w/ alias', {
+        old: `import {MatButton as Button} from '@angular/material/button';`,
+        new: `import {MatLegacyButton as Button} from '@angular/material/legacy-button';`,
+      });
+      await runTypeScriptMigrationTest('multiple named bindings', {
+        old: `import {MatButton, MatButtonModule} from '@angular/material/button';`,
+        new: `import {MatLegacyButton as MatButton, MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';`,
+      });
+      await runTypeScriptMigrationTest('multiple named bindings w/ alias', {
+        old: `import {MatButton, MatButtonModule as ButtonModule} from '@angular/material/button';`,
+        new: `import {MatLegacyButton as MatButton, MatLegacyButtonModule as ButtonModule} from '@angular/material/legacy-button';`,
+      });
+    });
+
+    it('updates import expressions', async () => {
+      await runTypeScriptMigrationTest('destructured & awaited', {
+        old: `const {MatButton} = await import('@angular/material/button');`,
+        new: `const {MatLegacyButton: MatButton} = await import('@angular/material/legacy-button');`,
+      });
+      await runTypeScriptMigrationTest('destructured & awaited w/ alias', {
+        old: `const {MatButton: Button} = await import('@angular/material/button');`,
+        new: `const {MatLegacyButton: Button} = await import('@angular/material/legacy-button');`,
+      });
+      await runTypeScriptMigrationTest('promise', {
+        old: `const promise = import('@angular/material/button');`,
+        new: `const promise = import('@angular/material/legacy-button');`,
+      });
+      await runTypeScriptMigrationTest('.then', {
+        old: `import('@angular/material/button').then(() => {});`,
+        new: `import('@angular/material/legacy-button').then(() => {});`,
+      });
     });
   });
 
   describe('style migrations', () => {
     it('should do nothing yet', async () => {
-      writeLines(THEME_FILE_PATH, [' ']);
+      writeLine(THEME_FILE_PATH, ' ');
       await runMigration();
-      expect(splitFile(THEME_FILE_PATH)).toEqual([' ']);
+      expect(readFile(THEME_FILE_PATH)).toEqual(' ');
     });
   });
 });
