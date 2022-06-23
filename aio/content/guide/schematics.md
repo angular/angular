@@ -12,7 +12,7 @@ Use schematics to enforce architectural rules and conventions, making your proje
 
 Schematics are part of the Angular ecosystem.
 The [Angular CLI](guide/glossary#cli)  uses schematics to apply transforms to a web-app project.
-You can modify these schematics, and define new ones to do things like update your code to fix breaking changes in a dependency, for example, or to add a new configuration option or framework to an existing project.
+You can update these schematics, and define new ones to do things like update your code to fix breaking changes in a dependency, for example, or to add a new configuration option or framework to an existing project.
 
 Schematics that are included in the `@schematics/angular` collection are run by default by the commands `ng generate` and `ng add`.
 The package contains named schematics that configure the options that are available to the CLI for `ng generate` sub-commands, such as `ng generate component` and `ng generate service`.
