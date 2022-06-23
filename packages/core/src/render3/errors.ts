@@ -18,13 +18,8 @@ import {stringifyForError} from './util/stringify_utils';
 
 /** Verifies that a given type is a Standalone Component. */
 export function assertStandaloneComponentType(type: Type<unknown>) {
-  const componentDef = getComponentDef(type);
-  if (!componentDef) {
-    throw new RuntimeError(
-        RuntimeErrorCode.MISSING_GENERATED_DEF,
-        `The ${stringifyForError(type)} is not an Angular component, ` +
-            `make sure it has the \`@Component\` decorator.`);
-  }
+  assertComponentDef(type);
+  const componentDef = getComponentDef(type)!;
   if (!componentDef.standalone) {
     throw new RuntimeError(
         RuntimeErrorCode.TYPE_IS_NOT_STANDALONE,
@@ -32,6 +27,16 @@ export function assertStandaloneComponentType(type: Type<unknown>) {
             `but Angular expects to have a standalone component here. ` +
             `Please make sure the ${stringifyForError(type)} component has ` +
             `the \`standalone: true\` flag in the decorator.`);
+  }
+}
+
+/** Verifies whether a given type is a component */
+export function assertComponentDef(type: Type<unknown>) {
+  if (!getComponentDef(type)) {
+    throw new RuntimeError(
+        RuntimeErrorCode.MISSING_GENERATED_DEF,
+        `The ${stringifyForError(type)} is not an Angular component, ` +
+            `make sure it has the \`@Component\` decorator.`);
   }
 }
 
