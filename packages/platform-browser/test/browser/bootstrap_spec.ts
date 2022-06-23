@@ -7,10 +7,11 @@
  */
 
 import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
-import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, InjectionToken, Injector, Input, LOCALE_ID, NgModule, NgModuleRef, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, Type, VERSION} from '@angular/core';
+import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, InjectionToken, Injector, Input, LOCALE_ID, NgModule, NgModuleRef, NgZone, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, Type, VERSION} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
+import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {inject, TestBed} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
@@ -314,6 +315,15 @@ function bootstrap(
             'make sure it has the `@Component` decorator.';
         expect(() => bootstrapApplication(NonAnnotatedClass)).toThrowError(msg);
       });
+
+      it('should be possible to provide ngZone* options when bootstrapping standalone component',
+         async () => {
+           const appRef = await bootstrapApplication(SimpleComp, {providers: [], ngZone: 'noop'});
+           // Not sure if it's the right way of getting `ApplicationRef` because it's marked as
+           // `@internal`.
+           const ngZone = appRef['_injector'].get(NgZone);
+           expect(ngZone).toBeInstanceOf(NoopNgZone);
+         });
     });
 
     it('should throw if bootstrapped Directive is not a Component', done => {

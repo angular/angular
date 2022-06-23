@@ -22,9 +22,10 @@ import { SecurityContext } from '@angular/core';
 import { StaticProvider } from '@angular/core';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
+import { ɵBootstrapOptions } from '@angular/core';
 
 // @public
-export interface ApplicationConfig {
+export interface ApplicationConfig extends ɵBootstrapOptions {
     providers: Array<Provider | ImportedNgModuleProviders>;
 }
 

@@ -998,9 +998,9 @@ export const platformCore: (extraProviders?: StaticProvider[] | undefined) => Pl
 
 // @public
 export class PlatformRef {
-    bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: (CompilerOptions & BootstrapOptions) | Array<CompilerOptions & BootstrapOptions>): Promise<NgModuleRef<M>>;
+    bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: (CompilerOptions & ɵBootstrapOptions) | Array<CompilerOptions & ɵBootstrapOptions>): Promise<NgModuleRef<M>>;
     // @deprecated
-    bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions): Promise<NgModuleRef<M>>;
+    bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: ɵBootstrapOptions): Promise<NgModuleRef<M>>;
     destroy(): void;
     get destroyed(): boolean;
     get injector(): Injector;

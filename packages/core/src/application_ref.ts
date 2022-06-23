@@ -189,13 +189,15 @@ export function internalBootstrapApplication(config: {
   rootComponent: Type<unknown>,
   appProviders?: Array<Provider|ImportedNgModuleProviders>,
   platformProviders?: Provider[],
+  bootstrapOptions?: BootstrapOptions
 }): Promise<ApplicationRef> {
   const {rootComponent, appProviders, platformProviders} = config;
   NG_DEV_MODE && assertStandaloneComponentType(rootComponent);
 
   const platformInjector = createOrReusePlatformInjector(platformProviders as StaticProvider[]);
 
-  const ngZone = new NgZone(getNgZoneOptions());
+  const ngZone =
+      getNgZone(config.bootstrapOptions?.ngZone, getNgZoneOptions(config.bootstrapOptions));
 
   return ngZone.run(() => {
     // Create root application injector based on a set of providers configured at the platform
@@ -550,8 +552,8 @@ interface NgZoneOptions {
 function getNgZoneOptions(options?: BootstrapOptions): NgZoneOptions {
   return {
     enableLongStackTrace: typeof ngDevMode === 'undefined' ? false : !!ngDevMode,
-    shouldCoalesceEventChangeDetection: !!(options && options.ngZoneEventCoalescing) || false,
-    shouldCoalesceRunChangeDetection: !!(options && options.ngZoneRunCoalescing) || false,
+    shouldCoalesceEventChangeDetection: options?.ngZoneEventCoalescing || false,
+    shouldCoalesceRunChangeDetection: options?.ngZoneRunCoalescing || false,
   };
 }
 
