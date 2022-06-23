@@ -15,7 +15,7 @@
   },
   "scripts": {
     "postinstall": "node tools/postinstall/apply-patches.js",
-    "ng-dev": "ts-node --esm --project .ng-dev/tsconfig.json node_modules/@angular/dev-infra-private/ng-dev/bundles/cli.mjs",
+    "ng-dev": "cross-env TS_NODE_PROJECT=$PWD/.ng-dev/tsconfig.json TS_NODE_TRANSPILE_ONLY=1 node --no-warnings --loader ts-node/esm node_modules/@angular/dev-infra-private/ng-dev/bundles/cli.mjs",
     "build": "ts-node --esm --project scripts/tsconfig.json ./scripts/build-packages-dist-main.mts",
     "build-docs-content": "ts-node --esm --project scripts/tsconfig.json ./scripts/build-docs-content-main.mts",
     "build-and-check-release-output": "ts-node --esm --project scripts/tsconfig.json scripts/build-and-check-release-output.mts",
@@ -166,6 +166,7 @@
     "browser-sync": "2.26.13",
     "chalk": "^4.1.0",
     "codelyzer": "^6.0.2",
+    "cross-env": "^7.0.3",
     "date-fns": "^2.28.0",
     "dgeni": "^0.4.14",
     "dgeni-packages": "^0.29.3",

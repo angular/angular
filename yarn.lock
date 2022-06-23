@@ -329,7 +329,6 @@
 
 "@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#f2ca0a57e8ede868dc51c3b80a0d3ca56d5fdf65":
   version "0.0.0-04a54cdfa050a7b6ed1dab8f0054f85022827ed5"
-  uid f2ca0a57e8ede868dc51c3b80a0d3ca56d5fdf65
   resolved "https://github.com/angular/dev-infra-private-builds.git#f2ca0a57e8ede868dc51c3b80a0d3ca56d5fdf65"
   dependencies:
     "@angular-devkit/build-angular" "14.1.0-next.1"
@@ -6414,6 +6413,13 @@ cross-env@^5.1.3:
   integrity sha512-1yHhtcfAd1r4nwQgknowuUNfIT9E8dOMMspC36g45dN+iD1blloi7xp8X/xAIDnjHWyt1uQ8PHk2fkNaym7soQ==
   dependencies:
     cross-spawn "^6.0.5"
+
+cross-env@^7.0.3:
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-7.0.3.tgz#865264b29677dc015ba8418918965dd232fc54cf"
+  integrity sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==
+  dependencies:
+    cross-spawn "^7.0.1"
 
 cross-spawn@^5.0.1:
   version "5.1.0"
