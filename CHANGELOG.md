@@ -1,3 +1,19 @@
+<a name="14.1.0-next.2"></a>
+# 14.1.0-next.2 "tin-box" (2022-06-23)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f6bcbb1b0](https://github.com/angular/components/commit/f6bcbb1b04806026c39b2e361b745c0733f8ea20) | fix | **scrolling:** content jumping in appendOnly mode ([#25097](https://github.com/angular/components/pull/25097)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [00f743e68](https://github.com/angular/components/commit/00f743e68c15d85ccd09444115990564a179953c) | fix | **button-toggle:** selected state not visible in high contrast mode ([#25114](https://github.com/angular/components/pull/25114)) |
+| [7d87068c7](https://github.com/angular/components/commit/7d87068c724250d17f15d238f5e8f5e19b3adb13) | fix | **datepicker:** actions not re-rendering if swapped out while calendar is open ([#25123](https://github.com/angular/components/pull/25123)) |
+## Special Thanks
+Kristiyan Kostadinov, Paul Gschwendtner and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.3"></a>
 # 14.0.3 "diamond-orb" (2022-06-23)
 ### cdk
