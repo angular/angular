@@ -108,6 +108,17 @@ To create a translation file for a locale or language, complete the following ac
 1.  Send the *translation* file to your translator.
 1.  Repeat the above steps for each language you want to add to your application.
 
+### Subsequent updates
+For an existing application, whenever you add or update translated texts, the translation files need to be updated as well.
+
+To archive this, you can repeat the steps above ([Create a translation file for each language][AioGuideI18nCommonTranslationFilesExtractTheSourceLanguageFile]).
+
+<div class="alert is-helpful">
+
+If you'd like to keep your existing translations, you can manually update `message.{locale}.xlf` or use additional tooling, such as [GithubDanielScNgExtractI18nMerge][ng-extract-i18n-merge] or [GithubKyubisationAngularT9n][angular-t9n].
+
+</div>
+
 ### `extract-i18n` example for French
 
 For example, to create a French translation file, complete the following actions.
@@ -263,6 +274,10 @@ The following example displays both translation units after translating.
 <!-- external links -->
 
 [GithubGoogleAppResourceBundleWikiApplicationresourcebundlespecification]: https://github.com/google/app-resource-bundle/wiki/ApplicationResourceBundleSpecification "ApplicationResourceBundleSpecification | google/app-resource-bundle | GitHub"
+
+[GithubDanielScNgExtractI18nMerge]: https://github.com/daniel-sc/ng-extract-i18n-merge "daniel-sc/ng-extract-i18n-merge | GitHub"
+
+[GithubKyubisationAngularT9n]: https://github.com/kyubisation/angular-t9n "kyubisation/angular-t9n | GitHub"
 
 [GithubUnicodeOrgCldrStagingChartsLatestSupplementalLanguagePluralRulesHtml]: https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html "Language Plural Rules - CLDR Charts | Unicode | GitHub"
 
