@@ -137,13 +137,7 @@ mat-toolbar.app-toolbar {
           &[href^="http:"],
           &[href^="https:"] {
             .nav-link-inner {
-              display: inline-flex;
-              align-items: center;
-              &::after {
-                content: "\e89e"; // codepoint for "open_in_new"
-                margin-left: 0.3rem;
-                font-family: "Material Icons";
-              }
+              @include mixins.external-link-with-icon();
             }
           }
 
