@@ -1,3 +1,19 @@
+<a name="14.0.3"></a>
+# 14.0.3 "diamond-orb" (2022-06-23)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2ad1677c7](https://github.com/angular/components/commit/2ad1677c7370830b67f54fc4191aae98df90646c) | fix | **scrolling:** content jumping in appendOnly mode ([#25097](https://github.com/angular/components/pull/25097)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8d5882cf1](https://github.com/angular/components/commit/8d5882cf177aae2dabed0e0924c1aa4b6e296ece) | fix | **button-toggle:** selected state not visible in high contrast mode ([#25114](https://github.com/angular/components/pull/25114)) |
+| [8df5efe08](https://github.com/angular/components/commit/8df5efe0824ac8cc5f83be45c0c856b74bbcf862) | fix | **datepicker:** actions not re-rendering if swapped out while calendar is open ([#25123](https://github.com/angular/components/pull/25123)) |
+## Special Thanks
+Kristiyan Kostadinov, Paul Gschwendtner and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.0-next.1"></a>
 # 14.1.0-next.1 "wool-window" (2022-06-16)
 ### cdk
