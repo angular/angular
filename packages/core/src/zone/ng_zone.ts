@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {EventEmitter} from '../event_emitter';
 import {global} from '../util/global';
 import {noop} from '../util/noop';
@@ -126,7 +127,9 @@ export class NgZone {
     shouldCoalesceRunChangeDetection = false
   }) {
     if (typeof Zone == 'undefined') {
-      throw new Error(`In this configuration Angular requires Zone.js`);
+      throw new RuntimeError(
+          RuntimeErrorCode.MISSING_ZONEJS,
+          ngDevMode && `In this configuration Angular requires Zone.js`);
     }
 
     Zone.assertZonePatched();
@@ -159,13 +162,17 @@ export class NgZone {
 
   static assertInAngularZone(): void {
     if (!NgZone.isInAngularZone()) {
-      throw new Error('Expected to be in Angular Zone, but it is not!');
+      throw new RuntimeError(
+          RuntimeErrorCode.UNEXPECTED_ZONE_STATE,
+          ngDevMode && 'Expected to be in Angular Zone, but it is not!');
     }
   }
 
   static assertNotInAngularZone(): void {
     if (NgZone.isInAngularZone()) {
-      throw new Error('Expected to not be in Angular Zone, but it is!');
+      throw new RuntimeError(
+          RuntimeErrorCode.UNEXPECTED_ZONE_STATE,
+          ngDevMode && 'Expected to not be in Angular Zone, but it is!');
     }
   }
 
