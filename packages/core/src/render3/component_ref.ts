@@ -10,10 +10,10 @@ import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detec
 import {Injector} from '../di/injector';
 import {InjectFlags} from '../di/interface/injector';
 import {ProviderToken} from '../di/provider_token';
-import {EnvironmentInjector} from '../di/r3_injector';
-import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
+import {EnvironmentInjector, getNullInjector} from '../di/r3_injector';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
-import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
+import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as AbstractComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {createElementRef, ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
@@ -26,6 +26,7 @@ import {assertComponentType} from './assert';
 import {createRootComponent, createRootComponentView, createRootContext, LifecycleHooksFeature} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
+import {assertComponentDef} from './errors';
 import {reportUnknownPropertyError} from './instructions/element_validation';
 import {createLView, createTView, initializeInputAndOutputAliases, locateHostElement, markDirtyIfOnPush, renderView, setInputsForProperty} from './instructions/shared';
 import {ComponentDef} from './interfaces/definition';
@@ -131,7 +132,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
   override create(
       injector: Injector, projectableNodes?: any[][]|undefined, rootSelectorOrNode?: any,
       environmentInjector?: viewEngine_NgModuleRef<any>|EnvironmentInjector|
-      undefined): viewEngine_ComponentRef<T> {
+      undefined): AbstractComponentRef<T> {
     environmentInjector = environmentInjector || this.ngModule;
 
     let realEnvironmentInjector = environmentInjector instanceof EnvironmentInjector ?
@@ -260,7 +261,7 @@ export function injectComponentFactoryResolver(): viewEngine_ComponentFactoryRes
  * method.
  *
  */
-export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
+export class ComponentRef<T> extends AbstractComponentRef<T> {
   override instance: T;
   override hostView: ViewRef<T>;
   override changeDetectorRef: ViewEngine_ChangeDetectorRef;
@@ -306,4 +307,69 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
   override onDestroy(callback: () => void): void {
     this.hostView.onDestroy(callback);
   }
+}
+
+/**
+ * Creates a `ComponentRef` instance based on provided Component and a set of options.
+ *
+ * @usageNotes
+ *
+ * The example below demonstrates how the `createComponent` function can be used
+ * to create an instance of a ComponentRef dynamically and attach it to an ApplicationRef,
+ * so that it gets included into change detection cycles.
+ *
+ * ```typescript
+ * @Component({
+ *   standalone: true,
+ *   template: `Hello {{ name }}!`
+ * })
+ * class HelloComponent {
+ *   name = 'Angular';
+ * }
+ *
+ * @Component({
+ *   standalone: true,
+ *   template: `<div id="hello-component-host"></div>`
+ * })
+ * class RootComponent {}
+ *
+ * // Bootstrap an application.
+ * const applicationRef = await bootstrapApplication(RootComponent);
+ *
+ * // Locate a DOM node that would be used as a host.
+ * const host = document.getElementById('hello-component-host');
+ *
+ * // Get an `EnvironmentInjector` instance from the `ApplicationRef`.
+ * const environmentInjector = applicationRef.injector;
+ *
+ * // We can now create a `ComponentRef` instance.
+ * const componentRef = createComponent(HelloComponent, {host, environmentInjector});
+ *
+ * // Last step is to register the newly created ref using the `ApplicationRef` instance
+ * // to include the component view into change detection cycles.
+ * applicationRef.attachView(componentRef.hostView);
+ * ```
+ *
+ * @param component Component class reference.
+ * @param options Set of options to use:
+ *  * `host`: A DOM node that should act as a host node for the component.
+ *  * `environmentInjector`: An `EnvironmentInjector` instance to be used for the component, see
+ * additional info about it at https://angular.io/guide/standalone-components#environment-injectors.
+ *  * `elementInjector` (optional): An `ElementInjector` instance, see additional info about it at
+ * https://angular.io/guide/hierarchical-dependency-injection#elementinjector.
+ *  * `projectableNodes` (optional): A list of DOM nodes that should be projected through
+ *                      [`<ng-content>`](api/core/ng-content) of the new component instance.
+ * @returns
+ */
+export function createComponent<C>(component: Type<C>, options: {
+  hostElement?: Element, environmentInjector: EnvironmentInjector,
+  elementInjector?: Injector,
+  projectableNodes?: Node[][],
+}): AbstractComponentRef<C> {
+  ngDevMode && assertComponentDef(component);
+  const componentDef = getComponentDef(component)!;
+  const elementInjector = options.elementInjector || getNullInjector();
+  const factory = new ComponentFactory<C>(componentDef);
+  return factory.create(
+      elementInjector, options.projectableNodes, options.hostElement, options.environmentInjector);
 }
