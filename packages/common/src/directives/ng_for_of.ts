@@ -133,7 +133,10 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * @ngModule CommonModule
  * @publicApi
  */
-@Directive({selector: '[ngFor][ngForOf]'})
+@Directive({
+  selector: '[ngFor][ngForOf]',
+  standalone: true,
+})
 export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
   /**
    * The value of the iterable expression, which can be used as a

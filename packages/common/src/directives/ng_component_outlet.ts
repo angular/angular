@@ -68,7 +68,10 @@ import {ComponentRef, createNgModuleRef, Directive, Injector, Input, NgModuleFac
  * @publicApi
  * @ngModule CommonModule
  */
-@Directive({selector: '[ngComponentOutlet]'})
+@Directive({
+  selector: '[ngComponentOutlet]',
+  standalone: true,
+})
 export class NgComponentOutlet implements OnChanges, OnDestroy {
   @Input() ngComponentOutlet: Type<any>|null = null;
 

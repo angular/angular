@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
+import {CommonModule, NgIf, ɵgetDOM as getDOM} from '@angular/common';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -250,6 +250,26 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
            fixture.detectChanges();
            expect(fixture.nativeElement).toHaveText('false');
          }));
+
+      it('should be available as a standalone directive', () => {
+        @Component({
+          selector: 'test-component',
+          imports: [NgIf],
+          template: `
+            <div *ngIf="true">Hello</div>
+            <div *ngIf="false">World</div>
+          `,
+          standalone: true,
+        })
+        class TestComponent {
+        }
+
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.textContent).toBe('Hello');
+        expect(fixture.nativeElement.textContent).not.toBe('World');
+      });
     });
 
     describe('Type guarding', () => {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgStyle} from '@angular/common';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
@@ -209,6 +209,23 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
       const target: HTMLElement = fixture.nativeElement.querySelector('div');
       expect(getComputedStyle(target).getPropertyValue('width')).toEqual('100px');
+    });
+
+    it('should be available as a standalone directive', () => {
+      @Component({
+        selector: 'test-component',
+        imports: [NgStyle],
+        template: `<div [ngStyle]="{'width.px': expr}"></div>`,
+        standalone: true,
+      })
+      class TestComponent {
+        expr = 400;
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      expectNativeEl(fixture).toHaveCssStyle({'width': '400px'});
     });
   });
 }

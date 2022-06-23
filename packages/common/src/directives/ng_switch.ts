@@ -101,7 +101,10 @@ export class SwitchView {
  * @see [Structural Directives](guide/structural-directives)
  *
  */
-@Directive({selector: '[ngSwitch]'})
+@Directive({
+  selector: '[ngSwitch]',
+  standalone: true,
+})
 export class NgSwitch {
   // TODO(issue/24571): remove '!'.
   private _defaultViews!: SwitchView[];
@@ -189,7 +192,10 @@ export class NgSwitch {
  * @see `NgSwitchDefault`
  *
  */
-@Directive({selector: '[ngSwitchCase]'})
+@Directive({
+  selector: '[ngSwitchCase]',
+  standalone: true,
+})
 export class NgSwitchCase implements DoCheck {
   private _view: SwitchView;
   /**
@@ -231,7 +237,10 @@ export class NgSwitchCase implements DoCheck {
  * @see `NgSwitchCase`
  *
  */
-@Directive({selector: '[ngSwitchDefault]'})
+@Directive({
+  selector: '[ngSwitchDefault]',
+  standalone: true,
+})
 export class NgSwitchDefault {
   constructor(
       viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
