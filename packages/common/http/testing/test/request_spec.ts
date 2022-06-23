@@ -109,4 +109,17 @@ describe('HttpClient TestRequest', () => {
               ' GET /some-other-url?query=world, POST /and-another-url');
     }
   });
+
+  it('accepts a URL object', () => {
+    const mock = new HttpClientTestingBackend();
+    const client = new HttpClient(mock);
+
+    let resp: any;
+    client.post(new URL('http://example.com/test?foo=1&bar=2'), {}).subscribe(body => resp = body);
+
+    const req = mock.expectOne(new URL('http://example.com/test?foo=1&bar=2'));
+    req.flush({test: true});
+
+    expect(resp).toEqual({test: true});
+  });
 });

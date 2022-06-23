@@ -152,7 +152,10 @@ export class HttpRequest<T> {
    */
   readonly urlWithParams: string;
 
-  constructor(method: 'DELETE'|'GET'|'HEAD'|'JSONP'|'OPTIONS', url: string, init?: {
+  /** URL used when constructing the request. */
+  readonly url: string;
+
+  constructor(method: 'DELETE'|'GET'|'HEAD'|'JSONP'|'OPTIONS', url: string|URL, init?: {
     headers?: HttpHeaders,
     context?: HttpContext,
     reportProgress?: boolean,
@@ -160,7 +163,7 @@ export class HttpRequest<T> {
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
   });
-  constructor(method: 'POST'|'PUT'|'PATCH', url: string, body: T|null, init?: {
+  constructor(method: 'POST'|'PUT'|'PATCH', url: string|URL, body: T|null, init?: {
     headers?: HttpHeaders,
     context?: HttpContext,
     reportProgress?: boolean,
@@ -168,7 +171,7 @@ export class HttpRequest<T> {
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
   });
-  constructor(method: string, url: string, body: T|null, init?: {
+  constructor(method: string, url: string|URL, body: T|null, init?: {
     headers?: HttpHeaders,
     context?: HttpContext,
     reportProgress?: boolean,
@@ -177,7 +180,7 @@ export class HttpRequest<T> {
     withCredentials?: boolean,
   });
   constructor(
-      method: string, readonly url: string, third?: T|{
+      method: string, url: string|URL, third?: T|{
         headers?: HttpHeaders,
         context?: HttpContext,
         reportProgress?: boolean,
@@ -193,6 +196,7 @@ export class HttpRequest<T> {
         responseType?: 'arraybuffer'|'blob'|'json'|'text',
         withCredentials?: boolean,
       }) {
+    this.url = url = url.toString();
     this.method = method.toUpperCase();
     // Next, need to figure out which argument holds the HttpRequestInit
     // options, if any.

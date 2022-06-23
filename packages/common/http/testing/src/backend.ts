@@ -49,9 +49,10 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
   /**
    * Helper function to search for requests in the list of open requests.
    */
-  private _match(match: string|RequestMatch|((req: HttpRequest<any>) => boolean)): TestRequest[] {
-    if (typeof match === 'string') {
-      return this.open.filter(testReq => testReq.request.urlWithParams === match);
+  private _match(match: string|URL|RequestMatch|
+                 ((req: HttpRequest<any>) => boolean)): TestRequest[] {
+    if (typeof match === 'string' || match instanceof URL) {
+      return this.open.filter(testReq => testReq.request.urlWithParams === match.toString());
     } else if (typeof match === 'function') {
       return this.open.filter(testReq => match(testReq.request));
     } else {
@@ -65,7 +66,7 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
    * Search for requests in the list of open requests, and return all that match
    * without asserting anything about the number of matches.
    */
-  match(match: string|RequestMatch|((req: HttpRequest<any>) => boolean)): TestRequest[] {
+  match(match: string|URL|RequestMatch|((req: HttpRequest<any>) => boolean)): TestRequest[] {
     const results = this._match(match);
     results.forEach(result => {
       const index = this.open.indexOf(result);
@@ -83,8 +84,9 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
    * Requests returned through this API will no longer be in the list of open requests,
    * and thus will not match twice.
    */
-  expectOne(match: string|RequestMatch|((req: HttpRequest<any>) => boolean), description?: string):
-      TestRequest {
+  expectOne(
+      match: string|URL|RequestMatch|((req: HttpRequest<any>) => boolean),
+      description?: string): TestRequest {
     description = description || this.descriptionFromMatcher(match);
     const matches = this.match(match);
     if (matches.length > 1) {
@@ -107,8 +109,9 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
    * Expect that no outstanding requests match the given matcher, and throw an error
    * if any do.
    */
-  expectNone(match: string|RequestMatch|((req: HttpRequest<any>) => boolean), description?: string):
-      void {
+  expectNone(
+      match: string|URL|RequestMatch|((req: HttpRequest<any>) => boolean),
+      description?: string): void {
     description = description || this.descriptionFromMatcher(match);
     const matches = this.match(match);
     if (matches.length > 0) {
@@ -134,10 +137,10 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
     }
   }
 
-  private descriptionFromMatcher(matcher: string|RequestMatch|
+  private descriptionFromMatcher(matcher: string|URL|RequestMatch|
                                  ((req: HttpRequest<any>) => boolean)): string {
-    if (typeof matcher === 'string') {
-      return `Match URL: ${matcher}`;
+    if (typeof matcher === 'string' || matcher instanceof URL) {
+      return `Match URL: ${matcher.toString()}`;
     } else if (typeof matcher === 'object') {
       const method = matcher.method || '(any)';
       const url = matcher.url || '(any)';

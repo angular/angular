@@ -17,7 +17,7 @@ import {TestRequest} from './request';
  */
 export interface RequestMatch {
   method?: string;
-  url?: string;
+  url?: string|URL;
 }
 
 /**
@@ -30,7 +30,8 @@ export abstract class HttpTestingController {
   /**
    * Search for requests that match the given parameter, without any expectations.
    */
-  abstract match(match: string|RequestMatch|((req: HttpRequest<any>) => boolean)): TestRequest[];
+  abstract match(match: string|URL|RequestMatch|
+                 ((req: HttpRequest<any>) => boolean)): TestRequest[];
 
   /**
    * Expect that a single request has been made which matches the given URL, and return its
@@ -39,7 +40,7 @@ export abstract class HttpTestingController {
    * If no such request has been made, or more than one such request has been made, fail with an
    * error message including the given request description, if any.
    */
-  abstract expectOne(url: string, description?: string): TestRequest;
+  abstract expectOne(url: string|URL, description?: string): TestRequest;
 
   /**
    * Expect that a single request has been made which matches the given parameters, and return
@@ -68,7 +69,7 @@ export abstract class HttpTestingController {
    * error message including the given request description, if any.
    */
   abstract expectOne(
-      match: string|RequestMatch|((req: HttpRequest<any>) => boolean),
+      match: string|URL|RequestMatch|((req: HttpRequest<any>) => boolean),
       description?: string): TestRequest;
 
   /**
@@ -77,7 +78,7 @@ export abstract class HttpTestingController {
    * If a matching request has been made, fail with an error message including the given request
    * description, if any.
    */
-  abstract expectNone(url: string, description?: string): void;
+  abstract expectNone(url: string|URL, description?: string): void;
 
   /**
    * Expect that no requests have been made which match the given parameters.
@@ -102,7 +103,8 @@ export abstract class HttpTestingController {
    * description, if any.
    */
   abstract expectNone(
-      match: string|RequestMatch|((req: HttpRequest<any>) => boolean), description?: string): void;
+      match: string|URL|RequestMatch|((req: HttpRequest<any>) => boolean),
+      description?: string): void;
 
   /**
    * Verify that no unmatched requests are outstanding.

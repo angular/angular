@@ -23,15 +23,15 @@ export class HttpClientTestingModule {
 
 // @public
 export abstract class HttpTestingController {
-    abstract expectNone(url: string, description?: string): void;
+    abstract expectNone(url: string | URL, description?: string): void;
     abstract expectNone(params: RequestMatch, description?: string): void;
     abstract expectNone(matchFn: ((req: HttpRequest<any>) => boolean), description?: string): void;
-    abstract expectNone(match: string | RequestMatch | ((req: HttpRequest<any>) => boolean), description?: string): void;
-    abstract expectOne(url: string, description?: string): TestRequest;
+    abstract expectNone(match: string | URL | RequestMatch | ((req: HttpRequest<any>) => boolean), description?: string): void;
+    abstract expectOne(url: string | URL, description?: string): TestRequest;
     abstract expectOne(params: RequestMatch, description?: string): TestRequest;
     abstract expectOne(matchFn: ((req: HttpRequest<any>) => boolean), description?: string): TestRequest;
-    abstract expectOne(match: string | RequestMatch | ((req: HttpRequest<any>) => boolean), description?: string): TestRequest;
-    abstract match(match: string | RequestMatch | ((req: HttpRequest<any>) => boolean)): TestRequest[];
+    abstract expectOne(match: string | URL | RequestMatch | ((req: HttpRequest<any>) => boolean), description?: string): TestRequest;
+    abstract match(match: string | URL | RequestMatch | ((req: HttpRequest<any>) => boolean)): TestRequest[];
     abstract verify(opts?: {
         ignoreCancelled?: boolean;
     }): void;
@@ -42,7 +42,7 @@ export interface RequestMatch {
     // (undocumented)
     method?: string;
     // (undocumented)
-    url?: string;
+    url?: string | URL;
 }
 
 // @public

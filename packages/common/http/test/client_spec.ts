@@ -122,6 +122,13 @@ import {toArray} from 'rxjs/operators';
         expect(req.request.reportProgress).toEqual(true);
         req.flush({});
       });
+      it('using a URL object', done => {
+        client.get(new URL('http://example.com/test?foo=1&bar=2')).subscribe(res => {
+          expect((res as any)['data']).toEqual('hello world');
+          done();
+        });
+        backend.expectOne('http://example.com/test?foo=1&bar=2').flush({'data': 'hello world'});
+      });
     });
     describe('makes a POST request', () => {
       it('with text data', done => {
