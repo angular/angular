@@ -54,7 +54,7 @@
     "ci-notify-slack-failure": "ts-node --esm --project scripts/tsconfig.json scripts/circleci/notify-slack-job-failure.mts",
     "prepare": "husky install"
   },
-  "version": "14.1.0-next.2",
+  "version": "15.0.0-next.0",
   "dependencies": {
     "@angular/animations": "^14.0.1",
     "@angular/common": "^14.0.1",
@@ -76,7 +76,7 @@
     "@angular/bazel": "^14.0.1",
     "@angular/cli": "^14.0.1",
     "@angular/compiler-cli": "^14.0.1",
-    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#f2ca0a57e8ede868dc51c3b80a0d3ca56d5fdf65",
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#714bb709f6d7ee3386a7f1097a75a54ab92c285d",
     "@angular/localize": "^14.0.1",
     "@angular/platform-browser-dynamic": "^14.0.1",
     "@angular/platform-server": "^14.0.1",

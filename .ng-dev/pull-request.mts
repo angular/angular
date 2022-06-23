@@ -16,4 +16,8 @@ export const pullRequest: PullRequestConfig = {
   mergeReadyLabel: 'merge ready',
   commitMessageFixupLabel: 'commit message fixup',
   caretakerNoteLabel: 'caretaker note',
+
+  // TODO(EXCEPTIONAL_MINOR): Remove this when v15 moves into RC / or when exceptional
+  // minors are supported.
+  __specialTreatRcAsExceptionalMinor: true,
 };
