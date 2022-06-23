@@ -5,6 +5,7 @@ import * as path from 'path';
 
 import {compareNodes} from '../../../../../tools/postcss/compare-nodes';
 import {createLocalAngularPackageImporter} from '../../../../../tools/sass/local-sass-importer';
+import {pathToFileURL} from 'url';
 
 // Note: For Windows compatibility, we need to resolve the directory paths through runfiles
 // which are guaranteed to reside in the source tree.
@@ -12,6 +13,15 @@ const testDir = path.join(runfiles.resolvePackageRelative('../_all-theme.scss'),
 const packagesDir = path.join(runfiles.resolveWorkspaceRelative('src/cdk/_index.scss'), '../..');
 
 const localPackageSassImporter = createLocalAngularPackageImporter(packagesDir);
+
+const mdcSassImporter = {
+  findFileUrl: (url: string) => {
+    if (url.toString().startsWith('@material')) {
+      return pathToFileURL(path.join(runfiles.resolveWorkspaceRelative('./node_modules'), url));
+    }
+    return null;
+  },
+};
 
 describe('theming api', () => {
   /** Map of known selectors for density styles and their corresponding AST rule. */
@@ -51,8 +61,6 @@ describe('theming api', () => {
   });
 
   it('should not warn if color styles and density are not duplicated', () => {
-    spyOn(process.stderr, 'write').and.callThrough();
-
     const parsed = parse(
       transpile(`
       $theme: mat-light-theme((
@@ -78,7 +86,7 @@ describe('theming api', () => {
 
     expect(hasDensityStyles(parsed, null)).toBe('all');
     expect(hasDensityStyles(parsed, '.dark-theme')).toBe('none');
-    expect(process.stderr.write).toHaveBeenCalledTimes(0);
+    expectNoWarning(/The same color styles are generated multiple times/);
   });
 
   it('should warn if default density styles are duplicated', () => {
@@ -217,7 +225,6 @@ describe('theming api', () => {
     });
 
     it('not warn if default density would be generated multiple times', () => {
-      spyOn(process.stderr, 'write');
       transpile(`
         $light-theme: mat-light-theme($mat-red, $mat-blue);
         $dark-theme: mat-dark-theme($mat-red, $mat-blue);
@@ -228,7 +235,7 @@ describe('theming api', () => {
         }
       `);
 
-      expect(process.stderr.write).toHaveBeenCalledTimes(0);
+      expectNoWarning(/The same density styles are generated multiple times/);
     });
 
     it('should be possible to modify color configuration directly', () => {
@@ -319,25 +326,36 @@ describe('theming api', () => {
       `,
       {
         loadPaths: [testDir],
-        importers: [localPackageSassImporter],
+        importers: [localPackageSassImporter, mdcSassImporter],
       },
     ).css.toString();
   }
 
+  /** Expects the given warning to be reported in Sass. */
+  function expectWarning(message: RegExp) {
+    expect(getMatchingWarning(message))
+      .withContext('Expected warning to be printed.')
+      .toBeDefined();
+  }
+
+  /** Expects the given warning not to be reported in Sass. */
+  function expectNoWarning(message: RegExp) {
+    expect(getMatchingWarning(message))
+      .withContext('Expected no warning to be printed.')
+      .toBeUndefined();
+  }
+
   /**
-   * Expects the given warning to be reported in Sass. Dart sass directly writes
+   * Gets first instance of the given warning reported in Sass. Dart sass directly writes
    * to the `process.stderr` stream, so we spy on the `stderr.write` method. We
    * cannot expect a specific amount of writes as Sass calls `stderr.write` multiple
    * times for a warning (e.g. spacing and stack trace)
    */
-  function expectWarning(message: RegExp) {
+  function getMatchingWarning(message: RegExp) {
     const writeSpy = process.stderr.write as jasmine.Spy;
-    const match = writeSpy.calls
-      .all()
-      .find(
-        (s: jasmine.CallInfo<typeof process.stderr.write>) =>
-          typeof s.args[0] === 'string' && message.test(s.args[0]),
-      );
-    expect(match).withContext('Expected warning to be printed.').toBeDefined();
+    return (writeSpy.calls?.all() ?? []).find(
+      (s: jasmine.CallInfo<typeof process.stderr.write>) =>
+        typeof s.args[0] === 'string' && message.test(s.args[0]),
+    );
   }
 });
