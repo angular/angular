@@ -105,8 +105,7 @@ Command syntax is shown as follows:
 
 *   Typically, the name of a generated artifact can be given as an argument to the command or specified with the `--name` option.
 
-*   Argument and option names can be given in either [camelCase or dash-case](guide/glossary#case-types).
-    `--myOptionName` is equivalent to `--my-option-name`.
+*   Argument and option names must be given in [dash-case](guide/glossary#case-types): `--my-option-name`.
 
 ### Boolean options
 
