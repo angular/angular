@@ -177,11 +177,33 @@ if (_isNode || typeof Element !== 'undefined') {
   }
 
   _query = (element: any, selector: string, multi: boolean): any[] => {
-    if (multi) {
-      return Array.from(element.querySelectorAll(selector));
+    return queryFn(element, selector, multi, [], true);
+    function queryFn(
+        element: any, selector: string, multi: boolean, matched: any[] = [],
+        skipElement = false): any[] {
+      const matches = skipElement ? false : element.matches(selector);
+
+      if (!multi && matches) {
+        return [element];
+      }
+
+      if (multi && matches) {
+        matched.push(element);
+      }
+
+      const childEls = Array.from(element.children);
+      const shadowChildEls = element.shadowRoot ? Array.from(element.shadowRoot.children) : [];
+      const allChildEls = [...childEls, ...shadowChildEls];
+
+      for (let i = 0; i < allChildEls.length; i++) {
+        const result = queryFn(allChildEls[i], selector, multi);
+        if (!multi && result.length) {
+          return result;
+        }
+        matched = matched.concat(result);
+      }
+      return matched;
     }
-    const elem = element.querySelector(selector);
-    return elem ? [elem] : [];
   };
 }
 

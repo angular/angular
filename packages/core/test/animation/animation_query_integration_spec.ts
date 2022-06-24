@@ -1844,6 +1844,292 @@ describe('animation query tests', function() {
     });
   });
 
+  describe('query() with shadowDom view emulation', () => {
+    it('should be able to query a single element inside inside a component with shadowDom view encapsulation',
+       () => {
+         @Component({
+           selector: 'child-cmp',
+           encapsulation: ViewEncapsulation.ShadowDom,
+           template: `<p class="p-element"></p>`,
+         })
+         class ChildCmp {
+         }
+
+         @Component({
+           selector: 'parent-cmp',
+           template: `
+            <div [@parent]="exp">
+              <child-cmp></child-cmp>
+            </div>
+          `,
+           animations: [
+             trigger(
+                 'parent',
+                 [
+                   transition(
+                       '* => go',
+                       [
+                         query(
+                             'p',
+                             [
+                               style({color: 'blue'}),
+                               animate(1000, style({color: 'red'})),
+                             ]),
+                       ]),
+                 ]),
+           ]
+         })
+         class ParentCmp {
+           public exp = '';
+         }
+
+         TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+
+         const fixture = TestBed.createComponent(ParentCmp);
+         const cmp = fixture.componentInstance;
+
+         cmp.exp = 'go';
+         fixture.detectChanges();
+
+         let players = getLog();
+         expect(players.length).toEqual(1);
+         resetLog();
+
+         const [p1] = players;
+         expect(p1.element.classList.contains('p-element')).toBeTruthy();
+       });
+
+    it('should be able to query a multiple elements inside inside a component with shadowDom view encapsulation',
+       () => {
+         @Component({
+           selector: 'child-cmp',
+           encapsulation: ViewEncapsulation.ShadowDom,
+           template: `
+          <div class="a" [@a]="expA"></div>
+          <div class="b" [@b]="expB"></div>
+          <section>
+            <div class="c" @c></div>
+          </section>
+        `,
+           animations: [
+             trigger(
+                 'a',
+                 [
+                   transition('* => 1', [animate(1000, style({opacity: 0}))]),
+                 ]),
+             trigger('b', [transition('* => 1', [animate(1000, style({opacity: 0}))])]),
+             trigger(
+                 'c',
+                 [
+                   transition('* => 1', [animate(1000, style({opacity: 0}))]),
+                 ]),
+           ]
+         })
+         class ChildCmp {
+           public expA = 0;
+           public expB = 0;
+         }
+
+         @Component({
+           selector: 'parent-cmp',
+           template: `
+            <div [@parent]="exp0">
+              <child-cmp></child-cmp>
+            </div>
+          `,
+           animations: [
+             trigger(
+                 'parent',
+                 [
+                   transition(
+                       '* => go',
+                       [
+                         query(
+                             '@*',
+                             [
+                               style({backgroundColor: 'blue'}),
+                               animate(1000, style({backgroundColor: 'red'})),
+                             ]),
+                       ]),
+                 ]),
+           ]
+         })
+         class ParentCmp {
+           public exp0: any;
+           public exp1: any;
+           public exp2: any;
+         }
+
+         TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+
+         const fixture = TestBed.createComponent(ParentCmp);
+         const cmp = fixture.componentInstance;
+
+         cmp.exp0 = 'go';
+         fixture.detectChanges();
+
+         let players = getLog();
+         expect(players.length).toEqual(3);  // a,b,c
+         resetLog();
+
+         const [p1, p2, p3] = players;
+         expect(p1.element.classList.contains('a')).toBeTruthy();
+         expect(p2.element.classList.contains('b')).toBeTruthy();
+         expect(p3.element.classList.contains('c')).toBeTruthy();
+       });
+
+    it('should be able to drill down a various number of shadowDom encapsulated views', () => {
+      @Component({
+        selector: 'child-a-cmp',
+        encapsulation: ViewEncapsulation.ShadowDom,
+        template: `<child-b-cmp></child-b-cmp>`,
+      })
+      class ChildACmp {
+      }
+
+      @Component({
+        selector: 'child-b-cmp',
+        encapsulation: ViewEncapsulation.ShadowDom,
+        template: `<child-c-cmp></child-c-cmp>`,
+      })
+      class ChildBCmp {
+      }
+
+      @Component({
+        selector: 'child-c-cmp',
+        encapsulation: ViewEncapsulation.ShadowDom,
+        template: `<p class="p-element"></p>`,
+      })
+      class ChildCCmp {
+      }
+
+      @Component({
+        selector: 'parent-cmp',
+        template: `
+            <div [@parent]="exp">
+              <child-a-cmp></child-a-cmp>
+            </div>
+          `,
+        animations: [
+          trigger(
+              'parent',
+              [
+                transition(
+                    '* => go',
+                    [
+                      query(
+                          'p',
+                          [
+                            style({color: 'blue'}),
+                            animate(1000, style({color: 'red'})),
+                          ]),
+                    ]),
+              ]),
+        ]
+      })
+      class ParentCmp {
+        public exp = '';
+      }
+
+      TestBed.configureTestingModule({declarations: [ParentCmp, ChildACmp, ChildBCmp, ChildCCmp]});
+
+      const fixture = TestBed.createComponent(ParentCmp);
+      const cmp = fixture.componentInstance;
+
+      cmp.exp = 'go';
+      fixture.detectChanges();
+
+      let players = getLog();
+      expect(players.length).toEqual(1);
+      resetLog();
+
+      const [p1] = players;
+      expect(p1.element.classList.contains('p-element')).toBeTruthy();
+    });
+
+
+    it('should be able to query a mix of nested Emulated and shadowDom encapsulated views', () => {
+      @Component({
+        selector: 'child-shadow-a-cmp',
+        encapsulation: ViewEncapsulation.ShadowDom,
+        template: `<p class="p-1"></p><child-emulated-b-cmp></child-emulated-b-cmp>`,
+      })
+      class ChildACmp {
+      }
+
+      @Component({
+        selector: 'child-emulated-b-cmp',
+        encapsulation: ViewEncapsulation.Emulated,
+        template:
+            `<child-shadow-c-cmp></child-shadow-c-cmp><child-shadow-d-cmp></child-shadow-d-cmp><p class="p-3"></p>`,
+      })
+      class ChildBCmp {
+      }
+
+      @Component({
+        selector: 'child-shadow-c-cmp',
+        encapsulation: ViewEncapsulation.ShadowDom,
+        template: '',
+      })
+      class ChildCCmp {
+      }
+
+      @Component({
+        selector: 'child-shadow-d-cmp',
+        encapsulation: ViewEncapsulation.ShadowDom,
+        template: `<p class="p-2"></p>`,
+      })
+      class ChildDCmp {
+      }
+
+      @Component({
+        selector: 'parent-cmp',
+        template: `
+            <div [@parent]="exp">
+              <child-shadow-a-cmp></child-shadow-a-cmp>
+            </div>
+          `,
+        animations: [
+          trigger(
+              'parent',
+              [
+                transition(
+                    '* => go',
+                    [
+                      query(
+                          'p',
+                          [
+                            style({color: 'blue'}),
+                            animate(1000, style({color: 'red'})),
+                          ]),
+                    ]),
+              ]),
+        ]
+      })
+      class ParentCmp {
+        public exp = '';
+      }
+
+      TestBed.configureTestingModule(
+          {declarations: [ParentCmp, ChildACmp, ChildBCmp, ChildCCmp, ChildDCmp]});
+
+      const fixture = TestBed.createComponent(ParentCmp);
+      const cmp = fixture.componentInstance;
+
+      cmp.exp = 'go';
+      fixture.detectChanges();
+
+      let players = getLog();
+      expect(players.length).toEqual(3);
+      resetLog();
+
+      const [p1, p2, p3] = players;
+      expect(p1.element.classList.contains('p-1')).toBeTruthy();
+      expect(p2.element.classList.contains('p-2')).toBeTruthy();
+      expect(p3.element.classList.contains('p-3')).toBeTruthy();
+    });
+  });
+
   describe('sub triggers', () => {
     it('should animate a sub trigger that exists in an inner element in the template', () => {
       @Component({
