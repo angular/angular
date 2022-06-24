@@ -328,10 +328,6 @@ Following convention, set the `header` attribute to the file's location within t
 
 Unless otherwise commented, all code snippets in this page are from sample source code located in the `content/examples/docs-style-guide` directory.
 
-<div class="alert is-important">
-
-The documentation tooling reports an error if the file identified in the path does not exist or is in the [`.git-ignore` file](https://github.com/angular/angular/blob/main/aio/content/examples/.gitignore).
-
 <a id="region"></a>
 
 ### Displaying part of a code file

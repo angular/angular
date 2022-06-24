@@ -11,6 +11,7 @@ load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 # found in the example. Set "zip" to True to generate archives for any stackblitz or
 # zipper configuration file found in the example.
 #
+# To ignore an example, comment out its row.
 
 EXAMPLES = {
     "accessibility": {"stackblitz": True, "zip": True},
@@ -102,7 +103,9 @@ def docs_example(name):
         name: name of the example
     """
     if name not in EXAMPLES:
-        fail("Cannot find example %s in the EXAMPLES map in aio/content/examples/examples.bzl. Did you forget to add an entry?" % name)
+        # buildifier: disable=print
+        print("WARNING: Example '%s' is being ignored. To include it, add an entry to the EXAMPLES map in aio/content/examples/examples.bzl." % name)
+        return
 
     native.filegroup(
         name = "files",
