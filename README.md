@@ -35,6 +35,12 @@
   </a>
 </p>
 
+<p align="center">
+  <a href="https://app.circleci.com/insights/github/angular/angular/workflows/default_workflow?branch=main">
+    <img src="https://dl.circleci.com/insights-snapshot/gh/angular/angular/main/default_workflow/badge.svg" alt="InsightsSnapshot" />
+  </a>
+</p>
+
 <hr>
 
 ## Documentation
