@@ -3,7 +3,7 @@
   "baseBranches": ["main"],
   "enabledManagers": ["npm", "bazel", "github-actions"],
   "stopUpdatingLabel": "action: merge",
-  "pinVersions": false,
+  "rangeStrategy": "replace",
   "pinDigests": true,
   "semanticCommits": "enabled",
   "semanticCommitScope": "",
@@ -11,9 +11,7 @@
   "separateMajorMinor": false,
   "prHourlyLimit": 3,
   "timezone": "America/Tijuana",
-  "lockFileMaintenance": {
-    "enabled": true
-  },
+  "lockFileMaintenance": {"enabled": true},
   "labels": ["target: patch", "comp: build & ci", "action: review"],
   "ignoreDeps": [
     "@angular/animations-12",
@@ -45,46 +43,33 @@
       "matchPackagePatterns": ["*"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "all non-major dependencies",
-      "schedule": ["after 10pm every monday", "before 4am every tuesday"]
+      "schedule": ["after 10:00pm on monday", "before 04:00am on tuesday"]
     },
-
     {
       "matchPackagePatterns": ["^@bazel/.*", "^build_bazel.*"],
       "groupName": "bazel setup",
       "schedule": ["at any time"]
     },
-
     {
       "matchPackagePrefixes": ["@angular/", "angular/", "@angular-devkit", "@schematics/"],
       "followTag": "next",
       "groupName": "cross-repo Angular dependencies",
       "schedule": ["at any time"]
     },
-
-    {
-      "matchPackagePrefixes": ["@babel/"],
-      "groupName": "babel dependencies"
-    },
-
+    {"matchPackagePrefixes": ["@babel/"], "groupName": "babel dependencies"},
     {
       "matchPackageNames": ["typescript", "tslib"],
       "groupName": "typescript dependencies"
     },
-
     {
       "matchPaths": [".github/workflows/scorecard.yml"],
       "groupName": "scorecard action dependencies",
       "groupSlug": "scorecard-action"
     },
-
     {
       "matchPaths": ["integration/!(bazel_workspace_tests)/**"],
       "enabled": false
     },
-
-    {
-      "matchCurrentVersion": "0.0.0-PLACEHOLDER",
-      "enabled": false
-    }
+    {"matchCurrentVersion": "0.0.0-PLACEHOLDER", "enabled": false}
   ]
 }
