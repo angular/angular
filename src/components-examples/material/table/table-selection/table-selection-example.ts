@@ -43,7 +43,7 @@ export class TableSelectionExample {
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
+  toggleAllRows() {
     if (this.isAllSelected()) {
       this.selection.clear();
       return;
