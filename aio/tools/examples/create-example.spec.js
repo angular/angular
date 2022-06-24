@@ -2,7 +2,7 @@ const path = require('canonical-path');
 const fs = require('fs-extra');
 const {glob} = require('glob');
 
-const {EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, STACKBLITZ_CONFIG_FILENAME} =
+const {EXAMPLE_CONFIG_FILENAME, STACKBLITZ_CONFIG_FILENAME} =
     require('./constants');
 
 const {
@@ -82,15 +82,12 @@ describe('create-example tool', () => {
 
   describe('copyExampleFiles', () => {
     it('should copy over files that are not ignored by git', () => {
-      const examplesGitIgnorePath = path.resolve(EXAMPLES_BASE_PATH, '.gitignore');
       const sourceGitIgnorePath = path.resolve('/source/path', '.gitignore');
 
       spyOn(console, 'log');
       spyOn(fs, 'existsSync').and.returnValue(true);
       const readFileSyncSpy = spyOn(fs, 'readFileSync').and.callFake(p => {
         switch (p) {
-          case examplesGitIgnorePath:
-            return '**/a/b/**';
           case sourceGitIgnorePath:
             return '**/*.bad';
           default:
@@ -98,14 +95,13 @@ describe('create-example tool', () => {
         }
       });
       spyOn(glob, 'sync').and.returnValue([
-        'a/', 'a/b/', 'a/c', 'x.ts', 'x.bad', 'a/b/y.ts', 'a/b/y.bad'
+        'a/', 'a/b/', 'a/c', 'x.ts', 'x.bad'
       ]);
       const ensureDirSyncSpy = spyOn(fs, 'ensureDirSync');
       const copySyncSpy = spyOn(fs, 'copySync');
 
       copyExampleFiles('/source/path', '/path/to/test-example', 'test-example');
 
-      expect(readFileSyncSpy).toHaveBeenCalledWith(examplesGitIgnorePath, 'utf8');
       expect(readFileSyncSpy).toHaveBeenCalledWith(sourceGitIgnorePath, 'utf8');
 
       expect(ensureDirSyncSpy.calls.allArgs()).toEqual([
