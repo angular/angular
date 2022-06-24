@@ -13,7 +13,7 @@ import {ReactiveFormsModule} from './form_providers';
 import {AbstractControl, AbstractControlOptions, FormHooks} from './model/abstract_model';
 import {FormArray, UntypedFormArray} from './model/form_array';
 import {FormControl, FormControlOptions, FormControlState, UntypedFormControl} from './model/form_control';
-import {FormGroup, UntypedFormGroup} from './model/form_group';
+import {FormGroup, FormRecord, UntypedFormGroup} from './model/form_group';
 
 function isAbstractControlOptions(options: AbstractControlOptions|{[key: string]: any}|null|
                                   undefined): options is AbstractControlOptions {
@@ -53,6 +53,10 @@ export type ɵElement<T, N extends null> =
   [T] extends [FormGroup<infer U>] ? FormGroup<U> :
   // Optional FormGroup containers.
   [T] extends [FormGroup<infer U>|undefined] ? FormGroup<U> :
+  // FormRecord containers.
+  [T] extends [FormRecord<infer U>] ? FormRecord<U> :
+  // Optional FormRecord containers.
+  [T] extends [FormRecord<infer U>|undefined] ? FormRecord<U> :
   // FormArray containers.
   [T] extends [FormArray<infer U>] ? FormArray<U> :
   // Optional FormArray containers.
@@ -202,6 +206,28 @@ export class FormBuilder {
     return new FormGroup(reducedControls, newOptions);
   }
 
+  /**
+   * @description
+   * Construct a new `FormRecord` instance. Accepts a single generic argument, which is an object
+   * containing all the keys and corresponding inner control types.
+   *
+   * @param controls A collection of child controls. The key for each child is the name
+   * under which it is registered.
+   *
+   * @param options Configuration options object for the `FormRecord`. The object should have the
+   * `AbstractControlOptions` type and might contain the following fields:
+   * * `validators`: A synchronous validator function, or an array of validator functions.
+   * * `asyncValidators`: A single async validator or array of async validator functions.
+   * * `updateOn`: The event upon which the control should be updated (options: 'change' | 'blur'
+   * | submit').
+   */
+  record<T>(controls: {[key: string]: T}, options: AbstractControlOptions|null = null):
+      FormRecord<ɵElement<T, null>> {
+    const reducedControls = this._reduceControls(controls);
+    // Cast to `any` because the inferred types are not as specific as Element.
+    return new FormRecord(reducedControls, options) as any;
+  }
+
   /** @deprecated Use `nonNullable` instead. */
   control<T>(formState: T|FormControlState<T>, opts: FormControlOptions&{
     initialValueIsDefault: true
@@ -340,6 +366,16 @@ export abstract class NonNullableFormBuilder {
       controls: T,
       options?: AbstractControlOptions|null,
       ): FormGroup<{[K in keyof T]: ɵElement<T[K], never>}>;
+
+  /**
+   * Similar to `FormBuilder#record`, except any implicitly constructed `FormControl`
+   * will be non-nullable (i.e. it will have `nonNullable` set to true). Note
+   * that already-constructed controls will not be altered.
+   */
+  abstract record<T>(
+      controls: {[key: string]: T},
+      options?: AbstractControlOptions|null,
+      ): FormRecord<ɵElement<T, never>>;
 
   /**
    * Similar to `FormBuilder#array`, except any implicitly constructed `FormControl`
