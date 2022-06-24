@@ -79,7 +79,7 @@ export function createInnerComponent(renderTemplateDirective: Type<{}>) {
               ɵɵproperty('renderTemplate', _r0);
             }
           },
-      directives: [renderTemplateDirective, InjectorComp],
+      dependencies: [renderTemplateDirective, InjectorComp],
       encapsulation: 2
     });
   };

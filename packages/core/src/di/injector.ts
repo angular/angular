@@ -7,6 +7,7 @@
  */
 
 
+import {createInjector} from './create_injector';
 import {THROW_IF_NOT_FOUND, ɵɵinject} from './injector_compatibility';
 import {InjectorMarkers} from './injector_marker';
 import {INJECTOR} from './injector_token';
@@ -15,7 +16,6 @@ import {InjectFlags} from './interface/injector';
 import {StaticProvider} from './interface/provider';
 import {NullInjector} from './null_injector';
 import {ProviderToken} from './provider_token';
-import {createInjector} from './r3_injector';
 
 /**
  * Concrete injectors implement this interface. Injectors are configured

@@ -13,6 +13,8 @@ ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
+        # This file should be just ignored, and not copied into the package.
+        "//packages/bazel/test/ng_package:outside_package.txt",
     ],
     deps = [
         ":example",

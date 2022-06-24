@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// `tsc-wrapped` helpers are not exposed in the primary `@bazel/concatjs` entry-point.
+// TODO: Update when https://github.com/bazelbuild/rules_nodejs/pull/3286 is available.
+import {BazelOptions as ExternalBazelOptions, CachedFileLoader, CompilerHost, constructManifest, debug, FileCache, FileLoader, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop, UncachedFileLoader} from '@bazel/concatjs/internal/tsc_wrapped';
+
 import type {AngularCompilerOptions, CompilerHost as NgCompilerHost, TsEmitCallback, Program, CompilerOptions} from '@angular/compiler-cli';
-import {BazelOptions, CachedFileLoader, CompilerHost, constructManifest, debug, FileCache, FileLoader, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop, UncachedFileLoader} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
@@ -16,6 +19,12 @@ import {pathToFileURL} from 'url';
 
 type CompilerCliModule =
     typeof import('@angular/compiler-cli')&typeof import('@angular/compiler-cli/private/bazel');
+
+// Add devmode for blaze internal
+interface BazelOptions extends ExternalBazelOptions {
+  allowedInputs?: string[];
+  unusedInputsListPath?: string;
+}
 
 /**
  * Reference to the previously loaded `compiler-cli` module exports. We cache the exports
@@ -245,37 +254,8 @@ export function compile({
         }
       };
 
-  // Patch fileExists when resolving modules, so that CompilerHost can ask TypeScript to
-  // resolve non-existing generated files that don't exist on disk, but are
-  // synthetic and added to the `programWithStubs` based on real inputs.
-  const generatedFileModuleResolverHost = Object.create(tsHost);
-  generatedFileModuleResolverHost.fileExists = (fileName: string) => {
-    const match = NGC_GEN_FILES.exec(fileName);
-    if (match) {
-      const [, file, suffix, ext] = match;
-      // Performance: skip looking for files other than .d.ts or .ts
-      if (ext !== '.ts' && ext !== '.d.ts') return false;
-      if (suffix.indexOf('ngstyle') >= 0) {
-        // Look for foo.css on disk
-        fileName = file;
-      } else {
-        // Look for foo.d.ts or foo.ts on disk
-        fileName = file + (ext || '');
-      }
-    }
-    return tsHost.fileExists(fileName);
-  };
-
-  function generatedFileModuleResolver(
-      moduleName: string, containingFile: string,
-      compilerOptions: ts.CompilerOptions): ts.ResolvedModuleWithFailedLookupLocations {
-    return ts.resolveModuleName(
-        moduleName, containingFile, compilerOptions, generatedFileModuleResolverHost);
-  }
-
   if (!bazelHost) {
-    bazelHost = new CompilerHost(
-        files, compilerOpts, bazelOpts, tsHost, fileLoader, generatedFileModuleResolver);
+    bazelHost = new CompilerHost(files, compilerOpts, bazelOpts, tsHost, fileLoader);
   }
 
   if (isInIvyMode) {
@@ -298,7 +278,7 @@ export function compile({
   // Though, if we are building inside `google3`, closure annotations are desired for
   // prodmode output, so we enable it by default. The defaults can be overridden by
   // setting the `annotateForClosureCompiler` compiler option in the user tsconfig.
-  if (!bazelOpts.es5Mode) {
+  if (!bazelOpts.es5Mode && !bazelOpts.devmode) {
     if (bazelOpts.workspaceName === 'google3') {
       compilerOpts.annotateForClosureCompiler = true;
       // Enable the tsickle decorator transform in google3 with Ivy mode enabled. The tsickle
@@ -320,8 +300,24 @@ export function compile({
     bazelHost.transformTypesToClosure = true;
   }
 
+  // Patch fileExists when resolving modules, so that CompilerHost can ask TypeScript to
+  // resolve non-existing generated files that don't exist on disk, but are
+  // synthetic and added to the `programWithStubs` based on real inputs.
   const origBazelHostFileExist = bazelHost.fileExists;
   bazelHost.fileExists = (fileName: string) => {
+    const match = NGC_GEN_FILES.exec(fileName);
+    if (match) {
+      const [, file, suffix, ext] = match;
+      // Performance: skip looking for files other than .d.ts or .ts
+      if (ext !== '.ts' && ext !== '.d.ts') return false;
+      if (suffix.indexOf('ngstyle') >= 0) {
+        // Look for foo.css on disk
+        fileName = file;
+      } else {
+        // Look for foo.d.ts or foo.ts on disk
+        fileName = file + (ext || '');
+      }
+    }
     if (NGC_ASSETS.test(fileName)) {
       return tsHost.fileExists(fileName);
     }
@@ -435,7 +431,53 @@ export function compile({
     originalWriteFile(fileName, '', false);
   }
 
+  if (!compilerOpts.noEmit) {
+    maybeWriteUnusedInputsList(program.getTsProgram(), compilerOpts, bazelOpts);
+  }
+
   return {program, diagnostics};
+}
+
+/**
+ * Writes a collection of unused input files and directories which can be
+ * consumed by bazel to avoid triggering rebuilds if only unused inputs are
+ * changed.
+ *
+ * See https://bazel.build/contribute/codebase#input-discovery
+ */
+export function maybeWriteUnusedInputsList(
+    program: ts.Program, options: ts.CompilerOptions, bazelOpts: BazelOptions) {
+  if (!bazelOpts?.unusedInputsListPath) {
+    return;
+  }
+
+  // ts.Program's getSourceFiles() gets populated by the sources actually
+  // loaded while the program is being built.
+  const usedFiles = new Set();
+  for (const sourceFile of program.getSourceFiles()) {
+    // Only concern ourselves with typescript files.
+    usedFiles.add(sourceFile.fileName);
+  }
+
+  // allowedInputs are absolute paths to files which may also end with /* which
+  // implies any files in that directory can be used.
+  const unusedInputs: string[] = [];
+  for (const f of bazelOpts.allowedInputs) {
+    // A ts/x file is unused if it was not found directly in the used sources.
+    if ((f.endsWith('.ts') || f.endsWith('.tsx')) && !usedFiles.has(f)) {
+      unusedInputs.push(f);
+      continue;
+    }
+
+    // TODO: Iterate over contents of allowed directories checking for used files.
+  }
+
+  // Bazel expects the unused input list to contain paths relative to the
+  // execroot directory.
+  // See https://docs.bazel.build/versions/main/output_directories.html
+  fs.writeFileSync(
+      bazelOpts.unusedInputsListPath,
+      unusedInputs.map(f => path.relative(options.rootDir!, f)).join('\n'));
 }
 
 function isCompilationTarget(bazelOpts: BazelOptions, sf: ts.SourceFile): boolean {
@@ -527,7 +569,7 @@ export function patchNgHostWithFileNameToModuleName(
     }
 
     // Unless manifest paths are explicitly enforced, we initially check if a module name is
-    // set for the given source file. The compiler host from `@bazel/typescript` sets source
+    // set for the given source file. The compiler host from `@bazel/concatjs` sets source
     // file module names if the compilation targets either UMD or AMD. To ensure that the AMD
     // module names match, we first consider those.
     try {
@@ -570,7 +612,7 @@ export function patchNgHostWithFileNameToModuleName(
       return ngHost.amdModuleName({fileName: importedFilePath} as ts.SourceFile);
     }
 
-    // If no AMD module name has been set for the source file by the `@bazel/typescript` compiler
+    // If no AMD module name has been set for the source file by the `@bazel/concatjs` compiler
     // host, and the target file is not part of a flat module node module package, we use the
     // following rules (in order):
     //    1. If target file is part of `node_modules/`, we use the package module name.

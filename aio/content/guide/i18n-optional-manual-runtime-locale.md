@@ -4,17 +4,17 @@
 
 <!--todo: To override the provider for the locale ID token. -->
 
-The inital installation of Angular already contains locale data for English in the United States (`en-US`).
+The initial installation of Angular already contains locale data for English in the United States \(`en-US`\).
 The [Angular CLI][AioCliMain] automatically includes the locale data and sets the `LOCALE_ID` value when you use the `--localize` option with [`ng build`][AioCliBuild] command.
 
 To manually set the runtime locale of an application to one other than the automatic value, complete the following actions.
 
-1.  Search for the Unicode locale ID in the language-locale combination in [the Angular repository][GithubAngularAngularTreeMasterPackagesCommonLocales].
+1.  Search for the Unicode locale ID in the language-locale combination in the [`@angular/common/locales/`][UnpkgBrowseAngularCommonLocales] directory.
 1.  Set the [`LOCALE_ID`][AioApiCoreLocaleId] token.
 
 The following example sets the value of `LOCALE_ID` to `fr` for French.
 
-<code-example path="i18n/doc-files/app.module.ts" header="src/app/app.module.ts" region="locale-id"></code-example>
+<code-example header="src/app/app.module.ts" path="i18n/doc-files/app.module.ts" region="locale-id"></code-example>
 
 <!-- links -->
 
@@ -25,8 +25,8 @@ The following example sets the value of `LOCALE_ID` to `fr` for French.
 
 <!-- external links -->
 
-[GithubAngularAngularTreeMasterPackagesCommonLocales]: https://github.com/angular/angular/tree/master/packages/common/locales "angular/packages/common/locales | angular/angular | GitHub"
+[UnpkgBrowseAngularCommonLocales]: https://unpkg.com/browse/@angular/common/locales/ "@angular/common/locales/ | Unpkg"
 
 <!-- end links -->
 
-@reviewed 2021-10-07
+@reviewed 2022-02-28

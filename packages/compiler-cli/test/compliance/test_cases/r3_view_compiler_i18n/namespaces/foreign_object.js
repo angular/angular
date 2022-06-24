@@ -10,6 +10,13 @@ consts: function() {
       "startTagXhtmlSpan": "\uFFFD#4\uFFFD",
       "closeTagXhtmlSpan": "\uFFFD/#4\uFFFD",
       "closeTagXhtmlDiv": "\uFFFD/#3\uFFFD"
+    }, {
+      original_code: {
+        "startTagXhtmlDiv": "<xhtml:div xmlns=\"http://www.w3.org/1999/xhtml\">",
+        "startTagXhtmlSpan": "<span>",
+        "closeTagXhtmlSpan": "</span>",
+        "closeTagXhtmlDiv": "</xhtml:div>"
+      }
     });
     $I18N_0$ = $MSG_EXTERNAL_7128002169381370313$$APP_SPEC_TS_1$;
   }

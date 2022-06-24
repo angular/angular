@@ -7,12 +7,274 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, EventEmitter, forwardRef, Host, HostBinding, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Self, SkipSelf, TemplateRef, ViewChild, ViewContainerRef, ViewRef, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID} from '@angular/core';
-import {ɵINJECTOR_SCOPE} from '@angular/core/src/core';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {BehaviorSubject} from 'rxjs';
+
+const getProvidersByToken =
+    (providers: Provider[], token: Type<unknown>|InjectionToken<unknown>): Provider[] =>
+        providers.filter(provider => (provider as any).provide === token);
+
+const hasProviderWithToken = (providers: Provider[], token: InjectionToken<unknown>): boolean =>
+    getProvidersByToken(providers, token).length > 0;
+
+const collectEnvironmentInitializerProviders = (providers: Provider[]) =>
+    getProvidersByToken(providers, ENVIRONMENT_INITIALIZER);
+
+function unwrappedImportProvidersFrom(...sources: ImportProvidersSource[]): Provider[] {
+  return importProvidersFrom(...sources).ɵproviders;
+}
+
+describe('importProvidersFrom', () => {
+  // Set of tokens used in various tests.
+  const A = new InjectionToken('A');
+  const B = new InjectionToken('B');
+  const C = new InjectionToken('C');
+  const D = new InjectionToken('D');
+
+  it('should collect providers from NgModules', () => {
+    @NgModule({
+      providers: [
+        {provide: C, useValue: 'C'},
+        {provide: D, useValue: 'D'},
+      ],
+    })
+    class MyModule2 {
+    }
+    @NgModule({
+      imports: [MyModule2],
+      providers: [
+        {provide: A, useValue: 'A'},
+        {provide: B, useValue: 'B'},
+      ],
+    })
+    class MyModule {
+    }
+    const providers = unwrappedImportProvidersFrom(MyModule);
+
+    // 4 tokens (A, B, C, D) + 2 providers for each NgModule:
+    // - the definition type itself
+    // - `INJECTOR_DEF_TYPES`
+    // - `ENVIRONMENT_INITIALIZER`
+    expect(providers.length).toBe(10);
+
+    expect(hasProviderWithToken(providers, A)).toBe(true);
+    expect(hasProviderWithToken(providers, B)).toBe(true);
+    expect(hasProviderWithToken(providers, C)).toBe(true);
+    expect(hasProviderWithToken(providers, D)).toBe(true);
+
+    // Expect 2 `ENVIRONMENT_INITIALIZER` providers: one for `MyModule`, another was `MyModule2`
+    expect(collectEnvironmentInitializerProviders(providers).length).toBe(2);
+  });
+
+  it('should collect providers from directly imported ModuleWithProviders', () => {
+    @NgModule({})
+    class Module {
+    }
+
+    const providers = unwrappedImportProvidersFrom({
+      ngModule: Module,
+      providers: [{provide: A, useValue: 'A'}],
+    });
+    expect(hasProviderWithToken(providers, A)).toBe(true);
+  });
+
+  it('should collect all providers when a module is used twice with different providers (via ModuleWithProviders)',
+     () => {
+       @NgModule({
+         providers: [
+           {provide: A, useValue: 'A'}  //
+         ]
+       })
+       class ModuleA {
+       }
+
+       @NgModule({imports: [ModuleA]})
+       class ModuleB {
+         static forRoot(): ModuleWithProviders<ModuleB> {
+           return {ngModule: ModuleB, providers: [{provide: B, useValue: 'B'}]};
+         }
+         static forChild(): ModuleWithProviders<ModuleB> {
+           return {ngModule: ModuleB, providers: [{provide: C, useValue: 'C'}]};
+         }
+       }
+
+       const providers = unwrappedImportProvidersFrom(ModuleB.forRoot(), ModuleB.forChild());
+
+       // Expect 2 `ENVIRONMENT_INITIALIZER` providers: one for `ModuleA`, another one for `ModuleB`
+       expect(collectEnvironmentInitializerProviders(providers).length).toBe(2);
+
+       // Expect exactly 1 provider for each module: `ModuleA` and `ModuleB`
+       expect(getProvidersByToken(providers, ModuleA).length).toBe(1);
+       expect(getProvidersByToken(providers, ModuleB).length).toBe(1);
+
+       // Expect all tokens to be collected.
+       expect(hasProviderWithToken(providers, A)).toBe(true);
+       expect(hasProviderWithToken(providers, B)).toBe(true);
+       expect(hasProviderWithToken(providers, C)).toBe(true);
+     });
+
+  it('should process nested arrays within a provider set of ModuleWithProviders type', () => {
+    @NgModule()
+    class ModuleA {
+      static forRoot(): ModuleWithProviders<ModuleA> {
+        return {
+          ngModule: ModuleA,
+          providers: [
+            {provide: A, useValue: 'A'},
+            // Nested arrays inside the list of providers:
+            [{provide: B, useValue: 'B'}, [{provide: C, useValue: 'C'}]]
+          ]
+        };
+      }
+    }
+
+    const providers = unwrappedImportProvidersFrom(ModuleA.forRoot());
+
+    // Expect 1 `ENVIRONMENT_INITIALIZER` provider (for `ModuleA`)
+    expect(collectEnvironmentInitializerProviders(providers).length).toBe(1);
+
+    // Expect exactly 1 provider for `ModuleA`
+    expect(getProvidersByToken(providers, ModuleA).length).toBe(1);
+
+    // Expect all tokens to be collected.
+    expect(hasProviderWithToken(providers, A)).toBe(true);
+    expect(hasProviderWithToken(providers, B)).toBe(true);
+    expect(hasProviderWithToken(providers, C)).toBe(true);
+  });
+
+  it('should process nested arrays within provider set of an imported ModuleWithProviders type',
+     () => {
+       @NgModule()
+       class ModuleA {
+         static forRoot(): ModuleWithProviders<ModuleA> {
+           return {
+             ngModule: ModuleA,
+             providers: [
+               {provide: A, useValue: 'A'},
+               // Nested arrays inside the list of providers:
+               [{provide: B, useValue: 'B'}, [{provide: C, useValue: 'C'}]]
+             ]
+           };
+         }
+       }
+
+       @NgModule({imports: [ModuleA.forRoot()]})
+       class ModuleB {
+       }
+
+       const providers = unwrappedImportProvidersFrom(ModuleB);
+
+       // Expect 2 `ENVIRONMENT_INITIALIZER` providers: one for `ModuleA`, another one for `ModuleB`
+       expect(collectEnvironmentInitializerProviders(providers).length).toBe(2);
+
+       // Expect exactly 1 provider for each module: `ModuleA` and `ModuleB`
+       expect(getProvidersByToken(providers, ModuleA).length).toBe(1);
+       expect(getProvidersByToken(providers, ModuleB).length).toBe(1);
+
+       // Expect all tokens to be collected.
+       expect(hasProviderWithToken(providers, A)).toBe(true);
+       expect(hasProviderWithToken(providers, B)).toBe(true);
+       expect(hasProviderWithToken(providers, C)).toBe(true);
+     });
+
+  it('should collect providers defined via `@NgModule.providers` when ModuleWithProviders type is used',
+     () => {
+       @NgModule({
+         providers: [
+           {provide: A, useValue: 'Original A'},  //
+           {provide: B, useValue: 'B'},           //
+           {provide: D, useValue: 'Original D', multi: true}
+         ]
+       })
+       class ModuleA {
+         static forRoot(): ModuleWithProviders<ModuleA> {
+           return {
+             ngModule: ModuleA,
+             providers: [
+               {provide: A, useValue: 'Overridden A'},  //
+               {provide: C, useValue: 'C'},             //
+               {provide: D, useValue: 'Extra D', multi: true}
+             ]
+           };
+         }
+       }
+
+       const providers = unwrappedImportProvidersFrom(ModuleA.forRoot());
+
+       // Expect all tokens to be collected.
+       expect(hasProviderWithToken(providers, A)).toBe(true);
+       expect(hasProviderWithToken(providers, B)).toBe(true);
+       expect(hasProviderWithToken(providers, C)).toBe(true);
+       expect(hasProviderWithToken(providers, D)).toBe(true);
+
+       const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+       const injector = createEnvironmentInjector(providers, parentEnvInjector);
+
+       // Verify that overridden token A has the right value.
+       expect(injector.get(A)).toBe('Overridden A');
+
+       // Verify that a multi-provider has both values.
+       expect(injector.get(D)).toEqual(['Original D', 'Extra D']);
+     });
+
+  it('should not be allowed in component providers', () => {
+    @NgModule({})
+    class Module {
+    }
+
+    expect(() => {
+      @Component({
+        selector: 'test-cmp',
+        template: '',
+        // The double array here is necessary to escape the compile-time error, via Provider's
+        // `any[]` option.
+        providers: [[importProvidersFrom(Module)]],
+      })
+      class Cmp {
+      }
+
+      TestBed.createComponent(Cmp);
+    }).toThrowError(/NG0207/);
+  });
+
+  it('should import providers from an array of NgModules (may be nested)', () => {
+    @NgModule({providers: [{provide: A, useValue: 'A'}]})
+    class ModuleA {
+    }
+
+    @NgModule({providers: [{provide: B, useValue: 'B'}]})
+    class ModuleB {
+    }
+
+    const providers = unwrappedImportProvidersFrom([ModuleA, [ModuleB]]);
+
+    expect(hasProviderWithToken(providers, A)).toBeTrue();
+    expect(hasProviderWithToken(providers, B)).toBeTrue();
+  });
+
+  it('should throw when trying to import providers from standalone components', () => {
+    @NgModule({providers: [{provide: A, useValue: 'A'}]})
+    class ModuleA {
+    }
+
+    @Component({
+      standalone: true,
+      template: '',
+      imports: [ModuleA],
+    })
+    class StandaloneCmp {
+    }
+
+    expect(() => {
+      importProvidersFrom(StandaloneCmp);
+    })
+        .toThrowError(
+            'NG0800: Importing providers supports NgModule or ModuleWithProviders but got a standalone component "StandaloneCmp"');
+  });
+});
 
 describe('di', () => {
   describe('no dependencies', () => {
@@ -2916,6 +3178,158 @@ describe('di', () => {
     });
   });
 
+  describe('inject()', () => {
+    it('should work in a directive constructor', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+
+      @Component({
+        standalone: true,
+        selector: 'test-cmp',
+        template: '{{value}}',
+        providers: [{provide: TOKEN, useValue: 'injected value'}],
+      })
+      class TestCmp {
+        value: string;
+        constructor() {
+          this.value = inject(TOKEN);
+        }
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('injected value');
+    });
+
+    it('should work in a service constructor when the service is provided on a directive', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+
+      @Injectable()
+      class Service {
+        value: string;
+        constructor() {
+          this.value = inject(TOKEN);
+        }
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'test-cmp',
+        template: '{{service.value}}',
+        providers: [Service, {provide: TOKEN, useValue: 'injected value'}],
+      })
+      class TestCmp {
+        constructor(readonly service: Service) {}
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('injected value');
+    });
+
+
+    it('should be able to inject special tokens like ChangeDetectorRef', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+
+      @Component({
+        standalone: true,
+        selector: 'test-cmp',
+        template: '{{value}}',
+      })
+      class TestCmp {
+        cdr = inject(ChangeDetectorRef);
+        value = 'before';
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.componentInstance.value = 'after';
+      fixture.componentInstance.cdr.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('after');
+    });
+
+    it('should work in a service constructor', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN', {
+        providedIn: 'root',
+        factory: () => 'injected value',
+      });
+
+      @Injectable({providedIn: 'root'})
+      class Service {
+        value: string;
+        constructor() {
+          this.value = inject(TOKEN);
+        }
+      }
+
+      const service = TestBed.inject(Service);
+      expect(service.value).toEqual('injected value');
+    });
+
+    it('should work in a useFactory definition for a service', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN', {
+        providedIn: 'root',
+        factory: () => 'injected value',
+      });
+
+      @Injectable({
+        providedIn: 'root',
+        useFactory: () => new Service(inject(TOKEN)),
+      })
+      class Service {
+        constructor(readonly value: string) {}
+      }
+
+      expect(TestBed.inject(Service).value).toEqual('injected value');
+    });
+
+    it('should work for field injection', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN', {
+        providedIn: 'root',
+        factory: () => 'injected value',
+      });
+
+      @Injectable({providedIn: 'root'})
+      class Service {
+        value = inject(TOKEN);
+      }
+
+      const service = TestBed.inject(Service);
+      expect(service.value).toEqual('injected value');
+    });
+
+    it('should not give non-node services access to the node context', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+
+      @Injectable({providedIn: 'root'})
+      class Service {
+        value: string;
+        constructor() {
+          this.value = inject(TOKEN, InjectFlags.Optional) ?? 'default value';
+        }
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'test-cmp',
+        template: '{{service.value}}',
+        providers: [{provide: TOKEN, useValue: 'injected value'}],
+      })
+      class TestCmp {
+        service: Service;
+        constructor() {
+          // `Service` is injected starting from the component context, where `inject` is
+          // `ɵɵdirectiveInject` under the hood. However, this should reach the root injector which
+          // should _not_ use `ɵɵdirectiveInject` to inject dependencies of `Service`, so `TOKEN`
+          // should not be visible to `Service`.
+          this.service = inject(Service);
+        }
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('default value');
+    });
+  });
+
   it('should be able to use Host in `useFactory` dependency config', () => {
     // Scenario:
     // ---------
@@ -4364,5 +4778,18 @@ describe('di', () => {
 
       expect(fixture.componentInstance.menu.tokenValue).toBe('hello from parent');
     });
+  });
+
+  it('should prioritize module providers over additional providers', () => {
+    const token = new InjectionToken('token');
+
+    @NgModule({providers: [{provide: token, useValue: 'module'}]})
+    class ModuleWithProvider {
+    }
+
+    const injector =
+        createInjector(ModuleWithProvider, null, [{provide: token, useValue: 'additional'}]);
+
+    expect(injector.get(token)).toBe('module');
   });
 });

@@ -64,7 +64,7 @@ runInEachFileSystem(() => {
       const dtsReader = new DtsMetadataReader(checker, reflectionHost);
       const metaReader = new CompoundMetadataReader([metaRegistry, dtsReader]);
       const scopeRegistry = new LocalModuleScopeRegistry(
-          metaRegistry, new MetadataDtsModuleScopeResolver(dtsReader, null),
+          metaRegistry, metaReader, new MetadataDtsModuleScopeResolver(dtsReader, null),
           new ReferenceEmitter([]), null);
       const refEmitter = new ReferenceEmitter([new LocalIdentifierStrategy()]);
       const injectableRegistry = new InjectableClassRegistry(reflectionHost);
@@ -72,7 +72,8 @@ runInEachFileSystem(() => {
       const handler = new NgModuleDecoratorHandler(
           reflectionHost, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry,
           /* isCore */ false, refEmitter, /* factoryTracker */ null,
-          /* annotateForClosureCompiler */ false, injectableRegistry, NOOP_PERF_RECORDER);
+          /* annotateForClosureCompiler */ false, /* onlyPublishPublicTypings */ false,
+          injectableRegistry, NOOP_PERF_RECORDER);
       const TestModule =
           getDeclaration(program, _('/entry.ts'), 'TestModule', isNamedClassDeclaration);
       const detected =

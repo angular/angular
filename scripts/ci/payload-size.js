@@ -12,13 +12,13 @@
 const fs = require('fs');
 const path = require('path');
 
-// Get branch and project name from command line arguments.
-const [, , limitFile, project, branch, commit] = process.argv;
+// Get limit file, project name and commit SHA from command line arguments.
+const [, , limitFile, project, commit] = process.argv;
 
 // Load sizes.
 const currentSizes = JSON.parse(fs.readFileSync('/tmp/current.log', 'utf8'));
 const allLimitSizes = JSON.parse(fs.readFileSync(limitFile, 'utf8'));
-const limitSizes = allLimitSizes[project][branch] || allLimitSizes[project]['master'];
+const limitSizes = allLimitSizes[project];
 
 // Check current sizes against limits.
 let failed = false;

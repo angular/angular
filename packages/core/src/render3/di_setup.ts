@@ -8,8 +8,9 @@
 
 
 import {resolveForwardRef} from '../di/forward_ref';
-import {ClassProvider, Provider, TypeProvider} from '../di/interface/provider';
-import {isClassProvider, isTypeProvider, providerToFactory} from '../di/r3_injector';
+import {ClassProvider, Provider} from '../di/interface/provider';
+import {isClassProvider, isTypeProvider} from '../di/provider_collection';
+import {providerToFactory} from '../di/r3_injector';
 import {assertDefined} from '../util/assert';
 
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from './di';

@@ -19,7 +19,7 @@ import {LContext} from '../interfaces/context';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
 import {isLView} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, DebugNode, FLAGS, LView, LViewFlags, T_HOST, TVIEW, TViewType} from '../interfaces/view';
+import {CLEANUP, CONTEXT, DebugNode, FLAGS, LView, LViewFlags, RootContext, T_HOST, TVIEW, TViewType} from '../interfaces/view';
 
 import {stringifyForError} from './stringify_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';
@@ -67,7 +67,7 @@ export function getComponent<T>(element: Element): T|null {
     context.component = getComponentAtNodeIndex(context.nodeIndex, lView);
   }
 
-  return context.component as T;
+  return context.component as unknown as T;
 }
 
 
@@ -83,7 +83,7 @@ export function getComponent<T>(element: Element): T|null {
  * @publicApi
  * @globalApi ng
  */
-export function getContext<T>(element: Element): T|null {
+export function getContext<T extends({} | RootContext)>(element: Element): T|null {
   assertDomElement(element);
   const context = getLContext(element)!;
   const lView = context ? context.lView : null;
@@ -114,7 +114,7 @@ export function getOwningComponent<T>(elementOrDir: Element|{}): T|null {
   while (lView[TVIEW].type === TViewType.Embedded && (parent = getLViewParent(lView)!)) {
     lView = parent;
   }
-  return lView[FLAGS] & LViewFlags.IsRoot ? null : lView[CONTEXT] as T;
+  return lView[FLAGS] & LViewFlags.IsRoot ? null : lView[CONTEXT] as unknown as T;
 }
 
 /**
@@ -129,8 +129,8 @@ export function getOwningComponent<T>(elementOrDir: Element|{}): T|null {
  * @globalApi ng
  */
 export function getRootComponents(elementOrDir: Element|{}): {}[] {
-  const lView = readPatchedLView(elementOrDir);
-  return lView !== null ? [...getRootContext(lView).components] : [];
+  const lView = readPatchedLView<{}>(elementOrDir);
+  return lView !== null ? [...getRootContext(lView).components as unknown as {}[]] : [];
 }
 
 /**

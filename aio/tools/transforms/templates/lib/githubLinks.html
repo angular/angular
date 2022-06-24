@@ -18,7 +18,7 @@ https://github.com/{$ versionInfo.gitRepoInfo.owner $}/{$ versionInfo.gitRepoInf
 
 {% macro githubEditHref(doc, versionInfo, pathPrefix) -%}
 {% set lineInfo = doc.startingLine and ('#L' + (doc.startingLine + 1) + '-L' + (doc.endingLine + 1)) or '' -%}
-{$ githubBaseUrl(versionInfo) $}/edit/master/{$ projectRelativePath(doc.fileInfo) $}?message=docs
+{$ githubBaseUrl(versionInfo) $}/edit/main/{$ projectRelativePath(doc.fileInfo) $}?message=docs
   {%- if doc.moduleDoc %}({$ doc.moduleDoc.id.split('/')[0] $})
   {%- elseif doc.docType === 'module' %}({$ doc.id.split('/')[0] $})
   {%- elseif doc.docType === 'content' %}

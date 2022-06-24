@@ -518,8 +518,8 @@ function expectComponentDef(
     encapsulation: ViewEncapsulation.None,
     onPush: false,
     styles: [],
-    directives: null,
-    pipes: null,
+    directives: [],
+    pipes: [],
     data: {},
     ...expected,
   };
@@ -543,14 +543,17 @@ function expectComponentDef(
   expect(actual.styles).toEqual(expectation.styles);
   expect(actual.data).toEqual(expectation.data);
 
+  const convertNullToEmptyArray = <T extends Type<any>[]|null>(arr: T): T =>
+      arr ?? ([] as unknown as T);
+
   const directiveDefs =
       typeof actual.directiveDefs === 'function' ? actual.directiveDefs() : actual.directiveDefs;
   const directiveTypes = directiveDefs !== null ? directiveDefs.map(def => def.type) : null;
-  expect(directiveTypes).toEqual(expectation.directives);
+  expect(convertNullToEmptyArray(directiveTypes)).toEqual(expectation.directives);
 
   const pipeDefs = typeof actual.pipeDefs === 'function' ? actual.pipeDefs() : actual.pipeDefs;
   const pipeTypes = pipeDefs !== null ? pipeDefs.map(def => def.type) : null;
-  expect(pipeTypes).toEqual(expectation.pipes);
+  expect(convertNullToEmptyArray(pipeTypes)).toEqual(expectation.pipes);
 }
 
 class TestClass {}

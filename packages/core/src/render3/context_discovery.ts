@@ -196,10 +196,10 @@ export function readPatchedData(target: any): LView|LContext|null {
   return (typeof data === 'number') ? getLViewById(data) : data || null;
 }
 
-export function readPatchedLView(target: any): LView|null {
+export function readPatchedLView<T>(target: any): LView<T>|null {
   const value = readPatchedData(target);
   if (value) {
-    return isLView(value) ? value : value.lView;
+    return (isLView(value) ? value : value.lView) as LView<T>;
   }
   return null;
 }

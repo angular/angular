@@ -339,6 +339,17 @@ export interface BazelAndG3Options {
   generateDeepReexports?: boolean;
 
   /**
+   * The `.d.ts` file for NgModules contain type pointers to their declarations, imports, and
+   * exports. Without this flag, the generated type definition will include
+   * components/directives/pipes/NgModules that are declared or imported locally in the NgModule and
+   * not necessarily exported to consumers.
+   *
+   * With this flag set, the type definition generated in the `.d.ts` for an NgModule will be
+   * filtered to only list those types which are publicly exported by the NgModule.
+   */
+  onlyPublishPublicTypingsForNgModules?: boolean;
+
+  /**
    * Insert JSDoc type annotations needed by Closure Compiler
    */
   annotateForClosureCompiler?: boolean;

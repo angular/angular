@@ -2,10 +2,10 @@
 
 To understand the capabilities of the Angular framework, you need to learn about the following:
 
-* Components
-* Templates
-* Directives
-* Dependency injection
+*   Components
+*   Templates
+*   Directives
+*   Dependency injection
 
 The topics in this section explain these features and concepts, and how you can use them.
 
@@ -13,8 +13,8 @@ The topics in this section explain these features and concepts, and how you can 
 
 To get the most out of these developer guides, you should review the following topics:
 
-* [What is Angular][AioGuideWhatIsAngular]
-* [Getting started tutorial][AioStart]
+*   [What is Angular][AioGuideWhatIsAngular]
+*   [Getting started tutorial][AioStart]
 
 ## Learn about Angular basics
 
@@ -56,4 +56,4 @@ To get the most out of these developer guides, you should review the following t
 
 <!-- end links -->
 
-@reviewed 2021-11-05
+@reviewed 2022-02-28

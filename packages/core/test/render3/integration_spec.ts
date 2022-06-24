@@ -8,6 +8,7 @@
 
 import {NgIf} from '@angular/common';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
+import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 
 import {RendererType2} from '../../src/render/api_flags';
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
@@ -26,6 +27,7 @@ describe('render3 integration test', () => {
   describe('render', () => {
     describe('text bindings', () => {
       it('should support creation-time values in text nodes', () => {
+        ngDevModeResetPerfCounters();
         function Template(rf: RenderFlags, value: string) {
           if (rf & RenderFlags.Create) {
             ɵɵtext(0, value);
@@ -33,12 +35,12 @@ describe('render3 integration test', () => {
         }
         expect(renderToHtml(Template, 'once', 1, 1)).toEqual('once');
         expect(renderToHtml(Template, 'twice', 1, 1)).toEqual('once');
-        expect(ngDevMode).toHaveProperties({
+        expect(ngDevMode).toEqual(jasmine.objectContaining({
           firstCreatePass: 0,
           tNode: 2,
           tView: 2,  // 1 for root view, 1 for template
           rendererSetText: 1,
-        });
+        }));
       });
     });
   });
@@ -223,7 +225,7 @@ describe('component animations', () => {
   //             ɵɵelement(0, 'child-comp-with-anim');
   //           }
   //         },
-  //         directives: [ChildCompWithAnim]
+  //         dependencies: [ChildCompWithAnim]
   //       });
   //     }
 
@@ -297,7 +299,7 @@ describe('element discovery', () => {
       static ɵcmp = ɵɵdefineComponent({
         type: ParentComp,
         selectors: [['parent-comp']],
-        directives: [ChildComp],
+        dependencies: [ChildComp],
         decls: 2,
         vars: 0,
         template:
@@ -331,7 +333,7 @@ describe('element discovery', () => {
       static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        directives: [NgIf],
+        dependencies: [NgIf],
         decls: 2,
         vars: 1,
         consts: [['ngIf', '']],
@@ -382,7 +384,7 @@ describe('element discovery', () => {
       static ɵcmp = ɵɵdefineComponent({
         type: StructuredComp,
         selectors: [['structured-comp']],
-        directives: [NgIf],
+        dependencies: [NgIf],
         decls: 2,
         vars: 0,
         template:
@@ -559,7 +561,7 @@ describe('element discovery', () => {
          static ɵcmp = ɵɵdefineComponent({
            type: ParentComp,
            selectors: [['parent-comp']],
-           directives: [ProjectorComp],
+           dependencies: [ProjectorComp],
            decls: 5,
            vars: 0,
            template:
@@ -716,7 +718,7 @@ describe('element discovery', () => {
          static ɵcmp = ɵɵdefineComponent({
            type: StructuredComp,
            selectors: [['structured-comp']],
-           directives: [MyDir1, MyDir2, MyDir3],
+           dependencies: [MyDir1, MyDir2, MyDir3],
            decls: 2,
            vars: 0,
            consts: [['my-dir-1', '', 'my-dir-2', ''], ['my-dir-3']],
@@ -809,7 +811,7 @@ describe('element discovery', () => {
          static ɵcmp = ɵɵdefineComponent({
            type: ParentComp,
            selectors: [['parent-comp']],
-           directives: [ChildComp, MyDir1, MyDir2],
+           dependencies: [ChildComp, MyDir1, MyDir2],
            decls: 1,
            vars: 0,
            consts: [['my-dir-1', '', 'my-dir-2', '']],
@@ -891,7 +893,7 @@ describe('element discovery', () => {
          static ɵcmp = ɵɵdefineComponent({
            type: ParentComp,
            selectors: [['parent-comp']],
-           directives: [ChildComp],
+           dependencies: [ChildComp],
            decls: 2,
            vars: 0,
            template:
@@ -1007,7 +1009,7 @@ describe('sanitization', () => {
                 ɵɵelement(0, 'blockquote', 0);
               }
             },
-        directives: [UnsafeUrlHostBindingDir]
+        dependencies: [UnsafeUrlHostBindingDir]
       });
     }
 

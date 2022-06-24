@@ -1,5 +1,5 @@
+load("@npm//@bazel/concatjs:index.bzl", "ts_library")
 load("@npm//@bazel/protractor:index.bzl", "protractor_web_test_suite")
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
 
 ts_library(
     name = "e2e",

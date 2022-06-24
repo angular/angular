@@ -2,17 +2,27 @@
 
 {@searchKeywords i18n}
 
-*Internationalization* , sometimes referenced as i18n, is the process of designing and preparing your project for use in different locales around the world.
-*Localization* is the process of building versions of your project for different locales.  The localization process includes the following actions.
+*Internationalization*, sometimes referenced as i18n, is the process of designing and preparing your project for use in different locales around the world.
+*Localization* is the process of building versions of your project for different locales.
+The localization process includes the following actions.
 
 *   Extract text for translation into different languages
 *   Format data for a specific locale
 
-A *locale* identifies a region in which people speak a particular language or language variant.  Possible regions includes countries and geographical regions.
+A *locale* identifies a region in which people speak a particular language or language variant.
+Possible regions includes countries and geographical regions.
 A locale determines the formatting and parsing of the following details.
 
 *   Measurement units including date and time, numbers, and currencies
 *   Translated names including time zones, languages, and countries
+
+For a quick introduction to localization and internationalization watch this video:
+
+<div class="video-container">
+
+<iframe allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0" src="https://www.youtube.com/embed/KNTN-nsbV7M"></iframe>
+
+</div>
 
 ## Learn about Angular internationalization
 
@@ -40,4 +50,4 @@ A locale determines the formatting and parsing of the following details.
 
 <!-- end links -->
 
-@reviewed 2021-10-07
+@reviewed 2022-06-06

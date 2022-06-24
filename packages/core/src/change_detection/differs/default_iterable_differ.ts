@@ -7,8 +7,8 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
+import {isListLikeIterable, iterateListLike} from '../../util/iterable';
 import {stringify} from '../../util/stringify';
-import {isListLikeIterable, iterateListLike} from '../change_detection_util';
 
 import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, NgIterable, TrackByFunction} from './iterable_differs';
 
@@ -153,10 +153,11 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   diff(collection: NgIterable<V>|null|undefined): DefaultIterableDiffer<V>|null {
     if (collection == null) collection = [];
     if (!isListLikeIterable(collection)) {
-      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-          `Error trying to diff '${stringify(collection)}'. Only arrays and iterables are allowed` :
-          '';
-      throw new RuntimeError(RuntimeErrorCode.INVALID_DIFFER_INPUT, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.INVALID_DIFFER_INPUT,
+          ngDevMode &&
+              `Error trying to diff '${
+                  stringify(collection)}'. Only arrays and iterables are allowed`);
     }
 
     if (this.check(collection)) {

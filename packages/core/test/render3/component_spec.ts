@@ -8,8 +8,7 @@
 
 import {NgIf} from '@angular/common';
 
-import {ViewEncapsulation, ɵɵdefineInjectable, ɵɵdefineInjector} from '../../src/core';
-import {createInjector} from '../../src/di/r3_injector';
+import {ViewEncapsulation, ɵcreateInjector as createInjector, ɵɵdefineInjectable, ɵɵdefineInjector} from '../../src/core';
 import {AttributeMarker, markDirty, ɵɵadvance, ɵɵdefineComponent, ɵɵdirectiveInject, ɵɵproperty, ɵɵtemplate} from '../../src/render3/index';
 import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵtext, ɵɵtextInterpolate} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -181,7 +180,7 @@ it('should not invoke renderer destroy method for embedded views', () => {
       selectors: [['comp']],
       decls: 3,
       vars: 1,
-      directives: [NgIf],
+      dependencies: [NgIf],
       consts: [[AttributeMarker.Template, 'ngIf']],
       /**
        *  <div>Root view</div>

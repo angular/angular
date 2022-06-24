@@ -13,13 +13,14 @@ import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
+import {MetaKind} from '../../metadata';
 import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from '../../perf';
 import {ProgramDriver, UpdateMode} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
-import {ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
+import {ComponentScopeKind, ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
-import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, ShimLocation, Symbol, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
+import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, NgTemplateDiagnostic, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, Symbol, TcbLocation, TemplateDiagnostic, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {CompletionEngine} from './completion';
@@ -97,7 +98,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   private getLatestComponentState(component: ts.ClassDeclaration):
-      {data: TemplateData|null, tcb: ts.Node|null, shimPath: AbsoluteFsPath} {
+      {data: TemplateData|null, tcb: ts.Node|null, tcbPath: AbsoluteFsPath, tcbIsShim: boolean} {
     this.ensureShimForComponent(component);
 
     const sf = component.getSourceFile();
@@ -107,7 +108,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const fileRecord = this.getFileData(sfPath);
 
     if (!fileRecord.shimData.has(shimPath)) {
-      return {data: null, tcb: null, shimPath};
+      return {data: null, tcb: null, tcbPath: shimPath, tcbIsShim: true};
     }
 
     const templateId = fileRecord.sourceManager.getTemplateId(component);
@@ -123,10 +124,15 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
     let tcb: ts.Node|null = findTypeCheckBlock(shimSf, id, /*isDiagnosticsRequest*/ false);
 
+    let tcbPath = shimPath;
     if (tcb === null) {
       // Try for an inline block.
       const inlineSf = getSourceFileOrError(program, sfPath);
       tcb = findTypeCheckBlock(inlineSf, id, /*isDiagnosticsRequest*/ false);
+
+      if (tcb !== null) {
+        tcbPath = sfPath;
+      }
     }
 
     let data: TemplateData|null = null;
@@ -134,11 +140,33 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       data = shimRecord.templates.get(templateId)!;
     }
 
-    return {data, tcb, shimPath};
+    return {data, tcb, tcbPath, tcbIsShim: tcbPath === shimPath};
   }
 
   isTrackedTypeCheckFile(filePath: AbsoluteFsPath): boolean {
     return this.getFileAndShimRecordsForPath(filePath) !== null;
+  }
+
+  private getFileRecordForTcbLocation({tcbPath, isShimFile}: TcbLocation): FileTypeCheckingData
+      |null {
+    if (!isShimFile) {
+      // The location is not within a shim file but corresponds with an inline TCB in an original
+      // source file; we can obtain the record directly by its path.
+      if (this.state.has(tcbPath)) {
+        return this.state.get(tcbPath)!;
+      } else {
+        return null;
+      }
+    }
+
+    // The location is within a type-checking shim file; find the type-checking data that owns this
+    // shim path.
+    const records = this.getFileAndShimRecordsForPath(tcbPath);
+    if (records !== null) {
+      return records.fileRecord;
+    } else {
+      return null;
+    }
   }
 
   private getFileAndShimRecordsForPath(shimPath: AbsoluteFsPath):
@@ -151,20 +179,19 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return null;
   }
 
-  getTemplateMappingAtShimLocation({shimPath, positionInShimFile}: ShimLocation):
-      FullTemplateMapping|null {
-    const records = this.getFileAndShimRecordsForPath(absoluteFrom(shimPath));
-    if (records === null) {
+  getTemplateMappingAtTcbLocation(tcbLocation: TcbLocation): FullTemplateMapping|null {
+    const fileRecord = this.getFileRecordForTcbLocation(tcbLocation);
+    if (fileRecord === null) {
       return null;
     }
-    const {fileRecord} = records;
 
-    const shimSf = this.programDriver.getProgram().getSourceFile(absoluteFrom(shimPath));
+    const shimSf = this.programDriver.getProgram().getSourceFile(tcbLocation.tcbPath);
     if (shimSf === undefined) {
       return null;
     }
     return getTemplateMapping(
-        shimSf, positionInShimFile, fileRecord.sourceManager, /*isDiagnosticsRequest*/ false);
+        shimSf, tcbLocation.positionInFile, fileRecord.sourceManager,
+        /*isDiagnosticsRequest*/ false);
   }
 
   generateAllTypeCheckBlocks() {
@@ -270,7 +297,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getExpressionCompletionLocation(
-      ast: PropertyRead|SafePropertyRead, component: ts.ClassDeclaration): ShimLocation|null {
+      ast: PropertyRead|SafePropertyRead, component: ts.ClassDeclaration): TcbLocation|null {
     const engine = this.getOrCreateCompletionEngine(component);
     if (engine === null) {
       return null;
@@ -280,7 +307,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getLiteralCompletionLocation(
-      node: LiteralPrimitive|TmplAstTextAttribute, component: ts.ClassDeclaration): ShimLocation
+      node: LiteralPrimitive|TmplAstTextAttribute, component: ts.ClassDeclaration): TcbLocation
       |null {
     const engine = this.getOrCreateCompletionEngine(component);
     if (engine === null) {
@@ -334,12 +361,12 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return this.completionCache.get(component)!;
     }
 
-    const {tcb, data, shimPath} = this.getLatestComponentState(component);
+    const {tcb, data, tcbPath, tcbIsShim} = this.getLatestComponentState(component);
     if (tcb === null || data === null) {
       return null;
     }
 
-    const engine = new CompletionEngine(tcb, data, shimPath);
+    const engine = new CompletionEngine(tcb, data, tcbPath, tcbIsShim);
     this.completionCache.set(component, engine);
     return engine;
   }
@@ -509,13 +536,13 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return this.symbolBuilderCache.get(component)!;
     }
 
-    const {tcb, data, shimPath} = this.getLatestComponentState(component);
+    const {tcb, data, tcbPath, tcbIsShim} = this.getLatestComponentState(component);
     if (tcb === null || data === null) {
       return null;
     }
 
     const builder = new SymbolBuilder(
-        shimPath, tcb, data, this.componentScopeReader,
+        tcbPath, tcbIsShim, tcb, data, this.componentScopeReader,
         () => this.programDriver.getProgram().getTypeChecker());
     this.symbolBuilderCache.set(component, builder);
     return builder;
@@ -600,48 +627,54 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return null;
     }
 
+    const dependencies = scope.kind === ComponentScopeKind.NgModule ?
+        scope.compilation.dependencies :
+        scope.dependencies;
+
     const data: ScopeData = {
       directives: [],
       pipes: [],
-      isPoisoned: scope.compilation.isPoisoned,
+      isPoisoned: scope.kind === ComponentScopeKind.NgModule ? scope.compilation.isPoisoned :
+                                                               scope.isPoisoned,
     };
 
     const typeChecker = this.programDriver.getProgram().getTypeChecker();
-    for (const dir of scope.compilation.directives) {
-      if (dir.selector === null) {
-        // Skip this directive, it can't be added to a template anyway.
-        continue;
-      }
-      const tsSymbol = typeChecker.getSymbolAtLocation(dir.ref.node.name);
-      if (!isSymbolWithValueDeclaration(tsSymbol)) {
-        continue;
-      }
+    for (const dep of dependencies) {
+      if (dep.kind === MetaKind.Directive) {
+        if (dep.selector === null) {
+          // Skip this directive, it can't be added to a template anyway.
+          continue;
+        }
+        const tsSymbol = typeChecker.getSymbolAtLocation(dep.ref.node.name);
+        if (!isSymbolWithValueDeclaration(tsSymbol)) {
+          continue;
+        }
 
-      let ngModule: ClassDeclaration|null = null;
-      const moduleScopeOfDir = this.componentScopeReader.getScopeForComponent(dir.ref.node);
-      if (moduleScopeOfDir !== null) {
-        ngModule = moduleScopeOfDir.ngModule;
-      }
+        let ngModule: ClassDeclaration|null = null;
+        const moduleScopeOfDir = this.componentScopeReader.getScopeForComponent(dep.ref.node);
+        if (moduleScopeOfDir !== null && moduleScopeOfDir.kind === ComponentScopeKind.NgModule) {
+          ngModule = moduleScopeOfDir.ngModule;
+        }
 
-      data.directives.push({
-        isComponent: dir.isComponent,
-        isStructural: dir.isStructural,
-        selector: dir.selector,
-        tsSymbol,
-        ngModule,
-      });
+        data.directives.push({
+          isComponent: dep.isComponent,
+          isStructural: dep.isStructural,
+          selector: dep.selector,
+          tsSymbol,
+          ngModule,
+        });
+      } else if (dep.kind === MetaKind.Pipe) {
+        const tsSymbol = typeChecker.getSymbolAtLocation(dep.ref.node.name);
+        if (tsSymbol === undefined) {
+          continue;
+        }
+        data.pipes.push({
+          name: dep.name,
+          tsSymbol,
+        });
+      }
     }
 
-    for (const pipe of scope.compilation.pipes) {
-      const tsSymbol = typeChecker.getSymbolAtLocation(pipe.ref.node.name);
-      if (tsSymbol === undefined) {
-        continue;
-      }
-      data.pipes.push({
-        name: pipe.name,
-        tsSymbol,
-      });
-    }
 
     this.scopeCache.set(component, data);
     return data;

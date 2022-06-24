@@ -66,9 +66,8 @@ checkSize() {
   name="$1"
   limitFile="$2"
 
-  # In non-PR builds, `CI_BRANCH` is the branch being built (e.g. `pull/12345`), not the targeted branch.
-  # Thus, PRs will fall back to using the size limits for `master`.
-  node ${PROJECT_ROOT}/scripts/ci/payload-size.js $limitFile $name ${CI_BRANCH:-} ${CI_COMMIT:-}
+  # PRs and non-PR pushes will always test against the size-limits of the current revision.
+  node ${PROJECT_ROOT}/scripts/ci/payload-size.js $limitFile $name ${CI_COMMIT:-}
 }
 
 # Write timestamp to global variable `$payloadData`.
@@ -87,15 +86,10 @@ addBuildUrl() {
   payloadData="$payloadData\"buildUrl\": \"$buildUrl\", "
 }
 
-# Write the commit message for the current CI commit range to global variable `$payloadData`.
-#   $1: string - The commit range for this build (in `<SHA-1>...<SHA-2>` format).
+# Write the commit message for the specified CI commit to global variable `$payloadData`.
+#   $1: string - The commit SHA for this build (in `<SHA-1>` format).
 addMessage() {
-  commitRange="$1"
-
-  # Grab the set of SHAs for the message. This can fail when you force push or do initial build
-  # because $CI_COMMIT_RANGE may contain the previous SHA which will not be in the
-  # force push or commit, hence we default to last commit.
-  message=$(git --git-dir ${PROJECT_ROOT}/.git log --oneline $commitRange -- || git --git-dir ${PROJECT_ROOT}/.git log --oneline -n1)
+  message="${1}"
   message=$(echo $message | sed 's/\r//g' | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
   payloadData="$payloadData\"message\": \"$message\", "
 }
@@ -147,7 +141,7 @@ trackPayloadSize() {
     echo "Uploading data for '$name'..."
     addTimestamp
     addBuildUrl $CI_BUILD_URL
-    addMessage $CI_COMMIT_RANGE
+    addMessage $CI_COMMIT
     uploadData $name
   else
     echo "Skipped uploading data for '$name', because this is a pull request."

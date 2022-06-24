@@ -17,6 +17,6 @@ export {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, 
 export {ANALYZE_FOR_ENTRY_COMPONENTS, ContentChild, ContentChildDecorator, ContentChildren, ContentChildrenDecorator, Query, ViewChild, ViewChildDecorator, ViewChildren, ViewChildrenDecorator} from './metadata/di';
 export {Component, ComponentDecorator, Directive, DirectiveDecorator, HostBinding, HostBindingDecorator, HostListener, HostListenerDecorator, Input, InputDecorator, Output, OutputDecorator, Pipe, PipeDecorator} from './metadata/directives';
 export {DoBootstrap} from './metadata/do_boostrap';
-export {ModuleWithProviders, NgModule, NgModuleDecorator} from './metadata/ng_module';
+export {NgModule, NgModuleDecorator} from './metadata/ng_module';
 export {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from './metadata/schema';
 export {ViewEncapsulation} from './metadata/view';

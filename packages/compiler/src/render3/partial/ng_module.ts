@@ -20,7 +20,7 @@ import {R3DeclareNgModuleMetadata} from './api';
  *
  * Do not include any prerelease in these versions as they are ignored.
  */
-const MINIMUM_PARTIAL_LINKER_VERSION = '12.0.0';
+const MINIMUM_PARTIAL_LINKER_VERSION = '14.0.0';
 
 export function compileDeclareNgModuleFromMetadata(meta: R3NgModuleMetadata): R3CompiledExpression {
   const definitionMap = createNgModuleDefinitionMap(meta);

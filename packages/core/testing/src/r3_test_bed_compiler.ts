@@ -10,6 +10,8 @@ import {ResourceLoader} from '@angular/compiler';
 import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, resolveForwardRef, Type, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵgetInjectableDef as getInjectableDef, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDeclaration as InjectableDeclaration} from '@angular/core';
 
 import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
+import {ComponentDef, ComponentType} from '../../src/render3';
+import {generateStandaloneInDeclarationsError} from '../../src/render3/jit/module';
 
 import {MetadataOverride} from './metadata_override';
 import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
@@ -23,6 +25,16 @@ enum TestingModuleOverride {
 function isTestingModuleOverride(value: unknown): value is TestingModuleOverride {
   return value === TestingModuleOverride.DECLARATION ||
       value === TestingModuleOverride.OVERRIDE_TEMPLATE;
+}
+
+function assertNoStandaloneComponents(
+    types: Type<any>[], resolver: Resolver<any>, location: string) {
+  types.forEach(type => {
+    const component = resolver.resolve(type);
+    if (component && component.standalone) {
+      throw new Error(generateStandaloneInDeclarationsError(type, location));
+    }
+  });
 }
 
 // Resolvers for Angular decorators
@@ -70,9 +82,10 @@ export class R3TestBedCompiler {
 
   // Map that keeps initial version of component/directive/pipe defs in case
   // we compile a Type again, thus overriding respective static fields. This is
-  // required to make sure we restore defs to their initial states between test runs
-  // TODO: we should support the case with multiple defs on a type
-  private initialNgDefs = new Map<Type<any>, [string, PropertyDescriptor|undefined]>();
+  // required to make sure we restore defs to their initial states between test runs.
+  // Note: one class may have multiple defs (for example: ɵmod and ɵinj in case of an
+  // NgModule), store all of them in a map.
+  private initialNgDefs = new Map<Type<any>, Map<string, PropertyDescriptor|undefined>>();
 
   // Array that keeps cleanup operations for initial versions of component/directive/pipe/module
   // defs in case TestBed makes changes to the originals.
@@ -87,7 +100,7 @@ export class R3TestBedCompiler {
   // module's provider list.
   private providerOverridesByModule = new Map<InjectorType<any>, Provider[]>();
   private providerOverridesByToken = new Map<any, Provider>();
-  private moduleProvidersOverridden = new Set<Type<any>>();
+  private scopesWithOverriddenProviders = new Set<Type<any>>();
 
   private testModuleType: NgModuleType<any>;
   private testModuleRef: NgModuleRef<any>|null = null;
@@ -105,6 +118,10 @@ export class R3TestBedCompiler {
   configureTestingModule(moduleDef: TestModuleMetadata): void {
     // Enqueue any compilation tasks for the directly declared component.
     if (moduleDef.declarations !== undefined) {
+      // Verify that there are no standalone components
+      assertNoStandaloneComponents(
+          moduleDef.declarations, this.resolvers.component,
+          '"TestBed.configureTestingModule" call');
       this.queueTypeArray(moduleDef.declarations, TestingModuleOverride.DECLARATION);
       this.declarations.push(...moduleDef.declarations);
     }
@@ -143,18 +160,31 @@ export class R3TestBedCompiler {
   }
 
   overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void {
+    this.verifyNoStandaloneFlagOverrides(component, override);
     this.resolvers.component.addOverride(component, override);
     this.pendingComponents.add(component);
   }
 
   overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void {
+    this.verifyNoStandaloneFlagOverrides(directive, override);
     this.resolvers.directive.addOverride(directive, override);
     this.pendingDirectives.add(directive);
   }
 
   overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): void {
+    this.verifyNoStandaloneFlagOverrides(pipe, override);
     this.resolvers.pipe.addOverride(pipe, override);
     this.pendingPipes.add(pipe);
+  }
+
+  private verifyNoStandaloneFlagOverrides(
+      type: Type<any>, override: MetadataOverride<Component|Directive|Pipe>) {
+    if (override.add?.hasOwnProperty('standalone') || override.set?.hasOwnProperty('standalone') ||
+        override.remove?.hasOwnProperty('standalone')) {
+      throw new Error(
+          `An override for the ${type.name} class has the \`standalone\` flag. ` +
+          `Changing the \`standalone\` flag via TestBed overrides is not supported.`);
+    }
   }
 
   overrideProvider(
@@ -279,7 +309,7 @@ export class R3TestBedCompiler {
     this.queueTypesFromModulesArray([moduleType]);
     this.compileTypesSync();
     this.applyProviderOverrides();
-    this.applyProviderOverridesToModule(moduleType);
+    this.applyProviderOverridesInScope(moduleType);
     this.applyTransitiveScopes();
   }
 
@@ -290,7 +320,7 @@ export class R3TestBedCompiler {
     this.queueTypesFromModulesArray([moduleType]);
     await this.compileComponents();
     this.applyProviderOverrides();
-    this.applyProviderOverridesToModule(moduleType);
+    this.applyProviderOverridesInScope(moduleType);
     this.applyTransitiveScopes();
   }
 
@@ -405,30 +435,57 @@ export class R3TestBedCompiler {
     this.seenDirectives.clear();
   }
 
-  private applyProviderOverridesToModule(moduleType: Type<any>): void {
-    if (this.moduleProvidersOverridden.has(moduleType)) {
+
+  /**
+   * Applies provider overrides to a given type (either an NgModule or a standalone component)
+   * and all imported NgModules and standalone components recursively.
+   */
+  private applyProviderOverridesInScope(type: Type<any>): void {
+    const hasScope = isStandaloneComponent(type) || isNgModule(type);
+
+    // The function can be re-entered recursively while inspecting dependencies
+    // of an NgModule or a standalone component. Exit early if we come across a
+    // type that can not have a scope (directive or pipe) or the type is already
+    // processed earlier.
+    if (!hasScope || this.scopesWithOverriddenProviders.has(type)) {
       return;
     }
-    this.moduleProvidersOverridden.add(moduleType);
+    this.scopesWithOverriddenProviders.add(type);
 
-    const injectorDef: any = (moduleType as any)[NG_INJ_DEF];
-    if (this.providerOverridesByToken.size > 0) {
+    // NOTE: the line below triggers JIT compilation of the module injector,
+    // which also invokes verification of the NgModule semantics, which produces
+    // detailed error messages. The fact that the code relies on this line being
+    // present here is suspicious and should be refactored in a way that the line
+    // below can be moved (for ex. after an early exit check below).
+    const injectorDef: any = (type as any)[NG_INJ_DEF];
+
+    // No provider overrides, exit early.
+    if (this.providerOverridesByToken.size === 0) return;
+
+    if (isStandaloneComponent(type)) {
+      // Visit all component dependencies and override providers there.
+      const def = getComponentDef(type);
+      const dependencies = maybeUnwrapFn(def.dependencies ?? []);
+      for (const dependency of dependencies) {
+        this.applyProviderOverridesInScope(dependency);
+      }
+    } else {
       const providers = [
         ...injectorDef.providers,
-        ...(this.providerOverridesByModule.get(moduleType as InjectorType<any>) || [])
+        ...(this.providerOverridesByModule.get(type as InjectorType<any>) || [])
       ];
       if (this.hasProviderOverrides(providers)) {
-        this.maybeStoreNgDef(NG_INJ_DEF, moduleType);
+        this.maybeStoreNgDef(NG_INJ_DEF, type);
 
-        this.storeFieldOfDefOnType(moduleType, NG_INJ_DEF, 'providers');
+        this.storeFieldOfDefOnType(type, NG_INJ_DEF, 'providers');
         injectorDef.providers = this.getOverriddenProviders(providers);
       }
 
       // Apply provider overrides to imported modules recursively
-      const moduleDef = (moduleType as any)[NG_MOD_DEF];
+      const moduleDef = (type as any)[NG_MOD_DEF];
       const imports = maybeUnwrapFn(moduleDef.imports);
       for (const importedModule of imports) {
-        this.applyProviderOverridesToModule(importedModule);
+        this.applyProviderOverridesInScope(importedModule);
       }
       // Also override the providers on any ModuleWithProviders imports since those don't appear in
       // the moduleDef.
@@ -469,7 +526,7 @@ export class R3TestBedCompiler {
     compileNgModuleDefs(ngModule as NgModuleType<any>, metadata);
   }
 
-  private queueType(type: Type<any>, moduleType: Type<any>|TestingModuleOverride): void {
+  private queueType(type: Type<any>, moduleType: Type<any>|TestingModuleOverride|null): void {
     const component = this.resolvers.component.resolve(type);
     if (component) {
       // Check whether a give Type has respective NG def (ɵcmp) and compile if def is
@@ -495,8 +552,11 @@ export class R3TestBedCompiler {
       // real module, which was imported. This pattern is understood to mean that the component
       // should use its original scope, but that the testing module should also contain the
       // component in its scope.
-      if (!this.componentToModuleScope.has(type) ||
-          this.componentToModuleScope.get(type) === TestingModuleOverride.DECLARATION) {
+      //
+      // Note: standalone components have no associated NgModule, so the `moduleType` can be `null`.
+      if (moduleType !== null &&
+          (!this.componentToModuleScope.has(type) ||
+           this.componentToModuleScope.get(type) === TestingModuleOverride.DECLARATION)) {
         this.componentToModuleScope.set(type, moduleType);
       }
       return;
@@ -540,6 +600,21 @@ export class R3TestBedCompiler {
           queueTypesFromModulesArrayRecur(maybeUnwrapFn(def.exports));
         } else if (isModuleWithProviders(value)) {
           queueTypesFromModulesArrayRecur([value.ngModule]);
+        } else if (isStandaloneComponent(value)) {
+          this.queueType(value, null);
+          const def = getComponentDef(value);
+          const dependencies = maybeUnwrapFn(def.dependencies ?? []);
+          dependencies.forEach((dependency) => {
+            // Note: in AOT, the `dependencies` might also contain regular
+            // (NgModule-based) Component, Directive and Pipes, so we handle
+            // them separately and proceed with recursive process for standalone
+            // Components and NgModules only.
+            if (isStandaloneComponent(dependency) || hasNgModuleDef(dependency)) {
+              queueTypesFromModulesArrayRecur([dependency]);
+            } else {
+              this.queueType(dependency, null);
+            }
+          });
         }
       }
     };
@@ -586,10 +661,20 @@ export class R3TestBedCompiler {
     return affectedModules;
   }
 
+  /**
+   * Preserve an original def (such as ɵmod, ɵinj, etc) before applying an override.
+   * Note: one class may have multiple defs (for example: ɵmod and ɵinj in case of
+   * an NgModule). If there is a def in a set already, don't override it, since
+   * an original one should be restored at the end of a test.
+   */
   private maybeStoreNgDef(prop: string, type: Type<any>) {
     if (!this.initialNgDefs.has(type)) {
+      this.initialNgDefs.set(type, new Map());
+    }
+    const currentDefs = this.initialNgDefs.get(type)!;
+    if (!currentDefs.has(prop)) {
       const currentDef = Object.getOwnPropertyDescriptor(type, prop);
-      this.initialNgDefs.set(type, [prop, currentDef]);
+      currentDefs.set(prop, currentDef);
     }
   }
 
@@ -631,22 +716,24 @@ export class R3TestBedCompiler {
       op.object[op.fieldName] = op.originalValue;
     });
     // Restore initial component/directive/pipe defs
-    this.initialNgDefs.forEach((value: [string, PropertyDescriptor|undefined], type: Type<any>) => {
-      const [prop, descriptor] = value;
-      if (!descriptor) {
-        // Delete operations are generally undesirable since they have performance implications
-        // on objects they were applied to. In this particular case, situations where this code
-        // is invoked should be quite rare to cause any noticeable impact, since it's applied
-        // only to some test cases (for example when class with no annotations extends some
-        // @Component) when we need to clear 'ɵcmp' field on a given class to restore
-        // its original state (before applying overrides and running tests).
-        delete (type as any)[prop];
-      } else {
-        Object.defineProperty(type, prop, descriptor);
-      }
-    });
+    this.initialNgDefs.forEach(
+        (defs: Map<string, PropertyDescriptor|undefined>, type: Type<any>) => {
+          defs.forEach((descriptor, prop) => {
+            if (!descriptor) {
+              // Delete operations are generally undesirable since they have performance
+              // implications on objects they were applied to. In this particular case, situations
+              // where this code is invoked should be quite rare to cause any noticeable impact,
+              // since it's applied only to some test cases (for example when class with no
+              // annotations extends some @Component) when we need to clear 'ɵcmp' field on a given
+              // class to restore its original state (before applying overrides and running tests).
+              delete (type as any)[prop];
+            } else {
+              Object.defineProperty(type, prop, descriptor);
+            }
+          });
+        });
     this.initialNgDefs.clear();
-    this.moduleProvidersOverridden.clear();
+    this.scopesWithOverriddenProviders.clear();
     this.restoreComponentResolutionQueue();
     // Restore the locale ID to the default value, this shouldn't be necessary but we never know
     setLocaleId(DEFAULT_LOCALE_ID);
@@ -676,7 +763,7 @@ export class R3TestBedCompiler {
     }, /* allowDuplicateDeclarationsInRoot */ true);
     // clang-format on
 
-    this.applyProviderOverridesToModule(this.testModuleType);
+    this.applyProviderOverridesInScope(this.testModuleType);
   }
 
   get injector(): Injector {
@@ -777,8 +864,23 @@ function initResolvers(): Resolvers {
   };
 }
 
+function isStandaloneComponent<T>(value: Type<T>): value is ComponentType<T> {
+  const def = getComponentDef(value);
+  return !!def?.standalone;
+}
+
+function getComponentDef(value: ComponentType<unknown>): ComponentDef<unknown>;
+function getComponentDef(value: Type<unknown>): ComponentDef<unknown>|null;
+function getComponentDef(value: Type<unknown>): ComponentDef<unknown>|null {
+  return (value as any).ɵcmp ?? null;
+}
+
 function hasNgModuleDef<T>(value: Type<T>): value is NgModuleType<T> {
   return value.hasOwnProperty('ɵmod');
+}
+
+function isNgModule<T>(value: Type<T>): boolean {
+  return hasNgModuleDef(value);
 }
 
 function maybeUnwrapFn<T>(maybeFn: (() => T)|T): T {

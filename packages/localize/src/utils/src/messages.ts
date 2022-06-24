@@ -328,10 +328,6 @@ function computePlaceholderName(index: number) {
  * @throws an error if the block is unterminated
  */
 export function findEndOfBlock(cooked: string, raw: string): number {
-  /************************************************************************************************
-   * This function is repeated in `src/localize/src/localize.ts` and the two should be kept in sync.
-   * (See that file for more explanation of why.)
-   ************************************************************************************************/
   for (let cookedIndex = 1, rawIndex = 1; cookedIndex < cooked.length; cookedIndex++, rawIndex++) {
     if (raw[rawIndex] === '\\') {
       rawIndex++;

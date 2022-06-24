@@ -10,7 +10,6 @@ import {EventEmitter, Injectable, OnDestroy, ɵɵinject} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 
 import {LocationStrategy} from './location_strategy';
-import {PlatformLocation} from './platform_location';
 import {joinWithSlash, normalizeQueryParams, stripTrailingSlash} from './util';
 
 /** @publicApi */
@@ -60,20 +59,17 @@ export class Location implements OnDestroy {
   /** @internal */
   _baseHref: string;
   /** @internal */
-  _platformStrategy: LocationStrategy;
-  /** @internal */
-  _platformLocation: PlatformLocation;
+  _locationStrategy: LocationStrategy;
   /** @internal */
   _urlChangeListeners: ((url: string, state: unknown) => void)[] = [];
   /** @internal */
   _urlChangeSubscription: SubscriptionLike|null = null;
 
-  constructor(platformStrategy: LocationStrategy, platformLocation: PlatformLocation) {
-    this._platformStrategy = platformStrategy;
-    const browserBaseHref = this._platformStrategy.getBaseHref();
-    this._platformLocation = platformLocation;
+  constructor(locationStrategy: LocationStrategy) {
+    this._locationStrategy = locationStrategy;
+    const browserBaseHref = this._locationStrategy.getBaseHref();
     this._baseHref = stripTrailingSlash(_stripIndexHtml(browserBaseHref));
-    this._platformStrategy.onPopState((ev) => {
+    this._locationStrategy.onPopState((ev) => {
       this._subject.emit({
         'url': this.path(true),
         'pop': true,
@@ -99,7 +95,7 @@ export class Location implements OnDestroy {
   // TODO: vsavkin. Remove the boolean flag and always include hash once the deprecated router is
   // removed.
   path(includeHash: boolean = false): string {
-    return this.normalize(this._platformStrategy.path(includeHash));
+    return this.normalize(this._locationStrategy.path(includeHash));
   }
 
   /**
@@ -107,7 +103,7 @@ export class Location implements OnDestroy {
    * @returns The current value of the `history.state` object.
    */
   getState(): unknown {
-    return this._platformLocation.getState();
+    return this._locationStrategy.getState();
   }
 
   /**
@@ -148,7 +144,7 @@ export class Location implements OnDestroy {
     if (url && url[0] !== '/') {
       url = '/' + url;
     }
-    return this._platformStrategy.prepareExternalUrl(url);
+    return this._locationStrategy.prepareExternalUrl(url);
   }
 
   // TODO: rename this method to pushState
@@ -162,7 +158,7 @@ export class Location implements OnDestroy {
    *
    */
   go(path: string, query: string = '', state: any = null): void {
-    this._platformStrategy.pushState(state, '', path, query);
+    this._locationStrategy.pushState(state, '', path, query);
     this._notifyUrlChangeListeners(
         this.prepareExternalUrl(path + normalizeQueryParams(query)), state);
   }
@@ -176,7 +172,7 @@ export class Location implements OnDestroy {
    * @param state Location history state.
    */
   replaceState(path: string, query: string = '', state: any = null): void {
-    this._platformStrategy.replaceState(state, '', path, query);
+    this._locationStrategy.replaceState(state, '', path, query);
     this._notifyUrlChangeListeners(
         this.prepareExternalUrl(path + normalizeQueryParams(query)), state);
   }
@@ -185,14 +181,14 @@ export class Location implements OnDestroy {
    * Navigates forward in the platform's history.
    */
   forward(): void {
-    this._platformStrategy.forward();
+    this._locationStrategy.forward();
   }
 
   /**
    * Navigates back in the platform's history.
    */
   back(): void {
-    this._platformStrategy.back();
+    this._locationStrategy.back();
   }
 
   /**
@@ -208,7 +204,7 @@ export class Location implements OnDestroy {
    * @see https://developer.mozilla.org/en-US/docs/Web/API/History_API#Moving_to_a_specific_point_in_history
    */
   historyGo(relativePosition: number = 0): void {
-    this._platformStrategy.historyGo?.(relativePosition);
+    this._locationStrategy.historyGo?.(relativePosition);
   }
 
   /**
@@ -295,7 +291,7 @@ export class Location implements OnDestroy {
 }
 
 export function createLocation() {
-  return new Location(ɵɵinject(LocationStrategy as any), ɵɵinject(PlatformLocation as any));
+  return new Location(ɵɵinject(LocationStrategy as any));
 }
 
 function _stripBaseHref(baseHref: string, url: string): string {

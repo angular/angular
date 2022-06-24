@@ -4,25 +4,15 @@
 
 ```ts
 
-// @public
-const $localize_2: LocalizeFn;
+import { ɵ$localize as $localize_2 } from '@angular/localize';
+import { ɵLocalizeFn as LocalizeFn } from '@angular/localize';
+import { ɵTranslateFn as TranslateFn } from '@angular/localize';
 
 export { $localize_2 as $localize }
 
-// @public (undocumented)
-export interface LocalizeFn {
-    // (undocumented)
-    (messageParts: TemplateStringsArray, ...expressions: readonly any[]): string;
-    locale?: string;
-    translate?: TranslateFn;
-}
+export { LocalizeFn }
 
-// @public (undocumented)
-export interface TranslateFn {
-    // (undocumented)
-    (messageParts: TemplateStringsArray, expressions: readonly any[]): [TemplateStringsArray, readonly any[]];
-}
-
+export { TranslateFn }
 
 // (No @packageDocumentation comment for this package)
 

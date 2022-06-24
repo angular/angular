@@ -8,6 +8,7 @@
 
 import {Type} from '../../interface/type';
 import {getClosureSafeProperty} from '../../util/property';
+
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, ValueProvider} from './provider';
 
 
@@ -36,7 +37,7 @@ export interface ɵɵInjectableDeclaration<T> {
    * - `null`, does not belong to any injector. Must be explicitly listed in the injector
    *   `providers`.
    */
-  providedIn: InjectorType<any>|'root'|'platform'|'any'|null;
+  providedIn: InjectorType<any>|'root'|'platform'|'any'|'environment'|null;
 
   /**
    * The token to which this definition belongs.
@@ -81,7 +82,7 @@ export interface ɵɵInjectorDef<T> {
  * A `Type` which has a `ɵprov: ɵɵInjectableDeclaration` static field.
  *
  * `InjectableType`s contain their own Dependency Injection metadata and are usable in an
- * `InjectorDef`-based `StaticInjector.
+ * `InjectorDef`-based `StaticInjector`.
  *
  * @publicApi
  */
@@ -141,7 +142,7 @@ export interface InjectorTypeWithProviders<T> {
  */
 export function ɵɵdefineInjectable<T>(opts: {
   token: unknown,
-  providedIn?: Type<any>|'root'|'platform'|'any'|null, factory: () => T,
+  providedIn?: Type<any>|'root'|'platform'|'any'|'environment'|null, factory: () => T,
 }): unknown {
   return {
     token: opts.token,

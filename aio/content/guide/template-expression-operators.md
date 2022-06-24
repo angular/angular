@@ -21,9 +21,9 @@ See the <live-example></live-example> for a working example containing the code 
 
 </div>
 
-{@a non-null-assertion-operator}
+<a id="non-null-assertion-operator"></a>
 
-## The non-null assertion operator ( `!` )
+## The non-null assertion operator (`!`)
 
 When you use TypeScript's `--strictNullChecks` flag, you can prevent the type checker from throwing an error with Angular's non-null assertion operator, `!`.
 
@@ -31,7 +31,7 @@ The Angular non-null assertion operator causes the TypeScript type checker to su
 
 For example, you can assert that `item` properties are also defined.
 
-<code-example path="template-expression-operators/src/app/app.component.html" region="non-null" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="template-expression-operators/src/app/app.component.html" region="non-null"></code-example>
 
 Often, you want to make sure that any property bindings aren't `null` or `undefined`.
 However, there are situations in which such states are acceptable.
@@ -41,8 +41,7 @@ The non-null assertion operator, `!`, is optional unless you turn on strict null
 
 For more information, see TypeScript's [strict null checking](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html "Strict null checking in TypeScript").
 
-
-{@a any-type-cast-function}
+<a id="any-type-cast-function"></a>
 
 ## The `$any()` type cast function
 
@@ -50,12 +49,20 @@ Sometimes a binding expression triggers a type error during [AOT compilation](gu
 To silence the error, you can use the `$any()` cast function to cast
 the expression to the [`any` type](https://www.typescriptlang.org/docs/handbook/basic-types.html#any) as in the following example:
 
-<code-example path="built-in-template-functions/src/app/app.component.html" region="any-type-cast-function-1" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="built-in-template-functions/src/app/app.component.html" region="any-type-cast-function-1"></code-example>
 
 Using `$any()` prevents TypeScript from reporting that `bestByDate` is not a member of the `item` object.
 
 The `$any()` cast function also works with `this` to allow access to undeclared members of the component.
 
-<code-example path="built-in-template-functions/src/app/app.component.html" region="any-type-cast-function-2" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="built-in-template-functions/src/app/app.component.html" region="any-type-cast-function-2"></code-example>
 
 The `$any()` cast function works anywhere in a binding expression where a method call is valid.
+
+<!-- links -->
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-02-28

@@ -12,15 +12,15 @@ import {Component, ViewChild} from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {NoopAnimationsModule, ɵBrowserAnimationBuilder as BrowserAnimationBuilder} from '@angular/platform-browser/animations';
 
-import {el} from '../../testing/src/browser_util';
-
 {
   describe('BrowserAnimationBuilder', () => {
-    if (isNode) return;
-    let element: any;
-    beforeEach(() => {
-      element = el('<div></div>');
+    if (isNode) {
+      // Jasmine will throw if there are no tests.
+      it('should pass', () => {});
+      return;
+    }
 
+    beforeEach(() => {
       TestBed.configureTestingModule({
         imports: [NoopAnimationsModule],
         providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}]
@@ -44,6 +44,75 @@ import {el} from '../../testing/src/browser_util';
       fixture.detectChanges();
       expect(cmp.builder instanceof BrowserAnimationBuilder).toBeTruthy();
     });
+
+    it('should listen on start and done on the animation builder\'s player after it has been reset',
+       fakeAsync(() => {
+         @Component({
+           selector: 'ani-cmp',
+           template: '...',
+         })
+         class Cmp {
+           @ViewChild('target') public target: any;
+
+           constructor(public builder: AnimationBuilder) {}
+
+           build() {
+             const definition =
+                 this.builder.build([style({opacity: 0}), animate(1000, style({opacity: 1}))]);
+
+             return definition.create(this.target);
+           }
+         }
+
+         TestBed.configureTestingModule({declarations: [Cmp]});
+
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
+         fixture.detectChanges();
+
+         const player = cmp.build();
+
+         let startedCount = 0;
+         player.onStart(() => startedCount++);
+
+         let finishedCount = 0;
+         player.onDone(() => finishedCount++);
+
+         player.init();
+         flushMicrotasks();
+         expect(startedCount).toEqual(0);
+         expect(finishedCount).toEqual(0);
+
+         player.play();
+         flushMicrotasks();
+         expect(startedCount).toEqual(1);
+         expect(finishedCount).toEqual(0);
+
+         player.finish();
+         flushMicrotasks();
+         expect(startedCount).toEqual(1);
+         expect(finishedCount).toEqual(1);
+
+         player.play();
+         player.finish();
+         flushMicrotasks();
+         expect(startedCount).toEqual(1);
+         expect(finishedCount).toEqual(1);
+
+         [0, 1, 2, 3].forEach(i => {
+           player.reset();
+
+           player.play();
+           flushMicrotasks();
+           expect(startedCount).toEqual(i + 2);
+           expect(finishedCount).toEqual(i + 1);
+
+           player.finish();
+           flushMicrotasks();
+           expect(startedCount).toEqual(i + 2);
+           expect(finishedCount).toEqual(i + 2);
+         });
+       }));
 
     it('should listen on start and done on the animation builder\'s player', fakeAsync(() => {
          @Component({

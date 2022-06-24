@@ -118,10 +118,10 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptUR
   if (allowSanitizationBypassAndThrow(unsafeResourceUrl, BypassType.ResourceUrl)) {
     return trustedScriptURLFromStringBypass(unwrapSafeValue(unsafeResourceUrl));
   }
-  const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-      'unsafe value used in a resource URL context (see https://g.co/ng/security#xss)' :
-      '';
-  throw new RuntimeError(RuntimeErrorCode.UNSAFE_VALUE_IN_RESOURCE_URL, errorMessage);
+  throw new RuntimeError(
+      RuntimeErrorCode.UNSAFE_VALUE_IN_RESOURCE_URL,
+      ngDevMode &&
+          'unsafe value used in a resource URL context (see https://g.co/ng/security#xss)');
 }
 
 /**
@@ -145,10 +145,9 @@ export function ɵɵsanitizeScript(unsafeScript: any): TrustedScript|string {
   if (allowSanitizationBypassAndThrow(unsafeScript, BypassType.Script)) {
     return trustedScriptFromStringBypass(unwrapSafeValue(unsafeScript));
   }
-  const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-      'unsafe value used in a script context' :
-      '';
-  throw new RuntimeError(RuntimeErrorCode.UNSAFE_VALUE_IN_SCRIPT, errorMessage);
+  throw new RuntimeError(
+      RuntimeErrorCode.UNSAFE_VALUE_IN_SCRIPT,
+      ngDevMode && 'unsafe value used in a script context');
 }
 
 /**

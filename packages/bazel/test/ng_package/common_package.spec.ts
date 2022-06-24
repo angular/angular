@@ -10,6 +10,7 @@ import {runfiles} from '@bazel/runfiles';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as shx from 'shelljs';
+
 import {matchesObjectWithOrder} from './test_utils';
 
 // Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
@@ -82,13 +83,13 @@ describe('@angular/common ng_package', () => {
         esm2020: `./esm2020/common.mjs`,
         fesm2020: `./fesm2020/common.mjs`,
         fesm2015: `./fesm2015/common.mjs`,
-        typings: `./common.d.ts`,
+        typings: `./index.d.ts`,
         exports: matchesObjectWithOrder({
           './locales/global/*': {default: './locales/global/*.js'},
           './locales/*': {default: './locales/*.mjs'},
           './package.json': {default: './package.json'},
           '.': {
-            types: './common.d.ts',
+            types: './index.d.ts',
             esm2020: './esm2020/common.mjs',
             es2020: './fesm2020/common.mjs',
             es2015: './fesm2015/common.mjs',
@@ -96,7 +97,7 @@ describe('@angular/common ng_package', () => {
             default: './fesm2020/common.mjs'
           },
           './http': {
-            types: './http/http.d.ts',
+            types: './http/index.d.ts',
             esm2020: './esm2020/http/http.mjs',
             es2020: './fesm2020/http.mjs',
             es2015: './fesm2015/http.mjs',
@@ -104,7 +105,7 @@ describe('@angular/common ng_package', () => {
             default: './fesm2020/http.mjs'
           },
           './http/testing': {
-            types: './http/testing/testing.d.ts',
+            types: './http/testing/index.d.ts',
             esm2020: './esm2020/http/testing/testing.mjs',
             es2020: './fesm2020/http/testing.mjs',
             es2015: './fesm2015/http/testing.mjs',
@@ -112,7 +113,7 @@ describe('@angular/common ng_package', () => {
             default: './fesm2020/http/testing.mjs'
           },
           './testing': {
-            types: './testing/testing.d.ts',
+            types: './testing/index.d.ts',
             esm2020: './esm2020/testing/testing.mjs',
             es2020: './fesm2020/testing.mjs',
             es2015: './fesm2015/testing.mjs',
@@ -120,7 +121,7 @@ describe('@angular/common ng_package', () => {
             default: './fesm2020/testing.mjs'
           },
           './upgrade': {
-            types: './upgrade/upgrade.d.ts',
+            types: './upgrade/index.d.ts',
             esm2020: './esm2020/upgrade/upgrade.mjs',
             es2020: './fesm2020/upgrade.mjs',
             es2015: './fesm2015/upgrade.mjs',
@@ -130,44 +131,21 @@ describe('@angular/common ng_package', () => {
         }),
       }));
     });
-    // https://github.com/angular/common-builds/blob/master/http/package.json
+    // https://github.com/angular/common-builds/blob/master/http
     it('/http', () => {
-      const actual =
-          JSON.parse(fs.readFileSync('http/package.json', {encoding: 'utf-8'})) as PackageJson;
-      expect(actual['fesm2015']).toEqual('../fesm2015/http.mjs');
-      expect(actual['es2020']).toEqual('../fesm2020/http.mjs');
-      expect(actual['module']).toEqual('../fesm2015/http.mjs');
-      expect(actual['typings']).toEqual('./http.d.ts');
-      expect(actual['exports']).toBeUndefined();
+      expect(fs.existsSync('http/index.d.ts')).toBe(true);
     });
-    // https://github.com/angular/common-builds/blob/master/testing/package.json
+    // https://github.com/angular/common-builds/blob/master/testing
     it('/testing', () => {
-      const actual =
-          JSON.parse(fs.readFileSync('testing/package.json', {encoding: 'utf-8'})) as PackageJson;
-      expect(actual['fesm2015']).toEqual('../fesm2015/testing.mjs');
-      expect(actual['es2020']).toEqual('../fesm2020/testing.mjs');
-      expect(actual['exports']).toBeUndefined();
+      expect(fs.existsSync('testing/index.d.ts')).toBe(true);
     });
-    // https://github.com/angular/common-builds/blob/master/http/testing/package.json
+    // https://github.com/angular/common-builds/blob/master/http/testing
     it('/http/testing', () => {
-      const actual =
-          JSON.parse(fs.readFileSync('http/testing/package.json', {encoding: 'utf-8'})) as
-          PackageJson;
-      expect(actual['fesm2015']).toEqual('../../fesm2015/http/testing.mjs');
-      expect(actual['es2020']).toEqual('../../fesm2020/http/testing.mjs');
-      expect(actual['module']).toEqual('../../fesm2015/http/testing.mjs');
-      expect(actual['typings']).toEqual('./testing.d.ts');
-      expect(actual['exports']).toBeUndefined();
+      expect(fs.existsSync('http/testing/index.d.ts')).toBe(true);
     });
-    // https://github.com/angular/common-builds/blob/master/upgrade/package.json
+    // https://github.com/angular/common-builds/blob/master/upgrade
     it('/upgrade', () => {
-      const actual =
-          JSON.parse(fs.readFileSync('upgrade/package.json', {encoding: 'utf-8'})) as PackageJson;
-      expect(actual['fesm2015']).toEqual('../fesm2015/upgrade.mjs');
-      expect(actual['es2020']).toEqual('../fesm2020/upgrade.mjs');
-      expect(actual['module']).toEqual('../fesm2015/upgrade.mjs');
-      expect(actual['typings']).toEqual('./upgrade.d.ts');
-      expect(actual['exports']).toBeUndefined();
+      expect(fs.existsSync('upgrade/index.d.ts')).toBe(true);
     });
   });
 });

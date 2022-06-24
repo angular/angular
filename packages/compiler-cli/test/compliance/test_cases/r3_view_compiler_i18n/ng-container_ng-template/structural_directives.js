@@ -21,8 +21,8 @@ function MyComponent_ng_container_1_Template(rf, ctx) {
 decls: 2,
 vars: 2,
 consts: function() {
-  __i18nMsg__('Content A', [], {})
-  __i18nMsg__('Content B', [], {})
+  __i18nMsg__('Content A', [], {}, {})
+  __i18nMsg__('Content B', [], {}, {})
   return [
     [__AttributeMarker.Template__, "ngIf"],
     $i18n_0$,

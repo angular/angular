@@ -43,7 +43,7 @@ export function generateBaseCurrencies(localeData: CldrLocaleData) {
   const currencies: BaseCurrencies = {};
 
   Object.keys(currenciesData).forEach(key => {
-    let symbolsArray = [];
+    const symbolsArray: any[] = [];
     const symbol = currenciesData[key].symbol;
     const symbolNarrow = currenciesData[key]['symbol-alt-narrow'];
     if (symbol && symbol !== key) {
@@ -53,7 +53,7 @@ export function generateBaseCurrencies(localeData: CldrLocaleData) {
       if (symbolsArray.length > 0) {
         symbolsArray.push(symbolNarrow);
       } else {
-        symbolsArray = [undefined, symbolNarrow];
+        symbolsArray.push(undefined, symbolNarrow);
       }
     }
     if (fractions[key] && fractions[key]['_digits']) {
@@ -61,9 +61,9 @@ export function generateBaseCurrencies(localeData: CldrLocaleData) {
       if (symbolsArray.length === 2) {
         symbolsArray.push(digits);
       } else if (symbolsArray.length === 1) {
-        symbolsArray = [...symbolsArray, undefined, digits];
+        symbolsArray.push(undefined, digits);
       } else {
-        symbolsArray = [undefined, undefined, digits];
+        symbolsArray.push(undefined, undefined, digits);
       }
     }
     if (symbolsArray.length > 0) {

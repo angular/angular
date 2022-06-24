@@ -410,7 +410,6 @@ describe('PreviewServerFactory', () => {
           pr: PR,
           repo: defaultConfig.githubRepo,
           sha: SHA,
-          success: true,
         };
         BASIC_PAYLOAD = { payload: { build_num: BUILD_NUM, build_parameters: { CIRCLE_JOB: 'aio_preview' } } };
         AFFECTS_SIGNIFICANT_FILES = true;
@@ -479,15 +478,6 @@ describe('PreviewServerFactory', () => {
       it('should respond with 202 if the build is not trusted', async () => {
         IS_PUBLIC = false;
         await agent.post(URL).send(BASIC_PAYLOAD).expect(202);
-      });
-
-      it('should not create a preview if the build was not successful', async () => {
-        BUILD_INFO.success = false;
-        await agent.post(URL).send(BASIC_PAYLOAD).expect(204);
-        expect(getGithubInfoSpy).toHaveBeenCalledWith(BUILD_NUM);
-        expect(downloadBuildArtifactSpy).not.toHaveBeenCalled();
-        expect(getPrIsTrustedSpy).not.toHaveBeenCalled();
-        expect(createBuildSpy).not.toHaveBeenCalled();
       });
 
       it('should fail if the CircleCI request fails', async () => {

@@ -178,8 +178,8 @@ import {HttpParams} from '@angular/common/http/src/params';
       it('should encode parameters', () => {
         const body = new HttpParams({fromString: 'a=standard_chars'});
         expect(body.toString()).toEqual('a=standard_chars');
-        const body2 = new HttpParams({fromString: 'a=1 2 3&b=mail@test&c=3_^[]$&d=eq=1'});
-        expect(body2.toString()).toEqual('a=1%202%203&b=mail@test&c=3_%5E%5B%5D$&d=eq=1');
+        const body2 = new HttpParams({fromString: 'a=1 2 3&b=mail@test&c=3_^[]$&d=eq=1&e=1+1'});
+        expect(body2.toString()).toEqual('a=1%202%203&b=mail@test&c=3_%5E%5B%5D$&d=eq=1&e=1%2B1');
       });
     });
 
@@ -195,18 +195,26 @@ import {HttpParams} from '@angular/common/http/src/params';
       it('should stringify number params', () => {
         const body = new HttpParams({fromObject: {a: '', b: 2, c: 3}});
         expect(body.toString()).toBe('a=&b=2&c=3');
+        // make sure the param value is now a string
+        expect(body.get('b')).toBe('2');
       });
       it('should stringify number array params', () => {
         const body = new HttpParams({fromObject: {a: '', b: [21, 22], c: 3}});
         expect(body.toString()).toBe('a=&b=21&b=22&c=3');
+        // make sure the param values are now strings
+        expect(body.getAll('b')).toEqual(['21', '22']);
       });
       it('should stringify boolean params', () => {
         const body = new HttpParams({fromObject: {a: '', b: true, c: 3}});
         expect(body.toString()).toBe('a=&b=true&c=3');
+        // make sure the param value is now a boolean
+        expect(body.get('b')).toBe('true');
       });
       it('should stringify boolean array params', () => {
         const body = new HttpParams({fromObject: {a: '', b: [true, false], c: 3}});
         expect(body.toString()).toBe('a=&b=true&b=false&c=3');
+        // make sure the param values are now booleans
+        expect(body.getAll('b')).toEqual(['true', 'false']);
       });
       it('should stringify array params of different types', () => {
         const body = new HttpParams({fromObject: {a: ['', false, 3] as const}});

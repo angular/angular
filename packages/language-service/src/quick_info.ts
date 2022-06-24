@@ -7,7 +7,7 @@
  */
 import {AST, Call, ImplicitReceiver, PropertyRead, ThisReceiver, TmplAstBoundAttribute, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, Symbol, SymbolKind, TcbLocation, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {createDisplayParts, DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
@@ -55,11 +55,11 @@ export class QuickInfoBuilder {
       case SymbolKind.DomBinding:
         return this.getQuickInfoForDomBinding(symbol);
       case SymbolKind.Directive:
-        return this.getQuickInfoAtShimLocation(symbol.shimLocation);
+        return this.getQuickInfoAtTcbLocation(symbol.tcbLocation);
       case SymbolKind.Pipe:
         return this.getQuickInfoForPipeSymbol(symbol);
       case SymbolKind.Expression:
-        return this.getQuickInfoAtShimLocation(symbol.shimLocation);
+        return this.getQuickInfoAtTcbLocation(symbol.tcbLocation);
     }
   }
 
@@ -72,7 +72,7 @@ export class QuickInfoBuilder {
     const kind =
         symbol.kind === SymbolKind.Input ? DisplayInfoKind.PROPERTY : DisplayInfoKind.EVENT;
 
-    const quickInfo = this.getQuickInfoAtShimLocation(symbol.bindings[0].shimLocation);
+    const quickInfo = this.getQuickInfoAtTcbLocation(symbol.bindings[0].tcbLocation);
     return quickInfo === undefined ? undefined : updateQuickInfoKind(quickInfo, kind);
   }
 
@@ -104,7 +104,7 @@ export class QuickInfoBuilder {
 
   private getQuickInfoForPipeSymbol(symbol: PipeSymbol): ts.QuickInfo|undefined {
     if (symbol.tsSymbol !== null) {
-      const quickInfo = this.getQuickInfoAtShimLocation(symbol.shimLocation);
+      const quickInfo = this.getQuickInfoAtTcbLocation(symbol.tcbLocation);
       return quickInfo === undefined ? undefined :
                                        updateQuickInfoKind(quickInfo, DisplayInfoKind.PIPE);
     } else {
@@ -131,7 +131,7 @@ export class QuickInfoBuilder {
   private getQuickInfoForDirectiveSymbol(dir: DirectiveSymbol, node: TmplAstNode|AST = this.node):
       ts.QuickInfo {
     const kind = dir.isComponent ? DisplayInfoKind.COMPONENT : DisplayInfoKind.DIRECTIVE;
-    const documentation = this.getDocumentationFromTypeDefAtLocation(dir.shimLocation);
+    const documentation = this.getDocumentationFromTypeDefAtLocation(dir.tcbLocation);
     let containerName: string|undefined;
     if (ts.isClassDeclaration(dir.tsSymbol.valueDeclaration) && dir.ngModule !== null) {
       containerName = dir.ngModule.name.getText();
@@ -142,10 +142,10 @@ export class QuickInfoBuilder {
         containerName, undefined, documentation);
   }
 
-  private getDocumentationFromTypeDefAtLocation(shimLocation: ShimLocation):
+  private getDocumentationFromTypeDefAtLocation(tcbLocation: TcbLocation):
       ts.SymbolDisplayPart[]|undefined {
-    const typeDefs = this.tsLS.getTypeDefinitionAtPosition(
-        shimLocation.shimPath, shimLocation.positionInShimFile);
+    const typeDefs =
+        this.tsLS.getTypeDefinitionAtPosition(tcbLocation.tcbPath, tcbLocation.positionInFile);
     if (typeDefs === undefined || typeDefs.length === 0) {
       return undefined;
     }
@@ -153,9 +153,8 @@ export class QuickInfoBuilder {
         ?.documentation;
   }
 
-  private getQuickInfoAtShimLocation(location: ShimLocation): ts.QuickInfo|undefined {
-    const quickInfo =
-        this.tsLS.getQuickInfoAtPosition(location.shimPath, location.positionInShimFile);
+  private getQuickInfoAtTcbLocation(location: TcbLocation): ts.QuickInfo|undefined {
+    const quickInfo = this.tsLS.getQuickInfoAtPosition(location.tcbPath, location.positionInFile);
     if (quickInfo === undefined || quickInfo.displayParts === undefined) {
       return quickInfo;
     }

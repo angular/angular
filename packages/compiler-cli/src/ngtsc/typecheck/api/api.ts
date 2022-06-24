@@ -8,8 +8,8 @@
 
 import {AbsoluteSourceSpan, BoundTarget, DirectiveMeta, ParseSourceSpan, SchemaMetadata} from '@angular/compiler';
 import ts from 'typescript';
-import {ErrorCode} from '../../diagnostics';
 
+import {ErrorCode} from '../../diagnostics';
 import {AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
 import {ClassPropertyMapping, DirectiveTypeCheckMeta} from '../../metadata';
@@ -25,6 +25,7 @@ export interface TypeCheckableDirectiveMeta extends DirectiveMeta, DirectiveType
   queries: string[];
   inputs: ClassPropertyMapping;
   outputs: ClassPropertyMapping;
+  isStandalone: boolean;
 }
 
 export type TemplateId = string&{__brand: 'TemplateId'};
@@ -76,6 +77,11 @@ export interface TypeCheckBlockMetadata {
    * Schemas that apply to this template.
    */
   schemas: SchemaMetadata[];
+
+  /*
+   * A boolean indicating whether the component is standalone.
+   */
+  isStandalone: boolean;
 }
 
 export interface TypeCtorMetadata {

@@ -12,12 +12,14 @@ import {Reference} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {ReflectionHost} from '../../reflection';
 
+import {DynamicValue} from './dynamic';
 import {StaticInterpreter} from './interpreter';
 import {ResolvedValue} from './result';
 
 export type ForeignFunctionResolver =
-    (node: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-     args: ReadonlyArray<ts.Expression>) => ts.Expression|null;
+    (fn: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
+     callExpr: ts.CallExpression, resolve: (expr: ts.Expression) => ResolvedValue,
+     unresolvable: DynamicValue) => ResolvedValue;
 
 export class PartialEvaluator {
   constructor(

@@ -1,5 +1,5 @@
 @use 'sass:map';
-@use '../../constants' ;
+@use '../../constants';
 @use '@angular/material' as mat;
 
 @mixin theme($theme) {
@@ -10,5 +10,11 @@
   body,
   .content {
     background: if($is-dark-theme, mat.get-color-from-palette($background, background), constants.$white);
+  }
+
+  @if $is-dark-theme {
+    :root {
+      color-scheme: dark;
+    }
   }
 }

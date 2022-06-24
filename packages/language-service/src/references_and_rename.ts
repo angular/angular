@@ -8,7 +8,7 @@
 import {AST, TmplAstNode} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {MetaType, PipeMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {MetaKind, PipeMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
 import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
 import {SymbolKind} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
@@ -308,7 +308,7 @@ export class RenameBuilder {
         if (targetDetails.symbol.kind === SymbolKind.Pipe) {
           const meta =
               this.compiler.getMeta(targetDetails.symbol.classSymbol.tsSymbol.valueDeclaration);
-          if (meta === null || meta.type !== MetaType.Pipe) {
+          if (meta === null || meta.kind !== MetaKind.Pipe) {
             return null;
           }
           const renameRequest = this.buildPipeRenameRequest(meta);
@@ -337,7 +337,7 @@ export class RenameBuilder {
       return null;
     }
     const meta = getParentClassMeta(requestNode, this.compiler);
-    if (meta !== null && meta.type === MetaType.Pipe && meta.nameExpr === requestNode) {
+    if (meta !== null && meta.kind === MetaKind.Pipe && meta.nameExpr === requestNode) {
       return this.buildPipeRenameRequest(meta);
     } else {
       return {type: RequestKind.DirectFromTypeScript, requestNode};

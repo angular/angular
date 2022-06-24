@@ -1,8 +1,8 @@
 decls: 4,
 vars: 0,
 consts: function() {
-  __i18nMsg__('Text #1', [] , {})
-  __i18nMsg__('Text #2', [] , {})
+  __i18nMsg__('Text #1', [], {}, {})
+  __i18nMsg__('Text #2', [], {}, {})
   return [
     [__AttributeMarker.Classes__, "myClass"],
     $i18n_0$,

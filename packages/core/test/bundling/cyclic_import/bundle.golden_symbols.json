@@ -27,7 +27,16 @@
     "name": "NG_FACTORY_DEF"
   },
   {
+    "name": "NG_INJECTABLE_DEF"
+  },
+  {
     "name": "NG_PIPE_DEF"
+  },
+  {
+    "name": "NG_PROV_DEF"
+  },
+  {
+    "name": "NOT_FOUND"
   },
   {
     "name": "NO_CHANGE"
@@ -48,16 +57,7 @@
     "name": "ViewEncapsulation"
   },
   {
-    "name": "__global"
-  },
-  {
-    "name": "__globalThis"
-  },
-  {
-    "name": "__self"
-  },
-  {
-    "name": "__window"
+    "name": "__forward_ref__"
   },
   {
     "name": "_global"
@@ -66,7 +66,7 @@
     "name": "_injectImplementation"
   },
   {
-    "name": "_renderCompCount"
+    "name": "componentDefCount"
   },
   {
     "name": "addComponentLogic"
@@ -85,6 +85,9 @@
   },
   {
     "name": "attachPatchData"
+  },
+  {
+    "name": "bloomHasToken"
   },
   {
     "name": "callHook"
@@ -111,6 +114,9 @@
     "name": "createLView"
   },
   {
+    "name": "createNodeInjector"
+  },
+  {
     "name": "createTView"
   },
   {
@@ -121,6 +127,9 @@
   },
   {
     "name": "domRendererFactory3"
+  },
+  {
+    "name": "enterDI"
   },
   {
     "name": "enterView"
@@ -141,10 +150,10 @@
     "name": "extractDirectiveDef"
   },
   {
-    "name": "extractPipeDef"
+    "name": "findAttrIndexInNode"
   },
   {
-    "name": "findAttrIndexInNode"
+    "name": "forwardRef"
   },
   {
     "name": "generateInitialInputs"
@@ -180,6 +189,9 @@
     "name": "getFirstLContainer"
   },
   {
+    "name": "getInjectorIndex"
+  },
+  {
     "name": "getLView"
   },
   {
@@ -195,6 +207,9 @@
     "name": "getNodeInjectable"
   },
   {
+    "name": "getOrCreateInjectable"
+  },
+  {
     "name": "getOrCreateNodeInjectorForNode"
   },
   {
@@ -202,6 +217,21 @@
   },
   {
     "name": "getOrCreateTNode"
+  },
+  {
+    "name": "getOwnDefinition"
+  },
+  {
+    "name": "getParentInjectorIndex"
+  },
+  {
+    "name": "getParentInjectorLocation"
+  },
+  {
+    "name": "getParentInjectorView"
+  },
+  {
+    "name": "getPipeDef"
   },
   {
     "name": "getSimpleChangesStore"
@@ -223,6 +253,9 @@
   },
   {
     "name": "initTNodeFlags"
+  },
+  {
+    "name": "injectInjectorOnly"
   },
   {
     "name": "insertBloom"
@@ -247,9 +280,6 @@
   },
   {
     "name": "isCurrentTNodeParent"
-  },
-  {
-    "name": "isInCheckNoChangesMode"
   },
   {
     "name": "isInlineTemplate"
@@ -282,6 +312,12 @@
     "name": "leaveViewLight"
   },
   {
+    "name": "lookupTokenUsingModuleInjector"
+  },
+  {
+    "name": "lookupTokenUsingNodeInjector"
+  },
+  {
     "name": "markAsComponentHost"
   },
   {
@@ -298,6 +334,12 @@
   },
   {
     "name": "ngOnChangesSetInput"
+  },
+  {
+    "name": "nonNull"
+  },
+  {
+    "name": "notFoundValueOrThrow"
   },
   {
     "name": "refreshComponent"
@@ -327,7 +369,13 @@
     "name": "resetPreOrderHookFlags"
   },
   {
+    "name": "resolveForwardRef"
+  },
+  {
     "name": "saveNameToExportMap"
+  },
+  {
+    "name": "searchTokensOnInjector"
   },
   {
     "name": "setBindingRootForHostBindings"
@@ -360,6 +408,15 @@
     "name": "setUpAttributes"
   },
   {
+    "name": "shouldSearchParent"
+  },
+  {
+    "name": "stringify"
+  },
+  {
+    "name": "throwProviderNotFoundError"
+  },
+  {
     "name": "uniqueIdCounter"
   },
   {
@@ -378,6 +435,9 @@
     "name": "ɵɵdefineComponent"
   },
   {
+    "name": "ɵɵdirectiveInject"
+  },
+  {
     "name": "ɵɵelement"
   },
   {
@@ -385,5 +445,8 @@
   },
   {
     "name": "ɵɵelementStart"
+  },
+  {
+    "name": "ɵɵinject"
   }
 ]

@@ -10,5 +10,5 @@ contact_links:
     url: https://github.com/angular/components/issues/new/choose
     about: Issues and feature requests for Angular Material
   - name: Support Request
-    url: https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question
+    url: https://github.com/angular/angular/blob/main/CONTRIBUTING.md#question
     about: Questions and requests for support

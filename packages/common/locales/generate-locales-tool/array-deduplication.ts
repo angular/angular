@@ -24,12 +24,18 @@
  */
 export function removeDuplicates(data: unknown[]) {
   const dedup = [data[0]];
+  let prevStringified = JSON.stringify(data[0]);
+  let nextStringified;
+
   for (let i = 1; i < data.length; i++) {
-    if (JSON.stringify(data[i]) !== JSON.stringify(data[i - 1])) {
+    nextStringified = JSON.stringify(data[i]);
+    if (nextStringified !== prevStringified) {
+      prevStringified = nextStringified;
       dedup.push(data[i]);
     } else {
       dedup.push(undefined);
     }
   }
+
   return dedup;
 }

@@ -6,25 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from '../di/interface/provider';
+import {ModuleWithProviders, Provider} from '../di/interface/provider';
 import {Type} from '../interface/type';
 import {SchemaMetadata} from '../metadata/schema';
 import {compileNgModule} from '../render3/jit/module';
 import {makeDecorator, TypeDecorator} from '../util/decorators';
-
-
-/**
- * A wrapper around an NgModule that associates it with [providers](guide/glossary#provider
- * "Definition"). Usage without a generic type is deprecated.
- *
- * @see [Deprecations](guide/deprecations#modulewithproviders-type-without-a-generic)
- *
- * @publicApi
- */
-export interface ModuleWithProviders<T> {
-  ngModule: Type<T>;
-  providers?: Provider[];
-}
 
 
 /**

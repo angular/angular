@@ -45,6 +45,7 @@ describe('Location Class', () => {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
+        teardown: {destroyAfterEach: true},
         imports: [CommonModule],
         providers: [
           {provide: LocationStrategy, useClass: PathLocationStrategy},
@@ -170,6 +171,26 @@ describe('Location Class', () => {
       expect((location as any)._urlChangeListeners.length).toBe(1);
       expect((location as any)._urlChangeListeners[0]).toEqual(changeListener);
     });
+
+    it('should unregister a URL change listener and unsubscribe from URL changes when the root view is removed',
+       () => {
+         const changeListener = jasmine.createSpy('changeListener');
+
+         const removeUrlChangeFn = location.onUrlChange(changeListener);
+         location.go('x');
+         expect(changeListener).toHaveBeenCalledTimes(1);
+
+         removeUrlChangeFn();
+         expect(changeListener).toHaveBeenCalledTimes(1);
+
+         location.onUrlChange((url: string, state: unknown) => {});
+         TestBed.resetTestingModule();
+         // Let's ensure that URL change listeners are unregistered when the root view is removed,
+         // tho the last returned `onUrlChange` function hasn't been invoked.
+         expect((location as any)._urlChangeListeners.length).toEqual(0);
+         expect((location as any)._urlChangeSubscription.closed).toEqual(true);
+       });
+
 
     it('should only notify listeners once when multiple listeners are registered', () => {
       let notificationCount = 0;

@@ -83,7 +83,8 @@ export function generateTypeCheckBlock(
     oobRecorder: OutOfBandDiagnosticRecorder,
     genericContextBehavior: TcbGenericContextBehavior): ts.FunctionDeclaration {
   const tcb = new Context(
-      env, domSchemaChecker, oobRecorder, meta.id, meta.boundTarget, meta.pipes, meta.schemas);
+      env, domSchemaChecker, oobRecorder, meta.id, meta.boundTarget, meta.pipes, meta.schemas,
+      meta.isStandalone);
   const scope = Scope.forNodes(tcb, null, tcb.boundTarget.target.template!, /* guard */ null);
   const ctxRawType = env.referenceType(ref);
   if (!ts.isTypeReferenceNode(ctxRawType)) {
@@ -117,7 +118,7 @@ export function generateTypeCheckBlock(
     }
   }
 
-  const paramList = [tcbCtxParam(ref.node, ctxRawType.typeName, typeArguments)];
+  const paramList = [tcbThisParam(ref.node, ctxRawType.typeName, typeArguments)];
 
   const scopeStatements = scope.render();
   const innerBody = ts.factory.createBlock([
@@ -849,7 +850,8 @@ class TcbDomSchemaCheckerOp extends TcbOp {
 
   override execute(): ts.Expression|null {
     if (this.checkElement) {
-      this.tcb.domSchemaChecker.checkElement(this.tcb.id, this.element, this.tcb.schemas);
+      this.tcb.domSchemaChecker.checkElement(
+          this.tcb.id, this.element, this.tcb.schemas, this.tcb.hostIsStandalone);
     }
 
     // TODO(alxhub): this could be more efficient.
@@ -864,7 +866,8 @@ class TcbDomSchemaCheckerOp extends TcbOp {
           // A direct binding to a property.
           const propertyName = ATTR_TO_PROP[binding.name] || binding.name;
           this.tcb.domSchemaChecker.checkProperty(
-              this.tcb.id, this.element, propertyName, binding.sourceSpan, this.tcb.schemas);
+              this.tcb.id, this.element, propertyName, binding.sourceSpan, this.tcb.schemas,
+              this.tcb.hostIsStandalone);
         }
       }
     }
@@ -1099,7 +1102,7 @@ class TcbUnclaimedOutputsOp extends TcbOp {
 /**
  * A `TcbOp` which generates a completion point for the component context.
  *
- * This completion point looks like `ctx. ;` in the TCB output, and does not produce diagnostics.
+ * This completion point looks like `this. ;` in the TCB output, and does not produce diagnostics.
  * TypeScript autocompletion APIs can be used at this completion point (after the '.') to produce
  * autocompletion results of properties and methods from the template's component context.
  */
@@ -1111,7 +1114,7 @@ class TcbComponentContextCompletionOp extends TcbOp {
   override readonly optional = false;
 
   override execute(): null {
-    const ctx = ts.factory.createIdentifier('ctx');
+    const ctx = ts.factory.createThis();
     const ctxDot = ts.factory.createPropertyAccessExpression(ctx, '');
     markIgnoreDiagnostics(ctxDot);
     addExpressionIdentifier(ctxDot, ExpressionIdentifier.COMPONENT_COMPLETION);
@@ -1144,7 +1147,7 @@ export class Context {
       readonly oobRecorder: OutOfBandDiagnosticRecorder, readonly id: TemplateId,
       readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
       private pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
-      readonly schemas: SchemaMetadata[]) {}
+      readonly schemas: SchemaMetadata[], readonly hostIsStandalone: boolean) {}
 
   /**
    * Allocate a new variable name for use within the `Context`.
@@ -1636,9 +1639,10 @@ interface TcbBoundInput {
 }
 
 /**
- * Create the `ctx` parameter to the top-level TCB function, with the given generic type arguments.
+ * Create the `this` parameter to the top-level TCB function, with the given generic type
+ * arguments.
  */
-function tcbCtxParam(
+function tcbThisParam(
     node: ClassDeclaration<ts.ClassDeclaration>, name: ts.EntityName,
     typeArguments: ts.TypeNode[]|undefined): ts.ParameterDeclaration {
   const type = ts.factory.createTypeReferenceNode(name, typeArguments);
@@ -1646,7 +1650,7 @@ function tcbCtxParam(
       /* decorators */ undefined,
       /* modifiers */ undefined,
       /* dotDotDotToken */ undefined,
-      /* name */ 'ctx',
+      /* name */ 'this',
       /* questionToken */ undefined,
       /* type */ type,
       /* initializer */ undefined);
@@ -1708,7 +1712,7 @@ class TcbExpressionTranslator {
       // Therefore if `resolve` is called on an `ImplicitReceiver`, it's because no outer
       // PropertyRead/Call resolved to a variable or reference, and therefore this is a
       // property read or method call on the component context itself.
-      return ts.factory.createIdentifier('ctx');
+      return ts.factory.createThis();
     } else if (ast instanceof BindingPipe) {
       const expr = this.translate(ast.exp);
       const pipeRef = this.tcb.getPipeByName(ast.name);
@@ -1985,13 +1989,13 @@ function tcbCreateEventHandler(
       /* type */ eventParamType);
   addExpressionIdentifier(eventParam, ExpressionIdentifier.EVENT_PARAMETER);
 
-  return ts.factory.createFunctionExpression(
-      /* modifier */ undefined,
-      /* asteriskToken */ undefined,
-      /* name */ undefined,
+  // Return an arrow function instead of a function expression to preserve the `this` context.
+  return ts.factory.createArrowFunction(
+      /* modifiers */ undefined,
       /* typeParameters */ undefined,
       /* parameters */[eventParam],
       /* type */ ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+      /* equalsGreaterThanToken */ undefined,
       /* body */ ts.factory.createBlock([body]));
 }
 

@@ -34,7 +34,7 @@ export function children(): any {
         [
           {path: '', pathMatch: 'prefix', loadChildren: children},
         ],
-        {initialNavigation: 'enabled'}),
+        {initialNavigation: 'enabledBlocking'}),
   ],
   declarations: [AppComponent],
   bootstrap: [AppComponent],

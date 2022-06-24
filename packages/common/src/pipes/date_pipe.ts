@@ -177,7 +177,11 @@ export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>('DATE_PIPE_
  * @publicApi
  */
 // clang-format on
-@Pipe({name: 'date', pure: true})
+@Pipe({
+  name: 'date',
+  pure: true,
+  standalone: true,
+})
 export class DatePipe implements PipeTransform {
   constructor(
       @Inject(LOCALE_ID) private locale: string,

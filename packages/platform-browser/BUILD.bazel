@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "api_golden_test_npm_package", "ng_module", "ng_package")
-load("@npm//tsec:index.bzl", "tsec_test")
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "ng_module", "ng_package", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -30,8 +29,6 @@ ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
-        "//packages/platform-browser/animations:package.json",
-        "//packages/platform-browser/testing:package.json",
     ],
     tags = [
         "release-with-framework",

@@ -7,8 +7,8 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
+import {isJsObject} from '../../util/iterable';
 import {stringify} from '../../util/stringify';
-import {isJsObject} from '../change_detection_util';
 
 import {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory} from './keyvalue_differs';
 
@@ -81,10 +81,10 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
     if (!map) {
       map = new Map();
     } else if (!(map instanceof Map || isJsObject(map))) {
-      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-          `Error trying to diff '${stringify(map)}'. Only maps and objects are allowed` :
-          '';
-      throw new RuntimeError(RuntimeErrorCode.INVALID_DIFFER_INPUT, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.INVALID_DIFFER_INPUT,
+          ngDevMode &&
+              `Error trying to diff '${stringify(map)}'. Only maps and objects are allowed`);
     }
 
     return this.check(map) ? this : null;

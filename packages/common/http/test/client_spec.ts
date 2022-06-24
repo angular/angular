@@ -218,5 +218,14 @@ import {toArray} from 'rxjs/operators';
             {status: HttpStatusCode.InternalServerError, statusText: 'Server error'});
       });
     });
+    describe('throws an error', () => {
+      it('for a request with nullish header', () => {
+        client.request('GET', '/test', {headers: {foo: null!}}).subscribe();
+        expect(() => backend.expectOne('/test').request.headers.has('random-header'))
+            .toThrowError(
+                'Unexpected value of the `foo` header provided. ' +
+                'Expecting either a string or an array, but got: `null`.');
+      });
+    });
   });
 }

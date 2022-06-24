@@ -1,8 +1,8 @@
 decls: 9,
 vars: 5,
 consts: function() {
-  __i18nMsg__(' My i18n block #{$interpolation} {$startTagSpan}Plain text in nested element{$closeTagSpan}', [['interpolation', String.raw`\uFFFD0\uFFFD`], ['startTagSpan', String.raw`\uFFFD#2\uFFFD`], ['closeTagSpan', String.raw`\uFFFD/#2\uFFFD`]], {})
-  __i18nMsgWithPostprocess__(' My i18n block #{$interpolation} {$startTagDiv}{$startTagDiv}{$startTagSpan} More bindings in more nested element: {$interpolation_1} {$closeTagSpan}{$closeTagDiv}{$closeTagDiv}', [['interpolation', String.raw`\uFFFD0\uFFFD`], ['startTagDiv', String.raw`[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]`], ['startTagSpan', String.raw`\uFFFD#8\uFFFD`], ['interpolation_1', String.raw`\uFFFD1\uFFFD`], ['closeTagSpan', String.raw`\uFFFD/#8\uFFFD`], ['closeTagDiv', String.raw`[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]`]], {}, [])
+  __i18nMsg__(' My i18n block #{$interpolation} {$startTagSpan}Plain text in nested element{$closeTagSpan}', [['interpolation', String.raw`\uFFFD0\uFFFD`], ['startTagSpan', String.raw`\uFFFD#2\uFFFD`], ['closeTagSpan', String.raw`\uFFFD/#2\uFFFD`]], {original_code: {'interpolation': '{{ one }}', 'startTagSpan': '<span>', 'closeTagSpan': '</span>'}}, {})
+  __i18nMsgWithPostprocess__(' My i18n block #{$interpolation} {$startTagDiv}{$startTagDiv}{$startTagSpan} More bindings in more nested element: {$interpolation_1} {$closeTagSpan}{$closeTagDiv}{$closeTagDiv}', [['interpolation', String.raw`\uFFFD0\uFFFD`], ['startTagDiv', String.raw`[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]`], ['startTagSpan', String.raw`\uFFFD#8\uFFFD`], ['interpolation_1', String.raw`\uFFFD1\uFFFD`], ['closeTagSpan', String.raw`\uFFFD/#8\uFFFD`], ['closeTagDiv', String.raw`[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]`]], {original_code: {'interpolation': '{{ two | uppercase }}', 'startTagDiv': '<div>', 'startTagSpan': '<span>', 'interpolation_1': '{{ nestedInBlockTwo }}', 'closeTagSpan': '</span>', 'closeTagDiv': '</div>'}}, {}, [])
   return [
     $i18n_0$,
     $i18n_1$

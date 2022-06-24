@@ -1,10 +1,12 @@
+load("//tools:defaults.bzl", "nodejs_binary")
+
 package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "LICENSE",
     "karma-js.conf.js",
     "browser-providers.conf.js",
-    "scripts/ci/track-payload-size.sh",
+    "scripts/ci/bazel-payload-size.sh",
     "scripts/ci/payload-size.sh",
     "scripts/ci/payload-size.js",
     "package.json",
@@ -55,4 +57,11 @@ filegroup(
 config_setting(
     name = "stamp",
     values = {"stamp": "true"},
+)
+
+nodejs_binary(
+    name = "yarn_vendored",
+    data = [".yarn/releases/yarn-1.22.17.cjs"],
+    entry_point = ".yarn/releases/yarn-1.22.17.cjs",
+    visibility = ["//integration:__subpackages__"],
 )

@@ -140,7 +140,7 @@ const isEditable = (instance: any, propName: string|number, propData: TerminalTy
 
 const hasValue = (obj: {}, prop: string|number) => {
   const descriptor = Object.getOwnPropertyDescriptor(obj, prop);
-  if (!descriptor?.get && typeof descriptor?.value === 'undefined') {
+  if (!descriptor?.get && descriptor?.set && typeof descriptor?.value === 'undefined') {
     return false;
   }
   return true;

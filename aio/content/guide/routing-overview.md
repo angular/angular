@@ -12,9 +12,9 @@ To explore a sample app featuring the router's primary features, see the <live-e
 
 Before creating a route, you should be familiar with the following:
 
-* [Basics of components](guide/architecture-components)
-* [Basics of templates](guide/glossary#template)
-* An Angular app&mdash;you can generate a basic Angular application using the [Angular CLI](cli).
+*   [Basics of components](guide/architecture-components)
+*   [Basics of templates](guide/glossary#template)
+*   An Angular app &mdash;you can generate a basic Angular application using the [Angular CLI](cli).
 
 ## Learn about Angular routing
 
@@ -45,3 +45,11 @@ Before creating a route, you should be familiar with the following:
     <p class="card-footer">Router reference</p>
   </a>
 </div>
+
+<!-- links -->
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-02-28

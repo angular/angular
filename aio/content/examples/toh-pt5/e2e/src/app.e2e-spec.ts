@@ -2,7 +2,7 @@ import { browser, element, by, ElementFinder } from 'protractor';
 
 const expectedH1 = 'Tour of Heroes';
 const expectedTitle = `${expectedH1}`;
-const targetHero = { id: 15, name: 'Magneta' };
+const targetHero = { id: 16, name: 'RubberMan' };
 const targetHeroDashboardIndex = 3;
 const nameSuffix = 'X';
 const newHeroName = targetHero.name + nameSuffix;
@@ -106,7 +106,7 @@ describe('Tutorial part 5', () => {
       await getPageElts().appHeroesHref.click();
       const page = getPageElts();
       expect(await page.appHeroes.isPresent()).toBeTruthy();
-      expect(await page.allHeroes.count()).toEqual(10, 'number of heroes');
+      expect(await page.allHeroes.count()).toEqual(9, 'number of heroes');
     });
 
     it('can route to hero details', async () => {

@@ -123,7 +123,7 @@ export function assembleBoundTextPlaceholders(
  * @param useCamelCase whether to camelCase the placeholder name when formatting.
  * @returns A new map of formatted placeholder names to expressions.
  */
-export function i18nFormatPlaceholderNames(
+export function formatI18nPlaceholderNamesInMap(
     params: {[name: string]: o.Expression} = {}, useCamelCase: boolean) {
   const _params: {[key: string]: o.Expression} = {};
   if (params && Object.keys(params).length) {

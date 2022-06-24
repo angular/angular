@@ -23,9 +23,14 @@ def _linker_mapping_impl(ctx):
             sources = depset(ctx.files.srcs),
         ),
         LinkerPackageMappingInfo(
-            mappings = {
-                ctx.attr.module_name: "%s/%s" % (ctx.label.package, ctx.attr.subpath),
-            },
+            mappings = depset([
+                struct(
+                    package_name = ctx.attr.module_name,
+                    package_path = "",
+                    link_path = "%s/%s" % (ctx.label.package, ctx.attr.subpath),
+                ),
+            ]),
+            node_modules_roots = depset([]),
         ),
     ]
 

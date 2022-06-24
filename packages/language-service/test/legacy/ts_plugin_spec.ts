@@ -23,7 +23,8 @@ describe('getExternalFiles()', () => {
     ngLS.getSemanticDiagnostics(APP_COMPONENT);
     // Now that global analysis is run, we should have all the typecheck files
     externalFiles = getExternalFiles(project);
-    expect(externalFiles.length).toBe(1);
+    // Includes 1 typecheck file, 1 template, and 1 css files
+    expect(externalFiles.length).toBe(3);
     expect(externalFiles[0].endsWith('app.component.ngtypecheck.ts')).toBeTrue();
   });
 });

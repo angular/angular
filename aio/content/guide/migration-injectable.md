@@ -2,63 +2,78 @@
 
 ### What does this schematic do?
 
-  1. This schematic adds an `@Injectable()` decorator to classes which are provided in the
-     application but are not decorated.
-  2. The schematic updates providers which follow the `{provide: SomeToken}` pattern
-     to explicitly specify `useValue: undefined`.
+1.  This schematic adds an `@Injectable()` decorator to classes which are provided in the application but are not decorated.
+1.  The schematic updates providers which follow the `{provide: SomeToken}` pattern to explicitly specify `useValue: undefined`.
 
 **Example for missing `@Injectable()`**
 
-_Before migration:_
-```typescript
-export class MyService {...}
-export class MyOtherService {...}
-export class MyThirdClass {...}
-export class MyFourthClass {...}
-export class MyFifthClass {...}
+**Before migration**:
 
-@NgModule({
+<code-example format="typescript" language="typescript">
+
+export class MyService {&hellip;}
+export class MyOtherService {&hellip;}
+export class MyThirdClass {&hellip;}
+export class MyFourthClass {&hellip;}
+export class MyFifthClass {&hellip;}
+
+&commat;NgModule({
   providers: [
     MyService,
     {provide: SOME_TOKEN, useClass: MyOtherService},
     // The following classes do not need to be decorated because they
     // are never instantiated and just serve as DI tokens.
-    {provide: MyThirdClass, useValue: ...},
-    {provide: MyFourthClass, useFactory: ...},
-    {provide: MyFifthClass, useExisting: ...},
+    {provide: MyThirdClass, useValue: &hellip;},
+    {provide: MyFourthClass, useFactory: &hellip;},
+    {provide: MyFifthClass, useExisting: &hellip;},
   ]
 })
-```
 
-_After migration:_
-```ts
-@Injectable()
-export class MyService {...}
-@Injectable()
-export class MyOtherService {...}
-export class MyThirdClass {...}
-export class MyFourthClass {...}
-export class MySixthClass {...}
+</code-example>
 
-...
-```
+**After migration**:
 
-Note that `MyThirdClass`, `MyFourthClass` and `MyFifthClass` do not need to be decorated
-with `@Injectable()` because they are never instantiated, but just used as a [DI token][DI_TOKEN].
+<code-example format="typescript" language="typescript">
+
+&commat;Injectable()
+export class MyService {&hellip;}
+&commat;Injectable()
+export class MyOtherService {&hellip;}
+export class MyThirdClass {&hellip;}
+export class MyFourthClass {&hellip;}
+export class MySixthClass {&hellip;}
+
+&hellip;
+
+</code-example>
+
+<div class="alert is-helpful">
+
+**NOTE**: <br />
+`MyThirdClass`, `MyFourthClass`, and `MyFifthClass` do not need to be decorated with `@Injectable()` because they are never instantiated, but just used as a [DI token][AioGuideGlossaryDiToken].
+
+</div>
 
 **Example for provider needing `useValue: undefined`**
 
 This example shows a provider following the `{provide: X}` pattern.
 The provider needs to be migrated to a more explicit definition where `useValue: undefined` is specified.
 
-_Before migration_:
-```typescript
+**Before migration**:
+
+<code-example format="typescript" language="typescript">
+
 {provide: MyToken}
-```
-_After migration_:
-```typescript
+
+</code-example>
+
+**After migration**:
+
+<code-example format="typescript" language="typescript">
+
 {provide: MyToken, useValue: undefined}
-```
+
+</code-example>
 
 ### Why is adding `@Injectable()` necessary?
 
@@ -73,13 +88,15 @@ This schematic adds any `@Injectable()` decorators that may be missing to future
 
 Consider the following pattern:
 
-```typescript
-@NgModule({
+<code-example format="typescript" language="typescript">
+
+&commat;NgModule({
   providers: [{provide: MyService}]
 })
-```
 
-Providers using this pattern will behave as if they provide `MyService` as [DI token][DI_TOKEN]
+</code-example>
+
+Providers using this pattern will behave as if they provide `MyService` as [DI token][AioGuideGlossaryDiToken]
 with the value of `undefined`.
 This is not the case in Ivy where such providers will be interpreted as if `useClass: MyService` is specified.
 This means that these providers will behave differently when updating to version 9 and above.
@@ -102,4 +119,12 @@ In a future version of Angular, a missing `@Injectable()` decorator will always 
 Additionally, providers in your library that follow the described `{provide: X}` pattern should be updated to specify an explicit value.
 Without explicit value, these providers can behave differently based on the Angular version in applications consuming your library.
 
-[DI_TOKEN]: guide/glossary#di-token
+<!-- links -->
+
+[AioGuideGlossaryDiToken]: guide/glossary#di-token "DI token - Glossary | Angular"
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-02-28

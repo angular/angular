@@ -82,7 +82,7 @@ export function createAppComponent(injector: Injector|undefined) {
                             ɵɵproperty('renderTemplate', _r0);
                           }
                         },
-                    directives: [RenderTemplate, InnerComp],
+                    dependencies: [RenderTemplate, InnerComp],
                     encapsulation: 2
                   }) as never;
   };

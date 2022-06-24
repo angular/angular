@@ -13,6 +13,7 @@ import {compileComponent, compileDirective} from '../render3/jit/directive';
 import {compilePipe} from '../render3/jit/pipe';
 import {makeDecorator, makePropDecorator, TypeDecorator} from '../util/decorators';
 
+import {SchemaMetadata} from './schema';
 import {ViewEncapsulation} from './view';
 
 
@@ -50,20 +51,52 @@ export interface DirectiveDecorator {
    *
    * ### Declaring directives
    *
-   * Directives are [declarables](guide/glossary#declarable).
-   * They must be declared by an NgModule
-   * in order to be usable in an app.
+   * In order to make a directive available to other components in your application, you should do
+   * one of the following:
+   *  - either mark the directive as [standalone](guide/standalone-components),
+   *  - or declare it in an NgModule by adding it to the `declarations` and `exports` fields.
    *
-   * A directive must belong to exactly one NgModule. Do not re-declare
-   * a directive imported from another module.
-   * List the directive class in the `declarations` field of an NgModule.
+   * ** Marking a directive as standalone **
+   *
+   * You can add the `standalone: true` flag to the Directive decorator metadata to declare it as
+   * [standalone](guide/standalone-components):
    *
    * ```ts
-   * declarations: [
-   *  AppComponent,
-   *  MyDirective
-   * ],
+   * @Directive({
+   *   standalone: true,
+   *   selector: 'my-directive',
+   * })
+   * class MyDirective {}
    * ```
+   *
+   * When marking a directive as standalone, please make sure that the directive is not already
+   * declared in an NgModule.
+   *
+   *
+   * ** Declaring a directive in an NgModule **
+   *
+   * Another approach is to declare a directive in an NgModule:
+   *
+   * ```ts
+   * @Directive({
+   *   selector: 'my-directive',
+   * })
+   * class MyDirective {}
+   *
+   * @NgModule({
+   *   declarations: [MyDirective, SomeComponent],
+   *   exports: [MyDirective], // making it available outside of this module
+   * })
+   * class SomeNgModule {}
+   * ```
+   *
+   * When declaring a directive in an NgModule, please make sure that:
+   *  - the directive is declared in exactly one NgModule.
+   *  - the directive is not standalone.
+   *  - you do not re-declare a directive imported from another module.
+   *  - the directive is included into the `exports` field as well if you want this directive to be
+   *    accessible for components outside of the NgModule.
+   *
    *
    * @Annotation
    */
@@ -287,6 +320,18 @@ export interface Directive {
    * To ensure the correct behavior, the app must import `@angular/compiler`.
    */
   jit?: true;
+
+  /**
+   * Angular directives marked as `standalone` do not need to be declared in an NgModule. Such
+   * directives don't depend on any "intermediate context" of an NgModule (ex. configured
+   * providers).
+   *
+   * More information about standalone components, directives and pipes can be found in [this
+   * guide](guide/standalone-components).
+   *
+   * @developerPreview
+   */
+  standalone?: boolean;
 }
 
 /**
@@ -553,6 +598,45 @@ export interface Component extends Directive {
    * overridden in compiler options.
    */
   preserveWhitespaces?: boolean;
+
+  /**
+   * Angular components marked as `standalone` do not need to be declared in an NgModule. Such
+   * components directly manage their own template dependencies (components, directives and pipes
+   * used in a template) via the imports property.
+   *
+   * More information about standalone components, directives and pipes can be found in [this
+   * guide](guide/standalone-components).
+   *
+   * @developerPreview
+   */
+  standalone?: boolean;
+
+  /**
+   * The imports property specifies the standalone component's template dependencies — those
+   * directives, components, and pipes that can be used within its template. Standalone components
+   * can import other standalone components, directives and pipes as well as existing NgModules.
+   *
+   * This property is only available for standalone components - specifying it for components
+   * declared in an NgModule generates a compilation error.
+   *
+   * More information about standalone components, directives and pipes can be found in [this
+   * guide](guide/standalone-components).
+   *
+   * @developerPreview
+   */
+  imports?: (Type<any>|any[])[];
+
+  /**
+   * The set of schemas that declare elements to be allowed in a standalone component. Elements and
+   * properties that are neither Angular components nor directives must be declared in a schema.
+   *
+   * This property is only available for standalone components - specifying it for components
+   * declared in an NgModule generates a compilation error.
+   *
+   * More information about standalone components, directives and pipes can be found in [this
+   * guide](guide/standalone-components).
+   */
+  schemas?: SchemaMetadata[];
 }
 
 /**
@@ -624,6 +708,15 @@ export interface Pipe {
    * even if the arguments have not changed.
    */
   pure?: boolean;
+
+  /**
+   * Angular pipes marked as `standalone` do not need to be declared in an NgModule. Such
+   * pipes don't depend on any "intermediate context" of an NgModule (ex. configured providers).
+   *
+   * More information about standalone components, directives and pipes can be found in [this
+   * guide](guide/standalone-components).
+   */
+  standalone?: boolean;
 }
 
 /**

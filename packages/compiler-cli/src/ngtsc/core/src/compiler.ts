@@ -23,7 +23,8 @@ import {ActivePerfRecorder, DelegatingPerfRecorder, PerfCheckpoint, PerfEvent, P
 import {FileUpdate, ProgramDriver, UpdateMode} from '../../program_driver';
 import {DeclarationNode, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {AdapterResourceLoader} from '../../resource';
-import {ComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../scope';
+import {ComponentScopeReader, CompoundComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../scope';
+import {StandaloneComponentScopeReader} from '../../scope/src/standalone';
 import {generatedFactoryTransform} from '../../shims';
 import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
@@ -964,11 +965,14 @@ export class NgCompiler {
     const localMetaReader: MetadataReader = localMetaRegistry;
     const depScopeReader = new MetadataDtsModuleScopeResolver(dtsReader, aliasingHost);
     const metaReader = new CompoundMetadataReader([localMetaReader, dtsReader]);
-    const scopeRegistry =
-        new LocalModuleScopeRegistry(localMetaReader, depScopeReader, refEmitter, aliasingHost);
-    const scopeReader: ComponentScopeReader = scopeRegistry;
+    const ngModuleScopeRegistry = new LocalModuleScopeRegistry(
+        localMetaReader, metaReader, depScopeReader, refEmitter, aliasingHost);
+    const standaloneScopeReader =
+        new StandaloneComponentScopeReader(metaReader, ngModuleScopeRegistry, depScopeReader);
+    const scopeReader: ComponentScopeReader =
+        new CompoundComponentScopeReader([ngModuleScopeRegistry, standaloneScopeReader]);
     const semanticDepGraphUpdater = this.incrementalCompilation.semanticDepGraphUpdater;
-    const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, scopeRegistry]);
+    const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, ngModuleScopeRegistry]);
     const injectableRegistry = new InjectableClassRegistry(reflector);
 
     const typeCheckScopeRegistry = new TypeCheckScopeRegistry(scopeReader, metaReader);
@@ -1010,8 +1014,8 @@ export class NgCompiler {
     const handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[] = [
       new ComponentDecoratorHandler(
           reflector, evaluator, metaRegistry, metaReader, scopeReader, depScopeReader,
-          scopeRegistry, typeCheckScopeRegistry, resourceRegistry, isCore, this.resourceManager,
-          this.adapter.rootDirs, this.options.preserveWhitespaces || false,
+          ngModuleScopeRegistry, typeCheckScopeRegistry, resourceRegistry, isCore,
+          this.resourceManager, this.adapter.rootDirs, this.options.preserveWhitespaces || false,
           this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false, this.usePoisonedData,
           this.options.i18nNormalizeLineEndingsInICUs === true, this.moduleResolver,
@@ -1023,7 +1027,7 @@ export class NgCompiler {
       // not being assignable to `unknown` when wrapped in `Readonly`).
       // clang-format off
         new DirectiveDecoratorHandler(
-            reflector, evaluator, metaRegistry, scopeRegistry, metaReader,
+            reflector, evaluator, metaRegistry, ngModuleScopeRegistry, metaReader,
             injectableRegistry, isCore, semanticDepGraphUpdater,
           this.closureCompilerEnabled, /** compileUndecoratedClassesWithAngularFeatures */ false,
           this.delegatingPerfRecorder,
@@ -1032,21 +1036,22 @@ export class NgCompiler {
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
       new PipeDecoratorHandler(
-          reflector, evaluator, metaRegistry, scopeRegistry, injectableRegistry, isCore,
+          reflector, evaluator, metaRegistry, ngModuleScopeRegistry, injectableRegistry, isCore,
           this.delegatingPerfRecorder),
       new InjectableDecoratorHandler(
           reflector, isCore, this.options.strictInjectionParameters || false, injectableRegistry,
           this.delegatingPerfRecorder),
       new NgModuleDecoratorHandler(
-          reflector, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry, isCore,
-          refEmitter, this.adapter.factoryTracker, this.closureCompilerEnabled, injectableRegistry,
+          reflector, evaluator, metaReader, metaRegistry, ngModuleScopeRegistry, referencesRegistry,
+          isCore, refEmitter, this.adapter.factoryTracker, this.closureCompilerEnabled,
+          this.options.onlyPublishPublicTypingsForNgModules ?? false, injectableRegistry,
           this.delegatingPerfRecorder),
     ];
 
     const traitCompiler = new TraitCompiler(
         handlers, reflector, this.delegatingPerfRecorder, this.incrementalCompilation,
         this.options.compileNonExportedClasses !== false, compilationMode, dtsTransforms,
-        semanticDepGraphUpdater);
+        semanticDepGraphUpdater, this.adapter);
 
     // Template type-checking may use the `ProgramDriver` to produce new `ts.Program`(s). If this
     // happens, they need to be tracked by the `NgCompiler`.
@@ -1058,7 +1063,7 @@ export class NgCompiler {
 
     const templateTypeChecker = new TemplateTypeCheckerImpl(
         this.inputProgram, notifyingDriver, traitCompiler, this.getTypeCheckingConfig(), refEmitter,
-        reflector, this.adapter, this.incrementalCompilation, scopeRegistry, typeCheckScopeRegistry,
+        reflector, this.adapter, this.incrementalCompilation, scopeReader, typeCheckScopeRegistry,
         this.delegatingPerfRecorder);
 
     // Only construct the extended template checker if the configuration is valid and usable.
@@ -1071,7 +1076,7 @@ export class NgCompiler {
       isCore,
       traitCompiler,
       reflector,
-      scopeRegistry,
+      scopeRegistry: ngModuleScopeRegistry,
       dtsTransforms,
       exportReferenceGraph,
       metaReader,

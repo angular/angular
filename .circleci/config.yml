@@ -31,12 +31,12 @@ var_3: &cache_key v6-angular-node-14-{{ checksum "month.txt" }}-{{ checksum ".ba
 var_4: &cache_key_fallback v6-angular-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
 
 # Windows needs its own cache key because binaries in node_modules are different.
-var_3_win: &cache_key_win v6-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "aio/yarn.lock" }}
-var_4_win: &cache_key_win_fallback v6-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
+var_3_win: &cache_key_win v8-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}
+var_4_win: &cache_key_win_fallback v8-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
-var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-6b2b51844a9c86add1bd6628d5ec8a621e606073
+var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-e65f5f5bafcd00dbb64387878fb866283909a2dd
 var_6: &components_repo_unit_tests_cache_key_fallback v1-angular-components-{{ checksum "month.txt" }}
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages`.
@@ -58,20 +58,25 @@ var_9: &skip_on_pull_requests
       ignore:
         - /pull\/\d+/
 
-# Filter to run a job on builds for the master branch only.
-var_10: &only_on_master
+# Filter to run a job on builds for the main branch only.
+var_10: &only_on_main_branch
   filters:
     branches:
       only:
-        - master
+        - main
 
 # Filter to run a job on all releasable branches.
 var_11: &only_release_branches
   filters:
     branches:
       only:
-        - master
+        - main
         - /\d+\.\d+\.x/
+
+# CircleCI orbs
+# https://circleci.com/developer/orbs.
+orbs:
+  node: circleci/node@5.0.1
 
 # Executor Definitions
 # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
@@ -103,20 +108,8 @@ executors:
   windows-executor:
     working_directory: ~/ng
     resource_class: windows.2xlarge
-    # CircleCI windows VMs do have the GitBash shell available:
-    # https://github.com/CircleCI-Public/windows-preview-docs#shells
-    # But in this specific case we really should not use it because Bazel must not be ran from
-    # GitBash. These issues discuss why:
-    # https://github.com/bazelbuild/bazel/issues/5751
-    # https://github.com/bazelbuild/bazel/issues/5724#issuecomment-410194038
-    # https://github.com/bazelbuild/bazel/issues/6339#issuecomment-441600879
-    shell: powershell.exe -ExecutionPolicy Bypass
+    shell: bash
     machine:
-      # Windows preview image that includes the following:
-      # - Visual Studio 2019 build tools
-      # - Node 14
-      # - yarn 1.17
-      # - Python 3 3.7.4
       image: windows-server-2019-vs2019:201908-02
 
 # Command Definitions
@@ -192,28 +185,14 @@ commands:
           # snapshot stamping would have the `-with-local-changes` suffix.
           command: date +%Y-%m > month.txt
 
-  # Normally this would be an individual job instead of a command.
-  # But startup and setup time for each individual windows job are high enough to discourage
-  # many small jobs, so instead we use a command for setup unless the gain becomes significant.
-  setup_win:
-    description: Setup windows node environment
+  yarn_install:
+    description: Install dependencies
     steps:
-      - checkout
-      - save_month_to_file
-      # Install Bazel pre-requisites that aren't in the preconfigured CircleCI Windows VM.
-      - run: ./.circleci/windows-env.ps1
-      - run: node --version
-      - run: yarn --version
-      - restore_cache:
-          keys:
-            - *cache_key_win
-            - *cache_key_win_fallback
-      # Install @bazel/bazelisk globally and use that for the first run.
-      # Workaround for https://github.com/bazelbuild/rules_nodejs/issues/894
-      # NB: the issue was for @bazel/bazel but the same problem applies to @bazel/bazelisk
-      - run: yarn global add @bazel/bazelisk@$env:BAZELISK_VERSION
-      # On Windows `~/` is not resolved when using as a CLI value. `../` results in the same path.
-      - run: yarn install --frozen-lockfile --non-interactive --cache-folder ../.cache/yarn
+      - run:
+          name: Running Yarn install
+          command: yarn install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+          # Yarn's requests sometimes take more than 10mins to complete (especially on Windows).
+          no_output_timeout: 45m
 
   notify_webhook_on_fail:
     description: Notify a webhook about failure
@@ -257,11 +236,7 @@ jobs:
           keys:
             - *cache_key
             - *cache_key_fallback
-      - run:
-          name: Running Yarn install
-          command: yarn install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
-          # Yarn's requests sometimes take more than 10mins to complete.
-          no_output_timeout: 45m
+      - yarn_install
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
       # Make the bazel directories and add a file to them if they don't exist already so that
       # persist_to_workspace does not fail.
@@ -329,7 +304,7 @@ jobs:
           path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
           destination: core/todo/bundle.br
 
-  # NOTE: This is currently limited to master builds only. See the `monitoring` configuration.
+  # NOTE: This is currently limited to main builds only. See the `monitoring` configuration.
   saucelabs:
     executor:
       name: default-executor
@@ -467,7 +442,7 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - run: node scripts/build/build-packages-dist.js
+      - run: yarn build
 
       # Save the npm packages from //packages/... for other workflow jobs to read
       - persist_to_workspace:
@@ -724,15 +699,45 @@ jobs:
   test_win:
     executor: windows-executor
     steps:
-      - setup_win
+      - checkout
+      - save_month_to_file
+      - init_environment
+
+      # Setup the proper NodeJS version. The image comes pre-installed with `nvm-windows`.
+      - run:
+          name: Install NodeJS version from `.nvmrc`.
+          command: |
+            nvm install $(cat .nvmrc)
+            nvm use $(cat .nvmrc)
+
+      - restore_cache:
+          keys:
+            - *cache_key_win
+            - *cache_key_win_fallback
+
+      # Install project dependencies, and install Bazelisk globally. This is necessary as
+      # Windows might error when `bazel` is invoked from the project node modules. The Bazel
+      # invocation might modify the symlinked project `node_modules` again, causing failures.
+      - yarn_install
+      - run: yarn global add @bazel/bazelisk@${BAZELISK_VERSION}
+
       - run:
           name: Build all windows CI targets
-          command: bazel build //packages/compiler-cli/...
+          command: |
+            $(yarn global bin)/bazelisk build //packages/compiler-cli/...
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: bazel test --test_tag_filters="-browser:chromium-local" //packages/compiler-cli/...
+          command: |
+            $(yarn global bin)/bazelisk test --test_tag_filters="-browser:chromium-local" //packages/compiler-cli/...
           no_output_timeout: 15m
+
+      - save_cache:
+          key: *cache_key_win
+          paths:
+            - node_modules
+            - ~/AppData/Local/bazelisk
+
   test_angular_devtools:
     executor: test-browser-executor
     steps:
@@ -803,9 +808,10 @@ workflows:
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
             - legacy-unit-tests-saucelabs
-      - components-repo-unit-tests:
-          requires:
-            - build-npm-packages
+      # TODO(devversion): re-enable once `angular/components` is using `rules_nodejs` v5.
+      #- components-repo-unit-tests:
+      #    requires:
+      #      - build-npm-packages
       - test_zonejs:
           requires:
             - setup
@@ -831,7 +837,7 @@ workflows:
       - saucelabs:
           # Testing saucelabs via Bazel currently taking longer than the legacy saucelabs job as it
           # each karma_web_test target is provisioning and tearing down browsers which is adding
-          # a lot of overhead. Running once daily on master only to avoid wasting resources and
+          # a lot of overhead. Running once daily in the main branch to avoid wasting resources and
           # slowing down CI for PRs.
           # TODO: Run this job on all branches (including PRs) once karma_web_test targets can
           # share provisioned browsers and we can remove the legacy saucelabs job.
@@ -839,6 +845,6 @@ workflows:
             - setup
     triggers:
       - schedule:
-          <<: *only_on_master
+          <<: *only_on_main_branch
           # Runs monitoring jobs at 10:00AM every day.
           cron: '0 10 * * *'

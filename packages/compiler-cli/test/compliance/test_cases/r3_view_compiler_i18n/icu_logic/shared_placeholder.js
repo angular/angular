@@ -71,6 +71,13 @@ consts: function() {
         "closeTagDiv": "[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]",
         "startTagDiv_1": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
         "icu": "\uFFFDI18N_EXP_ICU\uFFFD"
+      }, {
+        original_code: {
+          "startTagDiv": "<div>",
+          "closeTagDiv": "</div>",
+          "startTagDiv_1": "<div *ngIf=\"visible\">",
+          "icu": "{gender, select, male {male} female {female} other {other}}"
+        }
       });
       $I18N_0$ = $MSG_APP_SPEC_TS_0$;
   }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, R3ClassMetadata, R3ComponentMetadata} from '@angular/compiler';
+import {AnimationTriggerNames, R3ClassMetadata, R3ComponentMetadata, R3TemplateDependency, R3TemplateDependencyMetadata, SchemaMetadata} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../../imports';
@@ -22,15 +22,15 @@ import {ParsedTemplateWithSource, StyleUrlMeta} from './resources';
  * The `keyof R3ComponentMetadata &` condition ensures that only fields of `R3ComponentMetadata` can
  * be included here.
  */
-export type ComponentMetadataResolvedFields =
-    SubsetOfKeys<R3ComponentMetadata, 'directives'|'pipes'|'declarationListEmitMode'>;
+export type ComponentMetadataResolvedFields = SubsetOfKeys<
+    R3ComponentMetadata<R3TemplateDependencyMetadata>, 'declarations'|'declarationListEmitMode'>;
 
 export interface ComponentAnalysisData {
   /**
    * `meta` includes those fields of `R3ComponentMetadata` which are calculated at `analyze` time
    * (not during resolve).
    */
-  meta: Omit<R3ComponentMetadata, ComponentMetadataResolvedFields>;
+  meta: Omit<R3ComponentMetadata<R3TemplateDependencyMetadata>, ComponentMetadataResolvedFields>;
   baseClass: Reference<ClassDeclaration>|'dynamic'|null;
   typeCheckMeta: DirectiveTypeCheckMeta;
   template: ParsedTemplateWithSource;
@@ -66,10 +66,11 @@ export interface ComponentAnalysisData {
   isPoisoned: boolean;
   animationTriggerNames: AnimationTriggerNames|null;
 
-  imports: {
-    resolved: Reference<ClassDeclaration>[],
-    raw: ts.Expression,
-  }|null;
+  rawImports: ts.Expression|null;
+  resolvedImports: Reference<ClassDeclaration>[]|null;
+
+  schemas: SchemaMetadata[]|null;
 }
 
-export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadataResolvedFields>;
+export type ComponentResolutionData =
+    Pick<R3ComponentMetadata<R3TemplateDependencyMetadata>, ComponentMetadataResolvedFields>;

@@ -3,19 +3,23 @@ structure.
 
 The following changes from vanilla Phonecat are applied:
 
-* E2E tests have been moved to the parent directory, where `run-e2e-tests` can
+*   E2E tests have been moved to the parent directory, where `run-e2e-tests` can
   discover and run them along with all the other examples.
-* Most of the phone JSON and image data removed in the interest of keeping
+*   Most of the phone JSON and image data removed in the interest of keeping
   repo weight down. Keeping enough to retain testability of the app.
 
 ## Running the app
 
 Start like any example
 
-    npm run start
+```shell
+npm run start
+```
 
 ## Running E2E tests
 
-Like for any example (at the project root):
+Like for any example \(at the project root\):
 
-    gulp run-e2e-tests --filter=phonecat-3
+```shell
+gulp run-e2e-tests --filter=phonecat-3
+```

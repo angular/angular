@@ -8,7 +8,7 @@
 
 import {DefaultKeyValueDiffer, DefaultKeyValueDifferFactory} from '@angular/core/src/change_detection/differs/default_keyvalue_differ';
 
-import {kvChangesAsString, testChangesAsString} from '../../change_detection/util';
+import {kvChangesAsString, testChangesAsString} from '../util';
 
 
 // TODO(vicb): Update the code & tests for object equality

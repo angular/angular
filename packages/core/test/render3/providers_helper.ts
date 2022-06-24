@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectorType, Provider, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵProvidersFeature, ɵɵtext} from '@angular/core';
-import {createInjector} from '@angular/core/src/di/r3_injector';
+import {InjectorType, Provider, ɵcreateInjector as createInjector, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵProvidersFeature, ɵɵtext} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 import {ComponentFixture} from '@angular/core/test/render3/render_util';
 
@@ -121,7 +120,7 @@ export function expectProvidersScenario(defs: {
           },
       features: defs.parent &&
           [ɵɵProvidersFeature(defs.parent.providers || [], defs.parent.viewProviders || [])],
-      directives: [ViewChildComponent, ViewChildDirective]
+      dependencies: [ViewChildComponent, ViewChildDirective]
     });
   }
 
@@ -161,7 +160,7 @@ export function expectProvidersScenario(defs: {
           },
       features: defs.app &&
           [ɵɵProvidersFeature(defs.app.providers || [], defs.app.viewProviders || [])],
-      directives:
+      dependencies:
           [
             ParentComponent, ParentDirective2, ParentDirective, ContentChildComponent,
             ContentChildDirective

@@ -10,7 +10,7 @@ import {AST, EmptyExpr, ImplicitReceiver, LiteralPrimitive, PropertyRead, Proper
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
-import {CompletionKind, GlobalCompletion, ReferenceCompletion, ShimLocation, VariableCompletion} from '../api';
+import {CompletionKind, GlobalCompletion, ReferenceCompletion, TcbLocation, VariableCompletion} from '../api';
 
 import {ExpressionIdentifier, findFirstMatchingNode} from './comments';
 import {TemplateData} from './context';
@@ -22,7 +22,7 @@ import {TemplateData} from './context';
  * surrounding TS program have changed.
  */
 export class CompletionEngine {
-  private componentContext: ShimLocation|null;
+  private componentContext: TcbLocation|null;
 
   /**
    * Cache of completions for various levels of the template, including the root template (`null`).
@@ -32,10 +32,12 @@ export class CompletionEngine {
       new Map<TmplAstTemplate|null, Map<string, ReferenceCompletion|VariableCompletion>>();
 
   private expressionCompletionCache =
-      new Map<PropertyRead|SafePropertyRead|LiteralPrimitive|TmplAstTextAttribute, ShimLocation>();
+      new Map<PropertyRead|SafePropertyRead|LiteralPrimitive|TmplAstTextAttribute, TcbLocation>();
 
 
-  constructor(private tcb: ts.Node, private data: TemplateData, private shimPath: AbsoluteFsPath) {
+  constructor(
+      private tcb: ts.Node, private data: TemplateData, private tcbPath: AbsoluteFsPath,
+      private tcbIsShim: boolean) {
     // Find the component completion expression within the TCB. This looks like: `ctx. /* ... */;`
     const globalRead = findFirstMatchingNode(this.tcb, {
       filter: ts.isPropertyAccessExpression,
@@ -44,11 +46,12 @@ export class CompletionEngine {
 
     if (globalRead !== null) {
       this.componentContext = {
-        shimPath: this.shimPath,
+        tcbPath: this.tcbPath,
+        isShimFile: this.tcbIsShim,
         // `globalRead.name` is an empty `ts.Identifier`, so its start position immediately follows
         // the `.` in `ctx.`. TS autocompletion APIs can then be used to access completion results
         // for the component context.
-        positionInShimFile: globalRead.name.getStart(),
+        positionInFile: globalRead.name.getStart(),
       };
     } else {
       this.componentContext = null;
@@ -74,7 +77,7 @@ export class CompletionEngine {
       return null;
     }
 
-    let nodeContext: ShimLocation|null = null;
+    let nodeContext: TcbLocation|null = null;
     if (node instanceof EmptyExpr) {
       const nodeLocation = findFirstMatchingNode(this.tcb, {
         filter: ts.isIdentifier,
@@ -82,8 +85,9 @@ export class CompletionEngine {
       });
       if (nodeLocation !== null) {
         nodeContext = {
-          shimPath: this.shimPath,
-          positionInShimFile: nodeLocation.getStart(),
+          tcbPath: this.tcbPath,
+          isShimFile: this.tcbIsShim,
+          positionInFile: nodeLocation.getStart(),
         };
       }
     }
@@ -95,8 +99,9 @@ export class CompletionEngine {
       });
       if (nodeLocation) {
         nodeContext = {
-          shimPath: this.shimPath,
-          positionInShimFile: nodeLocation.getStart(),
+          tcbPath: this.tcbPath,
+          isShimFile: this.tcbIsShim,
+          positionInFile: nodeLocation.getStart(),
         };
       }
     }
@@ -108,7 +113,7 @@ export class CompletionEngine {
     };
   }
 
-  getExpressionCompletionLocation(expr: PropertyRead|PropertyWrite|SafePropertyRead): ShimLocation
+  getExpressionCompletionLocation(expr: PropertyRead|PropertyWrite|SafePropertyRead): TcbLocation
       |null {
     if (this.expressionCompletionCache.has(expr)) {
       return this.expressionCompletionCache.get(expr)!;
@@ -146,15 +151,16 @@ export class CompletionEngine {
       return null;
     }
 
-    const res: ShimLocation = {
-      shimPath: this.shimPath,
-      positionInShimFile: tsExpr.name.getEnd(),
+    const res: TcbLocation = {
+      tcbPath: this.tcbPath,
+      isShimFile: this.tcbIsShim,
+      positionInFile: tsExpr.name.getEnd(),
     };
     this.expressionCompletionCache.set(expr, res);
     return res;
   }
 
-  getLiteralCompletionLocation(expr: LiteralPrimitive|TmplAstTextAttribute): ShimLocation|null {
+  getLiteralCompletionLocation(expr: LiteralPrimitive|TmplAstTextAttribute): TcbLocation|null {
     if (this.expressionCompletionCache.has(expr)) {
       return this.expressionCompletionCache.get(expr)!;
     }
@@ -186,9 +192,10 @@ export class CompletionEngine {
       // In the shimFile, if `tsExpr` is a string, the position should be in the quotes.
       positionInShimFile -= 1;
     }
-    const res: ShimLocation = {
-      shimPath: this.shimPath,
-      positionInShimFile,
+    const res: TcbLocation = {
+      tcbPath: this.tcbPath,
+      isShimFile: this.tcbIsShim,
+      positionInFile: positionInShimFile,
     };
     this.expressionCompletionCache.set(expr, res);
     return res;

@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {createInjectorWithoutInjectorInstances} from '../di/create_injector';
 import {Injector} from '../di/injector';
 import {INJECTOR} from '../di/injector_token';
 import {InjectFlags} from '../di/interface/injector';
-import {createInjectorWithoutInjectorInstances, R3Injector} from '../di/r3_injector';
+import {ImportedNgModuleProviders, Provider} from '../di/interface/provider';
+import {EnvironmentInjector, getNullInjector, R3Injector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
@@ -31,12 +33,13 @@ export function createNgModuleRef<T>(
     ngModule: Type<T>, parentInjector?: Injector): viewEngine_NgModuleRef<T> {
   return new NgModuleRef<T>(ngModule, parentInjector ?? null);
 }
-export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T> {
+export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T>,
+                                                                         EnvironmentInjector {
   // tslint:disable-next-line:require-internal-with-underscore
   _bootstrapComponents: Type<any>[] = [];
   // tslint:disable-next-line:require-internal-with-underscore
   _r3Injector: R3Injector;
-  override injector: Injector = this;
+  override injector: EnvironmentInjector = this;
   override instance: T;
   destroyCbs: (() => void)[]|null = [];
 
@@ -66,12 +69,12 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
                                useValue: this.componentFactoryResolver
                              }
                            ],
-                           stringify(ngModuleType)) as R3Injector;
+                           stringify(ngModuleType), new Set(['environment'])) as R3Injector;
 
     // We need to resolve the injector types separately from the injector creation, because
     // the module might be trying to use this ref in its constructor for DI which will cause a
     // circular error that will eventually error out, because the injector isn't created yet.
-    this._r3Injector._resolveInjectorDefTypes();
+    this._r3Injector.resolveInjectorInitializers();
     this.instance = this.get(ngModuleType);
   }
 
@@ -104,4 +107,55 @@ export class NgModuleFactory<T> extends viewEngine_NgModuleFactory<T> {
   override create(parentInjector: Injector|null): viewEngine_NgModuleRef<T> {
     return new NgModuleRef(this.moduleType, parentInjector);
   }
+}
+
+class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {
+  override readonly injector: EnvironmentInjector;
+  override readonly componentFactoryResolver: ComponentFactoryResolver =
+      new ComponentFactoryResolver(this);
+  override readonly instance = null;
+
+  constructor(
+      providers: Array<Provider|ImportedNgModuleProviders>, parent: EnvironmentInjector|null,
+      source: string|null) {
+    super();
+    const injector = new R3Injector(
+        [
+          ...providers,
+          {provide: viewEngine_NgModuleRef, useValue: this},
+          {provide: viewEngine_ComponentFactoryResolver, useValue: this.componentFactoryResolver},
+        ],
+        parent || getNullInjector(), source, new Set(['environment']));
+    this.injector = injector;
+    injector.resolveInjectorInitializers();
+  }
+
+  override destroy(): void {
+    this.injector.destroy();
+  }
+
+  override onDestroy(callback: () => void): void {
+    this.injector.onDestroy(callback);
+  }
+}
+
+/**
+ * Create a new environment injector.
+ *
+ * Learn more about environment injectors in
+ * [this guide](guide/standalone-components#environment-injectors).
+ *
+ * @param providers An array of providers.
+ * @param parent A parent environment injector.
+ * @param debugName An optional name for this injector instance, which will be used in error
+ *     messages.
+ *
+ * @publicApi
+ * @developerPreview
+ */
+export function createEnvironmentInjector(
+    providers: Array<Provider|ImportedNgModuleProviders>, parent: EnvironmentInjector,
+    debugName: string|null = null): EnvironmentInjector {
+  const adapter = new EnvironmentNgModuleRefAdapter(providers, parent, debugName);
+  return adapter.injector;
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleFactory, NgModuleRef, Type} from '@angular/core';
+import {EnvironmentInjector, ImportedNgModuleProviders, InjectionToken, NgModuleFactory, Provider, Type} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
@@ -93,6 +93,8 @@ export type ResolveData = {
  * A function that is called to resolve a collection of lazy-loaded routes.
  * Must be an arrow function of the following form:
  * `() => import('...').then(mod => mod.MODULE)`
+ * or
+ * `() => import('...').then(mod => mod.ROUTES)`
  *
  * For example:
  *
@@ -102,12 +104,19 @@ export type ResolveData = {
  *   loadChildren: () => import('./lazy-route/lazy.module').then(mod => mod.LazyModule),
  * }];
  * ```
+ * or
+ * ```
+ * [{
+ *   path: 'lazy',
+ *   loadChildren: () => import('./lazy-route/lazy.routes').then(mod => mod.ROUTES),
+ * }];
+ * ```
  *
  * @see [Route.loadChildren](api/router/Route#loadChildren)
  * @publicApi
  */
-export type LoadChildrenCallback = () => Type<any>|NgModuleFactory<any>|Observable<Type<any>>|
-    Promise<NgModuleFactory<any>|Type<any>|any>;
+export type LoadChildrenCallback = () => Type<any>|NgModuleFactory<any>|Routes|
+    Observable<Type<any>|Routes>|Promise<NgModuleFactory<any>|Type<any>|Routes>;
 
 /**
  *
@@ -122,8 +131,9 @@ export type LoadChildren = LoadChildrenCallback;
  *
  * How to handle query parameters in a router link.
  * One of:
- * - `merge` : Merge new with current parameters.
- * - `preserve` : Preserve current parameters.
+ * - `"merge"` : Merge new parameters with current parameters.
+ * - `"preserve"` : Preserve current parameters.
+ * - `""` : Replace current parameters with new parameters. This is the default behavior.
  *
  * @see `UrlCreationOptions#queryParamsHandling`
  * @see `RouterLink`
@@ -413,6 +423,17 @@ export interface Route {
    * Can be empty if child routes specify components.
    */
   component?: Type<any>;
+
+  /**
+   * An object specifying a lazy-loaded component.
+   */
+  loadComponent?: () => Type<unknown>| Observable<Type<unknown>>| Promise<Type<unknown>>;
+  /**
+   * Filled for routes `loadComponent` once the component is loaded.
+   * @internal
+   */
+  _loadedComponent?: Type<unknown>;
+
   /**
    * A URL to redirect to when the path matches.
    *
@@ -433,6 +454,12 @@ export interface Route {
    * activate the component. By default, any user can activate.
    */
   canActivate?: any[];
+  /**
+   * An array of DI tokens used to look up `CanMatch()`
+   * handlers, in order to determine if the current user is allowed to
+   * match the `Route`. By default, any route can match.
+   */
+  canMatch?: Array<Type<CanMatch>|InjectionToken<CanMatchFn>>;
   /**
    * An array of DI tokens used to look up `CanActivateChild()` handlers,
    * in order to determine if the current user is allowed to activate
@@ -470,6 +497,7 @@ export interface Route {
    * An object specifying lazy-loaded child routes.
    */
   loadChildren?: LoadChildren;
+
   /**
    * Defines when guards and resolvers will be run. One of
    * - `paramsOrQueryParamsChange` : Run when query parameters change.
@@ -478,20 +506,39 @@ export interface Route {
    * parameters of the route change.
    */
   runGuardsAndResolvers?: RunGuardsAndResolvers;
+
   /**
-   * Filled for routes with `loadChildren` once the module has been loaded
+   * A `Provider` array to use for this `Route` and its `children`.
+   *
+   * The `Router` will create a new `EnvironmentInjector` for this
+   * `Route` and use it for this `Route` and its `children`. If this
+   * route also has a `loadChildren` function which returns an `NgModuleRef`, this injector will be
+   * used as the parent of the lazy loaded module.
+   */
+  providers?: Array<Provider|ImportedNgModuleProviders>;
+
+  /**
+   * Injector created from the static route providers
    * @internal
    */
-  _loadedConfig?: LoadedRouterConfig;
+  _injector?: EnvironmentInjector;
+
   /**
-   * Filled for routes with `loadChildren` during load
+   * Filled for routes with `loadChildren` once the routes are loaded.
    * @internal
    */
-  _loader$?: Observable<LoadedRouterConfig>;
+  _loadedRoutes?: Route[];
+
+  /**
+   * Filled for routes with `loadChildren` once the routes are loaded
+   * @internal
+   */
+  _loadedInjector?: EnvironmentInjector;
 }
 
-export class LoadedRouterConfig {
-  constructor(public routes: Route[], public module: NgModuleRef<any>) {}
+export interface LoadedRouterConfig {
+  routes: Route[];
+  injector: EnvironmentInjector|undefined;
 }
 
 /**
@@ -763,6 +810,112 @@ export type CanDeactivateFn<T> =
     (component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
      nextState?: RouterStateSnapshot) =>
         Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
+
+/**
+ * @description
+ *
+ * Interface that a class can implement to be a guard deciding if a `Route` can be matched.
+ * If all guards return `true`, navigation continues and the `Router` will use the `Route` during
+ * activation. If any guard returns `false`, the `Route` is skipped for matching and other `Route`
+ * configurations are processed instead.
+ *
+ * The following example implements a `CanMatch` function that decides whether the
+ * current user has permission to access the users page.
+ *
+ *
+ * ```
+ * class UserToken {}
+ * class Permissions {
+ *   canAccess(user: UserToken, id: string, segments: UrlSegment[]): boolean {
+ *     return true;
+ *   }
+ * }
+ *
+ * @Injectable()
+ * class CanMatchTeamSection implements CanMatch {
+ *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
+ *
+ *   canMatch(route: Route, segments: UrlSegment[]): Observable<boolean>|Promise<boolean>|boolean {
+ *     return this.permissions.canAccess(this.currentUser, route, segments);
+ *   }
+ * }
+ * ```
+ *
+ * Here, the defined guard function is provided as part of the `Route` object
+ * in the router configuration:
+ *
+ * ```
+ *
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: 'team/:id',
+ *         component: TeamComponent,
+ *         loadChildren: () => import('./team').then(mod => mod.TeamModule),
+ *         canMatch: [CanMatchTeamSection]
+ *       },
+ *       {
+ *         path: '**',
+ *         component: NotFoundComponent
+ *       }
+ *     ])
+ *   ],
+ *   providers: [CanMatchTeamSection, UserToken, Permissions]
+ * })
+ * class AppModule {}
+ * ```
+ *
+ * If the `CanMatchTeamSection` were to return `false`, the router would continue navigating to the
+ * `team/:id` URL, but would load the `NotFoundComponent` because the `Route` for `'team/:id'`
+ * could not be used for a URL match but the catch-all `**` `Route` did instead.
+ *
+ * You can alternatively provide an in-line function with the `canMatch` signature:
+ *
+ * ```
+ * const CAN_MATCH_TEAM_SECTION = new InjectionToken('CanMatchTeamSection');
+ *
+ * @NgModule({
+ *   imports: [
+ *     RouterModule.forRoot([
+ *       {
+ *         path: 'team/:id',
+ *         component: TeamComponent,
+ *         loadChildren: () => import('./team').then(mod => mod.TeamModule),
+ *         canMatch: [CAN_MATCH_TEAM_SECTION]
+ *       },
+ *       {
+ *         path: '**',
+ *         component: NotFoundComponent
+ *       }
+ *     ])
+ *   ],
+ *   providers: [
+ *     {
+ *       provide: CAN_MATCH_TEAM_SECTION,
+ *       useValue: (route: Route, segments: UrlSegment[]) => true
+ *     }
+ *   ]
+ * })
+ * class AppModule {}
+ * ```
+ *
+ * @publicApi
+ */
+export interface CanMatch {
+  canMatch(route: Route, segments: UrlSegment[]):
+      Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
+}
+
+/**
+ * The signature of a function used as a `CanMatch` guard on a `Route`.
+ *
+ * @publicApi
+ * @see `CanMatch`
+ * @see `Route`
+ */
+export type CanMatchFn = (route: Route, segments: UrlSegment[]) =>
+    Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 
 /**
  * @description

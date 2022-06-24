@@ -21,7 +21,7 @@ describe('FormArray', () => {
     let logger: string[];
 
     beforeEach(() => {
-      a = new FormArray([]);
+      a = new FormArray<any>([]);
       c1 = new FormControl(1);
       c2 = new FormControl(2);
       c3 = new FormControl(3);
@@ -138,7 +138,7 @@ describe('FormArray', () => {
          // becomes invalid.
          const validatorFn = (value: any) => value.controls.length > 0 ? {controls: true} : null;
          const asyncValidatorFn = (value: any) => of(validatorFn(value));
-         const arr: FormArray = new FormArray([], validatorFn, asyncValidatorFn);
+         const arr: FormArray = new FormArray<any>([], validatorFn, asyncValidatorFn);
          expect(arr.valid).toBe(true);
 
          arr.statusChanges.subscribe(() => logger.push('status change'));
@@ -309,7 +309,7 @@ describe('FormArray', () => {
     });
 
     it('should throw if no controls are set yet', () => {
-      const empty: FormArray = new FormArray([]);
+      const empty: FormArray = new FormArray<any>([]);
       expect(() => empty.setValue(['one']))
           .toThrowError(new RegExp(`no form controls registered with this array`));
     });
@@ -1177,7 +1177,7 @@ describe('FormArray', () => {
     });
 
     it('should keep empty, disabled arrays disabled when updating validity', () => {
-      const arr: FormArray = new FormArray([]);
+      const arr: FormArray = new FormArray<any>([]);
       expect(arr.status).toEqual('VALID');
 
       arr.disable();
@@ -1522,6 +1522,22 @@ describe('FormArray', () => {
         it('at -10', () => {
           fa.insert(-10, c99);
           expect(fa.value).toEqual([99, 1, 2, 3, 4]);
+        });
+      });
+
+      describe('can be extended', () => {
+        it('by a simple strongly-typed array', () => {
+          abstract class StringFormArray extends FormArray {
+            override value!: string[];
+          }
+        });
+
+        it('by a class that redefines many properties', () => {
+          abstract class OtherTypedFormArray<
+              TControls extends Array<AbstractControl<unknown>>> extends FormArray {
+            override controls!: TControls;
+            override value!: never[];
+          }
         });
       });
     });

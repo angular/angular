@@ -20,7 +20,7 @@ describe('deploy-to-firebase:', () => {
 
     mostRecentMinorBranch = u.getMostRecentMinorBranch();
     latestCommits = {
-      master: u.getLatestCommit('master'),
+      main: u.getLatestCommit('main'),
       '2.1.x': u.getLatestCommit('2.1.x'),
       '2.4.x': u.getLatestCommit('2.4.x'),
       '4.3.x': u.getLatestCommit('4.3.x'),
@@ -39,7 +39,7 @@ describe('deploy-to-firebase:', () => {
     return JSON.parse(JSON.stringify(deploymentsInfo, jsonFunctionReplacer));
   };
 
-  it('master - skip deploy - not angular', () => {
+  it('main - skip deploy - not angular', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'notangular',
@@ -52,7 +52,7 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('master - skip deploy - angular fork', () => {
+  it('main - skip deploy - angular fork', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'notangular',
       CI_REPO_NAME: 'angular',
@@ -65,7 +65,7 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('master - skip deploy - pull request', () => {
+  it('main - skip deploy - pull request', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
@@ -79,20 +79,20 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('master - deploy success - no active RC, major higher than stable', () => {
+  it('main - deploy success - no active RC, major higher than stable', () => {
     const mostRecentMajorVersion = u.computeMajorVersion(mostRecentMinorBranch);
-    const fakeMasterMajorVersion = mostRecentMajorVersion + 1;
+    const fakeMainMajorVersion = mostRecentMajorVersion + 1;
 
     // Fake the `package.json` version.
-    spyOn(u, 'loadJson').and.returnValue({version: `${fakeMasterMajorVersion}.0.0-next.42`});
+    spyOn(u, 'loadJson').and.returnValue({version: `${fakeMainMajorVersion}.0.0-next.42`});
 
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
-      CI_BRANCH: 'master',
+      CI_BRANCH: 'main',
       CI_STABLE_BRANCH: mostRecentMinorBranch,
-      CI_COMMIT: latestCommits.master,
+      CI_COMMIT: latestCommits.main,
     })).toEqual([
       {
         name: 'next',
@@ -109,15 +109,15 @@ describe('deploy-to-firebase:', () => {
         type: 'secondary',
         deployEnv: 'next',
         projectId: 'angular-io',
-        siteId: `v${fakeMasterMajorVersion}-angular-io-site`,
-        deployedUrl: `https://v${fakeMasterMajorVersion}.angular.io/`,
+        siteId: `v${fakeMainMajorVersion}-angular-io-site`,
+        deployedUrl: `https://v${fakeMainMajorVersion}.angular.io/`,
         preDeployActions: ['function:redirectAllToNext'],
         postDeployActions: ['function:undoRedirectAllToNext', 'function:testRedirectToNext'],
       },
     ]);
   });
 
-  it('master - deploy success - no active RC, major same as stable', () => {
+  it('main - deploy success - no active RC, major same as stable', () => {
     const mostRecentMajorVersion = u.computeMajorVersion(mostRecentMinorBranch);
 
     // Fake the `package.json` version.
@@ -127,9 +127,9 @@ describe('deploy-to-firebase:', () => {
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
-      CI_BRANCH: 'master',
+      CI_BRANCH: 'main',
       CI_STABLE_BRANCH: mostRecentMinorBranch,
-      CI_COMMIT: latestCommits.master,
+      CI_COMMIT: latestCommits.main,
     })).toEqual([
       {
         name: 'next',
@@ -144,20 +144,20 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('master - deploy success - active RC, major higher than RC and stable', () => {
+  it('main - deploy success - active RC, major higher than RC and stable', () => {
     const mostRecentMajorVersion = u.computeMajorVersion(mostRecentMinorBranch);
-    const fakeMasterMajorVersion = mostRecentMajorVersion + 1;
+    const fakeMainMajorVersion = mostRecentMajorVersion + 1;
 
     // Fake the `package.json` version.
-    spyOn(u, 'loadJson').and.returnValue({version: `${fakeMasterMajorVersion}.0.0-next.42`});
+    spyOn(u, 'loadJson').and.returnValue({version: `${fakeMainMajorVersion}.0.0-next.42`});
 
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
-      CI_BRANCH: 'master',
+      CI_BRANCH: 'main',
       CI_STABLE_BRANCH: '4.4.x',
-      CI_COMMIT: latestCommits.master,
+      CI_COMMIT: latestCommits.main,
     })).toEqual([
       {
         name: 'next',
@@ -174,15 +174,15 @@ describe('deploy-to-firebase:', () => {
         type: 'secondary',
         deployEnv: 'next',
         projectId: 'angular-io',
-        siteId: `v${fakeMasterMajorVersion}-angular-io-site`,
-        deployedUrl: `https://v${fakeMasterMajorVersion}.angular.io/`,
+        siteId: `v${fakeMainMajorVersion}-angular-io-site`,
+        deployedUrl: `https://v${fakeMainMajorVersion}.angular.io/`,
         preDeployActions: ['function:redirectAllToNext'],
         postDeployActions: ['function:undoRedirectAllToNext', 'function:testRedirectToNext'],
       },
     ]);
   });
 
-  it('master - deploy success - active RC, major same as RC and higher than stable', () => {
+  it('main - deploy success - active RC, major same as RC and higher than stable', () => {
     const mostRecentMajorVersion = u.computeMajorVersion(mostRecentMinorBranch);
 
     // Fake the `package.json` version.
@@ -192,9 +192,9 @@ describe('deploy-to-firebase:', () => {
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
-      CI_BRANCH: 'master',
+      CI_BRANCH: 'main',
       CI_STABLE_BRANCH: '4.4.x',
-      CI_COMMIT: latestCommits.master,
+      CI_COMMIT: latestCommits.main,
     })).toEqual([
       {
         name: 'next',
@@ -209,12 +209,12 @@ describe('deploy-to-firebase:', () => {
     ]);
   });
 
-  it('master - skip deploy - commit not HEAD', () => {
+  it('main - skip deploy - commit not HEAD', () => {
     expect(getDeploymentsInfoFor({
       CI_REPO_OWNER: 'angular',
       CI_REPO_NAME: 'angular',
       CI_PULL_REQUEST: 'false',
-      CI_BRANCH: 'master',
+      CI_BRANCH: 'main',
       CI_COMMIT: 'DUMMY_TEST_COMMIT',
     })).toEqual([
       {
@@ -222,7 +222,7 @@ describe('deploy-to-firebase:', () => {
         type: 'skipped',
         reason:
             'Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ' +
-            `(${latestCommits.master}).`,
+            `(${latestCommits.main}).`,
       },
     ]);
   });

@@ -25,6 +25,6 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵelementEnd();
     }
   },
-  directives: [IfDirective],
+  dependencies: [IfDirective],
   encapsulation: 2
 });

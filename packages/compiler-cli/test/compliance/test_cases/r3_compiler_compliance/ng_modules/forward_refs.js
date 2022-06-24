@@ -5,7 +5,7 @@ export function provideModule() {
 export class TestModule {}
 TestModule.ɵfac = function TestModule_Factory(t) { return new (t || TestModule)(); };
 TestModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TestModule, imports: function () { return [ForwardModule]; } });
-TestModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [[provideModule()]] });
+TestModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [provideModule()] });
 …
 export class ForwardModule {}
 ForwardModule.ɵfac = function ForwardModule_Factory(t) { return new (t || ForwardModule)(); };

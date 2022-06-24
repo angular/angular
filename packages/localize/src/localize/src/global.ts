@@ -24,12 +24,13 @@ declare global {
   var WorkerGlobalScope: {prototype: WorkerGlobalScope; new (): WorkerGlobalScope;};
 }
 
-const __globalThis = typeof globalThis !== 'undefined' && globalThis;
-const __window = typeof window !== 'undefined' && window;
-const __self = typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
-    self instanceof WorkerGlobalScope && self;
-const __global = typeof global !== 'undefined' && global;
-// Always use __globalThis if available; this is the spec-defined global variable across all
-// environments.
-// Then fallback to __global first; in Node tests both __global and __window may be defined.
-export const _global: any = __globalThis || __global || __window || __self;
+// Always use __globalThis if available, which is the spec-defined global variable across all
+// environments, then fallback to __global first, because in Node tests both __global and
+// __window may be defined and _global should be __global in that case. Note: Typeof/Instanceof
+// checks are considered side-effects in Terser. We explicitly mark this as side-effect free:
+// https://github.com/terser/terser/issues/250.
+export const _global: any = (/* @__PURE__ */ (
+    () => (typeof globalThis !== 'undefined' && globalThis) ||
+        (typeof global !== 'undefined' && global) || (typeof window !== 'undefined' && window) ||
+        (typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
+         self instanceof WorkerGlobalScope && self))());

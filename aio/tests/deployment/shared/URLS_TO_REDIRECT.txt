@@ -199,8 +199,8 @@
 /getting-started/data --> /start/start-data
 /getting-started/forms --> /start/start-forms
 /getting-started/deployment --> /start/start-deployment
-/guide/bazel --> https://github.com/angular/angular/blob/master/packages/bazel/docs/BAZEL_SCHEMATICS.md
-/guide/change-log --> https://github.com/angular/angular/blob/master/CHANGELOG.md
+/guide/bazel --> https://github.com/angular/angular/blob/main/packages/bazel/docs/BAZEL_SCHEMATICS.md
+/guide/change-log --> https://github.com/angular/angular/blob/main/CHANGELOG.md
 /guide/cli-quickstart --> /start
 /guide/displaying-data --> /start#template-syntax
 /guide/i18n --> /guide/i18n-overview
@@ -217,6 +217,7 @@
 /guide/updating-to-version-10 --> https://v10.angular.io/guide/updating-to-version-10
 /guide/updating-to-version-11 --> https://v11.angular.io/guide/updating-to-version-11
 /guide/updating-to-version-12 --> /guide/update-to-latest-version
+/guide/set-document-title --> /guide/router#setting-the-page-title
 /guide/webpack --> https://v5.angular.io/guide/webpack
 /index.html?foo=bar --> /?foo=bar
 /news --> https://blog.angular.io/

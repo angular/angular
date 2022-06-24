@@ -14,7 +14,6 @@ import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDefined, assertIndexInRange} from '../util/assert';
 
 import {assertComponentType} from './assert';
-import {readPatchedLView} from './context_discovery';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {throwProviderNotFoundError} from './errors_di';
@@ -27,7 +26,7 @@ import {domRendererFactory3, Renderer3, RendererFactory3} from './interfaces/ren
 import {RElement} from './interfaces/renderer_dom';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
 import {writeDirectClass, writeDirectStyle} from './node_manipulation';
-import {enterView, getCurrentTNode, leaveView, setSelectedIndex} from './state';
+import {enterView, getCurrentTNode, getLView, leaveView, setSelectedIndex} from './state';
 import {computeStaticStyling} from './styling/static_styling';
 import {setUpAttributes} from './util/attrs_utils';
 import {publishDefaultGlobalUtils} from './util/global_utils';
@@ -228,7 +227,11 @@ export function createRootComponent<T>(
   rootContext.components.push(component);
   componentView[CONTEXT] = component;
 
-  hostFeatures && hostFeatures.forEach((feature) => feature(component, componentDef));
+  if (hostFeatures !== null) {
+    for (const feature of hostFeatures) {
+      feature(component, componentDef);
+    }
+  }
 
   // We want to generate an empty QueryList for root content queries for backwards
   // compatibility with ViewEngine.
@@ -279,13 +282,10 @@ export function createRootContext(
  * renderComponent(AppComponent, {hostFeatures: [LifecycleHooksFeature]});
  * ```
  */
-export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
-  const lView = readPatchedLView(component)!;
-  ngDevMode && assertDefined(lView, 'LView is required');
-  const tView = lView[TVIEW];
+export function LifecycleHooksFeature(): void {
   const tNode = getCurrentTNode()!;
   ngDevMode && assertDefined(tNode, 'TNode is required');
-  registerPostOrderHooks(tView, tNode);
+  registerPostOrderHooks(getLView()[TVIEW], tNode);
 }
 
 /**

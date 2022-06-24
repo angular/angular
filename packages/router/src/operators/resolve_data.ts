@@ -7,10 +7,10 @@
  */
 
 import {Injector} from '@angular/core';
-import {EMPTY, from, MonoTypeOperatorFunction, Observable, of} from 'rxjs';
-import {concatMap, map, mergeMap, take, takeLast, tap} from 'rxjs/operators';
+import {EMPTY, EmptyError, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
+import {catchError, concatMap, first, map, mapTo, mergeMap, takeLast, tap} from 'rxjs/operators';
 
-import {ResolveData} from '../models';
+import {ResolveData, Route} from '../models';
 import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, inheritedParamsDataResolve, RouterStateSnapshot} from '../router_state';
 import {wrapIntoObservable} from '../utils/collection';
@@ -50,21 +50,16 @@ function runResolve(
     paramsInheritanceStrategy: 'emptyOnly'|'always', moduleInjector: Injector) {
   const config = futureARS.routeConfig;
   const resolve = futureARS._resolve;
-  const data = {...futureARS.data};
-  if (config?.title !== undefined) {
-    if (typeof config.title === 'string' || config.title === null) {
-      data[RouteTitle] = config.title;
-    } else {
-      resolve[RouteTitle] = config.title;
-    }
+  if (config?.title !== undefined && !hasStaticTitle(config)) {
+    resolve[RouteTitle] = config.title;
   }
   return resolveNode(resolve, futureARS, futureRSS, moduleInjector)
       .pipe(map((resolvedData: any) => {
         futureARS._resolvedData = resolvedData;
-        futureARS.data = {
-          ...data,
-          ...inheritedParamsDataResolve(futureARS, paramsInheritanceStrategy).resolve
-        };
+        futureARS.data = inheritedParamsDataResolve(futureARS, paramsInheritanceStrategy).resolve;
+        if (config && hasStaticTitle(config)) {
+          futureARS.data[RouteTitle] = config.title;
+        }
         return null;
       }));
 }
@@ -80,18 +75,12 @@ function resolveNode(
   return from(keys).pipe(
       mergeMap(
           key => getResolver(resolve[key], futureARS, futureRSS, moduleInjector)
-                     .pipe(take(1), tap((value: any) => {
+                     .pipe(first(), tap((value: any) => {
                              data[key] = value;
                            }))),
       takeLast(1),
-      mergeMap(() => {
-        // Ensure all resolvers returned values, otherwise don't emit any "next" and just complete
-        // the chain which will cancel navigation
-        if (getDataKeys(data).length === keys.length) {
-          return of(data);
-        }
-        return EMPTY;
-      }),
+      mapTo(data),
+      catchError((e: unknown) => e instanceof EmptyError ? EMPTY : throwError(e)),
   );
 }
 
@@ -105,4 +94,8 @@ function getResolver(
   const resolver = getToken(injectionToken, futureARS, moduleInjector);
   return resolver.resolve ? wrapIntoObservable(resolver.resolve(futureARS, futureRSS)) :
                             wrapIntoObservable(resolver(futureARS, futureRSS));
+}
+
+function hasStaticTitle(config: Route) {
+  return typeof config.title === 'string' || config.title === null;
 }

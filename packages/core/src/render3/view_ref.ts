@@ -60,11 +60,11 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
       private _cdRefInjectingView?: LView) {}
 
   get context(): T {
-    return this._lView[CONTEXT] as T;
+    return this._lView[CONTEXT] as unknown as T;
   }
 
   set context(value: T) {
-    this._lView[CONTEXT] = value;
+    this._lView[CONTEXT] = value as unknown as {};
   }
 
   get destroyed(): boolean {
@@ -271,7 +271,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * See {@link ChangeDetectorRef#detach detach} for more information.
    */
   detectChanges(): void {
-    detectChangesInternal(this._lView[TVIEW], this._lView, this.context);
+    detectChangesInternal(this._lView[TVIEW], this._lView, this.context as unknown as {});
   }
 
   /**
@@ -281,14 +281,16 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * introduce other changes.
    */
   checkNoChanges(): void {
-    checkNoChangesInternal(this._lView[TVIEW], this._lView, this.context);
+    if (ngDevMode) {
+      checkNoChangesInternal(this._lView[TVIEW], this._lView, this.context as unknown as {});
+    }
   }
 
   attachToViewContainerRef() {
     if (this._appRef) {
-      const errorMessage =
-          ngDevMode ? 'This view is already attached directly to the ApplicationRef!' : '';
-      throw new RuntimeError(RuntimeErrorCode.VIEW_ALREADY_ATTACHED, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.VIEW_ALREADY_ATTACHED,
+          ngDevMode && 'This view is already attached directly to the ApplicationRef!');
     }
     this._attachedToViewContainer = true;
   }
@@ -300,8 +302,9 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
 
   attachToAppRef(appRef: ViewRefTracker) {
     if (this._attachedToViewContainer) {
-      const errorMessage = ngDevMode ? 'This view is already attached to a ViewContainer!' : '';
-      throw new RuntimeError(RuntimeErrorCode.VIEW_ALREADY_ATTACHED, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.VIEW_ALREADY_ATTACHED,
+          ngDevMode && 'This view is already attached to a ViewContainer!');
     }
     this._appRef = appRef;
   }
@@ -318,7 +321,9 @@ export class RootViewRef<T> extends ViewRef<T> {
   }
 
   override checkNoChanges(): void {
-    checkNoChangesInRootView(this._view);
+    if (ngDevMode) {
+      checkNoChangesInRootView(this._view);
+    }
   }
 
   override get context(): T {

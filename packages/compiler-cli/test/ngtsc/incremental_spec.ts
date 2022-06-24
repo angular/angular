@@ -439,7 +439,8 @@ runInEachFileSystem(() => {
          expect(written).not.toContain('/foo_pipe.js');
          expect(written).not.toContain('/foo_module.js');
          // Ensure that the used directives are included in the component's generated template.
-         expect(env.getContents('/built/bar_component.js')).toMatch(/directives:\s*\[.+\.BarDir\]/);
+         expect(env.getContents('/built/bar_component.js'))
+             .toMatch(/dependencies:\s*\[.+\.BarDir\]/);
        });
 
     it('should rebuild everything if a typings file changes', () => {

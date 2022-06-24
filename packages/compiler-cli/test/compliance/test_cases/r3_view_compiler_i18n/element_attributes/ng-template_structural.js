@@ -10,7 +10,7 @@ function MyComponent_0_Template(rf, ctx) {
 }
 …
 consts: function() {
-  __i18nMsg__('Hello', [], {})
+  __i18nMsg__('Hello', [], {}, {})
   return [
     // NOTE: AttributeMarker.Template = 4
     [4, "ngIf"],

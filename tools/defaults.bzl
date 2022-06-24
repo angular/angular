@@ -1,24 +1,23 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
-load("@build_bazel_rules_nodejs//:index.bzl", _nodejs_binary = "nodejs_binary", _pkg_npm = "pkg_npm")
+load("@build_bazel_rules_nodejs//:index.bzl", _nodejs_binary = "nodejs_binary", _nodejs_test = "nodejs_test", _npm_package_bin = "npm_package_bin", _pkg_npm = "pkg_npm")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
-load("@npm//@bazel/concatjs:index.bzl", _concatjs_devserver = "concatjs_devserver")
+load("@npm//@bazel/concatjs:index.bzl", _concatjs_devserver = "concatjs_devserver", _ts_config = "ts_config", _ts_library = "ts_library")
 load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
-load("@npm//@bazel/typescript:index.bzl", _ts_config = "ts_config", _ts_library = "ts_library")
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//typescript:index.bzl", "tsc")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("@npm//@angular/dev-infra-private/bazel/benchmark/app_bundling:index.bzl", _app_bundle = "app_bundle")
-load("//tools:ng_benchmark.bzl", _ng_benchmark = "ng_benchmark")
+load("@npm//@angular/dev-infra-private/bazel/http-server:index.bzl", _http_server = "http_server")
 load("@npm//@angular/dev-infra-private/bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm//@angular/dev-infra-private/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@npm//@angular/dev-infra-private/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
+load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
-_INTERNAL_NG_MODULE_API_EXTRACTOR = "//packages/bazel/src/api-extractor:api_extractor"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
 _INTERNAL_NG_MODULE_XI18N = "//packages/bazel/src/ngc-wrapped:xi18n"
 _INTERNAL_NG_PACKAGE_PACKAGER = "//packages/bazel/src/ng_package:packager"
@@ -27,6 +26,7 @@ _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP = "//packages/bazel/src/ng_package:rollup_fo
 
 esbuild = _esbuild
 esbuild_config = _esbuild_config
+http_server = _http_server
 
 # Packages which are versioned together on npm
 ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
@@ -148,12 +148,12 @@ def ts_library(name, tsconfig = None, testonly = False, deps = [], module_name =
         srcs = [":%s" % name],
         testonly = testonly,
         # Note: Ironically this is named `es5_sources` but it refers to the devmode output.
-        # This is just an artifact of many iterations in `@bazel/typescript`. This is being
+        # This is just an artifact of many iterations in `@bazel/concatjs`. This is being
         # solved together with us combining devmode & prodmode.
         output_group = "es5_sources",
     )
 
-def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, package_name = None, bundle_dts = True, **kwargs):
+def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, package_name = None, **kwargs):
     """Default values for ng_module"""
     deps = deps + ["@npm//tslib"]
     if testonly:
@@ -181,10 +181,8 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         tsconfig = tsconfig,
         entry_point = entry_point,
         testonly = testonly,
-        bundle_dts = bundle_dts,
         deps = deps,
         compiler = _INTERNAL_NG_MODULE_COMPILER,
-        api_extractor = _INTERNAL_NG_MODULE_API_EXTRACTOR,
         ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
         # `module_name` is used for AMD module names within emitted JavaScript files.
         module_name = module_name,
@@ -393,14 +391,28 @@ def protractor_web_test_suite(**kwargs):
         **kwargs
     )
 
-def ng_benchmark(**kwargs):
-    """Default values for ng_benchmark"""
-    _ng_benchmark(**kwargs)
-
-def nodejs_binary(data = [], **kwargs):
-    """Default values for nodejs_binary"""
+def nodejs_binary(data = [], templated_args = [], **kwargs):
     _nodejs_binary(
         data = data + ["@npm//source-map-support"],
+        # Disable the linker and rely on patched resolution which works better on Windows
+        # and is less prone to race conditions when targets build concurrently.
+        templated_args = ["--nobazel_run_linker"] + templated_args,
+        **kwargs
+    )
+
+def nodejs_test(templated_args = [], **kwargs):
+    _nodejs_test(
+        # Disable the linker and rely on patched resolution which works better on Windows
+        # and is less prone to race conditions when targets build concurrently.
+        templated_args = ["--nobazel_run_linker"] + templated_args,
+        **kwargs
+    )
+
+def npm_package_bin(args = [], **kwargs):
+    _npm_package_bin(
+        # Disable the linker and rely on patched resolution which works better on Windows
+        # and is less prone to race conditions when targets build concurrently.
+        args = ["--nobazel_run_linker"] + args,
         **kwargs
     )
 
@@ -442,9 +454,10 @@ def jasmine_node_test(bootstrap = [], **kwargs):
     ]
     configuration_env_vars = kwargs.pop("configuration_env_vars", [])
 
-    # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
-    # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
-    templated_args = ["--bazel_patch_module_resolver"] + kwargs.pop("templated_args", [])
+    # Disable the linker and rely on patched resolution which works better on Windows
+    # and is less prone to race conditions when targets build concurrently.
+    templated_args = ["--nobazel_run_linker"] + kwargs.pop("templated_args", [])
+
     for label in bootstrap:
         deps += [label]
         templated_args += ["--node_options=--require=$$(rlocation $(rootpath %s))" % label]
@@ -576,5 +589,12 @@ def api_golden_test(**kwargs):
 
 def api_golden_test_npm_package(**kwargs):
     _api_golden_test_npm_package(
+        **kwargs
+    )
+
+def tsec_test(**kwargs):
+    """Default values for tsec_test"""
+    _tsec_test(
+        use_runfiles_on_windows = True,  # We explicitly enable runfiles in .bazelrc
         **kwargs
     )

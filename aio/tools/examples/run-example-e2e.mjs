@@ -417,6 +417,7 @@ function getE2eSpecsFor(basePath, specFile, filter) {
   return globby(e2eSpecGlob, {cwd: basePath, nodir: true})
       .then(
           paths => paths.filter(file => !IGNORED_EXAMPLES.some(ignored => file.startsWith(ignored)))
+                       .sort()
                        .map(file => path.join(basePath, file)));
 }
 

@@ -200,58 +200,58 @@ const bTok = new InjectionToken<string>('b');
         beforeEach(() => {
           TestBed.configureTestingModule(
               {providers: [{provide: FancyService, useValue: new FancyService()}]});
+        });
 
-          it('should use set up providers', inject([FancyService], (service: FancyService) => {
-               expect(service.value).toEqual('real value');
+        it('should use set up providers', inject([FancyService], (service: FancyService) => {
+             expect(service.value).toEqual('real value');
+           }));
+
+        it('should wait until returned promises',
+           waitForAsync(inject([FancyService], (service: FancyService) => {
+             service.getAsyncValue().then((value) => expect(value).toEqual('async value'));
+             service.getTimeoutValue().then((value) => expect(value).toEqual('timeout value'));
+           })));
+
+        it('should allow the use of fakeAsync',
+           fakeAsync(inject([FancyService], (service: FancyService) => {
+             let value: string = undefined!;
+             service.getAsyncValue().then((val) => value = val);
+             tick();
+             expect(value).toEqual('async value');
+           })));
+
+        it('should allow use of "done"', (done) => {
+          inject([FancyService], (service: FancyService) => {
+            let count = 0;
+            const id = setInterval(() => {
+              count++;
+              if (count > 2) {
+                clearInterval(id);
+                done();
+              }
+            }, 5);
+          })();  // inject needs to be invoked explicitly with ().
+        });
+
+        describe('using beforeEach', () => {
+          beforeEach(inject([FancyService], (service: FancyService) => {
+            service.value = 'value modified in beforeEach';
+          }));
+
+          it('should use modified providers', inject([FancyService], (service: FancyService) => {
+               expect(service.value).toEqual('value modified in beforeEach');
              }));
+        });
 
-          it('should wait until returned promises',
-             waitForAsync(inject([FancyService], (service: FancyService) => {
-               service.getAsyncValue().then((value) => expect(value).toEqual('async value'));
-               service.getTimeoutValue().then((value) => expect(value).toEqual('timeout value'));
-             })));
+        describe('using async beforeEach', () => {
+          beforeEach(waitForAsync(inject([FancyService], (service: FancyService) => {
+            service.getAsyncValue().then((value) => service.value = value);
+          })));
 
-          it('should allow the use of fakeAsync',
-             fakeAsync(inject([FancyService], (service: FancyService) => {
-               let value: string = undefined!;
-               service.getAsyncValue().then((val) => value = val);
-               tick();
-               expect(value).toEqual('async value');
-             })));
-
-          it('should allow use of "done"', (done) => {
-            inject([FancyService], (service: FancyService) => {
-              let count = 0;
-              const id = setInterval(() => {
-                count++;
-                if (count > 2) {
-                  clearInterval(id);
-                  done();
-                }
-              }, 5);
-            })();  // inject needs to be invoked explicitly with ().
-          });
-
-          describe('using beforeEach', () => {
-            beforeEach(inject([FancyService], (service: FancyService) => {
-              service.value = 'value modified in beforeEach';
-            }));
-
-            it('should use modified providers', inject([FancyService], (service: FancyService) => {
-                 expect(service.value).toEqual('value modified in beforeEach');
-               }));
-          });
-
-          describe('using async beforeEach', () => {
-            beforeEach(waitForAsync(inject([FancyService], (service: FancyService) => {
-              service.getAsyncValue().then((value) => service.value = value);
-            })));
-
-            it('should use asynchronously modified value',
-               inject([FancyService], (service: FancyService) => {
-                 expect(service.value).toEqual('async value');
-               }));
-          });
+          it('should use asynchronously modified value',
+             inject([FancyService], (service: FancyService) => {
+               expect(service.value).toEqual('async value');
+             }));
         });
       });
     });

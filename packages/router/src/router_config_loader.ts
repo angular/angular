@@ -6,13 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, InjectFlags, InjectionToken, Injector, NgModuleFactory} from '@angular/core';
+import {Compiler, EnvironmentInjector, Injectable, InjectFlags, InjectionToken, Injector, NgModuleFactory, Type} from '@angular/core';
 import {ConnectableObservable, from, Observable, of, Subject} from 'rxjs';
-import {catchError, map, mergeMap, refCount, tap} from 'rxjs/operators';
+import {catchError, finalize, map, mergeMap, refCount, tap} from 'rxjs/operators';
 
-import {LoadChildren, LoadedRouterConfig, Route} from './models';
+import {LoadChildren, LoadedRouterConfig, Route, Routes} from './models';
 import {flatten, wrapIntoObservable} from './utils/collection';
-import {standardizeConfig} from './utils/config';
+import {assertStandalone, standardizeConfig, validateConfig} from './utils/config';
+
+
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 /**
  * The [DI token](guide/glossary/#di-token) for a router configuration.
@@ -26,51 +29,101 @@ import {standardizeConfig} from './utils/config';
  */
 export const ROUTES = new InjectionToken<Route[][]>('ROUTES');
 
-export class RouterConfigLoader {
-  constructor(
-      private injector: Injector, private compiler: Compiler,
-      private onLoadStartListener?: (r: Route) => void,
-      private onLoadEndListener?: (r: Route) => void) {}
+type ComponentLoader = Observable<Type<unknown>>;
 
-  load(parentInjector: Injector, route: Route): Observable<LoadedRouterConfig> {
-    if (route._loader$) {
-      return route._loader$;
+@Injectable()
+export class RouterConfigLoader {
+  private componentLoaders = new WeakMap<Route, ComponentLoader>();
+  private childrenLoaders = new WeakMap<Route, Observable<LoadedRouterConfig>>();
+  onLoadStartListener?: (r: Route) => void;
+  onLoadEndListener?: (r: Route) => void;
+
+  constructor(
+      private injector: Injector,
+      private compiler: Compiler,
+  ) {}
+
+  loadComponent(route: Route): Observable<Type<unknown>> {
+    if (this.componentLoaders.get(route)) {
+      return this.componentLoaders.get(route)!;
+    } else if (route._loadedComponent) {
+      return of(route._loadedComponent);
     }
 
     if (this.onLoadStartListener) {
       this.onLoadStartListener(route);
     }
-    const moduleFactory$ = this.loadModuleFactory(route.loadChildren!);
-    const loadRunner = moduleFactory$.pipe(
-        map((factory: NgModuleFactory<any>) => {
+    const loadRunner = wrapIntoObservable(route.loadComponent!())
+                           .pipe(
+                               tap(component => {
+                                 if (this.onLoadEndListener) {
+                                   this.onLoadEndListener(route);
+                                 }
+                                 NG_DEV_MODE && assertStandalone(route.path ?? '', component);
+                                 route._loadedComponent = component;
+                               }),
+                               finalize(() => {
+                                 this.componentLoaders.delete(route);
+                               }),
+                           );
+    // Use custom ConnectableObservable as share in runners pipe increasing the bundle size too much
+    const loader =
+        new ConnectableObservable(loadRunner, () => new Subject<Type<unknown>>()).pipe(refCount());
+    this.componentLoaders.set(route, loader);
+    return loader;
+  }
+
+  loadChildren(parentInjector: Injector, route: Route): Observable<LoadedRouterConfig> {
+    if (this.childrenLoaders.get(route)) {
+      return this.childrenLoaders.get(route)!;
+    } else if (route._loadedRoutes) {
+      return of({routes: route._loadedRoutes, injector: route._loadedInjector});
+    }
+
+    if (this.onLoadStartListener) {
+      this.onLoadStartListener(route);
+    }
+    const moduleFactoryOrRoutes$ = this.loadModuleFactoryOrRoutes(route.loadChildren!);
+    const loadRunner = moduleFactoryOrRoutes$.pipe(
+        map((factoryOrRoutes: NgModuleFactory<any>|Routes) => {
           if (this.onLoadEndListener) {
             this.onLoadEndListener(route);
           }
-          const module = factory.create(parentInjector);
-          // When loading a module that doesn't provide `RouterModule.forChild()` preloader
-          // will get stuck in an infinite loop. The child module's Injector will look to
-          // its parent `Injector` when it doesn't find any ROUTES so it will return routes
-          // for it's parent module instead.
-          return new LoadedRouterConfig(
-              flatten(
-                  module.injector.get(ROUTES, undefined, InjectFlags.Self | InjectFlags.Optional))
-                  .map(standardizeConfig),
-              module);
+          // This injector comes from the `NgModuleRef` when lazy loading an `NgModule`. There is no
+          // injector associated with lazy loading a `Route` array.
+          let injector: EnvironmentInjector|undefined;
+          let rawRoutes: Route[];
+          let requireStandaloneComponents = false;
+          if (Array.isArray(factoryOrRoutes)) {
+            rawRoutes = factoryOrRoutes;
+            requireStandaloneComponents = true;
+          } else {
+            injector = factoryOrRoutes.create(parentInjector).injector;
+            // When loading a module that doesn't provide `RouterModule.forChild()` preloader
+            // will get stuck in an infinite loop. The child module's Injector will look to
+            // its parent `Injector` when it doesn't find any ROUTES so it will return routes
+            // for it's parent module instead.
+            rawRoutes = flatten(injector.get(ROUTES, [], InjectFlags.Self | InjectFlags.Optional));
+          }
+          const routes = rawRoutes.map(standardizeConfig);
+          NG_DEV_MODE && validateConfig(routes, route.path, requireStandaloneComponents);
+          return {routes, injector};
         }),
-        catchError((err) => {
-          route._loader$ = undefined;
-          throw err;
+        finalize(() => {
+          this.childrenLoaders.delete(route);
         }),
     );
     // Use custom ConnectableObservable as share in runners pipe increasing the bundle size too much
-    route._loader$ = new ConnectableObservable(loadRunner, () => new Subject<LoadedRouterConfig>())
-                         .pipe(refCount());
-    return route._loader$;
+    const loader = new ConnectableObservable(loadRunner, () => new Subject<LoadedRouterConfig>())
+                       .pipe(refCount());
+    this.childrenLoaders.set(route, loader);
+    return loader;
   }
 
-  private loadModuleFactory(loadChildren: LoadChildren): Observable<NgModuleFactory<any>> {
-    return wrapIntoObservable(loadChildren()).pipe(mergeMap((t: any) => {
-      if (t instanceof NgModuleFactory) {
+  private loadModuleFactoryOrRoutes(loadChildren: LoadChildren):
+      Observable<NgModuleFactory<any>|Routes> {
+    return wrapIntoObservable(loadChildren()).pipe(mergeMap((t) => {
+      if (t instanceof NgModuleFactory || Array.isArray(t)) {
         return of(t);
       } else {
         return from(this.compiler.compileModuleAsync(t));

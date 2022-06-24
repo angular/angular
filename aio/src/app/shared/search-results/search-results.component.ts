@@ -28,6 +28,12 @@ export class SearchResultsComponent implements OnChanges {
   @Output()
   resultSelected = new EventEmitter<SearchResult>();
 
+  /**
+   * Emitted when the user clicks the close button
+   */
+  @Output()
+  closeButtonClick = new EventEmitter<void>();
+
   searchState: SearchState = SearchState.InProgress;
   readonly defaultArea = 'other';
   readonly folderToAreaMap: Record<string, string> = {
@@ -57,6 +63,10 @@ export class SearchResultsComponent implements OnChanges {
     if (event.button === 0 && !event.ctrlKey && !event.metaKey) {
       this.resultSelected.emit(page);
     }
+  }
+
+  onCloseClicked() {
+    this.closeButtonClick.emit();
   }
 
   // Map the search results into groups by area

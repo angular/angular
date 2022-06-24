@@ -51,9 +51,9 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
   const metaRegistry = new LocalMetadataRegistry();
   const dtsReader = new DtsMetadataReader(checker, reflectionHost);
   const dtsResolver = new MetadataDtsModuleScopeResolver(dtsReader, null);
-  const scopeRegistry =
-      new LocalModuleScopeRegistry(metaRegistry, dtsResolver, new ReferenceEmitter([]), null);
   const metaReader = new CompoundMetadataReader([metaRegistry, dtsReader]);
+  const scopeRegistry = new LocalModuleScopeRegistry(
+      metaRegistry, metaReader, dtsResolver, new ReferenceEmitter([]), null);
   const refEmitter = new ReferenceEmitter([]);
   const injectableRegistry = new InjectableClassRegistry(reflectionHost);
   const resourceRegistry = new ResourceRegistry();

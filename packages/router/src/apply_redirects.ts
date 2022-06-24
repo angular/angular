@@ -6,19 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, NgModuleRef} from '@angular/core';
-import {EmptyError, from, Observable, Observer, of, throwError} from 'rxjs';
-import {catchError, concatMap, first, last, map, mergeMap, scan, tap} from 'rxjs/operators';
+import {EnvironmentInjector} from '@angular/core';
+import {EmptyError, from, Observable, of, throwError} from 'rxjs';
+import {catchError, concatMap, first, last, map, mergeMap, scan, switchMap, tap} from 'rxjs/operators';
 
-import {CanLoadFn, LoadedRouterConfig, Route, Routes} from './models';
-import {prioritizedGuardValue} from './operators/prioritized_guard_value';
+import {LoadedRouterConfig, Route, Routes} from './models';
+import {runCanLoadGuards} from './operators/check_guards';
 import {RouterConfigLoader} from './router_config_loader';
 import {navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
-import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
-import {forEach, wrapIntoObservable} from './utils/collection';
-import {getOutlet, sortByMatchingOutlets} from './utils/config';
-import {isImmediateMatch, match, noLeftoversInUrl, split} from './utils/config_matching';
-import {isCanLoad, isFunction, isUrlTree} from './utils/type_guards';
+import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
+import {forEach} from './utils/collection';
+import {getOrCreateRouteInjectorIfNeeded, getOutlet, sortByMatchingOutlets} from './utils/config';
+import {isImmediateMatch, match, matchWithChecks, noLeftoversInUrl, split} from './utils/config_matching';
 
 class NoMatch {
   public segmentGroup: UrlSegmentGroup|null;
@@ -57,20 +56,17 @@ function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
  * Lazy modules are loaded along the way.
  */
 export function applyRedirects(
-    moduleInjector: Injector, configLoader: RouterConfigLoader, urlSerializer: UrlSerializer,
+    injector: EnvironmentInjector, configLoader: RouterConfigLoader, urlSerializer: UrlSerializer,
     urlTree: UrlTree, config: Routes): Observable<UrlTree> {
-  return new ApplyRedirects(moduleInjector, configLoader, urlSerializer, urlTree, config).apply();
+  return new ApplyRedirects(injector, configLoader, urlSerializer, urlTree, config).apply();
 }
 
 class ApplyRedirects {
   private allowRedirects: boolean = true;
-  private ngModule: NgModuleRef<any>;
 
   constructor(
-      moduleInjector: Injector, private configLoader: RouterConfigLoader,
-      private urlSerializer: UrlSerializer, private urlTree: UrlTree, private config: Routes) {
-    this.ngModule = moduleInjector.get(NgModuleRef);
-  }
+      private injector: EnvironmentInjector, private configLoader: RouterConfigLoader,
+      private urlSerializer: UrlSerializer, private urlTree: UrlTree, private config: Routes) {}
 
   apply(): Observable<UrlTree> {
     const splitGroup = split(this.urlTree.root, [], [], this.config).segmentGroup;
@@ -83,7 +79,7 @@ class ApplyRedirects {
     const rootSegmentGroup = new UrlSegmentGroup(splitGroup.segments, splitGroup.children);
 
     const expanded$ =
-        this.expandSegmentGroup(this.ngModule, this.config, rootSegmentGroup, PRIMARY_OUTLET);
+        this.expandSegmentGroup(this.injector, this.config, rootSegmentGroup, PRIMARY_OUTLET);
     const urlTrees$ = expanded$.pipe(map((rootSegmentGroup: UrlSegmentGroup) => {
       return this.createUrlTree(
           squashSegmentGroup(rootSegmentGroup), this.urlTree.queryParams, this.urlTree.fragment);
@@ -107,7 +103,7 @@ class ApplyRedirects {
 
   private match(tree: UrlTree): Observable<UrlTree> {
     const expanded$ =
-        this.expandSegmentGroup(this.ngModule, this.config, tree.root, PRIMARY_OUTLET);
+        this.expandSegmentGroup(this.injector, this.config, tree.root, PRIMARY_OUTLET);
     const mapped$ = expanded$.pipe(map((rootSegmentGroup: UrlSegmentGroup) => {
       return this.createUrlTree(
           squashSegmentGroup(rootSegmentGroup), tree.queryParams, tree.fragment);
@@ -127,26 +123,24 @@ class ApplyRedirects {
 
   private createUrlTree(rootCandidate: UrlSegmentGroup, queryParams: Params, fragment: string|null):
       UrlTree {
-    const root = rootCandidate.segments.length > 0 ?
-        new UrlSegmentGroup([], {[PRIMARY_OUTLET]: rootCandidate}) :
-        rootCandidate;
+    const root = createRoot(rootCandidate);
     return new UrlTree(root, queryParams, fragment);
   }
 
   private expandSegmentGroup(
-      ngModule: NgModuleRef<any>, routes: Route[], segmentGroup: UrlSegmentGroup,
+      injector: EnvironmentInjector, routes: Route[], segmentGroup: UrlSegmentGroup,
       outlet: string): Observable<UrlSegmentGroup> {
     if (segmentGroup.segments.length === 0 && segmentGroup.hasChildren()) {
-      return this.expandChildren(ngModule, routes, segmentGroup)
+      return this.expandChildren(injector, routes, segmentGroup)
           .pipe(map((children: any) => new UrlSegmentGroup([], children)));
     }
 
-    return this.expandSegment(ngModule, segmentGroup, routes, segmentGroup.segments, outlet, true);
+    return this.expandSegment(injector, segmentGroup, routes, segmentGroup.segments, outlet, true);
   }
 
   // Recursively expand segment groups for all the child outlets
   private expandChildren(
-      ngModule: NgModuleRef<any>, routes: Route[],
+      injector: EnvironmentInjector, routes: Route[],
       segmentGroup: UrlSegmentGroup): Observable<{[name: string]: UrlSegmentGroup}> {
     // Expand outlets one at a time, starting with the primary outlet. We need to do it this way
     // because an absolute redirect from the primary outlet takes precedence.
@@ -167,7 +161,7 @@ class ApplyRedirects {
               // first, followed by routes for other outlets, which might match if they have an
               // empty path.
               const sortedRoutes = sortByMatchingOutlets(routes, childOutlet);
-              return this.expandSegmentGroup(ngModule, sortedRoutes, child, childOutlet)
+              return this.expandSegmentGroup(injector, sortedRoutes, child, childOutlet)
                   .pipe(map(s => ({segment: s, outlet: childOutlet})));
             }),
             scan(
@@ -181,13 +175,13 @@ class ApplyRedirects {
   }
 
   private expandSegment(
-      ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[],
+      injector: EnvironmentInjector, segmentGroup: UrlSegmentGroup, routes: Route[],
       segments: UrlSegment[], outlet: string,
       allowRedirects: boolean): Observable<UrlSegmentGroup> {
     return from(routes).pipe(
-        concatMap((r: any) => {
+        concatMap(r => {
           const expanded$ = this.expandSegmentAgainstRoute(
-              ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
+              injector, segmentGroup, routes, r, segments, outlet, allowRedirects);
           return expanded$.pipe(catchError((e: any) => {
             if (e instanceof NoMatch) {
               return of(null);
@@ -207,38 +201,38 @@ class ApplyRedirects {
   }
 
   private expandSegmentAgainstRoute(
-      ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
+      injector: EnvironmentInjector, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
       paths: UrlSegment[], outlet: string, allowRedirects: boolean): Observable<UrlSegmentGroup> {
     if (!isImmediateMatch(route, segmentGroup, paths, outlet)) {
       return noMatch(segmentGroup);
     }
 
     if (route.redirectTo === undefined) {
-      return this.matchSegmentAgainstRoute(ngModule, segmentGroup, route, paths, outlet);
+      return this.matchSegmentAgainstRoute(injector, segmentGroup, route, paths, outlet);
     }
 
     if (allowRedirects && this.allowRedirects) {
       return this.expandSegmentAgainstRouteUsingRedirect(
-          ngModule, segmentGroup, routes, route, paths, outlet);
+          injector, segmentGroup, routes, route, paths, outlet);
     }
 
     return noMatch(segmentGroup);
   }
 
   private expandSegmentAgainstRouteUsingRedirect(
-      ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
+      injector: EnvironmentInjector, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
       segments: UrlSegment[], outlet: string): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
       return this.expandWildCardWithParamsAgainstRouteUsingRedirect(
-          ngModule, routes, route, outlet);
+          injector, routes, route, outlet);
     }
 
     return this.expandRegularSegmentAgainstRouteUsingRedirect(
-        ngModule, segmentGroup, routes, route, segments, outlet);
+        injector, segmentGroup, routes, route, segments, outlet);
   }
 
   private expandWildCardWithParamsAgainstRouteUsingRedirect(
-      ngModule: NgModuleRef<any>, routes: Route[], route: Route,
+      injector: EnvironmentInjector, routes: Route[], route: Route,
       outlet: string): Observable<UrlSegmentGroup> {
     const newTree = this.applyRedirectCommands([], route.redirectTo!, {});
     if (route.redirectTo!.startsWith('/')) {
@@ -247,12 +241,12 @@ class ApplyRedirects {
 
     return this.lineralizeSegments(route, newTree).pipe(mergeMap((newSegments: UrlSegment[]) => {
       const group = new UrlSegmentGroup(newSegments, {});
-      return this.expandSegment(ngModule, group, routes, newSegments, outlet, false);
+      return this.expandSegment(injector, group, routes, newSegments, outlet, false);
     }));
   }
 
   private expandRegularSegmentAgainstRouteUsingRedirect(
-      ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
+      injector: EnvironmentInjector, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
       segments: UrlSegment[], outlet: string): Observable<UrlSegmentGroup> {
     const {matched, consumedSegments, remainingSegments, positionalParamSegments} =
         match(segmentGroup, route, segments);
@@ -266,19 +260,23 @@ class ApplyRedirects {
 
     return this.lineralizeSegments(route, newTree).pipe(mergeMap((newSegments: UrlSegment[]) => {
       return this.expandSegment(
-          ngModule, segmentGroup, routes, newSegments.concat(remainingSegments), outlet, false);
+          injector, segmentGroup, routes, newSegments.concat(remainingSegments), outlet, false);
     }));
   }
 
   private matchSegmentAgainstRoute(
-      ngModule: NgModuleRef<any>, rawSegmentGroup: UrlSegmentGroup, route: Route,
+      injector: EnvironmentInjector, rawSegmentGroup: UrlSegmentGroup, route: Route,
       segments: UrlSegment[], outlet: string): Observable<UrlSegmentGroup> {
     if (route.path === '**') {
+      // Only create the Route's `EnvironmentInjector` if it matches the attempted navigation
+      injector = getOrCreateRouteInjectorIfNeeded(route, injector);
       if (route.loadChildren) {
-        const loaded$ = route._loadedConfig ? of(route._loadedConfig) :
-                                              this.configLoader.load(ngModule.injector, route);
+        const loaded$ = route._loadedRoutes ?
+            of({routes: route._loadedRoutes, injector: route._loadedInjector}) :
+            this.configLoader.loadChildren(injector, route);
         return loaded$.pipe(map((cfg: LoadedRouterConfig) => {
-          route._loadedConfig = cfg;
+          route._loadedRoutes = cfg.routes;
+          route._loadedInjector = cfg.injector;
           return new UrlSegmentGroup(segments, {});
         }));
       }
@@ -286,101 +284,74 @@ class ApplyRedirects {
       return of(new UrlSegmentGroup(segments, {}));
     }
 
-    const {matched, consumedSegments, remainingSegments} = match(rawSegmentGroup, route, segments);
-    if (!matched) return noMatch(rawSegmentGroup);
+    return matchWithChecks(rawSegmentGroup, route, segments, injector, this.urlSerializer)
+        .pipe(
+            switchMap(({matched, consumedSegments, remainingSegments}) => {
+              if (!matched) return noMatch(rawSegmentGroup);
 
-    const childConfig$ = this.getChildConfig(ngModule, route, segments);
+              // If the route has an injector created from providers, we should start using that.
+              injector = route._injector ?? injector;
+              const childConfig$ = this.getChildConfig(injector, route, segments);
 
-    return childConfig$.pipe(mergeMap((routerConfig: LoadedRouterConfig) => {
-      const childModule = routerConfig.module;
-      const childConfig = routerConfig.routes;
+              return childConfig$.pipe(mergeMap((routerConfig: LoadedRouterConfig) => {
+                const childInjector = routerConfig.injector ?? injector;
+                const childConfig = routerConfig.routes;
 
-      const {segmentGroup: splitSegmentGroup, slicedSegments} =
-          split(rawSegmentGroup, consumedSegments, remainingSegments, childConfig);
-      // See comment on the other call to `split` about why this is necessary.
-      const segmentGroup =
-          new UrlSegmentGroup(splitSegmentGroup.segments, splitSegmentGroup.children);
+                const {segmentGroup: splitSegmentGroup, slicedSegments} =
+                    split(rawSegmentGroup, consumedSegments, remainingSegments, childConfig);
+                // See comment on the other call to `split` about why this is necessary.
+                const segmentGroup =
+                    new UrlSegmentGroup(splitSegmentGroup.segments, splitSegmentGroup.children);
 
-      if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
-        const expanded$ = this.expandChildren(childModule, childConfig, segmentGroup);
-        return expanded$.pipe(
-            map((children: any) => new UrlSegmentGroup(consumedSegments, children)));
-      }
+                if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
+                  const expanded$ = this.expandChildren(childInjector, childConfig, segmentGroup);
+                  return expanded$.pipe(
+                      map((children: any) => new UrlSegmentGroup(consumedSegments, children)));
+                }
 
-      if (childConfig.length === 0 && slicedSegments.length === 0) {
-        return of(new UrlSegmentGroup(consumedSegments, {}));
-      }
+                if (childConfig.length === 0 && slicedSegments.length === 0) {
+                  return of(new UrlSegmentGroup(consumedSegments, {}));
+                }
 
-      const matchedOnOutlet = getOutlet(route) === outlet;
-      const expanded$ = this.expandSegment(
-          childModule, segmentGroup, childConfig, slicedSegments,
-          matchedOnOutlet ? PRIMARY_OUTLET : outlet, true);
-      return expanded$.pipe(
-          map((cs: UrlSegmentGroup) =>
-                  new UrlSegmentGroup(consumedSegments.concat(cs.segments), cs.children)));
-    }));
+                const matchedOnOutlet = getOutlet(route) === outlet;
+                const expanded$ = this.expandSegment(
+                    childInjector, segmentGroup, childConfig, slicedSegments,
+                    matchedOnOutlet ? PRIMARY_OUTLET : outlet, true);
+                return expanded$.pipe(
+                    map((cs: UrlSegmentGroup) => new UrlSegmentGroup(
+                            consumedSegments.concat(cs.segments), cs.children)));
+              }));
+            }),
+        );
   }
 
-  private getChildConfig(ngModule: NgModuleRef<any>, route: Route, segments: UrlSegment[]):
+  private getChildConfig(injector: EnvironmentInjector, route: Route, segments: UrlSegment[]):
       Observable<LoadedRouterConfig> {
     if (route.children) {
       // The children belong to the same module
-      return of(new LoadedRouterConfig(route.children, ngModule));
+      return of({routes: route.children, injector});
     }
 
     if (route.loadChildren) {
       // lazy children belong to the loaded module
-      if (route._loadedConfig !== undefined) {
-        return of(route._loadedConfig);
+      if (route._loadedRoutes !== undefined) {
+        return of({routes: route._loadedRoutes, injector: route._loadedInjector});
       }
 
-      return this.runCanLoadGuards(ngModule.injector, route, segments)
+      return runCanLoadGuards(injector, route, segments, this.urlSerializer)
           .pipe(mergeMap((shouldLoadResult: boolean) => {
             if (shouldLoadResult) {
-              return this.configLoader.load(ngModule.injector, route)
-                  .pipe(map((cfg: LoadedRouterConfig) => {
-                    route._loadedConfig = cfg;
-                    return cfg;
+              return this.configLoader.loadChildren(injector, route)
+                  .pipe(tap((cfg: LoadedRouterConfig) => {
+                    route._loadedRoutes = cfg.routes;
+                    route._loadedInjector = cfg.injector;
                   }));
             }
             return canLoadFails(route);
           }));
     }
 
-    return of(new LoadedRouterConfig([], ngModule));
-  }
-
-  private runCanLoadGuards(moduleInjector: Injector, route: Route, segments: UrlSegment[]):
-      Observable<boolean> {
-    const canLoad = route.canLoad;
-    if (!canLoad || canLoad.length === 0) return of(true);
-
-    const canLoadObservables = canLoad.map((injectionToken: any) => {
-      const guard = moduleInjector.get(injectionToken);
-      let guardVal;
-      if (isCanLoad(guard)) {
-        guardVal = guard.canLoad(route, segments);
-      } else if (isFunction<CanLoadFn>(guard)) {
-        guardVal = guard(route, segments);
-      } else {
-        throw new Error('Invalid CanLoad guard');
-      }
-      return wrapIntoObservable(guardVal);
-    });
-
-    return of(canLoadObservables)
-        .pipe(
-            prioritizedGuardValue(),
-            tap((result: UrlTree|boolean) => {
-              if (!isUrlTree(result)) return;
-
-              const error: Error&{url?: UrlTree} = navigationCancelingError(
-                  `Redirecting to "${this.urlSerializer.serialize(result)}"`);
-              error.url = result;
-              throw error;
-            }),
-            map(result => result === true),
-        );
+    return of({routes: [], injector});
   }
 
   private lineralizeSegments(route: Route, urlTree: UrlTree): Observable<UrlSegment[]> {
@@ -471,40 +442,4 @@ class ApplyRedirects {
     }
     return redirectToUrlSegment;
   }
-}
-
-/**
- * When possible, merges the primary outlet child into the parent `UrlSegmentGroup`.
- *
- * When a segment group has only one child which is a primary outlet, merges that child into the
- * parent. That is, the child segment group's segments are merged into the `s` and the child's
- * children become the children of `s`. Think of this like a 'squash', merging the child segment
- * group into the parent.
- */
-function mergeTrivialChildren(s: UrlSegmentGroup): UrlSegmentGroup {
-  if (s.numberOfChildren === 1 && s.children[PRIMARY_OUTLET]) {
-    const c = s.children[PRIMARY_OUTLET];
-    return new UrlSegmentGroup(s.segments.concat(c.segments), c.children);
-  }
-
-  return s;
-}
-
-/**
- * Recursively merges primary segment children into their parents and also drops empty children
- * (those which have no segments and no children themselves). The latter prevents serializing a
- * group into something like `/a(aux:)`, where `aux` is an empty child segment.
- */
-function squashSegmentGroup(segmentGroup: UrlSegmentGroup): UrlSegmentGroup {
-  const newChildren = {} as any;
-  for (const childOutlet of Object.keys(segmentGroup.children)) {
-    const child = segmentGroup.children[childOutlet];
-    const childCandidate = squashSegmentGroup(child);
-    // don't add empty children
-    if (childCandidate.segments.length > 0 || childCandidate.hasChildren()) {
-      newChildren[childOutlet] = childCandidate;
-    }
-  }
-  const s = new UrlSegmentGroup(segmentGroup.segments, newChildren);
-  return mergeTrivialChildren(s);
 }

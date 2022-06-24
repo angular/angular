@@ -9,6 +9,8 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     INVALID_BANANA_IN_BOX = "invalidBananaInBox",
     // (undocumented)
+    MISSING_CONTROL_FLOW_DIRECTIVE = "missingControlFlowDirective",
+    // (undocumented)
     NULLISH_COALESCING_NOT_NULLABLE = "nullishCoalescingNotNullable"
 }
 

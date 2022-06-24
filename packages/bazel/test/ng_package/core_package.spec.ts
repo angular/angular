@@ -9,6 +9,7 @@
 import {runfiles} from '@bazel/runfiles';
 import * as path from 'path';
 import * as shx from 'shelljs';
+
 import {matchesObjectWithOrder} from './test_utils';
 
 // Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
@@ -58,12 +59,12 @@ describe('@angular/core ng_package', () => {
           esm2020: `./esm2020/core.mjs`,
           fesm2020: `./fesm2020/core.mjs`,
           fesm2015: `./fesm2015/core.mjs`,
-          typings: `./core.d.ts`,
+          typings: `./index.d.ts`,
           exports: matchesObjectWithOrder({
             './schematics/*': {default: './schematics/*.js'},
             './package.json': {default: './package.json'},
             '.': {
-              types: './core.d.ts',
+              types: './index.d.ts',
               esm2020: './esm2020/core.mjs',
               es2020: './fesm2020/core.mjs',
               es2015: './fesm2015/core.mjs',
@@ -71,7 +72,7 @@ describe('@angular/core ng_package', () => {
               default: './fesm2020/core.mjs'
             },
             './testing': {
-              types: './testing/testing.d.ts',
+              types: './testing/index.d.ts',
               esm2020: './esm2020/testing/testing.mjs',
               es2020: './fesm2020/testing.mjs',
               es2015: './fesm2015/testing.mjs',
@@ -95,10 +96,10 @@ describe('@angular/core ng_package', () => {
 
     describe('typescript support', () => {
       it('should not have amd module names', () => {
-        expect(shx.cat('core.d.ts')).not.toContain('<amd-module name');
+        expect(shx.cat('index.d.ts')).not.toContain('<amd-module name');
       });
       it('should have an index d.ts file', () => {
-        expect(shx.cat('core.d.ts')).toContain('export declare');
+        expect(shx.cat('index.d.ts')).toContain('export declare');
       });
 
       // The `r3_symbols` file was needed for View Engine ngcc processing.
@@ -152,31 +153,8 @@ describe('@angular/core ng_package', () => {
   });
 
   describe('secondary entry-point', () => {
-    describe('package.json', () => {
-      const packageJson = p`testing/package.json`;
-
-      it('should have a package.json file', () => {
-        expect(shx.grep('"name":', packageJson)).toContain(`@angular/core/testing`);
-      });
-
-      it('should have its module resolution mappings defined in the nested package.json', () => {
-        const packageJson = p`testing/package.json`;
-        const data = JSON.parse(shx.cat(packageJson)) as any;
-
-        expect(data).toEqual(jasmine.objectContaining({
-          module: `../fesm2015/testing.mjs`,
-          es2020: `../fesm2020/testing.mjs`,
-          esm2020: `../esm2020/testing/testing.mjs`,
-          fesm2020: `../fesm2020/testing.mjs`,
-          fesm2015: `../fesm2015/testing.mjs`,
-          typings: `./testing.d.ts`,
-        }));
-        expect(data.exports).toBeUndefined();
-      });
-    });
-
     describe('typings', () => {
-      const typingsFile = p`testing/testing.d.ts`;
+      const typingsFile = p`testing/index.d.ts`;
       it('should have a typings file', () => {
         expect(shx.cat(typingsFile)).toContain('export declare');
       });

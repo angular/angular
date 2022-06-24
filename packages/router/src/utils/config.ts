@@ -6,20 +6,63 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {createEnvironmentInjector, EnvironmentInjector, Type, ɵisStandalone as isStandalone} from '@angular/core';
+
 import {EmptyOutletComponent} from '../components/empty_outlet';
 import {Route, Routes} from '../models';
+import {ActivatedRouteSnapshot} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
-export function validateConfig(config: Routes, parentPath: string = ''): void {
+/**
+ * Creates an `EnvironmentInjector` if the `Route` has providers and one does not already exist
+ * and returns the injector. Otherwise, if the `Route` does not have `providers`, returns the
+ * `currentInjector`.
+ *
+ * @param route The route that might have providers
+ * @param currentInjector The parent injector of the `Route`
+ */
+export function getOrCreateRouteInjectorIfNeeded(
+    route: Route, currentInjector: EnvironmentInjector) {
+  if (route.providers && !route._injector) {
+    route._injector =
+        createEnvironmentInjector(route.providers, currentInjector, `Route: ${route.path}`);
+  }
+  return route._injector ?? currentInjector;
+}
+
+export function getLoadedRoutes(route: Route): Route[]|undefined {
+  return route._loadedRoutes;
+}
+
+export function getLoadedInjector(route: Route): EnvironmentInjector|undefined {
+  return route._loadedInjector;
+}
+export function getLoadedComponent(route: Route): Type<unknown>|undefined {
+  return route._loadedComponent;
+}
+
+export function getProvidersInjector(route: Route): EnvironmentInjector|undefined {
+  return route._injector;
+}
+
+export function validateConfig(
+    config: Routes, parentPath: string = '', requireStandaloneComponents = false): void {
   // forEach doesn't iterate undefined values
   for (let i = 0; i < config.length; i++) {
     const route: Route = config[i];
     const fullPath: string = getFullPath(parentPath, route);
-    validateNode(route, fullPath);
+    validateNode(route, fullPath, requireStandaloneComponents);
   }
 }
 
-function validateNode(route: Route, fullPath: string): void {
+export function assertStandalone(fullPath: string, component: Type<unknown>|undefined) {
+  if (component && !isStandalone(component)) {
+    throw new Error(
+        `Invalid configuration of route '${fullPath}'. The component must be standalone.`);
+  }
+}
+
+function validateNode(route: Route, fullPath: string, requireStandaloneComponents: boolean): void {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     if (!route) {
       throw new Error(`
@@ -37,7 +80,7 @@ function validateNode(route: Route, fullPath: string): void {
     if (Array.isArray(route)) {
       throw new Error(`Invalid configuration of route '${fullPath}': Array cannot be specified`);
     }
-    if (!route.component && !route.children && !route.loadChildren &&
+    if (!route.component && !route.loadComponent && !route.children && !route.loadChildren &&
         (route.outlet && route.outlet !== PRIMARY_OUTLET)) {
       throw new Error(`Invalid configuration of route '${
           fullPath}': a componentless route without children or loadChildren cannot have a named outlet set`);
@@ -54,9 +97,13 @@ function validateNode(route: Route, fullPath: string): void {
       throw new Error(`Invalid configuration of route '${
           fullPath}': children and loadChildren cannot be used together`);
     }
-    if (route.redirectTo && route.component) {
+    if (route.redirectTo && (route.component || route.loadComponent)) {
       throw new Error(`Invalid configuration of route '${
-          fullPath}': redirectTo and component cannot be used together`);
+          fullPath}': redirectTo and component/loadComponent cannot be used together`);
+    }
+    if (route.component && route.loadComponent) {
+      throw new Error(`Invalid configuration of route '${
+          fullPath}': component and loadComponent cannot be used together`);
     }
     if (route.redirectTo && route.canActivate) {
       throw new Error(
@@ -68,9 +115,10 @@ function validateNode(route: Route, fullPath: string): void {
       throw new Error(
           `Invalid configuration of route '${fullPath}': path and matcher cannot be used together`);
     }
-    if (route.redirectTo === void 0 && !route.component && !route.children && !route.loadChildren) {
+    if (route.redirectTo === void 0 && !route.component && !route.loadComponent &&
+        !route.children && !route.loadChildren) {
       throw new Error(`Invalid configuration of route '${
-          fullPath}'. One of the following must be provided: component, redirectTo, children or loadChildren`);
+          fullPath}'. One of the following must be provided: component, loadComponent, redirectTo, children or loadChildren`);
     }
     if (route.path === void 0 && route.matcher === void 0) {
       throw new Error(`Invalid configuration of route '${
@@ -86,9 +134,12 @@ function validateNode(route: Route, fullPath: string): void {
       throw new Error(`Invalid configuration of route '{path: "${fullPath}", redirectTo: "${
           route.redirectTo}"}': please provide 'pathMatch'. ${exp}`);
     }
+    if (requireStandaloneComponents) {
+      assertStandalone(fullPath, route.component);
+    }
   }
   if (route.children) {
-    validateConfig(route.children, fullPath);
+    validateConfig(route.children, fullPath, requireStandaloneComponents);
   }
 }
 
@@ -113,7 +164,8 @@ function getFullPath(parentPath: string, currentRoute: Route): string {
 export function standardizeConfig(r: Route): Route {
   const children = r.children && r.children.map(standardizeConfig);
   const c = children ? {...r, children} : {...r};
-  if (!c.component && (children || c.loadChildren) && (c.outlet && c.outlet !== PRIMARY_OUTLET)) {
+  if ((!c.component && !c.loadComponent) && (children || c.loadChildren) &&
+      (c.outlet && c.outlet !== PRIMARY_OUTLET)) {
     c.component = EmptyOutletComponent;
   }
   return c;
@@ -132,4 +184,40 @@ export function sortByMatchingOutlets(routes: Routes, outletName: string): Route
   const sortedConfig = routes.filter(r => getOutlet(r) === outletName);
   sortedConfig.push(...routes.filter(r => getOutlet(r) !== outletName));
   return sortedConfig;
+}
+
+/**
+ * Gets the first injector in the snapshot's parent tree.
+ *
+ * If the `Route` has a static list of providers, the returned injector will be the one created from
+ * those. If it does not exist, the returned injector may come from the parents, which may be from a
+ * loaded config or their static providers.
+ *
+ * Returns `null` if there is neither this nor any parents have a stored injector.
+ *
+ * Generally used for retrieving the injector to use for getting tokens for guards/resolvers and
+ * also used for getting the correct injector to use for creating components.
+ */
+export function getClosestRouteInjector(snapshot: ActivatedRouteSnapshot): EnvironmentInjector|
+    null {
+  if (!snapshot) return null;
+
+  // If the current route has its own injector, which is created from the static providers on the
+  // route itself, we should use that. Otherwise, we start at the parent since we do not want to
+  // include the lazy loaded injector from this route.
+  if (snapshot.routeConfig?._injector) {
+    return snapshot.routeConfig._injector;
+  }
+
+  for (let s = snapshot.parent; s; s = s.parent) {
+    const route = s.routeConfig;
+    // Note that the order here is important. `_loadedInjector` stored on the route with
+    // `loadChildren: () => NgModule` so it applies to child routes with priority. The `_injector`
+    // is created from the static providers on that parent route, so it applies to the children as
+    // well, but only if there is no lazy loaded NgModuleRef injector.
+    if (route?._loadedInjector) return route._loadedInjector;
+    if (route?._injector) return route._injector;
+  }
+
+  return null;
 }

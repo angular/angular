@@ -8,7 +8,6 @@
     }
   }
 
-
 <h4>Switch with *ngFor repeated switchCases using &lt;ng-container&gt;</h4>
 <!-- #docregion NgSwitch-ngFor -->
 <div [ngSwitch]="hero.id">

@@ -756,6 +756,8 @@ describe('AppComponent', () => {
         it('should clear "only" the search query param from the URL', () => {
           // Mock out the current state of the URL query params
           locationService.search.and.returnValue({ a: 'some-A', b: 'some-B', search: 'some-C'});
+          // the clearing only happens when some results are actually being shown
+          component.showSearchResults = true;
           // docViewer is a commonly-clicked, non-search element
           docViewer.click();
           // Check that the query params were updated correctly
@@ -847,11 +849,20 @@ describe('AppComponent', () => {
           expect(component.showSearchResults).toBe(false);
         });
 
-        it('should re-run the search when the search box regains focus', () => {
-          const doSearchSpy = spyOn(component, 'doSearch');
+        it('should re-run the search when the search box regains focus and there are no results being shown', () => {
+          const searchService = TestBed.inject(SearchService) as Partial<SearchService> as MockSearchService;
+          component.showSearchResults = false;
           const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent));
           searchBox.triggerEventHandler('onFocus', 'some query');
-          expect(doSearchSpy).toHaveBeenCalledWith('some query');
+          expect(searchService.search).toHaveBeenCalledWith('some query');
+        });
+
+        it('should not re-run the search when the search box regains focus and there are results being shown', () => {
+          const searchService = TestBed.inject(SearchService) as Partial<SearchService> as MockSearchService;
+          component.showSearchResults = true;
+          const searchBox = fixture.debugElement.query(By.directive(SearchBoxComponent));
+          searchBox.triggerEventHandler('onFocus', 'some query');
+          expect(searchService.search).not.toHaveBeenCalled();
         });
       });
     });

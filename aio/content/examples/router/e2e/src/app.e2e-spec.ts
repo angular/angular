@@ -2,7 +2,7 @@ import { browser, element, by, ExpectedConditions as EC } from 'protractor';
 
 const numDashboardTabs = 5;
 const numCrises = 4;
-const numHeroes = 10;
+const numHeroes = 9;
 
 describe('Router', () => {
 

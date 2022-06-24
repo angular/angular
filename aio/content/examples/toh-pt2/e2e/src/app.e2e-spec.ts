@@ -54,7 +54,7 @@ function initialPageTests() {
 
   it('has the right number of heroes', async () => {
     const page = getPageElts();
-    expect(await page.heroes.count()).toEqual(10);
+    expect(await page.heroes.count()).toEqual(9);
   });
 
   it('has no selected hero and no hero details', async () => {

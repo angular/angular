@@ -1,5 +1,5 @@
 consts: function () {
-  __i18nMsg__('Hello', [], {})
+  __i18nMsg__('Hello', [], {}, {})
   return [
     ["title", $i18n_0$]
   ];

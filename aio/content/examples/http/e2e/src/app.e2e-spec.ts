@@ -54,7 +54,7 @@ describe('Http Tests', () => {
   describe('Heroes', () => {
     it('retrieves the list of heroes at startup', async () => {
       expect(await page.heroesListItems.count()).toBe(4);
-      expect(await page.heroesListItems.get(0).getText()).toContain('Dr Nice');
+      expect(await page.heroesListItems.get(0).getText()).toContain('Dr. Nice');
       await checkLogForMessage('GET "api/heroes"');
     });
 

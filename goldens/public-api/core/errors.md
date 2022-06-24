@@ -17,7 +17,7 @@ export class RuntimeError<T extends number = RuntimeErrorCode> extends Error {
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
-    ALREADY_DESTROYED_PLATFORM = 404,
+    APPLICATION_REF_ALREADY_DESTROYED = 406,
     // (undocumented)
     ASYNC_INITIALIZERS_STILL_RUNNING = 405,
     // (undocumented)
@@ -30,6 +30,8 @@ export const enum RuntimeErrorCode {
     EXPORT_NOT_FOUND = -301,
     // (undocumented)
     EXPRESSION_CHANGED_AFTER_CHECKED = -100,
+    // (undocumented)
+    IMPORT_PROVIDERS_FROM_STANDALONE = 800,
     // (undocumented)
     INJECTOR_ALREADY_DESTROYED = 205,
     // (undocumented)
@@ -45,7 +47,15 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_INJECTION_TOKEN = 204,
     // (undocumented)
-    MISSING_INJECTION_CONTEXT = 203,
+    MISSING_GENERATED_DEF = 906,
+    // (undocumented)
+    MISSING_INJECTION_CONTEXT = -203,
+    // (undocumented)
+    MISSING_INJECTION_TOKEN = 208,
+    // (undocumented)
+    MISSING_LOCALE_DATA = 701,
+    // (undocumented)
+    MISSING_ZONEJS = 908,
     // (undocumented)
     MULTIPLE_COMPONENTS_MATCH = -300,
     // (undocumented)
@@ -55,13 +65,21 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     PIPE_NOT_FOUND = -302,
     // (undocumented)
+    PLATFORM_ALREADY_DESTROYED = 404,
+    // (undocumented)
     PLATFORM_NOT_FOUND = 401,
+    // (undocumented)
+    PROVIDER_IN_WRONG_CONTEXT = 207,
     // (undocumented)
     PROVIDER_NOT_FOUND = -201,
     // (undocumented)
     RECURSIVE_APPLICATION_REF_TICK = 101,
     // (undocumented)
     TEMPLATE_STRUCTURE_ERROR = 305,
+    // (undocumented)
+    TYPE_IS_NOT_STANDALONE = 907,
+    // (undocumented)
+    UNEXPECTED_ZONE_STATE = 909,
     // (undocumented)
     UNKNOWN_BINDING = 303,
     // (undocumented)

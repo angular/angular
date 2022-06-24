@@ -5,7 +5,7 @@ function MyComponent_div_0_Template(rf, ctx) {
 }
 …
 consts: function() {
-  __i18nMsg__('introduction', [], {meaning: 'm', desc: 'd'})
+  __i18nMsg__('introduction', [], {}, {meaning: 'm', desc: 'd'})
   return [
     ["id", "static", "title", $i18n_0$, __AttributeMarker.Template__, "ngIf"],
     ["id", "static", "title", $i18n_0$]

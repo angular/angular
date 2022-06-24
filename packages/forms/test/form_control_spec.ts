@@ -817,7 +817,7 @@ describe('FormControl', () => {
     });
 
     it('should reset to the initial value if specified in FormControlOptions', () => {
-      const c2 = new FormControl('foo', {initialValueIsDefault: true});
+      const c2 = new FormControl('foo', {nonNullable: true});
       expect(c2.value).toBe('foo');
       expect(c2.defaultValue).toBe('foo');
 
@@ -829,7 +829,7 @@ describe('FormControl', () => {
       expect(c2.value).toBe('foo');
       expect(c2.defaultValue).toBe('foo');
 
-      const c3 = new FormControl('foo', {initialValueIsDefault: false});
+      const c3 = new FormControl('foo', {nonNullable: false});
       expect(c3.value).toBe('foo');
       expect(c3.defaultValue).toBe(null);
 
@@ -858,7 +858,7 @@ describe('FormControl', () => {
 
     it('should not alter the disabled state when resetting, even if a default value is provided',
        () => {
-         const c2 = new FormControl({value: 'foo', disabled: true}, {initialValueIsDefault: true});
+         const c2 = new FormControl({value: 'foo', disabled: true}, {nonNullable: true});
          expect(c2.value).toBe('foo');
          expect(c2.defaultValue).toBe('foo');
          expect(c2.disabled).toBe(true);

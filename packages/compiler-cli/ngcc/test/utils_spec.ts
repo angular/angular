@@ -8,10 +8,11 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom as _abs} from '../../src/ngtsc/file_system';
+import {absoluteFrom as _abs, FileSystem, getFileSystem} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {KnownDeclaration} from '../../src/ngtsc/reflection';
-import {FactoryMap, getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, isRelativePath, stripExtension} from '../src/utils';
+import {loadTestFiles} from '../../src/ngtsc/testing';
+import {FactoryMap, getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, isRelativePath, loadJson, loadSecondaryEntryPointInfoForApfV14, stripExtension} from '../src/utils';
 
 describe('FactoryMap', () => {
   it('should return an existing value', () => {
@@ -238,5 +239,151 @@ describe('stripExtension()', () => {
     expect(stripExtension('foo')).toBe('foo');
     expect(stripExtension('/foo/bar')).toBe('/foo/bar');
     expect(stripExtension('/fo-o/b_ar')).toBe('/fo-o/b_ar');
+  });
+});
+
+runInEachFileSystem(() => {
+  let fs: FileSystem;
+
+  beforeEach(() => fs = getFileSystem());
+
+  describe('loadJson()', () => {
+    it('should load a `.json` file', () => {
+      const jsonData = {foo: 'yes', bar: 'sure'};
+      loadTestFiles([
+        {
+          name: _abs('/foo/bar.json'),
+          contents: `${JSON.stringify(jsonData)}\n`,
+        },
+      ]);
+
+      expect(loadJson(fs, _abs('/foo/bar.json'))).toEqual(jsonData);
+    });
+
+    it('should return `null` if it fails to read the `.json` file', () => {
+      expect(loadJson(fs, _abs('/does/not/exist.json'))).toBeNull();
+    });
+
+    it('should return `null` if it fails to parse the `.json` file', () => {
+      loadTestFiles([
+        {
+          name: _abs('/foo/bar.txt'),
+          contents: '{This is not valid JSON.}',
+        },
+      ]);
+
+      expect(loadJson(fs, _abs('/foo/bar.json'))).toBeNull();
+    });
+  });
+});
+
+runInEachFileSystem(() => {
+  let fs: FileSystem;
+
+  beforeEach(() => fs = getFileSystem());
+
+  describe('loadSecondaryEntryPointInfoForApfV14()', () => {
+    it('should return `null` if the primary `package.json` failed to be loaded', () => {
+      expect(loadSecondaryEntryPointInfoForApfV14(fs, null, _abs('/foo'), _abs('/foo/bar')))
+          .toBe(null);
+    });
+
+    it('should return `null` if the primary `package.json` has no `exports` property', () => {
+      const primaryPackageJson = {
+        name: 'some-package',
+        version: '1.33.7',
+        main: './index.js',
+      };
+
+      expect(loadSecondaryEntryPointInfoForApfV14(
+                 fs, primaryPackageJson, _abs('/foo'), _abs('/foo/bar')))
+          .toBe(null);
+    });
+
+    it('should return `null` if the primary `package.json`\'s `exports` property is a string',
+       () => {
+         const primaryPackageJson = {
+           name: 'some-package',
+           exports: './index.js',
+         };
+
+         expect(loadSecondaryEntryPointInfoForApfV14(
+                    fs, primaryPackageJson, _abs('/foo'), _abs('/foo/bar')))
+             .toBe(null);
+       });
+
+    it('should return `null` if the primary `package.json`\'s `exports` property is a string array',
+       () => {
+         const primaryPackageJson = {
+           name: 'some-package',
+           exports: [
+             './foo.js',
+             './bar.js',
+           ],
+         };
+
+         expect(loadSecondaryEntryPointInfoForApfV14(
+                    fs, primaryPackageJson, _abs('/foo'), _abs('/foo/bar')))
+             .toBe(null);
+       });
+
+    it('should return `null` if there is no info for the specified entry-point', () => {
+      const primaryPackageJson = {
+        name: 'some-package',
+        exports: {
+          './baz': {
+            main: './baz/index.js',
+          },
+        },
+      };
+
+      expect(loadSecondaryEntryPointInfoForApfV14(
+                 fs, primaryPackageJson, _abs('/foo'), _abs('/foo/bar')))
+          .toBe(null);
+    });
+
+    it('should return `null` if the entry-point info is a string', () => {
+      const primaryPackageJson = {
+        name: 'some-package',
+        exports: {
+          './bar': './bar/index.js',
+        },
+      };
+
+      expect(loadSecondaryEntryPointInfoForApfV14(
+                 fs, primaryPackageJson, _abs('/foo'), _abs('/foo/bar')))
+          .toBe(null);
+    });
+
+    it('should return `null` if the entry-point info is a string array', () => {
+      const primaryPackageJson = {
+        name: 'some-package',
+        exports: {
+          './bar': [
+            './bar/a.js',
+            './bar/b.js',
+          ],
+        },
+      };
+
+      expect(loadSecondaryEntryPointInfoForApfV14(
+                 fs, primaryPackageJson, _abs('/foo'), _abs('/foo/bar')))
+          .toBe(null);
+    });
+
+    it('should return the entry-point info if it exists and is an object', () => {
+      const primaryPackageJson = {
+        name: 'some-package',
+        exports: {
+          './bar': {
+            main: './bar/index.js',
+          },
+        },
+      };
+
+      expect(loadSecondaryEntryPointInfoForApfV14(
+                 fs, primaryPackageJson, _abs('/foo'), _abs('/foo/bar')))
+          .toEqual({main: './bar/index.js'});
+    });
   });
 });

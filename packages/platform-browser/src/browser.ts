@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, XhrFactory, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationModule, createPlatformFactory, ErrorHandler, Inject, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, RendererFactory2, Sanitizer, SkipSelf, StaticProvider, Testability, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵsetDocument} from '@angular/core';
+import {APP_ID, ApplicationModule, ApplicationRef, createPlatformFactory, ErrorHandler, ImportedNgModuleProviders, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, SkipSelf, StaticProvider, Testability, TestabilityRegistry, Type, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵinternalBootstrapApplication as internalBootstrapApplication, ɵsetDocument, ɵTESTABILITY as TESTABILITY, ɵTESTABILITY_GETTER as TESTABILITY_GETTER} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {SERVER_TRANSITION_PROVIDERS, TRANSITION_ID} from './browser/server-transition';
@@ -18,11 +18,114 @@ import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
-import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
+
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
+
+/**
+ * Set of config options available during the bootstrap operation via `bootstrapApplication` call.
+ *
+ * @developerPreview
+ * @publicApi
+ */
+export interface ApplicationConfig {
+  /**
+   * List of providers that should be available to the root component and all its children.
+   */
+  providers: Array<Provider|ImportedNgModuleProviders>;
+}
+
+/**
+ * Bootstraps an instance of an Angular application and renders a standalone component as the
+ * application's root component. More information about standalone components can be found in [this
+ * guide](guide/standalone-components).
+ *
+ * @usageNotes
+ * The root component passed into this function *must* be a standalone one (should have the
+ * `standalone: true` flag in the `@Component` decorator config).
+ *
+ * ```typescript
+ * @Component({
+ *   standalone: true,
+ *   template: 'Hello world!'
+ * })
+ * class RootComponent {}
+ *
+ * const appRef: ApplicationRef = await bootstrapApplication(RootComponent);
+ * ```
+ *
+ * You can add the list of providers that should be available in the application injector by
+ * specifying the `providers` field in an object passed as the second argument:
+ *
+ * ```typescript
+ * await bootstrapApplication(RootComponent, {
+ *   providers: [
+ *     {provide: BACKEND_URL, useValue: 'https://yourdomain.com/api'}
+ *   ]
+ * });
+ * ```
+ *
+ * The `importProvidersFrom` helper method can be used to collect all providers from any
+ * existing NgModule (and transitively from all NgModules that it imports):
+ *
+ * ```typescript
+ * await bootstrapApplication(RootComponent, {
+ *   providers: [
+ *     importProvidersFrom(SomeNgModule)
+ *   ]
+ * });
+ * ```
+ *
+ * Note: the `bootstrapApplication` method doesn't include [Testability](api/core/Testability) by
+ * default. You can add [Testability](api/core/Testability) by getting the list of necessary
+ * providers using `provideProtractorTestingSupport()` function and adding them into the `providers`
+ * array, for example:
+ *
+ * ```typescript
+ * import {provideProtractorTestingSupport} from '@angular/platform-browser';
+ *
+ * await bootstrapApplication(RootComponent, {providers: [provideProtractorTestingSupport()]});
+ * ```
+ *
+ * @param rootComponent A reference to a standalone component that should be rendered.
+ * @param options Extra configuration for the bootstrap operation, see `ApplicationConfig` for
+ *     additional info.
+ * @returns A promise that returns an `ApplicationRef` instance once resolved.
+ *
+ * @publicApi
+ * @developerPreview
+ */
+export function bootstrapApplication(
+    rootComponent: Type<unknown>, options?: ApplicationConfig): Promise<ApplicationRef> {
+  return internalBootstrapApplication({
+    rootComponent,
+    appProviders: [
+      ...BROWSER_MODULE_PROVIDERS,
+      ...(options?.providers ?? []),
+    ],
+    platformProviders: INTERNAL_BROWSER_PLATFORM_PROVIDERS,
+  });
+}
+
+/**
+ * Returns a set of providers required to setup [Testability](api/core/Testability) for an
+ * application bootstrapped using the `bootstrapApplication` function. The set of providers is
+ * needed to support testing an application with Protractor (which relies on the Testability APIs
+ * to be present).
+ *
+ * @returns An array of providers required to setup Testability for an application and make it
+ *     available for testing using Protractor.
+ *
+ * @developerPreview
+ * @publicApi
+ */
+export function provideProtractorTestingSupport(): Provider[] {
+  // Return a copy to prevent changes to the original array in case any in-place
+  // alterations are performed to the `provideProtractorTestingSupport` call results in app code.
+  return [...TESTABILITY_PROVIDERS];
+}
 
 export function initDomAdapter() {
   BrowserDomAdapter.makeCurrent();
-  BrowserGetTestability.init();
 }
 
 export function errorHandler(): ErrorHandler {
@@ -50,17 +153,42 @@ export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
 export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef =
     createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
 
-export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
-  {provide: INJECTOR_SCOPE, useValue: 'root'},
-  {provide: ErrorHandler, useFactory: errorHandler, deps: []},
+/**
+ * Internal marker to signal whether providers from the `BrowserModule` are already present in DI.
+ * This is needed to avoid loading `BrowserModule` providers twice. We can't rely on the
+ * `BrowserModule` presence itself, since the standalone-based bootstrap just imports
+ * `BrowserModule` providers without referencing the module itself.
+ */
+const BROWSER_MODULE_PROVIDERS_MARKER =
+    new InjectionToken(NG_DEV_MODE ? 'BrowserModule Providers Marker' : '');
+
+const TESTABILITY_PROVIDERS = [
   {
+    provide: TESTABILITY_GETTER,
+    useClass: BrowserGetTestability,
+    deps: [],
+  },
+  {
+    provide: TESTABILITY,
+    useClass: Testability,
+    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER]
+  },
+  {
+    provide: Testability,  // Also provide as `Testability` for backwards-compatibility.
+    useClass: Testability,
+    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER]
+  }
+];
+
+const BROWSER_MODULE_PROVIDERS: Provider[] = [
+  {provide: INJECTOR_SCOPE, useValue: 'root'},
+  {provide: ErrorHandler, useFactory: errorHandler, deps: []}, {
     provide: EVENT_MANAGER_PLUGINS,
     useClass: DomEventsPlugin,
     multi: true,
     deps: [DOCUMENT, NgZone, PLATFORM_ID]
   },
-  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]},
-  {
+  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]}, {
     provide: DomRendererFactory2,
     useClass: DomRendererFactory2,
     deps: [EventManager, DomSharedStylesHost, APP_ID]
@@ -68,9 +196,9 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
   {provide: DomSharedStylesHost, useClass: DomSharedStylesHost, deps: [DOCUMENT]},
-  {provide: Testability, useClass: Testability, deps: [NgZone]},
   {provide: EventManager, useClass: EventManager, deps: [EVENT_MANAGER_PLUGINS, NgZone]},
   {provide: XhrFactory, useClass: BrowserXhr, deps: []},
+  NG_DEV_MODE ? {provide: BROWSER_MODULE_PROVIDERS_MARKER, useValue: true} : []
 ];
 
 /**
@@ -82,12 +210,20 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
  *
  * @publicApi
  */
-@NgModule({providers: BROWSER_MODULE_PROVIDERS, exports: [CommonModule, ApplicationModule]})
+@NgModule({
+  providers: [
+    ...BROWSER_MODULE_PROVIDERS,  //
+    ...TESTABILITY_PROVIDERS
+  ],
+  exports: [CommonModule, ApplicationModule],
+})
 export class BrowserModule {
-  constructor(@Optional() @SkipSelf() @Inject(BrowserModule) parentModule: BrowserModule|null) {
-    if (parentModule) {
+  constructor(@Optional() @SkipSelf() @Inject(BROWSER_MODULE_PROVIDERS_MARKER)
+              providersAlreadyPresent: boolean|null) {
+    if (NG_DEV_MODE && providersAlreadyPresent) {
       throw new Error(
-          `BrowserModule has already been loaded. If you need access to common directives such as NgIf and NgFor from a lazy loaded module, import CommonModule instead.`);
+          `Providers from the \`BrowserModule\` have already been loaded. If you need access ` +
+          `to common directives such as NgIf and NgFor, import the \`CommonModule\` instead.`);
     }
   }
 

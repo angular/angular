@@ -8,11 +8,12 @@
 
 import {Injector} from '@angular/core';
 
-import {LoadedRouterConfig, RunGuardsAndResolvers} from '../models';
+import {RunGuardsAndResolvers} from '../models';
 import {ChildrenOutletContexts, OutletContext} from '../router_outlet_context';
 import {ActivatedRouteSnapshot, equalParamsAndUrlSegments, RouterStateSnapshot} from '../router_state';
 import {equalPath} from '../url_tree';
 import {forEach, shallowEqual} from '../utils/collection';
+import {getClosestRouteInjector} from '../utils/config';
 import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
 
 export class CanActivate {
@@ -48,21 +49,10 @@ export function getCanActivateChild(p: ActivatedRouteSnapshot):
 }
 
 export function getToken(
-    token: any, snapshot: ActivatedRouteSnapshot, moduleInjector: Injector): any {
-  const config = getClosestLoadedConfig(snapshot);
-  const injector = config ? config.module.injector : moduleInjector;
+    token: any, snapshot: ActivatedRouteSnapshot, fallbackInjector: Injector): any {
+  const routeInjector = getClosestRouteInjector(snapshot);
+  const injector = routeInjector ?? fallbackInjector;
   return injector.get(token);
-}
-
-function getClosestLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig|null {
-  if (!snapshot) return null;
-
-  for (let s = snapshot.parent; s; s = s.parent) {
-    const route = s.routeConfig;
-    if (route && route._loadedConfig) return route._loadedConfig;
-  }
-
-  return null;
 }
 
 function getChildRouteGuards(

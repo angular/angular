@@ -585,6 +585,29 @@ class TestComponent {
       expect(messages).toEqual(
           [`TestComponent.html(3, 30): Type 'HTMLElement' is not assignable to type 'string'.`]);
     });
+
+    it('allows access to protected members', () => {
+      const messages = diagnose(`<button (click)="doFoo()">{{ message }}</button>`, `
+        class TestComponent {
+          protected message = 'Hello world';
+          protected doFoo(): void {}
+        }`);
+
+      expect(messages).toEqual([]);
+    });
+
+    it('disallows access to private members', () => {
+      const messages = diagnose(`<button (click)="doFoo()">{{ message }}</button>`, `
+        class TestComponent {
+          private message = 'Hello world';
+          private doFoo(): void {}
+        }`);
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 18): Property 'doFoo' is private and only accessible within class 'TestComponent'.`,
+        `TestComponent.html(1, 30): Property 'message' is private and only accessible within class 'TestComponent'.`
+      ]);
+    });
   });
 
   describe('method call spans', () => {
@@ -664,6 +687,18 @@ class TestComponent {
       expect(messages).toEqual(
           [`TestComponent.html(1, 15): Type 'number' is not assignable to type 'string'.`]);
     });
+  });
+
+  // https://github.com/angular/angular/issues/44999
+  it('should not fail for components outside of rootDir', () => {
+    // This test configures a component that is located outside the configured `rootDir`. Such
+    // configuration requires that an inline type-check block is used as the reference emitter does
+    // not allow generating imports outside `rootDir`.
+    const messages =
+        diagnose(`{{invalid}}`, `export class TestComponent {}`, [], [], {}, {rootDir: '/root'});
+
+    expect(messages).toEqual(
+        [`TestComponent.html(1, 3): Property 'invalid' does not exist on type 'TestComponent'.`]);
   });
 });
 

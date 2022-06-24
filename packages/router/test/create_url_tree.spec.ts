@@ -6,12 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Component, Injectable} from '@angular/core';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 import {BehaviorSubject} from 'rxjs';
 
-import {createUrlTree} from '../src/create_url_tree';
+import {createUrlTree, createUrlTreeFromSnapshot} from '../src/create_url_tree';
+import {RouterLink} from '../src/directives/router_link';
+import {Routes} from '../src/models';
+import {Router} from '../src/router';
+import {RouterModule, routerNgProbeToken} from '../src/router_module';
 import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute} from '../src/router_state';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
+import {RouterTestingModule} from '../testing';
 
 describe('createUrlTree', () => {
   const serializer = new DefaultUrlSerializer();
@@ -433,4 +441,110 @@ function create(
       new BehaviorSubject(null!), new BehaviorSubject(null!), PRIMARY_OUTLET, 'someComponent', s);
   advanceActivatedRoute(a);
   return createUrlTree(a, tree, commands, queryParams ?? null, fragment ?? null);
+}
+
+describe('createUrlTreeFromSnapshot', () => {
+  it('can create a UrlTree relative to empty path named parent', fakeAsync(() => {
+       @Component({
+         template: `<router-outlet></router-outlet>`,
+         standalone: true,
+         imports: [RouterModule],
+       })
+       class MainPageComponent {
+         constructor(private route: ActivatedRoute, private router: Router) {}
+
+         navigate() {
+           this.router.navigateByUrl(
+               createUrlTreeFromSnapshot(this.route.snapshot, ['innerRoute'], null, null));
+         }
+       }
+
+       @Component({template: 'child works!'})
+       class ChildComponent {
+       }
+
+       @Component({
+         template: '<router-outlet name="main-page"></router-outlet>',
+         standalone: true,
+         imports: [RouterModule]
+       })
+       class RootCmp {
+       }
+
+       const routes: Routes = [{
+         path: '',
+         component: MainPageComponent,
+         outlet: 'main-page',
+         children: [{path: 'innerRoute', component: ChildComponent}]
+       }];
+
+       TestBed.configureTestingModule({imports: [RouterTestingModule.withRoutes(routes)]});
+       const router = TestBed.inject(Router);
+       const fixture = TestBed.createComponent(RootCmp);
+
+       router.initialNavigation();
+       advance(fixture);
+       fixture.debugElement.query(By.directive(MainPageComponent)).componentInstance.navigate();
+       advance(fixture);
+       expect(fixture.nativeElement.innerHTML).toContain('child works!');
+     }));
+
+  it('can navigate to relative to `ActivatedRouteSnapshot` in guard', fakeAsync(() => {
+       @Injectable({providedIn: 'root'})
+       class Guard {
+         constructor(private readonly router: Router) {}
+         canActivate(snapshot: ActivatedRouteSnapshot) {
+           this.router.navigateByUrl(
+               createUrlTreeFromSnapshot(snapshot, ['../sibling'], null, null));
+         }
+       }
+
+       @Component({
+         template: `main`,
+         standalone: true,
+         imports: [RouterModule],
+       })
+       class GuardedComponent {
+       }
+
+       @Component({template: 'sibling', standalone: true})
+       class SiblingComponent {
+       }
+
+       @Component(
+           {template: '<router-outlet></router-outlet>', standalone: true, imports: [RouterModule]})
+       class RootCmp {
+       }
+
+       const routes: Routes = [
+         {
+           path: 'parent',
+           component: RootCmp,
+           children: [
+             {
+               path: 'guarded',
+               component: GuardedComponent,
+               canActivate: [Guard],
+             },
+             {
+               path: 'sibling',
+               component: SiblingComponent,
+             }
+           ],
+         },
+       ];
+
+       TestBed.configureTestingModule({imports: [RouterTestingModule.withRoutes(routes)]});
+       const router = TestBed.inject(Router);
+       const fixture = TestBed.createComponent(RootCmp);
+
+       router.navigateByUrl('parent/guarded');
+       advance(fixture);
+       expect(router.url).toEqual('/parent/sibling');
+     }));
+});
+
+function advance(fixture: ComponentFixture<unknown>) {
+  tick();
+  fixture.detectChanges();
 }

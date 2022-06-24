@@ -22,8 +22,6 @@ ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
-        "//packages/upgrade/static:package.json",
-        "//packages/upgrade/static/testing:package.json",
     ],
     tags = [
         "release-with-framework",

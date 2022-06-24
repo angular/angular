@@ -7,8 +7,6 @@
  */
 
 export const ERROR_ORIGINAL_ERROR = 'ngOriginalError';
-export const ERROR_LOGGER = 'ngErrorLogger';
-
 
 export function wrappedError(message: string, originalError: any): Error {
   const msg = `${message} caused by: ${
@@ -20,12 +18,4 @@ export function wrappedError(message: string, originalError: any): Error {
 
 export function getOriginalError(error: Error): Error {
   return (error as any)[ERROR_ORIGINAL_ERROR];
-}
-
-export function getErrorLogger(error: unknown): (console: Console, ...values: any[]) => void {
-  return error && (error as any)[ERROR_LOGGER] || defaultErrorLogger;
-}
-
-function defaultErrorLogger(console: Console, ...values: any[]) {
-  (<any>console.error)(...values);
 }

@@ -7,7 +7,7 @@
  */
 
 import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {DirectiveInScope, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {DirectiveInScope, ReferenceSymbol, Symbol, SymbolKind, TcbLocation, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 
@@ -119,9 +119,9 @@ export function unsafeCastDisplayInfoKindToScriptElementKind(kind: DisplayInfoKi
 }
 
 function getDocumentationFromTypeDefAtLocation(
-    tsLS: ts.LanguageService, shimLocation: ShimLocation): ts.SymbolDisplayPart[]|undefined {
+    tsLS: ts.LanguageService, tcbLocation: TcbLocation): ts.SymbolDisplayPart[]|undefined {
   const typeDefs =
-      tsLS.getTypeDefinitionAtPosition(shimLocation.shimPath, shimLocation.positionInShimFile);
+      tsLS.getTypeDefinitionAtPosition(tcbLocation.tcbPath, tcbLocation.positionInFile);
   if (typeDefs === undefined || typeDefs.length === 0) {
     return undefined;
   }

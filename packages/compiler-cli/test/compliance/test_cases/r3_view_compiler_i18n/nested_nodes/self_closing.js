@@ -20,7 +20,7 @@ function MyComponent_img_2_Template(rf, ctx) {
 decls: 3,
 vars: 2,
 consts: function() {
-  __i18nMsg__('App logo #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {})
+  __i18nMsg__('App logo #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ id }}'}}, {})
   return [
     ["src", "logo.png"],
     ["src", "logo.png", __AttributeMarker.Template__, "ngIf"],

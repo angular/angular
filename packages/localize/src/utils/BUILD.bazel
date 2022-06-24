@@ -10,7 +10,6 @@ ts_library(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/localize/src/utils",
     deps = [
         "//packages/compiler",
     ],

@@ -10,6 +10,13 @@ import ts from 'typescript';
 import {absoluteFrom, AbsoluteFsPath, isRooted, ReadonlyFileSystem} from '../../src/ngtsc/file_system';
 import {DeclarationNode, KnownDeclaration} from '../../src/ngtsc/reflection';
 
+export type JsonPrimitive = string|number|boolean|null;
+export type JsonValue = JsonPrimitive|JsonArray|JsonObject|undefined;
+export interface JsonArray extends Array<JsonValue> {}
+export interface JsonObject {
+  [key: string]: JsonValue;
+}
+
 /**
  * A list (`Array`) of partially ordered `T` items.
  *
@@ -163,4 +170,73 @@ export function stripDollarSuffix(value: string): string {
 
 export function stripExtension(fileName: string): string {
   return fileName.replace(/\..+$/, '');
+}
+
+/**
+ * Parse the JSON from a `package.json` file.
+ *
+ * @param packageJsonPath The absolute path to the `package.json` file.
+ * @returns JSON from the `package.json` file if it exists and is valid, `null` otherwise.
+ */
+export function loadJson<T extends JsonObject = JsonObject>(
+    fs: ReadonlyFileSystem, packageJsonPath: AbsoluteFsPath): T|null {
+  try {
+    return JSON.parse(fs.readFile(packageJsonPath)) as T;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Given the parsed JSON of a `package.json` file, try to extract info for a secondary entry-point
+ * from the `exports` property. Such info will only be present for packages following Angular
+ * Package Format v14+.
+ *
+ * @param primaryPackageJson The parsed JSON of the primary `package.json` (or `null` if it failed
+ *     to be loaded).
+ * @param packagePath The absolute path to the containing npm package.
+ * @param entryPointPath The absolute path to the secondary entry-point.
+ * @returns The `exports` info for the specified entry-point if it exists, `null` otherwise.
+ */
+export function loadSecondaryEntryPointInfoForApfV14(
+    fs: ReadonlyFileSystem, primaryPackageJson: JsonObject|null, packagePath: AbsoluteFsPath,
+    entryPointPath: AbsoluteFsPath): JsonObject|null {
+  // Check if primary `package.json` has been loaded and has an `exports` property that is an
+  // object.
+  const exportMap = primaryPackageJson?.exports;
+  if (!isExportObject(exportMap)) {
+    return null;
+  }
+
+  // Find the `exports` key for the secondary entry-point.
+  const relativeEntryPointPath = fs.relative(packagePath, entryPointPath);
+  const entryPointExportKey = `./${relativeEntryPointPath}`;
+
+  // Read the info for the entry-point.
+  const entryPointInfo = exportMap[entryPointExportKey];
+
+  // Check whether the entry-point info exists and is an export map.
+  return isExportObject(entryPointInfo) ? entryPointInfo : null;
+}
+
+/**
+ * Check whether a value read from a JSON file is a Node.js export map (either the top-level one or
+ * one for a subpath).
+ *
+ * In `package.json` files, the `exports` field can be of type `Object | string | string[]`, but APF
+ * v14+ uses an object with subpath exports for each entry-point, which in turn are conditional
+ * exports (see references below). This function verifies that a value read from the top-level
+ * `exports` field or a subpath is of type `Object` (and not `string` or `string[]`).
+ *
+ * References:
+ * - https://nodejs.org/api/packages.html#exports
+ * - https://nodejs.org/api/packages.html#subpath-exports
+ * - https://nodejs.org/api/packages.html#conditional-exports
+ * - https://v14.angular.io/guide/angular-package-format#exports
+ *
+ * @param thing The value read from the JSON file
+ * @returns True if the value is an `Object` (and not an `Array`).
+ */
+function isExportObject(thing: JsonValue): thing is JsonObject {
+  return (typeof thing === 'object') && (thing !== null) && !Array.isArray(thing);
 }

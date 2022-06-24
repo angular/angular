@@ -7,7 +7,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
+import { MatIconRegistry } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -150,7 +150,6 @@ export const svgIconProviders = [
     CustomElementsModule,
     HttpClientModule,
     MatButtonModule,
-    MatIconModule,
     MatProgressBarModule,
     MatSidenavModule,
     MatToolbarModule,

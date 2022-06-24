@@ -26,23 +26,26 @@ export function matchObjectShape<T>(
     expected: Partial<T> = {}): jasmine.AsymmetricMatcher<T> {
   const matcher = function() {};
   let _actual: any = null;
+  let _matcherUtils: jasmine.MatchersUtil = null!;
 
-  matcher.asymmetricMatch = function(actual: any) {
+  matcher.asymmetricMatch = function(actual: any, matcherUtils: jasmine.MatchersUtil) {
     _actual = actual;
+    _matcherUtils = matcherUtils;
     if (!shapePredicate(actual)) return false;
     for (const key in expected) {
-      if (expected.hasOwnProperty(key) && !jasmine.matchersUtil.equals(actual[key], expected[key]))
+      if (expected.hasOwnProperty(key) && !matcherUtils.equals(actual[key], expected[key])) {
         return false;
+      }
     }
     return true;
   };
-  matcher.jasmineToString = function(pp: typeof jasmine.pp) {
+  matcher.jasmineToString = function(pp: (value: any) => string) {
     let errors: string[] = [];
     if (!_actual || typeof _actual !== 'object') {
       return `Expecting ${pp(expect)} got ${pp(_actual)}`;
     }
     for (const key in expected) {
-      if (expected.hasOwnProperty(key) && !jasmine.matchersUtil.equals(_actual[key], expected[key]))
+      if (expected.hasOwnProperty(key) && !_matcherUtils.equals(_actual[key], expected[key]))
         errors.push(`\n  property obj.${key} to equal ${expected[key]} but got ${_actual[key]}`);
     }
     return errors.join('\n');
@@ -237,11 +240,11 @@ export function matchI18nMutableOpCodes(expectedMutableOpCodes: string[]):
   const matcher = function() {};
   let _actual: any = null;
 
-  matcher.asymmetricMatch = function(actual: any) {
+  matcher.asymmetricMatch = function(actual: any, matchersUtil: jasmine.MatchersUtil) {
     _actual = actual;
     if (!Array.isArray(actual)) return false;
     const debug = (actual as I18nDebug).debug as undefined | string[];
-    if (expectedMutableOpCodes && (!jasmine.matchersUtil.equals(debug, expectedMutableOpCodes))) {
+    if (expectedMutableOpCodes && (!matchersUtil.equals(debug, expectedMutableOpCodes))) {
       return false;
     }
     return true;

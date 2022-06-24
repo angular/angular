@@ -72,6 +72,22 @@ describe('runtime i18n', () => {
     expect(fixture.nativeElement.innerHTML).toEqual(`<div> Bonjour John! Emails: 5 </div>`);
   });
 
+  it('should support named interpolations with the same name', () => {
+    loadTranslations(
+        {[computeMsgId(' Hello {$PH_NAME} {$PH_NAME_1}! ')]: ' Bonjour {$PH_NAME} {$PH_NAME_1}! '});
+    const fixture = initWithTemplate(AppComp, `
+      <div i18n>
+        Hello {{ name // i18n(ph="ph_name") }} {{ description // i18n(ph="ph_name") }}!
+      </div>
+    `);
+    expect(fixture.nativeElement.innerHTML).toEqual(`<div> Bonjour Angular Web Framework! </div>`);
+    fixture.componentRef.instance.name = 'Other';
+    fixture.componentRef.instance.description = 'Backend Framework';
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML)
+        .toEqual(`<div> Bonjour Other Backend Framework! </div>`);
+  });
+
   it('should support interpolations with custom interpolation config', () => {
     loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
     const interpolation = ['{%', '%}'] as [string, string];
@@ -3088,6 +3104,7 @@ function initWithTemplate(compType: Type<any>, template: string) {
 @Component({selector: 'app-comp', template: ``})
 class AppComp {
   name = `Angular`;
+  description = `Web Framework`;
   visible = true;
   count = 0;
 }

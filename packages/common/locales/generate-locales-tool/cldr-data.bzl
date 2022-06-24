@@ -1,6 +1,6 @@
-def _cldr_data_repository_impl(ctx):
+def _cldr_json_data_repository_impl(ctx):
     for url, sha256 in ctx.attr.urls.items():
-        ctx.report_progress("Downloading CLDR data from: %s" % url)
+        ctx.report_progress("Downloading CLDR JSON data from: %s" % url)
         ctx.download_and_extract(
             url = url,
             sha256 = sha256,
@@ -23,14 +23,30 @@ filegroup(
 )
   """)
 
+def _cldr_xml_data_repository_impl(ctx):
+    for url, sha256 in ctx.attr.urls.items():
+        ctx.report_progress("Downloading CLDR XML data from: %s" % url)
+        ctx.download_and_extract(
+            url = url,
+            sha256 = sha256,
+        )
+
+    ctx.file("BUILD.bazel", content = """
+filegroup(
+  name = "all_xml",
+  srcs = glob(["**/*.xml"]),
+  visibility = ["//visibility:public"],
+)
+  """)
+
 """
-  Repository rule that downloads CLDR data from the specified repository and generates a
-  `BUILD.bazel` file that exposes all data files. Additionally, an `index.bzl` file is generated
-  that exposes a constant for all locales the repository contains data for. This can be used to
-  generate pre-declared outputs.
+  Repository rule that downloads CLDR data in JSON format from the specified repository and
+  generates a `BUILD.bazel` file that exposes all data files. Additionally, an `index.bzl` file is
+  generated that exposes a constant for all locales the repository contains data for. This can be
+  used to generate pre-declared outputs.
 """
-cldr_data_repository = repository_rule(
-    implementation = _cldr_data_repository_impl,
+cldr_json_data_repository = repository_rule(
+    implementation = _cldr_json_data_repository_impl,
     attrs = {
         "urls": attr.string_dict(doc = """
            Dictionary of URLs that resolve to archives containing CLDR JSON data. These archives
@@ -44,5 +60,20 @@ cldr_data_repository = repository_rule(
             """,
             default = "cldr-core/availableLocales.json",
         ),
+    },
+)
+
+"""
+  Repository rule that downloads CLDR data in XML format from the specified repository and
+  generates a `BUILD.bazel` file that exposes all data files.
+"""
+cldr_xml_data_repository = repository_rule(
+    implementation = _cldr_xml_data_repository_impl,
+    attrs = {
+        "urls": attr.string_dict(doc = """
+           Dictionary of URLs that resolve to archives containing CLDR XML data. These archives
+           will be downloaded and extracted at root of the repository. Each key can specify
+           a SHA256 checksum for hermetic builds.
+        """, mandatory = True),
     },
 )

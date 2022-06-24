@@ -121,15 +121,20 @@ const coreR3DeclareComponentFacade: core.R3DeclareComponentFacade =
 const compilerR3DeclareComponentFacade: compiler.R3DeclareComponentFacade =
     null! as core.R3DeclareComponentFacade;
 
-const coreR3DeclareUsedDirectiveFacade: core.R3DeclareUsedDirectiveFacade =
-    null! as compiler.R3DeclareUsedDirectiveFacade;
-const compilerR3DeclareUsedDirectiveFacade: compiler.R3DeclareUsedDirectiveFacade =
-    null! as core.R3DeclareUsedDirectiveFacade;
+const coreR3DeclareDirectiveDependencyFacade: core.R3DeclareDirectiveDependencyFacade =
+    null! as compiler.R3DeclareDirectiveDependencyFacade;
+const compilerR3DeclareDirectiveDependencyFacade: compiler.R3DeclareDirectiveDependencyFacade =
+    null! as core.R3DeclareDirectiveDependencyFacade;
 
-const coreR3UsedDirectiveMetadata: core.R3UsedDirectiveMetadata =
-    null! as compiler.R3UsedDirectiveMetadata;
-const compilerR3UsedDirectiveMetadata: compiler.R3UsedDirectiveMetadata =
-    null! as core.R3UsedDirectiveMetadata;
+const coreR3DeclarePipeDependencyFacade: core.R3DeclarePipeDependencyFacade =
+    null! as compiler.R3DeclarePipeDependencyFacade;
+const compilerR3DeclarePipeDependencyFacade: compiler.R3DeclarePipeDependencyFacade =
+    null! as core.R3DeclarePipeDependencyFacade;
+
+const coreR3TemplateDependencyFacade: core.R3TemplateDependencyFacade =
+    null! as compiler.R3TemplateDependencyFacade;
+const compiler3TemplateDependencyFacade: compiler.R3TemplateDependencyFacade =
+    null! as core.R3TemplateDependencyFacade;
 
 const coreViewEncapsulation: core.ViewEncapsulation = null! as compiler.ViewEncapsulation;
 const compilerViewEncapsulation: compiler.ViewEncapsulation = null! as core.ViewEncapsulation;

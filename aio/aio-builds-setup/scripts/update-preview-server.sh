@@ -25,8 +25,8 @@ readonly CONTAINER_NAME=aio
   readonly lastDeployedCommit=$(git rev-parse HEAD)
   echo "Currently at commit $lastDeployedCommit."
 
-  # Pull latest master from origin.
-  git pull origin master
+  # Pull latest main from origin.
+  git pull origin main
 
   # Do not update the server unless files inside `aio-builds-setup/` have changed
   # or the last attempt failed (identified by the provisional image still being around).
@@ -66,6 +66,10 @@ readonly CONTAINER_NAME=aio
       --volume $HOST_LOCALCERTS_DIR:/etc/ssl/localcerts:ro \
       --volume $HOST_LOGS_DIR:/var/log/aio \
       "$LATEST_IMAGE_NAME"
+
+  # Clean up unused docker containers and images (to reclaim space).
+  sudo docker container prune --force
+  sudo docker image prune --all --force
 
   echo "The new docker image has been successfully deployed."
 )

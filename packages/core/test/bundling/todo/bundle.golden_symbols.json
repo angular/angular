@@ -21,6 +21,9 @@
     "name": "ElementRef"
   },
   {
+    "name": "EnvironmentInjector"
+  },
+  {
     "name": "InjectFlags"
   },
   {
@@ -156,25 +159,13 @@
     "name": "__forward_ref__"
   },
   {
-    "name": "__global"
-  },
-  {
-    "name": "__globalThis"
-  },
-  {
-    "name": "__self"
-  },
-  {
-    "name": "__window"
-  },
-  {
     "name": "_global"
   },
   {
     "name": "_injectImplementation"
   },
   {
-    "name": "_renderCompCount"
+    "name": "componentDefCount"
   },
   {
     "name": "_symbolIterator"
@@ -291,9 +282,6 @@
     "name": "createTView"
   },
   {
-    "name": "defaultErrorLogger"
-  },
-  {
     "name": "defaultIterableDiffersFactory"
   },
   {
@@ -307,12 +295,6 @@
   },
   {
     "name": "detachView"
-  },
-  {
-    "name": "detectChangesInRootView"
-  },
-  {
-    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
@@ -343,9 +325,6 @@
   },
   {
     "name": "extractDirectiveDef"
-  },
-  {
-    "name": "extractPipeDef"
   },
   {
     "name": "findAttrIndexInNode"
@@ -462,6 +441,9 @@
     "name": "getParentInjectorView"
   },
   {
+    "name": "getPipeDef"
+  },
+  {
     "name": "getPreviousIndex"
   },
   {
@@ -559,9 +541,6 @@
   },
   {
     "name": "isDirectiveHost"
-  },
-  {
-    "name": "isInCheckNoChangesMode"
   },
   {
     "name": "isInlineTemplate"
@@ -672,6 +651,9 @@
     "name": "noSideEffects"
   },
   {
+    "name": "nonNull"
+  },
+  {
     "name": "notFoundValueOrThrow"
   },
   {
@@ -765,9 +747,6 @@
     "name": "setInputsFromAttrs"
   },
   {
-    "name": "setIsInCheckNoChangesMode"
-  },
-  {
     "name": "setSelectedIndex"
   },
   {
@@ -790,9 +769,6 @@
   },
   {
     "name": "stringifyCSSSelector"
-  },
-  {
-    "name": "stringifyForError"
   },
   {
     "name": "throwProviderNotFoundError"

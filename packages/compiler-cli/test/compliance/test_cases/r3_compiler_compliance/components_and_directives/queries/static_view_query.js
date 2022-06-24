@@ -22,6 +22,6 @@ ViewQueryComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵelement(0, "div", 0);
     }
   },
-  directives: function () { return [SomeDirective]; },
+  dependencies: function () { return [SomeDirective]; },
   encapsulation: 2
 });

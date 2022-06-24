@@ -15,6 +15,12 @@ import {TestBed} from './test_bed';
 /** Whether test modules should be torn down by default. */
 export const TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT = true;
 
+/** Whether unknown elements in templates should throw by default. */
+export const THROW_ON_UNKNOWN_ELEMENTS_DEFAULT = false;
+
+/** Whether unknown properties in templates should throw by default. */
+export const THROW_ON_UNKNOWN_PROPERTIES_DEFAULT = false;
+
 /**
  * An abstract class for inserting the root test component element in a platform independent way.
  *
@@ -39,33 +45,50 @@ export const ComponentFixtureNoNgZone = new InjectionToken<boolean[]>('Component
 /**
  * @publicApi
  */
-export type TestModuleMetadata = {
-  providers?: any[],
-  declarations?: any[],
-  imports?: any[],
-  schemas?: Array<SchemaMetadata|any[]>,
-  /**
-   * @deprecated With Ivy, AOT summary files are unused.
-   */
-  aotSummaries?: () => any[],
+export interface TestModuleMetadata {
+  providers?: any[];
+  declarations?: any[];
+  imports?: any[];
+  schemas?: Array<SchemaMetadata|any[]>;
   teardown?: ModuleTeardownOptions;
-};
+  /**
+   * Whether NG0304 runtime errors should be thrown when unknown elements are present in component's
+   * template. Defaults to `false`, where the error is simply logged. If set to `true`, the error is
+   * thrown.
+   * @see https://angular.io/errors/NG8001 for the description of the problem and how to fix it
+   */
+  errorOnUnknownElements?: boolean;
+  /**
+   * Whether errors should be thrown when unknown properties are present in component's template.
+   * Defaults to `false`, where the error is simply logged.
+   * If set to `true`, the error is thrown.
+   * @see https://angular.io/errors/NG8002 for the description of the error and how to fix it
+   */
+  errorOnUnknownProperties?: boolean;
+}
 
 /**
  * @publicApi
  */
 export interface TestEnvironmentOptions {
   /**
-   * Provides a way to specify AOT summaries to use in TestBed.
-   * This parameter is unused and deprecated in Ivy.
-   *
-   * @deprecated With Ivy, AOT summary files are unused.
-   */
-  aotSummaries?: () => any[];
-  /**
    * Configures the test module teardown behavior in `TestBed`.
    */
   teardown?: ModuleTeardownOptions;
+  /**
+   * Whether errors should be thrown when unknown elements are present in component's template.
+   * Defaults to `false`, where the error is simply logged.
+   * If set to `true`, the error is thrown.
+   * @see https://angular.io/errors/NG8001 for the description of the error and how to fix it
+   */
+  errorOnUnknownElements?: boolean;
+  /**
+   * Whether errors should be thrown when unknown properties are present in component's template.
+   * Defaults to `false`, where the error is simply logged.
+   * If set to `true`, the error is thrown.
+   * @see https://angular.io/errors/NG8002 for the description of the error and how to fix it
+   */
+  errorOnUnknownProperties?: boolean;
 }
 
 /**
@@ -102,22 +125,6 @@ export interface TestBedStatic {
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef,
       options?: TestEnvironmentOptions): TestBed;
-  /**
-   * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
-   * angular module. These are common to every test in the suite.
-   *
-   * This may only be called once, to set up the common providers for the current test
-   * suite on the current platform. If you absolutely need to change the providers,
-   * first use `resetTestEnvironment`.
-   *
-   * Test modules and platforms for individual platforms are available from
-   * '@angular/<platform_name>/testing'.
-   *
-   * @deprecated This API that allows providing AOT summaries is deprecated, since summary files are
-   *     unused in Ivy.
-   */
-  initTestEnvironment(
-      ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
 
   /**
    * Reset the providers for the test injector.

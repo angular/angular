@@ -103,7 +103,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       return undefined;
     }
     const tsResults =
-        this.tsLS.getCompletionsAtPosition(location.shimPath, location.positionInShimFile, options);
+        this.tsLS.getCompletionsAtPosition(location.tcbPath, location.positionInFile, options);
     if (tsResults === undefined) {
       return undefined;
     }
@@ -209,8 +209,8 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       if (location === null) {
         return undefined;
       }
-      const tsResults = this.tsLS.getCompletionsAtPosition(
-          location.shimPath, location.positionInShimFile, options);
+      const tsResults =
+          this.tsLS.getCompletionsAtPosition(location.tcbPath, location.positionInFile, options);
       if (tsResults === undefined) {
         return undefined;
       }
@@ -268,7 +268,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
         return undefined;
       }
       details = this.tsLS.getCompletionEntryDetails(
-          location.shimPath, location.positionInShimFile, entryName, formatOptions,
+          location.tcbPath, location.positionInFile, entryName, formatOptions,
           /* source */ undefined, preferences, data);
     }
     if (details !== undefined) {
@@ -292,7 +292,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
         return undefined;
       }
       return this.tsLS.getCompletionEntrySymbol(
-          location.shimPath, location.positionInShimFile, name, /* source */ undefined);
+          location.tcbPath, location.positionInFile, name, /* source */ undefined);
     }
   }
 
@@ -316,7 +316,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     // Merge TS completion results with results from the template scope.
     let entries: ts.CompletionEntry[] = [];
     const componentCompletions = this.tsLS.getCompletionsAtPosition(
-        componentContext.shimPath, componentContext.positionInShimFile, options);
+        componentContext.tcbPath, componentContext.positionInFile, options);
     if (componentCompletions !== undefined) {
       for (const tsCompletion of componentCompletions.entries) {
         // Skip completions that are shadowed by a template entity definition.
@@ -335,7 +335,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     // Merge TS completion results with results from the ast context.
     if (astContext !== null) {
       const nodeCompletions = this.tsLS.getCompletionsAtPosition(
-          astContext.shimPath, astContext.positionInShimFile, options);
+          astContext.tcbPath, astContext.positionInFile, options);
       if (nodeCompletions !== undefined) {
         for (const tsCompletion of nodeCompletions.entries) {
           if (this.isValidNodeContextCompletion(tsCompletion)) {
@@ -411,7 +411,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       };
     } else {
       return this.tsLS.getCompletionEntryDetails(
-          componentContext.shimPath, componentContext.positionInShimFile, entryName, formatOptions,
+          componentContext.tcbPath, componentContext.positionInFile, entryName, formatOptions,
           /* source */ undefined, preferences, data);
     }
   }
@@ -440,7 +440,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       return symbol.tsSymbol;
     } else {
       return this.tsLS.getCompletionEntrySymbol(
-          componentContext.shimPath, componentContext.positionInShimFile, entryName,
+          componentContext.tcbPath, componentContext.positionInFile, entryName,
           /* source */ undefined);
     }
   }

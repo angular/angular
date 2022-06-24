@@ -1,4 +1,4 @@
-load("@cldr_data//:index.bzl", _ALL_CLDR_LOCALES = "LOCALES")
+load("@cldr_json_data//:index.bzl", _ALL_CLDR_LOCALES = "LOCALES")
 
 # List of locales the tool can generate files for.
 LOCALES = _ALL_CLDR_LOCALES
@@ -36,7 +36,7 @@ def generate_base_locale_file(name, output_file, **kwargs):
         **kwargs
     )
 
-def generate_closure_locales_file(name, output_file, **kwargs):
+def generate_closure_locale_file(name, output_file, **kwargs):
     _run_tool_with_single_output(
         name = name,
         output_file = output_file,

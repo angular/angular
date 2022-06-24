@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵMessageId, ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
+import {MessageId, ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
 /**
  * Consolidate messages into groups that have the same id.
@@ -25,7 +25,7 @@ import {ɵMessageId, ɵParsedMessage, ɵSourceLocation} from '@angular/localize'
 export function consolidateMessages(
     messages: ɵParsedMessage[],
     getMessageId: (message: ɵParsedMessage) => string): ɵParsedMessage[][] {
-  const messageGroups = new Map<ɵMessageId, ɵParsedMessage[]>();
+  const messageGroups = new Map<MessageId, ɵParsedMessage[]>();
   for (const message of messages) {
     const id = getMessageId(message);
     if (!messageGroups.has(id)) {

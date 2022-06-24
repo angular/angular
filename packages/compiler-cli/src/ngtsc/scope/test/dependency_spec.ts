@@ -145,7 +145,7 @@ runInEachFileSystem(() => {
       expect(scopeToRefs(scope).map(ref => ref.node)).toEqual([Dir.node]);
 
       // Explicitly verify that the directive has the correct owning module.
-      expect(scope.exported.directives[0].ref.bestGuessOwningModule).toEqual({
+      expect(scope.exported.dependencies[0].ref.bestGuessOwningModule).toEqual({
         specifier: 'declaration',
         resolutionContext: ModuleB.node.getSourceFile().fileName,
       });
@@ -278,9 +278,8 @@ runInEachFileSystem(() => {
   });
 
   function scopeToRefs(scope: ExportScope): Reference<ClassDeclaration>[] {
-    const directives = scope.exported.directives.map(dir => dir.ref);
-    const pipes = scope.exported.pipes.map(pipe => pipe.ref);
-    return [...directives, ...pipes].sort((a, b) => a.debugName!.localeCompare(b.debugName!));
+    return scope.exported.dependencies.map(dep => dep.ref)
+        .sort((a, b) => a.debugName!.localeCompare(b.debugName!));
   }
 
   function getAlias(ref: Reference<ClassDeclaration>): ExternalReference|null {

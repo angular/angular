@@ -43,6 +43,10 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
 
   dir.valueAccessor!.writeValue(control.value);
 
+  if (control.disabled) {
+    dir.valueAccessor!.setDisabledState?.(true);
+  }
+
   setUpViewChangePipeline(control, dir);
   setUpModelChangePipeline(control, dir);
 
@@ -352,6 +356,11 @@ export function selectValueAccessor(
     _throwError(dir, 'No valid value accessor for form control with');
   }
   return null;
+}
+
+export function removeListItem<T>(list: T[], el: T): void {
+  const index = list.indexOf(el);
+  if (index > -1) list.splice(index, 1);
 }
 
 // TODO(kara): remove after deprecation period

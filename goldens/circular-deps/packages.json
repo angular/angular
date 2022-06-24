@@ -12,10 +12,6 @@
     "packages/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter.ts"
   ],
   [
-    "packages/compiler-cli/src/ngtsc/scope/src/component_scope.ts",
-    "packages/compiler-cli/src/ngtsc/scope/src/local.ts"
-  ],
-  [
     "packages/compiler/src/output/output_ast.ts",
     "packages/compiler/src/render3/view/i18n/meta.ts"
   ],
@@ -46,24 +42,67 @@
     "packages/core/src/change_detection/differs/keyvalue_differs.ts"
   ],
   [
-    "packages/core/src/di/injectable.ts",
-    "packages/core/src/di/jit/injectable.ts"
+    "packages/core/src/di/create_injector.ts",
+    "packages/core/src/di/injector.ts"
   ],
   [
+    "packages/core/src/di/create_injector.ts",
+    "packages/core/src/di/provider_collection.ts",
+    "packages/core/src/render3/definition.ts",
+    "packages/core/src/render3/interfaces/definition.ts",
+    "packages/core/src/di/r3_injector.ts",
     "packages/core/src/di/injector_compatibility.ts",
     "packages/core/src/di/injector.ts"
   ],
   [
+    "packages/core/src/di/create_injector.ts",
+    "packages/core/src/di/provider_collection.ts",
+    "packages/core/src/render3/definition.ts",
+    "packages/core/src/render3/interfaces/definition.ts",
+    "packages/core/src/di/r3_injector.ts",
     "packages/core/src/di/injector_token.ts",
     "packages/core/src/di/injector.ts"
   ],
   [
-    "packages/core/src/di/injector.ts",
-    "packages/core/src/di/null_injector.ts"
+    "packages/core/src/di/create_injector.ts",
+    "packages/core/src/di/provider_collection.ts",
+    "packages/core/src/render3/definition.ts",
+    "packages/core/src/render3/interfaces/definition.ts",
+    "packages/core/src/di/r3_injector.ts",
+    "packages/core/src/di/injector.ts"
   ],
   [
-    "packages/core/src/di/injector.ts",
+    "packages/core/src/di/create_injector.ts",
+    "packages/core/src/di/provider_collection.ts",
+    "packages/core/src/render3/definition.ts",
+    "packages/core/src/render3/interfaces/definition.ts",
+    "packages/core/src/di/r3_injector.ts",
+    "packages/core/src/di/null_injector.ts",
+    "packages/core/src/di/injector.ts"
+  ],
+  [
+    "packages/core/src/di/create_injector.ts",
+    "packages/core/src/di/provider_collection.ts",
+    "packages/core/src/render3/definition.ts",
+    "packages/core/src/render3/interfaces/definition.ts",
+    "packages/core/src/render3/interfaces/node.ts",
+    "packages/core/src/render3/interfaces/view.ts",
+    "packages/core/src/di/injector.ts"
+  ],
+  [
+    "packages/core/src/di/injectable.ts",
+    "packages/core/src/di/jit/injectable.ts"
+  ],
+  [
+    "packages/core/src/di/provider_collection.ts",
+    "packages/core/src/render3/definition.ts",
+    "packages/core/src/render3/interfaces/definition.ts",
     "packages/core/src/di/r3_injector.ts"
+  ],
+  [
+    "packages/core/src/di/r3_injector.ts",
+    "packages/core/src/render3/definition.ts",
+    "packages/core/src/render3/interfaces/definition.ts"
   ],
   [
     "packages/core/src/di/reflective_errors.ts",
@@ -72,10 +111,6 @@
   [
     "packages/core/src/linker/component_factory_resolver.ts",
     "packages/core/src/linker/component_factory.ts",
-    "packages/core/src/linker/ng_module_factory.ts"
-  ],
-  [
-    "packages/core/src/linker/component_factory_resolver.ts",
     "packages/core/src/linker/ng_module_factory.ts"
   ],
   [
@@ -271,6 +306,12 @@
     "packages/forms/src/model/abstract_model.ts"
   ],
   [
+    "packages/router/src/apply_redirects.ts",
+    "packages/router/src/operators/check_guards.ts",
+    "packages/router/src/router.ts",
+    "packages/router/src/operators/apply_redirects.ts"
+  ],
+  [
     "packages/router/src/directives/router_outlet.ts",
     "packages/router/src/router_outlet_context.ts"
   ],
@@ -280,7 +321,7 @@
   ],
   [
     "packages/router/src/models.ts",
-    "packages/router/src/router_state.ts",
+    "packages/router/src/url_tree.ts",
     "packages/router/src/shared.ts"
   ],
   [
@@ -289,10 +330,6 @@
   ],
   [
     "packages/router/src/operators/apply_redirects.ts",
-    "packages/router/src/router.ts"
-  ],
-  [
-    "packages/router/src/operators/check_guards.ts",
     "packages/router/src/router.ts"
   ],
   [
@@ -306,10 +343,5 @@
   [
     "packages/router/src/shared.ts",
     "packages/router/src/url_tree.ts"
-  ],
-  [
-    "packages/router/src/shared.ts",
-    "packages/router/src/url_tree.ts",
-    "packages/router/src/utils/collection.ts"
   ]
 ]

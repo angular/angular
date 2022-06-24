@@ -13,4 +13,5 @@ export * from './src/evaluation';
 export * from './src/factory';
 export * from './src/metadata';
 export * from './src/references_registry';
+export * from './src/schema';
 export * from './src/util';

@@ -74,7 +74,7 @@ Fixes #<issue number>
 # =============================
 #
 # The full specification of the Angular Commit Message Format can be found at
-# https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit
+# https://github.com/angular/angular/blob/main/CONTRIBUTING.md#commit
 #
 # The following is an excerpt of the specification with the most commonly needed info.
 #
@@ -108,10 +108,10 @@ Fixes #<issue number>
 #   │                          platform-browser-dynamic|platform-server|router|service-worker|
 #   │                          upgrade|zone.js|packaging|changelog|docs-infra|migrations|ngcc|ve|
 #   │                          devtools
-#   │                          https://github.com/angular/angular/blob/master/CONTRIBUTING.md#scope
+#   │                          https://github.com/angular/angular/blob/main/CONTRIBUTING.md#scope
 #   │
 #   └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|style|test
-#                     https://github.com/angular/angular/blob/master/CONTRIBUTING.md#type
+#                     https://github.com/angular/angular/blob/main/CONTRIBUTING.md#type
 #
 #
 # Commit Message Body

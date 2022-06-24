@@ -35,22 +35,6 @@ export interface TestBed {
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef,
       options?: TestEnvironmentOptions): void;
-  /**
-   * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
-   * angular module. These are common to every test in the suite.
-   *
-   * This may only be called once, to set up the common providers for the current test
-   * suite on the current platform. If you absolutely need to change the providers,
-   * first use `resetTestEnvironment`.
-   *
-   * Test modules and platforms for individual platforms are available from
-   * '@angular/<platform_name>/testing'.
-   *
-   * @deprecated This API that allows providing AOT summaries is deprecated, since summary files are
-   *     unused in Ivy.
-   */
-  initTestEnvironment(
-      ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void;
 
   /**
    * Reset the providers for the test injector.
@@ -123,7 +107,10 @@ export const TestBed: TestBedStatic = TestBedRender3;
 export const getTestBed: () => TestBed = _getTestBedRender3;
 
 /**
- * Allows injecting dependencies in `beforeEach()` and `it()`.
+ * Allows injecting dependencies in `beforeEach()` and `it()`. Note: this function
+ * (imported from the `@angular/core/testing` package) can **only** be used to inject dependencies
+ * in tests. To inject dependencies in your application code, use the [`inject`](api/core/inject)
+ * function from the `@angular/core` package instead.
  *
  * Example:
  *

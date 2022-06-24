@@ -32,15 +32,15 @@ For example, return a string if the target property expects a string, a number i
 
 In the following example, the `childItem` property of the `ItemDetailComponent` expects a string.
 
-<code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="property-binding/src/app/app.component.html" region="model-property-binding"></code-example>
 
 Confirm this expectation by looking in the `ItemDetailComponent` where the `@Input()` type is `string`:
 
-<code-example path="property-binding/src/app/item-detail/item-detail.component.ts" region="input-type" header="src/app/item-detail/item-detail.component.ts (setting the @Input() type)"></code-example>
+<code-example header="src/app/item-detail/item-detail.component.ts (setting the @Input() type)" path="property-binding/src/app/item-detail/item-detail.component.ts" region="input-type"></code-example>
 
 The `parentItem` in `AppComponent` is a string, which means that the expression, `parentItem` within `[childItem]="parentItem"`, evaluates to a string.
 
-<code-example path="property-binding/src/app/app.component.ts" region="parent-data-type" header="src/app/app.component.ts"></code-example>
+<code-example header="src/app/app.component.ts" path="property-binding/src/app/app.component.ts" region="parent-data-type"></code-example>
 
 If `parentItem` were some other type, you would need to specify `childItem`  `@Input()` as that type as well.
 
@@ -48,18 +48,26 @@ If `parentItem` were some other type, you would need to specify `childItem`  `@I
 
 In this example, `ItemListComponent` is a child component of `AppComponent` and the `items` property expects an array of objects.
 
-<code-example path="property-binding/src/app/app.component.html" region="pass-object" header="src/app/app.component.html"></code-example>
+<code-example header="src/app/app.component.html" path="property-binding/src/app/app.component.html" region="pass-object"></code-example>
 
 In the `ItemListComponent` the `@Input()`, `items`, has a type of `Item[]`.
 
-<code-example path="property-binding/src/app/item-list/item-list.component.ts" region="item-input" header="src/app/item-list.component.ts"></code-example>
+<code-example header="src/app/item-list.component.ts" path="property-binding/src/app/item-list/item-list.component.ts" region="item-input"></code-example>
 
 Notice that `Item` is an object that it has two properties; an `id` and a `name`.
 
-<code-example path="property-binding/src/app/item.ts" region="item-class" header="src/app/item.ts"></code-example>
+<code-example header="src/app/item.ts" path="property-binding/src/app/item.ts" region="item-class"></code-example>
 
 In `app.component.ts`, `currentItems` is an array of objects in the same shape as the `Item` object in `items.ts`, with an `id` and a `name`.
 
-<code-example path="property-binding/src/app/app.component.ts" region="pass-object" header="src/app.component.ts"></code-example>
+<code-example header="src/app.component.ts" path="property-binding/src/app/app.component.ts" region="pass-object"></code-example>
 
 By supplying an object in the same shape, you satisfy the expectations of `items` when Angular evaluates the expression `currentItems`.
+
+<!-- links -->
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-02-28

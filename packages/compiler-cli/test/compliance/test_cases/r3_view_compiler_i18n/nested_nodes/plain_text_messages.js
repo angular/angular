@@ -1,7 +1,7 @@
 consts: function() {
-  __i18nMsg__('My i18n block #1', [], {})
-  __i18nMsg__('My i18n block #2', [], {})
-  __i18nMsg__('My i18n block #3', [], {})
+  __i18nMsg__('My i18n block #1', [], {}, {})
+  __i18nMsg__('My i18n block #2', [], {}, {})
+  __i18nMsg__('My i18n block #3', [], {}, {})
   return [
     $i18n_0$,
     $i18n_1$,

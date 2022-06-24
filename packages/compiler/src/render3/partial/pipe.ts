@@ -10,6 +10,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {createPipeType, R3PipeMetadata} from '../r3_pipe_compiler';
 import {R3CompiledExpression} from '../util';
 import {DefinitionMap} from '../view/util';
+
 import {R3DeclarePipeMetadata} from './api';
 
 /**
@@ -19,7 +20,7 @@ import {R3DeclarePipeMetadata} from './api';
  *
  * Do not include any prerelease in these versions as they are ignored.
  */
-const MINIMUM_PARTIAL_LINKER_VERSION = '12.0.0';
+const MINIMUM_PARTIAL_LINKER_VERSION = '14.0.0';
 
 /**
  * Compile a Pipe declaration defined by the `R3PipeMetadata`.
@@ -46,6 +47,11 @@ export function createPipeDefinitionMap(meta: R3PipeMetadata):
 
   // e.g. `type: MyPipe`
   definitionMap.set('type', meta.internalType);
+
+  if (meta.isStandalone) {
+    definitionMap.set('isStandalone', o.literal(meta.isStandalone));
+  }
+
   // e.g. `name: "myPipe"`
   definitionMap.set('name', o.literal(meta.pipeName));
 

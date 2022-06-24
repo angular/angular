@@ -20,7 +20,7 @@ import {BoundEvent} from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, R3CompiledExpression, typeWithParameters} from '../util';
 
-import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
+import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3TemplateDependency} from './api';
 import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
 import {asLiteral, conditionallyCreateMapObjectLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, getQueryPredicate, Instruction, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
@@ -77,18 +77,24 @@ function baseDirectiveFields(
     definitionMap.set('exportAs', o.literalArr(meta.exportAs.map(e => o.literal(e))));
   }
 
+  if (meta.isStandalone) {
+    definitionMap.set('standalone', o.literal(true));
+  }
+
   return definitionMap;
 }
 
 /**
  * Add features to the definition map.
  */
-function addFeatures(definitionMap: DefinitionMap, meta: R3DirectiveMetadata|R3ComponentMetadata) {
+function addFeatures(
+    definitionMap: DefinitionMap,
+    meta: R3DirectiveMetadata|R3ComponentMetadata<R3TemplateDependency>) {
   // e.g. `features: [NgOnChangesFeature]`
   const features: o.Expression[] = [];
 
   const providers = meta.providers;
-  const viewProviders = (meta as R3ComponentMetadata).viewProviders;
+  const viewProviders = (meta as R3ComponentMetadata<R3TemplateDependency>).viewProviders;
   if (providers || viewProviders) {
     const args = [providers || new o.LiteralArrayExpr([])];
     if (viewProviders) {
@@ -105,6 +111,10 @@ function addFeatures(definitionMap: DefinitionMap, meta: R3DirectiveMetadata|R3C
   }
   if (meta.lifecycle.usesOnChanges) {
     features.push(o.importExpr(R3.NgOnChangesFeature));
+  }
+  // TODO: better way of differentiating component vs directive metadata.
+  if (meta.hasOwnProperty('template') && meta.isStandalone) {
+    features.push(o.importExpr(R3.StandaloneFeature));
   }
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
@@ -130,7 +140,7 @@ export function compileDirectiveFromMetadata(
  * Compile a component for the render3 runtime as defined by the `R3ComponentMetadata`.
  */
 export function compileComponentFromMetadata(
-    meta: R3ComponentMetadata, constantPool: ConstantPool,
+    meta: R3ComponentMetadata<R3TemplateDependency>, constantPool: ConstantPool,
     bindingParser: BindingParser): R3CompiledExpression {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
@@ -195,18 +205,11 @@ export function compileComponentFromMetadata(
 
   definitionMap.set('template', templateFunctionExpression);
 
-  // e.g. `directives: [MyDirective]`
-  if (meta.directives.length > 0) {
-    const directivesList = o.literalArr(meta.directives.map(dir => dir.type));
-    const directivesExpr = compileDeclarationList(directivesList, meta.declarationListEmitMode);
-    definitionMap.set('directives', directivesExpr);
-  }
-
-  // e.g. `pipes: [MyPipe]`
-  if (meta.pipes.size > 0) {
-    const pipesList = o.literalArr(Array.from(meta.pipes.values()));
-    const pipesExpr = compileDeclarationList(pipesList, meta.declarationListEmitMode);
-    definitionMap.set('pipes', pipesExpr);
+  if (meta.declarations.length > 0) {
+    definitionMap.set(
+        'dependencies',
+        compileDeclarationList(
+            o.literalArr(meta.declarations.map(decl => decl.type)), meta.declarationListEmitMode));
   }
 
   if (meta.encapsulation === null) {
@@ -218,8 +221,16 @@ export function compileComponentFromMetadata(
     const styleValues = meta.encapsulation == core.ViewEncapsulation.Emulated ?
         compileStyles(meta.styles, CONTENT_ATTR, HOST_ATTR) :
         meta.styles;
-    const strings = styleValues.map(str => constantPool.getConstLiteral(o.literal(str)));
-    definitionMap.set('styles', o.literalArr(strings));
+    const styleNodes = styleValues.reduce((result, style) => {
+      if (style.trim().length > 0) {
+        result.push(constantPool.getConstLiteral(o.literal(style)));
+      }
+      return result;
+    }, [] as o.Expression[]);
+
+    if (styleNodes.length > 0) {
+      definitionMap.set('styles', o.literalArr(styleNodes));
+    }
   } else if (meta.encapsulation === core.ViewEncapsulation.Emulated) {
     // If there is no style, don't generate css selectors on elements
     meta.encapsulation = core.ViewEncapsulation.None;
@@ -252,9 +263,10 @@ export function compileComponentFromMetadata(
  * Creates the type specification from the component meta. This type is inserted into .d.ts files
  * to be consumed by upstream compilations.
  */
-export function createComponentType(meta: R3ComponentMetadata): o.Type {
-  const typeParams = createDirectiveTypeParams(meta);
+export function createComponentType(meta: R3ComponentMetadata<R3TemplateDependency>): o.Type {
+  const typeParams = createBaseDirectiveTypeParams(meta);
   typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
+  typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
   return o.expressionType(o.importExpr(R3.ComponentDeclaration, typeParams));
 }
 
@@ -395,7 +407,7 @@ function stringArrayAsType(arr: ReadonlyArray<string|null>): o.Type {
                           o.NONE_TYPE;
 }
 
-export function createDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
+export function createBaseDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
   // string literal, which must be on one line.
   const selectorForType = meta.selector !== null ? meta.selector.replace(/\n/g, '') : null;
@@ -415,7 +427,11 @@ export function createDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
  * to be consumed by upstream compilations.
  */
 export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
-  const typeParams = createDirectiveTypeParams(meta);
+  const typeParams = createBaseDirectiveTypeParams(meta);
+  // Directives have no NgContentSelectors slot, but instead express a `never` type
+  // so that future fields align.
+  typeParams.push(o.NONE_TYPE);
+  typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
   return o.expressionType(o.importExpr(R3.DirectiveDeclaration, typeParams));
 }
 

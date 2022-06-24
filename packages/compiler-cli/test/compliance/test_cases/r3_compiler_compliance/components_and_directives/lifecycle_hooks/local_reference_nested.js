@@ -50,6 +50,6 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵtextInterpolate1(" ", $foo$, " ");
     }
   },
-  directives:[IfDirective],
+  dependencies:[IfDirective],
   encapsulation: 2
 });

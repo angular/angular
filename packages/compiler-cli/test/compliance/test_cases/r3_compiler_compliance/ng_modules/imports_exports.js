@@ -23,7 +23,7 @@ BModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [AModule] });
 export class AppModule {}
 AppModule.ɵfac = function AppModule_Factory(t) { return new (t || AppModule)(); };
 AppModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
-AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [[BModule]] });
+AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ imports: [BModule] });
 …
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AppModule, [{
   type: NgModule,

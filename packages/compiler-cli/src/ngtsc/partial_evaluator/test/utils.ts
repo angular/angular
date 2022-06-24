@@ -58,18 +58,18 @@ export function owningModuleOf(ref: Reference): string|null {
 }
 
 export function firstArgFfr(
-    node: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-    args: ReadonlyArray<ts.Expression>): ts.Expression {
-  return args[0];
+    fn: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
+    expr: ts.CallExpression, resolve: (expr: ts.Expression) => ResolvedValue): ResolvedValue {
+  return resolve(expr.arguments[0]);
 }
 
-export const arrowReturnValueFfr: ForeignFunctionResolver = (_ref, args) => {
+export const arrowReturnValueFfr: ForeignFunctionResolver = (_fn, node, resolve) => {
   // Extracts the `Foo` from `() => Foo`.
-  return (args[0] as ts.ArrowFunction).body as ts.Expression;
+  return resolve((node.arguments[0] as ts.ArrowFunction).body as ts.Expression);
 };
 
-export const returnTypeFfr: ForeignFunctionResolver = (ref) => {
+export const returnTypeFfr: ForeignFunctionResolver = (fn, node, resolve) => {
   // Extract the `Foo` from the return type of the `external` function declaration.
-  return ((ref.node as ts.FunctionDeclaration).type as ts.TypeReferenceNode).typeName as
-      ts.Identifier;
+  return resolve(
+      ((fn.node as ts.FunctionDeclaration).type as ts.TypeReferenceNode).typeName as ts.Identifier);
 };

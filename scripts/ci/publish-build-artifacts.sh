@@ -33,7 +33,8 @@ function publishRepo {
   ARTIFACTS_DIR=$2
 
   BUILD_REPO="${COMPONENT}-builds"
-  REPO_DIR="tmp/${BUILD_REPO}"
+  REPO_DIR="$(pwd)/tmp/${BUILD_REPO}"
+  REPO_URL="https://github.com/angular/${BUILD_REPO}.git"
 
   if [ -n "${CREATE_REPOS:-}" ]; then
     curl -u "$ORG:$TOKEN" https://api.github.com/user/repos \
@@ -44,18 +45,35 @@ function publishRepo {
 
   # create local repo folder and clone build repo into it
   rm -rf $REPO_DIR
-  mkdir -p $REPO_DIR
+  mkdir -p ${REPO_DIR}
+
+  echo "Starting cloning process of ${REPO_URL} into ${REPO_DIR}.."
+
   (
-    cd $REPO_DIR && \
-    git init && \
-    git remote add origin $REPO_URL && \
-    # use the remote branch if it exists
-    if git ls-remote --exit-code origin ${BRANCH}; then
-      git fetch origin ${BRANCH} --depth=1 && \
-      git checkout origin/${BRANCH}
+    if [[ $(git ls-remote --heads ${REPO_URL} ${BRANCH}) ]]; then
+      echo "Branch ${BRANCH} already exists. Cloning that branch."
+      git clone ${REPO_URL} ${REPO_DIR} --depth 1 --branch ${BRANCH}
+
+      cd ${REPO_DIR}
+      echo "Cloned repository and switched into the repository directory (${REPO_DIR})."
+    else
+      echo "Branch ${BRANCH} does not exist on ${BUILD_REPO} yet."
+      echo "Cloning default branch and creating branch '${BRANCH}' on top of it."
+
+      git clone ${REPO_URL} ${REPO_DIR} --depth 1
+      cd ${REPO_DIR}
+
+      echo "Cloned repository and switched into directory. Creating new branch now.."
+
+      git checkout -b ${BRANCH}
     fi
-    git checkout -b "${BRANCH}"
   )
+
+  # Unshallow the repo manually so that it doesn't trigger a push failure.
+  # This is generally unsafe, however we immediately remove all of the files from within
+  # the repo on the next line, so we should be able to safely treat the entire repo
+  # contents as an atomic piece to be pushed.
+  rm $REPO_DIR/.git/shallow
 
   # copy over build artifacts into the repo directory
   rm -rf $REPO_DIR/*
@@ -78,7 +96,7 @@ function publishRepo {
     git config user.email "${COMMITTER_USER_EMAIL}" && \
     git add --all && \
     git commit -m "${COMMIT_MSG}" --quiet && \
-    git tag "${BUILD_VER}" && \
+    git tag "${BUILD_VER}" --force && \
     git push origin "${BRANCH}" --tags --force
   )
 }
@@ -125,11 +143,12 @@ function publishAllBuilds() {
   COMMIT_MSG=`git log --oneline -1`
   COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
   COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
+  PACKAGES_DIST="$(pwd)/dist/packages-dist"
 
   local shortSha=`git rev-parse --short HEAD`
   local latestTag=`getLatestTag`
 
-  publishPackages $GIT_SCHEME dist/packages-dist $CUR_BRANCH "${latestTag}+${shortSha}"
+  publishPackages $GIT_SCHEME $PACKAGES_DIST $CUR_BRANCH "${latestTag}+${shortSha}"
 }
 
 # See docs/DEVELOPER.md for help

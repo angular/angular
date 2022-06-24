@@ -72,6 +72,16 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  * </div>
  * ```
  *
+ * The `RouterLinkActive` directive can also be used to set the aria-current attribute
+ * to provide an alternative distinction for active elements to visually impaired users.
+ *
+ * For example, the following code adds the 'active' class to the Home Page link when it is
+ * indeed active and in such case also sets its aria-current attribute to 'page':
+ *
+ * ```
+ * <a routerLink="/" routerLinkActive="active" ariaCurrentWhenActive="page">Home Page</a>
+ * ```
+ *
  * @ngModule RouterModule
  *
  * @publicApi
@@ -98,6 +108,16 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    * @see Router.isActive
    */
   @Input() routerLinkActiveOptions: {exact: boolean}|IsActiveMatchOptions = {exact: false};
+
+
+  /**
+   * Aria-current attribute to apply when the router link is active.
+   *
+   * Possible values: `'page'` | `'step'` | `'location'` | `'date'` | `'time'` | `true` | `false`.
+   *
+   * @see {@link https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current}
+   */
+  @Input() ariaCurrentWhenActive?: 'page'|'step'|'location'|'date'|'time'|true|false;
 
   /**
    *
@@ -180,6 +200,12 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
             this.renderer.removeClass(this.element.nativeElement, c);
           }
         });
+        if (hasActiveLinks && this.ariaCurrentWhenActive !== undefined) {
+          this.renderer.setAttribute(
+              this.element.nativeElement, 'aria-current', this.ariaCurrentWhenActive.toString());
+        } else {
+          this.renderer.removeAttribute(this.element.nativeElement, 'aria-current');
+        }
 
         // Emit on isActiveChange after classes are updated
         this.isActiveChange.emit(hasActiveLinks);

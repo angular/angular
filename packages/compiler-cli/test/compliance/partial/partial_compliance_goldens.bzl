@@ -1,4 +1,5 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test", "nodejs_binary", "npm_package_bin")
+load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
+load("//tools:defaults.bzl", "nodejs_binary", "npm_package_bin")
 
 def partial_compliance_golden(filePath):
     """Creates the generate and testing targets for partial compile results.
@@ -6,7 +7,7 @@ def partial_compliance_golden(filePath):
 
     # Remove the "TEST_CASES.json" substring from the end of the provided path.
     path = filePath[:-len("/TEST_CASES.json")]
-    generate_partial_name = "generate_partial_for_%s" % path
+    generate_partial_name = "partial_%s" % path
     data = [
         "//packages/compiler-cli/test/compliance/partial:generate_golden_partial_lib",
         "//packages/compiler-cli/test/compliance/test_cases",
@@ -16,15 +17,10 @@ def partial_compliance_golden(filePath):
     nodejs_binary(
         name = generate_partial_name,
         testonly = True,
-        data = data,
+        data = data + [filePath],
         visibility = [":__pkg__"],
         entry_point = "//packages/compiler-cli/test/compliance/partial:cli.ts",
-        templated_args = [
-            filePath,
-            # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
-            # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
-            "--bazel_patch_module_resolver",
-        ],
+        templated_args = ["$(execpath %s)" % filePath],
     )
 
     nodejs_binary(
@@ -33,21 +29,18 @@ def partial_compliance_golden(filePath):
         data = data,
         visibility = [":__pkg__"],
         entry_point = "//packages/compiler-cli/test/compliance/partial:cli.ts",
-        templated_args = [
-            # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
-            # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
-            "--bazel_patch_module_resolver",
-            "--node_options=--inspect-brk",
-            filePath,
-        ],
+        templated_args = ["--node_options=--inspect-brk", filePath],
     )
 
     npm_package_bin(
         name = "_generated_%s" % path,
         tool = generate_partial_name,
         testonly = True,
-        stdout = "%s/this_file_should_not_be_committed" % path,
+        stdout = "%s/_generated.js" % path,
         link_workspace_root = True,
+        # Disable the linker and rely on patched resolution which works better on Windows
+        # and is less prone to race conditions when targets build concurrently.
+        args = ["--nobazel_run_linker"],
         visibility = [":__pkg__"],
         data = [],
     )

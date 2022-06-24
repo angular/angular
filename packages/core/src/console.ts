@@ -8,7 +8,7 @@
 
 import {Injectable} from './di';
 
-@Injectable()
+@Injectable({providedIn: 'platform'})
 export class Console {
   log(message: string): void {
     // tslint:disable-next-line:no-console

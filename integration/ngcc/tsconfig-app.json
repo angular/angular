@@ -8,7 +8,8 @@
     "emitDecoratorMetadata": true,
     "outDir": "dist",
     "types": ["node"],
-    "rootDir": "."
+    "rootDir": ".",
+    "skipLibCheck": true
   },
   "files": [
     "src/main.ts"

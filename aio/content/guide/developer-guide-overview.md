@@ -2,7 +2,6 @@
 
 As an application framework, Angular includes a collection of well-integrated libraries that cover a wide variety of features.
 
-
 The Angular libraries include routing, forms management, client-server communication, and more.
 
 This topic lists the various developer guides for you to learn more about these Angular features and to help you determine the correct use of each in your application.
@@ -11,9 +10,9 @@ This topic lists the various developer guides for you to learn more about these 
 
 To get the most out of these developer guides, you should review the following topics:
 
-* [What is Angular][AioGuideWhatIsAngular]
-* [Getting started tutorial][AioStart]
-* [Understanding Angular][AioGuideUnderstandingAngularOverview]
+*   [What is Angular][AioGuideWhatIsAngular]
+*   [Getting started tutorial][AioStart]
+*   [Understanding Angular][AioGuideUnderstandingAngularOverview]
 
 ## Learn about Angular's features
 
@@ -41,7 +40,7 @@ To get the most out of these developer guides, you should review the following t
   <a href="guide/i18n-overview" class="docs-card" title="Angular internationalization developer guide">
     <section>Internationalization</section>
     <p>Learn how to localize your Angular application.</p>
-    <p class="card-footer">i18n and $localize</p>
+    <p class="card-footer">i18n and &dollar;localize</p>
   </a>
   <a href="guide/animations" class="docs-card" title="Angular animations developer guide">
     <section>Animations</section>

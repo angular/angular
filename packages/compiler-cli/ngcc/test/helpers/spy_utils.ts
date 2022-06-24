@@ -93,8 +93,8 @@ export const spyProperty = <T, P extends keyof T>(ctx: T, prop: P): IPropertySpy
 
   let value = ctx[prop];
   const setMockValue = (mockValue: typeof value) => value = mockValue;
-  const setSpy = jasmine.createSpy(`set ${prop}`).and.callFake(setMockValue);
-  const getSpy = jasmine.createSpy(`get ${prop}`).and.callFake(() => value);
+  const setSpy = jasmine.createSpy(`set ${String(prop)}`).and.callFake(setMockValue);
+  const getSpy = jasmine.createSpy(`get ${String(prop)}`).and.callFake(() => value);
 
   const installSpies = () => {
     value = ctx[prop];

@@ -12,8 +12,16 @@ import {CldrLocaleData} from './cldr-data';
  * Returns data for the chosen day periods
  */
 export function getDayPeriods(localeData: CldrLocaleData, dayPeriodsList: string[]): {
-  format: {narrow: string[], abbreviated: string[], wide: string[]},
-  'stand-alone': {narrow: string[], abbreviated: string[], wide: string[]}
+  format: {
+    narrow: Record<string, string>,
+    abbreviated: Record<string, string>,
+    wide: Record<string, string>
+  },
+  'stand-alone': {
+    narrow: Record<string, string>,
+    abbreviated: Record<string, string>,
+    wide: Record<string, string>
+  }
 } {
   const dayPeriods = localeData.main(`dates/calendars/gregorian/dayPeriods`);
   const result: any = {};
@@ -39,7 +47,8 @@ export function getDayPeriods(localeData: CldrLocaleData, dayPeriodsList: string
  * @returns string[]
  */
 export function getDayPeriodRules(
-    localeData: CldrLocaleData, language = localeData.attributes.language): {[key: string]: []} {
+    localeData: CldrLocaleData,
+    language = localeData.attributes.language): Record<string, string|[string, string]> {
   const dayPeriodRules = localeData.get(`supplemental/dayPeriodRuleSet/${language}`);
   const rules: any = {};
   if (dayPeriodRules) {

@@ -125,6 +125,7 @@
     "!/guide/service-worker-comm/{0,1}",
     "!/guide/service-worker-configref/{0,1}",
     "!/guide/service-worker-getstart/{0,1}",
+    "!/guide/set-document-title/{0,1}",
     "!/guide/setup-systemjs-anatomy/{0,1}",
     "!/guide/setup/{0,1}",
     "!/guide/updating-to-version-10/{0,1}",

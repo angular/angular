@@ -99,11 +99,6 @@ jasmine_node_test(
     ],
     shard_count = 4,
     tags = [],
-    templated_args = [
-        # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
-        # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
-        "--bazel_patch_module_resolver",
-    ],
     deps = [
         ":integration_lib",
         "@npm//convert-source-map",

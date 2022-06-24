@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ErrorHandler, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ElementRef, ErrorHandler, getNgModuleById, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelementEnd as elementEnd, ɵɵelementStart as elementStart, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
 import {getTestBed, TestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {getNgModuleById} from '../public_api';
 import {TestBedRender3} from '../testing/src/r3_test_bed';
-import {TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT} from '../testing/src/test_bed_common';
+import {TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from '../testing/src/test_bed_common';
 
 const NAME = new InjectionToken<string>('name');
 
@@ -168,6 +168,334 @@ describe('TestBed', () => {
   });
 });
 
+describe('TestBed with Standalone types', () => {
+  beforeEach(() => {
+    getTestBed().resetTestingModule();
+  });
+
+  it('should override providers on standalone component itself', () => {
+    const A = new InjectionToken('A');
+
+    @Component({
+      standalone: true,
+      template: '{{ a }}',
+      providers: [{provide: A, useValue: 'A'}],
+    })
+    class MyStandaloneComp {
+      constructor(@Inject(A) public a: string) {}
+    }
+
+    // NOTE: the `TestBed.configureTestingModule` is load-bearing here: it instructs
+    // TestBed to examine and override providers in dependencies.
+    TestBed.configureTestingModule({imports: [MyStandaloneComp]});
+    TestBed.overrideProvider(A, {useValue: 'Overridden A'});
+
+    const fixture = TestBed.createComponent(MyStandaloneComp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).toBe('Overridden A');
+  });
+
+  it('should override providers in standalone component dependencies via overrideProvider', () => {
+    const A = new InjectionToken('A');
+    @NgModule({
+      providers: [{provide: A, useValue: 'A'}],
+    })
+    class ComponentDependenciesModule {
+    }
+
+    @Component({
+      standalone: true,
+      template: '{{ a }}',
+      imports: [ComponentDependenciesModule],
+    })
+    class MyStandaloneComp {
+      constructor(@Inject(A) public a: string) {}
+    }
+
+    // NOTE: the `TestBed.configureTestingModule` is load-bearing here: it instructs
+    // TestBed to examine and override providers in dependencies.
+    TestBed.configureTestingModule({imports: [MyStandaloneComp]});
+    TestBed.overrideProvider(A, {useValue: 'Overridden A'});
+
+    const fixture = TestBed.createComponent(MyStandaloneComp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).toBe('Overridden A');
+  });
+
+  it('should override providers in standalone component dependencies via overrideModule', () => {
+    const A = new InjectionToken('A');
+    @NgModule({
+      providers: [{provide: A, useValue: 'A'}],
+    })
+    class ComponentDependenciesModule {
+    }
+
+    @Component({
+      standalone: true,
+      template: '{{ a }}',
+      imports: [ComponentDependenciesModule],
+    })
+    class MyStandaloneComp {
+      constructor(@Inject(A) public a: string) {}
+    }
+
+    // NOTE: the `TestBed.configureTestingModule` is *not* needed here, since the TestBed
+    // knows which NgModule was overridden and needs re-compilation.
+    TestBed.overrideModule(
+        ComponentDependenciesModule, {set: {providers: [{provide: A, useValue: 'Overridden A'}]}});
+
+    const fixture = TestBed.createComponent(MyStandaloneComp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).toBe('Overridden A');
+  });
+
+  it('should allow overriding a template of a standalone component', () => {
+    @Component({
+      standalone: true,
+      template: 'Original',
+    })
+    class MyStandaloneComp {
+    }
+
+    // NOTE: the `TestBed.configureTestingModule` call is *not* required here, since TestBed already
+    // knows that the `MyStandaloneComp` should be overridden/recompiled.
+    TestBed.overrideComponent(MyStandaloneComp, {set: {template: 'Overridden'}});
+
+    const fixture = TestBed.createComponent(MyStandaloneComp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).toBe('Overridden');
+  });
+
+  it('should allow overriding the set of directives and pipes used in a standalone component',
+     () => {
+       @Directive({
+         selector: '[dir]',
+         standalone: true,
+         host: {'[id]': 'id'},
+       })
+       class MyStandaloneDirectiveA {
+         id = 'A';
+       }
+
+       @Directive({
+         selector: '[dir]',
+         standalone: true,
+         host: {'[id]': 'id'},
+       })
+       class MyStandaloneDirectiveB {
+         id = 'B';
+       }
+
+       @Pipe({name: 'pipe', standalone: true})
+       class MyStandalonePipeA {
+         transform(value: string): string {
+           return `transformed ${value} (A)`;
+         }
+       }
+       @Pipe({name: 'pipe', standalone: true})
+       class MyStandalonePipeB {
+         transform(value: string): string {
+           return `transformed ${value} (B)`;
+         }
+       }
+
+       @Component({
+         standalone: true,
+         template: '<div dir>{{ name | pipe }}</div>',
+         imports: [MyStandalonePipeA, MyStandaloneDirectiveA],
+       })
+       class MyStandaloneComp {
+         name = 'MyStandaloneComp';
+       }
+
+       // NOTE: the `TestBed.configureTestingModule` call is *not* required here, since TestBed
+       // already knows that the `MyStandaloneComp` should be overridden/recompiled.
+       TestBed.overrideComponent(
+           MyStandaloneComp, {set: {imports: [MyStandalonePipeB, MyStandaloneDirectiveB]}});
+
+       const fixture = TestBed.createComponent(MyStandaloneComp);
+       fixture.detectChanges();
+
+       const rootElement = fixture.nativeElement.firstChild;
+       expect(rootElement.id).toBe('B');
+       expect(rootElement.innerHTML).toBe('transformed MyStandaloneComp (B)');
+     });
+
+  it('should reflect overrides on imported standalone directive', () => {
+    @Directive({
+      selector: '[dir]',
+      standalone: true,
+      host: {'[id]': 'id'},
+    })
+    class DepStandaloneDirective {
+      id = 'A';
+    }
+
+    @Component({
+      selector: 'standalone-cmp',
+      standalone: true,
+      template: 'Original MyStandaloneComponent',
+    })
+    class DepStandaloneComponent {
+      id = 'A';
+    }
+
+    @Component({
+      standalone: true,
+      template: '<standalone-cmp dir>Hello world!</standalone-cmp>',
+      imports: [DepStandaloneDirective, DepStandaloneComponent],
+    })
+    class RootStandaloneComp {
+    }
+
+    // NOTE: the `TestBed.configureTestingModule` call is *not* required here, since TestBed
+    // already knows which Components/Directives are overridden and should be recompiled.
+    TestBed.overrideComponent(
+        DepStandaloneComponent, {set: {template: 'Overridden MyStandaloneComponent'}});
+    TestBed.overrideDirective(DepStandaloneDirective, {set: {host: {'[id]': '\'Overridden\''}}});
+
+    const fixture = TestBed.createComponent(RootStandaloneComp);
+    fixture.detectChanges();
+
+    const rootElement = fixture.nativeElement.firstChild;
+
+    expect(rootElement.id).toBe('Overridden');
+    expect(rootElement.innerHTML).toBe('Overridden MyStandaloneComponent');
+  });
+
+  it('should make overridden providers available in pipes', () => {
+    const TOKEN_A = new InjectionToken('TOKEN_A');
+    @Pipe({
+      name: 'testPipe',
+      standalone: true,
+    })
+    class TestPipe {
+      constructor(@Inject(TOKEN_A) private token: string) {}
+
+      transform(value: string): string {
+        return `transformed ${value} using ${this.token} token`;
+      }
+    }
+    @NgModule({
+      imports: [TestPipe],
+      exports: [TestPipe],
+      providers: [{provide: TOKEN_A, useValue: 'A'}],
+    })
+    class TestNgModule {
+    }
+
+    @Component({
+      selector: 'test-component',
+      standalone: true,
+      imports: [TestNgModule],
+      template: `{{ 'original value' | testPipe }}`
+    })
+    class TestComponent {
+    }
+
+    TestBed.configureTestingModule({
+      imports: [TestComponent],
+    });
+    TestBed.overrideProvider(TOKEN_A, {useValue: 'Overridden A'});
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+
+    const hostElement = fixture.nativeElement.firstChild;
+    expect(hostElement.textContent).toBe('transformed original value using Overridden A token');
+  });
+
+  describe('NgModules as dependencies', () => {
+    @Component({
+      selector: 'test-cmp',
+      template: '...',
+    })
+    class TestComponent {
+      testField = 'default';
+    }
+
+    @Component({
+      selector: 'test-cmp',
+      template: '...',
+    })
+    class MockTestComponent {
+      testField = 'overridden';
+    }
+
+    @NgModule({
+      declarations: [TestComponent],
+      exports: [TestComponent],
+    })
+    class TestModule {
+    }
+
+    @Component({
+      standalone: true,
+      selector: 'app-root',
+      template: `<test-cmp #testCmpCtrl></test-cmp>`,
+      imports: [TestModule],
+    })
+    class AppComponent {
+      @ViewChild('testCmpCtrl', {static: true}) testCmpCtrl!: TestComponent;
+    }
+
+    it('should allow declarations and exports overrides on an imported NgModule', () => {
+      // replace TestComponent with MockTestComponent
+      TestBed.overrideModule(TestModule, {
+        remove: {declarations: [TestComponent], exports: [TestComponent]},
+        add: {declarations: [MockTestComponent], exports: [MockTestComponent]}
+      });
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+
+      const app = fixture.componentInstance;
+      expect(app.testCmpCtrl.testField).toBe('overridden');
+    });
+
+    it('should allow removing an import via `overrideModule`', () => {
+      const fooToken = new InjectionToken<string>('foo');
+
+      @NgModule({
+        providers: [{provide: fooToken, useValue: 'FOO'}],
+      })
+      class ImportedModule {
+      }
+
+      @NgModule({
+        imports: [ImportedModule],
+      })
+      class ImportingModule {
+      }
+
+      TestBed.configureTestingModule({
+        imports: [ImportingModule],
+      });
+
+      TestBed.overrideModule(ImportingModule, {
+        remove: {
+          imports: [ImportedModule],
+        },
+      });
+
+      expect(TestBed.inject(fooToken, 'BAR')).toBe('BAR');
+
+      // Emulate an end of a test.
+      TestBed.resetTestingModule();
+
+      // Emulate the start of a next test, make sure previous overrides
+      // are not persisted across tests.
+      TestBed.configureTestingModule({
+        imports: [ImportingModule],
+      });
+      expect(TestBed.inject(fooToken, 'BAR')).toBe('FOO');
+    });
+  });
+});
+
 describe('TestBed', () => {
   beforeEach(() => {
     getTestBed().resetTestingModule();
@@ -179,6 +507,64 @@ describe('TestBed', () => {
     hello.detectChanges();
 
     expect(hello.nativeElement).toHaveText('Hello World!');
+  });
+
+  it('should not allow overrides of the `standalone` field', () => {
+    @Component({
+      standalone: true,
+      selector: 'standalone-comp',
+      template: '...',
+    })
+    class StandaloneComponent {
+    }
+
+    @Component({
+      selector: 'non-standalone-comp',
+      template: '...',
+    })
+    class NonStandaloneComponent {
+    }
+
+    @Directive({standalone: true})
+    class StandaloneDirective {
+    }
+
+    @Directive({})
+    class NonStandaloneDirective {
+    }
+
+    @Pipe({standalone: true, name: 'test'})
+    class StandalonePipe {
+    }
+
+    @Pipe({name: 'test'})
+    class NonStandalonePipe {
+    }
+
+    const getExpectedError = (typeName: string) =>
+        `An override for the ${typeName} class has the \`standalone\` flag. ` +
+        `Changing the \`standalone\` flag via TestBed overrides is not supported.`;
+
+    const overrides = [
+      {set: {standalone: false}},
+      {add: {standalone: false}},
+      {remove: {standalone: true}},
+    ];
+
+    const scenarios = [
+      [TestBed.overrideComponent, StandaloneComponent, NonStandaloneComponent],
+      [TestBed.overrideDirective, StandaloneDirective, NonStandaloneDirective],
+      [TestBed.overridePipe, StandalonePipe, NonStandalonePipe]
+    ];
+
+    overrides.forEach(override => {
+      scenarios.forEach(([fn, standaloneType, nonStandaloneType]) => {
+        expect(() => (fn as Function)(standaloneType, override))
+            .toThrowError(getExpectedError(standaloneType.name));
+        expect(() => (fn as Function)(nonStandaloneType, override))
+            .toThrowError(getExpectedError(nonStandaloneType.name));
+      });
+    });
   });
 
   it('should give access to the component instance', () => {
@@ -1082,6 +1468,8 @@ describe('TestBed', () => {
      * Function returns a class that represents AOT-compiled version of the following Component:
      *
      * @Component({
+     *  standalone: true|false,
+     *  imports: [...],  // for standalone only
      *  selector: 'comp',
      *  templateUrl: './template.ng.html',
      *  styleUrls: ['./style.css']
@@ -1092,18 +1480,23 @@ describe('TestBed', () => {
      * outside of TestBed) without changing TestBed state and/or Component metadata to compile
      * them via TestBed with external resources.
      */
-    const getAOTCompiledComponent = () => {
+    const getAOTCompiledComponent = (standalone: boolean = false, dependencies: any[] = []) => {
       class ComponentClass {
         static ɵfac = () => new ComponentClass();
         static ɵcmp = defineComponent({
+          standalone,
           type: ComponentClass,
           selectors: [['comp']],
-          decls: 1,
+          decls: 2,
           vars: 0,
+          dependencies,
+          consts: [['dir']],
           template:
               (rf: any, ctx: any) => {
                 if (rf & 1) {
-                  text(0, 'Some template');
+                  elementStart(0, 'div', 0);
+                  text(1, 'Some template');
+                  elementEnd();
                 }
               },
           styles: ['body { margin: 0; }']
@@ -1113,6 +1506,8 @@ describe('TestBed', () => {
           ComponentClass, [{
             type: Component,
             args: [{
+              standalone,
+              imports: dependencies,
               selector: 'comp',
               templateUrl: './template.ng.html',
               styleUrls: ['./style.css'],
@@ -1121,6 +1516,30 @@ describe('TestBed', () => {
           null, null);
       return ComponentClass;
     };
+
+    it('should allow to override a provider used in a dependency of a standalone component', () => {
+      const A = new InjectionToken('A');
+
+      @Directive({
+        selector: '[dir]',
+        providers: [{provide: A, useValue: 'A'}],
+      })
+      class SomeDir {
+        constructor(@Inject(A) private tokenA: string, private elementRef: ElementRef) {}
+
+        ngAfterViewInit() {
+          this.elementRef.nativeElement.innerHTML = this.tokenA;
+        }
+      }
+
+      const SomeComponent = getAOTCompiledComponent(true, [SomeDir]);
+      TestBed.configureTestingModule({imports: [SomeComponent]});
+      TestBed.overrideProvider(A, {useValue: 'Overridden A'});
+      const fixture = TestBed.createComponent(SomeComponent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Overridden A');
+    });
 
     it('should have an ability to override template', () => {
       const SomeComponent = getAOTCompiledComponent();
@@ -1171,7 +1590,8 @@ describe('TestBed', () => {
       });
       const fixture = TestBed.createComponent(TestFixture);
       // The regex avoids any issues with styling attributes.
-      expect(fixture.nativeElement.innerHTML).toMatch(/<comp[^>]*>Some template<\/comp>/);
+      expect(fixture.nativeElement.innerHTML)
+          .toMatch(/<comp[^>]*><div[^>]*>Some template<\/div><\/comp>/);
     });
   });
 
@@ -1654,5 +2074,67 @@ describe('TestBed module teardown', () => {
   it('should not rethrow errors if the option is disabled, but teardown is enabled', () => {
     TestBed.configureTestingModule({teardown: {destroyAfterEach: true, rethrowErrors: false}});
     expect(TestBed.shouldRethrowTeardownErrors()).toBe(false);
+  });
+});
+
+describe('TestBed module `errorOnUnknownElements`', () => {
+  // Cast the `TestBed` to the internal data type since we're testing private APIs.
+  let TestBed: TestBedRender3;
+
+  beforeEach(() => {
+    TestBed = getTestBed() as unknown as TestBedRender3;
+    TestBed.resetTestingModule();
+  });
+
+  it('should not throw based on the default behavior', () => {
+    expect(TestBed.shouldThrowErrorOnUnknownElements()).toBe(THROW_ON_UNKNOWN_ELEMENTS_DEFAULT);
+  });
+
+  it('should not throw if the option is omitted', () => {
+    TestBed.configureTestingModule({});
+    expect(TestBed.shouldThrowErrorOnUnknownElements()).toBe(false);
+  });
+
+  it('should be able to configure the option', () => {
+    TestBed.configureTestingModule({errorOnUnknownElements: true});
+    expect(TestBed.shouldThrowErrorOnUnknownElements()).toBe(true);
+  });
+
+  it('should reset the option back to the default when TestBed is reset', () => {
+    TestBed.configureTestingModule({errorOnUnknownElements: true});
+    expect(TestBed.shouldThrowErrorOnUnknownElements()).toBe(true);
+    TestBed.resetTestingModule();
+    expect(TestBed.shouldThrowErrorOnUnknownElements()).toBe(false);
+  });
+});
+
+describe('TestBed module `errorOnUnknownProperties`', () => {
+  // Cast the `TestBed` to the internal data type since we're testing private APIs.
+  let TestBed: TestBedRender3;
+
+  beforeEach(() => {
+    TestBed = getTestBed() as unknown as TestBedRender3;
+    TestBed.resetTestingModule();
+  });
+
+  it('should not throw based on the default behavior', () => {
+    expect(TestBed.shouldThrowErrorOnUnknownProperties()).toBe(THROW_ON_UNKNOWN_PROPERTIES_DEFAULT);
+  });
+
+  it('should not throw if the option is omitted', () => {
+    TestBed.configureTestingModule({});
+    expect(TestBed.shouldThrowErrorOnUnknownProperties()).toBe(false);
+  });
+
+  it('should be able to configure the option', () => {
+    TestBed.configureTestingModule({errorOnUnknownProperties: true});
+    expect(TestBed.shouldThrowErrorOnUnknownProperties()).toBe(true);
+  });
+
+  it('should reset the option back to the default when TestBed is reset', () => {
+    TestBed.configureTestingModule({errorOnUnknownProperties: true});
+    expect(TestBed.shouldThrowErrorOnUnknownProperties()).toBe(true);
+    TestBed.resetTestingModule();
+    expect(TestBed.shouldThrowErrorOnUnknownProperties()).toBe(false);
   });
 });

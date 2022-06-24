@@ -14,6 +14,6 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵproperty("names", $r3$.ɵɵpureFunction1(1, $e0_ff$, ctx.customName));
     }
   },
- directives: [MyComp],
+ dependencies: [MyComp],
  encapsulation: 2
 });

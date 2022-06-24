@@ -377,10 +377,6 @@ describe('find references and rename locations', () => {
 
       expect(refs.length).toBe(2);
       assertTextSpans(refs, ['myInput']);
-
-      // Get the declaration by finding the reference that appears first in the template
-      refs.sort((a, b) => a.textSpan.start - b.textSpan.start);
-      expect(refs[0].isDefinition).toBe(true);
     });
 
     it('finds rename location in template', () => {
@@ -418,10 +414,6 @@ describe('find references and rename locations', () => {
       expect(refs.length).toBe(2);
       assertTextSpans(refs, ['myTemplate']);
       assertFileNames(refs, ['app.html']);
-
-      // Get the declaration by finding the reference that appears first in the template
-      refs.sort((a, b) => a.textSpan.start - b.textSpan.start);
-      expect(refs[0].isDefinition).toBe(true);
     });
 
     it('finds rename location in template', () => {
@@ -599,10 +591,6 @@ describe('find references and rename locations', () => {
         expect(refs.length).toBe(3);
         assertFileNames(refs, ['template.ng.html']);
         assertTextSpans(refs, ['hero']);
-
-        // Get the declaration by finding the reference that appears first in the template
-        refs.sort((a, b) => a.textSpan.start - b.textSpan.start);
-        expect(refs[0].isDefinition).toBe(true);
       });
 
       it('should find rename locations', () => {
@@ -637,10 +625,6 @@ describe('find references and rename locations', () => {
         expect(refs.length).toBe(2);
         assertFileNames(refs, ['app.ts']);
         assertTextSpans(refs, ['iRef']);
-
-        // Get the declaration by finding the reference that appears first in the template
-        refs.sort((a, b) => a.textSpan.start - b.textSpan.start);
-        expect(refs[0].isDefinition).toBe(true);
       });
 
       it('should find rename locations', () => {

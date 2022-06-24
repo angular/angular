@@ -37,7 +37,8 @@ import {getLView, getSelectedIndex, getTView, isInCheckNoChangesMode, setSelecte
  */
 export function ɵɵadvance(delta: number): void {
   ngDevMode && assertGreaterThan(delta, 0, 'Can only advance forward');
-  selectIndexInternal(getTView(), getLView(), getSelectedIndex() + delta, isInCheckNoChangesMode());
+  selectIndexInternal(
+      getTView(), getLView(), getSelectedIndex() + delta, !!ngDevMode && isInCheckNoChangesMode());
 }
 
 export function selectIndexInternal(

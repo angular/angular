@@ -27,9 +27,11 @@ export const enum RuntimeErrorCode {
   CYCLIC_DI_DEPENDENCY = -200,
   PROVIDER_NOT_FOUND = -201,
   INVALID_FACTORY_DEPENDENCY = 202,
-  MISSING_INJECTION_CONTEXT = 203,
+  MISSING_INJECTION_CONTEXT = -203,
   INVALID_INJECTION_TOKEN = 204,
   INJECTOR_ALREADY_DESTROYED = 205,
+  PROVIDER_IN_WRONG_CONTEXT = 207,
+  MISSING_INJECTION_TOKEN = 208,
 
   // Template Errors
   MULTIPLE_COMPONENTS_MATCH = -300,
@@ -45,8 +47,9 @@ export const enum RuntimeErrorCode {
   PLATFORM_NOT_FOUND = 401,
   ERROR_HANDLER_NOT_FOUND = 402,
   BOOTSTRAP_COMPONENTS_NOT_FOUND = 403,
-  ALREADY_DESTROYED_PLATFORM = 404,
+  PLATFORM_ALREADY_DESTROYED = 404,
   ASYNC_INITIALIZERS_STILL_RUNNING = 405,
+  APPLICATION_REF_ALREADY_DESTROYED = 406,
 
   // Styling Errors
 
@@ -54,6 +57,10 @@ export const enum RuntimeErrorCode {
 
   // i18n Errors
   INVALID_I18N_STRUCTURE = 700,
+  MISSING_LOCALE_DATA = 701,
+
+  // standalone errors
+  IMPORT_PROVIDERS_FROM_STANDALONE = 800,
 
   // JIT Compilation Errors
   // Other
@@ -62,7 +69,11 @@ export const enum RuntimeErrorCode {
   VIEW_ALREADY_ATTACHED = 902,
   INVALID_INHERITANCE = 903,
   UNSAFE_VALUE_IN_RESOURCE_URL = 904,
-  UNSAFE_VALUE_IN_SCRIPT = 905
+  UNSAFE_VALUE_IN_SCRIPT = 905,
+  MISSING_GENERATED_DEF = 906,
+  TYPE_IS_NOT_STANDALONE = 907,
+  MISSING_ZONEJS = 908,
+  UNEXPECTED_ZONE_STATE = 909,
 }
 
 /**
@@ -96,10 +107,13 @@ export function formatRuntimeError<T extends number = RuntimeErrorCode>(
   // generate a link to the error details page on angular.io.
   const fullCode = `NG0${Math.abs(code)}`;
 
-  let errorMessage = `${fullCode}${message ? ': ' + message : ''}`;
+  let errorMessage = `${fullCode}${message ? ': ' + message.trim() : ''}`;
 
   if (ngDevMode && code < 0) {
-    errorMessage = `${errorMessage}. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/${fullCode}`;
+    const addPeriodSeparator = !errorMessage.match(/[.,;!?]$/);
+    const separator = addPeriodSeparator ? '.' : '';
+    errorMessage =
+        `${errorMessage}${separator} Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/${fullCode}`;
   }
   return errorMessage;
 }

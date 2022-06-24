@@ -10,6 +10,6 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵtext(1, "!");
     }
   },
-  directives: [ChildComponent, SomeDirective],
+  dependencies: [ChildComponent, SomeDirective],
   encapsulation: 2
 });

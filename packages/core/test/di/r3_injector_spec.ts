@@ -7,7 +7,8 @@
  */
 
 import {InjectFlags, InjectionToken, INJECTOR, Injector, Optional, ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵinject} from '@angular/core';
-import {createInjector, R3Injector} from '@angular/core/src/di/r3_injector';
+import {createInjector} from '@angular/core/src/di/create_injector';
+import {R3Injector} from '@angular/core/src/di/r3_injector';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('InjectorDef-based createInjector()', () => {

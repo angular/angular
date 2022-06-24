@@ -10,6 +10,7 @@ import {assertDefined} from '../../util/assert';
 import {getComponentViewByInstance} from '../context_discovery';
 import {CONTEXT, RootContext, RootContextFlags, TVIEW} from '../interfaces/view';
 import {getRootView} from '../util/view_traversal_utils';
+
 import {detectChangesInternal, markViewDirty, scheduleTick, tickRootContext} from './shared';
 
 /**
@@ -53,7 +54,7 @@ export function markDirty(component: {}): void {
  * single change detection run. By default, the scheduler is `requestAnimationFrame`, but can
  * be changed when calling `renderComponent` and providing the `scheduler` option.
  */
-export function tick<T>(component: T): void {
+export function tick(component: {}): void {
   const rootView = getRootView(component);
   const rootContext = rootView[CONTEXT] as RootContext;
   tickRootContext(rootContext);

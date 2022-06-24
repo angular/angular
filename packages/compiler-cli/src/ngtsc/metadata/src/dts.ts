@@ -11,9 +11,9 @@ import ts from 'typescript';
 import {Reference} from '../../imports';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
 
-import {DirectiveMeta, MetadataReader, MetaType, NgModuleMeta, PipeMeta} from './api';
+import {DirectiveMeta, MetadataReader, MetaKind, NgModuleMeta, PipeMeta} from './api';
 import {ClassPropertyMapping} from './property_mapping';
-import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readStringArrayType, readStringMapType, readStringType} from './util';
+import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readBooleanType, readStringArrayType, readStringMapType, readStringType} from './util';
 
 /**
  * A `MetadataReader` that can read metadata from `.d.ts` files, which have static Ivy properties
@@ -48,6 +48,7 @@ export class DtsMetadataReader implements MetadataReader {
     // Read the ModuleData out of the type arguments.
     const [_, declarationMetadata, importMetadata, exportMetadata] = ngModuleDef.type.typeArguments;
     return {
+      kind: MetaKind.NgModule,
       ref,
       declarations:
           extractReferencesFromType(this.checker, declarationMetadata, ref.bestGuessOwningModule),
@@ -55,6 +56,8 @@ export class DtsMetadataReader implements MetadataReader {
       imports: extractReferencesFromType(this.checker, importMetadata, ref.bestGuessOwningModule),
       schemas: [],
       rawDeclarations: null,
+      rawImports: null,
+      rawExports: null,
     };
   }
 
@@ -88,12 +91,15 @@ export class DtsMetadataReader implements MetadataReader {
           param.typeValueReference.importedName === 'TemplateRef';
     });
 
+    const isStandalone =
+        def.type.typeArguments.length > 7 && (readBooleanType(def.type.typeArguments[7]) ?? false);
+
     const inputs =
         ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[3]));
     const outputs =
         ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[4]));
     return {
-      type: MetaType.Directive,
+      kind: MetaKind.Directive,
       ref,
       name: clazz.name.text,
       isComponent,
@@ -107,7 +113,12 @@ export class DtsMetadataReader implements MetadataReader {
       isPoisoned: false,
       isStructural,
       animationTriggerNames: null,
-      isStandalone: false,  // TODO: read this from the compiled metadata.
+      isStandalone,
+      // Imports are tracked in metadata only for template type-checking purposes,
+      // so standalone components from .d.ts files don't have any.
+      imports: null,
+      // The same goes for schemas.
+      schemas: null,
     };
   }
 
@@ -132,12 +143,16 @@ export class DtsMetadataReader implements MetadataReader {
       return null;
     }
     const name = type.literal.text;
+
+    const isStandalone =
+        def.type.typeArguments.length > 2 && (readBooleanType(def.type.typeArguments[2]) ?? false);
+
     return {
-      type: MetaType.Pipe,
+      kind: MetaKind.Pipe,
       ref,
       name,
       nameExpr: null,
-      isStandalone: false,  // TODO
+      isStandalone,
     };
   }
 }

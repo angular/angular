@@ -43,7 +43,7 @@ footer {
       }
     }
 
-    h3 {
+    .footer-block-heading {
       @include mixins.font-size(16);
       text-transform: uppercase;
       font-weight: 400;

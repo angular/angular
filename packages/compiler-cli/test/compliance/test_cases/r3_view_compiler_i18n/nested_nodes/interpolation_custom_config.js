@@ -1,5 +1,5 @@
 consts: function() {
-  __i18nMsg__('{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {})
+  __i18nMsg__('{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{% valueA %}'}}, {})
   return [
     $i18n_0$
   ];

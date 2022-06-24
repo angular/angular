@@ -105,8 +105,12 @@ describe('perform watch', () => {
     expect(fs.existsSync(genPath)).toBe(true);
     expect(fileExistsSpy!).toHaveBeenCalledWith(mainTsPath);
     expect(fileExistsSpy!).toHaveBeenCalledWith(utilTsPath);
-    expect(getSourceFileSpy!).toHaveBeenCalledWith(mainTsPath, ts.ScriptTarget.ES5);
-    expect(getSourceFileSpy!).toHaveBeenCalledWith(utilTsPath, ts.ScriptTarget.ES5);
+    expect(getSourceFileSpy!).toHaveBeenCalledWith(mainTsPath, jasmine.objectContaining({
+      languageVersion: ts.ScriptTarget.ES5
+    }));
+    expect(getSourceFileSpy!).toHaveBeenCalledWith(utilTsPath, jasmine.objectContaining({
+      languageVersion: ts.ScriptTarget.ES5
+    }));
 
     fileExistsSpy!.calls.reset();
     getSourceFileSpy!.calls.reset();

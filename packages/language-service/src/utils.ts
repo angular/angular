@@ -362,11 +362,11 @@ export function isWithin(position: number, span: AbsoluteSourceSpan|ParseSourceS
  * For a given location in a shim file, retrieves the corresponding file url for the template and
  * the span in the template.
  */
-export function getTemplateLocationFromShimLocation(
-    templateTypeChecker: TemplateTypeChecker, shimPath: AbsoluteFsPath,
-    positionInShimFile: number): {templateUrl: AbsoluteFsPath, span: ParseSourceSpan}|null {
-  const mapping =
-      templateTypeChecker.getTemplateMappingAtShimLocation({shimPath, positionInShimFile});
+export function getTemplateLocationFromTcbLocation(
+    templateTypeChecker: TemplateTypeChecker, tcbPath: AbsoluteFsPath, tcbIsShim: boolean,
+    positionInFile: number): {templateUrl: AbsoluteFsPath, span: ParseSourceSpan}|null {
+  const mapping = templateTypeChecker.getTemplateMappingAtTcbLocation(
+      {tcbPath, isShimFile: tcbIsShim, positionInFile});
   if (mapping === null) {
     return null;
   }

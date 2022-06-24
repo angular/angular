@@ -35,7 +35,7 @@ const requiredNodeModules = {
   '@angular/platform-server':
       resolveNpmTreeArtifact('angular/packages/platform-server/npm_package'),
   '@angular/router': resolveNpmTreeArtifact('angular/packages/router/npm_package'),
-  // Note, @bazel/typescript does not appear here because it's not listed as a dependency of
+  // Note, @bazel/concatjs does not appear here because it's not listed as a dependency of
   // @angular/compiler-cli
   '@types/jasmine': resolveNpmTreeArtifact('npm/node_modules/@types/jasmine'),
   '@types/node': resolveNpmTreeArtifact('npm/node_modules/@types/node'),

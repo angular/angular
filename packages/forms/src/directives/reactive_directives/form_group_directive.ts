@@ -11,12 +11,11 @@ import {Directive, EventEmitter, forwardRef, Inject, Input, OnChanges, OnDestroy
 import {FormArray} from '../../model/form_array';
 import {FormControl, isFormControl} from '../../model/form_control';
 import {FormGroup} from '../../model/form_group';
-import {removeListItem} from '../../util';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {ControlContainer} from '../control_container';
 import {Form} from '../form_interface';
 import {missingFormException} from '../reactive_errors';
-import {cleanUpControl, cleanUpFormContainer, cleanUpValidators, setUpControl, setUpFormContainer, setUpValidators, syncPendingControls} from '../shared';
+import {cleanUpControl, cleanUpFormContainer, cleanUpValidators, removeListItem, setUpControl, setUpFormContainer, setUpValidators, syncPendingControls} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 import {FormControlName} from './form_control_name';
@@ -30,10 +29,10 @@ export const formDirectiveProvider: any = {
 /**
  * @description
  *
- * Binds an existing `FormGroup` to a DOM element.
+ * Binds an existing `FormGroup` or `FormRecord` to a DOM element.
  *
  * This directive accepts an existing `FormGroup` instance. It will then use this
- * `FormGroup` instance to match any child `FormControl`, `FormGroup`,
+ * `FormGroup` instance to match any child `FormControl`, `FormGroup`/`FormRecord`,
  * and `FormArray` instances to child `FormControlName`, `FormGroupName`,
  * and `FormArrayName` directives.
  *
@@ -257,7 +256,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @param value The new value for the directive's control.
    */
   updateModel(dir: FormControlName, value: any): void {
-    const ctrl  = <FormControl>this.form.get(dir.path);
+    const ctrl = <FormControl>this.form.get(dir.path);
     ctrl.setValue(value);
   }
 
@@ -293,7 +292,6 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     this.form.reset(value);
     (this as {submitted: boolean}).submitted = false;
   }
-
 
   /** @internal */
   _updateDomValue() {

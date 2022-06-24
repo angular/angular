@@ -5,99 +5,115 @@
 This migration adds an empty `@Directive()` decorator to undecorated
 base classes that:
 
-- use Angular features
-- are extended by directives or components
+*   Use Angular features
+*   Are extended by directives or components
 
 For example, in the diff below, a `@Directive()` decorator is added to `BaseMenu` because `BaseMenu` uses dependency injection.
 
+**Before**:
 
-  **Before:**
-  ```ts
-  export class BaseMenu {
-    constructor(private vcr: ViewContainerRef) {}
-  }
+<code-example format="typescript" language="typescript">
 
-  @Directive({selector: '[settingsMenu]'})
-  export class SettingsMenu extends BaseMenu {}
-  ```
+export class BaseMenu {
+  constructor(private vcr: ViewContainerRef) {}
+}
 
-  **After:**
-  ```ts
-  @Directive()
-  export class BaseMenu {
-    constructor(private vcr: ViewContainerRef) {}
-  }
+&commat;Directive({selector: '[settingsMenu]'})
+export class SettingsMenu extends BaseMenu {}
 
-  @Directive({selector: '[settingsMenu]'})
-  export class SettingsMenu extends BaseMenu {}
-  ```
+</code-example>
+
+**After**:
+
+<code-example format="typescript" language="typescript">
+
+&commat;Directive()
+export class BaseMenu {
+  constructor(private vcr: ViewContainerRef) {}
+}
+
+&commat;Directive({selector: '[settingsMenu]'})
+export class SettingsMenu extends BaseMenu {}
+
+</code-example>
 
 In the event that a directive or component is extended by a class without a decorator, the schematic copies any inherited directive or component metadata to the derived class.
 
-**Before:**
-```ts
-@Component({
+**Before**:
+
+<code-example format="typescript" language="typescript">
+
+&commat;Component({
   selector: 'base-menu',
-  template: '<div></div>'
+  template: '&lt;div&gt;&lt;/div&gt;'
 })
 class BaseMenu {}
 
 export class SettingsMenu extends BaseMenu {}
-```
 
-**After:**
-```ts
-@Component({
+</code-example>
+
+**After**:
+
+<code-example format="typescript" language="typescript">
+
+&commat;Component({
   selector: 'base-menu',
-  template: '<div></div>'
+  template: '&lt;div&gt;&lt;/div&gt;'
 })
 class BaseMenu {}
 
-@Component({
+&commat;Component({
   selector: 'base-menu',
-  template: '<div></div>'
+  template: '&lt;div&gt;&lt;/div*gt;'
 })
 export class SettingsMenu extends BaseMenu {}
-```
+
+</code-example>
 
 This schematic also decorates classes that use Angular field decorators, including:
-- `@Input()`
-- `@Output()`
-- `@HostBinding()`
-- `@HostListener()`
-- `@ViewChild()` / `@ViewChildren()`
-- `@ContentChild()` / `@ContentChildren()`
 
+*   `@Input()`
+*   `@Output()`
+*   `@HostBinding()`
+*   `@HostListener()`
+*   `@ViewChild()` / `@ViewChildren()`
+*   `@ContentChild()` / `@ContentChildren()`
 
-**Before:**
-```ts
+**Before**:
+
+<code-example format="typescript" language="typescript">
+
 class Base {
-  @Output()
-  countChanged = new EventEmitter<number>();
+  &commat;Output()
+  countChanged = new EventEmitter&lt;number&gt;();
 }
 
-@Directive({
+&commat;Directive({
   selector: '[myDir]'
 })
 class Dir extends Base {
 }
-```
 
-**After:**
-```ts
-@Directive() // schematic adds @Directive()
+</code-example>
+
+**After**:
+
+<code-example format="typescript" language="typescript">
+
+&commat;Directive() // schematic adds &commat;Directive()
 class Base {
-  @Output()
-  countChanged = new EventEmitter<number>();
+  &commat;Output()
+  countChanged = new EventEmitter&lt;number&gt;();
 }
 
-@Directive({
+&commat;Directive({
   selector: '[myDir]'
 })
 class Dir extends Base {
 }
-```
 
+</code-example>
 
 ## Why is this migration necessary?
 
@@ -106,15 +122,13 @@ class Dir extends Base {
 When a class has a `@Directive()` or `@Component()` decorator, the Angular compiler generates extra code to inject dependencies into the constructor.
 When using inheritance, Ivy needs both the parent class and the child class to apply a decorator to generate the correct code.
 
-You can think of this change as two cases: a parent class is missing a
-decorator or a child class is missing a decorator.
+You can think of this change as two cases: a parent class is missing a decorator or a child class is missing a decorator.
 In both scenarios, Angular's runtime needs additional information from the compiler.
 This additional information comes from adding decorators.
 
-
 #### Decorator missing from parent class
 
-When the decorator is missing from the parent class, the subclass will inherit a constructor from a class for which the compiler did not generate special constructor info (because it was not decorated as a directive).
+When the decorator is missing from the parent class, the subclass will inherit a constructor from a class for which the compiler did not generate special constructor info \(because it was not decorated as a directive\).
 When Angular then tries to create the subclass, it doesn't have the correct info to create it.
 
 In View Engine, the compiler has global knowledge, so it can look up the missing data.
@@ -134,36 +148,37 @@ Without a decorator, the compiler has no way of knowing that the class is a `@Di
 In ViewEngine, base classes with field decorators like `@Input()` worked even when the class did not have a `@Directive()` or `@Component()` decorator.
 For example:
 
-```ts
+<code-example format="typescript" language="typescript">
+
 class Base {
-  @Input()
+  &commat;Input()
   foo: string;
 }
 
-@Directive(...)
+&commat;Directive(&hellip;)
 class Dir extends Base {
   ngOnChanges(): void {
     // notified when bindings to [foo] are updated
   }
 }
-```
 
-However, this example won't compile with Ivy because the `Base` class _requires_ either a `@Directive()` or `@Component()` decorator to generate code for inputs, outputs, queries, and host bindings.
+</code-example>
+
+However, this example won't compile with Ivy because the `Base` class *requires* either a `@Directive()` or `@Component()` decorator to generate code for inputs, outputs, queries, and host bindings.
 
 Always requiring a class decorator leads to two main benefits for Angular:
 
-1. The previous behavior was inconsistent.
-   Some Angular features required a decorator (dependency injection), but others did not.
-   Now, all Angular features consistently require a class decorator.
+1.  The previous behavior was inconsistent.
+    Some Angular features required a decorator \(dependency injection\), but others did not.
+    Now, all Angular features consistently require a class decorator.
 
-1. Supporting undecorated classes increases the code size and complexity of Angular.
-   Always requiring class decorators allows the framework to become smaller and simpler for all users.
-
+1.  Supporting undecorated classes increases the code size and complexity of Angular.
+    Always requiring class decorators allows the framework to become smaller and simpler for all users.
 
 ## What does it mean to have a `@Directive()` decorator with no metadata inside of it?
 
 The presence of the `@Directive` decorator causes Angular to generate extra code for the affected class.
-If that decorator includes no properties (metadata), the directive won't be matched to elements or instantiated directly, but other classes that _extend_ the directive class will inherit this generated code.
+If that decorator includes no properties \(metadata\), the directive won't be matched to elements or instantiated directly, but other classes that *extend* the directive class will inherit this generated code.
 You can think of this as an "abstract" directive.
 
 Adding an abstract directive to an `NgModule` will cause an error.
@@ -185,4 +200,12 @@ You can either add `@Directive()` with a selector or move the Angular-specific f
 
 ## What about applications using non-migrated libraries?
 
-The [Angular compatibility compiler](guide/glossary#ngcc) (`ngcc`) should automatically transform any non-migrated libraries to generate the proper code.
+The [Angular compatibility compiler](guide/glossary#ngcc) \(`ngcc`\) should automatically transform any non-migrated libraries to generate the proper code.
+
+<!-- links -->
+
+<!-- external links -->
+
+<!-- end links -->
+
+@reviewed 2022-02-28

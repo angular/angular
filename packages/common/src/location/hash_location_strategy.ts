@@ -100,6 +100,10 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
     this._platformLocation.back();
   }
 
+  override getState(): unknown {
+    return this._platformLocation.getState();
+  }
+
   override historyGo(relativePosition: number = 0): void {
     this._platformLocation.historyGo?.(relativePosition);
   }

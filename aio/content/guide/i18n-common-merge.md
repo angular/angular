@@ -43,16 +43,16 @@ Use the `i18n` project option in the [`angular.json`][AioGuideWorkspaceConfig] w
 
 The following sub-options identify the source language and tell the compiler where to find supported translations for the project.
 
-| Suboption | Details |
-|:--- |:--- |
-| `sourceLocale` | The locale you use within the application source code (`en-US` by default) |
-| `locales` | A map of locale identifiers to translation files |
+| Suboption      | Details |
+|:---            |:--- |
+| `sourceLocale` | The locale you use within the application source code \(`en-US` by default\) |
+| `locales`      | A map of locale identifiers to translation files                             |
 
 ### `angular.json` for `en-US` and `fr` example
 
-For example, the following excerpt of an [`angular.json`][AioGuideWorkspaceConfig] workspace build configuration file sets the source locale to `en-US` and provides the path to the French (`fr`) locale translation file.
+For example, the following excerpt of an [`angular.json`][AioGuideWorkspaceConfig] workspace build configuration file sets the source locale to `en-US` and provides the path to the French \(`fr`\) locale translation file.
 
-<code-example language="json" header="angular.json" path="i18n/angular.json" region="locale-config"></code-example>
+<code-example header="angular.json" path="i18n/angular.json" region="locale-config"></code-example>
 
 ## Generate application variants for each locale
 
@@ -64,7 +64,8 @@ To use your locale definition in the build configuration, use the `"localize"` o
 
 <div class="alert is-helpful">
 
-**NOTE**: [Ahead-of-time (AOT) compilation][AioGuideGlossaryAheadOfTimeAotCompilation] is required to localize component templates.
+**NOTE**: <br />
+[Ahead-of-time (AOT) compilation][AioGuideGlossaryAheadOfTimeAotCompilation] is required to localize component templates.
 
 If you changed this setting, set `"aot"` to `true` in order to use AOT.
 
@@ -75,7 +76,7 @@ If you changed this setting, set `"aot"` to `true` in order to use AOT.
 Due to the deployment complexities of i18n and the need to minimize rebuild time, the development server only supports localizing a single locale at a time.
 If you set the `"localize"` option to `true`, define more than one locale, and use `ng serve`; then an error occurs.
 If you want to develop against a specific locale, set the `"localize"` option to a specific locale.
-For example, for French (`fr`), specify `"localize": ["fr"]`.
+For example, for French \(`fr`\), specify `"localize": ["fr"]`.
 
 </div>
 
@@ -90,7 +91,7 @@ Also, set the property to override other configurations.
 
 The following example displays the `"localize"` option set to `true` in the [`angular.json`][AioGuideWorkspaceConfig] workspace build configuration file, so that all locales defined in the build configuration are built.
 
-<code-example language="json" header="angular.json" path="i18n/angular.json" region="build-localize-true"></code-example>
+<code-example header="angular.json" path="i18n/angular.json" region="build-localize-true"></code-example>
 
 ## Build from the command line
 
@@ -104,7 +105,7 @@ For more information about how to set the locales, see [Generate application var
 
 </div>
 
-<code-example path="i18n/doc-files/commands.sh" region="build-localize" language="sh"></code-example>
+<code-example path="i18n/doc-files/commands.sh" region="build-localize"></code-example>
 
 ## Apply specific build options for just one locale
 
@@ -112,7 +113,7 @@ To apply specific build options to only one locale, specify a single locale to c
 
 <div class="alert is-important">
 
-Use the [Angular CLI][AioCliMain] development server (`ng serve`) with only a single locale.
+Use the [Angular CLI][AioCliMain] development server \(`ng serve`\) with only a single locale.
 
 </div>
 
@@ -120,29 +121,29 @@ Use the [Angular CLI][AioCliMain] development server (`ng serve`) with only a si
 
 The following example displays a custom locale-specific configuration using a single locale.
 
-<code-example language="json" header="angular.json" path="i18n/angular.json" region="build-single-locale"></code-example>
+<code-example header="angular.json" path="i18n/angular.json" region="build-single-locale"></code-example>
 
 Pass this configuration to the `ng serve` or `ng build` commands.
 The following code example displays how to serve the French language file.
 
-<code-example path="i18n/doc-files/commands.sh" region="serve-french" language="sh"></code-example>
+<code-example path="i18n/doc-files/commands.sh" region="serve-french"></code-example>
 
 For production builds, use configuration composition to run both configurations.
 
-<code-example path="i18n/doc-files/commands.sh" region="build-production-french" language="sh"></code-example>
+<code-example path="i18n/doc-files/commands.sh" region="build-production-french"></code-example>
 
-<code-example language="json" header="angular.json" path="i18n/angular.json" region="build-production-french" ></code-example>
+<code-example header="angular.json" path="i18n/angular.json" region="build-production-french" ></code-example>
 
 ## Report missing translations
 
 When a translation is missing, the build succeeds but generates a warning such as `Missing translation for message "{translation_text}"`.
 To configure the level of warning that is generated by the Angular compiler, specify one of the following levels.
 
-| Warning level | Details | Output |
-|:--- |:--- |:--- |
-| `error` | Throw an error and the build fails | n/a |
-| `ignore` | Do nothing | n/a |
-| `warning` | Displays the default warning in the console or shell | `Missing translation for message "{translation_text}"` |
+| Warning level | Details                                              | Output |
+|:---           |:---                                                  |:---    |
+| `error`       | Throw an error and the build fails                   | n/a                                                    |
+| `ignore`      | Do nothing                                           | n/a                                                    |
+| `warning`     | Displays the default warning in the console or shell | `Missing translation for message "{translation_text}"` |
 
 Specify the warning level in the `options` section for the `build` target of your [`angular.json`][AioGuideWorkspaceConfig] workspace build configuration file.
 
@@ -150,7 +151,7 @@ Specify the warning level in the `options` section for the `build` target of you
 
 The following example displays how to set the warning level to `error`.
 
-<code-example language="json" header="angular.json" path="i18n/angular.json" region="missing-translation-error" ></code-example>
+<code-example header="angular.json" path="i18n/angular.json" region="missing-translation-error" ></code-example>
 
 <div class="alert is-helpful">
 
@@ -158,7 +159,7 @@ When you compile your Angular project into an Angular application, the instances
 This means that your Angular application is translated after compilation.
 This also means that you can create localized versions of your Angular application without re-compiling your entire Angular project for each locale.
 
-When you translate your Angular application, the *translation transformation* replaces and reorders the parts (static strings and expressions) of the template literal string with strings from a collection of translations.
+When you translate your Angular application, the *translation transformation* replaces and reorders the parts \(static strings and expressions\) of the template literal string with strings from a collection of translations.
 For more information, see [`$localize`][AioApiLocalizeInitLocalize].
 
 <div class="alert is-helpful">
@@ -203,4 +204,4 @@ Compile once, then translate for each locale.
 
 <!-- end links -->
 
-@reviewed 2021-10-13
+@reviewed 2022-02-28

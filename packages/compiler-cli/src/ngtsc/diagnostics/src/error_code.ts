@@ -146,6 +146,11 @@ export enum ErrorCode {
   NGMODULE_DECLARATION_IS_STANDALONE = 6008,
 
   /**
+   * Raised when a standalone component is part of the bootstrap list of an NgModule.
+   */
+  NGMODULE_BOOTSTRAP_IS_STANDALONE = 6009,
+
+  /**
    * Indicates that an NgModule is declared with `id: module.id`. This is an anti-pattern that is
    * disabled explicitly in the compiler, that was originally based on a misunderstanding of
    * `NgModule.id`.
@@ -227,6 +232,12 @@ export enum ErrorCode {
    * When the type of foo doesn't include `null` or `undefined`.
    */
   NULLISH_COALESCING_NOT_NULLABLE = 8102,
+
+  /**
+   * A known control flow directive (e.g. `*ngIf`) is used in a template,
+   * but the `CommonModule` is not imported.
+   */
+  MISSING_CONTROL_FLOW_DIRECTIVE = 8103,
 
   /**
    * The template type-checking engine would need to generate an inline type check block for a

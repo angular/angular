@@ -78,7 +78,7 @@ export interface OpaqueViewState {
  * Keeping separate state for each view facilities view insertion / deletion, so we
  * don't have to edit the data array based on which views are present.
  */
-export interface LView extends Array<any> {
+export interface LView<T = unknown> extends Array<any> {
   /**
    * Human readable representation of the `LView`.
    *
@@ -180,7 +180,7 @@ export interface LView extends Array<any> {
    * - For non-root components, the context is the component instance,
    * - For inline views, the context is null.
    */
-  [CONTEXT]: {}|RootContext|null;
+  [CONTEXT]: T;
 
   /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
   readonly[INJECTOR]: Injector|null;
@@ -368,50 +368,33 @@ export const enum LViewFlags {
   /** Whether this view has default change detection strategy (checks always) or onPush */
   CheckAlways = 0b00000010000,
 
-  /**
-   * Whether or not manual change detection is turned on for onPush components.
-   *
-   * This is a special mode that only marks components dirty in two cases:
-   * 1) There has been a change to an @Input property
-   * 2) `markDirty()` has been called manually by the user
-   *
-   * Note that in this mode, the firing of events does NOT mark components
-   * dirty automatically.
-   *
-   * Manual mode is turned off by default for backwards compatibility, as events
-   * automatically mark OnPush components dirty in View Engine.
-   *
-   * TODO: Add a public API to ChangeDetectionStrategy to turn this mode on
-   */
-  ManualOnPush = 0b00000100000,
-
   /** Whether or not this view is currently dirty (needing check) */
-  Dirty = 0b000001000000,
+  Dirty = 0b00000100000,
 
   /** Whether or not this view is currently attached to change detection tree. */
-  Attached = 0b000010000000,
+  Attached = 0b000001000000,
 
   /** Whether or not this view is destroyed. */
-  Destroyed = 0b000100000000,
+  Destroyed = 0b000010000000,
 
   /** Whether or not this view is the root view */
-  IsRoot = 0b001000000000,
+  IsRoot = 0b000100000000,
 
   /**
    * Whether this moved LView was needs to be refreshed at the insertion location because the
    * declaration was dirty.
    */
-  RefreshTransplantedView = 0b0010000000000,
+  RefreshTransplantedView = 0b001000000000,
 
   /** Indicates that the view **or any of its ancestors** have an embedded view injector. */
-  HasEmbeddedViewInjector = 0b0100000000000,
+  HasEmbeddedViewInjector = 0b0010000000000,
 
   /**
    * Index of the current init phase on last 21 bits
    */
-  IndexWithinInitPhaseIncrementer = 0b01000000000000,
-  IndexWithinInitPhaseShift = 12,
-  IndexWithinInitPhaseReset = 0b00111111111111,
+  IndexWithinInitPhaseIncrementer = 0b0100000000000,
+  IndexWithinInitPhaseShift = 11,
+  IndexWithinInitPhaseReset = 0b0011111111111,
 }
 
 /**
@@ -818,7 +801,7 @@ export const enum RootContextFlags {
  * RootContext contains information which is shared for all components which
  * were bootstrapped with {@link renderComponent}.
  */
-export interface RootContext {
+export interface RootContext<T = unknown> {
   /**
    * A function used for scheduling change detection in the future. Usually
    * this is `requestAnimationFrame`.
@@ -836,7 +819,7 @@ export interface RootContext {
    * RootComponents - The components that were instantiated by the call to
    * {@link renderComponent}.
    */
-  components: {}[];
+  components: T[];
 
   /**
    * The player flushing handler to kick off all animations
@@ -935,7 +918,7 @@ export const unusedValueExportToPlacateAjd = 1;
  * `LViewDebug` for easier debugging and test writing. It is the intent of `LViewDebug` to be used
  * in tests.
  */
-export interface LViewDebug {
+export interface LViewDebug<T = unknown> {
   /**
    * Flags associated with the `LView` unpacked into a more readable state.
    *
@@ -973,7 +956,7 @@ export interface LViewDebug {
    *
    * (Usually the component)
    */
-  readonly context: {}|null;
+  readonly context: T;
 
   /**
    * Hierarchical tree of nodes.

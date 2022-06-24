@@ -7,16 +7,17 @@
  */
 
 import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
-import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, Injector, Input, LOCALE_ID, NgModule, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Type, VERSION} from '@angular/core';
+import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, InjectionToken, Injector, Input, LOCALE_ID, NgModule, NgModuleRef, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, Type, VERSION} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
-import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {inject, TestBed} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+
+import {bootstrapApplication} from '../../src/browser';
 
 @Component({selector: 'non-existent', template: ''})
 class NonExistentComp {
@@ -28,11 +29,6 @@ class HelloRootCmp {
   constructor() {
     this.greeting = 'hello';
   }
-}
-
-@Component({selector: 'hello-app', template: 'before: <ng-content></ng-content> after: done'})
-class HelloRootCmpContent {
-  constructor() {}
 }
 
 @Component({selector: 'hello-app-2', template: '{{greeting}} world, again!'})
@@ -99,7 +95,6 @@ class DummyConsole implements Console {
 }
 
 
-class TestModule {}
 function bootstrap(
     cmpType: any, providers: Provider[] = [], platformProviders: StaticProvider[] = [],
     imports: Type<any>[] = []): Promise<any> {
@@ -120,7 +115,12 @@ function bootstrap(
       lightDom: any /** TODO #9100 */;
 
   describe('bootstrap factory method', () => {
-    if (isNode) return;
+    if (isNode) {
+      // Jasmine will throw if there are no tests.
+      it('should pass', () => {});
+      return;
+    }
+
     let compilerConsole: DummyConsole;
 
     beforeEach(() => {
@@ -147,6 +147,174 @@ function bootstrap(
     }));
 
     afterEach(destroyPlatform);
+
+    describe('bootstrapApplication', () => {
+      const NAME = new InjectionToken<string>('name');
+      @Component({
+        standalone: true,
+        selector: 'hello-app',
+        template: 'Hello from {{ name }}!',
+      })
+      class SimpleComp {
+        name = 'SimpleComp';
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'hello-app-2',
+        template: 'Hello from {{ name }}!',
+      })
+      class SimpleComp2 {
+        name = 'SimpleComp2';
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'hello-app',
+        template: 'Hello from {{ name }}!',
+      })
+      class ComponentWithDeps {
+        constructor(@Inject(NAME) public name: string) {}
+      }
+
+      @Component({
+        selector: 'hello-app-2',
+        template: 'Hello from {{ name }}!',
+      })
+      class NonStandaloneComp {
+        name = 'NonStandaloneComp';
+      }
+
+      @NgModule({
+        declarations: [NonStandaloneComp],
+      })
+      class NonStandaloneCompModule {
+      }
+
+      it('should work for simple standalone components', async () => {
+        await bootstrapApplication(SimpleComp);
+        expect(el.innerText).toBe('Hello from SimpleComp!');
+      });
+
+      it('should allow passing providers during the bootstrap', async () => {
+        const providers = [{provide: NAME, useValue: 'Name via DI'}];
+        await bootstrapApplication(ComponentWithDeps, {providers});
+        expect(el.innerText).toBe('Hello from Name via DI!');
+      });
+
+      it('should reuse existing platform', async () => {
+        const platformProviders = [{provide: NAME, useValue: 'Name via DI (Platform level)'}];
+        platformBrowserDynamic(platformProviders);
+
+        await bootstrapApplication(ComponentWithDeps);
+        expect(el.innerText).toBe('Hello from Name via DI (Platform level)!');
+      });
+
+      it('should allow bootstrapping multiple apps', async () => {
+        await bootstrapApplication(SimpleComp);
+        await bootstrapApplication(SimpleComp2);
+
+        expect(el.innerText).toBe('Hello from SimpleComp!');
+        expect(el2.innerText).toBe('Hello from SimpleComp2!');
+      });
+
+      it('should keep change detection isolated for separately bootstrapped apps', async () => {
+        const appRef1 = await bootstrapApplication(SimpleComp);
+        const appRef2 = await bootstrapApplication(SimpleComp2);
+
+        expect(el.innerText).toBe('Hello from SimpleComp!');
+        expect(el2.innerText).toBe('Hello from SimpleComp2!');
+
+        // Update name in both components, but trigger change detection only in the first one.
+        appRef1.components[0].instance.name = 'Updated SimpleComp';
+        appRef2.components[0].instance.name = 'Updated SimpleComp2';
+
+        // Trigger change detection for the first app.
+        appRef1.tick();
+
+        // Expect that the first component content is updated, but the second one remains the same.
+        expect(el.innerText).toBe('Hello from Updated SimpleComp!');
+        expect(el2.innerText).toBe('Hello from SimpleComp2!');
+
+        // Trigger change detection for the second app.
+        appRef2.tick();
+
+        // Now the second component should be updated as well.
+        expect(el.innerText).toBe('Hello from Updated SimpleComp!');
+        expect(el2.innerText).toBe('Hello from Updated SimpleComp2!');
+      });
+
+      it('should allow bootstrapping multiple standalone components within the same app',
+         async () => {
+           const appRef = await bootstrapApplication(SimpleComp);
+           appRef.bootstrap(SimpleComp2);
+
+           expect(el.innerText).toBe('Hello from SimpleComp!');
+           expect(el2.innerText).toBe('Hello from SimpleComp2!');
+
+           // Update name in both components.
+           appRef.components[0].instance.name = 'Updated SimpleComp';
+           appRef.components[1].instance.name = 'Updated SimpleComp2';
+
+           // Run change detection for the app.
+           appRef.tick();
+
+           // Expect both components to be updated, since they belong to the same app.
+           expect(el.innerText).toBe('Hello from Updated SimpleComp!');
+           expect(el2.innerText).toBe('Hello from Updated SimpleComp2!');
+         });
+
+      it('should allow bootstrapping non-standalone components within the same app', async () => {
+        const appRef = await bootstrapApplication(SimpleComp);
+
+        // ApplicationRef should still allow bootstrapping non-standalone
+        // components into the same application.
+        appRef.bootstrap(NonStandaloneComp);
+
+        expect(el.innerText).toBe('Hello from SimpleComp!');
+        expect(el2.innerText).toBe('Hello from NonStandaloneComp!');
+
+        // Update name in both components.
+        appRef.components[0].instance.name = 'Updated SimpleComp';
+        appRef.components[1].instance.name = 'Updated NonStandaloneComp';
+
+        // Run change detection for the app.
+        appRef.tick();
+
+        // Expect both components to be updated, since they belong to the same app.
+        expect(el.innerText).toBe('Hello from Updated SimpleComp!');
+        expect(el2.innerText).toBe('Hello from Updated NonStandaloneComp!');
+      });
+
+      it('should throw when trying to bootstrap a non-standalone component', () => {
+        const msg = 'NG0907: The NonStandaloneComp component is not marked as standalone, ' +
+            'but Angular expects to have a standalone component here. Please make sure the ' +
+            'NonStandaloneComp component has the `standalone: true` flag in the decorator.';
+        expect(() => bootstrapApplication(NonStandaloneComp)).toThrowError(msg);
+      });
+
+      it('should throw when trying to bootstrap a standalone directive', () => {
+        @Directive({
+          standalone: true,
+          selector: '[dir]',
+        })
+        class StandaloneDirective {
+        }
+
+        const msg =  //
+            'NG0906: The StandaloneDirective is not an Angular component, ' +
+            'make sure it has the `@Component` decorator.';
+        expect(() => bootstrapApplication(StandaloneDirective)).toThrowError(msg);
+      });
+
+      it('should throw when trying to bootstrap a non-annotated class', () => {
+        class NonAnnotatedClass {}
+        const msg =  //
+            'NG0906: The NonAnnotatedClass is not an Angular component, ' +
+            'make sure it has the `@Component` decorator.';
+        expect(() => bootstrapApplication(NonAnnotatedClass)).toThrowError(msg);
+      });
+    });
 
     it('should throw if bootstrapped Directive is not a Component', done => {
       const logger = new MockConsole();
@@ -280,7 +448,9 @@ function bootstrap(
                return compiler.compileModuleAsync(AsyncModule).then(factory => {
                  expect(() => factory.create(ref.injector))
                      .toThrowError(
-                         `BrowserModule has already been loaded. If you need access to common directives such as NgIf and NgFor from a lazy loaded module, import CommonModule instead.`);
+                         'Providers from the `BrowserModule` have already been loaded. ' +
+                         'If you need access to common directives such as NgIf and NgFor, ' +
+                         'import the `CommonModule` instead.');
                });
              })
              .then(() => done(), err => done.fail(err));
@@ -408,22 +578,16 @@ function bootstrap(
       }, done.fail);
     });
 
-    it('should register each application with the testability registry', done => {
-      const refPromise1: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp, testProviders);
-      const refPromise2: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp2, testProviders);
+    it('should register each application with the testability registry', async () => {
+      const ngModuleRef1: NgModuleRef<unknown> = await bootstrap(HelloRootCmp, testProviders);
+      const ngModuleRef2: NgModuleRef<unknown> = await bootstrap(HelloRootCmp2, testProviders);
 
-      Promise.all([refPromise1, refPromise2]).then((refs: ComponentRef<any>[]) => {
-        const registry = refs[0].injector.get(TestabilityRegistry);
-        const testabilities =
-            [refs[0].injector.get(Testability), refs[1].injector.get(Testability)];
+      // The `TestabilityRegistry` is provided in the "platform", so the same instance is available
+      // to both `NgModuleRef`s and it can be retrieved from any ref (we use the first one).
+      const registry = ngModuleRef1.injector.get(TestabilityRegistry);
 
-        Promise.all(testabilities).then((testabilities: Testability[]) => {
-          expect(registry.findTestabilityInTree(el)).toEqual(testabilities[0]);
-          expect(registry.findTestabilityInTree(el2)).toEqual(testabilities[1]);
-
-          done();
-        }, done.fail);
-      }, done.fail);
+      expect(registry.findTestabilityInTree(el)).toEqual(ngModuleRef1.injector.get(Testability));
+      expect(registry.findTestabilityInTree(el2)).toEqual(ngModuleRef2.injector.get(Testability));
     });
 
     it('should allow to pass schemas', done => {

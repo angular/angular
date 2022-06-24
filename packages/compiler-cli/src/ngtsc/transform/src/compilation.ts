@@ -9,16 +9,16 @@
 import {ConstantPool} from '@angular/compiler';
 import ts from 'typescript';
 
+import {SourceFileTypeIdentifier} from '../../core/api';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {IncrementalBuild} from '../../incremental/api';
 import {SemanticDepGraphUpdater, SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
-import {isShim} from '../../shims';
 import {ProgramTypeCheckAdapter, TypeCheckContext} from '../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
-import {getSourceFile, isExported} from '../../util/src/typescript';
+import {getSourceFile} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
 
 import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api';
@@ -97,11 +97,15 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
 
   constructor(
       private handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[],
-      private reflector: ReflectionHost, private perf: PerfRecorder,
+      private reflector: ReflectionHost,
+      private perf: PerfRecorder,
       private incrementalBuild: IncrementalBuild<ClassRecord, unknown>,
-      private compileNonExportedClasses: boolean, private compilationMode: CompilationMode,
+      private compileNonExportedClasses: boolean,
+      private compilationMode: CompilationMode,
       private dtsTransforms: DtsTransformRegistry,
-      private semanticDepGraphUpdater: SemanticDepGraphUpdater|null) {
+      private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
+      private sourceFileTypeIdentifier: SourceFileTypeIdentifier,
+  ) {
     for (const handler of handlers) {
       this.handlersByName.set(handler.name, handler);
     }
@@ -118,8 +122,9 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
   private analyze(sf: ts.SourceFile, preanalyze: false): void;
   private analyze(sf: ts.SourceFile, preanalyze: true): Promise<void>|undefined;
   private analyze(sf: ts.SourceFile, preanalyze: boolean): Promise<void>|undefined {
-    // We shouldn't analyze declaration files.
-    if (sf.isDeclarationFile || isShim(sf)) {
+    // We shouldn't analyze declaration, shim, or resource files.
+    if (sf.isDeclarationFile || this.sourceFileTypeIdentifier.isShim(sf) ||
+        this.sourceFileTypeIdentifier.isResource(sf)) {
       return undefined;
     }
 

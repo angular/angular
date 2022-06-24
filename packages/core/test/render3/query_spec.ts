@@ -277,7 +277,7 @@ describe('query', () => {
                     ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) && (ctx.alias = tmp.first);
                   }
                 },
-            directives: [MyDirective]
+            dependencies: [MyDirective]
           });
         }
 
@@ -323,7 +323,7 @@ describe('query', () => {
                         (ctx.service = tmp.first);
                   }
                 },
-            directives: [MyDirective]
+            dependencies: [MyDirective]
           });
         }
 
@@ -1918,7 +1918,7 @@ describe('query', () => {
                       (ctx.texts = tmp as QueryList<TextDirective>);
                 }
               },
-          directives: [TextDirective]
+          dependencies: [TextDirective]
         });
       }
 

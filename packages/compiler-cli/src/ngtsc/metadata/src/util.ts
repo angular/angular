@@ -44,6 +44,21 @@ export function extractReferencesFromType(
   });
 }
 
+export function readBooleanType(type: ts.TypeNode): boolean|null {
+  if (!ts.isLiteralTypeNode(type)) {
+    return null;
+  }
+
+  switch (type.literal.kind) {
+    case ts.SyntaxKind.TrueKeyword:
+      return true;
+    case ts.SyntaxKind.FalseKeyword:
+      return false;
+    default:
+      return null;
+  }
+}
+
 export function readStringType(type: ts.TypeNode): string|null {
   if (!ts.isLiteralTypeNode(type) || !ts.isStringLiteral(type.literal)) {
     return null;

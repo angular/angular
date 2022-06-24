@@ -7,6 +7,11 @@ consts: function() {
     const $MSG_EXTERNAL_7428861019045796010$$APP_SPEC_TS_1$ = goog.getMsg(" Count: {$startTagXhtmlSpan}5{$closeTagXhtmlSpan}", {
       "startTagXhtmlSpan": "\uFFFD#4\uFFFD",
       "closeTagXhtmlSpan": "\uFFFD/#4\uFFFD"
+    }, {
+      original_code: {
+        "startTagXhtmlSpan": "<span>",
+        "closeTagXhtmlSpan": "</span>"
+      }
     });
     $I18N_0$ = $MSG_EXTERNAL_7428861019045796010$$APP_SPEC_TS_1$;
   }

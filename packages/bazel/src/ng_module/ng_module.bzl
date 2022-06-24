@@ -10,7 +10,6 @@ load(
     "//packages/bazel/src:external.bzl",
     "COMMON_ATTRIBUTES",
     "COMMON_OUTPUTS",
-    "DEFAULT_API_EXTRACTOR",
     "DEFAULT_NG_COMPILER",
     "DEFAULT_NG_XI18N",
     "DEPS_ASPECTS",
@@ -29,8 +28,6 @@ load(
 # enable_perf_logging controls whether Ivy's performance tracing system will be enabled for any
 # compilation which includes this provider.
 NgPerfInfo = provider(fields = ["enable_perf_logging"])
-
-_FLAT_DTS_FILE_SUFFIX = ".bundle.d.ts"
 
 def is_perf_requested(ctx):
     return ctx.attr.perf_flag != None and ctx.attr.perf_flag[NgPerfInfo].enable_perf_logging == True
@@ -54,7 +51,7 @@ def _basename_of(ctx, file):
 # Return true if run with bazel (the open-sourced version of blaze), false if
 # run with blaze.
 def _is_bazel():
-    return not hasattr(native, "genmpm")
+    return not hasattr(native, "genmpm")  # this_is_bazel
 
 def _flat_module_out_file(ctx):
     """Provide a default for the flat_module_out_file attribute.
@@ -71,20 +68,6 @@ def _flat_module_out_file(ctx):
     if getattr(ctx.attr, "flat_module_out_file", False):
         return ctx.attr.flat_module_out_file
     return "%s_public_index" % ctx.label.name
-
-def _should_produce_dts_bundle(ctx):
-    """Should we produce dts bundles.
-
-    We only produce flatten dts outs when we expect the ng_module is meant to be published,
-    based on the value of the bundle_dts attribute.
-
-    Args:
-      ctx: skylark rule execution context
-
-    Returns:
-      true when we should produce bundled dts.
-    """
-    return getattr(ctx.attr, "bundle_dts", False)
 
 def _should_produce_flat_module_outs(ctx):
     """Should we produce flat module outputs.
@@ -154,14 +137,6 @@ def _expected_outs(ctx):
 
         declaration_files += [ctx.actions.declare_file(basename + ext) for ext in declarations]
 
-    dts_bundle = None
-    if _should_produce_dts_bundle(ctx):
-        # We need to add a suffix to bundle as it might collide with the flat module dts.
-        # The flat module dts out contains several other exports
-        # https://github.com/angular/angular/blob/84406e4d6d93b28b23efbb1701bc5ae1084da67b/packages/compiler-cli/src/metadata/index_writer.ts#L18
-        # the file name will be like 'core.bundle.d.ts'
-        dts_bundle = ctx.actions.declare_file(ctx.label.name + _FLAT_DTS_FILE_SUFFIX)
-
     # We do this just when producing a flat module index for a publishable ng_module
     if _should_produce_flat_module_outs(ctx):
         flat_module_out_name = _flat_module_out_file(ctx)
@@ -193,7 +168,6 @@ def _expected_outs(ctx):
         devmode_js = devmode_js_files,
         declarations = declaration_files,
         transpilation_infos = transpilation_infos,
-        dts_bundle = dts_bundle,
         bundle_index_typings = bundle_index_typings,
         dev_perf_files = dev_perf_files,
         prod_perf_files = prod_perf_files,
@@ -300,7 +274,6 @@ def ngc_compile_action(
         node_opts,
         locale = None,
         i18n_args = [],
-        dts_bundle_out = None,
         target_flavor = "prodmode"):
     """Helper function to create the ngc action.
 
@@ -316,7 +289,6 @@ def ngc_compile_action(
       node_opts: list of strings, extra nodejs options.
       locale: i18n locale, or None
       i18n_args: additional command-line arguments to ngc
-      dts_bundle_out: produced flattened dts file
       target_flavor: Whether prodmode or devmode output is being built.
 
     Returns:
@@ -364,28 +336,6 @@ def ngc_compile_action(
         },
     )
 
-    if dts_bundle_out != None:
-        # combine the inputs and outputs and filter .d.ts and json files
-        filter_inputs = [f for f in inputs.to_list() + outputs if f.path.endswith(".d.ts") or f.path.endswith(".json")]
-
-        if _should_produce_flat_module_outs(ctx):
-            dts_entry_point = "%s.d.ts" % _flat_module_out_file(ctx)
-        else:
-            dts_entry_point = ctx.attr.entry_point.label.name.replace(".ts", ".d.ts")
-
-        ctx.actions.run(
-            progress_message = "Bundling DTS (%s) %s" % (target_flavor, str(ctx.label)),
-            mnemonic = "APIExtractor",
-            executable = ctx.executable.api_extractor,
-            inputs = filter_inputs,
-            outputs = [dts_bundle_out],
-            arguments = [
-                tsconfig_file.path,
-                "/".join([ctx.bin_dir.path, ctx.label.package, dts_entry_point]),
-                dts_bundle_out.path,
-            ],
-        )
-
     if not locale and not ctx.attr.no_i18n:
         return struct(
             label = label,
@@ -410,8 +360,6 @@ def _compile_action(
         ctx,
         inputs,
         outputs,
-        dts_bundle_out,
-        perf_out,
         tsconfig_file,
         node_opts,
         target_flavor):
@@ -445,21 +393,21 @@ def _compile_action(
     # Collect the inputs and summary files from our deps
     action_inputs = depset(file_inputs)
 
-    return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, tsconfig_file, node_opts, None, [], dts_bundle_out, target_flavor)
+    return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, tsconfig_file, node_opts, None, [], target_flavor)
 
 def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
-    return _compile_action(ctx, inputs, outputs + outs.closure_js + outs.prod_perf_files, None, outs.prod_perf_files, tsconfig_file, node_opts, "prodmode")
+    return _compile_action(ctx, inputs, outputs + outs.closure_js + outs.prod_perf_files, tsconfig_file, node_opts, "prodmode")
 
 def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
     compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.dev_perf_files
-    _compile_action(ctx, inputs, compile_action_outputs, outs.dts_bundle, outs.dev_perf_files, tsconfig_file, node_opts, "devmode")
+    _compile_action(ctx, inputs, compile_action_outputs, tsconfig_file, node_opts, "devmode")
 
+# Note: We need to define `label` and `srcs_files` as `tsc_wrapped` passes
+# them and Starlark would otherwise error at runtime.
+# buildifier: disable=unused-variable
 def _ts_expected_outs(ctx, label, srcs_files = []):
-    # rules_typescript expects a function with two or more arguments, but our
-    # implementation doesn't use the label(and **kwargs).
-    _ignored = [label, srcs_files]
     return _expected_outs(ctx)
 
 def ng_module_impl(ctx, ts_compile_actions):
@@ -496,9 +444,6 @@ def ng_module_impl(ctx, ts_compile_actions):
             typings_file = outs.bundle_index_typings,
             flat_module_out_prodmode_file = outs.flat_module_out_prodmode_file,
         )
-
-    if outs.dts_bundle != None:
-        providers["dts_bundle"] = outs.dts_bundle
 
     return providers
 
@@ -573,12 +518,12 @@ NG_MODULE_ATTRIBUTES = {
         """,
         default = Label(DEFAULT_NG_COMPILER),
         executable = True,
-        cfg = "host",
+        cfg = "exec",
     ),
     "ng_xi18n": attr.label(
         default = Label(DEFAULT_NG_XI18N),
         executable = True,
-        cfg = "host",
+        cfg = "exec",
     ),
     "_partial_compilation_flag": attr.label(
         default = "//packages/bazel/src:partial_compilation",
@@ -597,7 +542,7 @@ NG_MODULE_ATTRIBUTES = {
     ),
     "_supports_workers": attr.bool(default = True),
 
-    # Matches the API of the `ts_library` rule from `@bazel/typescript`.
+    # Matches the API of the `ts_library` rule from `@bazel/concatjs`.
     # https://github.com/bazelbuild/rules_nodejs/blob/398d351a3f2a9b2ebf6fc31fb5882cce7eedfd7b/packages/typescript/internal/build_defs.bzl#L435-L446.
     "package_name": attr.string(
         doc = """The package name that the linker will link this `ng_module` output as.
@@ -605,7 +550,7 @@ NG_MODULE_ATTRIBUTES = {
     If `package_path` is not set, the package will be linked in the top-level workspace node_modules folder.""",
     ),
 
-    # Matches the API of the `ts_library` rule from `@bazel/typescript`.
+    # Matches the API of the `ts_library` rule from `@bazel/concatjs`.
     # https://github.com/bazelbuild/rules_nodejs/blob/398d351a3f2a9b2ebf6fc31fb5882cce7eedfd7b/packages/typescript/internal/build_defs.bzl#L435-L446.
     "package_path": attr.string(
         doc = """The package path in the workspace that the linker will link this `ng_module` output to.
@@ -690,14 +635,8 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
     # Later packaging rules will point to these generated files as the entry point
     # into the package.
     # See the flatModuleOutFile documentation in
-    # https://github.com/angular/angular/blob/master/packages/compiler-cli/src/transformers/api.ts
+    # https://github.com/angular/angular/blob/main/packages/compiler-cli/src/transformers/api.ts
     "flat_module_out_file": attr.string(),
-    "bundle_dts": attr.bool(default = False),
-    "api_extractor": attr.label(
-        default = Label(DEFAULT_API_EXTRACTOR),
-        executable = True,
-        cfg = "host",
-    ),
     # Should the rule generate ngfactory and ngsummary shim files?
     "generate_ve_shims": attr.bool(default = False),
 })

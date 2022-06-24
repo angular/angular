@@ -62,7 +62,7 @@ describe('config', () => {
     it('should validate children and report full path', () => {
       expect(() => validateConfig([{path: 'a', children: [{path: 'b'}]}]))
           .toThrowError(
-              `Invalid configuration of route 'a/b'. One of the following must be provided: component, redirectTo, children or loadChildren`);
+              `Invalid configuration of route 'a/b'. One of the following must be provided: component, loadComponent, redirectTo, children or loadChildren`);
     });
 
     it('should properly report deeply nested path', () => {
@@ -71,7 +71,7 @@ describe('config', () => {
             {path: 'a', children: [{path: 'b', children: [{path: 'c', children: [{path: 'd'}]}]}]}
           ]))
           .toThrowError(
-              `Invalid configuration of route 'a/b/c/d'. One of the following must be provided: component, redirectTo, children or loadChildren`);
+              `Invalid configuration of route 'a/b/c/d'. One of the following must be provided: component, loadComponent, redirectTo, children or loadChildren`);
     });
 
     it('should throw when redirectTo and loadChildren are used together', () => {
@@ -95,7 +95,23 @@ describe('config', () => {
         validateConfig([{path: 'a', component: ComponentA, redirectTo: 'b'}]);
       })
           .toThrowError(
-              `Invalid configuration of route 'a': redirectTo and component cannot be used together`);
+              `Invalid configuration of route 'a': redirectTo and component/loadComponent cannot be used together`);
+    });
+
+    it('should throw when redirectTo and loadComponent are used together', () => {
+      expect(() => {
+        validateConfig([{path: 'a', redirectTo: 'b', loadComponent: () => ComponentA}]);
+      })
+          .toThrowError(
+              `Invalid configuration of route 'a': redirectTo and component/loadComponent cannot be used together`);
+    });
+
+    it('should throw when component and loadComponent are used together', () => {
+      expect(() => {
+        validateConfig([{path: 'a', component: ComponentA, loadComponent: () => ComponentA}]);
+      })
+          .toThrowError(
+              `Invalid configuration of route 'a': component and loadComponent cannot be used together`);
     });
 
     it('should throw when component and redirectTo are used together', () => {
@@ -128,7 +144,7 @@ describe('config', () => {
         validateConfig([{path: 'a'}]);
       })
           .toThrowError(
-              `Invalid configuration of route 'a'. One of the following must be provided: component, redirectTo, children or loadChildren`);
+              `Invalid configuration of route 'a'. One of the following must be provided: component, loadComponent, redirectTo, children or loadChildren`);
     });
 
     it('should throw when path starts with a slash', () => {

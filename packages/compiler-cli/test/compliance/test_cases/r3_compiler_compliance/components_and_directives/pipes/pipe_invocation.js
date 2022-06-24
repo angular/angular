@@ -24,6 +24,6 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       );
     }
   },
-  pipes: [MyPipe],
+  dependencies: [MyPipe],
   encapsulation: 2
 });

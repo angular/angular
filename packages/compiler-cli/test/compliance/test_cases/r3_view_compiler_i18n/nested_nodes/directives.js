@@ -17,7 +17,7 @@ function MyComponent_div_0_Template(rf, ctx) {
 decls: 1,
 vars: 1,
 consts: function() {
-  __i18nMsg__('Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}', [['startTagSpan', String.raw`\uFFFD#2\uFFFD`], ['interpolation', String.raw`\uFFFD0\uFFFD`], ['closeTagSpan', String.raw`\uFFFD/#2\uFFFD`]], {})
+  __i18nMsg__('Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}', [['startTagSpan', String.raw`\uFFFD#2\uFFFD`], ['interpolation', String.raw`\uFFFD0\uFFFD`], ['closeTagSpan', String.raw`\uFFFD/#2\uFFFD`]], {original_code: {'startTagSpan': '<span>', 'interpolation': '{{ valueA }}', 'closeTagSpan': '</span>'}}, {})
   return [
     [__AttributeMarker.Template__, "ngIf"],
     $i18n_0$
