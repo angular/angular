@@ -21,6 +21,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatTableModule} from '@angular/material/table';
 import {AutocompleteComponent} from './components/autocomplete/autocomplete.component';
 import {ButtonComponent} from './components/button/button.component';
 import {CardComponent} from './components/card/card.component';
@@ -37,6 +38,7 @@ import {SelectComponent} from './components/select/select.component';
 import {SlideToggleComponent} from './components/slide-toggle/slide-toggle.component';
 import {SliderComponent} from './components/slider/slider.component';
 import {SnackBarComponent} from './components/snack-bar/snack-bar.component';
+import {TableComponent} from './components/table/table.component';
 
 @NgModule({
   declarations: [
@@ -57,6 +59,7 @@ import {SnackBarComponent} from './components/snack-bar/snack-bar.component';
     SlideToggleComponent,
     SliderComponent,
     SnackBarComponent,
+    TableComponent,
   ],
   imports: [
     BrowserModule,
@@ -78,6 +81,7 @@ import {SnackBarComponent} from './components/snack-bar/snack-bar.component';
     MatSlideToggleModule,
     MatSliderModule,
     MatSnackBarModule,
+    MatTableModule,
     ReactiveFormsModule,
   ],
   providers: [],
