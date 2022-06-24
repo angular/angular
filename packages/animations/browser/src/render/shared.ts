@@ -179,28 +179,26 @@ if (_isNode || typeof Element !== 'undefined') {
   _query = (element: any, selector: string, multi: boolean): any[] => {
     return queryFn(element, selector, multi, [], true);
     function queryFn(
-        element: any, selector: string, multi: boolean, matched: any[] = [],
-        skipElement = false): any[] {
-      const matches = skipElement ? false : element.matches(selector);
+        element: any, selector: string, multi: boolean, matched: any[],
+        isStartElement: boolean): any[] {
+      const matches = isStartElement ? false : element.matches(selector);
 
-      if (!multi && matches) {
-        return [element];
-      }
-
-      if (multi && matches) {
+      if (matches) {
         matched.push(element);
+        if (!multi) {
+          return matched;
+        }
       }
 
       const childEls = Array.from(element.children);
       const shadowChildEls = element.shadowRoot ? Array.from(element.shadowRoot.children) : [];
-      const allChildEls = [...childEls, ...shadowChildEls];
 
-      for (let i = 0; i < allChildEls.length; i++) {
-        const result = queryFn(allChildEls[i], selector, multi);
-        if (!multi && result.length) {
-          return result;
+      for (let i = 0; i < childEls.length + shadowChildEls.length; i++) {
+        const el = i < childEls.length ? childEls[i] : shadowChildEls[i - childEls.length];
+        matched = queryFn(el, selector, multi, matched, false);
+        if (!multi && matched.length) {
+          return matched;
         }
-        matched = matched.concat(result);
       }
       return matched;
     }
