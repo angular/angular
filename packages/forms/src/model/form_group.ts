@@ -625,8 +625,7 @@ export const isFormGroup = (control: unknown): control is FormGroup => control i
  *
  * @publicApi
  */
-export class FormRecord<TControl extends AbstractControl<ɵValue<TControl>, ɵRawValue<TControl>> =
-                                             AbstractControl> extends
+export class FormRecord<TControl extends AbstractControl = AbstractControl> extends
     FormGroup<{[key: string]: TControl}> {}
 
 export interface FormRecord<TControl> {

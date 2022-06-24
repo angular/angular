@@ -195,6 +195,9 @@
     "name": "FormGroupName"
   },
   {
+    "name": "FormRecord"
+  },
+  {
     "name": "FormsExampleModule"
   },
   {
