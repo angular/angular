@@ -87,12 +87,11 @@ function writeStackBlitzFile(exampleName, examplePath) {
 }
 
 /**
- * Copy all the files from the `sourcePath`, which are not ignored by the `.gitignore` file in the
- * `EXAMPLES_BASE_PATH`, to the `examplePath`.
+ * Copy all the files from the `sourcePath` to the `examplePath`, except for files
+ * ignored by the source example.
  */
 function copyExampleFiles(sourcePath, examplePath, exampleName) {
   const gitIgnoreSource = getGitIgnore(sourcePath);
-  const gitIgnoreExamples = getGitIgnore(EXAMPLES_BASE_PATH);
 
   // Grab the files in the source folder and filter them based on the gitignore rules.
   const sourceFiles =
@@ -106,8 +105,6 @@ function copyExampleFiles(sourcePath, examplePath, exampleName) {
           .filter(filePath => !/\/$/.test(filePath))
           // Filter out files that match the source directory .gitignore rules
           .filter(filePath => !gitIgnoreSource.ignores(filePath))
-          // Filter out files that match the examples directory .gitignore rules
-          .filter(filePath => !gitIgnoreExamples.ignores(path.join(exampleName, filePath)));
 
   for (const sourceFile of sourceFiles) {
     console.log(' - ', sourceFile);
