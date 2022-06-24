@@ -20,6 +20,7 @@ import {MatRadioModule} from '@angular/material-experimental/mdc-radio';
 import {MatSelectModule} from '@angular/material-experimental/mdc-select';
 import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-toggle';
 import {MatSliderModule} from '@angular/material-experimental/mdc-slider';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {AutocompleteComponent} from './components/autocomplete/autocomplete.component';
 import {ButtonComponent} from './components/button/button.component';
 import {CardComponent} from './components/card/card.component';
@@ -35,6 +36,7 @@ import {RadioComponent} from './components/radio/radio.component';
 import {SelectComponent} from './components/select/select.component';
 import {SlideToggleComponent} from './components/slide-toggle/slide-toggle.component';
 import {SliderComponent} from './components/slider/slider.component';
+import {SnackBarComponent} from './components/snack-bar/snack-bar.component';
 
 @NgModule({
   declarations: [
@@ -54,6 +56,7 @@ import {SliderComponent} from './components/slider/slider.component';
     SelectComponent,
     SlideToggleComponent,
     SliderComponent,
+    SnackBarComponent,
   ],
   imports: [
     BrowserModule,
@@ -74,6 +77,7 @@ import {SliderComponent} from './components/slider/slider.component';
     MatSelectModule,
     MatSlideToggleModule,
     MatSliderModule,
+    MatSnackBarModule,
     ReactiveFormsModule,
   ],
   providers: [],

@@ -1,0 +1,6 @@
+<h2>Snackbar example</h2>
+<mat-form-field appearance="fill">
+  <mat-label>Message</mat-label>
+  <input matInput value="Disco party!" #message>
+</mat-form-field>
+<button mat-stroked-button (click)="openSnackBar(message.value)">Show snack-bar</button>
