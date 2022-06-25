@@ -6,24 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {Component, destroyPlatform, ErrorHandler, Inject, Injectable, InjectionToken, NgModule} from '@angular/core';
-import {inject} from '@angular/core/testing';
+import {Component, ErrorHandler, Inject, Injectable, InjectionToken, NgModule, PlatformRef} from '@angular/core';
+import {R3Injector} from '@angular/core/src/di/r3_injector';
+import {withBody} from '@angular/private/testing';
 
 import {bootstrapApplication, BrowserModule} from '../../src/browser';
 
 describe('bootstrapApplication for standalone components', () => {
-  let rootEl: HTMLUnknownElement;
-  beforeEach(inject([DOCUMENT], (doc: any) => {
-    rootEl = getDOM().createElement('test-app', doc);
-    getDOM().getDefaultDocument().body.appendChild(rootEl);
-  }));
-
-  afterEach(() => {
-    destroyPlatform();
-    rootEl?.remove();
-  });
-
   class SilentErrorHandler extends ErrorHandler {
     override handleError() {
       // the error is already re-thrown by the application ref.
@@ -31,38 +20,46 @@ describe('bootstrapApplication for standalone components', () => {
     }
   }
 
-  it('should create injector where ambient providers shadow explicit providers', async () => {
-    const testToken = new InjectionToken('test token');
+  it('should create injector where ambient providers shadow explicit providers',
+     withBody('<test-app></test-app>', async () => {
+       const testToken = new InjectionToken('test token');
 
-    @NgModule({
-      providers: [
-        {provide: testToken, useValue: 'Ambient'},
-      ]
-    })
-    class AmbientModule {
-    }
+       @NgModule({
+         providers: [
+           {provide: testToken, useValue: 'Ambient'},
+         ]
+       })
+       class AmbientModule {
+       }
 
-    @Component({
-      selector: 'test-app',
-      standalone: true,
-      template: `({{testToken}})`,
-      imports: [AmbientModule]
-    })
-    class StandaloneCmp {
-      constructor(@Inject(testToken) readonly testToken: String) {}
-    }
+       @Component({
+         selector: 'test-app',
+         standalone: true,
+         template: `({{testToken}})`,
+         imports: [AmbientModule]
+       })
+       class StandaloneCmp {
+         constructor(@Inject(testToken) readonly testToken: String) {}
+       }
 
-    const appRef = await bootstrapApplication(StandaloneCmp, {
-      providers: [
-        {provide: testToken, useValue: 'Bootstrap'},
-      ]
-    });
+       class SilentErrorHandler extends ErrorHandler {
+         override handleError() {
+           // the error is already re-thrown by the application ref.
+           // we don't want to print it, but instead catch it in tests.
+         }
+       }
 
-    appRef.tick();
+       const appRef = await bootstrapApplication(StandaloneCmp, {
+         providers: [
+           {provide: testToken, useValue: 'Bootstrap'},
+         ]
+       });
 
-    // make sure that ambient providers "shadow" ones explicitly provided during bootstrap
-    expect(rootEl.textContent).toBe('(Ambient)');
-  });
+       appRef.tick();
+
+       // make sure that ambient providers "shadow" ones explicitly provided during bootstrap
+       expect(document.body.textContent).toBe('(Ambient)');
+     }));
 
   /*
     This test verifies that ambient providers for the standalone component being bootstrapped
@@ -74,7 +71,7 @@ describe('bootstrapApplication for standalone components', () => {
     - standalone injector (ambient providers go here);
   */
   it('should create a standalone injector for standalone components with ambient providers',
-     async () => {
+     withBody('<test-app></test-app>', async () => {
        const ambientToken = new InjectionToken('ambient token');
 
        @NgModule({
@@ -119,10 +116,10 @@ describe('bootstrapApplication for standalone components', () => {
          expect(e).toBeInstanceOf(Error);
          expect((e as Error).message).toContain('No provider for InjectionToken ambient token!');
        }
-     });
+     }));
 
   it('should throw if `BrowserModule` is imported in the standalone bootstrap scenario',
-     async () => {
+     withBody('<test-app></test-app>', async () => {
        @Component({
          selector: 'test-app',
          template: '...',
@@ -145,10 +142,10 @@ describe('bootstrapApplication for standalone components', () => {
          expect((e as Error).message)
              .toContain('Providers from the `BrowserModule` have already been loaded.');
        }
-     });
+     }));
 
   it('should throw if `BrowserModule` is imported indirectly in the standalone bootstrap scenario',
-     async () => {
+     withBody('<test-app></test-app>', async () => {
        @NgModule({
          imports: [BrowserModule],
        })
@@ -177,5 +174,49 @@ describe('bootstrapApplication for standalone components', () => {
          expect((e as Error).message)
              .toContain('Providers from the `BrowserModule` have already been loaded.');
        }
-     });
+     }));
+
+  it('should trigger an app destroy when a platform is destroyed',
+     withBody('<test-app></test-app>', async () => {
+       let compOnDestroyCalled = false;
+       let serviceOnDestroyCalled = false;
+       let injectorOnDestroyCalled = false;
+
+       @Injectable({providedIn: 'root'})
+       class ServiceWithOnDestroy {
+         ngOnDestroy() {
+           serviceOnDestroyCalled = true;
+         }
+       }
+
+       @Component({
+         selector: 'test-app',
+         standalone: true,
+         template: 'Hello',
+       })
+       class ComponentWithOnDestroy {
+         constructor(service: ServiceWithOnDestroy) {}
+
+         ngOnDestroy() {
+           compOnDestroyCalled = true;
+         }
+       }
+
+       const appRef = await bootstrapApplication(ComponentWithOnDestroy);
+       const injector = (appRef as unknown as {injector: R3Injector}).injector;
+       injector.onDestroy(() => injectorOnDestroyCalled = true);
+
+       expect(document.body.textContent).toBe('Hello');
+
+       const platformRef = injector.get(PlatformRef);
+       platformRef.destroy();
+
+       // Verify the callbacks were invoked.
+       expect(compOnDestroyCalled).toBe(true);
+       expect(serviceOnDestroyCalled).toBe(true);
+       expect(injectorOnDestroyCalled).toBe(true);
+
+       // Make sure the DOM has been cleaned up as well.
+       expect(document.body.textContent).toBe('');
+     }));
 });

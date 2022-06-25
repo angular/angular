@@ -225,13 +225,13 @@
     "name": "Observable"
   },
   {
+    "name": "PLATFORM_DESTROY_LISTENERS"
+  },
+  {
     "name": "PLATFORM_ID"
   },
   {
     "name": "PLATFORM_INITIALIZER"
-  },
-  {
-    "name": "PLATFORM_ON_DESTROY"
   },
   {
     "name": "R3Injector"
@@ -342,9 +342,6 @@
     "name": "_randomChar"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "_wrapInTimeout"
   },
   {
@@ -391,6 +388,9 @@
   },
   {
     "name": "collectNativeNodes"
+  },
+  {
+    "name": "componentDefCount"
   },
   {
     "name": "concatStringsWithSpace"
