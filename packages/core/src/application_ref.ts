@@ -60,7 +60,8 @@ export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultip
  * `PlatformRef` class (i.e. register the callback via `PlatformRef.onDestroy`), thus making the
  * entire class tree-shakeable.
  */
-const PLATFORM_ON_DESTROY = new InjectionToken<() => void>('PlatformOnDestroy');
+const PLATFORM_DESTROY_LISTENERS =
+    new InjectionToken<Set<VoidFunction>>('PlatformDestroyListeners');
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
@@ -230,7 +231,18 @@ export function internalBootstrapApplication(config: {
         setLocaleId(localeId || DEFAULT_LOCALE_ID);
 
         const appRef = appInjector.get(ApplicationRef);
-        appRef.onDestroy(() => onErrorSubscription.unsubscribe());
+
+        // If the whole platform is destroyed, invoke the `destroy` method
+        // for all bootstrapped applications as well.
+        const destroyListener = () => appRef.destroy();
+        const onPlatformDestroyListeners = platformInjector.get(PLATFORM_DESTROY_LISTENERS, null);
+        onPlatformDestroyListeners?.add(destroyListener);
+
+        appRef.onDestroy(() => {
+          onPlatformDestroyListeners?.delete(destroyListener);
+          onErrorSubscription.unsubscribe();
+        });
+
         appRef.bootstrap(rootComponent);
         return appRef;
       });
@@ -303,7 +315,7 @@ export function createPlatformInjector(providers: StaticProvider[] = [], name?: 
     name,
     providers: [
       {provide: INJECTOR_SCOPE, useValue: 'platform'},
-      {provide: PLATFORM_ON_DESTROY, useValue: () => _platformInjector = null},  //
+      {provide: PLATFORM_DESTROY_LISTENERS, useValue: new Set([() => _platformInjector = null])},
       ...providers
     ],
   });
@@ -523,8 +535,11 @@ export class PlatformRef {
     this._modules.slice().forEach(module => module.destroy());
     this._destroyListeners.forEach(listener => listener());
 
-    const destroyListener = this._injector.get(PLATFORM_ON_DESTROY, null);
-    destroyListener?.();
+    const destroyListeners = this._injector.get(PLATFORM_DESTROY_LISTENERS, null);
+    if (destroyListeners) {
+      destroyListeners.forEach(listener => listener());
+      destroyListeners.clear();
+    }
 
     this._destroyed = true;
   }
