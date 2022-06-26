@@ -17,20 +17,7 @@
 </head>
 <body>
   <dev-app>Loading...</dev-app>
-
   <script src="zone.js/dist/zone.js"></script>
-  <script src="https://www.youtube.com/iframe_api"></script>
-  <script src="https://unpkg.com/@googlemaps/markerclustererplus/dist/index.min.js"></script>
-  <script>
-    (function loadGoogleMaps() {
-      // Key can be set through the `GOOGLE_MAPS_KEY` environment variable.
-      const key = window.GOOGLE_MAPS_KEY;
-      const script = document.createElement('script');
-      script.src = 'https://maps.googleapis.com/maps/api/js?libraries=visualization' +
-        (key ? '&key=' + key : '');
-      document.body.appendChild(script);
-    })();
-  </script>
   <script src="bundles/dev-app/main.js" type="module"></script>
 </body>
 </html>

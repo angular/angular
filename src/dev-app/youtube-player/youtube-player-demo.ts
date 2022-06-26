@@ -53,7 +53,9 @@ export class YouTubePlayerDemo implements AfterViewInit, OnDestroy {
   videoWidth: number | undefined;
   videoHeight: number | undefined;
 
-  constructor(private _changeDetectorRef: ChangeDetectorRef) {}
+  constructor(private _changeDetectorRef: ChangeDetectorRef) {
+    this._loadApi();
+  }
 
   ngAfterViewInit(): void {
     this.onResize();
@@ -69,5 +71,15 @@ export class YouTubePlayerDemo implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     window.removeEventListener('resize', this.onResize);
+  }
+
+  private _loadApi() {
+    if (!window.YT) {
+      // We don't need to wait for the API to load since the
+      // component is set up to wait for it automatically.
+      const script = document.createElement('script');
+      script.src = 'https://www.youtube.com/iframe_api';
+      document.body.appendChild(script);
+    }
   }
 }

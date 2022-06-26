@@ -44,6 +44,8 @@ const CIRCLE_CENTER: google.maps.LatLngLiteral = {
 };
 const CIRCLE_RADIUS = 500000;
 
+let apiLoadingPromise: Promise<unknown> | null = null;
+
 /** Demo Component for @angular/google-maps/map */
 @Component({
   selector: 'google-map-demo',
@@ -96,6 +98,7 @@ export class GoogleMapDemo {
   };
 
   isGroundOverlayDisplayed = false;
+  hasLoaded: boolean;
   groundOverlayImages = [
     {
       title: 'Red logo',
@@ -116,19 +119,16 @@ export class GoogleMapDemo {
   isBicyclingLayerDisplayed = false;
 
   mapTypeId: google.maps.MapTypeId;
-  mapTypeIds = [
-    google.maps.MapTypeId.HYBRID,
-    google.maps.MapTypeId.ROADMAP,
-    google.maps.MapTypeId.SATELLITE,
-    google.maps.MapTypeId.TERRAIN,
-  ];
+  mapTypeIds = ['hybrid', 'roadmap', 'sattelite', 'terrain'] as google.maps.MapTypeId[];
 
   markerClustererImagePath =
     'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m';
 
   directionsResult?: google.maps.DirectionsResult;
 
-  constructor(private readonly _mapDirectionsService: MapDirectionsService) {}
+  constructor(private readonly _mapDirectionsService: MapDirectionsService) {
+    this._loadApi();
+  }
 
   authFailure() {
     console.log('Auth failure event emitted');
@@ -256,5 +256,42 @@ export class GoogleMapDemo {
     }
 
     return result;
+  }
+
+  private _loadApi() {
+    this.hasLoaded = !!window.google?.maps;
+
+    if (this.hasLoaded) {
+      return;
+    }
+
+    if (!apiLoadingPromise) {
+      // Key can be set through the `GOOGLE_MAPS_KEY` environment variable.
+      const apiKey: string | undefined = (window as any).GOOGLE_MAPS_KEY;
+
+      apiLoadingPromise = Promise.all([
+        this._loadScript(
+          `https://maps.googleapis.com/maps/api/js?libraries=visualization${
+            apiKey ? `&key=${apiKey}` : ''
+          }`,
+        ),
+        this._loadScript('https://unpkg.com/@googlemaps/markerclustererplus/dist/index.min.js'),
+      ]);
+    }
+
+    apiLoadingPromise.then(
+      () => (this.hasLoaded = true),
+      error => console.error('Failed to load Google Maps API', error),
+    );
+  }
+
+  private _loadScript(url: string): Promise<unknown> {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = url;
+      script.addEventListener('load', resolve);
+      script.addEventListener('error', reject);
+      document.body.appendChild(script);
+    });
   }
 }

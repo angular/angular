@@ -1,4 +1,5 @@
-<div class="demo-google-map">
+<div *ngIf="!hasLoaded">Loading Google Maps API...</div>
+<div class="demo-google-map" *ngIf="hasLoaded">
   <google-map height="400px"
               width="750px"
               [center]="center"
