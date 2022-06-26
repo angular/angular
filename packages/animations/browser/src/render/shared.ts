@@ -195,48 +195,35 @@ if (_isNode || typeof Element !== 'undefined') {
  * @param isStartElement boolean flag indicating if this is the first element being traversed
  *                       (needed to ignore the first element and allow the other elements to be
  * queried in the recursive calls).
+ * @returns boolean indicating if at least one match has been found (used for the recursive calls).
  */
 function collectQueryMatches(
     element: Element, selector: string, multi: boolean, matched: Element[],
-    isStartElement: boolean): void {
+    isStartElement: boolean): boolean {
   const matches = isStartElement ? false : element.matches(selector);
 
   if (matches) {
     matched.push(element);
     if (!multi) {
-      return;
+      return true;
     }
   }
 
-  collectQueryMatchesOnChildren(element.children, selector, multi, matched);
-
-  if (!multi && matched.length) {
-    return;
+  for (const el of element.children as any as Iterable<Element>) {
+    if (collectQueryMatches(el, selector, multi, matched, false)) {
+      return true;
+    }
   }
 
   if (element.shadowRoot) {
-    collectQueryMatchesOnChildren(element.shadowRoot.children, selector, multi, matched);
-  }
-}
-
-/**
- * Applies the collectQueryMatches to an iterable of children elements
- *
- * @param children elements to iterate through.
- * @param selector the css selector which to query for.
- * @param multi boolean flag indicating if only the first element found should be returned or not.
- * @param matched array into which the function collects the matching elements (also used for the
- *     recursive calls).
- */
-function collectQueryMatchesOnChildren(
-    children: HTMLCollection, selector: string, multi: boolean, matched: Element[]): void {
-  for (let el of children as any as Iterable<Element>) {
-    collectQueryMatches(el, selector, multi, matched, false);
-    if (!multi && matched.length) {
-      return;
+    for (const el of element.shadowRoot.children as any as Iterable<Element>) {
+      if (collectQueryMatches(el, selector, multi, matched, false)) {
+        return true;
+      }
     }
   }
-  return;
+
+  return false;
 }
 
 function containsVendorPrefix(prop: string): boolean {
