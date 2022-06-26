@@ -177,32 +177,66 @@ if (_isNode || typeof Element !== 'undefined') {
   }
 
   _query = (element: any, selector: string, multi: boolean): any[] => {
-    return queryFn(element, selector, multi, [], true);
-    function queryFn(
-        element: any, selector: string, multi: boolean, matched: any[],
-        isStartElement: boolean): any[] {
-      const matches = isStartElement ? false : element.matches(selector);
-
-      if (matches) {
-        matched.push(element);
-        if (!multi) {
-          return matched;
-        }
-      }
-
-      const childEls = Array.from(element.children);
-      const shadowChildEls = element.shadowRoot ? Array.from(element.shadowRoot.children) : [];
-
-      for (let i = 0; i < childEls.length + shadowChildEls.length; i++) {
-        const el = i < childEls.length ? childEls[i] : shadowChildEls[i - childEls.length];
-        matched = queryFn(el, selector, multi, matched, false);
-        if (!multi && matched.length) {
-          return matched;
-        }
-      }
-      return matched;
-    }
+    const matched: Element[] = [];
+    collectQueryMatches(element, selector, multi, matched, true);
+    return matched;
   };
+}
+
+/**
+ * Recursively traverse a tree of elements and returns those matching
+ * the provided selector
+ *
+ * @param element root of the tree of elements from which to apply the querying.
+ * @param selector the css selector which to query for.
+ * @param multi boolean flag indicating if only the first element found should be returned or not.
+ * @param matched array into which the function collects the matching elements (also used for the
+ *     recursive calls).
+ * @param isStartElement boolean flag indicating if this is the first element being traversed
+ *                       (needed to ignore the first element and allow the other elements to be
+ * queried in the recursive calls).
+ */
+function collectQueryMatches(
+    element: Element, selector: string, multi: boolean, matched: Element[],
+    isStartElement: boolean): void {
+  const matches = isStartElement ? false : element.matches(selector);
+
+  if (matches) {
+    matched.push(element);
+    if (!multi) {
+      return;
+    }
+  }
+
+  collectQueryMatchesOnChildren(element.children, selector, multi, matched);
+
+  if (!multi && matched.length) {
+    return;
+  }
+
+  if (element.shadowRoot) {
+    collectQueryMatchesOnChildren(element.shadowRoot.children, selector, multi, matched);
+  }
+}
+
+/**
+ * Applies the collectQueryMatches to an iterable of children elements
+ *
+ * @param children elements to iterate through.
+ * @param selector the css selector which to query for.
+ * @param multi boolean flag indicating if only the first element found should be returned or not.
+ * @param matched array into which the function collects the matching elements (also used for the
+ *     recursive calls).
+ */
+function collectQueryMatchesOnChildren(
+    children: HTMLCollection, selector: string, multi: boolean, matched: Element[]): void {
+  for (let el of children as any as Iterable<Element>) {
+    collectQueryMatches(el, selector, multi, matched, false);
+    if (!multi && matched.length) {
+      return;
+    }
+  }
+  return;
 }
 
 function containsVendorPrefix(prop: string): boolean {
