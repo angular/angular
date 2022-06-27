@@ -10,7 +10,8 @@ import {AnimationEvent} from '@angular/animations';
 import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {DOCUMENT} from '@angular/common';
-import {Component, DoCheck, NgZone, RendererFactory2, RendererType2} from '@angular/core';
+import {Component, DoCheck, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
@@ -21,6 +22,7 @@ import {ServerRendererFactory2} from '@angular/platform-server/src/server_render
 
 describe('renderer factory lifecycle', () => {
   let logs: string[] = [];
+  let lastCapturedType: RendererType2|null = null;
 
   @Component({selector: 'some-component', template: `foo`})
   class SomeComponent implements DoCheck {
@@ -56,6 +58,7 @@ describe('renderer factory lifecycle', () => {
 
     rendererFactory.createRenderer = (hostElement: any, type: RendererType2|null) => {
       logs.push('create');
+      lastCapturedType = type;
       return createRender.apply(rendererFactory, [hostElement, type]);
     };
 
@@ -94,6 +97,92 @@ describe('renderer factory lifecycle', () => {
       fixture.detectChanges();
     }).toThrow();
     expect(logs).toEqual(['create', 'create', 'begin', 'end']);
+  });
+
+  it('should pass in the component styles directly into the underlying renderer', () => {
+    @Component({
+      standalone: true,
+      styles: ['.some-css-class { color: red; }'],
+      template: '...',
+      encapsulation: ViewEncapsulation.ShadowDom,
+    })
+    class StyledComp {
+    }
+
+    TestBed.createComponent(StyledComp);
+
+    expect(lastCapturedType!.styles).toEqual(['.some-css-class { color: red; }']);
+    expect(lastCapturedType!.encapsulation).toEqual(ViewEncapsulation.ShadowDom);
+  });
+
+  describe('component animations', () => {
+    it('should pass in the component styles directly into the underlying renderer', () => {
+      const animA = {name: 'a'};
+      const animB = {name: 'b'};
+
+      @Component({
+        standalone: true,
+        template: '',
+        animations: [
+          animA,
+          animB,
+        ],
+      })
+      class AnimComp {
+      }
+
+      TestBed.createComponent(AnimComp);
+
+      const capturedAnimations = lastCapturedType!.data!['animation'];
+      expect(Array.isArray(capturedAnimations)).toBeTruthy();
+      expect(capturedAnimations.length).toEqual(2);
+      expect(capturedAnimations).toContain(animA);
+      expect(capturedAnimations).toContain(animB);
+    });
+
+    it('should include animations in the renderType data array even if the array is empty', () => {
+      @Component({
+        standalone: true,
+        template: '...',
+        animations: [],
+      })
+      class AnimComp {
+      }
+
+      TestBed.createComponent(AnimComp);
+
+      const data = lastCapturedType!.data;
+      expect(data.animation).toEqual([]);
+    });
+
+    it('should allow [@trigger] bindings to be picked up by the underlying renderer', () => {
+      @Component({
+        standalone: true,
+        template: '<div @fooAnimation></div>',
+        animations: [],
+      })
+      class AnimComp {
+      }
+
+      const rendererFactory = new MockRendererFactory(['setProperty']);
+
+      TestBed.configureTestingModule({
+        providers: [{
+          provide: RendererFactory2,
+          useValue: rendererFactory,
+          deps: [DOCUMENT],
+        }]
+      });
+
+      const fixture = TestBed.createComponent(AnimComp);
+      fixture.detectChanges();
+
+      const renderer = rendererFactory.lastRenderer!;
+      const spy = renderer.spies['setProperty'];
+      const [_, prop, __] = spy.calls.mostRecent().args;
+
+      expect(prop).toEqual('@fooAnimation');
+    });
   });
 });
 
@@ -328,3 +417,84 @@ describe('Renderer2 destruction hooks', () => {
     expect(ngDevMode!.rendererDestroyNode).toBe(3);
   });
 });
+
+export class MockRendererFactory implements RendererFactory2 {
+  lastRenderer: any;
+  private _spyOnMethods: string[];
+
+  constructor(spyOnMethods?: string[]) {
+    this._spyOnMethods = spyOnMethods || [];
+  }
+
+  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer2 {
+    const renderer = this.lastRenderer = new MockRenderer(this._spyOnMethods);
+    return renderer;
+  }
+}
+
+class MockRenderer implements Renderer2 {
+  public spies: {[methodName: string]: any} = {};
+  data = {};
+
+  destroyNode: ((node: any) => void)|null = null;
+
+  constructor(spyOnMethods: string[]) {
+    spyOnMethods.forEach(methodName => {
+      this.spies[methodName] = spyOn(this as any, methodName).and.callThrough();
+    });
+  }
+
+  destroy(): void {}
+  createComment(value: string): Comment {
+    return document.createComment(value);
+  }
+  createElement(name: string, namespace?: string|null): Element {
+    return namespace ? document.createElementNS(namespace, name) : document.createElement(name);
+  }
+  createText(value: string): Text {
+    return document.createTextNode(value);
+  }
+  appendChild(parent: RElement, newChild: Node): void {
+    parent.appendChild(newChild);
+  }
+  insertBefore(parent: Node, newChild: Node, refChild: Node|null): void {
+    parent.insertBefore(newChild, refChild);
+  }
+  removeChild(parent: RElement, oldChild: Node): void {
+    parent.removeChild(oldChild);
+  }
+  selectRootElement(selectorOrNode: string|any): RElement {
+    return typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
+                                                selectorOrNode;
+  }
+  parentNode(node: Node): Element|null {
+    return node.parentNode as Element;
+  }
+  nextSibling(node: Node): Node|null {
+    return node.nextSibling;
+  }
+  setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void {
+    // set all synthetic attributes as properties
+    if (name[0] === '@') {
+      this.setProperty(el, name, value);
+    } else {
+      el.setAttribute(name, value);
+    }
+  }
+  removeAttribute(el: RElement, name: string, namespace?: string|null): void {}
+  addClass(el: RElement, name: string): void {}
+  removeClass(el: RElement, name: string): void {}
+  setStyle(el: RElement, style: string, value: any, flags?: RendererStyleFlags2): void {}
+  removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2): void {}
+  setProperty(el: RElement, name: string, value: any): void {
+    (el as any)[name] = value;
+  }
+  setValue(node: Text, value: string): void {
+    node.textContent = value;
+  }
+
+  // TODO: Deprecate in favor of addEventListener/removeEventListener
+  listen(target: Node, eventName: string, callback: (event: any) => boolean | void): () => void {
+    return () => {};
+  }
+}
