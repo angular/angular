@@ -1,4 +1,5 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//aio/tools:defaults.bzl", "nodejs_binary")
 
 package(default_visibility = ["//visibility:public"])
 
