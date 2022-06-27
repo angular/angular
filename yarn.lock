@@ -25,23 +25,23 @@
     "@angular-devkit/core" "14.0.1"
     rxjs "6.6.7"
 
-"@angular-devkit/architect@0.1401.0-next.1":
-  version "0.1401.0-next.1"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.1401.0-next.1.tgz#a0c74f1fe57d680ac0b3341ae3780acfe7c3c9a9"
-  integrity sha512-O96m5TZ5P4mH3L6k22oYQesJoaGGrxXE0VcnpnNDYWSDxHD60150tYAu3JQb+Vgs5+Tls735XActXfOv9nxNjw==
+"@angular-devkit/architect@0.1401.0-next.2":
+  version "0.1401.0-next.2"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.1401.0-next.2.tgz#b6e25ea5ba38603b0a4fa2a7180f03771326597f"
+  integrity sha512-XQay7qobhwuUulAN7P7mlBjgRjVIsjSmtQRlVWomBPL/iosHI1RZW7MEcrkgiQxPemugIN+y0kifaZFOhjpRoA==
   dependencies:
-    "@angular-devkit/core" "14.1.0-next.1"
+    "@angular-devkit/core" "14.1.0-next.2"
     rxjs "6.6.7"
 
-"@angular-devkit/build-angular@14.1.0-next.1":
-  version "14.1.0-next.1"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-angular/-/build-angular-14.1.0-next.1.tgz#94a40250092c554f9fce7475bf43d328c8a4ae14"
-  integrity sha512-T9lNIR0E1w+VnKeiFJOa34Ru72RCH8Qe113hzzLw8AFz798fP/jv55ujA7GOHCluph4PeqJC9Ed3JSNqRpoAJw==
+"@angular-devkit/build-angular@14.1.0-next.2":
+  version "14.1.0-next.2"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-angular/-/build-angular-14.1.0-next.2.tgz#4c68d7c7a8da599d7a63948d24ff83478d3ea06a"
+  integrity sha512-LXbT3DvttZmmGzkfAPXP08C3cEx0K7AwleUijp+giRzcraoRdjOzcR7G2R9OLLNa4bwLBFc8wkU28Y02U4xb7g==
   dependencies:
     "@ampproject/remapping" "2.2.0"
-    "@angular-devkit/architect" "0.1401.0-next.1"
-    "@angular-devkit/build-webpack" "0.1401.0-next.1"
-    "@angular-devkit/core" "14.1.0-next.1"
+    "@angular-devkit/architect" "0.1401.0-next.2"
+    "@angular-devkit/build-webpack" "0.1401.0-next.2"
+    "@angular-devkit/core" "14.1.0-next.2"
     "@babel/core" "7.18.2"
     "@babel/generator" "7.18.2"
     "@babel/helper-annotate-as-pure" "7.16.7"
@@ -52,7 +52,7 @@
     "@babel/runtime" "7.18.3"
     "@babel/template" "7.16.7"
     "@discoveryjs/json-ext" "0.5.7"
-    "@ngtools/webpack" "14.1.0-next.1"
+    "@ngtools/webpack" "14.1.0-next.2"
     ansi-colors "4.1.3"
     babel-loader "8.2.5"
     babel-plugin-istanbul "6.1.1"
@@ -181,12 +181,12 @@
     "@angular-devkit/architect" "0.1400.1"
     rxjs "6.6.7"
 
-"@angular-devkit/build-webpack@0.1401.0-next.1":
-  version "0.1401.0-next.1"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-webpack/-/build-webpack-0.1401.0-next.1.tgz#34922425c9ad5d4707609af90c3f25877b3ab67f"
-  integrity sha512-8nvvPeLrAMuqiMCNzWQKUjdCVB6cQlmWFmhI+rl4X2SeYHaL8Xmy5PtYCCMJcYLUT/XE8b+VdvuPzv84W87Hng==
+"@angular-devkit/build-webpack@0.1401.0-next.2":
+  version "0.1401.0-next.2"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-webpack/-/build-webpack-0.1401.0-next.2.tgz#53fb00ba5ffc083fe02ed20bc15dcfb3f0963c3d"
+  integrity sha512-59Y1dOC7IQPrjrYMkOxbQUsbhL/2WAQtzY4ETFtCoAzUh/kVgV6L236oM5ZsKT+b7317cmtRngtvMAZLW22hQQ==
   dependencies:
-    "@angular-devkit/architect" "0.1401.0-next.1"
+    "@angular-devkit/architect" "0.1401.0-next.2"
     rxjs "6.6.7"
 
 "@angular-devkit/core@14.0.1", "@angular-devkit/core@^14.0.1":
@@ -200,10 +200,10 @@
     rxjs "6.6.7"
     source-map "0.7.3"
 
-"@angular-devkit/core@14.1.0-next.1":
-  version "14.1.0-next.1"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-14.1.0-next.1.tgz#60106955588505045fc223d3a79f644a2318b820"
-  integrity sha512-2g0EgD1TMRfivEzjm3SLMyVoocSdCnG7s9Xp/5oWx1R8CmgcyXavwmspmCDyOV6dsFsRJXWqdUHFV/Og6FM9Zw==
+"@angular-devkit/core@14.1.0-next.2":
+  version "14.1.0-next.2"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-14.1.0-next.2.tgz#3f68034c94a7e82865ff4ca89a43a8b0105a5ac5"
+  integrity sha512-ZLfoMLlAFBIaHVRGBYk1vjjhPBa5MHIUtBg6TZEs+opIgw+PxyRo9nVePv7VfFKehypC4PzJMwNnUkhMTAtXKA==
   dependencies:
     ajv "8.11.0"
     ajv-formats "2.1.1"
@@ -327,11 +327,12 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#714bb709f6d7ee3386a7f1097a75a54ab92c285d":
-  version "0.0.0-3e07a8f0335813ddeee471c7c1db12325c07325e"
-  resolved "https://github.com/angular/dev-infra-private-builds.git#714bb709f6d7ee3386a7f1097a75a54ab92c285d"
+"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#d0d8a03a8622ed62be6236776832d55a394b6d7d":
+  version "0.0.0-c713d4a7449b499c0ac31a9941095a7319b15441"
+  uid d0d8a03a8622ed62be6236776832d55a394b6d7d
+  resolved "https://github.com/angular/dev-infra-private-builds.git#d0d8a03a8622ed62be6236776832d55a394b6d7d"
   dependencies:
-    "@angular-devkit/build-angular" "14.1.0-next.1"
+    "@angular-devkit/build-angular" "14.1.0-next.2"
     "@angular/benchpress" "0.3.0"
     "@babel/core" "^7.16.0"
     "@bazel/buildifier" "5.1.0"
@@ -3157,10 +3158,10 @@
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-14.0.1.tgz#005a4bbf08bc1cf94ab41aa3503024c583ad99df"
   integrity sha512-BR+RoOK8/20mRx86D6cYGjc0+/qsGvIpLHknRd9WfxB7ppfbWV8QTN9vnk3lRs13n2umRJ+8VvC8UMmd8B+m9A==
 
-"@ngtools/webpack@14.1.0-next.1":
-  version "14.1.0-next.1"
-  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-14.1.0-next.1.tgz#aeb89ca748e3b9f0d9db4be3a8d0233697ad291b"
-  integrity sha512-MXgzBn4LudIIdffY4X/pAhAAL5wvGRa36ToeYb4Pmfr0GROD2KvtWk6zNGmE1YuP1p9DHXh6ufoJxtHqTGgFVQ==
+"@ngtools/webpack@14.1.0-next.2":
+  version "14.1.0-next.2"
+  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-14.1.0-next.2.tgz#cedb06a9101a959faef5d88a40d846eb65318680"
+  integrity sha512-EuYY9LFJ2U4g2IaFbvQAW9o2XioXoa0J8NZr4Ju21wrJKgoPVegoKkw3E9pFskMI3NrIcDvvnRGz23+rD74IAA==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
