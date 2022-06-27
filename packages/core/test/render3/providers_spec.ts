@@ -6,26 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component as _Component, ComponentFactoryResolver, ElementRef, inject, Injectable as _Injectable, InjectFlags, InjectionToken, NgModule, RendererFactory2, Type, ViewContainerRef, ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵdefineNgModule, ɵɵinject} from '../../src/core';
+import {TestBed} from '@angular/core/testing';
+
+import {Component, createEnvironmentInjector, ElementRef, EnvironmentInjector, inject, Injectable, InjectFlags, InjectionToken, NgModule, RendererFactory2, Type, ViewContainerRef, ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵdefineNgModule, ɵɵinject} from '../../src/core';
 import {forwardRef} from '../../src/di/forward_ref';
-import {injectComponentFactoryResolver, ɵɵdefineComponent, ɵɵelement, ɵɵgetInheritedFactory, ɵɵProvidersFeature, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
-import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {NgModuleFactory} from '../../src/render3/ng_module_ref';
+import {ɵɵgetInheritedFactory} from '../../src/render3/index';
 import {getInjector} from '../../src/render3/util/discovery_utils';
 
-import {getRendererFactory2} from './imported_renderer2';
 import {expectProvidersScenario} from './providers_helper';
-import {ComponentFixture} from './render_util';
-
-const Component: typeof _Component = function(...args: any[]): any {
-  // In test we use @Component for documentation only so it's safe to mock out the implementation.
-  return () => undefined;
-} as any;
-const Injectable: typeof _Injectable = function(...args: any[]): any {
-  // In test we use @Injectable for documentation only so it's safe to mock out the implementation.
-  return () => undefined;
-} as any;
-
 
 describe('providers', () => {
   describe('should support all types of Provider:', () => {
@@ -996,135 +984,89 @@ describe('providers', () => {
     let hostComponent: HostComponent|null = null;
 
     @Component({
+      standalone: true,
       template: `{{s}}`,
+      selector: 'embedded-cmp',
     })
     class EmbeddedComponent {
       constructor(private s: String) {}
-
-      static ɵfac = () => new EmbeddedComponent(inject(String));
-      static ɵcmp = ɵɵdefineComponent({
-        type: EmbeddedComponent,
-        selectors: [['embedded-cmp']],
-        decls: 1,
-        vars: 1,
-        template:
-            (rf: RenderFlags, cmp: EmbeddedComponent) => {
-              if (rf & RenderFlags.Create) {
-                ɵɵtext(0);
-              }
-              if (rf & RenderFlags.Update) {
-                ɵɵtextInterpolate1('', cmp.s, '');
-              }
-            }
-      });
-    }
-
-    @Component({template: `foo`, providers: [{provide: String, useValue: 'From host component'}]})
-    class HostComponent {
-      constructor(public vcref: ViewContainerRef, public cfr: ComponentFactoryResolver) {}
-
-      static ɵfac = () => hostComponent =
-          new HostComponent(inject(ViewContainerRef as any), injectComponentFactoryResolver())
-
-              static ɵcmp = ɵɵdefineComponent({
-                type: HostComponent,
-                selectors: [['host-cmp']],
-                decls: 1,
-                vars: 0,
-                template:
-                    (rf: RenderFlags, cmp: HostComponent) => {
-                      if (rf & RenderFlags.Create) {
-                        ɵɵtext(0, 'foo');
-                      }
-                    },
-                features:
-                    [
-                      ɵɵProvidersFeature([{provide: String, useValue: 'From host component'}]),
-                    ],
-              });
     }
 
     @Component({
+      standalone: true,
+      selector: 'host-cmp',
+      template: `foo`,
+      providers: [{provide: String, useValue: 'From host component'}],
+    })
+    class HostComponent {
+      constructor(public vcref: ViewContainerRef) {
+        hostComponent = this;
+      }
+    }
+
+    @Component({
+      standalone: true,
+      imports: [HostComponent],
       template: `<host-cmp></host-cmp>`,
-      providers: [{provide: String, useValue: 'From app component'}]
+      providers: [{provide: String, useValue: 'From app component'}],
     })
     class AppComponent {
       constructor() {}
-
-      static ɵfac = () => new AppComponent();
-      static ɵcmp = ɵɵdefineComponent({
-        type: AppComponent,
-        selectors: [['app-cmp']],
-        decls: 1,
-        vars: 0,
-        template:
-            (rf: RenderFlags, cmp: AppComponent) => {
-              if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'host-cmp');
-              }
-            },
-        features:
-            [
-              ɵɵProvidersFeature([{provide: String, useValue: 'From app component'}]),
-            ],
-        dependencies: [HostComponent]
-      });
     }
 
-    it('should not cross the root view boundary, and use the root view injector', () => {
-      const fixture = new ComponentFixture(AppComponent);
-      expect(fixture.html).toEqual('<host-cmp>foo</host-cmp>');
+    afterEach(() => hostComponent = null);
 
-      hostComponent!.vcref.createComponent(
-          hostComponent!.cfr.resolveComponentFactory(EmbeddedComponent), undefined, {
-            get: (token: any, notFoundValue?: any) => {
-              return token === String ? 'From custom root view injector' : notFoundValue;
-            }
-          });
-      fixture.update();
-      expect(fixture.html)
+    it('should not cross the root view boundary, and use the root view injector', () => {
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('<host-cmp>foo</host-cmp><!--container-->');
+
+      hostComponent!.vcref.createComponent(EmbeddedComponent, {
+        injector: {
+          get: (token: any, notFoundValue?: any) => {
+            return token === String ? 'From custom root view injector' : notFoundValue;
+          }
+        },
+      });
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML)
           .toEqual(
-              '<host-cmp>foo</host-cmp><embedded-cmp>From custom root view injector</embedded-cmp>');
+              '<host-cmp>foo</host-cmp><embedded-cmp>From custom root view injector</embedded-cmp><!--container-->');
     });
 
     it('should not cross the root view boundary, and use the module injector if no root view injector',
        () => {
-         const fixture = new ComponentFixture(AppComponent);
-         expect(fixture.html).toEqual('<host-cmp>foo</host-cmp>');
+         const fixture = TestBed.createComponent(AppComponent);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.innerHTML)
+             .toEqual('<host-cmp>foo</host-cmp><!--container-->');
 
-         class MyAppModule {
-           static ɵinj = ɵɵdefineInjector({
-             imports: [],
-             providers:
-                 [
-                   {provide: RendererFactory2, useValue: getRendererFactory2(document)},
-                   {provide: String, useValue: 'From module injector'}
-                 ]
-           });
-           static ɵmod = ɵɵdefineNgModule({type: MyAppModule});
-         }
-         const myAppModuleFactory = new NgModuleFactory(MyAppModule);
-         const ngModuleRef = myAppModuleFactory.create(null);
+         const environmentInjector = createEnvironmentInjector(
+             [{provide: String, useValue: 'From module injector'}],
+             TestBed.get(EnvironmentInjector));
 
-         hostComponent!.vcref.createComponent(
-             hostComponent!.cfr.resolveComponentFactory(EmbeddedComponent), undefined,
-             {get: (token: any, notFoundValue?: any) => notFoundValue}, undefined, ngModuleRef);
-         fixture.update();
-         expect(fixture.html)
-             .toMatch(
-                 /<host-cmp>foo<\/host-cmp><embedded-cmp _nghost-[a-z]+-c(\d+)="">From module injector<\/embedded-cmp>/);
+         hostComponent!.vcref.createComponent(EmbeddedComponent, {
+           injector: {get: (token: any, notFoundValue?: any) => notFoundValue},
+           environmentInjector: environmentInjector
+         });
+         fixture.detectChanges();
+         expect(fixture.nativeElement.innerHTML)
+             .toEqual(
+                 '<host-cmp>foo</host-cmp><embedded-cmp>From module injector</embedded-cmp><!--container-->');
        });
 
     it('should cross the root view boundary to the parent of the host, thanks to the default root view injector',
        () => {
-         const fixture = new ComponentFixture(AppComponent);
-         expect(fixture.html).toEqual('<host-cmp>foo</host-cmp>');
+         const fixture = TestBed.createComponent(AppComponent);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.innerHTML)
+             .toEqual('<host-cmp>foo</host-cmp><!--container-->');
 
-         hostComponent!.vcref.createComponent(
-             hostComponent!.cfr.resolveComponentFactory(EmbeddedComponent));
-         fixture.update();
-         expect(fixture.html)
-             .toEqual('<host-cmp>foo</host-cmp><embedded-cmp>From app component</embedded-cmp>');
+         hostComponent!.vcref.createComponent(EmbeddedComponent);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.innerHTML)
+             .toEqual(
+                 '<host-cmp>foo</host-cmp><embedded-cmp>From app component</embedded-cmp><!--container-->');
        });
   });
 
@@ -1134,11 +1076,6 @@ describe('providers', () => {
          @Injectable()
          class MyService {
            constructor(public value: String) {}
-
-           static ɵprov = ɵɵdefineInjectable({
-             token: MyService,
-             factory: () => new MyService(ɵɵinject(String)),
-           });
          }
 
          expectProvidersScenario({
@@ -1154,11 +1091,8 @@ describe('providers', () => {
        });
 
     it('should make sure that parent service does not see overrides in child directives', () => {
+      @Injectable()
       class Greeter {
-        static ɵprov = ɵɵdefineInjectable({
-          token: Greeter,
-          factory: () => new Greeter(ɵɵinject(String)),
-        });
         constructor(public greeting: String) {}
       }
 
@@ -1201,91 +1135,49 @@ describe('providers', () => {
       abstract location: String;
     }
 
+    @Injectable()
     class SomeInj implements Some {
       constructor(public location: String) {}
-
-      static ɵprov = ɵɵdefineInjectable({
-        token: SomeInj,
-        factory: () => new SomeInj(ɵɵinject(String)),
-      });
     }
 
     @Component({
+      standalone: true,
+      selector: 'my-cmp',
       template: `<p></p>`,
       providers: [{provide: String, useValue: 'From my component'}],
       viewProviders: [{provide: Number, useValue: 123}]
     })
     class MyComponent {
-      constructor() {}
-
-      static ɵfac = () => new MyComponent();
-      static ɵcmp = ɵɵdefineComponent({
-        type: MyComponent,
-        selectors: [['my-cmp']],
-        decls: 1,
-        vars: 0,
-        template:
-            (rf: RenderFlags, cmp: MyComponent) => {
-              if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'p');
-              }
-            },
-        features:
-            [
-              ɵɵProvidersFeature(
-                  [{provide: String, useValue: 'From my component'}],
-                  [{provide: Number, useValue: 123}]),
-            ],
-      });
     }
 
     @Component({
+      standalone: true,
+      imports: [MyComponent],
       template: `<my-cmp></my-cmp>`,
       providers:
           [{provide: String, useValue: 'From app component'}, {provide: Some, useClass: SomeInj}]
     })
     class AppComponent {
-      constructor() {}
-
-      static ɵfac = () => new AppComponent();
-      static ɵcmp = ɵɵdefineComponent({
-        type: AppComponent,
-        selectors: [['app-cmp']],
-        decls: 1,
-        vars: 0,
-        template:
-            (rf: RenderFlags, cmp: AppComponent) => {
-              if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'my-cmp');
-              }
-            },
-        features:
-            [
-              ɵɵProvidersFeature([
-                {provide: String, useValue: 'From app component'},
-                {provide: Some, useClass: SomeInj}
-              ]),
-            ],
-        dependencies: [MyComponent]
-      });
     }
 
     it('should work from within the template', () => {
-      const fixture = new ComponentFixture(AppComponent);
-      expect(fixture.html).toEqual('<my-cmp><p></p></my-cmp>');
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('<my-cmp><p></p></my-cmp>');
 
-      const p = fixture.hostElement.querySelector('p');
-      const injector = getInjector(p as any);
+      const p = fixture.nativeElement.querySelector('p');
+      const injector = getInjector(p);
       expect(injector.get(Number)).toEqual(123);
       expect(injector.get(String)).toEqual('From my component');
       expect(injector.get(Some).location).toEqual('From app component');
     });
 
     it('should work from the host of the component', () => {
-      const fixture = new ComponentFixture(AppComponent);
-      expect(fixture.html).toEqual('<my-cmp><p></p></my-cmp>');
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual('<my-cmp><p></p></my-cmp>');
 
-      const myCmp = fixture.hostElement.querySelector('my-cmp');
+      const myCmp = fixture.nativeElement.querySelector('my-cmp');
       const injector = getInjector(myCmp as any);
       expect(injector.get(Number)).toEqual(123);
       expect(injector.get(String)).toEqual('From my component');
