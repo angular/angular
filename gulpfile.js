@@ -18,5 +18,4 @@ function loadTask(fileName, taskName) {
 }
 
 
-gulp.task('source-map-test', loadTask('source-map-test'));
 gulp.task('changelog:zonejs', loadTask('changelog-zonejs'));
