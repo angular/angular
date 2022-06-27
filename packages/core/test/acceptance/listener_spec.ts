@@ -16,7 +16,99 @@ function getNoOfNativeListeners(): number {
 }
 
 describe('event listeners', () => {
-  describe('even handler', () => {
+  describe('even handling statements', () => {
+    it('should call function on event emit', () => {
+      @Component({
+        template: `<button (click)="onClick()">Click me</button>`,
+      })
+      class MyComp {
+        counter = 0;
+
+        onClick() {
+          this.counter++;
+        }
+      }
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.counter).toEqual(0);
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      expect(fixture.componentInstance.counter).toEqual(1);
+    });
+
+    it('should call function chain on event emit', () => {
+      @Component({
+        template: `<button (click)="onClick(); onClick2(); "> Click me </button>`,
+      })
+      class MyComp {
+        counter = 0;
+        counter2 = 0;
+        onClick() {
+          this.counter++;
+        }
+        onClick2() {
+          this.counter2++;
+        }
+      }
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.counter).toEqual(0);
+      expect(fixture.componentInstance.counter2).toEqual(0);
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      expect(fixture.componentInstance.counter).toEqual(1);
+      expect(fixture.componentInstance.counter2).toEqual(1);
+    });
+
+    it('should evaluate expression on event emit', () => {
+      @Component({
+        template: `<button (click)="showing=!showing"> Click me </button>`,
+      })
+      class MyComp {
+        showing = false;
+      }
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.showing).toBeFalse();
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      expect(fixture.componentInstance.showing).toBeTrue();
+
+      button.click();
+      expect(fixture.componentInstance.showing).toBeFalse();
+    });
+
+    it('should support listeners with specified set of args', () => {
+      @Component({
+        template: `<button (click)="onClick(data.a, data.b)"> Click me </button>`,
+      })
+      class MyComp {
+        counter = 0;
+        data = {a: 1, b: 2};
+
+        onClick(a: any, b: any) {
+          this.counter += a + b;
+        }
+      }
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.counter).toBe(0);
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      expect(fixture.componentInstance.counter).toBe(3);
+
+      button.click();
+      expect(fixture.componentInstance.counter).toBe(6);
+    });
+
     it('should be able to access a property called $event using `this`', () => {
       let eventVariable: number|undefined;
       let eventObject: MouseEvent|undefined;
@@ -109,6 +201,82 @@ describe('event listeners', () => {
 
       expect(instance.one.value).toBe('one!');
       expect(instance.two.value).toBe('two!');
+    });
+
+    it('should support local refs in listeners', () => {
+      @Component({
+        selector: 'my-comp',
+        standalone: true,
+        template: ``,
+      })
+      class MyComp {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [MyComp],
+        template: `
+          <my-comp #comp></my-comp>
+          <button (click)="onClick(comp)"></button>
+        `,
+      })
+      class App {
+        comp: MyComp|null = null;
+
+        onClick(comp: MyComp) {
+          this.comp = comp;
+        }
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.comp).toBeNull();
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      expect(fixture.componentInstance.comp).toBeInstanceOf(MyComp);
+    });
+  });
+
+  describe('prevent default', () => {
+    it('should call prevent default when a handler returns false', () => {
+      @Component({
+        template: `<button (click)="onClick($event)">Click</button>`,
+      })
+      class MyComp {
+        handlerReturnValue: boolean|undefined;
+        event: Event|undefined;
+
+        onClick(e: any) {
+          this.event = e;
+
+          // stub preventDefault() to check whether it's called
+          Object.defineProperty(
+              this.event, 'preventDefault',
+              {value: jasmine.createSpy('preventDefault'), writable: true});
+
+          return this.handlerReturnValue;
+        }
+      }
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const myComp = fixture.componentInstance;
+      const button = fixture.nativeElement.querySelector('button');
+
+      myComp.handlerReturnValue = undefined;
+      button.click();
+      expect(myComp.event!.preventDefault).not.toHaveBeenCalled();
+
+      myComp.handlerReturnValue = true;
+      button.click();
+      expect(myComp.event!.preventDefault).not.toHaveBeenCalled();
+
+      // Returning `false` is what causes the renderer to call `event.preventDefault`.
+      myComp.handlerReturnValue = false;
+      button.click();
+      expect(myComp.event!.preventDefault).toHaveBeenCalled();
     });
   });
 
@@ -490,7 +658,127 @@ describe('event listeners', () => {
     });
   });
 
-  describe('global event listeners on special elements', () => {
+  describe('host listeners', () => {
+    it('should support host listeners on components', () => {
+      const events: string[] = [];
+
+      @Component({
+        template: ``,
+      })
+      class MyComp {
+        @HostListener('click')
+        onClick() {
+          events.push('click!');
+        }
+      }
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const host = fixture.nativeElement;
+
+      host.click();
+      expect(events).toEqual(['click!']);
+
+      host.click();
+      expect(events).toEqual(['click!', 'click!']);
+    });
+
+    it('should support global host listeners on components', () => {
+      const events: string[] = [];
+
+      @Component({
+        template: ``,
+      })
+      class MyComp {
+        @HostListener('document:click')
+        onClick() {
+          events.push('global click!');
+        }
+      }
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const host = fixture.nativeElement;
+
+      host.click();
+      expect(events).toEqual(['global click!']);
+
+      host.click();
+      expect(events).toEqual(['global click!', 'global click!']);
+    });
+
+    it('should support host listeners on directives', () => {
+      const events: string[] = [];
+
+      @Directive({
+        selector: '[hostListenerDir]',
+        standalone: true,
+      })
+      class HostListenerDir {
+        @HostListener('click')
+        onClick() {
+          events.push('click!');
+        }
+      }
+
+      @Component({
+        standalone: true,
+        imports: [HostListenerDir],
+        template: `<button hostListenerDir>Click</button>`,
+      })
+      class MyComp {
+      }
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      expect(events).toEqual([]);
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      expect(events).toEqual(['click!']);
+
+      button.click();
+      expect(events).toEqual(['click!', 'click!']);
+    });
+
+    it('should support global host listeners on directives', () => {
+      const events: string[] = [];
+
+      @Directive({
+        selector: '[hostListenerDir]',
+        standalone: true,
+      })
+      class HostListenerDir {
+        @HostListener('document:click')
+        onClick() {
+          events.push('click!');
+        }
+      }
+
+      @Component({
+        standalone: true,
+        imports: [HostListenerDir],
+        template: `<button hostListenerDir>Click</button>`,
+      })
+      class MyComp {
+      }
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      expect(events).toEqual([]);
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      expect(events).toEqual(['click!']);
+
+      button.click();
+      expect(events).toEqual(['click!', 'click!']);
+    });
+  });
+
+  describe('global host listeners on special element as directive hosts', () => {
     it('should bind global event listeners on an ng-container directive host', () => {
       let clicks = 0;
 
