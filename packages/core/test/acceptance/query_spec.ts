@@ -1092,6 +1092,549 @@ describe('query logic', () => {
     });
   });
 
+  describe('read option', () => {
+    @Directive({selector: '[child]', standalone: true})
+    class Child {
+    }
+
+    @Directive({selector: '[otherChild]', standalone: true})
+    class OtherChild {
+    }
+
+    it('should query using type predicate and read ElementRef', () => {
+      @Component({
+        standalone: true,
+        imports: [Child],
+        template: `<div child></div>`,
+      })
+      class TestCmp {
+        @ViewChildren(Child, {read: ElementRef}) query?: QueryList<ElementRef>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      const elToQuery = fixture.nativeElement.querySelector('div');
+
+      expect(qList.length).toBe(1);
+      expect(qList.first.nativeElement).toBe(elToQuery);
+    });
+
+    it('should query using type predicate and read another directive type', () => {
+      @Component({
+        standalone: true,
+        imports: [Child, OtherChild],
+        template: `<div child otherChild></div>`,
+      })
+      class TestCmp {
+        @ViewChildren(Child, {read: OtherChild}) query?: QueryList<OtherChild>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(1);
+      expect(qList.first).toBeAnInstanceOf(OtherChild);
+    });
+
+    it('should not add results to query if a requested token cant be read', () => {
+      @Component({
+        standalone: true,
+        imports: [Child],
+        template: `<div child></div>`,
+      })
+      class TestCmp {
+        @ViewChildren(Child, {read: OtherChild}) query?: QueryList<OtherChild>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(0);
+    });
+
+    it('should query using local ref and read ElementRef by default', () => {
+      @Component({
+        standalone: true,
+        template: `
+          <div #foo></div>
+          <div></div>
+        `,
+      })
+      class TestCmp {
+        @ViewChildren('foo') query?: QueryList<ElementRef>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      const elToQuery = fixture.nativeElement.querySelector('div');
+
+      expect(qList.length).toBe(1);
+      expect(qList.first.nativeElement).toBe(elToQuery);
+    });
+
+    it('should query for multiple elements and read ElementRef by default', () => {
+      @Component({
+        standalone: true,
+        template: `
+          <div #foo></div>
+          <div></div>
+          <div #bar></div>
+        `,
+      })
+      class TestCmp {
+        @ViewChildren('foo,bar') query?: QueryList<ElementRef>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      const elToQuery = fixture.nativeElement.querySelectorAll('div');
+
+      expect(qList.length).toBe(2);
+      expect(qList.first.nativeElement).toBe(elToQuery[0]);
+      expect(qList.last.nativeElement).toBe(elToQuery[2]);
+    });
+
+    it('should read ElementRef from an element when explicitly asked for', () => {
+      @Component({
+        standalone: true,
+        template: `
+          <div #foo></div>
+          <div></div>
+        `,
+      })
+      class TestCmp {
+        @ViewChildren('foo', {read: ElementRef}) query?: QueryList<ElementRef>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      const elToQuery = fixture.nativeElement.querySelector('div');
+
+      expect(qList.length).toBe(1);
+      expect(qList.first.nativeElement).toBe(elToQuery);
+    });
+
+    it('should query for <ng-container> and read ElementRef with a native element pointing to comment node',
+       () => {
+         @Component({
+           standalone: true,
+           template: `<ng-container #foo></ng-container>`,
+         })
+         class TestCmp {
+           @ViewChildren('foo', {read: ElementRef}) query?: QueryList<ElementRef>;
+         }
+
+         const fixture = TestBed.createComponent(TestCmp);
+         fixture.detectChanges();
+
+         const qList = fixture.componentInstance.query!;
+         expect(qList.length).toBe(1);
+         expect(qList.first.nativeElement.nodeType).toBe(Node.COMMENT_NODE);
+       });
+
+    it('should query for <ng-container> and read ElementRef without explicit read option', () => {
+      @Component({
+        standalone: true,
+        template: `<ng-container #foo></ng-container>`,
+      })
+      class TestCmp {
+        @ViewChildren('foo') query?: QueryList<ElementRef>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(1);
+      expect(qList.first.nativeElement.nodeType).toBe(Node.COMMENT_NODE);
+    });
+
+    it('should read ViewContainerRef from element nodes when explicitly asked for', () => {
+      @Component({
+        standalone: true,
+        template: `<div #foo></div>`,
+      })
+      class TestCmp {
+        @ViewChildren('foo', {read: ViewContainerRef}) query?: QueryList<ViewContainerRef>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(1);
+      expect(qList.first).toBeInstanceOf(ViewContainerRef);
+    });
+
+    it('should read ViewContainerRef from ng-template nodes when explicitly asked for', () => {
+      @Component({
+        standalone: true,
+        template: `<ng-template #foo></ng-template>`,
+      })
+      class TestCmp {
+        @ViewChildren('foo', {read: ViewContainerRef}) query?: QueryList<ViewContainerRef>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(1);
+      expect(qList.first).toBeInstanceOf(ViewContainerRef);
+    });
+
+    it('should read ElementRef with a native element pointing to comment DOM node from ng-template',
+       () => {
+         @Component({
+           standalone: true,
+           template: `<ng-template #foo></ng-template>`,
+         })
+         class TestCmp {
+           @ViewChildren('foo', {read: ElementRef}) query?: QueryList<ElementRef>;
+         }
+
+         const fixture = TestBed.createComponent(TestCmp);
+         fixture.detectChanges();
+
+         const qList = fixture.componentInstance.query!;
+         expect(qList.length).toBe(1);
+         expect(qList.first.nativeElement.nodeType).toBe(Node.COMMENT_NODE);
+       });
+
+    it('should read TemplateRef from ng-template by default', () => {
+      @Component({
+        standalone: true,
+        template: `<ng-template #foo></ng-template>`,
+      })
+      class TestCmp {
+        @ViewChildren('foo') query?: QueryList<TemplateRef<unknown>>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(1);
+      expect(qList.first).toBeInstanceOf(TemplateRef);
+    });
+
+    it('should read TemplateRef from ng-template when explicitly asked for', () => {
+      @Component({
+        standalone: true,
+        template: `<ng-template #foo></ng-template>`,
+      })
+      class TestCmp {
+        @ViewChildren('foo', {read: TemplateRef}) query?: QueryList<TemplateRef<unknown>>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(1);
+      expect(qList.first).toBeInstanceOf(TemplateRef);
+    });
+
+    it('should read component instance if element queried for is a component host', () => {
+      @Component({selector: 'child-cmp', standalone: true, template: ''})
+      class ChildCmp {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [ChildCmp],
+        template: `<child-cmp #foo></child-cmp>`,
+      })
+      class TestCmp {
+        @ViewChildren('foo') query?: QueryList<ChildCmp>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(1);
+      expect(qList.first).toBeInstanceOf(ChildCmp);
+    });
+
+    it('should read component instance with explicit exportAs', () => {
+      @Component({
+        selector: 'child-cmp',
+        exportAs: 'child',
+        standalone: true,
+        template: '',
+      })
+      class ChildCmp {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [ChildCmp],
+        template: `<child-cmp #foo="child"></child-cmp>`,
+      })
+      class TestCmp {
+        @ViewChildren('foo') query?: QueryList<ChildCmp>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(1);
+      expect(qList.first).toBeInstanceOf(ChildCmp);
+    });
+
+    it('should read directive instance if element queried for has an exported directive with a matching name',
+       () => {
+         @Directive({selector: '[child]', exportAs: 'child', standalone: true})
+         class ChildDirective {
+         }
+
+         @Component({
+           standalone: true,
+           imports: [ChildDirective],
+           template: `<div #foo="child" child></div>`,
+         })
+         class TestCmp {
+           @ViewChildren('foo') query?: QueryList<ChildDirective>;
+         }
+
+         const fixture = TestBed.createComponent(TestCmp);
+         fixture.detectChanges();
+
+         const qList = fixture.componentInstance.query!;
+         expect(qList.length).toBe(1);
+         expect(qList.first).toBeInstanceOf(ChildDirective);
+       });
+
+    it('should read all matching directive instances from a given element', () => {
+      @Directive({selector: '[child1]', exportAs: 'child1', standalone: true})
+      class Child1Dir {
+      }
+
+      @Directive({selector: '[child2]', exportAs: 'child2', standalone: true})
+      class Child2Dir {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [Child1Dir, Child2Dir],
+        template: `<div #foo="child1" child1 #bar="child2" child2></div>`,
+      })
+      class TestCmp {
+        @ViewChildren('foo, bar') query?: QueryList<unknown>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(2);
+      expect(qList.first).toBeInstanceOf(Child1Dir);
+      expect(qList.last).toBeInstanceOf(Child2Dir);
+    });
+
+    it('should read multiple locals exporting the same directive from a given element', () => {
+      @Directive({selector: '[child]', exportAs: 'child', standalone: true})
+      class ChildDir {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [ChildDir],
+        template: `<div child #foo="child" #bar="child"></div>`,
+      })
+      class TestCmp {
+        @ViewChildren('foo, bar') query?: QueryList<ChildDir>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(2);
+      expect(qList.first).toBeInstanceOf(ChildDir);
+      expect(qList.last).toBeInstanceOf(ChildDir);
+    });
+
+    it('should match on exported directive name and read a requested token', () => {
+      @Directive({selector: '[child]', exportAs: 'child', standalone: true})
+      class ChildDir {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [ChildDir],
+        template: `<div child #foo="child"></div>`,
+      })
+      class TestCmp {
+        @ViewChildren('foo', {read: ElementRef}) query?: QueryList<ElementRef>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(1);
+      expect(qList.first).toBeInstanceOf(ElementRef);
+    });
+
+    it('should support reading a mix of ElementRef and directive instances', () => {
+      @Directive({selector: '[child]', exportAs: 'child', standalone: true})
+      class ChildDir {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [ChildDir],
+        template: `<div #foo #bar="child" child></div>`,
+      })
+      class TestCmp {
+        @ViewChildren('foo, bar') query?: QueryList<unknown>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(2);
+      expect(qList.first).toBeInstanceOf(ElementRef);
+      expect(qList.last).toBeInstanceOf(ChildDir);
+    });
+
+    it('should not add results to selector-based query if a requested token cant be read', () => {
+      @Directive({selector: '[child]', standalone: true})
+      class ChildDir {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [],
+        template: `<div #foo></div>`,
+      })
+      class TestCmp {
+        @ViewChildren('foo', {read: ChildDir}) query?: QueryList<ChildDir>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(0);
+    });
+
+    it('should not add results to directive-based query if only read token matches', () => {
+      @Directive({selector: '[child]', standalone: true})
+      class ChildDir {
+      }
+
+      @Directive({selector: '[otherChild]', standalone: true})
+      class OtherChildDir {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [Child],
+        template: `<div child></div>`,
+      })
+      class TestCmp {
+        @ViewChildren(OtherChild, {read: Child}) query?: QueryList<ChildDir>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(0);
+    });
+
+    it('should not add results to TemplateRef-based query if only read token matches', () => {
+      @Component({
+        standalone: true,
+        template: `<div></div>`,
+      })
+      class TestCmp {
+        @ViewChildren(TemplateRef, {read: ElementRef}) query?: QueryList<ElementRef>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(0);
+    });
+
+    it('should not add results to the query in case no match found (via TemplateRef)', () => {
+      @Component({
+        standalone: true,
+        template: `<div></div>`,
+      })
+      class TestCmp {
+        @ViewChildren(TemplateRef) query?: QueryList<TemplateRef<unknown>>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(0);
+    });
+
+    it('should query templates if the type is TemplateRef (and respect "read" option)', () => {
+      @Component({
+        standalone: true,
+        template: `
+          <ng-template #foo><div>Test</div></ng-template>
+          <ng-template #bar><div>Test</div></ng-template>
+          <ng-template #baz><div>Test</div></ng-template>
+        `,
+      })
+      class TestCmp {
+        @ViewChildren(TemplateRef) tplQuery?: QueryList<TemplateRef<unknown>>;
+        @ViewChildren(TemplateRef, {read: ElementRef}) elRefQuery?: QueryList<TemplateRef<unknown>>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const tplQuery = fixture.componentInstance.tplQuery!;
+      const elRefQuery = fixture.componentInstance.elRefQuery!;
+
+      expect(tplQuery.length).toBe(3);
+      expect(tplQuery.first).toBeInstanceOf(TemplateRef);
+
+      expect(elRefQuery.length).toBe(3);
+      expect(elRefQuery.first).toBeInstanceOf(ElementRef);
+    });
+
+    it('should match using string selector and directive as a read argument', () => {
+      @Component({
+        standalone: true,
+        imports: [Child],
+        template: `<div child #foo></div>`,
+      })
+      class TestCmp {
+        @ViewChildren('foo', {read: Child}) query?: QueryList<Child>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.query!;
+      expect(qList.length).toBe(1);
+      expect(qList.first).toBeInstanceOf(Child);
+    });
+  });
 
 
   describe('observable interface', () => {
