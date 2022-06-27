@@ -14,7 +14,7 @@ import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, tap}
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {RuntimeErrorCode} from './errors';
-import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
+import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {QueryParamsHandling, Route, Routes} from './models';
 import {activateRoutes} from './operators/activate_routes';
 import {applyRedirects} from './operators/apply_redirects';
@@ -411,8 +411,7 @@ export class Router {
   private disposed = false;
 
   private locationSubscription?: SubscriptionLike;
-  /** @internal */
-  navigationId: number = 0;
+  private navigationId: number = 0;
 
   /**
    * The id of the currently active page in the router.
@@ -779,7 +778,8 @@ export class Router {
                      filter(t => {
                        if (!t.guardsResult) {
                          this.restoreHistory(t);
-                         this.cancelNavigationTransition(t, '');
+                         this.cancelNavigationTransition(
+                             t, '', NavigationCancellationCode.GuardRejected);
                          return false;
                        }
                        return true;
@@ -807,7 +807,10 @@ export class Router {
                                          this.restoreHistory(t);
                                          this.cancelNavigationTransition(
                                              t,
-                                             `At least one route resolver didn't emit any value.`);
+                                             NG_DEV_MODE ?
+                                                 `At least one route resolver didn't emit any value.` :
+                                                 '',
+                                             NavigationCancellationCode.NoDataFromResolver);
                                        }
                                      }
                                    }),
@@ -896,9 +899,13 @@ export class Router {
                         * event is fired when a navigation gets cancelled but not caught by other
                         * means. */
                        if (!completed && !errored) {
-                         const cancelationReason = `Navigation ID ${
-                             t.id} is not equal to the current navigation id ${this.navigationId}`;
-                         this.cancelNavigationTransition(t, cancelationReason);
+                         const cancelationReason = NG_DEV_MODE ?
+                             `Navigation ID ${t.id} is not equal to the current navigation id ${
+                                 this.navigationId}` :
+                             '';
+                         this.cancelNavigationTransition(
+                             t, cancelationReason,
+                             NavigationCancellationCode.SupersededByNewNavigation);
                        }
                        // Only clear current navigation if it is still set to the one that
                        // finalized.
@@ -933,7 +940,8 @@ export class Router {
                            this.restoreHistory(t, true);
                          }
                          const navCancel = new NavigationCancel(
-                             t.id, this.serializeUrl(t.extractedUrl), e.message);
+                             t.id, this.serializeUrl(t.extractedUrl), e.message,
+                             NavigationCancellationCode.Redirect);
                          eventsSubject.next(navCancel);
 
                          // When redirecting, we need to delay resolving the navigation
@@ -1460,8 +1468,9 @@ export class Router {
         this.generateNgRouterState(this.lastSuccessfulId, this.currentPageId));
   }
 
-  private cancelNavigationTransition(t: NavigationTransition, reason: string) {
-    const navCancel = new NavigationCancel(t.id, this.serializeUrl(t.extractedUrl), reason);
+  private cancelNavigationTransition(
+      t: NavigationTransition, reason: string, code: NavigationCancellationCode) {
+    const navCancel = new NavigationCancel(t.id, this.serializeUrl(t.extractedUrl), reason, code);
     this.triggerEvent(navCancel);
     t.resolve(false);
   }
