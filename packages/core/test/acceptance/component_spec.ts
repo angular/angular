@@ -12,7 +12,7 @@ import {TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
+import {domRendererFactory3, enableRenderer3} from '../../src/render3/interfaces/renderer';
 import {global} from '../../src/util/global';
 
 
@@ -582,6 +582,7 @@ describe('component', () => {
   });
 
   describe('should clear host element if provided in ComponentFactory.create', () => {
+    beforeAll(() => enableRenderer3());
     function runTestWithRenderer(rendererProviders: any[]) {
       @Component({
         selector: 'dynamic-comp',

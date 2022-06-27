@@ -63,9 +63,6 @@
     "name": "_injectImplementation"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "allocExpando"
   },
   {
@@ -85,6 +82,9 @@
   },
   {
     "name": "callHooks"
+  },
+  {
+    "name": "componentDefCount"
   },
   {
     "name": "concatStringsWithSpace"
@@ -280,6 +280,9 @@
   },
   {
     "name": "renderView"
+  },
+  {
+    "name": "renderer3Enabled"
   },
   {
     "name": "resetPreOrderHookFlags"

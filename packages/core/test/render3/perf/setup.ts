@@ -8,13 +8,14 @@
 import {addToViewTree, createLContainer, createLView, createTNode, createTView, getOrCreateTNode, refreshView, renderView} from '../../../src/render3/instructions/shared';
 import {ComponentTemplate, DirectiveDefList} from '../../../src/render3/interfaces/definition';
 import {TAttributes, TElementNode, TNodeType} from '../../../src/render3/interfaces/node';
-import {domRendererFactory3, RendererFactory3} from '../../../src/render3/interfaces/renderer';
+import {domRendererFactory3, enableRenderer3, RendererFactory3} from '../../../src/render3/interfaces/renderer';
 import {LView, LViewFlags, TVIEW, TView, TViewType} from '../../../src/render3/interfaces/view';
 import {insertView} from '../../../src/render3/node_manipulation';
 
 import {MicroBenchmarkRendererFactory} from './noop_renderer';
 
 const isBrowser = typeof process === 'undefined';
+enableRenderer3();
 const rendererFactory: RendererFactory3 =
     isBrowser ? domRendererFactory3 : new MicroBenchmarkRendererFactory;
 const renderer = rendererFactory.createRenderer(null, null);

@@ -60,9 +60,6 @@
     "name": "ConnectableSubscriber"
   },
   {
-    "name": "DOCUMENT"
-  },
-  {
     "name": "DOCUMENT2"
   },
   {
@@ -342,9 +339,6 @@
     "name": "_randomChar"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "_wrapInTimeout"
   },
   {
@@ -391,6 +385,9 @@
   },
   {
     "name": "collectNativeNodes"
+  },
+  {
+    "name": "componentDefCount"
   },
   {
     "name": "concatStringsWithSpace"
