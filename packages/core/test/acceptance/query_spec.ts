@@ -1467,6 +1467,35 @@ describe('query logic', () => {
       expect(qList.last).toBeInstanceOf(ChildDir);
     });
 
+    it('should query multiple locals on the same element', () => {
+      @Component({
+        selector: 'multiple-local-refs',
+        template: `
+          <div #foo #bar id="target"></div>
+          <div></div>
+        `,
+      })
+      class MultipleLocalRefsComp {
+        @ViewChildren('foo') fooQuery!: QueryList<any>;
+        @ViewChildren('bar') barQuery!: QueryList<any>;
+      }
+
+      const fixture = TestBed.createComponent(MultipleLocalRefsComp);
+      fixture.detectChanges();
+
+      const cmptInstance = fixture.componentInstance;
+
+      const targetElement = fixture.nativeElement.querySelector('#target');
+      const fooList = cmptInstance.fooQuery;
+
+      expect(fooList.length).toBe(1);
+      expect(fooList.first.nativeElement).toEqual(targetElement);
+
+      const barList = cmptInstance.barQuery;
+      expect(barList.length).toBe(1);
+      expect(barList.first.nativeElement).toEqual(targetElement);
+    });
+
     it('should match on exported directive name and read a requested token', () => {
       @Directive({selector: '[child]', exportAs: 'child', standalone: true})
       class ChildDir {

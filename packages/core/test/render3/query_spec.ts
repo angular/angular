@@ -15,38 +15,10 @@ import {ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵ
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {ɵɵcontentQuery, ɵɵloadQuery, ɵɵqueryRefresh, ɵɵviewQuery} from '../../src/render3/query';
 import {getLView} from '../../src/render3/state';
-import {getNativeByIndex, load} from '../../src/render3/util/view_utils';
+import {load} from '../../src/render3/util/view_utils';
 
-import {ComponentFixture, createComponent, renderComponent} from './render_util';
+import {ComponentFixture, createComponent} from './render_util';
 
-
-
-/**
- * Helper function to check if a given candidate object resembles ElementRef
- * @param candidate
- * @returns true if `ElementRef`.
- */
-function isElementRef(candidate: any): boolean {
-  return candidate.nativeElement != null;
-}
-
-/**
- * Helper function to check if a given candidate object resembles TemplateRef
- * @param candidate
- * @returns true if `TemplateRef`.
- */
-function isTemplateRef(candidate: any): boolean {
-  return candidate.createEmbeddedView != null && candidate.createComponent == null;
-}
-
-/**
- * Helper function to check if a given candidate object resembles ViewContainerRef
- * @param candidate
- * @returns true if `ViewContainerRef`.
- */
-function isViewContainerRef(candidate: any): boolean {
-  return candidate.createEmbeddedView != null && candidate.createComponent != null;
-}
 
 describe('query', () => {
   describe('predicate', () => {
@@ -169,55 +141,6 @@ describe('query', () => {
 
         const componentFixture = new ComponentFixture(App);
         expect(componentFixture.component.service).toBe(directive!.service);
-      });
-    });
-
-    describe('local names', () => {
-      it('should query multiple locals on the same element', () => {
-        let elToQuery;
-
-        /**
-         * <div #foo #bar></div>
-         * <div></div>
-         * class Cmpt {
-         *  @ViewChildren('foo') fooQuery;
-         *  @ViewChildren('bar') barQuery;
-         * }
-         */
-        const Cmpt = createComponent(
-            'cmpt',
-            function(rf: RenderFlags, ctx: any) {
-              if (rf & RenderFlags.Create) {
-                ɵɵelement(0, 'div', null, 0);
-                elToQuery = getNativeByIndex(HEADER_OFFSET, getLView());
-                ɵɵelement(3, 'div');
-              }
-            },
-            4, 0, [], [],
-            function(rf: RenderFlags, ctx: any) {
-              if (rf & RenderFlags.Create) {
-                ɵɵviewQuery(['foo'], QueryFlags.none);
-                ɵɵviewQuery(['bar'], QueryFlags.none);
-              }
-              if (rf & RenderFlags.Update) {
-                let tmp: any;
-                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
-                    (ctx.fooQuery = tmp as QueryList<any>);
-                ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
-                    (ctx.barQuery = tmp as QueryList<any>);
-              }
-            },
-            [], [], undefined, [['foo', '', 'bar', '']]);
-
-        const cmptInstance = renderComponent(Cmpt);
-
-        const fooList = (cmptInstance.fooQuery as QueryList<any>);
-        expect(fooList.length).toBe(1);
-        expect(fooList.first.nativeElement).toEqual(elToQuery);
-
-        const barList = (cmptInstance.barQuery as QueryList<any>);
-        expect(barList.length).toBe(1);
-        expect(barList.first.nativeElement).toEqual(elToQuery);
       });
     });
   });

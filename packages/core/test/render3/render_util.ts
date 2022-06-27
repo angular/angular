@@ -280,7 +280,7 @@ export function resetDOM() {
  * @param pipes Pipe defs that should be used for matching
  * @param consts Constants associated with the template.
  */
-export function renderTemplate<T>(
+function renderTemplate<T>(
     hostNode: RElement, templateFn: ComponentTemplate<T>, decls: number, vars: number, context: T,
     providedRendererFactory: RendererFactory3, componentView: LView|null,
     directives?: DirectiveDefListOrFactory|null, pipes?: PipeDefListOrFactory|null,
@@ -316,21 +316,6 @@ export function renderTemplate<T>(
   return componentView;
 }
 
-
-/**
- * @deprecated use `TemplateFixture` or `ComponentFixture`
- */
-export function renderToHtml(
-    template: ComponentTemplate<any>, ctx: any, decls: number = 0, vars: number = 0,
-    directives?: DirectiveTypesOrFactory|null, pipes?: PipeTypesOrFactory|null,
-    providedRendererFactory?: RendererFactory3|null, keepNgReflect = false, consts?: TConstants) {
-  hostView = renderTemplate(
-      containerEl, template, decls, vars, ctx, providedRendererFactory || testRendererFactory,
-      hostView, toDefs(directives, def => extractDirectiveDef(def)!),
-      toDefs(pipes, pipe => getPipeDef(pipe)!), null, consts);
-  return toHtml(containerEl, keepNgReflect);
-}
-
 function toDefs(
     types: DirectiveTypesOrFactory|undefined|null,
     mapFn: (type: Type<any>) => DirectiveDef<any>): DirectiveDefList|null;
@@ -352,23 +337,7 @@ beforeEach(resetDOM);
 // of special objects like ElementRef and TemplateRef.
 beforeEach(enableIvyInjectableFactories);
 
-/**
- * @deprecated use `TemplateFixture` or `ComponentFixture`
- */
-export function renderComponent<T>(type: ComponentType<T>, opts?: CreateComponentOptions): T {
-  return _renderComponent(type, {
-    rendererFactory: opts && opts.rendererFactory || testRendererFactory,
-    host: containerEl,
-    scheduler: requestAnimationFrame,
-    sanitizer: opts ? opts.sanitizer : undefined,
-    hostFeatures: opts && opts.hostFeatures
-  });
-}
-
-/**
- * @deprecated use `TemplateFixture` or `ComponentFixture`
- */
-export function toHtml<T>(componentOrElement: T|RElement, keepNgReflect = false): string {
+function toHtml<T>(componentOrElement: T|RElement, keepNgReflect = false): string {
   let element: any;
   if (isComponentInstance(componentOrElement)) {
     const context = getLContext(componentOrElement);
