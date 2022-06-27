@@ -1132,7 +1132,6 @@ groups:
           'tools/rxjs/**',
           'tools/saucelabs/**',
           'tools/size-tracking/**',
-          'tools/source-map-test/**',
           'tools/symbol-extractor/**',
           'tools/testing/**',
           'tools/tslint/**',
