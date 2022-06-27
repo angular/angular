@@ -11,8 +11,8 @@ ng_module(
     ],
     deps = [
         "//src/material/button",
-        "//src/material/card",
         "//src/material/divider",
+        "//src/material/legacy-card",
         "//src/material/progress-bar",
     ],
 )

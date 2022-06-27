@@ -9,7 +9,6 @@
 @use '../../../bottom-sheet/bottom-sheet-theme';
 @use '../../../button/button-theme';
 @use '../../../button-toggle/button-toggle-theme';
-@use '../../../card/card-theme';
 @use '../../../checkbox/checkbox-theme';
 @use '../../../chips/chips-theme';
 @use '../../../table/table-theme';
@@ -73,7 +72,6 @@
   @include bottom-sheet-theme.theme($css-var-theme);
   @include button-theme.theme($css-var-theme);
   @include button-toggle-theme.theme($css-var-theme);
-  @include card-theme.theme($css-var-theme);
   @include checkbox-theme.theme($css-var-theme);
   @include chips-theme.theme($css-var-theme);
   @include table-theme.theme($css-var-theme);

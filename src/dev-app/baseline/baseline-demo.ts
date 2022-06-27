@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MatCardModule} from '@angular/material/card';
+import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
@@ -23,7 +23,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
   standalone: true,
   imports: [
     CommonModule,
-    MatCardModule,
+    MatLegacyCardModule,
     MatCheckboxModule,
     MatFormFieldModule,
     MatInputModule,

@@ -4,6 +4,8 @@ load(
     "markdown_to_html",
     "ng_e2e_test_library",
     "ng_module",
+    "ng_test_library",
+    "ng_web_test_suite",
     "sass_binary",
     "sass_library",
 )
@@ -16,24 +18,26 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    assets = [":card.css"] + glob(["**/*.html"]),
+    assets = [":card_scss"] + glob(["**/*.html"]),
     deps = [
         "//src/material/core",
-        "@npm//@angular/core",
     ],
 )
 
 sass_library(
     name = "card_scss_lib",
     srcs = glob(["**/_*.scss"]),
-    deps = ["//src/material/core:core_scss_lib"],
+    deps = [
+        "//:mdc_sass_lib",
+        "//src/material/core:core_scss_lib",
+    ],
 )
 
 sass_binary(
     name = "card_scss",
     src = "card.scss",
     deps = [
-        "//src/cdk:sass_lib",
+        "//:mdc_sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )
@@ -52,6 +56,22 @@ e2e_test_suite(
         ":e2e_test_sources",
         "//src/cdk/testing/private/e2e",
     ],
+)
+
+ng_test_library(
+    name = "unit_test_sources",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
+    deps = [
+        ":card",
+    ],
+)
+
+ng_web_test_suite(
+    name = "unit_tests",
+    deps = [":unit_test_sources"],
 )
 
 markdown_to_html(

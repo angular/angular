@@ -11,11 +11,11 @@ ng_module(
     ],
     deps = [
         "//src/material/button",
-        "//src/material/card",
         "//src/material/checkbox",
         "//src/material/chips",
         "//src/material/form-field",
         "//src/material/icon",
+        "//src/material/legacy-card",
         "//src/material/toolbar",
     ],
 )

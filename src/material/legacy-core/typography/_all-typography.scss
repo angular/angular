@@ -1,8 +1,6 @@
 @use '../../core/typography/typography';
 @use '../../core/theming/theming';
-
-// Add legacy theme imports here, e.g.:
-// @use '../../<legacy-component>/<legacy-component>-theme';
+@use '../../legacy-card/card-theme';
 
 // Includes all of the typographic styles.
 @mixin all-legacy-component-typographies($config-or-theme: null) {
@@ -20,8 +18,7 @@
   // mixin that is transitively loaded by the `all-theme` file, imports `all-typography` which
   // would then load `all-theme` again. This ultimately results a circular dependency.
 
-  // Add legacy typography includes here, e.g.:
-  // @include <legacy-component>-theme.typography($config);
+  @include card-theme.typography($config);
 }
 
 // @deprecated Use `all-legacy-component-typographies`.

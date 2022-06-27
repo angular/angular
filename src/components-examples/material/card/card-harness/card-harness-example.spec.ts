@@ -1,9 +1,9 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatButtonHarness} from '@angular/material/button/testing';
-import {MatCardHarness} from '@angular/material/card/testing';
+import {MatLegacyCardHarness} from '@angular/material/legacy-card/testing';
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
-import {MatCardModule} from '@angular/material/card';
+import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {CardHarnessExample} from './card-harness-example';
 
 describe('CardHarnessExample', () => {
@@ -12,7 +12,7 @@ describe('CardHarnessExample', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatCardModule],
+      imports: [MatLegacyCardModule],
       declarations: [CardHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(CardHarnessExample);
@@ -21,13 +21,13 @@ describe('CardHarnessExample', () => {
   });
 
   it('should find card with text', async () => {
-    const cards = await loader.getAllHarnesses(MatCardHarness.with({text: /spitz breed/}));
+    const cards = await loader.getAllHarnesses(MatLegacyCardHarness.with({text: /spitz breed/}));
     expect(cards.length).toBe(1);
     expect(await cards[0].getTitleText()).toBe('Shiba Inu');
   });
 
   it('should get subtitle text', async () => {
-    const cards = await loader.getAllHarnesses(MatCardHarness);
+    const cards = await loader.getAllHarnesses(MatLegacyCardHarness);
     expect(await parallel(() => cards.map(card => card.getSubtitleText()))).toEqual([
       '',
       'Dog Breed',
@@ -35,7 +35,7 @@ describe('CardHarnessExample', () => {
   });
 
   it('should act as a harness loader for user content', async () => {
-    const card = await loader.getHarness(MatCardHarness.with({title: 'Shiba Inu'}));
+    const card = await loader.getHarness(MatLegacyCardHarness.with({title: 'Shiba Inu'}));
     const footerSubcomponents = (await card.getAllHarnesses(MatButtonHarness)) ?? [];
     expect(footerSubcomponents.length).toBe(2);
   });

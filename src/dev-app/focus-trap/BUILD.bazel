@@ -15,8 +15,8 @@ ng_module(
         "//src/cdk/a11y",
         "//src/cdk/platform",
         "//src/material/button",
-        "//src/material/card",
         "//src/material/dialog",
+        "//src/material/legacy-card",
         "//src/material/toolbar",
     ],
 )

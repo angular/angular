@@ -6,7 +6,7 @@ import {browser} from 'protractor';
 describe('card harness', () => {
   let loader: HarnessLoader;
 
-  beforeEach(async () => await browser.get('/cards'));
+  beforeEach(async () => await browser.get('/mdc-card'));
 
   beforeEach(() => {
     loader = ProtractorHarnessEnvironment.loader();

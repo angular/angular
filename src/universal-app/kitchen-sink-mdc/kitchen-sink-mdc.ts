@@ -1,7 +1,7 @@
 import {Component, NgModule, ErrorHandler} from '@angular/core';
 import {MatAutocompleteModule} from '@angular/material-experimental/mdc-autocomplete';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
-import {MatCardModule} from '@angular/material-experimental/mdc-card';
+import {MatCardModule} from '@angular/material/card';
 import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
 import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
 import {MatInputModule} from '@angular/material-experimental/mdc-input';

@@ -1,7 +1,7 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatCardModule} from '@angular/material/card';
+import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
 import {CheckboxConfigurableExample} from './checkbox-configurable/checkbox-configurable-example';
@@ -26,7 +26,7 @@ const EXAMPLES = [
 @NgModule({
   imports: [
     CommonModule,
-    MatCardModule,
+    MatLegacyCardModule,
     MatCheckboxModule,
     MatRadioModule,
     FormsModule,

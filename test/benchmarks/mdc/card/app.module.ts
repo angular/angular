@@ -8,7 +8,7 @@
 
 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {MatCardModule} from '@angular/material-experimental/mdc-card';
+import {MatCardModule} from '@angular/material/card';
 
 /** component: mdc-card */
 

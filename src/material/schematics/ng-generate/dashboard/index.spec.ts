@@ -44,7 +44,9 @@ describe('material-dashboard-schematic', () => {
     expect(moduleContent).toContain(
       `import { MatGridListModule } from '@angular/material/grid-list';`,
     );
-    expect(moduleContent).toContain(`import { MatCardModule } from '@angular/material/card';`);
+    expect(moduleContent).toContain(
+      `import { MatCardModule } from '@angular/material/legacy-card';`,
+    );
     expect(moduleContent).toContain(`import { MatMenuModule } from '@angular/material/menu';`);
     expect(moduleContent).toContain(`import { MatIconModule } from '@angular/material/icon';`);
     expect(moduleContent).toContain(`import { MatButtonModule } from '@angular/material/button';`);

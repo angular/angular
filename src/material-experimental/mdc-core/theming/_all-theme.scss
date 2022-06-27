@@ -5,7 +5,6 @@
 @use '../../mdc-button/button-theme';
 @use '../../mdc-button/fab-theme';
 @use '../../mdc-button/icon-button-theme';
-@use '../../mdc-card/card-theme';
 @use '../../mdc-checkbox/checkbox-theme';
 @use '../../mdc-chips/chips-theme';
 @use '../../mdc-dialog/dialog-theme';
@@ -34,7 +33,7 @@
     @include dialog-theme.theme($theme-or-color-config);
     @include fab-theme.theme($theme-or-color-config);
     @include icon-button-theme.theme($theme-or-color-config);
-    @include card-theme.theme($theme-or-color-config);
+    @include mat.card-theme($theme-or-color-config);
     @include checkbox-theme.theme($theme-or-color-config);
     @include chips-theme.theme($theme-or-color-config);
     @include list-theme.theme($theme-or-color-config);

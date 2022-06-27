@@ -1,124 +1,99 @@
 @use 'sass:math';
-@use '@angular/cdk';
+@use '../core/mdc-helpers/mdc-helpers';
+@use '@material/card' as mdc-card;
 
-@use '../core/style/variables';
-@use '../core/style/elevation';
-@use '../core/style/private';
+// TODO(jelbourn): move header and title-group styles to their own files.
 
+// Size of the `mat-card-header` region custom to Angular Material.
+$mat-card-header-size: 40px !default;
 
-$padding: 16px !default;
-$border-radius: 4px !default;
-$header-size: 40px !default;
+// Default padding for text content within a card.
+$mat-card-default-padding: 16px !default;
 
-.mat-card {
-  @include elevation.elevation-transition;
-  @include private.private-animation-noop();
+@include mdc-helpers.disable-mdc-fallback-declarations {
+  // Include all MDC card styles except for color and typography.
+  @include mdc-card.without-ripple($query: mdc-helpers.$mdc-base-styles-query);
+}
+
+// Title text and subtitles text within a card. MDC doesn't have pre-made title sections for cards.
+// Maintained here for backwards compatibility with the previous generation MatCard.
+.mat-mdc-card-title,
+.mat-mdc-card-subtitle {
+  // Custom elements default to `display: inline`. Reset to 'block'.
   display: block;
-  position: relative;
-  padding: $padding;
-  border-radius: $border-radius;
 
-  > .mat-divider-horizontal {
-    position: absolute;
-    left: 0;
-    width: 100%;
+  // Titles and subtitles can be set on native header elements which come with
+  // their own margin. Clear it since the spacing is done using `padding`.
+  margin: 0;
 
-    [dir='rtl'] & {
-      left: auto;
-      right: 0;
-    }
-
-    &.mat-divider-inset {
-      position: static;
-      margin: 0;
-
-      [dir='rtl'] & {
-        // Needs to be reset explicitly since the divider set `margin-right` in particular in RTL.
-        margin-right: 0;
-      }
-    }
-  }
-
-  @include cdk.high-contrast(active, off) {
-    outline: solid 1px;
+  .mat-mdc-card-avatar ~ .mat-mdc-card-header-text & {
+    // Apply default padding for a text content region. Omit any bottom padding because we assume
+    // this region will be followed by another region that includes top padding.
+    padding: $mat-card-default-padding $mat-card-default-padding 0;
   }
 }
 
-// base styles for each card section preset (mat-card-content, etc)
-%mat-card-section-base {
-  display: block;
-  margin-bottom: 16px;
-}
-
-.mat-card-title {
-  display: block;
-  margin-bottom: 8px;
-}
-
-.mat-card-subtitle, .mat-card-content {
-  @extend %mat-card-section-base;
-}
-
-.mat-card-actions {
-  @extend %mat-card-section-base;
-  margin-left: math.div(-$padding, 2);
-  margin-right: math.div(-$padding, 2);
-  padding: 8px 0;
-}
-
-.mat-card-actions-align-end {
+// Header section at the top of a card. MDC does not have a pre-made header section for cards.
+// Maintained here for backwards compatibility with the previous generation MatCard.
+.mat-mdc-card-header {
+  // The primary purpose of the card header is to lay out the title, subtitle, and image in the
+  // correct order. The image will come first, followed by a single div that will contain (via
+  // content projection) both the title and the subtitle.
   display: flex;
-  justify-content: flex-end;
-}
 
-.mat-card-image {
-  width: calc(100% + #{$padding * 2});
-  margin: 0 (-$padding) 16px (-$padding);
+  // Apply default padding for the header region. Omit any bottom padding because we assume
+  // this region will be followed by another region that includes top padding.
+  padding: $mat-card-default-padding $mat-card-default-padding 0;
 
-  // The following properties are to handle `mat-card-image` on a `picture` element.
-  display: block;
-  overflow: hidden;
-
-  img {
-    width: 100%;
+  // When a subtitle is inside of a header, we want to move it up slightly to reduce the space with
+  // the title, and add a margin bottom to create space underneath the header.
+  .mat-mdc-card-subtitle {
+    margin-top: -(math.div($mat-card-default-padding, 2));
+    margin-bottom: $mat-card-default-padding;
   }
 }
 
-.mat-card-footer {
-  // The negative margins pulls out the element, countering the padding
-  // to get the footer to be flush against the side of the card.
-  $margin: -$padding;
-
+// Primary card content. MDC does not have a pre-made section for primary content.
+// Adds the default 16px padding to the content. Maintained here for backwards compatibility
+// with the previous generation MatCard.
+.mat-mdc-card-content {
+  // Custom elements default to `display: inline`. Reset to 'block'.
   display: block;
-  margin: 0 $margin $margin $margin;
-}
 
-.mat-card-actions {
-  .mat-button,
-  .mat-raised-button,
-  .mat-stroked-button {
-    margin: 0 8px;
+  // Apply default horizontal padding for a content region.
+  padding: 0 $mat-card-default-padding;
+
+  // Only add vertical padding to the main content area if it's not preceeded/followed by another
+  // element within the card.
+  &:first-child {
+    padding-top: $mat-card-default-padding;
+  }
+
+  &:last-child {
+    padding-bottom: $mat-card-default-padding;
   }
 }
 
-// HEADER STYLES
-
-.mat-card-header {
+// Title group within a card. MDC does not have a pre-made section for anything title-related.
+// Maintained here for backwards compatibility with the previous generation MatCard.
+.mat-mdc-card-title-group {
+  // This element exists primary to lay out its children (title, subtitle, media). The title
+  // and subtitle go first (projected into a single div), followed by the media.
   display: flex;
-  flex-direction: row;
+  justify-content: space-between;
 
-  .mat-card-title {
-    margin-bottom: 12px;
-  }
+  // Apply default padding for the title-group region. Omit any bottom padding because we assume
+  // this region will be followed by another region that includes top padding.
+  padding: $mat-card-default-padding $mat-card-default-padding 0;
 }
 
-.mat-card-header-text {
-  margin: 0 $padding;
-}
-
-.mat-card-avatar {
-  height: $header-size;
-  width: $header-size;
+// Avatar image for a card. MDC does not specifically have a card avatar or a "common" avatar.
+// They *do* have a list avatar, but it uses a different size than we do here, which we preserve
+// to reduce breaking changes. Ultimately, the avatar styles just consist of a size and a
+// border-radius.
+.mat-mdc-card-avatar {
+  height: $mat-card-header-size;
+  width: $mat-card-header-size;
   border-radius: 50%;
   flex-shrink: 0;
 
@@ -127,135 +102,56 @@ $header-size: 40px !default;
   object-fit: cover;
 }
 
-// TITLE-GROUP STYLES
-
-.mat-card-title-group {
-  display: flex;
-  justify-content: space-between;
-}
-
-.mat-card-sm-image {
+// Specifically sized small image, specific to Angular Material.
+.mat-mdc-card-sm-image {
   width: 80px;
   height: 80px;
 }
 
-.mat-card-md-image {
+// Specifically sized medium image, specific to Angular Material.
+.mat-mdc-card-md-image {
   width: 112px;
   height: 112px;
 }
 
-.mat-card-lg-image {
+// Specifically sized large image, specific to Angular Material.
+.mat-mdc-card-lg-image {
   width: 152px;
   height: 152px;
 }
 
-// This should normally also extend the `%mat-card-title-img`, but in order to avoid breaking
-// changes, we need to keep the horizontal margin reversion for now.
-// See: https://github.com/angular/components/issues/12203
-.mat-card-xl-image {
+// Specifically sized extra-large image, specific to Angular Material.
+.mat-mdc-card-xl-image {
   width: 240px;
   height: 240px;
-  margin: -8px;
-
-  // Special treatment inside title group in order to fix the media areas inside of a title-group.
-  // This can be removed once #12203 has been addressed.
-  .mat-card-title-group > & {
-    // As per Material Design specifications, the images exceed the *top* content-box and take
-    // up some space. The margin below is necessary because otherwise space of the actual card
-    // content will be overlapped.
-    margin: -8px 0 8px;
-  }
 }
 
-// MEDIA QUERIES
+// When both a title and a subtitle are used, eliminate the top padding of whichever comes second
+// because the first already covers the padding.
+//
+// Additionally, reset the padding for title and subtitle when used within `mat-card-header` or
+// `mat-card-title-group` since the padding is captured by parent container already.
+.mat-mdc-card-subtitle ~ .mat-mdc-card-title,
+.mat-mdc-card-title ~ .mat-mdc-card-subtitle,
 
-@media (variables.$xsmall) {
-  .mat-card-title-group {
-    margin: 0;
-  }
-
-  .mat-card-xl-image {
-    margin-left: 0;
-    margin-right: 0;
-  }
+// The `.mat-mdc-card-header-text` here is redundant since the header text
+// wrapper is always there in the header, but we need the extra specificity.
+.mat-mdc-card-header .mat-mdc-card-header-text .mat-mdc-card-title,
+.mat-mdc-card-header .mat-mdc-card-header-text .mat-mdc-card-subtitle,
+.mat-mdc-card-title-group .mat-mdc-card-title,
+.mat-mdc-card-title-group .mat-mdc-card-subtitle {
+  padding-top: 0;
 }
 
-// FIRST/LAST CHILD ADJUSTMENTS
-
-// top els in mat-card-content and mat-card can't have their default margin-tops (e.g. <p> tags)
-// or they'll incorrectly add to card's top padding
-.mat-card > :first-child, .mat-card-content > :first-child {
-  margin-top: 0;
-}
-
-// last els in mat-card-content and mat-card can't have their default margin-bottoms (e.g. <p> tags)
-// or they'll incorrectly add to card's bottom padding
-.mat-card > :last-child:not(.mat-card-footer),
-.mat-card-content > :last-child:not(.mat-card-footer) {
+// Remove the bottom margin from the last child of the card content. We intended to remove
+// margin from elements that have it built-in, such as `<p>`. We do this to avoid having too much
+// space between card content regions, as the space is already captured in the content region
+// element.
+.mat-mdc-card-content > :last-child:not(.mat-mdc-card-footer) {
   margin-bottom: 0;
 }
 
-// if main image is on top, need to place it flush against top
-// (by stripping card's default padding)
-.mat-card-image:first-child {
-  margin-top: -$padding;
-  border-top-left-radius: inherit;
-  border-top-right-radius: inherit;
-}
-
-// actions panel on bottom should be 8px from bottom of card
-// so must strip 16px from default card padding
-.mat-card > .mat-card-actions:last-child {
-  margin-bottom: -8px;
-  padding-bottom: 0;
-}
-
-// actions panel should always be 8px from sides,
-// so the first button in the actions panel can't add its own margins
-.mat-card-actions {
-  &:not(.mat-card-actions-align-end) {
-    .mat-button,
-    .mat-raised-button,
-    .mat-stroked-button {
-      &:first-child {
-        margin-left: 0;
-        margin-right: 0;
-      }
-    }
-  }
-}
-
-.mat-card-actions-align-end {
-  .mat-button,
-  .mat-raised-button,
-  .mat-stroked-button {
-    &:last-child {
-      margin-left: 0;
-      margin-right: 0;
-    }
-  }
-}
-
-// should be 12px space between titles and subtitles generally
-// default margin-bottom is 16px, so need to move lower title up 4px
-.mat-card-title:not(:first-child), .mat-card-subtitle:not(:first-child) {
-  margin-top: -4px;
-}
-
-// should be 8px space between titles and subtitles in header
-// default margin-bottom is 16px, so need to move subtitle in header up 4px
-.mat-card-header .mat-card-subtitle:not(:first-child) {
-  margin-top: -8px;
-}
-
-// xl image should always have 16px on top.
-// when it's the first el, it'll need to remove 8px from default card padding
-.mat-card > .mat-card-xl-image:first-child {
-  margin-top: -8px;
-}
-
-// xl image should always have 16px on bottom
-// when it's the last el, it'll need to remove 8px from default card padding
-.mat-card > .mat-card-xl-image:last-child {
-  margin-bottom: -8px;
+// Support for actions aligned to the end of the card.
+.mat-mdc-card-actions-align-end {
+  justify-content: flex-end;
 }

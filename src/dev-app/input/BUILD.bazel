@@ -12,11 +12,11 @@ ng_module(
     deps = [
         "//src/material/button",
         "//src/material/button-toggle",
-        "//src/material/card",
         "//src/material/checkbox",
         "//src/material/form-field",
         "//src/material/icon",
         "//src/material/input",
+        "//src/material/legacy-card",
         "//src/material/select",
         "//src/material/tabs",
         "//src/material/toolbar",

@@ -1,0 +1,72 @@
+@use 'sass:map';
+@use '../core/theming/theming';
+@use '../core/style/private';
+@use '../core/typography/typography';
+@use '../core/typography/typography-utils';
+
+
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
+
+  .mat-card {
+    @include private.private-theme-overridable-elevation(1, $config);
+    background: theming.get-color-from-palette($background, card);
+    color: theming.get-color-from-palette($foreground, text);
+
+    // Needs extra specificity to be able to override the elevation selectors.
+    &.mat-card-flat {
+      @include private.private-theme-overridable-elevation(0, $config);
+    }
+  }
+
+  .mat-card-subtitle {
+    color: theming.get-color-from-palette($foreground, secondary-text);
+  }
+}
+
+@mixin typography($config-or-theme) {
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
+  .mat-card {
+    font-family: typography-utils.font-family($config);
+  }
+
+  .mat-card-title {
+    font: {
+      size: typography-utils.font-size($config, headline);
+      weight: typography-utils.font-weight($config, title);
+    }
+  }
+
+  .mat-card-header .mat-card-title {
+    font-size: typography-utils.font-size($config, title);
+  }
+
+  .mat-card-subtitle,
+  .mat-card-content {
+    font-size: typography-utils.font-size($config, body-1);
+  }
+}
+
+@mixin _density($config-or-theme) {}
+
+@mixin theme($theme-or-color-config) {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-card') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
+
+    @if $color != null {
+      @include color($color);
+    }
+    @if $density != null {
+      @include _density($density);
+    }
+    @if $typography != null {
+      @include typography($typography);
+    }
+  }
+}

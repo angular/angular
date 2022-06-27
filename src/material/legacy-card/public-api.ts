@@ -7,4 +7,4 @@
  */
 
 export * from './card';
-export * from './module';
+export * from './card-module';

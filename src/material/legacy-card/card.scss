@@ -1,0 +1,261 @@
+@use 'sass:math';
+@use '@angular/cdk';
+
+@use '../core/style/variables';
+@use '../core/style/elevation';
+@use '../core/style/private';
+
+
+$padding: 16px !default;
+$border-radius: 4px !default;
+$header-size: 40px !default;
+
+.mat-card {
+  @include elevation.elevation-transition;
+  @include private.private-animation-noop();
+  display: block;
+  position: relative;
+  padding: $padding;
+  border-radius: $border-radius;
+
+  > .mat-divider-horizontal {
+    position: absolute;
+    left: 0;
+    width: 100%;
+
+    [dir='rtl'] & {
+      left: auto;
+      right: 0;
+    }
+
+    &.mat-divider-inset {
+      position: static;
+      margin: 0;
+
+      [dir='rtl'] & {
+        // Needs to be reset explicitly since the divider set `margin-right` in particular in RTL.
+        margin-right: 0;
+      }
+    }
+  }
+
+  @include cdk.high-contrast(active, off) {
+    outline: solid 1px;
+  }
+}
+
+// base styles for each card section preset (mat-card-content, etc)
+%mat-card-section-base {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.mat-card-title {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.mat-card-subtitle, .mat-card-content {
+  @extend %mat-card-section-base;
+}
+
+.mat-card-actions {
+  @extend %mat-card-section-base;
+  margin-left: math.div(-$padding, 2);
+  margin-right: math.div(-$padding, 2);
+  padding: 8px 0;
+}
+
+.mat-card-actions-align-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mat-card-image {
+  width: calc(100% + #{$padding * 2});
+  margin: 0 (-$padding) 16px (-$padding);
+
+  // The following properties are to handle `mat-card-image` on a `picture` element.
+  display: block;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+  }
+}
+
+.mat-card-footer {
+  // The negative margins pulls out the element, countering the padding
+  // to get the footer to be flush against the side of the card.
+  $margin: -$padding;
+
+  display: block;
+  margin: 0 $margin $margin $margin;
+}
+
+.mat-card-actions {
+  .mat-button,
+  .mat-raised-button,
+  .mat-stroked-button {
+    margin: 0 8px;
+  }
+}
+
+// HEADER STYLES
+
+.mat-card-header {
+  display: flex;
+  flex-direction: row;
+
+  .mat-card-title {
+    margin-bottom: 12px;
+  }
+}
+
+.mat-card-header-text {
+  margin: 0 $padding;
+}
+
+.mat-card-avatar {
+  height: $header-size;
+  width: $header-size;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  // Makes `<img>` tags behave like `background-size: cover`. Not supported
+  // in IE, but we're using it as a progressive enhancement.
+  object-fit: cover;
+}
+
+// TITLE-GROUP STYLES
+
+.mat-card-title-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.mat-card-sm-image {
+  width: 80px;
+  height: 80px;
+}
+
+.mat-card-md-image {
+  width: 112px;
+  height: 112px;
+}
+
+.mat-card-lg-image {
+  width: 152px;
+  height: 152px;
+}
+
+// This should normally also extend the `%mat-card-title-img`, but in order to avoid breaking
+// changes, we need to keep the horizontal margin reversion for now.
+// See: https://github.com/angular/components/issues/12203
+.mat-card-xl-image {
+  width: 240px;
+  height: 240px;
+  margin: -8px;
+
+  // Special treatment inside title group in order to fix the media areas inside of a title-group.
+  // This can be removed once #12203 has been addressed.
+  .mat-card-title-group > & {
+    // As per Material Design specifications, the images exceed the *top* content-box and take
+    // up some space. The margin below is necessary because otherwise space of the actual card
+    // content will be overlapped.
+    margin: -8px 0 8px;
+  }
+}
+
+// MEDIA QUERIES
+
+@media (variables.$xsmall) {
+  .mat-card-title-group {
+    margin: 0;
+  }
+
+  .mat-card-xl-image {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+// FIRST/LAST CHILD ADJUSTMENTS
+
+// top els in mat-card-content and mat-card can't have their default margin-tops (e.g. <p> tags)
+// or they'll incorrectly add to card's top padding
+.mat-card > :first-child, .mat-card-content > :first-child {
+  margin-top: 0;
+}
+
+// last els in mat-card-content and mat-card can't have their default margin-bottoms (e.g. <p> tags)
+// or they'll incorrectly add to card's bottom padding
+.mat-card > :last-child:not(.mat-card-footer),
+.mat-card-content > :last-child:not(.mat-card-footer) {
+  margin-bottom: 0;
+}
+
+// if main image is on top, need to place it flush against top
+// (by stripping card's default padding)
+.mat-card-image:first-child {
+  margin-top: -$padding;
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+
+// actions panel on bottom should be 8px from bottom of card
+// so must strip 16px from default card padding
+.mat-card > .mat-card-actions:last-child {
+  margin-bottom: -8px;
+  padding-bottom: 0;
+}
+
+// actions panel should always be 8px from sides,
+// so the first button in the actions panel can't add its own margins
+.mat-card-actions {
+  &:not(.mat-card-actions-align-end) {
+    .mat-button,
+    .mat-raised-button,
+    .mat-stroked-button {
+      &:first-child {
+        margin-left: 0;
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+.mat-card-actions-align-end {
+  .mat-button,
+  .mat-raised-button,
+  .mat-stroked-button {
+    &:last-child {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+}
+
+// should be 12px space between titles and subtitles generally
+// default margin-bottom is 16px, so need to move lower title up 4px
+.mat-card-title:not(:first-child), .mat-card-subtitle:not(:first-child) {
+  margin-top: -4px;
+}
+
+// should be 8px space between titles and subtitles in header
+// default margin-bottom is 16px, so need to move subtitle in header up 4px
+.mat-card-header .mat-card-subtitle:not(:first-child) {
+  margin-top: -8px;
+}
+
+// xl image should always have 16px on top.
+// when it's the first el, it'll need to remove 8px from default card padding
+.mat-card > .mat-card-xl-image:first-child {
+  margin-top: -8px;
+}
+
+// xl image should always have 16px on bottom
+// when it's the last el, it'll need to remove 8px from default card padding
+.mat-card > .mat-card-xl-image:last-child {
+  margin-bottom: -8px;
+}

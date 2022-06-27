@@ -11,9 +11,9 @@ ng_module(
     ],
     deps = [
         "//src/material/button",
-        "//src/material/card",
         "//src/material/grid-list",
         "//src/material/icon",
+        "//src/material/legacy-card",
     ],
 )
 

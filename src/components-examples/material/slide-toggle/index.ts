@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
+import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -28,7 +28,7 @@ const EXAMPLES = [
   imports: [
     FormsModule,
     MatButtonModule,
-    MatCardModule,
+    MatLegacyCardModule,
     MatCheckboxModule,
     MatRadioModule,
     MatSlideToggleModule,

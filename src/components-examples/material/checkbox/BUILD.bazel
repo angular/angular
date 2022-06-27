@@ -15,9 +15,9 @@ ng_module(
     deps = [
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
-        "//src/material/card",
         "//src/material/checkbox",
         "//src/material/checkbox/testing",
+        "//src/material/legacy-card",
         "//src/material/radio",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",

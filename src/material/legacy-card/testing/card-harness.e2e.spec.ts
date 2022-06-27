@@ -1,19 +1,19 @@
 import {HarnessLoader} from '@angular/cdk/testing';
 import {ProtractorHarnessEnvironment} from '@angular/cdk/testing/protractor';
-import {MatCardHarness} from '@angular/material-experimental/mdc-card/testing/card-harness';
+import {MatLegacyCardHarness} from '@angular/material/legacy-card/testing/card-harness';
 import {browser} from 'protractor';
 
 describe('card harness', () => {
   let loader: HarnessLoader;
 
-  beforeEach(async () => await browser.get('/mdc-card'));
+  beforeEach(async () => await browser.get('/cards'));
 
   beforeEach(() => {
     loader = ProtractorHarnessEnvironment.loader();
   });
 
   it('should get card text', async () => {
-    const card = await loader.getHarness(MatCardHarness);
+    const card = await loader.getHarness(MatLegacyCardHarness);
     expect(await card.getText()).toBe(
       'Shiba InuDog Breed The Shiba Inu is the smallest of ' +
         'the six original and distinct spitz breeds of dog from ' +
@@ -24,12 +24,12 @@ describe('card harness', () => {
   });
 
   it('should get title text', async () => {
-    const card = await loader.getHarness(MatCardHarness);
+    const card = await loader.getHarness(MatLegacyCardHarness);
     expect(await card.getTitleText()).toBe('Shiba Inu');
   });
 
   it('should get subtitle text', async () => {
-    const card = await loader.getHarness(MatCardHarness);
+    const card = await loader.getHarness(MatLegacyCardHarness);
     expect(await card.getSubtitleText()).toBe('Dog Breed');
   });
 });

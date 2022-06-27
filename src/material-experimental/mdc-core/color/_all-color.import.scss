@@ -7,9 +7,6 @@ mat-mdc-color, mat-mdc-density, mat-mdc-theme, mat-mdc-typography;
 $mat-mdc-button-mat-button-state-target;
 @forward '../../mdc-button/fab-theme' as mat-mdc-fab-*;
 @forward '../../mdc-button/icon-button-theme' as mat-mdc-icon-button-*;
-@forward '../../mdc-card/card-theme' hide color, density, theme, typography;
-@forward '../../mdc-card/card-theme' as mat-mdc-card-* hide
-$mat-mdc-card-mdc-card-action-icon-color, $mat-mdc-card-mdc-card-outline-color;
 @forward '../../mdc-checkbox/checkbox-theme' hide color, density,
 private-checkbox-styles-with-color, theme, typography;
 @forward '../../mdc-checkbox/checkbox-theme' as mat-mdc-* hide $mat-mdc-mdc-checkbox-border-color,

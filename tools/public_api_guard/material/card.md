@@ -6,14 +6,19 @@
 
 import * as i0 from '@angular/core';
 import * as i2 from '@angular/material/core';
+import * as i3 from '@angular/common';
+import { InjectionToken } from '@angular/core';
+
+// @public
+export const MAT_CARD_CONFIG: InjectionToken<MatCardConfig>;
 
 // @public
 export class MatCard {
-    constructor(_animationMode?: string | undefined);
+    constructor(config?: MatCardConfig);
     // (undocumented)
-    _animationMode?: string | undefined;
+    appearance: MatCardAppearance;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatCard, "mat-card", ["matCard"], {}, {}, never, ["*", "mat-card-footer"], false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatCard, "mat-card", ["matCard"], { "appearance": "appearance"; }, {}, never, ["*"], false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatCard, [{ optional: true; }]>;
 }
@@ -27,6 +32,9 @@ export class MatCardActions {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatCardActions, never>;
 }
 
+// @public (undocumented)
+export type MatCardAppearance = 'outlined' | 'raised';
+
 // @public
 export class MatCardAvatar {
     // (undocumented)
@@ -36,9 +44,14 @@ export class MatCardAvatar {
 }
 
 // @public
+export interface MatCardConfig {
+    appearance?: MatCardAppearance;
+}
+
+// @public
 export class MatCardContent {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatCardContent, "mat-card-content, [mat-card-content], [matCardContent]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatCardContent, "mat-card-content", never, {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatCardContent, never>;
 }
@@ -90,7 +103,7 @@ export class MatCardModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatCardModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatCardModule, [typeof i1.MatCard, typeof i1.MatCardHeader, typeof i1.MatCardTitleGroup, typeof i1.MatCardContent, typeof i1.MatCardTitle, typeof i1.MatCardSubtitle, typeof i1.MatCardActions, typeof i1.MatCardFooter, typeof i1.MatCardSmImage, typeof i1.MatCardMdImage, typeof i1.MatCardLgImage, typeof i1.MatCardImage, typeof i1.MatCardXlImage, typeof i1.MatCardAvatar], [typeof i2.MatCommonModule], [typeof i1.MatCard, typeof i1.MatCardHeader, typeof i1.MatCardTitleGroup, typeof i1.MatCardContent, typeof i1.MatCardTitle, typeof i1.MatCardSubtitle, typeof i1.MatCardActions, typeof i1.MatCardFooter, typeof i1.MatCardSmImage, typeof i1.MatCardMdImage, typeof i1.MatCardLgImage, typeof i1.MatCardImage, typeof i1.MatCardXlImage, typeof i1.MatCardAvatar, typeof i2.MatCommonModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatCardModule, [typeof i1.MatCard, typeof i1.MatCardActions, typeof i1.MatCardAvatar, typeof i1.MatCardContent, typeof i1.MatCardFooter, typeof i1.MatCardHeader, typeof i1.MatCardImage, typeof i1.MatCardLgImage, typeof i1.MatCardMdImage, typeof i1.MatCardSmImage, typeof i1.MatCardSubtitle, typeof i1.MatCardTitle, typeof i1.MatCardTitleGroup, typeof i1.MatCardXlImage], [typeof i2.MatCommonModule, typeof i3.CommonModule], [typeof i1.MatCard, typeof i1.MatCardActions, typeof i1.MatCardAvatar, typeof i1.MatCardContent, typeof i1.MatCardFooter, typeof i1.MatCardHeader, typeof i1.MatCardImage, typeof i1.MatCardLgImage, typeof i1.MatCardMdImage, typeof i1.MatCardSmImage, typeof i1.MatCardSubtitle, typeof i1.MatCardTitle, typeof i1.MatCardTitleGroup, typeof i1.MatCardXlImage, typeof i2.MatCommonModule]>;
 }
 
 // @public
@@ -120,7 +133,7 @@ export class MatCardTitle {
 // @public
 export class MatCardTitleGroup {
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatCardTitleGroup, "mat-card-title-group", never, {}, {}, never, ["mat-card-title, mat-card-subtitle,\n      [mat-card-title], [mat-card-subtitle],\n      [matCardTitle], [matCardSubtitle]", "img", "*"], false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatCardTitleGroup, "mat-card-title-group", never, {}, {}, never, ["mat-card-title, mat-card-subtitle,\n      [mat-card-title], [mat-card-subtitle],\n      [matCardTitle], [matCardSubtitle]", "[mat-card-image], [matCardImage],\n                    [mat-card-sm-image], [matCardImageSmall],\n                    [mat-card-md-image], [matCardImageMedium],\n                    [mat-card-lg-image], [matCardImageLarge],\n                    [mat-card-xl-image], [matCardImageXLarge]", "*"], false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatCardTitleGroup, never>;
 }

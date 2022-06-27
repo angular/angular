@@ -14,7 +14,7 @@ component_benchmark(
     ng_deps = [
         "@npm//@angular/core",
         "@npm//@angular/platform-browser",
-        "//src/material/card",
+        "//src/material/legacy-card",
     ],
     ng_srcs = [":app.module.ts"],
     prefix = "",

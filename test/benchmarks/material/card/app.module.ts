@@ -8,7 +8,7 @@
 
 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {MatCardModule} from '@angular/material/card';
+import {MatLegacyCardModule} from '@angular/material/legacy-card';
 
 /** component: mat-card */
 
@@ -36,7 +36,7 @@ export class CardBenchmarkApp {
 
 @NgModule({
   declarations: [CardBenchmarkApp],
-  imports: [BrowserModule, MatCardModule],
+  imports: [BrowserModule, MatLegacyCardModule],
   bootstrap: [CardBenchmarkApp],
 })
 export class AppModule {}

@@ -1,0 +1,10 @@
+@forward '../core/theming/theming.import';
+@forward '../core/style/private.import';
+@forward '../core/typography/typography-utils.import';
+@forward 'card-theme' hide color, theme, typography;
+@forward 'card-theme' as mat-legacy-card-* hide mat-legacy-card-density;
+
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/style/private';
+@import '../core/typography/typography-utils';

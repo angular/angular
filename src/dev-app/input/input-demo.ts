@@ -11,7 +11,7 @@ import {CommonModule} from '@angular/common';
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatCardModule} from '@angular/material/card';
+import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {ErrorStateMatcher} from '@angular/material/core';
 import {FloatLabelType, MatFormFieldModule} from '@angular/material/form-field';
@@ -36,7 +36,7 @@ const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA
     FormsModule,
     MatButtonModule,
     MatButtonToggleModule,
-    MatCardModule,
+    MatLegacyCardModule,
     MatCheckboxModule,
     MatFormFieldModule,
     MatIconModule,

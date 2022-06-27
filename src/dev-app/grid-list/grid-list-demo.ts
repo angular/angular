@@ -10,7 +10,7 @@ import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
+import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatIconModule} from '@angular/material/icon';
 
@@ -23,7 +23,7 @@ import {MatIconModule} from '@angular/material/icon';
     CommonModule,
     FormsModule,
     MatButtonModule,
-    MatCardModule,
+    MatLegacyCardModule,
     MatGridListModule,
     MatIconModule,
   ],

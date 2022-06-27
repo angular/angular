@@ -1,0 +1,2 @@
+@forward 'card-theme' hide color, theme, typography;
+@forward 'card-theme' as mat-legacy-card-* hide mat-legacy-card-density;

@@ -70,6 +70,8 @@
 @forward './button-toggle/button-toggle-theme' as button-toggle-* show button-toggle-theme,
   button-toggle-color, button-toggle-typography;
 @forward './card/card-theme' as card-* show card-theme, card-color, card-typography;
+@forward './legacy-card/card-theme' as legacy-card-* show legacy-card-theme, legacy-card-color,
+  legacy-card-typography;
 @forward './checkbox/checkbox-theme' as checkbox-* show checkbox-theme, checkbox-color,
   checkbox-typography;
 @forward './chips/chips-theme' as chips-* show chips-theme, chips-color, chips-typography;

@@ -10,11 +10,11 @@ ng_module(
         ":mdc_paginator_demo_scss",
     ],
     deps = [
-        "//src/material-experimental/mdc-card",
         "//src/material-experimental/mdc-form-field",
         "//src/material-experimental/mdc-input",
         "//src/material-experimental/mdc-paginator",
         "//src/material-experimental/mdc-slide-toggle",
+        "//src/material/card",
         "@npm//@angular/forms",
     ],
 )

@@ -7,189 +7,229 @@
  */
 
 import {
-  Component,
-  ViewEncapsulation,
   ChangeDetectionStrategy,
+  Component,
   Directive,
+  Inject,
+  InjectionToken,
   Input,
   Optional,
-  Inject,
+  ViewEncapsulation,
 } from '@angular/core';
-import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+
+export type MatCardAppearance = 'outlined' | 'raised';
+
+/** Object that can be used to configure the default options for the card module. */
+export interface MatCardConfig {
+  /** Default appearance for cards. */
+  appearance?: MatCardAppearance;
+}
+
+/** Injection token that can be used to provide the default options the card module. */
+export const MAT_CARD_CONFIG = new InjectionToken<MatCardConfig>('MAT_CARD_CONFIG');
 
 /**
- * Content of a card, needed as it's used as a selector in the API.
- * @docs-private
+ * Material Design card component. Cards contain content and actions about a single subject.
+ * See https://material.io/design/components/cards.html
+ *
+ * MatCard provides no behaviors, instead serving as a purely visual treatment.
  */
-@Directive({
-  selector: 'mat-card-content, [mat-card-content], [matCardContent]',
-  host: {'class': 'mat-card-content'},
+@Component({
+  selector: 'mat-card',
+  templateUrl: 'card.html',
+  styleUrls: ['card.css'],
+  host: {
+    'class': 'mat-mdc-card mdc-card',
+    '[class.mdc-card--outlined]': 'appearance == "outlined"',
+  },
+  exportAs: 'matCard',
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatCardContent {}
+export class MatCard {
+  @Input() appearance: MatCardAppearance;
+
+  constructor(@Inject(MAT_CARD_CONFIG) @Optional() config?: MatCardConfig) {
+    this.appearance = config?.appearance || 'raised';
+  }
+}
+
+// TODO(jelbourn): add `MatActionCard`, which is a card that acts like a button (and has a ripple).
+// Supported in MDC with `.mdc-card__primary-action`. Will require additional a11y docs for users.
 
 /**
- * Title of a card, needed as it's used as a selector in the API.
- * @docs-private
+ * Title of a card, intended for use within `<mat-card>`. This component is an optional
+ * convenience for one variety of card title; any custom title element may be used in its place.
+ *
+ * MatCardTitle provides no behaviors, instead serving as a purely visual treatment.
  */
 @Directive({
   selector: `mat-card-title, [mat-card-title], [matCardTitle]`,
-  host: {
-    'class': 'mat-card-title',
-  },
+  host: {'class': 'mat-mdc-card-title'},
 })
 export class MatCardTitle {}
 
 /**
- * Sub-title of a card, needed as it's used as a selector in the API.
- * @docs-private
- */
-@Directive({
-  selector: `mat-card-subtitle, [mat-card-subtitle], [matCardSubtitle]`,
-  host: {
-    'class': 'mat-card-subtitle',
-  },
-})
-export class MatCardSubtitle {}
-
-/**
- * Action section of a card, needed as it's used as a selector in the API.
- * @docs-private
- */
-@Directive({
-  selector: 'mat-card-actions',
-  exportAs: 'matCardActions',
-  host: {
-    'class': 'mat-card-actions',
-    '[class.mat-card-actions-align-end]': 'align === "end"',
-  },
-})
-export class MatCardActions {
-  /** Position of the actions inside the card. */
-  @Input() align: 'start' | 'end' = 'start';
-}
-
-/**
- * Footer of a card, needed as it's used as a selector in the API.
- * @docs-private
- */
-@Directive({
-  selector: 'mat-card-footer',
-  host: {'class': 'mat-card-footer'},
-})
-export class MatCardFooter {}
-
-/**
- * Image used in a card, needed to add the mat- CSS styling.
- * @docs-private
- */
-@Directive({
-  selector: '[mat-card-image], [matCardImage]',
-  host: {'class': 'mat-card-image'},
-})
-export class MatCardImage {}
-
-/**
- * Image used in a card, needed to add the mat- CSS styling.
- * @docs-private
- */
-@Directive({
-  selector: '[mat-card-sm-image], [matCardImageSmall]',
-  host: {'class': 'mat-card-sm-image'},
-})
-export class MatCardSmImage {}
-
-/**
- * Image used in a card, needed to add the mat- CSS styling.
- * @docs-private
- */
-@Directive({
-  selector: '[mat-card-md-image], [matCardImageMedium]',
-  host: {'class': 'mat-card-md-image'},
-})
-export class MatCardMdImage {}
-
-/**
- * Image used in a card, needed to add the mat- CSS styling.
- * @docs-private
- */
-@Directive({
-  selector: '[mat-card-lg-image], [matCardImageLarge]',
-  host: {'class': 'mat-card-lg-image'},
-})
-export class MatCardLgImage {}
-
-/**
- * Large image used in a card, needed to add the mat- CSS styling.
- * @docs-private
- */
-@Directive({
-  selector: '[mat-card-xl-image], [matCardImageXLarge]',
-  host: {'class': 'mat-card-xl-image'},
-})
-export class MatCardXlImage {}
-
-/**
- * Avatar image used in a card, needed to add the mat- CSS styling.
- * @docs-private
- */
-@Directive({
-  selector: '[mat-card-avatar], [matCardAvatar]',
-  host: {'class': 'mat-card-avatar'},
-})
-export class MatCardAvatar {}
-
-/**
- * A basic content container component that adds the styles of a Material design card.
- *
- * While this component can be used alone, it also provides a number
- * of preset styles for common card sections, including:
- * - mat-card-title
- * - mat-card-subtitle
- * - mat-card-content
- * - mat-card-actions
- * - mat-card-footer
- */
-@Component({
-  selector: 'mat-card',
-  exportAs: 'matCard',
-  templateUrl: 'card.html',
-  styleUrls: ['card.css'],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    'class': 'mat-card mat-focus-indicator',
-    '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
-  },
-})
-export class MatCard {
-  // @breaking-change 9.0.0 `_animationMode` parameter to be made required.
-  constructor(@Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {}
-}
-
-/**
- * Component intended to be used within the `<mat-card>` component. It adds styles for a
- * preset header section (i.e. a title, subtitle, and avatar layout).
- * @docs-private
- */
-@Component({
-  selector: 'mat-card-header',
-  templateUrl: 'card-header.html',
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {'class': 'mat-card-header'},
-})
-export class MatCardHeader {}
-
-/**
- * Component intended to be used within the `<mat-card>` component. It adds styles for a preset
- * layout that groups an image with a title section.
- * @docs-private
+ * Container intended to be used within the `<mat-card>` component. Can contain exactly one
+ * `<mat-card-title>`, one `<mat-card-subtitle>` and one content image of any size
+ * (e.g. `<img matCardLgImage>`).
  */
 @Component({
   selector: 'mat-card-title-group',
   templateUrl: 'card-title-group.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {'class': 'mat-card-title-group'},
+  host: {'class': 'mat-mdc-card-title-group'},
 })
 export class MatCardTitleGroup {}
+
+/**
+ * Content of a card, intended for use within `<mat-card>`. This component is an optional
+ * convenience for use with other convenience elements, such as `<mat-card-title>`; any custom
+ * content block element may be used in its place.
+ *
+ * MatCardContent provides no behaviors, instead serving as a purely visual treatment.
+ */
+@Directive({
+  selector: 'mat-card-content',
+  host: {'class': 'mat-mdc-card-content'},
+})
+export class MatCardContent {}
+
+/**
+ * Sub-title of a card, intended for use within `<mat-card>` beneath a `<mat-card-title>`. This
+ * component is an optional convenience for use with other convenience elements, such as
+ * `<mat-card-title>`.
+ *
+ * MatCardSubtitle provides no behaviors, instead serving as a purely visual treatment.
+ */
+@Directive({
+  selector: `mat-card-subtitle, [mat-card-subtitle], [matCardSubtitle]`,
+  host: {'class': 'mat-mdc-card-subtitle'},
+})
+export class MatCardSubtitle {}
+
+/**
+ * Bottom area of a card that contains action buttons, intended for use within `<mat-card>`.
+ * This component is an optional convenience for use with other convenience elements, such as
+ * `<mat-card-content>`; any custom action block element may be used in its place.
+ *
+ * MatCardActions provides no behaviors, instead serving as a purely visual treatment.
+ */
+@Directive({
+  selector: 'mat-card-actions',
+  exportAs: 'matCardActions',
+  host: {
+    'class': 'mat-mdc-card-actions mdc-card__actions',
+    '[class.mat-mdc-card-actions-align-end]': 'align === "end"',
+  },
+})
+export class MatCardActions {
+  // TODO(jelbourn): deprecate `align` in favor of `actionPositon` or `actionAlignment`
+  // as to not conflict with the native `align` attribute.
+
+  /** Position of the actions inside the card. */
+  @Input() align: 'start' | 'end' = 'start';
+
+  // TODO(jelbourn): support `.mdc-card__actions--full-bleed`.
+
+  // TODO(jelbourn): support  `.mdc-card__action-buttons` and `.mdc-card__action-icons`.
+
+  // TODO(jelbourn): figure out how to use `.mdc-card__action`, `.mdc-card__action--button`, and
+  // `mdc-card__action--icon`. They're used primarily for positioning, which we might be able to
+  // do implicitly.
+}
+
+/**
+ * Header region of a card, intended for use within `<mat-card>`. This header captures
+ * a card title, subtitle, and avatar.  This component is an optional convenience for use with
+ * other convenience elements, such as `<mat-card-footer>`; any custom header block element may be
+ * used in its place.
+ *
+ * MatCardHeader provides no behaviors, instead serving as a purely visual treatment.
+ */
+@Component({
+  selector: 'mat-card-header',
+  templateUrl: 'card-header.html',
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {'class': 'mat-mdc-card-header'},
+})
+export class MatCardHeader {}
+
+/**
+ * Footer area a card, intended for use within `<mat-card>`.
+ * This component is an optional convenience for use with other convenience elements, such as
+ * `<mat-card-content>`; any custom footer block element may be used in its place.
+ *
+ * MatCardFooter provides no behaviors, instead serving as a purely visual treatment.
+ */
+@Directive({
+  selector: 'mat-card-footer',
+  host: {'class': 'mat-mdc-card-footer'},
+})
+export class MatCardFooter {}
+
+// TODO(jelbourn): deprecate the "image" selectors to replace with "media".
+
+// TODO(jelbourn): support `.mdc-card__media-content`.
+
+/**
+ * Primary image content for a card, intended for use within `<mat-card>`. Can be applied to
+ * any media element, such as `<img>` or `<picture>`.
+ *
+ * This component is an optional convenience for use with other convenience elements, such as
+ * `<mat-card-content>`; any custom media element may be used in its place.
+ *
+ * MatCardImage provides no behaviors, instead serving as a purely visual treatment.
+ */
+@Directive({
+  selector: '[mat-card-image], [matCardImage]',
+  host: {'class': 'mat-mdc-card-image mdc-card__media'},
+})
+export class MatCardImage {
+  // TODO(jelbourn): support `.mdc-card__media--square` and `.mdc-card__media--16-9`.
+}
+
+/** Same as `MatCardImage`, but small. */
+@Directive({
+  selector: '[mat-card-sm-image], [matCardImageSmall]',
+  host: {'class': 'mat-mdc-card-sm-image mdc-card__media'},
+})
+export class MatCardSmImage {}
+
+/** Same as `MatCardImage`, but medium. */
+@Directive({
+  selector: '[mat-card-md-image], [matCardImageMedium]',
+  host: {'class': 'mat-mdc-card-md-image mdc-card__media'},
+})
+export class MatCardMdImage {}
+
+/** Same as `MatCardImage`, but large. */
+@Directive({
+  selector: '[mat-card-lg-image], [matCardImageLarge]',
+  host: {'class': 'mat-mdc-card-lg-image mdc-card__media'},
+})
+export class MatCardLgImage {}
+
+/** Same as `MatCardImage`, but extra-large. */
+@Directive({
+  selector: '[mat-card-xl-image], [matCardImageXLarge]',
+  host: {'class': 'mat-mdc-card-xl-image mdc-card__media'},
+})
+export class MatCardXlImage {}
+
+/**
+ * Avatar image content for a card, intended for use within `<mat-card>`. Can be applied to
+ * any media element, such as `<img>` or `<picture>`.
+ *
+ * This component is an optional convenience for use with other convenience elements, such as
+ * `<mat-card-title>`; any custom media element may be used in its place.
+ *
+ * MatCardAvatar provides no behaviors, instead serving as a purely visual treatment.
+ */
+@Directive({
+  selector: '[mat-card-avatar], [matCardAvatar]',
+  host: {'class': 'mat-mdc-card-avatar'},
+})
+export class MatCardAvatar {}

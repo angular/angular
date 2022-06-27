@@ -5,7 +5,7 @@
 /src/material/bottom-sheet/**                      @jelbourn @crisbeto
 /src/material/button-toggle/**                     @andrewseguin
 /src/material/button/**                            @andrewseguin
-/src/material/card/**                              @andrewseguin
+/src/material/legacy-card/**                              @andrewseguin
 /src/material/checkbox/**                          @andrewseguin @devversion
 /src/material/chips/**                             @andrewseguin
 /src/material/datepicker/**                        @mmalerba @crisbeto @zarend
@@ -107,7 +107,7 @@
 /src/material-experimental/column-resize/**        @andrewseguin
 /src/material-experimental/mdc-autocomplete/**     @crisbeto
 /src/material-experimental/mdc-button/**           @andrewseguin
-/src/material-experimental/mdc-card/**             @mmalerba
+/src/material/card/**             @mmalerba
 /src/material-experimental/mdc-checkbox/**         @mmalerba
 /src/material-experimental/mdc-chips/**            @mmalerba
 /src/material-experimental/mdc-core/**             @crisbeto
@@ -316,7 +316,7 @@
 /tools/public_api_guard/material/bottom-sheet**    @andrewseguin @crisbeto
 /tools/public_api_guard/material/button-toggle**   @andrewseguin
 /tools/public_api_guard/material/button**          @andrewseguin
-/tools/public_api_guard/material/card**            @andrewseguin
+/tools/public_api_guard/material/legacy-card**     @andrewseguin
 /tools/public_api_guard/material/checkbox**        @andrewseguin @devversion
 /tools/public_api_guard/material/chips**           @andrewseguin
 /tools/public_api_guard/material/chips/testing**   @andrewseguin

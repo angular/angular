@@ -11,6 +11,8 @@ entryPoints = [
     "button-toggle/testing",
     "card",
     "card/testing",
+    "legacy-card",
+    "legacy-card/testing",
     "checkbox",
     "checkbox/testing",
     "chips",

@@ -20,7 +20,7 @@ import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {_supportsShadowDom} from '@angular/cdk/platform';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
+import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
 @Component({
@@ -41,7 +41,7 @@ export class FocusTrapShadowDomDemo {}
     A11yModule,
     CommonModule,
     MatButtonModule,
-    MatCardModule,
+    MatLegacyCardModule,
     MatDialogModule,
     MatToolbarModule,
     FocusTrapShadowDomDemo,

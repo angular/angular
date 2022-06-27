@@ -20,7 +20,7 @@ import {MatInputModule} from '@angular/material-experimental/mdc-input';
 import {MatAutocompleteModule} from '@angular/material-experimental/mdc-autocomplete';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatCardModule} from '@angular/material-experimental/mdc-card';
+import {MatCardModule} from '@angular/material/card';
 import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';

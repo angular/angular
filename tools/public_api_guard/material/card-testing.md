@@ -5,6 +5,7 @@
 ```ts
 
 import { BaseHarnessFilters } from '@angular/cdk/testing';
+import { ComponentHarnessConstructor } from '@angular/cdk/testing';
 import { ContentContainerComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 
@@ -21,19 +22,19 @@ export class MatCardHarness extends ContentContainerComponentHarness<MatCardSect
     getText(): Promise<string>;
     getTitleText(): Promise<string>;
     static hostSelector: string;
-    static with(options?: CardHarnessFilters): HarnessPredicate<MatCardHarness>;
+    static with<T extends MatCardHarness>(this: ComponentHarnessConstructor<T>, options?: CardHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
 export const enum MatCardSection {
     // (undocumented)
-    ACTIONS = ".mat-card-actions",
+    ACTIONS = ".mat-mdc-card-actions",
     // (undocumented)
-    CONTENT = ".mat-card-content",
+    CONTENT = ".mat-mdc-card-content",
     // (undocumented)
-    FOOTER = ".mat-card-footer",
+    FOOTER = ".mat-mdc-card-footer",
     // (undocumented)
-    HEADER = ".mat-card-header"
+    HEADER = ".mat-mdc-card-header"
 }
 
 // (No @packageDocumentation comment for this package)

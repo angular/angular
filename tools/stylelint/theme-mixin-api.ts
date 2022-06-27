@@ -215,6 +215,8 @@ function getComponentNameFromPath(filePath: string): string | null {
 
   if (filePath.includes('material-experimental') && filePath.includes('mdc-')) {
     prefix = 'mat-mdc-';
+  } else if (filePath.includes('material/legacy-')) {
+    prefix = 'mat-legacy-';
   } else if (filePath.includes('material')) {
     prefix = 'mat-';
   }

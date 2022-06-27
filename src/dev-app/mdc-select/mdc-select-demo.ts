@@ -12,7 +12,7 @@ import {ErrorStateMatcher, ThemePalette} from '@angular/material-experimental/md
 import {MatSelectChange, MatSelectModule} from '@angular/material-experimental/mdc-select';
 import {FloatLabelType, MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
 import {CommonModule} from '@angular/common';
-import {MatCardModule} from '@angular/material-experimental/mdc-card';
+import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatInputModule} from '@angular/material-experimental/mdc-input';

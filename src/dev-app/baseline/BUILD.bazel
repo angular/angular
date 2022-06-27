@@ -10,10 +10,10 @@ ng_module(
         ":baseline_demo_scss",
     ],
     deps = [
-        "//src/material/card",
         "//src/material/checkbox",
         "//src/material/form-field",
         "//src/material/input",
+        "//src/material/legacy-card",
         "//src/material/radio",
         "//src/material/select",
         "//src/material/toolbar",

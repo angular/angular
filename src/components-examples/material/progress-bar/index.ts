@@ -1,7 +1,7 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatCardModule} from '@angular/material/card';
+import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSliderModule} from '@angular/material/slider';
@@ -33,7 +33,7 @@ const EXAMPLES = [
 @NgModule({
   imports: [
     CommonModule,
-    MatCardModule,
+    MatLegacyCardModule,
     MatProgressBarModule,
     MatRadioModule,
     MatSliderModule,

@@ -10,7 +10,7 @@ import {Component, TemplateRef} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
+import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {ErrorStateMatcher, ThemePalette} from '@angular/material/core';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {FloatLabelType, MatFormFieldModule} from '@angular/material/form-field';
@@ -37,7 +37,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     CommonModule,
     FormsModule,
     MatButtonModule,
-    MatCardModule,
+    MatLegacyCardModule,
     MatDialogModule,
     MatFormFieldModule,
     MatIconModule,

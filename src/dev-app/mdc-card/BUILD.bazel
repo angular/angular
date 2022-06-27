@@ -11,8 +11,8 @@ ng_module(
     ],
     deps = [
         "//src/material-experimental/mdc-button",
-        "//src/material-experimental/mdc-card",
         "//src/material-experimental/mdc-checkbox",
+        "//src/material/card",
     ],
 )
 

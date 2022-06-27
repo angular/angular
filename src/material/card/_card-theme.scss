@@ -1,56 +1,58 @@
-@use 'sass:map';
 @use '../core/theming/theming';
-@use '../core/style/private';
+@use '../core/mdc-helpers/mdc-helpers';
 @use '../core/typography/typography';
-@use '../core/typography/typography-utils';
-
+@use '@material/card' as mdc-card;
+@use '@material/typography' as mdc-typography;
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use 'sass:color';
+@use 'sass:map';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $background: map.get($config, background);
   $foreground: map.get($config, foreground);
+  $is-dark-theme: map.get($config, is-dark);
 
-  .mat-card {
-    @include private.private-theme-overridable-elevation(1, $config);
-    background: theming.get-color-from-palette($background, card);
-    color: theming.get-color-from-palette($foreground, text);
+  $orig-mdc-card-action-icon-color: mdc-card.$action-icon-color;
+  $orig-mdc-card-outline-color: mdc-card.$outline-color;
 
-    // Needs extra specificity to be able to override the elevation selectors.
-    &.mat-card-flat {
-      @include private.private-theme-overridable-elevation(0, $config);
+  @include mdc-helpers.using-mdc-theme($config) {
+    mdc-card.$action-icon-color: rgba(mdc-theme-color.prop-value(on-surface),
+      mdc-theme-color.text-emphasis(medium));
+    mdc-card.$outline-color: color.mix(mdc-theme-color.prop-value(on-surface),
+      mdc-theme-color.prop-value(surface), 12%);
+
+    @include mdc-card.without-ripple($query: mdc-helpers.$mdc-theme-styles-query);
+
+    // Card subtitles are an Angular Material construct (not MDC), so we explicitly set their
+    // color to secondary text here.
+    .mat-mdc-card-subtitle {
+      color: theming.get-color-from-palette($foreground, secondary-text);
     }
   }
 
-  .mat-card-subtitle {
-    color: theming.get-color-from-palette($foreground, secondary-text);
-  }
+  mdc-card.$action-icon-color: $orig-mdc-card-action-icon-color;
+  mdc-card.$outline-color: $orig-mdc-card-outline-color;
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
+  $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
-  .mat-card {
-    font-family: typography-utils.font-family($config);
-  }
+  @include mdc-helpers.using-mdc-typography($config) {
+    @include mdc-card.without-ripple($query: mdc-helpers.$mdc-typography-styles-query);
 
-  .mat-card-title {
-    font: {
-      size: typography-utils.font-size($config, headline);
-      weight: typography-utils.font-weight($config, title);
+    // Card subtitles and titles are an Angular Material construct (not MDC), so we explicitly
+    // set their typographic styles here.
+    .mat-mdc-card-title {
+      @include mdc-typography.typography(headline6);
     }
-  }
 
-  .mat-card-header .mat-card-title {
-    font-size: typography-utils.font-size($config, title);
-  }
-
-  .mat-card-subtitle,
-  .mat-card-content {
-    font-size: typography-utils.font-size($config, body-1);
+    .mat-mdc-card-subtitle {
+      @include mdc-typography.typography(subtitle2);
+    }
   }
 }
 
-@mixin _density($config-or-theme) {}
+@mixin density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -63,7 +65,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);
