@@ -163,6 +163,31 @@ export class NavigationEnd extends RouterEvent {
 }
 
 /**
+ * A code for the `NavigationCancel` event of the `Router` to indicate the
+ * reason a navigation failed.
+ *
+ * @publicApi
+ */
+export const enum NavigationCancellationCode {
+  /**
+   * A navigation failed because a guard returned a `UrlTree` to redirect.
+   */
+  Redirect,
+  /**
+   * A navigation failed because a more recent navigation started.
+   */
+  SupersededByNewNavigation,
+  /**
+   * A navigation failed because one of the resolvers completed without emiting a value.
+   */
+  NoDataFromResolver,
+  /**
+   * A navigation failed because a guard returned `false`.
+   */
+  GuardRejected,
+}
+
+/**
  * An event triggered when a navigation is canceled, directly or indirectly.
  * This can happen for several reasons including when a route guard
  * returns `false` or initiates a redirect by returning a `UrlTree`.
@@ -182,7 +207,13 @@ export class NavigationCancel extends RouterEvent {
       /** @docsNotRequired */
       url: string,
       /** @docsNotRequired */
-      public reason: string) {
+      public reason: string,
+      /**
+       * A code to indicate why the navigation was canceled. This cancellation code is stable for
+       * the reason and can be relied on whereas the `reason` string could change and should not be
+       * used in production.
+       */
+      readonly code?: NavigationCancellationCode) {
     super(id, url);
   }
 

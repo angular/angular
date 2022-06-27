@@ -16,7 +16,7 @@ import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
-import {Event, NavigationCancel, NavigationEnd, NavigationError, stringifyEvent} from './events';
+import {Event, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, stringifyEvent} from './events';
 import {Route, Routes} from './models';
 import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
@@ -26,7 +26,6 @@ import {ChildrenOutletContexts} from './router_outlet_context';
 import {PreloadingStrategy, RouterPreloader} from './router_preloader';
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
-import {REDIRECTING_CANCELLATION_REASON} from './shared';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {DefaultUrlSerializer, UrlSerializer, UrlTree} from './url_tree';
 import {flatten} from './utils/collection';
@@ -611,15 +610,11 @@ function provideEnabledBlockingInitialNavigation(): Provider {
                       // Navigation assumed to succeed if we get `ActivationStart`
                       return true;
                     }
-                    const newNavigationStarted = router.navigationId !== e.id;
-                    // TODO(atscott): Do not rely on the string reason to determine if cancelation
-                    // is redirecting
-                    const redirectingWithUrlTree = e instanceof NavigationCancel ?
-                        e.reason.indexOf(REDIRECTING_CANCELLATION_REASON) !== -1 :
+                    const redirecting = e instanceof NavigationCancel ?
+                        (e.code === NavigationCancellationCode.Redirect ||
+                         e.code === NavigationCancellationCode.SupersededByNewNavigation) :
                         false;
-                    // Navigation failed, but if we already have a new navigation, wait for the
-                    // result of that one instead.
-                    return newNavigationStarted || redirectingWithUrlTree ? null : false;
+                    return redirecting ? null : false;
                   }),
                   filter((result): result is boolean => result !== null),
                   take(1),

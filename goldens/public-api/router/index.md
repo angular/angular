@@ -351,13 +351,23 @@ export class NavigationCancel extends RouterEvent {
     constructor(
     id: number,
     url: string,
-    reason: string);
+    reason: string,
+    code?: NavigationCancellationCode | undefined);
+    readonly code?: NavigationCancellationCode | undefined;
     // (undocumented)
     reason: string;
     // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.NavigationCancel;
+}
+
+// @public
+export const enum NavigationCancellationCode {
+    GuardRejected = 3,
+    NoDataFromResolver = 2,
+    Redirect = 0,
+    SupersededByNewNavigation = 1
 }
 
 // @public
