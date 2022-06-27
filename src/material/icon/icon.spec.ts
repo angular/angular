@@ -69,6 +69,7 @@ describe('MatIcon', () => {
       declarations: [
         IconWithColor,
         IconWithLigature,
+        IconWithLigatureByAttribute,
         IconWithCustomFontCss,
         IconFromSvgName,
         IconWithAriaHiddenFalse,
@@ -125,6 +126,7 @@ describe('MatIcon', () => {
     fixture.detectChanges();
     expect(sortedClassNames(matIconElement)).toEqual([
       'mat-icon',
+      'mat-ligature-font',
       'mat-primary',
       'material-icons',
       'notranslate',
@@ -143,6 +145,7 @@ describe('MatIcon', () => {
     expect(sortedClassNames(matIconElement)).toEqual([
       'mat-icon',
       'mat-icon-no-color',
+      'mat-ligature-font',
       'material-icons',
       'notranslate',
     ]);
@@ -179,7 +182,7 @@ describe('MatIcon', () => {
   });
 
   describe('Ligature icons', () => {
-    it('should add material-icons class by default', () => {
+    it('should add material-icons and mat-ligature-font class by default', () => {
       const fixture = TestBed.createComponent(IconWithLigature);
 
       const testComponent = fixture.componentInstance;
@@ -189,13 +192,14 @@ describe('MatIcon', () => {
       expect(sortedClassNames(matIconElement)).toEqual([
         'mat-icon',
         'mat-icon-no-color',
+        'mat-ligature-font',
         'material-icons',
         'notranslate',
       ]);
     });
 
     it('should use alternate icon font if set', () => {
-      iconRegistry.setDefaultFontSetClass('myfont');
+      iconRegistry.setDefaultFontSetClass('myfont', 'mat-ligature-font');
 
       const fixture = TestBed.createComponent(IconWithLigature);
 
@@ -206,6 +210,7 @@ describe('MatIcon', () => {
       expect(sortedClassNames(matIconElement)).toEqual([
         'mat-icon',
         'mat-icon-no-color',
+        'mat-ligature-font',
         'myfont',
         'notranslate',
       ]);
@@ -223,7 +228,7 @@ describe('MatIcon', () => {
     });
 
     it('should be able to provide multiple alternate icon set classes', () => {
-      iconRegistry.setDefaultFontSetClass('myfont', 'myfont-48x48');
+      iconRegistry.setDefaultFontSetClass('myfont', 'mat-ligature-font', 'myfont-48x48');
 
       let fixture = TestBed.createComponent(IconWithLigature);
 
@@ -234,6 +239,62 @@ describe('MatIcon', () => {
       expect(sortedClassNames(matIconElement)).toEqual([
         'mat-icon',
         'mat-icon-no-color',
+        'mat-ligature-font',
+        'myfont',
+        'myfont-48x48',
+        'notranslate',
+      ]);
+    });
+  });
+
+  describe('Ligature icons by attribute', () => {
+    it('should add material-icons and mat-ligature-font class by default', () => {
+      const fixture = TestBed.createComponent(IconWithLigatureByAttribute);
+
+      const testComponent = fixture.componentInstance;
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+      testComponent.iconName = 'home';
+      fixture.detectChanges();
+      expect(sortedClassNames(matIconElement)).toEqual([
+        'mat-icon',
+        'mat-icon-no-color',
+        'mat-ligature-font',
+        'material-icons',
+        'notranslate',
+      ]);
+    });
+
+    it('should use alternate icon font if set', () => {
+      iconRegistry.setDefaultFontSetClass('myfont', 'mat-ligature-font');
+
+      const fixture = TestBed.createComponent(IconWithLigatureByAttribute);
+
+      const testComponent = fixture.componentInstance;
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+      testComponent.iconName = 'home';
+      fixture.detectChanges();
+      expect(sortedClassNames(matIconElement)).toEqual([
+        'mat-icon',
+        'mat-icon-no-color',
+        'mat-ligature-font',
+        'myfont',
+        'notranslate',
+      ]);
+    });
+
+    it('should be able to provide multiple alternate icon set classes', () => {
+      iconRegistry.setDefaultFontSetClass('myfont', 'mat-ligature-font', 'myfont-48x48');
+
+      let fixture = TestBed.createComponent(IconWithLigatureByAttribute);
+
+      const testComponent = fixture.componentInstance;
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+      testComponent.iconName = 'home';
+      fixture.detectChanges();
+      expect(sortedClassNames(matIconElement)).toEqual([
+        'mat-icon',
+        'mat-icon-no-color',
+        'mat-ligature-font',
         'myfont',
         'myfont-48x48',
         'notranslate',
@@ -1042,6 +1103,7 @@ describe('MatIcon', () => {
     it('should handle values with extraneous spaces being passed in to `fontIcon`', () => {
       const fixture = TestBed.createComponent(IconWithCustomFontCss);
       const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+      fixture.componentInstance.fontSet = 'f1';
 
       expect(() => {
         fixture.componentInstance.fontIcon = 'font icon';
@@ -1049,10 +1111,10 @@ describe('MatIcon', () => {
       }).not.toThrow();
 
       expect(sortedClassNames(matIconElement)).toEqual([
+        'f1',
         'font',
         'mat-icon',
         'mat-icon-no-color',
-        'material-icons',
         'notranslate',
       ]);
 
@@ -1063,9 +1125,9 @@ describe('MatIcon', () => {
 
       expect(sortedClassNames(matIconElement)).toEqual([
         'changed',
+        'f1',
         'mat-icon',
         'mat-icon-no-color',
-        'material-icons',
         'notranslate',
       ]);
     });
@@ -1308,6 +1370,11 @@ describe('MatIcon with default options', () => {
 
 @Component({template: `<mat-icon>{{iconName}}</mat-icon>`})
 class IconWithLigature {
+  iconName = '';
+}
+
+@Component({template: `<mat-icon [fontIcon]="iconName"></mat-icon>`})
+class IconWithLigatureByAttribute {
   iconName = '';
 }
 

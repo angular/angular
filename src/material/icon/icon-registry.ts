@@ -13,12 +13,12 @@ import {
   Inject,
   Injectable,
   InjectionToken,
+  OnDestroy,
   Optional,
   SecurityContext,
   SkipSelf,
-  OnDestroy,
 } from '@angular/core';
-import {DomSanitizer, SafeResourceUrl, SafeHtml} from '@angular/platform-browser';
+import {DomSanitizer, SafeHtml, SafeResourceUrl} from '@angular/platform-browser';
 import {forkJoin, Observable, of as observableOf, throwError as observableThrow} from 'rxjs';
 import {catchError, finalize, map, share, tap} from 'rxjs/operators';
 import {TrustedHTML, trustedHTMLFromString} from './trusted-types';
@@ -149,7 +149,7 @@ export class MatIconRegistry implements OnDestroy {
    * specified. The default 'material-icons' value assumes that the material icon font has been
    * loaded as described at http://google.github.io/material-design-icons/#icon-font-for-the-web
    */
-  private _defaultFontSetClass = ['material-icons'];
+  private _defaultFontSetClass = ['material-icons', 'mat-ligature-font'];
 
   constructor(
     @Optional() private _httpClient: HttpClient,
@@ -281,15 +281,28 @@ export class MatIconRegistry implements OnDestroy {
   }
 
   /**
-   * Defines an alias for a CSS class name to be used for icon fonts. Creating an matIcon
+   * Defines an alias for CSS class names to be used for icon fonts. Creating an matIcon
    * component with the alias as the fontSet input will cause the class name to be applied
    * to the `<mat-icon>` element.
    *
+   * If the registered font is a ligature font, then don't forget to also include the special
+   * class `mat-ligature-font` to allow the usage via attribute. So register like this:
+   *
+   * ```ts
+   * iconRegistry.registerFontClassAlias('f1', 'font1 mat-ligature-font');
+   * ```
+   *
+   * And use like this:
+   *
+   * ```html
+   * <mat-icon fontSet="f1" fontIcon="home"></mat-icon>
+   * ```
+   *
    * @param alias Alias for the font.
-   * @param className Class name override to be used instead of the alias.
+   * @param classNames Class names override to be used instead of the alias.
    */
-  registerFontClassAlias(alias: string, className: string = alias): this {
-    this._fontCssClassesByAlias.set(alias, className);
+  registerFontClassAlias(alias: string, classNames: string = alias): this {
+    this._fontCssClassesByAlias.set(alias, classNames);
     return this;
   }
 

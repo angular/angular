@@ -114,13 +114,18 @@ const funcIriPattern = /^url\(['"]?#(.*?)['"]?\)$/;
  *     `<mat-icon svgIcon="left-arrow"></mat-icon>
  *     <mat-icon svgIcon="animals:cat"></mat-icon>`
  *
- * - Use a font ligature as an icon by putting the ligature text in the content of the `<mat-icon>`
- *   component. By default the Material icons font is used as described at
+ * - Use a font ligature as an icon by putting the ligature text in the `fontIcon` attribute or the
+ *   content of the `<mat-icon>` component. If you register a custom font class, don't forget to also
+ *   include the special class `mat-ligature-font`. It is recommended to use the attribute alternative
+ *   to prevent the ligature text to be selectable and to appear in search engine results.
+ *   By default, the Material icons font is used as described at
  *   http://google.github.io/material-design-icons/#icon-font-for-the-web. You can specify an
  *   alternate font by setting the fontSet input to either the CSS class to apply to use the
  *   desired font, or to an alias previously registered with MatIconRegistry.registerFontClassAlias.
  *   Examples:
- *     `<mat-icon>home</mat-icon>
+ *     `<mat-icon fontIcon="home"></mat-icon>
+ *     <mat-icon>home</mat-icon>
+ *     <mat-icon fontSet="myfont" fontIcon="sun"></mat-icon>
  *     <mat-icon fontSet="myfont">sun</mat-icon>`
  *
  * - Specify a font glyph to be included via CSS rules by setting the fontSet input to specify the
@@ -359,7 +364,7 @@ export class MatIcon extends _MatIconBase implements OnInit, AfterViewChecked, C
     const elem: HTMLElement = this._elementRef.nativeElement;
     const fontSetClasses = (
       this.fontSet
-        ? [this._iconRegistry.classNameForFontAlias(this.fontSet)]
+        ? this._iconRegistry.classNameForFontAlias(this.fontSet).split(/ +/)
         : this._iconRegistry.getDefaultFontSetClass()
     ).filter(className => className.length > 0);
 
@@ -367,7 +372,10 @@ export class MatIcon extends _MatIconBase implements OnInit, AfterViewChecked, C
     fontSetClasses.forEach(className => elem.classList.add(className));
     this._previousFontSetClass = fontSetClasses;
 
-    if (this.fontIcon !== this._previousFontIconClass) {
+    if (
+      this.fontIcon !== this._previousFontIconClass &&
+      !fontSetClasses.includes('mat-ligature-font')
+    ) {
       if (this._previousFontIconClass) {
         elem.classList.remove(this._previousFontIconClass);
       }

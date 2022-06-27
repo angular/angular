@@ -133,7 +133,7 @@ export class MatIconRegistry implements OnDestroy {
     getSvgIconFromUrl(safeUrl: SafeResourceUrl): Observable<SVGElement>;
     // (undocumented)
     ngOnDestroy(): void;
-    registerFontClassAlias(alias: string, className?: string): this;
+    registerFontClassAlias(alias: string, classNames?: string): this;
     setDefaultFontSetClass(...classNames: string[]): this;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatIconRegistry, [{ optional: true; }, null, { optional: true; }, null]>;

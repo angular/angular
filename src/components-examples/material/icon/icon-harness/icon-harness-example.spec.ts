@@ -32,24 +32,24 @@ describe('IconHarnessExample', () => {
 
   it('should load all icon harnesses', async () => {
     const icons = await loader.getAllHarnesses(MatIconHarness);
-    expect(icons.length).toBe(3);
+    expect(icons.length).toBe(4);
   });
 
   it('should get the name of an icon', async () => {
     const icons = await loader.getAllHarnesses(MatIconHarness);
     const names = await parallel(() => icons.map(icon => icon.getName()));
-    expect(names).toEqual(['fontIcon', 'svgIcon', 'ligature_icon']);
+    expect(names).toEqual(['fontIcon', 'svgIcon', 'ligature_icon', 'ligature_icon_by_attribute']);
   });
 
   it('should get the namespace of an icon', async () => {
     const icons = await loader.getAllHarnesses(MatIconHarness);
     const namespaces = await parallel(() => icons.map(icon => icon.getNamespace()));
-    expect(namespaces).toEqual(['fontIcons', 'svgIcons', null]);
+    expect(namespaces).toEqual(['fontIcons', 'svgIcons', null, null]);
   });
 
   it('should get whether an icon is inline', async () => {
     const icons = await loader.getAllHarnesses(MatIconHarness);
     const inlineStates = await parallel(() => icons.map(icon => icon.isInline()));
-    expect(inlineStates).toEqual([false, false, true]);
+    expect(inlineStates).toEqual([false, false, true, false]);
   });
 });

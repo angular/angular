@@ -21,6 +21,10 @@ $size: 24px !default;
     line-height: inherit;
     width: inherit;
   }
+
+  &.mat-ligature-font[fontIcon]::before {
+    content: attr(fontIcon);
+  }
 }
 
 // Icons that will be mirrored in RTL.
