@@ -7,11 +7,11 @@
  */
 
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
-import {Injector, NgModuleRef, RendererType2, ViewEncapsulation} from '../../src/core';
+
+import {Component, Injector, Input, NgModuleRef, Output, RendererType2, ViewEncapsulation} from '../../src/core';
 import {ComponentFactory} from '../../src/linker/component_factory';
 import {RendererFactory2} from '../../src/render/api';
 import {injectComponentFactoryResolver} from '../../src/render3/component_ref';
-import {AttributeMarker, ɵɵdefineComponent} from '../../src/render3/index';
 import {domRendererFactory3, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 
@@ -20,15 +20,12 @@ describe('ComponentFactory', () => {
 
   describe('constructor()', () => {
     it('should correctly populate default properties', () => {
+      @Component({
+        selector: 'test[foo], bar',
+        standalone: true,
+        template: '',
+      })
       class TestComponent {
-        static ɵfac = () => new TestComponent();
-        static ɵcmp = ɵɵdefineComponent({
-          type: TestComponent,
-          selectors: [['test', 'foo', ''], ['bar']],
-          decls: 0,
-          vars: 0,
-          template: () => undefined,
-        });
       }
 
       const cf = cfr.resolveComponentFactory(TestComponent);
@@ -41,25 +38,23 @@ describe('ComponentFactory', () => {
     });
 
     it('should correctly populate defined properties', () => {
+      @Component({
+        selector: 'test[foo], bar',
+        standalone: true,
+        template: `
+          <ng-content></ng-content>
+          <ng-content select="a"></ng-content>
+          <ng-content select="b"></ng-content>
+        `,
+      })
       class TestComponent {
-        static ɵfac = () => new TestComponent();
-        static ɵcmp = ɵɵdefineComponent({
-          type: TestComponent,
-          encapsulation: ViewEncapsulation.None,
-          selectors: [['test', 'foo', ''], ['bar']],
-          decls: 0,
-          vars: 0,
-          template: () => undefined,
-          ngContentSelectors: ['*', 'a', 'b'],
-          inputs: {
-            in1: 'in1',
-            in2: ['input-attr-2', 'in2'],
-          },
-          outputs: {
-            out1: 'out1',
-            out2: 'output-attr-2',
-          },
-        });
+        @Input() in1: unknown;
+
+        @Input('input-attr-2') in2: unknown;
+
+        @Output() out1: unknown;
+
+        @Output('output-attr-2') out2: unknown;
       }
 
       const cf = cfr.resolveComponentFactory(TestComponent);
@@ -89,17 +84,15 @@ describe('ComponentFactory', () => {
           jasmine.createSpy('RendererFactory2#createRenderer').and.returnValue(document),
       createRenderer3Spy = spyOn(domRendererFactory3, 'createRenderer').and.callThrough();
 
+      @Component({
+        selector: 'test',
+        template: '...',
+        host: {
+          'class': 'HOST_COMPONENT',
+        },
+        encapsulation: ViewEncapsulation.None
+      })
       class TestComponent {
-        static ɵfac = () => new TestComponent();
-        static ɵcmp = ɵɵdefineComponent({
-          type: TestComponent,
-          encapsulation: ViewEncapsulation.None,
-          selectors: [['test']],
-          decls: 0,
-          vars: 0,
-          template: () => undefined,
-          hostAttrs: [AttributeMarker.Classes, 'HOST_COMPONENT']
-        });
       }
 
       cf = cfr.resolveComponentFactory(TestComponent);
