@@ -113,6 +113,10 @@ Command syntax is shown as follows:
 Boolean options have two forms: `--this-option` sets the flag to `true`, `--no-this-option` sets it to `false`.
 If neither option is supplied, the flag remains in its default state, as listed in the reference documentation.
 
+### Array options
+
+Array options can be provided in two forms: `--option value1 value2` or `--option value1 --option value2`.
+
 ### Relative paths
 
 Options that specify files can be given as absolute paths, or as paths relative to the current working directory, which is generally either the workspace or project root.
