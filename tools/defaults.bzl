@@ -14,6 +14,7 @@ load("@npm//@angular/dev-infra-private/bazel/http-server:index.bzl", _http_serve
 load("@npm//@angular/dev-infra-private/bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm//@angular/dev-infra-private/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
+load("@npm//@angular/dev-infra-private/bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@npm//@angular/dev-infra-private/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 
@@ -27,6 +28,7 @@ _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP = "//packages/bazel/src/ng_package:rollup_fo
 esbuild = _esbuild
 esbuild_config = _esbuild_config
 http_server = _http_server
+extract_types = _extract_types
 
 # Packages which are versioned together on npm
 ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
@@ -459,14 +461,14 @@ def jasmine_node_test(bootstrap = [], **kwargs):
     templated_args = ["--nobazel_run_linker"] + kwargs.pop("templated_args", [])
 
     for label in bootstrap:
-        deps += [label]
-        templated_args += ["--node_options=--require=$$(rlocation $(rootpath %s))" % label]
+        deps.append(label)
+        templated_args.append("--node_options=--require=$$(rlocation $(rootpath %s))" % label)
         if label.endswith("_es2015"):
             # If this label is a filegroup derived from a ts_library then automatically
             # add the ts_library target (which is the label sans `_es2015`) to deps so we pull
             # in all of its transitive deps. This removes the need for duplicate deps on the
             # target and makes the usage of this rule less verbose.
-            deps += [label[:-len("_es2015")]]
+            deps.append(label[:-len("_es2015")])
 
     _jasmine_node_test(
         deps = deps,
