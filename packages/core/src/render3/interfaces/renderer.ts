@@ -17,6 +17,7 @@
 
 import {RendererStyleFlags2, RendererType2} from '../../render/api_flags';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../../util/security/trusted_type_defs';
+
 import {getDocument} from './document';
 import {RComment, RElement, RNode, RText} from './renderer_dom';
 
@@ -105,8 +106,20 @@ export interface RendererFactory3 {
   end?(): void;
 }
 
+let renderer3Enabled = false;
+
+export function enableRenderer3() {
+  renderer3Enabled = true;
+}
+
 export const domRendererFactory3: RendererFactory3 = {
   createRenderer: (hostElement: RElement|null, rendererType: RendererType2|null): Renderer3 => {
+    if (!renderer3Enabled) {
+      throw new Error(
+          ngDevMode ?
+              `Renderer3 is not supported. This problem is likely caused by some component in the hierarchy was constructed without a correct parent injector.` :
+              'Renderer3 disabled');
+    }
     return getDocument();
   }
 };

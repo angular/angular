@@ -150,9 +150,6 @@
     "name": "DIMENSIONAL_PROP_SET"
   },
   {
-    "name": "DOCUMENT"
-  },
-  {
     "name": "DOCUMENT2"
   },
   {
@@ -549,9 +546,6 @@
     "name": "_randomChar"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "_testabilityGetter"
   },
   {
@@ -640,6 +634,9 @@
   },
   {
     "name": "collectNativeNodes"
+  },
+  {
+    "name": "componentDefCount"
   },
   {
     "name": "computeStaticStyling"

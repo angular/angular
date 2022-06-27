@@ -165,9 +165,6 @@
     "name": "_injectImplementation"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "_symbolIterator"
   },
   {
@@ -238,6 +235,9 @@
   },
   {
     "name": "collectStylingFromTAttrs"
+  },
+  {
+    "name": "componentDefCount"
   },
   {
     "name": "computeStaticStyling"
@@ -697,6 +697,9 @@
   },
   {
     "name": "renderView"
+  },
+  {
+    "name": "renderer3Enabled"
   },
   {
     "name": "resetPreOrderHookFlags"

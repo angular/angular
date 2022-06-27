@@ -66,9 +66,6 @@
     "name": "_injectImplementation"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "addComponentLogic"
   },
   {
@@ -97,6 +94,9 @@
   },
   {
     "name": "classIndexOf"
+  },
+  {
+    "name": "componentDefCount"
   },
   {
     "name": "computeStaticStyling"
@@ -364,6 +364,9 @@
   },
   {
     "name": "renderView"
+  },
+  {
+    "name": "renderer3Enabled"
   },
   {
     "name": "resetPreOrderHookFlags"
