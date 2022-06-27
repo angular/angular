@@ -1,6 +1,6 @@
 import { APP_BASE_HREF } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, flushMicrotasks, inject, TestBed, tick } from '@angular/core/testing';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -19,7 +19,6 @@ import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
 import { ScrollService } from 'app/shared/scroll.service';
 import { SearchResultsComponent } from 'app/shared/search-results/search-results.component';
-import { SelectComponent } from 'app/shared/select/select.component';
 import { TocItem, TocService } from 'app/shared/toc.service';
 import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';
 import { of, Subject, timer } from 'rxjs';
@@ -381,68 +380,52 @@ describe('AppComponent', () => {
       });
     });
 
-    describe('SideNav version selector', () => {
-      let selectElement: DebugElement;
-      let selectComponent: SelectComponent;
-
-      async function setupSelectorForTesting(mode?: string) {
+    describe('SideNav version navigation', () => {
+      async function setupVersionsNavForTesting(mode?: string) {
         createTestingModule('a/b', mode);
         await initializeTest();
         component.onResize(dockSideNavWidth + 1); // wide view
-        selectElement = fixture.debugElement.query(By.directive(SelectComponent));
-        selectComponent = selectElement.componentInstance;
       }
 
-      it('should select the version that matches the deploy mode', async () => {
-        await setupSelectorForTesting();
-        expect(selectComponent.selected.title).toContain('stable');
-        await setupSelectorForTesting('next');
-        expect(selectComponent.selected.title).toContain('next');
-        await setupSelectorForTesting('archive');
-        expect(selectComponent.selected.title).toContain('v4');
+      function getAllVersionUrls() {
+        return (component.docVersions?.[0].children ?? []).map(
+          item => item?.url
+        ) as string[];
+      }
+
+      it('should present as current the version that matches the deploy mode', async () => {
+        await setupVersionsNavForTesting();
+        expect(component.currentDocsVersionNode?.title).toContain('stable');
+        await setupVersionsNavForTesting('next');
+        expect(component.currentDocsVersionNode?.title).toContain('next');
+        await setupVersionsNavForTesting('archive');
+        expect(component.currentDocsVersionNode?.title).toContain('v4');
       });
 
-      it('should add the current raw version string to the selected version', async () => {
-        await setupSelectorForTesting();
-        expect(selectComponent.selected.title).toContain(`(v${component.versionInfo.raw})`);
-        await setupSelectorForTesting('next');
-        expect(selectComponent.selected.title).toContain(`(v${component.versionInfo.raw})`);
-        await setupSelectorForTesting('archive');
-        expect(selectComponent.selected.title).toContain(`(v${component.versionInfo.raw})`);
+      it('should provide the correct url for each nav item', async () => {
+        await setupVersionsNavForTesting();
+        const allVersionUrls = getAllVersionUrls();
+        expect(allVersionUrls.length).toBeGreaterThan(0);
+        allVersionUrls.forEach(versionUrl =>
+          expect(versionUrl).toMatch(/^https:\/\/.*\/a\/b$/)
+        );
       });
 
-      // Older docs versions have an href
-      it('should navigate when change to a version with a url', async () => {
-        await setupSelectorForTesting();
-        locationService.urlSubject.next('new-page?id=1#section-1');
-        const versionWithUrlIndex = component.docVersions.findIndex(v => !!v.url);
-        const versionWithUrl = component.docVersions[versionWithUrlIndex];
-        const versionWithUrlAndPage = `${versionWithUrl.url}new-page?id=1#section-1`;
-        selectElement.triggerEventHandler('change', { option: versionWithUrl, index: versionWithUrlIndex});
-        expect(locationService.go).toHaveBeenCalledWith(versionWithUrlAndPage);
-      });
+      it('should update the urls on page changes', async () => {
+        function testUrlsOnRoute(route: string) {
+          locationService.urlSubject.next(route);
+          const allVersionUrls = getAllVersionUrls();
+          expect(allVersionUrls.length).toBeGreaterThan(0);
+          const escapedRoute = route.replace('?', '\\?');
+          allVersionUrls.forEach(versionUrl =>
+            expect(versionUrl).toMatch(new RegExp(`^https://.*/${escapedRoute}`))
+          );
+        }
 
-      it('should not navigate when change to a version without a url', async () => {
-        await setupSelectorForTesting();
-        const versionWithoutUrlIndex = component.docVersions.length;
-        const versionWithoutUrl = component.docVersions[versionWithoutUrlIndex] = { title: 'foo' };
-        selectElement.triggerEventHandler('change', { option: versionWithoutUrl, index: versionWithoutUrlIndex });
-        expect(locationService.go).not.toHaveBeenCalled();
-      });
-
-      it('should navigate when change to a version with a url that does not end with `/`', async () => {
-        await setupSelectorForTesting();
-        locationService.urlSubject.next('docs#section-1');
-        const versionWithoutSlashIndex = component.docVersions.length;
-        const versionWithoutSlashUrl = (component.docVersions[versionWithoutSlashIndex] = {
-          url: 'https://next.angular.io',
-          title: 'foo',
-        });
-        selectElement.triggerEventHandler('change', {
-          option: versionWithoutSlashUrl,
-          index: versionWithoutSlashIndex,
-        });
-        expect(locationService.go).toHaveBeenCalledWith('https://next.angular.io/docs#section-1');
+        await setupVersionsNavForTesting();
+        testUrlsOnRoute('new-page?id=1#section-1');
+        testUrlsOnRoute('new-new-page?id=2#section-2');
+        testUrlsOnRoute('new/new-new-page');
       });
     });
 

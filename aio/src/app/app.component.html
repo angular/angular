@@ -64,7 +64,7 @@
     <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNodes?.SideNav" [isWide]="dockSideNav" navLabel="guides and docs"></aio-nav-menu>
 
     <div class="doc-version">
-      <aio-select (optionsToggled)="scrollSelectIntoView()" (change)="onDocVersionChange($event.index)" [options]="docVersions" [selected]="currentDocVersion"></aio-select>
+      <aio-nav-menu [nodes]="docVersions" [isWide]="true" [currentNode]="currentDocsVersionNode" navLabel="docs versions"></aio-nav-menu>
     </div>
   </mat-sidenav>
 
