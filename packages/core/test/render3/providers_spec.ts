@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component as _Component, ComponentFactoryResolver, ElementRef, Injectable as _Injectable, InjectFlags, InjectionToken, InjectorType, Provider, RendererFactory2, Type, ViewContainerRef, ɵcreateInjector as createInjector, ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵdefineNgModule, ɵɵinject} from '../../src/core';
+import {Component as _Component, ComponentFactoryResolver, ElementRef, Injectable as _Injectable, InjectFlags, InjectionToken, NgModule, RendererFactory2, Type, ViewContainerRef, ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵdefineNgModule, ɵɵinject} from '../../src/core';
 import {forwardRef} from '../../src/di/forward_ref';
-import {injectComponentFactoryResolver, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵgetInheritedFactory, ɵɵProvidersFeature, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
+import {injectComponentFactoryResolver, ɵɵdefineComponent, ɵɵdirectiveInject, ɵɵelement, ɵɵgetInheritedFactory, ɵɵProvidersFeature, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {getInjector} from '../../src/render3/util/discovery_utils';
@@ -380,8 +380,10 @@ describe('providers', () => {
   });
 
   describe('single', () => {
+    @NgModule({
+      providers: [{provide: String, useValue: 'From module'}],
+    })
     class MyModule {
-      static ɵinj = ɵɵdefineInjector({providers: [{provide: String, useValue: 'From module'}]});
     }
 
     describe('without directives', () => {
@@ -646,9 +648,10 @@ describe('providers', () => {
   });
 
   describe('multi', () => {
+    @NgModule({
+      providers: [{provide: String, useValue: 'From module', multi: true}],
+    })
     class MyModule {
-      static ɵinj =
-          ɵɵdefineInjector({providers: [{provide: String, useValue: 'From module', multi: true}]});
     }
 
     describe('without directives', () => {
@@ -963,8 +966,10 @@ describe('providers', () => {
     });
 
     it('should work with a module', () => {
+      @NgModule({
+        providers: [{provide: String, useValue: 'From module'}],
+      })
       class MyModule {
-        static ɵinj = ɵɵdefineInjector({providers: [{provide: String, useValue: 'From module'}]});
       }
 
       @Injectable({providedIn: MyModule})
@@ -1172,8 +1177,10 @@ describe('providers', () => {
   });
 
   describe('injection flags', () => {
+    @NgModule({
+      providers: [{provide: String, useValue: 'Module'}],
+    })
     class MyModule {
-      static ɵinj = ɵɵdefineInjector({providers: [{provide: String, useValue: 'Module'}]});
     }
     it('should not fall through to ModuleInjector if flags limit the scope', () => {
       expectProvidersScenario({
@@ -1292,7 +1299,9 @@ describe('providers', () => {
   describe('getInheritedFactory on class with custom decorator', () => {
     function addFoo() {
       return (constructor: Type<any>): any => {
-        const decoratedClass = class Extender extends constructor { foo = 'bar'; };
+        const decoratedClass = class Extender extends constructor {
+          foo = 'bar';
+        };
         return decoratedClass;
       };
     }

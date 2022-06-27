@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectorType, Provider, ɵcreateInjector as createInjector, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵProvidersFeature, ɵɵtext} from '@angular/core';
-import {RenderFlags} from '@angular/core/src/render3';
-import {ComponentFixture} from '@angular/core/test/render3/render_util';
+import {Component, Directive, Provider, Type, ViewEncapsulation} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 
 export interface ComponentTest {
   providers?: Provider[];
@@ -24,154 +23,125 @@ export function expectProvidersScenario(defs: {
   parent?: ComponentTest,
   viewChild?: ComponentTest,
   contentChild?: ComponentTest,
-  ngModule?: InjectorType<any>,
+  ngModule?: Type<any>,
 }): void {
-  function testComponentInjection<T>(def: ComponentTest|undefined, instance: T): T {
-    if (def) {
-      def.componentAssertion && def.componentAssertion();
-    }
-    return instance;
-  }
-
-  function testDirectiveInjection<T>(def: ComponentTest|undefined, instance: T): T {
-    if (def) {
-      def.directiveAssertion && def.directiveAssertion();
-    }
-    return instance;
-  }
+  @Component({
+    standalone: true,
+    selector: 'view-child',
+    template: 'view-child',
+    encapsulation: ViewEncapsulation.None,
+    providers: defs.viewChild?.providers ?? [],
+    viewProviders: defs.viewChild?.viewProviders ?? [],
+  })
 
   class ViewChildComponent {
-    static ɵfac = () => testComponentInjection(defs.viewChild, new ViewChildComponent());
-    static ɵcmp = ɵɵdefineComponent({
-      type: ViewChildComponent,
-      selectors: [['view-child']],
-      decls: 1,
-      vars: 0,
-      template:
-          function(fs: RenderFlags, ctx: ViewChildComponent) {
-            if (fs & RenderFlags.Create) {
-              ɵɵtext(0, 'view-child');
-            }
-          },
-      features: defs.viewChild &&
-          [ɵɵProvidersFeature(defs.viewChild.providers || [], defs.viewChild.viewProviders || [])]
-    });
+    constructor() {
+      defs.viewChild?.componentAssertion?.();
+    }
   }
+
+  @Directive({
+    standalone: true,
+    selector: 'view-child',
+    providers: defs.viewChild?.directiveProviders ?? [],
+  })
 
   class ViewChildDirective {
-    static ɵfac = () => testDirectiveInjection(defs.viewChild, new ViewChildDirective());
-    static ɵdir = ɵɵdefineDirective({
-      type: ViewChildDirective,
-      selectors: [['view-child']],
-      features: defs.viewChild && [ɵɵProvidersFeature(defs.viewChild.directiveProviders || [])],
-    });
+    constructor() {
+      defs.viewChild?.directiveAssertion?.();
+    }
   }
 
+  @Component({
+    standalone: true,
+    selector: 'content-child',
+    template: 'content-child',
+    encapsulation: ViewEncapsulation.None,
+    providers: defs.contentChild?.providers ?? [],
+    viewProviders: defs.contentChild?.viewProviders ?? [],
+  })
   class ContentChildComponent {
-    static ɵfac =
-        () => {
-          return testComponentInjection(defs.contentChild, new ContentChildComponent());
-        }
-
-    static ɵcmp = ɵɵdefineComponent({
-      type: ContentChildComponent,
-      selectors: [['content-child']],
-      decls: 1,
-      vars: 0,
-      template:
-          function(fs: RenderFlags, ctx: ParentComponent) {
-            if (fs & RenderFlags.Create) {
-              ɵɵtext(0, 'content-child');
-            }
-          },
-      features: defs.contentChild &&
-          [ɵɵProvidersFeature(
-              defs.contentChild.providers || [], defs.contentChild.viewProviders || [])],
-    });
+    constructor() {
+      defs.contentChild?.componentAssertion?.();
+    }
   }
 
+  @Directive({
+    standalone: true,
+    selector: 'content-child',
+    providers: defs.contentChild?.directiveProviders ?? [],
+  })
   class ContentChildDirective {
-    static ɵfac =
-        () => {
-          return testDirectiveInjection(defs.contentChild, new ContentChildDirective());
-        }
-
-    static ɵdir = ɵɵdefineDirective({
-      type: ContentChildDirective,
-      selectors: [['content-child']],
-      features: defs.contentChild &&
-          [ɵɵProvidersFeature(defs.contentChild.directiveProviders || [])],
-    });
+    constructor() {
+      defs.contentChild?.directiveAssertion?.();
+    }
   }
 
 
+  @Component({
+    standalone: true,
+    imports: [ViewChildComponent, ViewChildDirective],
+    selector: 'parent',
+    template: '<view-child></view-child>',
+    encapsulation: ViewEncapsulation.None,
+    providers: defs.parent?.providers ?? [],
+    viewProviders: defs.parent?.viewProviders ?? [],
+  })
   class ParentComponent {
-    static ɵfac = () => testComponentInjection(defs.parent, new ParentComponent());
-    static ɵcmp = ɵɵdefineComponent({
-      type: ParentComponent,
-      selectors: [['parent']],
-      decls: 1,
-      vars: 0,
-      template:
-          function(fs: RenderFlags, ctx: ParentComponent) {
-            if (fs & RenderFlags.Create) {
-              ɵɵelement(0, 'view-child');
-            }
-          },
-      features: defs.parent &&
-          [ɵɵProvidersFeature(defs.parent.providers || [], defs.parent.viewProviders || [])],
-      dependencies: [ViewChildComponent, ViewChildDirective]
-    });
+    constructor() {
+      defs.parent?.componentAssertion?.();
+    }
   }
 
+  @Directive({
+    standalone: true,
+    selector: 'parent',
+    providers: defs.parent?.directiveProviders ?? [],
+  })
   class ParentDirective {
-    static ɵfac = () => testDirectiveInjection(defs.parent, new ParentDirective());
-    static ɵdir = ɵɵdefineDirective({
-      type: ParentDirective,
-      selectors: [['parent']],
-      features: defs.parent && [ɵɵProvidersFeature(defs.parent.directiveProviders || [])],
-    });
+    constructor() {
+      defs.parent?.directiveAssertion?.();
+    }
   }
-
+  @Directive({
+    standalone: true,
+    selector: 'parent',
+    providers: defs.parent?.directive2Providers ?? [],
+  })
   class ParentDirective2 {
-    static ɵfac = () => testDirectiveInjection(defs.parent, new ParentDirective2());
-    static ɵdir = ɵɵdefineDirective({
-      type: ParentDirective2,
-      selectors: [['parent']],
-      features: defs.parent && [ɵɵProvidersFeature(defs.parent.directive2Providers || [])],
-    });
+    constructor() {
+      defs.parent?.directiveAssertion?.();
+    }
   }
 
+  @Component({
+    standalone: true,
+    imports: [
+      ParentComponent,
+      // Note: tests are sensitive to the ordering here - the providers from `ParentDirective`
+      // should override the providers from `ParentDirective2`.
+      ParentDirective2,
+      ParentDirective,
+      ContentChildComponent,
+      ContentChildDirective,
+    ],
+    template: '<parent><content-child></content-child></parent>',
+    providers: defs.app?.providers ?? [],
+    viewProviders: defs.app?.viewProviders ?? [],
+  })
 
   class App {
-    static ɵfac = () => testComponentInjection(defs.app, new App());
-    static ɵcmp = ɵɵdefineComponent({
-      type: App,
-      selectors: [['app']],
-      decls: 2,
-      vars: 0,
-      template:
-          function(fs: RenderFlags, ctx: App) {
-            if (fs & RenderFlags.Create) {
-              ɵɵelementStart(0, 'parent');
-              ɵɵelement(1, 'content-child');
-              ɵɵelementEnd();
-            }
-          },
-      features: defs.app &&
-          [ɵɵProvidersFeature(defs.app.providers || [], defs.app.viewProviders || [])],
-      dependencies:
-          [
-            ParentComponent, ParentDirective2, ParentDirective, ContentChildComponent,
-            ContentChildDirective
-          ]
-    });
+    constructor() {
+      defs.app?.componentAssertion?.();
+    }
   }
 
-
-  const fixture = new ComponentFixture(
-      App, {injector: defs.ngModule ? createInjector(defs.ngModule) : undefined});
-  expect(fixture.html).toEqual('<parent><view-child>view-child</view-child></parent>');
-
+  TestBed.configureTestingModule({
+    imports: defs.ngModule ? [defs.ngModule] : [],
+  });
+  const fixture = TestBed.createComponent(App);
+  fixture.detectChanges();
+  expect(fixture.nativeElement.innerHTML)
+      .toEqual('<parent><view-child>view-child</view-child></parent>');
   fixture.destroy();
 }
