@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load("//aio/tools:defaults.bzl", "nodejs_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -7,13 +7,11 @@ nodejs_binary(
     data = [
         "exampleZipper.mjs",
         "//aio/tools/transforms/examples-package",
+        "//aio/tools/transforms/helpers",
         "@aio_npm//archiver",
         "@aio_npm//canonical-path",
         "@aio_npm//fs-extra",
         "@aio_npm//globby",
     ],
     entry_point = "generateZip.mjs",
-    # --preserve-symlinks-main is not enabled by default (see https://github.com/bazelbuild/rules_nodejs/pull/2176)
-    # However it seems to be required for mjs entry points to resolve node_modules within the sandbox.
-    templated_args = ["--node_options=--preserve-symlinks-main"],
 )
