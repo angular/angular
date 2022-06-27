@@ -16,6 +16,102 @@ function getNoOfNativeListeners(): number {
 }
 
 describe('event listeners', () => {
+  describe('even handler', () => {
+    it('should be able to access a property called $event using `this`', () => {
+      let eventVariable: number|undefined;
+      let eventObject: MouseEvent|undefined;
+
+      @Component({
+        template: `
+          <button (click)="clicked(this.$event, $event)">Click me!</button>
+        `,
+      })
+      class MyComp {
+        $event = 10;
+
+        clicked(value: number, event: MouseEvent) {
+          eventVariable = value;
+          eventObject = event;
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      fixture.nativeElement.querySelector('button').click();
+      fixture.detectChanges();
+
+      expect(eventVariable).toBe(10);
+      expect(eventObject?.type).toBe('click');
+    });
+
+    it('should be able to use a keyed write on `this` from a listener inside an ng-template',
+       () => {
+         @Component({
+           template: `
+          <ng-template #template>
+            <button (click)="this['mes' + 'sage'] = 'hello'">Click me</button>
+          </ng-template>
+  
+          <ng-container [ngTemplateOutlet]="template"></ng-container>
+        `
+         })
+         class MyComp {
+           message = '';
+         }
+
+         TestBed.configureTestingModule({declarations: [MyComp], imports: [CommonModule]});
+         const fixture = TestBed.createComponent(MyComp);
+         fixture.detectChanges();
+         const button = fixture.nativeElement.querySelector('button');
+         button.click();
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.message).toBe('hello');
+       });
+
+    it('should reference the correct context object if it is swapped out', () => {
+      @Component({
+        template: `
+          <ng-template let-obj #template>
+            <button (click)="obj.value = obj.value + '!'">Change</button>
+          </ng-template>
+  
+          <ng-container *ngTemplateOutlet="template; context: {$implicit: current}"></ng-container>
+        `
+      })
+      class MyComp {
+        one = {value: 'one'};
+        two = {value: 'two'};
+        current = this.one;
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComp], imports: [CommonModule]});
+      const fixture = TestBed.createComponent(MyComp);
+      const instance = fixture.componentInstance;
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('button');
+
+      expect(instance.one.value).toBe('one');
+      expect(instance.two.value).toBe('two');
+
+      button.click();
+      fixture.detectChanges();
+
+      expect(instance.one.value).toBe('one!');
+      expect(instance.two.value).toBe('two');
+
+      instance.current = instance.two;
+      fixture.detectChanges();
+
+      button.click();
+      fixture.detectChanges();
+
+      expect(instance.one.value).toBe('one!');
+      expect(instance.two.value).toBe('two!');
+    });
+  });
+
   describe('coalescing', () => {
     @Component({
       selector: 'with-clicks-cmpt',
@@ -285,302 +381,213 @@ describe('event listeners', () => {
     });
   });
 
-  it('should destroy listeners when view is removed', () => {
-    @Component({
-      selector: 'my-comp',
-      template: `
-        <button *ngIf="visible" (click)="count()">Click me!</button>
-      `,
-    })
-    class MyComp {
-      visible = true;
-      counter = 0;
-      count() {
-        this.counter++;
-      }
-    }
-
-    TestBed.configureTestingModule({declarations: [MyComp]});
-    const fixture = TestBed.createComponent(MyComp);
-    fixture.detectChanges();
-
-    const comp = fixture.componentInstance;
-
-    const button = fixture.nativeElement.querySelector('button');
-    button.click();
-    expect(comp.counter).toBe(1);
-
-    comp.visible = false;
-    fixture.detectChanges();
-
-    button.click();
-    expect(comp.counter).toBe(1);
-  });
-
-  it('should destroy listeners when views generated using *ngFor are removed', () => {
-    let counter = 0;
-    @Component({
-      selector: 'my-comp',
-      template: `
-        <button *ngFor="let button of buttons" (click)="count()">Click me!</button>
-      `,
-    })
-    class MyComp {
-      buttons = [1, 2];
-      count() {
-        counter++;
-      }
-    }
-
-    TestBed.configureTestingModule({declarations: [MyComp]});
-    const fixture = TestBed.createComponent(MyComp);
-    fixture.detectChanges();
-
-    const comp = fixture.componentInstance;
-
-    const buttons = fixture.nativeElement.querySelectorAll('button');
-    buttons[0].click();
-    buttons[1].click();
-    expect(counter).toBe(2);
-
-    comp.buttons = [];
-    fixture.detectChanges();
-
-    buttons[0].click();
-    buttons[1].click();
-    expect(counter).toBe(2);
-  });
-
-  it('should destroy listeners when nested view is removed', () => {
-    @Component({
-      selector: 'my-comp',
-      template: `
-        <ng-container *ngIf="isSectionVisible">
-          Click to submit a form:
-          <button *ngIf="isButtonVisible" (click)="count()">Click me!</button>
-        </ng-container>
-      `,
-    })
-    class MyComp {
-      isSectionVisible = true;
-      isButtonVisible = true;
-      counter = 0;
-      count() {
-        this.counter++;
-      }
-    }
-
-    TestBed.configureTestingModule({declarations: [MyComp]});
-    const fixture = TestBed.createComponent(MyComp);
-    fixture.detectChanges();
-
-    const comp = fixture.componentInstance;
-    const button = fixture.nativeElement.querySelector('button');
-    button.click();
-    expect(comp.counter).toBe(1);
-
-    comp.isButtonVisible = false;
-    fixture.detectChanges();
-
-    button.click();
-    expect(comp.counter).toBe(1);
-
-    comp.isSectionVisible = false;
-    fixture.detectChanges();
-
-    button.click();
-    expect(comp.counter).toBe(1);
-  });
-
-  it('should bind global event listeners on an ng-container directive host', () => {
-    let clicks = 0;
-
-    @Directive({selector: '[add-global-listener]'})
-    class AddGlobalListener {
-      @HostListener('document:click')
-      handleClick() {
-        clicks++;
-      }
-    }
-
-    @Component({
-      template: `
-            <ng-container add-global-listener>
-              <button>Click me!</button>
-            </ng-container>
-          `
-    })
-    class MyComp {
-    }
-
-    TestBed.configureTestingModule({declarations: [MyComp, AddGlobalListener]});
-    const fixture = TestBed.createComponent(MyComp);
-    fixture.detectChanges();
-    const button = fixture.nativeElement.querySelector('button');
-    button.click();
-    fixture.detectChanges();
-    expect(clicks).toBe(1);
-  });
-
-  it('should bind global event listeners on an ng-template directive host', () => {
-    let clicks = 0;
-
-    @Directive({selector: '[add-global-listener]'})
-    class AddGlobalListener {
-      @HostListener('document:click')
-      handleClick() {
-        clicks++;
-      }
-    }
-
-    @Component({
-      template: `
-            <ng-template #template add-global-listener>
-              <button>Click me!</button>
-            </ng-template>
-
-            <ng-container [ngTemplateOutlet]="template"></ng-container>
-          `
-    })
-    class MyComp {
-    }
-
-    TestBed.configureTestingModule(
-        {declarations: [MyComp, AddGlobalListener], imports: [CommonModule]});
-    const fixture = TestBed.createComponent(MyComp);
-    fixture.detectChanges();
-    const button = fixture.nativeElement.querySelector('button');
-    button.click();
-    fixture.detectChanges();
-    expect(clicks).toBe(1);
-  });
-
-  it('should bind global event listeners on a structural directive host', () => {
-    let clicks = 0;
-
-    @Directive({selector: '[add-global-listener]'})
-    class AddGlobalListener implements OnInit {
-      @HostListener('document:click')
-      handleClick() {
-        clicks++;
+  describe('destroy', () => {
+    it('should destroy listeners when view is removed', () => {
+      @Component({
+        selector: 'my-comp',
+        template: `
+          <button *ngIf="visible" (click)="count()">Click me!</button>
+        `,
+      })
+      class MyComp {
+        visible = true;
+        counter = 0;
+        count() {
+          this.counter++;
+        }
       }
 
-      constructor(private _vcr: ViewContainerRef, private _templateRef: TemplateRef<any>) {}
+      TestBed.configureTestingModule({declarations: [MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
 
-      ngOnInit() {
-        this._vcr.createEmbeddedView(this._templateRef);
+      const comp = fixture.componentInstance;
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      expect(comp.counter).toBe(1);
+
+      comp.visible = false;
+      fixture.detectChanges();
+
+      button.click();
+      expect(comp.counter).toBe(1);
+    });
+
+    it('should destroy listeners when views generated using *ngFor are removed', () => {
+      let counter = 0;
+      @Component({
+        selector: 'my-comp',
+        template: `
+          <button *ngFor="let button of buttons" (click)="count()">Click me!</button>
+        `,
+      })
+      class MyComp {
+        buttons = [1, 2];
+        count() {
+          counter++;
+        }
       }
-    }
 
-    @Component({
-      template: `
-            <div *add-global-listener>
-              <button>Click me!</button>
-            </div>
-          `
-    })
-    class MyComp {
-    }
+      TestBed.configureTestingModule({declarations: [MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
 
-    TestBed.configureTestingModule({declarations: [MyComp, AddGlobalListener]});
-    const fixture = TestBed.createComponent(MyComp);
-    fixture.detectChanges();
-    const button = fixture.nativeElement.querySelector('button');
-    button.click();
-    fixture.detectChanges();
-    expect(clicks).toBe(1);
-  });
+      const comp = fixture.componentInstance;
 
-  it('should be able to access a property called $event using `this`', () => {
-    let eventVariable: number|undefined;
-    let eventObject: MouseEvent|undefined;
+      const buttons = fixture.nativeElement.querySelectorAll('button');
+      buttons[0].click();
+      buttons[1].click();
+      expect(counter).toBe(2);
 
-    @Component({
-      template: `
-        <button (click)="clicked(this.$event, $event)">Click me!</button>
-      `,
-    })
-    class MyComp {
-      $event = 10;
+      comp.buttons = [];
+      fixture.detectChanges();
 
-      clicked(value: number, event: MouseEvent) {
-        eventVariable = value;
-        eventObject = event;
+      buttons[0].click();
+      buttons[1].click();
+      expect(counter).toBe(2);
+    });
+
+    it('should destroy listeners when nested view is removed', () => {
+      @Component({
+        selector: 'my-comp',
+        template: `
+          <ng-container *ngIf="isSectionVisible">
+            Click to submit a form:
+            <button *ngIf="isButtonVisible" (click)="count()">Click me!</button>
+          </ng-container>
+        `,
+      })
+      class MyComp {
+        isSectionVisible = true;
+        isButtonVisible = true;
+        counter = 0;
+        count() {
+          this.counter++;
+        }
       }
-    }
 
-    TestBed.configureTestingModule({declarations: [MyComp]});
-    const fixture = TestBed.createComponent(MyComp);
-    fixture.detectChanges();
-    fixture.nativeElement.querySelector('button').click();
-    fixture.detectChanges();
+      TestBed.configureTestingModule({declarations: [MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
 
-    expect(eventVariable).toBe(10);
-    expect(eventObject?.type).toBe('click');
+      const comp = fixture.componentInstance;
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      expect(comp.counter).toBe(1);
+
+      comp.isButtonVisible = false;
+      fixture.detectChanges();
+
+      button.click();
+      expect(comp.counter).toBe(1);
+
+      comp.isSectionVisible = false;
+      fixture.detectChanges();
+
+      button.click();
+      expect(comp.counter).toBe(1);
+    });
   });
 
-  it('should be able to use a keyed write on `this` from a listener inside an ng-template', () => {
-    @Component({
-      template: `
-        <ng-template #template>
-          <button (click)="this['mes' + 'sage'] = 'hello'">Click me</button>
-        </ng-template>
+  describe('global event listeners on special elements', () => {
+    it('should bind global event listeners on an ng-container directive host', () => {
+      let clicks = 0;
 
-        <ng-container [ngTemplateOutlet]="template"></ng-container>
-      `
-    })
-    class MyComp {
-      message = '';
-    }
+      @Directive({selector: '[add-global-listener]'})
+      class AddGlobalListener {
+        @HostListener('document:click')
+        handleClick() {
+          clicks++;
+        }
+      }
 
-    TestBed.configureTestingModule({declarations: [MyComp], imports: [CommonModule]});
-    const fixture = TestBed.createComponent(MyComp);
-    fixture.detectChanges();
-    const button = fixture.nativeElement.querySelector('button');
-    button.click();
-    fixture.detectChanges();
+      @Component({
+        template: `
+              <ng-container add-global-listener>
+                <button>Click me!</button>
+              </ng-container>
+            `
+      })
+      class MyComp {
+      }
 
-    expect(fixture.componentInstance.message).toBe('hello');
-  });
+      TestBed.configureTestingModule({declarations: [MyComp, AddGlobalListener]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      fixture.detectChanges();
+      expect(clicks).toBe(1);
+    });
 
-  it('should reference the correct context object if it is swapped out', () => {
-    @Component({
-      template: `
-        <ng-template let-obj #template>
-          <button (click)="obj.value = obj.value + '!'">Change</button>
-        </ng-template>
+    it('should bind global event listeners on an ng-template directive host', () => {
+      let clicks = 0;
 
-        <ng-container *ngTemplateOutlet="template; context: {$implicit: current}"></ng-container>
-      `
-    })
-    class MyComp {
-      one = {value: 'one'};
-      two = {value: 'two'};
-      current = this.one;
-    }
+      @Directive({selector: '[add-global-listener]'})
+      class AddGlobalListener {
+        @HostListener('document:click')
+        handleClick() {
+          clicks++;
+        }
+      }
 
-    TestBed.configureTestingModule({declarations: [MyComp], imports: [CommonModule]});
-    const fixture = TestBed.createComponent(MyComp);
-    const instance = fixture.componentInstance;
-    fixture.detectChanges();
-    const button = fixture.nativeElement.querySelector('button');
+      @Component({
+        template: `
+              <ng-template #template add-global-listener>
+                <button>Click me!</button>
+              </ng-template>
+  
+              <ng-container [ngTemplateOutlet]="template"></ng-container>
+            `
+      })
+      class MyComp {
+      }
 
-    expect(instance.one.value).toBe('one');
-    expect(instance.two.value).toBe('two');
+      TestBed.configureTestingModule(
+          {declarations: [MyComp, AddGlobalListener], imports: [CommonModule]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      fixture.detectChanges();
+      expect(clicks).toBe(1);
+    });
 
-    button.click();
-    fixture.detectChanges();
+    it('should bind global event listeners on a structural directive host', () => {
+      let clicks = 0;
 
-    expect(instance.one.value).toBe('one!');
-    expect(instance.two.value).toBe('two');
+      @Directive({selector: '[add-global-listener]'})
+      class AddGlobalListener implements OnInit {
+        @HostListener('document:click')
+        handleClick() {
+          clicks++;
+        }
 
-    instance.current = instance.two;
-    fixture.detectChanges();
+        constructor(private _vcr: ViewContainerRef, private _templateRef: TemplateRef<any>) {}
 
-    button.click();
-    fixture.detectChanges();
+        ngOnInit() {
+          this._vcr.createEmbeddedView(this._templateRef);
+        }
+      }
 
-    expect(instance.one.value).toBe('one!');
-    expect(instance.two.value).toBe('two!');
+      @Component({
+        template: `
+              <div *add-global-listener>
+                <button>Click me!</button>
+              </div>
+            `
+      })
+      class MyComp {
+      }
+
+      TestBed.configureTestingModule({declarations: [MyComp, AddGlobalListener]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      fixture.detectChanges();
+      expect(clicks).toBe(1);
+    });
   });
 });
