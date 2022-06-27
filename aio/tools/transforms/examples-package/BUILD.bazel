@@ -3,7 +3,6 @@ load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
 
 js_library(
     name = "examples-package",
-    package_name = "aio/tools/examples-package",
     srcs = glob(
         ["**/*.js"],
         exclude = ["**/*.spec.js"],
