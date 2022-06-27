@@ -231,12 +231,11 @@ It will automatically recognize `*.bazel` and `*.bzl` files.
 
 
 ### Remote Build Execution and Remote Caching
-Bazel builds in the Angular repository use a shared cache.  When a build occurs a hash of the inputs is computed
-and checked against available outputs in the shared cache.  If an output is found, it is used as the output for the
+Bazel builds in the Angular repository use a shared cache. When a build occurs a hash of the inputs is computed
+and checked against available outputs in the shared cache. If an output is found, it is used as the output for the
 build action rather than performing the build locally.
 
-> Remote Build Execution requires authentication as a google.com or angular.io account.
+> Remote Build Execution requires authentication as a google.com account.
 
 #### --config=remote flag
-The `--config=remote` flag can be added to enable remote execution of builds.  This flag can be added to
-the `.bazelrc.user` file using the script at `scripts/local-dev/setup-rbe.sh`.
+The `--config=remote` flag can be added to enable remote execution of builds.
