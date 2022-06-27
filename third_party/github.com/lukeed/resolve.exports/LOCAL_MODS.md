@@ -1,0 +1,1 @@
+- `index.js` has been renamed to `index.mjs` so that it's `export` declarations are read correctly by esm scripts
