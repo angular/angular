@@ -1,6 +1,5 @@
-load("//tools:defaults.bzl", "api_golden_test", "pkg_npm", "ts_config", "ts_library")
+load("//tools:defaults.bzl", "api_golden_test", "extract_types", "pkg_npm", "ts_config", "ts_library")
 load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
-load("//tools:extract_typings_rule.bzl", "extract_typings")
 
 # Load ng_perf_flag explicitly from ng_perf.bzl as it's private API, and not exposed to other
 # consumers of @angular/bazel.
@@ -116,7 +115,7 @@ ts_library(
     ],
 )
 
-extract_typings(
+extract_types(
     name = "api_type_definitions",
     deps = PUBLIC_TARGETS,
 )
