@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {Component, destroyPlatform, Inject, Injectable, InjectionToken, NgModule} from '@angular/core';
+import {Component, destroyPlatform, ErrorHandler, Inject, Injectable, InjectionToken, NgModule} from '@angular/core';
 import {inject} from '@angular/core/testing';
 
 import {bootstrapApplication, BrowserModule} from '../../src/browser';
@@ -23,6 +23,13 @@ describe('bootstrapApplication for standalone components', () => {
     destroyPlatform();
     rootEl?.remove();
   });
+
+  class SilentErrorHandler extends ErrorHandler {
+    override handleError() {
+      // the error is already re-thrown by the application ref.
+      // we don't want to print it, but instead catch it in tests.
+    }
+  }
 
   it('should create injector where ambient providers shadow explicit providers', async () => {
     const testToken = new InjectionToken('test token');
@@ -96,7 +103,12 @@ describe('bootstrapApplication for standalone components', () => {
        try {
          await bootstrapApplication(
              StandaloneCmp,
-             {providers: [NeedsAmbientProvider]},
+             {
+               providers: [
+                 {provide: ErrorHandler, useClass: SilentErrorHandler},
+                 NeedsAmbientProvider,
+               ]
+             },
          );
 
          // we expect the bootstrap process to fail since the "NeedsAmbientProvider" service
@@ -121,7 +133,8 @@ describe('bootstrapApplication for standalone components', () => {
        }
 
        try {
-         await bootstrapApplication(StandaloneCmp);
+         await bootstrapApplication(
+             StandaloneCmp, {providers: [{provide: ErrorHandler, useClass: SilentErrorHandler}]});
 
          // The `bootstrapApplication` already includes the set of providers from the
          // `BrowserModule`, so including the `BrowserModule` again will bring duplicate providers
@@ -152,7 +165,8 @@ describe('bootstrapApplication for standalone components', () => {
        }
 
        try {
-         await bootstrapApplication(StandaloneCmp);
+         await bootstrapApplication(
+             StandaloneCmp, {providers: [{provide: ErrorHandler, useClass: SilentErrorHandler}]});
 
          // The `bootstrapApplication` already includes the set of providers from the
          // `BrowserModule`, so including the `BrowserModule` again will bring duplicate providers
