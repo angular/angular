@@ -7,6 +7,7 @@
  */
 
 import {NgForOf, NgForOfContext} from '@angular/common';
+import {Component, Input} from '@angular/core/public_api';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {getSortedClassName} from '@angular/core/testing/src/styling';
 
@@ -118,6 +119,41 @@ describe('instructions', () => {
         tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
       }));
+    });
+
+    it('should instantiate nodes at high indices', () => {
+      @Component({
+        selector: 'comp',
+        standalone: true,
+        template: '{{ name }}',
+      })
+      class Comp {
+        @Input() name = '';
+      }
+
+      const ctx = {name: 'initial name'};
+      const createText = () => {
+        // Artificially inflating the slot IDs of this app component
+        // to mimic an app with a very large view.
+        ɵɵelement(4097, 'comp');
+      };
+      const updateText = () => {
+        ɵɵadvance(4097);
+        ɵɵproperty('name', ctx.name);
+      };
+      const fixture = new TemplateFixture({
+        create: createText,
+        update: updateText,
+        decls: 4098,
+        vars: 1,
+        directives: [Comp],
+      });
+
+      expect(fixture.html).toEqual('<comp>initial name</comp>');
+
+      ctx.name = 'some name';
+      fixture.update();
+      expect(fixture.html).toEqual('<comp>some name</comp>');
     });
   });
 

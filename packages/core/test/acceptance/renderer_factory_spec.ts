@@ -9,7 +9,7 @@
 import {AnimationEvent} from '@angular/animations';
 import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
-import {DOCUMENT} from '@angular/common';
+import {CommonModule, DOCUMENT} from '@angular/common';
 import {Component, DoCheck, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation} from '@angular/core';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
@@ -183,6 +183,51 @@ describe('renderer factory lifecycle', () => {
 
       expect(prop).toEqual('@fooAnimation');
     });
+  });
+
+  it('should not invoke renderer destroy method for embedded views', () => {
+    @Component({
+      selector: 'comp',
+      standalone: true,
+      imports: [CommonModule],
+      template: `
+        <div>Root view</div>
+        <div *ngIf="visible">Child view</div>
+      `,
+    })
+    class Comp {
+      visible = true;
+    }
+
+    const rendererFactory = new MockRendererFactory(['destroy', 'createElement']);
+    TestBed.configureTestingModule({
+      providers: [{
+        provide: RendererFactory2,
+        useValue: rendererFactory,
+        deps: [DOCUMENT],
+      }]
+    });
+
+    const fixture = TestBed.createComponent(Comp);
+    fixture.detectChanges();
+
+    const comp = fixture.componentInstance;
+    comp!.visible = false;
+    fixture.detectChanges();
+
+    comp!.visible = true;
+    fixture.detectChanges();
+
+    const renderer = rendererFactory.lastRenderer!;
+    const destroySpy = renderer.spies['destroy'];
+    const createElementSpy = renderer.spies['createElement'];
+
+    // we should never see `destroy` method being called
+    // in case child views are created/removed.
+    expect(destroySpy.calls.count()).toBe(0);
+
+    // Make sure other methods on the renderer were invoked.
+    expect(createElementSpy.calls.count() > 0).toBe(true);
   });
 });
 
