@@ -50,54 +50,6 @@ function isViewContainerRef(candidate: any): boolean {
 }
 
 describe('query', () => {
-  it('should match projected query children', () => {
-    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {});
-
-    let child1 = null;
-    let child2 = null;
-    const Cmp = createComponent(
-        'cmp',
-        function(rf: RenderFlags, ctx: any) {
-          /**
-           * <child>
-           *   <child>
-           *   </child>
-           * </child>
-           * class Cmp {
-           *   @ViewChildren(Child) query0;
-           *   @ViewChildren(Child, {descend: true}) query1;
-           * }
-           */
-          if (rf & RenderFlags.Create) {
-            ɵɵelementStart(0, 'child');
-            { ɵɵelement(1, 'child'); }
-            ɵɵelementEnd();
-          }
-          if (rf & RenderFlags.Update) {
-            child1 = getDirectiveOnNode(HEADER_OFFSET);
-            child2 = getDirectiveOnNode(HEADER_OFFSET + 1);
-          }
-        },
-        2, 0, [Child], [],
-        function(rf: RenderFlags, ctx: any) {
-          if (rf & RenderFlags.Create) {
-            ɵɵviewQuery(Child, QueryFlags.none);
-            ɵɵviewQuery(Child, QueryFlags.descendants);
-          }
-          if (rf & RenderFlags.Update) {
-            let tmp: any;
-            ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
-                (ctx.query0 = tmp as QueryList<any>);
-            ɵɵqueryRefresh(tmp = ɵɵloadQuery<QueryList<any>>()) &&
-                (ctx.query1 = tmp as QueryList<any>);
-          }
-        });
-
-    const parent = renderComponent(Cmp);
-    expect((parent.query0 as QueryList<any>).toArray()).toEqual([child1]);
-    expect((parent.query1 as QueryList<any>).toArray()).toEqual([child1, child2]);
-  });
-
   describe('predicate', () => {
     describe('types', () => {
       it('should query using type predicate and read a specified token', () => {
