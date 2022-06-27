@@ -87,7 +87,7 @@ Option names in the configuration file must use [camelCase](guide/glossary#case-
 
 Command syntax is shown as follows:
 
-`ng` *commandNameOrAlias* *requiredArg* [*optionalArg*] `[options]`
+`ng` *<command-name>* *<required-arg>* [*optional-arg*] `[options]`
 
 *   Most commands, and some options, have aliases.
     Aliases are shown in the syntax statement for each command.
@@ -105,8 +105,8 @@ Command syntax is shown as follows:
 
 *   Typically, the name of a generated artifact can be given as an argument to the command or specified with the `--name` option.
 
-*   Argument and option names can be given in either [camelCase or dash-case](guide/glossary#case-types).
-    `--myOptionName` is equivalent to `--my-option-name`.
+*   Arguments and option names must be given in [dash-case](guide/glossary#case-types).
+    For example: `--my-option-name`
 
 ### Boolean options
 
