@@ -1125,7 +1125,6 @@ groups:
           'scripts/**',
           'third_party/**',
           'tools/bazel-repo-patches/**',
-          'tools/build/**',
           'tools/circular_dependency_test/**',
           'tools/contributing-stats/**',
           'tools/gulp-tasks/**',
