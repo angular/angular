@@ -14,5 +14,7 @@ export const enum RuntimeErrorCode {
   // NgSwitch errors
   PARENT_NG_SWITCH_NOT_FOUND = 2000,
   // Pipe errors
-  INVALID_PIPE_ARGUMENT = 2100
+  INVALID_PIPE_ARGUMENT = 2100,
+  // NgForOf errors
+  NG_FOR_MISSING_DIFFER = 2200,
 }
