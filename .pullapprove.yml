@@ -1130,7 +1130,6 @@ groups:
           'tools/contributing-stats/**',
           'tools/gulp-tasks/**',
           'tools/legacy-saucelabs/**',
-          'tools/npm/**',
           'tools/rxjs/**',
           'tools/saucelabs/**',
           'tools/size-tracking/**',
