@@ -3,12 +3,11 @@ load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
 
 js_library(
     name = "helpers",
-    package_name = "helpers",
     srcs = [
         "test-package.js",
         "utils.js",
     ],
-    visibility = ["//aio/tools/transforms:__subpackages__"],
+    visibility = ["//aio/tools:__subpackages__"],
     deps = [
         "//:package_json",
         "@aio_npm//canonical-path",

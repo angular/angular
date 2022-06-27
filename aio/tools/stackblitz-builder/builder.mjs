@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import {globbySync} from 'globby';
 import jsdom from 'jsdom';
 
-import regionExtractor from 'aio/tools/examples-package/services/region-parser.js';
+import regionExtractor from '../transforms/examples-package/services/region-parser.js';
 
 export class StackblitzBuilder {
   constructor(examplePath, destPath) {
