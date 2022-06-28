@@ -11,7 +11,9 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MISSING_CONTROL_VALUE = 1002,
     // (undocumented)
-    NO_CONTROLS = 1000
+    NO_CONTROLS = 1000,
+    // (undocumented)
+    WRONG_VALIDATOR_RETURN_TYPE = -1101
 }
 
 // (No @packageDocumentation comment for this package)
