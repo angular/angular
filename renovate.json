@@ -45,31 +45,50 @@
       "groupName": "all non-major dependencies",
       "schedule": ["after 10:00pm on monday", "before 04:00am on tuesday"]
     },
+
     {
       "matchPackagePatterns": ["^@bazel/.*", "^build_bazel.*"],
       "groupName": "bazel setup",
       "schedule": ["at any time"]
     },
+
     {
       "matchPackagePrefixes": ["@angular/", "angular/", "@angular-devkit", "@schematics/"],
       "followTag": "next",
       "groupName": "cross-repo Angular dependencies",
       "schedule": ["at any time"]
     },
-    {"matchPackagePrefixes": ["@babel/"], "groupName": "babel dependencies"},
+
+    {
+      "matchPackagePrefixes": ["@angular/", "angular/", "@angular-devkit", "@schematics/"],
+      "matchPaths": ["packages/**"],
+      "followTag": null
+    },
+
+    {
+      "matchPackagePrefixes": ["@babel/"],
+      "groupName": "babel dependencies"
+    },
+
+    {
+      "matchPackagePrefixes": ["@angular-eslint/", "@typescript-eslint/"],
+      "groupName": "eslint dependencies"
+    },
+
     {
       "matchPackageNames": ["typescript", "tslib"],
       "groupName": "typescript dependencies"
     },
+
     {
       "matchPaths": [".github/workflows/scorecard.yml"],
       "groupName": "scorecard action dependencies",
       "groupSlug": "scorecard-action"
     },
-    {
-      "matchPaths": ["integration/!(bazel_workspace_tests)/**"],
-      "enabled": false
-    },
-    {"matchCurrentVersion": "0.0.0-PLACEHOLDER", "enabled": false}
+
+    {"matchCurrentVersion": "0.0.0-PLACEHOLDER", "enabled": false},
+
+    {"matchPaths": ["integration/**"], "enabled": false},
+    {"matchPaths": ["integration/bazel_workspace_tests/**/WORKSPACE"], "enabled": true}
   ]
 }
