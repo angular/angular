@@ -298,7 +298,7 @@ The only substantial difference between these APIs in Dart and TypeScript is the
 **Note:** Because the messages passed through the MessageBus cross a WebWorker boundary, they must be serializable.
 If you use the MessageBus directly, you are responsible for serializing your messages.
 In JavaScript / TypeScript this means they must be serializable via JavaScript's
-[structured cloning algorithim](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm).
+[structured cloning algorithm](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm).
 
 
 ### MessageBus and Zones
