@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EnvironmentInjector, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef, ɵRuntimeError as RuntimeError,} from '@angular/core';
+import {ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EnvironmentInjector, EventEmitter, inject, Injector, Input, OnDestroy, OnInit, Output, SimpleChanges, ViewContainerRef, ɵRuntimeError as RuntimeError,} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 import {Data} from '../models';
@@ -165,7 +165,12 @@ export interface RouterOutletContract {
 export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   private activated: ComponentRef<any>|null = null;
   private _activatedRoute: ActivatedRoute|null = null;
-  private name: string;
+  /**
+   * The name of the outlet
+   *
+   * @see [named outlets](guide/router-tutorial-toh#displaying-multiple-routes-in-named-outlets)
+   */
+  @Input() name = PRIMARY_OUTLET;
 
   @Output('activate') activateEvents = new EventEmitter<any>();
   @Output('deactivate') deactivateEvents = new EventEmitter<any>();
@@ -180,36 +185,64 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
    */
   @Output('detach') detachEvents = new EventEmitter<unknown>();
 
-  constructor(
-      private parentContexts: ChildrenOutletContexts, private location: ViewContainerRef,
-      @Attribute('name') name: string, private changeDetector: ChangeDetectorRef,
-      private environmentInjector: EnvironmentInjector) {
-    this.name = name || PRIMARY_OUTLET;
-    parentContexts.onChildOutletCreated(this.name, this);
+  private parentContexts = inject(ChildrenOutletContexts);
+  private location = inject(ViewContainerRef);
+  private changeDetector = inject(ChangeDetectorRef);
+  private environmentInjector = inject(EnvironmentInjector);
+
+  /** @nodoc */
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['name']) {
+      const {firstChange, previousValue} = changes['name'];
+      if (firstChange) {
+        // The first change is handled by ngOnInit. Because ngOnChanges doesn't get called when no
+        // input is set at all, we need to centrally handle the first change there.
+        return;
+      }
+
+      // unregister with the old name
+      if (this.isTrackedInParentContexts(previousValue)) {
+        this.deactivate();
+        this.parentContexts.onChildOutletDestroyed(previousValue);
+      }
+      // register the new name
+      this.initializeOutletWithName();
+    }
   }
 
   /** @nodoc */
   ngOnDestroy(): void {
     // Ensure that the registered outlet is this one before removing it on the context.
-    if (this.parentContexts.getContext(this.name)?.outlet === this) {
+    if (this.isTrackedInParentContexts(this.name)) {
       this.parentContexts.onChildOutletDestroyed(this.name);
     }
   }
 
+  private isTrackedInParentContexts(outletName: string) {
+    return this.parentContexts.getContext(outletName)?.outlet === this;
+  }
+
   /** @nodoc */
   ngOnInit(): void {
-    if (!this.activated) {
-      // If the outlet was not instantiated at the time the route got activated we need to populate
-      // the outlet when it is initialized (ie inside a NgIf)
-      const context = this.parentContexts.getContext(this.name);
-      if (context && context.route) {
-        if (context.attachRef) {
-          // `attachRef` is populated when there is an existing component to mount
-          this.attach(context.attachRef, context.route);
-        } else {
-          // otherwise the component defined in the configuration is created
-          this.activateWith(context.route, context.injector);
-        }
+    this.initializeOutletWithName();
+  }
+
+  private initializeOutletWithName() {
+    this.parentContexts.onChildOutletCreated(this.name, this);
+    if (this.activated) {
+      return;
+    }
+
+    // If the outlet was not instantiated at the time the route got activated we need to populate
+    // the outlet when it is initialized (ie inside a NgIf)
+    const context = this.parentContexts.getContext(this.name);
+    if (context?.route) {
+      if (context.attachRef) {
+        // `attachRef` is populated when there is an existing component to mount
+        this.attach(context.attachRef, context.route);
+      } else {
+        // otherwise the component defined in the configuration is created
+        this.activateWith(context.route, context.injector);
       }
     }
   }
