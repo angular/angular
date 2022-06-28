@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, Injector} from '@angular/core';
+import {EnvironmentInjector, Injector, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {concat, defer, from, MonoTypeOperatorFunction, Observable, of, OperatorFunction, pipe} from 'rxjs';
 import {concatMap, filter, first, map, mergeMap, tap} from 'rxjs/operators';
 
+import {RuntimeErrorCode} from '../errors';
 import {ActivationStart, ChildActivationStart, Event} from '../events';
 import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanLoadFn, CanMatch, CanMatchFn, Route} from '../models';
 import {NavigationTransition} from '../router';
@@ -21,6 +22,8 @@ import {CanActivate, CanDeactivate, getCanActivateChild, getToken} from '../util
 import {isBoolean, isCanActivate, isCanActivateChild, isCanDeactivate, isCanLoad, isCanMatch, isFunction, isUrlTree} from '../utils/type_guards';
 
 import {prioritizedGuardValue} from './prioritized_guard_value';
+
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 export function checkGuards(moduleInjector: Injector, forwardEvent?: (evt: Event) => void):
     MonoTypeOperatorFunction<NavigationTransition> {
@@ -120,7 +123,8 @@ function runCanActivate(
       } else if (isFunction<CanActivateFn>(guard)) {
         observable = wrapIntoObservable(guard(futureARS, futureRSS));
       } else {
-        throw new Error('Invalid CanActivate guard');
+        throw new RuntimeError(
+            RuntimeErrorCode.INVALID_GUARD, NG_DEV_MODE && 'Invalid CanActivate guard');
       }
       return observable.pipe(first());
     });
@@ -148,7 +152,8 @@ function runCanActivateChild(
         } else if (isFunction<CanActivateChildFn>(guard)) {
           observable = wrapIntoObservable(guard(futureARS, futureRSS));
         } else {
-          throw new Error('Invalid CanActivateChild guard');
+          throw new RuntimeError(
+              RuntimeErrorCode.INVALID_GUARD, NG_DEV_MODE && 'Invalid CanActivateChild guard');
         }
         return observable.pipe(first());
       });
@@ -171,7 +176,8 @@ function runCanDeactivate(
     } else if (isFunction<CanDeactivateFn<any>>(guard)) {
       observable = wrapIntoObservable(guard(component, currARS, currRSS, futureRSS));
     } else {
-      throw new Error('Invalid CanDeactivate guard');
+      throw new RuntimeError(
+          RuntimeErrorCode.INVALID_GUARD, NG_DEV_MODE && 'Invalid CanDeactivate guard');
     }
     return observable.pipe(first());
   });
@@ -194,7 +200,8 @@ export function runCanLoadGuards(
     } else if (isFunction<CanLoadFn>(guard)) {
       guardVal = guard(route, segments);
     } else {
-      throw new Error('Invalid CanLoad guard');
+      throw new RuntimeError(
+          RuntimeErrorCode.INVALID_GUARD, NG_DEV_MODE && 'Invalid CanLoad guard');
     }
     return wrapIntoObservable(guardVal);
   });

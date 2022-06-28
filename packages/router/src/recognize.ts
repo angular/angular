@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createEnvironmentInjector, EnvironmentInjector, Type} from '@angular/core';
+import {createEnvironmentInjector, EnvironmentInjector, Type, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {EmptyError, from, Observable, Observer, of} from 'rxjs';
 import {catchError, concatMap, defaultIfEmpty, first, last as rxjsLast, map, scan, startWith, switchMap, takeLast, takeWhile} from 'rxjs/operators';
 
+import {RuntimeErrorCode} from './errors';
 import {Data, ResolveData, Route, Routes} from './models';
 import {ActivatedRouteSnapshot, inheritedParamsDataResolve, ParamsInheritanceStrategy, RouterStateSnapshot} from './router_state';
 import {PRIMARY_OUTLET} from './shared';
@@ -135,7 +136,7 @@ export class Recognizer {
               // multiple activated results for the same outlet. We should merge the children of
               // these results so the final return value is only one `TreeNode` per outlet.
               const mergedChildren = mergeEmptyPathMatches(children);
-              if (typeof ngDevMode === 'undefined' || ngDevMode) {
+              if (NG_DEV_MODE) {
                 // This should really never happen - we are only taking the first match for each
                 // outlet and merge the empty path matches.
                 checkOutletNameUniqueness(mergedChildren);
@@ -336,7 +337,9 @@ function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): v
     if (routeWithSameOutletName) {
       const p = routeWithSameOutletName.url.map(s => s.toString()).join('/');
       const c = n.value.url.map(s => s.toString()).join('/');
-      throw new Error(`Two segments cannot have the same outlet name: '${p}' and '${c}'.`);
+      throw new RuntimeError(
+          RuntimeErrorCode.TWO_SEGMENTS_WITH_SAME_OUTLET,
+          NG_DEV_MODE && `Two segments cannot have the same outlet name: '${p}' and '${c}'.`);
     }
     names[n.value.outlet] = n.value;
   });

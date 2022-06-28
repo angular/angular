@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EnvironmentInjector, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef,} from '@angular/core';
+import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EnvironmentInjector, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef, ɵRuntimeError as RuntimeError,} from '@angular/core';
 
+import {RuntimeErrorCode} from '../errors';
 import {Data} from '../models';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
+
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 /**
  * An interface that defines the contract for developing a component outlet for the `Router`.
@@ -216,12 +219,16 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
    * @throws An error if the outlet is not activated.
    */
   get component(): Object {
-    if (!this.activated) throw new Error('Outlet is not activated');
+    if (!this.activated)
+      throw new RuntimeError(
+          RuntimeErrorCode.OUTLET_NOT_ACTIVATED, NG_DEV_MODE && 'Outlet is not activated');
     return this.activated.instance;
   }
 
   get activatedRoute(): ActivatedRoute {
-    if (!this.activated) throw new Error('Outlet is not activated');
+    if (!this.activated)
+      throw new RuntimeError(
+          RuntimeErrorCode.OUTLET_NOT_ACTIVATED, NG_DEV_MODE && 'Outlet is not activated');
     return this._activatedRoute as ActivatedRoute;
   }
 
@@ -236,7 +243,9 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
    * Called when the `RouteReuseStrategy` instructs to detach the subtree
    */
   detach(): ComponentRef<any> {
-    if (!this.activated) throw new Error('Outlet is not activated');
+    if (!this.activated)
+      throw new RuntimeError(
+          RuntimeErrorCode.OUTLET_NOT_ACTIVATED, NG_DEV_MODE && 'Outlet is not activated');
     this.location.detach();
     const cmp = this.activated;
     this.activated = null;
@@ -269,7 +278,9 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       activatedRoute: ActivatedRoute,
       resolverOrInjector?: ComponentFactoryResolver|EnvironmentInjector|null) {
     if (this.isActivated) {
-      throw new Error('Cannot activate an already activated outlet');
+      throw new RuntimeError(
+          RuntimeErrorCode.OUTLET_ALREADY_ACTIVATED,
+          NG_DEV_MODE && 'Cannot activate an already activated outlet');
     }
     this._activatedRoute = activatedRoute;
     const location = this.location;
