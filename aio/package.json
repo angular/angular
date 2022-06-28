@@ -110,7 +110,7 @@
     "@angular-eslint/builder": "^13.0.0",
     "@angular-eslint/eslint-plugin": "^13.0.0",
     "@angular-eslint/eslint-plugin-template": "^13.0.0",
-    "@angular-eslint/template-parser": "^13.0.0",
+    "@angular-eslint/template-parser": "^14.0.0",
     "@angular/cli": "~14.0.0",
     "@angular/compiler-cli": "^14.0.0",
     "@bazel/bazelisk": "^1.7.5",
