@@ -813,6 +813,243 @@ describe('query logic', () => {
                 `Expected content query results to be available when ngAfterContentChecked was called.`);
       }
     });
+
+    it('should not match directive host with content queries', () => {
+      @Directive({
+        selector: '[content-query]',
+        standalone: true,
+      })
+      class ContentQueryDirective {
+        @ContentChildren('foo', {descendants: true}) foos!: QueryList<ElementRef>;
+      }
+
+      @Component({
+        standalone: true,
+        imports: [ContentQueryDirective],
+        template: `<div content-query #foo></div>`
+      })
+      class TestCmp {
+        @ViewChild(ContentQueryDirective, {static: true})
+        contentQueryDirective!: ContentQueryDirective;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const qList = fixture.componentInstance.contentQueryDirective.foos;
+      expect(qList.length).toBe(0);
+    });
+
+    it('should report results to appropriate queries where deep content queries are nested', () => {
+      @Directive({selector: '[content-query]', standalone: true, exportAs: 'query'})
+      class ContentQueryDirective {
+        @ContentChildren('foo, bar, baz', {descendants: true}) qlist!: QueryList<ElementRef>;
+      }
+
+      @Component({
+        standalone: true,
+        imports: [ContentQueryDirective],
+        template: `
+          <div content-query #out="query">
+            <span #foo></span>
+            <div content-query #in="query">
+              <span #bar></span>
+            </div>
+            <span #baz></span>
+          </div>
+        `
+      })
+      class TestCmp {
+        @ViewChild('in', {static: true}) in !: ContentQueryDirective;
+        @ViewChild('out', {static: true}) out!: ContentQueryDirective;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const inQList = fixture.componentInstance.in.qlist;
+      expect(inQList.length).toBe(1);
+
+      const outQList = fixture.componentInstance.out.qlist;
+      expect(outQList.length).toBe(3);
+    });
+
+    it('should support nested shallow content queries', () => {
+      @Directive({selector: '[content-query]', standalone: true, exportAs: 'query'})
+      class ContentQueryDirective {
+        @ContentChildren('foo') qlist!: QueryList<ElementRef>;
+      }
+
+      @Component({
+        standalone: true,
+        imports: [ContentQueryDirective],
+        template: `
+          <div content-query #out="query">
+            <div content-query #in="query" #foo>
+              <span #foo></span>
+            </div>
+          </div>
+        `
+      })
+      class TestCmp {
+        @ViewChild('in', {static: true}) in !: ContentQueryDirective;
+        @ViewChild('out', {static: true}) out!: ContentQueryDirective;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const inQList = fixture.componentInstance.in.qlist;
+      expect(inQList.length).toBe(1);
+
+      const outQList = fixture.componentInstance.out.qlist;
+      expect(outQList.length).toBe(1);
+    });
+
+    it('should respect shallow flag on content queries when mixing deep and shallow queries',
+       () => {
+         @Directive(
+             {selector: '[shallow-content-query]', standalone: true, exportAs: 'shallow-query'})
+         class ShallowContentQueryDirective {
+           @ContentChildren('foo') qlist!: QueryList<ElementRef>;
+         }
+
+         @Directive({selector: '[deep-content-query]', standalone: true, exportAs: 'deep-query'})
+         class DeepContentQueryDirective {
+           @ContentChildren('foo', {descendants: true}) qlist!: QueryList<ElementRef>;
+         }
+
+         @Component({
+           standalone: true,
+           imports: [ShallowContentQueryDirective, DeepContentQueryDirective],
+           template: `
+          <div shallow-content-query #shallow="shallow-query" deep-content-query #deep="deep-query">
+            <span #foo></span>
+            <div>
+              <span #foo></span>
+            </div>
+          </div>
+        `
+         })
+         class TestCmp {
+           @ViewChild('shallow', {static: true}) shallow!: ShallowContentQueryDirective;
+           @ViewChild('deep', {static: true}) deep!: DeepContentQueryDirective;
+         }
+
+         const fixture = TestBed.createComponent(TestCmp);
+         fixture.detectChanges();
+
+         const inQList = fixture.componentInstance.shallow.qlist;
+         expect(inQList.length).toBe(1);
+
+         const outQList = fixture.componentInstance.deep.qlist;
+         expect(outQList.length).toBe(2);
+       });
+
+    it('should support view and content queries matching the same element', () => {
+      @Directive({
+        selector: '[content-query]',
+        standalone: true,
+      })
+      class ContentQueryDirective {
+        @ContentChildren('foo') foos!: QueryList<ElementRef>;
+      }
+
+      @Component({
+        standalone: true,
+        imports: [ContentQueryDirective],
+        template: `
+          <div content-query>
+            <div id="contentAndView" #foo></div>
+          </div>
+          <div id="contentOnly" #bar></div>
+        `
+      })
+      class TestCmp {
+        @ViewChild(ContentQueryDirective, {static: true}) contentQueryDir!: ContentQueryDirective;
+        @ViewChildren('foo, bar') fooBars!: QueryList<ElementRef>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const contentQList = fixture.componentInstance.contentQueryDir.foos;
+      expect(contentQList.length).toBe(1);
+      expect(contentQList.first.nativeElement.getAttribute('id')).toBe('contentAndView');
+
+      const viewQList = fixture.componentInstance.fooBars;
+      expect(viewQList.length).toBe(2);
+      expect(viewQList.first.nativeElement.getAttribute('id')).toBe('contentAndView');
+      expect(viewQList.last.nativeElement.getAttribute('id')).toBe('contentOnly');
+    });
+  });
+
+  describe('query order', () => {
+    @Directive({selector: '[text]', standalone: true})
+    class TextDirective {
+      @Input() text: string|undefined;
+    }
+
+    it('should register view query matches from top to bottom', () => {
+      @Component({
+        standalone: true,
+        imports: [TextDirective],
+        template: `
+          <span text="A"></span>
+          <div text="B">
+            <span text="C">
+              <span text="D"></span>
+            </span>
+          </div>
+          <span text="E"></span>`
+      })
+      class TestCmp {
+        @ViewChildren(TextDirective) texts!: QueryList<TextDirective>;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.texts.map(item => item.text)).toEqual([
+        'A', 'B', 'C', 'D', 'E'
+      ]);
+    });
+
+    it('should register content query matches from top to bottom', () => {
+      @Directive({
+        selector: '[content-query]',
+        standalone: true,
+      })
+      class ContentQueryDirective {
+        @ContentChildren(TextDirective, {descendants: true}) texts!: QueryList<TextDirective>;
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TextDirective, ContentQueryDirective],
+        template: `
+          <div content-query>
+            <span text="A"></span>
+            <div text="B">
+              <span text="C">
+                <span text="D"></span>
+              </span>
+            </div>
+            <span text="E"></span>
+          </div>`
+      })
+      class TestCmp {
+        @ViewChild(ContentQueryDirective, {static: true})
+        contentQueryDirective!: ContentQueryDirective;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.contentQueryDirective.texts.map(item => item.text)).toEqual([
+        'A', 'B', 'C', 'D', 'E'
+      ]);
+    });
   });
 
   // Some root components may have ContentChildren queries if they are also
