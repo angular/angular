@@ -10,7 +10,7 @@ import {CommonModule, Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Injectable, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Resolve, Router} from '@angular/router';
+import {ChildrenOutletContexts, Resolve, Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 import {of} from 'rxjs';
 import {delay, mapTo} from 'rxjs/operators';
@@ -338,6 +338,49 @@ describe('Integration', () => {
          expect(router.routerState.toString()).toContain(`url:'one'`);
          expect(fixture.nativeElement.innerHTML).toContain('one');
        }));
+  });
+
+  it('should not unregister outlet if a different one already exists #36711, 32453', async () => {
+    @Component({
+      template: `
+      <router-outlet *ngIf="outlet1"></router-outlet>
+      <router-outlet *ngIf="outlet2"></router-outlet>
+      `,
+    })
+    class TestCmp {
+      outlet1 = true;
+      outlet2 = false;
+    }
+
+    @Component({template: ''})
+    class EmptyCmp {
+    }
+
+    TestBed.configureTestingModule({
+      imports: [CommonModule, RouterTestingModule.withRoutes([{path: '**', component: EmptyCmp}])],
+      declarations: [TestCmp, EmptyCmp]
+    });
+    const fixture = TestBed.createComponent(TestCmp);
+    const contexts = TestBed.inject(ChildrenOutletContexts);
+    await TestBed.inject(Router).navigateByUrl('/');
+    fixture.detectChanges();
+
+    expect(contexts.getContext('primary')).toBeDefined();
+    expect(contexts.getContext('primary')?.outlet).not.toBeNull();
+
+    // Show the second outlet. Applications shouldn't really have more than one outlet but there can
+    // be timing issues between destroying and recreating a second one in some cases:
+    // https://github.com/angular/angular/issues/36711,
+    // https://github.com/angular/angular/issues/32453
+    fixture.componentInstance.outlet2 = true;
+    fixture.detectChanges();
+    expect(contexts.getContext('primary')?.outlet).not.toBeNull();
+
+    fixture.componentInstance.outlet1 = false;
+    fixture.detectChanges();
+    // Destroying the first one show not clear the outlet context because the second one takes over
+    // as the registered outlet.
+    expect(contexts.getContext('primary')?.outlet).not.toBeNull();
   });
 });
 
