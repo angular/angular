@@ -18,5 +18,8 @@ export const enum RuntimeErrorCode {
   MISSING_CONTROL = 1001,
   MISSING_CONTROL_VALUE = 1002,
 
+  // Validators errors
+  WRONG_VALIDATOR_RETURN_TYPE = -1101,
+
   // Template-driven Forms errors (11xx)
 }
