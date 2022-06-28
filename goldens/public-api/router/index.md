@@ -31,7 +31,6 @@ import { SimpleChanges } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
-import { ViewContainerRef } from '@angular/core';
 
 // @public
 export class ActivatedRoute {
@@ -800,7 +799,6 @@ export class RouterModule {
 
 // @public
 export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
-    constructor(parentContexts: ChildrenOutletContexts, location: ViewContainerRef, name: string, changeDetector: ChangeDetectorRef, environmentInjector: EnvironmentInjector);
     // (undocumented)
     get activatedRoute(): ActivatedRoute;
     // (undocumented)
@@ -821,14 +819,17 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     detachEvents: EventEmitter<unknown>;
     // (undocumented)
     get isActivated(): boolean;
+    name: string;
+    // (undocumented)
+    ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
     ngOnInit(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], {}, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], { "name": "name"; }, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, true, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<RouterOutlet, [null, null, { attribute: "name"; }, null, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<RouterOutlet, never>;
 }
 
 // @public
