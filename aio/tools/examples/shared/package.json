@@ -51,7 +51,7 @@
     "@angular/cli": "~14.0.0",
     "@angular/compiler-cli": "^14.0.0",
     "@nguniversal/builders": "~14.0.0",
-    "@rollup/plugin-commonjs": "^21.0.3",
+    "@rollup/plugin-commonjs": "^22.0.0",
     "@rollup/plugin-node-resolve": "^13.2.0",
     "@types/angular": "1.7.3",
     "@types/angular-animate": "1.5.10",
