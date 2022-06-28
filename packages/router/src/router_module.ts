@@ -7,13 +7,14 @@
  */
 
 import {HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, ViewportScroller} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, ENVIRONMENT_INITIALIZER, Inject, inject, InjectFlags, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, Optional, Provider, SkipSelf, Type} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, ENVIRONMENT_INITIALIZER, Inject, inject, InjectFlags, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, Optional, Provider, SkipSelf, Type, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {of, Subject} from 'rxjs';
 
 import {EmptyOutletComponent} from './components/empty_outlet';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
+import {RuntimeErrorCode} from './errors';
 import {Event, stringifyEvent} from './events';
 import {Route, Routes} from './models';
 import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
@@ -192,7 +193,8 @@ function providePathLocationStrategy(): Provider {
 
 export function provideForRootGuard(router: Router): any {
   if (NG_DEV_MODE && router) {
-    throw new Error(
+    throw new RuntimeError(
+        RuntimeErrorCode.FOR_ROOT_CALLED_TWICE,
         `RouterModule.forRoot() called twice. Lazy loaded modules should use RouterModule.forChild() instead.`);
   }
   return 'guarded';

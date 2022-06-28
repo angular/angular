@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector} from '@angular/core';
+import {EnvironmentInjector, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {EmptyError, from, Observable, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, last, map, mergeMap, scan, switchMap, tap} from 'rxjs/operators';
 
+import {RuntimeErrorCode} from './errors';
 import {LoadedRouterConfig, Route, Routes} from './models';
 import {runCanLoadGuards} from './operators/check_guards';
 import {RouterConfigLoader} from './router_config_loader';
@@ -18,6 +19,8 @@ import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlSerializ
 import {forEach} from './utils/collection';
 import {getOrCreateRouteInjectorIfNeeded, getOutlet, sortByMatchingOutlets} from './utils/config';
 import {isImmediateMatch, match, matchWithChecks, noLeftoversInUrl, split} from './utils/config_matching';
+
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 class NoMatch {
   public segmentGroup: UrlSegmentGroup|null;
@@ -40,13 +43,16 @@ function absoluteRedirect(newTree: UrlTree): Observable<any> {
 }
 
 function namedOutletsRedirect(redirectTo: string): Observable<any> {
-  return throwError(
-      new Error(`Only absolute redirects can have named outlets. redirectTo: '${redirectTo}'`));
+  return throwError(new RuntimeError(
+      RuntimeErrorCode.NAMED_OUTLET_REDIRECT,
+      NG_DEV_MODE &&
+          `Only absolute redirects can have named outlets. redirectTo: '${redirectTo}'`));
 }
 
 function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
-  return throwError(
-      navigationCancelingError(`Cannot load children because the guard of the route "path: '${
+  return throwError(navigationCancelingError(
+      NG_DEV_MODE &&
+      `Cannot load children because the guard of the route "path: '${
           route.path}'" returned false`));
 }
 
@@ -118,7 +124,9 @@ class ApplyRedirects {
   }
 
   private noMatchError(e: NoMatch): any {
-    return new Error(`Cannot match any routes. URL Segment: '${e.segmentGroup}'`);
+    return new RuntimeError(
+        RuntimeErrorCode.NO_MATCH,
+        NG_DEV_MODE && `Cannot match any routes. URL Segment: '${e.segmentGroup}'`);
   }
 
   private createUrlTree(rootCandidate: UrlSegmentGroup, queryParams: Params, fragment: string|null):
@@ -426,8 +434,10 @@ class ApplyRedirects {
       posParams: {[k: string]: UrlSegment}): UrlSegment {
     const pos = posParams[redirectToUrlSegment.path.substring(1)];
     if (!pos)
-      throw new Error(
-          `Cannot redirect to '${redirectTo}'. Cannot find '${redirectToUrlSegment.path}'.`);
+      throw new RuntimeError(
+          RuntimeErrorCode.MISSING_REDIRECT,
+          NG_DEV_MODE &&
+              `Cannot redirect to '${redirectTo}'. Cannot find '${redirectToUrlSegment.path}'.`);
     return pos;
   }
 

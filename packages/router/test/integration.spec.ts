@@ -1472,7 +1472,7 @@ describe('Integration', () => {
 
        expect(() => router.navigate([
          undefined, 'query'
-       ])).toThrowError(`The requested path contains undefined segment at index 0`);
+       ])).toThrowError(/The requested path contains undefined segment at index 0/);
      })));
 
   it('should push params only when they change', fakeAsync(inject([Router], (router: Router) => {
@@ -5522,9 +5522,7 @@ describe('Integration', () => {
          let recordedError: any = null;
          router.navigateByUrl('/lazy/loaded')!.catch(err => recordedError = err);
          advance(fixture);
-         expect(recordedError.message)
-             .toEqual(
-                 `RouterModule.forRoot() called twice. Lazy loaded modules should use RouterModule.forChild() instead.`);
+         expect(recordedError.message).toContain(`RouterModule.forRoot() called twice.`);
        })));
 
     it('should combine routes from multiple modules into a single configuration',
@@ -5821,7 +5819,7 @@ describe('Integration', () => {
          advance(fixture);
 
          expect(recordedError.message)
-             .toEqual(
+             .toContain(
                  `Invalid configuration of route 'lazy/loaded'. One of the following must be provided: component, loadComponent, redirectTo, children or loadChildren`);
        }));
 
