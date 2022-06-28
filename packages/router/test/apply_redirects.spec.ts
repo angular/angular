@@ -75,7 +75,7 @@ describe('applyRedirects', () => {
     applyRedirects(testModule.injector, null!, serializer, tree('/a/1'), [
       {path: 'a/:id', redirectTo: 'a/:other'}
     ]).subscribe(() => {}, (e) => {
-      expect(e.message).toEqual('Cannot redirect to \'a/:other\'. Cannot find \':other\'.');
+      expect(e.message).toContain('Cannot redirect to \'a/:other\'. Cannot find \':other\'.');
     });
   });
 
@@ -803,7 +803,7 @@ describe('applyRedirects', () => {
                 throw 'Should not be reached';
               },
               e => {
-                expect(e.message).toEqual('Cannot match any routes. URL Segment: \'b\'');
+                expect(e.message).toContain('Cannot match any routes. URL Segment: \'b\'');
               });
     });
 
@@ -962,7 +962,7 @@ describe('applyRedirects', () => {
                   throw 'Should not be reached';
                 },
                 e => {
-                  expect(e.message).toEqual(`Cannot match any routes. URL Segment: 'b'`);
+                  expect(e.message).toContain(`Cannot match any routes. URL Segment: 'b'`);
                 });
       });
     });
@@ -1055,7 +1055,7 @@ describe('applyRedirects', () => {
                   throw 'Should not be reached';
                 },
                 e => {
-                  expect(e.message).toEqual('Cannot match any routes. URL Segment: \'a\'');
+                  expect(e.message).toContain('Cannot match any routes. URL Segment: \'a\'');
                 });
       });
     });
@@ -1095,7 +1095,7 @@ describe('applyRedirects', () => {
                 throw 'Should not be reached';
               },
               e => {
-                expect(e.message).toEqual('Cannot match any routes. URL Segment: \'a/c\'');
+                expect(e.message).toContain('Cannot match any routes. URL Segment: \'a/c\'');
               });
     });
   });
@@ -1225,7 +1225,7 @@ describe('applyRedirects', () => {
                 throw new Error('should not be reached');
               },
               (e) => {
-                expect(e.message).toEqual(
+                expect(e.message).toContain(
                     'Only absolute redirects can have named outlets. redirectTo: \'b(aux:c)\'');
               });
     });

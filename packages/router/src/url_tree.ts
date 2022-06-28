@@ -6,8 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
+
+import {RuntimeErrorCode} from './errors';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
 import {equalArraysOrString, forEach, shallowEqual} from './utils/collection';
+
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 export function createEmptyUrlTree() {
   return new UrlTree(new UrlSegmentGroup([], {}), {}, null);
@@ -609,7 +614,9 @@ class UrlParser {
   private parseSegment(): UrlSegment {
     const path = matchSegments(this.remaining);
     if (path === '' && this.peekStartsWith(';')) {
-      throw new Error(`Empty path url segment cannot have parameters: '${this.remaining}'.`);
+      throw new RuntimeError(
+          RuntimeErrorCode.EMPTY_PATH_WITH_PARAMS,
+          NG_DEV_MODE && `Empty path url segment cannot have parameters: '${this.remaining}'.`);
     }
 
     this.capture(path);
@@ -688,7 +695,8 @@ class UrlParser {
       // if is is not one of these characters, then the segment was unescaped
       // or the group was not closed
       if (next !== '/' && next !== ')' && next !== ';') {
-        throw new Error(`Cannot parse url '${this.url}'`);
+        throw new RuntimeError(
+            RuntimeErrorCode.UNPARSABLE_URL, NG_DEV_MODE && `Cannot parse url '${this.url}'`);
       }
 
       let outletName: string = undefined!;
@@ -724,7 +732,8 @@ class UrlParser {
 
   private capture(str: string): void {
     if (!this.consumeOptional(str)) {
-      throw new Error(`Expected "${str}".`);
+      throw new RuntimeError(
+          RuntimeErrorCode.UNEXPECTED_VALUE_IN_URL, NG_DEV_MODE && `Expected "${str}".`);
     }
   }
 }
