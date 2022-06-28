@@ -337,23 +337,27 @@ describe('InjectorDef-based createInjector()', () => {
 
   it('should throw when no provider defined', () => {
     expect(() => injector.get(ServiceTwo)).toThrowError(
-      `R3InjectorError(Module)[ServiceTwo]: \n` +
-        `  NullInjectorError: No provider for ServiceTwo!`,
+      'NG0201: No provider found for `ServiceTwo`. ' +
+        'Source: Module. ' +
+        'Find more at https://angular.dev/errors/NG0201',
     );
   });
 
   it('should throw without the module name when no module', () => {
     const injector = createInjector([ServiceTwo]);
     expect(() => injector.get(ServiceTwo)).toThrowError(
-      `R3InjectorError[ServiceTwo]: \n` + `  NullInjectorError: No provider for ServiceTwo!`,
+      'NG0201: No provider found for `ServiceTwo`. ' +
+        'Find more at https://angular.dev/errors/NG0201',
     );
   });
 
   it('should throw with the full path when no provider', () => {
     const injector = createInjector(ModuleWithMissingDep);
     expect(() => injector.get(ServiceWithMissingDep)).toThrowError(
-      `R3InjectorError(ModuleWithMissingDep)[ServiceWithMissingDep -> Service]: \n` +
-        `  NullInjectorError: No provider for Service!`,
+      'NG0201: No provider found for `Service`. ' +
+        'Source: ModuleWithMissingDep. ' +
+        'Path: ServiceWithMissingDep -> Service. ' +
+        'Find more at https://angular.dev/errors/NG0201',
     );
   });
 

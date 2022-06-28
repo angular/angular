@@ -6,15 +6,24 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NotFoundError} from '@angular/core/primitives/di';
+import {RuntimeErrorCode} from '../errors';
+import {createRuntimeError} from '../render3/errors_di';
 import {stringify} from '../util/stringify';
+
 import type {Injector} from './injector';
 import {THROW_IF_NOT_FOUND} from './injector_compatibility';
 
 export class NullInjector implements Injector {
   get(token: any, notFoundValue: any = THROW_IF_NOT_FOUND): any {
     if (notFoundValue === THROW_IF_NOT_FOUND) {
-      const error = new NotFoundError(`NullInjectorError: No provider for ${stringify(token)}!`);
+      const message = ngDevMode ? `No provider found for \`${stringify(token)}\`.` : '';
+      const error = createRuntimeError(message, RuntimeErrorCode.PROVIDER_NOT_FOUND);
+
+      // Note: this name is unused in the code, but it's retained
+      // for backwards-compatibility reasons in case an app code
+      // relies on the error name.
+      error.name = 'NullInjectorError';
+
       throw error;
     }
     return notFoundValue;
