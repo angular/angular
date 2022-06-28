@@ -11,13 +11,15 @@ import {Injector} from '../../src/core';
 describe('Injector.NULL', () => {
   it('should throw if no arg is given', () => {
     expect(() => Injector.NULL.get('someToken')).toThrowError(
-      'NullInjectorError: No provider for someToken!',
+      'NG0201: No provider found for `someToken`. ' +
+        'Find more at https://angular.dev/errors/NG0201',
     );
   });
 
   it('should throw if THROW_IF_NOT_FOUND is given', () => {
     expect(() => Injector.NULL.get('someToken', Injector.THROW_IF_NOT_FOUND)).toThrowError(
-      'NullInjectorError: No provider for someToken!',
+      'NG0201: No provider found for `someToken`. ' +
+        'Find more at https://angular.dev/errors/NG0201',
     );
   });
 
