@@ -197,7 +197,7 @@ If a library lists `@angular/core` in `dependencies` instead of `peerDependencie
 
 ## Using your own library in applications
 
-You don't have to publish your library to the npm package manager to use it the same workspace, but you do have to build it first.
+You don't have to publish your library to the npm package manager to use it in the same workspace, but you do have to build it first.
 
 To use your own library in an application:
 
