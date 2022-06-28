@@ -11,7 +11,7 @@ import '@angular/compiler';
 import {withBody} from '@angular/private/testing';
 import * as path from 'path';
 
-const PACKAGE = 'angular/packages/core/test/bundling/todo_r2';
+const PACKAGE = 'angular/packages/core/test/bundling/todo';
 const BUNDLES = ['bundle.js', 'bundle.debug.min.js', 'bundle.min.js'];
 
 describe('functional test for todo', () => {

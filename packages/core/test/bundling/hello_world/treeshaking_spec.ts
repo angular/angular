@@ -11,7 +11,7 @@ import '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const PACKAGE = 'angular/packages/core/test/bundling/hello_world_r2';
+const PACKAGE = 'angular/packages/core/test/bundling/hello_world';
 
 describe('treeshaking with uglify', () => {
   let content: string;
