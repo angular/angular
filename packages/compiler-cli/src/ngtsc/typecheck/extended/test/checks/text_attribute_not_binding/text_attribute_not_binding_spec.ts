@@ -87,5 +87,23 @@ runInEachFileSystem(() => {
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING));
       expect(getSourceCodeForDiagnostic(diags[0])).toBe(`style.margin-right.px="5"`);
     });
+
+    it('should not produce a warning when there is no value', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([{
+        fileName,
+        templates: {
+          'TestCmp': `<div attr.readonly></div>`,
+        },
+        source: 'export class TestCmp { }'
+      }]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+          templateTypeChecker, program.getTypeChecker(), [textAttributeNotBindingFactory],
+          {} /* options */);
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(0);
+    });
   });
 });

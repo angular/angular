@@ -47,14 +47,15 @@ class TextAttributeNotBindingSpec extends
     } else {
       const expectedKey = `[${name}]`;
       const expectedValue =
-          node.value === 'true' || node.value === 'false' ? node.value : `'${node.value}'`;
+          // true/false are special cases because we don't want to convert them to strings but
+          // rather maintain the logical true/false when bound.
+          (node.value === 'true' || node.value === 'false') ? node.value : `'${node.value}'`;
       errorString = boundSyntax.replace(
           name,
           `Attribute, style, and class bindings should be enclosed with square braces: '${
               expectedKey}="${expectedValue}"'.`);
     }
-    const diagnostic = ctx.makeTemplateDiagnostic(
-        node.sourceSpan, `${errorString} Find more at https://angular.io/guide/TODO`);
+    const diagnostic = ctx.makeTemplateDiagnostic(node.sourceSpan, errorString);
     return [diagnostic];
   }
 }
