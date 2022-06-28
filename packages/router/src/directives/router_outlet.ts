@@ -183,7 +183,10 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
 
   /** @nodoc */
   ngOnDestroy(): void {
-    this.parentContexts.onChildOutletDestroyed(this.name);
+    // Ensure that the registered outlet is this one before removing it on the context.
+    if (this.parentContexts.getContext(this.name)?.outlet === this) {
+      this.parentContexts.onChildOutletDestroyed(this.name);
+    }
   }
 
   /** @nodoc */
