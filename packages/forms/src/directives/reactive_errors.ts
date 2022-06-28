@@ -6,11 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
+
+import {RuntimeErrorCode} from '../errors';
+
 import {formArrayNameExample, formControlNameExample, formGroupNameExample, ngModelGroupExample} from './error_examples';
 
 
 export function controlParentException(): Error {
-  return new Error(
+  return new RuntimeError(
+      RuntimeErrorCode.FORM_CONTROL_NAME_MISSING_PARENT,
       `formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
       directive and pass it an existing FormGroup instance (you can create one in your class).
 
@@ -20,7 +25,8 @@ export function controlParentException(): Error {
 }
 
 export function ngModelGroupException(): Error {
-  return new Error(
+  return new RuntimeError(
+      RuntimeErrorCode.FORM_CONTROL_NAME_INSIDE_MODEL_GROUP,
       `formControlName cannot be used with an ngModelGroup parent. It is only compatible with parents
       that also have a "form" prefix: formGroupName, formArrayName, or formGroup.
 
@@ -34,7 +40,9 @@ export function ngModelGroupException(): Error {
 }
 
 export function missingFormException(): Error {
-  return new Error(`formGroup expects a FormGroup instance. Please pass one in.
+  return new RuntimeError(
+      RuntimeErrorCode.FORM_GROUP_MISSING_INSTANCE,
+      `formGroup expects a FormGroup instance. Please pass one in.
 
       Example:
 
@@ -42,7 +50,8 @@ export function missingFormException(): Error {
 }
 
 export function groupParentException(): Error {
-  return new Error(
+  return new RuntimeError(
+      RuntimeErrorCode.FORM_GROUP_NAME_MISSING_PARENT,
       `formGroupName must be used with a parent formGroup directive.  You'll want to add a formGroup
     directive and pass it an existing FormGroup instance (you can create one in your class).
 
@@ -52,7 +61,8 @@ export function groupParentException(): Error {
 }
 
 export function arrayParentException(): Error {
-  return new Error(
+  return new RuntimeError(
+      RuntimeErrorCode.FORM_ARRAY_NAME_MISSING_PARENT,
       `formArrayName must be used with a parent formGroup directive.  You'll want to add a formGroup
       directive and pass it an existing FormGroup instance (you can create one in your class).
 
