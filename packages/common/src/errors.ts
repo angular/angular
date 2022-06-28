@@ -16,5 +16,5 @@ export const enum RuntimeErrorCode {
   // Pipe errors
   INVALID_PIPE_ARGUMENT = 2100,
   // NgForOf errors
-  NG_FOR_MISSING_DIFFER = 2200,
+  NG_FOR_MISSING_DIFFER = -2200,
 }
