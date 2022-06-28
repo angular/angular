@@ -103,7 +103,9 @@ runInEachFileSystem(() => {
           templateTypeChecker, program.getTypeChecker(), [textAttributeNotBindingFactory],
           {} /* options */);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
-      expect(diags.length).toBe(0);
+      expect(diags.length).toBe(1);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING));
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe(`attr.readonly`);
     });
   });
 });
