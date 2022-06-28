@@ -13,6 +13,7 @@ ng_module(
         "//packages/core",
         "//packages/localize",
         "//packages/localize/init",
+        "//packages/platform-browser",
     ],
 )
 
