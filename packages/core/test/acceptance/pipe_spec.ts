@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Directive, Inject, Injectable, InjectionToken, Input, NgModule, OnChanges, OnDestroy, Pipe, PipeTransform, SimpleChanges, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Directive, Inject, Injectable, InjectionToken, Input, NgModule, OnChanges, OnDestroy, Pipe, PipeTransform, SimpleChanges, ViewChild, ɵɵdefineInjectable, ɵɵdefinePipe, ɵɵgetInheritedFactory, ɵɵinject} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -269,6 +269,54 @@ describe('pipe', () => {
     fixture.componentInstance.condition = true;
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('a');
+  });
+
+  // This test uses AOT-generated code, because we can't capture the same behavior that we want
+  // when going through `TestBed`. Here we're testing the behavior of AOT-compiled code which
+  // differs from the JIT code in `TestBed`, because it includes a `ɵɵgetInheritedFactory` call
+  // when the pipe is using inheritance.
+  it('should be able to use DI in a Pipe that extends an Injectable', () => {
+    @Injectable({providedIn: 'root'})
+    class SayHelloService {
+      getHello() {
+        return 'Hello there';
+      }
+    }
+
+    // The generated code corresponds to the following decorator:
+    // @Injectable()
+    class ParentPipe {
+      constructor(protected sayHelloService: SayHelloService) {}
+
+      static ɵfac = (t?: any) => new(t || ParentPipe)(ɵɵinject(SayHelloService));
+      static ɵprov = ɵɵdefineInjectable({token: ParentPipe, factory: ParentPipe.ɵfac});
+    }
+
+    // The generated code corresponds to the following decorator:
+    // @Pipe({name: 'sayHello', pure: true, standalone: true})
+    class SayHelloPipe extends ParentPipe implements PipeTransform {
+      transform() {
+        return this.sayHelloService.getHello();
+      }
+
+      static override ɵfac = (t?: any) => ɵɵgetInheritedFactory(t || SayHelloPipe)(SayHelloPipe);
+      static ɵpipe =
+          ɵɵdefinePipe({name: 'sayHello', type: SayHelloPipe, pure: true, standalone: true});
+    }
+
+    @Component({
+      standalone: true,
+      selector: 'app',
+      template: '{{ value | sayHello }}',
+      imports: [SayHelloPipe]
+    })
+    class AppComponent {
+      value = 'test';
+    }
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('Hello there');
   });
 
   describe('pure', () => {
