@@ -8,8 +8,8 @@
 
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
-import {CommonModule} from '@angular/common';
-import {Component, Directive, ElementRef, HostBinding, HostListener, NgModule, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
+import {ApplicationRef, Component, Directive, ElementRef, HostBinding, HostListener, NgModule, ɵmarkDirty as markDirty} from '@angular/core';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 @Directive({
   selector: '[make-color-grey]',
@@ -122,9 +122,12 @@ class AnimationWorldComponent {
 
 @NgModule({
   declarations: [AnimationWorldComponent, MakeColorGreyDirective, BoxWithOverriddenStylesComponent],
-  imports: [CommonModule]
+  imports: [BrowserModule],
 })
 class AnimationWorldModule {
+  ngDoBootstrap(app: ApplicationRef) {
+    app.bootstrap(AnimationWorldComponent);
+  }
 }
 
-renderComponent(AnimationWorldComponent);
+platformBrowser().bootstrapModule(AnimationWorldModule, {ngZone: 'noop'});

@@ -1,14 +1,16 @@
 <!doctype html>
 
 <html>
-  <head>
-    <title>Angular Cyclic Import Example</title>
-  </head>
-  <body>
-    <!-- The Angular application will be bootstrapped into this element. -->
-    <trigger></trigger>
 
-    <!--
+<head>
+  <title>Angular Cyclic Import Example</title>
+</head>
+
+<body>
+  <!-- The Angular application will be bootstrapped into this element. -->
+  <trigger></trigger>
+
+  <!--
       Script tag which bootstraps the application. Use `?debug` in URL to select
       the debug version of the script.
 
@@ -22,10 +24,11 @@
         plugins from the devkit and terser, however mangling is disabled and the minified
         file is formatted using prettier (to ease debugging).
     -->
-    <script>
-        document.write('<script src="' +
-          (document.location.search.endsWith('debug') ? '/bundle.debug.min.js' : '/bundle.min.js') +
-          '"></' + 'script>');
-    </script>
-  </body>
+  <script>
+    document.write('<script src="' +
+      (document.location.search.endsWith('debug') ? 'bundle.debug.min.js' : 'bundle.min.js') +
+      '"></' + 'script>');
+  </script>
+</body>
+
 </html>
