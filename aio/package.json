@@ -107,7 +107,7 @@
   "devDependencies": {
     "@angular-devkit/architect-cli": "0.1400.0",
     "@angular-devkit/build-angular": "^14.0.0",
-    "@angular-eslint/builder": "^13.0.0",
+    "@angular-eslint/builder": "^14.0.0",
     "@angular-eslint/eslint-plugin": "^13.0.0",
     "@angular-eslint/eslint-plugin-template": "^13.0.0",
     "@angular-eslint/template-parser": "^13.0.0",
