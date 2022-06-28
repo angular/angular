@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '@angular/core';
+import {Type, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable, Observer, of} from 'rxjs';
 
+import {RuntimeErrorCode} from './errors';
 import {Data, ResolveData, Route, Routes} from './models';
 import {ActivatedRouteSnapshot, inheritedParamsDataResolve, ParamsInheritanceStrategy, RouterStateSnapshot} from './router_state';
 import {PRIMARY_OUTLET} from './shared';
@@ -297,7 +298,9 @@ function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): v
     if (routeWithSameOutletName) {
       const p = routeWithSameOutletName.url.map(s => s.toString()).join('/');
       const c = n.value.url.map(s => s.toString()).join('/');
-      throw new Error(`Two segments cannot have the same outlet name: '${p}' and '${c}'.`);
+      throw new RuntimeError(
+          RuntimeErrorCode.TWO_SEGMENTS_WITH_SAME_OUTLET,
+          NG_DEV_MODE && `Two segments cannot have the same outlet name: '${p}' and '${c}'.`);
     }
     names[n.value.outlet] = n.value;
   });
