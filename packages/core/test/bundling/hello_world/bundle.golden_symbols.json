@@ -108,9 +108,6 @@
     "name": "MergeMapSubscriber"
   },
   {
-    "name": "NEW_LINE"
-  },
-  {
     "name": "NG_COMP_DEF"
   },
   {
@@ -354,6 +351,9 @@
     "name": "createPlatformFactory"
   },
   {
+    "name": "createRuntimeError"
+  },
+  {
     "name": "createTView"
   },
   {
@@ -397,6 +397,9 @@
   },
   {
     "name": "forEachSingleProvider"
+  },
+  {
+    "name": "formatRuntimeError"
   },
   {
     "name": "forwardRef"
@@ -745,6 +748,9 @@
   },
   {
     "name": "stringifyCSSSelector"
+  },
+  {
+    "name": "stringifyForError"
   },
   {
     "name": "subscribeTo"

@@ -547,7 +547,7 @@ describe('View injector', () => {
          TestBed.overrideComponent(
              SimpleComponent, {set: {viewProviders: [{provide: 'service', useValue: 'service'}]}});
          expect(() => createComponent('<div simpleComponent needsService></div>'))
-             .toThrowError(/No provider for service!/);
+             .toThrowError(/NG0201: No provider found for `service`\./);
        });
 
     it('should not instantiate other directives that depend on viewProviders providers (child element)',
@@ -556,7 +556,7 @@ describe('View injector', () => {
          TestBed.overrideComponent(
              SimpleComponent, {set: {viewProviders: [{provide: 'service', useValue: 'service'}]}});
          expect(() => createComponent('<div simpleComponent><div needsService></div></div>'))
-             .toThrowError(/No provider for service!/);
+             .toThrowError(/NG0201: No provider found for `service`\./);
        });
 
     it('should instantiate directives that depend on providers of other directives', () => {
@@ -619,7 +619,7 @@ describe('View injector', () => {
       TestBed.configureTestingModule({declarations: [CycleDirective]});
       expect(() => createComponent('<div cycleDirective></div>'))
           .toThrowError(
-              'NG0200: Circular dependency in DI detected for CycleDirective. Find more at https://angular.io/errors/NG0200');
+              'NG0200: Circular dependency detected for `CycleDirective`. Find more at https://angular.io/errors/NG0200');
     });
 
     it('should not instantiate a directive in a view that has a host dependency on providers' +
@@ -673,7 +673,7 @@ describe('View injector', () => {
          TestBed.configureTestingModule({declarations: [NeedsService]});
 
          expect(() => createComponent('<div needsService></div>'))
-             .toThrowError(/No provider for service!/);
+             .toThrowError(/NG0201: No provider found for `service`\./);
        }));
 
     it('should inject null when an optional dependency cannot be resolved', () => {

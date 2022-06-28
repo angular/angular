@@ -153,7 +153,7 @@ It's identical to *Carol*'s constructor except for the additional `@SkipSelf` de
 
     <code-example format="output" hideCopy language="shell">
 
-    NG0200: Circular dependency in DI detected for BethComponent. Dependency path: BethComponent -&gt; Parent -&gt; BethComponent
+    NG0200: Circular dependency in DI detected for BethComponent. Path: BethComponent -&gt; Parent -&gt; BethComponent
 
     </code-example>
 

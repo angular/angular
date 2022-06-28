@@ -282,9 +282,6 @@
     "name": "NAMESPACE_URIS"
   },
   {
-    "name": "NEW_LINE"
-  },
-  {
     "name": "NG_COMP_DEF"
   },
   {
@@ -867,6 +864,9 @@
     "name": "createRoot"
   },
   {
+    "name": "createRuntimeError"
+  },
+  {
     "name": "createTView"
   },
   {
@@ -1021,6 +1021,9 @@
   },
   {
     "name": "forEachSingleProvider"
+  },
+  {
+    "name": "formatRuntimeError"
   },
   {
     "name": "forwardRef"
@@ -1761,10 +1764,13 @@
     "name": "stringify"
   },
   {
-    "name": "stringify10"
+    "name": "stringify11"
   },
   {
     "name": "stringifyCSSSelector"
+  },
+  {
+    "name": "stringifyForError"
   },
   {
     "name": "stripTrailingSlash"

@@ -237,9 +237,6 @@
     "name": "NAMESPACE_URIS"
   },
   {
-    "name": "NEW_LINE"
-  },
-  {
     "name": "NG_ASYNC_VALIDATORS"
   },
   {
@@ -684,6 +681,9 @@
     "name": "createPlatformFactory"
   },
   {
+    "name": "createRuntimeError"
+  },
+  {
     "name": "createTView"
   },
   {
@@ -772,6 +772,9 @@
   },
   {
     "name": "formDirectiveProvider"
+  },
+  {
+    "name": "formatRuntimeError"
   },
   {
     "name": "forwardRef"
@@ -1438,6 +1441,9 @@
   },
   {
     "name": "stringifyCSSSelector"
+  },
+  {
+    "name": "stringifyForError"
   },
   {
     "name": "subscribeTo"

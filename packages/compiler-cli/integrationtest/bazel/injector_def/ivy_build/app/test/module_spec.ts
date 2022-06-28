@@ -63,8 +63,8 @@ describe('NgModule', () => {
 
       expect(() => createInjector(AModule))
           .toThrowError(
-              'NG0200: Circular dependency in DI detected for AModule. ' +
-              'Dependency path: AModule > BModule > AModule. ' +
+              'NG0200: Circular dependency detected for `AModule`. ' +
+              'Path: AModule -> BModule -> AModule. ' +
               'Find more at https://angular.io/errors/NG0200');
     });
 

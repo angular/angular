@@ -19,7 +19,7 @@ import {noSideEffects} from '../util/closure';
 
 import {assertDirectiveDef, assertNodeInjector, assertTNodeForLView} from './assert';
 import {FactoryFn, getFactoryDef} from './definition_factory';
-import {throwCyclicDependencyError, throwProviderNotFoundError} from './errors_di';
+import {cyclicDependencyError, throwProviderNotFoundError} from './errors_di';
 import {NG_ELEMENT_ID, NG_FACTORY_DEF} from './fields';
 import {registerPreOrderHooks} from './hooks';
 import {DirectiveDef} from './interfaces/definition';
@@ -611,7 +611,7 @@ export function getNodeInjectable(
   if (isFactory(value)) {
     const factory: NodeInjectorFactory = value;
     if (factory.resolving) {
-      throwCyclicDependencyError(stringifyForError(tData[index]));
+      throw cyclicDependencyError(stringifyForError(tData[index]));
     }
     const previousIncludeViewProviders = setIncludeViewProviders(factory.canSeeViewProviders);
     factory.resolving = true;

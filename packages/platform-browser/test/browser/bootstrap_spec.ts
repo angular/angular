@@ -463,7 +463,8 @@ function bootstrap(
       bootstrap(RootCmp, [{provide: ErrorHandler, useValue: errorHandler}], [], [
         CustomModule
       ]).then(null, (e: Error) => {
-        const errorMsg = `R3InjectorError(TestModule)[IDontExist -> IDontExist -> IDontExist]: \n`;
+        const errorMsg = `NG0201: No provider found for \`IDontExist\`. ` +
+            `Source: TestModule. Find more at https://angular.io/errors/NG0201`;
         expect(e.message).toContain(errorMsg);
         done();
         return null;

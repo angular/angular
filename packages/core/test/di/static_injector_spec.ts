@@ -104,8 +104,9 @@ class SportsCar extends Car {
 
         expect(() => child.get(Car))
             .toThrowError(
-                `R3InjectorError[${stringify(Car)} -> ${stringify(Engine)}]: \n` +
-                '  NullInjectorError: No provider for Engine!');
+                'NG0201: No provider found for `Engine`. ' +
+                'Path: Car -> Engine. ' +
+                'Find more at https://angular.io/errors/NG0201');
       });
 
       it('should return a default value when not requested provider on self', () => {
@@ -132,8 +133,8 @@ class SportsCar extends Car {
         const injector = Injector.create([]);
         expect(() => injector.get(Car, undefined, InjectFlags.Self))
             .toThrowError(
-                `R3InjectorError[${stringify(Car)}]: \n` +
-                `  NullInjectorError: No provider for ${stringify(Car)}!`);
+                'NG0201: No provider found for `Car`. ' +
+                'Find more at https://angular.io/errors/NG0201');
       });
     });
 

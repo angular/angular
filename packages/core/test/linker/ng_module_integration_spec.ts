@@ -705,8 +705,9 @@ describe('NgModule', () => {
 
     it('should throw when the aliased provider does not exist', () => {
       const injector = createInjector([{provide: 'car', useExisting: SportsCar}]);
-      const errorMsg = `R3InjectorError(SomeModule)[car -> ${stringify(SportsCar)}]: \n  ` +
-          `NullInjectorError: No provider for ${stringify(SportsCar)}!`;
+      const errorMsg = 'NG0201: No provider found for `SportsCar`. ' +
+          'Source: SomeModule. Path: car -> SportsCar. ' +
+          'Find more at https://angular.io/errors/NG0201';
       expect(() => injector.get('car')).toThrowError(errorMsg);
     });
 
@@ -900,14 +901,15 @@ describe('NgModule', () => {
 
     it('should throw when no provider defined', () => {
       const injector = createInjector([]);
-      const errorMsg = `R3InjectorError(SomeModule)[NonExisting]: \n  ` +
-          'NullInjectorError: No provider for NonExisting!';
+      const errorMsg = 'NG0201: No provider found for `NonExisting`. ' +
+          'Source: SomeModule. ' +
+          'Find more at https://angular.io/errors/NG0201';
       expect(() => injector.get('NonExisting')).toThrowError(errorMsg);
     });
 
     it('should throw when trying to instantiate a cyclic dependency', () => {
       expect(() => createInjector([Car, {provide: Engine, useClass: CyclicEngine}]).get(Car))
-          .toThrowError(/NG0200: Circular dependency in DI detected for Car/g);
+          .toThrowError(/NG0200: Circular dependency detected for `Car`/g);
     });
 
     it('should support null values', () => {

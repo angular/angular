@@ -27,9 +27,6 @@
     "name": "InjectionToken"
   },
   {
-    "name": "NEW_LINE"
-  },
-  {
     "name": "NG_COMP_DEF"
   },
   {
@@ -85,6 +82,9 @@
   },
   {
     "name": "forEachSingleProvider"
+  },
+  {
+    "name": "formatRuntimeError"
   },
   {
     "name": "forwardRef"
@@ -148,6 +148,9 @@
   },
   {
     "name": "stringify"
+  },
+  {
+    "name": "stringifyForError"
   },
   {
     "name": "walkProviderTree"

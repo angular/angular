@@ -10,7 +10,6 @@ import '../util/ng_dev_mode';
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
-import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
 import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
@@ -28,12 +27,6 @@ export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
  * in the code, thus making them tree-shakable.
  */
 const DI_DECORATOR_FLAG = '__NG_DI_FLAG__';
-
-export const NG_TEMP_TOKEN_PATH = 'ngTempTokenPath';
-const NG_TOKEN_PATH = 'ngTokenPath';
-const NEW_LINE = /\n/gm;
-const NO_NEW_LINE = 'ɵ';
-export const SOURCE = '__source';
 
 /**
  * Current injector value used by `inject`.
@@ -290,37 +283,4 @@ export function attachInjectFlag(decorator: any, flag: InternalInjectFlags|Decor
  */
 export function getInjectFlag(token: any): number|undefined {
   return token[DI_DECORATOR_FLAG];
-}
-
-export function catchInjectorError(
-    e: any, token: any, injectorErrorName: string, source: string|null): never {
-  const tokenPath: any[] = e[NG_TEMP_TOKEN_PATH];
-  if (token[SOURCE]) {
-    tokenPath.unshift(token[SOURCE]);
-  }
-  e.message = formatError('\n' + e.message, tokenPath, injectorErrorName, source);
-  e[NG_TOKEN_PATH] = tokenPath;
-  e[NG_TEMP_TOKEN_PATH] = null;
-  throw e;
-}
-
-export function formatError(
-    text: string, obj: any, injectorErrorName: string, source: string|null = null): string {
-  text = text && text.charAt(0) === '\n' && text.charAt(1) == NO_NEW_LINE ? text.slice(2) : text;
-  let context = stringify(obj);
-  if (Array.isArray(obj)) {
-    context = obj.map(stringify).join(' -> ');
-  } else if (typeof obj === 'object') {
-    let parts = <string[]>[];
-    for (let key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        let value = obj[key];
-        parts.push(
-            key + ':' + (typeof value === 'string' ? JSON.stringify(value) : stringify(value)));
-      }
-    }
-    context = `{${parts.join(', ')}}`;
-  }
-  return `${injectorErrorName}${source ? '(' + source + ')' : ''}[${context}]: ${
-      text.replace(NEW_LINE, '\n  ')}`;
 }

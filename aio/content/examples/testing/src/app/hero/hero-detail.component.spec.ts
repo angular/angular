@@ -276,7 +276,7 @@ function heroModuleSetup() {
         // Throws because `inject` only has access to TestBed's injector
         // which is an ancestor of the component's injector
         inject([HeroDetailService], (hds: HeroDetailService) => service = hds))
-        .toThrowError(/No provider for HeroDetailService/);
+        .toThrowError(/No provider found for `HeroDetailService`/);
 
     // get `HeroDetailService` with component's own injector
     service = fixture.debugElement.injector.get(HeroDetailService);
