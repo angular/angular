@@ -291,7 +291,6 @@ describe('instructions', () => {
       }
       ngDevModeResetPerfCounters();
       TestBed.createComponent(NestedLoops);
-      debugger;
       expect(ngDevMode).toEqual(jasmine.objectContaining({
         // Expect: component view + ngFor(row) + ngFor(col)
         tView: 3,  // should be: 3
