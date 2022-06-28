@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "pretest": "ng version",
-    "test": "ng test && yarn e2e --prod && yarn test-ssr",
+    "test": "ng test && yarn e2e --configuration production && yarn test-ssr",
     "lint": "ng lint",
     "e2e": "ng e2e --port 0",
     "pretest-ssr": "yarn ng run cli-elements-universal:app-shell:production",
