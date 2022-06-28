@@ -6,20 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgForOf, NgForOfContext} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {Component, Input} from '@angular/core/public_api';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
+import {TestBed} from '@angular/core/testing';
 import {getSortedClassName} from '@angular/core/testing/src/styling';
 
-import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {RenderFlags, ɵɵadvance, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵproperty, ɵɵstyleMap, ɵɵstyleProp, ɵɵtemplate, ɵɵtext, ɵɵtextInterpolate1} from '../../src/render3/index';
+import {ɵɵadvance, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵproperty, ɵɵstyleMap, ɵɵstyleProp} from '../../src/render3/index';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, getSanitizationBypassType, SafeValue, unwrapSafeValue} from '../../src/sanitization/bypass';
 import {ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 import {SecurityContext} from '../../src/sanitization/security';
 
-import {ComponentFixture, TemplateFixture} from './render_util';
+import {TemplateFixture} from './render_util';
 
 describe('instructions', () => {
   function createAnchor() {
@@ -276,68 +276,25 @@ describe('instructions', () => {
 
   describe('performance counters', () => {
     it('should create tViews only once for each nested level', () => {
-      function ToDoAppComponent_NgForOf_Template_0(
-          rf: RenderFlags, ctx0: NgForOfContext<any, any>) {
-        if (rf & RenderFlags.Create) {
-          ɵɵelementStart(0, 'ul');
-          ɵɵtemplate(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, 2, 1, 'li', 0);
-          ɵɵelementEnd();
-        }
-        if (rf & RenderFlags.Update) {
-          const row_r2 = ctx0.$implicit;
-          ɵɵadvance(1);
-          ɵɵproperty('ngForOf', row_r2);
-        }
-      }
-
-      function ToDoAppComponent_NgForOf_NgForOf_Template_1(
-          rf: RenderFlags, ctx1: NgForOfContext<any, any>) {
-        if (rf & RenderFlags.Create) {
-          ɵɵelementStart(0, 'li');
-          ɵɵtext(1);
-          ɵɵelementEnd();
-        }
-        if (rf & RenderFlags.Update) {
-          const col_r3 = ctx1.$implicit;
-          ɵɵadvance(1);
-          ɵɵtextInterpolate1('', col_r3, '');
-        }
-      }
-
-      /**
-       * <ul *ngFor="let row of rows">
-       *   <li *ngFor="let col of row.cols">{{col}}</li>
-       * </ul>
-       */
+      @Component({
+        selector: 'nested-loops',
+        standalone: true,
+        template: `
+          <ul *ngFor="let row of rows">
+            <li *ngFor="let col of row.cols">{{col}}</li>
+          </ul>
+        `,
+        imports: [CommonModule],
+      })
       class NestedLoops {
         rows = [['a', 'b'], ['A', 'B'], ['a', 'b'], ['A', 'B']];
-
-        static ɵfac = function ToDoAppComponent_Factory() {
-          return new NestedLoops();
-        };
-        static ɵcmp = ɵɵdefineComponent({
-          type: NestedLoops,
-          selectors: [['nested-loops']],
-          decls: 1,
-          vars: 1,
-          consts: [[AttributeMarker.Template, 'ngFor', 'ngForOf']],
-          template:
-              function ToDoAppComponent_Template(rf: RenderFlags, ctx: NestedLoops) {
-                if (rf & RenderFlags.Create) {
-                  ɵɵtemplate(0, ToDoAppComponent_NgForOf_Template_0, 2, 1, 'ul', 0);
-                }
-                if (rf & RenderFlags.Update) {
-                  ɵɵproperty('ngForOf', ctx.rows);
-                }
-              },
-          dependencies: [NgForOf]
-        });
       }
       ngDevModeResetPerfCounters();
-      const fixture = new ComponentFixture(NestedLoops);
+      TestBed.createComponent(NestedLoops);
+      debugger;
       expect(ngDevMode).toEqual(jasmine.objectContaining({
-        // Expect: fixture view/Host view + component + ngForRow + ngForCol
-        tView: 4,  // should be: 4,
+        // Expect: component view + ngFor(row) + ngFor(col)
+        tView: 3,  // should be: 3
       }));
     });
   });
