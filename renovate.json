@@ -27,6 +27,11 @@
       "enabled": true
     },
     {
+      "matchPackagePatterns": ["^@bazel/.*", "^build_bazel.*"],
+      "groupName": "bazel setup",
+      "enabled": true
+    },
+    {
       "matchPaths": [".github/workflows/scorecard.yml"],
       "matchPackagePatterns": ["*"],
       "groupName": "scorecard action dependencies",
