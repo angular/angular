@@ -19,7 +19,8 @@ import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_bin
 import {getComponentLView} from '@angular/core/src/render3/util/discovery_utils';
 import {KeyValueArray} from '@angular/core/src/util/array_utils';
 import {TestBed} from '@angular/core/testing';
-import {TemplateFixture} from '../render_util';
+
+import {ViewFixture} from '../view_fixture';
 
 describe('lView_debug', () => {
   const mockFirstUpdatePassLView: LView = [null, {firstUpdatePass: true}] as any;
@@ -209,17 +210,25 @@ describe('lView_debug', () => {
         });
       }
 
-      const fixture = new TemplateFixture({
-        create: () => {
-          ɵɵelementStart(0, 'my-comp', 0);
-          ɵɵelement(1, 'my-child');
-          ɵɵelementEnd();
-        },
+      const fixture = new ViewFixture({
         decls: 2,
+        consts: [['my-dir', '']],
         directives: [MyComponent, MyDirective, MyChild],
-        consts: [['my-dir', '']]
       });
-      const lView = fixture.hostView;
+      fixture.enterView();
+
+      // <my-comp my-dir>
+      //   <my-child></my-child>
+      // </my-comp>
+      ɵɵelementStart(0, 'my-comp', 0);
+      ɵɵelement(1, 'my-child');
+      ɵɵelementEnd();
+
+      const lView = fixture.lView;
+
+      // Cleanup global state once we get a reference to an `lView`.
+      ViewFixture.cleanUp();
+
       const lViewDebug = lView.debug!;
       const myCompNode = lViewDebug.nodes[0];
       expect(myCompNode.factories).toEqual([MyComponent, MyDirective]);
