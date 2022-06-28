@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, COMPILER_OPTIONS, Component, destroyPlatform, forwardRef, NgModule, NgZone, TestabilityRegistry, ViewEncapsulation} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {ApplicationRef, COMPILER_OPTIONS, Component, destroyPlatform, forwardRef, NgModule, NgZone, TestabilityRegistry, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {bootstrapApplication, BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {withBody} from '@angular/private/testing';
 
@@ -36,6 +36,30 @@ describe('bootstrap', () => {
        } catch (err) {
          console.error(err);
        }
+     }));
+
+
+  it('should allow injecting VCRef into the root (bootstrapped) component',
+     withBody('before|<test-cmp></test-cmp>|after', async () => {
+       @Component({selector: 'dynamic-cmp', standalone: true, template: 'dynamic'})
+       class DynamicCmp {
+       }
+
+       @Component({selector: 'test-cmp', standalone: true, template: '(test)'})
+       class TestCmp {
+         constructor(public vcRef: ViewContainerRef) {}
+       }
+
+       expect(document.body.textContent).toEqual('before||after');
+
+       const appRef = await bootstrapApplication(TestCmp);
+       expect(document.body.textContent).toEqual('before|(test)|after');
+
+       appRef.components[0].instance.vcRef.createComponent(DynamicCmp);
+       expect(document.body.textContent).toEqual('before|(test)dynamic|after');
+
+       appRef.destroy();
+       expect(document.body.textContent).toEqual('before||after');
      }));
 
   describe('options', () => {
