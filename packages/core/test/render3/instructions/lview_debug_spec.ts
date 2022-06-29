@@ -14,7 +14,7 @@ import {TNodeDebug} from '@angular/core/src/render3/instructions/lview_debug';
 import {createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {HEADER_OFFSET, LView, LViewDebug, TView, TViewType} from '@angular/core/src/render3/interfaces/view';
-import {enterView, leaveView} from '@angular/core/src/render3/state';
+import {enterView, leaveView, specOnlyIsInstructionStateEmpty} from '@angular/core/src/render3/state';
 import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
 import {getComponentLView} from '@angular/core/src/render3/util/discovery_utils';
 import {KeyValueArray} from '@angular/core/src/util/array_utils';
@@ -25,7 +25,11 @@ import {ViewFixture} from '../view_fixture';
 describe('lView_debug', () => {
   const mockFirstUpdatePassLView: LView = [null, {firstUpdatePass: true}] as any;
   beforeEach(() => enterView(mockFirstUpdatePassLView));
-  afterEach(() => leaveView());
+  afterEach(() => {
+    while (!specOnlyIsInstructionStateEmpty()) {
+      leaveView();
+    }
+  });
 
   describe('TNode', () => {
     let tNode!: TNodeDebug;
