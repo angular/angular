@@ -8,12 +8,9 @@
 
 import {CommonModule} from '@angular/common';
 import {Component, Directive, HostBinding} from '@angular/core';
-import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {TestBed} from '@angular/core/testing';
 
-import {RendererType2} from '../../src/render/api_flags';
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
-import {domRendererFactory3, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 import {SecurityContext} from '../../src/sanitization/security';
