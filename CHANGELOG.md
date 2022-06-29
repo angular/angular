@@ -1,3 +1,26 @@
+<a name="14.0.4"></a>
+# 14.0.4 "sapphire-sandal" (2022-06-29)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c970ff9d3](https://github.com/angular/components/commit/c970ff9d37ad8ea2e1ed9bee24a38723c8bc3d60) | fix | **stepper:** isErrorState accepts AbstractControl instead of UntypedFormControl to avoid compiler errors when strict typing is enabled ([#25105](https://github.com/angular/components/pull/25105)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1b50a0743](https://github.com/angular/components/commit/1b50a07432f97710ee4c56b3bf9e7981371572eb) | fix | **mdc-chips:** missing role for trailing actions container ([#25160](https://github.com/angular/components/pull/25160)) |
+### docs
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c4ae88fb5](https://github.com/angular/components/commit/c4ae88fb5729081d16848d4cc197cfbb9ce32110) | fix | rename master to something else ([#25151](https://github.com/angular/components/pull/25151)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [301f6b0ef](https://github.com/angular/components/commit/301f6b0ef3331a2d58b9ff8d9f927f28d2bcdf3b) | fix | touch targets not excluded in densities lower than -2 ([#25108](https://github.com/angular/components/pull/25108)) |
+## Special Thanks
+Ammar Najjar, Amy Sorto, Angular Robot, James Jansson, Kristiyan Kostadinov, Paul Gschwendtner, Zach Arend and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.0-next.2"></a>
 # 14.1.0-next.2 "tin-box" (2022-06-23)
 ### cdk
