@@ -8,6 +8,7 @@
   "semanticCommits": "enabled",
   "semanticCommitScope": "",
   "semanticCommitType": "build",
+  "commitBodyTable": true,
   "separateMajorMinor": false,
   "prHourlyLimit": 3,
   "timezone": "America/Tijuana",
