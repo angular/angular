@@ -143,7 +143,7 @@
     "fs-extra": "^10.0.0",
     "globby": "^13.0.0",
     "hast-util-is-element": "^1.1.0",
-    "hast-util-to-string": "^1.0.4",
+    "hast-util-to-string": "^2.0.0",
     "html": "^1.0.0",
     "ignore": "^5.1.8",
     "image-size": "^1.0.0",
