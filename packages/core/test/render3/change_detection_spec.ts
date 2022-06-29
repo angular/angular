@@ -10,10 +10,12 @@ import {CommonModule, DOCUMENT} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
 import {withBody} from '@angular/private/testing';
 
-import {Component, DoCheck, OnInit, Renderer2, RendererFactory2} from '../../src/core';
+import {Component, DoCheck, OnInit, RendererFactory2} from '../../src/core';
 import {whenRendered} from '../../src/render3/component';
 import {getRenderedText} from '../../src/render3/index';
 import {detectChanges, markDirty} from '../../src/render3/instructions/all';
+
+import {MockRendererFactory} from './instructions/mock_renderer_factory';
 
 describe('change detection', () => {
   describe('markDirty, detectChanges, whenRendered, getRenderedText', () => {
@@ -171,13 +173,14 @@ describe('change detection', () => {
      withBody('<my-comp></my-comp>', () => {
        const log: string[] = [];
 
-       const testRendererFactory: RendererFactory2 = {
-         createRenderer: (): Renderer2 => {
-           return document as unknown as Renderer2;
-         },
-         begin: () => log.push('begin'),
-         end: () => log.push('end'),
-       };
+       class TestRendererFactory extends MockRendererFactory {
+         begin() {
+           log.push('begin');
+         }
+         end() {
+           log.push('end');
+         }
+       }
 
        @Component({
          selector: 'my-comp',
@@ -199,7 +202,7 @@ describe('change detection', () => {
            },
            {
              provide: RendererFactory2,
-             useValue: testRendererFactory,
+             useFactory: () => new TestRendererFactory(),
            }
          ]
        });

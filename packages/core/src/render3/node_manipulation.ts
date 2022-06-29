@@ -7,10 +7,9 @@
  */
 
 import {ViewEncapsulation} from '../metadata/view';
-import {Renderer2} from '../render/api';
 import {RendererStyleFlags2} from '../render/api_flags';
 import {addToArray, removeFromArray} from '../util/array_utils';
-import {assertDefined, assertDomNode, assertEqual, assertFunction, assertString} from '../util/assert';
+import {assertDefined, assertEqual, assertFunction, assertString} from '../util/assert';
 import {escapeCommentText} from '../util/dom';
 
 import {assertLContainer, assertLView, assertParentView, assertProjectionSlots, assertTNodeForLView} from './assert';
@@ -22,11 +21,10 @@ import {NodeInjectorFactory} from './interfaces/injector';
 import {unregisterLView} from './interfaces/lview_tracking';
 import {TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
-import {isProceduralRenderer, ProceduralRenderer3, Renderer3, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
+import {ProceduralRenderer3, Renderer3, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {RComment, RElement, RNode, RTemplate, RText} from './interfaces/renderer_dom';
 import {isLContainer, isLView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView, TViewType, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
-import {getNamespaceUri} from './namespaces';
 import {assertTNodeType} from './node_assert';
 import {profiler, ProfilerEvent} from './profiler';
 import {getLViewParent} from './util/view_traversal_utils';
@@ -80,7 +78,6 @@ function applyToElementOrContainer(
       lNodeToHandle = lNodeToHandle[HOST]!;
     }
     const rNode: RNode = unwrapRNode(lNodeToHandle);
-    ngDevMode && !isProceduralRenderer(renderer) && assertDomNode(rNode);
 
     if (action === WalkTNodeTreeAction.Create && parent !== null) {
       if (beforeNode == null) {
@@ -102,16 +99,15 @@ function applyToElementOrContainer(
   }
 }
 
-export function createTextNode(renderer: Renderer3, value: string): RText {
+export function createTextNode(renderer: ProceduralRenderer3, value: string): RText {
   ngDevMode && ngDevMode.rendererCreateTextNode++;
   ngDevMode && ngDevMode.rendererSetText++;
-  return isProceduralRenderer(renderer) ? renderer.createText(value) :
-                                          renderer.createTextNode(value);
+  return renderer.createText(value);
 }
 
 export function updateTextNode(renderer: Renderer3, rNode: RText, value: string): void {
   ngDevMode && ngDevMode.rendererSetText++;
-  isProceduralRenderer(renderer) ? renderer.setValue(rNode, value) : rNode.textContent = value;
+  renderer.setValue(rNode, value);
 }
 
 export function createCommentNode(renderer: Renderer3, value: string): RComment {
@@ -131,13 +127,7 @@ export function createCommentNode(renderer: Renderer3, value: string): RComment 
 export function createElementNode(
     renderer: Renderer3, name: string, namespace: string|null): RElement {
   ngDevMode && ngDevMode.rendererCreateElement++;
-  if (isProceduralRenderer(renderer)) {
-    return renderer.createElement(name, namespace);
-  } else {
-    const namespaceUri = namespace !== null ? getNamespaceUri(namespace) : null;
-    return namespaceUri === null ? renderer.createElement(name) :
-                                   renderer.createElementNS(namespaceUri, name);
-  }
+  return renderer.createElement(name, namespace);
 }
 
 
@@ -394,7 +384,7 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView|u
 export function destroyLView(tView: TView, lView: LView) {
   if (!(lView[FLAGS] & LViewFlags.Destroyed)) {
     const renderer = lView[RENDERER];
-    if (isProceduralRenderer(renderer) && renderer.destroyNode) {
+    if (renderer.destroyNode) {
       applyView(tView, lView, renderer, WalkTNodeTreeAction.Destroy, null, null);
     }
 
@@ -426,9 +416,9 @@ function cleanUpView(tView: TView, lView: LView): void {
     executeOnDestroys(tView, lView);
     processCleanups(tView, lView);
     // For component views only, the local renderer is destroyed at clean up time.
-    if (lView[TVIEW].type === TViewType.Component && isProceduralRenderer(lView[RENDERER])) {
+    if (lView[TVIEW].type === TViewType.Component) {
       ngDevMode && ngDevMode.rendererDestroy++;
-      (lView[RENDERER] as ProceduralRenderer3).destroy();
+      lView[RENDERER].destroy();
     }
 
     const declarationContainer = lView[DECLARATION_LCONTAINER];
@@ -617,23 +607,13 @@ export function nativeInsertBefore(
     renderer: Renderer3, parent: RElement, child: RNode, beforeNode: RNode|null,
     isMove: boolean): void {
   ngDevMode && ngDevMode.rendererInsertBefore++;
-  if (isProceduralRenderer(renderer)) {
-    renderer.insertBefore(parent, child, beforeNode, isMove);
-  } else {
-    const targetParent = isTemplateNode(parent) ? parent.content : parent;
-    targetParent.insertBefore(child, beforeNode, isMove);
-  }
+  renderer.insertBefore(parent, child, beforeNode, isMove);
 }
 
 function nativeAppendChild(renderer: Renderer3, parent: RElement, child: RNode): void {
   ngDevMode && ngDevMode.rendererAppendChild++;
   ngDevMode && assertDefined(parent, 'parent node must be defined');
-  if (isProceduralRenderer(renderer)) {
-    renderer.appendChild(parent, child);
-  } else {
-    const targetParent = isTemplateNode(parent) ? parent.content : parent;
-    targetParent.appendChild(child);
-  }
+  renderer.appendChild(parent, child);
 }
 
 function nativeAppendOrInsertBefore(
@@ -648,11 +628,7 @@ function nativeAppendOrInsertBefore(
 /** Removes a node from the DOM given its native parent. */
 function nativeRemoveChild(
     renderer: Renderer3, parent: RElement, child: RNode, isHostElement?: boolean): void {
-  if (isProceduralRenderer(renderer)) {
-    renderer.removeChild(parent, child, isHostElement);
-  } else {
-    parent.removeChild(child);
-  }
+  renderer.removeChild(parent, child, isHostElement);
 }
 
 /** Checks if an element is a `<template>` node. */
@@ -663,15 +639,17 @@ function isTemplateNode(node: RElement): node is RTemplate {
 /**
  * Returns a native parent of a given native node.
  */
+// TODO(pk): inline
 export function nativeParentNode(renderer: Renderer3, node: RNode): RElement|null {
-  return (isProceduralRenderer(renderer) ? renderer.parentNode(node) : node.parentNode) as RElement;
+  return renderer.parentNode(node);
 }
 
 /**
  * Returns a native sibling of a given native node.
  */
+// TODO(pk): inline
 export function nativeNextSibling(renderer: Renderer3, node: RNode): RNode|null {
-  return isProceduralRenderer(renderer) ? renderer.nextSibling(node) : node.nextSibling;
+  return renderer.nextSibling(node);
 }
 
 /**
@@ -1049,34 +1027,20 @@ function applyContainer(
  */
 export function applyStyling(
     renderer: Renderer3, isClassBased: boolean, rNode: RElement, prop: string, value: any) {
-  const isProcedural = isProceduralRenderer(renderer);
   if (isClassBased) {
     // We actually want JS true/false here because any truthy value should add the class
     if (!value) {
       ngDevMode && ngDevMode.rendererRemoveClass++;
-      if (isProcedural) {
-        (renderer as Renderer2).removeClass(rNode, prop);
-      } else {
-        (rNode as HTMLElement).classList.remove(prop);
-      }
+      renderer.removeClass(rNode, prop);
     } else {
       ngDevMode && ngDevMode.rendererAddClass++;
-      if (isProcedural) {
-        (renderer as Renderer2).addClass(rNode, prop);
-      } else {
-        ngDevMode && assertDefined((rNode as HTMLElement).classList, 'HTMLElement expected');
-        (rNode as HTMLElement).classList.add(prop);
-      }
+      renderer.addClass(rNode, prop);
     }
   } else {
     let flags = prop.indexOf('-') === -1 ? undefined : RendererStyleFlags2.DashCase as number;
     if (value == null /** || value === undefined */) {
       ngDevMode && ngDevMode.rendererRemoveStyle++;
-      if (isProcedural) {
-        (renderer as Renderer2).removeStyle(rNode, prop, flags);
-      } else {
-        (rNode as HTMLElement).style.removeProperty(prop);
-      }
+      renderer.removeStyle(rNode, prop, flags);
     } else {
       // A value is important if it ends with `!important`. The style
       // parser strips any semicolons at the end of the value.
@@ -1089,12 +1053,7 @@ export function applyStyling(
       }
 
       ngDevMode && ngDevMode.rendererSetStyle++;
-      if (isProcedural) {
-        (renderer as Renderer2).setStyle(rNode, prop, value, flags);
-      } else {
-        ngDevMode && assertDefined((rNode as HTMLElement).style, 'HTMLElement expected');
-        (rNode as HTMLElement).style.setProperty(prop, value, isImportant ? 'important' : '');
-      }
+      renderer.setStyle(rNode, prop, value, flags);
     }
   }
 }
@@ -1112,11 +1071,7 @@ export function applyStyling(
  */
 export function writeDirectStyle(renderer: Renderer3, element: RElement, newValue: string) {
   ngDevMode && assertString(newValue, '\'newValue\' should be a string');
-  if (isProceduralRenderer(renderer)) {
-    renderer.setAttribute(element, 'style', newValue);
-  } else {
-    (element as HTMLElement).style.cssText = newValue;
-  }
+  renderer.setAttribute(element, 'style', newValue);
   ngDevMode && ngDevMode.rendererSetStyle++;
 }
 
@@ -1132,15 +1087,11 @@ export function writeDirectStyle(renderer: Renderer3, element: RElement, newValu
  */
 export function writeDirectClass(renderer: Renderer3, element: RElement, newValue: string) {
   ngDevMode && assertString(newValue, '\'newValue\' should be a string');
-  if (isProceduralRenderer(renderer)) {
-    if (newValue === '') {
-      // There are tests in `google3` which expect `element.getAttribute('class')` to be `null`.
-      renderer.removeAttribute(element, 'class');
-    } else {
-      renderer.setAttribute(element, 'class', newValue);
-    }
+  if (newValue === '') {
+    // There are tests in `google3` which expect `element.getAttribute('class')` to be `null`.
+    renderer.removeAttribute(element, 'class');
   } else {
-    element.className = newValue;
+    renderer.setAttribute(element, 'class', newValue);
   }
   ngDevMode && ngDevMode.rendererSetClassName++;
 }
