@@ -561,16 +561,10 @@
     "name": "isPositive"
   },
   {
-    "name": "isProceduralRenderer"
-  },
-  {
     "name": "isPromise"
   },
   {
     "name": "isPromise2"
-  },
-  {
-    "name": "isTemplateNode"
   },
   {
     "name": "isTypeProvider"

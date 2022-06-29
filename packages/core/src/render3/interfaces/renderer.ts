@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RendererStyleFlags2, RendererType2} from '../../render/api_flags';
+import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../../util/security/trusted_type_defs';
+
+import {RComment, RElement, RNode, RText} from './renderer_dom';
+
 /**
  * The goal here is to make sure that the browser DOM API is the Renderer.
  * We do this by defining a subset of DOM API to be the renderer and then
@@ -15,45 +20,9 @@
  * it will be easy to implement such API.
  */
 
-import {RendererStyleFlags2, RendererType2} from '../../render/api_flags';
-import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../../util/security/trusted_type_defs';
-
-import {getDocument} from './document';
-import {RComment, RElement, RNode, RText} from './renderer_dom';
-
-// TODO: cleanup once the code is merged in angular/angular
-export enum RendererStyleFlags3 {
-  Important = 1 << 0,
-  DashCase = 1 << 1
-}
-
-export type Renderer3 = ObjectOrientedRenderer3|Renderer;
-
 export type GlobalTargetName = 'document'|'window'|'body';
 
 export type GlobalTargetResolver = (element: any) => EventTarget;
-
-/**
- * Object Oriented style of API needed to create elements and text nodes.
- *
- * This is the native browser API style, e.g. operations are methods on individual objects
- * like HTMLElement. With this style, no additional code is needed as a facade
- * (reducing payload size).
- * */
-export interface ObjectOrientedRenderer3 {
-  createComment(data: string): RComment;
-  createElement(tagName: string): RElement;
-  createElementNS(namespace: string, tagName: string): RElement;
-  createTextNode(data: string): RText;
-
-  querySelector(selectors: string): RElement|null;
-}
-
-/** Returns whether the `renderer` is a `ProceduralRenderer3` */
-export function isProceduralRenderer(renderer: Renderer|
-                                     ObjectOrientedRenderer3): renderer is Renderer {
-  return !!((renderer as any).listen);
-}
 
 /**
  * Procedural style of API needed to create elements and text nodes.
@@ -86,10 +55,8 @@ export interface Renderer {
   removeAttribute(el: RElement, name: string, namespace?: string|null): void;
   addClass(el: RElement, name: string): void;
   removeClass(el: RElement, name: string): void;
-  setStyle(
-      el: RElement, style: string, value: any,
-      flags?: RendererStyleFlags2|RendererStyleFlags3): void;
-  removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2|RendererStyleFlags3): void;
+  setStyle(el: RElement, style: string, value: any, flags?: RendererStyleFlags2): void;
+  removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2): void;
   setProperty(el: RElement, name: string, value: any): void;
   setValue(node: RText|RComment, value: string): void;
 
@@ -100,28 +67,10 @@ export interface Renderer {
 }
 
 export interface RendererFactory {
-  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer3;
+  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer;
   begin?(): void;
   end?(): void;
 }
-
-let renderer3Enabled = false;
-
-export function enableRenderer3() {
-  renderer3Enabled = true;
-}
-
-export const domRendererFactory3: RendererFactory = {
-  createRenderer: (hostElement: RElement|null, rendererType: RendererType2|null): Renderer3 => {
-    if (!renderer3Enabled) {
-      throw new Error(
-          ngDevMode ?
-              `Renderer3 is not supported. This problem is likely caused by some component in the hierarchy was constructed without a correct parent injector.` :
-              'Renderer3 disabled');
-    }
-    return getDocument();
-  }
-};
 
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

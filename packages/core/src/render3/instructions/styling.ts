@@ -15,7 +15,7 @@ import {assertFirstUpdatePass} from '../assert';
 import {bindingUpdated} from '../bindings';
 import {DirectiveDef} from '../interfaces/definition';
 import {AttributeMarker, TAttributes, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
-import {Renderer3} from '../interfaces/renderer';
+import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
 import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
 import {LView, RENDERER, TData, TView} from '../interfaces/view';
@@ -25,6 +25,7 @@ import {insertTStylingBinding} from '../styling/style_binding_list';
 import {getLastParsedKey, getLastParsedValue, parseClassName, parseClassNameNext, parseStyle, parseStyleNext} from '../styling/styling_parser';
 import {NO_CHANGE} from '../tokens';
 import {getNativeByIndex} from '../util/view_utils';
+
 import {setDirectiveInputsWhichShadowsStyling} from './property';
 
 
@@ -634,7 +635,7 @@ export function styleKeyValueArraySet(keyValueArray: KeyValueArray<any>, key: st
  * @param bindingIndex Binding index of the binding.
  */
 function updateStylingMap(
-    tView: TView, tNode: TNode, lView: LView, renderer: Renderer3,
+    tView: TView, tNode: TNode, lView: LView, renderer: Renderer,
     oldKeyValueArray: KeyValueArray<any>, newKeyValueArray: KeyValueArray<any>,
     isClassBased: boolean, bindingIndex: number) {
   if (oldKeyValueArray as KeyValueArray<any>| NO_CHANGE === NO_CHANGE) {
@@ -704,7 +705,7 @@ function updateStylingMap(
  * @param bindingIndex Binding index of the binding.
  */
 function updateStyling(
-    tView: TView, tNode: TNode, lView: LView, renderer: Renderer3, prop: string,
+    tView: TView, tNode: TNode, lView: LView, renderer: Renderer, prop: string,
     value: string|undefined|null|boolean, isClassBased: boolean, bindingIndex: number) {
   if (!(tNode.type & TNodeType.AnyRNode)) {
     // It is possible to have styling on non-elements (such as ng-container).
@@ -786,7 +787,7 @@ function findStylingValue(
       valueAtLViewIndex = isStylingMap ? EMPTY_ARRAY : undefined;
     }
     let currentValue = isStylingMap ? keyValueArrayGet(valueAtLViewIndex, prop) :
-                                      key === prop ? valueAtLViewIndex : undefined;
+                                      (key === prop ? valueAtLViewIndex : undefined);
     if (containsStatics && !isStylingValuePresent(currentValue)) {
       currentValue = keyValueArrayGet(rawKey as KeyValueArray<any>, prop);
     }
