@@ -2634,14 +2634,6 @@
   dependencies:
     "@types/node" "*"
 
-"@types/inquirer@^8.0.0":
-  version "8.2.1"
-  resolved "https://registry.yarnpkg.com/@types/inquirer/-/inquirer-8.2.1.tgz#28a139be3105a1175e205537e8ac10830e38dbf4"
-  integrity sha512-wKW3SKIUMmltbykg4I5JzCVzUhkuD9trD6efAmYgN2MrSntY0SMRQzEnD3mkyJ/rv9NLbTC7g3hKKE86YwEDLw==
-  dependencies:
-    "@types/through" "*"
-    rxjs "^7.2.0"
-
 "@types/is-windows@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/is-windows/-/is-windows-1.0.0.tgz#1011fa129d87091e2f6faf9042d6704cdf2e7be0"
@@ -2894,13 +2886,6 @@
   version "0.19.32"
   resolved "https://registry.yarnpkg.com/@types/systemjs/-/systemjs-0.19.32.tgz#e9204c4cdbc8e275d645c00e6150e68fc5615a24"
   integrity sha512-8jtvyxk9DI+KTQ/uh8iMW3FqCG2JnBPO6tEb2Z9r+4NDNpdBwOLjwIAGnprgyX/4yA6sgnc3sGqNpApZEJsXFg==
-
-"@types/through@*":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@types/through/-/through-0.0.30.tgz#e0e42ce77e897bd6aead6f6ea62aeb135b8a3895"
-  integrity sha512-FvnCJljyxhPM3gkRgWmxmDZyAQSiBQQWLI0A0VFL0K7W1oRUrPJSqNO0NvTnLkBcotdlp3lKvaT0JrnyRDkzOg==
-  dependencies:
-    "@types/node" "*"
 
 "@types/tmp@^0.2.1":
   version "0.2.3"

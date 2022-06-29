@@ -94,7 +94,6 @@
     "@types/events": "3.0.0",
     "@types/filesystem": "^0.0.32",
     "@types/hammerjs": "2.0.41",
-    "@types/inquirer": "^8.0.0",
     "@types/jasmine": "^4.0.0",
     "@types/jasmine-ajax": "^3.3.1",
     "@types/jasminewd2": "^2.0.8",
