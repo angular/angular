@@ -5,17 +5,17 @@ A service is typically a class with a narrow, well-defined purpose.
 It should do something specific and do it well.
 
 Angular distinguishes components from services to increase modularity and reusability.
-By separating a component's view-related functionality from other kinds of processing, you can make your component classes lean and efficient.
+By separating a component's view-related operations from other kinds of processing, you can make your component classes lean and efficient.
 
 Ideally, a component's job is to enable the user experience and nothing more.
-A component should present properties and methods for data binding, in order to mediate between the view \(rendered by the template\) and the application logic \(which often includes some notion of a *model*\).
+A component should present properties and methods for data binding to mediate between the view and the application logic. The view is what the template renders and the application logic is what includes the notion of a *model*.
 
 A component can delegate certain tasks to services, such as fetching data from the server, validating user input, or logging directly to the console.
 By defining such processing tasks in an *injectable service class*, you make those tasks available to any component.
 You can also make your application more adaptable by injecting different providers of the same kind of service, as appropriate in different circumstances.
 
 Angular doesn't *enforce* these principles.
-Angular does help you *follow* these principles by making it easy to factor your application logic into services and make those services available to components through *dependency injection*.
+Instead, Angular helps you *follow* these principles by making it easy to factor your application logic into services. In Angular, *dependency injection* makes those services available to components.
 
 ## Service examples
 
@@ -41,7 +41,7 @@ DI is wired into the Angular framework and used everywhere to provide new compon
 Components consume services; that is, you can *inject* a service into a component, giving the component access to that service class.
 
 To define a class as a service in Angular, use the `@Injectable()` decorator to provide the metadata that allows Angular to inject it into a component as a *dependency*.
-Similarly, use the `@Injectable()` decorator to indicate that a component or other class \(such as another service, a pipe, or an NgModule\) *has* a dependency.
+Similarly, use the `@Injectable()` decorator to indicate that a component or other class, such as another service, a pipe, or an NgModule, *has* a dependency.
 
 *   The *injector* is the main mechanism.
     Angular creates an application-wide injector for you during the bootstrap process, and additional injectors as needed.

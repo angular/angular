@@ -14,7 +14,7 @@ See the <live-example></live-example> for a working example containing the code 
 
 ## Creating an injectable service
 
-To generate a new `HeroService` class in the `src/app/heroes` folder use the following [Angular CLI](cli) command.
+To create a new `HeroService` class in the `src/app/heroes` directory, use the following [Angular CLI](cli) command.
 
 <code-example format="shell" language="shell">
 
@@ -69,7 +69,7 @@ When you create a class whose `constructor()` has parameters, specify the type a
 Here, the `constructor()` specifies a type of `Logger` and stores the instance of `Logger` in a private field called `logger`.
 
 The following code tabs feature the `Logger` service and two versions of `HeroService`.
-The first version of `HeroService` does not depend on the `Logger` service.
+The first version of `HeroService` doesn't depend on the `Logger` service.
 The revised second version does depend on `Logger` service.
 
 <code-tabs>

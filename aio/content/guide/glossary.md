@@ -34,7 +34,7 @@ This glossary lists the most prominent terms and a few less familiar ones with u
 
 <a id="aot"></a>
 
-## ahead-of-time (AOT) compilation
+## Ahead-of-time (AOT) compilation
 
 The Angular ahead-of-time \(AOT\) compiler converts Angular HTML and TypeScript code into efficient JavaScript code during the build phase, before the browser downloads and runs that code.
 This is the best compilation mode for production environments, with decreased load time and increased performance compared to [just-in-time (JIT) compilation][AioGuideGlossaryJustInTimeJitCompilation].
@@ -110,7 +110,7 @@ Learn more in [Bootstrapping][AioGuideBootstrapping].
 
 ## builder
 
-A function that uses the [Architect][AioGuideGlossaryArchitect] API to perform a complex process such as "build" or "test".
+A function that uses the [Architect][AioGuideGlossaryArchitect] API to perform a complex process such as `build` or `test`.
 The builder code is defined in an [npm package][AioGuideGlossaryNpmPackage].
 
 For example, [BrowserBuilder][GithubAngularAngularCliTreePrimaryPackagesAngularDevkitBuildAngularSrcBuildersBrowser] runs a [webpack][JsWebpackMain] build for a browser target and [KarmaBuilder][GithubAngularAngularCliTreePrimaryPackagesAngularDevkitBuildAngularSrcBuildersKarma] starts the Karma server and runs a webpack build for unit tests.
@@ -131,7 +131,7 @@ Here is a summary of the case types:
 |                                                                           | Details                                                                                                                                                                      | example             |
 |:---                                                                       |:---                                                                                                                                                                          |:---                 |
 | camelCase                                                                 | Symbols, properties, methods, pipe names, non-component directive selectors, constants. <br /> Standard or lower camel case uses lowercase on the first letter of the item.  | `selectedHero`      |
-| UpperCamelCase <br /> PascalCase                                          | Class names, including classes that define components, interfaces, NgModules, directives, and pipes. <br /> Upper camel case uses uppercase on the first letter of the item. | `HeroListComponent` |
+| UpperCamelCase <br /> PascalCase                                          | Class names, including classes that define components, interfaces, NgModules, directives, and pipes. <br /> Upper camel case uses uppercase on the first letter of the item. | `HeroComponent` |
 | dash-case <br /> kebab-case                                               | Descriptive part of file names, component selectors.                                                                                                                         | `app-hero-list`     |
 | underscore_case <br /> snake_case                                         | Not typically used in Angular. <br /> Snake case uses words connected with underscores.                                                                                      | `convert_link_mode` |
 | UPPER_UNDERSCORE_CASE <br /> UPPER_SNAKE_CASE <br /> SCREAMING_SNAKE_CASE | Traditional for constants. <br /> This case is acceptable, but camelCase is preferred. <br /> Upper snake case uses words in all capital letters connected with underscores. | `FIX_ME`            |
@@ -290,7 +290,7 @@ A directive class definition is immediately preceded by a `@Directive()` [decora
 A directive class is usually associated with an HTML element or attribute, and that element or attribute is often referred to as the directive itself.
 When Angular finds a directive in an HTML [template][AioGuideGlossaryTemplate], it creates the matching directive class instance and gives the instance control over that portion of the browser DOM.
 
-There are three categories of directive:
+Angular has three categories of directive:
 
 *   [Components][AioGuideGlossaryComponent] use `@Component()` to associate a template with a class.
     `@Component()` is an extension of `@Directive()`.
@@ -1132,6 +1132,7 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 [AioGuideHierarchicalDependencyInjection]: guide/hierarchical-dependency-injection "Hierarchical injectors | Angular"
 
 [AioGuideInterpolation]: guide/interpolation "Text interpolation | Angular"
+
 <!-- [AioGuideInterpolationTemplateExpressions]: guide/interpolation#template-expressions "Template expressions - Text interpolation | Angular" -->
 
 [AioGuideNgmodules]: guide/ngmodules "NgModules | Angular"

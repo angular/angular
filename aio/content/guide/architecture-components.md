@@ -1,16 +1,16 @@
 # Introduction to components and templates
 
 A *component* controls a patch of screen called a [*view*](guide/glossary#view "Definition of view").
-For example, individual components define and control each of the following views from the [Tour of Heroes tutorial](tutorial):
+For example, individual components define and control each of these aspects of an application:
 
 *   The application root with the navigation links
 *   The list of heroes
 *   The hero editor
 
-You define a component's application logic &mdash;what it does to support the view&mdash; inside a class.
+You define a component's application logic that supports the view inside a class.
 The class interacts with the view through an API of properties and methods.
 
-For example, `HeroListComponent` has a `heroes` property that holds an array of heroes.
+In this example, `HeroListComponent` has a `heroes` property that holds an array of heroes.
 Its `selectHero()` method sets a `selectedHero` property when the user clicks to choose a hero from that list.
 The component acquires the heroes from a service, which is a TypeScript [parameter property](https://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) on the constructor.
 The service is provided to the component through the dependency injection system.
@@ -71,7 +71,7 @@ The component can also define a *view hierarchy*, which contains *embedded views
 
 </div>
 
-A view hierarchy can include views from components in the same NgModule, but it also can \(and often does\) include views from components that are defined in different NgModules.
+A view hierarchy can include views from components in the same NgModule, but it can also include views from components that are defined in different NgModules.
 
 ## Template syntax
 
@@ -90,7 +90,7 @@ The template-syntax elements tell Angular how to render the HTML to the screen, 
     See more about [data binding](#data-binding) below.
 
 *   The `<app-hero-detail>` tag in the example is an element that represents a new component, `HeroDetailComponent`.
-    `HeroDetailComponent` \(code not shown\) defines the hero-detail child view of `HeroListComponent`.
+    `HeroDetailComponent`  defines the hero-detail child view of `HeroListComponent`.
     Notice how custom components like this mix seamlessly with native HTML in the same layouts.
 
 ### Data binding
@@ -220,7 +220,10 @@ The `ngModel` directive, which implements two-way data binding, is an example of
 
 <code-example header="src/app/hero-detail.component.html (ngModel)" path="architecture/src/app/hero-detail.component.html" region="ngModel"></code-example>
 
-Angular has more pre-defined directives that either alter the layout structure \(for example, [ngSwitch](guide/built-in-directives#ngSwitch)\) or modify aspects of DOM elements and components \(for example, [ngStyle](guide/built-in-directives#ngstyle) and [ngClass](guide/built-in-directives#ngClass)\).
+Angular has pre-defined directives that change: 
+
+* The layout structure, such as [ngSwitch](guide/built-in-directives#ngSwitch), and
+* Aspects of DOM elements and components, such as [ngStyle](guide/built-in-directives#ngstyle) and [ngClass](guide/built-in-directives#ngClass).
 
 <div class="alert is-helpful">
 
