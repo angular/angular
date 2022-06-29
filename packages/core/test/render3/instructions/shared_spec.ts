@@ -8,10 +8,10 @@
 
 import {createLView, createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
-import {domRendererFactory3} from '@angular/core/src/render3/interfaces/renderer';
 import {HEADER_OFFSET, LViewFlags, TVIEW, TViewType} from '@angular/core/src/render3/interfaces/view';
 import {enterView, getBindingRoot, getLView, setBindingIndex, setSelectedIndex} from '@angular/core/src/render3/state';
 
+import {MockRendererFactory} from './mock_renderer_factory';
 
 
 /**
@@ -30,7 +30,8 @@ import {enterView, getBindingRoot, getLView, setBindingIndex, setSelectedIndex} 
  * ```
  */
 export function enterViewWithOneDiv() {
-  const renderer = domRendererFactory3.createRenderer(null, null);
+  const rendererFactory = new MockRendererFactory();
+  const renderer = rendererFactory.createRenderer(null, null);
   const div = renderer.createElement('div');
   const consts = 1;
   const vars = 60;  // Space for directive expando,  template, component + 3 directives if we assume
@@ -41,8 +42,8 @@ export function enterViewWithOneDiv() {
   tView.expandoStartIndex = HEADER_OFFSET + 10;
   const tNode = tView.firstChild = createTNode(tView, null!, TNodeType.Element, 0, 'div', null);
   const lView = createLView(
-      null, tView, null, LViewFlags.CheckAlways, null, null, domRendererFactory3, renderer, null,
-      null, null);
+      null, tView, null, LViewFlags.CheckAlways, null, null, rendererFactory, renderer, null, null,
+      null);
   lView[HEADER_OFFSET] = div;
   tView.data[HEADER_OFFSET] = tNode;
   enterView(lView);
