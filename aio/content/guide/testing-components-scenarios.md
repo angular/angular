@@ -10,7 +10,7 @@ If you'd like to experiment with the application that this guide describes, <liv
 
 ## Component binding
 
-In the example app, the `BannerComponent` presents static title text in the HTML template.
+In the example application, the `BannerComponent` presents static title text in the HTML template.
 
 After a few changes, the `BannerComponent` presents a dynamic title by binding to the component's `title` property like this.
 
@@ -169,7 +169,7 @@ But not the real `UserService`.
 #### Provide service test doubles
 
 A *component-under-test* doesn't have to be injected with real services.
-In fact, it is usually better if they are test doubles \(stubs, fakes, spies, or mocks\).
+In fact, it is usually better if they are test doubles such as, stubs, fakes, spies, or mocks.
 The purpose of the spec is to test the component, not the service, and real services can be trouble.
 
 Injecting the real `UserService` could be a nightmare.
@@ -185,7 +185,7 @@ This particular test suite supplies a minimal mock of the `UserService` that sat
 
 #### Get injected services
 
-The tests need access to the \(stub\) `UserService` injected into the `WelcomeComponent`.
+The tests need access to the stub `UserService` injected into the `WelcomeComponent`.
 
 Angular has a hierarchical injection system.
 There can be injectors at multiple levels, from the root injector created by the `TestBed` down through the component tree.
@@ -343,14 +343,14 @@ XHR calls within a test are rare, but if you need to call XHR, see the [`waitFor
 
 #### The `tick()` function
 
-You do have to call [tick()](api/core/testing/tick) to advance the \(virtual\) clock.
+You do have to call [tick()](api/core/testing/tick) to advance the virtual clock.
 
 Calling [tick()](api/core/testing/tick) simulates the passage of time until all pending asynchronous activities finish.
 In this case, it waits for the error handler's `setTimeout()`.
 
-The [tick()](api/core/testing/tick) function accepts milliseconds and tickOptions as parameters, the millisecond \(defaults to 0 if not provided\) parameter represents how much the virtual clock advances.
+The [tick()](api/core/testing/tick) function accepts `millis` and `tickOptions` as parameters. The `millis` parameter specifies how much the virtual clock advances and defaults to `0` if not provided.
 For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use `tick(100)` to trigger the fn callback.
-The tickOptions is an optional parameter with a property called `processNewMacroTasksSynchronously` \(defaults to true\) that represents whether to invoke new generated macro tasks when ticking.
+The optional `tickOptions` parameter has a property named `processNewMacroTasksSynchronously`. The `processNewMacroTasksSynchronously` property represents whether to invoke new generated macro tasks when ticking and defaults to `true`.
 
 <code-example path="testing/src/app/demo/async-helper.spec.ts" region="fake-async-test-tick"></code-example>
 
@@ -359,13 +359,13 @@ It's a companion to `fakeAsync()` and you can only call it within a `fakeAsync()
 
 #### tickOptions
 
+In this example, you have a new macro task, the nested `setTimeout` function. By default, when the `tick` is setTimeout, `outside` and `nested` will both be triggered.
+
 <code-example path="testing/src/app/demo/async-helper.spec.ts" region="fake-async-test-tick-new-macro-task-sync"></code-example>
 
-In this example, you have a new macro task \(nested setTimeout\), by default, when the `tick` is setTimeout `outside` and `nested` will both be triggered.
+In some case, you don't want to trigger the new macro task when ticking. You can use `tick(millis, {processNewMacroTasksSynchronously: false})` to not invoke a new macro task.
 
 <code-example path="testing/src/app/demo/async-helper.spec.ts" region="fake-async-test-tick-new-macro-task-async"></code-example>
-
-And in some case, you don't want to trigger the new macro task when ticking, you can use `tick(milliseconds, {processNewMacroTasksSynchronously: false})` to not invoke new macro task.
 
 #### Comparing dates inside fakeAsync()
 
@@ -714,12 +714,12 @@ The test triggered a "click" event.
 
 <code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="trigger-event-handler"></code-example>
 
-The test assumes \(correctly in this case\) that the runtime event handler &mdash;the component's `click()` method&mdash; doesn't care about the event object.
+In this case, the test correctly assumes that the runtime event handler, the component's `click()` method, doesn't care about the event object.
 
 <div class="alert is-helpful">
 
 Other handlers are less forgiving.
-For example, the `RouterLink` directive expects an object with a `button` property that identifies which mouse button \(if any\) was pressed during the click.
+For example, the `RouterLink` directive expects an object with a `button` property that identifies which mouse button, if any, was pressed during the click.
 The `RouterLink` directive throws an error if the event object is missing.
 
 </div>
@@ -742,7 +742,7 @@ Make that consistent and straightforward by encapsulating the *click-triggering*
 
 The first parameter is the *element-to-click*.
 If you want, pass a custom event object as the second parameter.
-The default is a \(partial\) [left-button mouse event object](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) accepted by many handlers including the `RouterLink` directive.
+The default is a partial [left-button mouse event object](https://developer.mozilla.org/docs/Web/API/MouseEvent/button) accepted by many handlers including the `RouterLink` directive.
 
 <div class="alert is-important">
 
@@ -1263,8 +1263,8 @@ In addition to the support it receives from the default testing module `CommonMo
 
 *   `NgModel` and friends in the `FormsModule` to enable two-way data binding
 *   The `TitleCasePipe` from the `shared` folder
-*   Router services \(which these tests are stubbing\)
-*   Hero data access services \(also stubbed\)
+*   The Router services that these tests are stubbing out
+*   The Hero data access services that are also stubbed out
 
 One approach is to configure the testing module from the individual pieces as in this example:
 
@@ -1286,7 +1286,7 @@ The test configuration can use the `SharedModule` too as seen in this alternativ
 
 <code-example header="app/hero/hero-detail.component.spec.ts (SharedModule setup)" path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-shared-module"></code-example>
 
-It's a bit tighter and smaller, with fewer import statements \(not shown\).
+It's a bit tighter and smaller, with fewer import statements, which are not shown in this example.
 
 <a id="feature-module-import"></a>
 
@@ -1350,7 +1350,7 @@ The `TestBed.overrideComponent` method can replace the component's `providers` w
 
 <code-example header="app/hero/hero-detail.component.spec.ts (Override setup)" path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-override"></code-example>
 
-Notice that `TestBed.configureTestingModule` no longer provides a \(fake\) `HeroService` because it's [not needed](#spy-stub).
+Notice that `TestBed.configureTestingModule` no longer provides a fake `HeroService` because it's [not needed](#spy-stub).
 
 <a id="override-component-method"></a>
 

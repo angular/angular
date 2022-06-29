@@ -1,4 +1,4 @@
-# Router Reference
+# Router reference
 
 The following sections highlight some core router concepts.
 
@@ -7,7 +7,7 @@ The following sections highlight some core router concepts.
 ## Router imports
 
 The Angular Router is an optional service that presents a particular component view for a given URL.
-It is not part of the Angular core and thus is in its own library package, `@angular/router`.
+It isn't part of the Angular core and thus is in its own library package, `@angular/router`.
 
 Import what you need from it as you would from any other Angular package.
 
@@ -27,7 +27,7 @@ A routed Angular application has one singleton instance of the `Router` service.
 When the browser's URL changes, that router looks for a corresponding `Route` from which it can determine the component to display.
 
 A router has no routes until you configure it.
-The following example creates five route definitions, configures the router via the `RouterModule.forRoot()` method, and adds the result to the `AppModule`'s `imports` array.
+The following example creates five route definitions, configures the router via the `RouterModule.forRoot()` method, and adds the result to the `imports` array of the `AppModule`'.
 
 <code-example header="src/app/app.module.ts (excerpt)" path="router/src/app/app.module.0.ts"></code-example>
 
@@ -85,7 +85,7 @@ Consider the following template:
 <code-example header="src/app/app.component.html" path="router/src/app/app.component.1.html"></code-example>
 
 The `RouterLink` directives on the anchor tags give the router control over those elements.
-The navigation paths are fixed, so you can assign a string to the `routerLink` \(a "one-time" binding\).
+The navigation paths are fixed, so you can assign a string as a one-time binding to the `routerLink`.
 
 Had the navigation path been more dynamic, you could have bound to a template expression that returned an array of route link parameters; that is, the [link parameters array](guide/router#link-parameters-array).
 The router resolves that array into a complete URL.
@@ -104,7 +104,7 @@ routerLinkActive="..."
 
 </code-example>
 
-The template expression to the right of the equal sign, `=`, contains a space-delimited string of CSS classes that the Router adds when this link is active \(and removes when the link is inactive\).
+The template expression to the right of the equal sign, `=`, contains a space-delimited string of CSS classes that the Router adds when this link is active and removes when the link is inactive.
 You set the `RouterLinkActive` directive to a string of classes such as `routerLinkActive="active fluffy"` or bind it to a component property that returns such a string.
 For example,
 
@@ -138,7 +138,7 @@ It has a great deal of useful information including:
 
 | Property        | Details |
 |:---             |:---     |
-| `url`           | An `Observable` of the route path(s), represented as an array of strings for each part of the route path.                                                                                                                                                        |
+| `url`           | An `Observable` of the route paths, represented as an array of strings for each part of the route path.                                                                                                                                                        |
 | `data`          | An `Observable` that contains the `data` object provided for the route. Also contains any resolved values from the [resolve guard](guide/router-tutorial-toh#resolve-guard).                                                                                     |
 | `params`        | An `Observable` that contains the required and [optional parameters](guide/router-tutorial-toh#optional-route-parameters) specific to the route.                                                                                                                 |
 | `paramMap`      | An `Observable` that contains a [map](api/router/ParamMap) of the required and [optional parameters](guide/router-tutorial-toh#optional-route-parameters) specific to the route. The map supports retrieving single and multiple values from the same parameter. |
@@ -154,7 +154,7 @@ It has a great deal of useful information including:
 ## Router events
 
 During each navigation, the `Router` emits navigation events through the `Router.events` property.
-These events range from when the navigation starts and ends to many points in between. The full list of navigation events is displayed in the following table.
+These events are shown in the following table.
 
 | Router event                                              | Details |
 |:---                                                       |:---     |
@@ -189,9 +189,9 @@ Here are the key `Router` terms and their meanings:
 | `Routes`              | Defines an array of Routes, each mapping a URL path to a component.                                                                                                                              |
 | `Route`               | Defines how the router should navigate to a component based on a URL pattern. Most routes consist of a path and a component type.                                                                |
 | `RouterOutlet`        | The directive \(`<router-outlet>`\) that marks where the router displays a view.                                                                                                                 |
-| `RouterLink`          | The directive for binding a clickable HTML element to a route. Clicking an element with a `routerLink` directive that is bound to a *string* or a *link parameters array* triggers a navigation. |
+| `RouterLink`          | The directive for binding a clickable HTML element to a route. Clicking an element with a `routerLink` directive that's bound to a *string* or a *link parameters array* triggers a navigation. |
 | `RouterLinkActive`    | The directive for adding/removing classes from an HTML element when an associated `routerLink` contained on or inside the element becomes active/inactive. It can also set the `aria-current` of an active link for better accessibility.                                       |
-| `ActivatedRoute`      | A service that is provided to each route component that contains route specific information such as route parameters, static data, resolve data, global query params, and the global fragment.   |
+| `ActivatedRoute`      | A service that's provided to each route component that contains route specific information such as route parameters, static data, resolve data, global query parameters, and the global fragment.   |
 | `RouterState`         | The current state of the router including a tree of the currently activated routes together with convenience methods for traversing the route tree.                                              |
 | Link parameters array | An array that the router interprets as a routing instruction. You can bind that array to a `RouterLink` or pass the array as an argument to the `Router.navigate` method.                        |
 | Routing component     | An Angular component with a `RouterOutlet` that displays views based on router navigations.                                                                                                      |
