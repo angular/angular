@@ -2854,10 +2854,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/systemjs@0.19.32":
-  version "0.19.32"
-  resolved "https://registry.yarnpkg.com/@types/systemjs/-/systemjs-0.19.32.tgz#e9204c4cdbc8e275d645c00e6150e68fc5615a24"
-  integrity sha512-8jtvyxk9DI+KTQ/uh8iMW3FqCG2JnBPO6tEb2Z9r+4NDNpdBwOLjwIAGnprgyX/4yA6sgnc3sGqNpApZEJsXFg==
+"@types/systemjs@6.1.1":
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/@types/systemjs/-/systemjs-6.1.1.tgz#eae17f2a080e867d01a2dd614f524ab227cf5a41"
+  integrity sha512-d1M6eDKBGWx7RbYy295VEFoOF9YDJkPI959QYnmzcmeaV+SP4D0xV7dEh3sN5XF3GvO3PhGzm+17Z598nvHQuQ==
 
 "@types/through@*":
   version "0.0.30"
@@ -6624,13 +6624,6 @@ es6-iterator@^2.0.1, es6-iterator@^2.0.3:
     d "1"
     es5-ext "^0.10.35"
     es6-symbol "^3.1.1"
-
-es6-module-loader@^0.17.4:
-  version "0.17.11"
-  resolved "https://registry.yarnpkg.com/es6-module-loader/-/es6-module-loader-0.17.11.tgz#094f042e3b4d3086bcfd17380affabdfc99f35d7"
-  integrity sha512-6u2nrCQQ0fg7llO02vHAg8MZSxE+Y+fjy+9906ICIR5qaZLUlx7CePFvEJf1Fz7CnUUkKDt7woYtYTYpy9jVQQ==
-  dependencies:
-    when "^3.7.2"
 
 es6-symbol@^3.1.1, es6-symbol@^3.1.3:
   version "3.1.3"
@@ -14960,13 +14953,10 @@ symbol-observable@4.0.0:
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-4.0.0.tgz#5b425f192279e87f2f9b937ac8540d1984b39205"
   integrity sha512-b19dMThMV4HVFynSAM1++gBHAbk2Tc/osgLIBZMKsyqh34jb2e8Os7T6ZW/Bt3pJFdBTd2JwAnAAEQV7rSNvcQ==
 
-systemjs@0.18.10:
-  version "0.18.10"
-  resolved "https://registry.yarnpkg.com/systemjs/-/systemjs-0.18.10.tgz#4e679dc5bb04dffb9882d40b19c5daa1cd182102"
-  integrity sha1-TmedxbsE3/uYgtQLGcXaoc0YIQI=
-  dependencies:
-    es6-module-loader "^0.17.4"
-    when "^3.7.2"
+systemjs@6.12.1:
+  version "6.12.1"
+  resolved "https://registry.yarnpkg.com/systemjs/-/systemjs-6.12.1.tgz#47cdd23a6ec9f1b01cf5b5f70562c8550da229d3"
+  integrity sha512-hqTN6kW+pN6/qro6G9OZ7ceDQOcYno020zBQKpZQLsJhYTDMCMNfXi/Y8duF5iW+4WWZr42ry0MMkcRGpbwG2A==
 
 tapable@^2.1.1, tapable@^2.2.0:
   version "2.2.1"
@@ -16360,11 +16350,6 @@ whatwg-url@^5.0.0:
   dependencies:
     tr46 "~0.0.3"
     webidl-conversions "^3.0.0"
-
-when@^3.7.2:
-  version "3.7.8"
-  resolved "https://registry.yarnpkg.com/when/-/when-3.7.8.tgz#c7130b6a7ea04693e842cdc9e7a1f2aa39a39f82"
-  integrity sha1-xxMLan6gRpPoQs3J56Hyqjmjn4I=
 
 which-module@^1.0.0:
   version "1.0.0"
