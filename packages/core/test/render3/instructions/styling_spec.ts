@@ -10,6 +10,7 @@ import {DirectiveDef} from '@angular/core/src/render3';
 import {ɵɵdefineDirective} from '@angular/core/src/render3/definition';
 import {classStringParser, styleStringParser, toStylingKeyValueArray, ɵɵclassProp, ɵɵstyleMap, ɵɵstyleProp} from '@angular/core/src/render3/instructions/styling';
 import {AttributeMarker, TAttributes} from '@angular/core/src/render3/interfaces/node';
+import {enableRenderer3} from '@angular/core/src/render3/interfaces/renderer';
 import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, setTStylingRangeNext, setTStylingRangePrev, StylingRange, toTStylingRange, TStylingKey, TStylingRange} from '@angular/core/src/render3/interfaces/styling';
 import {HEADER_OFFSET, TVIEW} from '@angular/core/src/render3/interfaces/view';
 import {getLView, leaveView, setBindingRootForHostBindings} from '@angular/core/src/render3/state';
@@ -21,6 +22,7 @@ import {getElementClasses, getElementStyles} from '@angular/core/testing/src/sty
 import {clearFirstUpdatePass, enterViewWithOneDiv, rewindBindingIndex} from './shared_spec';
 
 describe('styling', () => {
+  beforeAll(enableRenderer3);
   beforeEach(enterViewWithOneDiv);
   afterEach(leaveView);
 
