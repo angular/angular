@@ -10,7 +10,7 @@
 import {assertIndexInRange} from '../../util/assert';
 import {isObservable} from '../../util/lang';
 import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
-import {GlobalTargetResolver, isProceduralRenderer, Renderer3} from '../interfaces/renderer';
+import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {CLEANUP, CONTEXT, LView, RENDERER, TView} from '../interfaces/view';
@@ -114,7 +114,7 @@ function findExistingListener(
 }
 
 function listenerInternal(
-    tView: TView, lView: LView<{}|null>, renderer: Renderer3, tNode: TNode, eventName: string,
+    tView: TView, lView: LView<{}|null>, renderer: Renderer, tNode: TNode, eventName: string,
     listenerFn: (e?: any) => any, useCapture: boolean,
     eventTargetResolver?: GlobalTargetResolver): void {
   const isTNodeDirectiveHost = isDirectiveHost(tNode);
@@ -145,53 +145,45 @@ function listenerInternal(
 
     // In order to match current behavior, native DOM event listeners must be added for all
     // events (including outputs).
-    if (isProceduralRenderer(renderer)) {
-      // There might be cases where multiple directives on the same element try to register an event
-      // handler function for the same event. In this situation we want to avoid registration of
-      // several native listeners as each registration would be intercepted by NgZone and
-      // trigger change detection. This would mean that a single user action would result in several
-      // change detections being invoked. To avoid this situation we want to have only one call to
-      // native handler registration (for the same element and same type of event).
-      //
-      // In order to have just one native event handler in presence of multiple handler functions,
-      // we just register a first handler function as a native event listener and then chain
-      // (coalesce) other handler functions on top of the first native handler function.
-      let existingListener = null;
-      // Please note that the coalescing described here doesn't happen for events specifying an
-      // alternative target (ex. (document:click)) - this is to keep backward compatibility with the
-      // view engine.
-      // Also, we don't have to search for existing listeners is there are no directives
-      // matching on a given node as we can't register multiple event handlers for the same event in
-      // a template (this would mean having duplicate attributes).
-      if (!eventTargetResolver && isTNodeDirectiveHost) {
-        existingListener = findExistingListener(tView, lView, eventName, tNode.index);
-      }
-      if (existingListener !== null) {
-        // Attach a new listener to coalesced listeners list, maintaining the order in which
-        // listeners are registered. For performance reasons, we keep a reference to the last
-        // listener in that list (in `__ngLastListenerFn__` field), so we can avoid going through
-        // the entire set each time we need to add a new listener.
-        const lastListenerFn = (<any>existingListener).__ngLastListenerFn__ || existingListener;
-        lastListenerFn.__ngNextListenerFn__ = listenerFn;
-        (<any>existingListener).__ngLastListenerFn__ = listenerFn;
-        processOutputs = false;
-      } else {
-        listenerFn = wrapListener(tNode, lView, context, listenerFn, false /** preventDefault */);
-        const cleanupFn = renderer.listen(target as RElement, eventName, listenerFn);
-        ngDevMode && ngDevMode.rendererAddEventListener++;
 
-        lCleanup.push(listenerFn, cleanupFn);
-        tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, lCleanupIndex + 1);
-      }
-
+    // There might be cases where multiple directives on the same element try to register an event
+    // handler function for the same event. In this situation we want to avoid registration of
+    // several native listeners as each registration would be intercepted by NgZone and
+    // trigger change detection. This would mean that a single user action would result in several
+    // change detections being invoked. To avoid this situation we want to have only one call to
+    // native handler registration (for the same element and same type of event).
+    //
+    // In order to have just one native event handler in presence of multiple handler functions,
+    // we just register a first handler function as a native event listener and then chain
+    // (coalesce) other handler functions on top of the first native handler function.
+    let existingListener = null;
+    // Please note that the coalescing described here doesn't happen for events specifying an
+    // alternative target (ex. (document:click)) - this is to keep backward compatibility with the
+    // view engine.
+    // Also, we don't have to search for existing listeners is there are no directives
+    // matching on a given node as we can't register multiple event handlers for the same event in
+    // a template (this would mean having duplicate attributes).
+    if (!eventTargetResolver && isTNodeDirectiveHost) {
+      existingListener = findExistingListener(tView, lView, eventName, tNode.index);
+    }
+    if (existingListener !== null) {
+      // Attach a new listener to coalesced listeners list, maintaining the order in which
+      // listeners are registered. For performance reasons, we keep a reference to the last
+      // listener in that list (in `__ngLastListenerFn__` field), so we can avoid going through
+      // the entire set each time we need to add a new listener.
+      const lastListenerFn = (<any>existingListener).__ngLastListenerFn__ || existingListener;
+      lastListenerFn.__ngNextListenerFn__ = listenerFn;
+      (<any>existingListener).__ngLastListenerFn__ = listenerFn;
+      processOutputs = false;
     } else {
-      listenerFn = wrapListener(tNode, lView, context, listenerFn, true /** preventDefault */);
-      target.addEventListener(eventName, listenerFn, useCapture);
+      listenerFn = wrapListener(tNode, lView, context, listenerFn, false /** preventDefault */);
+      const cleanupFn = renderer.listen(target as RElement, eventName, listenerFn);
       ngDevMode && ngDevMode.rendererAddEventListener++;
 
-      lCleanup.push(listenerFn);
-      tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, useCapture);
+      lCleanup.push(listenerFn, cleanupFn);
+      tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, lCleanupIndex + 1);
     }
+
   } else {
     // Even if there is no native listener to add, we still need to wrap the listener so that OnPush
     // ancestors are marked dirty when an event occurs.

@@ -477,8 +477,7 @@ function _queryNodeChildren(
       // Renderer2, however that's not the case in Ivy. This approach is being used because:
       // 1. Matching the ViewEngine behavior would mean potentially introducing a depedency
       //    from `Renderer2` to Ivy which could bring Ivy code into ViewEngine.
-      // 2. We would have to make `Renderer3` "know" about debug nodes.
-      // 3. It allows us to capture nodes that were inserted directly via the DOM.
+      // 2. It allows us to capture nodes that were inserted directly via the DOM.
       nativeNode && _queryNativeNodeDescendants(nativeNode, predicate, matches, elementsOnly);
     }
     // In all cases, if a dynamic container exists for this node, each view inside it has to be

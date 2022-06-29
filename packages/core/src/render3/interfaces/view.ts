@@ -18,7 +18,7 @@ import {I18nUpdateOpCodes, TI18n, TIcu} from './i18n';
 import {TConstants, TNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
-import {Renderer3, RendererFactory} from './renderer';
+import {Renderer, RendererFactory} from './renderer';
 import {RComment, RElement} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';
 
@@ -189,7 +189,7 @@ export interface LView<T = unknown> extends Array<any> {
   [RENDERER_FACTORY]: RendererFactory;
 
   /** Renderer to be used for this view. */
-  [RENDERER]: Renderer3;
+  [RENDERER]: Renderer;
 
   /** An optional custom sanitizer. */
   [SANITIZER]: Sanitizer|null;

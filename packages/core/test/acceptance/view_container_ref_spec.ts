@@ -12,7 +12,7 @@ import {ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, Direct
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {ComponentFixture, TestBed, TestComponentRenderer} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
-import {By, DomSanitizer, ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
+import {By, DomSanitizer} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('ViewContainerRef', () => {
@@ -31,7 +31,7 @@ describe('ViewContainerRef', () => {
    * comparisons easier and less verbose.
    */
   function getElementText(element: Element): string {
-    return element.textContent!.trim().replace(/\r?\n/g, ' ');
+    return element.textContent!.trim().replace(/\r?\n/g, ' ').replace(/ +/g, ' ');
   }
 
   beforeEach(() => {
