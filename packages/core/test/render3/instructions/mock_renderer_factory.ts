@@ -6,16 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '@angular/core';
+import {RendererStyleFlags2, RendererType2} from '@angular/core';
+import {Renderer, RendererFactory} from '@angular/core/src/render3/interfaces/renderer';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 
-export class MockRendererFactory implements RendererFactory2 {
-  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer2 {
+export class MockRendererFactory implements RendererFactory {
+  wasCalled = false;
+  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer {
+    this.wasCalled = true;
     return new MockRenderer();
   }
 }
 
-class MockRenderer implements Renderer2 {
+class MockRenderer implements Renderer {
   data = {};
 
   destroyNode: ((node: any) => void)|null = null;
@@ -24,8 +27,9 @@ class MockRenderer implements Renderer2 {
   createComment(value: string): Comment {
     return document.createComment(value);
   }
-  createElement(name: string, namespace?: string|null): Element {
-    return namespace ? document.createElementNS(namespace, name) : document.createElement(name);
+  createElement(name: string, namespace?: string|null): RElement {
+    return namespace ? document.createElementNS(namespace, name) as unknown as RElement :
+                       document.createElement(name);
   }
   createText(value: string): Text {
     return document.createTextNode(value);
@@ -43,8 +47,8 @@ class MockRenderer implements Renderer2 {
     return typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
                                                 selectorOrNode;
   }
-  parentNode(node: Node): Element|null {
-    return node.parentNode as Element;
+  parentNode(node: Node): RElement|null {
+    return node.parentNode as RElement | null;
   }
   nextSibling(node: Node): Node|null {
     return node.nextSibling;

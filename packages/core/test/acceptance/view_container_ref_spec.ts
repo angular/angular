@@ -9,7 +9,6 @@
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {computeMsgId} from '@angular/compiler';
 import {ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, InjectionToken, Injector, Input, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, OnInit, Pipe, PipeTransform, QueryList, Renderer2, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
-import {isProceduralRenderer} from '@angular/core/src/render3/interfaces/renderer';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {ComponentFixture, TestBed, TestComponentRenderer} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
@@ -1636,12 +1635,6 @@ describe('ViewContainerRef', () => {
         expect(getElementText(fixture.nativeElement.parentNode))
             .toContain('[TokenA - Value] [TokenB - CustomValue]');
 
-        // Verify that the dynamically-created component uses correct instance of a renderer.
-        // Ivy runtime code switches over to Renderer3 (document) if an instance of the Renderer2 is
-        // not found, which can happen when the module injector subtree is not in the DI tree.
-        // See https://github.com/angular/angular/issues/44897.
-        expect(isProceduralRenderer(factorylessChildB.instance.renderer)).toBe(true);
-
         // Use factory-based API to compare the output with the factory-less one.
         const childBFactory = comp.cfr.resolveComponentFactory(ChildB);
         const factoryBasedChildB = comp.viewContainerRef.createComponent(
@@ -1652,12 +1645,6 @@ describe('ViewContainerRef', () => {
         // so `TOKEN_A` should be retrieved from the module injector
         expect(getElementText(fixture.nativeElement.parentNode))
             .toContain('[TokenA - Value] [TokenB - CustomValue]');
-
-        // Verify that the dynamically-created component uses correct instance of a renderer.
-        // Ivy runtime code switches over to Renderer3 (document) if an instance of the Renderer2 is
-        // not found, which can happen when the module injector subtree is not in the DI tree.
-        // See https://github.com/angular/angular/issues/44897.
-        expect(isProceduralRenderer(factoryBasedChildB.instance.renderer)).toBe(true);
       });
 
       it('should throw if class without @Component decorator is used as Component type', () => {
