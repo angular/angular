@@ -1,3 +1,27 @@
+<a name="14.1.0-next.3"></a>
+# 14.1.0-next.3 "opal-object" (2022-06-29)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dd1a0feb5](https://github.com/angular/components/commit/dd1a0feb5d87f4f29f16da677e0f4fc6dce49bb4) | feat | **icon:** SEO friendly ligature icons ([#24578](https://github.com/angular/components/pull/24578)) |
+| [b95b0ad05](https://github.com/angular/components/commit/b95b0ad058e65788adee928dac6006efa8ae27f0) | fix | **stepper:** isErrorState accepts AbstractControl instead of UntypedFormControl to avoid compiler errors when strict typing is enabled ([#25105](https://github.com/angular/components/pull/25105)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7fd4e52c4](https://github.com/angular/components/commit/7fd4e52c408822b1f6cbd92175eaf0417d92b88e) | fix | **mdc-chips:** missing role for trailing actions container ([#25160](https://github.com/angular/components/pull/25160)) |
+### docs
+| Commit | Type | Description |
+| -- | -- | -- |
+| [160abab4f](https://github.com/angular/components/commit/160abab4f132cb771a7b4c5b7fa63f9da279d53e) | fix | rename master to something else ([#25151](https://github.com/angular/components/pull/25151)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [636920414](https://github.com/angular/components/commit/636920414b4648274228cb91e2fef54dcae57720) | fix | touch targets not excluded in densities lower than -2 ([#25108](https://github.com/angular/components/pull/25108)) |
+## Special Thanks
+Adrien Crivelli, Ammar Najjar, Amy Sorto, Angular Robot, James Jansson, Kristiyan Kostadinov, Paul Gschwendtner, Zach Arend and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.4"></a>
 # 14.0.4 "sapphire-sandal" (2022-06-29)
 ### material
