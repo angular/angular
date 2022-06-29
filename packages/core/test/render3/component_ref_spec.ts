@@ -12,11 +12,13 @@ import {Component, Injector, Input, NgModuleRef, Output, RendererType2, ViewEnca
 import {ComponentFactory} from '../../src/linker/component_factory';
 import {RendererFactory2} from '../../src/render/api';
 import {injectComponentFactoryResolver} from '../../src/render3/component_ref';
-import {domRendererFactory3, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
+import {domRendererFactory3, enableRenderer3, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 
 describe('ComponentFactory', () => {
   const cfr = injectComponentFactoryResolver();
+
+  beforeAll(enableRenderer3);
 
   describe('constructor()', () => {
     it('should correctly populate default properties', () => {
