@@ -65,7 +65,7 @@
     "canonical-path": "1.0.0",
     "concurrently": "^5.0.1",
     "copyfiles": "^2.4.1",
-    "http-server": "^0.12.0",
+    "http-server": "^14.0.0",
     "jasmine-core": "~4.1.0",
     "jasmine-marbles": "~0.8.3",
     "jasmine-spec-reporter": "~7.0.0",
