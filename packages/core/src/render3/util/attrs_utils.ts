@@ -8,7 +8,7 @@
 import {CharCode} from '../../util/char_code';
 import {AttributeMarker, TAttributes} from '../interfaces/node';
 import {CssSelector} from '../interfaces/projection';
-import {isProceduralRenderer, Renderer, Renderer3} from '../interfaces/renderer';
+import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
 
 
@@ -40,9 +40,7 @@ import {RElement} from '../interfaces/renderer_dom';
  * @param attrs The attribute array of values that will be assigned to the element
  * @returns the index value that was last accessed in the attributes array
  */
-export function setUpAttributes(renderer: Renderer3, native: RElement, attrs: TAttributes): number {
-  const isProc = isProceduralRenderer(renderer);
-
+export function setUpAttributes(renderer: Renderer, native: RElement, attrs: TAttributes): number {
   let i = 0;
   while (i < attrs.length) {
     const value = attrs[i];
@@ -61,8 +59,7 @@ export function setUpAttributes(renderer: Renderer3, native: RElement, attrs: TA
       const attrName = attrs[i++] as string;
       const attrVal = attrs[i++] as string;
       ngDevMode && ngDevMode.rendererSetAttribute++;
-      isProc ? (renderer as Renderer).setAttribute(native, attrName, attrVal, namespaceURI) :
-               native.setAttributeNS(namespaceURI, attrName, attrVal);
+      renderer.setAttribute(native, attrName, attrVal, namespaceURI);
     } else {
       // attrName is string;
       const attrName = value as string;
@@ -70,12 +67,9 @@ export function setUpAttributes(renderer: Renderer3, native: RElement, attrs: TA
       // Standard attributes
       ngDevMode && ngDevMode.rendererSetAttribute++;
       if (isAnimationProp(attrName)) {
-        if (isProc) {
-          (renderer as Renderer).setProperty(native, attrName, attrVal);
-        }
+        renderer.setProperty(native, attrName, attrVal);
       } else {
-        isProc ? (renderer as Renderer).setAttribute(native, attrName, attrVal as string) :
-                 native.setAttribute(attrName, attrVal as string);
+        renderer.setAttribute(native, attrName, attrVal as string);
       }
       i++;
     }

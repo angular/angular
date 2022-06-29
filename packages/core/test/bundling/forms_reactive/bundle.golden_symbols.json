@@ -1068,9 +1068,6 @@
     "name": "isAbstractControlOptions"
   },
   {
-    "name": "isAnimationProp"
-  },
-  {
     "name": "isArray"
   },
   {
@@ -1140,9 +1137,6 @@
     "name": "isPresent"
   },
   {
-    "name": "isProceduralRenderer"
-  },
-  {
     "name": "isPromise"
   },
   {
@@ -1156,9 +1150,6 @@
   },
   {
     "name": "isTemplateNode"
-  },
-  {
-    "name": "isTemplateNode2"
   },
   {
     "name": "isTypeProvider"
