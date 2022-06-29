@@ -74,6 +74,7 @@ export class DomPortalOutlet extends BasePortalOutlet {
         componentFactory,
         portal.viewContainerRef.length,
         portal.injector || portal.viewContainerRef.injector,
+        portal.projectableNodes || undefined,
       );
 
       this.setDisposeFn(() => componentRef.destroy());

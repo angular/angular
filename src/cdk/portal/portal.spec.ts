@@ -450,6 +450,19 @@ describe('Portals', () => {
 
       expect(hostContainer.textContent).toContain('Pizza');
     });
+
+    it('should be able to pass projectable nodes to portal', () => {
+      // Set the selectedHost to be a ComponentPortal.
+      const testAppComponent = fixture.componentInstance;
+      const componentPortal = new ComponentPortal(PizzaMsg, undefined, undefined, undefined, [
+        [document.createTextNode('Projectable node')],
+      ]);
+
+      testAppComponent.selectedPortal = componentPortal;
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('Projectable node');
+    });
   });
 
   describe('DomPortalOutlet', () => {
@@ -728,7 +741,7 @@ class ChocolateInjector {
 /** Simple component for testing ComponentPortal. */
 @Component({
   selector: 'pizza-msg',
-  template: '<p>Pizza</p><p>{{snack}}</p>',
+  template: '<p>Pizza</p><p>{{snack}}</p><ng-content></ng-content>',
 })
 class PizzaMsg {
   constructor(@Optional() public snack: Chocolate) {}

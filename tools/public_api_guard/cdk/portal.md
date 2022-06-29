@@ -78,10 +78,11 @@ export type CdkPortalOutletAttachedRef = ComponentRef<any> | EmbeddedViewRef<any
 
 // @public
 export class ComponentPortal<T> extends Portal<ComponentRef<T>> {
-    constructor(component: ComponentType<T>, viewContainerRef?: ViewContainerRef | null, injector?: Injector | null, componentFactoryResolver?: ComponentFactoryResolver | null);
+    constructor(component: ComponentType<T>, viewContainerRef?: ViewContainerRef | null, injector?: Injector | null, componentFactoryResolver?: ComponentFactoryResolver | null, projectableNodes?: Node[][] | null);
     component: ComponentType<T>;
     componentFactoryResolver?: ComponentFactoryResolver | null;
     injector?: Injector | null;
+    projectableNodes?: Node[][] | null;
     viewContainerRef?: ViewContainerRef | null;
 }
 
