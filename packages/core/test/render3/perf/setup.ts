@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {addToViewTree, createLContainer, createLView, createTNode, createTView, getOrCreateTNode, refreshView, renderView} from '../../../src/render3/instructions/shared';
 import {ComponentTemplate, DirectiveDefList} from '../../../src/render3/interfaces/definition';
 import {TAttributes, TElementNode, TNodeType} from '../../../src/render3/interfaces/node';
