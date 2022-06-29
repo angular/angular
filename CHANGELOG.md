@@ -1,3 +1,34 @@
+<a name="14.0.4"></a>
+# 14.0.4 (2022-06-29)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [51be9bbe29](https://github.com/angular/angular/commit/51be9bbe29e12ae0e8d4777cdac5c7466c8b6184) | fix | cleanup DOM elements when the root view is removed ([#45143](https://github.com/angular/angular/pull/45143)) |
+| [999aca86c8](https://github.com/angular/angular/commit/999aca86c89030b6a9023cd2835636ee487334f2) | fix | enable shadowElements to leave when their parent does ([#46459](https://github.com/angular/angular/pull/46459)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [42aed6b13e](https://github.com/angular/angular/commit/42aed6b13efef59c1c33472adc4f2df5d52d4c20) | fix | handle CSS custom properties in NgStyle ([#46451](https://github.com/angular/angular/pull/46451)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1e7f22f00a](https://github.com/angular/angular/commit/1e7f22f00ab10a6ae01729e3355871e51bc8bf4d) | fix | trigger `ApplicationRef.destroy` when Platform is destroyed ([#46497](https://github.com/angular/angular/pull/46497)) |
+| [8bde2dbc71](https://github.com/angular/angular/commit/8bde2dbc714a0d9f7cda80c7893ab213d1e3f931) | fix | Update ngfor error code to be negative ([#46555](https://github.com/angular/angular/pull/46555)) |
+| [57e8fc00eb](https://github.com/angular/angular/commit/57e8fc00eba92618c2cf063589ba1a88d3b30055) | fix | Updates error to use RuntimeError code ([#46526](https://github.com/angular/angular/pull/46526)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [74a26d870e](https://github.com/angular/angular/commit/74a26d870e2437f779c8c70f0b811f1d0bf8d4ee) | fix | Convert existing reactive errors to use RuntimeErrorCode. ([#46560](https://github.com/angular/angular/pull/46560)) |
+| [747872212d](https://github.com/angular/angular/commit/747872212d12660eee59024202840e7d3ebfc866) | fix | Update a Forms validator error to use RuntimeError ([#46537](https://github.com/angular/angular/pull/46537)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d6fac9e914](https://github.com/angular/angular/commit/d6fac9e914ad13f1ed63ea6a3738c245e547eaae) | fix | Ensure that new `RouterOutlet` instances work after old ones are destroyed ([#46554](https://github.com/angular/angular/pull/46554)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Bezael, Chad Ramos, Chellappan, Cédric Exbrayat, Dylan Hunn, George Kalpakas, Jeremy Meiss, Jessica Janiuk, Joey Perrott, KMathy, Kristiyan Kostadinov, Paul Gschwendtner, Pawel Kozlowski, Ramesh Thiruchelvam, Vaibhav Kumar, arturovt, dario-piotrowicz and renovate[bot]
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.0-next.2"></a>
 # 14.1.0-next.2 (2022-06-22)
 ### animations
