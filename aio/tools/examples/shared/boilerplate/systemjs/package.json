@@ -52,7 +52,7 @@
     "@types/angular-route": "1.7.1",
     "@types/jasmine": "~4.0.0",
     "@types/node": "^16.11.35",
-    "concurrently": "^5.0.1",
+    "concurrently": "^7.0.0",
     "http-server": "^14.0.0",
     "jasmine-core": "~4.1.0",
     "karma": "~6.3.0",
