@@ -11,6 +11,7 @@ import {Injector} from '../di/injector';
 import {InjectFlags} from '../di/interface/injector';
 import {ProviderToken} from '../di/provider_token';
 import {EnvironmentInjector} from '../di/r3_injector';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -28,7 +29,6 @@ import {NodeInjector} from './di';
 import {createLView, createTView, locateHostElement, renderView} from './instructions/shared';
 import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './interfaces/node';
-import {domRendererFactory3, RendererFactory} from './interfaces/renderer';
 import {RNode} from './interfaces/renderer_dom';
 import {HEADER_OFFSET, LView, LViewFlags, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
@@ -144,9 +144,15 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const rootViewInjector =
         realEnvironmentInjector ? new ChainedInjector(injector, realEnvironmentInjector) : injector;
 
-    const rendererFactory =
-        rootViewInjector.get(RendererFactory2, domRendererFactory3 as RendererFactory2) as
-        RendererFactory;
+    const rendererFactory = rootViewInjector.get(RendererFactory2, null);
+    if (rendererFactory === null) {
+      throw new RuntimeError(
+          RuntimeErrorCode.RENDERER_NOT_FOUND,
+          ngDevMode &&
+              'Angular was not able to inject a renderer (RendererFactory2). ' +
+                  'Likely this is due to a broken DI hierarchy. ' +
+                  'Make sure that any injector used to create this component has a correct parent.');
+    }
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
     const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);
