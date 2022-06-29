@@ -8,7 +8,7 @@
 import {RendererStyleFlags2} from '@angular/core/src/render';
 import {RComment, RElement, RNode, RText} from '@angular/core/src/render3/interfaces/renderer_dom';
 
-import {ProceduralRenderer3, RendererFactory3, RendererStyleFlags3} from '../../../src/render3/interfaces/renderer';
+import {Renderer, RendererFactory, RendererStyleFlags3} from '../../../src/render3/interfaces/renderer';
 
 export class MicroBenchmarkRenderNode implements RNode, RComment, RText {
   tagName?: string;
@@ -27,7 +27,7 @@ export class MicroBenchmarkRenderNode implements RNode, RComment, RText {
   className: string = '';
 }
 
-export class MicroBenchmarkRenderer implements ProceduralRenderer3 {
+export class MicroBenchmarkRenderer implements Renderer {
   destroy(): void {
     throw new Error('Method not implemented.');
   }
@@ -81,8 +81,8 @@ export class MicroBenchmarkRenderer implements ProceduralRenderer3 {
   }
 }
 
-export class MicroBenchmarkRendererFactory implements RendererFactory3 {
-  createRenderer(hostElement: RElement|null, rendererType: null): ProceduralRenderer3 {
+export class MicroBenchmarkRendererFactory implements RendererFactory {
+  createRenderer(hostElement: RElement|null, rendererType: null): Renderer {
     if (typeof global !== 'undefined') {
       (global as any).Node = MicroBenchmarkRenderNode;
     }
@@ -90,7 +90,7 @@ export class MicroBenchmarkRendererFactory implements RendererFactory3 {
   }
 }
 
-class MicroBenchmarkDomRenderer implements ProceduralRenderer3 {
+class MicroBenchmarkDomRenderer implements Renderer {
   destroy(): void {
     throw new Error('Method not implemented.');
   }
@@ -188,8 +188,8 @@ class MicroBenchmarkDomRenderer implements ProceduralRenderer3 {
   }
 }
 
-export class MicroBenchmarkDomRendererFactory implements RendererFactory3 {
-  createRenderer(hostElement: RElement|null, rendererType: null): ProceduralRenderer3 {
+export class MicroBenchmarkDomRendererFactory implements RendererFactory {
+  createRenderer(hostElement: RElement|null, rendererType: null): Renderer {
     return new MicroBenchmarkDomRenderer();
   }
 }
