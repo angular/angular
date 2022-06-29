@@ -10,10 +10,11 @@ import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 
 import {Component, Injector, Input, NgModuleRef, Output, RendererType2, ViewEncapsulation} from '../../src/core';
 import {ComponentFactory} from '../../src/linker/component_factory';
-import {RendererFactory2} from '../../src/render/api';
+import {Renderer2, RendererFactory2} from '../../src/render/api';
 import {injectComponentFactoryResolver} from '../../src/render3/component_ref';
-import {Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
+
+import {MockRendererFactory} from './instructions/mock_renderer_factory';
 
 const THROWING_RENDERER_FACTOR2_PROVIDER = {
   provide: RendererFactory2,
@@ -260,17 +261,18 @@ describe('ComponentFactory', () => {
     });
 
     it('should ensure that rendererFactory is called after initial styling is set', () => {
-      const myRendererFactory: RendererFactory3 = {
-        createRenderer: function(hostElement: RElement|null, rendererType: RendererType2|null):
-            Renderer3 {
-              if (hostElement) {
-                hostElement.classList.add('HOST_RENDERER');
-              }
-              return document;
-            }
-      };
+      class TestMockRendererFactory extends MockRendererFactory {
+        override createRenderer(hostElement: RElement|null, rendererType: RendererType2|null):
+            Renderer2 {
+          if (hostElement) {
+            hostElement.classList.add('HOST_RENDERER');
+          }
+          return super.createRenderer(hostElement, rendererType);
+        }
+      }
+
       const injector = Injector.create([
-        {provide: RendererFactory2, useValue: myRendererFactory},
+        {provide: RendererFactory2, useFactory: () => new TestMockRendererFactory(), deps: []},
       ]);
 
       const hostNode = document.createElement('div');
