@@ -8,6 +8,7 @@
 
 import {Component, ComponentFactoryResolver, createEnvironmentInjector, ENVIRONMENT_INITIALIZER, EnvironmentInjector, InjectionToken, INJECTOR, Injector, NgModuleRef} from '@angular/core';
 import {R3Injector} from '@angular/core/src/di/r3_injector';
+import {TestBed} from '@angular/core/testing';
 
 describe('environment injector', () => {
   it('should create and destroy an environment injector', () => {
@@ -78,7 +79,8 @@ describe('environment injector', () => {
          constructor(readonly service: Service) {}
        }
 
-       const envInjector = createEnvironmentInjector([Service]);
+       const envInjector =
+           createEnvironmentInjector([Service], TestBed.inject(EnvironmentInjector));
        const cfr = envInjector.get(ComponentFactoryResolver);
        const cf = cfr.resolveComponentFactory(TestComponent);
        const cRef = cf.create(Injector.NULL);
