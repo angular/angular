@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Renderer} from '@angular/core/src/render3/interfaces/renderer';
-
 import {MicroBenchmarkRendererFactory, MicroBenchmarkRenderNode} from './noop_renderer';
 
 describe('MicroBenchmarkRenderNode', () => {
-  const renderer = new MicroBenchmarkRendererFactory().createRenderer(null, null) as Renderer;
+  const renderer = new MicroBenchmarkRendererFactory().createRenderer(null, null);
   describe('className', () => {
     it('should be available in global space', () => {
       expect(Node).toBeDefined();

@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {RendererStyleFlags2} from '@angular/core/src/render';
+import {Renderer, RendererFactory} from '@angular/core/src/render3/interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '@angular/core/src/render3/interfaces/renderer_dom';
-
-import {Renderer, RendererFactory, RendererStyleFlags3} from '../../../src/render3/interfaces/renderer';
 
 export class MicroBenchmarkRenderNode implements RNode, RComment, RText {
   tagName?: string;
@@ -28,6 +27,9 @@ export class MicroBenchmarkRenderNode implements RNode, RComment, RText {
 }
 
 export class MicroBenchmarkRenderer implements Renderer {
+  get data(): any {
+    throw new Error('Not implemented.');
+  }
   destroy(): void {
     throw new Error('Method not implemented.');
   }
@@ -43,6 +45,7 @@ export class MicroBenchmarkRenderer implements Renderer {
   appendChild(parent: RElement, newChild: RNode): void {}
   insertBefore(parent: RNode, newChild: RNode, refChild: RNode|null): void {}
   removeChild(parent: RElement, oldChild: RNode, isHostElement?: boolean|undefined): void {}
+  destroyNode: ((node: any) => void)|null = null;
   selectRootElement(selectorOrNode: any): RElement {
     throw new Error('Method not implemented.');
   }
@@ -68,8 +71,8 @@ export class MicroBenchmarkRenderer implements Renderer {
       el.className = remove(el.className, name);
     }
   }
-  setStyle(el: RElement, style: string, value: any, flags?: RendererStyleFlags3|undefined): void {}
-  removeStyle(el: RElement, style: string, flags?: RendererStyleFlags3|undefined): void {}
+  setStyle(el: RElement, style: string, value: any, flags?: RendererStyleFlags2|undefined): void {}
+  removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2|undefined): void {}
   setProperty(el: RElement, name: string, value: any): void {}
   setValue(node: RComment|RText, value: string): void {
     node.textContent = value;
@@ -91,6 +94,9 @@ export class MicroBenchmarkRendererFactory implements RendererFactory {
 }
 
 class MicroBenchmarkDomRenderer implements Renderer {
+  get data(): any {
+    throw new Error('Not implemented.');
+  }
   destroy(): void {
     throw new Error('Method not implemented.');
   }
