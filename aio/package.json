@@ -182,7 +182,7 @@
     "uglify-js": "^3.13.3",
     "unist-util-filter": "^2.0.3",
     "unist-util-source": "^3.0.0",
-    "unist-util-visit": "^2.0.3",
+    "unist-util-visit": "^4.0.0",
     "unist-util-visit-parents": "^3.1.1",
     "watchr": "^3.0.1",
     "xregexp": "^5.0.2",
