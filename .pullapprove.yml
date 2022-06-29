@@ -164,7 +164,7 @@ groups:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files.exclude('packages/compiler-cli/ngcc/**/{*,.*}'), [
+        contains_any_globs(files.exclude('packages/compiler-cli/ngcc/*'), [
           'packages/compiler/**/{*,.*}',
           'packages/examples/compiler/**/{*,.*}',
           'aio/content/examples/angular-compiler-options/**/{*,.*}',
@@ -187,7 +187,7 @@ groups:
   fw-ngcc:
     <<: *defaults
     conditions:
-      - files.include('packages/compiler-cli/ngcc/**/{*,.*}')
+      - files.include('packages/compiler-cli/ngcc/*')
     reviewers:
       users:
         - alxhub
@@ -200,7 +200,7 @@ groups:
   fw-migrations:
     <<: *defaults
     conditions:
-      - files.include("packages/core/schematics/**/{*,.*}")
+      - files.include("packages/core/schematics/*")
     reviewers:
       users:
         - alxhub
@@ -215,7 +215,7 @@ groups:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files.exclude("packages/core/schematics/**/{*,.*}"), [
+        contains_any_globs(files.exclude("packages/core/schematics/*"), [
           'packages/core/**/{*,.*}',
           'packages/examples/core/**/{*,.*}',
           'packages/platform-browser/**/{*,.*}',
@@ -369,7 +369,7 @@ groups:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files.exclude("packages/core/schematics/**/{*,.*}").exclude("packages/common/http/**/{*,.*}"), [
+        contains_any_globs(files.exclude("packages/common/http/*"), [
           'packages/common/**/{*,.*}',
           'packages/examples/common/**/{*,.*}',
           ])
@@ -614,8 +614,8 @@ groups:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files.exclude('packages/compiler-cli/**/{*,.*}').exclude('packages/language-service/**/{*,.*}').exclude('packages/service-worker/**/{*,.*}'), [
-          'packages/**/{*,.*}/testing/**/{*,.*}',
+        contains_any_globs(files.exclude('packages/compiler-cli/*').exclude('packages/language-service/*').exclude('packages/service-worker/*'), [
+          'packages/**/testing/**/{*,.*}',
           'aio/content/guide/testing.md',
           'aio/content/guide/test-debugging.md',
           'aio/content/guide/testing-attribute-directives.md',
