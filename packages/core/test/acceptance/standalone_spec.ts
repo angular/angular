@@ -303,8 +303,8 @@ describe('standalone components, directives and pipes', () => {
              parent: this.inj,
            });
 
-           const rhsInj =
-               createEnvironmentInjector([{provide: Service, useClass: EnvOverrideService}]);
+           const rhsInj = createEnvironmentInjector(
+               [{provide: Service, useClass: EnvOverrideService}], this.envInj);
 
            this.vcRef.createComponent(InnerCmp, {injector: lhsInj, environmentInjector: rhsInj});
          }
@@ -352,8 +352,8 @@ describe('standalone components, directives and pipes', () => {
          constructor(readonly envInj: EnvironmentInjector) {}
 
          ngOnInit(): void {
-           const rhsInj =
-               createEnvironmentInjector([{provide: Service, useClass: EnvOverrideService}]);
+           const rhsInj = createEnvironmentInjector(
+               [{provide: Service, useClass: EnvOverrideService}], this.envInj);
 
            this.vcRef.createComponent(InnerCmp, {environmentInjector: rhsInj});
          }
