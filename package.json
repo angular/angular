@@ -141,7 +141,7 @@
     "karma": "~6.3.0",
     "karma-chrome-launcher": "^3.1.0",
     "karma-firefox-launcher": "^2.1.0",
-    "karma-jasmine": "^4.0.1",
+    "karma-jasmine": "^5.0.0",
     "karma-requirejs": "^1.1.0",
     "karma-sourcemap-loader": "^0.3.7",
     "magic-string": "0.26.2",
