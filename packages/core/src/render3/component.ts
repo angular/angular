@@ -9,27 +9,23 @@
 // We are temporarily importing the existing viewEngine from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
 import {Injector} from '../di/injector';
-import {Type} from '../interface/type';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDefined, assertIndexInRange} from '../util/assert';
 
-import {assertComponentType} from './assert';
-import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {throwProviderNotFoundError} from './errors_di';
 import {registerPostOrderHooks} from './hooks';
-import {addToViewTree, CLEAN_PROMISE, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, registerHostBindingOpCodes, renderView} from './instructions/shared';
-import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
+import {addToViewTree, CLEAN_PROMISE, createLView, getOrCreateTComponentView, getOrCreateTNode, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, markAsComponentHost, registerHostBindingOpCodes} from './instructions/shared';
+import {ComponentDef, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {Renderer, RendererFactory} from './interfaces/renderer';
 import {RElement} from './interfaces/renderer_dom';
-import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
+import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
 import {writeDirectClass, writeDirectStyle} from './node_manipulation';
-import {enterView, getCurrentTNode, getLView, leaveView, setSelectedIndex} from './state';
+import {getCurrentTNode, getLView, setSelectedIndex} from './state';
 import {computeStaticStyling} from './styling/static_styling';
 import {setUpAttributes} from './util/attrs_utils';
-import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler} from './util/misc_utils';
 import {getRootContext} from './util/view_traversal_utils';
 
@@ -93,70 +89,6 @@ export const NULL_INJECTOR: Injector = {
     throwProviderNotFoundError(token, 'NullInjector');
   }
 };
-
-/**
- * Bootstraps a Component into an existing host element and returns an instance
- * of the component.
- *
- * Use this function to bootstrap a component into the DOM tree. Each invocation
- * of this function will create a separate tree of components, injectors and
- * change detection cycles and lifetimes. To dynamically insert a new component
- * into an existing tree such that it shares the same injection, change detection
- * and object lifetime, use {@link ViewContainer#createComponent}.
- *
- * @param componentType Component to bootstrap
- * @param options Optional parameters which control bootstrapping
- */
-export function renderComponent<T>(
-    componentType: ComponentType<T>|
-    Type<T>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */
-    ,
-    opts: CreateComponentOptions = {}): T {
-  ngDevMode && publishDefaultGlobalUtils();
-  ngDevMode && assertComponentType(componentType);
-
-  const rendererFactory = opts.rendererFactory!;
-  const sanitizer = opts.sanitizer || null;
-  const componentDef = getComponentDef<T>(componentType)!;
-  if (componentDef.type != componentType) (componentDef as {type: Type<any>}).type = componentType;
-
-  // The first index of the first selector is the tag name.
-  const componentTag = componentDef.selectors![0]![0] as string;
-  const hostRenderer = rendererFactory.createRenderer(null, null);
-  const hostRNode =
-      locateHostElement(hostRenderer, opts.host || componentTag, componentDef.encapsulation);
-  const rootFlags = componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
-                                          LViewFlags.CheckAlways | LViewFlags.IsRoot;
-  const rootContext = createRootContext(opts.scheduler, opts.playerHandler);
-
-  const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
-  const rootTView = createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null);
-  const rootView: LView = createLView(
-      null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, null,
-      opts.injector || null, null);
-
-  enterView(rootView);
-  let component: T;
-
-  try {
-    if (rendererFactory.begin) rendererFactory.begin();
-    const componentView = createRootComponentView(
-        hostRNode, componentDef, rootView, rendererFactory, renderer, sanitizer);
-    component = createRootComponent(
-        componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
-
-    // create mode pass
-    renderView(rootTView, rootView, null);
-    // update mode pass
-    refreshView(rootTView, rootView, null, null);
-
-  } finally {
-    leaveView();
-    if (rendererFactory.end) rendererFactory.end();
-  }
-
-  return component;
-}
 
 /**
  * Creates the root component view and the root component node.
