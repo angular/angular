@@ -202,7 +202,6 @@
     "gulp": "^4.0.2",
     "gulp-conventional-changelog": "^2.0.35",
     "husky": "7.0.4",
-    "inquirer": "^8.0.0",
     "karma-sauce-launcher": "^4.3.6",
     "madge": "^5.0.0",
     "minimist": "^1.2.0",
