@@ -6,19 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * The goal here is to make sure that the browser DOM API is the Renderer.
- * We do this by defining a subset of DOM API to be the renderer and then
- * use that at runtime for rendering.
- *
- * At runtime we can then use the DOM api directly, in server or web-worker
- * it will be easy to implement such API.
- */
-
 import {RendererStyleFlags2, RendererType2} from '../../render/api_flags';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../../util/security/trusted_type_defs';
 
-import {getDocument} from './document';
 import {RComment, RElement, RNode, RText} from './renderer_dom';
 
 // TODO: cleanup once the code is merged in angular/angular
@@ -27,33 +17,9 @@ export enum RendererStyleFlags3 {
   DashCase = 1 << 1
 }
 
-export type Renderer3 = ObjectOrientedRenderer3|ProceduralRenderer3;
-
 export type GlobalTargetName = 'document'|'window'|'body';
 
 export type GlobalTargetResolver = (element: any) => EventTarget;
-
-/**
- * Object Oriented style of API needed to create elements and text nodes.
- *
- * This is the native browser API style, e.g. operations are methods on individual objects
- * like HTMLElement. With this style, no additional code is needed as a facade
- * (reducing payload size).
- * */
-export interface ObjectOrientedRenderer3 {
-  createComment(data: string): RComment;
-  createElement(tagName: string): RElement;
-  createElementNS(namespace: string, tagName: string): RElement;
-  createTextNode(data: string): RText;
-
-  querySelector(selectors: string): RElement|null;
-}
-
-/** Returns whether the `renderer` is a `ProceduralRenderer3` */
-export function isProceduralRenderer(renderer: ProceduralRenderer3|
-                                     ObjectOrientedRenderer3): renderer is ProceduralRenderer3 {
-  return !!((renderer as any).listen);
-}
 
 /**
  * Procedural style of API needed to create elements and text nodes.
@@ -101,29 +67,10 @@ export interface ProceduralRenderer3 {
 }
 
 export interface RendererFactory3 {
-  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer3;
+  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): ProceduralRenderer3;
   begin?(): void;
   end?(): void;
 }
-
-let renderer3Enabled = false;
-
-export function enableRenderer3() {
-  renderer3Enabled = true;
-}
-
-export const domRendererFactory3: RendererFactory3 = {
-  createRenderer: (hostElement: RElement|null, rendererType: RendererType2|null): Renderer3 => {
-    if (!renderer3Enabled) {
-      throw new Error(
-          ngDevMode ?
-              `Renderer3 is not supported. This problem is likely caused by some component in the hierarchy was constructed without a correct parent injector.` :
-              'Renderer3 disabled');
-    }
-    return getDocument();
-  }
-};
-
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

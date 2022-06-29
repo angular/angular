@@ -7,7 +7,6 @@
  */
 
 import {InjectionToken} from '../di/injection_token';
-import {isProceduralRenderer} from '../render3/interfaces/renderer';
 import {isLView} from '../render3/interfaces/type_checks';
 import {LView, RENDERER} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
@@ -243,9 +242,12 @@ export abstract class Renderer2 {
 /** Returns a Renderer2 (or throws when application was bootstrapped with Renderer3) */
 function getOrCreateRenderer2(lView: LView): Renderer2 {
   const renderer = lView[RENDERER];
+  // TODO(pk): look into it more
+  /*
   if (ngDevMode && !isProceduralRenderer(renderer)) {
     throw new Error('Cannot inject Renderer2 when the application uses Renderer3!');
   }
+  */
   return renderer as Renderer2;
 }
 

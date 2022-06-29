@@ -9,80 +9,25 @@
 // We are temporarily importing the existing viewEngine from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
 import {Injector} from '../di/injector';
-import {Type} from '../interface/type';
+import {Renderer2, RendererFactory2} from '../render';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDefined, assertIndexInRange} from '../util/assert';
 
-import {assertComponentType} from './assert';
-import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {throwProviderNotFoundError} from './errors_di';
 import {registerPostOrderHooks} from './hooks';
-import {addToViewTree, CLEAN_PROMISE, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, registerHostBindingOpCodes, renderView} from './instructions/shared';
-import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
+import {addToViewTree, CLEAN_PROMISE, createLView, getOrCreateTComponentView, getOrCreateTNode, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, registerHostBindingOpCodes, renderView} from './instructions/shared';
+import {ComponentDef, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
-import {domRendererFactory3, enableRenderer3, Renderer3, RendererFactory3} from './interfaces/renderer';
 import {RElement} from './interfaces/renderer_dom';
-import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
+import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
 import {writeDirectClass, writeDirectStyle} from './node_manipulation';
-import {enterView, getCurrentTNode, getLView, leaveView, setSelectedIndex} from './state';
+import {getCurrentTNode, getLView, setSelectedIndex} from './state';
 import {computeStaticStyling} from './styling/static_styling';
 import {setUpAttributes} from './util/attrs_utils';
-import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler} from './util/misc_utils';
 import {getRootContext} from './util/view_traversal_utils';
-
-
-
-/** Options that control how the component should be bootstrapped. */
-export interface CreateComponentOptions {
-  /** Which renderer factory to use. */
-  rendererFactory?: RendererFactory3;
-
-  /** A custom sanitizer instance */
-  sanitizer?: Sanitizer;
-
-  /** A custom animation player handler */
-  playerHandler?: PlayerHandler;
-
-  /**
-   * Host element on which the component will be bootstrapped. If not specified,
-   * the component definition's `tag` is used to query the existing DOM for the
-   * element to bootstrap.
-   */
-  host?: RElement|string;
-
-  /** Module injector for the component. If unspecified, the injector will be NULL_INJECTOR. */
-  injector?: Injector;
-
-  /**
-   * List of features to be applied to the created component. Features are simply
-   * functions that decorate a component with a certain behavior.
-   *
-   * Typically, the features in this list are features that cannot be added to the
-   * other features list in the component definition because they rely on other factors.
-   *
-   * Example: `LifecycleHooksFeature` is a function that adds lifecycle hook capabilities
-   * to root components in a tree-shakable way. It cannot be added to the component
-   * features list because there's no way of knowing when the component will be used as
-   * a root component.
-   */
-  hostFeatures?: HostFeature[];
-
-  /**
-   * A function which is used to schedule change detection work in the future.
-   *
-   * When marking components as dirty, it is necessary to schedule the work of
-   * change detection in the future. This is done to coalesce multiple
-   * {@link markDirty} calls into a single changed detection processing.
-   *
-   * The default value of the scheduler is the `requestAnimationFrame` function.
-   *
-   * It is also useful to override this function for testing purposes.
-   */
-  scheduler?: (work: () => void) => void;
-}
 
 /** See CreateComponentOptions.hostFeatures */
 type HostFeature = (<T>(component: T, componentDef: ComponentDef<T>) => void);
@@ -93,72 +38,6 @@ export const NULL_INJECTOR: Injector = {
     throwProviderNotFoundError(token, 'NullInjector');
   }
 };
-
-/**
- * Bootstraps a Component into an existing host element and returns an instance
- * of the component.
- *
- * Use this function to bootstrap a component into the DOM tree. Each invocation
- * of this function will create a separate tree of components, injectors and
- * change detection cycles and lifetimes. To dynamically insert a new component
- * into an existing tree such that it shares the same injection, change detection
- * and object lifetime, use {@link ViewContainer#createComponent}.
- *
- * @param componentType Component to bootstrap
- * @param options Optional parameters which control bootstrapping
- */
-export function renderComponent<T>(
-    componentType: ComponentType<T>|
-    Type<T>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */
-    ,
-    opts: CreateComponentOptions = {}): T {
-  ngDevMode && publishDefaultGlobalUtils();
-  ngDevMode && assertComponentType(componentType);
-
-  enableRenderer3();
-
-  const rendererFactory = opts.rendererFactory || domRendererFactory3;
-  const sanitizer = opts.sanitizer || null;
-  const componentDef = getComponentDef<T>(componentType)!;
-  if (componentDef.type != componentType) (componentDef as {type: Type<any>}).type = componentType;
-
-  // The first index of the first selector is the tag name.
-  const componentTag = componentDef.selectors![0]![0] as string;
-  const hostRenderer = rendererFactory.createRenderer(null, null);
-  const hostRNode =
-      locateHostElement(hostRenderer, opts.host || componentTag, componentDef.encapsulation);
-  const rootFlags = componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
-                                          LViewFlags.CheckAlways | LViewFlags.IsRoot;
-  const rootContext = createRootContext(opts.scheduler, opts.playerHandler);
-
-  const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
-  const rootTView = createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null);
-  const rootView: LView = createLView(
-      null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, null,
-      opts.injector || null, null);
-
-  enterView(rootView);
-  let component: T;
-
-  try {
-    if (rendererFactory.begin) rendererFactory.begin();
-    const componentView = createRootComponentView(
-        hostRNode, componentDef, rootView, rendererFactory, renderer, sanitizer);
-    component = createRootComponent(
-        componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
-
-    // create mode pass
-    renderView(rootTView, rootView, null);
-    // update mode pass
-    refreshView(rootTView, rootView, null, null);
-
-  } finally {
-    leaveView();
-    if (rendererFactory.end) rendererFactory.end();
-  }
-
-  return component;
-}
 
 /**
  * Creates the root component view and the root component node.
@@ -174,7 +53,7 @@ export function renderComponent<T>(
  */
 export function createRootComponentView(
     rNode: RElement|null, def: ComponentDef<any>, rootView: LView,
-    rendererFactory: RendererFactory3, hostRenderer: Renderer3, sanitizer?: Sanitizer|null): LView {
+    rendererFactory: RendererFactory2, hostRenderer: Renderer2, sanitizer?: Sanitizer|null): LView {
   const tView = rootView[TVIEW];
   const index = HEADER_OFFSET;
   ngDevMode && assertIndexInRange(rootView, index);

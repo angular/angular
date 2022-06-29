@@ -28,7 +28,6 @@ import {NodeInjector} from './di';
 import {createLView, createTView, locateHostElement, renderView} from './instructions/shared';
 import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './interfaces/node';
-import {domRendererFactory3, RendererFactory3} from './interfaces/renderer';
 import {RNode} from './interfaces/renderer_dom';
 import {HEADER_OFFSET, LView, LViewFlags, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
@@ -144,9 +143,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const rootViewInjector =
         realEnvironmentInjector ? new ChainedInjector(injector, realEnvironmentInjector) : injector;
 
-    const rendererFactory =
-        rootViewInjector.get(RendererFactory2, domRendererFactory3 as RendererFactory2) as
-        RendererFactory3;
+    const rendererFactory = rootViewInjector.get(RendererFactory2);
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
     const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);

@@ -10,6 +10,7 @@ import {Injector} from '../../di/injector';
 import {ProviderToken} from '../../di/provider_token';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
+import {Renderer2, RendererFactory2} from '../../render';
 import {Sanitizer} from '../../sanitization/sanitizer';
 
 import {LContainer} from './container';
@@ -18,7 +19,6 @@ import {I18nUpdateOpCodes, TI18n, TIcu} from './i18n';
 import {TConstants, TNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
-import {Renderer3, RendererFactory3} from './renderer';
 import {RComment, RElement} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';
 
@@ -186,10 +186,10 @@ export interface LView<T = unknown> extends Array<any> {
   readonly[INJECTOR]: Injector|null;
 
   /** Factory to be used for creating Renderer. */
-  [RENDERER_FACTORY]: RendererFactory3;
+  [RENDERER_FACTORY]: RendererFactory2;
 
   /** Renderer to be used for this view. */
-  [RENDERER]: Renderer3;
+  [RENDERER]: Renderer2;
 
   /** An optional custom sanitizer. */
   [SANITIZER]: Sanitizer|null;

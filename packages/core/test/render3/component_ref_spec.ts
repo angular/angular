@@ -88,20 +88,27 @@ describe('ComponentFactory', () => {
     let createRenderer2Spy: jasmine.Spy;
     let cf: ComponentFactory<any>;
 
-    beforeEach(() => {
-      createRenderer2Spy =
-          jasmine.createSpy('RendererFactory2#createRenderer').and.returnValue(document);
+    @Component({
+      selector: 'test',
+      template: '',
+      host: {
+        'class': 'HOST_COMPONENT',
+      },
+      encapsulation: ViewEncapsulation.None
+    })
+    class TestComponent {
+    }
 
-      @Component({
-        selector: 'test',
-        template: '...',
-        host: {
-          'class': 'HOST_COMPONENT',
+    beforeEach(() => {
+      createRenderer2Spy = jasmine.createSpy('RendererFactory2#createRenderer').and.returnValue({
+        setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void {
+          el.setAttribute(name, value);
         },
-        encapsulation: ViewEncapsulation.None
-      })
-      class TestComponent {
-      }
+        createElement(name: string, namespace?: string|null): Element {
+          return namespace ? document.createElementNS(namespace, name) :
+                             document.createElement(name);
+        }
+      });
 
       cf = cfr.resolveComponentFactory(TestComponent);
     });

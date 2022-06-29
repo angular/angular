@@ -17,7 +17,7 @@ import {TNode} from '../interfaces/node';
 import {RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {HEADER_OFFSET, LView, RENDERER, TView} from '../interfaces/view';
-import {createCommentNode, createElementNode, createTextNode, nativeInsertBefore, nativeParentNode, nativeRemoveNode, updateTextNode} from '../node_manipulation';
+import {createCommentNode, createElementNode, createTextNode, nativeInsertBefore, nativeRemoveNode, updateTextNode} from '../node_manipulation';
 import {getBindingIndex} from '../state';
 import {renderStringify} from '../util/stringify_utils';
 import {getNativeByIndex, unwrapRNode} from '../util/view_utils';
@@ -152,7 +152,7 @@ export function applyMutableOpCodes(
             // must insert into the root. (Only subsequent operations can insert into a dynamic
             // parent)
             rootIdx = parentIdx;
-            rootRNode = nativeParentNode(renderer, anchorRNode);
+            rootRNode = renderer.parentNode(anchorRNode);
           }
           let insertInFrontOf: RNode|null;
           let parentRNode: RElement|null;

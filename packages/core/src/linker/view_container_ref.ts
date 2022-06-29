@@ -21,7 +21,7 @@ import {RComment, RElement} from '../render3/interfaces/renderer_dom';
 import {isLContainer} from '../render3/interfaces/type_checks';
 import {LView, PARENT, RENDERER, T_HOST, TVIEW} from '../render3/interfaces/view';
 import {assertTNodeType} from '../render3/node_assert';
-import {addViewToContainer, destroyLView, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from '../render3/node_manipulation';
+import {addViewToContainer, destroyLView, detachView, getBeforeNodeForView, insertView, nativeInsertBefore} from '../render3/node_manipulation';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from '../render3/util/injector_utils';
 import {getNativeByTNode, unwrapRNode, viewAttachedToContainer} from '../render3/util/view_utils';
@@ -466,7 +466,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     // Physical operation of adding the DOM nodes.
     const beforeNode = getBeforeNodeForView(adjustedIdx, lContainer);
     const renderer = lView[RENDERER];
-    const parentRNode = nativeParentNode(renderer, lContainer[NATIVE] as RElement | RComment);
+    const parentRNode = renderer.parentNode(lContainer[NATIVE] as RElement | RComment);
     if (parentRNode !== null) {
       addViewToContainer(tView, lContainer[T_HOST], renderer, lView, parentRNode, beforeNode);
     }
@@ -571,10 +571,9 @@ export function createContainerRef(
       commentNode = renderer.createComment(ngDevMode ? 'container' : '');
 
       const hostNative = getNativeByTNode(hostTNode, hostLView)!;
-      const parentOfHostNative = nativeParentNode(renderer, hostNative);
+      const parentOfHostNative = renderer.parentNode(hostNative);
       nativeInsertBefore(
-          renderer, parentOfHostNative!, commentNode, nativeNextSibling(renderer, hostNative),
-          false);
+          renderer, parentOfHostNative!, commentNode, renderer.nextSibling(hostNative), false);
     }
 
     hostLView[hostTNode.index] = lContainer =

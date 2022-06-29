@@ -11,9 +11,10 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DoCheck, OnChanges, OnInit} from '../../interface/lifecycle_hooks';
 import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
+import {Renderer2, RendererFactory2} from '../../render';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/sanitizer';
-import {assertDefined, assertDomNode, assertEqual, assertGreaterThanOrEqual, assertIndexInRange, assertNotEqual, assertNotSame, assertSame, assertString, throwError} from '../../util/assert';
+import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertIndexInRange, assertNotEqual, assertNotSame, assertSame, assertString, throwError} from '../../util/assert';
 import {escapeCommentText} from '../../util/dom';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {stringify} from '../../util/stringify';
@@ -28,7 +29,6 @@ import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory
 import {NodeInjectorFactory} from '../interfaces/injector';
 import {getUniqueLViewId} from '../interfaces/lview_tracking';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from '../interfaces/node';
-import {isProceduralRenderer, Renderer3, RendererFactory3} from '../interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isRootView} from '../interfaces/type_checks';
@@ -39,7 +39,7 @@ import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_mat
 import {profiler, ProfilerEvent} from '../profiler';
 import {enterView, getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, leaveView, setBindingIndex, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setIsInCheckNoChangesMode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
-import {isAnimationProp, mergeHostAttrs} from '../util/attrs_utils';
+import {mergeHostAttrs} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
 import {renderStringify, stringifyForError} from '../util/stringify_utils';
 import {getFirstLContainer, getLViewParent, getNextLContainer} from '../util/view_traversal_utils';
@@ -125,7 +125,7 @@ function renderChildComponents(hostLView: LView, components: number[]): void {
 
 export function createLView<T>(
     parentLView: LView|null, tView: TView, context: T|null, flags: LViewFlags, host: RElement|null,
-    tHostNode: TNode|null, rendererFactory: RendererFactory3|null, renderer: Renderer3|null,
+    tHostNode: TNode|null, rendererFactory: RendererFactory2|null, renderer: Renderer2|null,
     sanitizer: Sanitizer|null, injector: Injector|null,
     embeddedViewInjector: Injector|null): LView {
   const lView =
@@ -745,26 +745,11 @@ function assertHostNodeExists(rElement: RElement, elementOrSelector: RElement|st
  * @param encapsulation View Encapsulation defined for component that requests host element.
  */
 export function locateHostElement(
-    renderer: Renderer3, elementOrSelector: RElement|string,
+    renderer: Renderer2, elementOrSelector: RElement|string,
     encapsulation: ViewEncapsulation): RElement {
-  if (isProceduralRenderer(renderer)) {
-    // When using native Shadow DOM, do not clear host element to allow native slot projection
-    const preserveContent = encapsulation === ViewEncapsulation.ShadowDom;
-    return renderer.selectRootElement(elementOrSelector, preserveContent);
-  }
-
-  let rElement = typeof elementOrSelector === 'string' ?
-      renderer.querySelector(elementOrSelector)! :
-      elementOrSelector;
-  ngDevMode && assertHostNodeExists(rElement, elementOrSelector);
-
-  // Always clear host element's content when Renderer3 is in use. For procedural renderer case we
-  // make it depend on whether ShadowDom encapsulation is used (in which case the content should be
-  // preserved to allow native slot projection). ShadowDom encapsulation requires procedural
-  // renderer, and procedural renderer case is handled above.
-  rElement.textContent = '';
-
-  return rElement;
+  // When using native Shadow DOM, do not clear host element to allow native slot projection
+  const preserveContent = encapsulation === ViewEncapsulation.ShadowDom;
+  return renderer.selectRootElement(elementOrSelector, preserveContent);
 }
 
 /**
@@ -997,7 +982,7 @@ function mapPropName(name: string): string {
 }
 
 export function elementPropertyInternal<T>(
-    tView: TView, tNode: TNode, lView: LView, propName: string, value: T, renderer: Renderer3,
+    tView: TView, tNode: TNode, lView: LView, propName: string, value: T, renderer: Renderer2,
     sanitizer: SanitizerFn|null|undefined, nativeOnly: boolean): void {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
   const element = getNativeByTNode(tNode, lView) as RElement | RComment;
@@ -1023,12 +1008,7 @@ export function elementPropertyInternal<T>(
     // It is assumed that the sanitizer is only added when the compiler determines that the
     // property is risky, so sanitization can be done without further checks.
     value = sanitizer != null ? (sanitizer(value, tNode.value || '', propName) as any) : value;
-    if (isProceduralRenderer(renderer)) {
-      renderer.setProperty(element as RElement, propName, value);
-    } else if (!isAnimationProp(propName)) {
-      (element as RElement).setProperty ? (element as any).setProperty(propName, value) :
-                                          (element as any)[propName] = value;
-    }
+    renderer.setProperty(element as RElement, propName, value);
   } else if (tNode.type & TNodeType.AnyContainer) {
     // If the node is a container and the property didn't
     // match any of the inputs or schemas we should throw.
@@ -1054,21 +1034,14 @@ function setNgReflectProperty(
   const debugValue = normalizeDebugBindingValue(value);
   if (type & TNodeType.AnyRNode) {
     if (value == null) {
-      isProceduralRenderer(renderer) ? renderer.removeAttribute((element as RElement), attrName) :
-                                       (element as RElement).removeAttribute(attrName);
+      renderer.removeAttribute((element as RElement), attrName);
     } else {
-      isProceduralRenderer(renderer) ?
-          renderer.setAttribute((element as RElement), attrName, debugValue) :
-          (element as RElement).setAttribute(attrName, debugValue);
+      renderer.setAttribute((element as RElement), attrName, debugValue);
     }
   } else {
     const textContent =
         escapeCommentText(`bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`);
-    if (isProceduralRenderer(renderer)) {
-      renderer.setValue((element as RComment), textContent);
-    } else {
-      (element as RComment).textContent = textContent;
-    }
+    renderer.setValue((element as RComment), textContent);
   }
 }
 
@@ -1492,24 +1465,16 @@ export function elementAttributeInternal(
 }
 
 export function setElementAttribute(
-    renderer: Renderer3, element: RElement, namespace: string|null|undefined, tagName: string|null,
+    renderer: Renderer2, element: RElement, namespace: string|null|undefined, tagName: string|null,
     name: string, value: any, sanitizer: SanitizerFn|null|undefined) {
   if (value == null) {
     ngDevMode && ngDevMode.rendererRemoveAttribute++;
-    isProceduralRenderer(renderer) ? renderer.removeAttribute(element, name, namespace) :
-                                     element.removeAttribute(name);
+    renderer.removeAttribute(element, name, namespace);
   } else {
     ngDevMode && ngDevMode.rendererSetAttribute++;
     const strValue =
         sanitizer == null ? renderStringify(value) : sanitizer(value, tagName || '', name);
-
-
-    if (isProceduralRenderer(renderer)) {
-      renderer.setAttribute(element, name, strValue, namespace);
-    } else {
-      namespace ? element.setAttributeNS(namespace, name, strValue) :
-                  element.setAttribute(name, strValue);
-    }
+    renderer.setAttribute(element, name, strValue.toString(), namespace);
   }
 }
 
@@ -1609,7 +1574,6 @@ export function createLContainer(
     hostNative: RElement|RComment|LView, currentView: LView, native: RComment,
     tNode: TNode): LContainer {
   ngDevMode && assertLView(currentView);
-  ngDevMode && !isProceduralRenderer(currentView[RENDERER]) && assertDomNode(native);
   // https://jsperf.com/array-literal-vs-new-array-really
   const lContainer: LContainer = new (ngDevMode ? LContainerArray : Array)(
       hostNative,   // host native
@@ -2003,7 +1967,7 @@ export function getOrCreateTViewCleanup(tView: TView): any[] {
  * instead of the current renderer (see the componentSyntheticHost* instructions).
  */
 export function loadComponentRenderer(
-    currentDef: DirectiveDef<any>|null, tNode: TNode, lView: LView): Renderer3 {
+    currentDef: DirectiveDef<any>|null, tNode: TNode, lView: LView): Renderer2 {
   // TODO(FW-2043): the `currentDef` is null when host bindings are invoked while creating root
   // component (see packages/core/src/render3/component.ts). This is not consistent with the process
   // of creating inner components, when current directive index is available in the state. In order

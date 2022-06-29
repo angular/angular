@@ -52,5 +52,6 @@ export function getDocument(): Document {
   // this should not happen in Angular apps.
   // Once we support running ivy outside of Angular we will need to publish `setDocument()` as a
   // public API. Meanwhile we just return `undefined` and let the application fail.
+  // TODO(pk): convert to error
   return undefined!;
 }
