@@ -73,7 +73,7 @@
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.0.0",
-    "karma-jasmine-html-reporter": "~1.7.0",
+    "karma-jasmine-html-reporter": "~2.0.0",
     "lite-server": "^2.6.1",
     "lodash": "^4.16.2",
     "protractor": "~7.0.0",
