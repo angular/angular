@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {LifecycleHooksFeature, renderComponent, whenRendered} from './component';
+import {LifecycleHooksFeature, whenRendered} from './component';
 import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefineNgModule, ɵɵdefinePipe, ɵɵsetComponentScope, ɵɵsetNgModuleScope} from './definition';
 import {ɵɵCopyDefinitionFeature} from './features/copy_definition_feature';
 import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_feature';
@@ -196,7 +196,6 @@ export {
   getRenderedText,
   LifecycleHooksFeature,
   PipeDef,
-  renderComponent,
   whenRendered,
   ɵɵComponentDeclaration,
   ɵɵCopyDefinitionFeature,
