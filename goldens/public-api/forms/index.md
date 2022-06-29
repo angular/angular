@@ -176,6 +176,9 @@ export class CheckboxRequiredValidator extends RequiredValidator {
 export const COMPOSITION_BUFFER_MODE: InjectionToken<boolean>;
 
 // @public
+export type ControlConfig<T> = [T | FormControlState<T>, (ValidatorFn | (ValidatorFn[]))?, (AsyncValidatorFn | AsyncValidatorFn[])?];
+
+// @public
 export abstract class ControlContainer extends AbstractControlDirective {
     get formDirective(): Form | null;
     name: string | number | null;
