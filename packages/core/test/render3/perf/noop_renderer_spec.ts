@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ProceduralRenderer3} from '@angular/core/src/render3/interfaces/renderer';
+import {Renderer} from '@angular/core/src/render3/interfaces/renderer';
 
 import {MicroBenchmarkRendererFactory, MicroBenchmarkRenderNode} from './noop_renderer';
 
 describe('MicroBenchmarkRenderNode', () => {
-  const renderer =
-      new MicroBenchmarkRendererFactory().createRenderer(null, null) as ProceduralRenderer3;
+  const renderer = new MicroBenchmarkRendererFactory().createRenderer(null, null) as Renderer;
   describe('className', () => {
     it('should be available in global space', () => {
       expect(Node).toBeDefined();
