@@ -27,7 +27,7 @@ export enum RendererStyleFlags3 {
   DashCase = 1 << 1
 }
 
-export type Renderer3 = ObjectOrientedRenderer3|ProceduralRenderer3;
+export type Renderer3 = ObjectOrientedRenderer3|Renderer;
 
 export type GlobalTargetName = 'document'|'window'|'body';
 
@@ -50,8 +50,8 @@ export interface ObjectOrientedRenderer3 {
 }
 
 /** Returns whether the `renderer` is a `ProceduralRenderer3` */
-export function isProceduralRenderer(renderer: ProceduralRenderer3|
-                                     ObjectOrientedRenderer3): renderer is ProceduralRenderer3 {
+export function isProceduralRenderer(renderer: Renderer|
+                                     ObjectOrientedRenderer3): renderer is Renderer {
   return !!((renderer as any).listen);
 }
 
@@ -59,10 +59,9 @@ export function isProceduralRenderer(renderer: ProceduralRenderer3|
  * Procedural style of API needed to create elements and text nodes.
  *
  * In non-native browser environments (e.g. platforms such as web-workers), this is the
- * facade that enables element manipulation. This also facilitates backwards compatibility
- * with Renderer2.
+ * facade that enables element manipulation. In practice, this is implemented by `Renderer2`.
  */
-export interface ProceduralRenderer3 {
+export interface Renderer {
   destroy(): void;
   createComment(value: string): RComment;
   createElement(name: string, namespace?: string|null): RElement;
@@ -100,7 +99,7 @@ export interface ProceduralRenderer3 {
       callback: (event: any) => boolean | void): () => void;
 }
 
-export interface RendererFactory3 {
+export interface RendererFactory {
   createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer3;
   begin?(): void;
   end?(): void;
@@ -112,7 +111,7 @@ export function enableRenderer3() {
   renderer3Enabled = true;
 }
 
-export const domRendererFactory3: RendererFactory3 = {
+export const domRendererFactory3: RendererFactory = {
   createRenderer: (hostElement: RElement|null, rendererType: RendererType2|null): Renderer3 => {
     if (!renderer3Enabled) {
       throw new Error(
