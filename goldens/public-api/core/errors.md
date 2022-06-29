@@ -75,6 +75,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     RECURSIVE_APPLICATION_REF_TICK = 101,
     // (undocumented)
+    RENDERER_NOT_FOUND = 407,
+    // (undocumented)
     TEMPLATE_STRUCTURE_ERROR = 305,
     // (undocumented)
     TYPE_IS_NOT_STANDALONE = 907,
