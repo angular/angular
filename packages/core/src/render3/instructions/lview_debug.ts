@@ -21,7 +21,7 @@ import {NO_PARENT_INJECTOR, NodeInjectorOffset} from '../interfaces/injector';
 import {AttributeMarker, InsertBeforeIndex, PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, toTNodeTypeAsString} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
 import {LQueries, TQueries} from '../interfaces/query';
-import {Renderer3, RendererFactory3} from '../interfaces/renderer';
+import {Renderer3, RendererFactory} from '../interfaces/renderer';
 import {RComment, RElement, RNode} from '../interfaces/renderer_dom';
 import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DebugNode, DECLARATION_VIEW, DestroyHookData, FLAGS, HEADER_OFFSET, HookData, HOST, HostBindingOpCodes, ID, INJECTOR, LContainerDebug as ILContainerDebug, LView, LViewDebug as ILViewDebug, LViewDebugRange, LViewDebugRangeContent, LViewFlags, NEXT, NodeInjectorDebug, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TView as ITView, TVIEW, TView, TViewType, TViewTypeAsString} from '../interfaces/view';
@@ -486,7 +486,7 @@ export class LViewDebug<T = unknown> implements ILViewDebug<T> {
   get injector(): Injector|null {
     return this._raw_lView[INJECTOR];
   }
-  get rendererFactory(): RendererFactory3 {
+  get rendererFactory(): RendererFactory {
     return this._raw_lView[RENDERER_FACTORY];
   }
   get renderer(): Renderer3 {

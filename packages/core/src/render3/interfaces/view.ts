@@ -18,7 +18,7 @@ import {I18nUpdateOpCodes, TI18n, TIcu} from './i18n';
 import {TConstants, TNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
-import {Renderer3, RendererFactory3} from './renderer';
+import {Renderer3, RendererFactory} from './renderer';
 import {RComment, RElement} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';
 
@@ -186,7 +186,7 @@ export interface LView<T = unknown> extends Array<any> {
   readonly[INJECTOR]: Injector|null;
 
   /** Factory to be used for creating Renderer. */
-  [RENDERER_FACTORY]: RendererFactory3;
+  [RENDERER_FACTORY]: RendererFactory;
 
   /** Renderer to be used for this view. */
   [RENDERER]: Renderer3;

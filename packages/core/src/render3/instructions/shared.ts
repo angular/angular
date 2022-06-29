@@ -28,7 +28,7 @@ import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory
 import {NodeInjectorFactory} from '../interfaces/injector';
 import {getUniqueLViewId} from '../interfaces/lview_tracking';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from '../interfaces/node';
-import {isProceduralRenderer, Renderer3, RendererFactory3} from '../interfaces/renderer';
+import {isProceduralRenderer, Renderer3, RendererFactory} from '../interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isRootView} from '../interfaces/type_checks';
@@ -125,7 +125,7 @@ function renderChildComponents(hostLView: LView, components: number[]): void {
 
 export function createLView<T>(
     parentLView: LView|null, tView: TView, context: T|null, flags: LViewFlags, host: RElement|null,
-    tHostNode: TNode|null, rendererFactory: RendererFactory3|null, renderer: Renderer3|null,
+    tHostNode: TNode|null, rendererFactory: RendererFactory|null, renderer: Renderer3|null,
     sanitizer: Sanitizer|null, injector: Injector|null,
     embeddedViewInjector: Injector|null): LView {
   const lView =
