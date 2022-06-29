@@ -22,7 +22,7 @@ import {addToViewTree, CLEAN_PROMISE, createLView, createTView, getOrCreateTComp
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
-import {domRendererFactory3, enableRenderer3, Renderer3, RendererFactory} from './interfaces/renderer';
+import {Renderer, RendererFactory} from './interfaces/renderer';
 import {RElement} from './interfaces/renderer_dom';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
 import {writeDirectClass, writeDirectStyle} from './node_manipulation';
@@ -115,9 +115,7 @@ export function renderComponent<T>(
   ngDevMode && publishDefaultGlobalUtils();
   ngDevMode && assertComponentType(componentType);
 
-  enableRenderer3();
-
-  const rendererFactory = opts.rendererFactory || domRendererFactory3;
+  const rendererFactory = opts.rendererFactory!;
   const sanitizer = opts.sanitizer || null;
   const componentDef = getComponentDef<T>(componentType)!;
   if (componentDef.type != componentType) (componentDef as {type: Type<any>}).type = componentType;
@@ -174,7 +172,7 @@ export function renderComponent<T>(
  */
 export function createRootComponentView(
     rNode: RElement|null, def: ComponentDef<any>, rootView: LView, rendererFactory: RendererFactory,
-    hostRenderer: Renderer3, sanitizer?: Sanitizer|null): LView {
+    hostRenderer: Renderer, sanitizer?: Sanitizer|null): LView {
   const tView = rootView[TVIEW];
   const index = HEADER_OFFSET;
   ngDevMode && assertIndexInRange(rootView, index);

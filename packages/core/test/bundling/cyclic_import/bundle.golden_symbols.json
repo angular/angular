@@ -774,9 +774,6 @@
     "name": "isPositive"
   },
   {
-    "name": "isProceduralRenderer"
-  },
-  {
     "name": "isPromise"
   },
   {
@@ -784,9 +781,6 @@
   },
   {
     "name": "isTemplateNode"
-  },
-  {
-    "name": "isTemplateNode2"
   },
   {
     "name": "isTypeProvider"
