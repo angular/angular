@@ -78,7 +78,7 @@
     "lodash": "^4.16.2",
     "protractor": "~7.0.0",
     "puppeteer": "10.2.0",
-    "rimraf": "^2.5.4",
+    "rimraf": "^3.0.0",
     "rollup": "^2.70.1",
     "rollup-plugin-terser": "^7.0.2",
     "source-map-explorer": "^2.0.0",
