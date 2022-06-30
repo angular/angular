@@ -15,8 +15,9 @@
 export * from './async';
 export * from './component_fixture';
 export * from './fake_async';
-export {TestBed, getTestBed, inject, InjectSetupWrapper, withModule} from './test_bed';
+export {TestBed, inject, InjectSetupWrapper, withModule} from './test_bed';
 export {TestComponentRenderer, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestModuleMetadata, TestEnvironmentOptions, ModuleTeardownOptions, TestBedStatic} from './test_bed_common';
 export * from './test_hooks';
+export {getTestBed} from './r3_test_bed';
 export * from './metadata_override';
 export {MetadataOverrider as ɵMetadataOverrider} from './metadata_overrider';

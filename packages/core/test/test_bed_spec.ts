@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
 import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ElementRef, ErrorHandler, getNgModuleById, Inject, Injectable, InjectionToken, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelementEnd as elementEnd, ɵɵelementStart as elementStart, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
-import {getTestBed, TestBed} from '@angular/core/testing/src/test_bed';
+import {TestBedImpl} from '@angular/core/testing/src/r3_test_bed';
+import {TestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {TestBedRender3} from '../testing/src/r3_test_bed';
 import {TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from '../testing/src/test_bed_common';
 
 const NAME = new InjectionToken<string>('name');
@@ -129,7 +128,7 @@ describe('TestBed', () => {
   it('should apply scopes correctly for components in the lazy-loaded module', () => {
     // Reset TestBed to the initial state, emulating an invocation of a first test.
     // Check `TestBed.checkGlobalCompilationFinished` for additional info.
-    (getTestBed() as any)._globalCompilationChecked = false;
+    TestBedImpl.INSTANCE.globalCompilationChecked = false;
 
     @Component({
       selector: 'root',
@@ -170,7 +169,7 @@ describe('TestBed', () => {
 
 describe('TestBed with Standalone types', () => {
   beforeEach(() => {
-    getTestBed().resetTestingModule();
+    TestBed.resetTestingModule();
   });
 
   it('should override providers on standalone component itself', () => {
@@ -498,7 +497,7 @@ describe('TestBed with Standalone types', () => {
 
 describe('TestBed', () => {
   beforeEach(() => {
-    getTestBed().resetTestingModule();
+    TestBed.resetTestingModule();
     TestBed.configureTestingModule({imports: [HelloWorldModule]});
   });
 
@@ -681,7 +680,7 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Hello World!');
 
     // override the template
-    getTestBed().resetTestingModule();
+    TestBed.resetTestingModule();
     TestBed.configureTestingModule({imports: [HelloWorldModule]});
     TestBed.overrideComponent(GreetingCmp, {set: {template: `Bonjour {{ name }}`}});
     hello = TestBed.createComponent(HelloWorld);
@@ -689,7 +688,7 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Bonjour World!');
 
     // restore the original template by calling `.resetTestingModule()`
-    getTestBed().resetTestingModule();
+    TestBed.resetTestingModule();
     TestBed.configureTestingModule({imports: [HelloWorldModule]});
     hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
@@ -1330,7 +1329,7 @@ describe('TestBed', () => {
     class ProvidesErrorHandler {
     }
 
-    getTestBed().resetTestingModule();
+    TestBed.resetTestingModule();
     TestBed.configureTestingModule({imports: [ProvidesErrorHandler, HelloWorldModule]});
 
     expect(TestBed.inject(ErrorHandler)).toEqual(jasmine.any(CustomErrorHandler));
@@ -1859,28 +1858,24 @@ describe('TestBed', () => {
 
 
 describe('TestBed module teardown', () => {
-  // Cast the `TestBed` to the internal data type since we're testing private APIs.
-  let TestBed: TestBedRender3;
-
   beforeEach(() => {
-    TestBed = getTestBed() as unknown as TestBedRender3;
     TestBed.resetTestingModule();
   });
 
   it('should tear down the test module by default', () => {
-    expect(TestBed.shouldTearDownTestingModule()).toBe(true);
+    expect(TestBedImpl.INSTANCE.shouldTearDownTestingModule()).toBe(true);
   });
 
   it('should be able to configure the teardown behavior', () => {
     TestBed.configureTestingModule({teardown: {destroyAfterEach: false}});
-    expect(TestBed.shouldTearDownTestingModule()).toBe(false);
+    expect(TestBedImpl.INSTANCE.shouldTearDownTestingModule()).toBe(false);
   });
 
   it('should reset the teardown behavior back to the default when TestBed is reset', () => {
     TestBed.configureTestingModule({teardown: {destroyAfterEach: false}});
-    expect(TestBed.shouldTearDownTestingModule()).toBe(false);
+    expect(TestBedImpl.INSTANCE.shouldTearDownTestingModule()).toBe(false);
     TestBed.resetTestingModule();
-    expect(TestBed.shouldTearDownTestingModule()).toBe(true);
+    expect(TestBedImpl.INSTANCE.shouldTearDownTestingModule()).toBe(true);
   });
 
   it('should destroy test module providers when test module teardown is enabled', () => {
@@ -2053,88 +2048,83 @@ describe('TestBed module teardown', () => {
   });
 
   it('should rethrow errors based on the default teardown behavior', () => {
-    expect(TestBed.shouldRethrowTeardownErrors()).toBe(TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT);
+    expect(TestBedImpl.INSTANCE.shouldRethrowTeardownErrors())
+        .toBe(TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT);
   });
 
   it('should rethrow errors if the option is omitted and test teardown is enabled', () => {
     TestBed.configureTestingModule({teardown: {destroyAfterEach: true}});
-    expect(TestBed.shouldRethrowTeardownErrors()).toBe(true);
+    expect(TestBedImpl.INSTANCE.shouldRethrowTeardownErrors()).toBe(true);
   });
 
   it('should not rethrow errors if the option is omitted and test teardown is disabled', () => {
     TestBed.configureTestingModule({teardown: {destroyAfterEach: false}});
-    expect(TestBed.shouldRethrowTeardownErrors()).toBe(false);
+    expect(TestBedImpl.INSTANCE.shouldRethrowTeardownErrors()).toBe(false);
   });
 
   it('should rethrow errors if the option is enabled, but teardown is disabled', () => {
     TestBed.configureTestingModule({teardown: {destroyAfterEach: false, rethrowErrors: true}});
-    expect(TestBed.shouldRethrowTeardownErrors()).toBe(true);
+    expect(TestBedImpl.INSTANCE.shouldRethrowTeardownErrors()).toBe(true);
   });
 
   it('should not rethrow errors if the option is disabled, but teardown is enabled', () => {
     TestBed.configureTestingModule({teardown: {destroyAfterEach: true, rethrowErrors: false}});
-    expect(TestBed.shouldRethrowTeardownErrors()).toBe(false);
+    expect(TestBedImpl.INSTANCE.shouldRethrowTeardownErrors()).toBe(false);
   });
 });
 
 describe('TestBed module `errorOnUnknownElements`', () => {
-  // Cast the `TestBed` to the internal data type since we're testing private APIs.
-  let TestBed: TestBedRender3;
-
   beforeEach(() => {
-    TestBed = getTestBed() as unknown as TestBedRender3;
     TestBed.resetTestingModule();
   });
 
   it('should not throw based on the default behavior', () => {
-    expect(TestBed.shouldThrowErrorOnUnknownElements()).toBe(THROW_ON_UNKNOWN_ELEMENTS_DEFAULT);
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownElements())
+        .toBe(THROW_ON_UNKNOWN_ELEMENTS_DEFAULT);
   });
 
   it('should not throw if the option is omitted', () => {
     TestBed.configureTestingModule({});
-    expect(TestBed.shouldThrowErrorOnUnknownElements()).toBe(false);
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownElements()).toBe(false);
   });
 
   it('should be able to configure the option', () => {
     TestBed.configureTestingModule({errorOnUnknownElements: true});
-    expect(TestBed.shouldThrowErrorOnUnknownElements()).toBe(true);
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownElements()).toBe(true);
   });
 
   it('should reset the option back to the default when TestBed is reset', () => {
     TestBed.configureTestingModule({errorOnUnknownElements: true});
-    expect(TestBed.shouldThrowErrorOnUnknownElements()).toBe(true);
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownElements()).toBe(true);
     TestBed.resetTestingModule();
-    expect(TestBed.shouldThrowErrorOnUnknownElements()).toBe(false);
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownElements()).toBe(false);
   });
 });
 
 describe('TestBed module `errorOnUnknownProperties`', () => {
-  // Cast the `TestBed` to the internal data type since we're testing private APIs.
-  let TestBed: TestBedRender3;
-
   beforeEach(() => {
-    TestBed = getTestBed() as unknown as TestBedRender3;
     TestBed.resetTestingModule();
   });
 
   it('should not throw based on the default behavior', () => {
-    expect(TestBed.shouldThrowErrorOnUnknownProperties()).toBe(THROW_ON_UNKNOWN_PROPERTIES_DEFAULT);
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownProperties())
+        .toBe(THROW_ON_UNKNOWN_PROPERTIES_DEFAULT);
   });
 
   it('should not throw if the option is omitted', () => {
     TestBed.configureTestingModule({});
-    expect(TestBed.shouldThrowErrorOnUnknownProperties()).toBe(false);
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownProperties()).toBe(false);
   });
 
   it('should be able to configure the option', () => {
     TestBed.configureTestingModule({errorOnUnknownProperties: true});
-    expect(TestBed.shouldThrowErrorOnUnknownProperties()).toBe(true);
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownProperties()).toBe(true);
   });
 
   it('should reset the option back to the default when TestBed is reset', () => {
     TestBed.configureTestingModule({errorOnUnknownProperties: true});
-    expect(TestBed.shouldThrowErrorOnUnknownProperties()).toBe(true);
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownProperties()).toBe(true);
     TestBed.resetTestingModule();
-    expect(TestBed.shouldThrowErrorOnUnknownProperties()).toBe(false);
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownProperties()).toBe(false);
   });
 });

@@ -41,9 +41,18 @@ import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {R3TestBedCompiler} from './r3_test_bed_compiler';
 import {TestBed} from './test_bed';
-import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestBedStatic, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from './test_bed_common';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from './test_bed_common';
 
 let _nextRootElementId = 0;
+
+/**
+ * Returns a singleton of the `TestBed` class.
+ *
+ * @publicApi
+ */
+export function getTestBed(): TestBed {
+  return TestBedImpl.INSTANCE;
+}
 
 
 /**
@@ -52,11 +61,14 @@ let _nextRootElementId = 0;
  * creating components and services in unit tests.
  *
  * TestBed is the primary api for writing unit tests for Angular applications and libraries.
- *
- * Note: Use `TestBed` in tests. It will be set to either `TestBedViewEngine` or `TestBedRender3`
- * according to the compiler used.
  */
-export class TestBedRender3 implements TestBed {
+export class TestBedImpl implements TestBed {
+  private static _INSTANCE: TestBedImpl|null = null;
+
+  static get INSTANCE(): TestBedImpl {
+    return TestBedImpl._INSTANCE = TestBedImpl._INSTANCE || new TestBedImpl();
+  }
+
   /**
    * Teardown options that have been configured at the environment level.
    * Used as a fallback if no instance-level options have been provided.
@@ -121,7 +133,7 @@ export class TestBedRender3 implements TestBed {
   static initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef,
       options?: TestEnvironmentOptions): TestBed {
-    const testBed = _getTestBedRender3();
+    const testBed = TestBedImpl.INSTANCE;
     testBed.initTestEnvironment(ngModule, platform, options);
     return testBed;
   }
@@ -132,21 +144,19 @@ export class TestBedRender3 implements TestBed {
    * @publicApi
    */
   static resetTestEnvironment(): void {
-    _getTestBedRender3().resetTestEnvironment();
+    TestBedImpl.INSTANCE.resetTestEnvironment();
   }
 
-  static configureCompiler(config: {providers?: any[]; useJit?: boolean;}): TestBedStatic {
-    _getTestBedRender3().configureCompiler(config);
-    return TestBedRender3 as any as TestBedStatic;
+  static configureCompiler(config: {providers?: any[]; useJit?: boolean;}): TestBed {
+    return TestBedImpl.INSTANCE.configureCompiler(config);
   }
 
   /**
    * Allows overriding default providers, directives, pipes, modules of the test injector,
    * which are defined in test_injector.js
    */
-  static configureTestingModule(moduleDef: TestModuleMetadata): TestBedStatic {
-    _getTestBedRender3().configureTestingModule(moduleDef);
-    return TestBedRender3 as any as TestBedStatic;
+  static configureTestingModule(moduleDef: TestModuleMetadata): TestBed {
+    return TestBedImpl.INSTANCE.configureTestingModule(moduleDef);
   }
 
   /**
@@ -155,34 +165,27 @@ export class TestBedRender3 implements TestBed {
    * as fetching urls is asynchronous.
    */
   static compileComponents(): Promise<any> {
-    return _getTestBedRender3().compileComponents();
+    return TestBedImpl.INSTANCE.compileComponents();
   }
 
-  static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBedStatic {
-    _getTestBedRender3().overrideModule(ngModule, override);
-    return TestBedRender3 as any as TestBedStatic;
+  static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBed {
+    return TestBedImpl.INSTANCE.overrideModule(ngModule, override);
   }
 
-  static overrideComponent(component: Type<any>, override: MetadataOverride<Component>):
-      TestBedStatic {
-    _getTestBedRender3().overrideComponent(component, override);
-    return TestBedRender3 as any as TestBedStatic;
+  static overrideComponent(component: Type<any>, override: MetadataOverride<Component>): TestBed {
+    return TestBedImpl.INSTANCE.overrideComponent(component, override);
   }
 
-  static overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>):
-      TestBedStatic {
-    _getTestBedRender3().overrideDirective(directive, override);
-    return TestBedRender3 as any as TestBedStatic;
+  static overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): TestBed {
+    return TestBedImpl.INSTANCE.overrideDirective(directive, override);
   }
 
-  static overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBedStatic {
-    _getTestBedRender3().overridePipe(pipe, override);
-    return TestBedRender3 as any as TestBedStatic;
+  static overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBed {
+    return TestBedImpl.INSTANCE.overridePipe(pipe, override);
   }
 
-  static overrideTemplate(component: Type<any>, template: string): TestBedStatic {
-    _getTestBedRender3().overrideComponent(component, {set: {template, templateUrl: null!}});
-    return TestBedRender3 as any as TestBedStatic;
+  static overrideTemplate(component: Type<any>, template: string): TestBed {
+    return TestBedImpl.INSTANCE.overrideTemplate(component, template);
   }
 
   /**
@@ -191,29 +194,27 @@ export class TestBedRender3 implements TestBed {
    *
    * Note: This works for JIT and AOTed components as well.
    */
-  static overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBedStatic {
-    _getTestBedRender3().overrideTemplateUsingTestingModule(component, template);
-    return TestBedRender3 as any as TestBedStatic;
+  static overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBed {
+    return TestBedImpl.INSTANCE.overrideTemplateUsingTestingModule(component, template);
   }
 
   static overrideProvider(token: any, provider: {
     useFactory: Function,
     deps: any[],
-  }): TestBedStatic;
-  static overrideProvider(token: any, provider: {useValue: any;}): TestBedStatic;
+  }): TestBed;
+  static overrideProvider(token: any, provider: {useValue: any;}): TestBed;
   static overrideProvider(token: any, provider: {
     useFactory?: Function,
     useValue?: any,
     deps?: any[],
-  }): TestBedStatic {
-    _getTestBedRender3().overrideProvider(token, provider);
-    return TestBedRender3 as any as TestBedStatic;
+  }): TestBed {
+    return TestBedImpl.INSTANCE.overrideProvider(token, provider);
   }
 
   static inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   static inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T|null;
   static inject<T>(token: ProviderToken<T>, notFoundValue?: T|null, flags?: InjectFlags): T|null {
-    return _getTestBedRender3().inject(token, notFoundValue, flags);
+    return TestBedImpl.INSTANCE.inject(token, notFoundValue, flags);
   }
 
   /** @deprecated from v9.0.0 use TestBed.inject */
@@ -224,24 +225,27 @@ export class TestBedRender3 implements TestBed {
   static get(
       token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
       flags: InjectFlags = InjectFlags.Default): any {
-    return _getTestBedRender3().inject(token, notFoundValue, flags);
+    return TestBedImpl.INSTANCE.inject(token, notFoundValue, flags);
   }
 
   static createComponent<T>(component: Type<T>): ComponentFixture<T> {
-    return _getTestBedRender3().createComponent(component);
+    return TestBedImpl.INSTANCE.createComponent(component);
   }
 
-  static resetTestingModule(): TestBedStatic {
-    _getTestBedRender3().resetTestingModule();
-    return TestBedRender3 as any as TestBedStatic;
+  static resetTestingModule(): TestBed {
+    return TestBedImpl.INSTANCE.resetTestingModule();
   }
 
-  static shouldTearDownTestingModule(): boolean {
-    return _getTestBedRender3().shouldTearDownTestingModule();
+  static execute(tokens: any[], fn: Function, context?: any): any {
+    return TestBedImpl.INSTANCE.execute(tokens, fn, context);
   }
 
-  static tearDownTestingModule(): void {
-    _getTestBedRender3().tearDownTestingModule();
+  static get platform(): PlatformRef {
+    return TestBedImpl.INSTANCE.platform;
+  }
+
+  static get ngModule(): Type<any>|Type<any>[] {
+    return TestBedImpl.INSTANCE.ngModule;
   }
 
   // Properties
@@ -253,7 +257,13 @@ export class TestBedRender3 implements TestBed {
   private _testModuleRef: NgModuleRef<any>|null = null;
 
   private _activeFixtures: ComponentFixture<any>[] = [];
-  private _globalCompilationChecked = false;
+
+  /**
+   * Internal-only flag to indicate whether a module
+   * scoping queue has been checked and flushed already.
+   * @nodoc
+   */
+  globalCompilationChecked = false;
 
   /**
    * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
@@ -275,11 +285,11 @@ export class TestBedRender3 implements TestBed {
       throw new Error('Cannot set base providers because it has already been called');
     }
 
-    TestBedRender3._environmentTeardownOptions = options?.teardown;
+    TestBedImpl._environmentTeardownOptions = options?.teardown;
 
-    TestBedRender3._environmentErrorOnUnknownElementsOption = options?.errorOnUnknownElements;
+    TestBedImpl._environmentErrorOnUnknownElementsOption = options?.errorOnUnknownElements;
 
-    TestBedRender3._environmentErrorOnUnknownPropertiesOption = options?.errorOnUnknownProperties;
+    TestBedImpl._environmentErrorOnUnknownPropertiesOption = options?.errorOnUnknownProperties;
 
     this.platform = platform;
     this.ngModule = ngModule;
@@ -302,11 +312,11 @@ export class TestBedRender3 implements TestBed {
     this._compiler = null;
     this.platform = null!;
     this.ngModule = null!;
-    TestBedRender3._environmentTeardownOptions = undefined;
+    TestBedImpl._environmentTeardownOptions = undefined;
     setAllowDuplicateNgModuleIdsForTest(false);
   }
 
-  resetTestingModule(): void {
+  resetTestingModule(): this {
     this.checkGlobalCompilationFinished();
     resetCompiledComponents();
     if (this._compiler !== null) {
@@ -337,9 +347,10 @@ export class TestBedRender3 implements TestBed {
         this._instanceErrorOnUnknownPropertiesOption = undefined;
       }
     }
+    return this;
   }
 
-  configureCompiler(config: {providers?: any[]; useJit?: boolean;}): void {
+  configureCompiler(config: {providers?: any[]; useJit?: boolean;}): this {
     if (config.useJit != null) {
       throw new Error('the Render3 compiler JiT mode is not configurable !');
     }
@@ -347,9 +358,10 @@ export class TestBedRender3 implements TestBed {
     if (config.providers !== undefined) {
       this.compiler.setCompilerProviders(config.providers);
     }
+    return this;
   }
 
-  configureTestingModule(moduleDef: TestModuleMetadata): void {
+  configureTestingModule(moduleDef: TestModuleMetadata): this {
     this.assertNotInstantiated('R3TestBed.configureTestingModule', 'configure the test module');
 
     // Trigger module scoping queue flush before executing other TestBed operations in a test.
@@ -370,6 +382,7 @@ export class TestBedRender3 implements TestBed {
     this._previousErrorOnUnknownPropertiesOption = getUnknownPropertyStrictMode();
     setUnknownPropertyStrictMode(this.shouldThrowErrorOnUnknownProperties());
     this.compiler.configureTestingModule(moduleDef);
+    return this;
   }
 
   compileComponents(): Promise<any> {
@@ -379,7 +392,7 @@ export class TestBedRender3 implements TestBed {
   inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T|null;
   inject<T>(token: ProviderToken<T>, notFoundValue?: T|null, flags?: InjectFlags): T|null {
-    if (token as unknown === TestBedRender3) {
+    if (token as unknown === TestBed) {
       return this as any;
     }
     const UNDEFINED = {} as unknown as T;
@@ -403,40 +416,50 @@ export class TestBedRender3 implements TestBed {
     return fn.apply(context, params);
   }
 
-  overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
+  overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): this {
     this.assertNotInstantiated('overrideModule', 'override module metadata');
     this.compiler.overrideModule(ngModule, override);
+    return this;
   }
 
-  overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void {
+  overrideComponent(component: Type<any>, override: MetadataOverride<Component>): this {
     this.assertNotInstantiated('overrideComponent', 'override component metadata');
     this.compiler.overrideComponent(component, override);
+    return this;
   }
 
-  overrideTemplateUsingTestingModule(component: Type<any>, template: string): void {
+  overrideTemplateUsingTestingModule(component: Type<any>, template: string): this {
     this.assertNotInstantiated(
         'R3TestBed.overrideTemplateUsingTestingModule',
         'Cannot override template when the test module has already been instantiated');
     this.compiler.overrideTemplateUsingTestingModule(component, template);
+    return this;
   }
 
-  overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void {
+  overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): this {
     this.assertNotInstantiated('overrideDirective', 'override directive metadata');
     this.compiler.overrideDirective(directive, override);
+    return this;
   }
 
-  overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): void {
+  overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): this {
     this.assertNotInstantiated('overridePipe', 'override pipe metadata');
     this.compiler.overridePipe(pipe, override);
+    return this;
   }
 
   /**
    * Overwrites all providers for the given token with the given provider definition.
    */
   overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
-      void {
+      this {
     this.assertNotInstantiated('overrideProvider', 'override provider');
     this.compiler.overrideProvider(token, provider);
+    return this;
+  }
+
+  overrideTemplate(component: Type<any>, template: string): TestBed {
+    return this.overrideComponent(component, {set: {template, templateUrl: null!}});
   }
 
   createComponent<T>(type: Type<T>): ComponentFixture<T> {
@@ -512,10 +535,10 @@ export class TestBedRender3 implements TestBed {
   private checkGlobalCompilationFinished(): void {
     // Checking _testNgModuleRef is null should not be necessary, but is left in as an additional
     // guard that compilations queued in tests (after instantiation) are never flushed accidentally.
-    if (!this._globalCompilationChecked && this._testModuleRef === null) {
+    if (!this.globalCompilationChecked && this._testModuleRef === null) {
       flushModuleScopingQueueAsMuchAsPossible();
     }
-    this._globalCompilationChecked = true;
+    this.globalCompilationChecked = true;
   }
 
   private destroyActiveFixtures(): void {
@@ -542,7 +565,7 @@ export class TestBedRender3 implements TestBed {
 
   shouldRethrowTeardownErrors(): boolean {
     const instanceOptions = this._instanceTeardownOptions;
-    const environmentOptions = TestBedRender3._environmentTeardownOptions;
+    const environmentOptions = TestBedImpl._environmentTeardownOptions;
 
     // If the new teardown behavior hasn't been configured, preserve the old behavior.
     if (!instanceOptions && !environmentOptions) {
@@ -557,20 +580,19 @@ export class TestBedRender3 implements TestBed {
   shouldThrowErrorOnUnknownElements(): boolean {
     // Check if a configuration has been provided to throw when an unknown element is found
     return this._instanceErrorOnUnknownElementsOption ??
-        TestBedRender3._environmentErrorOnUnknownElementsOption ??
-        THROW_ON_UNKNOWN_ELEMENTS_DEFAULT;
+        TestBedImpl._environmentErrorOnUnknownElementsOption ?? THROW_ON_UNKNOWN_ELEMENTS_DEFAULT;
   }
 
   shouldThrowErrorOnUnknownProperties(): boolean {
     // Check if a configuration has been provided to throw when an unknown property is found
     return this._instanceErrorOnUnknownPropertiesOption ??
-        TestBedRender3._environmentErrorOnUnknownPropertiesOption ??
+        TestBedImpl._environmentErrorOnUnknownPropertiesOption ??
         THROW_ON_UNKNOWN_PROPERTIES_DEFAULT;
   }
 
   shouldTearDownTestingModule(): boolean {
     return this._instanceTeardownOptions?.destroyAfterEach ??
-        TestBedRender3._environmentTeardownOptions?.destroyAfterEach ??
+        TestBedImpl._environmentTeardownOptions?.destroyAfterEach ??
         TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT;
   }
 
@@ -597,10 +619,4 @@ export class TestBedRender3 implements TestBed {
       testRenderer.removeAllRootElements?.();
     }
   }
-}
-
-let testBed: TestBedRender3;
-
-export function _getTestBedRender3(): TestBedRender3 {
-  return testBed = testBed || new TestBedRender3();
 }

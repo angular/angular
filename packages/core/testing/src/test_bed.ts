@@ -10,16 +10,16 @@ import {Component, Directive, InjectFlags, NgModule, Pipe, PlatformRef, Provider
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
-import {_getTestBedRender3, TestBedRender3} from './r3_test_bed';
+import {TestBedImpl} from './r3_test_bed';
 import {TestBedStatic, TestEnvironmentOptions, TestModuleMetadata} from './test_bed_common';
 
 /**
  * @publicApi
  */
 export interface TestBed {
-  platform: PlatformRef;
+  get platform(): PlatformRef;
 
-  ngModule: Type<any>|Type<any>[];
+  get ngModule(): Type<any>|Type<any>[];
 
   /**
    * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
@@ -41,11 +41,11 @@ export interface TestBed {
    */
   resetTestEnvironment(): void;
 
-  resetTestingModule(): void;
+  resetTestingModule(): TestBed;
 
   configureCompiler(config: {providers?: any[], useJit?: boolean}): void;
 
-  configureTestingModule(moduleDef: TestModuleMetadata): void;
+  configureTestingModule(moduleDef: TestModuleMetadata): TestBed;
 
   compileComponents(): Promise<any>;
 
@@ -59,13 +59,15 @@ export interface TestBed {
 
   execute(tokens: any[], fn: Function, context?: any): any;
 
-  overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void;
+  overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBed;
 
-  overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void;
+  overrideComponent(component: Type<any>, override: MetadataOverride<Component>): TestBed;
 
-  overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void;
+  overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): TestBed;
 
-  overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): void;
+  overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBed;
+
+  overrideTemplate(component: Type<any>, template: string): TestBed;
 
   /**
    * Overwrites all providers for the given token with the given provider definition.
@@ -73,12 +75,12 @@ export interface TestBed {
   overrideProvider(token: any, provider: {
     useFactory: Function,
     deps: any[],
-  }): void;
-  overrideProvider(token: any, provider: {useValue: any;}): void;
+  }): TestBed;
+  overrideProvider(token: any, provider: {useValue: any;}): TestBed;
   overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
-      void;
+      TestBed;
 
-  overrideTemplateUsingTestingModule(component: Type<any>, template: string): void;
+  overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBed;
 
   createComponent<T>(component: Type<T>): ComponentFixture<T>;
 }
@@ -90,21 +92,10 @@ export interface TestBed {
  *
  * `TestBed` is the primary api for writing unit tests for Angular applications and libraries.
  *
- * Note: Use `TestBed` in tests. It will be set to either `TestBedViewEngine` or `TestBedRender3`
- * according to the compiler used.
- *
  * @publicApi
  */
-export const TestBed: TestBedStatic = TestBedRender3;
+export const TestBed: TestBedStatic = TestBedImpl;
 
-/**
- * Returns a singleton of the applicable `TestBed`.
- *
- * It will be either an instance of `TestBedViewEngine` or `TestBedRender3`.
- *
- * @publicApi
- */
-export const getTestBed: () => TestBed = _getTestBedRender3;
 
 /**
  * Allows injecting dependencies in `beforeEach()` and `it()`. Note: this function
@@ -129,7 +120,7 @@ export const getTestBed: () => TestBed = _getTestBedRender3;
  * @publicApi
  */
 export function inject(tokens: any[], fn: Function): () => any {
-  const testBed = getTestBed();
+  const testBed = TestBedImpl.INSTANCE;
   // Not using an arrow function to preserve context passed from call site
   return function(this: unknown) {
     return testBed.execute(tokens, fn, this);
@@ -145,7 +136,7 @@ export class InjectSetupWrapper {
   private _addModule() {
     const moduleDef = this._moduleDef();
     if (moduleDef) {
-      getTestBed().configureTestingModule(moduleDef);
+      TestBedImpl.configureTestingModule(moduleDef);
     }
   }
 
@@ -169,7 +160,7 @@ export function withModule(moduleDef: TestModuleMetadata, fn?: Function|null): (
   if (fn) {
     // Not using an arrow function to preserve context passed from call site
     return function(this: unknown) {
-      const testBed = getTestBed();
+      const testBed = TestBedImpl.INSTANCE;
       if (moduleDef) {
         testBed.configureTestingModule(moduleDef);
       }
