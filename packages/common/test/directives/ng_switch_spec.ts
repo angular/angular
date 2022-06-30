@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgSwitch, NgSwitchCase, NgSwitchDefault} from '@angular/common';
 import {Attribute, Component, Directive, TemplateRef, ViewChild,} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -119,6 +119,33 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         getComponent().when1 = 'd';
         detectChangesAndExpectText('when default;');
       });
+    });
+
+    it('should be available as standalone directives', () => {
+      @Component({
+        selector: 'test-component',
+        imports: [NgSwitch, NgSwitchCase, NgSwitchDefault],
+        template: '<ul [ngSwitch]="switchValue">' +
+            '<li *ngSwitchCase="\'a\'">when a</li>' +
+            '<li *ngSwitchDefault>when default</li>' +
+            '</ul>',
+        standalone: true,
+      })
+      class TestComponent {
+        switchValue = 'a';
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('when a');
+
+      fixture.componentInstance.switchValue = 'b';
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('when default');
+
+      fixture.componentInstance.switchValue = 'c';
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('when default');
     });
 
     describe('corner cases', () => {

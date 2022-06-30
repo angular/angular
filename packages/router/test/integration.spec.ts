@@ -16,7 +16,7 @@ import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, 
 import {EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, map, mapTo, tap} from 'rxjs/operators';
 
-import {CanMatch} from '../src/models';
+import {CanMatch, CanMatchFn} from '../src/models';
 import {forEach} from '../src/utils/collection';
 import {getLoadedRoutes} from '../src/utils/config';
 import {RouterTestingModule} from '../testing';
@@ -1472,7 +1472,7 @@ describe('Integration', () => {
 
        expect(() => router.navigate([
          undefined, 'query'
-       ])).toThrowError(`The requested path contains undefined segment at index 0`);
+       ])).toThrowError(/The requested path contains undefined segment at index 0/);
      })));
 
   it('should push params only when they change', fakeAsync(inject([Router], (router: Router) => {
@@ -4793,6 +4793,28 @@ describe('Integration', () => {
            expect(fixture.nativeElement.innerHTML).toContain('team');
          }));
 
+      it('can return UrlTree from CanMatchFn guard', fakeAsync(() => {
+           const canMatchTeamSection = new InjectionToken('CanMatchTeamSection');
+           const canMatchFactory: (router: Router) => CanMatchFn = (router: Router) => () =>
+               router.createUrlTree(['/team/1']);
+
+           TestBed.overrideProvider(
+               canMatchTeamSection, {useFactory: canMatchFactory, deps: [Router]});
+
+           const router = TestBed.inject(Router);
+
+           router.resetConfig([
+             {path: 'a', canMatch: [canMatchTeamSection], component: SimpleCmp},
+             {path: 'team/:id', component: TeamCmp},
+           ]);
+           const fixture = createRoot(router, RootCmp);
+
+
+           router.navigateByUrl('/a');
+           advance(fixture);
+           expect(fixture.nativeElement.innerHTML).toContain('team');
+         }));
+
       it('runs canMatch guards provided in lazy module', fakeAsync(() => {
            const router = TestBed.inject(Router);
            @Component(
@@ -5500,9 +5522,7 @@ describe('Integration', () => {
          let recordedError: any = null;
          router.navigateByUrl('/lazy/loaded')!.catch(err => recordedError = err);
          advance(fixture);
-         expect(recordedError.message)
-             .toEqual(
-                 `RouterModule.forRoot() called twice. Lazy loaded modules should use RouterModule.forChild() instead.`);
+         expect(recordedError.message).toContain(`RouterModule.forRoot() called twice.`);
        })));
 
     it('should combine routes from multiple modules into a single configuration',
@@ -5799,7 +5819,7 @@ describe('Integration', () => {
          advance(fixture);
 
          expect(recordedError.message)
-             .toEqual(
+             .toContain(
                  `Invalid configuration of route 'lazy/loaded'. One of the following must be provided: component, loadComponent, redirectTo, children or loadChildren`);
        }));
 

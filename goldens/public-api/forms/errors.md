@@ -7,11 +7,23 @@
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
+    FORM_ARRAY_NAME_MISSING_PARENT = 1054,
+    // (undocumented)
+    FORM_CONTROL_NAME_INSIDE_MODEL_GROUP = 1051,
+    // (undocumented)
+    FORM_CONTROL_NAME_MISSING_PARENT = 1050,
+    // (undocumented)
+    FORM_GROUP_MISSING_INSTANCE = 1052,
+    // (undocumented)
+    FORM_GROUP_NAME_MISSING_PARENT = 1053,
+    // (undocumented)
     MISSING_CONTROL = 1001,
     // (undocumented)
     MISSING_CONTROL_VALUE = 1002,
     // (undocumented)
-    NO_CONTROLS = 1000
+    NO_CONTROLS = 1000,
+    // (undocumented)
+    WRONG_VALIDATOR_RETURN_TYPE = -1101
 }
 
 // (No @packageDocumentation comment for this package)

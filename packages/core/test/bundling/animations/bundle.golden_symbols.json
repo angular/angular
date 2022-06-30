@@ -150,9 +150,6 @@
     "name": "DIMENSIONAL_PROP_SET"
   },
   {
-    "name": "DOCUMENT"
-  },
-  {
     "name": "DOCUMENT2"
   },
   {
@@ -357,13 +354,13 @@
     "name": "PARAM_REGEX"
   },
   {
+    "name": "PLATFORM_DESTROY_LISTENERS"
+  },
+  {
     "name": "PLATFORM_ID"
   },
   {
     "name": "PLATFORM_INITIALIZER"
-  },
-  {
-    "name": "PLATFORM_ON_DESTROY"
   },
   {
     "name": "PlatformRef"
@@ -549,9 +546,6 @@
     "name": "_randomChar"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "_testabilityGetter"
   },
   {
@@ -640,6 +634,9 @@
   },
   {
     "name": "collectNativeNodes"
+  },
+  {
+    "name": "componentDefCount"
   },
   {
     "name": "computeStaticStyling"

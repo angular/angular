@@ -145,6 +145,14 @@
     "picture": "bonnie.jpg",
     "bio": "Bonnie has been specializing in Angular since 2013. She is the founder of ngHouston Angular Meetup and a regular panelist on Angular Air. She is also the very proud parent component of @thelittlestdev!"
   },
+  "bezael": {
+    "name": "Bezael Perez",
+    "picture": "bezael_perez.jpg",
+    "twitter": "bezaelperez",
+    "website": "https://medium.com/@bezael",
+    "bio": "Bezael is an Angular Developer and a GDE. He is a technical content creator on Youtube and Udemy. He has spoken at over 50 conferences internationally. He enjoys gaming, basketball, and soccer",
+    "groups": ["GDE"]
+  },
   "blove": {
     "name": "Brian Love",
     "picture": "brian-love.jpg",
@@ -239,6 +247,14 @@
     "twitter": "DanWahlin",
     "website": "https://codewithdan.com",
     "bio": "Dan Wahlin founded Wahlin Consulting which provides consulting and onsite/online training services on Web technologies such as JavaScript, Angular, TypeScript, Node.js, C#, ASP.NET Core, Web API, and Docker. He’s also published many developer courses on Pluralsight.com and Udemy.com. Dan is a Google GDE, Docker Captain, and Microsoft MVP and Regional Director and speaks at conferences and user groups around the world.  Dan has written several books on Web technologies, hundreds of technical articles and blog posts (https://blog.codewithdan.com) and runs the 'Code with Dan Web Weekly Newsletter' - a great way to stay up on the latest technologies. Follow Dan on Twitter @DanWahlin.",
+    "groups": ["GDE"]
+  },
+  "danywalls": {
+    "name": "Dany Paredes",
+    "picture": "danyparedes.jpg",
+    "twitter": "danywalls",
+    "website": "https://www.danywalls.com",
+    "bio": "Dany is a Google Developer Expert on Angular and loves sharing content and writing articles about Angular, Typescript, and Testing. In his spare time, he watches NBA games and enjoys the Beach.",
     "groups": ["GDE"]
   },
   "deborah": {

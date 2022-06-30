@@ -572,7 +572,7 @@ Such component declarations are still processed by the compiler and can still be
 
 ### `Environment`
 
-TCBs are not standalone, and require supporting code such as imports to be properly checked. Additonally, multiple TCBs can share declarations regarding common dependencies, such as type constructors for directives as well as pipe instances.
+TCBs are not standalone, and require supporting code such as imports to be properly checked. Additionally, multiple TCBs can share declarations regarding common dependencies, such as type constructors for directives as well as pipe instances.
 
 Each TCB is therefore generated in the context of an `Environment`, which loosely represents the file which will ultimately contain the TCB code.
 

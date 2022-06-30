@@ -245,35 +245,27 @@ The value of the property can be either a general type-narrowing function based 
 
 For example, consider the following structural directive that takes the result of a template expression as an input:
 
-<code-example format="typescript" header="IfLoadedDirective" language="typescript">
-
-export type Loaded&lt;T&gt; = { type: 'loaded', data: T };
-export type Loading = { type: 'loading' };
-export type LoadingState&lt;T&gt; = Loaded&lt;T&gt; | Loading;
-export class IfLoadedDirective&lt;T&gt; {
-    &commat;Input('ifLoaded') set state(state: LoadingState&lt;T&gt;) {}
-    static ngTemplateGuard_state&lt;T&gt;(dir: IfLoadedDirective&lt;T&gt;, expr: LoadingState&lt;T&gt;): expr is Loaded&lt;T&gt; { return true; };
-}
-
-export interface Person {
-  name: string;
-}
-
-&commat;Component({
-  template: `&lt;div *ifLoaded="state">{{ state.data }}&lt;/div>`,
-})
-export class AppComponent {
-  state: LoadingState&lt;Person&gt;;
-}
-
-</code-example>
+<code-tabs linenums="true">
+  <code-pane
+    header="src/app/if-loaded.directive.ts"
+    path="structural-directives/src/app/if-loaded.directive.ts">
+  </code-pane>
+  <code-pane
+    header="src/app/loading-state.ts"
+    path="structural-directives/src/app/loading-state.ts">
+  </code-pane>
+  <code-pane
+    header="src/app/hero.component.ts"
+    path="structural-directives/src/app/hero.component.ts">
+  </code-pane>
+</code-tabs>
 
 In this example, the `LoadingState<T>` type permits either of two states, `Loaded<T>` or `Loading`.
-The expression used as the directive's `state` input is of the umbrella type `LoadingState`, as it's unknown what the loading state is at that point.
+The expression used as the directive's `state` input (aliased as `appIfLoaded`) is of the umbrella type `LoadingState`, as it's unknown what the loading state is at that point.
 
-The `IfLoadedDirective` definition declares the static field `ngTemplateGuard_state`, which expresses the narrowing behavior.
-Within the `AppComponent` template, the `*ifLoaded` structural directive should render this template only when `state` is actually `Loaded<Person>`.
-The type guard lets the type checker infer that the acceptable type of `state` within the template is a `Loaded<T>`, and further infer that `T` must be an instance of `Person`.
+The `IfLoadedDirective` definition declares the static field `ngTemplateGuard_appIfLoaded`, which expresses the narrowing behavior.
+Within the `AppComponent` template, the `*appIfLoaded` structural directive should render this template only when `state` is actually `Loaded<Hero>`.
+The type guard lets the type checker infer that the acceptable type of `state` within the template is a `Loaded<T>`, and further infer that `T` must be an instance of `Hero`.
 
 <a id="narrowing-context-type"></a>
 

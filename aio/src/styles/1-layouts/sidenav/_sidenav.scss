@@ -91,6 +91,15 @@ aio-nav-menu {
       }
     }
 
+    a.vertical-menu-item {
+      &[href^="http:"],
+      &[href^="https:"] {
+        .vertical-menu-item-text {
+          @include mixins.external-link-with-icon();
+        }
+      }
+    }
+
     button.vertical-menu-item {
       border: none;
       background-color: transparent;

@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "ng_module")
-load("@npm//tsec:index.bzl", "tsec_test")
+load("//tools:defaults.bzl", "ng_module", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 

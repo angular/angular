@@ -51,6 +51,12 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MISSING_INJECTION_CONTEXT = -203,
     // (undocumented)
+    MISSING_INJECTION_TOKEN = 208,
+    // (undocumented)
+    MISSING_LOCALE_DATA = 701,
+    // (undocumented)
+    MISSING_ZONEJS = 908,
+    // (undocumented)
     MULTIPLE_COMPONENTS_MATCH = -300,
     // (undocumented)
     MULTIPLE_PLATFORMS = 400,
@@ -72,6 +78,8 @@ export const enum RuntimeErrorCode {
     TEMPLATE_STRUCTURE_ERROR = 305,
     // (undocumented)
     TYPE_IS_NOT_STANDALONE = 907,
+    // (undocumented)
+    UNEXPECTED_ZONE_STATE = 909,
     // (undocumented)
     UNKNOWN_BINDING = 303,
     // (undocumented)

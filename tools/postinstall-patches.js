@@ -61,12 +61,6 @@ ls('node_modules/@types').filter(f => f.startsWith('babel__')).forEach(pkg => {
   }
 });
 
-// patch tsec 0.2.2 to enable runfiles on windows
-// Note that we need to use tsec 0.2.2 as future versions don't publish this bzl file
-log('\n# patch: tsec to enable using runfiles on windows');
-sed('-i', '@platforms//os:windows": False', '@platforms//os:windows": True',
-    'node_modules/tsec/index.bzl');
-
 log('\n# patch: use local version of @angular/* and zone.js in Starlark files from @angular/dev-infra-private');
 
 const ngDevPatches = new Map();
@@ -176,22 +170,5 @@ rm('-rf', [
   'node_modules/rxjs/Subscriber.*',
   'node_modules/rxjs/Subscription.*',
 ]);
-
-
-log('\n# patch: dev-infra snapshotting');
-// more info in https://github.com/angular/dev-infra/pull/449
-['node_modules/@angular/dev-infra-private/ng-dev/bundles/cli.js',
- 'node_modules/@angular/dev-infra-private/ng-dev/bundles/cli.js.map',
-].forEach(filePath => {
-  const contents = readFileSync(filePath, 'utf8');
-  const newContents = contents.replace('*[0-9]*.[0-9]*.[0-9]*', '?[0-9]*.[0-9]*.[0-9]*');
-  if (contents !== newContents) {
-    writeFileSync(filePath, newContents, 'utf8');
-    log(`Release tag matcher for snapshots replaced in ${filePath}`);
-  } else {
-    log(`Release tag matcher for snapshots were already replaced in ${filePath}`);
-  }
-});
-
 
 log('===== finished running the postinstall-patches.js script =====');

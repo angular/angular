@@ -31,6 +31,7 @@ export const enum RuntimeErrorCode {
   INVALID_INJECTION_TOKEN = 204,
   INJECTOR_ALREADY_DESTROYED = 205,
   PROVIDER_IN_WRONG_CONTEXT = 207,
+  MISSING_INJECTION_TOKEN = 208,
 
   // Template Errors
   MULTIPLE_COMPONENTS_MATCH = -300,
@@ -56,6 +57,7 @@ export const enum RuntimeErrorCode {
 
   // i18n Errors
   INVALID_I18N_STRUCTURE = 700,
+  MISSING_LOCALE_DATA = 701,
 
   // standalone errors
   IMPORT_PROVIDERS_FROM_STANDALONE = 800,
@@ -70,6 +72,8 @@ export const enum RuntimeErrorCode {
   UNSAFE_VALUE_IN_SCRIPT = 905,
   MISSING_GENERATED_DEF = 906,
   TYPE_IS_NOT_STANDALONE = 907,
+  MISSING_ZONEJS = 908,
+  UNEXPECTED_ZONE_STATE = 909,
 }
 
 /**

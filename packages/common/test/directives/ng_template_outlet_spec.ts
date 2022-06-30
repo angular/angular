@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgTemplateOutlet} from '@angular/common';
 import {Component, ContentChildren, Directive, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, OnDestroy, Provider, QueryList, TemplateRef} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -299,6 +299,25 @@ describe('NgTemplateOutlet', () => {
            Injector.create({providers: [{provide: templateToken, useValue: 'world'}]});
        detectChangesAndExpectText('Hello world');
      }));
+
+  it('should be available as a standalone directive', () => {
+    @Component({
+      selector: 'test-component',
+      imports: [NgTemplateOutlet],
+      template: `
+        <ng-template #tpl>Hello World</ng-template>
+        <ng-container *ngTemplateOutlet="tpl"></ng-container>
+      `,
+      standalone: true,
+    })
+    class TestComponent {
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('Hello World');
+  });
 });
 
 const templateToken = new InjectionToken<string>('templateToken');

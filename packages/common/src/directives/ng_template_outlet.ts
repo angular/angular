@@ -32,7 +32,10 @@ import {Directive, EmbeddedViewRef, Injector, Input, OnChanges, SimpleChanges, T
  *
  * @publicApi
  */
-@Directive({selector: '[ngTemplateOutlet]'})
+@Directive({
+  selector: '[ngTemplateOutlet]',
+  standalone: true,
+})
 export class NgTemplateOutlet implements OnChanges {
   private _viewRef: EmbeddedViewRef<any>|null = null;
 

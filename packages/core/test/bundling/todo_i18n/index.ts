@@ -7,9 +7,9 @@
  */
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
-import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent, ɵwhenRendered as whenRendered} from '@angular/core';
+import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵwhenRendered as whenRendered} from '@angular/core';
 import {loadTranslations} from '@angular/localize';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 import {translations} from './translations';
 
@@ -194,12 +194,17 @@ class ToDoAppComponent {
   }
 }
 
-@NgModule({declarations: [ToDoAppComponent], imports: [CommonModule]})
+@NgModule({
+  declarations: [ToDoAppComponent],
+  imports: [BrowserModule],
+  bootstrap: [ToDoAppComponent],
+})
 class ToDoAppModule {
 }
 
 loadTranslations(translations);
-renderComponent(ToDoAppComponent);
+
+(window as any).appReady = platformBrowser().bootstrapModule(ToDoAppModule, {ngZone: 'noop'});
 
 // This bundle includes `@angular/core` within it which means that the test asserting
 // against it will load a different core bundle. These symbols are exposed so that they

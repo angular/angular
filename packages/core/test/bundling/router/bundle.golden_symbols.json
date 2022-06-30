@@ -42,6 +42,9 @@
     "name": "ArgumentOutOfRangeError"
   },
   {
+    "name": "BOOTSTRAP_DONE"
+  },
+  {
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
@@ -136,9 +139,6 @@
   },
   {
     "name": "DEFAULT_SERIALIZER"
-  },
-  {
-    "name": "DOCUMENT"
   },
   {
     "name": "DOCUMENT2"
@@ -237,6 +237,9 @@
     "name": "HashLocationStrategy"
   },
   {
+    "name": "INITIAL_NAVIGATION"
+  },
+  {
     "name": "INITIAL_VALUE"
   },
   {
@@ -247,9 +250,6 @@
   },
   {
     "name": "INJECTOR_SCOPE"
-  },
-  {
-    "name": "Inject"
   },
   {
     "name": "InjectFlags"
@@ -408,9 +408,6 @@
     "name": "NoMatch"
   },
   {
-    "name": "NoPreloading"
-  },
-  {
     "name": "NodeInjector"
   },
   {
@@ -435,13 +432,13 @@
     "name": "OutletInjector"
   },
   {
+    "name": "PLATFORM_DESTROY_LISTENERS"
+  },
+  {
     "name": "PLATFORM_ID"
   },
   {
     "name": "PLATFORM_INITIALIZER"
-  },
-  {
-    "name": "PLATFORM_ON_DESTROY"
   },
   {
     "name": "PathLocationStrategy"
@@ -486,7 +483,13 @@
     "name": "ROUTER_INITIALIZER"
   },
   {
+    "name": "ROUTER_PRELOADER"
+  },
+  {
     "name": "ROUTER_PROVIDERS"
+  },
+  {
+    "name": "ROUTER_SCROLLER"
   },
   {
     "name": "ROUTES"
@@ -538,9 +541,6 @@
   },
   {
     "name": "RouterEvent"
-  },
-  {
-    "name": "RouterInitializer"
   },
   {
     "name": "RouterLink"
@@ -786,9 +786,6 @@
     "name": "_randomChar"
   },
   {
-    "name": "componentDefCount"
-  },
-  {
     "name": "_stripIndexHtml"
   },
   {
@@ -891,6 +888,9 @@
     "name": "compare"
   },
   {
+    "name": "componentDefCount"
+  },
+  {
     "name": "computeStaticStyling"
   },
   {
@@ -970,9 +970,6 @@
   },
   {
     "name": "createRoot"
-  },
-  {
-    "name": "createRouterScroller"
   },
   {
     "name": "createTView"
@@ -1144,9 +1141,6 @@
   },
   {
     "name": "getAllRouteGuards"
-  },
-  {
-    "name": "getAppInitializer"
   },
   {
     "name": "getBeforeNodeForView"
@@ -1375,6 +1369,9 @@
   },
   {
     "name": "initTNodeFlags"
+  },
+  {
+    "name": "inject"
   },
   {
     "name": "injectArgs"
@@ -1698,7 +1695,7 @@
     "name": "provideForRootGuard"
   },
   {
-    "name": "provideLocationStrategy2"
+    "name": "provideInitialNavigation"
   },
   {
     "name": "provideRoutes"

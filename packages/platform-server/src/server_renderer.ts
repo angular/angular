@@ -155,11 +155,12 @@ class DefaultServerRenderer2 implements Renderer2 {
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     style = style.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+    value = value == null ? '' : `${value}`.trim();
     const styleMap = _readStyleAttribute(el);
     if (flags & RendererStyleFlags2.Important) {
       value += ' !important';
     }
-    styleMap[style] = value == null ? '' : value;
+    styleMap[style] = value;
     _writeStyleAttribute(el, styleMap);
   }
 
@@ -297,12 +298,19 @@ function _readStyleAttribute(element: any): {[name: string]: string} {
 }
 
 function _writeStyleAttribute(element: any, styleMap: {[name: string]: string}) {
+  // We have to construct the `style` attribute ourselves, instead of going through
+  // `element.style.setProperty` like the other renderers, because `setProperty` won't
+  // write newer CSS properties that Domino doesn't know about like `clip-path`.
   let styleAttrValue = '';
   for (const key in styleMap) {
     const newValue = styleMap[key];
-    if (newValue != null) {
-      styleAttrValue += key + ':' + styleMap[key] + ';';
+    if (newValue != null && newValue !== '') {
+      styleAttrValue += key + ':' + newValue + ';';
     }
   }
-  element.setAttribute('style', styleAttrValue);
+  if (styleAttrValue) {
+    element.setAttribute('style', styleAttrValue);
+  } else {
+    element.removeAttribute('style');
+  }
 }

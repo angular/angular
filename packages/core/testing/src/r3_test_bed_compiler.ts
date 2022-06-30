@@ -100,7 +100,7 @@ export class R3TestBedCompiler {
   // module's provider list.
   private providerOverridesByModule = new Map<InjectorType<any>, Provider[]>();
   private providerOverridesByToken = new Map<any, Provider>();
-  private moduleProvidersOverridden = new Set<Type<any>>();
+  private scopesWithOverriddenProviders = new Set<Type<any>>();
 
   private testModuleType: NgModuleType<any>;
   private testModuleRef: NgModuleRef<any>|null = null;
@@ -309,7 +309,7 @@ export class R3TestBedCompiler {
     this.queueTypesFromModulesArray([moduleType]);
     this.compileTypesSync();
     this.applyProviderOverrides();
-    this.applyProviderOverridesToModule(moduleType);
+    this.applyProviderOverridesInScope(moduleType);
     this.applyTransitiveScopes();
   }
 
@@ -320,7 +320,7 @@ export class R3TestBedCompiler {
     this.queueTypesFromModulesArray([moduleType]);
     await this.compileComponents();
     this.applyProviderOverrides();
-    this.applyProviderOverridesToModule(moduleType);
+    this.applyProviderOverridesInScope(moduleType);
     this.applyTransitiveScopes();
   }
 
@@ -435,53 +435,57 @@ export class R3TestBedCompiler {
     this.seenDirectives.clear();
   }
 
-  private applyProviderOverridesToModule(moduleType: Type<any>): void {
-    if (this.moduleProvidersOverridden.has(moduleType)) {
+
+  /**
+   * Applies provider overrides to a given type (either an NgModule or a standalone component)
+   * and all imported NgModules and standalone components recursively.
+   */
+  private applyProviderOverridesInScope(type: Type<any>): void {
+    const hasScope = isStandaloneComponent(type) || isNgModule(type);
+
+    // The function can be re-entered recursively while inspecting dependencies
+    // of an NgModule or a standalone component. Exit early if we come across a
+    // type that can not have a scope (directive or pipe) or the type is already
+    // processed earlier.
+    if (!hasScope || this.scopesWithOverriddenProviders.has(type)) {
       return;
     }
-    this.moduleProvidersOverridden.add(moduleType);
+    this.scopesWithOverriddenProviders.add(type);
 
     // NOTE: the line below triggers JIT compilation of the module injector,
     // which also invokes verification of the NgModule semantics, which produces
     // detailed error messages. The fact that the code relies on this line being
     // present here is suspicious and should be refactored in a way that the line
     // below can be moved (for ex. after an early exit check below).
-    const injectorDef: any = (moduleType as any)[NG_INJ_DEF];
+    const injectorDef: any = (type as any)[NG_INJ_DEF];
 
     // No provider overrides, exit early.
     if (this.providerOverridesByToken.size === 0) return;
 
-    if (isStandaloneComponent(moduleType)) {
+    if (isStandaloneComponent(type)) {
       // Visit all component dependencies and override providers there.
-      const def = getComponentDef(moduleType);
+      const def = getComponentDef(type);
       const dependencies = maybeUnwrapFn(def.dependencies ?? []);
       for (const dependency of dependencies) {
-        // Proceed with examining dependencies recursively
-        // when a dependency is a standalone component or an NgModule.
-        // In AOT, the `dependencies` might also contain regular (NgModule-based)
-        // Component, Directive and Pipes. Skip them here, they are handled in a
-        // different location (in the `configureTestingModule` function).
-        if (isStandaloneComponent(dependency) || hasNgModuleDef(dependency)) {
-          this.applyProviderOverridesToModule(dependency);
-        }
+        this.applyProviderOverridesInScope(dependency);
       }
     } else {
       const providers = [
         ...injectorDef.providers,
-        ...(this.providerOverridesByModule.get(moduleType as InjectorType<any>) || [])
+        ...(this.providerOverridesByModule.get(type as InjectorType<any>) || [])
       ];
       if (this.hasProviderOverrides(providers)) {
-        this.maybeStoreNgDef(NG_INJ_DEF, moduleType);
+        this.maybeStoreNgDef(NG_INJ_DEF, type);
 
-        this.storeFieldOfDefOnType(moduleType, NG_INJ_DEF, 'providers');
+        this.storeFieldOfDefOnType(type, NG_INJ_DEF, 'providers');
         injectorDef.providers = this.getOverriddenProviders(providers);
       }
 
       // Apply provider overrides to imported modules recursively
-      const moduleDef = (moduleType as any)[NG_MOD_DEF];
+      const moduleDef = (type as any)[NG_MOD_DEF];
       const imports = maybeUnwrapFn(moduleDef.imports);
       for (const importedModule of imports) {
-        this.applyProviderOverridesToModule(importedModule);
+        this.applyProviderOverridesInScope(importedModule);
       }
       // Also override the providers on any ModuleWithProviders imports since those don't appear in
       // the moduleDef.
@@ -729,7 +733,7 @@ export class R3TestBedCompiler {
           });
         });
     this.initialNgDefs.clear();
-    this.moduleProvidersOverridden.clear();
+    this.scopesWithOverriddenProviders.clear();
     this.restoreComponentResolutionQueue();
     // Restore the locale ID to the default value, this shouldn't be necessary but we never know
     setLocaleId(DEFAULT_LOCALE_ID);
@@ -759,7 +763,7 @@ export class R3TestBedCompiler {
     }, /* allowDuplicateDeclarationsInRoot */ true);
     // clang-format on
 
-    this.applyProviderOverridesToModule(this.testModuleType);
+    this.applyProviderOverridesInScope(this.testModuleType);
   }
 
   get injector(): Injector {
@@ -873,6 +877,10 @@ function getComponentDef(value: Type<unknown>): ComponentDef<unknown>|null {
 
 function hasNgModuleDef<T>(value: Type<T>): value is NgModuleType<T> {
   return value.hasOwnProperty('ɵmod');
+}
+
+function isNgModule<T>(value: Type<T>): boolean {
+  return hasNgModuleDef(value);
 }
 
 function maybeUnwrapFn<T>(maybeFn: (() => T)|T): T {

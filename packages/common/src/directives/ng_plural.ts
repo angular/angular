@@ -44,7 +44,10 @@ import {SwitchView} from './ng_switch';
  *
  * @publicApi
  */
-@Directive({selector: '[ngPlural]'})
+@Directive({
+  selector: '[ngPlural]',
+  standalone: true,
+})
 export class NgPlural {
   // TODO(issue/24571): remove '!'.
   private _switchValue!: number;
@@ -104,7 +107,10 @@ export class NgPlural {
  *
  * @publicApi
  */
-@Directive({selector: '[ngPluralCase]'})
+@Directive({
+  selector: '[ngPluralCase]',
+  standalone: true,
+})
 export class NgPluralCase {
   constructor(
       @Attribute('ngPluralCase') public value: string, template: TemplateRef<Object>,

@@ -7,12 +7,13 @@
  */
 
 import {Location} from '@angular/common';
-import {Compiler, Injectable, Injector, NgModuleRef, NgZone, Type, ɵConsole as Console} from '@angular/core';
+import {Compiler, Injectable, Injector, NgModuleRef, NgZone, Type, ɵConsole as Console, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject, SubscriptionLike} from 'rxjs';
 import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
+import {RuntimeErrorCode} from './errors';
 import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {QueryParamsHandling, Route, Routes} from './models';
 import {activateRoutes} from './operators/activate_routes';
@@ -26,7 +27,7 @@ import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strat
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
-import {isNavigationCancelingError, navigationCancelingError, Params} from './shared';
+import {isNavigationCancelingError, navigationCancelingError, Params, REDIRECTING_CANCELLATION_REASON} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {containsTree, createEmptyUrlTree, IsActiveMatchOptions, UrlSerializer, UrlTree} from './url_tree';
 import {standardizeConfig, validateConfig} from './utils/config';
@@ -410,7 +411,8 @@ export class Router {
   private disposed = false;
 
   private locationSubscription?: SubscriptionLike;
-  private navigationId: number = 0;
+  /** @internal */
+  navigationId: number = 0;
 
   /**
    * The id of the currently active page in the router.
@@ -761,7 +763,8 @@ export class Router {
                      tap(t => {
                        if (isUrlTree(t.guardsResult)) {
                          const error: Error&{url?: UrlTree} = navigationCancelingError(
-                             `Redirecting to "${this.serializeUrl(t.guardsResult)}"`);
+                             REDIRECTING_CANCELLATION_REASON +
+                             `"${this.serializeUrl(t.guardsResult)}"`);
                          error.url = t.guardsResult;
                          throw error;
                        }
@@ -820,8 +823,6 @@ export class Router {
                        return undefined;
                      }),
 
-                     switchTap(() => this.afterPreactivation()),
-
                      // --- LOAD COMPONENTS ---
                      switchTap((t: NavigationTransition) => {
                        const loadComponents =
@@ -845,6 +846,8 @@ export class Router {
                        return combineLatest(loadComponents(t.targetSnapshot!.root))
                            .pipe(defaultIfEmpty(), take(1));
                      }),
+
+                     switchTap(() => this.afterPreactivation()),
 
                      map((t: NavigationTransition) => {
                        const targetRouterState = createRouterState(
@@ -1475,7 +1478,9 @@ function validateCommands(commands: string[]): void {
   for (let i = 0; i < commands.length; i++) {
     const cmd = commands[i];
     if (cmd == null) {
-      throw new Error(`The requested path contains ${cmd} segment at index ${i}`);
+      throw new RuntimeError(
+          RuntimeErrorCode.NULLISH_COMMAND,
+          NG_DEV_MODE && `The requested path contains ${cmd} segment at index ${i}`);
     }
   }
 }

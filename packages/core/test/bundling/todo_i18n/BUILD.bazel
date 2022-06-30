@@ -10,11 +10,11 @@ ng_module(
         "translations.ts",
     ],
     deps = [
-        "//packages/common",
         "//packages/core",
         "//packages/core/test/bundling/util:reflect_metadata",
         "//packages/localize",
         "//packages/localize/init",
+        "//packages/platform-browser",
     ],
 )
 
@@ -92,6 +92,6 @@ http_server(
         "index.html",
         "todo.css",
         ":bundle.debug.min.js",
-        ":bundle.min.js.br",
+        ":bundle.min.js",
     ],
 )

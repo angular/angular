@@ -14,17 +14,22 @@ import {TNodeDebug} from '@angular/core/src/render3/instructions/lview_debug';
 import {createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {HEADER_OFFSET, LView, LViewDebug, TView, TViewType} from '@angular/core/src/render3/interfaces/view';
-import {enterView, leaveView} from '@angular/core/src/render3/state';
+import {enterView, leaveView, specOnlyIsInstructionStateEmpty} from '@angular/core/src/render3/state';
 import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
 import {getComponentLView} from '@angular/core/src/render3/util/discovery_utils';
 import {KeyValueArray} from '@angular/core/src/util/array_utils';
 import {TestBed} from '@angular/core/testing';
-import {TemplateFixture} from '../render_util';
+
+import {ViewFixture} from '../view_fixture';
 
 describe('lView_debug', () => {
   const mockFirstUpdatePassLView: LView = [null, {firstUpdatePass: true}] as any;
   beforeEach(() => enterView(mockFirstUpdatePassLView));
-  afterEach(() => leaveView());
+  afterEach(() => {
+    while (!specOnlyIsInstructionStateEmpty()) {
+      leaveView();
+    }
+  });
 
   describe('TNode', () => {
     let tNode!: TNodeDebug;
@@ -209,17 +214,25 @@ describe('lView_debug', () => {
         });
       }
 
-      const fixture = new TemplateFixture({
-        create: () => {
-          ɵɵelementStart(0, 'my-comp', 0);
-          ɵɵelement(1, 'my-child');
-          ɵɵelementEnd();
-        },
+      const fixture = new ViewFixture({
         decls: 2,
+        consts: [['my-dir', '']],
         directives: [MyComponent, MyDirective, MyChild],
-        consts: [['my-dir', '']]
       });
-      const lView = fixture.hostView;
+      fixture.enterView();
+
+      // <my-comp my-dir>
+      //   <my-child></my-child>
+      // </my-comp>
+      ɵɵelementStart(0, 'my-comp', 0);
+      ɵɵelement(1, 'my-child');
+      ɵɵelementEnd();
+
+      const lView = fixture.lView;
+
+      // Cleanup global state once we get a reference to an `lView`.
+      ViewFixture.cleanUp();
+
       const lViewDebug = lView.debug!;
       const myCompNode = lViewDebug.nodes[0];
       expect(myCompNode.factories).toEqual([MyComponent, MyDirective]);

@@ -74,7 +74,7 @@ setPublicVar COMPONENTS_REPO_URL "https://github.com/angular/components.git"
 # TODO(BRANCH_RENAME_CLEANUP): fixup branch name to point to main branch
 setPublicVar COMPONENTS_REPO_BRANCH "main-branch-rename-do-not-delete"
 # **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI `config.yml`.
-setPublicVar COMPONENTS_REPO_COMMIT "e65f5f5bafcd00dbb64387878fb866283909a2dd"
+setPublicVar COMPONENTS_REPO_COMMIT "7a24e95bafbdeb697f74a48e275c2442bcbefc74"
 
 ####################################################################################################
 # Create shell script in /tmp for Bazel actions to access CI envs without

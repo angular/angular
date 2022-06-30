@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {global} from '../util/global';
 
 import localeEn from './locale_en';
@@ -62,7 +63,9 @@ export function findLocaleData(locale: string): any {
     return localeEn;
   }
 
-  throw new Error(`Missing locale data for the locale "${locale}".`);
+  throw new RuntimeError(
+      RuntimeErrorCode.MISSING_LOCALE_DATA,
+      ngDevMode && `Missing locale data for the locale "${locale}".`);
 }
 
 /**

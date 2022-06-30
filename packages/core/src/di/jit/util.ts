@@ -7,6 +7,7 @@
  */
 
 import {R3DependencyMetadataFacade} from '../../compiler/compiler_facade';
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type} from '../../interface/type';
 import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
 import {Host, Inject, Optional, Self, SkipSelf} from '../metadata';
@@ -58,7 +59,9 @@ function reflectDependency(dep: any|any[]): R3DependencyMetadataFacade {
         meta.token = param.token;
       } else if (param instanceof Attribute) {
         if (param.attributeName === undefined) {
-          throw new Error(`Attribute name must be defined.`);
+          throw new RuntimeError(
+              RuntimeErrorCode.INVALID_INJECTION_TOKEN,
+              ngDevMode && `Attribute name must be defined.`);
         }
         meta.attribute = param.attributeName;
       } else {

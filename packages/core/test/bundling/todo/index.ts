@@ -9,7 +9,8 @@
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent, ɵwhenRendered as whenRendered} from '@angular/core';
+import {Component, Injectable, NgModule, ɵNgModuleFactory as NgModuleFactory, ɵwhenRendered as whenRendered} from '@angular/core';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 class Todo {
   editing: boolean;
@@ -79,20 +80,26 @@ class TodoStore {
 @Component({
   selector: 'todo-app',
   // TODO(misko): make this work with `[(ngModel)]`
-  encapsulation: ViewEncapsulation.None,
+  styles: [`
+    .todo-list li.completed label {
+      color: #d9d9d9;
+      text-decoration: line-through;
+      font-weight:bold;
+    }
+  `],
   template: `
   <section class="todoapp">
     <header class="header">
       <h1>todos</h1>
       <input class="new-todo" placeholder="What needs to be done?" autofocus=""
              [value]="newTodoText"
-             (keyup)="$event.code == 'Enter' ? addTodo() : updateNewTodoValue($event.target.value)">
+             (keyup)="$event.code == 'Enter' ? addTodo() : newTodoText = $event.target.value">
     </header>
     <section *ngIf="todoStore.todos.length > 0" class="main">
       <input *ngIf="todoStore.todos.length"
              #toggleall class="toggle-all" type="checkbox"
              [checked]="todoStore.allCompleted()"
-             (click)="toggleAllTodos(toggleall.checked)">
+             (click)="todoStore.setAllTo(toggleall.checked)">
       <ul class="todo-list">
         <li *ngFor="let todo of todoStore.todos"
             [class.completed]="todo.completed"
@@ -107,9 +114,9 @@ class TodoStore {
           <input *ngIf="todo.editing"
                  class="edit" #editedtodo
                  [value]="todo.title"
-                 (blur)="updateEditedTodoValue(todo, editedtodo.value)"
-                 (keyup)="updateEditedTodoValue(todo, $event.target.value)"
-                 (keyup)="$event.code == 'Enter' && updateEditedTodoValue(todo, editedtodo.value)"
+                 (blur)="stopEditing(todo, editedtodo.value)"
+                 (keyup)="todo.title = $event.target.value"
+                 (keyup)="$event.code == 'Enter' && updateEditingTodo(todo, editedtodo.value)"
                  (keyup)="$event.code == 'Escape' && cancelEditingTodo(todo)">
         </li>
       </ul>
@@ -134,43 +141,43 @@ class ToDoAppComponent {
   newTodoText = '';
 
   constructor(public todoStore: TodoStore) {
-    (window as any).todoAppComponent = this;
+    (window as any).toDoAppComponent = this;
+  }
+
+  stopEditing(todo: Todo, editedTitle: string) {
+    todo.title = editedTitle;
+    todo.editing = false;
   }
 
   cancelEditingTodo(todo: Todo) {
     todo.editing = false;
-    markDirty(this);
   }
 
-  finishUpdatingTodo(todo: Todo, editedTitle: string) {
+  updateEditingTodo(todo: Todo, editedTitle: string) {
     editedTitle = editedTitle.trim();
+    todo.editing = false;
 
     if (editedTitle.length === 0) {
-      this.remove(todo);
+      return this.todoStore.remove(todo);
     }
 
     todo.title = editedTitle;
-    this.cancelEditingTodo(todo);
   }
 
   editTodo(todo: Todo) {
     todo.editing = true;
-    markDirty(this);
   }
 
   removeCompleted() {
     this.todoStore.removeCompleted();
-    markDirty(this);
   }
 
   toggleCompletion(todo: Todo) {
     this.todoStore.toggleCompletion(todo);
-    markDirty(this);
   }
 
   remove(todo: Todo) {
     this.todoStore.remove(todo);
-    markDirty(this);
   }
 
   addTodo() {
@@ -178,32 +185,25 @@ class ToDoAppComponent {
       this.todoStore.add(this.newTodoText);
       this.newTodoText = '';
     }
-    markDirty(this);
-  }
-
-  toggleAllTodos(checked: boolean) {
-    this.todoStore.setAllTo(checked);
-    markDirty(this);
-  }
-
-  updateEditedTodoValue(todo: Todo, value: string) {
-    todo.title = value;
-    markDirty(this);
-  }
-
-  updateNewTodoValue(value: string) {
-    this.newTodoText = value;
-    markDirty(this);
   }
 }
 
-@NgModule({declarations: [ToDoAppComponent], imports: [CommonModule]})
+@NgModule({declarations: [ToDoAppComponent], imports: [CommonModule, BrowserModule]})
 class ToDoAppModule {
+  ngDoBootstrap(app: any) {
+    app.bootstrap(ToDoAppComponent);
+  }
 }
 
-renderComponent(ToDoAppComponent);
+function bootstrapApp() {
+  return platformBrowser().bootstrapModuleFactory(
+      new NgModuleFactory(ToDoAppModule), {ngZone: 'noop'});
+}
 
 // This bundle includes `@angular/core` within it which means that the test asserting
 // against it will load a different core bundle. These symbols are exposed so that they
 // can interact with the correct `@angular/core` instance.
-module.exports = {whenRendered};
+module.exports = {
+  whenRendered,
+  bootstrapApp
+};

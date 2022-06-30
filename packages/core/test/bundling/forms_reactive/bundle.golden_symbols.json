@@ -108,9 +108,6 @@
     "name": "DEFAULT_VALUE_ACCESSOR"
   },
   {
-    "name": "DOCUMENT"
-  },
-  {
     "name": "DOCUMENT2"
   },
   {
@@ -360,13 +357,13 @@
     "name": "Optional"
   },
   {
+    "name": "PLATFORM_DESTROY_LISTENERS"
+  },
+  {
     "name": "PLATFORM_ID"
   },
   {
     "name": "PLATFORM_INITIALIZER"
-  },
-  {
-    "name": "PLATFORM_ON_DESTROY"
   },
   {
     "name": "PlatformRef"
@@ -1135,9 +1132,6 @@
   },
   {
     "name": "isObject"
-  },
-  {
-    "name": "isObservable"
   },
   {
     "name": "isOptionsObj"

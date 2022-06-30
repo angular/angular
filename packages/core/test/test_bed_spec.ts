@@ -367,6 +367,48 @@ describe('TestBed with Standalone types', () => {
     expect(rootElement.innerHTML).toBe('Overridden MyStandaloneComponent');
   });
 
+  it('should make overridden providers available in pipes', () => {
+    const TOKEN_A = new InjectionToken('TOKEN_A');
+    @Pipe({
+      name: 'testPipe',
+      standalone: true,
+    })
+    class TestPipe {
+      constructor(@Inject(TOKEN_A) private token: string) {}
+
+      transform(value: string): string {
+        return `transformed ${value} using ${this.token} token`;
+      }
+    }
+    @NgModule({
+      imports: [TestPipe],
+      exports: [TestPipe],
+      providers: [{provide: TOKEN_A, useValue: 'A'}],
+    })
+    class TestNgModule {
+    }
+
+    @Component({
+      selector: 'test-component',
+      standalone: true,
+      imports: [TestNgModule],
+      template: `{{ 'original value' | testPipe }}`
+    })
+    class TestComponent {
+    }
+
+    TestBed.configureTestingModule({
+      imports: [TestComponent],
+    });
+    TestBed.overrideProvider(TOKEN_A, {useValue: 'Overridden A'});
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+
+    const hostElement = fixture.nativeElement.firstChild;
+    expect(hostElement.textContent).toBe('transformed original value using Overridden A token');
+  });
+
   describe('NgModules as dependencies', () => {
     @Component({
       selector: 'test-cmp',

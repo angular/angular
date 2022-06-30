@@ -915,7 +915,7 @@ export interface CanMatch {
  * @see `Route`
  */
 export type CanMatchFn = (route: Route, segments: UrlSegment[]) =>
-    Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean;
+    Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 
 /**
  * @description

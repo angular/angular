@@ -10,6 +10,7 @@ import {ɵgetDOM as getDOM} from '@angular/common';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_events';
 import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
+
 import {createMouseEvent, el} from '../../../testing/src/browser_util';
 
 (function() {
@@ -310,28 +311,35 @@ describe('EventManager', () => {
     expect(receivedEvents).toEqual([]);
   });
 
+  // This test is reliant on `zone_event_unpatched_init.js` and verifies
+  // that the Zone unpatched event setting applies to the event manager.
   it('should run unpatchedEvents handler outside of ngZone', () => {
-    const Zone = (window as any)['Zone'];
     const element = el('<div><div></div></div>');
+    const zone = new NgZone({enableLongStackTrace: true});
+    const manager = new EventManager([domEventPlugin], zone);
+    let timeoutId: NodeJS.Timeout|null = null;
+
     doc.body.appendChild(element);
-    const dispatchedEvent = createMouseEvent('scroll');
-    let receivedEvent: any /** TODO #9100 */ = null;
-    let receivedZone: any = null;
-    const handler = (e: any /** TODO #9100 */) => {
-      receivedEvent = e;
-      receivedZone = Zone.current;
-    };
-    const manager = new EventManager([domEventPlugin], new FakeNgZone());
 
-    let remover = manager.addEventListener(element, 'scroll', handler);
-    getDOM().dispatchEvent(element, dispatchedEvent);
-    expect(receivedEvent).toBe(dispatchedEvent);
-    expect(receivedZone.name).not.toEqual('angular');
+    // Register the event listener in the Angular zone. If the handler would be
+    // patched then, the Zone should propagate into the listener callback.
+    zone.run(() => {
+      manager.addEventListener(element, 'unpatchedEventManagerTest', () => {
+        // schedule some timer that would cause the zone to become unstable. if the event
+        // handler would be patched, `hasPendingMacrotasks` would be `true`.
+        timeoutId = setTimeout(() => {}, 9999999);
+      });
+    });
 
-    receivedEvent = null;
-    remover && remover();
-    getDOM().dispatchEvent(element, dispatchedEvent);
-    expect(receivedEvent).toBe(null);
+    expect(zone.hasPendingMacrotasks).toBe(false);
+    getDOM().dispatchEvent(element, createMouseEvent('unpatchedEventManagerTest'));
+
+    expect(zone.hasPendingMacrotasks).toBe(false);
+    expect(timeoutId).not.toBe(null);
+
+    // cleanup the DOM by removing the test element we attached earlier.
+    doc.body.removeChild(element);
+    timeoutId && clearTimeout(timeoutId);
   });
 
   it('should only trigger one Change detection when bubbling with shouldCoalesceEventChangeDetection = true',

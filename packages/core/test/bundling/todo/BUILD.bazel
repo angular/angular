@@ -11,17 +11,21 @@ ng_module(
         "//packages/common",
         "//packages/core",
         "//packages/core/test/bundling/util:reflect_metadata",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
     ],
 )
 
 app_bundle(
     name = "bundle",
-    entry_point = ":index.ts",
+    entry_point = "index.ts",
     deps = [
         ":todo",
         "//packages/common",
         "//packages/core",
         "//packages/core/test/bundling/util:reflect_metadata",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
         "@npm//rxjs",
     ],
 )
@@ -35,6 +39,8 @@ ts_library(
         "//packages/compiler",
         "//packages/core",
         "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
         "//packages/private/testing",
     ],
 )

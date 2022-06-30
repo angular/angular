@@ -22,7 +22,7 @@ import {addToViewTree, CLEAN_PROMISE, createLView, createTView, getOrCreateTComp
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
-import {domRendererFactory3, Renderer3, RendererFactory3} from './interfaces/renderer';
+import {domRendererFactory3, enableRenderer3, Renderer3, RendererFactory3} from './interfaces/renderer';
 import {RElement} from './interfaces/renderer_dom';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
 import {writeDirectClass, writeDirectStyle} from './node_manipulation';
@@ -114,6 +114,8 @@ export function renderComponent<T>(
     opts: CreateComponentOptions = {}): T {
   ngDevMode && publishDefaultGlobalUtils();
   ngDevMode && assertComponentType(componentType);
+
+  enableRenderer3();
 
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
