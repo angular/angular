@@ -7,6 +7,8 @@
 // @public
 export const enum RuntimeErrorCode {
     // (undocumented)
+    COMPAREWITH_NOT_A_FN = 1201,
+    // (undocumented)
     FORM_ARRAY_NAME_MISSING_PARENT = 1054,
     // (undocumented)
     FORM_CONTROL_NAME_INSIDE_MODEL_GROUP = 1051,
@@ -20,6 +22,18 @@ export const enum RuntimeErrorCode {
     MISSING_CONTROL = 1001,
     // (undocumented)
     MISSING_CONTROL_VALUE = 1002,
+    // (undocumented)
+    NAME_AND_FORM_CONTROL_NAME_MUST_MATCH = 1202,
+    // (undocumented)
+    NG_VALUE_ACCESSOR_NOT_PROVIDED = 1200,
+    // (undocumented)
+    NGMODEL_IN_FORM_GROUP = 1350,
+    // (undocumented)
+    NGMODEL_IN_FORM_GROUP_NAME = 1351,
+    // (undocumented)
+    NGMODEL_WITHOUT_NAME = 1352,
+    // (undocumented)
+    NGMODELGROUP_IN_FORM_GROUP = 1353,
     // (undocumented)
     NO_CONTROLS = 1000,
     // (undocumented)

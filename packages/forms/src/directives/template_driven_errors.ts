@@ -6,11 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
+
+import {RuntimeErrorCode} from '../errors';
+
 import {formControlNameExample, formGroupNameExample, ngModelGroupExample, ngModelWithFormGroupExample} from './error_examples';
 
 
 export function modelParentException(): Error {
-  return new Error(`
+  return new RuntimeError(RuntimeErrorCode.NGMODEL_IN_FORM_GROUP, `
     ngModel cannot be used to register form controls with a parent formGroup directive.  Try using
     formGroup's partner directive "formControlName" instead.  Example:
 
@@ -24,7 +28,7 @@ export function modelParentException(): Error {
 }
 
 export function formGroupNameException(): Error {
-  return new Error(`
+  return new RuntimeError(RuntimeErrorCode.NGMODEL_IN_FORM_GROUP_NAME, `
     ngModel cannot be used to register form controls with a parent formGroupName or formArrayName directive.
 
     Option 1: Use formControlName instead of ngModel (reactive strategy):
@@ -37,7 +41,8 @@ export function formGroupNameException(): Error {
 }
 
 export function missingNameException(): Error {
-  return new Error(
+  return new RuntimeError(
+      RuntimeErrorCode.NGMODEL_WITHOUT_NAME,
       `If ngModel is used within a form tag, either the name attribute must be set or the form
     control must be defined as 'standalone' in ngModelOptions.
 
@@ -46,7 +51,7 @@ export function missingNameException(): Error {
 }
 
 export function modelGroupParentException(): Error {
-  return new Error(`
+  return new RuntimeError(RuntimeErrorCode.NGMODELGROUP_IN_FORM_GROUP, `
     ngModelGroup cannot be used with a parent formGroup directive.
 
     Option 1: Use formGroupName instead of ngModelGroup (reactive strategy):

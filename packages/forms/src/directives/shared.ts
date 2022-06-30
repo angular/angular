@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
+
+import {RuntimeErrorCode} from '../errors';
 import {AbstractControl} from '../model/abstract_model';
 import {FormArray} from '../model/form_array';
 import {FormControl} from '../model/form_control';
@@ -292,9 +295,10 @@ function _describeControlLocation(dir: AbstractControlDirective): string {
 
 function _throwInvalidValueAccessorError(dir: AbstractControlDirective) {
   const loc = _describeControlLocation(dir);
-  throw new Error(
+  throw new RuntimeError(
+      RuntimeErrorCode.NG_VALUE_ACCESSOR_NOT_PROVIDED,
       `Value accessor was not provided as an array for form control with ${loc}. ` +
-      `Check that the \`NG_VALUE_ACCESSOR\` token is configured as a \`multi: true\` provider.`);
+          `Check that the \`NG_VALUE_ACCESSOR\` token is configured as a \`multi: true\` provider.`);
 }
 
 export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {
