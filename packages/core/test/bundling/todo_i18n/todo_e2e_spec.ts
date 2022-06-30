@@ -20,8 +20,11 @@ describe('functional test for todo i18n', () => {
     describe(bundle, () => {
       it('should render todo i18n', withBody('<todo-app></todo-app>', async () => {
            clearTranslations();
-           const {whenRendered} = require(path.join(PACKAGE, bundle));
-           await (window as any).appReady;
+           // load the bundle
+           require(path.join(PACKAGE, bundle));
+           // the bundle attaches the following fields to the `window` global.
+           const {appReady, whenRendered} = window as any;
+           await appReady;
            expect(document.body.textContent).toContain('liste de tâches');
            expect(document.body.textContent).toContain('Démontrer les components');
            expect(document.body.textContent).toContain('Démontrer NgModules');

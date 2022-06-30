@@ -19,7 +19,11 @@ describe('functional test for todo', () => {
     describe(bundle, () => {
       it('should place styles on the elements within the component',
          withBody('<todo-app></todo-app>', async () => {
-           const {bootstrapApp, whenRendered} = require(path.join(PACKAGE, bundle));
+           // load the bundle
+           require(path.join(PACKAGE, bundle));
+           // the bundle attaches the following fields to the `window` global.
+           const {bootstrapApp, whenRendered} = window as any;
+
            await bootstrapApp();
            const toDoAppComponent = (window as any).toDoAppComponent;
            await whenRendered(toDoAppComponent);
