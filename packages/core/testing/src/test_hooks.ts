@@ -13,7 +13,7 @@
  */
 
 import {resetFakeAsyncZone} from './fake_async';
-import {TestBedImpl} from './r3_test_bed';
+import {TestBedImpl} from './test_bed_impl';
 
 declare var global: any;
 

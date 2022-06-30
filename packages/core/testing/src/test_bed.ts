@@ -10,8 +10,8 @@ import {Component, Directive, InjectFlags, NgModule, Pipe, PlatformRef, Provider
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
-import {TestBedImpl} from './r3_test_bed';
 import {TestBedStatic, TestEnvironmentOptions, TestModuleMetadata} from './test_bed_common';
+import {TestBedImpl} from './test_bed_impl';
 
 /**
  * @publicApi

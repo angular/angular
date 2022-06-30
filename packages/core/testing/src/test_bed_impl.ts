@@ -39,9 +39,9 @@ import {
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
-import {TestBedCompiler} from './r3_test_bed_compiler';
 import {TestBed} from './test_bed';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from './test_bed_common';
+import {TestBedCompiler} from './test_bed_compiler';
 
 let _nextRootElementId = 0;
 
