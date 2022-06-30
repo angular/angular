@@ -66,7 +66,7 @@ export function flush(maxTurns?: number): number;
 export function flushMicrotasks(): void;
 
 // @public
-export const getTestBed: () => TestBed;
+export function getTestBed(): TestBed;
 
 // @public
 export function inject(tokens: any[], fn: Function): () => any;
@@ -104,7 +104,7 @@ export interface TestBed {
         useJit?: boolean;
     }): void;
     // (undocumented)
-    configureTestingModule(moduleDef: TestModuleMetadata): void;
+    configureTestingModule(moduleDef: TestModuleMetadata): TestBed;
     // (undocumented)
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
     // (undocumented)
@@ -119,90 +119,47 @@ export interface TestBed {
     // (undocumented)
     inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T | null;
     // (undocumented)
-    ngModule: Type<any> | Type<any>[];
+    get ngModule(): Type<any> | Type<any>[];
     // (undocumented)
-    overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void;
+    overrideComponent(component: Type<any>, override: MetadataOverride<Component>): TestBed;
     // (undocumented)
-    overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void;
+    overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): TestBed;
     // (undocumented)
-    overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void;
+    overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBed;
     // (undocumented)
-    overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): void;
+    overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBed;
     overrideProvider(token: any, provider: {
         useFactory: Function;
         deps: any[];
-    }): void;
+    }): TestBed;
     // (undocumented)
     overrideProvider(token: any, provider: {
         useValue: any;
-    }): void;
+    }): TestBed;
     // (undocumented)
     overrideProvider(token: any, provider: {
         useFactory?: Function;
         useValue?: any;
         deps?: any[];
-    }): void;
+    }): TestBed;
     // (undocumented)
-    overrideTemplateUsingTestingModule(component: Type<any>, template: string): void;
+    overrideTemplate(component: Type<any>, template: string): TestBed;
     // (undocumented)
-    platform: PlatformRef;
+    overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBed;
+    // (undocumented)
+    get platform(): PlatformRef;
     resetTestEnvironment(): void;
     // (undocumented)
-    resetTestingModule(): void;
+    resetTestingModule(): TestBed;
 }
 
 // @public
 export const TestBed: TestBedStatic;
 
 // @public
-export interface TestBedStatic {
+export interface TestBedStatic extends TestBed {
     // (undocumented)
     new (...args: any[]): TestBed;
-    compileComponents(): Promise<any>;
-    configureCompiler(config: {
-        providers?: any[];
-        useJit?: boolean;
-    }): TestBedStatic;
-    configureTestingModule(moduleDef: TestModuleMetadata): TestBedStatic;
-    // (undocumented)
-    createComponent<T>(component: Type<T>): ComponentFixture<T>;
-    // @deprecated (undocumented)
-    get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
-    // @deprecated (undocumented)
-    get(token: any, notFoundValue?: any): any;
-    initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: TestEnvironmentOptions): TestBed;
-    // (undocumented)
-    inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
-    // (undocumented)
-    inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T | null;
-    // (undocumented)
-    overrideComponent(component: Type<any>, override: MetadataOverride<Component>): TestBedStatic;
-    // (undocumented)
-    overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): TestBedStatic;
-    // (undocumented)
-    overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBedStatic;
-    // (undocumented)
-    overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBedStatic;
-    overrideProvider(token: any, provider: {
-        useFactory: Function;
-        deps: any[];
-    }): TestBedStatic;
-    // (undocumented)
-    overrideProvider(token: any, provider: {
-        useValue: any;
-    }): TestBedStatic;
-    // (undocumented)
-    overrideProvider(token: any, provider: {
-        useFactory?: Function;
-        useValue?: any;
-        deps?: any[];
-    }): TestBedStatic;
-    // (undocumented)
-    overrideTemplate(component: Type<any>, template: string): TestBedStatic;
-    overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBedStatic;
-    resetTestEnvironment(): void;
-    // (undocumented)
-    resetTestingModule(): TestBedStatic;
 }
 
 // @public
