@@ -25,6 +25,9 @@
   // we have to change it in order for margins to work.
   display: inline-block;
 
+  // Avoids issues in some CSS grid layouts (see #25153).
+  position: relative;
+
   .mdc-checkbox {
     // MDC theme styles also include structural styles so we have to include the theme at least
     // once here. The values will be overwritten by our own theme file afterwards.

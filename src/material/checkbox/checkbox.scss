@@ -189,6 +189,9 @@ $_mark-stroke-size: math.div(2, 15) * checkbox-common.$size !default;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 
+  // Avoids issues in some CSS grid layouts (see #25153).
+  position: relative;
+
   .mat-ripple-element:not(.mat-checkbox-persistent-ripple) {
     opacity: 0.16;
   }
