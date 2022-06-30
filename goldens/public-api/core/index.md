@@ -457,6 +457,7 @@ export abstract class EnvironmentInjector implements Injector {
     abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
     // @deprecated (undocumented)
     abstract get(token: any, notFoundValue?: any): any;
+    abstract runInContext<ReturnT>(fn: () => ReturnT): ReturnT;
 }
 
 // @public
