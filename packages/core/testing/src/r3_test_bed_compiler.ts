@@ -51,7 +51,7 @@ interface CleanupOperation {
   originalValue: unknown;
 }
 
-export class R3TestBedCompiler {
+export class TestBedCompiler {
   private originalComponentResolutionQueue: Map<Type<any>, Component>|null = null;
 
   // Testing module configuration
@@ -922,7 +922,7 @@ function invalidTypeError(name: string, expectedType: string): Error {
 }
 
 class R3TestCompiler implements Compiler {
-  constructor(private testBed: R3TestBedCompiler) {}
+  constructor(private testBed: TestBedCompiler) {}
 
   compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> {
     this.testBed._compileNgModuleSync(moduleType);
