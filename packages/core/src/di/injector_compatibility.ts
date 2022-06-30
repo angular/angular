@@ -103,6 +103,35 @@ Please check that 1) the type for the parameter at index ${
 }
 
 /**
+ * Type of the options argument to `inject`.
+ *
+ * @publicApi
+ */
+export interface InjectOptions {
+  /**
+   * Use optional injection, and return `null` if the requested token is not found.
+   */
+  optional?: boolean;
+
+  /**
+   * Start injection at the parent of the current injector.
+   */
+  skipSelf?: boolean;
+
+  /**
+   * Only query the current injector for the token, and don't fall back to the parent injector if
+   * it's not found.
+   */
+  self?: boolean;
+
+  /**
+   * Stop injection at the host component's injector. Only relevant when injecting from an element
+   * injector, and a no-op for environment injectors.
+   */
+  host?: boolean;
+}
+
+/**
  * @param token A token that represents a dependency that should be injected.
  * @returns the injected value if operation is successful, `null` otherwise.
  * @throws if called outside of a supported context.
@@ -118,8 +147,33 @@ export function inject<T>(token: ProviderToken<T>): T;
  * @throws if called outside of a supported context.
  *
  * @publicApi
+ * @deprecated prefer an options object instead of `InjectFlags`
  */
 export function inject<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
+/**
+ * @param token A token that represents a dependency that should be injected.
+ * @param options Control how injection is executed. Options correspond to injection strategies
+ *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
+ *     `@Optional`.
+ * @returns the injected value if operation is successful.
+ * @throws if called outside of a supported context, or if the token is not found.
+ *
+ * @publicApi
+ */
+export function inject<T>(token: ProviderToken<T>, options: InjectOptions&{optional?: false}): T;
+/**
+ * @param token A token that represents a dependency that should be injected.
+ * @param options Control how injection is executed. Options correspond to injection strategies
+ *     that can be specified with parameter decorators `@Host`, `@Self`, `@SkipSelf`, and
+ *     `@Optional`.
+ * @returns the injected value if operation is successful,  `null` if the token is not
+ *     found and optional injection has been requested.
+ * @throws if called outside of a supported context, or if the token is not found and optional
+ *     injection was not requested.
+ *
+ * @publicApi
+ */
+export function inject<T>(token: ProviderToken<T>, options: InjectOptions): T|null;
 /**
  * Injects a token from the currently active injector.
  * `inject` is only supported during instantiation of a dependency by the DI system. It can be used
@@ -184,7 +238,18 @@ export function inject<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
  *
  * @publicApi
  */
-export function inject<T>(token: ProviderToken<T>, flags = InjectFlags.Default): T|null {
+export function inject<T>(
+    token: ProviderToken<T>, flags: InjectFlags|InjectOptions = InjectFlags.Default): T|null {
+  if (typeof flags !== 'number') {
+    // While TypeScript doesn't accept it without a cast, bitwise OR with false-y values in
+    // JavaScript is a no-op. We can use that for a very codesize-efficient conversion from
+    // `InjectOptions` to `InjectFlags`.
+    flags = (InternalInjectFlags.Default |  // comment to force a line break in the formatter
+             ((flags.optional && InternalInjectFlags.Optional) as number) |
+             ((flags.host && InternalInjectFlags.Host) as number) |
+             ((flags.self && InternalInjectFlags.Self) as number) |
+             ((flags.skipSelf && InternalInjectFlags.SkipSelf) as number)) as InjectFlags;
+  }
   return ɵɵinject(token, flags);
 }
 

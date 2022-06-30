@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, createEnvironmentInjector, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, INJECTOR, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, NgZone, Optional, Output, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE} from '@angular/core';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -3327,6 +3327,102 @@ describe('di', () => {
       const fixture = TestBed.createComponent(TestCmp);
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML).toEqual('default value');
+    });
+
+    describe('with an options object argument', () => {
+      it('should be able to optionally inject a service', () => {
+        const TOKEN = new InjectionToken<string>('TOKEN');
+
+        @Component({
+          standalone: true,
+          template: '',
+        })
+        class TestCmp {
+          value = inject(TOKEN, {optional: true});
+        }
+
+        expect(TestBed.createComponent(TestCmp).componentInstance.value).toBeNull();
+      });
+
+      it('should be able to use skipSelf injection', () => {
+        const TOKEN = new InjectionToken<string>('TOKEN', {
+          providedIn: 'root',
+          factory: () => 'from root',
+        });
+        @Component({
+          standalone: true,
+          template: '',
+          providers: [{provide: TOKEN, useValue: 'from component'}],
+        })
+        class TestCmp {
+          value = inject(TOKEN, {skipSelf: true});
+        }
+
+        expect(TestBed.createComponent(TestCmp).componentInstance.value).toEqual('from root');
+      });
+
+      it('should be able to use self injection', () => {
+        const TOKEN = new InjectionToken<string>('TOKEN', {
+          providedIn: 'root',
+          factory: () => 'from root',
+        });
+
+        @Component({
+          standalone: true,
+          template: '',
+        })
+        class TestCmp {
+          value = inject(TOKEN, {self: true, optional: true});
+        }
+
+        expect(TestBed.createComponent(TestCmp).componentInstance.value).toBeNull();
+      });
+
+      it('should be able to use host injection', () => {
+        const TOKEN = new InjectionToken<string>('TOKEN');
+
+        @Component({
+          standalone: true,
+          selector: 'child',
+          template: '{{value}}',
+        })
+        class ChildCmp {
+          value = inject(TOKEN, {host: true, optional: true}) ?? 'not found';
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ChildCmp],
+          template: '<child></child>',
+          providers: [{provide: TOKEN, useValue: 'from parent'}],
+          encapsulation: ViewEncapsulation.None,
+        })
+        class ParentCmp {
+        }
+
+        const fixture = TestBed.createComponent(ParentCmp);
+        fixture.detectChanges();
+        expect(fixture.nativeElement.innerHTML).toEqual('<child>not found</child>');
+      });
+
+      it('should not indicate it returns null when optional is explicitly false', () => {
+        const TOKEN = new InjectionToken<string>('TOKEN', {
+          providedIn: 'root',
+          factory: () => 'from root',
+        });
+
+        @Component({
+          standalone: true,
+          template: '',
+        })
+        class TestCmp {
+          // TypeScript will check if this assignment is legal, which won't be the case if
+          // inject() erroneously returns a `string|null` type here.
+          value: string = inject(TOKEN, {optional: false});
+        }
+
+        expect(TestBed.createComponent(TestCmp).componentInstance.value).toEqual('from root');
+      });
     });
   });
 
