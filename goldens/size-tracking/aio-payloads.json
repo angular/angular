@@ -2,9 +2,9 @@
   "aio": {
     "uncompressed": {
       "runtime": 4325,
-      "main": 456483,
+      "main": 461099,
       "polyfills": 33814,
-      "styles": 72616,
+      "styles": 73640,
       "light-theme": 78276,
       "dark-theme": 78381
     }
@@ -12,9 +12,9 @@
   "aio-local": {
     "uncompressed": {
       "runtime": 4325,
-      "main": 455915,
+      "main": 459842,
       "polyfills": 33922,
-      "styles": 72616,
+      "styles": 73640,
       "light-theme": 78276,
       "dark-theme": 78381
     }
