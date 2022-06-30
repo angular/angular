@@ -6,8 +6,8 @@ import {PullRequestConfig} from '@angular/dev-infra-private/ng-dev';
  */
 export const pullRequest: PullRequestConfig = {
   githubApiMerge: false,
-  mergeReadyLabel: /^action: merge(-assistance)?/,
-  caretakerNoteLabel: /^(action: merge-assistance)|(PullApprove: disable)/,
+  mergeReadyLabel: 'action: merge',
+  caretakerNoteLabel: 'action: merge-assistance',
   commitMessageFixupLabel: 'commit message fixup',
   requiredBaseCommits: {
     // PRs that target either `main` or the patch branch, need to be rebased
