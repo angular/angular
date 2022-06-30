@@ -209,4 +209,4 @@ loadTranslations(translations);
 // This bundle includes `@angular/core` within it which means that the test asserting
 // against it will load a different core bundle. These symbols are exposed so that they
 // can interact with the correct `@angular/core` instance.
-module.exports = {whenRendered};
+(window as any).whenRendered = whenRendered;
