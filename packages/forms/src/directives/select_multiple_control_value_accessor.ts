@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, forwardRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider, ɵRuntimeError as RuntimeError} from '@angular/core';
+
+import {RuntimeErrorCode} from '../errors';
 
 import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
@@ -103,7 +105,9 @@ export class SelectMultipleControlValueAccessor extends BuiltInControlValueAcces
   @Input()
   set compareWith(fn: (o1: any, o2: any) => boolean) {
     if (typeof fn !== 'function' && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      throw new Error(`compareWith must be a function, but received ${JSON.stringify(fn)}`);
+      throw new RuntimeError(
+          RuntimeErrorCode.COMPAREWITH_NOT_A_FN,
+          `compareWith must be a function, but received ${JSON.stringify(fn)}`);
     }
     this._compareWith = fn;
   }
