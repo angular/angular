@@ -92,8 +92,8 @@ captureNgDevPatches(
 // Patches for the app bundling
 captureNgDevPatches(
     [
-      'node_modules/@angular/dev-infra-private/bazel/benchmark/app_bundling/index.bzl',
-      'node_modules/@angular/dev-infra-private/bazel/benchmark/app_bundling/esbuild.config-tmpl.mjs',
+      'node_modules/@angular/dev-infra-private/bazel/app-bundling/index.bzl',
+      'node_modules/@angular/dev-infra-private/bazel/app-bundling/esbuild.config-tmpl.mjs',
     ],
     [
       // The app bundle config accesses the linker entry-point as well, so we need
