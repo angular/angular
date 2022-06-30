@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, Injectable, NgModule} from '@angular/core';
-import {inject} from '@angular/core/testing';
-import {BrowserModule} from '@angular/platform-browser';
+import {APP_BASE_HREF, DOCUMENT, Location, LocationStrategy, ɵgetDOM as getDOM} from '@angular/common';
+import {MockLocationStrategy} from '@angular/common/testing';
+import {APP_INITIALIZER, ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, importProvidersFrom, inject as coreInject, Injectable, NgModule} from '@angular/core';
+import {inject, TestBed} from '@angular/core/testing';
+import {bootstrapApplication, BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {NavigationEnd, Resolve, Router, RouterModule} from '@angular/router';
+import {NavigationEnd, Resolve, Router, RouterModule, UrlHandlingStrategy, UrlTree} from '@angular/router';
+import {filter} from 'rxjs/operators';
 
 // This is needed, because all files under `packages/` are compiled together as part of the
 // [legacy-unit-tests-saucelabs][1] CI job, including the `lib.webworker.d.ts` typings brought in by
@@ -89,7 +91,7 @@ describe('bootstrap', () => {
                  },
                  children: []
                }],
-               {useHash: true, initialNavigation: 'enabledBlocking'})
+               {useHash: true, initialNavigation: 'enabledBlocking', errorHandler: () => {}})
          ],
          declarations: [RootCmp],
          bootstrap: [RootCmp],
@@ -129,7 +131,7 @@ describe('bootstrap', () => {
               {path: 'redirectToMe', children: [], resolve: {test: TestResolver}},
               {path: '**', canActivate: [Redirect], children: []}
             ],
-            {useHash: true, initialNavigation: 'enabledBlocking'})
+            {useHash: true, initialNavigation: 'enabledBlocking', errorHandler: () => {}})
       ],
       declarations: [RootCmp],
       bootstrap: [RootCmp],
@@ -306,6 +308,162 @@ describe('bootstrap', () => {
       });
     });
   });
+
+  describe('navigates to root when initial navigation fails', () => {
+    @Component({template: 'other', standalone: true})
+    class OtherCmp {
+    }
+    @Component({template: '', standalone: true})
+    class ErrorCmp {
+      constructor() {
+        throw new Error('error creating ErrorCmp');
+      }
+    }
+
+    @Component({template: 'home component', standalone: true})
+    class HomeCmp {
+    }
+
+    @Component({
+      selector: 'test-app',
+      template: '<router-outlet></router-outlet>',
+      imports: [RouterModule],
+      standalone: true
+    })
+    class AppCmp {
+    }
+
+    it('because a guard rejects', async () => {
+      @Injectable({providedIn: 'root'})
+      class CannotActivate {
+        canActivate() {
+          return Promise.resolve(false);
+        }
+      }
+      await bootstrapApplication(AppCmp, {
+        providers: [
+          importProvidersFrom(RouterModule.forRoot(
+              [
+                {path: '', component: HomeCmp},
+                {path: 'other', component: OtherCmp, canActivate: [CannotActivate]},
+              ],
+              )),
+          ...testProviders, {provide: LocationStrategy, useClass: MockLocationStrategy},
+          {provide: APP_INITIALIZER, useFactory: () => () => coreInject(Location).go('other')}
+        ]
+      }).then((result) => {
+        expect(document.querySelector('test-app')?.innerHTML).toContain('home component');
+        expect((result as any)._injector.get(Location).path()).toEqual('');
+      });
+    });
+
+    it('because component throws error during activation', async () => {
+      @Component({
+        selector: 'test-app',
+        template: '<router-outlet></router-outlet>',
+        imports: [RouterModule],
+        standalone: true
+      })
+      class AppCmp {
+      }
+      const appRef = await bootstrapApplication(AppCmp, {
+        providers: [
+          importProvidersFrom(RouterModule.forRoot(
+              [
+                {path: '', component: HomeCmp},
+                {path: 'error', component: ErrorCmp},
+              ],
+              {errorHandler: () => {}})),
+          ...testProviders, {provide: LocationStrategy, useClass: MockLocationStrategy},
+          {provide: APP_INITIALIZER, useFactory: () => coreInject(Location).go('error')}
+        ]
+      });
+      expect(document.querySelector('test-app')?.innerHTML).toContain('home component');
+      expect((appRef as any)._injector.get(Location).path()).toEqual('');
+    });
+
+    it('because the initial route does not exist', async () => {
+      @Component({
+        selector: 'test-app',
+        template: '<router-outlet></router-outlet>',
+        imports: [RouterModule],
+        standalone: true
+      })
+      class AppCmp {
+      }
+      const appRef = await bootstrapApplication(AppCmp, {
+        providers: [
+          importProvidersFrom(RouterModule.forRoot(
+              [
+                {path: '', component: HomeCmp},
+              ],
+              {errorHandler: () => {}})),
+          ...testProviders, {provide: LocationStrategy, useClass: MockLocationStrategy},
+          {provide: APP_INITIALIZER, useFactory: () => coreInject(Location).go('does not exist')}
+        ]
+      });
+      expect(document.querySelector('test-app')?.innerHTML).toContain('home component');
+      expect((appRef as any)._injector.get(Location).path()).toEqual('');
+    });
+  });
+
+  it('does not redirect to root if initial navigation is ignored by UrlHandlingStrategy',
+     async () => {
+       @Component({template: 'home component', standalone: true})
+       class HomeCmp {
+       }
+       @Component({template: 'other component', standalone: true})
+       class OtherCmp {
+       }
+       @Injectable({providedIn: 'root'})
+       class CannotActivate {
+         canActivate() {
+           return false;
+         }
+       }
+
+       @Component({
+         selector: 'test-app',
+         template: '<router-outlet></router-outlet>',
+         imports: [RouterModule],
+         standalone: true
+       })
+       class AppCmp {
+       }
+       @Injectable()
+       class UrlHandler implements UrlHandlingStrategy {
+         shouldProcessUrl(url: UrlTree): boolean {
+           return url.toString().indexOf('/ignore') === -1;
+         }
+         extract(url: UrlTree): UrlTree {
+           return url;
+         }
+         merge(newUrlPart: UrlTree, rawUrl: UrlTree): UrlTree {
+           return newUrlPart;
+         }
+       }
+       const appRef = await bootstrapApplication(AppCmp, {
+         providers: [
+           importProvidersFrom(RouterModule.forRoot([
+             {path: '', component: HomeCmp},
+             {path: 'reject', component: OtherCmp, canActivate: [CannotActivate]},
+           ])),
+           ...testProviders, {provide: LocationStrategy, useClass: MockLocationStrategy},
+           {provide: UrlHandlingStrategy, useClass: UrlHandler},
+           {provide: APP_INITIALIZER, useFactory: () => coreInject(Location).go('ignore')}
+         ]
+       });
+       const location = (appRef as any)._injector.get(Location);
+       const router = (appRef as any)._injector.get(Router);
+
+       // Ensure we are on the ignored route and no component from the app is rendered
+       expect(location.path()).toEqual('/ignore');
+       expect(document.querySelector('test-app')?.innerHTML).not.toContain('component');
+       // Navigate to the rejected route and ensure we get back to 'ignore' rather than redirecting
+       // to the root
+       await router.navigateByUrl('/reject');
+       expect(location.path()).toEqual('/ignore');
+     });
 
   it('should not run navigation when initialNavigation = disabled', (done) => {
     @Component({selector: 'test', template: 'test'})
