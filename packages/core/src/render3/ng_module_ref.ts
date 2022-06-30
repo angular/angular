@@ -86,6 +86,10 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
     return this._r3Injector.get(token, notFoundValue, injectFlags);
   }
 
+  runInContext<ReturnT>(fn: () => ReturnT): ReturnT {
+    return this.injector.runInContext(fn);
+  }
+
   override destroy(): void {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
     const injector = this._r3Injector;

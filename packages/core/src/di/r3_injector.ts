@@ -89,6 +89,18 @@ export abstract class EnvironmentInjector implements Injector {
    */
   abstract get(token: any, notFoundValue?: any): any;
 
+  /**
+   * Runs the given function in the context of this `EnvironmentInjector`.
+   *
+   * Within the function's stack frame, `inject` can be used to inject dependencies from this
+   * injector. Note that `inject` is only usable synchronously, and cannot be used in any
+   * asynchronous callbacks or after any `await` points.
+   *
+   * @param fn the closure to be run in the context of this injector
+   * @returns the return value of the function, if any
+   */
+  abstract runInContext<ReturnT>(fn: () => ReturnT): ReturnT;
+
   abstract destroy(): void;
 
   /**
@@ -178,6 +190,19 @@ export class R3Injector extends EnvironmentInjector {
 
   override onDestroy(callback: () => void): void {
     this._onDestroyHooks.push(callback);
+  }
+
+  override runInContext<ReturnT>(fn: () => ReturnT): ReturnT {
+    this.assertNotDestroyed();
+
+    const previousInjector = setCurrentInjector(this);
+    const previousInjectImplementation = setInjectImplementation(undefined);
+    try {
+      return fn();
+    } finally {
+      setCurrentInjector(previousInjector);
+      setInjectImplementation(previousInjectImplementation);
+    }
   }
 
   override get<T>(

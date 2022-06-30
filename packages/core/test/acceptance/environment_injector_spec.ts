@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, createEnvironmentInjector, ENVIRONMENT_INITIALIZER, EnvironmentInjector, InjectionToken, INJECTOR, Injector, NgModuleRef} from '@angular/core';
+import {Component, ComponentFactoryResolver, createEnvironmentInjector, ENVIRONMENT_INITIALIZER, EnvironmentInjector, inject, InjectFlags, InjectionToken, INJECTOR, Injector, NgModuleRef, ViewContainerRef} from '@angular/core';
 import {R3Injector} from '@angular/core/src/di/r3_injector';
 import {TestBed} from '@angular/core/testing';
 
@@ -118,5 +118,95 @@ describe('environment injector', () => {
       factory: () => true,
     });
     expect(injector.get(EnvScopedToken, false)).toBeTrue();
+  });
+
+  describe('runInContext()', () => {
+    it('should return the function\'s return value', () => {
+      const injector = TestBed.inject(EnvironmentInjector);
+      const returnValue = injector.runInContext(() => 3);
+      expect(returnValue).toBe(3);
+    });
+
+    it('should make inject() available', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+      const injector = createEnvironmentInjector(
+          [{provide: TOKEN, useValue: 'from injector'}], TestBed.inject(EnvironmentInjector));
+
+      const result = injector.runInContext(() => inject(TOKEN));
+      expect(result).toEqual('from injector');
+    });
+
+    it('should properly clean up after the function returns', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+      const injector = TestBed.inject(EnvironmentInjector);
+      injector.runInContext(() => {});
+      expect(() => inject(TOKEN, InjectFlags.Optional)).toThrow();
+    });
+
+    it('should properly clean up after the function throws', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+      const injector = TestBed.inject(EnvironmentInjector);
+      expect(() => injector.runInContext(() => {
+        throw new Error('crashes!');
+      })).toThrow();
+      expect(() => inject(TOKEN, InjectFlags.Optional)).toThrow();
+    });
+
+    it('should set the correct inject implementation', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN', {
+        providedIn: 'root',
+        factory: () => 'from root',
+      });
+
+      @Component({
+        standalone: true,
+        template: '',
+        providers: [{provide: TOKEN, useValue: 'from component'}],
+      })
+      class TestCmp {
+        envInjector = inject(EnvironmentInjector);
+
+        tokenFromComponent = inject(TOKEN);
+        tokenFromEnvContext = this.envInjector.runInContext(() => inject(TOKEN));
+
+        // Attempt to inject ViewContainerRef within the environment injector's context. This should
+        // not be available, so the result should be `null`.
+        vcrFromEnvContext =
+            this.envInjector.runInContext(() => inject(ViewContainerRef, InjectFlags.Optional));
+      }
+
+      const instance = TestBed.createComponent(TestCmp).componentInstance;
+      expect(instance.tokenFromComponent).toEqual('from component');
+      expect(instance.tokenFromEnvContext).toEqual('from root');
+      expect(instance.vcrFromEnvContext).toBeNull();
+    });
+
+    it('should be reentrant', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN', {
+        providedIn: 'root',
+        factory: () => 'from root',
+      });
+
+      const parentInjector = TestBed.inject(EnvironmentInjector);
+      const childInjector =
+          createEnvironmentInjector([{provide: TOKEN, useValue: 'from child'}], parentInjector);
+
+      const results = parentInjector.runInContext(() => {
+        const fromParentBefore = inject(TOKEN);
+        const fromChild = childInjector.runInContext(() => inject(TOKEN));
+        const fromParentAfter = inject(TOKEN);
+        return {fromParentBefore, fromChild, fromParentAfter};
+      });
+
+      expect(results.fromParentBefore).toEqual('from root');
+      expect(results.fromChild).toEqual('from child');
+      expect(results.fromParentAfter).toEqual('from root');
+    });
+
+    it('should not function on a destroyed injector', () => {
+      const injector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
+      injector.destroy();
+      expect(() => injector.runInContext(() => {})).toThrow();
+    });
   });
 });
