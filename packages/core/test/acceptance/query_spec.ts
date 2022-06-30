@@ -946,6 +946,36 @@ describe('query logic', () => {
          expect(outQList.length).toBe(2);
        });
 
+    it('should support shallow ContentChild queries', () => {
+      @Directive({selector: '[query-dir]', standalone: true})
+      class ContentQueryDirective {
+        @ContentChild('foo', {descendants: false}) shallow: ElementRef|undefined;
+        // ContentChild queries have {descendants: true} option by default
+        @ContentChild('foo') deep: ElementRef|undefined;
+      }
+
+      @Component({
+        standalone: true,
+        imports: [ContentQueryDirective],
+        template: `
+          <div query-dir>
+            <div>
+              <span #foo></span>
+            </div>
+          </div>
+        `
+      })
+      class TestCmp {
+        @ViewChild(ContentQueryDirective, {static: true}) queryDir!: ContentQueryDirective;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.queryDir.shallow).toBeUndefined();
+      expect(fixture.componentInstance.queryDir.deep).toBeInstanceOf(ElementRef);
+    });
+
     it('should support view and content queries matching the same element', () => {
       @Directive({
         selector: '[content-query]',
