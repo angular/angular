@@ -1368,6 +1368,9 @@
     "name": "initTNodeFlags"
   },
   {
+    "name": "initializeInputAndOutputAliases"
+  },
+  {
     "name": "inject"
   },
   {
@@ -1810,6 +1813,9 @@
   },
   {
     "name": "setInjectImplementation"
+  },
+  {
+    "name": "setInputsForProperty"
   },
   {
     "name": "setInputsFromAttrs"

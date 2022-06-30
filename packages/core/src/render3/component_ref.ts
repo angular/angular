@@ -11,7 +11,7 @@ import {Injector} from '../di/injector';
 import {InjectFlags} from '../di/interface/injector';
 import {ProviderToken} from '../di/provider_token';
 import {EnvironmentInjector} from '../di/r3_injector';
-import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -26,16 +26,18 @@ import {assertComponentType} from './assert';
 import {createRootComponent, createRootComponentView, createRootContext, LifecycleHooksFeature} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
-import {createLView, createTView, locateHostElement, renderView} from './instructions/shared';
+import {reportUnknownPropertyError} from './instructions/element_validation';
+import {createLView, createTView, initializeInputAndOutputAliases, locateHostElement, markDirtyIfOnPush, renderView, setInputsForProperty} from './instructions/shared';
 import {ComponentDef} from './interfaces/definition';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './interfaces/node';
+import {PropertyAliasValue, TContainerNode, TElementContainerNode, TElementNode, TNode} from './interfaces/node';
 import {RNode} from './interfaces/renderer_dom';
-import {HEADER_OFFSET, LView, LViewFlags, TViewType} from './interfaces/view';
+import {HEADER_OFFSET, LView, LViewFlags, TVIEW, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {createElementNode, writeDirectClass} from './node_manipulation';
 import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
 import {enterView, leaveView} from './state';
 import {setUpAttributes} from './util/attrs_utils';
+import {stringifyForError} from './util/stringify_utils';
 import {getTNode} from './util/view_utils';
 import {RootViewRef, ViewRef} from './view_ref';
 
@@ -226,7 +228,6 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-vcref
       component = createRootComponent(
           componentView, this.componentDef, rootLView, rootContext, [LifecycleHooksFeature]);
-
       renderView(rootTView, rootLView, null);
     } finally {
       leaveView();
@@ -273,6 +274,25 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
     this.instance = instance;
     this.hostView = this.changeDetectorRef = new RootViewRef<T>(_rootLView);
     this.componentType = componentType;
+  }
+
+  override setInput(name: string, value: unknown): void {
+    const inputData = this._tNode.inputs;
+    let dataValue: PropertyAliasValue|undefined;
+    if (inputData !== null && (dataValue = inputData[name])) {
+      const lView = this._rootLView;
+      setInputsForProperty(lView[TVIEW], lView, dataValue, name, value);
+      markDirtyIfOnPush(lView, this._tNode.index);
+    } else {
+      if (ngDevMode) {
+        const cmpNameForError = stringifyForError(this.componentType);
+        let message =
+            `Can't set value of the '${name}' input on the '${cmpNameForError}' component. `;
+        message += `Make sure that the '${
+            name}' property is annotated with @Input() or a mapped @Input('${name}') exists.`;
+        reportUnknownPropertyError(message);
+      }
+    }
   }
 
   override get injector(): Injector {

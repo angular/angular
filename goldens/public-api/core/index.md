@@ -235,6 +235,7 @@ export abstract class ComponentRef<C> {
     abstract get instance(): C;
     abstract get location(): ElementRef;
     abstract onDestroy(callback: Function): void;
+    abstract setInput(name: string, value: unknown): void;
 }
 
 // @public

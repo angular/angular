@@ -207,6 +207,10 @@ export function handleUnknownPropertyError(
     }
   }
 
+  reportUnknownPropertyError(message);
+}
+
+export function reportUnknownPropertyError(message: string) {
   if (shouldThrowErrorOnUnknownProperty) {
     throw new RuntimeError(RuntimeErrorCode.UNKNOWN_BINDING, message);
   } else {
