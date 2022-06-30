@@ -305,10 +305,9 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#4de6d08280e6fdd57c8fde742e69577f4d0d911c":
-  version "0.0.0-550c81899c5705eefc2e1ba323873f6b85e123fa"
-  uid "4de6d08280e6fdd57c8fde742e69577f4d0d911c"
-  resolved "https://github.com/angular/dev-infra-private-builds.git#4de6d08280e6fdd57c8fde742e69577f4d0d911c"
+"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#b9800c107795fea27bc4704118ce3aff64cbb8b1":
+  version "0.0.0-73d42922727304bf3d7c606cdef627dc7c773164"
+  resolved "https://github.com/angular/dev-infra-private-builds.git#b9800c107795fea27bc4704118ce3aff64cbb8b1"
   dependencies:
     "@angular-devkit/build-angular" "14.1.0-next.2"
     "@angular/benchpress" "0.3.0"
