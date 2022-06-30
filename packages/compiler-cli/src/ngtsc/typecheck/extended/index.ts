@@ -14,6 +14,7 @@ import {factory as missingControlFlowDirectiveFactory} from './checks/missing_co
 import {factory as missingNgForOfLetFactory} from './checks/missing_ngforof_let';
 import {factory as nullishCoalescingNotNullableFactory} from './checks/nullish_coalescing_not_nullable';
 import {factory as textAttributeNotBindingFactory} from './checks/text_attribute_not_binding';
+import {factory as suffixNotSupportedFactory} from './checks/suffix_not_supported';
 
 export {ExtendedTemplateCheckerImpl} from './src/extended_template_checker';
 
@@ -24,4 +25,5 @@ export const ALL_DIAGNOSTIC_FACTORIES:
       missingControlFlowDirectiveFactory,
       textAttributeNotBindingFactory,
       missingNgForOfLetFactory,
+      suffixNotSupportedFactory,
     ];

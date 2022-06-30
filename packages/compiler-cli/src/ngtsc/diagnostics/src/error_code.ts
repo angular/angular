@@ -266,6 +266,17 @@ export enum ErrorCode {
    * ```
    */
   MISSING_NGFOROF_LET = 8105,
+  /**
+   * Indicates that the binding suffix is not supported
+   *
+   * Style bindings support suffixes like `stlye.width.px`, `.em`, and `.%`.
+   * These suffixes are _not_ supported for attribute bindings.
+   *
+   * For example `[attr.width.px]="5"` becomes `width.px="5"` when bound.
+   * This is almost certainly unintentional and this error is meant to
+   * surface this mistake to the developer.
+   */
+  SUFFIX_NOT_SUPPORTED = 8106,
 
   /**
    * The template type-checking engine would need to generate an inline type check block for a
