@@ -1266,7 +1266,7 @@
           "tooltip": "Post issues and suggestions on github."
         },
         {
-          "url": "https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md",
+          "url": "https://github.com/angular/code-of-conduct/blob/main/CODE_OF_CONDUCT.md",
           "title": "Code of Conduct",
           "tooltip": "Treating each other with respect."
         }
