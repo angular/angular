@@ -39,7 +39,7 @@ import {
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
-import {R3TestBedCompiler} from './r3_test_bed_compiler';
+import {TestBedCompiler} from './r3_test_bed_compiler';
 import {TestBed} from './test_bed';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from './test_bed_common';
 
@@ -253,7 +253,7 @@ export class TestBedImpl implements TestBed {
   platform: PlatformRef = null!;
   ngModule: Type<any>|Type<any>[] = null!;
 
-  private _compiler: R3TestBedCompiler|null = null;
+  private _compiler: TestBedCompiler|null = null;
   private _testModuleRef: NgModuleRef<any>|null = null;
 
   private _activeFixtures: ComponentFixture<any>[] = [];
@@ -293,7 +293,7 @@ export class TestBedImpl implements TestBed {
 
     this.platform = platform;
     this.ngModule = ngModule;
-    this._compiler = new R3TestBedCompiler(this.platform, this.ngModule);
+    this._compiler = new TestBedCompiler(this.platform, this.ngModule);
 
     // TestBed does not have an API which can reliably detect the start of a test, and thus could be
     // used to track the state of the NgModule registry and reset it correctly. Instead, when we
@@ -322,7 +322,7 @@ export class TestBedImpl implements TestBed {
     if (this._compiler !== null) {
       this.compiler.restoreOriginalState();
     }
-    this._compiler = new R3TestBedCompiler(this.platform, this.ngModule);
+    this._compiler = new TestBedCompiler(this.platform, this.ngModule);
     // Restore the previous value of the "error on unknown elements" option
     setUnknownElementStrictMode(
         this._previousErrorOnUnknownElementsOption ?? THROW_ON_UNKNOWN_ELEMENTS_DEFAULT);
@@ -494,7 +494,7 @@ export class TestBedImpl implements TestBed {
    * @internal strip this from published d.ts files due to
    * https://github.com/microsoft/TypeScript/issues/36216
    */
-  private get compiler(): R3TestBedCompiler {
+  private get compiler(): TestBedCompiler {
     if (this._compiler === null) {
       throw new Error(`Need to call TestBed.initTestEnvironment() first`);
     }
