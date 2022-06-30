@@ -16,7 +16,7 @@ Before working with the `HttpClientModule`, you should have a basic understandin
 
 *   TypeScript programming
 *   Usage of the HTTP protocol
-*   Angular app-design fundamentals, as described in [Angular Concepts](guide/architecture)
+*   Angular application-design fundamentals, as described in [Angular Concepts](guide/architecture)
 *   Observable techniques and operators.
     See the [Observables](guide/observables) guide.
 
@@ -109,6 +109,45 @@ The subscription callback performs minimal post-processing.
 It copies the data fields into the component's `config` object, which is data-bound in the component template for display.
 
 <code-example header="app/config/config.component.ts (showConfig v.1)" path="http/src/app/config/config.component.ts" region="v1"></code-example>
+
+<a id="always-subscribe"></a>
+
+### Starting the request
+
+For all `HttpClient` methods, the method doesn't begin its HTTP request until you call `subscribe()` on the observable the method returns.
+
+This is true for *all* `HttpClient` *methods*.
+
+<div class="alert is-helpful">
+
+The [`AsyncPipe`](api/common/AsyncPipe) subscribes and unsubscribes for you automatically.
+
+</div>
+
+All observables returned from `HttpClient` methods are *cold* by design.
+Execution of the HTTP request is *deferred*, letting you extend the observable with additional operations such as  `tap` and `catchError` before anything actually happens.
+
+Calling `subscribe()` triggers execution of the observable and causes `HttpClient` to compose and send the HTTP request to the server.
+
+Think of these observables as *blueprints* for actual HTTP requests.
+
+<div class="alert is-helpful">
+
+In fact, each `subscribe()` initiates a separate, independent execution of the observable.
+Subscribing twice results in two HTTP requests.
+
+<code-example format="javascript" language="javascript">
+
+const req = http.get&lt;Heroes&gt;('/api/heroes');
+// 0 requests made - .subscribe() not called.
+req.subscribe();
+// 1 request made.
+req.subscribe();
+// 2 requests made.
+
+</code-example>
+
+</div>
 
 <a id="typed-response"></a>
 
@@ -266,7 +305,7 @@ In this next example, a `DownloaderService` method reads a text file from the se
 
 `HttpClient.get()` returns a string rather than the default JSON because of the `responseType` option.
 
-The RxJS `tap` operator \(as in "wiretap"\) lets the code inspect both success and error values passing through the observable without disturbing them.
+The RxJS `tap` operator lets the code inspect both success and error values passing through the observable without disturbing them.
 
 A `download()` method in the `DownloaderComponent` initiates the request by subscribing to the service method.
 
@@ -379,43 +418,6 @@ Just calling `HeroesService.deleteHero()` does not initiate the DELETE request.
 
 <code-example path="http/src/app/heroes/heroes.component.ts" region="delete-hero-no-subscribe"></code-example>
 
-<a id="always-subscribe"></a>
-
-**Always *subscribe*.**
-
-An `HttpClient` method does not begin its HTTP request until you call `subscribe()` on the observable returned by that method.
-This is true for *all* `HttpClient` *methods*.
-
-<div class="alert is-helpful">
-
-The [`AsyncPipe`](api/common/AsyncPipe) subscribes \(and unsubscribes\) for you automatically.
-
-</div>
-
-All observables returned from `HttpClient` methods are *cold* by design.
-Execution of the HTTP request is *deferred*, letting you extend the observable with additional operations such as  `tap` and `catchError` before anything actually happens.
-
-Calling `subscribe(&hellip;)` triggers execution of the observable and causes `HttpClient` to compose and send the HTTP request to the server.
-
-Think of these observables as *blueprints* for actual HTTP requests.
-
-<div class="alert is-helpful">
-
-In fact, each `subscribe()` initiates a separate, independent execution of the observable.
-Subscribing twice results in two HTTP requests.
-
-<code-example format="javascript" language="javascript">
-
-const req = http.get&lt;Heroes&gt;('/api/heroes');
-// 0 requests made - .subscribe() not called.
-req.subscribe();
-// 1 request made.
-req.subscribe();
-// 2 requests made.
-
-</code-example>
-
-</div>
 
 ### Making a PUT request
 
@@ -502,7 +504,7 @@ Here is a do-nothing `noop` interceptor that passes the request through without 
 The `intercept` method transforms a request into an `Observable` that eventually returns the HTTP response.
 In this sense, each interceptor is fully capable of handling the request entirely by itself.
 
-Most interceptors inspect the request on the way in and forward the \(perhaps altered\) request to the `handle()` method of the `next` object which implements the [`HttpHandler`](api/common/http/HttpHandler) interface.
+Most interceptors inspect the request on the way in and forward the potentially altered request to the `handle()` method of the `next` object which implements the [`HttpHandler`](api/common/http/HttpHandler) interface.
 
 <code-example format="javascript" language="javascript">
 
@@ -532,7 +534,7 @@ This is a common middleware pattern found in frameworks such as Express.js.
 The `NoopInterceptor` is a service managed by Angular's [dependency injection (DI)](guide/dependency-injection) system.
 Like other services, you must provide the interceptor class before the app can use it.
 
-Because interceptors are \(optional\) dependencies of the `HttpClient` service, you must provide them in the same injector \(or a parent of the injector\) that provides `HttpClient`.
+Because interceptors are optional dependencies of the `HttpClient` service, you must provide them in the same injector or a parent of the injector that provides `HttpClient`.
 Interceptors provided *after* DI creates the `HttpClient` are ignored.
 
 This app provides `HttpClient` in the app's root injector, as a side-effect of importing the `HttpClientModule` in `AppModule`.
@@ -703,7 +705,7 @@ with the injected `MessageService`.
 <code-example header="app/http-interceptors/logging-interceptor.ts)" path="http/src/app/http-interceptors/logging-interceptor.ts" region="excerpt"></code-example>
 
 The RxJS `tap` operator captures whether the request succeeded or failed.
-The RxJS `finalize` operator is called when the response observable either errors or completes \(which it must\), and reports the outcome to the `MessageService`.
+The RxJS `finalize` operator is called when the response observable either returns an error or completes and reports the outcome to the `MessageService`.
 
 Neither `tap` nor `finalize` touch the values of the observable stream returned to the caller.
 
@@ -745,7 +747,7 @@ The `CachingInterceptor` in the following example demonstrates this approach.
     In this sample, only GET requests to the package search API are cacheable.
 
 *   If the request is not cacheable, the interceptor forwards the request to the next handler in the chain
-*   If a cacheable request is found in the cache, the interceptor returns an `of()` *observable* with the cached response, by-passing the `next` handler \(and all other interceptors downstream\)
+*   If a cacheable request is found in the cache, the interceptor returns an `of()` *observable* with the cached response, by-passing the `next` handler and all other interceptors downstream
 *   If a cacheable request is not in cache, the code calls `sendRequest()`.
     This function forwards the request to `next.handle()` which ultimately calls the server and returns the server's response.
 
@@ -763,7 +765,8 @@ The original response continues untouched back up through the chain of intercept
 Data services, such as `PackageSearchService`, are unaware that some of their `HttpClient` requests actually return cached responses.
 
 </div>
-  
+
+
 <a id="cache-refresh"></a>
 
 ### Using interceptors to request multiple values
@@ -788,8 +791,9 @@ The revised `CachingInterceptor` sets up a server request whether there's a cach
 The `results$` observable makes the request when subscribed.
 
 *   If there's no cached value, the interceptor returns `results$`.
-*   If there is a cached value, the code *pipes* the cached response onto `results$`, producing a recomposed observable that emits twice, the cached response first \(and immediately\), followed later by the response from the server.
-    Subscribers see a sequence of two responses.
+*   If there is a cached value, the code *pipes* the cached response onto `results$`. This produces a recomposed observable that emits two responses, so subscribers will see a sequence of these two responses:  
+  *   The cached response that's emitted immediately
+  *   The response from the server, that's emitted later
 
 <a id="report-progress"></a>
 
@@ -860,7 +864,7 @@ Rather than forward every `searchText` value directly to the injected `PackageSe
 
 | RxJS operators           | Details |
 |:---                      |:---     |
-| `debounceTime(500)`⁠      | Wait for the user to stop typing \(1/2 second in this case\). |
+| `debounceTime(500)`⁠      | Wait for the user to stop typing, which is 1/2 second in this case. |
 | `distinctUntilChanged()` | Wait until the search text changes.                           |
 | `switchMap()`⁠            | Send the search request to the service.                       |
 
@@ -877,7 +881,7 @@ See [Using interceptors to request multiple values](#cache-refresh) for more abo
 
 The `switchMap()` operator takes a function argument that returns an `Observable`.
 In the example, `PackageSearchService.search` returns an `Observable`, as other data service methods do.
-If a previous search request is still in-flight \(as when the network connection is poor\), the operator cancels that request and sends a new one.
+If a previous search request is still in-flight, such as when the network connection is poor, the operator cancels that request and sends a new one.
 
 <div class="alert is-helpful">
 
