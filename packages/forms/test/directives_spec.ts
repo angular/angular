@@ -54,7 +54,7 @@ class CustomValidatorDirective implements Validator {
         it('should throw when accessor is not provided as array', () => {
           expect(() => selectValueAccessor(dir, {} as any[]))
               .toThrowError(
-                  'Value accessor was not provided as an array for form control with unspecified name attribute. Check that the \`NG_VALUE_ACCESSOR\` token is configured as a \`multi: true\` provider.');
+                  'NG01200: Value accessor was not provided as an array for form control with unspecified name attribute. Check that the \`NG_VALUE_ACCESSOR\` token is configured as a \`multi: true\` provider.');
         });
 
         it('should return the default value accessor when no other provided', () => {
