@@ -53,4 +53,4 @@ See [Contributing to Angular](https://github.com/angular/angular/blob/main/CONTR
 for information about submission guidelines.
 
 Our community values respectful, supportive communication.
-Please consult and adhere to the [Code of Conduct](https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md "Contributor code of conduct").
+Please consult and adhere to the [Code of Conduct](https://github.com/angular/code-of-conduct/blob/main/CODE_OF_CONDUCT.md "Contributor code of conduct").
