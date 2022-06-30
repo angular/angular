@@ -163,13 +163,11 @@
     "packages/core/src/render3/interfaces/view.ts"
   ],
   [
-    "packages/core/testing/src/r3_test_bed_compiler.ts",
     "packages/core/testing/src/test_bed_common.ts",
-    "packages/core/testing/src/test_bed.ts",
-    "packages/core/testing/src/r3_test_bed.ts"
+    "packages/core/testing/src/test_bed.ts"
   ],
   [
-    "packages/core/testing/src/r3_test_bed.ts",
+    "packages/core/testing/src/test_bed_impl.ts",
     "packages/core/testing/src/test_bed.ts"
   ],
   [
