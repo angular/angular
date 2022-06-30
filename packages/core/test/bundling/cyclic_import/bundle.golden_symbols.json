@@ -699,6 +699,9 @@
     "name": "initTNodeFlags"
   },
   {
+    "name": "initializeInputAndOutputAliases"
+  },
+  {
     "name": "injectArgs"
   },
   {
@@ -964,6 +967,9 @@
   },
   {
     "name": "setInjectImplementation"
+  },
+  {
+    "name": "setInputsForProperty"
   },
   {
     "name": "setInputsFromAttrs"

@@ -912,7 +912,7 @@ function generatePropertyAliases(
  * Initializes data structures required to work with directive inputs and outputs.
  * Initialization is done for all directives matched on a given TNode.
  */
-function initializeInputAndOutputAliases(tView: TView, tNode: TNode): void {
+export function initializeInputAndOutputAliases(tView: TView, tNode: TNode): void {
   ngDevMode && assertFirstCreatePass(tView);
 
   const start = tNode.directiveStart;
@@ -1010,7 +1010,7 @@ export function elementPropertyInternal<T>(
 }
 
 /** If node is an OnPush component, marks its LView dirty. */
-function markDirtyIfOnPush(lView: LView, viewIndex: number): void {
+export function markDirtyIfOnPush(lView: LView, viewIndex: number): void {
   ngDevMode && assertLView(lView);
   const childComponentLView = getComponentLViewByIndex(viewIndex, lView);
   if (!(childComponentLView[FLAGS] & LViewFlags.CheckAlways)) {
@@ -1067,6 +1067,7 @@ export function instantiateRootComponent<T>(tView: TView, lView: LView, def: Com
             directiveIndex, rootTNode.directiveStart,
             'Because this is a root component the allocated expando should match the TNode component.');
     configureViewWithDirective(tView, rootTNode, lView, directiveIndex, def);
+    initializeInputAndOutputAliases(tView, rootTNode);
   }
   const directive =
       getNodeInjectable(lView, tView, rootTNode.directiveStart, rootTNode as TElementNode);

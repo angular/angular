@@ -8,8 +8,9 @@
 
 import {Renderer} from '@angular/core/src/render3/interfaces/renderer';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
+import {TestBed} from '@angular/core/testing';
 
-import {Component, Injector, Input, NgModuleRef, Output, RendererType2, ViewEncapsulation} from '../../src/core';
+import {ChangeDetectionStrategy, Component, Injector, Input, NgModuleRef, OnChanges, Output, RendererType2, SimpleChanges, Type, ViewEncapsulation} from '../../src/core';
 import {ComponentFactory} from '../../src/linker/component_factory';
 import {RendererFactory2} from '../../src/render/api';
 import {injectComponentFactoryResolver} from '../../src/render3/component_ref';
@@ -276,6 +277,97 @@ describe('ComponentFactory', () => {
       const hostNode = document.createElement('div');
       const componentRef = cf.create(injector, undefined, hostNode);
       expect(hostNode.className).toEqual('HOST_COMPONENT HOST_RENDERER');
+    });
+  });
+
+  describe('setInput', () => {
+    it('should allow setting inputs on the ComponentRef', () => {
+      const inputChangesLog: string[] = [];
+
+      @Component({template: `{{in}}`})
+      class DynamicCmp implements OnChanges {
+        ngOnChanges(changes: SimpleChanges): void {
+          const inChange = changes['in'];
+          inputChangesLog.push(
+              `${inChange.previousValue}:${inChange.currentValue}:${inChange.firstChange}`);
+        }
+
+        @Input() in : string|undefined;
+      }
+
+      const fixture = TestBed.createComponent(DynamicCmp);
+
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('');
+      expect(inputChangesLog).toEqual([]);
+
+      fixture.componentRef.setInput('in', 'first');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('first');
+      expect(inputChangesLog).toEqual(['undefined:first:true']);
+
+      fixture.componentRef.setInput('in', 'second');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('second');
+      expect(inputChangesLog).toEqual(['undefined:first:true', 'first:second:false']);
+    });
+
+    it('should allow setting mapped inputs on the ComponentRef', () => {
+      @Component({template: `{{in}}`})
+      class DynamicCmp {
+        @Input('publicName') in : string|undefined;
+      }
+
+      const fixture = TestBed.createComponent(DynamicCmp);
+
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      fixture.componentRef.setInput('publicName', 'in value');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('in value');
+
+      fixture.componentRef.setInput('in', 'should not change');
+      fixture.detectChanges();
+      // The value doesn't change, since `in` is an internal name of the input.
+      expect(fixture.nativeElement.textContent).toBe('in value');
+    });
+
+    it('should log or throw error on unknown inputs', () => {
+      @Component({template: ``})
+      class NoInputsCmp {
+      }
+
+      const fixture = TestBed.createComponent(NoInputsCmp);
+      fixture.detectChanges();
+
+      spyOn(console, 'error');
+      fixture.componentRef.setInput('doesNotExist', '');
+
+      const msgL1 =
+          `NG0303: Can't set value of the 'doesNotExist' input on the 'NoInputsCmp' component. `;
+      const msgL2 =
+          `Make sure that the 'doesNotExist' property is annotated with @Input() or a mapped @Input('doesNotExist') exists.`;
+      expect(console.error).toHaveBeenCalledWith(msgL1 + msgL2);
+    });
+
+    it('should mark components for check when setting an input on a ComponentRef', () => {
+      @Component({
+        template: `{{in}}`,
+        changeDetection: ChangeDetectionStrategy.OnPush,
+      })
+      class DynamicCmp {
+        @Input() in : string|undefined;
+      }
+
+      const fixture = TestBed.createComponent(DynamicCmp);
+
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      fixture.componentRef.setInput('in', 'pushed');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('pushed');
     });
   });
 });

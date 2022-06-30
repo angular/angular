@@ -474,6 +474,12 @@
     "name": "forwardRef"
   },
   {
+    "name": "generateInitialInputs"
+  },
+  {
+    "name": "generatePropertyAliases"
+  },
+  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -631,6 +637,9 @@
   },
   {
     "name": "isImportedNgModuleProviders"
+  },
+  {
+    "name": "isInlineTemplate"
   },
   {
     "name": "isLContainer"

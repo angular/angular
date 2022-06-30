@@ -993,6 +993,9 @@
     "name": "initTNodeFlags"
   },
   {
+    "name": "initializeInputAndOutputAliases"
+  },
+  {
     "name": "injectArgs"
   },
   {
@@ -1159,6 +1162,9 @@
   },
   {
     "name": "markAsComponentHost"
+  },
+  {
+    "name": "markDirtyIfOnPush"
   },
   {
     "name": "markDuplicates"
