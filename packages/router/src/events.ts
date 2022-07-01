@@ -206,7 +206,10 @@ export class NavigationCancel extends RouterEvent {
       id: number,
       /** @docsNotRequired */
       url: string,
-      /** @docsNotRequired */
+      /**
+       * A description of why the navigation was cancelled. For debug purposes only. Use `code`
+       * instead for a stable cancellation reason that can be used in production.
+       */
       public reason: string,
       /**
        * A code to indicate why the navigation was canceled. This cancellation code is stable for

@@ -354,7 +354,6 @@ export class NavigationCancel extends RouterEvent {
     reason: string,
     code?: NavigationCancellationCode | undefined);
     readonly code?: NavigationCancellationCode | undefined;
-    // (undocumented)
     reason: string;
     // (undocumented)
     toString(): string;
