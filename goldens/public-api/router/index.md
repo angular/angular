@@ -126,16 +126,28 @@ export interface CanActivateChild {
 }
 
 // @public
+export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+
+// @public
+export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+
+// @public
 export interface CanDeactivate<T> {
     // (undocumented)
     canDeactivate(component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState?: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 }
 
 // @public
+export type CanDeactivateFn<T> = (component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState?: RouterStateSnapshot) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+
+// @public
 export interface CanLoad {
     // (undocumented)
     canLoad(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 }
+
+// @public
+export type CanLoadFn = (route: Route, segments: UrlSegment[]) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
 
 // @public
 export interface CanMatch {
@@ -505,7 +517,7 @@ export interface Resolve<T> {
 
 // @public
 export type ResolveData = {
-    [key: string | symbol]: any;
+    [key: string | symbol]: any | ResolveFn<unknown>;
 };
 
 // @public
@@ -526,6 +538,9 @@ export class ResolveEnd extends RouterEvent {
 }
 
 // @public
+export type ResolveFn<T> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => Observable<T> | Promise<T> | T;
+
+// @public
 export class ResolveStart extends RouterEvent {
     constructor(
     id: number,
@@ -544,11 +559,11 @@ export class ResolveStart extends RouterEvent {
 
 // @public
 export interface Route {
-    canActivate?: any[];
-    canActivateChild?: any[];
-    canDeactivate?: any[];
-    canLoad?: any[];
-    canMatch?: Array<Type<CanMatch> | InjectionToken<CanMatchFn>>;
+    canActivate?: Array<CanActivateFn | any>;
+    canActivateChild?: Array<CanActivateChildFn | any>;
+    canDeactivate?: Array<CanDeactivateFn<any> | any>;
+    canLoad?: Array<CanLoadFn | any>;
+    canMatch?: Array<Type<CanMatch> | InjectionToken<CanMatchFn> | CanMatchFn>;
     children?: Routes;
     component?: Type<any>;
     data?: Data;
@@ -562,7 +577,7 @@ export interface Route {
     redirectTo?: string;
     resolve?: ResolveData;
     runGuardsAndResolvers?: RunGuardsAndResolvers;
-    title?: string | Type<Resolve<string>>;
+    title?: string | Type<Resolve<string>> | ResolveFn<string>;
 }
 
 // @public

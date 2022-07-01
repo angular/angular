@@ -1314,7 +1314,7 @@
     "name": "getTView"
   },
   {
-    "name": "getToken"
+    "name": "getTokenOrFunctionIdentity"
   },
   {
     "name": "getViewRefs"

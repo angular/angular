@@ -7,6 +7,7 @@
  */
 
 import {Location} from '@angular/common';
+import {EnvironmentInjector} from '@angular/core';
 import {inject, TestBed} from '@angular/core/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {of} from 'rxjs';
@@ -101,7 +102,6 @@ describe('Router', () => {
 
   describe('PreActivation', () => {
     const serializer = new DefaultUrlSerializer();
-    const inj = {get: (token: any) => () => `${token}_value`};
     let empty: RouterStateSnapshot;
     let logger: Logger;
     let events: any[];
@@ -169,7 +169,7 @@ describe('Router', () => {
 
         of(testTransition)
             .pipe(checkGuardsOperator(
-                TestBed,
+                TestBed.inject(EnvironmentInjector),
                 (evt) => {
                   events.push(evt);
                 }))
@@ -214,7 +214,7 @@ describe('Router', () => {
 
         of(testTransition)
             .pipe(checkGuardsOperator(
-                TestBed,
+                TestBed.inject(EnvironmentInjector),
                 (evt) => {
                   events.push(evt);
                 }))
@@ -257,7 +257,7 @@ describe('Router', () => {
 
         of(testTransition)
             .pipe(checkGuardsOperator(
-                TestBed,
+                TestBed.inject(EnvironmentInjector),
                 (evt) => {
                   events.push(evt);
                 }))
@@ -313,7 +313,7 @@ describe('Router', () => {
 
         of(testTransition)
             .pipe(checkGuardsOperator(
-                TestBed,
+                TestBed.inject(EnvironmentInjector),
                 (evt) => {
                   events.push(evt);
                 }))
@@ -356,7 +356,7 @@ describe('Router', () => {
             new TreeNode(
                 empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
 
-        checkGuards(futureState, empty, TestBed, (result) => {
+        checkGuards(futureState, empty, TestBed.inject(EnvironmentInjector), (result) => {
           expect(result).toBe(true);
           expect(logger.logs).toEqual([CA_CHILD, CAC_CHILD, CA_GRANDCHILD]);
         });
@@ -383,7 +383,7 @@ describe('Router', () => {
             new TreeNode(
                 empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
 
-        checkGuards(futureState, empty, TestBed, (result) => {
+        checkGuards(futureState, empty, TestBed.inject(EnvironmentInjector), (result) => {
           expect(result).toBe(false);
           expect(logger.logs).toEqual([CA_CHILD_FALSE]);
         });
@@ -410,7 +410,7 @@ describe('Router', () => {
             new TreeNode(
                 empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
 
-        checkGuards(futureState, empty, TestBed, (result) => {
+        checkGuards(futureState, empty, TestBed.inject(EnvironmentInjector), (result) => {
           expect(result).toBe(false);
           expect(logger.logs).toEqual([CA_CHILD, CAC_CHILD_FALSE]);
         });
@@ -444,7 +444,7 @@ describe('Router', () => {
             new TreeNode(
                 empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
 
-        checkGuards(futureState, currentState, TestBed, (result) => {
+        checkGuards(futureState, currentState, TestBed.inject(EnvironmentInjector), (result) => {
           expect(logger.logs).toEqual([CDA_CHILD, CA_CHILD, CAC_CHILD, CA_GRANDCHILD]);
         });
       });
@@ -474,7 +474,7 @@ describe('Router', () => {
             new TreeNode(
                 empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
 
-        checkGuards(futureState, currentState, TestBed, (result) => {
+        checkGuards(futureState, currentState, TestBed.inject(EnvironmentInjector), (result) => {
           expect(result).toBe(false);
           expect(logger.logs).toEqual([CDA_CHILD_FALSE]);
         });
@@ -509,7 +509,7 @@ describe('Router', () => {
             new TreeNode(
                 empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
 
-        checkGuards(futureState, currentState, TestBed, (result) => {
+        checkGuards(futureState, currentState, TestBed.inject(EnvironmentInjector), (result) => {
           expect(result).toBe(true);
           expect(logger.logs).toEqual([
             CDA_GRANDCHILD, CDA_CHILD, CA_CHILD, CAC_CHILD, CA_GRANDCHILD
@@ -517,7 +517,7 @@ describe('Router', () => {
         });
 
         logger.empty();
-        checkGuards(currentState, futureState, TestBed, (result) => {
+        checkGuards(currentState, futureState, TestBed.inject(EnvironmentInjector), (result) => {
           expect(result).toBe(true);
           expect(logger.logs).toEqual([]);
         });
@@ -542,7 +542,7 @@ describe('Router', () => {
           const futureState = new (RouterStateSnapshot as any)(
               'url', new TreeNode(empty.root, [new TreeNode(childSnapshot, [])]));
 
-          checkGuards(futureState, empty, TestBed, (result) => {
+          checkGuards(futureState, empty, TestBed.inject(EnvironmentInjector), (result) => {
             expect(serializer.serialize(result as UrlTree)).toBe('/' + CA_CHILD_REDIRECT);
             expect(logger.logs).toEqual([CA_CHILD_REDIRECT]);
           });
@@ -567,7 +567,7 @@ describe('Router', () => {
                 new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])
               ]));
 
-          checkGuards(futureState, empty, TestBed, (result) => {
+          checkGuards(futureState, empty, TestBed.inject(EnvironmentInjector), (result) => {
             expect(serializer.serialize(result as UrlTree)).toBe('/' + CAC_CHILD_REDIRECT);
             expect(logger.logs).toEqual([CAC_CHILD_REDIRECT]);
           });
@@ -592,7 +592,7 @@ describe('Router', () => {
                 new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])
               ]));
 
-          checkGuards(futureState, empty, TestBed, (result) => {
+          checkGuards(futureState, empty, TestBed.inject(EnvironmentInjector), (result) => {
             expect(serializer.serialize(result as UrlTree)).toBe('/' + CA_GRANDCHILD_REDIRECT);
             expect(logger.logs).toEqual([CAC_CHILD, CA_GRANDCHILD_REDIRECT]);
           });
@@ -623,7 +623,7 @@ describe('Router', () => {
                 new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])
               ]));
 
-          checkGuards(futureState, currentState, TestBed, (result) => {
+          checkGuards(futureState, currentState, TestBed.inject(EnvironmentInjector), (result) => {
             expect(serializer.serialize(result as UrlTree)).toBe('/' + CDA_CHILD_REDIRECT);
             expect(logger.logs).toEqual([CDA_CHILD_REDIRECT]);
           });
@@ -638,12 +638,12 @@ describe('Router', () => {
          *          \
          *           a
          */
-        const r = {data: 'resolver'};
+        const r = {data: () => 'resolver_value'};
         const n = createActivatedRouteSnapshot({component: 'a', resolve: r});
         const s = new (RouterStateSnapshot as any)(
             'url', new TreeNode(empty.root, [new TreeNode(n, [])]));
 
-        checkResolveData(s, empty, inj, () => {
+        checkResolveData(s, empty, TestBed.inject(EnvironmentInjector), () => {
           expect(s.root.firstChild!.data).toEqual({data: 'resolver_value'});
         });
       });
@@ -656,7 +656,7 @@ describe('Router', () => {
          *            \
          *             b (resolve: childResolve)
          */
-        const parentResolve = {data: 'resolver'};
+        const parentResolve = {data: () => 'resolver_value'};
         const childResolve = {};
 
         const parent = createActivatedRouteSnapshot({component: null!, resolve: parentResolve});
@@ -665,9 +665,7 @@ describe('Router', () => {
         const s = new (RouterStateSnapshot as any)(
             'url', new TreeNode(empty.root, [new TreeNode(parent, [new TreeNode(child, [])])]));
 
-        const inj = {get: (token: any) => () => Promise.resolve(`${token}_value`)};
-
-        checkResolveData(s, empty, inj, () => {
+        checkResolveData(s, empty, TestBed.inject(EnvironmentInjector), () => {
           expect(s.root.firstChild!.firstChild!.data).toEqual({data: 'resolver_value'});
         });
       });
@@ -680,19 +678,19 @@ describe('Router', () => {
          *                                  \
          *                                   n22 (resolve: r2)
          */
-        const r1 = {data: 'resolver1'};
-        const r2 = {data: 'resolver2'};
+        const r1 = {data: () => 'resolver1_value'};
+        const r2 = {data: () => 'resolver2_value'};
 
         const n1 = createActivatedRouteSnapshot({component: 'a', resolve: r1});
         const s1 = new (RouterStateSnapshot as any)(
             'url', new TreeNode(empty.root, [new TreeNode(n1, [])]));
-        checkResolveData(s1, empty, inj, () => {});
+        checkResolveData(s1, empty, TestBed.inject(EnvironmentInjector), () => {});
 
         const n21 = createActivatedRouteSnapshot({component: 'a', resolve: r1});
         const n22 = createActivatedRouteSnapshot({component: 'b', resolve: r2});
         const s2 = new (RouterStateSnapshot as any)(
             'url', new TreeNode(empty.root, [new TreeNode(n21, [new TreeNode(n22, [])])]));
-        checkResolveData(s2, s1, inj, () => {
+        checkResolveData(s2, s1, TestBed.inject(EnvironmentInjector), () => {
           expect(s2.root.firstChild!.data).toEqual({data: 'resolver1_value'});
           expect(s2.root.firstChild!.firstChild!.data).toEqual({data: 'resolver2_value'});
         });
@@ -702,7 +700,8 @@ describe('Router', () => {
 });
 
 function checkResolveData(
-    future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any, check: any): void {
+    future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: EnvironmentInjector,
+    check: any): void {
   // Since we only test the guards and their resolve data function, we don't need to provide
   // a full navigation transition object with all properties set.
   of({guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts())} as
@@ -714,7 +713,7 @@ function checkResolveData(
 }
 
 function checkGuards(
-    future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any,
+    future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: EnvironmentInjector,
     check: (result: boolean|UrlTree) => void): void {
   // Since we only test the guards, we don't need to provide a full navigation
   // transition object with all properties set.

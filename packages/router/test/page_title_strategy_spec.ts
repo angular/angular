@@ -42,6 +42,13 @@ describe('title strategy', () => {
          expect(document.title).toBe('resolved title');
        }));
 
+    it('sets page title from resolved data function', fakeAsync(() => {
+         router.resetConfig([{path: 'home', title: () => 'resolved title', component: BlankCmp}]);
+         router.navigateByUrl('home');
+         tick();
+         expect(document.title).toBe('resolved title');
+       }));
+
     it('sets title with child routes', fakeAsync(() => {
          router.resetConfig([{
            path: 'home',
