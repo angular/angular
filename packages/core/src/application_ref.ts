@@ -342,6 +342,8 @@ export function getPlatform(): PlatformRef|null {
 
 /**
  * Provides additional options to the bootstraping process.
+ *
+ * @publicApi
  */
 export interface BootstrapOptions {
   /**
