@@ -9,7 +9,7 @@
   "semanticCommitScope": "",
   "semanticCommitType": "build",
   "dependencyDashboard": true,
-  "commitBodyTable": true,
+  "commitBody": "See associated pull request for more information.",
   "separateMajorMinor": false,
   "prHourlyLimit": 3,
   "timezone": "America/Tijuana",
