@@ -17,7 +17,6 @@ import {Builders} from '@schematics/angular/utility/workspace-models';
 
 import {Schema} from './schema';
 
-
 export const localizePolyfill = `import '@angular/localize/init';`;
 
 function getRelevantTargetDefinitions(
@@ -115,14 +114,18 @@ function moveToDependencies(host: Tree, context: SchematicContext) {
 
 export default function(options: Schema): Rule {
   return async (host: Tree) => {
-    if (!options.name) {
-      throw new SchematicsException('Option "name" is required.');
+    // We favor the name option because the project option has a
+    // smart default which can be populated even when unspecified by the user.
+    const projectName = options.name ?? options.project;
+
+    if (!projectName) {
+      throw new SchematicsException('Option "project" is required.');
     }
 
     const workspace = await getWorkspace(host);
-    const project: workspaces.ProjectDefinition|undefined = workspace.projects.get(options.name);
+    const project: workspaces.ProjectDefinition|undefined = workspace.projects.get(projectName);
     if (!project) {
-      throw new SchematicsException(`Invalid project name (${options.name})`);
+      throw new SchematicsException(`Invalid project name (${projectName})`);
     }
 
     const localizeStr =
@@ -137,7 +140,7 @@ ${localizePolyfill}
       prependToTargetFiles(project, Builders.Server, 'main', localizeStr),
       // If `$localize` will be used at runtime then must install `@angular/localize`
       // into `dependencies`, rather than the default of `devDependencies`.
-      options.useAtRuntime ? moveToDependencies : noop()
+      options.useAtRuntime ? moveToDependencies : noop(),
     ]);
   };
 }

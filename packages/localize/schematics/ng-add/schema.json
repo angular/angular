@@ -4,12 +4,17 @@
   "title": "Angular Localize Ng Add Schema",
   "type": "object",
   "properties": {
-    "name": {
+    "project": {
       "type": "string",
       "description": "The name of the project.",
       "$default": {
         "$source": "projectName"
       }
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the project.",
+      "x-deprecated": "Use the \"project\" option instead."
     },
     "useAtRuntime": {
       "type": "boolean",
