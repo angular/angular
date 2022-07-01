@@ -698,6 +698,14 @@
     "bio": "Chau works to bring the best engineering practices to web application production. He is the creator of AutoMapper TypeScript, @ngneat/tailwind for Angular, and a core member of NestJS. Also, he is one of Angular Vietnam’s founders. He blogs, lives stream, and maintains open-source projects.",
     "groups": ["GDE"]
   },
+  "nicobytes": {
+    "name": "Nicolas Molina",
+    "picture": "nicobytes.jpg",
+    "twitter": "nicobytes",
+    "website": "https://nicobytes.com",
+    "bio": "I'm Software Senior Developer. With more than 8 years of professional software development experience focusing in Web Development, Tech Management and skills for problem-solving. I'm passionate about sharing my knowledge with the community about Web Development and I do this through code contributions, videos, conferences, articles and, creating online content therefore I got recognized by Google like an GDE (Google Developer Expert) in Angular and by Microsoft like an MVP (Most Value Professional).",
+    "groups": ["GDE"]
+  },
   "nirkaufman": {
     "name": "Nir Kaufman",
     "picture": "nirkaufman.jpg",
