@@ -7,10 +7,14 @@
     "project": {
       "type": "string",
       "description": "The name of the project.",
-      "alias": "name",
       "$default": {
         "$source": "projectName"
       }
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the project.",
+      "x-deprecated": "Use the \"project\" option instead."
     },
     "useAtRuntime": {
       "type": "boolean",

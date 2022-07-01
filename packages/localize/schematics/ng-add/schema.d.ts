@@ -12,6 +12,11 @@ export interface Schema {
    */
   project?: string;
   /**
+   * The name of the project.
+   * @deprecated use the `project` option instead.
+   */
+  name?: string;
+  /**
    * Will this project use $localize at runtime?
    *
    * If true then the dependency is included in the `dependencies` section of package.json, rather
