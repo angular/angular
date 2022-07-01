@@ -13,6 +13,7 @@ import {copyObj, interpolateParams, iteratorToArray} from '../util';
 
 import {StyleAst, TransitionAst} from './animation_ast';
 import {buildAnimationTimelines} from './animation_timeline_builder';
+import {AnimationTimelineInstruction} from './animation_timeline_instruction';
 import {TransitionMatcherFn} from './animation_transition_expr';
 import {AnimationTransitionInstruction, createTransitionInstruction} from './animation_transition_instruction';
 import {ElementInstructionMap} from './element_instruction_map';
@@ -91,10 +92,62 @@ export class AnimationTransitionFactory {
       }
     });
 
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      checkNonAnimatableInTimelines(timelines, this._triggerName, driver);
+    }
+
     const queriedElementsList = iteratorToArray(queriedElements.values());
     return createTransitionInstruction(
         element, this._triggerName, currentState, nextState, isRemoval, currentStateStyles,
         nextStateStyles, timelines, queriedElementsList, preStyleMap, postStyleMap, totalTime);
+  }
+}
+
+/**
+ * Checks inside a set of timelines if they try to animate a css property which is not considered
+ * animatable, in that case it prints a warning on the console.
+ * Besides that the function doesn't have any other effect.
+ *
+ * Note: this check is done here after the timelines are built instead of doing on a lower level so
+ * that we can make sure that the warning appears only once per instruction (we can aggregate here
+ * all the issues instead of finding them separately).
+ *
+ * @param timelines The built timelines for the current instruction.
+ * @param triggerName The name of the trigger for the current instruction.
+ * @param driver Animation driver used to perform the check.
+ *
+ */
+function checkNonAnimatableInTimelines(
+    timelines: AnimationTimelineInstruction[], triggerName: string, driver: AnimationDriver): void {
+  if (!driver.validateAnimatableStyleProperty) {
+    return;
+  }
+
+  const invalidNonAnimatableProps = new Set<string>();
+
+  timelines.forEach(({keyframes}) => {
+    const nonAnimatablePropsInitialValues = new Map<string, string|number>();
+    keyframes.forEach(keyframe => {
+      for (const [prop, value] of keyframe.entries()) {
+        if (!driver.validateAnimatableStyleProperty!(prop)) {
+          if (nonAnimatablePropsInitialValues.has(prop) && !invalidNonAnimatableProps.has(prop)) {
+            const propInitialValue = nonAnimatablePropsInitialValues.get(prop);
+            if (propInitialValue !== value) {
+              invalidNonAnimatableProps.add(prop);
+            }
+          } else {
+            nonAnimatablePropsInitialValues.set(prop, value);
+          }
+        }
+      }
+    });
+  });
+
+  if (invalidNonAnimatableProps.size > 0) {
+    console.warn(
+        `Warning: The animation trigger "${triggerName}" is attempting to animate the following` +
+        ' not animatable properties: ' + Array.from(invalidNonAnimatableProps).join(', ') + '\n' +
+        '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)');
   }
 }
 
