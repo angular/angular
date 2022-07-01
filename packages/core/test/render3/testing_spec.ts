@@ -44,7 +44,7 @@ describe('testing', () => {
   describe('requestAnimationFrame', () => {
     it('should have requestAnimationFrame', (done) => {
       // In Browser we have requestAnimationFrame, but verify that we also have it node.js
-      requestAnimationFrame(done);
+      requestAnimationFrame(() => done());
     });
   });
 });

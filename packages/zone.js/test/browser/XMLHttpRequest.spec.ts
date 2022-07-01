@@ -334,15 +334,25 @@ describe('XMLHttpRequest', function() {
      function(done) {
        testZone.run(function() {
          const req = new XMLHttpRequest();
+
          req.open('get', '/', true);
          req.send();
+
+         let count = 0;
          const listener = function(ev: any) {
            if (req.readyState >= 2) {
+             const isInitial = count++ === 0;
+
              expect(() => {
+               // this triggers a synchronous dispatch of the state change event.
                req.abort();
              }).not.toThrow();
+
              req.removeEventListener('readystatechange', listener);
-             done();
+
+             if (isInitial) {
+               done();
+             }
            }
          };
          req.addEventListener('readystatechange', listener);
