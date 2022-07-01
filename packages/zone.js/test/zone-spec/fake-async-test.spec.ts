@@ -752,84 +752,86 @@ describe('FakeAsyncTestZoneSpec', () => {
     const functions =
         ['requestAnimationFrame', 'webkitRequestAnimationFrame', 'mozRequestAnimationFrame'];
     functions.forEach((fnName) => {
-      describe(fnName, ifEnvSupports(fnName, () => {
-                 it('should schedule a requestAnimationFrame with timeout of 16ms', () => {
-                   fakeAsyncTestZone.run(() => {
-                     let ran = false;
-                     requestAnimationFrame(() => {
-                       ran = true;
-                     });
+      if ((global as any)[fnName] !== undefined) {
+        describe(fnName, () => {
+          it('should schedule a requestAnimationFrame with timeout of 16ms', () => {
+            fakeAsyncTestZone.run(() => {
+              let ran = false;
+              requestAnimationFrame(() => {
+                ran = true;
+              });
 
-                     testZoneSpec.tick(6);
-                     expect(ran).toEqual(false);
+              testZoneSpec.tick(6);
+              expect(ran).toEqual(false);
 
-                     testZoneSpec.tick(10);
-                     expect(ran).toEqual(true);
-                   });
-                 });
-                 it('does not count as a pending timer', () => {
-                   fakeAsyncTestZone.run(() => {
-                     requestAnimationFrame(() => {});
-                   });
-                   expect(testZoneSpec.pendingTimers.length).toBe(0);
-                   expect(testZoneSpec.pendingPeriodicTimers.length).toBe(0);
-                 });
-                 it('should cancel a scheduled requestAnimatiomFrame', () => {
-                   fakeAsyncTestZone.run(() => {
-                     let ran = false;
-                     const id = requestAnimationFrame(() => {
-                       ran = true;
-                     });
+              testZoneSpec.tick(10);
+              expect(ran).toEqual(true);
+            });
+          });
+          it('does not count as a pending timer', () => {
+            fakeAsyncTestZone.run(() => {
+              requestAnimationFrame(() => {});
+            });
+            expect(testZoneSpec.pendingTimers.length).toBe(0);
+            expect(testZoneSpec.pendingPeriodicTimers.length).toBe(0);
+          });
+          it('should cancel a scheduled requestAnimatiomFrame', () => {
+            fakeAsyncTestZone.run(() => {
+              let ran = false;
+              const id = requestAnimationFrame(() => {
+                ran = true;
+              });
 
-                     testZoneSpec.tick(6);
-                     expect(ran).toEqual(false);
+              testZoneSpec.tick(6);
+              expect(ran).toEqual(false);
 
-                     cancelAnimationFrame(id);
+              cancelAnimationFrame(id);
 
-                     testZoneSpec.tick(10);
-                     expect(ran).toEqual(false);
-                   });
-                 });
-                 it('is not flushed when flushPeriodic is false', () => {
-                   let ran = false;
-                   fakeAsyncTestZone.run(() => {
-                     requestAnimationFrame(() => {
-                       ran = true;
-                     });
-                     testZoneSpec.flush(20);
-                     expect(ran).toEqual(false);
-                   });
-                 });
-                 it('is flushed when flushPeriodic is true', () => {
-                   let ran = false;
-                   fakeAsyncTestZone.run(() => {
-                     requestAnimationFrame(() => {
-                       ran = true;
-                     });
-                     const elapsed = testZoneSpec.flush(20, true);
-                     expect(elapsed).toEqual(16);
-                     expect(ran).toEqual(true);
-                   });
-                 });
-                 it('should pass timestamp as parameter', () => {
-                   let timestamp = 0;
-                   let timestamp1 = 0;
-                   fakeAsyncTestZone.run(() => {
-                     requestAnimationFrame((ts) => {
-                       timestamp = ts;
-                       requestAnimationFrame(ts1 => {
-                         timestamp1 = ts1;
-                       });
-                     });
-                     const elapsed = testZoneSpec.flush(20, true);
-                     const elapsed1 = testZoneSpec.flush(20, true);
-                     expect(elapsed).toEqual(16);
-                     expect(elapsed1).toEqual(16);
-                     expect(timestamp).toEqual(16);
-                     expect(timestamp1).toEqual(32);
-                   });
-                 });
-               }, emptyRun));
+              testZoneSpec.tick(10);
+              expect(ran).toEqual(false);
+            });
+          });
+          it('is not flushed when flushPeriodic is false', () => {
+            let ran = false;
+            fakeAsyncTestZone.run(() => {
+              requestAnimationFrame(() => {
+                ran = true;
+              });
+              testZoneSpec.flush(20);
+              expect(ran).toEqual(false);
+            });
+          });
+          it('is flushed when flushPeriodic is true', () => {
+            let ran = false;
+            fakeAsyncTestZone.run(() => {
+              requestAnimationFrame(() => {
+                ran = true;
+              });
+              const elapsed = testZoneSpec.flush(20, true);
+              expect(elapsed).toEqual(16);
+              expect(ran).toEqual(true);
+            });
+          });
+          it('should pass timestamp as parameter', () => {
+            let timestamp = 0;
+            let timestamp1 = 0;
+            fakeAsyncTestZone.run(() => {
+              requestAnimationFrame((ts) => {
+                timestamp = ts;
+                requestAnimationFrame(ts1 => {
+                  timestamp1 = ts1;
+                });
+              });
+              const elapsed = testZoneSpec.flush(20, true);
+              const elapsed1 = testZoneSpec.flush(20, true);
+              expect(elapsed).toEqual(16);
+              expect(elapsed1).toEqual(16);
+              expect(timestamp).toEqual(16);
+              expect(timestamp1).toEqual(32);
+            });
+          });
+        });
+      }
     });
   });
 
