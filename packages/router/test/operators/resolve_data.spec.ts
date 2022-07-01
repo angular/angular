@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '@angular/core';
+import {EnvironmentInjector, Injector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, interval, NEVER, of} from 'rxjs';
 import {TestScheduler} from 'rxjs/testing';
@@ -15,7 +15,7 @@ import {resolveData} from '../../src/operators/resolve_data';
 
 describe('resolveData operator', () => {
   let testScheduler: TestScheduler;
-  let injector: Injector;
+  let injector: EnvironmentInjector;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -32,7 +32,7 @@ describe('resolveData operator', () => {
     testScheduler = new TestScheduler(assertDeepEquals);
   });
   beforeEach(() => {
-    injector = TestBed.inject<Injector>(Injector);
+    injector = TestBed.inject(EnvironmentInjector);
   });
 
   it('should re-emit updated value from source after all resolvers emit and complete', () => {

@@ -256,6 +256,7 @@ export {
 } from './render3/jit/pipe';
 export {
   isStandalone as ɵisStandalone,
+  isInjectable as ɵisInjectable,
 } from './render3/jit/module';
 export { Profiler as ɵProfiler, ProfilerEvent as ɵProfilerEvent } from './render3/profiler';
 export {

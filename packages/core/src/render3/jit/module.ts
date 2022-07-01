@@ -7,6 +7,7 @@
  */
 
 import {getCompilerFacade, JitCompilerUsage, R3InjectorMetadataFacade} from '../../compiler/compiler_facade';
+import {ProviderToken} from '../../di';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {NG_INJ_DEF} from '../../di/interface/defs';
 import {ModuleWithProviders} from '../../di/interface/provider';
@@ -200,6 +201,10 @@ export function compileNgModuleDefs(
 export function isStandalone<T>(type: Type<T>) {
   const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
   return def !== null ? def.standalone : false;
+}
+
+export function isInjectable(token: ProviderToken<unknown>) {
+  return (token as any).ɵprov !== undefined;
 }
 
 export function generateStandaloneInDeclarationsError(type: Type<any>, location: string) {

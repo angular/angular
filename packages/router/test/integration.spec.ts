@@ -8,16 +8,16 @@
 
 import {CommonModule, HashLocationStrategy, Location, LocationStrategy} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
-import {ChangeDetectionStrategy, Component, EventEmitter, Inject, Injectable, InjectionToken, NgModule, NgModuleRef, NgZone, OnDestroy, ViewChild, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EnvironmentInjector, inject as coreInject, Inject, Injectable, InjectionToken, NgModule, NgModuleRef, NgZone, OnDestroy, ViewChild, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkWithHref, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
-import {EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
-import {delay, filter, first, map, mapTo, tap} from 'rxjs/operators';
+import {concat, defer, EMPTY, from, Observable, Observer, of, Subscription} from 'rxjs';
+import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/operators';
 
-import {CanMatch, CanMatchFn} from '../src/models';
-import {forEach} from '../src/utils/collection';
+import {CanActivateChildFn, CanActivateFn, CanMatch, CanMatchFn, ResolveFn} from '../src/models';
+import {forEach, wrapIntoObservable} from '../src/utils/collection';
 import {getLoadedRoutes} from '../src/utils/config';
 import {RouterTestingModule} from '../testing';
 
@@ -1028,7 +1028,11 @@ describe('Integration', () => {
          router.urlUpdateStrategy = 'eager';
          router.resetConfig([
            {path: '', component: BlankCmp},
-           {path: 'simple', component: SimpleCmp, canActivate: [AuthGuard]},
+           {
+             path: 'simple',
+             component: SimpleCmp,
+             canActivate: [() => coreInject(AuthGuard).canActivate()]
+           },
          ]);
          const fixture = createRoot(router, RootCmp);
 
@@ -1053,7 +1057,11 @@ describe('Integration', () => {
          router.urlUpdateStrategy = 'eager';
          router.resetConfig([
            {path: '', component: BlankCmp},
-           {path: 'simple', component: SimpleCmp, canActivate: [DelayedGuard]},
+           {
+             path: 'simple',
+             component: SimpleCmp,
+             canActivate: [() => coreInject(DelayedGuard).canActivate()]
+           },
          ]);
          const fixture = createRoot(router, RootCmp);
 
@@ -1242,7 +1250,11 @@ describe('Integration', () => {
          const fixture = createRoot(router, RootCmp);
 
          router.resetConfig([
-           {path: 'blocked', component: BlankCmp, canActivate: [RedirectingGuard]},
+           {
+             path: 'blocked',
+             component: BlankCmp,
+             canActivate: [() => coreInject(RedirectingGuard).canActivate()]
+           },
            {path: 'simple', component: SimpleCmp}
          ]);
          router.navigateByUrl('/simple');
@@ -1260,8 +1272,11 @@ describe('Integration', () => {
          const fixture = createRoot(router, RootCmp);
 
          router.resetConfig([
-           {path: 'home', component: SimpleCmp},
-           {path: 'blocked', component: BlankCmp, canActivate: [RedirectingGuard]},
+           {path: 'home', component: SimpleCmp}, {
+             path: 'blocked',
+             component: BlankCmp,
+             canActivate: [() => coreInject(RedirectingGuard).canActivate()]
+           },
            {path: 'simple', component: SimpleCmp}
          ]);
          router.navigateByUrl('/home');
@@ -1283,7 +1298,11 @@ describe('Integration', () => {
 
          router.resetConfig([
            {path: 'home', component: SimpleCmp},
-           {path: 'blocked', component: BlankCmp, canActivate: [RedirectingGuard]},
+           {
+             path: 'blocked',
+             component: BlankCmp,
+             canActivate: [() => coreInject(RedirectingGuard).canActivate()]
+           },
            {path: 'simple', redirectTo: '404'},
            {path: '404', component: SimpleCmp},
          ]);
@@ -2582,6 +2601,46 @@ describe('Integration', () => {
          advance(fixture);
 
          expect(router.routerState.root.snapshot.firstChild!.data[symbolKey]).toEqual(4);
+       }));
+
+    it('should allow resolvers as pure functions', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         const fixture = createRoot(router, RootCmp);
+         const user = Symbol('user');
+
+         const userResolver: ResolveFn<string> = (route: ActivatedRouteSnapshot) =>
+             route.params['user'];
+         router.resetConfig(
+             [{path: ':user', component: SimpleCmp, resolve: {[user]: userResolver}}]);
+
+         router.navigateByUrl('/atscott');
+         advance(fixture);
+
+         expect(router.routerState.root.snapshot.firstChild!.data[user]).toEqual('atscott');
+       }));
+
+    it('should allow DI in resolvers as pure functions', fakeAsync(() => {
+         const router = TestBed.inject(Router);
+         const fixture = createRoot(router, RootCmp);
+         const user = Symbol('user');
+
+         @Injectable({providedIn: 'root'})
+         class LoginState {
+           user = 'atscott';
+         }
+
+         router.resetConfig([{
+           path: '**',
+           component: SimpleCmp,
+           resolve: {
+             [user]: () => coreInject(LoginState).user,
+           },
+         }]);
+
+         router.navigateByUrl('/');
+         advance(fixture);
+
+         expect(router.routerState.root.snapshot.firstChild!.data[user]).toEqual('atscott');
        }));
   });
 
@@ -4125,8 +4184,15 @@ describe('Integration', () => {
            fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
              const fixture = createRoot(router, RootCmp);
 
-             router.resetConfig(
-                 [{path: 'team/:id', component: TeamCmp, canDeactivate: [ClassWithNextState]}]);
+             router.resetConfig([{
+               path: 'team/:id',
+               component: TeamCmp,
+               canDeactivate:
+                   [(component: TeamCmp, currentRoute: ActivatedRouteSnapshot,
+                     currentState: RouterStateSnapshot, nextState: RouterStateSnapshot) =>
+                        coreInject(ClassWithNextState)
+                            .canDeactivate(component, currentRoute, currentState, nextState)]
+             }]);
 
              router.navigateByUrl('/team/22');
              advance(fixture);
@@ -4159,9 +4225,7 @@ describe('Integration', () => {
 
       describe('should work when given a class', () => {
         class AlwaysTrue implements CanDeactivate<TeamCmp> {
-          canDeactivate(
-              component: TeamCmp, route: ActivatedRouteSnapshot,
-              state: RouterStateSnapshot): boolean {
+          canDeactivate(): boolean {
             return true;
           }
         }
@@ -4173,8 +4237,11 @@ describe('Integration', () => {
         it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
              const fixture = createRoot(router, RootCmp);
 
-             router.resetConfig(
-                 [{path: 'team/:id', component: TeamCmp, canDeactivate: [AlwaysTrue]}]);
+             router.resetConfig([{
+               path: 'team/:id',
+               component: TeamCmp,
+               canDeactivate: [() => coreInject(AlwaysTrue).canDeactivate()]
+             }]);
 
              router.navigateByUrl('/team/22');
              advance(fixture);
@@ -4794,7 +4861,11 @@ describe('Integration', () => {
       it('falls back to second route when canMatch returns false', fakeAsync(() => {
            const router = TestBed.inject(Router);
            router.resetConfig([
-             {path: 'a', canMatch: [ConfigurableGuard], component: BlankCmp},
+             {
+               path: 'a',
+               canMatch: [() => coreInject(ConfigurableGuard).canMatch()],
+               component: BlankCmp
+             },
              {path: 'a', component: SimpleCmp},
            ]);
            const fixture = createRoot(router, RootCmp);
@@ -4808,7 +4879,11 @@ describe('Integration', () => {
            const router = TestBed.inject(Router);
            TestBed.inject(ConfigurableGuard).result = Promise.resolve(true);
            router.resetConfig([
-             {path: 'a', canMatch: [ConfigurableGuard], component: SimpleCmp},
+             {
+               path: 'a',
+               canMatch: [() => coreInject(ConfigurableGuard).canMatch()],
+               component: SimpleCmp
+             },
              {path: 'a', component: BlankCmp},
            ]);
            const fixture = createRoot(router, RootCmp);
@@ -4824,7 +4899,11 @@ describe('Integration', () => {
            TestBed.inject(ConfigurableGuard).result =
                Promise.resolve(router.createUrlTree(['/team/1']));
            router.resetConfig([
-             {path: 'a', canMatch: [ConfigurableGuard], component: SimpleCmp},
+             {
+               path: 'a',
+               canMatch: [() => coreInject(ConfigurableGuard).canMatch()],
+               component: SimpleCmp
+             },
              {path: 'team/:id', component: TeamCmp},
            ]);
            const fixture = createRoot(router, RootCmp);
@@ -4949,6 +5028,169 @@ describe('Integration', () => {
            expect(delayedGuardSpy.calls.count()).toEqual(1);
          }));
     });
+
+    it('should allow guards as functions', fakeAsync(() => {
+         @Component({
+           template: '',
+           standalone: true,
+         })
+         class BlankCmp {
+         }
+         const router = TestBed.inject(Router);
+         const fixture = createRoot(router, RootCmp);
+         const guards = {
+           canActivate() {
+             return true;
+           },
+           canDeactivate() {
+             return true;
+           },
+           canActivateChild() {
+             return true;
+           },
+           canMatch() {
+             return true;
+           },
+           canLoad() {
+             return true;
+           }
+         };
+         spyOn(guards, 'canActivate').and.callThrough();
+         spyOn(guards, 'canActivateChild').and.callThrough();
+         spyOn(guards, 'canDeactivate').and.callThrough();
+         spyOn(guards, 'canLoad').and.callThrough();
+         spyOn(guards, 'canMatch').and.callThrough();
+         router.resetConfig([
+           {
+             path: '',
+             component: BlankCmp,
+             loadChildren: () => [{path: '', component: BlankCmp}],
+             canActivate: [guards.canActivate],
+             canActivateChild: [guards.canActivateChild],
+             canLoad: [guards.canLoad],
+             canDeactivate: [guards.canDeactivate],
+             canMatch: [guards.canMatch],
+           },
+           {
+             path: 'other',
+             component: BlankCmp,
+           }
+         ]);
+
+         router.navigateByUrl('/');
+         advance(fixture);
+         expect(guards.canMatch).toHaveBeenCalled();
+         expect(guards.canLoad).toHaveBeenCalled();
+         expect(guards.canActivate).toHaveBeenCalled();
+         expect(guards.canActivateChild).toHaveBeenCalled();
+
+         router.navigateByUrl('/other');
+         advance(fixture);
+         expect(guards.canDeactivate).toHaveBeenCalled();
+       }));
+
+    it('should allow DI in plain function guards', fakeAsync(() => {
+         @Component({
+           template: '',
+           standalone: true,
+         })
+         class BlankCmp {
+         }
+
+         @Injectable({providedIn: 'root'})
+         class State {
+           value = true;
+         }
+         const router = TestBed.inject(Router);
+         const fixture = createRoot(router, RootCmp);
+         const guards = {
+           canActivate() {
+             return coreInject(State).value;
+           },
+           canDeactivate() {
+             return coreInject(State).value;
+           },
+           canActivateChild() {
+             return coreInject(State).value;
+           },
+           canMatch() {
+             return coreInject(State).value;
+           },
+           canLoad() {
+             return coreInject(State).value;
+           }
+         };
+         spyOn(guards, 'canActivate').and.callThrough();
+         spyOn(guards, 'canActivateChild').and.callThrough();
+         spyOn(guards, 'canDeactivate').and.callThrough();
+         spyOn(guards, 'canLoad').and.callThrough();
+         spyOn(guards, 'canMatch').and.callThrough();
+         router.resetConfig([
+           {
+             path: '',
+             component: BlankCmp,
+             loadChildren: () => [{path: '', component: BlankCmp}],
+             canActivate: [guards.canActivate],
+             canActivateChild: [guards.canActivateChild],
+             canLoad: [guards.canLoad],
+             canDeactivate: [guards.canDeactivate],
+             canMatch: [guards.canMatch],
+           },
+           {
+             path: 'other',
+             component: BlankCmp,
+           }
+         ]);
+
+         router.navigateByUrl('/');
+         advance(fixture);
+         expect(guards.canMatch).toHaveBeenCalled();
+         expect(guards.canLoad).toHaveBeenCalled();
+         expect(guards.canActivate).toHaveBeenCalled();
+         expect(guards.canActivateChild).toHaveBeenCalled();
+
+         router.navigateByUrl('/other');
+         advance(fixture);
+         expect(guards.canDeactivate).toHaveBeenCalled();
+       }));
+
+    it('can run functional guards serially', fakeAsync(() => {
+         function runSerially(guards: CanActivateFn[]|CanActivateChildFn[]): CanActivateFn|
+             CanActivateChildFn {
+           return (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+             const injector = coreInject(EnvironmentInjector);
+             const observables = guards.map(guard => {
+               const guardResult = injector.runInContext(() => guard(route, state));
+               return wrapIntoObservable(guardResult).pipe(first());
+             });
+             return concat(...observables).pipe(takeWhile(v => v === true), last());
+           };
+         }
+
+         const guardDone: string[] = [];
+
+         const guard1: CanActivateFn = () =>
+             of(true).pipe(delay(100), tap(() => guardDone.push('guard1')));
+         const guard2: CanActivateFn = () => of(true).pipe(tap(() => guardDone.push('guard2')));
+         const guard3: CanActivateFn = () =>
+             of(true).pipe(delay(50), tap(() => guardDone.push('guard3')));
+         const guard4: CanActivateFn = () =>
+             of(true).pipe(delay(200), tap(() => guardDone.push('guard4')));
+         const router = TestBed.inject(Router);
+         router.resetConfig([{
+           path: '**',
+           component: BlankCmp,
+           canActivate: [runSerially([guard1, guard2, guard3, guard4])]
+         }]);
+         router.navigateByUrl('');
+
+         tick(100);
+         expect(guardDone).toEqual(['guard1', 'guard2']);
+         tick(50);
+         expect(guardDone).toEqual(['guard1', 'guard2', 'guard3']);
+         tick(200);
+         expect(guardDone).toEqual(['guard1', 'guard2', 'guard3', 'guard4']);
+       }));
   });
 
   describe('route events', () => {
@@ -5462,7 +5704,7 @@ describe('Integration', () => {
          @Injectable()
          class Resolver implements Resolve<Service> {
            constructor(public service: Service) {}
-           resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+           resolve() {
              return this.service;
            }
          }
@@ -5482,7 +5724,7 @@ describe('Integration', () => {
              RouterModule.forChild([{
                path: 'loaded',
                component: LazyLoadedComponent,
-               resolve: {'service': Resolver},
+               resolve: {'service': () => coreInject(Resolver).resolve()},
              }]),
            ]
          })
