@@ -19,7 +19,8 @@ import {profiler, ProfilerEvent} from '../profiler';
 import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
 import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
 
-import {getOrCreateLViewCleanup, getOrCreateTViewCleanup, handleError, loadComponentRenderer, markViewDirty} from './shared';
+import {handleError, loadComponentRenderer, markViewDirty} from './shared';
+import {getOrCreateLViewCleanup, getOrCreateTViewCleanup} from './view_cleanup';
 
 
 

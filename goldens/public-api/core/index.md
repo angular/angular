@@ -930,7 +930,7 @@ export interface OnDestroy {
 
 // @public
 export interface OnInit {
-    ngOnInit(): void;
+    ngOnInit(): void | (() => void);
 }
 
 // @public

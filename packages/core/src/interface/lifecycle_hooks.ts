@@ -60,8 +60,10 @@ export interface OnInit {
    * data-bound properties for the first time,
    * and before any of the view or content children have been checked.
    * It is invoked only once when the directive is instantiated.
+   * This callback method can, optionally, return a function that will be interpreted as the
+   * `OnDestroy` lifecycle hook.
    */
-  ngOnInit(): void;
+  ngOnInit(): void|(() => void);
 }
 
 /**

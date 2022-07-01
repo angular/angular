@@ -8,11 +8,13 @@
 
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy, OnInit} from '../interface/lifecycle_hooks';
 import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
+
 import {assertFirstCreatePass} from './assert';
 import {NgOnChangesFeatureImpl} from './features/ng_onchanges_feature';
+import {storeCleanupWithContext} from './instructions/view_cleanup';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
-import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
+import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView, TVIEW} from './interfaces/view';
 import {profiler, ProfilerEvent} from './profiler';
 import {isInCheckNoChangesMode} from './state';
 
@@ -259,7 +261,10 @@ function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, 
       currentView[FLAGS] += LViewFlags.IndexWithinInitPhaseIncrementer;
       profiler(ProfilerEvent.LifecycleHookStart, directive, hook);
       try {
-        hook.call(directive);
+        const onDestroyFn = hook.call(directive);
+        if (typeof onDestroyFn === 'function') {
+          storeCleanupWithContext(currentView[TVIEW], currentView, null, onDestroyFn);
+        }
       } finally {
         profiler(ProfilerEvent.LifecycleHookEnd, directive, hook);
       }

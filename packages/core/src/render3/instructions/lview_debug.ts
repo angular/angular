@@ -376,8 +376,6 @@ export class MatchesArray extends Array {}
 export class TViewComponents extends Array {}
 export class TNodeLocalNames extends Array {}
 export class TNodeInitialInputs extends Array {}
-export class LCleanup extends Array {}
-export class TCleanup extends Array {}
 
 export function attachLViewDebug(lView: LView) {
   attachDebugObject(lView, new LViewDebug(lView));

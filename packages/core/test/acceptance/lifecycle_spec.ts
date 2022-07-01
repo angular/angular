@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, ContentChildren, Directive, DoCheck, Input, NgModule, OnChanges, QueryList, SimpleChange, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ComponentFactoryResolver, ContentChildren, Directive, DoCheck, Input, NgModule, OnChanges, OnInit, QueryList, SimpleChange, SimpleChanges, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -1959,6 +1959,34 @@ describe('onInit', () => {
       'child of parent 0',
       'child of parent 1',
     ]);
+  });
+});
+
+describe('destroy hook from onInit', () => {
+  it('should allow returning a destroy hook from the onInit one', () => {
+    const hooksLog: string[] = [];
+
+    @Component({
+      template: ``,
+    })
+    class OnInitWithDestroyCmp implements OnInit {
+      ngOnInit() {
+        hooksLog.push('init');
+
+        // functions returned from ngOnInit are interpreted as an instance-specific destroy hooks
+        return () => {
+          hooksLog.push('destroy');
+        };
+      }
+    }
+
+    const fixture = TestBed.createComponent(OnInitWithDestroyCmp);
+    fixture.detectChanges();
+
+    expect(hooksLog).toEqual(['init']);
+
+    fixture.destroy();
+    expect(hooksLog).toEqual(['init', 'destroy']);
   });
 });
 
