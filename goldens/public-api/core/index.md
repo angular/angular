@@ -115,6 +115,13 @@ export interface AttributeDecorator {
 }
 
 // @public
+export interface BootstrapOptions {
+    ngZone?: NgZone | 'zone.js' | 'noop';
+    ngZoneEventCoalescing?: boolean;
+    ngZoneRunCoalescing?: boolean;
+}
+
+// @public
 export enum ChangeDetectionStrategy {
     Default = 1,
     OnPush = 0
