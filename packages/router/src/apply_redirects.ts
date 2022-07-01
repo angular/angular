@@ -11,7 +11,7 @@ import {EmptyError, from, Observable, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, last, map, mergeMap, scan, tap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from './errors';
-import {CanLoadFn, LoadedRouterConfig, Route, Routes} from './models';
+import {CanLoad, CanLoadFn, LoadedRouterConfig, Route, Routes} from './models';
 import {prioritizedGuardValue} from './operators/prioritized_guard_value';
 import {RouterConfigLoader} from './router_config_loader';
 import {navigationCancelingError, Params, PRIMARY_OUTLET, REDIRECTING_CANCELLATION_REASON} from './shared';
@@ -367,16 +367,8 @@ class ApplyRedirects {
     if (!canLoad || canLoad.length === 0) return of(true);
 
     const canLoadObservables = canLoad.map((injectionToken: any) => {
-      const guard = injector.get(injectionToken);
-      let guardVal;
-      if (isCanLoad(guard)) {
-        guardVal = guard.canLoad(route, segments);
-      } else if (isFunction<CanLoadFn>(guard)) {
-        guardVal = guard(route, segments);
-      } else {
-        throw new RuntimeError(
-            RuntimeErrorCode.INVALID_GUARD, NG_DEV_MODE && 'Invalid CanLoad guard');
-      }
+      const guard = injector.get<CanLoad|CanLoadFn>(injectionToken);
+      const guardVal = isCanLoad(guard) ? guard.canLoad(route, segments) : guard(route, segments);
       return wrapIntoObservable(guardVal);
     });
 

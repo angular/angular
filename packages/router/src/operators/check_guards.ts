@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Injector} from '@angular/core';
 import {concat, defer, from, MonoTypeOperatorFunction, Observable, of} from 'rxjs';
 import {concatMap, first, map, mergeMap} from 'rxjs/operators';
 
-import {RuntimeErrorCode} from '../errors';
 import {ActivationStart, ChildActivationStart, Event} from '../events';
-import {CanActivateChildFn, CanActivateFn, CanDeactivateFn} from '../models';
 import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
 import {UrlTree} from '../url_tree';
@@ -21,8 +19,6 @@ import {CanActivate, CanDeactivate, getCanActivateChild, getToken} from '../util
 import {isBoolean, isCanActivate, isCanActivateChild, isCanDeactivate, isFunction} from '../utils/type_guards';
 
 import {prioritizedGuardValue} from './prioritized_guard_value';
-
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 export function checkGuards(moduleInjector: Injector, forwardEvent?: (evt: Event) => void):
     MonoTypeOperatorFunction<NavigationTransition> {
@@ -116,16 +112,9 @@ function runCanActivate(
   const canActivateObservables = canActivate.map((c: any) => {
     return defer(() => {
       const guard = getToken(c, futureARS, moduleInjector);
-      let observable;
-      if (isCanActivate(guard)) {
-        observable = wrapIntoObservable(guard.canActivate(futureARS, futureRSS));
-      } else if (isFunction<CanActivateFn>(guard)) {
-        observable = wrapIntoObservable(guard(futureARS, futureRSS));
-      } else {
-        throw new RuntimeError(
-            RuntimeErrorCode.INVALID_GUARD, NG_DEV_MODE && 'Invalid CanActivate guard');
-      }
-      return observable.pipe(first());
+      const guardVal = isCanActivate(guard) ? guard.canActivate(futureARS, futureRSS) :
+                                              guard(futureARS, futureRSS);
+      return wrapIntoObservable(guardVal).pipe(first());
     });
   });
   return of(canActivateObservables).pipe(prioritizedGuardValue());
@@ -145,16 +134,9 @@ function runCanActivateChild(
     return defer(() => {
       const guardsMapped = d.guards.map((c: any) => {
         const guard = getToken(c, d.node, moduleInjector);
-        let observable;
-        if (isCanActivateChild(guard)) {
-          observable = wrapIntoObservable(guard.canActivateChild(futureARS, futureRSS));
-        } else if (isFunction<CanActivateChildFn>(guard)) {
-          observable = wrapIntoObservable(guard(futureARS, futureRSS));
-        } else {
-          throw new RuntimeError(
-              RuntimeErrorCode.INVALID_GUARD, NG_DEV_MODE && 'Invalid CanActivateChild guard');
-        }
-        return observable.pipe(first());
+        const guardVal = isCanActivateChild(guard) ? guard.canActivateChild(futureARS, futureRSS) :
+                                                     guard(futureARS, futureRSS);
+        return wrapIntoObservable(guardVal).pipe(first());
       });
       return of(guardsMapped).pipe(prioritizedGuardValue());
     });
@@ -169,16 +151,10 @@ function runCanDeactivate(
   if (!canDeactivate || canDeactivate.length === 0) return of(true);
   const canDeactivateObservables = canDeactivate.map((c: any) => {
     const guard = getToken(c, currARS, moduleInjector);
-    let observable;
-    if (isCanDeactivate(guard)) {
-      observable = wrapIntoObservable(guard.canDeactivate(component!, currARS, currRSS, futureRSS));
-    } else if (isFunction<CanDeactivateFn<any>>(guard)) {
-      observable = wrapIntoObservable(guard(component, currARS, currRSS, futureRSS));
-    } else {
-      throw new RuntimeError(
-          RuntimeErrorCode.INVALID_GUARD, NG_DEV_MODE && 'Invalid CanDeactivate guard');
-    }
-    return observable.pipe(first());
+    const guardVal = isCanDeactivate(guard) ?
+        guard.canDeactivate(component!, currARS, currRSS, futureRSS) :
+        guard(component, currARS, currRSS, futureRSS);
+    return wrapIntoObservable(guardVal).pipe(first());
   });
   return of(canDeactivateObservables).pipe(prioritizedGuardValue());
 }
