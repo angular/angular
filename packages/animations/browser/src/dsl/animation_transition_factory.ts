@@ -123,31 +123,30 @@ function checkNonAnimatableInTimelines(
     return;
   }
 
-  const animatedNonAnimatableProps = new Set<string>();
+  const invalidNonAnimatableProps = new Set<string>();
 
   timelines.forEach(({keyframes}) => {
-    const nonAnimatablePropsValues = new Map<string, Set<string|number>>();
+    const nonAnimatablePropsFirstValues = new Map<string, string|number>();
     keyframes.forEach(keyframe => {
       for (const [prop, value] of keyframe.entries()) {
         if (!driver.validateAnimatableStyleProperty!(prop)) {
-          if (!nonAnimatablePropsValues.has(prop)) {
-            nonAnimatablePropsValues.set(prop, new Set<string>());
+          if (nonAnimatablePropsFirstValues.has(prop) && !invalidNonAnimatableProps.has(prop)) {
+            const propInitialValue = nonAnimatablePropsFirstValues.get(prop);
+            if (propInitialValue !== value) {
+              invalidNonAnimatableProps.add(prop);
+            }
+          } else {
+            nonAnimatablePropsFirstValues.set(prop, value);
           }
-          nonAnimatablePropsValues.get(prop)!.add(value);
         }
       }
     });
-    for (const [prop, values] of nonAnimatablePropsValues.entries()) {
-      if (values.size > 1) {
-        animatedNonAnimatableProps.add(prop);
-      }
-    }
   });
 
-  if (animatedNonAnimatableProps.size) {
+  if (invalidNonAnimatableProps.size) {
     console.warn(
         `Warning: The animation trigger "${triggerName}" is attempting to animate the following` +
-        ' not animatable properties: ' + Array.from(animatedNonAnimatableProps).join(', ') + '\n' +
+        ' not animatable properties: ' + Array.from(invalidNonAnimatableProps).join(', ') + '\n' +
         '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)');
   }
 }
