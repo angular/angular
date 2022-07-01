@@ -130,7 +130,7 @@ function checkNonAnimatableInTimelines(
     keyframes.forEach(keyframe => {
       for (const [prop, value] of keyframe.entries()) {
         if (!driver.validateAnimatableStyleProperty!(prop)) {
-          if (!nonAnimatablePropsValues.get(prop)) {
+          if (!nonAnimatablePropsValues.has(prop)) {
             nonAnimatablePropsValues.set(prop, new Set<string>());
           }
           nonAnimatablePropsValues.get(prop)!.add(value);
