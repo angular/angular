@@ -13,9 +13,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_DOUBLE_DOTS = 4005,
     // (undocumented)
-    INVALID_GUARD = 4014,
-    // (undocumented)
-    INVALID_ROUTE_CONFIG = 4015,
+    INVALID_ROUTE_CONFIG = 4014,
     // (undocumented)
     MISPLACED_OUTLETS_COMMAND = 4004,
     // (undocumented)
