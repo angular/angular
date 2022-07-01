@@ -10,7 +10,7 @@ export interface Schema {
   /**
    * The name of the project.
    */
-  name?: string;
+  project?: string;
   /**
    * Will this project use $localize at runtime?
    *

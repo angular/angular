@@ -115,14 +115,14 @@ function moveToDependencies(host: Tree, context: SchematicContext) {
 
 export default function(options: Schema): Rule {
   return async (host: Tree) => {
-    if (!options.name) {
-      throw new SchematicsException('Option "name" is required.');
+    if (!options.project) {
+      throw new SchematicsException('Option "project" is required.');
     }
 
     const workspace = await getWorkspace(host);
-    const project: workspaces.ProjectDefinition|undefined = workspace.projects.get(options.name);
+    const project: workspaces.ProjectDefinition|undefined = workspace.projects.get(options.project);
     if (!project) {
-      throw new SchematicsException(`Invalid project name (${options.name})`);
+      throw new SchematicsException(`Invalid project name (${options.project})`);
     }
 
     const localizeStr =

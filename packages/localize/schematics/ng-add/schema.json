@@ -4,9 +4,10 @@
   "title": "Angular Localize Ng Add Schema",
   "type": "object",
   "properties": {
-    "name": {
+    "project": {
       "type": "string",
       "description": "The name of the project.",
+      "alias": "name",
       "$default": {
         "$source": "projectName"
       }

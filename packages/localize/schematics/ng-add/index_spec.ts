@@ -14,7 +14,7 @@ import {localizePolyfill} from './index';
 
 describe('ng-add schematic', () => {
   const countInstances = (str: string, substr: string) => str.split(substr).length - 1;
-  const defaultOptions = {name: 'demo'};
+  const defaultOptions = {project: 'demo'};
   let host: UnitTestTree;
   let schematicRunner: SchematicTestRunner;
   // The real polyfills file is bigger than this, but for the test it shouldn't matter.
