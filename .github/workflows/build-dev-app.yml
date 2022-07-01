@@ -11,6 +11,8 @@ on:
   pull_request:
     types: [synchronize, labeled]
 
+permissions: read-all
+
 jobs:
   dev-app-build:
     runs-on: ubuntu-latest

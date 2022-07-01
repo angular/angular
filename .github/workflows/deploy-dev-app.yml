@@ -9,8 +9,12 @@ name: Deploying dev-app to Firebase previews
 
 on:
   workflow_run:
-    workflows: [Build dev-app for deployment]
+    workflows: ['Build dev-app for deployment']
     types: [completed]
+
+permissions:
+  # Needed in order to be able to comment on the pull request.
+  pull-requests: write
 
 jobs:
   deploy-dev-app:
