@@ -119,8 +119,7 @@ export class AnimationTransitionFactory {
  */
 function checkNonAnimatableInTimelines(
     timelines: AnimationTimelineInstruction[], triggerName: string, driver: AnimationDriver): void {
-  const validationFunctionIsUnavailable = !driver.validateAnimatableStyleProperty;
-  if (validationFunctionIsUnavailable) {
+  if (!driver.validateAnimatableStyleProperty) {
     return;
   }
 
@@ -130,8 +129,7 @@ function checkNonAnimatableInTimelines(
     const nonAnimatablePropsValues = new Map<string, Set<string|number>>();
     keyframes.forEach(keyframe => {
       for (const [prop, value] of keyframe.entries()) {
-        const propIsAnimatable = driver.validateAnimatableStyleProperty!(prop);
-        if (!propIsAnimatable) {
+        if (!driver.validateAnimatableStyleProperty!(prop)) {
           if (!nonAnimatablePropsValues.get(prop)) {
             nonAnimatablePropsValues.set(prop, new Set<string>());
           }
@@ -140,8 +138,7 @@ function checkNonAnimatableInTimelines(
       }
     });
     for (const [prop, values] of nonAnimatablePropsValues.entries()) {
-      const propIsBeingAnimated = values.size > 1;
-      if (propIsBeingAnimated) {
+      if (values.size > 1) {
         animatedNonAnimatableProps.add(prop);
       }
     }
