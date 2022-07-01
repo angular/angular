@@ -81,13 +81,6 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
             [...context.unsupportedCSSPropertiesFound.keys()],
         );
       }
-
-      if (context.nonAnimatableCSSPropertiesFound.size) {
-        pushNonAnimatablePropertiesWarning(
-            warnings,
-            [...context.nonAnimatableCSSPropertiesFound.keys()],
-        );
-      }
     }
 
     return ast;
@@ -321,15 +314,6 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
             context.unsupportedCSSPropertiesFound.add(prop);
             return;
           }
-
-          if (this._driver.validateAnimatableStyleProperty) {
-            if (!this._driver.validateAnimatableStyleProperty(prop)) {
-              context.nonAnimatableCSSPropertiesFound.add(prop);
-              // note: non animatable properties are not removed for the tuple just in case they are
-              //       categorized as non animatable but can actually be animated
-              return;
-            }
-          }
         }
 
         // This is guaranteed to have a defined Map at this querySelector location making it
@@ -535,7 +519,6 @@ export class AnimationAstBuilderContext {
   public collectedStyles = new Map<string, Map<string, StyleTimeTuple>>();
   public options: AnimationOptions|null = null;
   public unsupportedCSSPropertiesFound: Set<string> = new Set<string>();
-  public readonly nonAnimatableCSSPropertiesFound: Set<string> = new Set<string>();
   constructor(public errors: Error[]) {}
 }
 
