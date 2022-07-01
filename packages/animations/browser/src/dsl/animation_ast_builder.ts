@@ -11,7 +11,7 @@ import {invalidDefinition, invalidKeyframes, invalidOffset, invalidParallelAnima
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetDefaultValue} from '../render/shared';
 import {convertToMap, copyObj, extractStyleParams, iteratorToArray, NG_ANIMATING_SELECTOR, NG_TRIGGER_SELECTOR, normalizeAnimationEntry, resolveTiming, SUBSTITUTION_EXPR_START, validateStyleParams, visitDslNode} from '../util';
-import {pushNonAnimatablePropertiesWarning, pushUnrecognizedPropertiesWarning} from '../warning_helpers';
+import {pushUnrecognizedPropertiesWarning} from '../warning_helpers';
 
 import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast';
 import {AnimationDslVisitor} from './animation_dsl_visitor';
@@ -79,13 +79,6 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
         pushUnrecognizedPropertiesWarning(
             warnings,
             [...context.unsupportedCSSPropertiesFound.keys()],
-        );
-      }
-
-      if (context.nonAnimatableCSSPropertiesFound.size) {
-        pushNonAnimatablePropertiesWarning(
-            warnings,
-            [...context.nonAnimatableCSSPropertiesFound.keys()],
         );
       }
     }
@@ -321,15 +314,6 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
             context.unsupportedCSSPropertiesFound.add(prop);
             return;
           }
-
-          if (this._driver.validateAnimatableStyleProperty) {
-            if (!this._driver.validateAnimatableStyleProperty(prop)) {
-              context.nonAnimatableCSSPropertiesFound.add(prop);
-              // note: non animatable properties are not removed for the tuple just in case they are
-              //       categorized as non animatable but can actually be animated
-              return;
-            }
-          }
         }
 
         // This is guaranteed to have a defined Map at this querySelector location making it
@@ -535,7 +519,6 @@ export class AnimationAstBuilderContext {
   public collectedStyles = new Map<string, Map<string, StyleTimeTuple>>();
   public options: AnimationOptions|null = null;
   public unsupportedCSSPropertiesFound: Set<string> = new Set<string>();
-  public readonly nonAnimatableCSSPropertiesFound: Set<string> = new Set<string>();
   constructor(public errors: Error[]) {}
 }
 
