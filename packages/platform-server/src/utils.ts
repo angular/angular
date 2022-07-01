@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ImportedNgModuleProviders, importProvidersFrom, Injector, NgModuleFactory, NgModuleRef, PlatformRef, Provider, StaticProvider, Type, ɵinternalBootstrapApplication as internalBootstrapApplication, ɵisPromise} from '@angular/core';
+import {ApplicationRef, ImportedNgModuleProviders, importProvidersFrom, NgModuleFactory, NgModuleRef, PlatformRef, Provider, StaticProvider, Type, ɵinternalBootstrapApplication as internalBootstrapApplication, ɵisPromise} from '@angular/core';
 import {BrowserModule, ɵTRANSITION_ID} from '@angular/platform-browser';
 import {first} from 'rxjs/operators';
 
@@ -34,7 +34,7 @@ function _render<T>(
     platform: PlatformRef,
     bootstrapPromise: Promise<NgModuleRef<T>|ApplicationRef>): Promise<string> {
   return bootstrapPromise.then((moduleOrApplicationRef) => {
-    const environmentInjector = (moduleOrApplicationRef as {injector: Injector}).injector;
+    const environmentInjector = moduleOrApplicationRef.injector;
     const transitionId = environmentInjector.get(ɵTRANSITION_ID, null);
     if (!transitionId) {
       throw new Error(

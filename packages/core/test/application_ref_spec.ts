@@ -8,17 +8,16 @@
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {ResourceLoader} from '@angular/compiler';
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, Compiler, CompilerFactory, Component, InjectionToken, Injector, LOCALE_ID, NgModule, NgZone, PlatformRef, RendererFactory2, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, Compiler, CompilerFactory, Component, EnvironmentInjector, InjectionToken, LOCALE_ID, NgModule, NgZone, PlatformRef, RendererFactory2, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
-import {getLocaleId} from '@angular/core/src/render3';
+import {createEnvironmentInjector, getLocaleId} from '@angular/core/src/render3';
 import {BrowserModule} from '@angular/platform-browser';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {createTemplate, dispatchEvent, getContent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {ApplicationRef} from '../src/application_ref';
-import {createInjector} from '../src/di/create_injector';
 import {NoopNgZone} from '../src/zone/ng_zone';
 import {ComponentFixtureNoNgZone, inject, TestBed, waitForAsync, withModule} from '../testing';
 
@@ -224,23 +223,23 @@ class SomeComponent {
       // that the instance of the `ApplicationRef` class is created on that injector (vs in the
       // app-level injector). It is needed to verify `ApplicationRef.destroy` scenarios, which
       // includes destroying an underlying injector.
-      function createApplicationRefInjector(parentInjector: Injector) {
-        @NgModule()
-        class RootModule {
-        }
+      function createApplicationRefInjector(parentInjector: EnvironmentInjector) {
         const extraProviders = [{provide: ApplicationRef, useClass: ApplicationRef}];
-        return createInjector(RootModule, parentInjector, extraProviders);
+
+        return createEnvironmentInjector(extraProviders, parentInjector);
       }
 
-      function createApplicationRef(parentInjector: Injector) {
+      function createApplicationRef(parentInjector: EnvironmentInjector) {
         const injector = createApplicationRefInjector(parentInjector);
         return injector.get(ApplicationRef);
       }
+
       it('should cleanup the DOM',
          withModule(
              {providers},
-             waitForAsync(
-                 inject([Injector, DOCUMENT], (parentInjector: Injector, doc: Document) => {
+             waitForAsync(inject(
+                 [EnvironmentInjector, DOCUMENT],
+                 (parentInjector: EnvironmentInjector, doc: Document) => {
                    createRootEl();
 
                    const appRef = createApplicationRef(parentInjector);
@@ -258,7 +257,8 @@ class SomeComponent {
 
       it('should throw when trying to call `destroy` method on already destroyed ApplicationRef',
          withModule(
-             {providers}, waitForAsync(inject([Injector], (parentInjector: Injector) => {
+             {providers},
+             waitForAsync(inject([EnvironmentInjector], (parentInjector: EnvironmentInjector) => {
                createRootEl();
                const appRef = createApplicationRef(parentInjector);
                appRef.bootstrap(SomeComponent);
@@ -270,85 +270,84 @@ class SomeComponent {
              }))));
 
       it('should invoke all registered `onDestroy` callbacks (internal API)',
-         withModule({providers}, waitForAsync(inject([Injector], (parentInjector: Injector) => {
-                      const onDestroyA = jasmine.createSpy('onDestroyA');
-                      const onDestroyB = jasmine.createSpy('onDestroyB');
-                      createRootEl();
+         withModule(
+             {providers},
+             waitForAsync(inject([EnvironmentInjector], (parentInjector: EnvironmentInjector) => {
+               const onDestroyA = jasmine.createSpy('onDestroyA');
+               const onDestroyB = jasmine.createSpy('onDestroyB');
+               createRootEl();
 
-                      const appRef =
-                          createApplicationRef(parentInjector) as unknown as ApplicationRef &
-                          {onDestroy: Function};
-                      appRef.bootstrap(SomeComponent);
-                      appRef.onDestroy(onDestroyA);
-                      appRef.onDestroy(onDestroyB);
-                      appRef.destroy();
+               const appRef = createApplicationRef(parentInjector) as unknown as ApplicationRef &
+                   {onDestroy: Function};
+               appRef.bootstrap(SomeComponent);
+               appRef.onDestroy(onDestroyA);
+               appRef.onDestroy(onDestroyB);
+               appRef.destroy();
 
-                      expect(onDestroyA).toHaveBeenCalledTimes(1);
-                      expect(onDestroyB).toHaveBeenCalledTimes(1);
-                    }))));
+               expect(onDestroyA).toHaveBeenCalledTimes(1);
+               expect(onDestroyB).toHaveBeenCalledTimes(1);
+             }))));
 
       it('should allow to unsubscribe a registered `onDestroy` callback (internal API)',
-         withModule({providers}, waitForAsync(inject([Injector], (parentInjector: Injector) => {
-                      createRootEl();
+         withModule(
+             {providers},
+             waitForAsync(inject([EnvironmentInjector], (parentInjector: EnvironmentInjector) => {
+               createRootEl();
 
-                      const appRef =
-                          createApplicationRef(parentInjector) as unknown as ApplicationRef &
-                          {onDestroy: Function};
-                      appRef.bootstrap(SomeComponent);
+               const appRef = createApplicationRef(parentInjector) as unknown as ApplicationRef &
+                   {onDestroy: Function};
+               appRef.bootstrap(SomeComponent);
 
-                      const onDestroyA = jasmine.createSpy('onDestroyA');
-                      const onDestroyB = jasmine.createSpy('onDestroyB');
-                      const unsubscribeOnDestroyA = appRef.onDestroy(onDestroyA);
-                      const unsubscribeOnDestroyB = appRef.onDestroy(onDestroyB);
+               const onDestroyA = jasmine.createSpy('onDestroyA');
+               const onDestroyB = jasmine.createSpy('onDestroyB');
+               const unsubscribeOnDestroyA = appRef.onDestroy(onDestroyA);
+               const unsubscribeOnDestroyB = appRef.onDestroy(onDestroyB);
 
-                      // Unsubscribe registered listeners.
-                      unsubscribeOnDestroyA();
-                      unsubscribeOnDestroyB();
+               // Unsubscribe registered listeners.
+               unsubscribeOnDestroyA();
+               unsubscribeOnDestroyB();
 
-                      appRef.destroy();
+               appRef.destroy();
 
-                      expect(onDestroyA).not.toHaveBeenCalled();
-                      expect(onDestroyB).not.toHaveBeenCalled();
-                    }))));
+               expect(onDestroyA).not.toHaveBeenCalled();
+               expect(onDestroyB).not.toHaveBeenCalled();
+             }))));
 
       it('should correctly update the `destroyed` flag',
-         withModule({providers}, waitForAsync(inject([Injector], (parentInjector: Injector) => {
-                      createRootEl();
+         withModule(
+             {providers},
+             waitForAsync(inject([EnvironmentInjector], (parentInjector: EnvironmentInjector) => {
+               createRootEl();
 
-                      const appRef = createApplicationRef(parentInjector);
-                      appRef.bootstrap(SomeComponent);
+               const appRef = createApplicationRef(parentInjector);
+               appRef.bootstrap(SomeComponent);
 
-                      expect(appRef.destroyed).toBeFalse();
+               expect(appRef.destroyed).toBeFalse();
 
-                      appRef.destroy();
+               appRef.destroy();
 
-                      expect(appRef.destroyed).toBeTrue();
-                    }))));
+               expect(appRef.destroyed).toBeTrue();
+             }))));
 
       it('should also destroy underlying injector',
-         withModule({providers}, waitForAsync(inject([Injector], (parentInjector: Injector) => {
-                      // This is a temporary type to represent an instance of an R3Injector, which
-                      // can be destroyed.
-                      // The type will be replaced with a different one once destroyable injector
-                      // type is available.
-                      type DestroyableInjector = Injector&{destroy?: Function, destroyed?: boolean};
+         withModule(
+             {providers},
+             waitForAsync(inject([EnvironmentInjector], (parentInjector: EnvironmentInjector) => {
+               createRootEl();
 
-                      createRootEl();
+               const injector = createApplicationRefInjector(parentInjector);
 
-                      const injector =
-                          createApplicationRefInjector(parentInjector) as DestroyableInjector;
+               const appRef = injector.get(ApplicationRef);
+               appRef.bootstrap(SomeComponent);
 
-                      const appRef = injector.get(ApplicationRef);
-                      appRef.bootstrap(SomeComponent);
+               expect(appRef.destroyed).toBeFalse();
+               expect((injector as any).destroyed).toBeFalse();
 
-                      expect(appRef.destroyed).toBeFalse();
-                      expect(injector.destroyed).toBeFalse();
+               appRef.destroy();
 
-                      appRef.destroy();
-
-                      expect(appRef.destroyed).toBeTrue();
-                      expect(injector.destroyed).toBeTrue();
-                    }))));
+               expect(appRef.destroyed).toBeTrue();
+               expect((injector as any).destroyed).toBeTrue();
+             }))));
     });
 
     describe('bootstrapModule', () => {
@@ -823,6 +822,20 @@ class SomeComponent {
              dispatchEvent(element.nativeElement, 'click');
            });
          }));
+    });
+  });
+
+  describe('injector', () => {
+    it('should expose an EnvironmentInjector', () => {
+      @Component({})
+      class TestCmp {
+        constructor(readonly envInjector: EnvironmentInjector) {}
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      const appRef = TestBed.inject(ApplicationRef);
+
+      expect(appRef.injector).toBe(fixture.componentInstance.envInjector);
     });
   });
 }

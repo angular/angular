@@ -742,15 +742,17 @@ export class ApplicationRef {
   // TODO(issue/24571): remove '!'.
   public readonly isStable!: Observable<boolean>;
 
-  /** @internal */
-  get injector(): Injector {
+  /**
+   * The `EnvironmentInjector` used to create this application.
+   */
+  get injector(): EnvironmentInjector {
     return this._injector;
   }
 
   /** @internal */
   constructor(
       private _zone: NgZone,
-      private _injector: Injector,
+      private _injector: EnvironmentInjector,
       private _exceptionHandler: ErrorHandler,
   ) {
     this._onMicrotaskEmptySubscription = this._zone.onMicrotaskEmpty.subscribe({
