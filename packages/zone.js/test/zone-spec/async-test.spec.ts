@@ -186,6 +186,44 @@ describe('AsyncTestZoneSpec', function() {
     }, 50);
   });
 
+  it('should not call done multiple times when proxy zone captures previously ' +
+         'captured microtasks',
+     (done) => {
+       const ProxyZoneSpec = (Zone as any)['ProxyZoneSpec'];
+       const proxyZoneSpec = new ProxyZoneSpec(null) as ProxyZoneSpec;
+       const proxyZone = Zone.current.fork(proxyZoneSpec);
+
+       // This simulates a simple `beforeEach` patched, running in the proxy zone,
+       // but not necessarily waiting for the promise to be resolved. This can
+       // be the case e.g. in the AngularJS upgrade tests where the bootstrap is
+       // performed in the before each, but the waiting is done in the actual `it` specs.
+       proxyZone.run(() => {
+         Promise.resolve().then(() => {});
+       });
+
+       let doneCalledCount = 0;
+       const testFn = () => {
+         // When a test executes with `waitForAsync`, the proxy zone delegates to the async
+         // test zone, potentially also capturing tasks leaking from `beforeEach`.
+         proxyZoneSpec.setDelegate(testZoneSpec);
+       };
+
+       const testZoneSpec = new AsyncTestZoneSpec(() => {
+         // reset the proxy zone delegate after test completion.
+         proxyZoneSpec.setDelegate(null);
+         doneCalledCount++;
+       }, () => done.fail('Error occurred in the async test zone.'), 'name');
+
+       const atz = Zone.current.fork(testZoneSpec);
+       atz.run(testFn);
+
+       setTimeout(() => {
+         expect(doneCalledCount).toBe(1);
+         done();
+       }, 50);
+     });
+
+
   describe('event tasks', ifEnvSupports('document', () => {
              let button: HTMLButtonElement;
              beforeEach(function() {
@@ -359,7 +397,10 @@ describe('AsyncTestZoneSpec', function() {
         },
         (err: Error) => {
           expect(err.message).toEqual('Uncaught (in promise): my reason');
-          done();
+          // Without the `runInTestZone` function, the callback continues to execute
+          // in the async test zone. We don't want to trigger new tasks upon
+          // the failure callback already being invoked (`jasmine.done` schedules tasks)
+          Zone.root.run(() => done());
         },
         'name');
 
