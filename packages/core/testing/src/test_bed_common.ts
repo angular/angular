@@ -8,7 +8,6 @@
 
 import {InjectionToken, SchemaMetadata} from '@angular/core';
 
-import {TestBed} from './test_bed';
 
 /** Whether test modules should be torn down by default. */
 export const TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT = true;
@@ -99,13 +98,4 @@ export interface ModuleTeardownOptions {
 
   /** Whether errors during test module destruction should be re-thrown. Defaults to `true`. */
   rethrowErrors?: boolean;
-}
-
-/**
- * Static methods implemented by the `TestBed`.
- *
- * @publicApi
- */
-export interface TestBedStatic extends TestBed {
-  new(...args: any[]): TestBed;
 }

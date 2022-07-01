@@ -163,14 +163,6 @@
     "packages/core/src/render3/interfaces/view.ts"
   ],
   [
-    "packages/core/testing/src/test_bed_common.ts",
-    "packages/core/testing/src/test_bed.ts"
-  ],
-  [
-    "packages/core/testing/src/test_bed_impl.ts",
-    "packages/core/testing/src/test_bed.ts"
-  ],
-  [
     "packages/forms/src/directives.ts",
     "packages/forms/src/directives/ng_control_status.ts",
     "packages/forms/src/directives/abstract_control_directive.ts",
