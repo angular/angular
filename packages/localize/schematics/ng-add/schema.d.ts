@@ -10,6 +10,11 @@ export interface Schema {
   /**
    * The name of the project.
    */
+  project?: string;
+  /**
+   * The name of the project.
+   * @deprecated use the `project` option instead.
+   */
   name?: string;
   /**
    * Will this project use $localize at runtime?
