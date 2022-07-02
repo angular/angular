@@ -6,7 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ComposeMessageComponent } from './compose-message/compose-message.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
-import { AuthGuard } from './auth/auth.guard';
+import { authGuard } from './auth/auth.guard';
 import { SelectivePreloadingStrategyService } from './selective-preloading-strategy.service';
 
 const appRoutes: Routes = [
@@ -18,7 +18,7 @@ const appRoutes: Routes = [
   {
     path: 'admin',
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
-    canLoad: [AuthGuard]
+    canLoad: [authGuard]
   },
   // #docregion preload-v2
   {
