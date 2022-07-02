@@ -15,6 +15,8 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     NULLISH_COALESCING_NOT_NULLABLE = "nullishCoalescingNotNullable",
     // (undocumented)
+    OPTIONAL_CHAIN_NOT_NULLABLE = "optionalChainNotNullable",
+    // (undocumented)
     SUFFIX_NOT_SUPPORTED = "suffixNotSupported",
     // (undocumented)
     TEXT_ATTRIBUTE_NOT_BINDING = "textAttributeNotBinding"
