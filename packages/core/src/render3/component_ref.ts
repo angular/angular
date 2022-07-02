@@ -28,7 +28,7 @@ import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
 import {assertComponentDef} from './errors';
 import {reportUnknownPropertyError} from './instructions/element_validation';
-import {createLView, createTView, initializeInputAndOutputAliases, locateHostElement, markDirtyIfOnPush, renderView, setInputsForProperty} from './instructions/shared';
+import {createLView, createTView, locateHostElement, markDirtyIfOnPush, renderView, setInputsForProperty} from './instructions/shared';
 import {ComponentDef} from './interfaces/definition';
 import {PropertyAliasValue, TContainerNode, TElementContainerNode, TElementNode, TNode} from './interfaces/node';
 import {RNode} from './interfaces/renderer_dom';
@@ -359,7 +359,9 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
  * https://angular.io/guide/hierarchical-dependency-injection#elementinjector.
  *  * `projectableNodes` (optional): A list of DOM nodes that should be projected through
  *                      [`<ng-content>`](api/core/ng-content) of the new component instance.
- * @returns
+ * @returns ComponentRef instance that represents a given Component.
+ *
+ * @publicApi
  */
 export function createComponent<C>(component: Type<C>, options: {
   hostElement?: Element, environmentInjector: EnvironmentInjector,
@@ -372,4 +374,104 @@ export function createComponent<C>(component: Type<C>, options: {
   const factory = new ComponentFactory<C>(componentDef);
   return factory.create(
       elementInjector, options.projectableNodes, options.hostElement, options.environmentInjector);
+}
+
+/**
+ * An interface that describes the subset of component metadata
+ * that can be retrieved using the `reflectComponentType` function.
+ *
+ * @publicApi
+ */
+export interface ComponentMirror<C> {
+  /**
+   * The component's HTML selector.
+   */
+  get selector(): string;
+  /**
+   * The type of component the factory will create.
+   */
+  get type(): Type<C>;
+  /**
+   * The inputs of the component.
+   */
+  get inputs(): ReadonlyArray<{propName: string, templateName: string}>;
+  /**
+   * The outputs of the component.
+   */
+  get outputs(): ReadonlyArray<{propName: string, templateName: string}>;
+  /**
+   * Selector for all <ng-content> elements in the component.
+   */
+  get ngContentSelectors(): ReadonlyArray<string>;
+  /**
+   * Whether this component is marked as standalone.
+   * Note: an extra flag, not present in `ComponentFactory`.
+   */
+  get isStandalone(): boolean;
+}
+
+/**
+ * Creates an object that allows to retrieve component metadata.
+ *
+ * @usageNotes
+ *
+ * The example below demonstrates how to use the function and how the fields
+ * of the returned object map to the component metadata.
+ *
+ * ```typescript
+ * @Component({
+ *   standalone: true,
+ *   selector: 'foo-component',
+ *   template: `
+ *     <ng-content></ng-content>
+ *     <ng-content select="content-selector-a"></ng-content>
+ *   `,
+ * })
+ * class FooComponent {
+ *   @Input('inputName') inputPropName: string;
+ *   @Output('outputName') outputPropName = new EventEmitter<void>();
+ * }
+ *
+ * const mirror = reflectComponentType(FooComponent)!;
+ * expect(mirror.type).toBe(FooComponent);
+ * expect(mirror.selector).toBe('foo-component');
+ * expect(mirror.isStandalone).toBe(true);
+ * expect(mirror.inputs).toEqual([{propName: 'inputName', templateName: 'inputPropName'}]);
+ * expect(mirror.outputs).toEqual([{propName: 'outputName', templateName: 'outputPropName'}]);
+ * expect(mirror.ngContentSelectors).toEqual([
+ *   '*',                 // first `<ng-content>` in a template, the selector defaults to `*`
+ *   'content-selector-a' // second `<ng-content>` in a template
+ * ]);
+ * ```
+ *
+ * @param component Component class reference.
+ * @returns An object that allows to retrieve component metadata.
+ *
+ * @publicApi
+ */
+export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C>|null {
+  const componentDef = getComponentDef(component);
+  if (!componentDef) return null;
+
+  const factory = new ComponentFactory<C>(componentDef);
+  return {
+    get selector(): string {
+      return factory.selector;
+    },
+    get type(): Type<C> {
+      return factory.componentType;
+    },
+    get inputs(): ReadonlyArray<{propName: string, templateName: string}> {
+      return factory.inputs;
+    },
+    get outputs(): ReadonlyArray<{propName: string, templateName: string}> {
+      return factory.outputs;
+    },
+    get ngContentSelectors(): ReadonlyArray<string> {
+      return factory.ngContentSelectors;
+    },
+    get isStandalone(): boolean {
+      return componentDef.standalone;
+    },
+  };
 }
