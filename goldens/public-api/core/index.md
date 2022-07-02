@@ -234,6 +234,22 @@ export abstract class ComponentFactoryResolver {
 }
 
 // @public
+export interface ComponentMirror<C> {
+    get inputs(): ReadonlyArray<{
+        propName: string;
+        templateName: string;
+    }>;
+    get isStandalone(): boolean;
+    get ngContentSelectors(): ReadonlyArray<string>;
+    get outputs(): ReadonlyArray<{
+        propName: string;
+        templateName: string;
+    }>;
+    get selector(): string;
+    get type(): Type<C>;
+}
+
+// @public
 export abstract class ComponentRef<C> {
     abstract get changeDetectorRef(): ChangeDetectorRef;
     abstract get componentType(): Type<any>;
@@ -1113,6 +1129,9 @@ export class QueryList<T> implements Iterable<T> {
     // (undocumented)
     toString(): string;
 }
+
+// @public
+export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C> | null;
 
 // @public @deprecated
 export abstract class ReflectiveInjector implements Injector {
