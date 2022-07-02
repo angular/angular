@@ -257,6 +257,17 @@ export enum ErrorCode {
   TEXT_ATTRIBUTE_NOT_BINDING = 8104,
 
   /**
+   * NgForOf is used in a template, but the user forgot to include let
+   * in their statement.
+   *
+   * For example:
+   * ```
+   * <ul><li *ngFor="item of items">{{item["name"]}};</li></ul>
+   * ```
+   */
+  MISSING_NGFOROF_LET = 8105,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */

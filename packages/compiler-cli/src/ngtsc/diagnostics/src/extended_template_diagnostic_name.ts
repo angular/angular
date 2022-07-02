@@ -20,4 +20,5 @@ export enum ExtendedTemplateDiagnosticName {
   NULLISH_COALESCING_NOT_NULLABLE = 'nullishCoalescingNotNullable',
   MISSING_CONTROL_FLOW_DIRECTIVE = 'missingControlFlowDirective',
   TEXT_ATTRIBUTE_NOT_BINDING = 'textAttributeNotBinding',
+  MISSING_NGFOROF_LET = 'missingNgForOfLet'
 }
