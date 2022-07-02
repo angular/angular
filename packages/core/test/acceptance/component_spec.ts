@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {ApplicationRef, Component, ComponentFactoryResolver, ComponentRef, createComponent, createEnvironmentInjector, Directive, ElementRef, EmbeddedViewRef, EnvironmentInjector, inject, Injectable, InjectionToken, Injector, Input, NgModule, OnDestroy, Renderer2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
+import {ApplicationRef, Component, ComponentFactoryResolver, ComponentRef, createComponent, createEnvironmentInjector, Directive, ElementRef, EmbeddedViewRef, EnvironmentInjector, inject, Injectable, InjectionToken, Injector, Input, NgModule, OnDestroy, reflectComponentType, Renderer2, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument} from '@angular/core';
 import {stringifyForError} from '@angular/core/src/render3/util/stringify_utils';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -863,6 +863,93 @@ describe('component', () => {
 
         expect(() => createComponent(AnInjectiable, {hostElement, environmentInjector}))
             .toThrowError(errorFor(AnInjectiable));
+      });
+    });
+  });
+
+  describe('reflectComponentType', () => {
+    it('should create an ComponentMirror for a standalone component', () => {
+      @Component({
+        selector: 'standalone-component',
+        standalone: true,
+        template: `
+          <ng-content></ng-content>
+          <ng-content select="content-selector-a"></ng-content>
+          <ng-content select="content-selector-b"></ng-content>
+          <ng-content></ng-content>
+        `,
+        inputs: ['input-a', 'input-b:input-alias-b'],
+        outputs: ['output-a', 'output-b:output-alias-b'],
+      })
+      class StandaloneComponent {
+      }
+
+      const mirror = reflectComponentType(StandaloneComponent)!;
+
+      expect(mirror.selector).toBe('standalone-component');
+      expect(mirror.type).toBe(StandaloneComponent);
+      expect(mirror.isStandalone).toEqual(true);
+      expect(mirror.inputs).toEqual([
+        {propName: 'input-a', templateName: 'input-a'},
+        {propName: 'input-b', templateName: 'input-alias-b'}
+      ]);
+      expect(mirror.outputs).toEqual([
+        {propName: 'output-a', templateName: 'output-a'},
+        {propName: 'output-b', templateName: 'output-alias-b'}
+      ]);
+      expect(mirror.ngContentSelectors).toEqual([
+        '*', 'content-selector-a', 'content-selector-b', '*'
+      ]);
+    });
+
+    it('should create an ComponentMirror for a non-standalone component', () => {
+      @Component({
+        selector: 'non-standalone-component',
+        template: `
+          <ng-content></ng-content>
+          <ng-content select="content-selector-a"></ng-content>
+          <ng-content select="content-selector-b"></ng-content>
+          <ng-content></ng-content>
+        `,
+        inputs: ['input-a', 'input-b:input-alias-b'],
+        outputs: ['output-a', 'output-b:output-alias-b'],
+      })
+      class NonStandaloneComponent {
+      }
+
+      const mirror = reflectComponentType(NonStandaloneComponent)!;
+
+      expect(mirror.selector).toBe('non-standalone-component');
+      expect(mirror.type).toBe(NonStandaloneComponent);
+      expect(mirror.isStandalone).toEqual(false);
+      expect(mirror.inputs).toEqual([
+        {propName: 'input-a', templateName: 'input-a'},
+        {propName: 'input-b', templateName: 'input-alias-b'}
+      ]);
+      expect(mirror.outputs).toEqual([
+        {propName: 'output-a', templateName: 'output-a'},
+        {propName: 'output-b', templateName: 'output-alias-b'}
+      ]);
+      expect(mirror.ngContentSelectors).toEqual([
+        '*', 'content-selector-a', 'content-selector-b', '*'
+      ]);
+    });
+
+    describe('error checking', () => {
+      it('should throw when provided class is not a component', () => {
+        class NotAnnotated {}
+
+        @Directive()
+        class ADirective {
+        }
+
+        @Injectable()
+        class AnInjectiable {
+        }
+
+        expect(reflectComponentType(NotAnnotated)).toBe(null);
+        expect(reflectComponentType(ADirective)).toBe(null);
+        expect(reflectComponentType(AnInjectiable)).toBe(null);
       });
     });
   });
