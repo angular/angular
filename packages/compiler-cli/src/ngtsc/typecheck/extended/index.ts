@@ -13,6 +13,7 @@ import {factory as invalidBananaInBoxFactory} from './checks/invalid_banana_in_b
 import {factory as missingControlFlowDirectiveFactory} from './checks/missing_control_flow_directive';
 import {factory as missingNgForOfLetFactory} from './checks/missing_ngforof_let';
 import {factory as nullishCoalescingNotNullableFactory} from './checks/nullish_coalescing_not_nullable';
+import {factory as optionalChainNotNullableFactory} from './checks/optional_chain_not_nullable';
 import {factory as suffixNotSupportedFactory} from './checks/suffix_not_supported';
 import {factory as textAttributeNotBindingFactory} from './checks/text_attribute_not_binding';
 
@@ -22,6 +23,7 @@ export const ALL_DIAGNOSTIC_FACTORIES:
     readonly TemplateCheckFactory<ErrorCode, ExtendedTemplateDiagnosticName>[] = [
       invalidBananaInBoxFactory,
       nullishCoalescingNotNullableFactory,
+      optionalChainNotNullableFactory,
       missingControlFlowDirectiveFactory,
       textAttributeNotBindingFactory,
       missingNgForOfLetFactory,

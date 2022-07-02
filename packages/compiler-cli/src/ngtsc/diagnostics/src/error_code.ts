@@ -279,6 +279,18 @@ export enum ErrorCode {
   SUFFIX_NOT_SUPPORTED = 8106,
 
   /**
+   * The left side of an optional chain operation is not nullable.
+   *
+   * ```
+   * {{ foo?.bar }}
+   * {{ foo?.['bar'] }}
+   * {{ foo?.() }}
+   * ```
+   * When the type of foo doesn't include `null` or `undefined`.
+   */
+  OPTIONAL_CHAIN_NOT_NULLABLE = 8107,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
