@@ -11,7 +11,7 @@ import {
 import { ComposeMessageComponent } from './compose-message/compose-message.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
-import { AuthGuard } from './auth/auth.guard';
+import { authGuard } from './auth/auth.guard';
 
 const appRoutes: Routes = [
   {
@@ -22,7 +22,7 @@ const appRoutes: Routes = [
   {
     path: 'admin',
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
-    canLoad: [AuthGuard]
+    canLoad: [authGuard]
   },
   {
     path: 'crisis-center',

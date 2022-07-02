@@ -1,49 +1,38 @@
 // #docplaster
 // #docregion
-import { Injectable } from '@angular/core';
+import { inject } from '@angular/core';
 import {
-  CanActivate, Router,
-  ActivatedRouteSnapshot,
-  RouterStateSnapshot,
-  CanActivateChild,
+  CanActivateFn, CanMatchFn, Router,
+  CanActivateChildFn,
   NavigationExtras,
   UrlTree
 } from '@angular/router';
 import { AuthService } from './auth.service';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class AuthGuard implements CanActivate, CanActivateChild {
-  constructor(private authService: AuthService, private router: Router) {}
+export const authGuard: CanMatchFn|CanActivateFn|CanActivateChildFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): true|UrlTree {
-    const url: string = state.url;
-
-    return this.checkLogin(url);
+  if (authService.isLoggedIn) {
+    return true;
   }
 
-  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): true|UrlTree {
-    return this.canActivate(route, state);
-  }
+  const url = router.getCurrentNavigation()!.extractedUrl.toString();
 
-  checkLogin(url: string): true|UrlTree {
-    if (this.authService.isLoggedIn) { return true; }
+  // Store the attempted URL for redirecting
+  authService.redirectUrl = url;
 
-    // Store the attempted URL for redirecting
-    this.authService.redirectUrl = url;
+  // Create a dummy session id
+  const sessionId = 123456789;
 
-    // Create a dummy session id
-    const sessionId = 123456789;
+  // Set our navigation extras object
+  // that contains our global query params and fragment
+  const navigationExtras: NavigationExtras = {
+    queryParams: { session_id: sessionId },
+    fragment: 'anchor'
+  };
 
-    // Set our navigation extras object
-    // that contains our global query params and fragment
-    const navigationExtras: NavigationExtras = {
-      queryParams: { session_id: sessionId },
-      fragment: 'anchor'
-    };
+  // Redirect to the login page with extras
+  return router.createUrlTree(['/login'], navigationExtras);
+};
 
-    // Redirect to the login page with extras
-    return this.router.createUrlTree(['/login'], navigationExtras);
-  }
-}
