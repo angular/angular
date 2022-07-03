@@ -119,20 +119,6 @@ overrides:
 
 groups:
   # =========================================================
-  #  Renovate PRs
-  #
-  #  All renovate PRs will be assigned to the current
-  #  caretakers for review.
-  # =========================================================
-  renovate-changes:
-    <<: *defaults
-    conditions:
-      - author in ["renovate[bot]"]
-    reviewers:
-      teams:
-        - angular-caretaker
-
-  # =========================================================
   #  Framework: Animations
   # =========================================================
   fw-animations:
