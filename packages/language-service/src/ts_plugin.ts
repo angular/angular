@@ -164,6 +164,38 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return ngLS.getTemplateLocationForComponent(fileName, position);
   }
 
+  function getCodeFixesAtPosition(
+      fileName: string, start: number, end: number, errorCodes: readonly number[],
+      formatOptions: ts.FormatCodeSettings,
+      preferences: ts.UserPreferences): readonly ts.CodeFixAction[] {
+    if (angularOnly) {
+      return ngLS.getCodeFixesAtPosition(
+          fileName, start, end, errorCodes, formatOptions, preferences);
+    } else {
+      const tsLsCodeFixes =
+          tsLS.getCodeFixesAtPosition(fileName, start, end, errorCodes, formatOptions, preferences);
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return tsLsCodeFixes.length > 0 ?
+          tsLsCodeFixes :
+          ngLS.getCodeFixesAtPosition(fileName, start, end, errorCodes, formatOptions, preferences);
+    }
+  }
+
+  function getCombinedCodeFix(
+      scope: ts.CombinedCodeFixScope, fixId: string, formatOptions: ts.FormatCodeSettings,
+      preferences: ts.UserPreferences): ts.CombinedCodeActions {
+    if (angularOnly) {
+      return ngLS.getCombinedCodeFix(scope, fixId, formatOptions, preferences);
+    } else {
+      const tsLsCombinedCodeFix = tsLS.getCombinedCodeFix(scope, fixId, formatOptions, preferences);
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return tsLsCombinedCodeFix.changes.length > 0 ?
+          tsLsCombinedCodeFix :
+          ngLS.getCombinedCodeFix(scope, fixId, formatOptions, preferences);
+    }
+  }
+
+
   return {
     ...tsLS,
     getSemanticDiagnostics,
@@ -181,6 +213,8 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getComponentLocationsForTemplate,
     getSignatureHelpItems,
     getTemplateLocationForComponent,
+    getCodeFixesAtPosition,
+    getCombinedCodeFix,
   };
 }
 

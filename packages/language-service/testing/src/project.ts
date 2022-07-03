@@ -144,6 +144,26 @@ export class Project {
     return diagnostics;
   }
 
+  getCodeFixesAtPosition(
+      projectFileName: string,
+      start: number,
+      end: number,
+      errorCodes: readonly number[],
+      ): readonly ts.CodeFixAction[] {
+    const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
+    return this.ngLS.getCodeFixesAtPosition(fileName, start, end, errorCodes, {}, {});
+  }
+
+  getCombinedCodeFix(projectFileName: string, fixId: string): ts.CombinedCodeActions {
+    const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
+    return this.ngLS.getCombinedCodeFix(
+        {
+          type: 'file',
+          fileName,
+        },
+        fixId, {}, {});
+  }
+
   expectNoSourceDiagnostics(): void {
     const program = this.tsLS.getProgram();
     if (program === undefined) {

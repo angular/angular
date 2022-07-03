@@ -6,11 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseSpan, TmplAstBoundEvent} from '@angular/compiler';
+import {ParseSourceSpan, ParseSpan, TmplAstBoundEvent} from '@angular/compiler';
+import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {findFirstMatchingNode} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
+import * as tss from 'typescript/lib/tsserverlibrary';
 
-import {isBoundEventWithSyntheticHandler, isTemplateNodeWithKeyAndValue, isWithin, isWithinKeyValue} from './utils';
+import {isBoundEventWithSyntheticHandler, isTemplateNodeWithKeyAndValue, isWithin, isWithinKeyValue, TemplateInfo} from './utils';
 
 /**
  * Contextual information for a target position within the template.
@@ -258,6 +261,69 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
   }
 
   return {position, context: nodeInContext, template: context, parent};
+}
+
+function findFirstMatchingNodeForSourceSpan(
+    tcb: tss.Node, sourceSpan: ParseSourceSpan|e.AbsoluteSourceSpan) {
+  return findFirstMatchingNode(
+      tcb,
+      {
+        withSpan: sourceSpan,
+        filter: (node: tss.Node): node is tss.Node => true,
+      },
+  );
+}
+
+/**
+ * A tcb nodes for the template at a given position, include the tcb node of the template.
+ */
+interface TcbNodesInfoForTemplate {
+  componentTcbNode: tss.Node;
+  nodes: tss.Node[];
+}
+
+/**
+ * Return the nodes in `TCB` of the node at the specified cursor `position`.
+ *
+ */
+export function getTcbNodesOfTemplateAtPosition(
+    templateInfo: TemplateInfo, position: number, compiler: NgCompiler): TcbNodesInfoForTemplate|
+    null {
+  const target = getTargetAtPosition(templateInfo.template, position);
+  if (target === null) {
+    return null;
+  }
+
+  const tcb = compiler.getTemplateTypeChecker().getTypeCheckBlock(templateInfo.component);
+  if (tcb === null) {
+    return null;
+  }
+
+  const tcbNodes: (tss.Node|null)[] = [];
+  if (target.context.kind === TargetNodeKind.RawExpression) {
+    const targetNode = target.context.node;
+    if (targetNode instanceof e.PropertyRead) {
+      const tsNode = findFirstMatchingNode(tcb, {
+        withSpan: targetNode.nameSpan,
+        filter: (node): node is tss.PropertyAccessExpression => tss.isPropertyAccessExpression(node)
+      });
+      tcbNodes.push(tsNode?.name ?? null);
+    } else {
+      tcbNodes.push(findFirstMatchingNodeForSourceSpan(tcb, target.context.node.sourceSpan));
+    }
+  } else if (target.context.kind === TargetNodeKind.TwoWayBindingContext) {
+    const targetNodes = target.context.nodes.map(n => n.sourceSpan).map((node) => {
+      return findFirstMatchingNodeForSourceSpan(tcb, node);
+    });
+    tcbNodes.push(...targetNodes);
+  } else {
+    tcbNodes.push(findFirstMatchingNodeForSourceSpan(tcb, target.context.node.sourceSpan));
+  }
+
+  return {
+    nodes: tcbNodes.filter((n): n is tss.Node => n !== null),
+    componentTcbNode: tcb,
+  };
 }
 
 /**

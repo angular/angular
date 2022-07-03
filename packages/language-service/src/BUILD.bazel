@@ -4,7 +4,10 @@ package(default_visibility = ["//packages/language-service:__subpackages__"])
 
 ts_library(
     name = "src",
-    srcs = glob(["*.ts"]),
+    srcs = glob([
+        "*.ts",
+        "**/*.ts",
+    ]),
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli",
