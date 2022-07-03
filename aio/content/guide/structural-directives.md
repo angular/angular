@@ -274,20 +274,17 @@ The type guard lets the type checker infer that the acceptable type of `state` w
 If your structural directive provides a context to the instantiated template, you can properly type it inside the template by providing a static `ngTemplateContextGuard` function.
 The following snippet shows an example of such a function.
 
-<code-example format="typescript" header="myDirective.ts" language="typescript">
-
-&commat;Directive({&hellip;})
-export class ExampleDirective {
-    // Make sure the template checker knows the type of the context with which the
-    // template of this directive will be rendered
-    static ngTemplateContextGuard(
-      dir: ExampleDirective, ctx: unknown
-    ): ctx is ExampleContext { return true; };
-
-    // &hellip;
-}
-
-</code-example>
+<code-tabs linenums="true">
+  <code-pane
+    header="src/app/trigonometry.directive.ts"
+    path="structural-directives/src/app/trigonometry.directive.ts">
+  </code-pane>
+  <code-pane
+    header="src/app/app.component.html (appTrigonometry)"
+    path="structural-directives/src/app/app.component.html"
+    region="appTrigonometry">
+  </code-pane>
+</code-tabs>
 
 <!-- links -->
 

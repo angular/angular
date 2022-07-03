@@ -8,6 +8,7 @@ import { heroSwitchComponents } from './hero-switch.components';
 import { HeroComponent } from './hero.component';
 import { IfLoadedDirective } from './if-loaded.directive';
 import { UnlessDirective } from './unless.directive';
+import { TrigonometryDirective } from './trigonometry.directive';
 
 @NgModule({
   imports: [BrowserModule, FormsModule],
@@ -17,6 +18,7 @@ import { UnlessDirective } from './unless.directive';
     HeroComponent,
     IfLoadedDirective,
     UnlessDirective,
+    TrigonometryDirective,
   ],
   bootstrap: [AppComponent],
 })
