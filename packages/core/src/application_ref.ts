@@ -40,6 +40,7 @@ import {setJitOptions} from './render3/jit/jit_options';
 import {isStandalone} from './render3/jit/module';
 import {createEnvironmentInjector, NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
+import {viewAttachedToChangeDetector} from './render3/util/view_utils';
 import {TESTABILITY} from './testability/testability';
 import {isPromise} from './util/lang';
 import {scheduleMicroTask} from './util/microtask';
@@ -997,11 +998,17 @@ export class ApplicationRef {
     try {
       this._runningTick = true;
       for (let view of this._views) {
-        view.detectChanges();
+        const viewRef = view as unknown as any;
+        if (viewAttachedToChangeDetector(viewRef._lView)) {
+          view.detectChanges();
+        }
       }
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
         for (let view of this._views) {
-          view.checkNoChanges();
+          const viewRef = view as unknown as any;
+          if (viewAttachedToChangeDetector(viewRef._lView)) {
+            view.checkNoChanges();
+          }
         }
       }
     } catch (e) {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, ElementRef, EmbeddedViewRef, Injector, NgModule, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, DoCheck, ElementRef, EmbeddedViewRef, EnvironmentInjector, Injector, NgModule, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {InternalViewRef} from '@angular/core/src/linker/view_ref';
 import {TestBed} from '@angular/core/testing';
 
@@ -135,5 +135,39 @@ describe('ViewRef', () => {
     expect(viewRef.destroyed).toBe(false);
     componentRef.hostView.destroy();
     expect(viewRef.destroyed).toBe(true);
+  });
+
+  it('should not detect changes in views attached to ApplicationRef but marked as detached', () => {
+    @Component({})
+    class DynamicCmp implements DoCheck {
+      checkCount = 0;
+
+      ngDoCheck(): void {
+        this.checkCount++;
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: []});
+    const envInjector = TestBed.inject(EnvironmentInjector);
+    const cfResolver = TestBed.inject(ComponentFactoryResolver);
+    const appRef = TestBed.inject(ApplicationRef);
+
+    const cmpFactory = cfResolver.resolveComponentFactory(DynamicCmp);
+    const cmpRef = cmpFactory.create(Injector.NULL, [], undefined, envInjector);
+
+    // explicit change detection should trigger change detection
+    cmpRef.changeDetectorRef.detectChanges();
+    expect(cmpRef.instance.checkCount).toBe(1);
+
+    // tick on ApplicationRef should trigger change detection
+    appRef.attachView(cmpRef.hostView);
+    appRef.tick();
+    expect(cmpRef.instance.checkCount).toBe(2);
+
+    // detaching ChangeDetector should NOT trigger change detection
+    // case from https://github.com/angular/angular/issues/46690
+    cmpRef.changeDetectorRef.detach();
+    appRef.tick();
+    expect(cmpRef.instance.checkCount).toBe(2);
   });
 });
