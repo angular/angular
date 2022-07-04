@@ -8,6 +8,7 @@
   "semanticCommits": "enabled",
   "semanticCommitScope": "",
   "semanticCommitType": "build",
+  "dependencyDashboard": true,
   "commitBodyTable": true,
   "separateMajorMinor": false,
   "prHourlyLimit": 3,
