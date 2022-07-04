@@ -63,7 +63,7 @@
     "@types/jquery": "3.5.1",
     "@types/node": "^16.11.35",
     "canonical-path": "1.0.0",
-    "concurrently": "^5.0.1",
+    "concurrently": "^7.0.0",
     "copyfiles": "^2.4.1",
     "http-server": "^14.0.0",
     "jasmine-core": "~4.1.0",
