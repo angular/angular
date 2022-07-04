@@ -140,7 +140,7 @@ This class contains a `writeCount` function that logs a number to the console.
 
 Next, the `hello-world-di.component.ts` file defines an Angular component.
 This component contains a button that uses the `writeCount` function of the Logger class.
-To access that function, the `Logger` service is injected into the `HelloWorldDI` class by adding `private logger: Logger` to the constructor.
+To access that function, the `Logger` service is injected into the `HelloWorldDependencyInjectionComponent` class by adding `private logger: Logger` to the constructor.
 
 <code-example format="typescript" language="typescript" path="what-is-angular/src/app/hello-world-di/hello-world-di.component.ts"></code-example>
 
