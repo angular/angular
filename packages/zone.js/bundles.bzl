@@ -19,6 +19,9 @@ BUNDLES_ENTRY_POINTS = {
     "async-test": {
         "entrypoint": _DIR + "testing/async-testing",
     },
+    "async-stack-tagging": {
+        "entrypoint": _DIR + "zone-spec/async-stack-tagging",
+    },
     "fake-async-test": {
         "entrypoint": _DIR + "testing/fake-async",
     },
