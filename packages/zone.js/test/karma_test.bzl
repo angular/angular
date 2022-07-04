@@ -58,6 +58,7 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
             "//packages/zone.js/bundles:zone-patch-resize-observer.umd.js",
             "//packages/zone.js/bundles:zone-patch-message-port.umd.js",
             "//packages/zone.js/bundles:zone-patch-user-media.umd.js",
+            "//packages/zone.js/bundles:async-stack-tagging.umd.js",
             ":" + name + "_rollup.umd",
         ]
 
