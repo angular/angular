@@ -327,21 +327,21 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#67631cd48a5d0cab942279b1205b0e2b1736ae56":
-  version "0.0.0-f5e706a8bd255a86681369fabf0b8ebed4858b30"
-  uid "67631cd48a5d0cab942279b1205b0e2b1736ae56"
-  resolved "https://github.com/angular/dev-infra-private-builds.git#67631cd48a5d0cab942279b1205b0e2b1736ae56"
+"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#fed440324f82e9220f107c74c039210bd9c6ec19":
+  version "0.0.0-b5e4e3227f855adf65529353b73669718bcb8a12"
+  uid fed440324f82e9220f107c74c039210bd9c6ec19
+  resolved "https://github.com/angular/dev-infra-private-builds.git#fed440324f82e9220f107c74c039210bd9c6ec19"
   dependencies:
     "@angular-devkit/build-angular" "14.1.0-next.2"
     "@angular/benchpress" "0.3.0"
     "@babel/core" "^7.16.0"
     "@bazel/buildifier" "5.1.0"
-    "@bazel/concatjs" "5.5.0"
-    "@bazel/esbuild" "5.5.0"
-    "@bazel/protractor" "5.5.0"
-    "@bazel/runfiles" "5.5.0"
-    "@bazel/terser" "5.5.0"
-    "@bazel/typescript" "5.5.0"
+    "@bazel/concatjs" "5.5.1"
+    "@bazel/esbuild" "5.5.1"
+    "@bazel/protractor" "5.5.1"
+    "@bazel/runfiles" "5.5.1"
+    "@bazel/terser" "5.5.1"
+    "@bazel/typescript" "5.5.1"
     "@microsoft/api-extractor" "7.25.2"
     "@types/browser-sync" "^2.26.3"
     "@types/node" "16.10.9"
@@ -357,6 +357,7 @@
     protractor "^7.0.0"
     selenium-webdriver "4.2.0"
     send "^0.18.0"
+    source-map "^0.7.4"
     tmp "^0.2.1"
     "true-case-path" "^2.2.1"
     tslib "^2.3.0"
@@ -1971,15 +1972,6 @@
   resolved "https://registry.yarnpkg.com/@bazel/buildifier/-/buildifier-5.1.0.tgz#ae0b93c5d14b2b080d5a492a8bfee231101b5385"
   integrity sha512-gO0+//hkH+iE3AQ02mYttJAcWiE+rapP8IxmstDhwSqs+CmZJJI8Q1vAaIvMyJUT3NIf7lGljRNpzclkCPk89w==
 
-"@bazel/concatjs@5.5.0":
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/@bazel/concatjs/-/concatjs-5.5.0.tgz#e6104ed70595cae59463ae6b0b5389252566221e"
-  integrity sha512-hwG+ahivR20Z3iTOlkUz3OdwnW/PUaZyyz8BIX+GNUTg6U3rPHK51CavUirMupOU/LRJ5GyCwBNAAtjCyquo2g==
-  dependencies:
-    protobufjs "6.8.8"
-    source-map-support "0.5.9"
-    tsutils "3.21.0"
-
 "@bazel/concatjs@5.5.1":
   version "5.5.1"
   resolved "https://registry.yarnpkg.com/@bazel/concatjs/-/concatjs-5.5.1.tgz#151985de8f8538b5dd8fa744c11c697c12e5f39e"
@@ -1988,11 +1980,6 @@
     protobufjs "6.8.8"
     source-map-support "0.5.9"
     tsutils "3.21.0"
-
-"@bazel/esbuild@5.5.0":
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/@bazel/esbuild/-/esbuild-5.5.0.tgz#51cff0a3f1da93c17cffe3fc52132e25d9aa14b8"
-  integrity sha512-kKB1XupmjPJD2R/JpVz5pQWnSVw6j3HF7gGJhoTzbplqqL7jQLfJLWRKmg286vkNe/g6EGrDG1ONN7dF3DT7lQ==
 
 "@bazel/esbuild@5.5.1":
   version "5.5.1"
@@ -2012,11 +1999,6 @@
     c8 "~7.5.0"
     jasmine-reporters "~2.5.0"
 
-"@bazel/protractor@5.5.0":
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-5.5.0.tgz#d2a0134e91fad9c60c5835bbce99974245315559"
-  integrity sha512-8lXEtjfb77Hku6CdJpUlCCHq4BoXiLMQzW0uJuSGYSZd9oBsHU6u++YrM27Ds/xN8VzsUf4jKBecRpchM3ZOmQ==
-
 "@bazel/protractor@5.5.1":
   version "5.5.1"
   resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-5.5.1.tgz#19f1c2d5fda75157d073295878ddad3592d7c640"
@@ -2029,43 +2011,25 @@
   dependencies:
     "@bazel/worker" "5.5.1"
 
-"@bazel/runfiles@5.5.0":
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/@bazel/runfiles/-/runfiles-5.5.0.tgz#01647efbef624be2eb80d297fa20cdedaed23338"
-  integrity sha512-sFEPFhIkDH//98O71WlT/PJPPi7sNeuA+O0wH312QfNdtgnSpNr7CGwfr0JEztwGn2zC16C119fnzra569Y1Uw==
-
 "@bazel/runfiles@5.5.1":
   version "5.5.1"
   resolved "https://registry.yarnpkg.com/@bazel/runfiles/-/runfiles-5.5.1.tgz#3e5860e51bf4fee07d90e1f1fbdc67241315cb55"
   integrity sha512-5leyQVWMqZVMyjeIpQ/3w6ozP7cUgZMalfdzMYJZtPqekXpAQqeV/jXLPW0f86x2ocIDKEkeMDIpzTB9+FiENg==
-
-"@bazel/terser@5.5.0":
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-5.5.0.tgz#3b2b582a417d99d59ae99b50d74576ca0719c03a"
-  integrity sha512-aBjNmJ7TbcD7cKAdFErYQYXn4OqTvrmqrtN6Z6Wnv82d+23kbEsF427ixgdCO3GTQJDw7+x7K9TP2CGogaGtcg==
 
 "@bazel/terser@5.5.1":
   version "5.5.1"
   resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-5.5.1.tgz#1c11154a03a88ec5477e308b3dea3f86fb335278"
   integrity sha512-YxKXn6Td90EUVjUFzeS5TQFCxtnmVNaVeLTwQLr7rhtq8tQ4BnYbWJcKrWJZAfuFkxoK1iU3PeFtIDoaOXUAOg==
 
-"@bazel/typescript@5.5.0":
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-5.5.0.tgz#053c255acb1b3cac23d24984cd8d5d5542fe1f7c"
-  integrity sha512-Ord0+nCj+B1M4NDbe0uqZf2FyOCzaDAlc4DAsr5UKJrArCipIbMTEAxlsEk+WAYBNAFGO/FS9/zlDtLceqpHqw==
+"@bazel/typescript@5.5.1":
+  version "5.5.1"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-5.5.1.tgz#2a30107f7d0b16ef486a473f204b1ffc72c4d28b"
+  integrity sha512-5CZROZMOsu4m4VZ39oZOd23XBzVg1YyJLy7rYknfJ+cNiEO8beOy+fuCw39MietN6eNEj0YyPqNaRc5B1hs/xw==
   dependencies:
-    "@bazel/worker" "5.5.0"
-    protobufjs "6.8.8"
+    "@bazel/worker" "5.5.1"
     semver "5.6.0"
     source-map-support "0.5.9"
     tsutils "3.21.0"
-
-"@bazel/worker@5.5.0":
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/@bazel/worker/-/worker-5.5.0.tgz#d30b75e46f2052d33bcda251b328d36655a5636f"
-  integrity sha512-pYfjJKg4D1CQ/AJ1UGC5ySyH09gDqNiBrQJ0uMYVewIBW24uOAkKsJfTE2y4ES0UL1Ik758WO0la0mJeFOKScg==
-  dependencies:
-    google-protobuf "^3.6.1"
 
 "@bazel/worker@5.5.1":
   version "5.5.1"
@@ -14887,6 +14851,11 @@ source-map@^0.5.0, source-map@^0.5.6, source-map@^0.5.7:
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
   integrity sha1-igOdLRAh0i0eoUyA2OpGi6LvP8w=
+
+source-map@^0.7.4:
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.4.tgz#a9bbe705c9d8846f4e08ff6765acf0f1b0898656"
+  integrity sha512-l3BikUxvPOcn5E74dZiq5BGsTb5yEwhaTSzccU6t4sDOH8NWJCstKO5QT2CvtFoK6F0saL7p9xHAqHOlCPJygA==
 
 source-map@~0.2.0:
   version "0.2.0"
