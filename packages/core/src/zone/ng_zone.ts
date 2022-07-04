@@ -138,6 +138,11 @@ export class NgZone {
 
     self._outer = self._inner = Zone.current;
 
+    if ((Zone as any)['AsyncStackTaggingZoneSpec']) {
+      const AsyncStackTaggingZoneSpec = (Zone as any)['AsyncStackTaggingZoneSpec'];
+      self._inner = self._inner.fork(new AsyncStackTaggingZoneSpec('Angular'));
+    }
+
     if ((Zone as any)['TaskTrackingZoneSpec']) {
       self._inner = self._inner.fork(new ((Zone as any)['TaskTrackingZoneSpec'] as any));
     }
