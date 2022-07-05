@@ -46,7 +46,7 @@
     document.head.appendChild(tag);
   </script>
 
-  <!-- Google Analytics -->
+  <!-- Legacy Google Analytics -->
   <script>
     // Note this is a customised version of the GA tracking snippet
     // See the comments below for more info
@@ -65,12 +65,15 @@
         m.parentNode.insertBefore(a, m)
     })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
   </script>
-  <!-- End Google Analytics -->
+  <!-- End Legacy Google Analytics -->
 
   <script>
     // Report fatal errors to Google Analytics
     window.onerror = function () {
-      ga('send', 'exception', { exDescription: formatError.apply(null, arguments), exFatal: true });
+      var errDescription = formatError.apply(null, arguments);
+
+      ga('send', 'exception', { exDescription: errDescription, exFatal: true });
+      gtag('event', 'exception', { description: errDescription, fatal: true });
 
       function formatError(msg, url, line, col, e) {
         var stack;
