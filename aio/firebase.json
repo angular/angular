@@ -214,12 +214,14 @@
             // - angular: Angular's main internal policy. Defined in the `@angular/core` package.
             // - angular#bundler: Used by Angular's bundler. Defined in the `webpack` package, enabled by `@angular-devkit/build-angular`.
             // - angular#unsafe-bypass: For bypassSecurityTrust* usage. Defined in the `@angular/core` package.
-            // - aio#analytics: For the Google Analytics snippet. Defined in `index.html`.
+            // - aio#analytics: For the Legacy Google Analytics snippet. Defined in `index.html`.
             // - google#safe: Used by the safevalues library. Defined in the `safevalues` package.
+            // - goog#html: Used by the Global Site Tag (`gtag.js`).
 
             // csp.withgoogle.com is Google's CSP report collecting
             // infrastructure.
-            "value": "require-trusted-types-for 'script'; trusted-types angular angular#bundler angular#unsafe-bypass aio#analytics google#safe; report-uri https://csp.withgoogle.com/csp/angular.io"
+            // NOTE: Keep in sync with the header in `angular.json`.
+            "value": "require-trusted-types-for 'script'; trusted-types angular angular#bundler angular#unsafe-bypass aio#analytics google#safe goog#html; report-uri https://csp.withgoogle.com/csp/angular.io"
           },
           {
             "key": "X-Frame-Options",

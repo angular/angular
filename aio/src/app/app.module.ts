@@ -22,7 +22,7 @@ import { CookiesPopupComponent } from 'app/layout/cookies-popup/cookies-popup.co
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { DtComponent } from 'app/layout/doc-viewer/dt.component';
 import { ModeBannerComponent } from 'app/layout/mode-banner/mode-banner.component';
-import { GaService } from 'app/shared/ga.service';
+import { AnalyticsService } from 'app/shared/analytics.service';
 import { Logger } from 'app/shared/logger.service';
 import { LocationService } from 'app/shared/location.service';
 import { STORAGE_PROVIDERS } from 'app/shared/storage.service';
@@ -174,10 +174,10 @@ export const svgIconProviders = [
     ThemeToggleComponent,
   ],
   providers: [
+    AnalyticsService,
     Deployment,
     DocumentService,
     { provide: ErrorHandler, useClass: ReportingErrorHandler },
-    GaService,
     Logger,
     Location,
     { provide: LocationStrategy, useClass: PathLocationStrategy },

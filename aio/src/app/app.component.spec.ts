@@ -14,7 +14,7 @@ import { NavigationNode, NavigationService } from 'app/navigation/navigation.ser
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { SearchService } from 'app/search/search.service';
 import { Deployment } from 'app/shared/deployment.service';
-import { GaService } from 'app/shared/ga.service';
+import { AnalyticsService } from 'app/shared/analytics.service';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
 import { ScrollService } from 'app/shared/scroll.service';
@@ -1360,7 +1360,7 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
     providers: [
       { provide: APP_BASE_HREF, useValue: '/' },
       { provide: ElementsLoader, useClass: TestElementsLoader },
-      { provide: GaService, useClass: TestGaService },
+      { provide: AnalyticsService, useClass: TestAnalyticsService },
       { provide: HttpClient, useClass: TestHttpClient },
       { provide: LocationService, useFactory: () => mockLocationService },
       { provide: Logger, useClass: MockLogger },
@@ -1383,7 +1383,7 @@ class TestElementsLoader {
       .and.returnValue(Promise.resolve());
 }
 
-class TestGaService {
+class TestAnalyticsService {
   locationChanged = jasmine.createSpy('locationChanged');
 }
 
