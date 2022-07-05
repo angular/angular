@@ -57,7 +57,6 @@ export {
   getDirectives as ɵgetDirectives,
   getHostElement as ɵgetHostElement,
   LifecycleHooksFeature as ɵLifecycleHooksFeature,
-  markDirty as ɵmarkDirty,
   NgModuleFactory as ɵNgModuleFactory,
   NgModuleRef as ɵRender3NgModuleRef,
   NgModuleType as ɵNgModuleType,

@@ -23,7 +23,6 @@ export {getLocaleId, setLocaleId} from './i18n/i18n_locale_id';
 // clang-format off
 export {
   detectChanges,
-  markDirty,
   store,
   tick,
   ɵɵadvance,

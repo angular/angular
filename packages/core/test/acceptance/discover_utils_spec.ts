@@ -14,7 +14,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {getElementStyles} from '@angular/core/testing/src/styling';
 
 import {getLContext} from '../../src/render3/context_discovery';
-import {getHostElement, markDirty} from '../../src/render3/index';
+import {getHostElement} from '../../src/render3/index';
 import {ComponentDebugMetadata, getComponent, getComponentLView, getContext, getDebugNode, getDirectiveMetadata, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils';
 
 describe('discovery utils', () => {
@@ -321,16 +321,6 @@ describe('discovery utils', () => {
       fixture.componentInstance.spanVisible = false;
       fixture.detectChanges();
       expect(getInjectionTokens(span[0])).toEqual([]);
-    });
-  });
-
-  describe('markDirty', () => {
-    it('should re-render component', () => {
-      expect(span[0].textContent).toEqual('INIT');
-      myApp.text = 'WORKS';
-      markDirty(myApp);
-      fixture.detectChanges();
-      expect(span[0].textContent).toEqual('WORKS');
     });
   });
 

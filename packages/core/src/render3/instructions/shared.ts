@@ -1791,46 +1791,6 @@ export function markViewDirty(lView: LView): LView|null {
   return null;
 }
 
-
-/**
- * Used to schedule change detection on the whole application.
- *
- * Unlike `tick`, `scheduleTick` coalesces multiple calls into one change detection run.
- * It is usually called indirectly by calling `markDirty` when the view needs to be
- * re-rendered.
- *
- * Typically `scheduleTick` uses `requestAnimationFrame` to coalesce multiple
- * `scheduleTick` requests. The scheduling function can be overridden in
- * `renderComponent`'s `scheduler` option.
- */
-export function scheduleTick(rootContext: RootContext, flags: RootContextFlags) {
-  const nothingScheduled = rootContext.flags === RootContextFlags.Empty;
-  if (nothingScheduled && rootContext.clean == _CLEAN_PROMISE) {
-    // https://github.com/angular/angular/issues/39296
-    // should only attach the flags when really scheduling a tick
-    rootContext.flags |= flags;
-    let res: null|((val: null) => void);
-    rootContext.clean = new Promise<null>((r) => res = r);
-    rootContext.scheduler(() => {
-      if (rootContext.flags & RootContextFlags.DetectChanges) {
-        rootContext.flags &= ~RootContextFlags.DetectChanges;
-        tickRootContext(rootContext);
-      }
-
-      if (rootContext.flags & RootContextFlags.FlushPlayers) {
-        rootContext.flags &= ~RootContextFlags.FlushPlayers;
-        const playerHandler = rootContext.playerHandler;
-        if (playerHandler) {
-          playerHandler.flushPlayers();
-        }
-      }
-
-      rootContext.clean = _CLEAN_PROMISE;
-      res!(null);
-    });
-  }
-}
-
 export function tickRootContext(rootContext: RootContext) {
   for (let i = 0; i < rootContext.components.length; i++) {
     const rootComponent = rootContext.components[i];
