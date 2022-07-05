@@ -5,9 +5,6 @@
 ```ts
 
 // @public
-export function applyChanges(component: {}): void;
-
-// @public
 export interface ComponentDebugMetadata extends DirectiveDebugMetadata {
     // (undocumented)
     changeDetection: ChangeDetectionStrategy;
@@ -27,9 +24,6 @@ export interface DirectiveDebugMetadata {
 export function getComponent<T>(element: Element): T | null;
 
 // @public
-export function getContext<T extends ({} | RootContext)>(element: Element): T | null;
-
-// @public
 export function getDirectiveMetadata(directiveOrComponentInstance: any): ComponentDebugMetadata | DirectiveDebugMetadata | null;
 
 // @public
@@ -46,9 +40,6 @@ export function getListeners(element: Element): Listener[];
 
 // @public
 export function getOwningComponent<T>(elementOrDir: Element | {}): T | null;
-
-// @public
-export function getRootComponents(elementOrDir: Element | {}): {}[];
 
 // @public
 export interface Listener {

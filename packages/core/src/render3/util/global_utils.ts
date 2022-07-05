@@ -8,8 +8,8 @@
 import {assertDefined} from '../../util/assert';
 import {global} from '../../util/global';
 import {setProfiler} from '../profiler';
-import {applyChanges} from './change_detection_utils';
-import {getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils';
+
+import {getComponent, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent} from './discovery_utils';
 
 
 
@@ -49,14 +49,11 @@ export function publishDefaultGlobalUtils() {
     publishGlobalUtil('ɵsetProfiler', setProfiler);
     publishGlobalUtil('getDirectiveMetadata', getDirectiveMetadata);
     publishGlobalUtil('getComponent', getComponent);
-    publishGlobalUtil('getContext', getContext);
     publishGlobalUtil('getListeners', getListeners);
     publishGlobalUtil('getOwningComponent', getOwningComponent);
     publishGlobalUtil('getHostElement', getHostElement);
     publishGlobalUtil('getInjector', getInjector);
-    publishGlobalUtil('getRootComponents', getRootComponents);
     publishGlobalUtil('getDirectives', getDirectives);
-    publishGlobalUtil('applyChanges', applyChanges);
   }
 }
 

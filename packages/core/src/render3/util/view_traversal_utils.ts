@@ -11,7 +11,7 @@ import {assertLView} from '../assert';
 import {readPatchedLView} from '../context_discovery';
 import {LContainer} from '../interfaces/container';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CONTEXT, FLAGS, LView, LViewFlags, NEXT, PARENT, RootContext} from '../interfaces/view';
+import {CHILD_HEAD, FLAGS, LView, LViewFlags, NEXT, PARENT} from '../interfaces/view';
 
 
 /**
@@ -40,21 +40,6 @@ export function getRootView<T>(componentOrLView: LView|{}): LView<T> {
   ngDevMode && assertLView(lView);
   return lView as LView<T>;
 }
-
-/**
- * Returns the `RootContext` instance that is associated with
- * the application where the target is situated. It does this by walking the parent views until it
- * gets to the root view, then getting the context off of that.
- *
- * @param viewOrComponent the `LView` or component to get the root context for.
- */
-export function getRootContext<T>(viewOrComponent: LView<T>|{}): RootContext {
-  const rootView = getRootView(viewOrComponent);
-  ngDevMode &&
-      assertDefined(rootView[CONTEXT], 'RootView has no context. Perhaps it is disconnected?');
-  return rootView[CONTEXT] as RootContext;
-}
-
 
 /**
  * Gets the first `LContainer` in the LView or `null` if none exists.

@@ -13,7 +13,7 @@ import {removeFromArray} from '../util/array_utils';
 import {assertEqual} from '../util/assert';
 
 import {collectNativeNodes} from './collect_native_nodes';
-import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupWithContext} from './instructions/shared';
+import {checkNoChangesInternal, detectChangesInternal, markViewDirty, storeCleanupWithContext} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
 import {isLContainer} from './interfaces/type_checks';
 import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
@@ -307,26 +307,5 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
           ngDevMode && 'This view is already attached to a ViewContainer!');
     }
     this._appRef = appRef;
-  }
-}
-
-/** @internal */
-export class RootViewRef<T> extends ViewRef<T> {
-  constructor(public _view: LView) {
-    super(_view);
-  }
-
-  override detectChanges(): void {
-    detectChangesInRootView(this._view);
-  }
-
-  override checkNoChanges(): void {
-    if (ngDevMode) {
-      checkNoChangesInRootView(this._view);
-    }
-  }
-
-  override get context(): T {
-    return null!;
   }
 }

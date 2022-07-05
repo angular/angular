@@ -13,7 +13,7 @@ import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, LView, PARENT, T_HOST, TData, TVIEW} from '../render3/interfaces/view';
-import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent} from '../render3/util/discovery_utils';
+import {getComponent, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER} from '../render3/util/misc_utils';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
@@ -79,7 +79,7 @@ export class DebugNode {
    * of heroes"`.
    */
   get context(): any {
-    return getComponent(this.nativeNode as Element) || getContext(this.nativeNode as Element);
+    return getComponent(this.nativeNode as Element);
   }
 
   /**

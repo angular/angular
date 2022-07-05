@@ -8,7 +8,7 @@
 
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
-import {ApplicationRef, Component, Directive, ElementRef, HostBinding, HostListener, NgModule, ɵmarkDirty as markDirty} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, Component, Directive, ElementRef, HostBinding, HostListener, NgModule} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 @Directive({
@@ -41,7 +41,7 @@ class BoxWithOverriddenStylesComponent {
 
   @HostBinding('style') styles = {};
 
-  constructor() {
+  constructor(private _cdRef: ChangeDetectorRef) {
     this.onInActive();
   }
 
@@ -52,7 +52,7 @@ class BoxWithOverriddenStylesComponent {
     } else {
       this.onActive();
     }
-    markDirty(this);
+    this._cdRef.detectChanges();
   }
 
   onActive() {
@@ -105,7 +105,7 @@ class AnimationWorldComponent {
   private _hostElement: HTMLElement;
   public styles: {[key: string]: any}|null = null;
 
-  constructor(element: ElementRef) {
+  constructor(element: ElementRef, private _cdRef: ChangeDetectorRef) {
     this._hostElement = element.nativeElement;
   }
 
@@ -116,7 +116,7 @@ class AnimationWorldComponent {
   toggleActive(item: any, makeColorGrey: MakeColorGreyDirective) {
     item.active = !item.active;
     makeColorGrey.toggle();
-    markDirty(this);
+    this._cdRef.detectChanges();
   }
 }
 

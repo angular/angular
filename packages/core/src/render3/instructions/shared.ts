@@ -19,7 +19,7 @@ import {escapeCommentText} from '../../util/dom';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
 import {stringify} from '../../util/stringify';
 import {assertFirstCreatePass, assertFirstUpdatePass, assertLContainer, assertLView, assertTNodeForLView, assertTNodeForTView} from '../assert';
-import {attachPatchData, readPatchedLView} from '../context_discovery';
+import {attachPatchData} from '../context_discovery';
 import {getFactoryDef} from '../definition_factory';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
@@ -33,7 +33,7 @@ import {Renderer, RendererFactory} from '../interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isRootView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, ID, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, ID, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
@@ -1792,56 +1792,6 @@ export function markViewDirty(lView: LView): LView|null {
 }
 
 
-/**
- * Used to schedule change detection on the whole application.
- *
- * Unlike `tick`, `scheduleTick` coalesces multiple calls into one change detection run.
- * It is usually called indirectly by calling `markDirty` when the view needs to be
- * re-rendered.
- *
- * Typically `scheduleTick` uses `requestAnimationFrame` to coalesce multiple
- * `scheduleTick` requests. The scheduling function can be overridden in
- * `renderComponent`'s `scheduler` option.
- */
-export function scheduleTick(rootContext: RootContext, flags: RootContextFlags) {
-  const nothingScheduled = rootContext.flags === RootContextFlags.Empty;
-  if (nothingScheduled && rootContext.clean == _CLEAN_PROMISE) {
-    // https://github.com/angular/angular/issues/39296
-    // should only attach the flags when really scheduling a tick
-    rootContext.flags |= flags;
-    let res: null|((val: null) => void);
-    rootContext.clean = new Promise<null>((r) => res = r);
-    rootContext.scheduler(() => {
-      if (rootContext.flags & RootContextFlags.DetectChanges) {
-        rootContext.flags &= ~RootContextFlags.DetectChanges;
-        tickRootContext(rootContext);
-      }
-
-      if (rootContext.flags & RootContextFlags.FlushPlayers) {
-        rootContext.flags &= ~RootContextFlags.FlushPlayers;
-        const playerHandler = rootContext.playerHandler;
-        if (playerHandler) {
-          playerHandler.flushPlayers();
-        }
-      }
-
-      rootContext.clean = _CLEAN_PROMISE;
-      res!(null);
-    });
-  }
-}
-
-export function tickRootContext(rootContext: RootContext) {
-  for (let i = 0; i < rootContext.components.length; i++) {
-    const rootComponent = rootContext.components[i];
-    const lView = readPatchedLView(rootComponent);
-    // We might not have an `LView` if the component was destroyed.
-    if (lView !== null) {
-      const tView = lView[TVIEW];
-      renderComponentOrTemplate(tView, lView, tView.template, rootComponent);
-    }
-  }
-}
 
 export function detectChangesInternal<T>(tView: TView, lView: LView, context: T) {
   const rendererFactory = lView[RENDERER_FACTORY];
@@ -1856,37 +1806,10 @@ export function detectChangesInternal<T>(tView: TView, lView: LView, context: T)
   }
 }
 
-/**
- * Synchronously perform change detection on a root view and its components.
- *
- * @param lView The view which the change detection should be performed on.
- */
-export function detectChangesInRootView(lView: LView): void {
-  tickRootContext(lView[CONTEXT] as RootContext);
-}
-
 export function checkNoChangesInternal<T>(tView: TView, view: LView, context: T) {
   setIsInCheckNoChangesMode(true);
   try {
     detectChangesInternal(tView, view, context);
-  } finally {
-    setIsInCheckNoChangesMode(false);
-  }
-}
-
-/**
- * Checks the change detector on a root view and its components, and throws if any changes are
- * detected.
- *
- * This is used in development mode to verify that running change detection doesn't
- * introduce other changes.
- *
- * @param lView The view which the change detection should be checked on.
- */
-export function checkNoChangesInRootView(lView: LView): void {
-  setIsInCheckNoChangesMode(true);
-  try {
-    detectChangesInRootView(lView);
   } finally {
     setIsInCheckNoChangesMode(false);
   }

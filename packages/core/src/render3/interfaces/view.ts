@@ -790,48 +790,6 @@ export interface TView {
   incompleteFirstPass: boolean;
 }
 
-export const enum RootContextFlags {
-  Empty = 0b00,
-  DetectChanges = 0b01,
-  FlushPlayers = 0b10
-}
-
-
-/**
- * RootContext contains information which is shared for all components which
- * were bootstrapped with {@link renderComponent}.
- */
-export interface RootContext<T = unknown> {
-  /**
-   * A function used for scheduling change detection in the future. Usually
-   * this is `requestAnimationFrame`.
-   */
-  scheduler: (workFn: () => void) => void;
-
-  /**
-   * A promise which is resolved when all components are considered clean (not dirty).
-   *
-   * This promise is overwritten every time a first call to {@link markDirty} is invoked.
-   */
-  clean: Promise<null>;
-
-  /**
-   * RootComponents - The components that were instantiated by the call to
-   * {@link renderComponent}.
-   */
-  components: T[];
-
-  /**
-   * The player flushing handler to kick off all animations
-   */
-  playerHandler: PlayerHandler|null;
-
-  /**
-   * What render-related operations to run once a scheduler has been set
-   */
-  flags: RootContextFlags;
-}
-
 /** Single hook callback function. */
 export type HookFn = () => void;
 

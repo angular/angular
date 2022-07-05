@@ -14,8 +14,8 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {getElementStyles} from '@angular/core/testing/src/styling';
 
 import {getLContext} from '../../src/render3/context_discovery';
-import {getHostElement, markDirty} from '../../src/render3/index';
-import {ComponentDebugMetadata, getComponent, getComponentLView, getContext, getDebugNode, getDirectiveMetadata, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils';
+import {getHostElement} from '../../src/render3/index';
+import {ComponentDebugMetadata, getComponent, getComponentLView, getDebugNode, getDirectiveMetadata, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent} from '../../src/render3/util/discovery_utils';
 
 describe('discovery utils', () => {
   let fixture: ComponentFixture<MyApp>;
@@ -126,24 +126,6 @@ describe('discovery utils', () => {
       const childLView = getComponentLView(childComponent[0]);
       expect(isLView(childLView)).toBe(true);
       expect(childLView[CONTEXT] instanceof Child).toBe(true);
-    });
-  });
-
-  describe('getContext', () => {
-    it('should throw when called on non-element', () => {
-      expect(() => getContext(dirA[0] as any)).toThrowError(/Expecting instance of DOM Element/);
-      expect(() => getContext(dirA[1] as any)).toThrowError(/Expecting instance of DOM Element/);
-    });
-    it('should return context from element', () => {
-      expect(getContext<MyApp>(child[0])).toEqual(myApp);
-      expect(getContext<{$implicit: boolean}>(child[2])!.$implicit).toEqual(true);
-      expect(getContext<Child>(p[0])).toEqual(childComponent[0]);
-    });
-    it('should return null for destroyed node', () => {
-      expect(getContext(span[0])).toBeTruthy();
-      fixture.componentInstance.spanVisible = false;
-      fixture.detectChanges();
-      expect(getContext(span[0])).toBeNull();
     });
   });
 
@@ -266,27 +248,6 @@ describe('discovery utils', () => {
     });
   });
 
-  describe('getRootComponents', () => {
-    it('should return root components from component', () => {
-      const rootComponents = [myApp];
-      expect(getRootComponents(myApp)).toEqual(rootComponents);
-      expect(getRootComponents(childComponent[0])).toEqual(rootComponents);
-      expect(getRootComponents(childComponent[1])).toEqual(rootComponents);
-      expect(getRootComponents(dirA[0])).toEqual(rootComponents);
-      expect(getRootComponents(dirA[1])).toEqual(rootComponents);
-      expect(getRootComponents(child[0])).toEqual(rootComponents);
-      expect(getRootComponents(child[1])).toEqual(rootComponents);
-      expect(getRootComponents(div[0])).toEqual(rootComponents);
-      expect(getRootComponents(p[0])).toEqual(rootComponents);
-    });
-    it('should return an empty array for a destroyed node', () => {
-      expect(getRootComponents(span[0])).toEqual([myApp]);
-      fixture.componentInstance.spanVisible = false;
-      fixture.detectChanges();
-      expect(getRootComponents(span[0])).toEqual([]);
-    });
-  });
-
   describe('getListeners', () => {
     it('should return no listeners', () => {
       expect(getListeners(fixture.nativeElement)).toEqual([]);
@@ -321,16 +282,6 @@ describe('discovery utils', () => {
       fixture.componentInstance.spanVisible = false;
       fixture.detectChanges();
       expect(getInjectionTokens(span[0])).toEqual([]);
-    });
-  });
-
-  describe('markDirty', () => {
-    it('should re-render component', () => {
-      expect(span[0].textContent).toEqual('INIT');
-      myApp.text = 'WORKS';
-      markDirty(myApp);
-      fixture.detectChanges();
-      expect(span[0].textContent).toEqual('WORKS');
     });
   });
 
@@ -379,31 +330,6 @@ describe('discovery utils', () => {
 });
 
 describe('discovery utils deprecated', () => {
-  describe('getRootComponents()', () => {
-    it('should return a list of the root components of the application from an element', () => {
-      @Component({selector: 'inner-comp', template: '<div></div>'})
-      class InnerComp {
-      }
-
-      @Component({selector: 'comp', template: '<inner-comp></inner-comp>'})
-      class Comp {
-      }
-
-      TestBed.configureTestingModule({declarations: [Comp, InnerComp]});
-      const fixture = TestBed.createComponent(Comp);
-      fixture.detectChanges();
-
-      const hostElm = fixture.nativeElement;
-      const innerElm = hostElm.querySelector('inner-comp')!;
-      const divElm = hostElm.querySelector('div')!;
-      const component = fixture.componentInstance;
-
-      expect(getRootComponents(hostElm)!).toEqual([component]);
-      expect(getRootComponents(innerElm)!).toEqual([component]);
-      expect(getRootComponents(divElm)!).toEqual([component]);
-    });
-  });
-
   describe('getDirectives()', () => {
     it('should return a list of the directives that are on the given element', () => {
       @Directive({selector: '[my-dir-1]'})

@@ -15,14 +15,12 @@ import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, ge
 import {getComponentDef, getDirectiveDef} from '../definition';
 import {NodeInjector} from '../di';
 import {buildDebugNode} from '../instructions/lview_debug';
-import {LContext} from '../interfaces/context';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
 import {isLView} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, DebugNode, FLAGS, LView, LViewFlags, RootContext, T_HOST, TVIEW, TViewType} from '../interfaces/view';
+import {CLEANUP, CONTEXT, DebugNode, FLAGS, LView, LViewFlags, T_HOST, TVIEW, TViewType} from '../interfaces/view';
 
-import {stringifyForError} from './stringify_utils';
-import {getLViewParent, getRootContext} from './view_traversal_utils';
+import {getLViewParent} from './view_traversal_utils';
 import {getTNode, unwrapRNode} from './view_utils';
 
 
@@ -72,25 +70,6 @@ export function getComponent<T>(element: Element): T|null {
 
 
 /**
- * If inside an embedded view (e.g. `*ngIf` or `*ngFor`), retrieves the context of the embedded
- * view that the element is part of. Otherwise retrieves the instance of the component whose view
- * owns the element (in this case, the result is the same as calling `getOwningComponent`).
- *
- * @param element Element for which to get the surrounding component instance.
- * @returns Instance of the component that is around the element or null if the element isn't
- *    inside any component.
- *
- * @publicApi
- * @globalApi ng
- */
-export function getContext<T extends({} | RootContext)>(element: Element): T|null {
-  assertDomElement(element);
-  const context = getLContext(element)!;
-  const lView = context ? context.lView : null;
-  return lView === null ? null : lView[CONTEXT] as T;
-}
-
-/**
  * Retrieves the component instance whose view contains the DOM element.
  *
  * For example, if `<child-comp>` is used in the template of `<app-comp>`
@@ -115,22 +94,6 @@ export function getOwningComponent<T>(elementOrDir: Element|{}): T|null {
     lView = parent;
   }
   return lView[FLAGS] & LViewFlags.IsRoot ? null : lView[CONTEXT] as unknown as T;
-}
-
-/**
- * Retrieves all root components associated with a DOM element, directive or component instance.
- * Root components are those which have been bootstrapped by Angular.
- *
- * @param elementOrDir DOM element, component or directive instance
- *    for which to retrieve the root components.
- * @returns Root components associated with the target object.
- *
- * @publicApi
- * @globalApi ng
- */
-export function getRootComponents(elementOrDir: Element|{}): {}[] {
-  const lView = readPatchedLView<{}>(elementOrDir);
-  return lView !== null ? [...getRootContext(lView).components as unknown as {}[]] : [];
 }
 
 /**

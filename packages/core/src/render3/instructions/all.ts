@@ -27,7 +27,6 @@
  */
 export * from './attribute';
 export * from './attribute_interpolation';
-export * from './change_detection';
 export * from './template';
 export * from './storage';
 export * from './di';

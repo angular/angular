@@ -15,20 +15,17 @@ import {assertDefined, assertIndexInRange} from '../util/assert';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {throwProviderNotFoundError} from './errors_di';
 import {registerPostOrderHooks} from './hooks';
-import {addToViewTree, CLEAN_PROMISE, createLView, getOrCreateTComponentView, getOrCreateTNode, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, markAsComponentHost, registerHostBindingOpCodes} from './instructions/shared';
+import {addToViewTree, createLView, getOrCreateTComponentView, getOrCreateTNode, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, markAsComponentHost, registerHostBindingOpCodes} from './instructions/shared';
 import {ComponentDef, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {Renderer, RendererFactory} from './interfaces/renderer';
 import {RElement} from './interfaces/renderer_dom';
-import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
+import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, TVIEW} from './interfaces/view';
 import {writeDirectClass, writeDirectStyle} from './node_manipulation';
 import {getCurrentTNode, getLView, setSelectedIndex} from './state';
 import {computeStaticStyling} from './styling/static_styling';
 import {setUpAttributes} from './util/attrs_utils';
-import {defaultScheduler} from './util/misc_utils';
-import {getRootContext} from './util/view_traversal_utils';
-
 
 
 /** Options that control how the component should be bootstrapped. */
@@ -150,13 +147,12 @@ export function createRootComponentView(
  * renderComponent() and ViewContainerRef.createComponent().
  */
 export function createRootComponent<T>(
-    componentView: LView, componentDef: ComponentDef<T>, rootLView: LView, rootContext: RootContext,
+    componentView: LView, componentDef: ComponentDef<T>, rootLView: LView,
     hostFeatures: HostFeature[]|null): any {
   const tView = rootLView[TVIEW];
   // Create directive instance with factory() and store at next index in viewData
   const component = instantiateRootComponent(tView, rootLView, componentDef);
 
-  rootContext.components.push(component);
   componentView[CONTEXT] = component;
 
   if (hostFeatures !== null) {
@@ -190,17 +186,6 @@ export function createRootComponent<T>(
 }
 
 
-export function createRootContext(
-    scheduler?: (workFn: () => void) => void, playerHandler?: PlayerHandler|null): RootContext {
-  return {
-    components: [],
-    scheduler: scheduler || defaultScheduler,
-    clean: CLEAN_PROMISE,
-    playerHandler: playerHandler || null,
-    flags: RootContextFlags.Empty
-  };
-}
-
 /**
  * Used to enable lifecycle hooks on the root component.
  *
@@ -218,24 +203,4 @@ export function LifecycleHooksFeature(): void {
   const tNode = getCurrentTNode()!;
   ngDevMode && assertDefined(tNode, 'TNode is required');
   registerPostOrderHooks(getLView()[TVIEW], tNode);
-}
-
-/**
- * Wait on component until it is rendered.
- *
- * This function returns a `Promise` which is resolved when the component's
- * change detection is executed. This is determined by finding the scheduler
- * associated with the `component`'s render tree and waiting until the scheduler
- * flushes. If nothing is scheduled, the function returns a resolved promise.
- *
- * Example:
- * ```
- * await whenRendered(myComponent);
- * ```
- *
- * @param component Component to wait upon
- * @returns Promise which resolves when the component is rendered.
- */
-export function whenRendered(component: any): Promise<null> {
-  return getRootContext(component).clean;
 }
