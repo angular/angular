@@ -24,9 +24,8 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, options?: {filePatter
     }
 
     root.walkComments(comment => {
-      // The `raws.inline` property isn't in the typing so we need to cast to any. Also allow
-      // comments starting with `!` since they're used to tell minifiers to preserve the comment.
-      if (!(comment.raws as any).inline && !comment.text.startsWith('!')) {
+      // Allow comments starting with `!` since they're used to tell minifiers to preserve the comment.
+      if (!comment.raws.inline && !comment.text.startsWith('!')) {
         utils.report({
           result,
           ruleName,

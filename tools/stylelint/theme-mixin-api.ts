@@ -1,4 +1,4 @@
-import {createPlugin, utils} from 'stylelint';
+import {createPlugin, utils, PostcssResult} from 'stylelint';
 import {basename} from 'path';
 import {AtRule, Declaration, Node} from 'postcss';
 
@@ -49,159 +49,183 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options, context) =>
       const args = matches[2].split(',').map(arg => arg.trim());
 
       if (type === 'theme') {
-        validateThemeMixin(node, args);
+        validateThemeMixin(result, componentName, node, args, !!context.fix);
       } else {
-        validateIndividualSystemMixins(node, type, args);
+        validateIndividualSystemMixins(result, node, type, args, !!context.fix);
       }
     });
-
-    function validateThemeMixin(node: AtRule, args: string[]) {
-      if (args.length !== 1) {
-        reportError(node, 'Expected theme mixin to only declare a single argument.');
-      } else if (args[0] !== '$theme-or-color-config') {
-        if (context.fix) {
-          node.params = node.params.replace(args[0], '$theme-or-color-config');
-        } else {
-          reportError(node, 'Expected first mixin argument to be called `$theme-or-color-config`.');
-        }
-      }
-
-      const themePropName = `$theme`;
-      const legacyColorExtractExpr = anyPattern(
-        `<..>.private-legacy-get-theme($theme-or-color-config)`,
-      );
-      const duplicateStylesCheckExpr = anyPattern(
-        `<..>.private-check-duplicate-theme-styles(${themePropName}, '${componentName}')`,
-      );
-
-      let legacyConfigDecl: Declaration | null = null;
-      let duplicateStylesCheck: AtRule | null = null;
-      let hasNodesOutsideDuplicationCheck = false;
-      let isLegacyConfigRetrievalFirstStatement = false;
-
-      if (node.nodes) {
-        for (let i = 0; i < node.nodes.length; i++) {
-          const childNode = node.nodes[i];
-          if (childNode.type === 'decl' && legacyColorExtractExpr.test(childNode.value)) {
-            legacyConfigDecl = childNode;
-            isLegacyConfigRetrievalFirstStatement = i === 0;
-          } else if (
-            childNode.type === 'atrule' &&
-            childNode.name === 'include' &&
-            duplicateStylesCheckExpr.test(childNode.params)
-          ) {
-            duplicateStylesCheck = childNode;
-          } else if (childNode.type !== 'comment') {
-            hasNodesOutsideDuplicationCheck = true;
-          }
-        }
-      }
-
-      if (!legacyConfigDecl) {
-        reportError(
-          node,
-          `Legacy color API is not handled. Consumers could pass in a ` +
-            `color configuration directly to the theme mixin. For backwards compatibility, ` +
-            `use the following declaration to retrieve the theme object: ` +
-            `${themePropName}: ${legacyColorExtractExpr}`,
-        );
-      } else if (legacyConfigDecl.prop !== themePropName) {
-        reportError(
-          legacyConfigDecl,
-          `For consistency, theme variable should be called: ${themePropName}`,
-        );
-      }
-
-      if (!duplicateStylesCheck) {
-        reportError(
-          node,
-          `Missing check for duplicative theme styles. Please include the ` +
-            `duplicate styles check mixin: ${duplicateStylesCheckExpr}`,
-        );
-      }
-
-      if (hasNodesOutsideDuplicationCheck) {
-        reportError(
-          node,
-          `Expected nodes other than the "${legacyColorExtractExpr}" ` +
-            `declaration to be nested inside the duplicate styles check.`,
-        );
-      }
-
-      if (legacyConfigDecl !== null && !isLegacyConfigRetrievalFirstStatement) {
-        reportError(
-          legacyConfigDecl,
-          'Legacy configuration should be retrieved first in theme mixin.',
-        );
-      }
-    }
-
-    function validateIndividualSystemMixins(node: AtRule, type: string, args: string[]) {
-      if (args.length !== 1) {
-        reportError(node, 'Expected mixin to only declare a single argument.');
-      } else if (args[0] !== '$config-or-theme') {
-        if (context.fix) {
-          node.params = node.params.replace(args[0], '$config-or-theme');
-        } else {
-          reportError(node, 'Expected first mixin argument to be called `$config-or-theme`.');
-        }
-      }
-
-      const expectedProperty = type === 'density' ? '$density-scale' : '$config';
-      const expectedValues =
-        type === 'typography'
-          ? [
-              anyPattern(
-                '<..>.private-typography-to-2014-config(' +
-                  '<..>.get-typography-config($config-or-theme))',
-              ),
-              anyPattern(
-                '<..>.private-typography-to-2018-config(' +
-                  '<..>.get-typography-config($config-or-theme))',
-              ),
-            ]
-          : [anyPattern(`<..>.get-${type}-config($config-or-theme)`)];
-      let configExtractionNode: Declaration | null = null;
-      let nonCommentNodeCount = 0;
-
-      if (node.nodes) {
-        for (const currentNode of node.nodes) {
-          if (currentNode.type !== 'comment') {
-            nonCommentNodeCount++;
-          }
-
-          if (
-            currentNode.type === 'decl' &&
-            expectedValues.some(v => v.test(stripNewlinesAndIndentation(currentNode.value)))
-          ) {
-            configExtractionNode = currentNode;
-            break;
-          }
-        }
-      }
-
-      if (!configExtractionNode && nonCommentNodeCount > 0) {
-        reportError(
-          node,
-          `Config is not extracted. Consumers could pass a theme object. ` +
-            `Extract the configuration by using one of the following:` +
-            expectedValues.map(expectedValue => `${expectedProperty}: ${expectedValue}`).join('\n'),
-        );
-      } else if (configExtractionNode && configExtractionNode.prop !== expectedProperty) {
-        reportError(
-          configExtractionNode,
-          `For consistency, variable for configuration should ` + `be called: ${expectedProperty}`,
-        );
-      }
-    }
-
-    function reportError(node: Node, message: string) {
-      // We need these `as any` casts, because Stylelint uses an older version
-      // of the postcss typings that don't match up with our anymore.
-      utils.report({result: result as any, ruleName, node: node, message});
-    }
   };
 });
+
+/** Validates a `theme` mixin. */
+function validateThemeMixin(
+  result: PostcssResult,
+  componentName: string,
+  node: AtRule,
+  args: string[],
+  shouldFix: boolean,
+) {
+  if (args.length !== 1) {
+    reportError(result, node, 'Expected theme mixin to only declare a single argument.');
+  } else if (args[0] !== '$theme-or-color-config') {
+    if (shouldFix) {
+      node.params = node.params.replace(args[0], '$theme-or-color-config');
+    } else {
+      reportError(
+        result,
+        node,
+        'Expected first mixin argument to be called `$theme-or-color-config`.',
+      );
+    }
+  }
+
+  const themePropName = `$theme`;
+  const legacyColorExtractExpr = anyPattern(
+    `<..>.private-legacy-get-theme($theme-or-color-config)`,
+  );
+  const duplicateStylesCheckExpr = anyPattern(
+    `<..>.private-check-duplicate-theme-styles(${themePropName}, '${componentName}')`,
+  );
+
+  let legacyConfigDecl: Declaration | null = null;
+  let duplicateStylesCheck: AtRule | null = null;
+  let hasNodesOutsideDuplicationCheck = false;
+  let isLegacyConfigRetrievalFirstStatement = false;
+
+  if (node.nodes) {
+    for (let i = 0; i < node.nodes.length; i++) {
+      const childNode = node.nodes[i];
+      if (childNode.type === 'decl' && legacyColorExtractExpr.test(childNode.value)) {
+        legacyConfigDecl = childNode;
+        isLegacyConfigRetrievalFirstStatement = i === 0;
+      } else if (
+        childNode.type === 'atrule' &&
+        childNode.name === 'include' &&
+        duplicateStylesCheckExpr.test(childNode.params)
+      ) {
+        duplicateStylesCheck = childNode;
+      } else if (childNode.type !== 'comment') {
+        hasNodesOutsideDuplicationCheck = true;
+      }
+    }
+  }
+
+  if (!legacyConfigDecl) {
+    reportError(
+      result,
+      node,
+      `Legacy color API is not handled. Consumers could pass in a ` +
+        `color configuration directly to the theme mixin. For backwards compatibility, ` +
+        `use the following declaration to retrieve the theme object: ` +
+        `${themePropName}: ${legacyColorExtractExpr}`,
+    );
+  } else if (legacyConfigDecl.prop !== themePropName) {
+    reportError(
+      result,
+      legacyConfigDecl,
+      `For consistency, theme variable should be called: ${themePropName}`,
+    );
+  }
+
+  if (!duplicateStylesCheck) {
+    reportError(
+      result,
+      node,
+      `Missing check for duplicative theme styles. Please include the ` +
+        `duplicate styles check mixin: ${duplicateStylesCheckExpr}`,
+    );
+  }
+
+  if (hasNodesOutsideDuplicationCheck) {
+    reportError(
+      result,
+      node,
+      `Expected nodes other than the "${legacyColorExtractExpr}" ` +
+        `declaration to be nested inside the duplicate styles check.`,
+    );
+  }
+
+  if (legacyConfigDecl !== null && !isLegacyConfigRetrievalFirstStatement) {
+    reportError(
+      result,
+      legacyConfigDecl,
+      'Legacy configuration should be retrieved first in theme mixin.',
+    );
+  }
+}
+
+/** Validates one of the individual theming mixins (`color`, `typography` etc.) */
+function validateIndividualSystemMixins(
+  result: PostcssResult,
+  node: AtRule,
+  type: string,
+  args: string[],
+  shouldFix: boolean,
+) {
+  if (args.length !== 1) {
+    reportError(result, node, 'Expected mixin to only declare a single argument.');
+  } else if (args[0] !== '$config-or-theme') {
+    if (shouldFix) {
+      node.params = node.params.replace(args[0], '$config-or-theme');
+    } else {
+      reportError(result, node, 'Expected first mixin argument to be called `$config-or-theme`.');
+    }
+  }
+
+  const expectedProperty = type === 'density' ? '$density-scale' : '$config';
+  const expectedValues =
+    type === 'typography'
+      ? [
+          anyPattern(
+            '<..>.private-typography-to-2014-config(' +
+              '<..>.get-typography-config($config-or-theme))',
+          ),
+          anyPattern(
+            '<..>.private-typography-to-2018-config(' +
+              '<..>.get-typography-config($config-or-theme))',
+          ),
+        ]
+      : [anyPattern(`<..>.get-${type}-config($config-or-theme)`)];
+  let configExtractionNode: Declaration | null = null;
+  let nonCommentNodeCount = 0;
+
+  if (node.nodes) {
+    for (const currentNode of node.nodes) {
+      if (currentNode.type !== 'comment') {
+        nonCommentNodeCount++;
+      }
+
+      if (
+        currentNode.type === 'decl' &&
+        expectedValues.some(v => v.test(stripNewlinesAndIndentation(currentNode.value)))
+      ) {
+        configExtractionNode = currentNode;
+        break;
+      }
+    }
+  }
+
+  if (!configExtractionNode && nonCommentNodeCount > 0) {
+    reportError(
+      result,
+      node,
+      `Config is not extracted. Consumers could pass a theme object. ` +
+        `Extract the configuration by using one of the following:` +
+        expectedValues.map(expectedValue => `${expectedProperty}: ${expectedValue}`).join('\n'),
+    );
+  } else if (configExtractionNode && configExtractionNode.prop !== expectedProperty) {
+    reportError(
+      result,
+      configExtractionNode,
+      `For consistency, variable for configuration should ` + `be called: ${expectedProperty}`,
+    );
+  }
+}
+
+/** Reports a lint error. */
+function reportError(result: PostcssResult, node: Node, message: string) {
+  utils.report({result, ruleName, node, message});
+}
 
 /** Figures out the name of the component from a file path. */
 function getComponentNameFromPath(filePath: string): string | null {
