@@ -2,7 +2,7 @@ import { Injector } from '@angular/core';
 import { Location, LocationStrategy, PlatformLocation } from '@angular/common';
 import { MockLocationStrategy } from '@angular/common/testing';
 
-import { GaService } from 'app/shared/ga.service';
+import { AnalyticsService } from 'app/shared/analytics.service';
 import { LocationService } from './location.service';
 import { ScrollService } from './scroll.service';
 
@@ -15,9 +15,9 @@ describe('LocationService', () => {
   beforeEach(() => {
     injector = Injector.create({
       providers: [
-        { provide: LocationService, deps: [GaService, Location, ScrollService, PlatformLocation] },
+        { provide: LocationService, deps: [AnalyticsService, Location, ScrollService, PlatformLocation] },
         { provide: Location, deps: [LocationStrategy, PlatformLocation] },
-        { provide: GaService, useClass: TestGaService, deps: [] },
+        { provide: AnalyticsService, useClass: TestAnalyticsService, deps: [] },
         { provide: LocationStrategy, useClass: MockLocationStrategy, deps: [] },
         { provide: PlatformLocation, useClass: MockPlatformLocation, deps: [] },
         { provide: ScrollService, useClass: MockScrollService, deps: [] }
@@ -579,13 +579,13 @@ describe('LocationService', () => {
     });
   });
 
-  describe('google analytics - GaService#locationChanged', () => {
+  describe('google analytics - AnalyticsService#locationChanged', () => {
 
-    let gaLocationChanged: jasmine.Spy;
+    let locationChanged: jasmine.Spy;
 
     beforeEach(() => {
-      const gaService = injector.get(GaService) as unknown as TestGaService;
-      gaLocationChanged = gaService.locationChanged;
+      const analyticsService = injector.get(AnalyticsService) as unknown as TestAnalyticsService;
+      locationChanged = analyticsService.locationChanged;
       // execute currentPath observable so that gaLocationChanged is called
       service.currentPath.subscribe();
     });
@@ -593,15 +593,15 @@ describe('LocationService', () => {
     it('should call locationChanged with initial URL', () => {
       const initialUrl = location.path().replace(/^\/+/, '');  // strip leading slashes
 
-      expect(gaLocationChanged.calls.count()).withContext('gaService.locationChanged').toBe(1);
-      const args = gaLocationChanged.calls.first().args;
+      expect(locationChanged.calls.count()).withContext('gaService.locationChanged').toBe(1);
+      const args = locationChanged.calls.first().args;
       expect(args[0]).toBe(initialUrl);
     });
 
     it('should call locationChanged when `go` to a page', () => {
       service.go('some-new-url');
-      expect(gaLocationChanged.calls.count()).withContext('gaService.locationChanged').toBe(2);
-      const args = gaLocationChanged.calls.argsFor(1);
+      expect(locationChanged.calls.count()).withContext('gaService.locationChanged').toBe(2);
+      const args = locationChanged.calls.argsFor(1);
       expect(args[0]).toBe('some-new-url');
     });
 
@@ -611,8 +611,8 @@ describe('LocationService', () => {
       service.go('some-new-url#one');
       service.go('some-new-url#two');
       service.go('some-new-url/?foo="true"');
-      expect(gaLocationChanged.calls.count()).withContext('gaService.locationChanged called').toBe(4);
-      const args = gaLocationChanged.calls.allArgs();
+      expect(locationChanged.calls.count()).withContext('gaService.locationChanged called').toBe(4);
+      const args = locationChanged.calls.allArgs();
       expect(args[1]).withContext('same url for hash calls').toEqual(args[2]);
       expect(args[1]).withContext('same url for query string call').toEqual(args[3]);
     });
@@ -620,8 +620,8 @@ describe('LocationService', () => {
     it('should call locationChanged when window history changes', () => {
       location.simulatePopState('/next-url');
 
-      expect(gaLocationChanged.calls.count()).withContext('gaService.locationChanged').toBe(2);
-      const args = gaLocationChanged.calls.argsFor(1);
+      expect(locationChanged.calls.count()).withContext('gaService.locationChanged').toBe(2);
+      const args = locationChanged.calls.argsFor(1);
       expect(args[0]).toBe('next-url');
     });
 
@@ -639,6 +639,6 @@ class MockScrollService {
   removeStoredScrollInfo() { }
 }
 
-class TestGaService {
+class TestAnalyticsService {
   locationChanged = jasmine.createSpy('locationChanged');
 }
