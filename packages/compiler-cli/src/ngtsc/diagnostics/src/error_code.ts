@@ -208,7 +208,7 @@ export enum ErrorCode {
   DUPLICATE_VARIABLE_DECLARATION = 8006,
 
   /**
-   * A template has a two way binding (two bindings created by a single syntactial element)
+   * A template has a two way binding (two bindings created by a single syntactical element)
    * in which the input and output are going to different places.
    */
   SPLIT_TWO_WAY_BINDING = 8007,

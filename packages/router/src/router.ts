@@ -858,7 +858,7 @@ export class Router {
                        return ({...t, targetRouterState});
                      }),
 
-                     /* Once here, we are about to activate syncronously. The assumption is this
+                     /* Once here, we are about to activate synchronously. The assumption is this
                         will succeed, and user code may read from the Router service. Therefore
                         before activation, we need to update router properties storing the current
                         URL and the RouterState, as well as updated the browser URL. All this should
@@ -1419,7 +1419,7 @@ export class Router {
       // The navigator change the location before triggered the browser event,
       // so we need to go back to the current url if the navigation is canceled.
       // Also, when navigation gets cancelled while using url update strategy eager, then we need to
-      // go back. Because, when `urlUpdateSrategy` is `eager`; `setBrowserUrl` method is called
+      // go back. Because, when `urlUpdateStrategy` is `eager`; `setBrowserUrl` method is called
       // before any verification.
       const browserUrlUpdateOccurred =
           (t.source === 'popstate' || this.urlUpdateStrategy === 'eager' ||

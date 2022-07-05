@@ -505,7 +505,7 @@ export function ɵɵpropertyInterpolate8(
  * be conducted at runtime so child components that add new `@Inputs` don't have to be re-compiled.
  *
  * @param propName The name of the property to update.
- * @param values The collection of values and the strings inbetween those values, beginning with a
+ * @param values The collection of values and the strings in between those values, beginning with a
  * string prefix and ending with a string suffix.
  * (e.g. `['prefix', value0, '-', value1, '-', value2, ..., value99, 'suffix']`)
  * @param sanitizer An optional sanitizer function

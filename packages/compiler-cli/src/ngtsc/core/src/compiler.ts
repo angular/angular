@@ -380,7 +380,7 @@ export class NgCompiler {
     perfRecorder.inPhase(PerfPhase.ResourceUpdate, () => {
       if (this.compilation === null) {
         // Analysis hasn't happened yet, so no update is necessary - any changes to resources will
-        // be captured by the inital analysis pass itself.
+        // be captured by the initial analysis pass itself.
         return;
       }
 
@@ -565,8 +565,8 @@ export class NgCompiler {
    *
    * Normally, this operation happens lazily whenever `getDiagnostics` or `prepareEmit` are called.
    * However, certain consumers may wish to allow for an asynchronous phase of analysis, where
-   * resources such as `styleUrls` are resolved asynchonously. In these cases `analyzeAsync` must be
-   * called first, and its `Promise` awaited prior to calling any other APIs of `NgCompiler`.
+   * resources such as `styleUrls` are resolved asynchronously. In these cases `analyzeAsync` must
+   * be called first, and its `Promise` awaited prior to calling any other APIs of `NgCompiler`.
    */
   async analyzeAsync(): Promise<void> {
     if (this.compilation !== null) {

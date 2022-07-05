@@ -381,11 +381,11 @@ class ApplyRedirects {
 
   private applyRedirectCommands(
       segments: UrlSegment[], redirectTo: string, posParams: {[k: string]: UrlSegment}): UrlTree {
-    return this.applyRedirectCreatreUrlTree(
+    return this.applyRedirectCreateUrlTree(
         redirectTo, this.urlSerializer.parse(redirectTo), segments, posParams);
   }
 
-  private applyRedirectCreatreUrlTree(
+  private applyRedirectCreateUrlTree(
       redirectTo: string, urlTree: UrlTree, segments: UrlSegment[],
       posParams: {[k: string]: UrlSegment}): UrlTree {
     const newRoot = this.createSegmentGroup(redirectTo, urlTree.root, segments, posParams);

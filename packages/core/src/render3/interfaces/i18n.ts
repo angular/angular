@@ -238,7 +238,7 @@ export enum I18nCreateOpCode {
   SHIFT = 2,
 
   /**
-   * Should the node be appended to parent imedditatly after creation.
+   * Should the node be appended to parent immediately after creation.
    */
   APPEND_EAGERLY = 0b01,
 

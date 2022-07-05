@@ -225,7 +225,7 @@ function renderFactoryParameters(
  * Compute a global identifier for the given import (`i`).
  *
  * The identifier used to access a package when using the "global" form of a UMD bundle usually
- * follows a special format where snake-case is conveted to camelCase and path separators are
+ * follows a special format where snake-case is converted to camelCase and path separators are
  * converted to dots. In addition there are special cases such as `@angular` is mapped to `ng`.
  *
  * For example
@@ -241,7 +241,7 @@ function renderFactoryParameters(
  *
  * If it turns out that there are packages that are being used via globals, where this approach
  * fails, we should consider implementing a configuration based solution, similar to what would go
- * in a rollup configuration for mapping import paths to global indentifiers.
+ * in a rollup configuration for mapping import paths to global identifiers.
  */
 function getGlobalIdentifier(i: Import): string {
   return i.specifier.replace(/^@angular\//, 'ng.')

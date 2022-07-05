@@ -17,7 +17,7 @@ import {ImportGenerator, NamedImport} from './api/import_generator';
 export interface Import {
   /** The name of the module that has been imported. */
   specifier: string;
-  /** The `ts.Identifer` by which the imported module is known. */
+  /** The `ts.Identifier` by which the imported module is known. */
   qualifier: ts.Identifier;
 }
 

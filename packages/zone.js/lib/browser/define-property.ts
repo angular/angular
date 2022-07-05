@@ -44,9 +44,9 @@ export function propertyPatch() {
     for (const sym of Object.getOwnPropertySymbols(props)) {
       const desc = Object.getOwnPropertyDescriptor(props, sym);
       // Since `Object.getOwnPropertySymbols` returns *all* symbols,
-      // including non-enumberable ones, retrieve property descriptor and check
+      // including non-enumerable ones, retrieve property descriptor and check
       // enumerability there. Proceed with the rewrite only when a property is
-      // enumberable to make the logic consistent with the way regular
+      // enumerable to make the logic consistent with the way regular
       // properties are retrieved (via `Object.keys`, which respects
       // `enumerable: false` flag). More information:
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Enumerability_and_ownership_of_properties#retrieval

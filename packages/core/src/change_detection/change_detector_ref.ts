@@ -68,7 +68,7 @@ export abstract class ChangeDetectorRef {
    *
    * Components are normally marked as dirty (in need of rerendering) when inputs
    * have changed or events have fired in the view. Call this method to ensure that
-   * a component is checked even if these triggers have not occured.
+   * a component is checked even if these triggers have not occurred.
    *
    * <!-- TODO: Add a link to a chapter on OnPush components -->
    *

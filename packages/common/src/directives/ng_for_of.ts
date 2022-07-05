@@ -74,7 +74,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * on an element](guide/structural-directives#one-per-element).
  * If you want to iterate conditionally, for example,
  * put the `*ngIf` on a container element that wraps the `*ngFor` element.
- * For futher discussion, see
+ * For further discussion, see
  * [Structural Directives](guide/structural-directives#one-per-element).
  *
  * @usageNotes

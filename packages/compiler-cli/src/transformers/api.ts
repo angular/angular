@@ -118,12 +118,12 @@ export interface CompilerHost extends ts.CompilerHost, ExtendedTsCompilerHost {
    * E.g.
    * `some_file.ts` -> `some_file.d.ts`
    *
-   * @param referringSrcFileName the soure file that refers to fileName
+   * @param referringSrcFileName the source file that refers to fileName
    */
   toSummaryFileName?(fileName: string, referringSrcFileName: string): string;
   /**
    * Converts a fileName that was processed by `toSummaryFileName` back into a real fileName
-   * given the fileName of the library that is referrig to it.
+   * given the fileName of the library that is referring to it.
    */
   fromSummaryFileName?(fileName: string, referringLibFileName: string): string;
   /**

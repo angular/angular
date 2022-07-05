@@ -45,7 +45,7 @@ export interface LegacyNgcOptions {
    * option only one .metadata.json file is produced that contains all the metadata
    * necessary for symbols exported from the library index.
    * In the generated .ngfactory.ts files flat module index is used to import symbols
-   * including both the public API from the library index as well as shrowded internal
+   * including both the public API from the library index as well as shrouded internal
    * symbols.
    * By default the .ts file supplied in the `files` field is assumed to be the
    * library index. If more than one is specified, uses `libraryIndex` to select the

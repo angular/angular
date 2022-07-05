@@ -2010,7 +2010,7 @@ export interface ParseTemplateOptions {
   /**
    * Render `$localize` message ids with additional legacy message ids.
    *
-   * This option defaults to `true` but in the future the defaul will be flipped.
+   * This option defaults to `true` but in the future the default will be flipped.
    *
    * For now set this option to false if you have migrated the translation files to use the new
    * `$localize` message id format and you are not using compile time translation merging.
