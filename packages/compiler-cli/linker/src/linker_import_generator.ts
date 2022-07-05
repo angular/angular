@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ImportGenerator, NamedImport} from '../../src/ngtsc/translator';
+
 import {FatalLinkerError} from './fatal_linker_error';
 
 /**
@@ -13,7 +14,7 @@ import {FatalLinkerError} from './fatal_linker_error';
  * render, such as Babel.
  *
  * Note that, in the linker, there can only be imports from `@angular/core` and that these imports
- * must be achieved by property access on an `ng` namespace identifer, which is passed in via the
+ * must be achieved by property access on an `ng` namespace identifier, which is passed in via the
  * constructor.
  */
 export class LinkerImportGenerator<TExpression> implements ImportGenerator<TExpression> {

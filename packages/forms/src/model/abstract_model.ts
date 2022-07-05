@@ -263,7 +263,7 @@ export type ɵRawValue<T extends AbstractControl|undefined> = T extends Abstract
 // clang-format off
 
 /**
- * Tokenize splits a string literal S by a delimeter D.
+ * Tokenize splits a string literal S by a delimiter D.
  */
 export type ɵTokenize<S extends string, D extends string> =
   string extends S ? string[] : /* S must be a literal */

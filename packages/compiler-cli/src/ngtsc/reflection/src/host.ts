@@ -28,11 +28,11 @@ export interface BaseDecorator {
    */
   identifier: DecoratorIdentifier|null;
 
-/**
- * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
- * if the decorator was declared in the same module and not imported.
- */
-import: Import|null;
+  /**
+   * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
+   * if the decorator was declared in the same module and not imported.
+   */
+  import: Import|null;
 
   /**
    * TypeScript reference to the decorator itself, or `null` if the decorator is synthesized (e.g.
@@ -724,7 +724,7 @@ export interface ReflectionHost {
    * Determine if an identifier was imported from another module and return `Import` metadata
    * describing its origin.
    *
-   * @param id a TypeScript `ts.Identifer` to reflect.
+   * @param id a TypeScript `ts.Identifier` to reflect.
    *
    * @returns metadata about the `Import` if the identifier was imported from another module, or
    * `null` if the identifier doesn't resolve to an import but instead is locally defined.

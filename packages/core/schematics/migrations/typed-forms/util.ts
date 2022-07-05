@@ -111,7 +111,7 @@ function isUsageOfFormsImport(
   const symbol = typeChecker.getSymbolAtLocation(node);
 
   // We check symbol.declarations because we actually care about the name at the declaration site,
-  // not the usage site. These could be different in the case of overriden constructors.
+  // not the usage site. These could be different in the case of overridden constructors.
   if (!symbol || symbol.declarations === undefined || !symbol.declarations.length) return false;
 
   const decl = symbol.declarations[0];

@@ -157,7 +157,7 @@ export class HttpHeaders {
    * in the returned object.
    *
    * @param name The header name.
-   * @param value The value or values to set or overide for the given header.
+   * @param value The value or values to set or override for the given header.
    *
    * @returns A clone of the HTTP headers object with the newly set header value.
    */

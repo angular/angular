@@ -137,7 +137,7 @@ const wrapFn = function(this: unknown, event: Event) {
   const listener = target[eventNameSymbol];
   let result;
   if (isBrowser && target === internalWindow && event.type === 'error') {
-    // window.onerror have different signiture
+    // window.onerror have different signature
     // https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onerror#window.onerror
     // and onerror callback will prevent default when callback return true
     const errorEvent: ErrorEvent = event as any;

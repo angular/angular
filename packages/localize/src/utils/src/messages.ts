@@ -267,7 +267,7 @@ export function parseMetadata(cooked: string, raw: string): MessageMetadata {
  *
  * @param cooked The cooked version of the message part to parse.
  * @param raw The raw version of the message part to parse.
- * @returns A object containing the metadata (`placeholderName` and `associatedMesssageId`) of the
+ * @returns A object containing the metadata (`placeholderName` and `associatedMessageId`) of the
  *     preceding placeholder, along with the static text that follows.
  */
 export function parsePlaceholder(cooked: string, raw: string):

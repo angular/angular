@@ -53,7 +53,7 @@ export interface RouterOutletContract {
   /**
    * Called by the `Router` when the outlet should activate (create a component).
    */
-  activateWith(activatedRoute: ActivatedRoute, environmnetInjector: EnvironmentInjector|null): void;
+  activateWith(activatedRoute: ActivatedRoute, environmentInjector: EnvironmentInjector|null): void;
   /**
    * Called by the `Router` when the outlet should activate (create a component).
    *

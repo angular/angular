@@ -360,7 +360,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     // Use a `ts.Printer` to generate source code.
     const printer = ts.createPrinter({omitTrailingSemicolon: true});
 
-    // Begin with the intial section of the code text.
+    // Begin with the initial section of the code text.
     let code = textParts[0];
 
     // Process each operation and use the printer to generate source code for it, inserting it into

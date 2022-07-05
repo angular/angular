@@ -40,7 +40,7 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
    * Resolve a `Reference`'d NgModule from a .d.ts file and produce a transitive `ExportScope`
    * listing the directives and pipes which that NgModule exports to others.
    *
-   * This operation relies on a `Reference` instead of a direct TypeScrpt node as the `Reference`s
+   * This operation relies on a `Reference` instead of a direct TypeScript node as the `Reference`s
    * produced depend on how the original NgModule was imported.
    */
   resolve(ref: Reference<ClassDeclaration>): ExportScope|null {

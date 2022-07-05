@@ -475,7 +475,7 @@ function _queryNodeChildren(
       // Renderer2. Note that this is __not__ optimal, because we're walking similar trees multiple
       // times. ViewEngine could do it more efficiently, because all the insertions go through
       // Renderer2, however that's not the case in Ivy. This approach is being used because:
-      // 1. Matching the ViewEngine behavior would mean potentially introducing a depedency
+      // 1. Matching the ViewEngine behavior would mean potentially introducing a dependency
       //    from `Renderer2` to Ivy which could bring Ivy code into ViewEngine.
       // 2. It allows us to capture nodes that were inserted directly via the DOM.
       nativeNode && _queryNativeNodeDescendants(nativeNode, predicate, matches, elementsOnly);

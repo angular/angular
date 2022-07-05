@@ -168,8 +168,8 @@ export interface LView<T = unknown> extends Array<any> {
    * TView.cleanup saves an index to the necessary context in this array.
    *
    * After `LView` is created it is possible to attach additional instance specific functions at the
-   * end of the `lView[CLENUP]` because we know that no more `T` level cleanup functions will be
-   * addeded here.
+   * end of the `lView[CLEANUP]` because we know that no more `T` level cleanup functions will be
+   * added here.
    */
   [CLEANUP]: any[]|null;
 
@@ -516,7 +516,7 @@ export const enum TViewType {
 
   /**
    * `TView` associated with a template. Such as `*ngIf`, `<ng-template>` etc... A `Component`
-   * can have zero or more `Embedede` `TView`s.
+   * can have zero or more `Embedded` `TView`s.
    */
   Embedded = 2,
 }

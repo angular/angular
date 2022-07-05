@@ -333,11 +333,11 @@ export function getLocaleWeekEndRange(locale: string): [WeekDay, WeekDay] {
 }
 
 /**
- * Retrieves a localized date-value formating string.
+ * Retrieves a localized date-value formatting string.
  *
  * @param locale A locale code for the locale format rules to use.
  * @param width The format type.
- * @returns The localized formating string.
+ * @returns The localized formatting string.
  * @see `FormatWidth`
  * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n-overview)
  *

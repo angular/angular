@@ -137,7 +137,7 @@ export class ConstantPool {
         usage = o.variable(name).callFn([]);
       } else {
         // Just declare and use the variable directly, without a function call
-        // indirection. This saves a few bytes and avoids an unncessary call.
+        // indirection. This saves a few bytes and avoids an unnecessary call.
         definition = o.variable(name).set(literal);
         usage = o.variable(name);
       }

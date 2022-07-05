@@ -8,6 +8,7 @@
 import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {NGCC_PROPERTY_EXTENSION} from '../writing/new_entry_point_file_writer';
 import {PackageJsonUpdater} from '../writing/package_json_updater';
+
 import {EntryPointPackageJson, PackageJsonFormatProperties} from './entry_point';
 
 export const NGCC_VERSION = '0.0.0-PLACEHOLDER';
@@ -39,7 +40,7 @@ export function cleanPackageJson(packageJson: EntryPointPackageJson): boolean {
       }
     }
 
-    // Also remove the prebulish script if we modified it
+    // Also remove the prepublish script if we modified it
     const scripts = packageJson.scripts;
     if (scripts !== undefined && scripts.prepublishOnly) {
       delete scripts.prepublishOnly;
