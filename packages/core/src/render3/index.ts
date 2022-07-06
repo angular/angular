@@ -25,7 +25,6 @@ export {
   detectChanges,
   markDirty,
   store,
-  tick,
   ɵɵadvance,
 
   ɵɵattribute,
