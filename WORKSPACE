@@ -7,6 +7,7 @@ workspace(
 )
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("//:yarn.bzl", "YARN_LABEL")
 
 # Add a patch fix for rules_webtesting v0.3.5 required for enabling runfiles on Windows.
 # TODO: Remove the http_archive for this transitive dependency when a release is cut
@@ -94,7 +95,7 @@ yarn_install(
     # Note that we add the postinstall scripts here so that the dependencies are re-installed
     # when the postinstall patches are modified.
     data = [
-        "//:.yarn/releases/yarn-1.22.17.cjs",
+        YARN_LABEL,
         "//:.yarnrc",
         "//:scripts/puppeteer-chromedriver-versions.js",
         "//:scripts/webdriver-manager-update.js",
@@ -109,7 +110,7 @@ yarn_install(
     # We prefer to symlink the `node_modules` to only maintain a single install.
     # See https://github.com/angular/dev-infra/pull/446#issuecomment-1059820287 for details.
     symlink_node_modules = True,
-    yarn = "//:.yarn/releases/yarn-1.22.17.cjs",
+    yarn = YARN_LABEL,
     yarn_lock = "//:yarn.lock",
 )
 
@@ -118,7 +119,7 @@ yarn_install(
     # Note that we add the postinstall scripts here so that the dependencies are re-installed
     # when the postinstall patches are modified.
     data = [
-        "//:.yarn/releases/yarn-1.22.17.cjs",
+        YARN_LABEL,
         "//:.yarnrc",
         "//aio:tools/cli-patches/patch.js",
     ],
@@ -131,27 +132,7 @@ yarn_install(
     # We prefer to symlink the `node_modules` to only maintain a single install.
     # See https://github.com/angular/dev-infra/pull/446#issuecomment-1059820287 for details.
     symlink_node_modules = True,
-    yarn = "//:.yarn/releases/yarn-1.22.17.cjs",
-    yarn_lock = "//aio:yarn.lock",
-)
-
-# Needed for the aio example e2e tests which run with patched node_module resolution through bazel
-yarn_install(
-    name = "docs_examples_npm",
-    data = [
-        "//:.yarn/releases/yarn-1.22.17.cjs",
-        "//:.yarnrc",
-    ],
-    # Currently disabled due to:
-    #  1. Missing Windows support currently.
-    #  2. Incompatibilites with the `ts_library` rule.
-    exports_directories_only = False,
-    manual_build_file_contents = npm_package_archives(),
-    package_json = "//aio/tools/examples/shared:package.json",
-    # We prefer to symlink the `node_modules` to only maintain a single install.
-    # See https://github.com/angular/dev-infra/pull/446#issuecomment-1059820287 for details.
-    symlink_node_modules = True,
-    yarn = "//:.yarn/releases/yarn-1.22.17.cjs",
+    yarn = YARN_LABEL,
     yarn_lock = "//aio:yarn.lock",
 )
 
@@ -215,5 +196,5 @@ http_archive(
 load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
 
 sass_repositories(
-    yarn_script = "//:.yarn/releases/yarn-1.22.17.cjs",
+    yarn_script = YARN_LABEL,
 )
