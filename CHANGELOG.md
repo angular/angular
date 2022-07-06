@@ -1,3 +1,30 @@
+<a name="14.1.0-next.4"></a>
+# 14.1.0-next.4 (2022-07-06)
+## Deprecations
+### core
+- The bit field signature of `inject()` has been deprecated, in favor of the
+  new options object. Correspondingly, `InjectFlags` is deprecated as well.
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6f11a58040](https://github.com/angular/angular/commit/6f11a580406877e440c43df31fae3d5f120cafed) | feat | Add extended diagnostic to warn when text attributes are intended to be bindings ([#46161](https://github.com/angular/angular/pull/46161)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [96c6139c9a](https://github.com/angular/angular/commit/96c6139c9ab35aa6ab2330a5a79a5906d5c2e8be) | feat | add ability to set inputs on ComponentRef ([#46641](https://github.com/angular/angular/pull/46641)) |
+| [a7a14df5f8](https://github.com/angular/angular/commit/a7a14df5f8ff2d1e6a4dba3ac53f4479a6646810) | feat | introduce `EnvironmentInjector.runInContext` API ([#46653](https://github.com/angular/angular/pull/46653)) |
+| [fa52b6e906](https://github.com/angular/angular/commit/fa52b6e906e549e1c6b4a4f4428596d093fb0549) | feat | options object to supersede bit flags for `inject()` ([#46649](https://github.com/angular/angular/pull/46649)) |
+| [af20112222](https://github.com/angular/angular/commit/af20112222fcfa961ff9a2dee4050dd59aa4156e) | feat | support the descendants option for ContentChild queries ([#46638](https://github.com/angular/angular/pull/46638)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6c1357dd7d](https://github.com/angular/angular/commit/6c1357dd7d5f466575398ebc32c581068d9bf2df) | feat | Add stable cancelation code to `NavigationCancel` event ([#46675](https://github.com/angular/angular/pull/46675)) |
+| [e8c7dd10e9](https://github.com/angular/angular/commit/e8c7dd10e93d338456131e11d600bf758ee48634) | fix | Ensure `APP_INITIALIZER` of `enabledBlocking` option completes ([#46026](https://github.com/angular/angular/pull/46026)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, Andrew Scott, Aristeidis Bampakos, Bob Watson, George Kalpakas, Paul Gschwendtner and Pawel Kozlowski
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.5"></a>
 # 14.0.5 (2022-07-06)
 ### router
