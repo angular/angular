@@ -183,23 +183,23 @@ describe('site App', () => {
 
   describe('google analytics', () => {
 
-    it('should call ga with initial URL', async () => {
+    it('should call legacy ga with initial URL', async () => {
       await page.navigateTo('api');
 
       const path = await page.locationPath();
-      const calls = await page.ga();
+      const calls = await page.legacyGa();
 
       // The last call (length-1) will be the `send` command
       // The second to last call (length-2) will be the command to `set` the page url
       expect(calls[calls.length - 2]).toEqual(['set', 'page', path]);
     });
 
-    it('should call ga with new URL on navigation', async () => {
+    it('should call legacy ga with new URL on navigation', async () => {
       await page.navigateTo('');
       await page.click(page.getTopMenuLink('features'));
 
       const path = await page.locationPath();
-      const calls = await page.ga();
+      const calls = await page.legacyGa();
 
       // The last call (length-1) will be the `send` command
       // The second to last call (length-2) will be the command to `set` the page url
