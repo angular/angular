@@ -34,6 +34,7 @@ sass_library(
     deps = [
         "//:mdc_sass_lib",
         "//src/material:sass_lib",
+        "//src/material-experimental/mdc-form-field:mdc_form_field_scss_lib",
         "//src/material/core:core_scss_lib",
     ],
 )
@@ -43,7 +44,6 @@ sass_binary(
     src = "paginator.scss",
     deps = [
         "//src/cdk:sass_lib",
-        "//src/material-experimental/mdc-form-field:mdc_form_field_scss_lib",
     ],
 )
 

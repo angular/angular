@@ -1,5 +1,4 @@
 @use '@angular/cdk';
-@use '../mdc-form-field/form-field-theme';
 
 $padding: 0 8px;
 $page-size-margin-right: 8px;
@@ -13,10 +12,6 @@ $button-icon-size: 28px;
 
 .mat-mdc-paginator {
   display: block;
-
-  // We need the form field to be as narrow as possible in order to fit
-  // into the paginator so we always use the densest layout available.
-  @include form-field-theme.density(minimum);
 
   // This element reserves space for hints and error messages.
   // Hide it since we know that we won't need it.

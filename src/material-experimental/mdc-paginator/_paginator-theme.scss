@@ -1,7 +1,9 @@
+@use 'sass:map';
+@use 'sass:meta';
 @use '@angular/material' as mat;
 @use '@material/density' as mdc-density;
 @use '@material/typography' as mdc-typography;
-@use 'sass:map';
+@use '../mdc-form-field/form-field-theme';
 
 @use './paginator-variables';
 
@@ -65,6 +67,18 @@
   $density-scale: mat.get-density-config($config-or-theme);
   $height: mdc-density.prop-value(
       paginator-variables.$density-config, $density-scale, height);
+
+  .mat-mdc-paginator {
+    // We need the form field to be narrower in order to fit into the paginator,
+    // so we set its density to be -4 or denser.
+    @if ((meta.type-of($density-scale) == 'number' and $density-scale >= -4) or
+         $density-scale == maximum) {
+      @include form-field-theme.density(-4);
+    }
+    @else {
+      @include form-field-theme.density($density-scale);
+    }
+  }
 
   .mat-mdc-paginator-container {
     min-height: $height;
