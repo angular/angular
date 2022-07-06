@@ -13,6 +13,8 @@ import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics
 import {NgTemplateDiagnostic} from '../../../api';
 import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
 
+const STYLE_SUFFIXES = ['px', '%', 'em'];
+
 /**
  * A check which detects when the `.px`, `.%`, and `.em` suffixes are used with an attribute
  * binding. These suffixes are only available for style bindings.
@@ -25,14 +27,16 @@ class SuffixNotSupportedCheck extends TemplateCheckWithVisitor<ErrorCode.SUFFIX_
       node: TmplAstNode|AST): NgTemplateDiagnostic<ErrorCode.SUFFIX_NOT_SUPPORTED>[] {
     if (!(node instanceof TmplAstBoundAttribute)) return [];
 
-    if (!node.name.startsWith('attr.') ||
-        (!node.name.endsWith('.px') && !node.name.endsWith('.%') && !node.name.endsWith('.em'))) {
+    if (!node.keySpan.toString().startsWith('attr.') ||
+        !STYLE_SUFFIXES.some(suffix => node.name.endsWith(`.${suffix}`))) {
       return [];
     }
 
     const diagnostic = ctx.makeTemplateDiagnostic(
         node.keySpan,
-        'The `.px`, `.%`, `.em`, etc. suffixes are only supported on style bindings.');
+        `The ${
+            STYLE_SUFFIXES.map(suffix => `'.${suffix}'`)
+                .join(', ')} suffixes are only supported on style bindings.`);
     return [diagnostic];
   }
 }
