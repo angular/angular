@@ -532,6 +532,7 @@ export function getBootstrapListener() {
     if (injector.get(INITIAL_NAVIGATION, null, InjectFlags.Optional) === null) {
       afterNextNavigation(router, () => {
         if (!router.navigated) {
+          NG_DEV_MODE && warnOfFailedInitialNavigation();
           router.navigateByUrl('/');
         }
       });
@@ -641,6 +642,7 @@ function provideEnabledBlockingInitialNavigation(): Provider {
                   initNavigation = true;
                 }
                 if (!router.navigated) {
+                  NG_DEV_MODE && warnOfFailedInitialNavigation();
                   router.navigateByUrl('/').then(() => {
                     complete();
                   });
@@ -669,6 +671,10 @@ function provideEnabledBlockingInitialNavigation(): Provider {
       }
     },
   ];
+}
+
+function warnOfFailedInitialNavigation() {
+  console.warn('Initial navigation failed. Navigating to application root.');
 }
 
 const INITIAL_NAVIGATION =
