@@ -8,9 +8,9 @@
       "cmd": "yarn",
       "args": [
         "e2e",
-        "--protractor-config=e2e/protractor-puppeteer.conf.js",
+        "--protractor-config=e2e/protractor-bazel.conf.js",
         "--no-webdriver-update",
-        "--port={PORT}"
+        "--port=0"
       ]
     }
   ]
