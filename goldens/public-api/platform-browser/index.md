@@ -63,6 +63,9 @@ export class By {
 }
 
 // @public
+export function createApplication(options?: ApplicationConfig): Promise<ApplicationRef>;
+
+// @public
 export function disableDebugTools(): void;
 
 // @public

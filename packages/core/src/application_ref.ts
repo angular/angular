@@ -177,7 +177,8 @@ export function runPlatformInitializers(injector: Injector): void {
 }
 
 /**
- * Internal bootstrap application API that implements the core bootstrap logic.
+ * Internal create application API that implements the core application creation logic and optional
+ * bootstrap logic.
  *
  * Platforms (such as `platform-browser`) may require different set of application and platform
  * providers for an application to function correctly. As a result, platforms may use this function
@@ -186,17 +187,20 @@ export function runPlatformInitializers(injector: Injector): void {
  *
  * @returns A promise that returns an `ApplicationRef` instance once resolved.
  */
-export function internalBootstrapApplication(config: {
-  rootComponent: Type<unknown>,
+export function internalCreateApplication(config: {
+  rootComponent?: Type<unknown>,
   appProviders?: Array<Provider|ImportedNgModuleProviders>,
   platformProviders?: Provider[],
 }): Promise<ApplicationRef> {
   const {rootComponent, appProviders, platformProviders} = config;
-  NG_DEV_MODE && assertStandaloneComponentType(rootComponent);
+
+  if (NG_DEV_MODE && rootComponent !== undefined) {
+    assertStandaloneComponentType(rootComponent);
+  }
 
   const platformInjector = createOrReusePlatformInjector(platformProviders as StaticProvider[]);
 
-  const ngZone = new NgZone(getNgZoneOptions());
+  const ngZone = getNgZone('zone.js', getNgZoneOptions());
 
   return ngZone.run(() => {
     // Create root application injector based on a set of providers configured at the platform
@@ -205,10 +209,11 @@ export function internalBootstrapApplication(config: {
       {provide: NgZone, useValue: ngZone},  //
       ...(appProviders || []),              //
     ];
-    const appInjector = createEnvironmentInjector(
+
+    const envInjector = createEnvironmentInjector(
         allAppProviders, platformInjector as EnvironmentInjector, 'Environment Injector');
 
-    const exceptionHandler: ErrorHandler|null = appInjector.get(ErrorHandler, null);
+    const exceptionHandler: ErrorHandler|null = envInjector.get(ErrorHandler, null);
     if (NG_DEV_MODE && !exceptionHandler) {
       throw new RuntimeError(
           RuntimeErrorCode.ERROR_HANDLER_NOT_FOUND,
@@ -223,27 +228,30 @@ export function internalBootstrapApplication(config: {
         }
       });
     });
+
+    // If the whole platform is destroyed, invoke the `destroy` method
+    // for all bootstrapped applications as well.
+    const destroyListener = () => envInjector.destroy();
+    const onPlatformDestroyListeners = platformInjector.get(PLATFORM_DESTROY_LISTENERS);
+    onPlatformDestroyListeners.add(destroyListener);
+
+    envInjector.onDestroy(() => {
+      onErrorSubscription.unsubscribe();
+      onPlatformDestroyListeners.delete(destroyListener);
+    });
+
     return _callAndReportToErrorHandler(exceptionHandler!, ngZone, () => {
-      const initStatus = appInjector.get(ApplicationInitStatus);
+      const initStatus = envInjector.get(ApplicationInitStatus);
       initStatus.runInitializers();
+
       return initStatus.donePromise.then(() => {
-        const localeId = appInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
+        const localeId = envInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
         setLocaleId(localeId || DEFAULT_LOCALE_ID);
 
-        const appRef = appInjector.get(ApplicationRef);
-
-        // If the whole platform is destroyed, invoke the `destroy` method
-        // for all bootstrapped applications as well.
-        const destroyListener = () => appRef.destroy();
-        const onPlatformDestroyListeners = platformInjector.get(PLATFORM_DESTROY_LISTENERS, null);
-        onPlatformDestroyListeners?.add(destroyListener);
-
-        appRef.onDestroy(() => {
-          onPlatformDestroyListeners?.delete(destroyListener);
-          onErrorSubscription.unsubscribe();
-        });
-
-        appRef.bootstrap(rootComponent);
+        const appRef = envInjector.get(ApplicationRef);
+        if (rootComponent !== undefined) {
+          appRef.bootstrap(rootComponent);
+        }
         return appRef;
       });
     });
@@ -493,7 +501,7 @@ export class PlatformRef {
   }
 
   private _moduleDoBootstrap(moduleRef: InternalNgModuleRef<any>): void {
-    const appRef = moduleRef.injector.get(ApplicationRef) as ApplicationRef;
+    const appRef = moduleRef.injector.get(ApplicationRef);
     if (moduleRef._bootstrapComponents.length > 0) {
       moduleRef._bootstrapComponents.forEach(f => appRef.bootstrap(f));
     } else if (moduleRef.instance.ngDoBootstrap) {
