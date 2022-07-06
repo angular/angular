@@ -970,8 +970,9 @@ export class Router {
                           * the pre-error state. */
                        } else {
                          this.restoreHistory(t, true);
-                         const navError =
-                             new NavigationError(t.id, this.serializeUrl(t.extractedUrl), e);
+                         const navError = new NavigationError(
+                             t.id, this.serializeUrl(t.extractedUrl), e,
+                             t.targetSnapshot ?? undefined);
                          eventsSubject.next(navError);
                          try {
                            t.resolve(this.errorHandler(e));

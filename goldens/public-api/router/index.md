@@ -388,9 +388,11 @@ export class NavigationError extends RouterEvent {
     constructor(
     id: number,
     url: string,
-    error: any);
+    error: any,
+    target?: RouterStateSnapshot | undefined);
     // (undocumented)
     error: any;
+    readonly target?: RouterStateSnapshot | undefined;
     // (undocumented)
     toString(): string;
     // (undocumented)

@@ -244,7 +244,14 @@ export class NavigationError extends RouterEvent {
       /** @docsNotRequired */
       url: string,
       /** @docsNotRequired */
-      public error: any) {
+      public error: any,
+      /**
+       * The target of the navigation when the error occurred.
+       *
+       * Note that this can be `undefined` because an error could have occurred before the
+       * `RouterStateSnapshot` was created for the navigation.
+       */
+      readonly target?: RouterStateSnapshot) {
     super(id, url);
   }
 
