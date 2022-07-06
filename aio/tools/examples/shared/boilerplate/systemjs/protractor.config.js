@@ -11,18 +11,17 @@
 //   To do all steps, try:  `npm run e2e`
 
 var fs = require('fs');
-var path = require('canonical-path');
 var _ = require('lodash');
-
 
 exports.config = {
   directConnect: true,
+  chromeDriver: process.env.CHROMEDRIVER_BIN,
 
   // Capabilities to be passed to the webdriver instance.
   capabilities: {
     browserName: 'chrome',
     chromeOptions: {
-      binary: require('puppeteer').executablePath(),
+      binary: process.env.CHROME_BIN,
       // See /integration/README.md#browser-tests for more info on these args
       args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage', '--hide-scrollbars', '--mute-audio'],
     },
