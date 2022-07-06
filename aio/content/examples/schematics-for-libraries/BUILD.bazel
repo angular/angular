@@ -4,4 +4,5 @@ package(default_visibility = ["//visibility:public"])
 
 docs_example(
     name = "schematics-for-libraries",
+    test = False,
 )

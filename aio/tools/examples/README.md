@@ -89,7 +89,7 @@ The file is expected to contain a JSON object with zero or more of the following
       "args": [
         "e2e",
         "--configuration=production",
-        "--protractor-config=e2e/protractor-puppeteer.conf.js",
+        "--protractor-config=e2e/protractor-bazel.conf.js",
         "--no-webdriver-update",
         "--port={PORT}"
       ]
