@@ -1,5 +1,7 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//aio/tools:defaults.bzl", "nodejs_test")
+load("//:yarn.bzl", "YARN_LABEL")
 
 # This map controls which examples are included and whether or not to generate
 # a stackblitz live examples and zip archives. Keys are the example name, and values
@@ -96,11 +98,13 @@ EXAMPLES = {
     "what-is-angular": {"stackblitz": True, "zip": True},
 }
 
-def docs_example(name):
+def docs_example(name, test = True, test_tags = []):
     """Stamp targets for adding boilerplate to examples, creating live examples, and creating zips.
 
     Args:
         name: name of the example
+        test: whether to run e2e tests
+        test_tags: tags to add to e2e tests
     """
     if name not in EXAMPLES:
         # buildifier: disable=print
@@ -119,6 +123,7 @@ def docs_example(name):
         env = {
             "BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH": "$(@D)",
         },
+        data = [":files"],
         output_dir = True,
         tool = "//aio/tools/examples:example-boilerplate",
     )
@@ -134,6 +139,7 @@ def docs_example(name):
         ],
         replace_prefixes = {
             "boilerplate": "",
+            "aio/tools/examples/shared": "",
         },
         allow_overwrites = True,
     )
@@ -169,3 +175,38 @@ def docs_example(name):
             outs = outs,
             tool = "//aio/tools/example-zipper:generate-example-zip",
         )
+
+    if test:
+        # These node_modules deps are symlinked into each example. These tree
+        # artifact folder names must still be "node_modules" despite the symlink
+        # being named node_modules. Otherwise, some deps will fail to resolve.
+        node_modules_deps = {
+            "local": "//aio/tools/examples/shared:local/node_modules",
+            "npm": "//aio/tools/examples/shared:node_modules",
+        }
+
+        for [node_modules_source, node_modules_label] in node_modules_deps.items():
+            nodejs_test(
+                name = "e2e_%s" % node_modules_source,
+                data = [
+                    ":%s" % name,
+                    YARN_LABEL,
+                    node_modules_label,
+                    "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium",
+                ],
+                args = [
+                    "$(rootpath :%s)" % name,
+                    "$(rootpath %s)" % node_modules_label,
+                    "$(rootpath %s)" % YARN_LABEL,
+                ],
+                configuration_env_vars = ["NG_BUILD_CACHE"],
+                entry_point = "//aio/tools/examples:run-example-e2e",
+                env = {
+                    "CHROME_BIN": "$(CHROMIUM)",
+                    "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
+                },
+                toolchains = [
+                    "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias",
+                ],
+                tags = test_tags,
+            )

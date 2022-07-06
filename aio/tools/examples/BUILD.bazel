@@ -1,4 +1,5 @@
 load("//aio/tools:defaults.bzl", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
 
 package(default_visibility = ["//visibility:public"])
@@ -52,5 +53,23 @@ nodejs_binary(
 jasmine_node_test(
     name = "create-example-test",
     srcs = ["create-example.spec.js"],
-    deps = CREATE_EXAMPLE_SRCS + CREATE_EXAMPLE_DEPS,
+    deps =
+        CREATE_EXAMPLE_SRCS + CREATE_EXAMPLE_DEPS,
+)
+
+js_library(
+    name = "run-example-e2e",
+    srcs = [
+        "run-example-e2e.mjs",
+    ],
+    deps = [
+        "@aio_npm//@bazel/runfiles",
+        "@aio_npm//canonical-path",
+        "@aio_npm//cross-spawn",
+        "@aio_npm//fs-extra",
+        "@aio_npm//globby",
+        "@aio_npm//shelljs",
+        "@aio_npm//tree-kill",
+        "@aio_npm//yargs",
+    ],
 )
