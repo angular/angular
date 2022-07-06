@@ -1,3 +1,14 @@
+<a name="14.0.5"></a>
+# 14.0.5 (2022-07-06)
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a3bd65e2b8](https://github.com/angular/angular/commit/a3bd65e2b87a2b5676c920778598fa6afd2cda9f) | fix | Ensure `APP_INITIALIZER` of `enabledBlocking` option completes ([#46634](https://github.com/angular/angular/pull/46634)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bob Watson, George Kalpakas, Paul Gschwendtner and Pawel Kozlowski
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.0-next.3"></a>
 # 14.1.0-next.3 (2022-06-29)
 ### animations
