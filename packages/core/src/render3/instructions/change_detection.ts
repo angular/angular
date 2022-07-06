@@ -41,21 +41,3 @@ export function markDirty(component: {}): void {
   ngDevMode && assertDefined(rootView[CONTEXT], 'rootContext should be defined');
   scheduleTick(rootView[CONTEXT] as RootContext, RootContextFlags.DetectChanges);
 }
-
-/**
- * Used to perform change detection on the whole application.
- *
- * This is equivalent to `detectChanges`, but invoked on root component. Additionally, `tick`
- * executes lifecycle hooks and conditionally checks components based on their
- * `ChangeDetectionStrategy` and dirtiness.
- *
- * The preferred way to trigger change detection is to call `markDirty`. `markDirty` internally
- * schedules `tick` using a scheduler in order to coalesce multiple `markDirty` calls into a
- * single change detection run. By default, the scheduler is `requestAnimationFrame`, but can
- * be changed when calling `renderComponent` and providing the `scheduler` option.
- */
-export function tick(component: {}): void {
-  const rootView = getRootView(component);
-  const rootContext = rootView[CONTEXT] as RootContext;
-  tickRootContext(rootContext);
-}
