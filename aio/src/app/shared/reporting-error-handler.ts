@@ -1,5 +1,6 @@
-import { ErrorHandler, Inject, Injectable, VERSION } from '@angular/core';
-import { WindowToken } from './window';
+import { ErrorHandler, Injectable, VERSION } from '@angular/core';
+import { formatErrorForAnalytics } from './analytics-format-error';
+import { AnalyticsService } from './analytics.service';
 
 /**
  * Extend the default error handling to report errors to an external service - e.g Google Analytics.
@@ -9,7 +10,7 @@ import { WindowToken } from './window';
 @Injectable()
 export class ReportingErrorHandler extends ErrorHandler {
 
-  constructor(@Inject(WindowToken) private window: Window) {
+  constructor(private _analytics: AnalyticsService) {
     super();
   }
 
@@ -47,19 +48,17 @@ export class ReportingErrorHandler extends ErrorHandler {
   }
 
   private reportError(error: unknown) {
-    if (this.window.onerror) {
-      if (error instanceof Error) {
-        this.window.onerror(error.message, undefined, undefined, undefined, error);
-      } else {
-        if (typeof error === 'object') {
-          try {
-            error = JSON.stringify(error);
-          } catch {
-            // Ignore the error and just let it be stringified.
-          }
+    if (error instanceof Error) {
+      this._analytics.reportError(formatErrorForAnalytics(error));
+    } else {
+      if (typeof error === 'object') {
+        try {
+          error = JSON.stringify(error);
+        } catch {
+          // Ignore the error and just let it be stringified.
         }
-        this.window.onerror(`${error}`);
       }
+      this._analytics.reportError(`${error}`);
     }
   }
 }
