@@ -89,7 +89,8 @@
       // For the non-upgraded notch label (i.e. when rendered on the server), also
       // use the correct `body1` typography level.
       .mdc-floating-label--float-above {
-        font-size: mdc-typography.get-size(body1) * 0.75;
+        font-size: calc(#{
+            mdc-typography.get-size(body1)} * var(--mat-mdc-form-field-floating-label-scale, 0.75));
       }
       .mdc-notched-outline--upgraded .mdc-floating-label--float-above {
         font-size: mdc-typography.get-size(body1);

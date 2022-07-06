@@ -46,7 +46,7 @@
   <div class="mat-mdc-form-field-flex">
     <div *ngIf="_hasOutline()" matFormFieldNotchedOutline
          [matFormFieldNotchedOutlineOpen]="_shouldLabelFloat()"
-         [matFormFieldNotchedOutlineWidth]="_outlineNotchWidth">
+         [matFormFieldNotchedOutlineLabelWidth]="_labelWidth">
       <ng-template [ngIf]="!_forceDisplayInfixLabel()">
         <ng-template [ngTemplateOutlet]="labelTemplate"></ng-template>
       </ng-template>

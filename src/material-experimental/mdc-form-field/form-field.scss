@@ -36,6 +36,9 @@
 // Host element of the form-field. It contains the mdc-text-field wrapper
 // and the subscript wrapper.
 .mat-mdc-form-field {
+  // The scale to use for the form-field's label when its in the floating position.
+  --mat-mdc-form-field-floating-label-scale: 0.75;
+
   display: inline-flex;
   // This container contains the text-field and the subscript. The subscript
   // should be displayed below the text-field. Hence the column direction.
