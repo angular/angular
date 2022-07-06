@@ -742,7 +742,9 @@ export class ApplicationRef {
   // TODO(issue/24571): remove '!'.
   public readonly isStable!: Observable<boolean>;
 
-  /** @internal */
+  /**
+   * The root injector that contains all of the root providers.
+   */
   get injector(): Injector {
     return this._injector;
   }

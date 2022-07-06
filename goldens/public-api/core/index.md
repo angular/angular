@@ -84,6 +84,7 @@ export class ApplicationRef {
     destroy(): void;
     get destroyed(): boolean;
     detachView(viewRef: ViewRef): void;
+    get injector(): Injector;
     readonly isStable: Observable<boolean>;
     tick(): void;
     get viewCount(): number;
