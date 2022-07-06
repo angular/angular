@@ -1,3 +1,6 @@
+load("//aio/tools/ng-packages-installer:node_modules.bzl", "node_modules")
+load("//:packages.bzl", "AIO_EXAMPLE_PACKAGES", "to_package_label")
+
 package(default_visibility = ["//visibility:public"])
 
 filegroup(
@@ -6,4 +9,13 @@ filegroup(
         ["**"],
         exclude = ["BUILD.bazel"],
     ),
+)
+
+node_modules(
+    name = "node_modules",
+)
+
+node_modules(
+    name = "local/node_modules",
+    local_package_substitutions = [to_package_label(pkg) for pkg in AIO_EXAMPLE_PACKAGES],
 )
