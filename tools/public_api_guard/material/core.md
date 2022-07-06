@@ -464,7 +464,7 @@ export class NativeDateAdapter extends DateAdapter<Date> {
     // (undocumented)
     isValid(date: Date): boolean;
     // (undocumented)
-    parse(value: any): Date | null;
+    parse(value: any, parseFormat?: any): Date | null;
     // (undocumented)
     today(): Date;
     // (undocumented)

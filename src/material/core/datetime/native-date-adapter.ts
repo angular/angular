@@ -125,7 +125,7 @@ export class NativeDateAdapter extends DateAdapter<Date> {
     return new Date();
   }
 
-  parse(value: any): Date | null {
+  parse(value: any, parseFormat?: any): Date | null {
     // We have no way using the native JS Date to set the parse format or locale, so we ignore these
     // parameters.
     if (typeof value == 'number') {
