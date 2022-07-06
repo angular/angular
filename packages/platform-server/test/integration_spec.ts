@@ -740,7 +740,8 @@ describe('platform-server integration', () => {
 
     // Run the set of tests with regular and standalone components.
     [true, false].forEach((isStandalone: boolean) => {
-      it('using renderModule should work', waitForAsync(() => {
+      it(`using ${isStandalone ? 'renderApplication' : 'renderModule'} should work`,
+         waitForAsync(() => {
            const options = {document: doc};
            const bootstrap = isStandalone ?
                renderApplication(MyAsyncServerAppStandalone, {...options, appId: 'simple-cmp'}) :

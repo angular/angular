@@ -333,20 +333,26 @@ class SomeComponent {
          withModule(
              {providers},
              waitForAsync(inject([EnvironmentInjector], (parentInjector: EnvironmentInjector) => {
+               // This is a temporary type to represent an instance of an R3Injector, which
+               // can be destroyed.
+               // The type will be replaced with a different one once destroyable injector
+               // type is available.
+               type DestroyableInjector = EnvironmentInjector&{destroyed?: boolean};
+
                createRootEl();
 
-               const injector = createApplicationRefInjector(parentInjector);
+               const injector = createApplicationRefInjector(parentInjector) as DestroyableInjector;
 
                const appRef = injector.get(ApplicationRef);
                appRef.bootstrap(SomeComponent);
 
                expect(appRef.destroyed).toBeFalse();
-               expect((injector as any).destroyed).toBeFalse();
+               expect(injector.destroyed).toBeFalse();
 
                appRef.destroy();
 
                expect(appRef.destroyed).toBeTrue();
-               expect((injector as any).destroyed).toBeTrue();
+               expect(injector.destroyed).toBeTrue();
              }))));
     });
 
