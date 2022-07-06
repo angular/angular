@@ -10,13 +10,13 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@angular-devkit/architect-cli@0.1401.0-next.3":
-  version "0.1401.0-next.3"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/architect-cli/-/architect-cli-0.1401.0-next.3.tgz#e7115a93d310465f950257f29c718b1e4025922b"
-  integrity sha512-WzYwmBxuYBEi4KcalRPtirWmwa7Qprspr+TpQB6cHaO7OBJpPkqyRr/JPzvrWklINg8ZvoQ9HB5SZqCOxL1TYw==
+"@angular-devkit/architect-cli@0.1401.0-next.4":
+  version "0.1401.0-next.4"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect-cli/-/architect-cli-0.1401.0-next.4.tgz#063ea04a6f33d111e9655f4abf42b2079f08f113"
+  integrity sha512-X5kCUMbOQ5JxDv9RuyLBf6hhJpNReYjJRBg1Em4Gn3bYDSmZ8rEb5JO7NaE/21gF3b42uonC85NggGOybAN0Ow==
   dependencies:
-    "@angular-devkit/architect" "0.1401.0-next.3"
-    "@angular-devkit/core" "14.1.0-next.3"
+    "@angular-devkit/architect" "0.1401.0-next.4"
+    "@angular-devkit/core" "14.1.0-next.4"
     ansi-colors "4.1.3"
     progress "2.0.3"
     rxjs "6.6.7"
@@ -37,6 +37,14 @@
   integrity sha512-y1oeZdDmUeNaVVckYhPyIN+SD5vxBqb6nmdVARLnkYBTlYf1+Hy9/lfmbdvJUagFCg94rXM4LlPXPbP0z8R5SQ==
   dependencies:
     "@angular-devkit/core" "14.1.0-next.3"
+    rxjs "6.6.7"
+
+"@angular-devkit/architect@0.1401.0-next.4":
+  version "0.1401.0-next.4"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.1401.0-next.4.tgz#5e63f645f47c42f9bfe13296cb0c561cc182c284"
+  integrity sha512-jPL5rlJX06J7g7FagL3FGnd/srKlg7TjwgU8EIXyIhZKVzT/jJEjY3esi6n0bBOXsErwU1SuF95s9x0W0vRvRg==
+  dependencies:
+    "@angular-devkit/core" "14.1.0-next.4"
     rxjs "6.6.7"
 
 "@angular-devkit/build-angular@^14.1.0-next":
@@ -132,6 +140,17 @@
   version "14.1.0-next.3"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-14.1.0-next.3.tgz#5cf3d079fbef41a44866e41b208eaf567d0eca6d"
   integrity sha512-zzpuTDtCo8h5R+ucq7r9YpEwmuW1rp3saqYDtGIqa3pykDsvtDeoiNxxstYpptfuTCIoMarROfxabe8DqskdsQ==
+  dependencies:
+    ajv "8.11.0"
+    ajv-formats "2.1.1"
+    jsonc-parser "3.0.0"
+    rxjs "6.6.7"
+    source-map "0.7.4"
+
+"@angular-devkit/core@14.1.0-next.4":
+  version "14.1.0-next.4"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-14.1.0-next.4.tgz#af9885036517252380ff13817b9c2175f63c26cf"
+  integrity sha512-RU6HIO47jnDr4LmVgwiwxtAh1ZftKKkLTh6JdF3O+TyxVIczXAG9fAv0fGEEocCWXjR3+CNPOizMtpPp9H7Seg==
   dependencies:
     ajv "8.11.0"
     ajv-formats "2.1.1"
