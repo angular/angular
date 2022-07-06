@@ -1,8 +1,10 @@
 import { Inject, Injectable } from '@angular/core';
 
-import { environment } from '../../environments/environment';
-import { WindowToken } from 'app/shared/window';
 import { scriptUrl, unwrapScriptUrlForSink } from 'safevalues';
+
+import { formatErrorEventForAnalytics } from './analytics-format-error';
+import { WindowToken } from '../shared/window';
+import { environment } from '../../environments/environment';
 
 /** Extension of `Window` with potential Google Analytics fields. */
 interface WindowWithAnalytics extends Window {
@@ -32,9 +34,19 @@ export class AnalyticsService {
 
   constructor(@Inject(WindowToken) private window: WindowWithAnalytics) {
     this._installGlobalSiteTag();
+    this._installWindowErrorHandler();
 
     // TODO: Remove this when we fully switch to Google Analytics 4+.
     this._legacyGa('create', environment.legacyUniversalAnalyticsId , 'auto');
+  }
+
+  reportError(description: string, fatal = true) {
+    // Limit descriptions to maximum of 150 characters.
+    // See: https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters#exd.
+    description = description.substring(0, 150);
+
+    this._legacyGa('send', 'exception', {exDescription: description, exFatal: fatal});
+    this._gtag('event', 'exception', {description, fatal});
   }
 
   locationChanged(url: string) {
@@ -55,7 +67,6 @@ export class AnalyticsService {
   }
 
   private _gtag(...args: any[]) {
-    const gtagFn = this.window.gtag;
     if (this.window.gtag) {
       this.window.gtag(...args);
     }
@@ -93,5 +104,10 @@ export class AnalyticsService {
     el.async = true;
     el.src = unwrapScriptUrlForSink(url);
     window.document.head.appendChild(el);
+  }
+
+  private _installWindowErrorHandler() {
+    this.window.addEventListener('error', event =>
+      this.reportError(formatErrorEventForAnalytics(event), true));
   }
 }

@@ -9,6 +9,7 @@ describe('AnalyticsService', () => {
   let legacyGaSpy: jasmine.Spy;
   let gtagSpy: jasmine.Spy;
   let gtagAppendNodeSpy: jasmine.Spy;
+  let windowOnErrorHandler: (event: ErrorEvent) => void;
 
   let mockWindow: any;
 
@@ -23,7 +24,9 @@ describe('AnalyticsService', () => {
       document: {
         head: {appendChild: gtagAppendNodeSpy},
         createElement: (tag: string) => document.createElement(tag),
-      }
+      },
+      addEventListener: (_name: string, handler: typeof windowOnErrorHandler) =>
+        windowOnErrorHandler = handler,
     };
 
     injector = Injector.create({
@@ -99,6 +102,45 @@ describe('AnalyticsService', () => {
       service.sendEvent('some_name', {works: 'true', confirmed: true, count: 3});
       expect(gtagSpy).toHaveBeenCalledWith('event', 'some_name', {works: 'true', confirmed: true, count: 3});
       expect(legacyGaSpy).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe('error reporting', () => {
+    it('should subscribe to window uncaught errors and report them', () => {
+      spyOn(service, 'reportError');
+
+      windowOnErrorHandler(new ErrorEvent('error', {
+        error: new Error('Test Error')
+      }));
+
+      expect(service.reportError).toHaveBeenCalledTimes(1);
+      expect(service.reportError).toHaveBeenCalledWith(
+          jasmine.stringContaining('Test Error\n'), true);
+    });
+
+    it('should report errors to analytics by dispatching `gtag` and `ga` events', () => {
+      legacyGaSpy.calls.reset();
+      gtagSpy.calls.reset();
+
+      windowOnErrorHandler(new ErrorEvent('error', {
+        error: new Error('Test Error')
+      }));
+
+      expect(legacyGaSpy).toHaveBeenCalledTimes(1);
+      expect(legacyGaSpy).toHaveBeenCalledWith('send', 'exception',
+        jasmine.objectContaining({
+          exDescription: jasmine.stringContaining('Test Error\n'),
+          exFatal: true
+        })
+      );
+
+      expect(gtagSpy).toHaveBeenCalledTimes(1);
+      expect(gtagSpy).toHaveBeenCalledWith('event', 'exception',
+        jasmine.objectContaining({
+          description: jasmine.stringContaining('Test Error\n'),
+          fatal: true
+        })
+      );
     });
   });
 
