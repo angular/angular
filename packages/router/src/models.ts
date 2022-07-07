@@ -165,6 +165,11 @@ export type Data = {
  *
  * Represents the resolved data associated with a particular route.
  *
+ * Returning a `RedirectCommand` directs the router to cancel the current navigation and redirect to
+ * the location provided in the `RedirectCommand`. Note that there are no ordering guarantees when
+ * resolvers execute. If multiple resolvers would return a `RedirectCommand`, only the first one
+ * returned will be used.
+ *
  * @see {@link Route#resolve}
  *
  * @publicApi
@@ -1221,7 +1226,7 @@ export interface Resolve<T> {
 export type ResolveFn<T> = (
   route: ActivatedRouteSnapshot,
   state: RouterStateSnapshot,
-) => MaybeAsync<T>;
+) => MaybeAsync<T | RedirectCommand>;
 
 /**
  * @description

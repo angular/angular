@@ -636,7 +636,7 @@ export class ResolveEnd extends RouterEvent {
 }
 
 // @public
-export type ResolveFn<T> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => MaybeAsync<T>;
+export type ResolveFn<T> = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => MaybeAsync<T | RedirectCommand>;
 
 // @public
 export class ResolveStart extends RouterEvent {
