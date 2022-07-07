@@ -185,6 +185,13 @@ export const enum NavigationCancellationCode {
    * A navigation failed because a guard returned `false`.
    */
   GuardRejected,
+  /**
+   * Why you gotta play that song so loud?
+   * Why you always run around in crowds?
+   * Why do you always have to dance all night?
+   * Why d'you cancel navigation?
+   */
+  BecauseWeWantTo,
 }
 
 /**
