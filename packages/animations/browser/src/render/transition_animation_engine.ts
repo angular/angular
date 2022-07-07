@@ -314,13 +314,11 @@ export class AnimationTransitionNamespace {
 
   private _signalRemovalForInnerTriggers(rootElement: any, context: any) {
     const elements = this._engine.driver.query(rootElement, NG_TRIGGER_SELECTOR, true);
-    const shadowElements = rootElement.shadowRoot ?
-        this._engine.driver.query(rootElement.shadowRoot, NG_TRIGGER_SELECTOR, true) :
-        [];
+
     // emulate a leave animation for all inner nodes within this node.
     // If there are no animations found for any of the nodes then clear the cache
     // for the element.
-    [...elements, ...shadowElements].forEach(elm => {
+    elements.forEach(elm => {
       // this means that an inner remove() operation has already kicked off
       // the animation on this element...
       if (elm[REMOVAL_FLAG]) return;
@@ -404,9 +402,7 @@ export class AnimationTransitionNamespace {
 
   removeNode(element: any, context: any): void {
     const engine = this._engine;
-    const elementHasChildren = !!element.childElementCount;
-    const elementHasShadowChildren = !!(element.shadowRoot && element.shadowRoot.childElementCount);
-    if (elementHasChildren || elementHasShadowChildren) {
+    if (element.childElementCount) {
       this._signalRemovalForInnerTriggers(element, context);
     }
 

@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {animate, animateChild, AnimationEvent, AnimationPlayer, AUTO_STYLE, group, query, sequence, stagger, state, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
+import {animate, animateChild, AnimationPlayer, AUTO_STYLE, group, query, sequence, stagger, state, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵnormalizeKeyframes as normalizeKeyframes} from '@angular/animations/browser';
 import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '@angular/animations/browser/src/util';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule} from '@angular/common';
-import {Component, HostBinding, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Component, HostBinding, ViewChild} from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
@@ -2830,64 +2830,6 @@ describe('animation query tests', function() {
          expect(cmp.log).toEqual([
            'c1-start', 'c1-done', 'c2-start', 'c2-done', 'p-start', 'c3-start', 'c3-done', 'p-done'
          ]);
-       }));
-
-    it(`should emulate a leave animation on a child elements when a parent component using shadowDom leaves the DOM`,
-       fakeAsync(() => {
-         let childLeaveLog = 0;
-
-         @Component({
-           selector: 'ani-host',
-           template: `<ani-parent *ngIf="exp"></ani-parent>`,
-         })
-         class HostCmp {
-           public exp: boolean = false;
-         }
-
-         @Component({
-           selector: 'ani-parent',
-           encapsulation: ViewEncapsulation.ShadowDom,
-           template: `
-              <div @childAnimation (@childAnimation.start)="logChildLeave($event)"></div>
-          `,
-           animations: [
-             trigger(
-                 'childAnimation',
-                 [
-                   transition(':leave', []),
-                 ]),
-           ]
-         })
-         class ParentCmp {
-           logChildLeave(event: AnimationEvent) {
-             if (event.toState === 'void') {
-               childLeaveLog++;
-             }
-           }
-         }
-
-         TestBed.configureTestingModule({declarations: [ParentCmp, HostCmp]});
-
-         const fixture = TestBed.createComponent(HostCmp);
-         const cmp = fixture.componentInstance;
-
-         const updateExpAndFlush = (value: boolean) => {
-           cmp.exp = value;
-           fixture.detectChanges();
-           flushMicrotasks();
-         };
-
-         updateExpAndFlush(true);
-         expect(childLeaveLog).toEqual(0);
-
-         updateExpAndFlush(false);
-         expect(childLeaveLog).toEqual(1);
-
-         updateExpAndFlush(true);
-         expect(childLeaveLog).toEqual(1);
-
-         updateExpAndFlush(false);
-         expect(childLeaveLog).toEqual(2);
        }));
 
     it('should build, but not run sub triggers when a parent animation is scheduled', () => {
