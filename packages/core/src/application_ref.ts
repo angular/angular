@@ -1086,7 +1086,7 @@ export class ApplicationRef {
 
   /**
    * Destroys an Angular application represented by this `ApplicationRef`. Calling this function
-   * will destroy the associated environnement injectors as well as all the bootstrapped components
+   * will destroy the associated environment injectors as well as all the bootstrapped components
    * with their views.
    */
   destroy(): void {
