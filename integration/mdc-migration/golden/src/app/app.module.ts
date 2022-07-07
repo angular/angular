@@ -24,6 +24,7 @@ import {MatSliderModule} from '@angular/material-experimental/mdc-slider';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTableModule} from '@angular/material-experimental/mdc-table';
 import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';
+import {MatTooltipModule} from '@angular/material-experimental/mdc-tooltip';
 import {AutocompleteComponent} from './components/autocomplete/autocomplete.component';
 import {ButtonComponent} from './components/button/button.component';
 import {CardComponent} from './components/card/card.component';
@@ -43,6 +44,7 @@ import {SliderComponent} from './components/slider/slider.component';
 import {SnackBarComponent} from './components/snack-bar/snack-bar.component';
 import {TableComponent} from './components/table/table.component';
 import {TabsComponent} from './components/tabs/tabs.component';
+import {TooltipComponent} from './components/tooltip/tooltip.component';
 
 @NgModule({
   declarations: [
@@ -66,6 +68,7 @@ import {TabsComponent} from './components/tabs/tabs.component';
     SnackBarComponent,
     TableComponent,
     TabsComponent,
+    TooltipComponent,
   ],
   imports: [
     BrowserModule,
@@ -90,6 +93,7 @@ import {TabsComponent} from './components/tabs/tabs.component';
     MatSnackBarModule,
     MatTableModule,
     MatTabsModule,
+    MatTooltipModule,
     ReactiveFormsModule,
   ],
   providers: [],

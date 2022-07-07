@@ -1,0 +1,15 @@
+::ng-deep {
+  .mat-mdc-tooltip {
+    font-size: 16px;
+  }
+
+  .mat-mdc-tooltip-panel {
+    margin: 4px;
+  }
+}
+
+/* TODO: The following rule targets internal classes of tooltip that may no longer apply for the MDC version. */
+
+.mat-tooltip-handset {
+  font-size: 12px;
+}
