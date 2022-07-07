@@ -1,0 +1,14 @@
+.mat-tab {
+  height: 50px;
+}
+
+
+::ng-deep {
+  .mat-tab-body {
+    padding: 12px;
+  }
+
+  .mat-tab-label-content {
+    color: darkblue;
+  }
+}

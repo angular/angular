@@ -23,6 +23,7 @@ import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-tog
 import {MatSliderModule} from '@angular/material-experimental/mdc-slider';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTableModule} from '@angular/material-experimental/mdc-table';
+import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';
 import {AutocompleteComponent} from './components/autocomplete/autocomplete.component';
 import {ButtonComponent} from './components/button/button.component';
 import {CardComponent} from './components/card/card.component';
@@ -41,6 +42,7 @@ import {SlideToggleComponent} from './components/slide-toggle/slide-toggle.compo
 import {SliderComponent} from './components/slider/slider.component';
 import {SnackBarComponent} from './components/snack-bar/snack-bar.component';
 import {TableComponent} from './components/table/table.component';
+import {TabsComponent} from './components/tabs/tabs.component';
 
 @NgModule({
   declarations: [
@@ -63,6 +65,7 @@ import {TableComponent} from './components/table/table.component';
     SliderComponent,
     SnackBarComponent,
     TableComponent,
+    TabsComponent,
   ],
   imports: [
     BrowserModule,
@@ -86,6 +89,7 @@ import {TableComponent} from './components/table/table.component';
     MatSliderModule,
     MatSnackBarModule,
     MatTableModule,
+    MatTabsModule,
     ReactiveFormsModule,
   ],
   providers: [],
