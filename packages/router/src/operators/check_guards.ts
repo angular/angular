@@ -10,7 +10,7 @@ import {EnvironmentInjector, Injector} from '@angular/core';
 import {concat, defer, from, MonoTypeOperatorFunction, Observable, of, OperatorFunction, pipe} from 'rxjs';
 import {concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
 
-import {ActivationStart, ChildActivationStart, Event} from '../events';
+import {ActivationStart, ChildActivationStart, Event, NavigationCancellationCode} from '../events';
 import {CanLoad, CanLoadFn, CanMatch, CanMatchFn, Route} from '../models';
 import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
@@ -189,8 +189,8 @@ function redirectIfUrlTree(urlSerializer: UrlSerializer):
         if (!isUrlTree(result)) return;
 
         const error: Error&{url?: UrlTree} = navigationCancelingError(
-            REDIRECTING_CANCELLATION_REASON + urlSerializer.serialize(result));
-        error.url = result;
+            REDIRECTING_CANCELLATION_REASON + urlSerializer.serialize(result),
+            NavigationCancellationCode.Redirect, result);
         throw error;
       }),
       map(result => result === true),

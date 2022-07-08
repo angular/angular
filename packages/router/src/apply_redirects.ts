@@ -11,6 +11,7 @@ import {EmptyError, from, Observable, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, last, map, mergeMap, scan, switchMap, tap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from './errors';
+import {NavigationCancellationCode} from './events';
 import {LoadedRouterConfig, Route, Routes} from './models';
 import {runCanLoadGuards} from './operators/check_guards';
 import {RouterConfigLoader} from './router_config_loader';
@@ -52,8 +53,9 @@ function namedOutletsRedirect(redirectTo: string): Observable<any> {
 function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
   return throwError(navigationCancelingError(
       NG_DEV_MODE &&
-      `Cannot load children because the guard of the route "path: '${
-          route.path}'" returned false`));
+          `Cannot load children because the guard of the route "path: '${
+              route.path}'" returned false`,
+      NavigationCancellationCode.GuardRejected));
 }
 
 /**

@@ -12,7 +12,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Inject, Injectable, In
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkWithHref, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkWithHref, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, map, mapTo, tap} from 'rxjs/operators';
 
@@ -1769,6 +1769,7 @@ describe('Integration', () => {
        let locationUrlBeforeEmittingError = '';
        router.events.forEach(e => {
          if (e instanceof NavigationCancel) {
+           expect(e.code).toBe(NavigationCancellationCode.GuardRejected);
            routerUrlBeforeEmittingError = router.url;
            locationUrlBeforeEmittingError = location.path();
          }
@@ -2125,6 +2126,9 @@ describe('Integration', () => {
            [ResolveStart, '/simple'],
            [NavigationCancel, '/simple'],
          ]);
+
+         expect((recordedEvents[recordedEvents.length - 1] as NavigationCancel).code)
+             .toBe(NavigationCancellationCode.NoDataFromResolver);
 
          expect(e).toEqual(null);
        })));
@@ -4324,6 +4328,9 @@ describe('Integration', () => {
              [NavigationCancel, '/lazyFalse/loaded'],
            ]);
 
+           expect((recordedEvents[1] as NavigationCancel).code)
+               .toBe(NavigationCancellationCode.GuardRejected);
+
            recordedEvents.splice(0);
 
            // successful navigation
@@ -4386,6 +4393,9 @@ describe('Integration', () => {
              [GuardsCheckEnd, '/blank'], [ResolveStart, '/blank'], [ResolveEnd, '/blank'],
              [ActivationEnd], [ChildActivationEnd], [NavigationEnd, '/blank']
            ]);
+
+           expect((recordedEvents[1] as NavigationCancel).code)
+               .toBe(NavigationCancellationCode.SupersededByNewNavigation);
          })));
 
       it('should support returning UrlTree from within the guard',
@@ -4421,6 +4431,9 @@ describe('Integration', () => {
              [GuardsCheckEnd, '/blank'], [ResolveStart, '/blank'], [ResolveEnd, '/blank'],
              [ActivationEnd], [ChildActivationEnd], [NavigationEnd, '/blank']
            ]);
+
+           expect((recordedEvents[1] as NavigationCancel).code)
+               .toBe(NavigationCancellationCode.Redirect);
          })));
 
       // Regression where navigateByUrl with false CanLoad no longer resolved `false` value on
