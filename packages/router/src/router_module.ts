@@ -219,7 +219,6 @@ export function getBootstrapListener() {
     }
 
     const router = injector.get(Router);
-    const bootstrapDone = injector.get(BOOTSTRAP_DONE);
 
     // Default case
     if (injector.get(INITIAL_NAVIGATION, null, InjectFlags.Optional) === null) {
@@ -229,8 +228,6 @@ export function getBootstrapListener() {
     injector.get(ROUTER_PRELOADER, null, InjectFlags.Optional)?.setUpPreloading();
     injector.get(ROUTER_SCROLLER, null, InjectFlags.Optional)?.init();
     router.resetRootComponentType(ref.componentTypes[0]);
-    bootstrapDone.next();
-    bootstrapDone.complete();
   };
 }
 
@@ -267,14 +264,30 @@ function provideRouterInitializer(): ReadonlyArray<Provider> {
  */
 const BOOTSTRAP_DONE =
     new InjectionToken<Subject<void>>(NG_DEV_MODE ? 'bootstrap done indicator' : '', {
-      factory: () => {
-        return new Subject<void>();
-      }
+      providedIn: 'root',
+      factory: () => new Subject<void>(),
     });
 
 function provideEnabledBlockingInitialNavigation(): Provider {
   return [
     {provide: INITIAL_NAVIGATION, useValue: 'enabledBlocking'},
+    {
+      provide: APP_BOOTSTRAP_LISTENER,
+      multi: true,
+      useFactory: () => {
+        const bootstrapDone = inject(BOOTSTRAP_DONE);
+        return () => {
+          // Note that we emit the done event inside a promise to ensure there are no ordering
+          // issues with other BOOTSTRAP_LISTENERs that might be listening to router events.
+          // Specifically, this includes the RouterScroller. If the initial navigation unblocks and
+          // completes before the `provideRouterScroller`, it will miss the initial navigation.
+          Promise.resolve().then(() => {
+            bootstrapDone.next();
+            bootstrapDone.complete();
+          });
+        };
+      }
+    },
     {
       provide: APP_INITIALIZER,
       multi: true,
