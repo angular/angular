@@ -16,8 +16,9 @@ export {CanActivate, CanActivateChild, CanDeactivate, CanLoad, CanMatch, CanMatc
 export {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
 export {BaseRouteReuseStrategy, DetachedRouteHandle, RouteReuseStrategy} from './route_reuse_strategy';
 export {Navigation, NavigationExtras, Router, UrlCreationOptions} from './router';
+export {ExtraOptions, InitialNavigation, ROUTER_CONFIGURATION} from './router_config';
 export {ROUTES} from './router_config_loader';
-export {ExtraOptions, InitialNavigation, provideRoutes, ROUTER_CONFIGURATION, ROUTER_INITIALIZER, RouterModule} from './router_module';
+export {provideRoutes, ROUTER_INITIALIZER, RouterModule} from './router_module';
 export {ChildrenOutletContexts, OutletContext} from './router_outlet_context';
 export {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
 export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
