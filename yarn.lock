@@ -2035,21 +2035,21 @@
     read-package-json-fast "^2.0.3"
     which "^2.0.2"
 
-"@octokit/endpoint@^6.0.1":
-  version "6.0.12"
-  resolved "https://registry.yarnpkg.com/@octokit/endpoint/-/endpoint-6.0.12.tgz#3b4d47a4b0e79b1027fb8d75d4221928b2d05658"
-  integrity sha512-lF3puPwkQWGfkMClXb4k/eUT/nZKQfxinRWJrdZaJO85Dqwo/G0yOC434Jr2ojwafWJMYqFGFa5ms4jJUgujdA==
+"@octokit/endpoint@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@octokit/endpoint/-/endpoint-7.0.0.tgz#be758a1236d68d6bbb505e686dd50881c327a519"
+  integrity sha512-Kz/mIkOTjs9rV50hf/JK9pIDl4aGwAtT8pry6Rpy+hVXkAPhXanNQRxMoq6AeRgDCZR6t/A1zKniY2V1YhrzlQ==
   dependencies:
     "@octokit/types" "^6.0.3"
     is-plain-object "^5.0.0"
     universal-user-agent "^6.0.0"
 
-"@octokit/graphql@^4.6.1":
-  version "4.8.0"
-  resolved "https://registry.yarnpkg.com/@octokit/graphql/-/graphql-4.8.0.tgz#664d9b11c0e12112cbf78e10f49a05959aa22cc3"
-  integrity sha512-0gv+qLSBLKF0z8TKaSKTsS39scVKF9dbMxJpj3U0vC7wjNWFuIpL/z76Qe2fiuCbDRcJSavkXsVtMS6/dtQQsg==
+"@octokit/graphql@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@octokit/graphql/-/graphql-5.0.0.tgz#2cc6eb3bf8e0278656df1a7d0ca0d7591599e3b3"
+  integrity sha512-1ZZ8tX4lUEcLPvHagfIVu5S2xpHYXAmgN0+95eAOPoaVPzCfUXJtA5vASafcpWcO86ze0Pzn30TAx72aB2aguQ==
   dependencies:
-    "@octokit/request" "^5.6.0"
+    "@octokit/request" "^6.0.0"
     "@octokit/types" "^6.0.3"
     universal-user-agent "^6.0.0"
 
@@ -2067,12 +2067,12 @@
     deprecation "^2.0.0"
     once "^1.4.0"
 
-"@octokit/request@^5.6.0":
-  version "5.6.3"
-  resolved "https://registry.yarnpkg.com/@octokit/request/-/request-5.6.3.tgz#19a022515a5bba965ac06c9d1334514eb50c48b0"
-  integrity sha512-bFJl0I1KVc9jYTe9tdGGpAMPy32dLBXXo1dS/YwSCTL/2nd9XeHsY616RE3HPXDVk+a+dBuzyz5YdlXwcDTr2A==
+"@octokit/request@^6.0.0":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@octokit/request/-/request-6.0.1.tgz#d5f53b6adb56018be2793869611ed66f58f1454f"
+  integrity sha512-9DSQ7fKBeSMU5aD6JfWA/1XFwP44X32d9fSYdQzxSsROjOginPYtW4Xwwt3Qs7wZtBmFOWV/td3gxOHmz9hfig==
   dependencies:
-    "@octokit/endpoint" "^6.0.1"
+    "@octokit/endpoint" "^7.0.0"
     "@octokit/request-error" "^2.1.0"
     "@octokit/types" "^6.16.1"
     is-plain-object "^5.0.0"
