@@ -1839,6 +1839,9 @@
     "name": "setUpAttributes"
   },
   {
+    "name": "setupRouter"
+  },
+  {
     "name": "shallowEqual"
   },
   {

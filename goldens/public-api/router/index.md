@@ -737,11 +737,11 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
 
 // @public
 export class RouterModule {
-    constructor(guard: any, router: Router);
+    constructor(guard: any);
     static forChild(routes: Routes): ModuleWithProviders<RouterModule>;
     static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<RouterModule, [{ optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<RouterModule, [{ optional: true; }]>;
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<RouterModule>;
     // (undocumented)
