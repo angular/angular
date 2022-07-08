@@ -19,36 +19,27 @@ export function prioritizedGuardValue():
     OperatorFunction<Observable<boolean|UrlTree>[], boolean|UrlTree> {
   return switchMap(obs => {
     return combineLatest(obs.map(o => o.pipe(take(1), startWith(INITIAL_VALUE as INTERIM_VALUES))))
-               .pipe(
-                   scan(
-                       (acc: INTERIM_VALUES, list: INTERIM_VALUES[]) => {
-                         let isPending = false;
-                         return list.reduce((innerAcc, val, i: number) => {
-                           if (innerAcc !== INITIAL_VALUE) return innerAcc;
-
-                           // Toggle pending flag if any values haven't been set yet
-                           if (val === INITIAL_VALUE) isPending = true;
-
-                           // Any other return values are only valid if we haven't yet hit a pending
-                           // call. This guarantees that in the case of a guard at the bottom of the
-                           // tree that returns a redirect, we will wait for the higher priority
-                           // guard at the top to finish before performing the redirect.
-                           if (!isPending) {
-                             // Early return when we hit a `false` value as that should always
-                             // cancel navigation
-                             if (val === false) return val;
-
-                             if (i === list.length - 1 || isUrlTree(val)) {
-                               return val;
-                             }
-                           }
-
-                           return innerAcc;
-                         }, acc);
-                       },
-                       INITIAL_VALUE),
-                   filter(item => item !== INITIAL_VALUE),
-                   map(item => isUrlTree(item) ? item : item === true),  //
-                   take(1)) as Observable<boolean|UrlTree>;
+        .pipe(
+            map((results: INTERIM_VALUES[]) => {
+              for (const result of results) {
+                if (result === true) {
+                  // If result is true, check the next one
+                  continue;
+                } else if (result === INITIAL_VALUE) {
+                  // If guard has not finished, we need to stop processing.
+                  return INITIAL_VALUE;
+                } else if (result === false || result instanceof UrlTree) {
+                  // Result finished and was not true. Return the result.
+                  // Note that we only allow false/UrlTree. Other values are considered invalid and
+                  // ignored.
+                  return result;
+                }
+              }
+              // Everything resolved to true. Return true.
+              return true;
+            }),
+            filter((item): item is boolean|UrlTree => item !== INITIAL_VALUE),
+            take(1),
+        );
   });
 }
