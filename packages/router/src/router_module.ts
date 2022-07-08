@@ -7,7 +7,7 @@
  */
 
 import {HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, ViewportScroller} from '@angular/common';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentRef, ENVIRONMENT_INITIALIZER, inject, Inject, InjectFlags, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, Optional, Provider, SkipSelf, Type, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, ComponentRef, ENVIRONMENT_INITIALIZER, inject, Inject, InjectFlags, InjectionToken, Injector, ModuleWithProviders, NgModule, NgProbeToken, Optional, Provider, SkipSelf, Type, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {of, Subject} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
 
@@ -204,7 +204,6 @@ export function provideForRootGuard(router: Router): any {
  */
 export function provideRoutes(routes: Routes): any {
   return [
-    {provide: ANALYZE_FOR_ENTRY_COMPONENTS, multi: true, useValue: routes},
     {provide: ROUTES, multi: true, useValue: routes},
   ];
 }
