@@ -32,11 +32,13 @@ This glossary lists the most prominent terms and a few less familiar ones with u
 [Y][AioGuideGlossaryY]
 [Z][AioGuideGlossaryZ]
 
+<!-- vale Angular.Google_Headings = NO -->
+
 <a id="aot"></a>
 
-## Ahead-of-time (AOT) compilation
+## ahead-of-time (AOT) compilation
 
-The Angular ahead-of-time \(AOT\) compiler converts Angular HTML and TypeScript code into efficient JavaScript code during the build phase, before the browser downloads and runs that code.
+The Angular ahead-of-time \(AOT\) compiler converts Angular HTML and TypeScript code into efficient JavaScript code during the build phase. The build phase occurs before the browser downloads and runs the rendered code.
 This is the best compilation mode for production environments, with decreased load time and increased performance compared to [just-in-time (JIT) compilation][AioGuideGlossaryJustInTimeJitCompilation].
 
 By compiling your application using the `ngc` command-line tool, you can bootstrap directly to a module factory, so you do not need to include the Angular compiler in your JavaScript bundle.
@@ -967,6 +969,8 @@ An Angular application runs in a zone where it can respond to asynchronous event
 A zone client can take action before and after an async operation completes.
 
 Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
+
+<!-- vale Angular.Google_Headings = YES -->
 
 <!-- links -->
 
