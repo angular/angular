@@ -16,8 +16,6 @@ import {equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
-
-
 /**
  * Represents the state of the router as a tree of activated routes.
  *

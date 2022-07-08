@@ -621,6 +621,9 @@
     "name": "SkipSelf"
   },
   {
+    "name": "StandaloneService"
+  },
+  {
     "name": "Subject"
   },
   {
@@ -1969,6 +1972,9 @@
   },
   {
     "name": "ɵɵNgOnChangesFeature"
+  },
+  {
+    "name": "ɵɵStandaloneFeature"
   },
   {
     "name": "ɵɵattribute"
