@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {Compiler, Injectable, Injector, NgModuleRef, NgZone, Type, ɵConsole as Console, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Compiler, inject, Injectable, Injector, NgModuleRef, NgZone, Type, ɵConsole as Console, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject, SubscriptionLike} from 'rxjs';
 import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 
@@ -23,14 +23,16 @@ import {checkGuards} from './operators/check_guards';
 import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
 import {switchTap} from './operators/switch_tap';
-import {TitleStrategy} from './page_title_strategy';
+import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
 import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strategy';
-import {RouterConfigLoader} from './router_config_loader';
+import {ErrorHandler, ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
+import {RouterConfigLoader, ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
 import {Params} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {containsTree, createEmptyUrlTree, IsActiveMatchOptions, isUrlTree, UrlSerializer, UrlTree} from './url_tree';
+import {flatten} from './utils/collection';
 import {standardizeConfig, validateConfig} from './utils/config';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 
@@ -163,17 +165,6 @@ export interface UrlCreationOptions {
  */
 export interface NavigationExtras extends UrlCreationOptions, NavigationBehaviorOptions {}
 
-/**
- * Error handler that is invoked when a navigation error occurs.
- *
- * If the handler returns a value, the navigation Promise is resolved with this value.
- * If the handler throws an exception, the navigation Promise is rejected with
- * the exception.
- *
- * @publicApi
- */
-export type ErrorHandler = (error: any) => any;
-
 function defaultErrorHandler(error: any): any {
   throw error;
 }
@@ -301,6 +292,66 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
   queryParams: 'subset'
 };
 
+export function assignExtraOptionsToRouter(opts: ExtraOptions, router: Router): void {
+  if (opts.errorHandler) {
+    router.errorHandler = opts.errorHandler;
+  }
+
+  if (opts.malformedUriErrorHandler) {
+    router.malformedUriErrorHandler = opts.malformedUriErrorHandler;
+  }
+
+  if (opts.onSameUrlNavigation) {
+    router.onSameUrlNavigation = opts.onSameUrlNavigation;
+  }
+
+  if (opts.paramsInheritanceStrategy) {
+    router.paramsInheritanceStrategy = opts.paramsInheritanceStrategy;
+  }
+
+  if (opts.relativeLinkResolution) {
+    router.relativeLinkResolution = opts.relativeLinkResolution;
+  }
+
+  if (opts.urlUpdateStrategy) {
+    router.urlUpdateStrategy = opts.urlUpdateStrategy;
+  }
+
+  if (opts.canceledNavigationResolution) {
+    router.canceledNavigationResolution = opts.canceledNavigationResolution;
+  }
+}
+
+export function setupRouter() {
+  const urlSerializer = inject(UrlSerializer);
+  const contexts = inject(ChildrenOutletContexts);
+  const location = inject(Location);
+  const injector = inject(Injector);
+  const compiler = inject(Compiler);
+  const config = inject(ROUTES, {optional: true}) ?? [];
+  const opts = inject(ROUTER_CONFIGURATION, {optional: true}) ?? {};
+  const defaultTitleStrategy = inject(DefaultTitleStrategy);
+  const titleStrategy = inject(TitleStrategy, {optional: true});
+  const urlHandlingStrategy = inject(UrlHandlingStrategy, {optional: true});
+  const routeReuseStrategy = inject(RouteReuseStrategy, {optional: true});
+  const router =
+      new Router(null, urlSerializer, contexts, location, injector, compiler, flatten(config));
+
+  if (urlHandlingStrategy) {
+    router.urlHandlingStrategy = urlHandlingStrategy;
+  }
+
+  if (routeReuseStrategy) {
+    router.routeReuseStrategy = routeReuseStrategy;
+  }
+
+  router.titleStrategy = titleStrategy ?? defaultTitleStrategy;
+
+  assignExtraOptionsToRouter(opts, router);
+
+  return router;
+}
+
 /**
  * @description
  *
@@ -313,7 +364,10 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
  *
  * @publicApi
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+  useFactory: setupRouter,
+})
 export class Router {
   /**
    * Represents the activated `UrlTree` that the `Router` is configured to handle (through
