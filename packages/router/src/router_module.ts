@@ -138,7 +138,7 @@ export class RouterModule {
           deps: [[Router, new Optional(), new SkipSelf()]]
         },
         {provide: ROUTER_CONFIGURATION, useValue: config ? config : {}},
-        config?.useHash ? provideHashLocationStrategy() : providePathLocationStrategy(),
+        config?.useHash ? provideHashLocationStrategy() : [],
         provideRouterScroller(),
         config?.preloadingStrategy ? providePreloading(config.preloadingStrategy) : [],
         {provide: NgProbeToken, multi: true, useFactory: routerNgProbeToken},
@@ -186,10 +186,6 @@ export function provideRouterScroller(): Provider {
 
 function provideHashLocationStrategy(): Provider {
   return {provide: LocationStrategy, useClass: HashLocationStrategy};
-}
-
-function providePathLocationStrategy(): Provider {
-  return {provide: LocationStrategy, useClass: PathLocationStrategy};
 }
 
 export function provideForRootGuard(router: Router): any {
