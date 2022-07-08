@@ -429,9 +429,6 @@
     "name": "OuterSubscriber"
   },
   {
-    "name": "OutletInjector"
-  },
-  {
     "name": "PLATFORM_DESTROY_LISTENERS"
   },
   {
