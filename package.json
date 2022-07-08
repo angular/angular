@@ -183,7 +183,7 @@
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^5.0.0",
     "@bazel/ibazel": "^0.16.0",
-    "@octokit/graphql": "^4.6.1",
+    "@octokit/graphql": "^5.0.0",
     "@types/browser-sync": "^2.26.1",
     "@types/cldrjs": "^0.4.22",
     "@types/cli-progress": "^3.4.2",
