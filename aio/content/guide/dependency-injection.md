@@ -14,9 +14,9 @@ See the <live-example></live-example> for a working example containing the code 
 
 ## Creating an injectable service
 
-To create a new `HeroService` class in the `src/app/heroes` directory, use the following [Angular CLI](cli) command.
+To create a new `HeroService` class in the `src/app/heroes` directory, use the following command.
 
-<code-example format="shell" language="shell">
+<code-example format="shell" header="Generate the heroes/hero service" language="shell">
 
 ng generate service heroes/hero
 
@@ -43,7 +43,7 @@ If you define the component before the service, Angular returns a run-time null 
 
 ## Injecting services
 
-Injecting services results in making them visible to a component.
+Injecting services lets a component access their features and data.
 
 To inject a dependency in a component's `constructor()`, supply a constructor argument with the dependency type.
 The following example specifies the `HeroService` in the `HeroListComponent` constructor.
@@ -66,11 +66,10 @@ Next, inject the `Logger` service in the `HeroService` `constructor()` by specif
 
 When you create a class whose `constructor()` has parameters, specify the type and metadata about those parameters so that Angular can inject the correct service.
 
-Here, the `constructor()` specifies a type of `Logger` and stores the instance of `Logger` in a private field called `logger`.
+Here, `constructor()` specifies a type of `Logger` and stores the instance of `Logger` in a private field called `logger`.
 
-The following code tabs feature the `Logger` service and two versions of `HeroService`.
-The first version of `HeroService` doesn't depend on the `Logger` service.
-The revised second version does depend on `Logger` service.
+The following code tabs feature the `Logger` service and two versions of `HeroService`. 
+`HeroService (v2)` depends on `Logger` service, while `HeroService (v1)` doesn't depend on the `Logger` service.
 
 <code-tabs>
     <code-pane header="src/app/heroes/hero.service (v2)" path="dependency-injection/src/app/heroes/hero.service.2.ts"></code-pane>
