@@ -287,7 +287,13 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     const snapshot = activatedRoute._futureSnapshot;
     const component = snapshot.component!;
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
-    const injector = new OutletInjector(activatedRoute, childContexts, location.injector);
+    const injector = Injector.create({
+      providers: [
+        {provide: ActivatedRoute, useValue: activatedRoute},
+        {provide: ChildrenOutletContexts, useValue: childContexts}
+      ],
+      parent: location.injector
+    });
 
     if (resolverOrInjector && isComponentFactoryResolver(resolverOrInjector)) {
       const factory = resolverOrInjector.resolveComponentFactory(component);
@@ -301,24 +307,6 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
     this.changeDetector.markForCheck();
     this.activateEvents.emit(this.activated.instance);
-  }
-}
-
-class OutletInjector implements Injector {
-  constructor(
-      private route: ActivatedRoute, private childContexts: ChildrenOutletContexts,
-      private parent: Injector) {}
-
-  get(token: any, notFoundValue?: any): any {
-    if (token === ActivatedRoute) {
-      return this.route;
-    }
-
-    if (token === ChildrenOutletContexts) {
-      return this.childContexts;
-    }
-
-    return this.parent.get(token, notFoundValue);
   }
 }
 
