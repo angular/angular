@@ -31,7 +31,7 @@ export const ROUTES = new InjectionToken<Route[][]>('ROUTES');
 
 type ComponentLoader = Observable<Type<unknown>>;
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class RouterConfigLoader {
   private componentLoaders = new WeakMap<Route, ComponentLoader>();
   private childrenLoaders = new WeakMap<Route, Observable<LoadedRouterConfig>>();

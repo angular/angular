@@ -115,7 +115,10 @@ import {UrlTree} from '../url_tree';
  *
  * @publicApi
  */
-@Directive({selector: ':not(a):not(area)[routerLink]'})
+@Directive({
+  selector: ':not(a):not(area)[routerLink]',
+  standalone: true,
+})
 export class RouterLink implements OnChanges {
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
@@ -277,7 +280,7 @@ export class RouterLink implements OnChanges {
  *
  * @publicApi
  */
-@Directive({selector: 'a[routerLink],area[routerLink]'})
+@Directive({selector: 'a[routerLink],area[routerLink]', standalone: true})
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
   // TODO(issue/24571): remove '!'.
   @HostBinding('attr.target') @Input() target!: string;

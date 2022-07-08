@@ -74,6 +74,10 @@ export const ROUTER_PROVIDERS: Provider[] = [
   RouterConfigLoader,
 ];
 
+export function rootRoute(router: Router): ActivatedRoute {
+  return router.routerState.root;
+}
+
 export function routerNgProbeToken() {
   return new NgProbeToken('Router', Router);
 }
@@ -100,7 +104,7 @@ export function routerNgProbeToken() {
  * @publicApi
  */
 @NgModule({
-  declarations: ROUTER_DIRECTIVES,
+  imports: ROUTER_DIRECTIVES,
   exports: ROUTER_DIRECTIVES,
 })
 export class RouterModule {
@@ -510,10 +514,6 @@ export function assignExtraOptionsToRouter(opts: ExtraOptions, router: Router): 
   if (opts.canceledNavigationResolution) {
     router.canceledNavigationResolution = opts.canceledNavigationResolution;
   }
-}
-
-export function rootRoute(router: Router): ActivatedRoute {
-  return router.routerState.root;
 }
 
 export function getBootstrapListener() {

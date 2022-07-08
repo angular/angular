@@ -89,6 +89,7 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
 @Directive({
   selector: '[routerLinkActive]',
   exportAs: 'routerLinkActive',
+  standalone: true,
 })
 export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
   @ContentChildren(RouterLink, {descendants: true}) links!: QueryList<RouterLink>;
