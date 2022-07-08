@@ -1746,6 +1746,9 @@
     "name": "saveNameToExportMap"
   },
   {
+    "name": "scan"
+  },
+  {
     "name": "scheduleArray"
   },
   {
