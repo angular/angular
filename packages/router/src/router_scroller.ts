@@ -7,15 +7,18 @@
  */
 
 import {ViewportScroller} from '@angular/common';
-import {Injectable, InjectionToken, OnDestroy} from '@angular/core';
+import {inject, Injectable, OnDestroy} from '@angular/core';
 import {Unsubscribable} from 'rxjs';
 
 import {NavigationEnd, NavigationStart, Scroll} from './events';
 import {Router} from './router';
+import {ROUTER_CONFIGURATION} from './router_config';
 
-export const ROUTER_SCROLLER = new InjectionToken<RouterScroller>('');
-
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+  useFactory: () =>
+      new RouterScroller(inject(Router), inject(ViewportScroller), inject(ROUTER_CONFIGURATION))
+})
 export class RouterScroller implements OnDestroy {
   // TODO(issue/24571): remove '!'.
   private routerEventsSubscription!: Unsubscribable;

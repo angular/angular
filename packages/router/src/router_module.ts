@@ -23,7 +23,7 @@ import {ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader, ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {PreloadingStrategy, RouterPreloader} from './router_preloader';
-import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
+import {RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 
@@ -41,7 +41,6 @@ const ROUTER_DIRECTIVES =
 export const ROUTER_FORROOT_GUARD = new InjectionToken<void>(
     NG_DEV_MODE ? 'router duplicate forRoot guard' : 'ROUTER_FORROOT_GUARD');
 
-const ROUTER_PRELOADER = new InjectionToken<RouterPreloader>(NG_DEV_MODE ? 'router preloader' : '');
 
 // TODO(atscott): All of these except `ActivatedRoute` are `providedIn: 'root'`. They are only kept
 // here to avoid a breaking change whereby the provider order matters based on where the
@@ -156,16 +155,19 @@ export class RouterModule {
 
 export function provideRouterScroller(): Provider {
   return {
-    provide: ROUTER_SCROLLER,
+    provide: APP_BOOTSTRAP_LISTENER,
+    multi: true,
     useFactory: () => {
-      const router = inject(Router);
       const viewportScroller = inject(ViewportScroller);
       const config: ExtraOptions = inject(ROUTER_CONFIGURATION);
-      if (config.scrollOffset) {
-        viewportScroller.setOffset(config.scrollOffset);
-      }
-      return new RouterScroller(router, viewportScroller, config);
-    },
+      const scroller = inject(RouterScroller);
+      return () => {
+        if (config.scrollOffset) {
+          viewportScroller.setOffset(config.scrollOffset);
+        }
+        scroller.init();
+      };
+    }
   };
 }
 
@@ -226,8 +228,6 @@ export function getBootstrapListener() {
       router.initialNavigation();
     }
 
-    injector.get(ROUTER_PRELOADER, null, InjectFlags.Optional)?.setUpPreloading();
-    injector.get(ROUTER_SCROLLER, null, InjectFlags.Optional)?.init();
     router.resetRootComponentType(ref.componentTypes[0]);
     bootstrapDone.next();
     bootstrapDone.complete();
@@ -395,7 +395,14 @@ function provideTracing(): Provider[] {
 export function providePreloading(preloadingStrategy: Type<PreloadingStrategy>): Provider[] {
   return [
     RouterPreloader,
-    {provide: ROUTER_PRELOADER, useExisting: RouterPreloader},
     {provide: PreloadingStrategy, useExisting: preloadingStrategy},
+    {
+      provide: APP_BOOTSTRAP_LISTENER,
+      multi: true,
+      useFactory: () => {
+        const preloader = inject(RouterPreloader);
+        return () => preloader.setUpPreloading();
+      }
+    },
   ];
 }

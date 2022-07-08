@@ -483,13 +483,7 @@
     "name": "ROUTER_INITIALIZER"
   },
   {
-    "name": "ROUTER_PRELOADER"
-  },
-  {
     "name": "ROUTER_PROVIDERS"
-  },
-  {
-    "name": "ROUTER_SCROLLER"
   },
   {
     "name": "ROUTES"
