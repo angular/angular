@@ -761,11 +761,11 @@ export class Router {
                      checkGuards(this.ngModule.injector, (evt: Event) => this.triggerEvent(evt)),
                      tap(t => {
                        if (isUrlTree(t.guardsResult)) {
-                         const error: Error&{url?: UrlTree} = navigationCancelingError(
-                             REDIRECTING_CANCELLATION_REASON +
-                             `"${this.serializeUrl(t.guardsResult)}"`);
-                         error.url = t.guardsResult;
-                         throw error;
+                         throw navigationCancelingError(
+                             NG_DEV_MODE &&
+                                 REDIRECTING_CANCELLATION_REASON +
+                                     `"${this.serializeUrl(t.guardsResult)}"`,
+                             NavigationCancellationCode.Redirect, t.guardsResult);
                        }
 
                        const guardsEnd = new GuardsCheckEnd(
@@ -941,12 +941,12 @@ export class Router {
                          }
                          const navCancel = new NavigationCancel(
                              t.id, this.serializeUrl(t.extractedUrl), e.message,
-                             NavigationCancellationCode.Redirect);
+                             e.cancellationCode);
                          eventsSubject.next(navCancel);
 
                          // When redirecting, we need to delay resolving the navigation
                          // promise and push it to the redirect navigation
-                         if (!redirecting) {
+                         if (!isUrlTree(e.url)) {
                            t.resolve(false);
                          } else {
                            const mergedTree =

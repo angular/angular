@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NavigationCancellationCode} from './events';
 import {Route, UrlMatchResult} from './models';
-import {UrlSegment, UrlSegmentGroup} from './url_tree';
+import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 
 
 /**
@@ -114,13 +115,17 @@ export function convertToParamMap(params: Params): ParamMap {
 export const REDIRECTING_CANCELLATION_REASON = 'Redirecting to ';
 const NAVIGATION_CANCELING_ERROR = 'ngNavigationCancelingError';
 
-export function navigationCancelingError(message: string|null|false) {
+export function navigationCancelingError(
+    message: string|null|false, code: NavigationCancellationCode, redirectUrl?: UrlTree) {
   const error = Error('NavigationCancelingError: ' + (message || ''));
   (error as any)[NAVIGATION_CANCELING_ERROR] = true;
+  (error as any).cancellationCode = code;
+  (error as any).url = redirectUrl;
   return error;
 }
 
-export function isNavigationCancelingError(error: Error) {
+export function isNavigationCancelingError(error: Error): error is Error&
+    {cancellationCode: NavigationCancellationCode, url?: UrlTree} {
   return error && (error as any)[NAVIGATION_CANCELING_ERROR];
 }
 
