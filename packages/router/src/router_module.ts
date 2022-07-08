@@ -202,7 +202,7 @@ export function provideForRootGuard(router: Router): any {
  *
  * @publicApi
  */
-export function provideRoutes(routes: Routes): any {
+export function provideRoutes(routes: Routes): Provider[] {
   return [
     {provide: ROUTES, multi: true, useValue: routes},
   ];
@@ -249,7 +249,7 @@ function provideInitialNavigation(config: Pick<ExtraOptions, 'initialNavigation'
   ];
 }
 
-function provideRouterInitializer(): ReadonlyArray<Provider> {
+function provideRouterInitializer(): Provider[] {
   return [
     // ROUTER_INITIALIZER token should be removed. It's public API but shouldn't be. We can just
     // have `getBootstrapListener` directly attached to APP_BOOTSTRAP_LISTENER.
