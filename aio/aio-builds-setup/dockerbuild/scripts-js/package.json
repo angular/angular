@@ -27,7 +27,7 @@
     "body-parser": "^1.19.0",
     "delete-empty": "^3.0.0",
     "express": "^4.17.1",
-    "jasmine": "^3.6.1",
+    "jasmine": "^4.0.0",
     "nock": "^13.0.4",
     "node-fetch": "^2.6.1",
     "shelljs": "^0.8.5",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
     "@types/express": "^4.17.8",
-    "@types/jasmine": "^3.5.14",
+    "@types/jasmine": "^4.0.0",
     "@types/nock": "^11.1.0",
     "@types/node": "^14.6.4",
     "@types/node-fetch": "^2.5.7",
