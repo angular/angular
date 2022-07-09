@@ -225,10 +225,10 @@ describe('PreviewServerFactory', () => {
       buildCreator.emit(ChangedPrVisibilityEvent.type, {pr: 42, shas: ['12345', '67890'], isPublic: true});
 
       const allCalls = prsAddCommentSpy.calls.all();
-      const prs: GithubPullRequests = allCalls[0].object;
+      const prs = allCalls[0].object as GithubPullRequests;
 
       expect(prsAddCommentSpy).toHaveBeenCalledTimes(2);
-      expect(prs).toBe(allCalls[1].object);
+      expect(prs).toBe(allCalls[1].object as GithubPullRequests);
       expect(prs).toBeInstanceOf(GithubPullRequests);
       expect(prs.repoSlug).toBe('organisation/repo');
     });

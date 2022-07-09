@@ -2,7 +2,7 @@ import {PreviewServerError} from '../../lib/preview-server/preview-error';
 
 
 // Matchers
-const toBeRejectedWithPreviewServerError: jasmine.CustomAsyncMatcherFactory = () => {
+const toBeRejectedWithPreviewServerError: jasmine.CustomAsyncMatcherFactory = matchersUtil => {
   return {
     async compare(actualPromise: Promise<never>, expectedStatus: number, expectedMessage?: string | RegExp) {
       if (!(actualPromise instanceof Promise)) {
@@ -49,7 +49,7 @@ const toBeRejectedWithPreviewServerError: jasmine.CustomAsyncMatcherFactory = ()
       return `${PreviewServerError.name}(${value.status}${value.message ? `, ${value.message}` : ''})`;
     }
 
-    return jasmine.pp(value);
+    return matchersUtil.pp(value);
   }
 };
 
