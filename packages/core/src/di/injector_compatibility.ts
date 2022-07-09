@@ -15,7 +15,7 @@ import {stringify} from '../util/stringify';
 import {resolveForwardRef} from './forward_ref';
 import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
 import {Injector} from './injector';
-import {DecoratorFlags, InjectFlags, InternalInjectFlags} from './interface/injector';
+import {DecoratorFlags, InjectFlags, InjectOptions, InternalInjectFlags} from './interface/injector';
 import {ProviderToken} from './provider_token';
 
 
@@ -100,35 +100,6 @@ This can happen if the dependency type is a primitive like a string or if an anc
 
 Please check that 1) the type for the parameter at index ${
               index} is correct and 2) the correct Angular decorators are defined for this class and its ancestors.`);
-}
-
-/**
- * Type of the options argument to `inject`.
- *
- * @publicApi
- */
-export interface InjectOptions {
-  /**
-   * Use optional injection, and return `null` if the requested token is not found.
-   */
-  optional?: boolean;
-
-  /**
-   * Start injection at the parent of the current injector.
-   */
-  skipSelf?: boolean;
-
-  /**
-   * Only query the current injector for the token, and don't fall back to the parent injector if
-   * it's not found.
-   */
-  self?: boolean;
-
-  /**
-   * Stop injection at the host component's injector. Only relevant when injecting from an element
-   * injector, and a no-op for environment injectors.
-   */
-  host?: boolean;
 }
 
 /**
@@ -240,17 +211,24 @@ export function inject<T>(token: ProviderToken<T>, options: InjectOptions): T|nu
  */
 export function inject<T>(
     token: ProviderToken<T>, flags: InjectFlags|InjectOptions = InjectFlags.Default): T|null {
-  if (typeof flags !== 'number') {
-    // While TypeScript doesn't accept it without a cast, bitwise OR with false-y values in
-    // JavaScript is a no-op. We can use that for a very codesize-efficient conversion from
-    // `InjectOptions` to `InjectFlags`.
-    flags = (InternalInjectFlags.Default |  // comment to force a line break in the formatter
-             ((flags.optional && InternalInjectFlags.Optional) as number) |
-             ((flags.host && InternalInjectFlags.Host) as number) |
-             ((flags.self && InternalInjectFlags.Self) as number) |
-             ((flags.skipSelf && InternalInjectFlags.SkipSelf) as number)) as InjectFlags;
+  return ɵɵinject(token, convertToBitFlags(flags));
+}
+
+// Converts object-based DI flags (`InjectOptions`) to bit flags (`InjectFlags`).
+export function convertToBitFlags(flags: InjectOptions|InjectFlags|undefined): InjectFlags|
+    undefined {
+  if (typeof flags === 'undefined' || typeof flags === 'number') {
+    return flags;
   }
-  return ɵɵinject(token, flags);
+
+  // While TypeScript doesn't accept it without a cast, bitwise OR with false-y values in
+  // JavaScript is a no-op. We can use that for a very codesize-efficient conversion from
+  // `InjectOptions` to `InjectFlags`.
+  return (InternalInjectFlags.Default |  // comment to force a line break in the formatter
+          ((flags.optional && InternalInjectFlags.Optional) as number) |
+          ((flags.host && InternalInjectFlags.Host) as number) |
+          ((flags.self && InternalInjectFlags.Self) as number) |
+          ((flags.skipSelf && InternalInjectFlags.SkipSelf) as number)) as InjectFlags;
 }
 
 export function injectArgs(types: (ProviderToken<any>|any[])[]): any[] {
