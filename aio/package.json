@@ -147,7 +147,7 @@
     "html": "^1.0.0",
     "ignore": "^5.1.8",
     "image-size": "^1.0.0",
-    "jasmine": "~3.10.0",
+    "jasmine": "~4.2.0",
     "jasmine-core": "~4.2.0",
     "jasmine-spec-reporter": "~7.0.0",
     "jsdom": "^20.0.0",
