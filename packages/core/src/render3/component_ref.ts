@@ -8,7 +8,8 @@
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {Injector} from '../di/injector';
-import {InjectFlags} from '../di/interface/injector';
+import {convertToBitFlags} from '../di/injector_compatibility';
+import {InjectFlags, InjectOptions} from '../di/interface/injector';
 import {ProviderToken} from '../di/provider_token';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
@@ -83,7 +84,8 @@ function getNamespace(elementName: string): string|null {
 class ChainedInjector implements Injector {
   constructor(private injector: Injector, private parentInjector: Injector) {}
 
-  get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T {
+  get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags|InjectOptions): T {
+    flags = convertToBitFlags(flags);
     const value = this.injector.get<T|typeof NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR>(
         token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR, flags);
 

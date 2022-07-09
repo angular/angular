@@ -12,7 +12,7 @@ import {THROW_IF_NOT_FOUND, ɵɵinject} from './injector_compatibility';
 import {InjectorMarkers} from './injector_marker';
 import {INJECTOR} from './injector_token';
 import {ɵɵdefineInjectable} from './interface/defs';
-import {InjectFlags} from './interface/injector';
+import {InjectFlags, InjectOptions} from './interface/injector';
 import {StaticProvider} from './interface/provider';
 import {NullInjector} from './null_injector';
 import {ProviderToken} from './provider_token';
@@ -49,6 +49,14 @@ export abstract class Injector {
    * Retrieves an instance from the injector based on the provided token.
    * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
    * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
+   */
+  abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions|InjectFlags):
+      T;
+  /**
+   * Retrieves an instance from the injector based on the provided token.
+   * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
+   * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
+   * @deprecated use object-based flags (`InjectOptions`) instead.
    */
   abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   /**
