@@ -3,13 +3,11 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 import {AppComponent} from './app.component';
-import {MatSelectModule} from '@angular/material/select';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatRadioModule} from '@angular/material/radio';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [MatSelectModule, MatFormFieldModule, NoopAnimationsModule, BrowserModule],
-  providers: [],
+  imports: [MatRadioModule, NoopAnimationsModule, BrowserModule],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

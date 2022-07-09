@@ -23,7 +23,7 @@
     "@angular/platform-browser": "file:../../node_modules/@angular/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../node_modules/@angular/platform-browser-dynamic",
     "@angular/router": "file:../../node_modules/@angular/router",
-    "rxjs": "file:../../node_modules/rxjs",
+    "rxjs": "^7.5.5",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },

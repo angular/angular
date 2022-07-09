@@ -3,7 +3,13 @@ load("//tools:integration.bzl", "CLI_PROJECT_MAPPINGS")
 load("//tools:defaults.bzl", "node_integration_test")
 
 npmPackageMappings = dicts.add(
-    CLI_PROJECT_MAPPINGS,
+    dicts.omit(
+        CLI_PROJECT_MAPPINGS,
+        # Exclude rxjs, because we want to use the version from the package.json.
+        # Version 6.x that the rest of the project uses has some packaging issues. See:
+        # https://github.com/angular/components/pull/25241#issuecomment-1178701633
+        ["@npm//:rxjs_archive"],
+    ),
     {
         "//src/cdk:npm_package_archive": "@angular/cdk",
         "//src/material:npm_package_archive": "@angular/material",
