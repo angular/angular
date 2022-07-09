@@ -46,6 +46,12 @@ export abstract class Injector {
   static NULL: Injector = (/* @__PURE__ */ new NullInjector());
 
   /**
+   * Internal note on the `options?: InjectOptions|InjectFlags` override of the `get`
+   * method: consider dropping the `InjectFlags` part in one of the major versions.
+   * It can **not** be done in minor/patch, since it's breaking for custom injectors
+   * that only implement the old `InjectorFlags` interface.
+   */
+  /**
    * Retrieves an instance from the injector based on the provided token.
    * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
    * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.

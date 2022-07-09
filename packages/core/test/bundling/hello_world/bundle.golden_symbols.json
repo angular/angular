@@ -324,6 +324,9 @@
     "name": "connectableObservableDescriptor"
   },
   {
+    "name": "convertToBitFlags"
+  },
+  {
     "name": "createElementRef"
   },
   {

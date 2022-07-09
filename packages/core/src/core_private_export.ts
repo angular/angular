@@ -12,7 +12,7 @@ export {defaultIterableDiffers as ɵdefaultIterableDiffers, defaultKeyValueDiffe
 export {ChangeDetectorStatus as ɵChangeDetectorStatus, isDefaultChangeDetectionStrategy as ɵisDefaultChangeDetectionStrategy} from './change_detection/constants';
 export {Console as ɵConsole} from './console';
 export {getDebugNodeR2 as ɵgetDebugNodeR2} from './debug/debug_node';
-export {setCurrentInjector as ɵsetCurrentInjector} from './di/injector_compatibility';
+export {convertToBitFlags as ɵconvertToBitFlags, setCurrentInjector as ɵsetCurrentInjector} from './di/injector_compatibility';
 export {getInjectableDef as ɵgetInjectableDef, ɵɵInjectableDeclaration, ɵɵInjectorDef} from './di/interface/defs';
 export {INJECTOR_SCOPE as ɵINJECTOR_SCOPE} from './di/scope';
 export {formatRuntimeError as ɵformatRuntimeError, RuntimeError as ɵRuntimeError} from './errors';
