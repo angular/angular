@@ -12,6 +12,7 @@ import { Directive } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { InjectFlags } from '@angular/core';
 import { InjectionToken } from '@angular/core';
+import { InjectOptions } from '@angular/core';
 import { NgModule } from '@angular/core';
 import { NgZone } from '@angular/core';
 import { Pipe } from '@angular/core';
@@ -115,8 +116,16 @@ export interface TestBed {
     get(token: any, notFoundValue?: any): any;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: TestEnvironmentOptions): void;
     // (undocumented)
-    inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    inject<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions & {
+        optional?: false;
+    }): T;
     // (undocumented)
+    inject<T>(token: ProviderToken<T>, notFoundValue: null | undefined, options: InjectOptions): T | null;
+    // (undocumented)
+    inject<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
+    // @deprecated (undocumented)
+    inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    // @deprecated (undocumented)
     inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T | null;
     // (undocumented)
     get ngModule(): Type<any> | Type<any>[];

@@ -810,6 +810,9 @@
     "name": "containsTree"
   },
   {
+    "name": "convertToBitFlags"
+  },
+  {
     "name": "convertToParamMap"
   },
   {

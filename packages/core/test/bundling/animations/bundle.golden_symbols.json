@@ -651,6 +651,9 @@
     "name": "containsElement"
   },
   {
+    "name": "convertToBitFlags"
+  },
+  {
     "name": "convertToMap"
   },
   {

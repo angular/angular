@@ -678,6 +678,9 @@
     "name": "controlPath"
   },
   {
+    "name": "convertToBitFlags"
+  },
+  {
     "name": "createDirectivesInstances"
   },
   {

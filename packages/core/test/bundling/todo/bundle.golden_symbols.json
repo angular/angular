@@ -558,6 +558,9 @@
     "name": "connectableObservableDescriptor"
   },
   {
+    "name": "convertToBitFlags"
+  },
+  {
     "name": "createDirectivesInstances"
   },
   {

@@ -16,6 +16,7 @@ import {
   Directive,
   InjectFlags,
   InjectionToken,
+  InjectOptions,
   Injector,
   NgModule,
   NgZone,
@@ -23,6 +24,7 @@ import {
   PlatformRef,
   ProviderToken,
   Type,
+  ɵconvertToBitFlags as convertToBitFlags,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
   ɵgetUnknownElementStrictMode as getUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode as getUnknownPropertyStrictMode,
@@ -87,7 +89,14 @@ export interface TestBed {
 
   compileComponents(): Promise<any>;
 
+  inject<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions&{
+    optional?: false
+  }): T;
+  inject<T>(token: ProviderToken<T>, notFoundValue: null|undefined, options: InjectOptions): T|null;
+  inject<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
+  /** @deprecated use object-based flags (`InjectOptions`) instead. */
   inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  /** @deprecated use object-based flags (`InjectOptions`) instead. */
   inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T|null;
 
   /** @deprecated from v9.0.0 use TestBed.inject */
@@ -290,10 +299,19 @@ export class TestBedImpl implements TestBed {
     return TestBedImpl.INSTANCE.overrideProvider(token, provider);
   }
 
+  static inject<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions&{
+    optional?: false
+  }): T;
+  static inject<T>(token: ProviderToken<T>, notFoundValue: null|undefined, options: InjectOptions):
+      T|null;
+  static inject<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
+  /** @deprecated use object-based flags (`InjectOptions`) instead. */
   static inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  /** @deprecated use object-based flags (`InjectOptions`) instead. */
   static inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T|null;
-  static inject<T>(token: ProviderToken<T>, notFoundValue?: T|null, flags?: InjectFlags): T|null {
-    return TestBedImpl.INSTANCE.inject(token, notFoundValue, flags);
+  static inject<T>(
+      token: ProviderToken<T>, notFoundValue?: T|null, flags?: InjectFlags|InjectOptions): T|null {
+    return TestBedImpl.INSTANCE.inject(token, notFoundValue, convertToBitFlags(flags));
   }
 
   /** @deprecated from v9.0.0 use TestBed.inject */
@@ -468,14 +486,22 @@ export class TestBedImpl implements TestBed {
     return this.compiler.compileComponents();
   }
 
+  inject<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions&{
+    optional: true
+  }): T|null;
+  inject<T>(token: ProviderToken<T>, notFoundValue?: T, options?: InjectOptions): T;
+  inject<T>(token: ProviderToken<T>, notFoundValue: null, options?: InjectOptions): T|null;
+  /** @deprecated use object-based flags (`InjectOptions`) instead. */
   inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  /** @deprecated use object-based flags (`InjectOptions`) instead. */
   inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T|null;
-  inject<T>(token: ProviderToken<T>, notFoundValue?: T|null, flags?: InjectFlags): T|null {
+  inject<T>(token: ProviderToken<T>, notFoundValue?: T|null, flags?: InjectFlags|InjectOptions): T
+      |null {
     if (token as unknown === TestBed) {
       return this as any;
     }
     const UNDEFINED = {} as unknown as T;
-    const result = this.testModuleRef.injector.get(token, UNDEFINED, flags);
+    const result = this.testModuleRef.injector.get(token, UNDEFINED, convertToBitFlags(flags));
     return result === UNDEFINED ? this.compiler.injector.get(token, notFoundValue, flags) as any :
                                   result;
   }

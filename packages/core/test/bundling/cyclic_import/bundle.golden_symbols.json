@@ -459,6 +459,9 @@
     "name": "connectableObservableDescriptor"
   },
   {
+    "name": "convertToBitFlags"
+  },
+  {
     "name": "createElementNode"
   },
   {
