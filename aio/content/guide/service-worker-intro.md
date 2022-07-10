@@ -1,7 +1,7 @@
 # Angular service worker introduction
 
 Service workers augment the traditional web deployment model and empower applications to deliver a user experience with the reliability and performance on par with code that is written to run on your operating system and hardware.
-Adding a service worker to an Angular application is one of the steps for turning an application into a [Progressive Web App](https://developers.google.com/web/progressive-web-apps) \(also known as a PWA\).
+Adding a service worker to an Angular application is one of the steps for turning an application into a [Progressive Web App](https://web.dev/progressive-web-apps/) \(also known as a PWA\).
 
 At its simplest, a service worker is a script that runs in the web browser and manages caching for an application.
 
