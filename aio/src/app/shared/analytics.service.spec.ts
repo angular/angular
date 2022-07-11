@@ -47,6 +47,11 @@ describe('AnalyticsService', () => {
     expect(first[0]).toBe('create');
   });
 
+  it('should initialize ga with anonymize ips', () => {
+    const first = legacyGaSpy.calls.argsFor(1);
+    expect(first).toEqual(['set', 'anonymizeIp', true]);
+  });
+
   describe('#locationChanged(url)', () => {
     it('should set page to url w/ leading slash', () => {
       service.locationChanged('testUrl');
