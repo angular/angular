@@ -303,7 +303,10 @@ export interface ContentChildrenDecorator {
 export function createEnvironmentInjector(providers: Array<Provider | ImportedNgModuleProviders>, parent: EnvironmentInjector, debugName?: string | null): EnvironmentInjector;
 
 // @public
-export function createNgModuleRef<T>(ngModule: Type<T>, parentInjector?: Injector): NgModuleRef<T>;
+export function createNgModule<T>(ngModule: Type<T>, parentInjector?: Injector): NgModuleRef<T>;
+
+// @public @deprecated
+export const createNgModuleRef: typeof createNgModule;
 
 // @public
 export function createPlatform(injector: Injector): PlatformRef;
