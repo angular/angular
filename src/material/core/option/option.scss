@@ -43,6 +43,27 @@
     &[aria-disabled='true'] {
       opacity: 0.5;
     }
+
+    // In single selection mode, the selected option is indicated by changing its
+    // background color, but that doesn't work in high contrast mode. We add an
+    // alternate indication by rendering out a circle.
+    &.mat-selected:not(.mat-option-multiple)::after {
+      $size: 10px;
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: menu-common.$side-padding;
+      transform: translateY(-50%);
+      width: $size;
+      height: 0;
+      border-bottom: solid $size;
+      border-radius: $size;
+    }
+
+    [dir='rtl'] &.mat-selected:not(.mat-option-multiple)::after {
+      right: auto;
+      left: menu-common.$side-padding;
+    }
   }
 }
 

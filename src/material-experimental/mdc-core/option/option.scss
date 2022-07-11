@@ -1,4 +1,5 @@
 @use '@angular/material' as mat;
+@use '@angular/cdk';
 @use '@material/list/evolution-mixins' as mdc-list-mixins;
 @use '@material/list/evolution-variables' as mdc-list-variables;
 @use 'sass:map';
@@ -23,15 +24,6 @@
   // which doesn't work well with multi-line options.
   $height-config: map.get(mdc-list-variables.$one-line-item-density-config, height);
   min-height: map.get($height-config, default);
-
-  // Workaround for https://goo.gl/pFmjJD in IE 11. Adds a pseudo
-  // element that will stretch the option to the correct height. See:
-  // https://connect.microsoft.com/IE/feedback/details/802625
-  &::after {
-    display: inline-block;
-    min-height: inherit;
-    content: '';
-  }
 
   &.mdc-list-item--disabled {
     // This is the same as `mdc-list-mixins.list-disabled-opacity` which
@@ -86,6 +78,29 @@
     font-family: inherit;
     text-decoration: inherit;
     text-transform: inherit;
+  }
+
+  @include cdk.high-contrast(active, off) {
+    // In single selection mode, the selected option is indicated by changing its
+    // background color, but that doesn't work in high contrast mode. We add an
+    // alternate indication by rendering out a circle.
+    &.mdc-list-item--selected:not(.mat-mdc-option-multiple)::after {
+      $size: 10px;
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: mdc-list-variables.$side-padding;
+      transform: translateY(-50%);
+      width: $size;
+      height: 0;
+      border-bottom: solid $size;
+      border-radius: $size;
+    }
+
+    [dir='rtl'] &.mdc-list-item--selected:not(.mat-mdc-option-multiple)::after {
+      right: auto;
+      left: mdc-list-variables.$side-padding;
+    }
   }
 }
 
