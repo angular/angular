@@ -38,6 +38,7 @@ export class AnalyticsService {
 
     // TODO: Remove this when we fully switch to Google Analytics 4+.
     this._legacyGa('create', environment.legacyUniversalAnalyticsId , 'auto');
+    this._legacyGa('set', 'anonymizeIp', true);
   }
 
   reportError(description: string, fatal = true) {
