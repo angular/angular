@@ -8,6 +8,7 @@
   "lockFileMaintenance": {
     "enabled": false
   },
+  "rangeStrategy": "pin",
   "pinDigests": true,
   "prHourlyLimit": 2,
   "rebaseWhen": "behind-base-branch",
