@@ -24,15 +24,26 @@ import {maybeUnwrapFn} from './util/misc_utils';
 
 /**
  * Returns a new NgModuleRef instance based on the NgModule class and parent injector provided.
+ *
  * @param ngModule NgModule class.
  * @param parentInjector Optional injector instance to use as a parent for the module injector. If
  *     not provided, `NullInjector` will be used instead.
+ * @returns NgModuleRef that represents an NgModule instance.
+ *
  * @publicApi
  */
-export function createNgModuleRef<T>(
+export function createNgModule<T>(
     ngModule: Type<T>, parentInjector?: Injector): viewEngine_NgModuleRef<T> {
   return new NgModuleRef<T>(ngModule, parentInjector ?? null);
 }
+
+/**
+ * The `createNgModule` function alias for backwards-compatibility.
+ * Please avoid using it directly and use `createNgModule` instead.
+ *
+ * @deprecated Use `createNgModule` instead.
+ */
+export const createNgModuleRef = createNgModule;
 export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T>,
                                                                          EnvironmentInjector {
   // tslint:disable-next-line:require-internal-with-underscore
