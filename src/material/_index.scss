@@ -23,7 +23,7 @@
   @forward './core/style/layout-common' as private-* show private-fill;
 @forward './core/style/private' show private-theme-elevation, private-animation-noop;
 @forward './core/style/vendor-prefixes' as private-* show private-user-select,
-  private-position-sticky, private-color-adjust;
+  private-position-sticky, private-color-adjust, private-clip-path;
 @forward './core/theming/palette' as private-* show $private-dark-primary-text,
   $private-dark-disabled-text;
 @forward './core/style/variables' as private-* show $private-swift-ease-in-duration,

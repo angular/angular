@@ -38,4 +38,9 @@
   -webkit-background-clip: $value;
   background-clip: $value;
 }
+
+@mixin clip-path($value) {
+  -webkit-clip-path: $value;
+  clip-path: $value;
+}
 // stylelint-enable

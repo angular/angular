@@ -57,6 +57,29 @@
       .mat-mdc-form-field.mat-warn {
         @include _color-styles(error);
       }
+
+      // This fixes an issue where the notch appears to be thicker than the rest of the outline when
+      // zoomed in on Chrome. The border inconsistency seems to be some kind of rendering artifact
+      // that arises from a combination of the fact that the notch contains text, while the leading
+      // and trailing outline do not, combined with the fact that the border is semi-transparent.
+      // Experimentally, I discovered that adding a transparent left border fixes the inconsistency.
+      // Note: class name is repeated to achieve sufficient specificity over the various MDC states.
+      // (hover, focus, etc.)
+      // TODO(mmalerba): port this fix into MDC
+      .mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field {
+        &.mat-mdc-form-field .mdc-notched-outline__notch {
+          border-left: 1px solid transparent;
+        }
+      }
+
+      [dir='rtl'] {
+        .mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field {
+          &.mat-mdc-form-field .mdc-notched-outline__notch {
+            border-left: none;
+            border-right: 1px solid transparent;
+          }
+        }
+      }
     }
   }
 }

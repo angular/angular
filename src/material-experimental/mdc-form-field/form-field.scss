@@ -122,6 +122,21 @@
   box-sizing: border-box;
 }
 
+// In the form-field theme, we add a 1px left margin to the notch to fix a rendering bug in Chrome.
+// Here we apply negative margin to offset the effect on the layout and a clip-path to ensure the
+// left border is completely hidden. (Though the border is transparent, it still creates a triangle
+// shaped artifact where it meets the top and bottom borders.)
+.mat-mdc-form-field .mdc-notched-outline__notch {
+  margin-left: -1px;
+  @include mat.private-clip-path(inset(-9em -9em -9em 1px));
+
+  [dir='rtl'] & {
+    margin-left: 0;
+    margin-right: -1px;
+    @include mat.private-clip-path(inset(-9em 1px -9em -9em));
+  }
+}
+
 // In order to make it possible for developers to disable animations for form-fields,
 // we only activate the animation styles if animations are not explicitly disabled.
 .mat-mdc-form-field:not(.mat-form-field-no-animations) {
