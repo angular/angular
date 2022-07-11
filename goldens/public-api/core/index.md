@@ -317,8 +317,8 @@ export interface ContentChildrenDecorator {
 
 // @public
 export function createComponent<C>(component: Type<C>, options: {
-    hostElement?: Element;
     environmentInjector: EnvironmentInjector;
+    hostElement?: Element;
     elementInjector?: Injector;
     projectableNodes?: Node[][];
 }): ComponentRef<C>;
