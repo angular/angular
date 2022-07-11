@@ -778,6 +778,51 @@ describe('FocusMonitor observable stream', () => {
   }));
 });
 
+describe('FocusMonitor input label detection', () => {
+  let fixture: ComponentFixture<CheckboxWithLabel>;
+  let inputElement: HTMLElement;
+  let labelElement: HTMLElement;
+  let focusMonitor: FocusMonitor;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [A11yModule],
+      declarations: [CheckboxWithLabel],
+    }).compileComponents();
+  });
+
+  beforeEach(inject([FocusMonitor], (fm: FocusMonitor) => {
+    fixture = TestBed.createComponent(CheckboxWithLabel);
+    focusMonitor = fm;
+    fixture.detectChanges();
+    inputElement = fixture.nativeElement.querySelector('input');
+    labelElement = fixture.nativeElement.querySelector('label');
+    patchElementFocus(inputElement);
+  }));
+
+  it('should detect label click focus as `mouse`', fakeAsync(() => {
+    const spy = jasmine.createSpy('monitor spy');
+    focusMonitor.monitor(inputElement).subscribe(spy);
+    expect(spy).not.toHaveBeenCalled();
+
+    // Unlike most focus, focus from labels moves to the connected input on click rather than
+    // `mousedown`. To simulate it we have to dispatch both `mousedown` and `click` so the
+    // modality detector will pick it up.
+    dispatchMouseEvent(labelElement, 'mousedown');
+    labelElement.click();
+    fixture.detectChanges();
+    flush();
+
+    // The programmatic click from above won't move focus so we have to focus the input ourselves.
+    inputElement.focus();
+    fixture.detectChanges();
+    tick();
+
+    expect(inputElement.classList).toContain('cdk-mouse-focused');
+    expect(spy.calls.mostRecent()?.args[0]).toBe('mouse');
+  }));
+});
+
 @Component({
   template: `<div class="parent"><button>focus me!</button></div>`,
 })
@@ -809,3 +854,11 @@ class ComplexComponentWithMonitorSubtreeFocusAndMonitorElementFocus {}
   template: `<ng-container cdkMonitorElementFocus></ng-container>`,
 })
 class FocusMonitorOnCommentNode {}
+
+@Component({
+  template: `
+    <label for="test-checkbox">Check me</label>
+    <input id="test-checkbox" type="checkbox">
+  `,
+})
+class CheckboxWithLabel {}
