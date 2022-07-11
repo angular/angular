@@ -183,7 +183,7 @@
     "unist-util-filter": "^2.0.3",
     "unist-util-source": "^3.0.0",
     "unist-util-visit": "^2.0.3",
-    "unist-util-visit-parents": "^3.1.1",
+    "unist-util-visit-parents": "^5.0.0",
     "watchr": "^3.0.1",
     "xregexp": "^5.0.2",
     "yargs": "^17.0.0"
