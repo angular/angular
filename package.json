@@ -196,7 +196,7 @@
     "cldrjs": "0.5.5",
     "conventional-changelog": "^3.1.24",
     "cross-env": "^7.0.3",
-    "firebase-tools": "^11.0.0",
+    "firebase-tools": "^9.0.0",
     "glob": "8.0.3",
     "gulp": "^4.0.2",
     "gulp-conventional-changelog": "^2.0.35",
