@@ -1,0 +1,17 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("//tools:defaults.bzl", "sass_binary")
+
+# Sass binary used to ensure that the theming entry-point works as expected.
+sass_binary(
+    name = "test-theming",
+    testonly = True,
+    src = "test-theming.scss",
+    deps = ["//src/material-experimental:sass_lib"],
+)
+
+build_test(
+    name = "test",
+    targets = [
+        ":test-theming",
+    ],
+)
