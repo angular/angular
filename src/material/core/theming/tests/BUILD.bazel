@@ -1,4 +1,5 @@
 load("//tools:defaults.bzl", "jasmine_node_test", "sass_binary", "ts_library")
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -42,6 +43,16 @@ sass_binary(
     testonly = True,
     src = "test-legacy-theming-bundle.scss",
     deps = ["//src/material:sass_lib"],
+)
+
+build_test(
+    name = "sass_compile_tetss",
+    targets = [
+        ":test-css-variables-theme",
+        ":test-theming-api",
+        ":test-theming-bundle",
+        ":test-legacy-theming-bundle",
+    ],
 )
 
 ts_library(

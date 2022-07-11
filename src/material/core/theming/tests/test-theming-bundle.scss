@@ -11,8 +11,8 @@ mat.$theme-ignore-duplication-warnings: true;
 
 $theme: mat.define-light-theme((
   color: (
-    primary: mat.$red-palette,
-    accent: mat.$blue-palette,
+    primary: mat.define-palette(mat.$red-palette),
+    accent: mat.define-palette(mat.$blue-palette),
   ),
   density: -2,
 ));
@@ -22,10 +22,23 @@ $theme: mat.define-light-theme((
 @include mat.all-component-themes($theme);
 @include mat.all-component-typographies();
 @include mat.all-component-colors($theme);
+
+@include mat.private-all-component-densities($theme);
+@include mat.private-all-component-densities((density: 0));
+@include mat.private-all-component-densities((density: -1));
+@include mat.private-all-component-densities((density: minimum));
+
+@include mat.core-theme($theme);
+@include mat.button-theme($theme);
+
+@include mat.strong-focus-indicators();
+@include mat.strong-focus-indicators-theme($theme);
+
+// Legacy.
 @include mat.all-legacy-component-themes($theme);
 @include mat.all-legacy-component-typographies();
 @include mat.all-legacy-component-colors($theme);
-@include mat.core-theme($theme);
-@include mat.button-theme($theme);
-@include mat.strong-focus-indicators();
-@include mat.strong-focus-indicators-theme($theme);
+@include mat.private-all-legacy-component-densities($theme);
+@include mat.private-all-legacy-component-densities((density: 0));
+@include mat.private-all-legacy-component-densities((density: -1));
+@include mat.private-all-legacy-component-densities((density: minimum));
