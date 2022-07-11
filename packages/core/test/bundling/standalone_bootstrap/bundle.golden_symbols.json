@@ -417,9 +417,6 @@
     "name": "createNodeInjector"
   },
   {
-    "name": "createRootComponentView"
-  },
-  {
     "name": "createTView"
   },
   {
