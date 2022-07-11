@@ -351,9 +351,6 @@
     "name": "createPlatformFactory"
   },
   {
-    "name": "createRootComponentView"
-  },
-  {
     "name": "createTView"
   },
   {

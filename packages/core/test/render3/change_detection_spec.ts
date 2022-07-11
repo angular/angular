@@ -6,16 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, DOCUMENT} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
 import {withBody} from '@angular/private/testing';
 
 import {Component, DoCheck, OnInit, RendererFactory2} from '../../src/core';
-import {whenRendered} from '../../src/render3/component';
+import {whenRendered} from '../../src/render3/component_ref';
 import {getRenderedText} from '../../src/render3/index';
 import {detectChanges, markDirty} from '../../src/render3/instructions/all';
-
-import {MockRendererFactory} from './instructions/mock_renderer_factory';
 
 describe('change detection', () => {
   describe('markDirty, detectChanges, whenRendered, getRenderedText', () => {
