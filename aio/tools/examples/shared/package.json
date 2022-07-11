@@ -41,7 +41,7 @@
     "core-js": "^2.5.4",
     "express": "^4.18.1",
     "rxjs": "~7.5.0",
-    "systemjs": "~0.19.39",
+    "systemjs": "~6.12.0",
     "systemjs-plugin-babel": "~0.0.25",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
