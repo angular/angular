@@ -37,6 +37,19 @@ const VALID_WIDTH_DESCRIPTOR_SRCSET = /^((\s*\d+w\s*(,|$)){1,})$/;
 const VALID_DENSITY_DESCRIPTOR_SRCSET = /^((\s*\d(\.\d)?x\s*(,|$)){1,})$/;
 
 /**
+ * Srcset values with a density descriptor higher than this value will actively
+ * throw an error. Such densities are not permitted as they cause image sizes
+ * to be unreasonably large and slow down LCP.
+ */
+export const ABSOLUTE_SRCSET_DENSITY_CAP = 3;
+
+/**
+ * Used only in error message text to communicate best practices, as we will
+ * only throw based on the slightly more conservative ABSOLUTE_SRCSET_DENSITY_CAP.
+ */
+export const RECOMMENDED_SRCSET_DENSITY_CAP = 2;
+
+/**
  * Used to determine whether two aspect ratios are similar in value.
  */
 const ASPECT_RATIO_TOLERANCE = .1;
@@ -359,15 +372,37 @@ function assertNonEmptyInput(name: string, value: unknown) {
 export function assertValidRawSrcset(value: unknown) {
   if (value == null) return;
   assertNonEmptyInput('rawSrcset', value);
-  const isValidSrcset = VALID_WIDTH_DESCRIPTOR_SRCSET.test(value as string) ||
-      VALID_DENSITY_DESCRIPTOR_SRCSET.test(value as string);
+  const stringVal = value as string;
+  const isValidWidthDescriptor = VALID_WIDTH_DESCRIPTOR_SRCSET.test(stringVal);
+  const isValidDensityDescriptor = VALID_DENSITY_DESCRIPTOR_SRCSET.test(stringVal);
 
+  if (isValidDensityDescriptor) {
+    assertUnderDensityCap(stringVal);
+  }
+
+  const isValidSrcset = isValidWidthDescriptor || isValidDensityDescriptor;
   if (!isValidSrcset) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
         `The NgOptimizedImage directive has detected that the \`rawSrcset\` has an invalid value: ` +
             `expecting width descriptors (e.g. "100w, 200w") or density descriptors (e.g. "1x, 2x"), ` +
-            `but got: \`${value}\``);
+            `but got: \`${stringVal}\``);
+  }
+}
+
+function assertUnderDensityCap(value: string) {
+  const underDensityCap =
+      value.split(',').every(num => num === '' || parseFloat(num) <= ABSOLUTE_SRCSET_DENSITY_CAP);
+  if (!underDensityCap) {
+    throw new RuntimeError(
+        RuntimeErrorCode.INVALID_INPUT,
+        `The NgOptimizedImage directive has detected that the \`rawSrcset\` contains an unsupported image density:` +
+            `\`${value}\`. NgOptimizedImage generally recommends a max image density of ` +
+            `${RECOMMENDED_SRCSET_DENSITY_CAP}x but supports image densities up to ` +
+            `${ABSOLUTE_SRCSET_DENSITY_CAP}x. The human eye cannot distinguish between image densities ` +
+            `greater than ${RECOMMENDED_SRCSET_DENSITY_CAP}x - which makes them unnecessary for ` +
+            `most use cases. Images that will be pinch-zoomed are typically the primary use case for` +
+            `${ABSOLUTE_SRCSET_DENSITY_CAP}x images. Please remove the high density descriptor and try again.`);
   }
 }
 

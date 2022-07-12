@@ -14,7 +14,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {withHead} from '@angular/private/testing';
 
 import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '../../src/directives/ng_optimized_image/image_loaders/image_loader';
-import {assertValidRawSrcset, NgOptimizedImageModule} from '../../src/directives/ng_optimized_image/ng_optimized_image';
+import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidRawSrcset, NgOptimizedImageModule, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
 describe('Image directive', () => {
@@ -320,6 +320,33 @@ describe('Image directive', () => {
                         .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`rawSrcset\` has an invalid value: ` +
                 `expecting width descriptors (e.g. "100w, 200w") or density descriptors (e.g. "1x, 2x"), ` +
                 `but got: \`100q, 200q\``);
+      });
+
+      it('should throw if rawSrcset exceeds the density cap', () => {
+        const imageLoader = (config: ImageLoaderConfig) => {
+          const width = config.width ? `-${config.width}` : ``;
+          return window.location.origin + `/path/${config.src}${width}.png`;
+        };
+        setupTestingModule({imageLoader});
+
+        const template = `
+            <img rawSrc="img" rawSrcset="1x, 2x, 3x, 4x, 5x" width="100" height="50">
+          `;
+        expect(() => {
+          const fixture = createTestComponent(template);
+          fixture.detectChanges();
+        })
+            .toThrowError(
+                `NG0${
+                    RuntimeErrorCode
+                        .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`rawSrcset\` contains an unsupported image density:` +
+                `\`1x, 2x, 3x, 4x, 5x\`. NgOptimizedImage generally recommends a max image density of ` +
+                `${RECOMMENDED_SRCSET_DENSITY_CAP}x but supports image densities up to ` +
+                `${ABSOLUTE_SRCSET_DENSITY_CAP}x. The human eye cannot distinguish between image densities ` +
+                `greater than ${
+                    RECOMMENDED_SRCSET_DENSITY_CAP}x - which makes them unnecessary for ` +
+                `most use cases. Images that will be pinch-zoomed are typically the primary use case for` +
+                `${ABSOLUTE_SRCSET_DENSITY_CAP}x images. Please remove the high density descriptor and try again.`);
       });
 
       it('should throw if width srcset is missing a comma', () => {
