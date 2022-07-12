@@ -73,6 +73,7 @@
   $accent: mat.get-color-from-palette(map.get($config, accent));
   $warn: mat.get-color-from-palette(map.get($config, warn));
   $is-dark: map.get($config, is-dark);
+  $foreground: map.get($config, foreground);
 
   @include mat.private-using-mdc-theme($config) {
     // MDC's switch doesn't support a `color` property. We add support
@@ -80,6 +81,11 @@
     .mat-mdc-slide-toggle {
       @include mdc-form-field.core-styles($query: mat.$private-mdc-theme-styles-query);
       @include mdc-switch-theme.theme(_get-theme-base-map($is-dark));
+
+      // MDC should set the disabled color on the label, but doesn't, so we do it here instead.
+      .mdc-switch--disabled + label {
+        color: mat.get-color-from-palette($foreground, disabled-text);
+      }
 
       &.mat-primary {
         @include mdc-switch-theme.theme(_get-theme-color-map($primary));

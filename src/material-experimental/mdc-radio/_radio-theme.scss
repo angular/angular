@@ -21,6 +21,7 @@
   $primary: mat.get-color-from-palette(map.get($config, primary));
   $accent: mat.get-color-from-palette(map.get($config, accent));
   $warn: mat.get-color-from-palette(map.get($config, warn));
+  $foreground: map.get($config, foreground);
 
   @include mat.private-using-mdc-theme($config) {
     $on-surface: rgba(mdc-theme-color.$on-surface, 0.54);
@@ -45,6 +46,11 @@
       ));
 
       --mat-mdc-radio-ripple-color: #{mdc-theme-color.prop-value(on-surface)};
+
+      // MDC should set the disabled color on the label, but doesn't, so we do it here instead.
+      .mdc-radio--disabled + label {
+        color: mat.get-color-from-palette($foreground, disabled-text);
+      }
 
       &.mat-primary {
         @include _color-palette($primary);

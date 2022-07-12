@@ -32,6 +32,7 @@
   $primary: mat.get-color-from-palette(map.get($config, primary));
   $accent: mat.get-color-from-palette(map.get($config, accent));
   $warn: mat.get-color-from-palette(map.get($config, warn));
+  $foreground: map.get($config, foreground);
 
   @include mat.private-using-mdc-theme($config) {
     .mat-mdc-checkbox {
@@ -63,6 +64,11 @@
         @include checkbox-private.private-checkbox-styles-with-color($config, $warn, error);
         @include _selected-ripple-colors($warn, error);
       }
+    }
+
+    .mat-mdc-checkbox-disabled label {
+      // MDC should set the disabled color on the label, but doesn't, so we do it here instead.
+      color: mat.get-color-from-palette($foreground, disabled-text);
     }
   }
 }
