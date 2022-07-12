@@ -2,14 +2,15 @@
 
 <a id="template-driven"></a>
 
-This tutorial shows you how to create a template-driven form whose control elements are bound to data properties, with input validation to maintain data integrity and styling to improve the user experience.
+This tutorial shows you how to create a template-driven form. The control elements in the form are bound to data properties that have input validation. The input validation helps maintain data integrity and styling to improve the user experience.
 
 Template-driven forms use [two-way data binding](guide/architecture-components#data-binding "Intro to 2-way data binding") to update the data model in the component as changes are made in the template and vice versa.
 
 <div class="alert is-helpful">
 
 Angular supports two design approaches for interactive forms.
-You can build forms by writing templates using Angular [template syntax and directives](guide/glossary#template "Definition of template terms") with the form-specific directives and techniques described in this tutorial, or you can use a reactive \(or model-driven\) approach to build forms.
+You can build forms by using Angular [template syntax and directives](guide/glossary#template "Definition of template terms") to write templates with the form-specific directives.
+This tutorial describes the directives and techniques to use when writing templates. You can also use a reactive or model-driven approach to build forms.
 
 Template-driven forms are suitable for small or simple forms, while reactive forms are more scalable and suitable for complex forms.
 For a comparison of the two approaches, see [Introduction to Forms](guide/forms-overview "Overview of Angular forms.")
@@ -18,13 +19,13 @@ For a comparison of the two approaches, see [Introduction to Forms](guide/forms-
 
 You can build almost any kind of form with an Angular template &mdash;login forms, contact forms, and pretty much any business form.
 You can lay out the controls creatively and bind them to the data in your object model.
-You can specify validation rules and display validation errors, conditionally enable or disable specific controls, trigger built-in visual feedback, and much more.
+You can specify validation rules and display validation errors, conditionally allow input from specific controls, trigger built-in visual feedback, and much more.
 
-This tutorial shows you how to build a form from scratch, using a simplified sample form like the one from the [Tour of Heroes tutorial](tutorial "Tour of Heroes") to illustrate the techniques.
+This tutorial shows you how to build a simplified form like the one from the [Tour of Heroes tutorial](tutorial "Tour of Heroes") to illustrate the techniques.
 
 <div class="alert is-helpful">
 
-Run or download the example app: <live-example></live-example>.
+Run or download the example application: <live-example></live-example>.
 
 </div>
 
@@ -35,7 +36,7 @@ This tutorial teaches you how to do the following:
 *   Build an Angular form with a component and template
 *   Use `ngModel` to create two-way data bindings for reading and writing input-control values
 *   Provide visual feedback using special CSS classes that track the state of the controls
-*   Display validation errors to users and enable or disable form controls based on the form status
+*   Display validation errors to users and conditionally allow input from form controls based on the form status
 *   Share information across HTML elements using [template reference variables](guide/template-reference-variables)
 
 ## Prerequisites
@@ -43,7 +44,7 @@ This tutorial teaches you how to do the following:
 Before going further into template-driven forms, you should have a basic understanding of the following.
 
 *   [TypeScript](https://www.typescriptlang.org/ "The TypeScript language") and HTML5 programming
-*   Angular app-design fundamentals, as described in [Angular Concepts](guide/architecture "Introduction to Angular concepts")
+*   Angular application-design fundamentals, as described in [Angular Concepts](guide/architecture "Introduction to Angular concepts")
 *   The basics of [Angular template syntax](guide/template-syntax "Template syntax guide")
 *   The form-design concepts that are presented in [Introduction to Forms](guide/forms-overview "Overview of Angular forms")
 
@@ -75,10 +76,15 @@ The form highlights some design features that make it easier to use.
 For instance, the two required fields have a green bar on the left to make them easy to spot.
 These fields have initial values, so the form is valid and the **Submit** button is enabled.
 
-As you work with this form, you will learn how to include validation logic, how to customize the presentation with standard CSS, and how to handle error conditions to ensure valid input.
-If the user deletes the hero name, for example, the form becomes invalid.
+Working with this form shows you:
+
+*  How to include validation logic
+*  How to customize the presentation with standard CSS
+*  How to handle error conditions to ensure valid input
+  
+If the user deletes the hero name, for example, the form becomes not valid.
 The application detects the changed status, and displays a validation error in an attention-grabbing style.
-In addition, the **Submit** button is disabled, and the "required" bar to the left of the input control changes from green to red.
+The **Submit** button is not enabled, and the "required" bar to the left of the input control changes from green to red.
 
 <div class="lightbox">
 
@@ -227,7 +233,7 @@ Any unique value will do, but using a descriptive name is helpful.
 
 1.  Add similar `[(ngModel)]` bindings and `name` attributes to **Alter Ego** and **Hero Power**.
 1.  You can now remove the diagnostic messages that show interpolated values.
-1.  To confirm that two-way data binding works for the entire hero model, add a new text binding with the [`json`](api/common/JsonPipe) pipe \(which would serialize the data to a string\) at the top to the component's template.
+1.  To confirm that two-way data binding works for the entire hero model, add a new text binding with the [`json`](api/common/JsonPipe) pipe at the top to the component's template, which serializes the data to a string.
 
     After these revisions, the form template should look like the following:
 
@@ -251,11 +257,16 @@ Any unique value will do, but using a descriptive name is helpful.
 
 1.  When you have observed the effects, you can delete the `{{ model | json }}` text binding.
 
+## Track form states
+
+Angular applies the `ng-submitted` class to `form` elements after the form has been submitted. This class can be used to change the form's style after it has been submitted.
+
 ## Track control states
 
-The `NgModel` directive on a control tracks the state of that control.
-It tells you if the user touched the control, if the value changed, or if the value became invalid.
-Angular sets special CSS classes on the control element to reflect the state, as shown in the following table.
+Adding the `NgModel` directive to a control adds class names to the control that describe its state.
+These classes can be used to change a control's style based on its state.
+
+The following table describes the class names that Angular applies based on the control's state.
 
 | States                           | Class if true | Class if false |
 |:---                              |:---           |:---            |
@@ -263,8 +274,8 @@ Angular sets special CSS classes on the control element to reflect the state, as
 | The control's value has changed. | `ng-dirty`    | `ng-pristine`  |
 | The control's value is valid.    | `ng-valid`    | `ng-invalid`   |
 
-Additionally, Angular applies the `ng-submitted` class to `<form>` elements upon submission.
-This class does *not* apply to inner controls.
+Angular also applies the `ng-submitted` class to `form` elements upon submission,
+but not to the controls inside the `form` element.
 
 You use these CSS classes to define the styles for your control based on its status.
 
@@ -367,7 +378,7 @@ To define and show an error message when appropriate, take the following steps.
 In this example, you hide the message when the control is either valid or *pristine*.
 Pristine means the user hasn't changed the value since it was displayed in this form.
 If you ignore the `pristine` state, you would hide the message only when the value is valid.
-If you arrive in this component with a new \(blank\) hero or an invalid hero, you'll see the error message immediately, before you've done anything.
+If you arrive in this component with a new, blank hero or an invalid hero, you'll see the error message immediately, before you've done anything.
 
 You might want the message to display only when the user makes an invalid change.
 Hiding the message while the control is in the `pristine` state achieves that goal.
@@ -471,9 +482,9 @@ framework features to provide support for data modification, validation, and mor
 *   Template-reference variables such as `#heroForm` and `#name`
 *   `[(ngModel)]` syntax for two-way data binding
 *   The use of `name` attributes for validation and form-element change tracking
-*   The reference variable's `valid` property on input controls to check if a control is valid and show or hide error messages
+*   The reference variable's `valid` property on input controls indicates whether a control is valid or should show error messages
 *   Controlling the **Submit** button's enabled state by binding to `NgForm` validity
-*   Custom CSS classes that provide visual feedback to users about invalid controls
+*   Custom CSS classes that provide visual feedback to users about controls that are not valid
 
 Here's the code for the final version of the application:
 
