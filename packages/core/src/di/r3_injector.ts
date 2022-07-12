@@ -101,6 +101,9 @@ export abstract class EnvironmentInjector implements Injector {
    */
   abstract runInContext<ReturnT>(fn: () => ReturnT): ReturnT;
 
+  /**
+   * @internal
+   */
   abstract destroy(): void;
 
   /**

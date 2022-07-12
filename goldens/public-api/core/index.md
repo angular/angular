@@ -466,8 +466,6 @@ export const ENVIRONMENT_INITIALIZER: InjectionToken<() => void>;
 
 // @public
 export abstract class EnvironmentInjector implements Injector {
-    // (undocumented)
-    abstract destroy(): void;
     abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
     // @deprecated (undocumented)
     abstract get(token: any, notFoundValue?: any): any;

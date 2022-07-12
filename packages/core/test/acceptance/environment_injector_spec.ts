@@ -205,7 +205,7 @@ describe('environment injector', () => {
 
     it('should not function on a destroyed injector', () => {
       const injector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
-      injector.destroy();
+      (injector as unknown as {destroy: Function}).destroy();
       expect(() => injector.runInContext(() => {})).toThrow();
     });
   });
