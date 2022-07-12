@@ -12,8 +12,8 @@ $mat-theme-ignore-duplication-warnings: true;
 
 $theme: mat-light-theme((
   color: (
-    primary: $mat-red,
-    accent: $mat-blue,
+    primary: mat-define-palette($mat-red),
+    accent: mat-define-palette($mat-blue),
   ),
   density: -2,
 ));

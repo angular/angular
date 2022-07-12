@@ -45,8 +45,8 @@ describe('theming api', () => {
     transpile(`
       $theme: mat-light-theme((
         color: (
-          primary: $mat-red,
-          accent: $mat-red,
+          primary: mat-define-palette($mat-red),
+          accent: mat-define-palette($mat-red),
         )
       ));
 
@@ -65,14 +65,14 @@ describe('theming api', () => {
       transpile(`
       $theme: mat-light-theme((
         color: (
-          primary: $mat-red,
-          accent: $mat-red,
+          primary: mat-define-palette($mat-red),
+          accent: mat-define-palette($mat-red),
         )
       ));
       $theme2: mat-light-theme((
         color: (
-          primary: $mat-red,
-          accent: $mat-blue,
+          primary: mat-define-palette($mat-red),
+          accent: mat-define-palette($mat-blue),
         )
       ));
 
@@ -255,14 +255,14 @@ describe('theming api', () => {
     it('should be possible to specify palettes by keyword', () => {
       transpile(`
         $light-theme: mat-light-theme(
-          $primary: $mat-red,
-          $accent: $mat-blue,
-          $warn: $mat-red,
+          $primary: mat-define-palette($mat-red),
+          $accent: mat-define-palette($mat-blue),
+          $warn: mat-define-palette($mat-red),
         );
         $dark-theme: mat-dark-theme(
-          $primary: $mat-red,
-          $accent: $mat-blue,
-          $warn: $mat-red,
+          $primary: mat-define-palette($mat-red),
+          $accent: mat-define-palette($mat-blue),
+          $warn: mat-define-palette($mat-red),
         );
       `);
     });
