@@ -1961,12 +1961,12 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
-"@bazel/bazelisk@~1.12.0":
+"@bazel/bazelisk@1.12.0":
   version "1.12.0"
   resolved "https://registry.yarnpkg.com/@bazel/bazelisk/-/bazelisk-1.12.0.tgz#f08aebbf4afcb12684422450b0845dd6ef5cfe50"
   integrity sha512-7oQusq1e4AIyFgotxVV7Pc40Et0QyvoVjujL+7/qV5Vrbfh0Nj3CfqSgl63weEyI4r0+K6RlGVsjfRuBi05p5w==
 
-"@bazel/buildifier@5.1.0", "@bazel/buildifier@~5.1.0":
+"@bazel/buildifier@5.1.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@bazel/buildifier/-/buildifier-5.1.0.tgz#ae0b93c5d14b2b080d5a492a8bfee231101b5385"
   integrity sha512-gO0+//hkH+iE3AQ02mYttJAcWiE+rapP8IxmstDhwSqs+CmZJJI8Q1vAaIvMyJUT3NIf7lGljRNpzclkCPk89w==
@@ -1999,7 +1999,7 @@
   resolved "https://registry.yarnpkg.com/@bazel/esbuild/-/esbuild-5.5.2.tgz#598b75ffcb28972c5b0eb04c26db486fc001156b"
   integrity sha512-vSDnBOjydzwutg8rC97ftPDQmdhig8ya/IhsvsaoZdV0WbfNmqECCxri/7RH9e4PU7cb6YzBL/MCBNmwwTHLVg==
 
-"@bazel/ibazel@~0.16.2":
+"@bazel/ibazel@0.16.2":
   version "0.16.2"
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.16.2.tgz#05dd7f06659759fda30f87b15534f1e42f1201bb"
   integrity sha512-KgqAWMH0emL6f3xH6nqyTryoBMqlJ627LBIe9PT1PRRQPz2FtHib3FIHJPukp1slzF3hJYZvdiVwgPnHbaSOOA==
