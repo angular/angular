@@ -10,7 +10,7 @@ Animations can improve your application and user experience in a number of ways:
 
 Typically, animations involve multiple style *transformations* over time.
 An HTML element can move, change color, grow or shrink, fade, or slide off the page.
-These changes can occur simultaneously or sequentially.You can control the timing of each transformation.
+These changes can occur simultaneously or sequentially. You can control the timing of each transformation.
 
 Angular's animation system is built on CSS functionality, which means you can animate any property that the browser considers animatable.
 This includes positions, sizes, transforms, colors, borders, and more.
