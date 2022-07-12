@@ -89,6 +89,26 @@ describe('theming api', () => {
     expectNoWarning(/The same color styles are generated multiple times/);
   });
 
+  it('should be possible to modify color configuration directly', () => {
+    const result = transpile(`
+      $theme: mat-light-theme((
+        color: (
+          primary: mat-define-palette($mat-red),
+          accent: mat-define-palette($mat-blue),
+        )
+      ));
+
+      // Updates the "icon" foreground color to "canary".
+      $color: map-get($theme, color);
+      $theme: map-merge($color,
+        (foreground: map-merge(map-get($color, foreground), (icon: "canary"))));
+
+      @include angular-material-theme($theme);
+    `);
+
+    expect(result).toContain(': "canary"');
+  });
+
   it('should warn if default density styles are duplicated', () => {
     spyOn(process.stderr, 'write');
 
@@ -168,104 +188,6 @@ describe('theming api', () => {
     `);
 
     expect(process.stderr.write).toHaveBeenCalledTimes(0);
-  });
-
-  describe('legacy API', () => {
-    it('should warn if color styles are duplicated', () => {
-      spyOn(process.stderr, 'write');
-
-      transpile(`
-        $theme: mat-light-theme($mat-red, $mat-blue);
-        @include angular-material-theme($theme);
-        .dark-theme {
-          @include angular-material-theme($theme);
-        }
-      `);
-
-      expectWarning(/The same color styles are generated multiple times/);
-    });
-
-    it('should only generate default density once', () => {
-      const parsed = parse(
-        transpile(`
-        $light-theme: mat-light-theme($mat-red, $mat-blue);
-        $dark-theme: mat-dark-theme($mat-red, $mat-blue);
-        $third-theme: mat-dark-theme($mat-grey, $mat-blue);
-
-        @include angular-material-theme($light-theme);
-
-        .dark-theme {
-          @include angular-material-theme($dark-theme);
-        }
-
-        .third-theme {
-          @include angular-material-theme($third-theme);
-        }
-      `),
-      );
-
-      expect(hasDensityStyles(parsed, null)).toBe('all');
-      expect(hasDensityStyles(parsed, '.dark-theme')).toBe('none');
-      expect(hasDensityStyles(parsed, '.third-theme')).toBe('none');
-    });
-
-    it('should always generate default density at root', () => {
-      const parsed = parse(
-        transpile(`
-        $light-theme: mat-light-theme($mat-red, $mat-blue);
-
-        .my-app-theme {
-          @include angular-material-theme($light-theme);
-        }
-      `),
-      );
-
-      expect(hasDensityStyles(parsed, null)).toBe('all');
-      expect(hasDensityStyles(parsed, '.my-app-theme')).toBe('none');
-    });
-
-    it('not warn if default density would be generated multiple times', () => {
-      transpile(`
-        $light-theme: mat-light-theme($mat-red, $mat-blue);
-        $dark-theme: mat-dark-theme($mat-red, $mat-blue);
-
-        @include angular-material-theme($light-theme);
-        .dark-theme {
-          @include angular-material-theme($dark-theme);
-        }
-      `);
-
-      expectNoWarning(/The same density styles are generated multiple times/);
-    });
-
-    it('should be possible to modify color configuration directly', () => {
-      const result = transpile(`
-        $theme: mat-light-theme($mat-red, $mat-blue);
-
-        // Updates the "icon" foreground color to "canary".
-        $theme: map-merge($theme,
-          (foreground: map-merge(map-get($theme, foreground), (icon: "canary"))));
-
-        @include angular-material-theme($theme);
-      `);
-
-      expect(result).toContain(': "canary"');
-    });
-
-    it('should be possible to specify palettes by keyword', () => {
-      transpile(`
-        $light-theme: mat-light-theme(
-          $primary: mat-define-palette($mat-red),
-          $accent: mat-define-palette($mat-blue),
-          $warn: mat-define-palette($mat-red),
-        );
-        $dark-theme: mat-dark-theme(
-          $primary: mat-define-palette($mat-red),
-          $accent: mat-define-palette($mat-blue),
-          $warn: mat-define-palette($mat-red),
-        );
-      `);
-    });
   });
 
   /**
