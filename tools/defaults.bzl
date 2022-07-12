@@ -372,7 +372,6 @@ def karma_web_test_suite(name, **kwargs):
         deps = deps,
         data = data + [
             "//:browser-providers.conf.js",
-            "//tools:jasmine-seed-generator.js",
         ],
         karma = "//tools/saucelabs:karma-saucelabs",
         tags = tags + [

@@ -7,8 +7,10 @@
  */
 
 const browserProvidersConf = require('./browser-providers.conf');
-const {generateSeed} = require('./tools/jasmine-seed-generator');
 const {hostname} = require('os');
+
+const seed = process.env.JASMINE_RANDOM_SEED || String(Math.random()).slice(-5);
+console.info(`Jasmine random seed: ${seed}`);
 
 module.exports = function(config) {
   const conf = {
@@ -17,7 +19,7 @@ module.exports = function(config) {
     client: {
       jasmine: {
         random: true,
-        seed: generateSeed('karma-js.conf'),
+        seed,
       },
       captureConsole: true,
     },

@@ -99,7 +99,6 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                 configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
                 data = [
                     "//:browser-providers.conf.js",
-                    "//tools:jasmine-seed-generator.js",
                 ],
                 static_files = [
                     ":assets/sample.json",
