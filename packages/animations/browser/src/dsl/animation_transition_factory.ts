@@ -126,24 +126,24 @@ function checkNonAnimatableInTimelines(
   const invalidNonAnimatableProps = new Set<string>();
 
   timelines.forEach(({keyframes}) => {
-    const nonAnimatablePropsFirstValues = new Map<string, string|number>();
+    const nonAnimatablePropsInitialValues = new Map<string, string|number>();
     keyframes.forEach(keyframe => {
       for (const [prop, value] of keyframe.entries()) {
         if (!driver.validateAnimatableStyleProperty!(prop)) {
-          if (nonAnimatablePropsFirstValues.has(prop) && !invalidNonAnimatableProps.has(prop)) {
-            const propInitialValue = nonAnimatablePropsFirstValues.get(prop);
+          if (nonAnimatablePropsInitialValues.has(prop) && !invalidNonAnimatableProps.has(prop)) {
+            const propInitialValue = nonAnimatablePropsInitialValues.get(prop);
             if (propInitialValue !== value) {
               invalidNonAnimatableProps.add(prop);
             }
           } else {
-            nonAnimatablePropsFirstValues.set(prop, value);
+            nonAnimatablePropsInitialValues.set(prop, value);
           }
         }
       }
     });
   });
 
-  if (invalidNonAnimatableProps.size) {
+  if (invalidNonAnimatableProps.size > 0) {
     console.warn(
         `Warning: The animation trigger "${triggerName}" is attempting to animate the following` +
         ' not animatable properties: ' + Array.from(invalidNonAnimatableProps).join(', ') + '\n' +
