@@ -1,22 +1,16 @@
-load("//tools:defaults.bzl", "nodejs_binary", "ts_config")
+load("//tools:defaults.bzl", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "tsconfig.json",
     "postinstall-patches.js",
-    "jasmine-seed-generator.js",
 ])
 
 ts_config(
     name = "tsconfig-test",
     src = "tsconfig-test.json",
     deps = ["tsconfig.json"],
-)
-
-nodejs_binary(
-    name = "inline-package-json-deps",
-    entry_point = "inline-package-json-deps.js",
 )
 
 platform(
