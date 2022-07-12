@@ -14,9 +14,11 @@ import {
   getProjectMainFile,
   getProjectStyleFile,
   hasNgModuleImport,
+} from '@angular/cdk/schematics';
+import {
   importsProvidersFrom,
   addModuleImportToStandaloneBootstrap,
-} from '@angular/cdk/schematics';
+} from '@schematics/angular/private/components';
 import {getWorkspace, ProjectDefinition} from '@schematics/angular/utility/workspace';
 import {ProjectType} from '@schematics/angular/utility/workspace-models';
 import {addFontsToIndex} from './fonts/material-fonts';

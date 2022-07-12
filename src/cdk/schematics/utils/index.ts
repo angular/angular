@@ -17,4 +17,3 @@ export * from './project-main-file';
 export * from './project-style-file';
 export * from './project-targets';
 export * from './schematic-options';
-export {importsProvidersFrom, addModuleImportToStandaloneBootstrap} from './ast/standalone';
