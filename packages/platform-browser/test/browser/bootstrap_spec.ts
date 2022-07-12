@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {animate, state, style, transition, trigger} from '@angular/animations';
 import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
-import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, InjectionToken, Injector, Input, LOCALE_ID, NgModule, NgModuleRef, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, Type, VERSION} from '@angular/core';
+import {ANIMATION_MODULE_TYPE, APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, inject as _inject, InjectionToken, Injector, Input, LOCALE_ID, NgModule, NgModuleRef, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, Type, VERSION} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -15,6 +16,7 @@ import {inject, TestBed} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {provideAnimations, provideNoopAnimations} from '@angular/platform-browser/animations';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {bootstrapApplication} from '../../src/browser';
@@ -313,6 +315,58 @@ function bootstrap(
             'NG0906: The NonAnnotatedClass is not an Angular component, ' +
             'make sure it has the `@Component` decorator.';
         expect(() => bootstrapApplication(NonAnnotatedClass)).toThrowError(msg);
+      });
+
+      describe('with animations', () => {
+        @Component({
+          standalone: true,
+          selector: 'hello-app',
+          template: `
+            <div
+              @myAnimation
+              (@myAnimation.start)="onStart($event)">Hello from AnimationCmp!</div>`,
+          animations: [trigger(
+              'myAnimation', [transition('void => *', [style({opacity: 1}), animate(5)])])],
+        })
+        class AnimationCmp {
+          renderer = _inject(ANIMATION_MODULE_TYPE, {optional: true}) ?? 'not found';
+          startEvent?: {};
+          onStart(event: {}) {
+            this.startEvent = event;
+          }
+        }
+
+        it('should enable animations when using provideAnimations()', async () => {
+          const appRef = await bootstrapApplication(AnimationCmp, {
+            providers: [provideAnimations()],
+          });
+          const cmp = appRef.components[0].instance;
+
+          // Wait until animation is completed.
+          await new Promise(resolve => setTimeout(resolve, 10));
+
+          expect(cmp.renderer).toBe('BrowserAnimations');
+          expect(cmp.startEvent.triggerName).toEqual('myAnimation');
+          expect(cmp.startEvent.phaseName).toEqual('start');
+
+          expect(el.innerText).toBe('Hello from AnimationCmp!');
+        });
+
+        it('should use noop animations renderer when using provideNoopAnimations()', async () => {
+          const appRef = await bootstrapApplication(AnimationCmp, {
+            providers: [provideNoopAnimations()],
+          });
+          const cmp = appRef.components[0].instance;
+
+          // Wait until animation is completed.
+          await new Promise(resolve => setTimeout(resolve, 10));
+
+          expect(cmp.renderer).toBe('NoopAnimations');
+          expect(cmp.startEvent.triggerName).toEqual('myAnimation');
+          expect(cmp.startEvent.phaseName).toEqual('start');
+
+          expect(el.innerText).toBe('Hello from AnimationCmp!');
+        });
       });
     });
 

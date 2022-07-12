@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ModuleWithProviders, NgModule} from '@angular/core';
+import {ModuleWithProviders, NgModule, Provider} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS} from './providers';
@@ -59,6 +59,35 @@ export class BrowserAnimationsModule {
 }
 
 /**
+ * Returns the set of [dependency-injection providers](guide/glossary#provider)
+ * to enable animations in an application. See [animations guide](guide/animations)
+ * to learn more about animations in Angular.
+ *
+ * @usageNotes
+ *
+ * The function is useful when you want to enable animations in an application
+ * bootstrapped using the `bootstrapApplication` function. In this scenario there
+ * is no need to import the `BrowserAnimationsModule` NgModule at all, just add
+ * providers returned by this function to the `providers` list as show below.
+ *
+ * ```typescript
+ * bootstrapApplication(RootComponent, {
+ *   providers: [
+ *     provideAnimations()
+ *   ]
+ * });
+ * ```
+ *
+ * @publicApi
+ * @developerPreview
+ */
+export function provideAnimations(): Provider[] {
+  // Return a copy to prevent changes to the original array in case any in-place
+  // alterations are performed to the `provideAnimations` call results in app code.
+  return [...BROWSER_ANIMATIONS_PROVIDERS];
+}
+
+/**
  * A null player that must be imported to allow disabling of animations.
  * @publicApi
  */
@@ -67,4 +96,32 @@ export class BrowserAnimationsModule {
   providers: BROWSER_NOOP_ANIMATIONS_PROVIDERS,
 })
 export class NoopAnimationsModule {
+}
+
+/**
+ * Returns the set of [dependency-injection providers](guide/glossary#provider)
+ * to disable animations in an application. See [animations guide](guide/animations)
+ * to learn more about animations in Angular.
+ *
+ * @usageNotes
+ *
+ * The function is useful when you want to bootstrap an application using
+ * the `bootstrapApplication` function, but you need to disable animations
+ * (for example, when running tests).
+ *
+ * ```typescript
+ * bootstrapApplication(RootComponent, {
+ *   providers: [
+ *     provideNoopAnimations()
+ *   ]
+ * });
+ * ```
+ *
+ * @publicApi
+ * @developerPreview
+ */
+export function provideNoopAnimations(): Provider[] {
+  // Return a copy to prevent changes to the original array in case any in-place
+  // alterations are performed to the `provideNoopAnimations` call results in app code.
+  return [...BROWSER_NOOP_ANIMATIONS_PROVIDERS];
 }
