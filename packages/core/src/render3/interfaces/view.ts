@@ -16,7 +16,6 @@ import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
 import {I18nUpdateOpCodes, TI18n, TIcu} from './i18n';
 import {TConstants, TNode} from './node';
-import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
 import {Renderer, RendererFactory} from './renderer';
 import {RComment, RElement} from './renderer_dom';
@@ -790,46 +789,14 @@ export interface TView {
   incompleteFirstPass: boolean;
 }
 
-export const enum RootContextFlags {
-  Empty = 0b00,
-  DetectChanges = 0b01,
-  FlushPlayers = 0b10
-}
-
-
 /**
- * RootContext contains information which is shared for all components which
- * were bootstrapped with {@link renderComponent}.
+ * Contains information which is shared for all bootstrapped components.
  */
 export interface RootContext<T = unknown> {
   /**
-   * A function used for scheduling change detection in the future. Usually
-   * this is `requestAnimationFrame`.
-   */
-  scheduler: (workFn: () => void) => void;
-
-  /**
-   * A promise which is resolved when all components are considered clean (not dirty).
-   *
-   * This promise is overwritten every time a first call to {@link markDirty} is invoked.
-   */
-  clean: Promise<null>;
-
-  /**
-   * RootComponents - The components that were instantiated by the call to
-   * {@link renderComponent}.
+   * The components that were instantiated within this context.
    */
   components: T[];
-
-  /**
-   * The player flushing handler to kick off all animations
-   */
-  playerHandler: PlayerHandler|null;
-
-  /**
-   * What render-related operations to run once a scheduler has been set
-   */
-  flags: RootContextFlags;
 }
 
 /** Single hook callback function. */

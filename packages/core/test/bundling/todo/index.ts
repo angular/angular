@@ -9,7 +9,7 @@
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule, ɵNgModuleFactory as NgModuleFactory, ɵwhenRendered as whenRendered} from '@angular/core';
+import {Component, Injectable, NgModule} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 class Todo {
@@ -196,12 +196,7 @@ class ToDoAppModule {
 }
 
 function bootstrapApp() {
-  return platformBrowser().bootstrapModuleFactory(
-      new NgModuleFactory(ToDoAppModule), {ngZone: 'noop'});
+  return platformBrowser().bootstrapModule(ToDoAppModule, {ngZone: 'noop'});
 }
 
-// This bundle includes `@angular/core` within it which means that the test asserting
-// against it will load a different core bundle. These symbols are exposed so that they
-// can interact with the correct `@angular/core` instance.
-(window as any).whenRendered = whenRendered;
 (window as any).bootstrapApp = bootstrapApp;

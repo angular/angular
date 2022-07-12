@@ -24,9 +24,6 @@
     "name": "CIRCULAR"
   },
   {
-    "name": "CLEAN_PROMISE"
-  },
-  {
     "name": "ComponentFactory"
   },
   {
@@ -355,9 +352,6 @@
   },
   {
     "name": "deepForEach"
-  },
-  {
-    "name": "defaultScheduler"
   },
   {
     "name": "detachMovedView"

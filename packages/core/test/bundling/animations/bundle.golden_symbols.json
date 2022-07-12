@@ -105,9 +105,6 @@
     "name": "CIRCULAR"
   },
   {
-    "name": "CLEAN_PROMISE"
-  },
-  {
     "name": "COMPONENT_REGEX"
   },
   {
@@ -709,9 +706,6 @@
   },
   {
     "name": "deepForEach"
-  },
-  {
-    "name": "defaultScheduler"
   },
   {
     "name": "detachMovedView"

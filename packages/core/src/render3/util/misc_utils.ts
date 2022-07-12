@@ -6,17 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global} from '../../util/global';
 import {RElement} from '../interfaces/renderer_dom';
 
-
-export const defaultScheduler =
-    (() => (
-               typeof requestAnimationFrame !== 'undefined' &&
-                   requestAnimationFrame ||  // browser only
-               setTimeout                    // everything else
-               )
-               .bind(global))();
 
 /**
  *
