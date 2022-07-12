@@ -88,9 +88,6 @@ export class MatButtonBase
   /** Whether this button is a FAB. Used to apply the correct class on the ripple. */
   _isFab = false;
 
-  /** Whether this button is an icon button. Used to apply the correct class on the ripple. */
-  _isIconButton = false;
-
   /** Reference to the MatRipple instance of the button. */
   @ViewChild(MatRipple) ripple: MatRipple;
 

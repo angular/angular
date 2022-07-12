@@ -34,7 +34,7 @@ import {
  */
 @Component({
   selector: `button[mat-icon-button]`,
-  templateUrl: 'button.html',
+  templateUrl: 'icon-button.html',
   styleUrls: ['icon-button.css', 'button-high-contrast.css'],
   inputs: MAT_BUTTON_INPUTS,
   host: MAT_BUTTON_HOST,
@@ -43,8 +43,6 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatIconButton extends MatButtonBase {
-  override _isIconButton = true;
-
   constructor(
     elementRef: ElementRef,
     platform: Platform,
@@ -71,8 +69,6 @@ export class MatIconButton extends MatButtonBase {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatIconAnchor extends MatAnchorBase {
-  override _isIconButton = true;
-
   constructor(
     elementRef: ElementRef,
     platform: Platform,
