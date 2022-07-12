@@ -66,11 +66,16 @@ export class MatInkBar {
    */
   alignToElement(element: HTMLElement) {
     this.show();
-    this._ngZone.onStable.pipe(take(1)).subscribe(() => {
-      const positions = this._inkBarPositioner(element);
-      const inkBar: HTMLElement = this._elementRef.nativeElement;
-      inkBar.style.left = positions.left;
-      inkBar.style.width = positions.width;
+
+    // `onStable` might not run for a while if the zone has already stabilized.
+    // Wrap the call in `NgZone.run` to ensure that it runs relatively soon.
+    this._ngZone.run(() => {
+      this._ngZone.onStable.pipe(take(1)).subscribe(() => {
+        const positions = this._inkBarPositioner(element);
+        const inkBar = this._elementRef.nativeElement;
+        inkBar.style.left = positions.left;
+        inkBar.style.width = positions.width;
+      });
     });
   }
 
