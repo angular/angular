@@ -11,7 +11,7 @@ import {invalidDefinition, invalidKeyframes, invalidOffset, invalidParallelAnima
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetDefaultValue} from '../render/shared';
 import {convertToMap, copyObj, extractStyleParams, iteratorToArray, NG_ANIMATING_SELECTOR, NG_TRIGGER_SELECTOR, normalizeAnimationEntry, resolveTiming, SUBSTITUTION_EXPR_START, validateStyleParams, visitDslNode} from '../util';
-import {pushNonAnimatablePropertiesWarning, pushUnrecognizedPropertiesWarning} from '../warning_helpers';
+import {pushUnrecognizedPropertiesWarning} from '../warning_helpers';
 
 import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast';
 import {AnimationDslVisitor} from './animation_dsl_visitor';
