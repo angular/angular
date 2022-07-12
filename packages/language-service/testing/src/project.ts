@@ -68,7 +68,7 @@ export class Project {
       const dirPath = fs.dirname(filePath);
       fs.ensureDir(dirPath);
       fs.writeFile(filePath, contents);
-      if (projectFilePath.endsWith('.ts')) {
+      if (projectFilePath.endsWith('.ts') && !projectFilePath.endsWith('.d.ts')) {
         entryFiles.push(filePath);
       }
     }
