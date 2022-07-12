@@ -73,7 +73,7 @@ export enum TcbInliningRequirement {
 
 export function requiresInlineTypeCheckBlock(
     ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, env: ReferenceEmitEnvironment,
-    usedPipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
+    usedPipes: Reference<ClassDeclaration<ts.ClassDeclaration>>[],
     reflector: ReflectionHost): TcbInliningRequirement {
   // In order to qualify for a declared TCB (not inline) two conditions must be met:
   // 1) the class must be suitable to be referenced from `env` (e.g. it must be exported)
@@ -85,7 +85,7 @@ export function requiresInlineTypeCheckBlock(
     // Condition 2 is false, the class has constrained generic types. It should be checked with an
     // inline TCB if possible, but can potentially use fallbacks to avoid inlining if not.
     return TcbInliningRequirement.ShouldInlineForGenericBounds;
-  } else if (Array.from(usedPipes.values()).some(pipeRef => !env.canReferenceType(pipeRef))) {
+  } else if (usedPipes.some(pipeRef => !env.canReferenceType(pipeRef))) {
     // If one of the pipes used by the component is not exported, a non-inline TCB will not be able
     // to import it, so this requires an inline TCB.
     return TcbInliningRequirement.MustInline;

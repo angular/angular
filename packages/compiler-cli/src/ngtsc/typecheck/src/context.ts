@@ -263,8 +263,16 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       templateDiagnostics,
     });
 
+    const usedPipes: Reference<ClassDeclaration<ts.ClassDeclaration>>[] = [];
+    for (const name of boundTarget.getUsedPipes()) {
+      if (!pipes.has(name)) {
+        continue;
+      }
+      usedPipes.push(pipes.get(name)!);
+    }
+
     const inliningRequirement =
-        requiresInlineTypeCheckBlock(ref, shimData.file, pipes, this.reflector);
+        requiresInlineTypeCheckBlock(ref, shimData.file, usedPipes, this.reflector);
 
     // If inlining is not supported, but is required for either the TCB or one of its directive
     // dependencies, then exit here with an error.
