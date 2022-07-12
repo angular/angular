@@ -1,23 +1,25 @@
+@use 'sass:map';
 @use '@angular/material' as mat;
-@use '@material/circular-progress' as mdc-circular-progress;
+@use '@material/circular-progress/circular-progress-theme' as mdc-circular-progress-theme;
 
 
-@mixin _palette-styles($color) {
-  @include mdc-circular-progress.color($color, $query: mat.$private-mdc-theme-styles-query);
+@mixin _palette-styles($config, $palette) {
+  $color: mat.get-color-from-palette(map.get($config, $palette));
+  @include mdc-circular-progress-theme.theme((active-indicator-color: $color));
 }
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
   @include mat.private-using-mdc-theme($config) {
     .mat-mdc-progress-spinner {
-      @include _palette-styles(primary);
+      @include _palette-styles($config, primary);
 
       &.mat-accent {
-        @include _palette-styles(secondary);
+        @include _palette-styles($config, accent);
       }
 
       &.mat-warn {
-        @include _palette-styles(error);
+        @include _palette-styles($config, warn);
       }
     }
   }

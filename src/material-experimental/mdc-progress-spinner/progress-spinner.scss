@@ -1,13 +1,36 @@
+@use 'sass:map';
 @use '@angular/material' as mat;
 @use '@angular/cdk';
-@use '@material/circular-progress' as mdc-circular-progress;
+@use '@material/circular-progress/circular-progress' as mdc-circular-progress;
+@use '@material/circular-progress/circular-progress-theme' as mdc-circular-progress-theme;
 
 
 @include mat.private-disable-mdc-fallback-declarations {
-  @include mdc-circular-progress.core-styles($query: mat.$private-mdc-base-styles-query);
+  @include mdc-circular-progress.static-styles($query: mat.$private-mdc-base-styles-query);
 }
 
 .mat-mdc-progress-spinner {
+  @include mat.private-disable-mdc-fallback-declarations {
+    @include mdc-circular-progress-theme.theme-styles(map.merge(
+      mdc-circular-progress-theme.$light-theme,
+      (
+        active-indicator-color: transparent,
+
+        // We don't support the multi color variant so we exclude these variables.
+        four-color-active-indicator-four-color: null,
+        four-color-active-indicator-one-color: null,
+        four-color-active-indicator-three-color: null,
+        four-color-active-indicator-two-color: null,
+
+        // We currently size the element ourselves so we can exclude these styles as well.
+        // TODO(crisbeto): look into reusing MDC's styles by binding to a CSS variable
+        // in our own template.
+        active-indicator-width: null,
+        size: null,
+      )
+    ));
+  }
+
   // Explicitly set to `block` since the browser defaults custom elements to `inline`.
   display: block;
 
