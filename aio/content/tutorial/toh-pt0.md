@@ -89,14 +89,24 @@ They display data on the screen, listen for user input, and take action based on
 ## Make changes to the application
 
 Open the project in your favorite editor or IDE. Navigate to the `src/app` directory to edit the starter application.
-
-Note that the implementation of the shell `AppComponent` distributed over three files:
+In the IDE, locate these files, which make up the `AppComponent` that you just created:
 
 | Files                | Details |
 |:---                  |:---     |
 | `app.component.ts`   | The component class code, written in TypeScript. |
 | `app.component.html` | The component template, written in HTML.         |
 | `app.component.css`  | The component's private CSS styles.              |
+
+<div class="alert is-important">
+
+When you ran `ng new`, Angular created test specifications for your new application.
+Making these changes, however, breaks your newly created specifications.
+
+That won't be a problem because Angular testing is outside the scope of this tutorial and won't be used.
+
+To learn more about testing with Angular, see [Testing](guide/testing).
+
+</div>
 
 ### Change the application title
 
