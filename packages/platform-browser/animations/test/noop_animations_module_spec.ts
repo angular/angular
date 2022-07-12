@@ -9,7 +9,7 @@ import {animate, style, transition, trigger} from '@angular/animations';
 import {ɵAnimationEngine} from '@angular/animations/browser';
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule, NoopAnimationsModule, provideNoopAnimations} from '@angular/platform-browser/animations';
 
 describe('NoopAnimationsModule', () => {
   beforeEach(() => {
@@ -23,6 +23,14 @@ describe('BrowserAnimationsModule with disableAnimations = true', () => {
   beforeEach(() => {
     TestBed.configureTestingModule(
         {imports: [BrowserAnimationsModule.withConfig({disableAnimations: true})]});
+  });
+
+  noopAnimationTests();
+});
+
+describe('provideNoopAnimations()', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({providers: [provideNoopAnimations()]});
   });
 
   noopAnimationTests();

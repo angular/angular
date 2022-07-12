@@ -8,6 +8,7 @@ import { ANIMATION_MODULE_TYPE } from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/platform-browser';
 import { ModuleWithProviders } from '@angular/core';
+import { Provider } from '@angular/core';
 
 export { ANIMATION_MODULE_TYPE }
 
@@ -36,6 +37,12 @@ export class NoopAnimationsModule {
     // (undocumented)
     static ɵmod: i0.ɵɵNgModuleDeclaration<NoopAnimationsModule, never, never, [typeof i1.BrowserModule]>;
 }
+
+// @public
+export function provideAnimations(): Provider[];
+
+// @public
+export function provideNoopAnimations(): Provider[];
 
 // (No @packageDocumentation comment for this package)
 
