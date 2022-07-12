@@ -63,9 +63,6 @@
     "name": "CIRCULAR"
   },
   {
-    "name": "CLEAN_PROMISE"
-  },
-  {
     "name": "COMPONENT_REGEX"
   },
   {
@@ -325,9 +322,6 @@
   },
   {
     "name": "NgForOf"
-  },
-  {
-    "name": "NgModuleFactory2"
   },
   {
     "name": "NgModuleRef"
@@ -727,9 +721,6 @@
   },
   {
     "name": "defaultIterableDiffersFactory"
-  },
-  {
-    "name": "defaultScheduler"
   },
   {
     "name": "destroyLView"

@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {detectChanges, markDirty} from '../instructions/change_detection';
+import {assertDefined} from '../../util/assert';
+import {getComponentViewByInstance} from '../context_discovery';
+import {detectChanges} from '../instructions/change_detection';
+import {markViewDirty} from '../instructions/shared';
+
 import {getRootComponents} from './discovery_utils';
 
 /**
@@ -19,6 +23,7 @@ import {getRootComponents} from './discovery_utils';
  * @globalApi ng
  */
 export function applyChanges(component: {}): void {
-  markDirty(component);
+  ngDevMode && assertDefined(component, 'component');
+  markViewDirty(getComponentViewByInstance(component));
   getRootComponents(component).forEach(rootComponent => detectChanges(rootComponent));
 }

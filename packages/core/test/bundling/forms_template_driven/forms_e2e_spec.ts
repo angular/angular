@@ -21,14 +21,12 @@ describe('functional test for forms', () => {
            // load the bundle
            require(path.join(PACKAGE, bundle));
            // the bundle attaches the following fields to the `window` global.
-           const {bootstrapApp, whenRendered} = window as any;
+           const {bootstrapApp} = window as any;
 
            await bootstrapApp();
 
            // Template forms
            const templateFormsComponent = (window as any).templateFormsComponent;
-           await whenRendered(templateFormsComponent);
-
            const templateForm = document.querySelector('app-template-forms')!;
 
            // Check for inputs

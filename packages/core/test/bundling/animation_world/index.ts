@@ -8,7 +8,7 @@
 
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
-import {ApplicationRef, Component, Directive, ElementRef, HostBinding, HostListener, NgModule, ɵmarkDirty as markDirty} from '@angular/core';
+import {ApplicationRef, Component, Directive, ElementRef, HostBinding, HostListener, NgModule, ɵdetectChanges as detectChanges} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 @Directive({
@@ -52,7 +52,7 @@ class BoxWithOverriddenStylesComponent {
     } else {
       this.onActive();
     }
-    markDirty(this);
+    detectChanges(this);
   }
 
   onActive() {
@@ -116,7 +116,7 @@ class AnimationWorldComponent {
   toggleActive(item: any, makeColorGrey: MakeColorGreyDirective) {
     item.active = !item.active;
     makeColorGrey.toggle();
-    markDirty(this);
+    detectChanges(this);
   }
 }
 

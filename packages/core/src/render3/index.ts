@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {LifecycleHooksFeature, whenRendered} from './component_ref';
+import {LifecycleHooksFeature} from './component_ref';
 import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdefineNgModule, ɵɵdefinePipe, ɵɵsetComponentScope, ɵɵsetNgModuleScope} from './definition';
 import {ɵɵCopyDefinitionFeature} from './features/copy_definition_feature';
 import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_feature';
@@ -23,7 +23,6 @@ export {getLocaleId, setLocaleId} from './i18n/i18n_locale_id';
 // clang-format off
 export {
   detectChanges,
-  markDirty,
   store,
   ɵɵadvance,
 
@@ -195,7 +194,6 @@ export {
   getRenderedText,
   LifecycleHooksFeature,
   PipeDef,
-  whenRendered,
   ɵɵComponentDeclaration,
   ɵɵCopyDefinitionFeature,
   ɵɵdefineComponent,
