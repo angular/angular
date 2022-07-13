@@ -269,7 +269,7 @@ import {createEnvironmentInjector, ENVIRONMENT_INITIALIZER} from '@angular/core'
 
 createEnvironmentInjector([
 {provide: PhotosService, useClass: CustomPhotosService},
-{provide: ENVIRONMENT_INITIALIZER, useValue: () => {
+{provide: multi: true, ENVIRONMENT_INITIALIZER, useValue: () => {
         console.log("This function runs when this EnvironmentInjector gets created");
 }}
 ]);
