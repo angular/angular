@@ -42,6 +42,12 @@ export async function buildAndDeployWithSnapshots(
   targets: DeploymentInfo[],
   options: DeploymentConfig = {},
 ) {
+  console.log(`Building and deploying with snapshot builds.`);
+  console.log(`The following deployment targets are defined:`);
+  for (const target of targets) {
+    console.log(`  - ${target.projectId}:${target.site.firebaseSiteId} | ${target.site.remoteUrl}`);
+  }
+
   // Clone the docs repo.
   const docsRepoDir = await cloneDocsRepositoryForMajor(major);
 
