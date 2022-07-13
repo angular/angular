@@ -207,8 +207,8 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
   function runInTestZone(
       testBody: Function, applyThis: any, queueRunner: QueueRunner, done?: Function) {
     const isClockInstalled = !!(jasmine as any)[symbol('clockInstalled')];
-    const testProxyZoneSpec = queueRunner.testProxyZoneSpec!;
-    const testProxyZone = queueRunner.testProxyZone!;
+    const testProxyZoneSpec = new ProxyZoneSpec();
+    const testProxyZone = ambientZone.fork(testProxyZoneSpec);
     let lastDelegate;
     if (isClockInstalled && enableAutoFakeAsyncWhenClockPatched) {
       // auto run a fakeAsync
@@ -241,8 +241,6 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
   }
   interface QueueRunner {
     execute(): void;
-    testProxyZoneSpec: ZoneSpec|null;
-    testProxyZone: Zone|null;
   }
   interface QueueRunnerAttrs {
     queueableFns: {fn: Function}[];
@@ -264,8 +262,6 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
       if (attrs.onComplete) {
         attrs.onComplete = (fn => () => {
           // All functions are done, clear the test zone.
-          this.testProxyZone = null;
-          this.testProxyZoneSpec = null;
           ambientZone.scheduleMicroTask('jasmine.onComplete', fn);
         })(attrs.onComplete);
       }
@@ -302,7 +298,7 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
                 'Timeout - Async callback was not invoked within timeout specified by jasmine.DEFAULT_TIMEOUT_INTERVAL.') {
           // jasmine timeout, we can make the error message more
           // reasonable to tell what tasks are pending
-          const proxyZoneSpec: any = this && this.testProxyZoneSpec;
+          const proxyZoneSpec: any = (ProxyZoneSpec as any).get();
           if (proxyZoneSpec) {
             const pendingTasksInfo = proxyZoneSpec.getAndClearPendingTasksInfo();
             try {
@@ -342,8 +338,6 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
       //   - Because ProxyZone is parent fo `childZone` fakeAsync can retroactively add
       //     fakeAsync behavior to the childZone.
 
-      this.testProxyZoneSpec = new ProxyZoneSpec();
-      this.testProxyZone = ambientZone.fork(this.testProxyZoneSpec);
       if (!Zone.currentTask) {
         // if we are not running in a task then if someone would register a
         // element.addEventListener and then calling element.click() the

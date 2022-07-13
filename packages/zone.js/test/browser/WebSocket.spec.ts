@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupportsInDescribe} from '../test-util';
 declare const window: any;
 
 const TIMEOUT = 5000;
@@ -14,7 +14,7 @@ const TIMEOUT = 5000;
 if (!window['saucelabs']) {
   // sauceLabs does not support WebSockets; skip these tests
 
-  xdescribe('WebSocket', ifEnvSupports('WebSocket', function() {
+  xdescribe('WebSocket', ifEnvSupportsInDescribe('WebSocket', function() {
               let socket: WebSocket;
               const TEST_SERVER_URL = 'ws://localhost:8001';
               const testZone = Zone.current.fork({name: 'test'});

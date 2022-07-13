@@ -7,7 +7,7 @@
  */
 
 import {zoneSymbol} from '../../lib/common/utils';
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupportsInDescribe} from '../test-util';
 declare const global: any;
 
 function supportMediaQuery() {
@@ -16,7 +16,7 @@ function supportMediaQuery() {
   return _global['MediaQueryList'] && _global['matchMedia'];
 }
 
-describe('test mediaQuery patch', ifEnvSupports(supportMediaQuery, () => {
+describe('test mediaQuery patch', ifEnvSupportsInDescribe(supportMediaQuery, () => {
            it('test whether addListener is patched', () => {
              const mqList = window.matchMedia('min-width:500px');
              if (mqList && mqList['addListener']) {

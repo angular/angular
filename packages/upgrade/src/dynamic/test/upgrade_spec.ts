@@ -3517,7 +3517,7 @@ withEachNg1Version(() => {
          }));
     });
 
-    describe('registerForNg1Tests', () => {
+    fdescribe('registerForNg1Tests', () => {
       let upgradeAdapterRef: UpgradeAdapterRef;
       let $compile: angular.ICompileService;
       let $rootScope: angular.IRootScopeService;

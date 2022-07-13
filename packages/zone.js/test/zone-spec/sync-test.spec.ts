@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupportsInDescribe} from '../test-util';
 
 describe('SyncTestZoneSpec', () => {
   const SyncTestZoneSpec = (Zone as any)['SyncTestZoneSpec'];
@@ -34,7 +34,7 @@ describe('SyncTestZoneSpec', () => {
     });
   });
 
-  describe('event tasks', ifEnvSupports('document', () => {
+  describe('event tasks', ifEnvSupportsInDescribe('document', () => {
              it('should work with event tasks', () => {
                syncTestZone.run(() => {
                  const button = document.createElement('button');

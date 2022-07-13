@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupports, ifEnvSupportsInDescribe} from '../test-util';
 declare const global: any;
 
-describe('FileReader', ifEnvSupports('FileReader', function() {
+describe('FileReader', ifEnvSupportsInDescribe('FileReader', function() {
            let fileReader: FileReader;
            let blob: Blob;
            const data = 'Hello, World!';
@@ -37,34 +37,35 @@ describe('FileReader', ifEnvSupports('FileReader', function() {
              }
            });
 
-           describe('EventTarget methods', ifEnvSupports(supportsEventTargetFns, function() {
-                      it('should bind addEventListener listeners', function(done) {
-                        testZone.run(function() {
-                          fileReader.addEventListener('load', function() {
-                            expect(Zone.current).toBe(testZone);
-                            expect(fileReader.result).toEqual(data);
-                            done();
-                          });
-                        });
+           describe(
+               'EventTarget methods', ifEnvSupportsInDescribe(supportsEventTargetFns, function() {
+                 it('should bind addEventListener listeners', function(done) {
+                   testZone.run(function() {
+                     fileReader.addEventListener('load', function() {
+                       expect(Zone.current).toBe(testZone);
+                       expect(fileReader.result).toEqual(data);
+                       done();
+                     });
+                   });
 
-                        fileReader.readAsText(blob);
-                      });
+                   fileReader.readAsText(blob);
+                 });
 
-                      it('should remove listeners via removeEventListener', function(done) {
-                        const listenerSpy = jasmine.createSpy('listener');
+                 it('should remove listeners via removeEventListener', function(done) {
+                   const listenerSpy = jasmine.createSpy('listener');
 
-                        testZone.run(function() {
-                          fileReader.addEventListener('loadstart', listenerSpy);
-                          fileReader.addEventListener('loadend', function() {
-                            expect(listenerSpy).not.toHaveBeenCalled();
-                            done();
-                          });
-                        });
+                   testZone.run(function() {
+                     fileReader.addEventListener('loadstart', listenerSpy);
+                     fileReader.addEventListener('loadend', function() {
+                       expect(listenerSpy).not.toHaveBeenCalled();
+                       done();
+                     });
+                   });
 
-                        fileReader.removeEventListener('loadstart', listenerSpy);
-                        fileReader.readAsText(blob);
-                      });
-                    }));
+                   fileReader.removeEventListener('loadstart', listenerSpy);
+                   fileReader.readAsText(blob);
+                 });
+               }));
 
            it('should bind onEventType listeners', function(done) {
              let listenersCalled = 0;

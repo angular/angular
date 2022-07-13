@@ -48,7 +48,7 @@ ifEnvSupports(supportJasmineSpec, () => {
       let zone = Zone.current;
       expect(zone.name).toEqual('ProxyZone');
       expect(beforeEachZone!.name).toEqual(zone.name);
-      expect(itZone).toBe(zone);
+      expect(itZone).not.toBe(zone);
     });
 
     afterAll(() => {

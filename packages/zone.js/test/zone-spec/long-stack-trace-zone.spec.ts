@@ -7,12 +7,12 @@
  */
 
 import {isBrowser, isIE, zoneSymbol} from '../../lib/common/utils';
-import {ifEnvSupports, isSafari, isSupportSetErrorStack} from '../test-util';
+import {ifEnvSupports, ifEnvSupportsInDescribe, isSafari, isSupportSetErrorStack} from '../test-util';
 
 const defineProperty = (Object as any)[zoneSymbol('defineProperty')] || Object.defineProperty;
 
 describe(
-    'longStackTraceZone', ifEnvSupports(isSupportSetErrorStack, function() {
+    'longStackTraceZone', ifEnvSupportsInDescribe(isSupportSetErrorStack, function() {
       let log: Error[];
       let lstz: Zone;
       let longStackTraceZoneSpec = (Zone as any)['longStackTraceZoneSpec'];

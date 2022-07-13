@@ -7,7 +7,7 @@
  */
 
 import {zoneSymbol} from '../../lib/common/utils';
-import {asyncTest, ifEnvSupports} from '../test-util';
+import {asyncTest, ifEnvSupportsInDescribe} from '../test-util';
 
 function workerSupport() {
   const Worker = (window as any)['Worker'];
@@ -23,7 +23,7 @@ function workerSupport() {
 
 (workerSupport as any).message = 'Worker Support';
 
-xdescribe('Worker API', ifEnvSupports(workerSupport, function() {
+xdescribe('Worker API', ifEnvSupportsInDescribe(workerSupport, function() {
             it('Worker API should be patched by Zone', asyncTest((done: Function) => {
                  const zone: Zone = Zone.current.fork({name: 'worker'});
                  zone.run(() => {

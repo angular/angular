@@ -11,7 +11,7 @@
  * is properly patched
  */
 
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupportsInDescribe} from '../test-util';
 
 function registerElement() {
   return ('registerElement' in document) && (typeof customElements === 'undefined');
@@ -19,7 +19,7 @@ function registerElement() {
 (<any>registerElement).message = 'document.registerElement';
 
 describe(
-    'document.registerElement', ifEnvSupports(registerElement, function() {
+    'document.registerElement', ifEnvSupportsInDescribe(registerElement, function() {
       // register a custom element for each callback
       const callbackNames = ['created', 'attached', 'detached', 'attributeChanged'];
       const callbacks: any = {};

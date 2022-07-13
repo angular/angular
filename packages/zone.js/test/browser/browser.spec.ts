@@ -9,7 +9,7 @@
 import {patchFilteredProperties} from '../../lib/browser/property-descriptor';
 import {patchEventTarget} from '../../lib/common/events';
 import {isIEOrEdge, zoneSymbol} from '../../lib/common/utils';
-import {getEdgeVersion, getIEVersion, ifEnvSupports, ifEnvSupportsWithDone, isEdge} from '../test-util';
+import {getEdgeVersion, getIEVersion, ifEnvSupports, ifEnvSupportsInDescribe, ifEnvSupportsWithDone, isEdge} from '../test-util';
 
 import Spy = jasmine.Spy;
 declare const global: any;
@@ -120,7 +120,7 @@ describe('Zone', function() {
 
     describe(
         'DOM onProperty hooks',
-        ifEnvSupports(canPatchOnProperty(HTMLElement.prototype, 'onclick'), function() {
+        ifEnvSupportsInDescribe(canPatchOnProperty(HTMLElement.prototype, 'onclick'), function() {
           let mouseEvent = document.createEvent('Event');
           let hookSpy: Spy, eventListenerSpy: Spy;
           const zone = rootZone.fork({
@@ -943,7 +943,7 @@ describe('Zone', function() {
 
       describe(
           'should support addEventListener/removeEventListener with AddEventListenerOptions with capture setting',
-          ifEnvSupports(supportEventListenerOptions, function() {
+          ifEnvSupportsInDescribe(supportEventListenerOptions, function() {
             let hookSpy: Spy;
             let cancelSpy: Spy;
             let logs: string[];
@@ -1020,7 +1020,7 @@ describe('Zone', function() {
 
       describe(
           'should ignore duplicate event handler',
-          ifEnvSupports(supportEventListenerOptions, function() {
+          ifEnvSupportsInDescribe(supportEventListenerOptions, function() {
             let hookSpy: Spy;
             let cancelSpy: Spy;
             let logs: string[];
@@ -1096,7 +1096,7 @@ describe('Zone', function() {
 
       describe(
           'should support mix useCapture with AddEventListenerOptions capture',
-          ifEnvSupports(supportEventListenerOptions, function() {
+          ifEnvSupportsInDescribe(supportEventListenerOptions, function() {
             let hookSpy: Spy;
             let cancelSpy: Spy;
             let logs: string[];
@@ -3289,7 +3289,7 @@ describe('Zone', function() {
        }));
 
     describe(
-        'ResizeObserver', ifEnvSupports('ResizeObserver', () => {
+        'ResizeObserver', ifEnvSupportsInDescribe('ResizeObserver', () => {
           it('ResizeObserver callback should be in zone', (done) => {
             const ResizeObserver = (window as any)['ResizeObserver'];
             const div = document.createElement('div');
@@ -3398,7 +3398,7 @@ describe('Zone', function() {
   });
 
 
-  describe(
+  xdescribe(
       'pointer event in IE',
       ifEnvSupports(
           () => {

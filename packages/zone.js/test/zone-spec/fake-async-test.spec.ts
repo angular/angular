@@ -12,7 +12,7 @@ import {Observable} from 'rxjs';
 import {delay} from 'rxjs/operators';
 
 import {isNode, patchMacroTask, zoneSymbol} from '../../lib/common/utils';
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupports, ifEnvSupportsInDescribe} from '../test-util';
 
 function supportNode() {
   return isNode;
@@ -752,7 +752,7 @@ describe('FakeAsyncTestZoneSpec', () => {
     const functions =
         ['requestAnimationFrame', 'webkitRequestAnimationFrame', 'mozRequestAnimationFrame'];
     functions.forEach((fnName) => {
-      describe(fnName, ifEnvSupports(fnName, () => {
+      describe(fnName, ifEnvSupportsInDescribe(fnName, () => {
                  it('should schedule a requestAnimationFrame with timeout of 16ms', () => {
                    fakeAsyncTestZone.run(() => {
                      let ran = false;
@@ -834,7 +834,7 @@ describe('FakeAsyncTestZoneSpec', () => {
   });
 
   describe(
-      'XHRs', ifEnvSupports('XMLHttpRequest', () => {
+      'XHRs', ifEnvSupportsInDescribe('XMLHttpRequest', () => {
         it('should throw an exception if an XHR is initiated in the zone', () => {
           expect(() => {
             fakeAsyncTestZone.run(() => {
@@ -854,7 +854,7 @@ describe('FakeAsyncTestZoneSpec', () => {
         });
       }, emptyRun));
 
-  describe('node process', ifEnvSupports(supportNode, () => {
+  describe('node process', ifEnvSupportsInDescribe(supportNode, () => {
              it('should be able to schedule microTask with additional arguments', () => {
                const process = global['process'];
                const nextTick = process && process['nextTick'];
@@ -1054,7 +1054,7 @@ describe('FakeAsyncTestZoneSpec', () => {
 
   describe(
       'fakeAsyncTest should work without patch jasmine.clock',
-      ifEnvSupports(
+      ifEnvSupportsInDescribe(
           () => {
             return !supportClock() && supportNode();
           },
@@ -1158,7 +1158,7 @@ describe('FakeAsyncTestZoneSpec', () => {
           },
           emptyRun));
 
-  describe('fakeAsyncTest should patch jasmine.clock', ifEnvSupports(supportClock, () => {
+  describe('fakeAsyncTest should patch jasmine.clock', ifEnvSupportsInDescribe(supportClock, () => {
              let spy: any;
              beforeEach(() => {
                spy = jasmine.createSpy('timer');
@@ -1218,33 +1218,34 @@ describe('FakeAsyncTestZoneSpec', () => {
              });
            }, emptyRun));
 
-  describe('fakeAsyncTest should patch rxjs scheduler', ifEnvSupports(supportClock, () => {
-             let FakeAsyncTestZoneSpec = (Zone as any)['FakeAsyncTestZoneSpec'];
-             let testZoneSpec: any;
-             let fakeAsyncTestZone: Zone;
+  describe(
+      'fakeAsyncTest should patch rxjs scheduler', ifEnvSupportsInDescribe(supportClock, () => {
+        let FakeAsyncTestZoneSpec = (Zone as any)['FakeAsyncTestZoneSpec'];
+        let testZoneSpec: any;
+        let fakeAsyncTestZone: Zone;
 
-             beforeEach(() => {
-               testZoneSpec = new FakeAsyncTestZoneSpec('name', false);
-               fakeAsyncTestZone = Zone.current.fork(testZoneSpec);
-             });
+        beforeEach(() => {
+          testZoneSpec = new FakeAsyncTestZoneSpec('name', false);
+          fakeAsyncTestZone = Zone.current.fork(testZoneSpec);
+        });
 
-             it('should get date diff correctly', (done) => {
-               fakeAsyncTestZone.run(() => {
-                 let result: any = null;
-                 const observable = new Observable((subscribe: any) => {
-                   subscribe.next('hello');
-                   subscribe.complete();
-                 });
-                 observable.pipe(delay(1000)).subscribe((v: any) => {
-                   result = v;
-                 });
-                 expect(result).toBe(null);
-                 testZoneSpec.tick(1000);
-                 expect(result).toBe('hello');
-                 done();
-               });
-             });
-           }, emptyRun));
+        it('should get date diff correctly', (done) => {
+          fakeAsyncTestZone.run(() => {
+            let result: any = null;
+            const observable = new Observable((subscribe: any) => {
+              subscribe.next('hello');
+              subscribe.complete();
+            });
+            observable.pipe(delay(1000)).subscribe((v: any) => {
+              result = v;
+            });
+            expect(result).toBe(null);
+            testZoneSpec.tick(1000);
+            expect(result).toBe('hello');
+            done();
+          });
+        });
+      }, emptyRun));
 });
 
 class Log {
@@ -1636,9 +1637,9 @@ const {fakeAsync, tick, discardPeriodicTasks, flush, flushMicrotasks} = fakeAsyn
         zoneInBeforeEach = Zone.current;
       }));
 
-      it('should use the same zone as in beforeEach', fakeAsync(() => {
+      it('should not use the same zone as in beforeEach', fakeAsync(() => {
            zoneInTest1 = Zone.current;
-           expect(zoneInTest1).toBe(zoneInBeforeEach);
+           expect(zoneInTest1).not.toBe(zoneInBeforeEach);
          }));
     });
 

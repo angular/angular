@@ -7,7 +7,7 @@
  */
 
 import {zoneSymbol} from '../../lib/common/utils';
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupportsInDescribe} from '../test-util';
 declare const window: any;
 
 function notificationSupport() {
@@ -18,7 +18,7 @@ function notificationSupport() {
 
 (<any>notificationSupport).message = 'Notification Support';
 
-describe('Notification API', ifEnvSupports(notificationSupport, function() {
+describe('Notification API', ifEnvSupportsInDescribe(notificationSupport, function() {
            it('Notification API should be patched by Zone', () => {
              const Notification = window['Notification'];
              expect(Notification.prototype[zoneSymbol('addEventListener')]).toBeTruthy();

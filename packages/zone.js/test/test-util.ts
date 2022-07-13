@@ -27,6 +27,15 @@ import {isNode, zoneSymbol} from '../lib/common/utils';
 export {zoneSymbol};
 
 declare const global: any;
+const defaultOtherwise = function() {
+  xit('ignore describe with no child error', () => {});
+};
+
+export function ifEnvSupportsInDescribe(
+    test: any, block: Function, otherwise = defaultOtherwise): () => void {
+  return ifEnvSupports(test, block, otherwise);
+}
+
 export function ifEnvSupports(test: any, block: Function, otherwise?: Function): () => void {
   return _ifEnvSupports(test, block, otherwise);
 }

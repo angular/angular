@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ifEnvSupports, ifEnvSupportsWithDone, isFirefox, isSafari} from '../test-util';
+import {ifEnvSupportsInDescribe, ifEnvSupportsWithDone, isFirefox, isSafari} from '../test-util';
 
 declare const global: any;
 
 describe(
-    'fetch', ifEnvSupports('fetch', function() {
+    'fetch', ifEnvSupportsInDescribe('fetch', function() {
       let testZone: Zone;
       beforeEach(() => {
         testZone = Zone.current.fork({name: 'TestZone'});

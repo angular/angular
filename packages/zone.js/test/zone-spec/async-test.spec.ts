@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupports, ifEnvSupportsInDescribe} from '../test-util';
 
 describe('AsyncTestZoneSpec', function() {
   let log: string[];
@@ -186,7 +186,47 @@ describe('AsyncTestZoneSpec', function() {
     }, 50);
   });
 
-  describe('event tasks', ifEnvSupports('document', () => {
+  describe('beforeEach async', () => {
+    let callback: any;
+    beforeEach(() => {
+      Promise.resolve(1).then(() => {
+        console.log('callback is', callback);
+        callback && callback();
+      });
+      Promise.resolve(1).then(() => {
+        console.log('callback is', callback);
+        callback && callback();
+      });
+    });
+
+    it('test', (done: DoneFn) => {
+      let doneCalledCount = 0;
+      let callbackCalledCount = 0;
+      const testZoneSpec = new AsyncTestZoneSpec(() => {
+        doneCalledCount++;
+        done();
+      }, () => {}, 'name');
+
+      const atz = Zone.current.fork(testZoneSpec).fork({
+        name: 'monitor',
+        onScheduleTask(delegate, curr, target, task) {
+          console.log('schedule task', task);
+          return delegate.scheduleTask(target, task);
+        },
+        onHasTask(delegate, curr, target, hasTaskState) {
+          console.log('has task', hasTaskState);
+          return delegate.hasTask(target, hasTaskState);
+        },
+      });
+      atz.run(() => {
+        callback = () => {
+          callbackCalledCount++;
+        };
+      });
+    });
+  });
+
+  describe('event tasks', ifEnvSupportsInDescribe('document', () => {
              let button: HTMLButtonElement;
              beforeEach(function() {
                button = document.createElement('button');
@@ -254,7 +294,7 @@ describe('AsyncTestZoneSpec', function() {
              });
            }, emptyRun));
 
-  describe('XHRs', ifEnvSupports('XMLHttpRequest', () => {
+  describe('XHRs', ifEnvSupportsInDescribe('XMLHttpRequest', () => {
              it('should wait for XHRs to complete', function(done) {
                let req: XMLHttpRequest;
                let finished = false;

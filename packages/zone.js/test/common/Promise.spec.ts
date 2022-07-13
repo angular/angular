@@ -7,7 +7,7 @@
  */
 
 import {isNode, zoneSymbol} from '../../lib/common/utils';
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupports, ifEnvSupportsInDescribe} from '../test-util';
 
 declare const global: any;
 
@@ -38,7 +38,7 @@ class TestRejection {
 }
 
 describe(
-    'Promise', ifEnvSupports('Promise', function() {
+    'Promise', ifEnvSupportsInDescribe('Promise', function() {
       if (!global.Promise) return;
       let log: string[];
       let queueZone: Zone;

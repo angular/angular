@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ifEnvSupports, ifEnvSupportsWithDone, supportPatchXHROnProperty, zoneSymbol} from '../test-util';
+import {ifEnvSupportsInDescribe, ifEnvSupportsWithDone, supportPatchXHROnProperty, zoneSymbol} from '../test-util';
 declare const global: any;
 const wtfMock = global.wtfMock;
 
@@ -193,7 +193,7 @@ describe('XMLHttpRequest', function() {
 
   (<any>supportsOnProgress).message = 'XMLHttpRequest.onprogress';
 
-  describe('onprogress', ifEnvSupports(supportsOnProgress, function() {
+  describe('onprogress', ifEnvSupportsInDescribe(supportsOnProgress, function() {
              it('should work with onprogress', function(done) {
                let req: XMLHttpRequest;
                testZone.run(function() {
@@ -336,13 +336,17 @@ describe('XMLHttpRequest', function() {
          const req = new XMLHttpRequest();
          req.open('get', '/', true);
          req.send();
+         let count = 0;
          const listener = function(ev: any) {
            if (req.readyState >= 2) {
+             const isInitial = count++ === 0;
              expect(() => {
                req.abort();
              }).not.toThrow();
              req.removeEventListener('readystatechange', listener);
-             done();
+             if (isInitial) {
+               done();
+             }
            }
          };
          req.addEventListener('readystatechange', listener);

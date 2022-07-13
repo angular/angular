@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupportsInDescribe} from '../test-util';
 
 describe(
-    'queueMicrotask', ifEnvSupports('queueMicrotask', function() {
+    'queueMicrotask', ifEnvSupportsInDescribe('queueMicrotask', function() {
       it('callback in the queueMicrotask should be scheduled as microTask in the zone',
          (done: DoneFn) => {
            const logs: string[] = [];

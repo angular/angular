@@ -8,7 +8,7 @@
 import {Notification, Observable, of} from 'rxjs';
 import {dematerialize} from 'rxjs/operators';
 
-import {asyncTest, ifEnvSupports} from '../test-util';
+import {asyncTest, ifEnvSupports, ifEnvSupportsInDescribe} from '../test-util';
 
 const supportNotification = function() {
   return typeof Notification !== 'undefined';
@@ -16,7 +16,7 @@ const supportNotification = function() {
 
 (supportNotification as any).message = 'RxNotification';
 
-describe('Observable.notification', ifEnvSupports(supportNotification, () => {
+describe('Observable.notification', ifEnvSupportsInDescribe(supportNotification, () => {
            let log: any[];
            let observable1: Observable<any>;
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupportsInDescribe} from '../test-util';
 declare const window: any;
 
 describe('requestAnimationFrame', function() {
@@ -14,7 +14,7 @@ describe('requestAnimationFrame', function() {
       ['requestAnimationFrame', 'webkitRequestAnimationFrame', 'mozRequestAnimationFrame'];
 
   functions.forEach(function(fnName) {
-    describe(fnName, ifEnvSupports(fnName, function() {
+    describe(fnName, ifEnvSupportsInDescribe(fnName, function() {
                const originalTimeout: number = (<any>jasmine).DEFAULT_TIMEOUT_INTERVAL;
                beforeEach(() => {
                  (<any>jasmine).DEFAULT_TIMEOUT_INTERVAL = 10000;

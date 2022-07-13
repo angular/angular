@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupports, ifEnvSupportsInDescribe} from '../test-util';
 
 function supportsGeolocation() {
   return 'geolocation' in navigator;
 }
 (<any>supportsGeolocation).message = 'Geolocation';
 
-describe('Geolocation', ifEnvSupports(supportsGeolocation, function() {
+describe('Geolocation', ifEnvSupportsInDescribe(supportsGeolocation, function() {
            const testZone = Zone.current.fork({name: 'geotest'});
 
            it('should work for getCurrentPosition', function(done) {

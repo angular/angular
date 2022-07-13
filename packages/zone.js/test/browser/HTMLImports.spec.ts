@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ifEnvSupports} from '../test-util';
+import {ifEnvSupports, ifEnvSupportsInDescribe} from '../test-util';
 
 function supportsImports() {
   return 'import' in document.createElement('link');
 }
 (<any>supportsImports).message = 'HTML Imports';
 
-describe('HTML Imports', ifEnvSupports(supportsImports, function() {
+describe('HTML Imports', ifEnvSupportsInDescribe(supportsImports, function() {
            const testZone = Zone.current.fork({name: 'test'});
 
            it('should work with addEventListener', function(done) {
