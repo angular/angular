@@ -47,6 +47,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_INJECTION_TOKEN = 204,
     // (undocumented)
+    INVALID_MULTI_PROVIDER = 209,
+    // (undocumented)
     MISSING_GENERATED_DEF = 906,
     // (undocumented)
     MISSING_INJECTION_CONTEXT = -203,
