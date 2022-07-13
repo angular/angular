@@ -1606,43 +1606,38 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.3.tgz#472eaab5f15c1ffdd7f8628bd4c4f753995ec79e"
   integrity sha512-yOlFc+7UtL/89t2ZhjPvvB/DeAr3r+Dq58IgzsFkOAvVC6NMJXmCGjbptdXdR9qsX7pKcTL+s87FtYREi2dEEQ==
 
-"@types/angular-animate@1.5.10":
-  version "1.5.10"
-  resolved "https://registry.yarnpkg.com/@types/angular-animate/-/angular-animate-1.5.10.tgz#b94b45358c61163f1478768e8b081c76439c515f"
-  integrity sha512-MnYYvTHAPUbtT6gqwrnl6k3a03A5BlNz1nVlwVGxyS+MeWCX4DC14SJ/pgJUa8wj+J04wZ2prMxFsOfp6cyjjQ==
+"@types/angular-animate@^1.5.11":
+  version "1.5.11"
+  resolved "https://registry.yarnpkg.com/@types/angular-animate/-/angular-animate-1.5.11.tgz#17d9611f8175ab73e528a72f0d50a16891c7429a"
+  integrity sha512-JJL2BM9pTLz00oqXh09knxHOjKLBbMyb9k9/DNWWvQome42iMGD+R9+iKaFX6nnvmlMnhoO1wOGWvnOFHhkujg==
   dependencies:
     "@types/angular" "*"
 
-"@types/angular-mocks@1.7.0":
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/@types/angular-mocks/-/angular-mocks-1.7.0.tgz#310d999a3c47c10ecd8eef466b5861df84799429"
-  integrity sha512-MeT5vxWBx4Ny5/sNZJjpZdv4K2KGwqQYiRQQZctan1TTaNyiVlFRYbcmheolhM4KKbTWmoxTVeuvGzniTDg1kw==
-  dependencies:
-    "@types/angular" "*"
-
-"@types/angular-resource@1.5.16":
-  version "1.5.16"
-  resolved "https://registry.yarnpkg.com/@types/angular-resource/-/angular-resource-1.5.16.tgz#e32faef37c9e0557f5042b081746a666118af547"
-  integrity sha512-EJGp5Qxa+w2AHGW8Y+UUsYTTF+Kh68sFhI9YzXzM7n8pB91VGWynELQ/R3rTVE2xtxyiu+F2WU2mOQC4NUvWrA==
-  dependencies:
-    "@types/angular" "*"
-
-"@types/angular-route@1.7.1":
+"@types/angular-mocks@^1.7.1":
   version "1.7.1"
-  resolved "https://registry.yarnpkg.com/@types/angular-route/-/angular-route-1.7.1.tgz#0f545189ff51afc74afbcdde17b56a277963d51b"
-  integrity sha512-5N5nfUYTEf5InmrhGU5qtvBOHOq6uvv1olJR5fd6Eq5YFT+cdjrr0nklBaFfulAsF0Cd8y7IQipgaUSwWsATYQ==
+  resolved "https://registry.yarnpkg.com/@types/angular-mocks/-/angular-mocks-1.7.1.tgz#0f18066f8e6f327493aad0c280a43801ffa09464"
+  integrity sha512-44kaQL8sMGUIDV76zbJ3MX6aqPng7Wmfz91uds+WcNQFHTdSu6KDZNIypIZVAdrWnJfqrfL5VysaCejTW3JVIw==
   dependencies:
     "@types/angular" "*"
 
-"@types/angular@*":
+"@types/angular-resource@^1.5.17":
+  version "1.5.17"
+  resolved "https://registry.yarnpkg.com/@types/angular-resource/-/angular-resource-1.5.17.tgz#ad5f249a5182e80d045de8766cf0f80a2d8f486e"
+  integrity sha512-HPyxurb0qxkytQY/zwunMrdx/Hlb+VZ1Neiq3tL1J+HtdVvA1AgNcGTY5aonH3uqbLnKrBASdRbfvtAxT3GCXg==
+  dependencies:
+    "@types/angular" "*"
+
+"@types/angular-route@^1.7.2":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@types/angular-route/-/angular-route-1.7.2.tgz#919bfc829d9c4fe751a1d56deb31d8cbbebcddf3"
+  integrity sha512-Yc5ToBQpW7/v8tmQOlUzOYQPT/uQvfEuovNreM2YCOAQSlQGwpMxFxcYATxe4tLXbdmMZsbnlTZAbDaD6O/M1w==
+  dependencies:
+    "@types/angular" "*"
+
+"@types/angular@*", "@types/angular@^1.8.4":
   version "1.8.4"
   resolved "https://registry.yarnpkg.com/@types/angular/-/angular-1.8.4.tgz#a2cc163e508389c51d4c4119ebff6b9395cec472"
   integrity sha512-wPS/ncJWhyxJsndsW1B6Ta8D4mi97x1yItSu+rkLDytU3oRIh2CFAjMuJceYwFAh9+DIohndWM0QBA9OU2Hv0g==
-
-"@types/angular@1.7.3":
-  version "1.7.3"
-  resolved "https://registry.yarnpkg.com/@types/angular/-/angular-1.7.3.tgz#138c2f2f688e9dcb413c6052d9483d773ce7f627"
-  integrity sha512-rr40P9yHTlLuY6y+PUfwHeoBWO8uEJTazcs89o83fheyH/b9OZW7p7EsvFMriCPam3p6VSD57zkgn+nAQCvfUw==
 
 "@types/body-parser@*":
   version "1.19.2"
@@ -2148,10 +2143,10 @@ angular-route@1.8.0:
   resolved "https://registry.yarnpkg.com/angular-route/-/angular-route-1.8.0.tgz#cb8066c5d34284ffd6a15ac7be1b3d51c5ad7bb2"
   integrity sha512-ORvXAdVfCCA6XFwyjSkVQFFGufj0mNGiCvBR93Qsii8+7t/6Ioy6wheUoCj1x4NWUv7hAq3nYYGCVO6QEKb1BQ==
 
-angular@1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/angular/-/angular-1.8.0.tgz#b1ec179887869215cab6dfd0df2e42caa65b1b51"
-  integrity sha512-VdaMx+Qk0Skla7B5gw77a8hzlcOakwF8mjlW13DpIWIDlfqwAbSSLfd8N/qZnzEmQF4jC4iofInd3gE7vL8ZZg==
+angular@^1.8.3:
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.8.3.tgz#851ad75d5163c105a7e329555ef70c90aa706894"
+  integrity sha512-5qjkWIQQVsHj4Sb5TcEs4WZWpFeVFHXwxEBHUhrny41D8UrBAd6T/6nPPAsLngJCReIOqi95W3mxdveveutpZw==
 
 ansi-colors@4.1.1:
   version "4.1.1"
