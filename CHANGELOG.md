@@ -1,3 +1,47 @@
+<a name="14.1.0-rc.0"></a>
+# 14.1.0-rc.0 (2022-07-13)
+## Deprecations
+### core
+- The `createNgModuleRef` is deprecated in favor of newly added `createNgModule` one.
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [55308f2df5](https://github.com/angular/angular/commit/55308f2df5b0f6e8e40e3c4085c463a5b83c5ed1) | feat | add `provideAnimations()` and `provideNoopAnimations()` functions ([#46793](https://github.com/angular/angular/pull/46793)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [33ce3883a5](https://github.com/angular/angular/commit/33ce3883a5d962adf5ee7feffd3426feefe0c0b5) | feat | Add extended diagnostic to warn when missing let on ngForOf ([#46683](https://github.com/angular/angular/pull/46683)) |
+| [9e836c232f](https://github.com/angular/angular/commit/9e836c232ff66043bc101b905dae4c8bde18bc58) | feat | warn when style suffixes are used with attribute bindings ([#46651](https://github.com/angular/angular/pull/46651)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [93c65e7b14](https://github.com/angular/angular/commit/93c65e7b1468bb0c696dec1bc3362422a2ca5170) | feat | add extended diagnostic for non-nullable optional chains ([#46686](https://github.com/angular/angular/pull/46686)) |
+| [93d17ee888](https://github.com/angular/angular/commit/93d17ee888fc14c740daad5c74f17f0863cddddd) | fix | only consider used pipes for inline type-check requirement ([#46807](https://github.com/angular/angular/pull/46807)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a6d5fe202c](https://github.com/angular/angular/commit/a6d5fe202cafb419f3beb8d09711132124b6aa9a) | feat | alias `createNgModuleRef` as `createNgModule` ([#46789](https://github.com/angular/angular/pull/46789)) |
+| [71e606d3c3](https://github.com/angular/angular/commit/71e606d3c3cfdcf93a6e40f84fd69aa75c5cca42) | feat | expose EnvironmentInjector on ApplicationRef ([#46665](https://github.com/angular/angular/pull/46665)) |
+| [19e6d9ccd3](https://github.com/angular/angular/commit/19e6d9ccd36c7776fcee7de541bba413fd6dcabf) | feat | import AsyncStackTaggingZone if available ([#46693](https://github.com/angular/angular/pull/46693)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c0ca3fc71a](https://github.com/angular/angular/commit/c0ca3fc71aabc8902c7ed68f8f6a0efd9d1a6d81) | fix | expose ControlConfig in public API ([#46594](https://github.com/angular/angular/pull/46594)) |
+| [e9b5dac9ec](https://github.com/angular/angular/commit/e9b5dac9ecaa86914079a37176985c628c403aba) | fix | Move all remaining errors in Forms to use RuntimeErrorCode. ([#46654](https://github.com/angular/angular/pull/46654)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [392c56749a](https://github.com/angular/angular/commit/392c56749a0302f7e374ffcf36b2eac1a2353c8a) | fix | add `--project` option to `ng-add` schematic ([#46664](https://github.com/angular/angular/pull/46664)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a4ce273e50](https://github.com/angular/angular/commit/a4ce273e50551e6c6bc8f3a86591b04760de7ba4) | feat | Add the target `RouterStateSnapshot` to `NavigationError` ([#46731](https://github.com/angular/angular/pull/46731)) |
+| [e8ae0fe3e9](https://github.com/angular/angular/commit/e8ae0fe3e91e2e805146fad0d2f0976b1f886112) | fix | Fix cancellation code for canLoad rejections ([#46752](https://github.com/angular/angular/pull/46752)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Andrew Scott, Bob Watson, Dylan Hunn, George Kalpakas, Ivaylo Kirov, Jessica Janiuk, JiaLiPassion, John Vandenberg, JoostK, Joshua VanAllen, Lukas Matta, Marcin Wosinek, Nicolas Molina Monroy, Or'el Ben-Ya'ir, Paul Gschwendtner, Pawel Kozlowski, SoulsMark, Uday Sony, dario-piotrowicz, markostanimirovic and zhysky
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.6"></a>
 # 14.0.6 (2022-07-13)
 ### compiler-cli
