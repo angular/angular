@@ -13,15 +13,9 @@ import {catchError, concatMap, first, map, mapTo, mergeMap, takeLast, tap} from 
 import {ResolveData, Route} from '../models';
 import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, inheritedParamsDataResolve, RouterStateSnapshot} from '../router_state';
+import {RouteTitleKey} from '../shared';
 import {wrapIntoObservable} from '../utils/collection';
 import {getToken} from '../utils/preactivation';
-
-/**
- * A private symbol used to store the value of `Route.title` inside the `Route.data` if it is a
- * static string or `Route.resolve` if anything else. This allows us to reuse the existing route
- * data/resolvers to support the title feature without new instrumentation in the `Router` pipeline.
- */
-export const RouteTitle = Symbol('RouteTitle');
 
 export function resolveData(
     paramsInheritanceStrategy: 'emptyOnly'|'always',
@@ -51,14 +45,14 @@ function runResolve(
   const config = futureARS.routeConfig;
   const resolve = futureARS._resolve;
   if (config?.title !== undefined && !hasStaticTitle(config)) {
-    resolve[RouteTitle] = config.title;
+    resolve[RouteTitleKey] = config.title;
   }
   return resolveNode(resolve, futureARS, futureRSS, moduleInjector)
       .pipe(map((resolvedData: any) => {
         futureARS._resolvedData = resolvedData;
         futureARS.data = inheritedParamsDataResolve(futureARS, paramsInheritanceStrategy).resolve;
         if (config && hasStaticTitle(config)) {
-          futureARS.data[RouteTitle] = config.title;
+          futureARS.data[RouteTitleKey] = config.title;
         }
         return null;
       }));

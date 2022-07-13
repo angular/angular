@@ -9,7 +9,7 @@
 import {BehaviorSubject} from 'rxjs';
 
 import {ActivatedRoute, ActivatedRouteSnapshot, advanceActivatedRoute, equalParamsAndUrlSegments, RouterState, RouterStateSnapshot} from '../src/router_state';
-import {Params} from '../src/shared';
+import {Params, RouteTitleKey} from '../src/shared';
 import {UrlSegment} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 
@@ -200,6 +200,26 @@ describe('RouterState & Snapshot', () => {
       });
       advanceActivatedRoute(route);
       expect(hasSeenDataChange).toEqual(true);
+    });
+  });
+
+  describe('ActivatedRoute', () => {
+    it('should get resolved route title', () => {
+      const data = {[RouteTitleKey]: 'resolved title'};
+      const route = createActivatedRoute('a');
+      const snapshot = new (ActivatedRouteSnapshot as any)(
+          <any>[], <any>null, <any>null, <any>null, data, <any>null, 'test', <any>null, <any>null,
+          -1, null!);
+      let resolvedTitle: string|undefined;
+
+      route.data.next(data);
+
+      route.title.forEach((title: string|undefined) => {
+        resolvedTitle = title;
+      });
+
+      expect(resolvedTitle).toEqual('resolved title');
+      expect(snapshot.title).toEqual('resolved title');
     });
   });
 });

@@ -50,6 +50,7 @@ export class ActivatedRoute {
     get root(): ActivatedRoute;
     get routeConfig(): Route | null;
     snapshot: ActivatedRouteSnapshot;
+    readonly title: Observable<string | undefined>;
     // (undocumented)
     toString(): string;
     url: Observable<UrlSegment[]>;
@@ -73,6 +74,7 @@ export class ActivatedRouteSnapshot {
     queryParams: Params;
     get root(): ActivatedRouteSnapshot;
     readonly routeConfig: Route | null;
+    readonly title?: string;
     // (undocumented)
     toString(): string;
     url: UrlSegment[];
