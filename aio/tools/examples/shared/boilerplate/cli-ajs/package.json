@@ -21,7 +21,7 @@
     "@angular/platform-browser": "^14.1.0-next",
     "@angular/platform-browser-dynamic": "^14.1.0-next",
     "@angular/router": "^14.1.0-next",
-    "angular": "1.8.0",
+    "angular": "^1.8.3",
     "angular-in-memory-web-api": "~0.14.0",
     "angular-route": "1.8.0",
     "rxjs": "~7.5.0",
