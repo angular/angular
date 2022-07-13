@@ -9,9 +9,8 @@
 import {inject, Injectable} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 
-import {RouteTitle as TitleKey} from './operators/resolve_data';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
-import {PRIMARY_OUTLET} from './shared';
+import {PRIMARY_OUTLET, RouteTitleKey} from './shared';
 
 /**
  * Provides a strategy for setting the page title after a router navigation.
@@ -59,7 +58,7 @@ export abstract class TitleStrategy {
    * `Route.title` property, which can either be a static string or a resolved value.
    */
   getResolvedTitleForRoute(snapshot: ActivatedRouteSnapshot) {
-    return snapshot.data[TitleKey];
+    return snapshot.data[RouteTitleKey];
   }
 }
 
