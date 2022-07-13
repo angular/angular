@@ -7,7 +7,7 @@ To adequately test a component, you should test that they work together as inten
 Such tests require creating the component's host element in the browser DOM, as Angular does, and investigating the component class's interaction with the DOM as described by its template.
 
 The Angular `TestBed` facilitates this kind of testing as you'll see in the following sections.
-But in many cases, *testing the component class alone*, without DOM involvement, can validate much of the component's behavior in an straightforward, more obvious way.
+But in many cases, *testing the component class alone*, without DOM involvement, can validate much of the component's behavior in a straightforward, more obvious way.
 
 <div class="alert is-helpful">
 
