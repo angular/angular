@@ -96,7 +96,7 @@ describe('environment injector', () => {
        expect(cRef.instance.service).toBeInstanceOf(Service);
      });
 
-  it('should support the ENVIRONMENT_INITIALIZER muli-token', () => {
+  it('should support the ENVIRONMENT_INITIALIZER multi-token', () => {
     let initialized = false;
     const parentEnvInjector = TestBed.inject(EnvironmentInjector);
     createEnvironmentInjector(
@@ -108,6 +108,20 @@ describe('environment injector', () => {
         parentEnvInjector);
 
     expect(initialized).toBeTrue();
+  });
+
+  it('should throw when the ENVIRONMENT_INITIALIZER is not a multi-token', () => {
+    const parentEnvInjector = TestBed.inject(EnvironmentInjector);
+    const providers = [{
+      provide: ENVIRONMENT_INITIALIZER,
+      useValue: () => {},
+    }];
+    expect(() => createEnvironmentInjector(providers, parentEnvInjector))
+        .toThrowError(
+            'NG0209: Unexpected type of the `ENVIRONMENT_INITIALIZER` token value ' +
+            '(expected an array, but got function). ' +
+            'Please check that the `ENVIRONMENT_INITIALIZER` token is configured as ' +
+            'a `multi: true` provider.');
   });
 
   it('should adopt environment-scoped providers', () => {

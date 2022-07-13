@@ -272,6 +272,14 @@ export class R3Injector extends EnvironmentInjector {
     const previousInjectImplementation = setInjectImplementation(undefined);
     try {
       const initializers = this.get(ENVIRONMENT_INITIALIZER.multi, EMPTY_ARRAY, InjectFlags.Self);
+      if (ngDevMode && !Array.isArray(initializers)) {
+        throw new RuntimeError(
+            RuntimeErrorCode.INVALID_MULTI_PROVIDER,
+            'Unexpected type of the `ENVIRONMENT_INITIALIZER` token value ' +
+                `(expected an array, but got ${typeof initializers}). ` +
+                'Please check that the `ENVIRONMENT_INITIALIZER` token is configured as a ' +
+                '`multi: true` provider.');
+      }
       for (const initializer of initializers) {
         initializer();
       }
