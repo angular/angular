@@ -1,3 +1,23 @@
+<a name="14.0.6"></a>
+# 14.0.6 (2022-07-13)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [99697dae66](https://github.com/angular/angular/commit/99697dae668d8df07a5c46caf08a071371131e56) | fix | only consider used pipes for inline type-check requirement ([#46807](https://github.com/angular/angular/pull/46807)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4f469cbef3](https://github.com/angular/angular/commit/4f469cbef3664746750338d167964c247151de01) | fix | expose ControlConfig in public API ([#46594](https://github.com/angular/angular/pull/46594)) |
+| [e8c8b695f2](https://github.com/angular/angular/commit/e8c8b695f20174a520ca1ba88164458c31e5b024) | fix | Move all remaining errors in Forms to use RuntimeErrorCode. ([#46654](https://github.com/angular/angular/pull/46654)) |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [14863acb1a](https://github.com/angular/angular/commit/14863acb1a642e9f6d36ea5d10d64f26d84ad475) | fix | add `--project` option to `ng-add` schematic ([#46664](https://github.com/angular/angular/pull/46664)) |
+## Special Thanks
+Alan Agius, Andrew Scott, Bob Watson, Dylan Hunn, George Kalpakas, Ivaylo Kirov, Jessica Janiuk, JoostK, Joshua VanAllen, Lukas Matta, Marcin Wosinek, Nicolas Molina Monroy, Paul Gschwendtner, SoulsMark, Uday Sony, dario-piotrowicz, markostanimirovic and zhysky
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.0-next.4"></a>
 # 14.1.0-next.4 (2022-07-06)
 ## Deprecations
