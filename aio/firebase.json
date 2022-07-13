@@ -75,6 +75,7 @@
       {"type": 301, "source": "/getting-started", "destination": "/start"},
       {"type": 301, "source": "/getting-started/:rest*", "destination": "/start/:rest*"},
       {"type": 301, "source": "/guide/displaying-data", "destination": "/start#template-syntax"},
+      {"type": 301, "source": "/guide/ivy", "destination": "https://v12.angular.io/guide/ivy"},
       {"type": 301, "source": "/guide/updating-to-version-10", "destination": "https://v10.angular.io/guide/updating-to-version-10"},
       {"type": 301, "source": "/guide/updating-to-version-11", "destination": "https://v11.angular.io/guide/updating-to-version-11"},
       {"type": 301, "source": "/guide/updating-to-version-12", "destination": "/guide/update-to-latest-version"},
