@@ -637,10 +637,10 @@ function isOutput(value: any): value is Output {
 }
 
 function parseInputOutputs(values: string[]): StringMap {
-  return values.reduce((map, value) => {
-    const [field, property] = value.split(',').map(piece => piece.trim());
-    map[field] = property || field;
-    return map;
+  return values.reduce((results, value) => {
+    const [field, property] = value.split(':', 2).map(str => str.trim());
+    results[field] = property || field;
+    return results;
   }, {} as StringMap);
 }
 
