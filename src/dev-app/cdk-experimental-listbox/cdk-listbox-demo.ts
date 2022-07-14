@@ -27,6 +27,7 @@ function dumbCompare(o1: string, o2: string) {
 export class CdkListboxDemo {
   multiSelectable = false;
   activeDescendant = true;
+  skipDisabled = true;
   compare?: (o1: string, o2: string) => boolean;
   fruitControl = new FormControl();
   nativeFruitControl = new FormControl();
@@ -65,6 +66,10 @@ export class CdkListboxDemo {
 
   toggleDumbCompare() {
     this.compare = this.compare ? undefined : dumbCompare;
+  }
+
+  toggleSkipDisabled() {
+    this.skipDisabled = !this.skipDisabled;
   }
 
   onNativeFruitChange(event: Event) {

@@ -5,10 +5,11 @@
     [cdkListboxMultiple]="multiSelectable"
     [cdkListboxUseActiveDescendant]="activeDescendant"
     [cdkListboxCompareWith]="compare"
+    [cdkListboxKeyboardNavigationSkipsDisabled]="skipDisabled"
     [formControl]="fruitControl">
   <li cdkOption="apple">Apple</li>
   <li cdkOption="orange">Orange</li>
-  <li cdkOption="grapefruit">Grapefruit</li>
+  <li cdkOption="grapefruit" cdkOptionDisabled>Grapefruit</li>
   <li cdkOption="peach">Peach</li>
   <li cdkOption="kiwi">Kiwi</li>
 </ul>
@@ -30,10 +31,11 @@
     [cdkListboxUseActiveDescendant]="activeDescendant"
     [cdkListboxCompareWith]="compare"
     [cdkListboxDisabled]="fruitControl.disabled"
+    [cdkListboxKeyboardNavigationSkipsDisabled]="skipDisabled"
     [(ngModel)]="fruit">
   <li cdkOption="apple">Apple</li>
   <li cdkOption="orange">Orange</li>
-  <li cdkOption="grapefruit">Grapefruit</li>
+  <li cdkOption="grapefruit" cdkOptionDisabled>Grapefruit</li>
   <li cdkOption="peach">Peach</li>
 </ul>
 <select [multiple]="multiSelectable" [(ngModel)]="nativeFruit">
@@ -53,11 +55,12 @@
     [cdkListboxUseActiveDescendant]="activeDescendant"
     [cdkListboxCompareWith]="compare"
     [cdkListboxDisabled]="fruitControl.disabled"
+    [cdkListboxKeyboardNavigationSkipsDisabled]="skipDisabled"
     [cdkListboxValue]="fruit"
     (cdkListboxValueChange)="fruit = $event.value">
   <li cdkOption="apple">Apple</li>
   <li cdkOption="orange">Orange</li>
-  <li cdkOption="grapefruit">Grapefruit</li>
+  <li cdkOption="grapefruit" cdkOptionDisabled>Grapefruit</li>
   <li cdkOption="peach">Peach</li>
 </ul>
 <select [multiple]="multiSelectable" (change)="onNativeFruitChange($event)">
@@ -83,3 +86,4 @@
 }}</button>
 <br>
 <button (click)="toggleDumbCompare()">Compare With: {{this.compare ? 'Apple === Orange' : 'Standard'}}</button>
+<button (click)="toggleSkipDisabled()">Skip Disabled: {{this.skipDisabled ? 'Yes' : 'No'}}</button>

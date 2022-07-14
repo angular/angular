@@ -71,20 +71,21 @@ export interface SelectionChange<T> {
 
 // @public
 export class SelectionModel<T> {
-    constructor(_multiple?: boolean, initiallySelectedValues?: T[], _emitChanges?: boolean, _compareWith?: ((o1: T, o2: T) => boolean) | undefined);
+    constructor(_multiple?: boolean, initiallySelectedValues?: T[], _emitChanges?: boolean, compareWith?: ((o1: T, o2: T) => boolean) | undefined);
     readonly changed: Subject<SelectionChange<T>>;
-    clear(): void;
-    deselect(...values: T[]): void;
+    clear(flushEvent?: boolean): boolean | void;
+    // (undocumented)
+    compareWith?: ((o1: T, o2: T) => boolean) | undefined;
+    deselect(...values: T[]): boolean | void;
     hasValue(): boolean;
     isEmpty(): boolean;
     isMultipleSelection(): boolean;
     isSelected(value: T): boolean;
-    select(...values: T[]): void;
+    select(...values: T[]): boolean | void;
     get selected(): T[];
-    // (undocumented)
-    setSelection(...values: T[]): void;
+    setSelection(...values: T[]): boolean | void;
     sort(predicate?: (a: T, b: T) => number): void;
-    toggle(value: T): void;
+    toggle(value: T): boolean | void;
 }
 
 // @public

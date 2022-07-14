@@ -9,8 +9,8 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     deps = [
-        "//src/cdk-experimental/combobox",
         "//src/cdk/a11y",
+        "//src/cdk/bidi",
         "//src/cdk/collections",
         "//src/cdk/keycodes",
         "@npm//@angular/forms",
@@ -25,7 +25,6 @@ ng_test_library(
     ),
     deps = [
         ":listbox",
-        "//src/cdk-experimental/combobox",
         "//src/cdk/keycodes",
         "//src/cdk/testing/private",
         "@npm//@angular/common",

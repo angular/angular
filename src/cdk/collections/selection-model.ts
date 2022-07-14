@@ -40,7 +40,7 @@ export class SelectionModel<T> {
     private _multiple = false,
     initiallySelectedValues?: T[],
     private _emitChanges = true,
-    private _compareWith?: (o1: T, o2: T) => boolean,
+    public compareWith?: (o1: T, o2: T) => boolean,
   ) {
     if (initiallySelectedValues && initiallySelectedValues.length) {
       if (_multiple) {
@@ -56,23 +56,39 @@ export class SelectionModel<T> {
 
   /**
    * Selects a value or an array of values.
+   * @param values The values to select
+   * @return Whether the selection changed as a result of this call
+   * @breaking-change 16.0.0 make return type boolean
    */
-  select(...values: T[]): void {
+  select(...values: T[]): boolean | void {
     this._verifyValueAssignment(values);
     values.forEach(value => this._markSelected(value));
+    const changed = this._hasQueuedChanges();
     this._emitChangeEvent();
+    return changed;
   }
 
   /**
    * Deselects a value or an array of values.
+   * @param values The values to deselect
+   * @return Whether the selection changed as a result of this call
+   * @breaking-change 16.0.0 make return type boolean
    */
-  deselect(...values: T[]): void {
+  deselect(...values: T[]): boolean | void {
     this._verifyValueAssignment(values);
     values.forEach(value => this._unmarkSelected(value));
+    const changed = this._hasQueuedChanges();
     this._emitChangeEvent();
+    return changed;
   }
 
-  setSelection(...values: T[]): void {
+  /**
+   * Sets the selected values
+   * @param values The new selected values
+   * @return Whether the selection changed as a result of this call
+   * @breaking-change 16.0.0 make return type boolean
+   */
+  setSelection(...values: T[]): boolean | void {
     this._verifyValueAssignment(values);
     const oldValues = this.selected;
     const newSelectedSet = new Set(values);
@@ -80,31 +96,44 @@ export class SelectionModel<T> {
     oldValues
       .filter(value => !newSelectedSet.has(value))
       .forEach(value => this._unmarkSelected(value));
+    const changed = this._hasQueuedChanges();
     this._emitChangeEvent();
+    return changed;
   }
 
   /**
    * Toggles a value between selected and deselected.
+   * @param value The value to toggle
+   * @return Whether the selection changed as a result of this call
+   * @breaking-change 16.0.0 make return type boolean
    */
-  toggle(value: T): void {
-    this.isSelected(value) ? this.deselect(value) : this.select(value);
+  toggle(value: T): boolean | void {
+    return this.isSelected(value) ? this.deselect(value) : this.select(value);
   }
 
   /**
    * Clears all of the selected values.
+   * @param flushEvent Whether to flush the changes in an event.
+   *   If false, the changes to the selection will be flushed along with the next event.
+   * @return Whether the selection changed as a result of this call
+   * @breaking-change 16.0.0 make return type boolean
    */
-  clear(): void {
+  clear(flushEvent = true): boolean | void {
     this._unmarkAll();
-    this._emitChangeEvent();
+    const changed = this._hasQueuedChanges();
+    if (flushEvent) {
+      this._emitChangeEvent();
+    }
+    return changed;
   }
 
   /**
    * Determines whether a value is selected.
    */
   isSelected(value: T): boolean {
-    if (this._compareWith) {
+    if (this.compareWith) {
       for (const otherValue of this._selection) {
-        if (this._compareWith(otherValue, value)) {
+        if (this.compareWith(otherValue, value)) {
           return true;
         }
       }
@@ -203,6 +232,11 @@ export class SelectionModel<T> {
     if (values.length > 1 && !this._multiple && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw getMultipleValuesInSingleSelectionError();
     }
+  }
+
+  /** Whether there are queued up change to be emitted. */
+  private _hasQueuedChanges() {
+    return !!(this._deselectedToEmit.length || this._selectedToEmit.length);
   }
 }
 

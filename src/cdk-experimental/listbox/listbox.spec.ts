@@ -3,7 +3,17 @@ import {Component, Type} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {CdkListbox, CdkListboxModule, CdkOption, ListboxValueChangeEvent} from './index';
 import {dispatchKeyboardEvent, dispatchMouseEvent} from '../../cdk/testing/private';
-import {B, DOWN_ARROW, END, HOME, SPACE, UP_ARROW} from '@angular/cdk/keycodes';
+import {
+  A,
+  B,
+  DOWN_ARROW,
+  END,
+  HOME,
+  LEFT_ARROW,
+  RIGHT_ARROW,
+  SPACE,
+  UP_ARROW,
+} from '@angular/cdk/keycodes';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 
@@ -130,6 +140,54 @@ describe('CdkOption and CdkListbox', () => {
       expect(options[0].isSelected()).toBeTrue();
       expect(optionEls[0].getAttribute('aria-selected')).toBe('true');
       expect(fixture.componentInstance.changedOption?.id).toBe(options[0].id);
+    });
+
+    it('should select and deselect range on option SHIFT + click', async () => {
+      const {testComponent, fixture, listbox, optionEls} = await setupComponent(ListboxWithOptions);
+      testComponent.isMultiselectable = true;
+      fixture.detectChanges();
+
+      dispatchMouseEvent(
+        optionEls[1],
+        'click',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        {shift: true},
+      );
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['orange']);
+
+      dispatchMouseEvent(
+        optionEls[3],
+        'click',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        {shift: true},
+      );
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['orange', 'banana', 'peach']);
+
+      dispatchMouseEvent(
+        optionEls[2],
+        'click',
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        {shift: true},
+      );
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['orange']);
     });
 
     it('should update on option activated via keyboard', async () => {
@@ -260,20 +318,19 @@ describe('CdkOption and CdkListbox', () => {
       expect(options[1].isSelected()).toBeFalse();
     });
 
-    // TODO(mmalerba): Fix this case.
-    //  Currently banana gets booted because the option isn't loaded yet,
-    //  but then when the option loads the value is already lost.
-    // it('should allow binding to listbox value', async () => {
-    //   const {testComponent, fixture, listbox, options} = await setupComponent(ListboxWithBoundValue);
-    //   expect(listbox.value).toEqual(['banana']);
-    //   expect(options[2].isSelected()).toBeTrue();
-    //
-    //   testComponent.value = ['orange'];
-    //   fixture.detectChanges();
-    //
-    //   expect(listbox.value).toEqual(['orange']);
-    //   expect(options[1].isSelected()).toBeTrue();
-    // });
+    it('should allow binding to listbox value', async () => {
+      const {testComponent, fixture, listbox, options} = await setupComponent(
+        ListboxWithBoundValue,
+      );
+      expect(listbox.value).toEqual(['banana']);
+      expect(options[2].isSelected()).toBeTrue();
+
+      testComponent.value = ['orange'];
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['orange']);
+      expect(options[1].isSelected()).toBeTrue();
+    });
   });
 
   describe('disabled state', () => {
@@ -387,6 +444,36 @@ describe('CdkOption and CdkListbox', () => {
 
       expect(options[2].isActive()).toBeTrue();
     });
+
+    it('should not skip disabled options when navigating with arrow keys when skipping is turned off', async () => {
+      const {testComponent, fixture, listbox, listboxEl, options} = await setupComponent(
+        ListboxWithOptions,
+      );
+      testComponent.navigationSkipsDisabled = false;
+      testComponent.isOrangeDisabled = true;
+      listbox.focus();
+      fixture.detectChanges();
+
+      expect(options[0].isActive()).toBeTrue();
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+
+      expect(options[1].isActive()).toBeTrue();
+    });
+
+    it('should not select disabled options with CONTROL + A', async () => {
+      const {testComponent, fixture, listbox, listboxEl} = await setupComponent(ListboxWithOptions);
+      testComponent.isMultiselectable = true;
+      testComponent.isOrangeDisabled = true;
+      fixture.detectChanges();
+
+      listbox.focus();
+      dispatchKeyboardEvent(listboxEl, 'keydown', A, undefined, {control: true});
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['apple', 'banana', 'peach']);
+    });
   });
 
   describe('compare with', () => {
@@ -482,7 +569,138 @@ describe('CdkOption and CdkListbox', () => {
       expect(fixture.componentInstance.changedOption?.id).toBe(options[1].id);
     });
 
-    // TODO(mmalerba): ensure all keys covered
+    it('should update active item on arrow key presses in horizontal mode', async () => {
+      const {testComponent, fixture, listbox, listboxEl, options} = await setupComponent(
+        ListboxWithOptions,
+      );
+      testComponent.orientation = 'horizontal';
+      fixture.detectChanges();
+
+      expect(listboxEl.getAttribute('aria-orientation')).toBe('horizontal');
+
+      listbox.focus();
+      dispatchKeyboardEvent(listboxEl, 'keydown', RIGHT_ARROW);
+      fixture.detectChanges();
+
+      expect(options[1].isActive()).toBeTrue();
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', LEFT_ARROW);
+      fixture.detectChanges();
+
+      expect(options[0].isActive()).toBeTrue();
+    });
+
+    it('should select and deselect all option with CONTROL + A', async () => {
+      const {testComponent, fixture, listbox, listboxEl} = await setupComponent(ListboxWithOptions);
+      testComponent.isMultiselectable = true;
+      fixture.detectChanges();
+
+      listbox.focus();
+      dispatchKeyboardEvent(listboxEl, 'keydown', A, undefined, {control: true});
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['apple', 'orange', 'banana', 'peach']);
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', A, undefined, {control: true});
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual([]);
+    });
+
+    it('should select and deselect range with CONTROL + SPACE', async () => {
+      const {testComponent, fixture, listbox, listboxEl} = await setupComponent(ListboxWithOptions);
+      testComponent.isMultiselectable = true;
+      fixture.detectChanges();
+
+      listbox.focus();
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      dispatchKeyboardEvent(listboxEl, 'keydown', SPACE, undefined, {shift: true});
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['orange']);
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      dispatchKeyboardEvent(listboxEl, 'keydown', SPACE, undefined, {shift: true});
+      fixture.detectChanges();
+
+      expect(listbox.value).toEqual(['orange', 'banana', 'peach']);
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', UP_ARROW);
+      dispatchKeyboardEvent(listboxEl, 'keydown', SPACE, undefined, {shift: true});
+
+      expect(listbox.value).toEqual(['orange']);
+    });
+
+    it('should select and deselect range with CONTROL + SHIFT + HOME', async () => {
+      const {testComponent, fixture, listbox, listboxEl} = await setupComponent(ListboxWithOptions);
+      testComponent.isMultiselectable = true;
+      listbox.focus();
+      fixture.detectChanges();
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      dispatchKeyboardEvent(listboxEl, 'keydown', HOME, undefined, {control: true, shift: true});
+
+      expect(listbox.value).toEqual(['apple', 'orange', 'banana']);
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      dispatchKeyboardEvent(listboxEl, 'keydown', HOME, undefined, {control: true, shift: true});
+
+      expect(listbox.value).toEqual([]);
+    });
+
+    it('should select and deselect range with CONTROL + SHIFT + END', async () => {
+      const {testComponent, fixture, listbox, listboxEl} = await setupComponent(ListboxWithOptions);
+      testComponent.isMultiselectable = true;
+      listbox.focus();
+      fixture.detectChanges();
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      dispatchKeyboardEvent(listboxEl, 'keydown', END, undefined, {control: true, shift: true});
+
+      expect(listbox.value).toEqual(['orange', 'banana', 'peach']);
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', UP_ARROW);
+      dispatchKeyboardEvent(listboxEl, 'keydown', UP_ARROW);
+      dispatchKeyboardEvent(listboxEl, 'keydown', END, undefined, {control: true, shift: true});
+
+      expect(listbox.value).toEqual([]);
+    });
+
+    it('should wrap navigation when wrapping is enabled', async () => {
+      const {fixture, listbox, listboxEl, options} = await setupComponent(ListboxWithOptions);
+      listbox.focus();
+      dispatchKeyboardEvent(listboxEl, 'keydown', END);
+      fixture.detectChanges();
+
+      expect(options[options.length - 1].isActive()).toBeTrue();
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+
+      expect(options[0].isActive()).toBeTrue();
+    });
+
+    it('should not wrap navigation when wrapping is not enabled', async () => {
+      const {testComponent, fixture, listbox, listboxEl, options} = await setupComponent(
+        ListboxWithOptions,
+      );
+      testComponent.navigationWraps = false;
+      fixture.detectChanges();
+
+      listbox.focus();
+      dispatchKeyboardEvent(listboxEl, 'keydown', END);
+      fixture.detectChanges();
+
+      expect(options[options.length - 1].isActive()).toBeTrue();
+
+      dispatchKeyboardEvent(listboxEl, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+
+      expect(options[options.length - 1].isActive()).toBeTrue();
+    });
   });
 
   describe('with roving tabindex', () => {
@@ -639,15 +857,15 @@ describe('CdkOption and CdkListbox', () => {
       subscription.unsubscribe();
     });
 
-    it('should have FormControl error multiple values selected in single-select listbox', async () => {
+    it('should have FormControl error when multiple values selected in single-select listbox', async () => {
       const {testComponent, fixture} = await setupComponent(ListboxWithFormControl, [
         ReactiveFormsModule,
       ]);
       testComponent.formControl.setValue(['orange', 'banana']);
       fixture.detectChanges();
 
-      expect(testComponent.formControl.hasError('cdkListboxMultipleValues')).toBeTrue();
-      expect(testComponent.formControl.hasError('cdkListboxInvalidValues')).toBeFalse();
+      expect(testComponent.formControl.hasError('cdkListboxUnexpectedMultipleValues')).toBeTrue();
+      expect(testComponent.formControl.hasError('cdkListboxUnexpectedOptionValues')).toBeFalse();
     });
 
     it('should have FormControl error when non-option value selected', async () => {
@@ -658,9 +876,9 @@ describe('CdkOption and CdkListbox', () => {
       testComponent.formControl.setValue(['orange', 'dragonfruit', 'mango']);
       fixture.detectChanges();
 
-      expect(testComponent.formControl.hasError('cdkListboxInvalidValues')).toBeTrue();
-      expect(testComponent.formControl.hasError('cdkListboxMultipleValues')).toBeFalse();
-      expect(testComponent.formControl.errors?.['cdkListboxInvalidValues']).toEqual({
+      expect(testComponent.formControl.hasError('cdkListboxUnexpectedOptionValues')).toBeTrue();
+      expect(testComponent.formControl.hasError('cdkListboxUnexpectedMultipleValues')).toBeFalse();
+      expect(testComponent.formControl.errors?.['cdkListboxUnexpectedOptionValues']).toEqual({
         'values': ['dragonfruit', 'mango'],
       });
     });
@@ -672,9 +890,9 @@ describe('CdkOption and CdkListbox', () => {
       testComponent.formControl.setValue(['dragonfruit', 'mango']);
       fixture.detectChanges();
 
-      expect(testComponent.formControl.hasError('cdkListboxInvalidValues')).toBeTrue();
-      expect(testComponent.formControl.hasError('cdkListboxMultipleValues')).toBeTrue();
-      expect(testComponent.formControl.errors?.['cdkListboxInvalidValues']).toEqual({
+      expect(testComponent.formControl.hasError('cdkListboxUnexpectedOptionValues')).toBeTrue();
+      expect(testComponent.formControl.hasError('cdkListboxUnexpectedMultipleValues')).toBeTrue();
+      expect(testComponent.formControl.errors?.['cdkListboxUnexpectedOptionValues']).toEqual({
         'values': ['dragonfruit', 'mango'],
       });
     });
@@ -689,30 +907,37 @@ describe('CdkOption and CdkListbox', () => {
          [cdkListboxMultiple]="isMultiselectable"
          [cdkListboxDisabled]="isListboxDisabled"
          [cdkListboxUseActiveDescendant]="isActiveDescendant"
+         [cdkListboxOrientation]="orientation"
+         [cdkListboxKeyboardNavigationWraps]="navigationWraps"
+         [cdkListboxKeyboardNavigationSkipsDisabled]="navigationSkipsDisabled"
          (cdkListboxValueChange)="onSelectionChange($event)">
       <div cdkOption="apple"
-          [cdkOptionDisabled]="isAppleDisabled"
-          [id]="appleId"
-          [tabindex]="appleTabindex">
+           [cdkOptionDisabled]="isAppleDisabled"
+           [id]="appleId"
+           [tabindex]="appleTabindex">
         Apple
       </div>
-      <div cdkOption="orange" [cdkOptionDisabled]="isOrangeDisabled">Orange</div>
+      <div cdkOption="orange" [cdkOptionDisabled]="isOrangeDisabled">Orange
+      </div>
       <div cdkOption="banana">Banana</div>
       <div cdkOption="peach">Peach</div>
     </div>
   `,
 })
 class ListboxWithOptions {
-  changedOption: CdkOption;
+  changedOption: CdkOption | null;
   isListboxDisabled = false;
   isAppleDisabled = false;
   isOrangeDisabled = false;
   isMultiselectable = false;
   isActiveDescendant = false;
+  navigationWraps = true;
+  navigationSkipsDisabled = true;
   listboxId: string;
   listboxTabindex: number;
   appleId: string;
   appleTabindex: number;
+  orientation: 'horizontal' | 'vertical' = 'vertical';
 
   onSelectionChange(event: ListboxValueChangeEvent<unknown>) {
     this.changedOption = event.option;
@@ -755,20 +980,20 @@ class ListboxWithFormControl {
 })
 class ListboxWithCustomTypeahead {}
 
-// @Component({
-//   template: `
-//     <div cdkListbox
-//          [cdkListboxValue]="value">
-//       <div cdkOption="apple">Apple</div>
-//       <div cdkOption="orange">Orange</div>
-//       <div cdkOption="banana">Banana</div>
-//       <div cdkOption="peach">Peach</div>
-//     </div>
-//   `,
-// })
-// class ListboxWithBoundValue {
-//   value = ['banana'];
-// }
+@Component({
+  template: `
+    <div cdkListbox
+         [cdkListboxValue]="value">
+      <div cdkOption="apple">Apple</div>
+      <div cdkOption="orange">Orange</div>
+      <div cdkOption="banana">Banana</div>
+      <div cdkOption="peach">Peach</div>
+    </div>
+  `,
+})
+class ListboxWithBoundValue {
+  value = ['banana'];
+}
 
 @Component({
   template: `
