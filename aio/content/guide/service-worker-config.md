@@ -328,7 +328,7 @@ To use this strategy set `strategy` to `freshness` and `timeout` to `0u` in `cac
 This essentially does the following:
 
 1.  Try to fetch from the network first.
-2.  If the network request does not complete immediately, ignore the cache age and fall back to the cached value.
+2.  If the network request does not complete immediately, that is after a timeout of 0&nbsp;ms, ignore the cache age and fall back to the cached value.
 3.  Once the network request completes, update the cache for future requests.
 4.  If the resource does not exist in the cache, wait for the network request anyway.
 
@@ -343,7 +343,7 @@ If not specified, the default value depends on the data group's configured strat
 | Strategies                             | Details |
 |:---                                    |:---     |
 | Groups with the `freshness` strategy   | The default value is `true` and the service worker caches opaque responses. These groups will request the data every time and only fall back to the cached response when offline or on a slow network. Therefore, it doesn't matter if the service worker caches an error response.                                    |
-| Groups with the `performance` strategy | The default value is `false` and the service work doen't cache opaque responses. These groups would continue to return a cached response until `maxAge` expires, even if the error was due to a temporary network or server issue. Therefore, it would be problematic for the service worker to cache an error response. |
+| Groups with the `performance` strategy | The default value is `false` and the service work doesn't cache opaque responses. These groups would continue to return a cached response until `maxAge` expires, even if the error was due to a temporary network or server issue. Therefore, it would be problematic for the service worker to cache an error response. |
 
 <div class="callout is-important">
 
@@ -373,8 +373,8 @@ A request is considered to be a navigation request if:
 *   Its [mode](https://developer.mozilla.org/docs/Web/API/Request/mode) is `navigation`
 *   It accepts a `text/html` response as determined by the value of the `Accept` header
 *   Its URL matches the following criteria:
-  *   The URL must not contain a file extension \(that is, a `.`\) in the last path segment
-  *   The URL must not contain `__`
+    *   The URL must not contain a file extension \(that is, a `.`\) in the last path segment
+    *   The URL must not contain `__`
 
 <div class="alert is-helpful">
 
@@ -431,12 +431,6 @@ The `freshness` strategy usually results in more requests sent to the server, wh
 It is recommended that you use the default performance strategy whenever possible.
 
 </div>
-
-## Handling errors when the server can't be reached
-
-All requests are passed through the service worker, unless the `ngsw-bypass` request header is added.
-
-When a server can't be reached and the request times out, the service worker returns a [504 Gateway Timeout](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504) status. A timeout can happen when either the client is disconnected or the server is offline. Unfortunately, the service worker can't identify which event caused the request to time out.
 
 <!-- links -->
 
