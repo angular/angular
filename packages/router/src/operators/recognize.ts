@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, Injector, Type} from '@angular/core';
+import {EnvironmentInjector, Type} from '@angular/core';
 import {MonoTypeOperatorFunction} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 
 import {Route} from '../models';
 import {recognize as recognizeFn} from '../recognize';
 import {NavigationTransition} from '../router';
-import {UrlSerializer, UrlTree} from '../url_tree';
+import {UrlSerializer} from '../url_tree';
 
 export function recognize(
     injector: EnvironmentInjector, rootComponentType: Type<any>|null, config: Route[],
