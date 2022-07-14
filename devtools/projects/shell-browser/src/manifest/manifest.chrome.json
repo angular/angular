@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "short_name": "Angular DevTools",
   "name": "Angular DevTools",
   "description": "Angular DevTools extends Chrome DevTools adding Angular specific debugging and profiling capabilities.",
