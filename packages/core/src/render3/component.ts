@@ -106,11 +106,11 @@ export interface ComponentMirror<C> {
   /**
    * The inputs of the component.
    */
-  get inputs(): ReadonlyArray<{propName: string, templateName: string}>;
+  get inputs(): ReadonlyArray<{readonly propName: string, readonly templateName: string}>;
   /**
    * The outputs of the component.
    */
-  get outputs(): ReadonlyArray<{propName: string, templateName: string}>;
+  get outputs(): ReadonlyArray<{readonly propName: string, readonly templateName: string}>;
   /**
    * Selector for all <ng-content> elements in the component.
    */

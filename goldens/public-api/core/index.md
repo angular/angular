@@ -236,14 +236,14 @@ export abstract class ComponentFactoryResolver {
 // @public
 export interface ComponentMirror<C> {
     get inputs(): ReadonlyArray<{
-        propName: string;
-        templateName: string;
+        readonly propName: string;
+        readonly templateName: string;
     }>;
     get isStandalone(): boolean;
     get ngContentSelectors(): ReadonlyArray<string>;
     get outputs(): ReadonlyArray<{
-        propName: string;
-        templateName: string;
+        readonly propName: string;
+        readonly templateName: string;
     }>;
     get selector(): string;
     get type(): Type<C>;
