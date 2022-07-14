@@ -128,12 +128,12 @@
 // shaped artifact where it meets the top and bottom borders.)
 .mat-mdc-form-field .mdc-notched-outline__notch {
   margin-left: -1px;
-  @include mat.private-clip-path(inset(-9em -9em -9em 1px));
+  @include mat.private-clip-path(inset(-9em -999em -9em 1px));
 
   [dir='rtl'] & {
     margin-left: 0;
     margin-right: -1px;
-    @include mat.private-clip-path(inset(-9em 1px -9em -9em));
+    @include mat.private-clip-path(inset(-9em 1px -9em -999em));
   }
 }
 
