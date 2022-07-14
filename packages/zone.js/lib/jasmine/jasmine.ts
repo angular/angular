@@ -38,10 +38,6 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
   if (!ProxyZoneSpec) throw new Error('Missing: ProxyZoneSpec');
 
   const ambientZone = Zone.current;
-  // Create a synchronous-only zone in which to run `describe` blocks in order to raise an
-  // error if any asynchronous operations are attempted inside of a `describe` but outside of
-  // a `beforeEach` or `it`.
-  const syncZone = ambientZone.fork(new SyncTestZoneSpec('jasmine.describe'));
 
   const symbol = Zone.__symbol__;
 
@@ -100,7 +96,8 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
   ['describe', 'xdescribe', 'fdescribe'].forEach(methodName => {
     let originalJasmineFn: Function = jasmineEnv[methodName];
     jasmineEnv[methodName] = function(description: string, specDefinitions: Function) {
-      return originalJasmineFn.call(this, description, wrapDescribeInZone(specDefinitions));
+      return originalJasmineFn.call(
+          this, description, wrapDescribeInZone(description, specDefinitions));
     };
   });
   ['it', 'xit', 'fit'].forEach(methodName => {
@@ -198,8 +195,11 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
    * Gets a function wrapping the body of a Jasmine `describe` block to execute in a
    * synchronous-only zone.
    */
-  function wrapDescribeInZone(describeBody: Function): Function {
+  function wrapDescribeInZone(description: string, describeBody: Function): Function {
     return function(this: unknown) {
+      // Create a synchronous-only zone in which to run `describe` blocks in order to raise an
+      // error if any asynchronous operations are attempted inside of a `describe`.
+      const syncZone = ambientZone.fork(new SyncTestZoneSpec(`jasmine.describe#${description}`));
       return syncZone.run(describeBody, this, (arguments as any) as any[]);
     };
   }
@@ -332,6 +332,10 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
 
       if (!isChildOfAmbientZone) throw new Error('Unexpected Zone: ' + Zone.current.name);
 
+
+      Error.stackTraceLimit = Infinity;
+      let context = new Error().stack;
+
       // This is the zone which will be used for running individual tests.
       // It will be a proxy zone, so that the tests function can retroactively install
       // different zones.
@@ -345,6 +349,7 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
       this.testProxyZoneSpec = new ProxyZoneSpec();
       this.testProxyZone = ambientZone.fork(this.testProxyZoneSpec);
       if (!Zone.currentTask) {
+        console.error('Scheduling', context, Zone.current.name)
         // if we are not running in a task then if someone would register a
         // element.addEventListener and then calling element.click() the
         // addEventListener callback would think that it is the top most task and would
