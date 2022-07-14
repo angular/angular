@@ -22,7 +22,9 @@ describe('SyncTestZoneSpec', () => {
     syncTestZone.run(() => {
       expect(() => {
         Promise.resolve().then(function() {});
-      }).toThrow(new Error('Cannot call Promise.then from within a sync test.'));
+      })
+          .toThrow(new Error(
+              'Cannot call Promise.then from within a sync test (syncTestZone for name).'));
     });
   });
 
@@ -30,7 +32,9 @@ describe('SyncTestZoneSpec', () => {
     syncTestZone.run(() => {
       expect(() => {
         setTimeout(() => {}, 100);
-      }).toThrow(new Error('Cannot call setTimeout from within a sync test.'));
+      })
+          .toThrow(
+              new Error('Cannot call setTimeout from within a sync test (syncTestZone for name).'));
     });
   });
 

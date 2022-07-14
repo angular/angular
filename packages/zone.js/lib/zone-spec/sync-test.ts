@@ -21,7 +21,7 @@ class SyncTestZoneSpec implements ZoneSpec {
     switch (task.type) {
       case 'microTask':
       case 'macroTask':
-        throw new Error(`Cannot call ${task.source} from within a sync test.`);
+        throw new Error(`Cannot call ${task.source} from within a sync test (${this.name}).`);
       case 'eventTask':
         task = delegate.scheduleTask(target, task);
         break;
