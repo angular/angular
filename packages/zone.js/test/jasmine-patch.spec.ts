@@ -38,7 +38,7 @@ ifEnvSupports(supportJasmineSpec, () => {
 
     it('should throw on async in describe', () => {
       expect(throwOnAsync).toBe(true);
-      expect(syncZone.name).toEqual('syncTestZone for jasmine.describe');
+      expect(syncZone.name).toEqual('syncTestZone for jasmine.describe#jasmine');
       itZone = Zone.current;
     });
 
