@@ -40,8 +40,8 @@ sass_library(
         "//src/material-experimental/mdc-snack-bar:mdc_snack_bar_scss_lib",
         "//src/material-experimental/mdc-table:mdc_table_scss_lib",
         "//src/material-experimental/mdc-tabs:mdc_tabs_scss_lib",
-        "//src/material-experimental/mdc-tooltip:mdc_tooltip_scss_lib",
         "//src/material/card:card_scss_lib",
+        "//src/material/tooltip:tooltip_scss_lib",
     ],
 )
 

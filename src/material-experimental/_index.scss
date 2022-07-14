@@ -64,8 +64,6 @@
   mdc-table-density, mdc-table-theme;
 @forward './mdc-tabs/tabs-theme' as mdc-tabs-* show mdc-tabs-color, mdc-tabs-typography,
   mdc-tabs-density, mdc-tabs-theme;
-@forward './mdc-tooltip/tooltip-theme' as mdc-tooltip-* show mdc-tooltip-color,
-  mdc-tooltip-typography, mdc-tooltip-density, mdc-tooltip-theme;
 
 // Additional public APIs for individual components
 @forward './mdc-dialog/dialog-legacy-padding' as mdc-dialog-* show mdc-dialog-legacy-padding;

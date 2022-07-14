@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
-import {TooltipPosition, MatTooltipModule} from '@angular/material-experimental/mdc-tooltip';
+import {TooltipPosition, MatTooltipModule} from '@angular/material/tooltip';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';

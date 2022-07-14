@@ -1,0 +1,5 @@
+<div #tooltip
+     class="mat-tooltip"
+     (animationend)="_handleAnimationEnd($event)"
+     [ngClass]="tooltipClass"
+     [class.mat-tooltip-handset]="(_isHandset | async)?.matches">{{message}}</div>

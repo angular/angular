@@ -33,7 +33,6 @@
 @use '../../../sort/sort-theme';
 @use '../../../tabs/tabs-theme';
 @use '../../../toolbar/toolbar-theme';
-@use '../../../tooltip/tooltip-theme';
 @use '../../../tree/tree-theme';
 @use '../../../snack-bar/snack-bar-theme';
 @use '../../../form-field/form-field-theme';
@@ -97,7 +96,6 @@
   @include sort-theme.theme($css-var-theme);
   @include tabs-theme.theme($css-var-theme);
   @include toolbar-theme.theme($css-var-theme);
-  @include tooltip-theme.theme($css-var-theme);
   @include tree-theme.theme($css-var-theme);
   @include snack-bar-theme.theme($css-var-theme);
   @include legacy-all-theme.all-legacy-component-themes($css-var-theme);

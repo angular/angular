@@ -8,10 +8,8 @@ import { AfterViewInit } from '@angular/core';
 import { AnimationTriggerMetadata } from '@angular/animations';
 import { AriaDescriber } from '@angular/cdk/a11y';
 import { BooleanInput } from '@angular/cdk/coercion';
-import { BreakpointObserver } from '@angular/cdk/layout';
-import { BreakpointState } from '@angular/cdk/layout';
 import { ChangeDetectorRef } from '@angular/core';
-import { ComponentType } from '@angular/cdk/portal';
+import { ComponentType } from '@angular/cdk/overlay';
 import { ConnectedPosition } from '@angular/cdk/overlay';
 import { Directionality } from '@angular/cdk/bidi';
 import { ElementRef } from '@angular/core';
@@ -32,7 +30,7 @@ import { Overlay } from '@angular/cdk/overlay';
 import { OverlayConnectionPosition } from '@angular/cdk/overlay';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Platform } from '@angular/cdk/platform';
-import { ScrollDispatcher } from '@angular/cdk/scrolling';
+import { ScrollDispatcher } from '@angular/cdk/overlay';
 import { ScrollStrategy } from '@angular/cdk/overlay';
 import { ViewContainerRef } from '@angular/core';
 
@@ -61,6 +59,10 @@ export const MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER: {
 // @public
 export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
     constructor(overlay: Overlay, elementRef: ElementRef<HTMLElement>, scrollDispatcher: ScrollDispatcher, viewContainerRef: ViewContainerRef, ngZone: NgZone, platform: Platform, ariaDescriber: AriaDescriber, focusMonitor: FocusMonitor, scrollStrategy: any, dir: Directionality, defaultOptions: MatTooltipDefaultOptions, _document: any);
+    // (undocumented)
+    protected _addOffset(position: ConnectedPosition): ConnectedPosition;
+    // (undocumented)
+    protected readonly _cssClassPrefix = "mat-mdc";
     // (undocumented)
     protected readonly _tooltipComponent: typeof TooltipComponent;
     // (undocumented)
@@ -152,17 +154,19 @@ export class MatTooltipModule {
 export const SCROLL_THROTTLE_MS = 20;
 
 // @public @deprecated
-export const TOOLTIP_PANEL_CLASS = "mat-tooltip-panel";
+export const TOOLTIP_PANEL_CLASS = "mat-mdc-tooltip-panel";
 
 // @public
 export class TooltipComponent extends _TooltipComponentBase {
-    constructor(changeDetectorRef: ChangeDetectorRef, _breakpointObserver: BreakpointObserver, animationMode?: string);
+    constructor(changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef<HTMLElement>, animationMode?: string);
     // (undocumented)
     _hideAnimation: string;
-    _isHandset: Observable<BreakpointState>;
+    // (undocumented)
+    _isMultiline: boolean;
+    // (undocumented)
+    protected _onShow(): void;
     // (undocumented)
     _showAnimation: string;
-    // (undocumented)
     _tooltip: ElementRef<HTMLElement>;
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<TooltipComponent, "mat-tooltip-component", never, {}, {}, never, never, false>;

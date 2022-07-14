@@ -7,6 +7,7 @@
 import { AsyncFactoryFn } from '@angular/cdk/testing';
 import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
+import { ComponentHarnessConstructor } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 import { TestElement } from '@angular/cdk/testing';
 
@@ -22,7 +23,7 @@ export class MatTooltipHarness extends _MatTooltipHarnessBase {
     protected _optionalPanel: AsyncFactoryFn<TestElement | null>;
     // (undocumented)
     protected _showAnimationName: string;
-    static with(options?: TooltipHarnessFilters): HarnessPredicate<MatTooltipHarness>;
+    static with<T extends MatTooltipHarness>(this: ComponentHarnessConstructor<T>, options?: TooltipHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public (undocumented)

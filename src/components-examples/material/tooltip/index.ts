@@ -6,7 +6,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatLegacyTooltipModule} from '@angular/material/legacy-tooltip';
 import {TooltipAutoHideExample} from './tooltip-auto-hide/tooltip-auto-hide-example';
 import {TooltipCustomClassExample} from './tooltip-custom-class/tooltip-custom-class-example';
 import {TooltipDelayExample} from './tooltip-delay/tooltip-delay-example';
@@ -51,7 +51,7 @@ const EXAMPLES = [
     MatCheckboxModule,
     MatInputModule,
     MatSelectModule,
-    MatTooltipModule,
+    MatLegacyTooltipModule,
     ReactiveFormsModule,
     ScrollingModule, // Required for the auto-scrolling example
   ],

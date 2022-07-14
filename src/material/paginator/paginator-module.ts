@@ -11,12 +11,18 @@ import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSelectModule} from '@angular/material/select';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatLegacyTooltipModule} from '@angular/material/legacy-tooltip';
 import {MatPaginator} from './paginator';
 import {MAT_PAGINATOR_INTL_PROVIDER} from './paginator-intl';
 
 @NgModule({
-  imports: [CommonModule, MatButtonModule, MatSelectModule, MatTooltipModule, MatCommonModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatLegacyTooltipModule,
+    MatCommonModule,
+  ],
   exports: [MatPaginator],
   declarations: [MatPaginator],
   providers: [MAT_PAGINATOR_INTL_PROVIDER],

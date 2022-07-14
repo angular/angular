@@ -14,7 +14,7 @@ ng_module(
         "//src/material-experimental/mdc-form-field",
         "//src/material-experimental/mdc-input",
         "//src/material-experimental/mdc-select",
-        "//src/material-experimental/mdc-tooltip",
+        "//src/material/tooltip",
         "@npm//@angular/common",
         "@npm//@angular/forms",
     ],

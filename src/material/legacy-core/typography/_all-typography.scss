@@ -1,6 +1,7 @@
 @use '../../core/typography/typography';
 @use '../../core/theming/theming';
 @use '../../legacy-card/card-theme';
+@use '../../legacy-tooltip/tooltip-theme';
 
 // Includes all of the typographic styles.
 @mixin all-legacy-component-typographies($config-or-theme: null) {
@@ -19,6 +20,7 @@
   // would then load `all-theme` again. This ultimately results a circular dependency.
 
   @include card-theme.typography($config);
+  @include tooltip-theme.typography($config);
 }
 
 // @deprecated Use `all-legacy-component-typographies`.

@@ -36,6 +36,7 @@
 /src/material/tabs/**                              @andrewseguin
 /src/material/testing/**                           @andrewseguin
 /src/material/toolbar/**                           @devversion
+/src/material/legacy-tooltip/**                    @andrewseguin
 /src/material/tooltip/**                           @andrewseguin
 /src/material/tree/**                              @jelbourn @andrewseguin
 
@@ -345,7 +346,7 @@
 /tools/public_api_guard/material/table**           @andrewseguin
 /tools/public_api_guard/material/tabs**            @andrewseguin
 /tools/public_api_guard/material/toolbar**         @devversion
-/tools/public_api_guard/material/tooltip**         @andrewseguin
+/tools/public_api_guard/material/legacy-tooltip**  @andrewseguin
 /tools/public_api_guard/material/tree**            @jelbourn @andrewseguin
 /tools/public_api_guard/material/material**        @andrewseguin
 /tools/public_api_guard/google-maps/**             @crisbeto

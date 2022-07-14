@@ -5,7 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import {AriaDescriber, FocusMonitor} from '@angular/cdk/a11y';
+import {Directionality} from '@angular/cdk/bidi';
+import {BreakpointObserver, Breakpoints, BreakpointState} from '@angular/cdk/layout';
+import {Overlay} from '@angular/cdk/overlay';
+import {Platform} from '@angular/cdk/platform';
+import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -20,26 +25,15 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/common';
-import {Platform} from '@angular/cdk/platform';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {AriaDescriber, FocusMonitor} from '@angular/cdk/a11y';
-import {Directionality} from '@angular/cdk/bidi';
-import {ConnectedPosition, Overlay, ScrollDispatcher} from '@angular/cdk/overlay';
+import {Observable} from 'rxjs';
 import {
-  MatTooltipDefaultOptions,
-  MAT_TOOLTIP_DEFAULT_OPTIONS,
-  MAT_TOOLTIP_SCROLL_STRATEGY,
   _MatTooltipBase,
   _TooltipComponentBase,
+  MAT_TOOLTIP_DEFAULT_OPTIONS,
+  MAT_TOOLTIP_SCROLL_STRATEGY,
+  MatTooltipDefaultOptions,
 } from '@angular/material/tooltip';
-import {numbers} from '@material/tooltip';
-
-/**
- * CSS class that will be attached to the overlay panel.
- * @deprecated
- * @breaking-change 13.0.0 remove this variable
- */
-export const TOOLTIP_PANEL_CLASS = 'mat-mdc-tooltip-panel';
 
 /**
  * Directive that attaches a material design tooltip to the host element. Animates the showing and
@@ -51,12 +45,11 @@ export const TOOLTIP_PANEL_CLASS = 'mat-mdc-tooltip-panel';
   selector: '[matTooltip]',
   exportAs: 'matTooltip',
   host: {
-    'class': 'mat-mdc-tooltip-trigger',
+    'class': 'mat-tooltip-trigger',
   },
 })
-export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
-  protected override readonly _tooltipComponent = TooltipComponent;
-  protected override readonly _cssClassPrefix = 'mat-mdc';
+export class MatLegacyTooltip extends _MatTooltipBase<LegacyTooltipComponent> {
+  protected readonly _tooltipComponent = LegacyTooltipComponent;
 
   constructor(
     overlay: Overlay,
@@ -86,24 +79,6 @@ export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
       defaultOptions,
       _document,
     );
-    this._viewportMargin = numbers.MIN_VIEWPORT_TOOLTIP_THRESHOLD;
-  }
-
-  protected override _addOffset(position: ConnectedPosition): ConnectedPosition {
-    const offset = numbers.UNBOUNDED_ANCHOR_GAP;
-    const isLtr = !this._dir || this._dir.value == 'ltr';
-
-    if (position.originY === 'top') {
-      position.offsetY = -offset;
-    } else if (position.originY === 'bottom') {
-      position.offsetY = offset;
-    } else if (position.originX === 'start') {
-      position.offsetX = isLtr ? -offset : offset;
-    } else if (position.originX === 'end') {
-      position.offsetX = isLtr ? offset : -offset;
-    }
-
-    return position;
   }
 }
 
@@ -125,36 +100,24 @@ export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
     'aria-hidden': 'true',
   },
 })
-export class TooltipComponent extends _TooltipComponentBase {
-  /* Whether the tooltip text overflows to multiple lines */
-  _isMultiline = false;
+export class LegacyTooltipComponent extends _TooltipComponentBase {
+  /** Stream that emits whether the user has a handset-sized display.  */
+  _isHandset: Observable<BreakpointState> = this._breakpointObserver.observe(Breakpoints.Handset);
+  _showAnimation = 'mat-tooltip-show';
+  _hideAnimation = 'mat-tooltip-hide';
 
-  /** Reference to the internal tooltip element. */
   @ViewChild('tooltip', {
     // Use a static query here since we interact directly with
     // the DOM which can happen before `ngAfterViewInit`.
     static: true,
   })
   _tooltip: ElementRef<HTMLElement>;
-  _showAnimation = 'mat-mdc-tooltip-show';
-  _hideAnimation = 'mat-mdc-tooltip-hide';
 
   constructor(
     changeDetectorRef: ChangeDetectorRef,
-    private _elementRef: ElementRef<HTMLElement>,
+    private _breakpointObserver: BreakpointObserver,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
   ) {
     super(changeDetectorRef, animationMode);
-  }
-
-  protected override _onShow(): void {
-    this._isMultiline = this._isTooltipMultiline();
-    this._markForCheck();
-  }
-
-  /** Whether the tooltip text has overflown to the next line */
-  private _isTooltipMultiline() {
-    const rect = this._elementRef.nativeElement.getBoundingClientRect();
-    return rect.height > numbers.MIN_HEIGHT && rect.width >= numbers.MAX_WIDTH;
   }
 }

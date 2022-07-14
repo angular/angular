@@ -1,9 +1,2 @@
-@forward '../core/theming/theming.import';
-@forward '../core/typography/typography-utils.import';
-@forward 'tooltip-theme' hide $font-size, $handset-font-size, $handset-target-height,
-$handset-vertical-padding, $target-height, $vertical-padding, color, theme, typography;
-@forward 'tooltip-theme' as mat-tooltip-* hide mat-tooltip-density;
+@forward 'tooltip-theme' as mat-mdc-tooltip-*;
 
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';

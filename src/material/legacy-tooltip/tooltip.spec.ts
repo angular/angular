@@ -34,8 +34,8 @@ import {By} from '@angular/platform-browser';
 import {Subject} from 'rxjs';
 import {
   MAT_TOOLTIP_DEFAULT_OPTIONS,
-  MatTooltip,
-  MatTooltipModule,
+  MatLegacyTooltip,
+  MatLegacyTooltipModule,
   SCROLL_THROTTLE_MS,
   TooltipPosition,
   TooltipTouchGestures,
@@ -44,7 +44,7 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 const initialTooltipMessage = 'initial tooltip message';
 
-describe('MDC-based MatTooltip', () => {
+describe('MatTooltip', () => {
   let overlayContainerElement: HTMLElement;
   let dir: {value: Direction; change: Subject<Direction>};
   let platform: Platform;
@@ -52,7 +52,7 @@ describe('MDC-based MatTooltip', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [MatTooltipModule, OverlayModule],
+      imports: [MatLegacyTooltipModule, OverlayModule],
       declarations: [
         BasicTooltipDemo,
         ScrollableTooltipDemo,
@@ -88,14 +88,14 @@ describe('MDC-based MatTooltip', () => {
     let fixture: ComponentFixture<BasicTooltipDemo>;
     let buttonDebugElement: DebugElement;
     let buttonElement: HTMLButtonElement;
-    let tooltipDirective: MatTooltip;
+    let tooltipDirective: MatLegacyTooltip;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(BasicTooltipDemo);
       fixture.detectChanges();
       buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
       buttonElement = <HTMLButtonElement>buttonDebugElement.nativeElement;
-      tooltipDirective = buttonDebugElement.injector.get<MatTooltip>(MatTooltip);
+      tooltipDirective = buttonDebugElement.injector.get<MatLegacyTooltip>(MatLegacyTooltip);
     });
 
     it('should show and hide the tooltip', fakeAsync(() => {
@@ -111,11 +111,9 @@ describe('MDC-based MatTooltip', () => {
       finishCurrentTooltipAnimation(overlayContainerElement, true);
 
       // Make sure tooltip is shown to the user and animation has finished.
-      const tooltipElement = overlayContainerElement.querySelector(
-        '.mat-mdc-tooltip',
-      ) as HTMLElement;
+      const tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
       expect(tooltipElement instanceof HTMLElement).toBe(true);
-      expect(tooltipElement.classList).toContain('mat-mdc-tooltip-show');
+      expect(tooltipElement.classList).toContain('mat-tooltip-show');
 
       expect(overlayContainerElement.textContent).toContain(initialTooltipMessage);
 
@@ -171,7 +169,7 @@ describe('MDC-based MatTooltip', () => {
     it('should be able to override the default show and hide delays', fakeAsync(() => {
       TestBed.resetTestingModule()
         .configureTestingModule({
-          imports: [MatTooltipModule, OverlayModule],
+          imports: [MatLegacyTooltipModule, OverlayModule],
           declarations: [BasicTooltipDemo],
           providers: [
             {
@@ -186,7 +184,7 @@ describe('MDC-based MatTooltip', () => {
       fixture.detectChanges();
       tooltipDirective = fixture.debugElement
         .query(By.css('button'))!
-        .injector.get<MatTooltip>(MatTooltip);
+        .injector.get<MatLegacyTooltip>(MatLegacyTooltip);
 
       tooltipDirective.show();
       fixture.detectChanges();
@@ -208,7 +206,7 @@ describe('MDC-based MatTooltip', () => {
     it('should be able to override the default position', fakeAsync(() => {
       TestBed.resetTestingModule()
         .configureTestingModule({
-          imports: [MatTooltipModule, OverlayModule],
+          imports: [MatLegacyTooltipModule, OverlayModule],
           declarations: [TooltipDemoWithoutPositionBinding],
           providers: [
             {
@@ -223,7 +221,7 @@ describe('MDC-based MatTooltip', () => {
       newFixture.detectChanges();
       tooltipDirective = newFixture.debugElement
         .query(By.css('button'))!
-        .injector.get<MatTooltip>(MatTooltip);
+        .injector.get<MatLegacyTooltip>(MatLegacyTooltip);
 
       tooltipDirective.show();
       newFixture.detectChanges();
@@ -237,7 +235,7 @@ describe('MDC-based MatTooltip', () => {
     it('should be able to disable tooltip interactivity', fakeAsync(() => {
       TestBed.resetTestingModule()
         .configureTestingModule({
-          imports: [MatTooltipModule, OverlayModule, NoopAnimationsModule],
+          imports: [MatLegacyTooltipModule, OverlayModule, NoopAnimationsModule],
           declarations: [TooltipDemoWithoutPositionBinding],
           providers: [
             {
@@ -252,14 +250,14 @@ describe('MDC-based MatTooltip', () => {
       newFixture.detectChanges();
       tooltipDirective = newFixture.debugElement
         .query(By.css('button'))!
-        .injector.get<MatTooltip>(MatTooltip);
+        .injector.get<MatLegacyTooltip>(MatLegacyTooltip);
 
       tooltipDirective.show();
       newFixture.detectChanges();
       tick();
 
       expect(tooltipDirective._overlayRef?.overlayElement.classList).toContain(
-        'mat-mdc-tooltip-panel-non-interactive',
+        'mat-tooltip-panel-non-interactive',
       );
     }));
 
@@ -273,7 +271,7 @@ describe('MDC-based MatTooltip', () => {
       expect(!!overlayRef).toBeTruthy();
       expect(overlayRef!.overlayElement.classList)
         .withContext('Expected the overlay panel element to have the tooltip panel class set.')
-        .toContain('mat-mdc-tooltip-panel');
+        .toContain('mat-tooltip-panel');
     }));
 
     it('should not show if disabled', fakeAsync(() => {
@@ -448,22 +446,20 @@ describe('MDC-based MatTooltip', () => {
       fixture.detectChanges();
 
       // Make sure classes aren't prematurely added
-      let tooltipElement = overlayContainerElement.querySelector('.mat-mdc-tooltip') as HTMLElement;
-      expect(tooltipElement.classList).not.toContain(
-        'custom-one',
-        'Expected to not have the class before enabling matTooltipClass',
-      );
-      expect(tooltipElement.classList).not.toContain(
-        'custom-two',
-        'Expected to not have the class before enabling matTooltipClass',
-      );
+      let tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
+      expect(tooltipElement.classList)
+        .not.withContext('Expected to not have the class before enabling matTooltipClass')
+        .toContain('custom-one');
+      expect(tooltipElement.classList)
+        .not.withContext('Expected to not have the class before enabling matTooltipClass')
+        .toContain('custom-two');
 
       // Enable the classes via ngClass syntax
       fixture.componentInstance.showTooltipClass = true;
       fixture.detectChanges();
 
       // Make sure classes are correctly added
-      tooltipElement = overlayContainerElement.querySelector('.mat-mdc-tooltip') as HTMLElement;
+      tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
       expect(tooltipElement.classList)
         .withContext('Expected to have the class after enabling matTooltipClass')
         .toContain('custom-one');
@@ -691,7 +687,6 @@ describe('MDC-based MatTooltip', () => {
       tooltipDirective.show();
       tick(0);
       fixture.detectChanges();
-
       document.body.click();
       fixture.detectChanges();
       tick(500);
@@ -764,7 +759,7 @@ describe('MDC-based MatTooltip', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlayContainerElement.querySelector('.mat-mdc-tooltip')).toBeNull();
+      expect(overlayContainerElement.querySelector('.mat-tooltip')).toBeNull();
     }));
 
     it('should not show the tooltip on mouse focus', fakeAsync(() => {
@@ -776,7 +771,7 @@ describe('MDC-based MatTooltip', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlayContainerElement.querySelector('.mat-mdc-tooltip')).toBeNull();
+      expect(overlayContainerElement.querySelector('.mat-tooltip')).toBeNull();
     }));
 
     it('should not show the tooltip on touch focus', fakeAsync(() => {
@@ -788,7 +783,7 @@ describe('MDC-based MatTooltip', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlayContainerElement.querySelector('.mat-mdc-tooltip')).toBeNull();
+      expect(overlayContainerElement.querySelector('.mat-tooltip')).toBeNull();
     }));
 
     it('should not hide the tooltip when calling `show` twice in a row', fakeAsync(() => {
@@ -821,19 +816,19 @@ describe('MDC-based MatTooltip', () => {
       setPositionAndShow('below');
 
       const classList = tooltipDirective._overlayRef!.overlayElement.classList;
-      expect(classList).toContain('mat-mdc-tooltip-panel-below');
+      expect(classList).toContain('mat-tooltip-panel-below');
 
       setPositionAndShow('above');
-      expect(classList).not.toContain('mat-mdc-tooltip-panel-below');
-      expect(classList).toContain('mat-mdc-tooltip-panel-above');
+      expect(classList).not.toContain('mat-tooltip-panel-below');
+      expect(classList).toContain('mat-tooltip-panel-above');
 
       setPositionAndShow('left');
-      expect(classList).not.toContain('mat-mdc-tooltip-panel-above');
-      expect(classList).toContain('mat-mdc-tooltip-panel-left');
+      expect(classList).not.toContain('mat-tooltip-panel-above');
+      expect(classList).toContain('mat-tooltip-panel-left');
 
       setPositionAndShow('right');
-      expect(classList).not.toContain('mat-mdc-tooltip-panel-left');
-      expect(classList).toContain('mat-mdc-tooltip-panel-right');
+      expect(classList).not.toContain('mat-tooltip-panel-left');
+      expect(classList).toContain('mat-tooltip-panel-right');
 
       function setPositionAndShow(position: TooltipPosition) {
         tooltipDirective.hide(0);
@@ -864,10 +859,10 @@ describe('MDC-based MatTooltip', () => {
       tick(500);
 
       const classList = tooltipDirective._overlayRef!.overlayElement.classList;
-      expect(classList).not.toContain('mat-mdc-tooltip-panel-after');
-      expect(classList).not.toContain('mat-mdc-tooltip-panel-before');
-      expect(classList).not.toContain('mat-mdc-tooltip-panel-left');
-      expect(classList).toContain('mat-mdc-tooltip-panel-right');
+      expect(classList).not.toContain('mat-tooltip-panel-after');
+      expect(classList).not.toContain('mat-tooltip-panel-before');
+      expect(classList).not.toContain('mat-tooltip-panel-left');
+      expect(classList).toContain('mat-tooltip-panel-right');
 
       tooltipDirective.hide(0);
       fixture.detectChanges();
@@ -879,10 +874,10 @@ describe('MDC-based MatTooltip', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(classList).not.toContain('mat-mdc-tooltip-panel-after');
-      expect(classList).not.toContain('mat-mdc-tooltip-panel-before');
-      expect(classList).not.toContain('mat-mdc-tooltip-panel-right');
-      expect(classList).toContain('mat-mdc-tooltip-panel-left');
+      expect(classList).not.toContain('mat-tooltip-panel-after');
+      expect(classList).not.toContain('mat-tooltip-panel-before');
+      expect(classList).not.toContain('mat-tooltip-panel-right');
+      expect(classList).toContain('mat-tooltip-panel-left');
     }));
 
     it('should clear the show timeout on destroy', fakeAsync(() => {
@@ -910,25 +905,6 @@ describe('MDC-based MatTooltip', () => {
       // Note that we aren't asserting anything, but `fakeAsync` will
       // throw if we have any timers by the end of the test.
       fixture.destroy();
-    }));
-
-    it('should set the multiline class on tooltips with messages that overflow', fakeAsync(() => {
-      fixture.componentInstance.message =
-        'This is a very long message that should cause the' +
-        'tooltip message body to overflow onto a new line.';
-      tooltipDirective.show();
-      fixture.detectChanges();
-      tick();
-
-      // Need to detect changes again to wait for the multiline class to be applied.
-      fixture.detectChanges();
-
-      const tooltipElement = overlayContainerElement.querySelector(
-        '.mat-mdc-tooltip',
-      ) as HTMLElement;
-
-      expect(tooltipElement.classList).toContain('mdc-tooltip--multiline');
-      expect(tooltipDirective._tooltipInstance?._isMultiline).toBeTrue();
     }));
 
     it('should hide on mouseleave on the trigger', fakeAsync(() => {
@@ -959,9 +935,7 @@ describe('MDC-based MatTooltip', () => {
       tick(0);
       expect(tooltipDirective._isTooltipVisible()).toBe(true);
 
-      const tooltipElement = overlayContainerElement.querySelector(
-        '.mat-mdc-tooltip',
-      ) as HTMLElement;
+      const tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
       const event = createMouseEvent('mouseleave');
       Object.defineProperty(event, 'relatedTarget', {value: tooltipElement});
 
@@ -982,9 +956,7 @@ describe('MDC-based MatTooltip', () => {
       tick(0);
       expect(tooltipDirective._isTooltipVisible()).toBe(true);
 
-      const tooltipElement = overlayContainerElement.querySelector(
-        '.mat-mdc-tooltip',
-      ) as HTMLElement;
+      const tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
       dispatchMouseEvent(tooltipElement, 'mouseleave');
       fixture.detectChanges();
       tick(0);
@@ -1002,9 +974,7 @@ describe('MDC-based MatTooltip', () => {
       tick(0);
       expect(tooltipDirective._isTooltipVisible()).toBe(true);
 
-      const tooltipElement = overlayContainerElement.querySelector(
-        '.mat-mdc-tooltip',
-      ) as HTMLElement;
+      const tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
       const event = createMouseEvent('mouseleave');
       Object.defineProperty(event, 'relatedTarget', {
         value: fixture.componentInstance.button.nativeElement,
@@ -1019,12 +989,14 @@ describe('MDC-based MatTooltip', () => {
 
   describe('fallback positions', () => {
     let fixture: ComponentFixture<BasicTooltipDemo>;
-    let tooltip: MatTooltip;
+    let tooltip: MatLegacyTooltip;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(BasicTooltipDemo);
       fixture.detectChanges();
-      tooltip = fixture.debugElement.query(By.css('button'))!.injector.get<MatTooltip>(MatTooltip);
+      tooltip = fixture.debugElement
+        .query(By.css('button'))!
+        .injector.get<MatLegacyTooltip>(MatLegacyTooltip);
     });
 
     it('should set a fallback origin position by inverting the main origin position', () => {
@@ -1067,13 +1039,13 @@ describe('MDC-based MatTooltip', () => {
   describe('scrollable usage', () => {
     let fixture: ComponentFixture<ScrollableTooltipDemo>;
     let buttonDebugElement: DebugElement;
-    let tooltipDirective: MatTooltip;
+    let tooltipDirective: MatLegacyTooltip;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(ScrollableTooltipDemo);
       fixture.detectChanges();
       buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
-      tooltipDirective = buttonDebugElement.injector.get<MatTooltip>(MatTooltip);
+      tooltipDirective = buttonDebugElement.injector.get<MatLegacyTooltip>(MatLegacyTooltip);
     });
 
     it('should hide tooltip if clipped after changing positions', fakeAsync(() => {
@@ -1130,14 +1102,14 @@ describe('MDC-based MatTooltip', () => {
     let fixture: ComponentFixture<OnPushTooltipDemo>;
     let buttonDebugElement: DebugElement;
     let buttonElement: HTMLButtonElement;
-    let tooltipDirective: MatTooltip;
+    let tooltipDirective: MatLegacyTooltip;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(OnPushTooltipDemo);
       fixture.detectChanges();
       buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
       buttonElement = <HTMLButtonElement>buttonDebugElement.nativeElement;
-      tooltipDirective = buttonDebugElement.injector.get<MatTooltip>(MatTooltip);
+      tooltipDirective = buttonDebugElement.injector.get<MatLegacyTooltip>(MatLegacyTooltip);
     });
 
     it('should show and hide the tooltip', fakeAsync(() => {
@@ -1153,11 +1125,9 @@ describe('MDC-based MatTooltip', () => {
       finishCurrentTooltipAnimation(overlayContainerElement, true);
 
       // Make sure tooltip is shown to the user and animation has finished
-      const tooltipElement = overlayContainerElement.querySelector(
-        '.mat-mdc-tooltip',
-      ) as HTMLElement;
+      const tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
       expect(tooltipElement instanceof HTMLElement).toBe(true);
-      expect(tooltipElement.classList).toContain('mat-mdc-tooltip-show');
+      expect(tooltipElement.classList).toContain('mat-tooltip-show');
 
       // After hide called, a timeout delay is created that will to hide the tooltip.
       const tooltipDelay = 1000;
@@ -1184,9 +1154,7 @@ describe('MDC-based MatTooltip', () => {
       fixture.detectChanges();
       tick(0);
 
-      const tooltipElement = overlayContainerElement.querySelector(
-        '.mat-mdc-tooltip',
-      ) as HTMLElement;
+      const tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
       expect(tooltipElement.textContent).toContain('initial tooltip message');
     }));
   });
@@ -1478,7 +1446,7 @@ class BasicTooltipDemo {
   showButton: boolean = true;
   showTooltipClass = false;
   touchGestures: TooltipTouchGestures = 'auto';
-  @ViewChild(MatTooltip) tooltip: MatTooltip;
+  @ViewChild(MatLegacyTooltip) tooltip: MatLegacyTooltip;
   @ViewChild('button') button: ElementRef<HTMLButtonElement>;
 }
 
@@ -1584,12 +1552,12 @@ class TooltipOnDraggableElement {
 })
 class TooltipDemoWithoutPositionBinding {
   message: any = initialTooltipMessage;
-  @ViewChild(MatTooltip) tooltip: MatTooltip;
+  @ViewChild(MatLegacyTooltip) tooltip: MatLegacyTooltip;
   @ViewChild('button') button: ElementRef<HTMLButtonElement>;
 }
 
 /** Asserts whether a tooltip directive has a tooltip instance. */
-function assertTooltipInstance(tooltip: MatTooltip, shouldExist: boolean): void {
+function assertTooltipInstance(tooltip: MatLegacyTooltip, shouldExist: boolean): void {
   // Note that we have to cast this to a boolean, because Jasmine will go into an infinite loop
   // if it tries to stringify the `_tooltipInstance` when an assertion fails. The infinite loop
   // happens due to the `_tooltipInstance` having a circular structure.
@@ -1597,10 +1565,10 @@ function assertTooltipInstance(tooltip: MatTooltip, shouldExist: boolean): void 
 }
 
 function finishCurrentTooltipAnimation(overlayContainer: HTMLElement, isVisible: boolean) {
-  const tooltip = overlayContainer.querySelector('.mat-mdc-tooltip')!;
+  const tooltip = overlayContainer.querySelector('.mat-tooltip')!;
   const event = createFakeEvent('animationend');
   Object.defineProperty(event, 'animationName', {
-    get: () => `mat-mdc-tooltip-${isVisible ? 'show' : 'hide'}`,
+    get: () => `mat-tooltip-${isVisible ? 'show' : 'hide'}`,
   });
   dispatchEvent(tooltip, event);
 }

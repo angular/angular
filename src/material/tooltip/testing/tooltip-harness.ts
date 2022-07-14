@@ -9,6 +9,7 @@
 import {
   AsyncFactoryFn,
   ComponentHarness,
+  ComponentHarnessConstructor,
   HarnessPredicate,
   TestElement,
 } from '@angular/cdk/testing';
@@ -60,19 +61,23 @@ export abstract class _MatTooltipHarnessBase extends ComponentHarness {
 
 /** Harness for interacting with a standard mat-tooltip in tests. */
 export class MatTooltipHarness extends _MatTooltipHarnessBase {
-  protected _optionalPanel = this.documentRootLocatorFactory().locatorForOptional('.mat-tooltip');
-  protected _hiddenClass = 'mat-tooltip-hide';
-  protected _showAnimationName = 'mat-tooltip-show';
-  protected _hideAnimationName = 'mat-tooltip-hide';
-  static hostSelector = '.mat-tooltip-trigger';
+  protected _optionalPanel =
+    this.documentRootLocatorFactory().locatorForOptional('.mat-mdc-tooltip');
+  static hostSelector = '.mat-mdc-tooltip-trigger';
+  protected _hiddenClass = 'mat-mdc-tooltip-hide';
+  protected _showAnimationName = 'mat-mdc-tooltip-show';
+  protected _hideAnimationName = 'mat-mdc-tooltip-hide';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search
-   * for a tooltip trigger with specific attributes.
+   * Gets a `HarnessPredicate` that can be used to search for a tooltip trigger with specific
+   * attributes.
    * @param options Options for narrowing the search.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: TooltipHarnessFilters = {}): HarnessPredicate<MatTooltipHarness> {
-    return new HarnessPredicate(MatTooltipHarness, options);
+  static with<T extends MatTooltipHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: TooltipHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 }

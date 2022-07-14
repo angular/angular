@@ -107,6 +107,7 @@ export const commitMessage: CommitMessageConfig = {
     'material/testing',
     'material/theming',
     'material/toolbar',
+    'material/legacy-tooltip',
     'material/tooltip',
     'material/tree',
     'youtube-player',

@@ -11,36 +11,40 @@ load(
 package(default_visibility = ["//visibility:public"])
 
 ng_module(
-    name = "paginator",
+    name = "legacy-tooltip",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    assets = [":paginator.css"] + glob(["**/*.html"]),
+    assets = [":tooltip.css"] + glob(["**/*.html"]),
     deps = [
+        "//src:dev_mode_types",
+        "//src/cdk/a11y",
+        "//src/cdk/bidi",
         "//src/cdk/coercion",
-        "//src/material/button",
+        "//src/cdk/keycodes",
+        "//src/cdk/layout",
+        "//src/cdk/overlay",
+        "//src/cdk/platform",
+        "//src/cdk/portal",
+        "//src/cdk/scrolling",
         "//src/material/core",
-        "//src/material/legacy-tooltip",
-        "//src/material/select",
+        "//src/material/tooltip",
         "@npm//@angular/common",
         "@npm//@angular/core",
-        "@npm//@angular/forms",  # TODO(jelbourn): transitive dep via generated code
         "@npm//rxjs",
     ],
 )
 
 sass_library(
-    name = "paginator_scss_lib",
+    name = "legacy_tooltip_scss_lib",
     srcs = glob(["**/_*.scss"]),
-    deps = [
-        "//src/material/core:core_scss_lib",
-    ],
+    deps = ["//src/material/core:core_scss_lib"],
 )
 
 sass_binary(
-    name = "paginator_scss",
-    src = "paginator.scss",
+    name = "tooltip_scss",
+    src = "tooltip.scss",
     deps = [
         "//src/cdk:sass_lib",
     ],
@@ -53,11 +57,15 @@ ng_test_library(
         exclude = ["**/*.e2e.spec.ts"],
     ),
     deps = [
-        ":paginator",
+        ":legacy-tooltip",
+        "//src/cdk/a11y",
+        "//src/cdk/bidi",
+        "//src/cdk/keycodes",
+        "//src/cdk/overlay",
+        "//src/cdk/platform",
         "//src/cdk/testing/private",
-        "//src/material/core",
-        "//src/material/select",
         "@npm//@angular/platform-browser",
+        "@npm//rxjs",
     ],
 )
 
@@ -68,7 +76,7 @@ ng_web_test_suite(
 
 markdown_to_html(
     name = "overview",
-    srcs = [":paginator.md"],
+    srcs = [":tooltip.md"],
 )
 
 filegroup(

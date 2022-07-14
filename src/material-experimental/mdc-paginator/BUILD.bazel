@@ -19,8 +19,8 @@ ng_module(
     deps = [
         "//src/material-experimental/mdc-button",
         "//src/material-experimental/mdc-select",
-        "//src/material-experimental/mdc-tooltip",
         "//src/material/paginator",
+        "//src/material/tooltip",
         "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/forms",  # TODO(jelbourn): transitive dep via generated code

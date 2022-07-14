@@ -112,6 +112,8 @@
 @forward './tabs/tabs-theme' as tabs-* show tabs-theme, tabs-color, tabs-typography;
 @forward './toolbar/toolbar-theme' as toolbar-* show toolbar-theme, toolbar-color,
   toolbar-typography;
+@forward './legacy-tooltip/tooltip-theme' as legacy-tooltip-* show legacy-tooltip-theme,
+  legacy-tooltip-color, legacy-tooltip-typography;
 @forward './tooltip/tooltip-theme' as tooltip-* show tooltip-theme, tooltip-color,
   tooltip-typography;
 @forward './tree/tree-theme' as tree-* show tree-theme, tree-color, tree-typography;

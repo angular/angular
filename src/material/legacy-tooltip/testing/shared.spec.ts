@@ -2,14 +2,14 @@ import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatTooltipHarness} from '@angular/material/tooltip/testing/tooltip-harness';
+import {MatLegacyTooltipModule} from '@angular/material/legacy-tooltip';
+import {MatLegacyTooltipHarness} from '@angular/material/legacy-tooltip/testing/tooltip-harness';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 /** Shared tests to run on both the original and MDC-based tooltips. */
 export function runHarnessTests(
-  tooltipModule: typeof MatTooltipModule,
-  tooltipHarness: typeof MatTooltipHarness,
+  tooltipModule: typeof MatLegacyTooltipModule,
+  tooltipHarness: typeof MatLegacyTooltipHarness,
 ) {
   let fixture: ComponentFixture<TooltipHarnessTest>;
   let loader: HarnessLoader;

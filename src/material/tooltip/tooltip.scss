@@ -1,52 +1,41 @@
-@use '@angular/cdk';
+@use '@material/tooltip/tooltip';
 
-$horizontal-padding: 8px;
-$max-width: 250px;
-$margin: 14px;
+// Only include the structural styles, because we handle the animation ourselves.
+@include tooltip.core-styles($query: structure);
 
-$handset-horizontal-padding: 16px;
-$handset-margin: 24px;
-
-.mat-tooltip {
-  color: white;
-  border-radius: 4px;
-  margin: $margin;
-  max-width: $max-width;
-  padding-left: $horizontal-padding;
-  padding-right: $horizontal-padding;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.mat-mdc-tooltip {
+  // We don't use MDC's positioning so this has to be relative.
+  position: relative;
   transform: scale(0);
+
+  // Increases the area of the tooltip so the user's pointer can go from the trigger directly to it.
+  &::before {
+    $offset: -8px;
+    content: '';
+    top: $offset;
+    right: $offset;
+    bottom: $offset;
+    left: $offset;
+    z-index: -1;
+    position: absolute;
+  }
 
   &._mat-animation-noopable {
     animation: none;
     transform: scale(1);
   }
-
-  @include cdk.high-contrast(active, off) {
-    outline: solid 1px;
-  }
 }
 
-.mat-tooltip-handset {
-  margin: $handset-margin;
-  padding-left: $handset-horizontal-padding;
-  padding-right: $handset-horizontal-padding;
-}
-
-.mat-tooltip-panel-non-interactive {
+.mat-mdc-tooltip-panel-non-interactive {
   pointer-events: none;
 }
 
-@keyframes mat-tooltip-show {
+// TODO(crisbeto): we may be able to use MDC directly for these animations.
+
+@keyframes mat-mdc-tooltip-show {
   0% {
     opacity: 0;
-    transform: scale(0);
-  }
-
-  50% {
-    opacity: 0.5;
-    transform: scale(0.99);
+    transform: scale(0.8);
   }
 
   100% {
@@ -55,7 +44,7 @@ $handset-margin: 24px;
   }
 }
 
-@keyframes mat-tooltip-hide {
+@keyframes mat-mdc-tooltip-hide {
   0% {
     opacity: 1;
     transform: scale(1);
@@ -63,14 +52,14 @@ $handset-margin: 24px;
 
   100% {
     opacity: 0;
-    transform: scale(1);
+    transform: scale(0.8);
   }
 }
 
-.mat-tooltip-show {
-  animation: mat-tooltip-show 200ms cubic-bezier(0, 0, 0.2, 1) forwards;
+.mat-mdc-tooltip-show {
+  animation: mat-mdc-tooltip-show 150ms cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
-.mat-tooltip-hide {
-  animation: mat-tooltip-hide 100ms cubic-bezier(0, 0, 0.2, 1) forwards;
+.mat-mdc-tooltip-hide {
+  animation: mat-mdc-tooltip-hide 75ms cubic-bezier(0.4, 0, 1, 1) forwards;
 }

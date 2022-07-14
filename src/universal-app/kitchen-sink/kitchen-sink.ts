@@ -30,7 +30,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatLegacyTooltipModule} from '@angular/material/legacy-tooltip';
 import {MatBottomSheetModule, MatBottomSheet} from '@angular/material/bottom-sheet';
 import {MatBadgeModule} from '@angular/material/badge';
 import {MatDividerModule} from '@angular/material/divider';
@@ -128,7 +128,7 @@ export class KitchenSink {
     MatSnackBarModule,
     MatTabsModule,
     MatToolbarModule,
-    MatTooltipModule,
+    MatLegacyTooltipModule,
     MatExpansionModule,
     MatSortModule,
     MatTableModule,

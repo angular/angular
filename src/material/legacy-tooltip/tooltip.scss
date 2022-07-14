@@ -1,0 +1,76 @@
+@use '@angular/cdk';
+
+$horizontal-padding: 8px;
+$max-width: 250px;
+$margin: 14px;
+
+$handset-horizontal-padding: 16px;
+$handset-margin: 24px;
+
+.mat-tooltip {
+  color: white;
+  border-radius: 4px;
+  margin: $margin;
+  max-width: $max-width;
+  padding-left: $horizontal-padding;
+  padding-right: $horizontal-padding;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transform: scale(0);
+
+  &._mat-animation-noopable {
+    animation: none;
+    transform: scale(1);
+  }
+
+  @include cdk.high-contrast(active, off) {
+    outline: solid 1px;
+  }
+}
+
+.mat-tooltip-handset {
+  margin: $handset-margin;
+  padding-left: $handset-horizontal-padding;
+  padding-right: $handset-horizontal-padding;
+}
+
+.mat-tooltip-panel-non-interactive {
+  pointer-events: none;
+}
+
+@keyframes mat-tooltip-show {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(0.99);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes mat-tooltip-hide {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+.mat-tooltip-show {
+  animation: mat-tooltip-show 200ms cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+.mat-tooltip-hide {
+  animation: mat-tooltip-hide 100ms cubic-bezier(0, 0, 0.2, 1) forwards;
+}

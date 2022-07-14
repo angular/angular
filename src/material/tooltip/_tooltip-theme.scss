@@ -1,44 +1,34 @@
 @use 'sass:map';
-@use 'sass:math';
+@use '@material/tooltip/tooltip';
+@use '@material/tooltip' as tooltip-theme;
 @use '../core/theming/theming';
+@use '../core/theming/palette';
+@use '../core/mdc-helpers/mdc-helpers';
 @use '../core/typography/typography';
-@use '../core/typography/typography-utils';
-
-$target-height: 22px;
-$font-size: 10px;
-$vertical-padding: math.div($target-height - $font-size, 2);
-
-$handset-target-height: 30px;
-$handset-font-size: 14px;
-$handset-vertical-padding: math.div($handset-target-height - $handset-font-size, 2);
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $background: map.get($config, background);
-
-  .mat-tooltip {
-    background: theming.get-color-from-palette($background, tooltip, 0.9);
+  @include mdc-helpers.using-mdc-theme($config) {
+    @include tooltip.core-styles($query: mdc-helpers.$mdc-theme-styles-query);
+    // We are defining our own tooltip background color because of concerns
+    // surrounding the 0.6 background color opacity of the MDC tooltip styles.
+    @include tooltip-theme.fill-color(
+      map.get(palette.$light-theme-background-palette, tooltip)
+    );
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
-      theming.get-typography-config($config-or-theme));
-  .mat-tooltip {
-    font-family: typography-utils.font-family($config);
-    font-size: $font-size;
-    padding-top: $vertical-padding;
-    padding-bottom: $vertical-padding;
-  }
-
-  .mat-tooltip-handset {
-    font-size: $handset-font-size;
-    padding-top: $handset-vertical-padding;
-    padding-bottom: $handset-vertical-padding;
+  $config: typography.private-typography-to-2018-config(
+          theming.get-typography-config($config-or-theme));
+  @include mdc-helpers.using-mdc-typography($config) {
+    @include tooltip.core-styles($query: mdc-helpers.$mdc-typography-styles-query);
   }
 }
 
-@mixin _density($config-or-theme) {}
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -51,11 +41,10 @@ $handset-vertical-padding: math.div($handset-target-height - $handset-font-size,
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);
     }
   }
 }
-

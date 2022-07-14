@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './tooltip-module';
 export * from './tooltip';
 export * from './tooltip-animations';
+export * from './module';
