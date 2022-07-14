@@ -1,3 +1,41 @@
+<a name="14.1.0-rc.0"></a>
+# 14.1.0-rc.0 "plastic-ball" (2022-07-14)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e892e624fb](https://github.com/angular/components/commit/e892e624fb86efa518b9cf1387a8c45b2151a17a) | fix | **a11y:** correctly detect focus from input label ([#25232](https://github.com/angular/components/pull/25232)) |
+| [b520c3f44a](https://github.com/angular/components/commit/b520c3f44a30bc8de3d57c3d5de24b6ecf227d86) | fix | **clipboard:** page jumping on iOS ([#25221](https://github.com/angular/components/pull/25221)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f85330ae9a](https://github.com/angular/components/commit/f85330ae9a17262c1ae2cb03ce31f213e170bf3a) | fix | **checkbox:** broken appearance in some grid layouts ([#25197](https://github.com/angular/components/pull/25197)) |
+| [07feece209](https://github.com/angular/components/commit/07feece209b515d7c80697eec19d59435c31c987) | fix | **select:** add selected indication in high contrast mode ([#25237](https://github.com/angular/components/pull/25237)) |
+| [32cd3f982d](https://github.com/angular/components/commit/32cd3f982d45df07e4a8deaa6a5b57587ef0b99f) | fix | **tabs:** ink bar not shown in some cases ([#25218](https://github.com/angular/components/pull/25218)) |
+### cdk-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5c2a7e00e0](https://github.com/angular/components/commit/5c2a7e00e0f9873372973ec308dc546fc92f9215) | fix | **listbox:** clean up some TODOs ([#25005](https://github.com/angular/components/pull/25005)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a4fe4bbda0](https://github.com/angular/components/commit/a4fe4bbda0b98f6fb9d8759cc596c60894fe972c) | fix | **mdc-button:** always treat icon-button content as an icon ([#25200](https://github.com/angular/components/pull/25200)) |
+| [2bc17ccc6e](https://github.com/angular/components/commit/2bc17ccc6e7724c66ed5ccd2be0e34aeee1445f4) | fix | **mdc-form-field:** ensure clip-path does not truncate label early ([#25264](https://github.com/angular/components/pull/25264)) |
+| [4727c8b5e4](https://github.com/angular/components/commit/4727c8b5e4cf8a30ed782262559c42e641911b26) | fix | **mdc-form-field:** fix notch visual artifact ([#25201](https://github.com/angular/components/pull/25201)) |
+| [d836e27617](https://github.com/angular/components/commit/d836e27617c75459f4027c4daf0113d15addd91a) | fix | **mdc-form-field:** use a CSS var for the floating label scale ([#25178](https://github.com/angular/components/pull/25178)) |
+| [e2a031c1d6](https://github.com/angular/components/commit/e2a031c1d6fe12cf6883f0700443d066e222da45) | fix | **mdc-paginator:** allow form-field density to go lower than -4 ([#25192](https://github.com/angular/components/pull/25192)) |
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [33ff1f2a26](https://github.com/angular/components/commit/33ff1f2a2678c3c0fbf0c1589beb951fd48cddf5) | fix | making the parse format available for native date adapter extension ([#25226](https://github.com/angular/components/pull/25226)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [63d38e6f2e](https://github.com/angular/components/commit/63d38e6f2e8834abb7f6b0f1a2b1b8729950065f) | fix | fix disabled label style ([#25181](https://github.com/angular/components/pull/25181)) |
+## Special Thanks
+Andrew Seguin, Kai Schönberger, Kristiyan Kostadinov, Miles Malerba, Oliver Kierepka and Paul Gschwendtner
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.0-next.3"></a>
 # 14.1.0-next.3 "opal-object" (2022-06-29)
 ### material
