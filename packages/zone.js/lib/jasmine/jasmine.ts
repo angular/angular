@@ -349,7 +349,6 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
       this.testProxyZoneSpec = new ProxyZoneSpec();
       this.testProxyZone = ambientZone.fork(this.testProxyZoneSpec);
       if (!Zone.currentTask) {
-        console.error('Scheduling', context, Zone.current.name)
         // if we are not running in a task then if someone would register a
         // element.addEventListener and then calling element.click() the
         // addEventListener callback would think that it is the top most task and would
