@@ -1062,8 +1062,9 @@ groups:
           ])
     reviewers:
       users:
-        - alxhub
+        - AndrewKushnir
         - gkalpak
+        - jessicajaniuk
         - josephperrott
 
   # =========================================================
