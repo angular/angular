@@ -12,13 +12,13 @@ declare const global: any;
 
 describe('MutationObserver', ifEnvSupports('MutationObserver', function() {
            let elt: HTMLDivElement;
-           const testZone = Zone.current.fork({name: 'test'});
 
            beforeEach(function() {
              elt = document.createElement('div');
            });
 
            it('should run observers within the zone', function(done) {
+             const testZone = Zone.current.fork({name: 'test'});
              let ob;
 
              testZone.run(function() {
@@ -54,9 +54,8 @@ describe('MutationObserver', ifEnvSupports('MutationObserver', function() {
          }));
 
 describe('WebKitMutationObserver', ifEnvSupports('WebKitMutationObserver', function() {
-           const testZone = Zone.current.fork({name: 'test'});
-
            it('should run observers within the zone', function(done) {
+             const testZone = Zone.current.fork({name: 'test'});
              let elt: HTMLDivElement;
 
              testZone.run(function() {
