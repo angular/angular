@@ -6,28 +6,32 @@
   "version": "1.0.6",
   "version_name": "1.0.6",
   "minimum_chrome_version": "50",
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "content_security_policy": {
+    "sandbox": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  },
   "icons": {
     "16": "assets/icon16.png",
     "48": "assets/icon48.png",
     "128": "assets/icon128.png"
   },
-  "browser_action": {
+  "action": {
     "default_popup": "popups/not-angular.html"
   },
   "devtools_page": "devtools.html",
-  "web_accessible_resources": [
-    "app/backend_bundle.js",
-    "devtools.html"
-  ],
+  "web_accessible_resources": {
+    "resources": [
+      "app/backend_bundle.js",
+      "devtools.html"
+    ]
+  },
   "background": {
-    "scripts": [
-      "app/background_bundle.js"
-    ],
+    "service_worker": "app/background_bundle.js",
     "persistent": false
   },
   "permissions": [
-    "activeTab",
+    "activeTab"
+  ],
+  "host_permissions": [
     "http://*/*",
     "https://*/*",
     "file:///*"
