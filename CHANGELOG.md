@@ -1,3 +1,37 @@
+<a name="14.0.5"></a>
+# 14.0.5 "metal-hamster" (2022-07-14)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9cd5a6ad70](https://github.com/angular/components/commit/9cd5a6ad709f12715a923d28529d6d1401060595) | fix | **a11y:** correctly detect focus from input label ([#25232](https://github.com/angular/components/pull/25232)) |
+| [938aa2fa13](https://github.com/angular/components/commit/938aa2fa13f55de8ffb24375274e3a191f9e7920) | fix | **clipboard:** page jumping on iOS ([#25221](https://github.com/angular/components/pull/25221)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f5bdefe6fd](https://github.com/angular/components/commit/f5bdefe6fd55e7f8afe727a562c74f0f41380df3) | fix | **checkbox:** broken appearance in some grid layouts ([#25197](https://github.com/angular/components/pull/25197)) |
+| [25ce8e775c](https://github.com/angular/components/commit/25ce8e775c8344407159381fdb61066d216e054e) | fix | **select:** add selected indication in high contrast mode ([#25237](https://github.com/angular/components/pull/25237)) |
+| [76c0e9c1cd](https://github.com/angular/components/commit/76c0e9c1cd983ab255982250cdff242e734d1821) | fix | **tabs:** ink bar not shown in some cases ([#25218](https://github.com/angular/components/pull/25218)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a9c7f59240](https://github.com/angular/components/commit/a9c7f5924045d418ff3b44e526ec938ff0c0f1e7) | fix | **mdc-button:** always treat icon-button content as an icon ([#25200](https://github.com/angular/components/pull/25200)) |
+| [7101a91ef5](https://github.com/angular/components/commit/7101a91ef570bd46759ae4915660b49d097371dd) | fix | **mdc-form-field:** ensure clip-path does not truncate label early ([#25264](https://github.com/angular/components/pull/25264)) |
+| [84a4e9a742](https://github.com/angular/components/commit/84a4e9a7422b62f11f7e8919a493d809c4527290) | fix | **mdc-form-field:** fix notch visual artifact ([#25201](https://github.com/angular/components/pull/25201)) |
+| [ce7f42b912](https://github.com/angular/components/commit/ce7f42b912ff5d3fec96570a85680ba5ad5c4d75) | fix | **mdc-form-field:** use a CSS var for the floating label scale ([#25178](https://github.com/angular/components/pull/25178)) |
+| [c0716784b2](https://github.com/angular/components/commit/c0716784b24daa94fd6f11f8dd020125bcbef467) | fix | **mdc-paginator:** allow form-field density to go lower than -4 ([#25192](https://github.com/angular/components/pull/25192)) |
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [89bc64a329](https://github.com/angular/components/commit/89bc64a329c0d01029939e735b1c79b5161d4731) | fix | making the parse format available for native date adapter extension ([#25226](https://github.com/angular/components/pull/25226)) |
+### multiple
+| Commit | Type | Description |
+| -- | -- | -- |
+| [68edf42798](https://github.com/angular/components/commit/68edf427987e583802e97ace5f58cc4a7f2b4091) | fix | fix disabled label style ([#25181](https://github.com/angular/components/pull/25181)) |
+## Special Thanks
+Andrew Seguin, Kai Schönberger, Kristiyan Kostadinov, Miles Malerba, Oliver Kierepka and Paul Gschwendtner
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.0-rc.0"></a>
 # 14.1.0-rc.0 "plastic-ball" (2022-07-14)
 ### cdk
