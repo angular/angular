@@ -2245,6 +2245,35 @@ describe('Integration', () => {
          expect(e).toEqual(null);
        })));
 
+    it('should include target snapshot in NavigationError when resolver throws', async () => {
+      const router = TestBed.inject(Router);
+      const errorMessage = 'throwing resolver';
+      @Injectable({providedIn: 'root'})
+      class ThrowingResolver {
+        resolve() {
+          throw new Error(errorMessage);
+        }
+      }
+
+      let caughtError: NavigationError|undefined;
+      router.events.subscribe(e => {
+        if (e instanceof NavigationError) {
+          caughtError = e;
+        }
+      });
+      router.resetConfig(
+          [{path: 'throwing', resolve: {thrower: ThrowingResolver}, component: BlankCmp}]);
+      try {
+        await router.navigateByUrl('/throwing');
+        fail('navigation should throw');
+      } catch (e: unknown) {
+        expect((e as Error).message).toEqual(errorMessage);
+      }
+
+      expect(caughtError).toBeDefined();
+      expect(caughtError?.target).toBeDefined();
+    });
+
     it('should preserve resolved data', fakeAsync(inject([Router], (router: Router) => {
          const fixture = createRoot(router, RootCmp);
 
