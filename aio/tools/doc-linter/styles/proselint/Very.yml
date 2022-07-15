@@ -1,0 +1,6 @@
+extends: existence
+message: "Remove '%s'."
+ignorecase: true
+level: error
+tokens:
+  - very
