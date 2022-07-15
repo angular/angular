@@ -161,8 +161,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertNoConflictingSrcset(this);
       assertNotBase64Image(this);
       assertNotBlobURL(this);
-      assertRequiredNumberInput(this, this.width, 'width');
-      assertRequiredNumberInput(this, this.height, 'height');
+      assertNonEmptyWidthAndHeight(this);
       assertValidLoadingInput(this);
       assertNoImageDistortion(this, this.imgElement, this.renderer);
       if (this.priority) {
@@ -507,13 +506,17 @@ function assertNoImageDistortion(
 }
 
 // Verifies that a specified input is set.
-function assertRequiredNumberInput(dir: NgOptimizedImage, inputValue: unknown, inputName: string) {
-  if (typeof inputValue === 'undefined') {
+function assertNonEmptyWidthAndHeight(dir: NgOptimizedImage) {
+  let missingAttributes = [];
+  if (dir.width === undefined) missingAttributes.push('width');
+  if (dir.height === undefined) missingAttributes.push('height');
+  if (missingAttributes.length > 0) {
     throw new RuntimeError(
         RuntimeErrorCode.REQUIRED_INPUT_MISSING,
-        `${imgDirectiveDetails(dir.rawSrc)} has detected that the required \`${inputName}\` ` +
-            `attribute is missing. Please specify the \`${inputName}\` attribute ` +
-            `on the mentioned element.`);
+        `${imgDirectiveDetails(dir.rawSrc)} has detected that these required attributes` +
+            ` are missing:\`${missingAttributes.join(',')}\`. Including "width" and "height" ` +
+            `attributes will prevent image-related layout shifts. Please include "width" and ` +
+            `"height" attributes on the image tag.`);
   }
 }
 
