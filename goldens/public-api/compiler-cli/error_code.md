@@ -31,8 +31,6 @@ export enum ErrorCode {
     // (undocumented)
     DECORATOR_NOT_CALLED = 1003,
     // (undocumented)
-    DECORATOR_ON_ANONYMOUS_CLASS = 1004,
-    // (undocumented)
     DECORATOR_UNEXPECTED = 1005,
     DIRECTIVE_INHERITS_UNDECORATED_CTOR = 2006,
     // (undocumented)
@@ -71,8 +69,6 @@ export enum ErrorCode {
     SUFFIX_NOT_SUPPORTED = 8106,
     SUGGEST_STRICT_TEMPLATES = 10001,
     SUGGEST_SUBOPTIMAL_TYPE_INFERENCE = 10002,
-    // (undocumented)
-    SYMBOL_EXPORTED_UNDER_DIFFERENT_NAME = 3002,
     // (undocumented)
     SYMBOL_NOT_EXPORTED = 3001,
     TEMPLATE_PARSE_ERROR = 5002,
