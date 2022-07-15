@@ -162,9 +162,9 @@ describe('Image directive', () => {
               `NG0${
                   RuntimeErrorCode
                       .REQUIRED_INPUT_MISSING}: The NgOptimizedImage directive (activated on an <img> ` +
-              'element with the `rawSrc="img.png"`) has detected that the required ' +
-              '`width` attribute is missing. Please specify the `width` attribute ' +
-              'on the mentioned element.');
+              'element with the `rawSrc="img.png"`) has detected that these required attributes are missing:' +
+              '`width`. Including "width" and "height" attributes will prevent image-related layout shifts. ' +
+              'Please include "width" and "height" attributes on the image tag.');
     });
 
     it('should throw if `width` is 0', () => {
@@ -211,9 +211,9 @@ describe('Image directive', () => {
               `NG0${
                   RuntimeErrorCode
                       .REQUIRED_INPUT_MISSING}: The NgOptimizedImage directive (activated on an <img> ` +
-              'element with the `rawSrc="img.png"`) has detected that the required ' +
-              '`height` attribute is missing. Please specify the `height` attribute ' +
-              'on the mentioned element.');
+              'element with the `rawSrc="img.png"`) has detected that these required attributes are missing:' +
+              '`height`. Including "width" and "height" attributes will prevent image-related layout shifts. ' +
+              'Please include "width" and "height" attributes on the image tag.');
     });
 
     it('should throw if `height` is 0', () => {
