@@ -1,0 +1,52 @@
+extends: existence
+message: "'%s' is archaic."
+ignorecase: true
+level: error
+tokens:
+  - alack
+  - anent
+  - begat
+  - belike
+  - betimes
+  - boughten
+  - brocage
+  - brokage
+  - camarade
+  - chiefer
+  - chiefest
+  - Christiana
+  - completely obsolescent
+  - cozen
+  - divers
+  - deflexion
+  - fain
+  - forsooth
+  - foreclose from
+  - haply
+  - howbeit
+  - illumine
+  - in sooth
+  - maugre
+  - meseems
+  - methinks
+  - nigh
+  - peradventure
+  - perchance
+  - saith
+  - shew
+  - sistren
+  - spake
+  - to wit
+  - verily
+  - whilom
+  - withal
+  - wot
+  - enclosed please find
+  - please find enclosed
+  - enclosed herewith
+  - enclosed herein
+  - inforce
+  - ex postfacto
+  - foreclose from
+  - forewent
+  - for ever

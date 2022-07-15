@@ -1,0 +1,5 @@
+extends: existence
+message: "Don't start a sentence with '%s'. Try to rewrite the sentence without it."
+level: error
+raw:
+  - '(?:[;-]\s)so[\s,]|So[\s,]'

@@ -1,0 +1,15 @@
+extends: existence
+message: "Consider replacing '%s'."
+level: error
+ignorecase: true
+tokens:
+  - shit
+  - piss
+  - fuck
+  - cunt
+  - cocksucker
+  - motherfucker
+  - tits
+  - fart
+  - turd
+  - twat
