@@ -12,8 +12,16 @@
 
     <!-- CONTAINER -->
     <div class="homepage-container">
-      <h1 class="hero-headline no-title no-toc no-anchor" aria-label="Angular - The modern web developer's platform">The modern web<br>developer's platform</h1>
-      <a class="button hero-cta no-print" href="start">Get Started</a>
+      <h1 class="hero-headline no-title no-toc no-anchor" aria-label="Angular - Deliver web apps with confidence">
+        Deliver web apps<br>with confidence
+      </h1>
+
+      <div class="cta-button-container">
+        <p class="cta-link">
+          <a class="button hero-cta no-print" href="quick-start">Try Angular</a>
+        </p>
+      </div>
+
     </div>
 
   </section>
@@ -27,86 +35,48 @@
 
     <aio-announcement-bar></aio-announcement-bar>
 
-    <!-- Group 1 -->
+    <div layout="column" layout-xs="column" class="home-row homepage-container">
+      <!-- Group 1 -->
+      <div>
+        <section aria-labelledby="promo-0-title" class="text-block">
+          <h2 id="promo-0-title" class="no-anchor">The web development framework for building the future</h2>
+        </section>
+      </div>
+    </div>
     <div layout="row" layout-xs="column" class="home-row homepage-container">
-      <div class="promo-img-container promo-1">
-        <div>
-          <img height="222" width="340" src="generated/images/marketing/home/responsive-framework.svg" alt="" loading="lazy">
-        </div>
-      </div>
-
+      <!-- Group 1 -->
       <div class="text-container">
-        <section aria-labelledby="promo-1-title" class="text-block promo-1-desc l-pad-top-2">
-          <h2 id="promo-1-title" class="text-headline no-anchor">Develop Across All Platforms</h2>
-          <p class="text-body">Learn one way to build applications with Angular and reuse your code and abilities to build apps for any deployment target. For web, mobile web, native mobile and native desktop.
+        <section aria-labelledby="promo-1-title" class="text-block">
+          <h2 id="promo-1-title" class="text-headline no-anchor">Works at any scale</h2>
+          <p class="text-body"><img alt="Hero image" src="/generated/images/marketing/home/any-size.svg" width="276"></p>
+          <p class="text-body">Angular lets you start small and supports you as your team and apps grow.
+            </p>
+          <p class="text-body"><a href="scaling">Read how Angular helps you grow</a></p>
+          </section>
+      </div>
+      <!-- Group 2 -->
+      <div class="text-container">
+        <section aria-labelledby="promo-2-title" class="text-block promo-2-desc">
+          <h2 id="promo-2-title" class="text-headline no-anchor">Loved by millions</h2>
+          <p class="text-body"><img alt="Hero image" src="/generated/images/marketing/home/loved-by-millions.svg" width="276"></p>
+          <p class="text-body">Join the millions of developers building with Angular in a thriving and friendly community.
           </p>
+          <p class="text-body"><a href="resources?category=community">Meet the Angular community</a></p>
         </section>
       </div>
-    </div>
-    <hr>
-
-    <!-- Group 2 -->
-    <div layout="row" layout-xs="column" class="home-row">
+      <!-- Group 3 -->
       <div class="text-container">
-        <section aria-labelledby="promo-2-title" class="text-block">
-          <h2 id="promo-2-title" class="text-headline no-anchor">Speed & Performance</h2>
-          <p class="text-body">Achieve the maximum speed possible on the Web Platform today, and take it further, via Web Workers and server-side rendering.</p>
-          <p class="text-body">Angular puts you in control over scalability. Meet huge data requirements by building data models on RxJS, Immutable.js or another push-model.</p>
+        <section aria-labelledby="promo-3-title" class="text-block l-pad-top-2">
+          <h2 id="promo-3-title" class="text-headline no-anchor">Build for everyone</h2>
+          <p class="text-body"><img alt="Hero image" src="/generated/images/marketing/home/build-for-everyone.svg" width="276"></p>
+          <p class="text-body">Rely on Angular's internationalization tools, security, and accessibility to build for everyone around the world.</p>
+          <p class="text-body"><a href="everyone">Learn more about Angular's tools</a></p>
         </section>
       </div>
-
-      <div class="promo-img-container promo-2">
-        <div>
-          <img height="222" width="323" src="generated/images/marketing/home/speed-performance.svg" alt="" loading="lazy">
-        </div>
-      </div>
-    </div>
-    <hr>
-
-    <!-- Group 3 -->
-    <div layout="row" layout-xs="column" class="home-row">
-      <div class="promo-img-container promo-3">
-        <div><img src="generated/images/marketing/home/joyful-development.svg" alt="" loading="lazy"></div>
-      </div>
-
-      <div class="text-container">
-        <section aria-labelledby="promo-3-title" class="text-block promo-3-desc">
-          <h2 id="promo-3-title" class="text-headline no-anchor">Incredible Tooling</h2>
-          <p class="text-body">Build features quickly with simple, declarative templates. Extend the template language with your own components and use a wide array of existing components. Get immediate Angular-specific help and feedback with nearly every IDE and editor. All this comes together so you can focus on building amazing apps rather than trying to make the code work.
-          </p>
-        </section>
-      </div>
-
-    </div>
-    <hr>
-
-    <!-- Group 4 -->
-    <div layout="row" layout-xs="column" class="home-row">
-      <div class="text-container">
-        <section aria-labelledby="promo-4-title" class="text-block l-pad-top-2">
-          <h2 id="promo-4-title" class="text-headline no-anchor">Loved by Millions</h2>
-          <p class="text-body">From prototype through global deployment, Angular delivers the productivity and scalable infrastructure that supports Google's largest applications.</p>
-        </section>
-      </div>
-
-      <div class="promo-img-container promo-4">
-        <div>
-          <img src="generated/images/marketing/home/loved-by-millions.svg" alt="" width="455" height="228" loading="lazy">
-        </div>
-      </div>
     </div>
 
-    <!-- CTA CARDS -->
-    <div layout="row" layout-xs="column" class="home-row">
-      <a href="start" class="card">
-        <img src="generated/images/marketing/home/code-icon.svg" alt="" width="70" height="70" loading="lazy">
-        <div class="card-text-container">
-          <div class="text-headline">Try it now</div>
-          <p>Explore Angular's capabilities with a ready-made sample app. No setup required.</p>
-        </div>
-      </a>
-    </div>
+    <p style="text-align:center;"><a class="button hero-cta no-print" href="features">Learn more</a></p>
 
-  </div><!-- end of home rows -->
-
+  </div>
+<!-- end of home rows -->
 </article>

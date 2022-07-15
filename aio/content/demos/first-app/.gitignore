@@ -1,4 +1,7 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
+# git should ignore the cached files
+.angular
+node_modules
 
 # Compiled output
 /dist

@@ -1,11 +1,9 @@
 # Contributing to `events.json`
 
-
 ## About this list
 
 We maintain a list of events (conferences, meetups, etc.) where our team has or will be presenting.
 This data is stored in `events.json`.
-
 
 ## How to get an event listed
 
