@@ -12,23 +12,6 @@ describe('site App', () => {
     page = new SitePage();
   });
 
-  it('should show features text after clicking "Features"', async () => {
-    await page.navigateTo('');
-    await page.click(page.getTopMenuLink('features'));
-    expect(await page.getDocViewerText()).toMatch(/Progressive web apps/i);
-  });
-
-  it('should set appropriate window titles', async () => {
-    await page.navigateTo('');
-    expect(await browser.getTitle()).toBe('Angular');
-
-    await page.click(page.getTopMenuLink('features'));
-    expect(await browser.getTitle()).toBe('Angular - FEATURES & BENEFITS');
-
-    await page.click(page.homeLink);
-    expect(await browser.getTitle()).toBe('Angular');
-  });
-
   it('should not navigate when clicking on nav-item headings (sub-menu toggles)', async () => {
     // Show the sidenav.
     await page.navigateTo('docs');
@@ -79,10 +62,6 @@ describe('site App', () => {
     // check that we can navigate directly to the tutorial page
     await page.navigateTo('tutorial');
     expect(await page.getDocViewerText()).toMatch(/Tour of Heroes application and tutorial/i);
-
-    // navigate to a different page
-    await page.click(page.getTopMenuLink('features'));
-    expect(await page.getDocViewerText()).toMatch(/Progressive web apps/i);
 
     // Show the menu
     await page.click(page.docsMenuLink);
@@ -196,7 +175,7 @@ describe('site App', () => {
 
     it('should call legacy ga with new URL on navigation', async () => {
       await page.navigateTo('');
-      await page.click(page.getTopMenuLink('features'));
+      await page.click(page.getTopMenuLink('resources'));
 
       const path = await page.locationPath();
       const calls = await page.legacyGa();
@@ -215,7 +194,7 @@ describe('site App', () => {
       await page.navigateTo('does/not/exist');
       expect(await element(by.css('meta[name="robots"][content="noindex"]')).isPresent()).toBeTruthy();
 
-      await page.click(page.getTopMenuLink('features'));
+      await page.click(page.getTopMenuLink('resources'));
       expect(await element(by.css('meta[name="robots"]')).isPresent()).toBeFalsy();
     });
 

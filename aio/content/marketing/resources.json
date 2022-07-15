@@ -1,6 +1,6 @@
 {
   "Community": {
-    "order": 3,
+    "order": 1,
     "subCategories": {
       "Community Curations": {
         "order": 1,
@@ -119,7 +119,7 @@
     }
   },
   "Development": {
-    "order": 1,
+    "order": 3,
     "subCategories": {
       "Cross-Platform Development": {
         "order": 5,

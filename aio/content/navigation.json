@@ -1,20 +1,12 @@
 {
   "TopBar": [
     {
-      "url": "features",
-      "title": "Features"
-    },
-    {
       "url": "docs",
       "title": "Docs"
     },
     {
       "url": "resources",
-      "title": "Resources"
-    },
-    {
-      "url": "events",
-      "title": "Events"
+      "title": "Community"
     },
     {
       "url": "https://blog.angular.io/",

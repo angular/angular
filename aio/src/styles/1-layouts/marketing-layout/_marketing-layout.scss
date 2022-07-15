@@ -17,7 +17,7 @@
   transform: skewY(8deg);
   transform-origin: 100%;
 
-  @media (max-width: 480px) {
+  @media (max-width: 600px) {
     max-height: 486px;
     padding-top: 40px;
     transform: none;
@@ -219,13 +219,17 @@ section#intro {
   }
 }
 
+.cta-link {
+  margin: auto;
+}
+
 .button.hero-cta {
   padding: 2px 34px 0;
   @include mixins.font-size(18);
   font-weight: 600;
   @include mixins.line-height(40);
   border-radius: 48px;
-  box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,.50);
   box-sizing: border-box;
   cursor: pointer;
 
@@ -277,13 +281,13 @@ aio-shell:not(.view-SideNav) {
 }
 
 div[layout=row]{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
 
-    @media (max-width: 480px) {
-      display: block;
+  @media (max-width: 600px) {
+    display: block;
   }
 }
 
@@ -308,9 +312,10 @@ div[layout=row]{
   margin: 32px auto;
 
   .promo-img-container, .text-container {
-    max-width: 50%;
+    align-self: flex-start;
+    min-width: 30%;
 
-    @media(max-width: 480px) {
+    @media(max-width: 600px) {
       max-width: 100%;
       text-align: center;
 
@@ -320,11 +325,11 @@ div[layout=row]{
     }
   }
 
-  .text-block {
-    padding-right: 15%;
+  .text-container:not(:last-child) {
+    padding-right: 5%;
 
-    @media(max-width: 600px) {
-      padding: 0;
+    @media (max-width: 600px) {
+      padding-right: 0;
     }
   }
 
