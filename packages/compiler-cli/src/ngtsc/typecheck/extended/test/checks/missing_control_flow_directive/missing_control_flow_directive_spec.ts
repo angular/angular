@@ -13,14 +13,12 @@ import {absoluteFrom, getSourceFileOrError} from '../../../../../file_system';
 import {runInEachFileSystem} from '../../../../../file_system/testing';
 import {getSourceCodeForDiagnostic} from '../../../../../testing';
 import {getClass, setup} from '../../../../testing';
-import {factory as missingControlFlowDirectiveCheck} from '../../../checks/missing_control_flow_directive';
+import {factory as missingControlFlowDirectiveCheck, KNOWN_CONTROL_FLOW_DIRECTIVES} from '../../../checks/missing_control_flow_directive';
 import {ExtendedTemplateCheckerImpl} from '../../../src/extended_template_checker';
-
-const KNOWN_CONTROL_FLOW_DIRECTIVES = ['ngIf', 'ngFor', 'ngSwitchCase', 'ngSwitchDefault'];
 
 runInEachFileSystem(() => {
   describe('MissingControlFlowDirectiveCheck', () => {
-    KNOWN_CONTROL_FLOW_DIRECTIVES.forEach(directive => {
+    KNOWN_CONTROL_FLOW_DIRECTIVES.forEach((correspondingImport, directive) => {
       ['div', 'ng-template', 'ng-container', 'ng-content'].forEach(element => {
         it(`should produce a warning when the '${directive}' directive is not imported ` +
                `(when used on the '${element}' element)`,
@@ -47,6 +45,14 @@ runInEachFileSystem(() => {
              expect(diags.length).toBe(1);
              expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
              expect(diags[0].code).toBe(ngErrorCode(ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE));
+             expect(diags[0].messageText)
+                 .toBe(
+                     `The \`*${directive}\` directive was used in the template, ` +
+                     `but neither the \`${
+                         correspondingImport}\` directive nor the \`CommonModule\` was imported. ` +
+                     `Please make sure that either the \`${
+                         correspondingImport}\` directive or the \`CommonModule\` ` +
+                     `is included in the \`@Component.imports\` array of this component.`);
              expect(getSourceCodeForDiagnostic(diags[0])).toBe(directive);
            });
 
