@@ -1,0 +1,7 @@
+extends: existence
+message: With lowercase letters, the periods are standard.
+ignorecase: true
+level: error
+nonword: true
+tokens:
+  - '\d{1,2} ?[ap]m'

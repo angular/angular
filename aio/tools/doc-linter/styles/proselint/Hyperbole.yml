@@ -1,0 +1,7 @@
+extends: existence
+message: "'%s' is hyperbolic."
+level: error
+nonword: true
+tokens:
+  - '[a-z]*[!]{2,}'
+  - '[a-z]*\?{2,}'

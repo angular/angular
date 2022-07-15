@@ -1,0 +1,8 @@
+# tests for blank lines after an HTML tag or tag group
+extends: existence
+message: 'HTML in the Markdown should be followed by a blank line.'
+link: https://angular.io/guide/docs-style-guide#markdown-and-html
+level: error
+scope: raw
+raw:
+  - '[\r\n]\<.+\>[\r\n](?!(\s*[\r\n\<]))'

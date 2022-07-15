@@ -1,0 +1,17 @@
+{
+  "author": "jdkato",
+  "description": "A Vale-compatible implementation of the proselint linter.",
+  "email": "support@errata.ai",
+  "lang": "en",
+  "url": "https://github.com/errata-ai/proselint/releases/latest/download/proselint.zip",
+  "feed": "https://github.com/errata-ai/proselint/releases.atom",
+  "issues": "https://github.com/errata-ai/proselint/issues/new",
+  "license": "BSD-3-Clause",
+  "name": "proselint",
+  "sources": [
+    "https://github.com/amperser/proselint"
+  ],
+  "vale_version": ">=1.0.0",
+  "coverage": 0.0,
+  "version": "0.1.0"
+}
