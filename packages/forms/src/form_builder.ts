@@ -190,27 +190,16 @@ export class FormBuilder {
                                                                              any}|null = null):
       FormGroup {
     const reducedControls = this._reduceControls(controls);
-
-    let validators: ValidatorFn|ValidatorFn[]|null = null;
-    let asyncValidators: AsyncValidatorFn|AsyncValidatorFn[]|null = null;
-    let updateOn: FormHooks|undefined = undefined;
-
-    if (options !== null) {
-      if (isAbstractControlOptions(options)) {
-        // `options` are `AbstractControlOptions`
-        validators = options.validators != null ? options.validators : null;
-        asyncValidators = options.asyncValidators != null ? options.asyncValidators : null;
-        updateOn = options.updateOn != null ? options.updateOn : undefined;
-      } else {
-        // `options` are legacy form group options
-        validators = (options as any)['validator'] != null ? (options as any)['validator'] : null;
-        asyncValidators =
-            (options as any)['asyncValidator'] != null ? (options as any)['asyncValidator'] : null;
-      }
+    let newOptions: FormControlOptions = {};
+    if (isAbstractControlOptions(options)) {
+      // `options` are `AbstractControlOptions`
+      newOptions = options;
+    } else if (options !== null) {
+      // `options` are legacy form group options
+      newOptions.validators = (options as any).validator;
+      newOptions.asyncValidators = (options as any).asyncValidator;
     }
-
-    // Cast to `any` because the inferred types are not as specific as Element.
-    return new FormGroup(reducedControls, {asyncValidators, updateOn, validators}) as any;
+    return new FormGroup(reducedControls, newOptions);
   }
 
   /** @deprecated Use `nonNullable` instead. */
