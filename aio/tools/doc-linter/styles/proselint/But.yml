@@ -1,0 +1,6 @@
+extends: existence
+message: "Do not start a paragraph with a 'but'."
+level: error
+scope: paragraph
+tokens:
+  - ^But

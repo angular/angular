@@ -1,0 +1,10 @@
+# adapted from Google style library
+extends: existence
+message: "Use 'they' as a gender-neutral substitute for '%s'."
+link: 'https://developers.google.com/style/pronouns#gender-neutral-pronouns'
+level: error
+ignorecase: true
+tokens:
+  - he/she
+  - s/he
+  - \(s\)he

@@ -1,0 +1,10 @@
+# copied from Google style library
+# tests for correct format of numbers followed by units
+extends: existence
+message: "If '%s' is not code, put a nonbreaking space between the number and the unit."
+link: 'https://developers.google.com/style/units-of-measure'
+nonword: true
+level: error
+tokens:
+  - \d+(?:B|kB|MB|GB|TB)
+  - \d+(?:ns|ms|s|min|h|d)

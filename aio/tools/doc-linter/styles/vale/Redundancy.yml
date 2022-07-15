@@ -1,0 +1,67 @@
+extends: existence
+message: "'%s' is redundant"
+ignorecase: true
+level: error
+tokens:
+  - (?:added|extra) bonus
+  - (?:advance|prior) notice
+  - (?:gather|assemble|attach|blend|mix|combine|collaborate|connect|cooperate) together
+  - (?:terrible|horrible) tragedy
+  - \d{1,2} ?a\.?m\.? in the morning
+  - \d{1,2} ?p\.?m\.? at night
+  - \d{1,2} ?p\.?m\.? in the afternoon
+  - \d{1,2} ?p\.?m\.? in the evening
+  - ABM missile
+  - ABM missiles
+  - ABS braking system
+  - absolutely (?:necessary|essential)
+  - ACT test
+  - already existing
+  - armed gunman
+  - artificial prosthesis
+  - ATM machine
+  - bald-headed
+  - brief (?:moment|summary)
+  - CD disc
+  - cease and desist
+  - circle around
+  - close proximity
+  - closed fist
+  - completely (?:destroyed|eliminate|engulfed|filled|surround)
+  - could possibly
+  - CPI Index
+  - current trend(s)?
+  - end result
+  - enter in
+  - erode away
+  - false pretense
+  - final result
+  - free gift
+  - GPS system
+  - GUI interface
+  - HIV virus
+  - inner feelings
+  - ISBN number
+  - join together
+  - LCD display
+  - local resident(s)?
+  - natural instinct
+  - new invention
+  - null and void
+  - past history
+  - PDF format
+  - PIN number
+  - please RSVP
+  - RAM memory
+  - RAS syndrome
+  - RIP in peace
+  - safe haven
+  - SALT talks
+  - SAT test
+  - shout loudly
+  - surrounded on all sides
+  - undergraduate student
+  - unexpected surprise
+  - unintended mistake
+  - UPC code(s)?
+  - violent explosion

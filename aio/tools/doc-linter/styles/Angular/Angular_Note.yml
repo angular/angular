@@ -1,0 +1,11 @@
+# tests for NOTE strings that are not bolded
+extends: existence
+message: 'Alert heading must be bold.'
+link: https://angular.io/guide/docs-style-guide#alerts-and-callouts
+level: error
+ignorecase: false
+scope: raw
+raw:
+  - (?<!\*\*)NOTE[^\*]*(?!\*\*)
+  - (?<!\*\*)TIP[^\*]*(?!\*\*)
+  - (?<!\*\*)IMPORTANT[^\*]*(?!\*\*)

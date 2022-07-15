@@ -1,0 +1,8 @@
+# code and CLI references that should be marked as code
+extends: existence
+message: 'Clarify if this refers to a specific CLI, a specific ng command, or a command-line tool.'
+link: 'https://angular.io/guide/glossary#command-line-interface-cli'
+ignorecase: false
+level: warning
+tokens:
+  - '((?<!Angular )CLI(?! [B|b]uilder))'

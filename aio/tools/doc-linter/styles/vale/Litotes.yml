@@ -1,0 +1,28 @@
+extends: substitution
+message: Consider using '%s' instead of '%s'
+ignorecase: true
+level: warning
+swap:
+  no minor: major
+  no ordinary: extraordinary
+  no(?:t)? small: large
+  not (?:a)? bad: good
+  not accept(?:ed)?: rejected
+  not allow(?:ed)?: prevented
+  not certain: uncertain
+  not consider(?:ed)?: ignored
+  not fail: passed
+  not have: lack(s)
+  not many: few
+  not old enough: too young
+  not remember: forgot
+  not succeed: failed
+  not the brightest: dumb
+  not the same: different
+  not unaware: aware
+  not unclean: clean
+  not unfamiliar: familiar
+  not unlike: like
+  not unpleasant: pleasant
+  not useless: useful
+  not wrong: right
