@@ -858,6 +858,7 @@ groups:
           'aio/content/examples/getting-started-v0/**/{*,.*}',
           'aio/content/examples/getting-started/**/{*,.*}',
           'aio/content/start/**/{*,.*}',
+          'aio/content/guide/quick-start.md',
           'aio/content/images/guide/start/**/{*,.*}',
           'aio/content/examples/what-is-angular/**/{*,.*}',
           'aio/content/guide/what-is-angular.md'
@@ -875,6 +876,7 @@ groups:
     conditions:
       - >
         contains_any_globs(files.exclude("aio/content/marketing/contributors.json"), [
+          'aio/content/examples/marketing-first-app/**/{*,.*}',
           'aio/content/guide/roadmap.md',
           'aio/content/marketing/**/{*,.*}',
           'aio/content/images/marketing/**/{*,.*}',
