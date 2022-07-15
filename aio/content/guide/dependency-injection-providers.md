@@ -1,20 +1,40 @@
-# Defining Dependency providers
+# Configuring dependency providers
 
+The Creating and injecting services topic describes how to use classes as dependencies. In addition to classes, you can also use other values such as Boolean, string, date, and objects as dependencies. Angular DI provides the necessary APIs to make the dependency configuration flexible, so you can make those values available in DI.
+
+<comment>
 In order for Angular to know how to create a dependency, it needs a provider factory function. A provider factory function is a plain function that Angular can call to create a dependency. By configuring providers, you can make services available to the parts of your application that need them.
 
 A dependency [provider](guide/glossary#provider) configures an injector with a [DI token](guide/glossary#di-token), which that injector uses to provide the runtime version of a dependency value.
 
+
 ## Specifying a provider token
 
-If you specify the service class as the provider token, the default behavior is for the injector to instantiate that class with `new`.
+If you specify the service class as the provider token, the default behavior is for the injector to instantiate that class using the `new` operator.
 
 In the following example, the `Logger` class provides a `Logger` instance.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-logger"></code-example>
 
-You can, however, configure an injector with an alternative provider to deliver some other object that provides the needed logging functionality.
+You can, however, configure a DI to use a different class or any other different value to associate with the `Logger` class. So when the `Logger` is injected, this new value is used instead.
 
-Configure an injector with a service class, and provide a substitute class, an object, or a factory function.
+In fact, the class provider syntax is a shorthand expression that expands into a provider configuration, defined by the Provider interface.
+
+Angular expands the providers value in this case into a full provider object as follows:
+
+```
+[{ provide: Logger, useClass: Logger }]
+```
+The expanded provider configuration is an object literal with two properties:
+* The provide property holds the token that serves as the key for both locating a dependency value and configuring the injector.
+* The second property is a provider definition object, which tells the injector how to create the dependency value. The provider-definition key can be one of the following:
+    * useClass - this option tells Angular DI to instantiate a provided class when a dependency is injected
+    * useExisting - allows you to alias a token and reference any existing one.
+    * useFactory - allows you to define a function that constructs a dependency.
+    * useValue - provides a static value that should be used as a dependency.
+
+The section below describes how to use the mentioned provider definition keys.
+
 
 <a id="token"></a>
 <a id="injection-token"></a>
