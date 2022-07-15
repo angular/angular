@@ -1,0 +1,11 @@
+extends: existence
+message: "'%s' is jargon."
+ignorecase: true
+level: error
+tokens:
+  - in the affirmative
+  - in the negative
+  - agendize
+  - per your order
+  - per your request
+  - disincentivize

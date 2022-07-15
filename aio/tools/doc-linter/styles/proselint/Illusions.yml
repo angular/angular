@@ -1,0 +1,6 @@
+extends: existence
+message: "'%s' - There's a lexical illusion here."
+tokens:
+  - the\sthe
+  - am\sam
+  - has\shas
