@@ -1,0 +1,7 @@
+extends: existence
+message: "It's standard to put a space before '%s'"
+ignorecase: true
+level: error
+nonword: true
+tokens:
+  - '\d{1,2}[ap]\.?m\.?'
