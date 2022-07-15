@@ -93,7 +93,7 @@ export interface TestEnvironmentOptions {
  * @publicApi
  */
 export interface ModuleTeardownOptions {
-  /** Whether the test module should be destroyed after every test. */
+  /** Whether the test module should be destroyed after every test. Defaults to `true`. */
   destroyAfterEach: boolean;
 
   /** Whether errors during test module destruction should be re-thrown. Defaults to `true`. */
