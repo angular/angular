@@ -634,7 +634,7 @@ describe('NgModule', () => {
       lines.forEach(line => expect(errorMessage).toMatch(line));
     });
 
-    KNOWN_CONTROL_FLOW_DIRECTIVES.forEach(directive => {
+    KNOWN_CONTROL_FLOW_DIRECTIVES.forEach((correspondingImport, directive) => {
       it(`should produce a warning when the '${directive}' directive ` +
              `is used in a template, but not imported in corresponding NgModule`,
          () => {
@@ -663,7 +663,8 @@ describe('NgModule', () => {
              `NG0303: Can't bind to '${
                  directive}' since it isn't a known property of 'div' \\(used in the 'App' component template\\).`,
              `If the '${directive}' is an Angular control flow directive, please make sure ` +
-                 `that the 'CommonModule' is a part of an @NgModule where this component is declared.`
+                 `that either the '${
+                     correspondingImport}' directive or the 'CommonModule' is a part of an @NgModule where this component is declared.`
            ];
            lines.forEach(line => expect(errorMessage).toMatch(line));
          });
@@ -690,7 +691,8 @@ describe('NgModule', () => {
              `NG0303: Can't bind to '${
                  directive}' since it isn't a known property of 'div' \\(used in the 'App' component template\\).`,
              `If the '${directive}' is an Angular control flow directive, please make sure ` +
-                 `that the 'CommonModule' is included in the '@Component.imports' of this component.`
+                 `that either the '${
+                     correspondingImport}' directive or the 'CommonModule' is included in the '@Component.imports' of this component.`
            ];
            lines.forEach(line => expect(errorMessage).toMatch(line));
          });
