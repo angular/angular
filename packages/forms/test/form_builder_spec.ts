@@ -156,6 +156,13 @@ describe('Form Builder', () => {
     expect(g.asyncValidator).toBe(asyncValidator);
   });
 
+  it('should create groups with null options', () => {
+    const g = b.group({'login': 'some value'}, null);
+
+    expect(g.validator).toBe(null);
+    expect(g.asyncValidator).toBe(null);
+  });
+
   it('should create control arrays', () => {
     const c = b.control('three');
     const e = b.control(null);
