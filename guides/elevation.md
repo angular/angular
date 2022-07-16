@@ -8,7 +8,7 @@ these shadows.
 
 ## Elevation CSS classes
 
-The `core-theme` Sass mixin, described in the [theming guide][], emits CSS classes for applying
+The `core-theme` Sass mixin, described in the [theming guide][theming-guide], emits CSS classes for applying
 elevation. These classes follow the pattern `mat-elevation-z#`, where `#` is the elevation number
 you want, from 0 to 24. These predefined classes use the CSS `box-shadow` settings defined by the
 Material Design specification.
