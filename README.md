@@ -65,7 +65,7 @@ Get started with Angular, learn the fundamentals and explore advanced topics on 
 
 ### Prerequisites
 
-- Install [Node.js] which includes [Node Package Manager][npm]
+- First, install [Node.js] which includes [Node Package Manager][npm]
 
 ### Setting Up a Project
 
