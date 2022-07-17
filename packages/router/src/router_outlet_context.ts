@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentFactoryResolver, ComponentRef, EnvironmentInjector} from '@angular/core';
+import {ComponentFactoryResolver, ComponentRef, EnvironmentInjector, Injectable} from '@angular/core';
 
 import {RouterOutletContract} from './directives/router_outlet';
 import {ActivatedRoute} from './router_state';
@@ -35,6 +35,7 @@ export class OutletContext {
  *
  * @publicApi
  */
+@Injectable({providedIn: 'root'})
 export class ChildrenOutletContexts {
   // contexts for child outlets, by name.
   private contexts = new Map<string, OutletContext>();

@@ -8,7 +8,6 @@
 
 import '@angular/compiler';
 
-import {withBody} from '@angular/private/testing';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -28,29 +27,5 @@ describe('treeshaking with uglify', () => {
   it('should not contain rxjs from commonjs distro', () => {
     expect(content).not.toContain('commonjsGlobal');
     expect(content).not.toContain('createCommonjsModule');
-  });
-
-  it('should not contain zone.js', () => {
-    expect(content).not.toContain('global[\'Zone\'] = Zone');
-  });
-
-  describe('functional test in domino', () => {
-    it('should render hello world when not minified',
-       withBody('<hello-world></hello-world>', () => {
-         require(path.join(PACKAGE, 'bundle.js'));
-         expect(document.body.textContent).toEqual('Hello World!');
-       }));
-
-    it('should render hello world when debug minified',
-       withBody('<hello-world></hello-world>', () => {
-         require(path.join(PACKAGE, 'bundle.debug.min.js'));
-         expect(document.body.textContent).toEqual('Hello World!');
-       }));
-
-    it('should render hello world when fully minified',
-       withBody('<hello-world></hello-world>', () => {
-         require(path.join(PACKAGE, 'bundle.min.js'));
-         expect(document.body.textContent).toEqual('Hello World!');
-       }));
   });
 });

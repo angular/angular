@@ -5,8 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {fakeAsync, tick} from '@angular/core/testing';
-import {FormBuilder, UntypedFormBuilder, Validators} from '@angular/forms';
+import {Component} from '@angular/core';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {FormBuilder, NonNullableFormBuilder, ReactiveFormsModule, UntypedFormBuilder, Validators} from '@angular/forms';
 import {of} from 'rxjs';
 
 (function() {
@@ -67,6 +68,32 @@ describe('Form Builder', () => {
     expect(g.controls['login'].value).toEqual('some value');
   });
 
+  describe('should create control records', () => {
+    it('from simple values', () => {
+      const a = b.record({a: 'one', b: 'two'});
+      expect(a.value).toEqual({a: 'one', b: 'two'});
+    });
+
+    it('from boxed values', () => {
+      const a = b.record({a: 'one', b: {value: 'two', disabled: true}});
+      expect(a.value).toEqual({a: 'one'});
+      a.get('b')?.enable();
+      expect(a.value).toEqual({a: 'one', b: 'two'});
+    });
+
+    it('from an array', () => {
+      const a = b.record({a: ['one']});
+      expect(a.value).toEqual({a: 'one'});
+    });
+
+    it('from controls whose form state is a primitive value', () => {
+      const record = b.record({'login': b.control('some value', syncValidator, asyncValidator)});
+
+      expect(record.controls['login'].value).toEqual('some value');
+      expect(record.controls['login'].validator).toBe(syncValidator);
+      expect(record.controls['login'].asyncValidator).toBe(asyncValidator);
+    });
+  });
   it('should create homogenous control arrays', () => {
     const a = b.array(['one', 'two', 'three']);
     expect(a.value).toEqual(['one', 'two', 'three']);
@@ -155,6 +182,13 @@ describe('Form Builder', () => {
     expect(g.asyncValidator).toBe(asyncValidator);
   });
 
+  it('should create groups with null options', () => {
+    const g = b.group({'login': 'some value'}, null);
+
+    expect(g.validator).toBe(null);
+    expect(g.asyncValidator).toBe(null);
+  });
+
   it('should create control arrays', () => {
     const c = b.control('three');
     const e = b.control(null);
@@ -195,6 +229,60 @@ describe('Form Builder', () => {
     const a = b.array(['one', 'two'], [syncValidator1, syncValidator2]);
     expect(a.value).toEqual(['one', 'two']);
     expect(a.errors).toEqual({'sync1': true, 'sync2': true});
+  });
+
+  it('should be injectable', () => {
+    @Component({
+      standalone: true,
+      template: '...',
+    })
+    class MyComp {
+      constructor(public fb: FormBuilder) {}
+    }
+
+    TestBed.configureTestingModule({imports: [ReactiveFormsModule]});
+    const fixture = TestBed.createComponent(MyComp);
+
+    fixture.detectChanges();
+    expect(fixture.componentInstance.fb).toBeInstanceOf(FormBuilder);
+
+    const fc = fixture.componentInstance.fb.control('foo');
+    {
+      // Check the type of the value by assigning in each direction
+      type ValueType = string|null;
+      let t: ValueType = fc.value;
+      let t1 = fc.value;
+      t1 = null as unknown as ValueType;
+    }
+    fc.reset();
+    expect(fc.value).toEqual(null);
+  });
+
+  it('should be injectable as NonNullableFormBuilder', () => {
+    @Component({
+      standalone: true,
+      template: '...',
+    })
+    class MyComp {
+      constructor(public fb: NonNullableFormBuilder) {}
+    }
+
+    TestBed.configureTestingModule({imports: [ReactiveFormsModule]});
+
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.fb).toBeInstanceOf(FormBuilder);
+
+    const fc = fixture.componentInstance.fb.control('foo');
+    {
+      // Check the type of the value by assigning in each direction
+      type ValueType = string;
+      let t: ValueType = fc.value;
+      let t1 = fc.value;
+      t1 = null as unknown as ValueType;
+    }
+    fc.reset();
+    expect(fc.value).toEqual('foo');
   });
 
   describe('updateOn', () => {

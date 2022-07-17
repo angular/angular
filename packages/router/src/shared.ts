@@ -111,18 +111,6 @@ export function convertToParamMap(params: Params): ParamMap {
   return new ParamsAsMap(params);
 }
 
-const NAVIGATION_CANCELING_ERROR = 'ngNavigationCancelingError';
-
-export function navigationCancelingError(message: string) {
-  const error = Error('NavigationCancelingError: ' + message);
-  (error as any)[NAVIGATION_CANCELING_ERROR] = true;
-  return error;
-}
-
-export function isNavigationCancelingError(error: Error) {
-  return error && (error as any)[NAVIGATION_CANCELING_ERROR];
-}
-
 // Matches the route configuration (`route`) against the actual URL (`segments`).
 export function defaultUrlMatcher(
     segments: UrlSegment[], segmentGroup: UrlSegmentGroup, route: Route): UrlMatchResult|null {

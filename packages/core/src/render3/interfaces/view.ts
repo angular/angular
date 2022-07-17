@@ -18,7 +18,7 @@ import {I18nUpdateOpCodes, TI18n, TIcu} from './i18n';
 import {TConstants, TNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
-import {Renderer3, RendererFactory3} from './renderer';
+import {Renderer, RendererFactory} from './renderer';
 import {RComment, RElement} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';
 
@@ -168,8 +168,8 @@ export interface LView<T = unknown> extends Array<any> {
    * TView.cleanup saves an index to the necessary context in this array.
    *
    * After `LView` is created it is possible to attach additional instance specific functions at the
-   * end of the `lView[CLENUP]` because we know that no more `T` level cleanup functions will be
-   * addeded here.
+   * end of the `lView[CLEANUP]` because we know that no more `T` level cleanup functions will be
+   * added here.
    */
   [CLEANUP]: any[]|null;
 
@@ -186,10 +186,10 @@ export interface LView<T = unknown> extends Array<any> {
   readonly[INJECTOR]: Injector|null;
 
   /** Factory to be used for creating Renderer. */
-  [RENDERER_FACTORY]: RendererFactory3;
+  [RENDERER_FACTORY]: RendererFactory;
 
   /** Renderer to be used for this view. */
-  [RENDERER]: Renderer3;
+  [RENDERER]: Renderer;
 
   /** An optional custom sanitizer. */
   [SANITIZER]: Sanitizer|null;
@@ -368,50 +368,33 @@ export const enum LViewFlags {
   /** Whether this view has default change detection strategy (checks always) or onPush */
   CheckAlways = 0b00000010000,
 
-  /**
-   * Whether or not manual change detection is turned on for onPush components.
-   *
-   * This is a special mode that only marks components dirty in two cases:
-   * 1) There has been a change to an @Input property
-   * 2) `markDirty()` has been called manually by the user
-   *
-   * Note that in this mode, the firing of events does NOT mark components
-   * dirty automatically.
-   *
-   * Manual mode is turned off by default for backwards compatibility, as events
-   * automatically mark OnPush components dirty in View Engine.
-   *
-   * TODO: Add a public API to ChangeDetectionStrategy to turn this mode on
-   */
-  ManualOnPush = 0b00000100000,
-
   /** Whether or not this view is currently dirty (needing check) */
-  Dirty = 0b000001000000,
+  Dirty = 0b00000100000,
 
   /** Whether or not this view is currently attached to change detection tree. */
-  Attached = 0b000010000000,
+  Attached = 0b000001000000,
 
   /** Whether or not this view is destroyed. */
-  Destroyed = 0b000100000000,
+  Destroyed = 0b000010000000,
 
   /** Whether or not this view is the root view */
-  IsRoot = 0b001000000000,
+  IsRoot = 0b000100000000,
 
   /**
    * Whether this moved LView was needs to be refreshed at the insertion location because the
    * declaration was dirty.
    */
-  RefreshTransplantedView = 0b0010000000000,
+  RefreshTransplantedView = 0b001000000000,
 
   /** Indicates that the view **or any of its ancestors** have an embedded view injector. */
-  HasEmbeddedViewInjector = 0b0100000000000,
+  HasEmbeddedViewInjector = 0b0010000000000,
 
   /**
    * Index of the current init phase on last 21 bits
    */
-  IndexWithinInitPhaseIncrementer = 0b01000000000000,
-  IndexWithinInitPhaseShift = 12,
-  IndexWithinInitPhaseReset = 0b00111111111111,
+  IndexWithinInitPhaseIncrementer = 0b0100000000000,
+  IndexWithinInitPhaseShift = 11,
+  IndexWithinInitPhaseReset = 0b0011111111111,
 }
 
 /**
@@ -533,7 +516,7 @@ export const enum TViewType {
 
   /**
    * `TView` associated with a template. Such as `*ngIf`, `<ng-template>` etc... A `Component`
-   * can have zero or more `Embedede` `TView`s.
+   * can have zero or more `Embedded` `TView`s.
    */
   Embedded = 2,
 }

@@ -64,6 +64,25 @@ runInEachFileSystem(() => {
           name: _('/node_modules/top-package/package.json'),
           contents: 'PACKAGE.JSON for top-package'
         },
+        {
+          name: _('/node_modules/apf-v14-package/package.json'),
+          contents: `{
+            "name": "apf-v14-package",
+            "exports": {
+              "./second/ary": {
+                "main": "./second/ary/index.js"
+              }
+            }
+          }`,
+        },
+        {
+          name: _('/node_modules/apf-v14-package/index.js'),
+          contents: `export const type = 'primary';`,
+        },
+        {
+          name: _('/node_modules/apf-v14-package/second/ary/index.js'),
+          contents: `export const type = 'secondary';`,
+        },
       ]);
     });
 
@@ -143,6 +162,17 @@ runInEachFileSystem(() => {
                      'package-1/sub-folder', _('/libs/local-package/index.js')))
               .toEqual(new ResolvedDeepImport(
                   _('/libs/local-package/node_modules/package-1/sub-folder')));
+        });
+
+        it('should resolve to APF v14+ secondary entry-points', () => {
+          const resolver = new ModuleResolver(getFileSystem());
+
+          expect(resolver.resolveModuleImport(
+                     'apf-v14-package/second/ary', _('/libs/local-package/index.js')))
+              .toEqual(new ResolvedExternalModule(_('/node_modules/apf-v14-package/second/ary')));
+          expect(resolver.resolveModuleImport(
+                     'apf-v14-package/second/ary', _('/libs/local-package/sub-folder/index.js')))
+              .toEqual(new ResolvedExternalModule(_('/node_modules/apf-v14-package/second/ary')));
         });
       });
 
@@ -256,6 +286,20 @@ runInEachFileSystem(() => {
                         'package-4/secondary-entry-point', _('/dist/package-4/index.js')))
                  .toEqual(new ResolvedExternalModule(_('/dist/package-4/secondary-entry-point')));
            });
+
+        it('should resolve APF v14+ secondary entry-points', () => {
+          const resolver = new ModuleResolver(getFileSystem(), {
+            baseUrl: '/node_modules',
+            paths: {'package-42': ['apf-v14-package'], 'package-42/*': ['apf-v14-package/*']},
+          });
+
+          expect(resolver.resolveModuleImport(
+                     'package-42/second/ary', _('/libs/local-package/index.js')))
+              .toEqual(new ResolvedExternalModule(_('/node_modules/apf-v14-package/second/ary')));
+          expect(resolver.resolveModuleImport(
+                     'package-42/second/ary', _('/libs/local-package/sub-folder/index.js')))
+              .toEqual(new ResolvedExternalModule(_('/node_modules/apf-v14-package/second/ary')));
+        });
       });
 
       describe('with mapped path relative paths', () => {

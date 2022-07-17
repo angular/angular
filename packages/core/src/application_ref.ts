@@ -18,7 +18,7 @@ import {Console} from './console';
 import {Injectable} from './di/injectable';
 import {InjectionToken} from './di/injection_token';
 import {Injector} from './di/injector';
-import {Provider, StaticProvider} from './di/interface/provider';
+import {ImportedNgModuleProviders, Provider, StaticProvider} from './di/interface/provider';
 import {EnvironmentInjector} from './di/r3_injector';
 import {INJECTOR_SCOPE} from './di/scope';
 import {ErrorHandler} from './error_handler';
@@ -40,7 +40,7 @@ import {setJitOptions} from './render3/jit/jit_options';
 import {isStandalone} from './render3/jit/module';
 import {createEnvironmentInjector, NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from './render3/util/global_utils';
-import {Testability, TestabilityRegistry} from './testability/testability';
+import {TESTABILITY} from './testability/testability';
 import {isPromise} from './util/lang';
 import {scheduleMicroTask} from './util/microtask';
 import {stringify} from './util/stringify';
@@ -60,7 +60,8 @@ export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultip
  * `PlatformRef` class (i.e. register the callback via `PlatformRef.onDestroy`), thus making the
  * entire class tree-shakeable.
  */
-const PLATFORM_ON_DESTROY = new InjectionToken<() => void>('PlatformOnDestroy');
+const PLATFORM_DESTROY_LISTENERS =
+    new InjectionToken<Set<VoidFunction>>('PlatformDestroyListeners');
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
@@ -138,10 +139,10 @@ export class NgProbeToken {
  */
 export function createPlatform(injector: Injector): PlatformRef {
   if (_platformInjector && !_platformInjector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
-    const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-        'There can be only one platform. Destroy the previous one to create a new one.' :
-        '';
-    throw new RuntimeError(RuntimeErrorCode.MULTIPLE_PLATFORMS, errorMessage);
+    throw new RuntimeError(
+        RuntimeErrorCode.MULTIPLE_PLATFORMS,
+        ngDevMode &&
+            'There can be only one platform. Destroy the previous one to create a new one.');
   }
   publishDefaultGlobalUtils();
   _platformInjector = injector;
@@ -185,9 +186,9 @@ export function runPlatformInitializers(injector: Injector): void {
  *
  * @returns A promise that returns an `ApplicationRef` instance once resolved.
  */
-export function bootstrapApplication(config: {
+export function internalBootstrapApplication(config: {
   rootComponent: Type<unknown>,
-  appProviders?: Provider[],
+  appProviders?: Array<Provider|ImportedNgModuleProviders>,
   platformProviders?: Provider[],
 }): Promise<ApplicationRef> {
   const {rootComponent, appProviders, platformProviders} = config;
@@ -230,7 +231,18 @@ export function bootstrapApplication(config: {
         setLocaleId(localeId || DEFAULT_LOCALE_ID);
 
         const appRef = appInjector.get(ApplicationRef);
-        appRef.onDestroy(() => onErrorSubscription.unsubscribe());
+
+        // If the whole platform is destroyed, invoke the `destroy` method
+        // for all bootstrapped applications as well.
+        const destroyListener = () => appRef.destroy();
+        const onPlatformDestroyListeners = platformInjector.get(PLATFORM_DESTROY_LISTENERS, null);
+        onPlatformDestroyListeners?.add(destroyListener);
+
+        appRef.onDestroy(() => {
+          onPlatformDestroyListeners?.delete(destroyListener);
+          onErrorSubscription.unsubscribe();
+        });
+
         appRef.bootstrap(rootComponent);
         return appRef;
       });
@@ -281,9 +293,7 @@ export function assertPlatform(requiredToken: any): PlatformRef {
   const platform = getPlatform();
 
   if (!platform) {
-    const errorMessage =
-        (typeof ngDevMode === 'undefined' || ngDevMode) ? 'No platform exists!' : '';
-    throw new RuntimeError(RuntimeErrorCode.PLATFORM_NOT_FOUND, errorMessage);
+    throw new RuntimeError(RuntimeErrorCode.PLATFORM_NOT_FOUND, ngDevMode && 'No platform exists!');
   }
 
   if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
@@ -305,7 +315,7 @@ export function createPlatformInjector(providers: StaticProvider[] = [], name?: 
     name,
     providers: [
       {provide: INJECTOR_SCOPE, useValue: 'platform'},
-      {provide: PLATFORM_ON_DESTROY, useValue: () => _platformInjector = null},  //
+      {provide: PLATFORM_DESTROY_LISTENERS, useValue: new Set([() => _platformInjector = null])},
       ...providers
     ],
   });
@@ -331,7 +341,9 @@ export function getPlatform(): PlatformRef|null {
 }
 
 /**
- * Provides additional options to the bootstraping process.
+ * Provides additional options to the bootstrapping process.
+ *
+ * @publicApi
  */
 export interface BootstrapOptions {
   /**
@@ -353,7 +365,7 @@ export interface BootstrapOptions {
    *
    * When button is clicked, because of the event bubbling, both
    * event handlers will be called and 2 change detections will be
-   * triggered. We can colesce such kind of events to only trigger
+   * triggered. We can coalesce such kind of events to only trigger
    * change detection only once.
    *
    * By default, this option will be false. So the events will not be
@@ -426,10 +438,9 @@ export class PlatformRef {
       const moduleRef = <InternalNgModuleRef<M>>moduleFactory.create(ngZoneInjector);
       const exceptionHandler: ErrorHandler|null = moduleRef.injector.get(ErrorHandler, null);
       if (!exceptionHandler) {
-        const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-            'No ErrorHandler. Is platform module (BrowserModule) included?' :
-            '';
-        throw new RuntimeError(RuntimeErrorCode.ERROR_HANDLER_NOT_FOUND, errorMessage);
+        throw new RuntimeError(
+            RuntimeErrorCode.ERROR_HANDLER_NOT_FOUND,
+            ngDevMode && 'No ErrorHandler. Is platform module (BrowserModule) included?');
       }
       ngZone!.runOutsideAngular(() => {
         const subscription = ngZone!.onError.subscribe({
@@ -488,12 +499,12 @@ export class PlatformRef {
     } else if (moduleRef.instance.ngDoBootstrap) {
       moduleRef.instance.ngDoBootstrap(appRef);
     } else {
-      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-          `The module ${stringify(moduleRef.instance.constructor)} was bootstrapped, ` +
-              `but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
-              `Please define one of these.` :
-          '';
-      throw new RuntimeError(RuntimeErrorCode.BOOTSTRAP_COMPONENTS_NOT_FOUND, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.BOOTSTRAP_COMPONENTS_NOT_FOUND,
+          ngDevMode &&
+              `The module ${stringify(moduleRef.instance.constructor)} was bootstrapped, ` +
+                  `but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
+                  `Please define one of these.`);
     }
     this._modules.push(moduleRef);
   }
@@ -519,16 +530,18 @@ export class PlatformRef {
    */
   destroy() {
     if (this._destroyed) {
-      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-          'The platform has already been destroyed!' :
-          '';
-      throw new RuntimeError(RuntimeErrorCode.PLATFORM_ALREADY_DESTROYED, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.PLATFORM_ALREADY_DESTROYED,
+          ngDevMode && 'The platform has already been destroyed!');
     }
     this._modules.slice().forEach(module => module.destroy());
     this._destroyListeners.forEach(listener => listener());
 
-    const destroyListener = this._injector.get(PLATFORM_ON_DESTROY, null);
-    destroyListener?.();
+    const destroyListeners = this._injector.get(PLATFORM_DESTROY_LISTENERS, null);
+    if (destroyListeners) {
+      destroyListeners.forEach(listener => listener());
+      destroyListeners.clear();
+    }
 
     this._destroyed = true;
   }
@@ -729,15 +742,19 @@ export class ApplicationRef {
   // TODO(issue/24571): remove '!'.
   public readonly isStable!: Observable<boolean>;
 
-  /** @internal */
-  get injector(): Injector {
+  /**
+   * The `EnvironmentInjector` used to create this application.
+   */
+  get injector(): EnvironmentInjector {
     return this._injector;
   }
 
   /** @internal */
   constructor(
-      private _zone: NgZone, private _injector: Injector, private _exceptionHandler: ErrorHandler,
-      private _initStatus: ApplicationInitStatus) {
+      private _zone: NgZone,
+      private _injector: EnvironmentInjector,
+      private _exceptionHandler: ErrorHandler,
+  ) {
     this._onMicrotaskEmptySubscription = this._zone.onMicrotaskEmpty.subscribe({
       next: () => {
         this._zone.run(() => {
@@ -918,8 +935,9 @@ export class ApplicationRef {
       ComponentRef<C> {
     NG_DEV_MODE && this.warnIfDestroyed();
     const isComponentFactory = componentOrFactory instanceof ComponentFactory;
+    const initStatus = this._injector.get(ApplicationInitStatus);
 
-    if (!this._initStatus.done) {
+    if (!initStatus.done) {
       const standalone = !isComponentFactory && isStandalone(componentOrFactory);
       const errorMessage =
           'Cannot bootstrap as there are still asynchronous initializers running.' +
@@ -944,18 +962,13 @@ export class ApplicationRef {
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
     const compRef = componentFactory.create(Injector.NULL, [], selectorOrNode, ngModule);
     const nativeElement = compRef.location.nativeElement;
-    const testability = compRef.injector.get(Testability, null);
-    const testabilityRegistry = testability && compRef.injector.get(TestabilityRegistry);
-    if (testability && testabilityRegistry) {
-      testabilityRegistry.registerApplication(nativeElement, testability);
-    }
+    const testability = compRef.injector.get(TESTABILITY, null);
+    testability?.registerApplication(nativeElement);
 
     compRef.onDestroy(() => {
       this.detachView(compRef.hostView);
       remove(this.components, compRef);
-      if (testabilityRegistry) {
-        testabilityRegistry.unregisterApplication(nativeElement);
-      }
+      testability?.unregisterApplication(nativeElement);
     });
 
     this._loadComponent(compRef);
@@ -980,10 +993,9 @@ export class ApplicationRef {
   tick(): void {
     NG_DEV_MODE && this.warnIfDestroyed();
     if (this._runningTick) {
-      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-          'ApplicationRef.tick is called recursively' :
-          '';
-      throw new RuntimeError(RuntimeErrorCode.RECURSIVE_APPLICATION_REF_TICK, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.RECURSIVE_APPLICATION_REF_TICK,
+          ngDevMode && 'ApplicationRef.tick is called recursively');
     }
 
     try {
@@ -1072,11 +1084,16 @@ export class ApplicationRef {
     return () => remove(this._destroyListeners, callback);
   }
 
+  /**
+   * Destroys an Angular application represented by this `ApplicationRef`. Calling this function
+   * will destroy the associated environment injectors as well as all the bootstrapped components
+   * with their views.
+   */
   destroy(): void {
     if (this._destroyed) {
       throw new RuntimeError(
           RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
-          NG_DEV_MODE && 'This instance of the `ApplicationRef` has already been destroyed.');
+          ngDevMode && 'This instance of the `ApplicationRef` has already been destroyed.');
     }
 
     // This is a temporary type to represent an instance of an R3Injector, which can be destroyed.

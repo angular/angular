@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgClass} from '@angular/common';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
@@ -390,6 +391,23 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
         const trailing = fixture.nativeElement.querySelector('[trailing-space]');
         expect(leading.className).toBe('foo');
         expect(trailing.className).toBe('foo');
+      });
+
+      it('should be available as a standalone directive', () => {
+        @Component({
+          selector: 'test-component',
+          imports: [NgClass],
+          template: `<div trailing-space [ngClass]="{foo: applyClasses}"></div>`,
+          standalone: true,
+        })
+        class TestComponent {
+          applyClasses = true;
+        }
+
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.firstChild.className).toBe('foo');
       });
     });
   });

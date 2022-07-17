@@ -14,12 +14,12 @@ import {Type} from '../interface/type';
 import {getComponentDef} from '../render3/definition';
 import {FactoryFn, getFactoryDef} from '../render3/definition_factory';
 import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors_di';
-import {deepForEach, flatten, newArray} from '../util/array_utils';
+import {newArray} from '../util/array_utils';
 import {EMPTY_ARRAY} from '../util/empty';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
-import {INJECTOR_INITIALIZER} from './initializer_token';
+import {ENVIRONMENT_INITIALIZER} from './initializer_token';
 import {setInjectImplementation} from './inject_switch';
 import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
@@ -27,7 +27,7 @@ import {catchInjectorError, injectArgs, NG_TEMP_TOKEN_PATH, setCurrentInjector, 
 import {INJECTOR} from './injector_token';
 import {getInheritedInjectableDef, getInjectableDef, InjectorType, ɵɵInjectableDeclaration} from './interface/defs';
 import {InjectFlags} from './interface/injector';
-import {ClassProvider, ConstructorProvider, Provider, StaticClassProvider} from './interface/provider';
+import {ClassProvider, ConstructorProvider, ImportedNgModuleProviders, Provider, StaticClassProvider} from './interface/provider';
 import {INJECTOR_DEF_TYPES} from './internal_tokens';
 import {NullInjector} from './null_injector';
 import {importProvidersFrom, isExistingProvider, isFactoryProvider, isTypeProvider, isValueProvider, SingleProvider} from './provider_collection';
@@ -73,6 +73,8 @@ interface Record<T> {
 /**
  * An `Injector` that's part of the environment injector hierarchy, which exists outside of the
  * component tree.
+ *
+ * @developerPreview
  */
 export abstract class EnvironmentInjector implements Injector {
   /**
@@ -86,6 +88,18 @@ export abstract class EnvironmentInjector implements Injector {
    * @suppress {duplicate}
    */
   abstract get(token: any, notFoundValue?: any): any;
+
+  /**
+   * Runs the given function in the context of this `EnvironmentInjector`.
+   *
+   * Within the function's stack frame, `inject` can be used to inject dependencies from this
+   * injector. Note that `inject` is only usable synchronously, and cannot be used in any
+   * asynchronous callbacks or after any `await` points.
+   *
+   * @param fn the closure to be run in the context of this injector
+   * @returns the return value of the function, if any
+   */
+  abstract runInContext<ReturnT>(fn: () => ReturnT): ReturnT;
 
   abstract destroy(): void;
 
@@ -121,13 +135,11 @@ export class R3Injector extends EnvironmentInjector {
   private injectorDefTypes: Set<Type<unknown>>;
 
   constructor(
-      providers: Provider[], readonly parent: Injector, readonly source: string|null,
-      readonly scopes: Set<InjectorScope>) {
+      providers: Array<Provider|ImportedNgModuleProviders>, readonly parent: Injector,
+      readonly source: string|null, readonly scopes: Set<InjectorScope>) {
     super();
     // Start off by creating Records for every provider.
-    deepForEach(providers, provider => {
-      this.processProvider(provider as SingleProvider);
-    });
+    forEachSingleProvider(providers, provider => this.processProvider(provider));
 
     // Make sure the INJECTOR token provides this injector.
     this.records.set(INJECTOR, makeRecord(undefined, this));
@@ -178,6 +190,19 @@ export class R3Injector extends EnvironmentInjector {
 
   override onDestroy(callback: () => void): void {
     this._onDestroyHooks.push(callback);
+  }
+
+  override runInContext<ReturnT>(fn: () => ReturnT): ReturnT {
+    this.assertNotDestroyed();
+
+    const previousInjector = setCurrentInjector(this);
+    const previousInjectImplementation = setInjectImplementation(undefined);
+    try {
+      return fn();
+    } finally {
+      setCurrentInjector(previousInjector);
+      setInjectImplementation(previousInjectImplementation);
+    }
   }
 
   override get<T>(
@@ -246,7 +271,15 @@ export class R3Injector extends EnvironmentInjector {
     const previousInjector = setCurrentInjector(this);
     const previousInjectImplementation = setInjectImplementation(undefined);
     try {
-      const initializers = this.get(INJECTOR_INITIALIZER.multi, EMPTY_ARRAY, InjectFlags.Self);
+      const initializers = this.get(ENVIRONMENT_INITIALIZER.multi, EMPTY_ARRAY, InjectFlags.Self);
+      if (ngDevMode && !Array.isArray(initializers)) {
+        throw new RuntimeError(
+            RuntimeErrorCode.INVALID_MULTI_PROVIDER,
+            'Unexpected type of the `ENVIRONMENT_INITIALIZER` token value ' +
+                `(expected an array, but got ${typeof initializers}). ` +
+                'Please check that the `ENVIRONMENT_INITIALIZER` token is configured as a ' +
+                '`multi: true` provider.');
+      }
       for (const initializer of initializers) {
         initializer();
       }
@@ -403,6 +436,10 @@ function providerToRecord(provider: SingleProvider): Record<any> {
 export function providerToFactory(
     provider: SingleProvider, ngModuleType?: InjectorType<any>, providers?: any[]): () => any {
   let factory: (() => any)|undefined = undefined;
+  if (ngDevMode && isImportedNgModuleProviders(provider)) {
+    throwInvalidProviderError(undefined, providers, provider);
+  }
+
   if (isTypeProvider(provider)) {
     const unwrappedProvider = resolveForwardRef(provider);
     return getFactoryDef(unwrappedProvider) || injectableDefOrInjectorDefFactory(unwrappedProvider);
@@ -452,4 +489,23 @@ function hasOnDestroy(value: any): value is OnDestroy {
 function couldBeInjectableType(value: any): value is ProviderToken<any> {
   return (typeof value === 'function') ||
       (typeof value === 'object' && value instanceof InjectionToken);
+}
+
+function isImportedNgModuleProviders(provider: Provider|ImportedNgModuleProviders):
+    provider is ImportedNgModuleProviders {
+  return !!(provider as ImportedNgModuleProviders).ɵproviders;
+}
+
+function forEachSingleProvider(
+    providers: Array<Provider|ImportedNgModuleProviders>,
+    fn: (provider: SingleProvider) => void): void {
+  for (const provider of providers) {
+    if (Array.isArray(provider)) {
+      forEachSingleProvider(provider, fn);
+    } else if (isImportedNgModuleProviders(provider)) {
+      forEachSingleProvider(provider.ɵproviders, fn);
+    } else {
+      fn(provider);
+    }
+  }
 }

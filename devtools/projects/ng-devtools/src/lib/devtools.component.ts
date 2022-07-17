@@ -7,7 +7,9 @@
  */
 
 import {animate, style, transition, trigger} from '@angular/animations';
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Platform} from '@angular/cdk/platform';
+import {DOCUMENT} from '@angular/common';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {Events, MessageBus} from 'protocol';
 import {interval} from 'rxjs';
 
@@ -32,7 +34,12 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   angularIsInDevMode = true;
   ivy: boolean;
 
-  constructor(private _messageBus: MessageBus<Events>, private _themeService: ThemeService) {}
+  private readonly _firefoxStyleName = 'firefox_styles.css';
+  private readonly _chromeStyleName = 'chrome_styles.css';
+
+  constructor(
+      private _messageBus: MessageBus<Events>, private _themeService: ThemeService,
+      private _platform: Platform, @Inject(DOCUMENT) private _document: Document) {}
 
   private _interval$ = interval(500).subscribe((attempt) => {
     if (attempt === 10) {
@@ -51,6 +58,10 @@ export class DevToolsComponent implements OnInit, OnDestroy {
       this.ivy = ivy;
       this._interval$.unsubscribe();
     });
+
+    const browserStyleName =
+        this._platform.FIREFOX ? this._firefoxStyleName : this._chromeStyleName;
+    this._loadStyle(browserStyleName);
   }
 
   get majorAngularVersion(): number {
@@ -62,6 +73,17 @@ export class DevToolsComponent implements OnInit, OnDestroy {
 
   get supportedVersion(): boolean {
     return (this.majorAngularVersion >= 9 || this.majorAngularVersion === 0) && this.ivy;
+  }
+
+  /** Add a style file in header based on fileName */
+  private _loadStyle(styleName: string) {
+    const head = this._document.getElementsByTagName('head')[0];
+
+    const style = this._document.createElement('link');
+    style.rel = 'stylesheet';
+    style.href = `./styles/${styleName}`;
+
+    head.appendChild(style);
   }
 
   ngOnDestroy(): void {

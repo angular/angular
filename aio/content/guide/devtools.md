@@ -1,7 +1,7 @@
 # DevTools Overview
 
-Angular DevTools is a Chrome extension that provides debugging and profiling capabilities for Angular applications.
-Angular DevTools supports Angular v9 and later, with Ivy enabled.
+Angular DevTools is a browser extension that provides debugging and profiling capabilities for Angular applications.
+Angular DevTools supports Angular v12 and later.
 
 <div class="video-container">
 
@@ -9,9 +9,9 @@ Angular DevTools supports Angular v9 and later, with Ivy enabled.
 
 </div>
 
-You can find Angular DevTools in the [Chrome Web Store](https://chrome.google.com/webstore/detail/angular-developer-tools/ienfalfjdbdpebioblfackkekamfmbnh).
+You can find Angular DevTools in the [Chrome Web Store](https://chrome.google.com/webstore/detail/angular-developer-tools/ienfalfjdbdpebioblfackkekamfmbnh) and in [Firefox Addons](https://addons.mozilla.org/en-GB/firefox/addon/angular-devtools/).
 
-After installing Angular DevTools, find the extension under the Angular tab in Chrome DevTools.
+After installing Angular DevTools, find the extension under the Angular tab in your browser DevTools.
 
 <div class="lightbox">
 
@@ -92,7 +92,7 @@ To navigate to the previous search match, press `Shift + Enter`.
 ### Navigate to the host node
 
 To go to the host element of a particular component or directive, find it in the component explorer and double-click it.
-Chrome DevTools opens the Elements tab and selects the associated DOM node.
+Browsers' DevTools opens the Elements tab in Chrome or the Inspector one in Firefox, and selects the associated DOM node.
 
 ### Navigate to source
 
@@ -107,7 +107,7 @@ After you select a particular component, click the icon at the top-right of the 
 
 ### Update property value
 
-Like Chrome DevTools, the properties view lets you edit the value of an input, output, or another property.
+Like browsers' DevTools, the properties view lets you edit the value of an input, output, or another property.
 Right-click on the property value.
 If edit functionality is available for this value type, you'll see a text input.
 Type the new value and press `Enter`.
@@ -131,9 +131,9 @@ Type `$ng0` to get a reference to the instance of the currently selected compone
 
 ### Select a directive or component
 
-Similar to Chrome DevTools, you can inspect the page to select a particular component or directive.
-Click the ***Inspect element*** icon at the top left corner within Devtools and hover over a DOM element on the page.
-Angular DevTools recognizes the associated directives and/or components and lets you select the corresponding element in the Component tree.
+Similar to browsers' DevTools, you can inspect the page to select a particular component or directive.
+Click the ***Inspect element*** icon at the top left corner within Angular DevTools and hover over a DOM element on the page.
+The extension recognizes the associated directives and/or components and lets you select the corresponding element in the Component tree.
 
 <div class="lightbox">
 

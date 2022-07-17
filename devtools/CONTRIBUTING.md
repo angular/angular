@@ -69,7 +69,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 - In your forked repository, make your changes in a new git branch:
 
   ```shell
-  git checkout -b my-fix-branch master
+  git checkout -b my-fix-branch main
   ```
 
 - Create your patch, **including appropriate test cases**.
@@ -90,7 +90,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
   git push origin my-fix-branch
   ```
 
-- In GitHub, send a pull request to `angular:master`.
+- In GitHub, send a pull request to `angular:main`.
 - If we suggest changes then:
 
   - Make the required updates.
@@ -98,7 +98,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
   - Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
 
     ```shell
-    git rebase master -i
+    git rebase upstream/main -i
     git push -f
     ```
 
@@ -107,7 +107,7 @@ That's it! Thank you for your contribution!
 #### After your pull request is merged
 
 After your pull request is merged, you can safely delete your branch and pull the changes
-from the master (upstream) repository:
+from the upstream repository:
 
 - Delete the remote branch on GitHub either through the GitHub web UI or your local shell as follows:
 
@@ -115,10 +115,10 @@ from the master (upstream) repository:
   git push origin --delete my-fix-branch
   ```
 
-- Check out the master branch:
+- Check out the main branch:
 
   ```shell
-  git checkout master -f
+  git checkout main -f
   ```
 
 - Delete the local branch:
@@ -127,10 +127,10 @@ from the master (upstream) repository:
   git branch -D my-fix-branch
   ```
 
-- Update your master with the latest upstream version:
+- Update your local `main` with the latest upstream version:
 
   ```shell
-  git pull --ff upstream master
+  git pull --ff upstream main
   ```
 
 ## <a name="rules"></a> Coding Rules
@@ -166,7 +166,7 @@ to read on GitHub as well as in various git tools.
 
 Footer should contain a [closing reference to an issue](https://help.github.com/articles/closing-issues-via-commit-messages/) if any.
 
-Samples: (even more [samples](https://github.com/angular/angular/commits/master/devtools))
+Samples: (even more [samples](https://github.com/angular/angular/commits/main/devtools))
 
 ```
 docs(changelog): update change log to beta.5

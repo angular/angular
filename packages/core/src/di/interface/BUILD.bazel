@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "ts_library")
-load("@npm//tsec:index.bzl", "tsec_test")
+load("//tools:defaults.bzl", "ts_library", "tsec_test")
 
 package(default_visibility = [
     "//devtools:__subpackages__",

@@ -54,7 +54,7 @@ export type SingleNodeTarget = RawExpression|CallExpressionInArgContext|RawTempl
 
 /**
  * Contexts which logically target multiple nodes in the template AST, which cannot be
- * disambiguated given a single position because they are all equally relavent. For example, in the
+ * disambiguated given a single position because they are all equally relevant. For example, in the
  * banana-in-a-box syntax `[(ngModel)]="formValues.person"`, the position in the template for the
  * key `ngModel` refers to both the bound event `ngModelChange` and the input `ngModel`.
  */

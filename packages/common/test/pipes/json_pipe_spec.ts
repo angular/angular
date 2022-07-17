@@ -76,5 +76,23 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
            expect(fixture.nativeElement).toHaveText('[\n  1,\n  2\n]');
          }));
     });
+
+    it('should be available as a standalone pipe', () => {
+      @Component({
+        selector: 'test-component',
+        imports: [JsonPipe],
+        template: '{{ value | json }}',
+        standalone: true,
+      })
+      class TestComponent {
+        value = {'a': 1};
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const content = fixture.nativeElement.textContent;
+      expect(content.replace(/\s/g, '')).toBe('{"a":1}');
+    });
   });
 }

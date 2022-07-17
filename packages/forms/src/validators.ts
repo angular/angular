@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
+import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {forkJoin, from, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
+import {RuntimeErrorCode} from './errors';
 import {AbstractControl} from './model/abstract_model';
+
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 function isEmptyInputValue(value: any): boolean {
   /**
@@ -238,7 +241,7 @@ export class Validators {
    *
    * Tests the value using a [regular
    * expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
-   * pattern suitable for common usecases. The pattern is based on the definition of a valid email
+   * pattern suitable for common use cases. The pattern is based on the definition of a valid email
    * address in the [WHATWG HTML
    * specification](https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address) with
    * some enhancements to incorporate more RFC rules (such as rules related to domain names and the
@@ -567,10 +570,16 @@ function isPresent(o: any): boolean {
   return o != null;
 }
 
-export function toObservable(r: any): Observable<any> {
-  const obs = isPromise(r) ? from(r) : r;
-  if (!(isObservable(obs)) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-    throw new Error(`Expected validator to return Promise or Observable.`);
+export function toObservable(value: any): Observable<any> {
+  const obs = isPromise(value) ? from(value) : value;
+  if (NG_DEV_MODE && !(isObservable(obs))) {
+    let errorMessage = `Expected async validator to return Promise or Observable.`;
+    // A synchronous validator will return object or null.
+    if (typeof value === 'object') {
+      errorMessage +=
+          ' Are you using a synchronous validator where an async validator is expected?';
+    }
+    throw new RuntimeError(RuntimeErrorCode.WRONG_VALIDATOR_RETURN_TYPE, errorMessage);
   }
   return obs;
 }
@@ -718,7 +727,7 @@ export function hasValidator<T extends ValidatorFn|AsyncValidatorFn>(
  * Combines two arrays of validators into one. If duplicates are provided, only one will be added.
  *
  * @param validators The new validators.
- * @param currentValidators The base array of currrent validators.
+ * @param currentValidators The base array of current validators.
  * @returns An array of validators.
  */
 export function addValidators<T extends ValidatorFn|AsyncValidatorFn>(
@@ -727,7 +736,7 @@ export function addValidators<T extends ValidatorFn|AsyncValidatorFn>(
   const validatorsToAdd = makeValidatorsArray(validators);
   validatorsToAdd.forEach((v: T) => {
     // Note: if there are duplicate entries in the new validators array,
-    // only the first one would be added to the current list of validarors.
+    // only the first one would be added to the current list of validators.
     // Duplicate ones would be ignored since `hasValidator` would detect
     // the presence of a validator function and we update the current list in place.
     if (!hasValidator(current, v)) {

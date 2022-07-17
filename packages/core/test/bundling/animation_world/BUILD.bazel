@@ -6,11 +6,10 @@ package(default_visibility = ["//visibility:public"])
 ng_module(
     name = "animation_world",
     srcs = ["index.ts"],
-    type_check = False,  # see #26462
     deps = [
-        "//packages/common",
         "//packages/core",
         "//packages/core/test/bundling/util:reflect_metadata",
+        "//packages/platform-browser",
     ],
 )
 

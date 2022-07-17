@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
-import {SchemaMetadata} from '../../metadata/schema';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
@@ -23,9 +21,9 @@ import {computeStaticStyling} from '../styling/static_styling';
 import {setUpAttributes} from '../util/attrs_utils';
 import {getConstant} from '../util/view_utils';
 
+import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
-import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, matchingSchemas, resolveDirectives, saveResolvedLocalsInData} from './shared';
-
+import {createDirectivesInstances, executeContentQueries, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
 
 
 function elementStartFirstCreatePass(
@@ -40,7 +38,9 @@ function elementStartFirstCreatePass(
 
   const hasDirectives =
       resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
-  ngDevMode && validateElementIsKnown(native, tNode.value, tView.schemas, hasDirectives);
+  if (ngDevMode) {
+    validateElementIsKnown(native, lView, tNode.value, tView.schemas, hasDirectives);
+  }
 
   if (tNode.attrs !== null) {
     computeStaticStyling(tNode, tNode.attrs, false);
@@ -189,59 +189,4 @@ export function ɵɵelement(
   ɵɵelementStart(index, name, attrsIndex, localRefsIndex);
   ɵɵelementEnd();
   return ɵɵelement;
-}
-
-/**
- * Validates that the element is known at runtime and produces
- * an error if it's not the case.
- * This check is relevant for JIT-compiled components (for AOT-compiled
- * ones this check happens at build time).
- *
- * The element is considered known if either:
- * - it's a known HTML element
- * - it's a known custom element
- * - the element matches any directive
- * - the element is allowed by one of the schemas
- *
- * @param element Element to validate
- * @param tagName Name of the tag to check
- * @param schemas Array of schemas
- * @param hasDirectives Boolean indicating that the element matches any directive
- */
-function validateElementIsKnown(
-    element: RElement, tagName: string|null, schemas: SchemaMetadata[]|null,
-    hasDirectives: boolean): void {
-  // If `schemas` is set to `null`, that's an indication that this Component was compiled in AOT
-  // mode where this check happens at compile time. In JIT mode, `schemas` is always present and
-  // defined as an array (as an empty array in case `schemas` field is not defined) and we should
-  // execute the check below.
-  if (schemas === null) return;
-
-  // If the element matches any directive, it's considered as valid.
-  if (!hasDirectives && tagName !== null) {
-    // The element is unknown if it's an instance of HTMLUnknownElement, or it isn't registered
-    // as a custom element. Note that unknown elements with a dash in their name won't be instances
-    // of HTMLUnknownElement in browsers that support web components.
-    const isUnknown =
-        // Note that we can't check for `typeof HTMLUnknownElement === 'function'`,
-        // because while most browsers return 'function', IE returns 'object'.
-        (typeof HTMLUnknownElement !== 'undefined' && HTMLUnknownElement &&
-         element instanceof HTMLUnknownElement) ||
-        (typeof customElements !== 'undefined' && tagName.indexOf('-') > -1 &&
-         !customElements.get(tagName));
-
-    if (isUnknown && !matchingSchemas(schemas, tagName)) {
-      let message = `'${tagName}' is not a known element:\n`;
-      message += `1. If '${
-          tagName}' is an Angular component, then verify that it is part of this module.\n`;
-      if (tagName && tagName.indexOf('-') > -1) {
-        message += `2. If '${
-            tagName}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`;
-      } else {
-        message +=
-            `2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`;
-      }
-      console.error(formatRuntimeError(RuntimeErrorCode.UNKNOWN_ELEMENT, message));
-    }
-  }
 }

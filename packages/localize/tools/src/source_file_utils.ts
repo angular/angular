@@ -158,7 +158,8 @@ export function unwrapMessagePartsFromLocalizeCall(
 }
 
 /**
- * Parse the localize call expression to extract the arguments that hold the substition expressions.
+ * Parse the localize call expression to extract the arguments that hold the substitution
+ * expressions.
  *
  * @param call The AST node of the call to process.
  * @param fs The file system to use when computing source-map paths. If not provided then it uses
@@ -463,7 +464,7 @@ function getLineAndColumn(loc: {line: number, column: number}): {line: number, c
 }
 
 function getText(path: NodePath): string|undefined {
-  if (path.node.start === null || path.node.end === null) {
+  if (path.node.start == null || path.node.end == null) {
     return undefined;
   }
   return path.hub.file.code.substring(path.node.start, path.node.end);

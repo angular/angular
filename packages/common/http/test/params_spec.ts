@@ -195,18 +195,26 @@ import {HttpParams} from '@angular/common/http/src/params';
       it('should stringify number params', () => {
         const body = new HttpParams({fromObject: {a: '', b: 2, c: 3}});
         expect(body.toString()).toBe('a=&b=2&c=3');
+        // make sure the param value is now a string
+        expect(body.get('b')).toBe('2');
       });
       it('should stringify number array params', () => {
         const body = new HttpParams({fromObject: {a: '', b: [21, 22], c: 3}});
         expect(body.toString()).toBe('a=&b=21&b=22&c=3');
+        // make sure the param values are now strings
+        expect(body.getAll('b')).toEqual(['21', '22']);
       });
       it('should stringify boolean params', () => {
         const body = new HttpParams({fromObject: {a: '', b: true, c: 3}});
         expect(body.toString()).toBe('a=&b=true&c=3');
+        // make sure the param value is now a boolean
+        expect(body.get('b')).toBe('true');
       });
       it('should stringify boolean array params', () => {
         const body = new HttpParams({fromObject: {a: '', b: [true, false], c: 3}});
         expect(body.toString()).toBe('a=&b=true&b=false&c=3');
+        // make sure the param values are now booleans
+        expect(body.getAll('b')).toEqual(['true', 'false']);
       });
       it('should stringify array params of different types', () => {
         const body = new HttpParams({fromObject: {a: ['', false, 3] as const}});

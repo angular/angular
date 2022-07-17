@@ -27,7 +27,7 @@
  * | deploying | RC     | -                               | rc                              |
  * | from?     |        |                                 | redirectVersionDomainToRc(*)    |
  * |           |--------|---------------------------------|---------------------------------|
- * |           | main   | next                            | next                            |
+ * |           | MAIN   | next                            | next                            |
  * |           |        | redirectVersionDomainToNext(**) | redirectVersionDomainToNext(**) |
  * |-----------|--------|---------------------------------|---------------------------------|
  *

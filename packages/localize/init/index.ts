@@ -37,7 +37,7 @@ declare global {
    * ```
    *
    * This format is the same as that used for `i18n` markers in Angular templates. See the
-   * [Angular 18n guide](guide/i18n-common-prepare#mark-text-in-component-template).
+   * [Angular i18n guide](guide/i18n-common-prepare#mark-text-in-component-template).
    *
    * **Naming placeholders**
    *

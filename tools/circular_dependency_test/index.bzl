@@ -3,7 +3,7 @@
 # Use of this source code is governed by an MIT-style license that can be
 # found in the LICENSE file at https://angular.io/license
 
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_test")
+load("//tools:defaults.bzl", "nodejs_test")
 
 MADGE_CONFIG_LABEL = "//tools/circular_dependency_test:madge-resolve.config.js"
 

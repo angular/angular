@@ -34,7 +34,7 @@ try {
   console.error(
       'Your environment doesn\'t provide the prerequisite dependencies.\n' +
       'Please fix the issues listed above and then rerun the command.\n' +
-      'Check out https://github.com/angular/angular/blob/master/aio/README.md for more info.');
+      'Check out https://github.com/angular/angular/blob/main/aio/README.md for more info.');
   process.exit(1);
 }
 

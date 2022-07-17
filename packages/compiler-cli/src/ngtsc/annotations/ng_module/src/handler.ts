@@ -6,21 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, FactoryTarget, InvokeFunctionExpr, LiteralArrayExpr, NO_ERRORS_SCHEMA, R3ClassMetadata, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, R3SelectorScopeMode, SchemaMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, Expression, ExternalExpr, FactoryTarget, FunctionExpr, InvokeFunctionExpr, LiteralArrayExpr, R3ClassMetadata, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, R3SelectorScopeMode, ReturnStatement, SchemaMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {assertSuccessfulReferenceEmit, Reference, ReferenceEmitter} from '../../../imports';
 import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticReference, SemanticSymbol} from '../../../incremental/semantic_graph';
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
-import {DynamicValue, PartialEvaluator, ResolvedValue, SyntheticValue} from '../../../partial_evaluator';
+import {PartialEvaluator, ResolvedValue, SyntheticValue} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
-import {ClassDeclaration, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../../reflection';
+import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {LocalModuleScopeRegistry, ScopeData} from '../../../scope';
+import {getDiagnosticNode} from '../../../scope/src/util';
 import {FactoryTracker} from '../../../shims/api';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {getSourceFile} from '../../../util/src/typescript';
 import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, createValueHasWrongTypeError, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getProviderDiagnostics, getValidConstructorDependencies, isExpressionForwardReference, ReferencesRegistry, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
+
+import {createModuleWithProvidersResolver, isResolvedModuleWithProviders} from './module_with_providers';
 
 export interface NgModuleAnalysis {
   mod: R3NgModuleMetadata;
@@ -39,6 +42,7 @@ export interface NgModuleAnalysis {
   factorySymbolName: string;
   providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
   providers: ts.Expression|null;
+  remoteScopesMayRequireCycleProtection: boolean;
 }
 
 export interface NgModuleResolution {
@@ -127,7 +131,7 @@ export class NgModuleDecoratorHandler implements
       private scopeRegistry: LocalModuleScopeRegistry,
       private referencesRegistry: ReferencesRegistry, private isCore: boolean,
       private refEmitter: ReferenceEmitter, private factoryTracker: FactoryTracker|null,
-      private annotateForClosureCompiler: boolean,
+      private annotateForClosureCompiler: boolean, private onlyPublishPublicTypings: boolean,
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -178,8 +182,7 @@ export class NgModuleDecoratorHandler implements
     }
 
     const moduleResolvers = combineResolvers([
-      (fn, call, resolve, unresolvable) =>
-          this._extractModuleFromModuleWithProvidersFn(fn, call, resolve, unresolvable),
+      createModuleWithProvidersResolver(this.reflector, this.isCore),
       forwardRefResolver,
     ]);
 
@@ -235,6 +238,14 @@ export class NgModuleDecoratorHandler implements
       const expr = ngModule.get('bootstrap')!;
       const bootstrapMeta = this.evaluator.evaluate(expr, forwardRefResolver);
       bootstrapRefs = this.resolveTypeList(expr, bootstrapMeta, name, 'bootstrap', 0).references;
+
+      // Verify that the `@NgModule.bootstrap` list doesn't have Standalone Components.
+      for (const ref of bootstrapRefs) {
+        const dirMeta = this.metaReader.getDirectiveMetadata(ref);
+        if (dirMeta?.isStandalone) {
+          diagnostics.push(makeStandaloneBootstrapDiagnostic(node, ref, expr));
+        }
+      }
     }
 
     const schemas = ngModule.has('schemas') ?
@@ -263,19 +274,31 @@ export class NgModuleDecoratorHandler implements
       typeContext = typeNode.getSourceFile();
     }
 
+
+    const exportedNodes = new Set(exportRefs.map(ref => ref.node));
+    const declarations: R3Reference[] = [];
+    const exportedDeclarations: Expression[] = [];
+
     const bootstrap = bootstrapRefs.map(
         bootstrap => this._toR3Reference(
             bootstrap.getOriginForDiagnostics(meta, node.name), bootstrap, valueContext,
             typeContext));
-    const declarations = declarationRefs.map(
-        decl => this._toR3Reference(
-            decl.getOriginForDiagnostics(meta, node.name), decl, valueContext, typeContext));
+
+    for (const ref of declarationRefs) {
+      const decl = this._toR3Reference(
+          ref.getOriginForDiagnostics(meta, node.name), ref, valueContext, typeContext);
+      declarations.push(decl);
+      if (exportedNodes.has(ref.node)) {
+        exportedDeclarations.push(decl.type);
+      }
+    }
     const imports = importRefs.map(
         imp => this._toR3Reference(
             imp.getOriginForDiagnostics(meta, node.name), imp, valueContext, typeContext));
     const exports = exportRefs.map(
         exp => this._toR3Reference(
             exp.getOriginForDiagnostics(meta, node.name), exp, valueContext, typeContext));
+
 
     const isForwardReference = (ref: R3Reference) =>
         isExpressionForwardReference(ref.value, node.name!, valueContext);
@@ -293,8 +316,12 @@ export class NgModuleDecoratorHandler implements
       adjacentType,
       bootstrap,
       declarations,
+      publicDeclarationTypes: this.onlyPublishPublicTypings ? exportedDeclarations : null,
       exports,
       imports,
+      // Imported types are generally private, so include them unless restricting the .d.ts emit to
+      // only public types.
+      includeImportTypes: !this.onlyPublishPublicTypings,
       containsForwardDecls,
       id,
       // Use `ɵɵsetNgModuleScope` to patch selector scopes onto the generated definition in a
@@ -305,11 +332,16 @@ export class NgModuleDecoratorHandler implements
     };
 
     const rawProviders = ngModule.has('providers') ? ngModule.get('providers')! : null;
-    const wrapperProviders = rawProviders !== null ?
-        new WrappedNodeExpr(
-            this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(rawProviders) :
-                                              rawProviders) :
-        null;
+    let wrappedProviders: WrappedNodeExpr<ts.Expression>|null = null;
+
+    // In most cases the providers will be an array literal. Check if it has any elements
+    // and don't include the providers if it doesn't which saves us a few bytes.
+    if (rawProviders !== null &&
+        (!ts.isArrayLiteralExpression(rawProviders) || rawProviders.elements.length > 0)) {
+      wrappedProviders = new WrappedNodeExpr(
+          this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(rawProviders) :
+                                            rawProviders);
+    }
 
     const topLevelImports: TopLevelImportedExpression[] = [];
     if (ngModule.has('imports')) {
@@ -351,7 +383,7 @@ export class NgModuleDecoratorHandler implements
       name,
       type,
       internalType,
-      providers: wrapperProviders,
+      providers: wrappedProviders,
     };
 
     const factoryMetadata: R3FactoryMetadata = {
@@ -362,6 +394,30 @@ export class NgModuleDecoratorHandler implements
       deps: getValidConstructorDependencies(node, this.reflector, this.isCore),
       target: FactoryTarget.NgModule,
     };
+
+    // Remote scoping is used when adding imports to a component file would create a cycle. In such
+    // circumstances the component scope is monkey-patched from the NgModule file instead.
+    //
+    // However, if the NgModule itself has a cycle with the desired component/directive
+    // reference(s), then we need to be careful. This can happen for example if an NgModule imports
+    // a standalone component and the component also imports the NgModule.
+    //
+    // In this case, it'd be tempting to rely on the compiler's cycle detector to automatically put
+    // such circular references behind a function/closure. This requires global knowledge of the
+    // import graph though, and we don't want to depend on such techniques for new APIs like
+    // standalone components.
+    //
+    // Instead, we look for `forwardRef`s in the NgModule dependencies - an explicit signal from the
+    // user that a reference may not be defined until a circular import is resolved. If an NgModule
+    // contains forward-referenced declarations or imports, we assume that remotely scoped
+    // components should also guard against cycles using a closure-wrapped scope.
+    //
+    // The actual detection here is done heuristically. The compiler doesn't actually know whether
+    // any given `Reference` came from a `forwardRef`, but it does know when a `Reference` came from
+    // a `ForeignFunctionResolver` _like_ the `forwardRef` resolver. So we know when it's safe to
+    // not use a closure, and will use one just in case otherwise.
+    const remoteScopesMayRequireCycleProtection =
+        declarationRefs.some(isSyntheticReference) || importRefs.some(isSyntheticReference);
 
     return {
       diagnostics: diagnostics.length > 0 ? diagnostics : undefined,
@@ -385,6 +441,7 @@ export class NgModuleDecoratorHandler implements
         classMetadata: extractClassMetadata(
             node, this.reflector, this.isCore, this.annotateForClosureCompiler),
         factorySymbolName: node.name.text,
+        remoteScopesMayRequireCycleProtection,
       },
     };
   }
@@ -524,7 +581,8 @@ export class NgModuleDecoratorHandler implements
 
   compileFull(
       node: ClassDeclaration,
-      {inj, mod, fac, classMetadata, declarations}: Readonly<NgModuleAnalysis>,
+      {inj, mod, fac, classMetadata, declarations, remoteScopesMayRequireCycleProtection}:
+          Readonly<NgModuleAnalysis>,
       {injectorImports}: Readonly<NgModuleResolution>): CompileResult[] {
     const factoryFn = compileNgFactoryDefField(fac);
     const ngInjectorDef = compileInjector({
@@ -535,7 +593,8 @@ export class NgModuleDecoratorHandler implements
     const statements = ngModuleDef.statements;
     const metadata = classMetadata !== null ? compileClassMetadata(classMetadata) : null;
     this.insertMetadataStatement(statements, metadata);
-    this.appendRemoteScopingStatements(statements, node, declarations);
+    this.appendRemoteScopingStatements(
+        statements, node, declarations, remoteScopesMayRequireCycleProtection);
 
     return this.compileNgModule(factoryFn, ngInjectorDef, ngModuleDef);
   }
@@ -570,7 +629,8 @@ export class NgModuleDecoratorHandler implements
    */
   private appendRemoteScopingStatements(
       ngModuleStatements: Statement[], node: ClassDeclaration,
-      declarations: Reference<ClassDeclaration>[]): void {
+      declarations: Reference<ClassDeclaration>[],
+      remoteScopesMayRequireCycleProtection: boolean): void {
     const context = getSourceFile(node);
     for (const decl of declarations) {
       const remoteScope = this.scopeRegistry.getRemoteScope(decl.node);
@@ -587,12 +647,19 @@ export class NgModuleDecoratorHandler implements
         });
         const directiveArray = new LiteralArrayExpr(directives);
         const pipesArray = new LiteralArrayExpr(pipes);
+
+        const directiveExpr = remoteScopesMayRequireCycleProtection && directives.length > 0 ?
+            new FunctionExpr([], [new ReturnStatement(directiveArray)]) :
+            directiveArray;
+        const pipesExpr = remoteScopesMayRequireCycleProtection && pipes.length > 0 ?
+            new FunctionExpr([], [new ReturnStatement(pipesArray)]) :
+            pipesArray;
         const componentType = this.refEmitter.emit(decl, context);
         assertSuccessfulReferenceEmit(componentType, node, 'component');
         const declExpr = componentType.expression;
         const setComponentScope = new ExternalExpr(R3Identifiers.setComponentScope);
         const callExpr =
-            new InvokeFunctionExpr(setComponentScope, [declExpr, directiveArray, pipesArray]);
+            new InvokeFunctionExpr(setComponentScope, [declExpr, directiveExpr, pipesExpr]);
 
         ngModuleStatements.push(callExpr.toStmt());
       }
@@ -633,112 +700,6 @@ export class NgModuleDecoratorHandler implements
       }
       return toR3Reference(origin, valueRef, typeRef, valueContext, typeContext, this.refEmitter);
     }
-  }
-
-  /**
-   * Given a `FunctionDeclaration`, `MethodDeclaration` or `FunctionExpression`, check if it is
-   * typed as a `ModuleWithProviders` and return an expression referencing the module if available.
-   */
-  private _extractModuleFromModuleWithProvidersFn(
-      fn: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-      node: ts.CallExpression, resolve: (expr: ts.Expression) => ResolvedValue,
-      unresolvable: DynamicValue): SyntheticValue<ResolvedModuleWithProviders>|DynamicValue {
-    const rawType = fn.node.type || null;
-
-    const type = rawType &&
-        (this._reflectModuleFromTypeParam(rawType, fn.node) ||
-         this._reflectModuleFromLiteralType(rawType));
-    if (type === null) {
-      return unresolvable;
-    }
-    const ngModule = resolve(type);
-    if (!(ngModule instanceof Reference) || !isNamedClassDeclaration(ngModule.node)) {
-      return unresolvable;
-    }
-
-    return new SyntheticValue({
-      ngModule: ngModule as Reference<ClassDeclaration>,
-      mwpCall: node,
-    });
-  }
-
-  /**
-   * Retrieve an `NgModule` identifier (T) from the specified `type`, if it is of the form:
-   * `ModuleWithProviders<T>`
-   * @param type The type to reflect on.
-   * @returns the identifier of the NgModule type if found, or null otherwise.
-   */
-  private _reflectModuleFromTypeParam(
-      type: ts.TypeNode,
-      node: ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression): ts.Expression|null {
-    // Examine the type of the function to see if it's a ModuleWithProviders reference.
-    if (!ts.isTypeReferenceNode(type)) {
-      return null;
-    }
-
-    const typeName = type &&
-            (ts.isIdentifier(type.typeName) && type.typeName ||
-             ts.isQualifiedName(type.typeName) && type.typeName.right) ||
-        null;
-    if (typeName === null) {
-      return null;
-    }
-
-    // Look at the type itself to see where it comes from.
-    const id = this.reflector.getImportOfIdentifier(typeName);
-
-    // If it's not named ModuleWithProviders, bail.
-    if (id === null || id.name !== 'ModuleWithProviders') {
-      return null;
-    }
-
-    // If it's not from @angular/core, bail.
-    if (!this.isCore && id.from !== '@angular/core') {
-      return null;
-    }
-
-    // If there's no type parameter specified, bail.
-    if (type.typeArguments === undefined || type.typeArguments.length !== 1) {
-      const parent =
-          ts.isMethodDeclaration(node) && ts.isClassDeclaration(node.parent) ? node.parent : null;
-      const symbolName = (parent && parent.name ? parent.name.getText() + '.' : '') +
-          (node.name ? node.name.getText() : 'anonymous');
-      throw new FatalDiagnosticError(
-          ErrorCode.NGMODULE_MODULE_WITH_PROVIDERS_MISSING_GENERIC, type,
-          `${symbolName} returns a ModuleWithProviders type without a generic type argument. ` +
-              `Please add a generic type argument to the ModuleWithProviders type. If this ` +
-              `occurrence is in library code you don't control, please contact the library authors.`);
-    }
-
-    const arg = type.typeArguments[0];
-
-    return typeNodeToValueExpr(arg);
-  }
-
-  /**
-   * Retrieve an `NgModule` identifier (T) from the specified `type`, if it is of the form:
-   * `A|B|{ngModule: T}|C`.
-   * @param type The type to reflect on.
-   * @returns the identifier of the NgModule type if found, or null otherwise.
-   */
-  private _reflectModuleFromLiteralType(type: ts.TypeNode): ts.Expression|null {
-    if (!ts.isIntersectionTypeNode(type)) {
-      return null;
-    }
-    for (const t of type.types) {
-      if (ts.isTypeLiteralNode(t)) {
-        for (const m of t.members) {
-          const ngModuleType = ts.isPropertySignature(m) && ts.isIdentifier(m.name) &&
-                  m.name.text === 'ngModule' && m.type ||
-              null;
-          const ngModuleExpression = ngModuleType && typeNodeToValueExpr(ngModuleType);
-          if (ngModuleExpression) {
-            return ngModuleExpression;
-          }
-        }
-      }
-    }
-    return null;
   }
 
   // Verify that a "Declaration" reference is a `ClassDeclaration` reference.
@@ -817,20 +778,33 @@ function isModuleIdExpression(expr: ts.Expression): boolean {
       expr.expression.text === 'module' && expr.name.text === 'id';
 }
 
-interface ResolvedModuleWithProviders {
-  ngModule: Reference<ClassDeclaration>;
-  mwpCall: ts.CallExpression;
-}
-
 export interface TopLevelImportedExpression {
   expression: ts.Expression;
   resolvedReferences: Array<Reference<ClassDeclaration>>;
   hasModuleWithProviders: boolean;
 }
 
-function isResolvedModuleWithProviders(sv: SyntheticValue<unknown>):
-    sv is SyntheticValue<ResolvedModuleWithProviders> {
-  return typeof sv.value === 'object' && sv.value != null &&
-      sv.value.hasOwnProperty('ngModule' as keyof ResolvedModuleWithProviders) &&
-      sv.value.hasOwnProperty('mwpCall' as keyof ResolvedModuleWithProviders);
+/**
+ * Helper method to produce a diagnostics for a situation when a standalone component
+ * is referenced in the `@NgModule.bootstrap` array.
+ */
+function makeStandaloneBootstrapDiagnostic(
+    ngModuleClass: ClassDeclaration, bootstrappedClassRef: Reference<ClassDeclaration>,
+    rawBootstrapExpr: ts.Expression|null): ts.Diagnostic {
+  const componentClassName = bootstrappedClassRef.node.name.text;
+  // Note: this error message should be aligned with the one produced by JIT.
+  const message =  //
+      `The \`${componentClassName}\` class is a standalone component, which can ` +
+      `not be used in the \`@NgModule.bootstrap\` array. Use the \`bootstrapApplication\` ` +
+      `function for bootstrap instead.`;
+  const relatedInformation: ts.DiagnosticRelatedInformation[]|undefined =
+      [makeRelatedInformation(ngModuleClass, `The 'bootstrap' array is present on this NgModule.`)];
+
+  return makeDiagnostic(
+      ErrorCode.NGMODULE_BOOTSTRAP_IS_STANDALONE,
+      getDiagnosticNode(bootstrappedClassRef, rawBootstrapExpr), message, relatedInformation);
+}
+
+function isSyntheticReference(ref: Reference<DeclarationNode>): boolean {
+  return ref.synthetic;
 }

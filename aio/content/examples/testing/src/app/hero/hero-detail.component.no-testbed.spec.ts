@@ -15,7 +15,7 @@ describe('HeroDetailComponent - no TestBed', () => {
   let router: jasmine.SpyObj<Router>;
 
   beforeEach((done: DoneFn) => {
-    expectedHero = {id: 42, name: 'Bubba' };
+    expectedHero = { id: 42, name: 'Bubba' };
     const activatedRoute = new ActivatedRouteStub({ id: expectedHero.id });
     router = jasmine.createSpyObj('Router', ['navigate']);
 
@@ -27,7 +27,7 @@ describe('HeroDetailComponent - no TestBed', () => {
     comp.ngOnInit();
 
     // OnInit calls HDS.getHero; wait for it to get the fake hero
-    hds.getHero.calls.first().returnValue.subscribe(done);
+    hds.getHero.calls.first().returnValue.subscribe(() => done());
   });
 
   it('should expose the hero retrieved from the service', () => {

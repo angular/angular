@@ -49,8 +49,8 @@ We want to hear from you. [Report problems or submit suggestions for future docs
 Contribute to Angular docs by creating
 [pull requests](https://github.com/angular/angular/pulls "Angular Github pull requests")
 on the Angular Github repository.
-See [Contributing to Angular](https://github.com/angular/angular/blob/master/CONTRIBUTING.md "Contributing guide")
+See [Contributing to Angular](https://github.com/angular/angular/blob/main/CONTRIBUTING.md "Contributing guide")
 for information about submission guidelines.
 
 Our community values respectful, supportive communication.
-Please consult and adhere to the [Code of Conduct](https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md "Contributor code of conduct").
+Please consult and adhere to the [Code of Conduct](https://github.com/angular/code-of-conduct/blob/main/CODE_OF_CONDUCT.md "Contributor code of conduct").

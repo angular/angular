@@ -42,16 +42,19 @@
     "name": "ArgumentOutOfRangeError"
   },
   {
+    "name": "BOOTSTRAP_DONE"
+  },
+  {
     "name": "BROWSER_MODULE_PROVIDERS"
+  },
+  {
+    "name": "BROWSER_MODULE_PROVIDERS_MARKER"
   },
   {
     "name": "BehaviorSubject"
   },
   {
     "name": "BrowserDomAdapter"
-  },
-  {
-    "name": "BrowserGetTestability"
   },
   {
     "name": "BrowserModule"
@@ -138,9 +141,6 @@
     "name": "DEFAULT_SERIALIZER"
   },
   {
-    "name": "DOCUMENT"
-  },
-  {
     "name": "DOCUMENT2"
   },
   {
@@ -181,6 +181,9 @@
   },
   {
     "name": "EMPTY_PAYLOAD"
+  },
+  {
+    "name": "ENVIRONMENT_INITIALIZER"
   },
   {
     "name": "EVENT_MANAGER_PLUGINS"
@@ -234,6 +237,9 @@
     "name": "HashLocationStrategy"
   },
   {
+    "name": "INITIAL_NAVIGATION"
+  },
+  {
     "name": "INITIAL_VALUE"
   },
   {
@@ -243,13 +249,7 @@
     "name": "INJECTOR_DEF_TYPES"
   },
   {
-    "name": "INJECTOR_INITIALIZER"
-  },
-  {
     "name": "INJECTOR_SCOPE"
-  },
-  {
-    "name": "Inject"
   },
   {
     "name": "InjectFlags"
@@ -408,9 +408,6 @@
     "name": "NoMatch"
   },
   {
-    "name": "NoPreloading"
-  },
-  {
     "name": "NodeInjector"
   },
   {
@@ -435,13 +432,13 @@
     "name": "OutletInjector"
   },
   {
+    "name": "PLATFORM_DESTROY_LISTENERS"
+  },
+  {
     "name": "PLATFORM_ID"
   },
   {
     "name": "PLATFORM_INITIALIZER"
-  },
-  {
-    "name": "PLATFORM_ON_DESTROY"
   },
   {
     "name": "PathLocationStrategy"
@@ -486,13 +483,22 @@
     "name": "ROUTER_INITIALIZER"
   },
   {
+    "name": "ROUTER_PRELOADER"
+  },
+  {
     "name": "ROUTER_PROVIDERS"
+  },
+  {
+    "name": "ROUTER_SCROLLER"
   },
   {
     "name": "ROUTES"
   },
   {
     "name": "ROUTES2"
+  },
+  {
+    "name": "Recognizer"
   },
   {
     "name": "RefCountOperator"
@@ -535,9 +541,6 @@
   },
   {
     "name": "RouterEvent"
-  },
-  {
-    "name": "RouterInitializer"
   },
   {
     "name": "RouterLink"
@@ -618,6 +621,9 @@
     "name": "SkipSelf"
   },
   {
+    "name": "StandaloneService"
+  },
+  {
     "name": "Subject"
   },
   {
@@ -637,6 +643,15 @@
   },
   {
     "name": "SwitchMapSubscriber"
+  },
+  {
+    "name": "TESTABILITY"
+  },
+  {
+    "name": "TESTABILITY_GETTER"
+  },
+  {
+    "name": "TESTABILITY_PROVIDERS"
   },
   {
     "name": "THROW_IF_NOT_FOUND"
@@ -664,6 +679,9 @@
   },
   {
     "name": "TakeSubscriber"
+  },
+  {
+    "name": "TakeWhileSubscriber"
   },
   {
     "name": "TapSubscriber"
@@ -771,9 +789,6 @@
     "name": "_randomChar"
   },
   {
-    "name": "_renderCompCount"
-  },
-  {
     "name": "_stripIndexHtml"
   },
   {
@@ -876,6 +891,9 @@
     "name": "compare"
   },
   {
+    "name": "componentDefCount"
+  },
+  {
     "name": "computeStaticStyling"
   },
   {
@@ -954,7 +972,7 @@
     "name": "createResultForNode"
   },
   {
-    "name": "createRouterScroller"
+    "name": "createRoot"
   },
   {
     "name": "createTView"
@@ -984,16 +1002,10 @@
     "name": "defaultErrorHandler"
   },
   {
-    "name": "defaultErrorLogger"
-  },
-  {
     "name": "defaultIfEmpty"
   },
   {
     "name": "defaultMalformedUriErrorHandler"
-  },
-  {
-    "name": "defaultRouterHook"
   },
   {
     "name": "defaultScheduler"
@@ -1014,19 +1026,10 @@
     "name": "detachView"
   },
   {
-    "name": "detectChangesInRootView"
-  },
-  {
-    "name": "detectChangesInternal"
-  },
-  {
     "name": "diPublicInInjector"
   },
   {
     "name": "dispatch"
-  },
-  {
-    "name": "domRendererFactory3"
   },
   {
     "name": "empty"
@@ -1119,6 +1122,9 @@
     "name": "forEach"
   },
   {
+    "name": "forEachSingleProvider"
+  },
+  {
     "name": "forwardRef"
   },
   {
@@ -1135,9 +1141,6 @@
   },
   {
     "name": "getAllRouteGuards"
-  },
-  {
-    "name": "getAppInitializer"
   },
   {
     "name": "getBeforeNodeForView"
@@ -1240,6 +1243,9 @@
   },
   {
     "name": "getOrCreateNodeInjectorForNode"
+  },
+  {
+    "name": "getOrCreateRouteInjectorIfNeeded"
   },
   {
     "name": "getOrCreateTComponentView"
@@ -1365,6 +1371,9 @@
     "name": "initTNodeFlags"
   },
   {
+    "name": "initializeInputAndOutputAliases"
+  },
+  {
     "name": "inject"
   },
   {
@@ -1399,6 +1408,9 @@
   },
   {
     "name": "instructionState"
+  },
+  {
+    "name": "internalImportProvidersFrom"
   },
   {
     "name": "invertObject"
@@ -1449,7 +1461,7 @@
     "name": "isImmediateMatch"
   },
   {
-    "name": "isInCheckNoChangesMode"
+    "name": "isImportedNgModuleProviders"
   },
   {
     "name": "isInlineTemplate"
@@ -1467,6 +1479,9 @@
     "name": "isNameOnlyAttributeMarker"
   },
   {
+    "name": "isNavigationCancelingError"
+  },
+  {
     "name": "isNodeMatchingSelector"
   },
   {
@@ -1482,22 +1497,19 @@
     "name": "isPositive"
   },
   {
-    "name": "isProceduralRenderer"
-  },
-  {
     "name": "isPromise"
   },
   {
     "name": "isPromise2"
   },
   {
+    "name": "isRedirectingNavigationCancelingError"
+  },
+  {
     "name": "isScheduler"
   },
   {
     "name": "isTemplateNode"
-  },
-  {
-    "name": "isTemplateNode2"
   },
   {
     "name": "isTypeProvider"
@@ -1513,6 +1525,9 @@
   },
   {
     "name": "joinWithSlash"
+  },
+  {
+    "name": "last"
   },
   {
     "name": "last2"
@@ -1557,6 +1572,9 @@
     "name": "matchSegments"
   },
   {
+    "name": "matchWithChecks"
+  },
+  {
     "name": "materializeViewResults"
   },
   {
@@ -1597,9 +1615,6 @@
   },
   {
     "name": "navigationCancelingError"
-  },
-  {
-    "name": "newObservableError"
   },
   {
     "name": "nextBindingIndex"
@@ -1662,6 +1677,9 @@
     "name": "pathCompareMap"
   },
   {
+    "name": "pipeFromArray"
+  },
+  {
     "name": "platformBrowser"
   },
   {
@@ -1680,7 +1698,7 @@
     "name": "provideForRootGuard"
   },
   {
-    "name": "provideLocationStrategy2"
+    "name": "provideInitialNavigation"
   },
   {
     "name": "provideRoutes"
@@ -1689,7 +1707,10 @@
     "name": "readPatchedLView"
   },
   {
-    "name": "recognize2"
+    "name": "redirectIfUrlTree"
+  },
+  {
+    "name": "redirectingNavigationError"
   },
   {
     "name": "refCount"
@@ -1806,10 +1827,10 @@
     "name": "setInjectImplementation"
   },
   {
-    "name": "setInputsFromAttrs"
+    "name": "setInputsForProperty"
   },
   {
-    "name": "setIsInCheckNoChangesMode"
+    "name": "setInputsFromAttrs"
   },
   {
     "name": "setRouterState"
@@ -1852,9 +1873,6 @@
   },
   {
     "name": "stringifyCSSSelector"
-  },
-  {
-    "name": "stringifyForError"
   },
   {
     "name": "stripTrailingSlash"
@@ -1954,6 +1972,9 @@
   },
   {
     "name": "ɵɵNgOnChangesFeature"
+  },
+  {
+    "name": "ɵɵStandaloneFeature"
   },
   {
     "name": "ɵɵattribute"

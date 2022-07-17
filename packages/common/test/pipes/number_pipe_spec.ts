@@ -13,7 +13,8 @@ import localeDeAt from '@angular/common/locales/de-AT';
 import localeEn from '@angular/common/locales/en';
 import localeEsUS from '@angular/common/locales/es-US';
 import localeFr from '@angular/common/locales/fr';
-import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
+import {Component, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 
 {
   describe('Number pipes', () => {
@@ -77,6 +78,24 @@ import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
           expect(pipe.transform('9999999.99', '1.2-2')).toEqual('9,999,999.99');
         });
       });
+
+      it('should be available as a standalone pipe', () => {
+        @Component({
+          selector: 'test-component',
+          imports: [DecimalPipe],
+          template: '{{ value | number }}',
+          standalone: true,
+        })
+        class TestComponent {
+          value = 12345;
+        }
+
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+
+        const content = fixture.nativeElement.textContent;
+        expect(content).toBe('12,345');
+      });
     });
 
     describe('PercentPipe', () => {
@@ -111,6 +130,24 @@ import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
               .toThrowError(
                   `NG02100: InvalidPipeArgument: '[object Object] is not a number' for pipe 'PercentPipe'`);
         });
+      });
+
+      it('should be available as a standalone pipe', () => {
+        @Component({
+          selector: 'test-component',
+          imports: [PercentPipe],
+          template: '{{ value | percent }}',
+          standalone: true,
+        })
+        class TestComponent {
+          value = 15;
+        }
+
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+
+        const content = fixture.nativeElement.textContent;
+        expect(content).toBe('1,500%');
       });
     });
 
@@ -178,6 +215,24 @@ import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
           expect(warnSpy).toHaveBeenCalledWith(
               `Warning: the currency pipe has been changed in Angular v5. The symbolDisplay option (third parameter) is now a string instead of a boolean. The accepted values are "code", "symbol" or "symbol-narrow".`);
         });
+      });
+
+      it('should be available as a standalone pipe', () => {
+        @Component({
+          selector: 'test-component',
+          imports: [CurrencyPipe],
+          template: '{{ value | currency }}',
+          standalone: true,
+        })
+        class TestComponent {
+          value = 15;
+        }
+
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+
+        const content = fixture.nativeElement.textContent;
+        expect(content).toBe('$15.00');
       });
     });
   });

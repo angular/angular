@@ -374,4 +374,16 @@ describe('deeplySerializeSelectedProperties', () => {
       },
     });
   });
+
+  it('should preview the undefined values correctly', () => {
+    const result = deeplySerializeSelectedProperties({obj: undefined}, []);
+    expect(result).toEqual({
+      obj: {
+        type: PropType.Undefined,
+        editable: true,
+        expandable: false,
+        preview: 'undefined',
+      }
+    });
+  });
 });

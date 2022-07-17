@@ -6,12 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {EnvironmentInjector, Injector} from '@angular/core';
+import {Observable, of} from 'rxjs';
+import {map} from 'rxjs/operators';
+
 import {Route} from '../models';
+import {runCanMatchGuards} from '../operators/check_guards';
 import {defaultUrlMatcher, PRIMARY_OUTLET} from '../shared';
-import {UrlSegment, UrlSegmentGroup} from '../url_tree';
+import {UrlSegment, UrlSegmentGroup, UrlSerializer} from '../url_tree';
 
 import {forEach} from './collection';
-import {getOutlet} from './config';
+import {getOrCreateRouteInjectorIfNeeded, getOutlet} from './config';
 
 export interface MatchResult {
   matched: boolean;
@@ -28,6 +33,23 @@ const noMatch: MatchResult = {
   parameters: {},
   positionalParamSegments: {}
 };
+
+export function matchWithChecks(
+    segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[],
+    injector: EnvironmentInjector, urlSerializer: UrlSerializer): Observable<MatchResult> {
+  const result = match(segmentGroup, route, segments);
+  if (!result.matched) {
+    return of(result);
+  }
+
+  // Only create the Route's `EnvironmentInjector` if it matches the attempted
+  // navigation
+  injector = getOrCreateRouteInjectorIfNeeded(route, injector);
+  return runCanMatchGuards(injector, route, segments, urlSerializer)
+      .pipe(
+          map((v) => v === true ? result : {...noMatch}),
+      );
+}
 
 export function match(
     segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[]): MatchResult {

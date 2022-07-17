@@ -6,7 +6,7 @@ Assuming you have cloned the repository containing the preview server code (as d
 [here](vm-setup--create-docker-image.md)), you can use the `update-preview-server.sh` script on the
 VM host to update the preview server based on changes in the source code.
 
-The script will pull the latest changes from the origin's master branch and examine if there have
+The script will pull the latest changes from the origin's main branch and examine if there have
 been any changes in files inside the preview server source code directory (see below). If there are,
 it will create a new image and verify that it works as expected. Finally, it will stop and remove
 the old docker container and image, create a new container based on the new image and start it.

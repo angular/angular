@@ -202,6 +202,13 @@ export function isStandalone<T>(type: Type<T>) {
   return def !== null ? def.standalone : false;
 }
 
+export function generateStandaloneInDeclarationsError(type: Type<any>, location: string) {
+  const prefix = `Unexpected "${stringifyForError(type)}" found in the "declarations" array of the`;
+  const suffix = `"${stringifyForError(type)}" is marked as standalone and can't be declared ` +
+      'in any NgModule - did you intend to import it instead (by adding it to the "imports" array)?';
+  return `${prefix} ${location}, ${suffix}`;
+}
+
 function verifySemanticsOfNgModuleDef(
     moduleType: NgModuleType, allowDuplicateDeclarationsInRoot: boolean,
     importingModule?: NgModuleType): void {
@@ -280,10 +287,8 @@ function verifySemanticsOfNgModuleDef(
     type = resolveForwardRef(type);
     const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
     if (def?.standalone) {
-      errors.push(`Unexpected "${stringifyForError(type)}" declaration in "${
-          stringifyForError(moduleType)}" NgModule. "${
-          stringifyForError(
-              type)}" is marked as standalone and can't be declared in any NgModule - did you intend to import it?`);
+      const location = `"${stringifyForError(moduleType)}" NgModule`;
+      errors.push(generateStandaloneInDeclarationsError(type, location));
     }
   }
 
@@ -326,7 +331,7 @@ function verifySemanticsOfNgModuleDef(
   function verifyComponentIsPartOfNgModule(type: Type<any>) {
     type = resolveForwardRef(type);
     const existingModule = ownerNgModule.get(type);
-    if (!existingModule) {
+    if (!existingModule && !isStandalone(type)) {
       errors.push(`Component ${
           stringifyForError(
               type)} is not part of any NgModule or the module has not been imported into your module.`);
@@ -337,6 +342,14 @@ function verifySemanticsOfNgModuleDef(
     type = resolveForwardRef(type);
     if (!getComponentDef(type)) {
       errors.push(`${stringifyForError(type)} cannot be used as an entry component.`);
+    }
+    if (isStandalone(type)) {
+      // Note: this error should be the same as the
+      // `NGMODULE_BOOTSTRAP_IS_STANDALONE` one in AOT compiler.
+      errors.push(
+          `The \`${stringifyForError(type)}\` class is a standalone component, which can ` +
+          `not be used in the \`@NgModule.bootstrap\` array. Use the \`bootstrapApplication\` ` +
+          `function for bootstrap instead.`);
     }
   }
 
@@ -453,6 +466,7 @@ function setScopeOnDeclaredComponents(moduleType: Type<any>, ngModule: NgModule)
   const transitiveScopes = transitiveScopesFor(moduleType);
 
   declarations.forEach(declaration => {
+    declaration = resolveForwardRef(declaration);
     if (declaration.hasOwnProperty(NG_COMP_DEF)) {
       // A `ɵcmp` field exists - go ahead and patch the component directly.
       const component = declaration as Type<any>& {ɵcmp: ComponentDef<any>};
@@ -491,7 +505,7 @@ export function patchComponentDefWithScope<C>(
 
 /**
  * Compute the pair of transitive scopes (compilation scope and exported scope) for a given type
- * (eaither a NgModule or a standalone component / directive / pipe).
+ * (either a NgModule or a standalone component / directive / pipe).
  */
 export function transitiveScopesFor<T>(type: Type<T>): NgModuleTransitiveScopes {
   if (isNgModule(type)) {

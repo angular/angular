@@ -16,7 +16,7 @@ import { CartService } from '../cart.service';
 export class ProductDetailsComponent implements OnInit {
 
 // #enddocregion add-to-cart, inject-cart-service
-  product: Product | undefined;
+  product!: Product;
 
 // #docregion inject-cart-service
   constructor(

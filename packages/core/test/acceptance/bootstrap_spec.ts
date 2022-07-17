@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, COMPILER_OPTIONS, Component, destroyPlatform, NgModule, NgZone, TestabilityRegistry, ViewEncapsulation} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {ApplicationRef, COMPILER_OPTIONS, Component, destroyPlatform, forwardRef, NgModule, NgZone, TestabilityRegistry, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {bootstrapApplication, BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {withBody} from '@angular/private/testing';
 
@@ -36,6 +36,30 @@ describe('bootstrap', () => {
        } catch (err) {
          console.error(err);
        }
+     }));
+
+
+  it('should allow injecting VCRef into the root (bootstrapped) component',
+     withBody('before|<test-cmp></test-cmp>|after', async () => {
+       @Component({selector: 'dynamic-cmp', standalone: true, template: 'dynamic'})
+       class DynamicCmp {
+       }
+
+       @Component({selector: 'test-cmp', standalone: true, template: '(test)'})
+       class TestCmp {
+         constructor(public vcRef: ViewContainerRef) {}
+       }
+
+       expect(document.body.textContent).toEqual('before||after');
+
+       const appRef = await bootstrapApplication(TestCmp);
+       expect(document.body.textContent).toEqual('before|(test)|after');
+
+       appRef.components[0].instance.vcRef.createComponent(DynamicCmp);
+       expect(document.body.textContent).toEqual('before|(test)dynamic|after');
+
+       appRef.destroy();
+       expect(document.body.textContent).toEqual('before||after');
      }));
 
   describe('options', () => {
@@ -223,6 +247,71 @@ describe('bootstrap', () => {
 
            expect(appRef.components.length).toBe(0);
            expect(testabilityRegistry.getAllRootElements().length).toBe(0);
+         }));
+
+      it('should throw when standalone component is used in @NgModule.bootstrap',
+         withBody('<my-app></my-app>', async () => {
+           @Component({
+             standalone: true,
+             selector: 'standalone-comp',
+             template: '...',
+           })
+           class StandaloneComponent {
+           }
+
+           @NgModule({
+             bootstrap: [StandaloneComponent],
+           })
+           class MyModule {
+           }
+
+           try {
+             await platformBrowserDynamic().bootstrapModule(MyModule);
+
+             // This test tries to bootstrap a standalone component using NgModule-based bootstrap
+             // mechanisms. We expect standalone components to be bootstrapped via
+             // `bootstrapApplication` API instead.
+             fail('Expected to throw');
+           } catch (e: unknown) {
+             const expectedErrorMessage =
+                 'The `StandaloneComponent` class is a standalone component, ' +
+                 'which can not be used in the `@NgModule.bootstrap` array.';
+             expect(e).toBeInstanceOf(Error);
+             expect((e as Error).message).toContain(expectedErrorMessage);
+           }
+         }));
+
+      it('should throw when standalone component wrapped in `forwardRef` is used in @NgModule.bootstrap',
+         withBody('<my-app></my-app>', async () => {
+           @Component({
+             standalone: true,
+             selector: 'standalone-comp',
+             template: '...',
+           })
+           class StandaloneComponent {
+           }
+
+           @NgModule({
+             bootstrap: [forwardRef(() => StandaloneComponent)],
+           })
+           class MyModule {
+           }
+
+           try {
+             await platformBrowserDynamic().bootstrapModule(MyModule);
+
+             // This test tries to bootstrap a standalone component using NgModule-based bootstrap
+             // mechanisms. We expect standalone components to be bootstrapped via
+             // `bootstrapApplication` API instead.
+             fail('Expected to throw');
+           } catch (e: unknown) {
+             const expectedErrorMessage =
+                 'The `StandaloneComponent` class is a standalone component, which ' +
+                 'can not be used in the `@NgModule.bootstrap` array. Use the `bootstrapApplication` ' +
+                 'function for bootstrap instead.';
+             expect(e).toBeInstanceOf(Error);
+             expect((e as Error).message).toContain(expectedErrorMessage);
+           }
          }));
     });
 

@@ -45,7 +45,7 @@ export interface LegacyNgcOptions {
    * option only one .metadata.json file is produced that contains all the metadata
    * necessary for symbols exported from the library index.
    * In the generated .ngfactory.ts files flat module index is used to import symbols
-   * including both the public API from the library index as well as shrowded internal
+   * including both the public API from the library index as well as shrouded internal
    * symbols.
    * By default the .ts file supplied in the `files` field is assumed to be the
    * library index. If more than one is specified, uses `libraryIndex` to select the
@@ -337,6 +337,17 @@ export interface BazelAndG3Options {
    * support these future imports.
    */
   generateDeepReexports?: boolean;
+
+  /**
+   * The `.d.ts` file for NgModules contain type pointers to their declarations, imports, and
+   * exports. Without this flag, the generated type definition will include
+   * components/directives/pipes/NgModules that are declared or imported locally in the NgModule and
+   * not necessarily exported to consumers.
+   *
+   * With this flag set, the type definition generated in the `.d.ts` for an NgModule will be
+   * filtered to only list those types which are publicly exported by the NgModule.
+   */
+  onlyPublishPublicTypingsForNgModules?: boolean;
 
   /**
    * Insert JSDoc type annotations needed by Closure Compiler

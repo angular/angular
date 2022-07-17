@@ -34,6 +34,7 @@ ts_library(
         exclude = [
             "common/Error.spec.ts",
             "common/promise-disable-wrap-uncaught-promise-rejection.spec.ts",
+            "zone-spec/async-tagging-console.spec.ts",
         ],
     ),
     deps = [
@@ -264,6 +265,7 @@ test_srcs = glob(
     "jasmine-patch.spec.ts",
     "common_tests.ts",
     "browser_entry_point.ts",
+    "zone-spec/async-tagging-console.spec.ts",
 ]
 
 test_deps = [

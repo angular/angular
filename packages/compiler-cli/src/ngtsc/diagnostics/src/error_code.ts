@@ -146,6 +146,11 @@ export enum ErrorCode {
   NGMODULE_DECLARATION_IS_STANDALONE = 6008,
 
   /**
+   * Raised when a standalone component is part of the bootstrap list of an NgModule.
+   */
+  NGMODULE_BOOTSTRAP_IS_STANDALONE = 6009,
+
+  /**
    * Indicates that an NgModule is declared with `id: module.id`. This is an anti-pattern that is
    * disabled explicitly in the compiler, that was originally based on a misunderstanding of
    * `NgModule.id`.
@@ -203,7 +208,7 @@ export enum ErrorCode {
   DUPLICATE_VARIABLE_DECLARATION = 8006,
 
   /**
-   * A template has a two way binding (two bindings created by a single syntactial element)
+   * A template has a two way binding (two bindings created by a single syntactical element)
    * in which the input and output are going to different places.
    */
   SPLIT_TWO_WAY_BINDING = 8007,
@@ -227,6 +232,63 @@ export enum ErrorCode {
    * When the type of foo doesn't include `null` or `undefined`.
    */
   NULLISH_COALESCING_NOT_NULLABLE = 8102,
+
+  /**
+   * A known control flow directive (e.g. `*ngIf`) is used in a template,
+   * but the `CommonModule` is not imported.
+   */
+  MISSING_CONTROL_FLOW_DIRECTIVE = 8103,
+
+  /**
+   * A text attribute is not interpreted as a binding but likely intended to be.
+   *
+   * For example:
+   * ```
+   * <div
+   *   attr.x="value"
+   *   class.blue="true"
+   *   style.margin-right.px="5">
+   * </div>
+   * ```
+   *
+   * All of the above attributes will just be static text attributes and will not be interpreted as
+   * bindings by the compiler.
+   */
+  TEXT_ATTRIBUTE_NOT_BINDING = 8104,
+
+  /**
+   * NgForOf is used in a template, but the user forgot to include let
+   * in their statement.
+   *
+   * For example:
+   * ```
+   * <ul><li *ngFor="item of items">{{item["name"]}};</li></ul>
+   * ```
+   */
+  MISSING_NGFOROF_LET = 8105,
+  /**
+   * Indicates that the binding suffix is not supported
+   *
+   * Style bindings support suffixes like `stlye.width.px`, `.em`, and `.%`.
+   * These suffixes are _not_ supported for attribute bindings.
+   *
+   * For example `[attr.width.px]="5"` becomes `width.px="5"` when bound.
+   * This is almost certainly unintentional and this error is meant to
+   * surface this mistake to the developer.
+   */
+  SUFFIX_NOT_SUPPORTED = 8106,
+
+  /**
+   * The left side of an optional chain operation is not nullable.
+   *
+   * ```
+   * {{ foo?.bar }}
+   * {{ foo?.['bar'] }}
+   * {{ foo?.() }}
+   * ```
+   * When the type of foo doesn't include `null` or `undefined`.
+   */
+  OPTIONAL_CHAIN_NOT_NULLABLE = 8107,
 
   /**
    * The template type-checking engine would need to generate an inline type check block for a

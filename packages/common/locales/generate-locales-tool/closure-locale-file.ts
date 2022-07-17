@@ -9,6 +9,7 @@
 import {CldrData, CldrLocaleData} from './cldr-data';
 import {fileHeader} from './file-header';
 import {BaseCurrencies} from './locale-base-currencies';
+import {generateLocaleExtraDataArrayCode} from './locale-extra-file';
 import {generateLocale} from './locale-file';
 
 interface ClosureLocale {
@@ -86,13 +87,14 @@ const u = undefined;
 ${locales.map(locale => generateLocaleConstants(locale)).join('\n')}
 
 let l: any;
+let e: any;
 let locales: string[] = [];
 
 switch (goog.LOCALE) {
 ${locales.map(locale => generateCase(locale)).join('')}}
 
 if (l) {
-  locales.forEach(locale => registerLocaleData(l, locale));
+  locales.forEach(locale => registerLocaleData(l, locale, e));
 }
 `;
 
@@ -104,17 +106,29 @@ if (l) {
     // Closure Locale names contain both the dashed and underscore variant. We filter out
     // the dashed variant as otherwise we would end up with the same constant twice. e.g.
     // https://github.com/google/closure-library/blob/c7445058af72f679ef3273274e936d5d5f40b55a/closure/goog/i18n/datetimepatternsext.js#L11659-L11660.
-    const localeConstantNames = locale.closureLocaleNames.filter(d => !d.includes('-'))
-                                    .map(d => `locale_${formatLocale(d)}`);
+    const localeNamesToExpose = locale.closureLocaleNames.filter(d => !d.includes('-'));
+    const localeConstantNames = localeNamesToExpose.map(d => `locale_${formatLocale(d)}`);
+    const extraLocaleConstantNames =
+        localeNamesToExpose.map(d => `locale_extra_${formatLocale(d)}`);
+
     const dataConstantName = localeConstantNames[0];
-    const otherAliasConstantNames = localeConstantNames.slice(1);
+    const extraDataConstantName = extraLocaleConstantNames[0];
+    const aliasDataConstantNames = localeConstantNames.slice(1);
+    const aliasExtraDataConstantNames = extraLocaleConstantNames.slice(1);
 
     // We only generate the locale data once. All other constants just refer to the
     // first constant with the actual locale data. This reduces the Closure Locale file
     // size and potentially speeds up compilation with Closure Compiler.
+    // NOTE: The locale constants and aliases are exported as these could be used
+    // directly (e.g. in tests).
     return `
 ${generateLocaleConstant(locale, dataConstantName)}
-${otherAliasConstantNames.map(d => `export const ${d} = ${dataConstantName};`).join('\n')}`;
+${generateLocaleExtraDataConstant(locale, extraDataConstantName)}
+
+${aliasDataConstantNames.map(d => `export const ${d} = ${dataConstantName};`).join('\n')}
+${
+        aliasExtraDataConstantNames.map(d => `export const ${d} = ${extraDataConstantName};`)
+            .join('\n')}`;
   }
 
   /** Generates a locale data constant for the specified locale. */
@@ -124,14 +138,24 @@ ${otherAliasConstantNames.map(d => `export const ${d} = ${dataConstantName};`).j
         .replace('export default ', `export const ${constantName} = `)
         .replace('function plural', `function plural_${constantName}`)
         .replace(/,\s+plural/, `, plural_${constantName}`)
-        .replace(/\s*const u = undefined;\s*/, '');
+        .replace(/\s*const u = undefined;\s*/, '')
+        .trim();
+  }
+
+  /** Creates a locale extra data constant for the given locale. */
+  function generateLocaleExtraDataConstant(locale: ClosureLocale, constantName: string): string {
+    return `export const ${constantName} = ${
+        generateLocaleExtraDataArrayCode(locale.canonicalLocaleName, locale.data)};`;
   }
 
   /** Generates a TypeScript `switch` case for the specified locale. */
   function generateCase(locale: ClosureLocale): string {
+    const localeIdentifier = formatLocale(locale.canonicalLocaleName);
+
     return `
 ${locale.closureLocaleNames.map(l => `case '${l}':`).join('\n')}
-  l = locale_${formatLocale(locale.canonicalLocaleName)};
+  l = locale_${localeIdentifier};
+  e = locale_extra_${localeIdentifier};
   locales = [${locale.closureLocaleNames.map(n => `"${n}"`).join(', ')}];
   break;`;
   }

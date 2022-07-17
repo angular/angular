@@ -41,8 +41,8 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
     data = kwargs.pop("data", [])
 
     if setup_chromium:
-        data += ["@npm//@angular/dev-infra-private/bazel/browsers/chromium"]
-        toolchains += ["@npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias"]
+        data.append("@npm//@angular/dev-infra-private/bazel/browsers/chromium")
+        toolchains.append("@npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias")
         environment.update({
             "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
             "CHROME_BIN": "$(CHROMIUM)",

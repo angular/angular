@@ -208,16 +208,7 @@ code {
       > a {
         &[href^="http:"],
         &[href^="https:"] {
-          display: inline-flex;
-          padding-right: calc(1em + 0.25rem);
-          position: relative;
-
-          &::after {
-            content: "\e89e"; // codepoint for "open_in_new"
-            font-family: "Material Icons";
-            position: absolute;
-            right: 0;
-          }
+          @include mixins.external-link-with-icon();
         }
       }
     }

@@ -7,7 +7,7 @@
  */
 import 'reflect-metadata';
 
-import {Component, ContentChild, ContentChildren, Directive, ElementRef, getNgModuleById, HostBinding, HostListener, Input, NgModule, Pipe, QueryList, ViewChild, ViewChildren, ɵNgModuleDef as NgModuleDef, ɵɵngDeclareComponent as ngDeclareComponent} from '@angular/core';
+import {Component, ContentChild, ContentChildren, Directive, ElementRef, forwardRef, getNgModuleById, HostBinding, HostListener, Input, NgModule, Pipe, QueryList, ViewChild, ViewChildren, ɵNgModuleDef as NgModuleDef, ɵɵngDeclareComponent as ngDeclareComponent} from '@angular/core';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {setCurrentInjector, ɵɵinject} from '@angular/core/src/di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵInjectorDef} from '@angular/core/src/di/interface/defs';
@@ -224,6 +224,25 @@ describe('render3 jit', () => {
     }
     expect(moduleDef.declarations.length).toBe(1);
     expect(moduleDef.declarations[0]).toBe(Cmp);
+  });
+
+  it('compiles a module with forwardRef', () => {
+    @NgModule({
+      declarations: [forwardRef(() => Cmp)],
+    })
+    class Module {
+    }
+
+    @Component({
+      template: 'foo',
+      selector: 'foo',
+    })
+    class Cmp {
+    }
+
+    const componentDef: ComponentDef<Module> = (Cmp as any).ɵcmp;
+    expect(componentDef).toBeDefined();
+    expect(componentDef.schemas).toBeInstanceOf(Array);
   });
 
   it('compiles a module with an id and registers it correctly', () => {

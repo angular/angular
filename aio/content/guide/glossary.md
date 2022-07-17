@@ -32,11 +32,13 @@ This glossary lists the most prominent terms and a few less familiar ones with u
 [Y][AioGuideGlossaryY]
 [Z][AioGuideGlossaryZ]
 
+<!-- vale Angular.Google_Headings = NO -->
+
 <a id="aot"></a>
 
 ## ahead-of-time (AOT) compilation
 
-The Angular ahead-of-time \(AOT\) compiler converts Angular HTML and TypeScript code into efficient JavaScript code during the build phase, before the browser downloads and runs that code.
+The Angular ahead-of-time \(AOT\) compiler converts Angular HTML and TypeScript code into efficient JavaScript code during the build phase. The build phase occurs before the browser downloads and runs the rendered code.
 This is the best compilation mode for production environments, with decreased load time and increased performance compared to [just-in-time (JIT) compilation][AioGuideGlossaryJustInTimeJitCompilation].
 
 By compiling your application using the `ngc` command-line tool, you can bootstrap directly to a module factory, so you do not need to include the Angular compiler in your JavaScript bundle.
@@ -110,7 +112,7 @@ Learn more in [Bootstrapping][AioGuideBootstrapping].
 
 ## builder
 
-A function that uses the [Architect][AioGuideGlossaryArchitect] API to perform a complex process such as "build" or "test".
+A function that uses the [Architect][AioGuideGlossaryArchitect] API to perform a complex process such as `build` or `test`.
 The builder code is defined in an [npm package][AioGuideGlossaryNpmPackage].
 
 For example, [BrowserBuilder][GithubAngularAngularCliTreePrimaryPackagesAngularDevkitBuildAngularSrcBuildersBrowser] runs a [webpack][JsWebpackMain] build for a browser target and [KarmaBuilder][GithubAngularAngularCliTreePrimaryPackagesAngularDevkitBuildAngularSrcBuildersKarma] starts the Karma server and runs a webpack build for unit tests.
@@ -131,7 +133,7 @@ Here is a summary of the case types:
 |                                                                           | Details                                                                                                                                                                      | example             |
 |:---                                                                       |:---                                                                                                                                                                          |:---                 |
 | camelCase                                                                 | Symbols, properties, methods, pipe names, non-component directive selectors, constants. <br /> Standard or lower camel case uses lowercase on the first letter of the item.  | `selectedHero`      |
-| UpperCamelCase <br /> PascalCase                                          | Class names, including classes that define components, interfaces, NgModules, directives, and pipes. <br /> Upper camel case uses uppercase on the first letter of the item. | `HeroListComponent` |
+| UpperCamelCase <br /> PascalCase                                          | Class names, including classes that define components, interfaces, NgModules, directives, and pipes. <br /> Upper camel case uses uppercase on the first letter of the item. | `HeroComponent` |
 | dash-case <br /> kebab-case                                               | Descriptive part of file names, component selectors.                                                                                                                         | `app-hero-list`     |
 | underscore_case <br /> snake_case                                         | Not typically used in Angular. <br /> Snake case uses words connected with underscores.                                                                                      | `convert_link_mode` |
 | UPPER_UNDERSCORE_CASE <br /> UPPER_SNAKE_CASE <br /> SCREAMING_SNAKE_CASE | Traditional for constants. <br /> This case is acceptable, but camelCase is preferred. <br /> Upper snake case uses words in all capital letters connected with underscores. | `FIX_ME`            |
@@ -239,25 +241,25 @@ Read about the following forms of binding of the [Template Syntax][AioGuideTempl
 *   [Property binding][AioGuidePropertyBinding]
 *   [Event binding][AioGuideEventBinding]
 *   [Attribute binding][AioGuideAttributeBinding]
-*   [Class binding][AioGuideAttributeBindingBindingToTheClassAttribute]
-*   [Style binding][AioGuideAttributeBindingBindingToTheStyleAttribute]
+*   [Class and style binding][AioGuideAttributeBindingBindingToTheClassAttribute]
 *   [Two-way data binding with ngModel][AioGuideBuiltInDirectivesDisplayingAndUpdatingPropertiesWithNgmodel]
 
 ## declarable
 
-A class type that you can add to the `declarations` list of an [NgModule][AioGuideGlossaryNgmodule].
-You can declare [components][AioGuideGlossaryComponent], [directives][AioGuideGlossaryDirective], and [pipes][AioGuideGlossaryPipe].
+A class that you can add to the `declarations` list of an [NgModule][AioGuideGlossaryNgmodule].
+You can declare [components][AioGuideGlossaryComponent], [directives][AioGuideGlossaryDirective], and [pipes][AioGuideGlossaryPipe], unless they have the `standalone` flag in their decorators set to `true`, which makes them standalone. Note: standalone components/directives/pipes are **not** declarables. More info about standalone classes can be found [below][AioGuideGlossaryStandalone].
 
 Do not declare the following:
 
-*   A class that is already declared in another NgModule
+*   A class already declared as [standalone][AioGuideGlossaryStandalone].
+*   A class that is already declared in another NgModule.
 *   An array of directives imported from another package.
-    For example, do not declare `FORMS_DIRECTIVES` from `@angular/forms`
+    For example, do not declare `FORMS_DIRECTIVES` from `@angular/forms`.
+*   NgModule classes.
+*   Service classes.
+*   Non-Angular classes and objects, such as strings, numbers, functions, entity models, configurations, business logic, and helper classes.
 
-*   NgModule classes
-*   Service classes
-*   Non-Angular classes and objects, such as strings, numbers, functions, entity models, configurations, business logic, and helper classes
-
+Note that declarables can also be declared as standalone and simply be imported inside other standalone components or existing NgModules, to learn more, see the [Standalone components guide][AioGuideStandalone].
 ## decorator | decoration
 
 A function that modifies a class or property definition.
@@ -290,7 +292,7 @@ A directive class definition is immediately preceded by a `@Directive()` [decora
 A directive class is usually associated with an HTML element or attribute, and that element or attribute is often referred to as the directive itself.
 When Angular finds a directive in an HTML [template][AioGuideGlossaryTemplate], it creates the matching directive class instance and gives the instance control over that portion of the browser DOM.
 
-There are three categories of directive:
+Angular has three categories of directive:
 
 *   [Components][AioGuideGlossaryComponent] use `@Component()` to associate a template with a class.
     `@Component()` is an extension of `@Directive()`.
@@ -731,7 +733,18 @@ The `@Injectable()` metadata allows the service class to be used with the [depen
 The injectable class is instantiated by a [provider][AioGuideGlossaryProvider].
 [Injectors][AioGuideGlossaryInjector] maintain lists of providers and use them to provide service instances when they are required by components or other services.
 
-For To learn more, see [Introduction to Services and Dependency Injection][AioGuideArchitectureServices].
+To learn more, see [Introduction to Services and Dependency Injection][AioGuideArchitectureServices].
+
+## standalone
+
+A configuration of [components][AioGuideGlossaryComponent], [directives][AioGuideGlossaryDirective], and [pipes][AioGuideGlossaryPipe] to indicate that this class can be imported directly without declaring it in any [NgModule][AioGuideGlossaryNgmodule].
+
+Standalone components, directives and pipes mainly differ from non-standalone ones by:
+ - having the `standalone` field of their decorator set to `true`.
+ - allowing their direct importing without the need to pass through NgModules.
+ - specifying their dependencies directly in their decorator.
+
+To learn more, see the [Standalone components guide][AioGuideStandalone].
 
 ## structural directive
 
@@ -807,7 +820,8 @@ For an introduction and comparison of both forms approaches, see [Introduction t
 
 A TypeScript-like syntax that Angular evaluates within a [data binding][AioGuideGlossaryDataBinding].
 
-Read about how to write template expressions in the [template expressions][AioGuideInterpolationTemplateExpressions] section of the [Interpolation][AioGuideInterpolation] guide.
+<!--todo: have Alex review this -->
+<!-- Read about how to write template expressions in the [template expressions][AioGuideInterpolationTemplateExpressions] section of the [Interpolation][AioGuideInterpolation] guide. -->
 
 ## template reference variable
 
@@ -956,6 +970,8 @@ A zone client can take action before and after an async operation completes.
 
 Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 
+<!-- vale Angular.Google_Headings = YES -->
+
 <!-- links -->
 
 [AioApiCommonDatepipe]: api/common/DatePipe "DatePipe | @angular/common - API | Angular"
@@ -991,9 +1007,8 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 
 [AioGuideArchitectureServices]: guide/architecture-services "Introduction to services and dependency injection | Angular"
 
-[AioGuideAttributeBinding]: guide/attribute-binding "Attribute, class, and style bindings | Angular"
-[AioGuideAttributeBindingBindingToTheClassAttribute]: guide/attribute-binding#binding-to-the-class-attribute "Binding to the class attribute - Attribute, class, and style bindings | Angular"
-[AioGuideAttributeBindingBindingToTheStyleAttribute]: guide/attribute-binding#binding-to-the-style-attribute "Binding to the style attribute - Attribute, class, and style bindings | Angular"
+[AioGuideAttributeBinding]: guide/attribute-binding "Attribute binding | Angular"
+[AioGuideAttributeBindingBindingToTheClassAttribute]: guide/class-binding "Class and style binding | Angular"
 
 [AioGuideAttributeDirectives]: guide/attribute-directives "Attribute directives | Angular"
 
@@ -1094,6 +1109,7 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 [AioGuideGlossaryScopedPackage]: guide/glossary#scoped-package "scoped package - Glossary | Angular"
 [AioGuideGlossaryServerSideRendering]: guide/glossary#server-side-rendering "server-side rendering - Glossary | Angular"
 [AioGuideGlossaryService]: guide/glossary#service "service - Glossary | Angular"
+[AioGuideGlossaryStandalone]: guide/glossary#standalone "standalone - Glossary | Angular"
 [AioGuideGlossaryStructuralDirective]: guide/glossary#structural-directive "structural directive - Glossary | Angular"
 [AioGuideGlossarySubscriber]: guide/glossary#subscriber "subscriber - Glossary | Angular"
 [AioGuideGlossaryT]: guide/glossary#target "T - Glossary | Angular"
@@ -1120,7 +1136,8 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 [AioGuideHierarchicalDependencyInjection]: guide/hierarchical-dependency-injection "Hierarchical injectors | Angular"
 
 [AioGuideInterpolation]: guide/interpolation "Text interpolation | Angular"
-[AioGuideInterpolationTemplateExpressions]: guide/interpolation#template-expressions "Template expressions - Text interpolation | Angular"
+
+<!-- [AioGuideInterpolationTemplateExpressions]: guide/interpolation#template-expressions "Template expressions - Text interpolation | Angular" -->
 
 [AioGuideNgmodules]: guide/ngmodules "NgModules | Angular"
 
@@ -1143,7 +1160,9 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 
 [AioGuideSetupLocal]: guide/setup-local "Setting up the local environment and workspace | Angular"
 
-[AioGuideStructuralDirectives]: guide/structural-directives "Writing structural directives | Angular"
+[AioGuideStandalone]: guide/standalone-components "Getting started with standalone components | Angular"
+
+[AioGuideStructuralDirectives]: guide/structural-directives "Structural directives | Angular"
 
 [AioGuideStyleguide0201]: guide/styleguide#02-01 "Style 02-01 - Angular coding style guide | Angular"
 
@@ -1163,8 +1182,8 @@ Learn more about zones in this [Brian Ford video][YoutubeWatchV3iqtmusceU].
 
 [AngularBlogAPlanForVersion80AndIvyB3318dfc19f7]: https://blog.angular.io/a-plan-for-version-8-0-and-ivy-b3318dfc19f7 "A plan for version 8.0 and Ivy | Angular Blog"
 
-[GithubAngularAngularCliTreePrimaryPackagesAngularDevkitBuildAngularSrcBuildersBrowser]: https://github.com/angular/angular-cli/tree/master/packages/angular_devkit/build_angular/src/builders/browser "packages/angular_devkit/build_angular/src/builders/browser | angular/angular-cli | GitHub"
-[GithubAngularAngularCliTreePrimaryPackagesAngularDevkitBuildAngularSrcBuildersKarma]: https://github.com/angular/angular-cli/tree/master/packages/angular_devkit/build_angular/src/builders/karma "packages/angular_devkit/build_angular/src/builders/karma | angular/angular-cli | GitHub"
+[GithubAngularAngularCliTreePrimaryPackagesAngularDevkitBuildAngularSrcBuildersBrowser]: https://github.com/angular/angular-cli/tree/main/packages/angular_devkit/build_angular/src/builders/browser "packages/angular_devkit/build_angular/src/builders/browser | angular/angular-cli | GitHub"
+[GithubAngularAngularCliTreePrimaryPackagesAngularDevkitBuildAngularSrcBuildersKarma]: https://github.com/angular/angular-cli/tree/main/packages/angular_devkit/build_angular/src/builders/karma "packages/angular_devkit/build_angular/src/builders/karma | angular/angular-cli | GitHub"
 
 [GithubPalantirTslint]: https://palantir.github.io/tslint "TSLint | Palantir | GitHub"
 

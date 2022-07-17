@@ -111,7 +111,7 @@ uploadData() {
 
   # WARNING: CI_SECRET_PAYLOAD_FIREBASE_TOKEN should NOT be printed.
   set +x
-  $NODE_MODULES_BIN/firebase database:update --data "$jsonPayload" --project $PROJECT_NAME --confirm --token "$CI_SECRET_PAYLOAD_FIREBASE_TOKEN" $dbPath
+  $NODE_MODULES_BIN/firebase database:update --data "$jsonPayload" --project $PROJECT_NAME --force --token "$CI_SECRET_PAYLOAD_FIREBASE_TOKEN" $dbPath
 }
 
 # Track payload size.

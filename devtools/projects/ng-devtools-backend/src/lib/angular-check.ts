@@ -13,7 +13,8 @@ export const appIsAngularInDevMode = (): boolean => {
 };
 
 export const appIsAngularIvy = (): boolean => {
-  return typeof (window as any).getAllAngularRootElements?.()?.[0]?.__ngContext__ !== 'undefined';
+  const rootElement = (window as any).document.querySelector('[ng-version]');
+  return typeof rootElement?.__ngContext__ !== 'undefined';
 };
 
 export const appIsAngular = (): boolean => {
@@ -26,7 +27,7 @@ export const appIsSupportedAngularVersion = (): boolean => {
     return false;
   }
   const major = parseInt(version.toString().split('.')[0], 10);
-  return appIsAngular() && (major >= 9 || major === 0);
+  return appIsAngular() && (major >= 12 || major === 0);
 };
 
 /**

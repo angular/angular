@@ -31,6 +31,7 @@ describe('onerror handler', () => {
 
   it('(called with a Firefox on android style error) should call ga with a payload based on the error object', async () => {
     const message = await callOnError('Error: something terrible has happened. oh no. oh no.', undefined, undefined, undefined, {
+      message: 'something terrible has happened. oh no. oh no.',
       stack: `AppComponent@https://example.com/app/app.component.ts:31:29
 createClass@https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:12200:20
 createDirectiveInstance@https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:12049:37
@@ -53,7 +54,7 @@ ZoneDelegate.prototype.invokeTask@https://example.com/packages/zone.js@0.8.18/di
 forkInnerZoneWithAngularBehavior/zone._inner<.onInvokeTask@https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:4656:24
 ZoneDelegate.prototype.invokeTask@https://example.com/packages/zone.js@0.8.18/dist/zone.js:424:17
 Zone.prototype.runTask@https://example.com/packages/zone.js@0.8.18/dist/zone.js:192:28
-drainMicroTaskQueue@https://example.com/packages/zone.js@0.8.18/dist/zone.js:602:25` } as Error);
+drainMicroTaskQueue@https://example.com/packages/zone.js@0.8.18/dist/zone.js:602:25` });
 
     expect(message).toEqual(`something terrible has happened. oh no. oh no.
 AppComponent@app.component.ts:31:29
@@ -63,6 +64,7 @@ createDirectiveInstance@core.umd.j`);
 
   it('(called with a Safari 11 style error) should call ga with a payload based on the error object', async () => {
     const message = await callOnError('Error: something terrible has happened. oh no. oh no.', undefined, undefined, undefined, {
+      message: 'something terrible has happened. oh no. oh no.',
       stack: `AppComponent
       createClass
       createDirectiveInstance
@@ -80,7 +82,7 @@ createDirectiveInstance@core.umd.j`);
       onInvokeTask
       runTask
       drainMicroTaskQueue
-      promiseReactionJob@[native code]` } as Error);
+      promiseReactionJob@[native code]` });
 
     expect(message).toEqual(`something terrible has happened. oh no. oh no.
 AppComponent
@@ -94,6 +96,7 @@ cr`);
 
   it('(called with a Opera 50 style error) should call ga with a payload based on the error object', async () => {
     const message = await callOnError('Error: something terrible has happened. oh no. oh no.', undefined, undefined, undefined, {
+      message: 'something terrible has happened. oh no. oh no.',
       stack: `Error: something terrible has happened. oh no. oh no.
       at new AppComponent (https://example.com/app/app.component.ts:31:29)
       at createClass (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:12200:20)
@@ -104,7 +107,7 @@ cr`);
       at Object.debugCreateRootView [as createRootView] (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:14079:12)
       at ComponentFactory_.create (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:10998:46)
       at ComponentFactoryBoundToModule.create (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:3958:29)
-      at ApplicationRef.bootstrap (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:5769:57)` } as Error);
+      at ApplicationRef.bootstrap (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:5769:57)` });
 
     expect(message).toEqual(`something terrible has happened. oh no. oh no.
 new AppComponent@app.component.ts:31:29
@@ -114,6 +117,7 @@ createDirectiveInstance@core.u`);
 
   it('(called with a Chrome 64 style error) should call ga with a payload based on the error object', async () => {
     const message = await callOnError('Error: something terrible has happened. oh no. oh no.', undefined, undefined, undefined, {
+      message: 'something terrible has happened. oh no. oh no.',
       stack: `Error: something terrible has happened. oh no. oh no.
       at new AppComponent (https://example.com/app/app.component.ts:31:29)
       at createClass (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:12200:20)
@@ -124,7 +128,7 @@ createDirectiveInstance@core.u`);
       at Object.debugCreateRootView [as createRootView] (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:14079:12)
       at ComponentFactory_.create (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:10998:46)
       at ComponentFactoryBoundToModule.create (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:3958:29)
-      at ApplicationRef.bootstrap (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:5769:57)` } as Error);
+      at ApplicationRef.bootstrap (https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:5769:57)` });
 
     expect(message).toEqual(`something terrible has happened. oh no. oh no.
 new AppComponent@app.component.ts:31:29
@@ -134,6 +138,7 @@ createDirectiveInstance@core.u`);
 
   it('(called with a Firefox 58 style error) should call ga with a payload based on the error object', async () => {
     const message = await callOnError('Error: something terrible has happened. oh no. oh no.', undefined, undefined, undefined, {
+      message: 'something terrible has happened. oh no. oh no.',
       stack: `AppComponent@https://example.com/app/app.component.ts:31:29
 createClass@https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:12200:20
 createDirectiveInstance@https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:12049:37
@@ -156,7 +161,7 @@ ZoneDelegate.prototype.invokeTask@https://example.com/packages/zone.js@0.8.18/di
 onInvokeTask@https://example.com/packages/@angular/core@5.0.0/bundles/core.umd.js:4656:24
 ZoneDelegate.prototype.invokeTask@https://example.com/packages/zone.js@0.8.18/dist/zone.js:424:17
 Zone.prototype.runTask@https://example.com/packages/zone.js@0.8.18/dist/zone.js:192:28
-drainMicroTaskQueue@https://example.com/packages/zone.js@0.8.18/dist/zone.js:602:25` } as Error);
+drainMicroTaskQueue@https://example.com/packages/zone.js@0.8.18/dist/zone.js:602:25` });
 
     expect(message).toEqual(`something terrible has happened. oh no. oh no.
 AppComponent@app.component.ts:31:29
@@ -166,6 +171,7 @@ createDirectiveInstance@core.umd.j`);
 
   it('(called with a Edge 16 style error) should call ga with a payload based on the error object', async () => {
     const message = await callOnError('Error: something terrible has happened. oh no. oh no.', undefined, undefined, undefined, {
+      message: 'something terrible has happened. oh no. oh no.',
       stack: `Error: something terrible has happened. oh no. oh no.
       at AppComponent (eval code:31:21)
       at createClass (eval code:12200:13)
@@ -176,7 +182,7 @@ createDirectiveInstance@core.umd.j`);
       at debugCreateRootView (eval code:14079:5)
       at ComponentFactory_.prototype.create (eval code:10998:9)
       at ComponentFactoryBoundToModule.prototype.create (eval code:3958:9)
-      at ApplicationRef.prototype.bootstrap (eval code:5769:9)` } as Error);
+      at ApplicationRef.prototype.bootstrap (eval code:5769:9)` });
 
     expect(message).toEqual(`something terrible has happened. oh no. oh no.
 AppComponent@???:31:21
@@ -185,21 +191,44 @@ createDirectiveInstance@???:12049:5
 createViewNodes@???`);
   });
 
-  async function callOnError(message: string, url?: string, line?: number, column?: number, error?: Error) {
+  async function callOnError(
+      message: string, filename?: string, lineno?: number, colno?: number, error?: {message: string, stack?: string}) {
     await browser.executeScript(() => {
-      // reset the ga queue
+      // reset the ga and gtag queue
       (window as any).ga.q.length = 0;
-      // post the error to the handler
-      if (window.onerror) {
-        window.onerror(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]);
+      (window as any).dataLayer = [];
+      // create the error instance if provided
+      // we cannot pass the `Error` instance from the e2e tests as that one
+      // might fail an `instanceof Error` check.
+      let errorObj;
+      if (arguments[4]) {
+        errorObj = new Error(arguments[4].message);
+        errorObj.stack = arguments[4].stack;
       }
-    }, message, url, line, column, error);
-    const gaCalls = await page.ga();
-    const exceptionCall = gaCalls.find(call => call[0] === 'send' && call[1] === 'exception');
-    if (exceptionCall) {
-      const payload = exceptionCall[2];
-      expect(payload.exFatal).toBe(true);
-      return payload.exDescription;
+      // post the error to the handler
+      window.dispatchEvent(new ErrorEvent('error', {
+        message: arguments[0],
+        filename: arguments[1],
+        lineno: arguments[2],
+        colno: arguments[3],
+        error: errorObj,
+      }));
+    }, message, filename, lineno, colno, error);
+
+    const legacyGaCalls = await page.legacyGa();
+    const gtagCalls = await page.gtagQueue();
+
+    const legacyExceptionCall = legacyGaCalls.find(call => call[0] === 'send' && call[1] === 'exception');
+    const gtagExceptionCall = gtagCalls.find(call => call[0] === 'event' && call[1] === 'exception');
+
+    if (gtagExceptionCall && legacyExceptionCall) {
+      const legacyPayload = legacyExceptionCall[2];
+      const payload = gtagExceptionCall[2];
+
+      expect(legacyPayload.exFatal).toBe(true);
+      expect(payload.fatal).toBe(true);
+
+      return payload.description;
     }
   }
 });

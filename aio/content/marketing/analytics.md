@@ -39,7 +39,8 @@ ng analytics off
 
 </code-example>
 
-&num;&num;&num; Enabling usage analytics
+### Enabling usage analytics
+
 To enable usage analytics, run the following command:
 
 <code-example format="shell" language="shell">

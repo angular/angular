@@ -221,8 +221,16 @@ export function compileComponentFromMetadata(
     const styleValues = meta.encapsulation == core.ViewEncapsulation.Emulated ?
         compileStyles(meta.styles, CONTENT_ATTR, HOST_ATTR) :
         meta.styles;
-    const strings = styleValues.map(str => constantPool.getConstLiteral(o.literal(str)));
-    definitionMap.set('styles', o.literalArr(strings));
+    const styleNodes = styleValues.reduce((result, style) => {
+      if (style.trim().length > 0) {
+        result.push(constantPool.getConstLiteral(o.literal(style)));
+      }
+      return result;
+    }, [] as o.Expression[]);
+
+    if (styleNodes.length > 0) {
+      definitionMap.set('styles', o.literalArr(styleNodes));
+    }
   } else if (meta.encapsulation === core.ViewEncapsulation.Emulated) {
     // If there is no style, don't generate css selectors on elements
     meta.encapsulation = core.ViewEncapsulation.None;

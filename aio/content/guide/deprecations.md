@@ -84,7 +84,7 @@ v14 - v17
 | template syntax                     | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)                                         | <!--  v7 --> unspecified |
 | template syntax                     | [`bind-`, `on-`, `bindon-`, and `ref-`](#bind-syntax)                                                      | <!-- v13 --> v15         |
 
-For information about Angular CDK and Angular Material deprecations, see the [changelog](https://github.com/angular/components/blob/master/CHANGELOG.md).
+For information about Angular CDK and Angular Material deprecations, see the [changelog](https://github.com/angular/components/blob/main/CHANGELOG.md).
 
 ## Deprecated APIs
 
@@ -134,7 +134,7 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 | [`ModuleWithComponentFactories`](api/core/ModuleWithComponentFactories)                                    | none                                                                                                                                                              | v13                   | Ivy JIT mode doesn't require accessing this symbol. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context.                                                                                                                  |
 | [`Compiler`](api/core/Compiler)                                                                            | none                                                                                                                                                              | v13                   | Ivy JIT mode doesn't require accessing this symbol. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context.                                                                                                                  |
 | [`CompilerFactory`](api/core/CompilerFactory)                                                              | none                                                                                                                                                              | v13                   | Ivy JIT mode doesn't require accessing this symbol. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context.                                                                                                                  |
-| [`NgModuleFactory`](api/core/NgModuleFactory)                                                              | Use non-factory based framework APIs like [PlatformRef.bootstrapModule](api/core/PlatformRef#bootstrapModule) and [createNgModuleRef](api/core/createNgModuleRef) | v13                   | Ivy JIT mode doesn't require accessing this symbol. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context.                                                                                                                  |
+| [`NgModuleFactory`](api/core/NgModuleFactory)                                                              | Use non-factory based framework APIs like [PlatformRef.bootstrapModule](api/core/PlatformRef#bootstrapModule) and [createNgModule](api/core/createNgModule) | v13                   | Ivy JIT mode doesn't require accessing this symbol. See [JIT API changes due to ViewEngine deprecation](#jit-api-changes) for additional context.                                                                                                                  |
 | [Factory-based signature of `ViewContainerRef.createComponent`](api/core/ViewContainerRef#createComponent) | [Type-based signature of `ViewContainerRef.createComponent`](api/core/ViewContainerRef#createComponent)                                                           | v13                   | Angular no longer requires component factories to dynamically create components. Use different signature of the `createComponent` method, which allows passing Component class directly.                                                                           |
 | [`ComponentFactory`](api/core/ComponentFactory)                                                            | Use non-factory based framework APIs.                                                                                                                             | v13                   | Since Ivy, Component factories are not required. Angular provides other APIs where Component classes can be used directly.                                                                                                                                         |
 | [`ComponentFactoryResolver`](api/core/ComponentFactoryResolver)                                            | Use non-factory based framework APIs.                                                                                                                             | v13                   | Since Ivy, Component factories are not required, thus there is no need to resolve them.                                                                                                                                                                            |
@@ -225,7 +225,7 @@ It also includes deprecated API usage scenarios or API combinations, to augment 
 
 Bazel builder and schematics were introduced in Angular Labs to let users try out Bazel without having to manage Bazel version and BUILD files.
 This feature has been deprecated.
-For more information, please refer to the [migration doc](https://github.com/angular/angular/blob/master/packages/bazel/docs/BAZEL_SCHEMATICS.md).
+For more information, please refer to the [migration doc](https://github.com/angular/angular/blob/main/packages/bazel/docs/BAZEL_SCHEMATICS.md).
 
 <a id="wtf"></a>
 
@@ -359,7 +359,7 @@ Prior to version 7, the `import()` syntax only works in JIT mode \(with view eng
 <div class="alert is-helpful">
 
 **Declaration syntax**: <br />
-It's important to follow the route declaration syntax `loadChildren: () => import('&hellip;').then(m => m.ModuleName)` to allow `ngc` to discover the lazy-loaded module and the associated `NgModule`.
+It's important to follow the route declaration syntax `loadChildren: () => import('...').then(m => m.ModuleName)` to allow `ngc` to discover the lazy-loaded module and the associated `NgModule`.
 You can find the complete list of allowed syntax constructs [here](https://github.com/angular/angular-cli/blob/a491b09800b493fe01301387fa9a025f7c7d4808/packages/ngtools/webpack/src/transformers/import_factory.ts#L104-L113).
 These restrictions will be relaxed with the release of Ivy since it'll no longer use `NgFactories`.
 
@@ -475,7 +475,7 @@ For full rationale and discussion behind this deprecation, see [RFC: Internet Ex
 
 <div class="alert is-helpful">
 
-**NOTE**: <br /> 
+**NOTE**: <br />
 IE11 will be supported in Angular v12 LTS releases through November 2022.
 
 </div>

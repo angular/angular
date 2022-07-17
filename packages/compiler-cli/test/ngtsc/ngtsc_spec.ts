@@ -476,6 +476,67 @@ function allTests(os: string) {
       }
     });
 
+    it('should only list public declarations in NgModule .d.ts when requested', () => {
+      env.tsconfig({
+        onlyPublishPublicTypingsForNgModules: true,
+      });
+      env.write('test.ts', `
+            import {Directive, NgModule} from '@angular/core';
+
+            @Directive({selector: 'internal'})
+            export class InternalDir {}
+
+            @Directive({selector: 'external'})
+            export class ExternalDir {}
+
+            @NgModule({
+              declarations: [InternalDir, ExternalDir],
+              exports: [ExternalDir],
+            })
+            export class Module {}
+          `);
+
+      env.driveMain();
+      const dtsContents = env.getContents('test.d.ts');
+      expect(dtsContents)
+          .toContain(
+              'static ɵmod: i0.ɵɵNgModuleDeclaration<Module, ' +
+              '[typeof ExternalDir], never, [typeof ExternalDir]>');
+    });
+
+    it('should not list imports in NgModule .d.ts when requested', () => {
+      env.tsconfig({
+        onlyPublishPublicTypingsForNgModules: true,
+      });
+      env.write('test.ts', `
+            import {Directive, NgModule} from '@angular/core';
+
+            @Directive({selector: 'internal'})
+            export class InternalDir {}
+
+            @NgModule({
+              declarations: [InternalDir],
+              exports: [InternalDir],
+            })
+            export class DepModule {}
+
+            @Directive({selector: 'external'})
+            export class ExternalDir {}
+
+            @NgModule({
+              imports: [DepModule],
+            })
+            export class Module {}
+          `);
+
+      env.driveMain();
+      const dtsContents = env.getContents('test.d.ts');
+      expect(dtsContents)
+          .toContain(
+              'static ɵmod: i0.ɵɵNgModuleDeclaration<Module, ' +
+              'never, never, never>');
+    });
+
     // This test triggers the Tsickle compiler which asserts that the file-paths
     // are valid for the real OS. When on non-Windows systems it doesn't like paths
     // that start with `C:`.
@@ -6923,6 +6984,70 @@ function allTests(os: string) {
       });
     });
 
+    describe('empty resources', () => {
+      it('should not include empty inline styles in the compiled output', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          const someStyle = ' ';
+
+          @Component({
+            selector: 'test-cmp',
+            styles: ['', someStyle, '      '],
+            template: '',
+          })
+          export class TestCmp {}
+      `);
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).not.toContain('styles');
+        expect(jsContents).not.toContain('styleUrls');
+      });
+
+      it('should not include empty external styles in the compiled output', () => {
+        env.write('dir/a.css', '');
+        env.write('dir/b.css', '                ');
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            styleUrls: ['./dir/a.css', './dir/b.css'],
+            template: '',
+          })
+          export class TestCmp {}
+        `);
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).not.toContain('styles');
+        expect(jsContents).not.toContain('styleUrls');
+      });
+
+      it('should not include empty <link> tags that resolve to empty stylesheets', () => {
+        env.write('dir/a.css', '');
+        env.write('dir/b.css', '                ');
+        env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: \`
+            <link rel="stylesheet" href="./dir/a.css">
+            <link rel="stylesheet" href="./dir/b.css">
+          \`,
+        })
+        export class TestCmp {}
+      `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js').replace(/<link [^>]*>/g, '');
+        expect(jsContents).not.toContain('styles');
+        expect(jsContents).not.toContain('styleUrls');
+      });
+    });
+
     describe('non-exported classes', () => {
       beforeEach(() => env.tsconfig({compileNonExportedClasses: false}));
 
@@ -7264,10 +7389,11 @@ function allTests(os: string) {
            expect(diags.length).toBe(0);
          });
 
-      // TODO(alxhub): this test never worked correctly, as it used to declare a constructor with a
-      // body, which real declaration files don't have. Without the body, the ReflectionHost used to
-      // not return any constructor data, preventing an error from showing. That bug was fixed, but
-      // the error for declaration files is disabled until g3 can be updated.
+      // TODO(alxhub): this test never worked correctly, as it used to declare a constructor
+      // with a body, which real declaration files don't have. Without the body, the
+      // ReflectionHost used to not return any constructor data, preventing an error from
+      // showing. That bug was fixed, but the error for declaration files is disabled until g3
+      // can be updated.
       xit('should error when an undecorated class with a non-trivial constructor in a declaration file is provided via useClass',
           () => {
             env.write('node_modules/@angular/core/testing/index.d.ts', `
@@ -7657,6 +7783,55 @@ function allTests(os: string) {
       const codes = diagnostics.map((diag) => diag.code);
       expect(codes).toEqual([ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX)]);
     });
+
+    it('should produce an error when standalone component is used in @NgModule.bootstrap', () => {
+      env.tsconfig();
+
+      env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          standalone: true,
+          selector: 'standalone-component',
+          template: '...',
+        })
+        class StandaloneComponent {}
+
+        @NgModule({
+          bootstrap: [StandaloneComponent]
+        })
+        class BootstrapModule {}
+      `);
+
+      const diagnostics = env.driveDiagnostics();
+      const codes = diagnostics.map((diag) => diag.code);
+      expect(codes).toEqual([ngErrorCode(ErrorCode.NGMODULE_BOOTSTRAP_IS_STANDALONE)]);
+    });
+
+    it('should produce an error when standalone component wrapped in `forwardRef` is used in @NgModule.bootstrap',
+       () => {
+         env.tsconfig();
+
+         env.write('test.ts', `
+        import {Component, NgModule, forwardRef} from '@angular/core';
+
+        @Component({
+          standalone: true,
+          selector: 'standalone-component',
+          template: '...',
+        })
+        class StandaloneComponent {}
+
+        @NgModule({
+          bootstrap: [forwardRef(() => StandaloneComponent)]
+        })
+        class BootstrapModule {}
+      `);
+
+         const diagnostics = env.driveDiagnostics();
+         const codes = diagnostics.map((diag) => diag.code);
+         expect(codes).toEqual([ngErrorCode(ErrorCode.NGMODULE_BOOTSTRAP_IS_STANDALONE)]);
+       });
 
     describe('InjectorDef emit optimizations for standalone', () => {
       it('should not filter components out of NgModule.imports', () => {

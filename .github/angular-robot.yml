@@ -42,13 +42,26 @@ merge:
     exclude:
       - 'packages/*'
       - 'packages/bazel/*'
+      - 'packages/bazel/src/*'
       - 'packages/bazel/src/api-extractor/**'
-      - 'packages/bazel/src/ng_package/**'
+      - 'packages/bazel/src/builders/**'
       - 'packages/bazel/src/ng_module/**'
+      - 'packages/bazel/src/ng_package/**'
+      - 'packages/bazel/src/protractor/**'
+      - 'packages/bazel/src/schematics/**'
+      - 'packages/bazel/src/types_bundle/**'
       - 'packages/compiler-cli/src/ngcc/**'
       - 'packages/compiler-cli/linker/**'
       - 'packages/compiler-cli/ngcc/**'
       - 'packages/compiler-cli/src/ngtsc/sourcemaps/**'
+      # 'private' mostly contains entrypoints for 3P Angular.
+      # Note that 'private/migrations' _is_ used.
+      - 'packages/compiler-cli/private/bazel.ts'
+      - 'packages/compiler-cli/private/localize.ts'
+      - 'packages/compiler-cli/private/tooling.ts'
+      - 'packages/compiler-cli/private/babel.d.ts'
+      # google3 defines its own binary entrypoints.
+      - 'packages/compiler-cli/src/bin/**'
       - 'packages/docs/**'
       - 'packages/elements/schematics/**'
       - 'packages/examples/**'
@@ -56,7 +69,8 @@ merge:
       - 'packages/localize/**'
       - 'packages/private/**'
       - 'packages/service-worker/**'
-      - 'packages/common/locales/**'
+      - 'packages/common/locales/generate-locales-tool/**'
+      - 'packages/common/locales/index.bzl'
       - 'packages/http/**'
       - '**/.gitignore'
       - '**/.gitkeep'
@@ -97,7 +111,7 @@ merge:
 
     # whether the PR shouldn't have a conflict with the base branch
     noConflict: true
-    # list of labels that a PR needs to have, checked with a regexp (e.g. "target:" will work for the label "target: master")
+    # list of labels that a PR needs to have, checked with a regexp.
     requiredLabels:
       - 'target: *'
 
@@ -119,7 +133,7 @@ merge:
   # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable
   # {{MERGE_LABEL}} will be replaced by the value of the mergeLabel option
   # {{PLACEHOLDER}} will be replaced by the list of failing checks
-  mergeRemovedComment: "I see that you just added the `{{MERGE_LABEL}}` label, but the following checks are still failing:\n{{PLACEHOLDER}}\n\n**If you want your PR to be merged, it has to pass all the CI checks.**\n\nIf you can't get the PR to a green state due to flakes or broken master, please try rebasing to master and/or restarting the CI job. If that fails and you believe that the issue is not due to your change, please contact the caretaker and ask for help."
+  mergeRemovedComment: "I see that you just added the `{{MERGE_LABEL}}` label, but the following checks are still failing:\n{{PLACEHOLDER}}\n\n**If you want your PR to be merged, it has to pass all the CI checks.**\n\nIf you can't get the PR to a green state due to flakes or broken `main`, please try rebasing to `main` and/or restarting the CI job. If that fails and you believe that the issue is not due to your change, please contact the caretaker and ask for help."
 
 # options for the triage plugin
 triage:

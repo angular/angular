@@ -10,7 +10,7 @@ import {createInjectorWithoutInjectorInstances} from '../di/create_injector';
 import {Injector} from '../di/injector';
 import {INJECTOR} from '../di/injector_token';
 import {InjectFlags} from '../di/interface/injector';
-import {Provider} from '../di/interface/provider';
+import {ImportedNgModuleProviders, Provider} from '../di/interface/provider';
 import {EnvironmentInjector, getNullInjector, R3Injector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -24,15 +24,26 @@ import {maybeUnwrapFn} from './util/misc_utils';
 
 /**
  * Returns a new NgModuleRef instance based on the NgModule class and parent injector provided.
+ *
  * @param ngModule NgModule class.
  * @param parentInjector Optional injector instance to use as a parent for the module injector. If
  *     not provided, `NullInjector` will be used instead.
+ * @returns NgModuleRef that represents an NgModule instance.
+ *
  * @publicApi
  */
-export function createNgModuleRef<T>(
+export function createNgModule<T>(
     ngModule: Type<T>, parentInjector?: Injector): viewEngine_NgModuleRef<T> {
   return new NgModuleRef<T>(ngModule, parentInjector ?? null);
 }
+
+/**
+ * The `createNgModule` function alias for backwards-compatibility.
+ * Please avoid using it directly and use `createNgModule` instead.
+ *
+ * @deprecated Use `createNgModule` instead.
+ */
+export const createNgModuleRef = createNgModule;
 export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T>,
                                                                          EnvironmentInjector {
   // tslint:disable-next-line:require-internal-with-underscore
@@ -86,6 +97,10 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
     return this._r3Injector.get(token, notFoundValue, injectFlags);
   }
 
+  runInContext<ReturnT>(fn: () => ReturnT): ReturnT {
+    return this.injector.runInContext(fn);
+  }
+
   override destroy(): void {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
     const injector = this._r3Injector;
@@ -115,7 +130,9 @@ class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {
       new ComponentFactoryResolver(this);
   override readonly instance = null;
 
-  constructor(providers: Provider[], parent: EnvironmentInjector|null, source: string|null) {
+  constructor(
+      providers: Array<Provider|ImportedNgModuleProviders>, parent: EnvironmentInjector|null,
+      source: string|null) {
     super();
     const injector = new R3Injector(
         [
@@ -140,10 +157,19 @@ class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {
 /**
  * Create a new environment injector.
  *
+ * Learn more about environment injectors in
+ * [this guide](guide/standalone-components#environment-injectors).
+ *
+ * @param providers An array of providers.
+ * @param parent A parent environment injector.
+ * @param debugName An optional name for this injector instance, which will be used in error
+ *     messages.
+ *
  * @publicApi
+ * @developerPreview
  */
 export function createEnvironmentInjector(
-    providers: Provider[], parent: EnvironmentInjector|null = null,
+    providers: Array<Provider|ImportedNgModuleProviders>, parent: EnvironmentInjector,
     debugName: string|null = null): EnvironmentInjector {
   const adapter = new EnvironmentNgModuleRefAdapter(providers, parent, debugName);
   return adapter.injector;

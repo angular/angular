@@ -12,7 +12,7 @@ Change approvals in our monorepo are managed via [PullApprove](https://docs.pull
 # Merging
 
 Once a change has all of the required approvals, either the last approver or the PR author (if PR author has the project collaborator status)
-should mark the PR with the `action: merge` label and the correct [target label](https://github.com/angular/angular/blob/master/docs/TRIAGE_AND_LABELS.md#pr-target).
+should mark the PR with the `action: merge` label and the correct [target label](https://github.com/angular/angular/blob/main/docs/TRIAGE_AND_LABELS.md#pr-target).
 This signals to the caretaker that the PR should be merged. See [merge instructions](CARETAKER.md).
 
 # Who is the Caretaker?

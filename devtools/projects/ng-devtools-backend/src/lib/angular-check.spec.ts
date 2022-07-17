@@ -29,12 +29,12 @@ describe('angular-check', () => {
     });
 
     it('should work with new versions', () => {
-      setNgVersion('9.0.0');
+      setNgVersion('12.0.0');
       expect(appIsSupportedAngularVersion()).toBeTrue();
     });
 
     it('should return false for older version', () => {
-      setNgVersion('8.0.0');
+      setNgVersion('9.0.0');
       expect(appIsSupportedAngularVersion()).toBeFalse();
     });
 
@@ -68,13 +68,12 @@ describe('angular-check', () => {
     });
 
     it('should recognize Ivy apps', () => {
-      (window as any).getAllAngularRootElements = (): Element[] => {
-        const el = document.createElement('div');
-        (el as any).__ngContext__ = 0;
-        return [el];
-      };
+      const el = document.createElement('div');
+      el.setAttribute('ng-version', '0.0.0-PLACEHOLDER');
+      (el as any).__ngContext__ = 0;
+      document.body.append(el);
       expect(appIsAngularIvy()).toBeTrue();
-      delete (window as any).getAllAngularRootElements;
+      el.remove();
     });
   });
 

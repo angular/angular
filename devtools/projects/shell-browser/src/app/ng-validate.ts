@@ -46,8 +46,7 @@ function detectAngular(win: Window): void {
       {
         // Needs to be inline because we're stringifying
         // this function and executing it with eval.
-        isIvy: typeof (window as any).getAllAngularRootElements?.()?.[0]?.__ngContext__ !==
-            'undefined',
+        isIvy: typeof (ngVersionElement as any)?.__ngContext__ !== 'undefined',
         isAngular,
         isDebugMode,
         isSupportedAngularVersion,

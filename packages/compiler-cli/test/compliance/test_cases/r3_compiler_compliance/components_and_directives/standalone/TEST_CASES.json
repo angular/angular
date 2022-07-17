@@ -84,6 +84,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should handle a forwardRef in the imports of a standalone component",
+      "inputFiles": [
+        "forward_ref.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid component definition",
+          "files": [
+            "forward_ref.js"
+          ]
+        }
+      ]
     }
   ]
 }

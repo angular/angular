@@ -7,7 +7,7 @@
  */
 
 export {ɵgetDOM} from '@angular/common';
-export {bootstrapApplication as ɵbootstrapApplication, initDomAdapter as ɵinitDomAdapter, INTERNAL_BROWSER_PLATFORM_PROVIDERS as ɵINTERNAL_BROWSER_PLATFORM_PROVIDERS} from './browser';
+export {initDomAdapter as ɵinitDomAdapter, INTERNAL_BROWSER_PLATFORM_PROVIDERS as ɵINTERNAL_BROWSER_PLATFORM_PROVIDERS} from './browser';
 export {BrowserDomAdapter as ɵBrowserDomAdapter} from './browser/browser_adapter';
 export {TRANSITION_ID as ɵTRANSITION_ID} from './browser/server-transition';
 export {BrowserGetTestability as ɵBrowserGetTestability} from './browser/testability';

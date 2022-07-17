@@ -296,6 +296,48 @@ describe('getSemanticDiagnostics', () => {
     expect(diags.length).toBe(0);
   });
 
+  it('should exclude unused pipes that would otherwise require an inline TCB', () => {
+    const files = {
+      // Declare an external package that exports `MyPipeModule` without also exporting `MyPipe`
+      // from its public API. This means that `MyPipe` cannot be imported using the package name
+      // as module specifier.
+      'node_modules/pipe/pipe.d.ts': `
+        import {ɵɵDirectiveDeclaration} from '@angular/core';
+
+        export declare class MyPipe {
+          static ɵpipe: ɵɵPipeDeclaration<MyPipe, "myPipe", false>;
+        }
+      `,
+      'node_modules/pipe/index.d.ts': `
+        import {ɵɵNgModuleDeclaration} from '@angular/core';
+        import {MyPipe} from './pipe';
+
+        export declare class MyPipeModule {
+          static ɵmod: ɵɵNgModuleDeclaration<MyPipeModule, [typeof MyPipe], never, [typeof MyPipe]>;
+        }
+      `,
+      'app.ts': `
+        import {Component, NgModule} from '@angular/core';
+        import {MyPipeModule} from 'pipe';
+
+        @Component({
+          template: 'Simple template that does not use "myPipe"',
+        })
+        export class MyComponent {}
+
+        @NgModule({
+          declarations: [MyComponent],
+          imports: [MyPipeModule],
+        })
+        export class MyModule {}
+      `
+    };
+
+    const project = env.addProject('test', files);
+    const diags = project.getDiagnosticsForFile('app.ts');
+    expect(diags.length).toBe(0);
+  });
+
   it('logs perf tracing', () => {
     const files = {
       'app.ts': `

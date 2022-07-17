@@ -7,7 +7,7 @@
  */
 
 import {InjectFlags} from '../di/interface/injector';
-import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertLessThan, assertNotEqual} from '../util/assert';
+import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertLessThan, assertNotEqual, throwError} from '../util/assert';
 
 import {assertLViewOrUndefined, assertTNodeForLView, assertTNodeForTView} from './assert';
 import {DirectiveDef} from './interfaces/definition';
@@ -172,23 +172,22 @@ interface InstructionState {
    * ```
    */
   bindingsEnabled: boolean;
-
-  /**
-   * In this mode, any changes in bindings will throw an ExpressionChangedAfterChecked error.
-   *
-   * Necessary to support ChangeDetectorRef.checkNoChanges().
-   *
-   * checkNoChanges Runs only in devmode=true and verifies that no unintended changes exist in
-   * the change detector or its children.
-   */
-  isInCheckNoChangesMode: boolean;
 }
 
 const instructionState: InstructionState = {
   lFrame: createLFrame(null),
   bindingsEnabled: true,
-  isInCheckNoChangesMode: false,
 };
+
+/**
+ * In this mode, any changes in bindings will throw an ExpressionChangedAfterChecked error.
+ *
+ * Necessary to support ChangeDetectorRef.checkNoChanges().
+ *
+ * The `checkNoChanges` function is invoked only in ngDevMode=true and verifies that no unintended
+ * changes exist in the change detector or its children.
+ */
+let _isInCheckNoChangesMode = false;
 
 /**
  * Returns true if the instruction state stack is empty.
@@ -277,8 +276,6 @@ export function getTView(): TView {
   return instructionState.lFrame.tView;
 }
 
-// TODO(crisbeto): revert the @noinline once Closure issue is resolved.
-
 /**
  * Restores `contextViewData` to the given OpaqueViewState instance.
  *
@@ -290,7 +287,6 @@ export function getTView(): TView {
  * @returns Context of the restored OpaqueViewState instance.
  *
  * @codeGenApi
- * @noinline Disable inlining due to issue with Closure in listeners inside embedded views.
  */
 export function ɵɵrestoreView<T = any>(viewToRestore: OpaqueViewState): T {
   instructionState.lFrame.contextLView = viewToRestore as any as LView;
@@ -353,12 +349,13 @@ export function getContextLView(): LView {
 }
 
 export function isInCheckNoChangesMode(): boolean {
-  // TODO(misko): remove this from the LView since it is ngDevMode=true mode only.
-  return instructionState.isInCheckNoChangesMode;
+  !ngDevMode && throwError('Must never be called in production mode');
+  return _isInCheckNoChangesMode;
 }
 
 export function setIsInCheckNoChangesMode(mode: boolean): void {
-  instructionState.isInCheckNoChangesMode = mode;
+  !ngDevMode && throwError('Must never be called in production mode');
+  _isInCheckNoChangesMode = mode;
 }
 
 // top level variables should not be exported for performance reasons (PERF_NOTES.md)

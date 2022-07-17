@@ -13,6 +13,9 @@ nodejs_binary(
         "@npm//@bazel/concatjs",
     ],
     entry_point = "@npm//:node_modules/@bazel/concatjs/internal/tsc_wrapped/tsc_wrapped.js",
+    # Disable the linker and rely on patched resolution which works better on Windows
+    # and is less prone to race conditions when targets build concurrently.
+    templated_args = ["--nobazel_run_linker"],
     visibility = ["//:__subpackages__"],
 )
 

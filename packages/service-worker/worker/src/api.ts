@@ -16,7 +16,7 @@ export enum UpdateCacheStatus {
  * A `string` representing a URL that has been normalized relative to an origin (usually that of the
  * ServiceWorker).
  *
- * If the URL is relative to the origin, then it is representated by the path part only. Otherwise,
+ * If the URL is relative to the origin, then it is represented by the path part only. Otherwise,
  * the full URL is used.
  *
  * NOTE: A `string` is not assignable to a `NormalizedUrl`, but a `NormalizedUrl` is assignable to a

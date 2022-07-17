@@ -6,10 +6,121 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ActivatedRoute} from './router_state';
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
+
+import {RuntimeErrorCode} from './errors';
+import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
-import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
+import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {forEach, last, shallowEqual} from './utils/collection';
+
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
+
+/**
+ * Creates a `UrlTree` relative to an `ActivatedRouteSnapshot`.
+ *
+ * @publicApi
+ *
+ *
+ * @param relativeTo The `ActivatedRouteSnapshot` to apply the commands to
+ * @param commands An array of URL fragments with which to construct the new URL tree.
+ * If the path is static, can be the literal URL string. For a dynamic path, pass an array of path
+ * segments, followed by the parameters for each segment.
+ * The fragments are applied to the one provided in the `relativeTo` parameter.
+ * @param queryParams The query parameters for the `UrlTree`. `null` if the `UrlTree` does not have
+ *     any query parameters.
+ * @param fragment The fragment for the `UrlTree`. `null` if the `UrlTree` does not have a fragment.
+ *
+ * @usageNotes
+ *
+ * ```
+ * // create /team/33/user/11
+ * createUrlTreeFromSnapshot(snapshot, ['/team', 33, 'user', 11]);
+ *
+ * // create /team/33;expand=true/user/11
+ * createUrlTreeFromSnapshot(snapshot, ['/team', 33, {expand: true}, 'user', 11]);
+ *
+ * // you can collapse static segments like this (this works only with the first passed-in value):
+ * createUrlTreeFromSnapshot(snapshot, ['/team/33/user', userId]);
+ *
+ * // If the first segment can contain slashes, and you do not want the router to split it,
+ * // you can do the following:
+ * createUrlTreeFromSnapshot(snapshot, [{segmentPath: '/one/two'}]);
+ *
+ * // create /team/33/(user/11//right:chat)
+ * createUrlTreeFromSnapshot(snapshot, ['/team', 33, {outlets: {primary: 'user/11', right:
+ * 'chat'}}], null, null);
+ *
+ * // remove the right secondary node
+ * createUrlTreeFromSnapshot(snapshot, ['/team', 33, {outlets: {primary: 'user/11', right: null}}]);
+ *
+ * // For the examples below, assume the current URL is for the `/team/33/user/11` and the
+ * `ActivatedRouteSnapshot` points to `user/11`:
+ *
+ * // navigate to /team/33/user/11/details
+ * createUrlTreeFromSnapshot(snapshot, ['details']);
+ *
+ * // navigate to /team/33/user/22
+ * createUrlTreeFromSnapshot(snapshot, ['../22']);
+ *
+ * // navigate to /team/44/user/22
+ * createUrlTreeFromSnapshot(snapshot, ['../../team/44/user/22']);
+ * ```
+ */
+export function createUrlTreeFromSnapshot(
+    relativeTo: ActivatedRouteSnapshot, commands: any[], queryParams: Params|null = null,
+    fragment: string|null = null): UrlTree {
+  const relativeToUrlSegmentGroup = createSegmentGroupFromRoute(relativeTo);
+  return createUrlTreeFromSegmentGroup(relativeToUrlSegmentGroup, commands, queryParams, fragment);
+}
+
+function createSegmentGroupFromRoute(route: ActivatedRouteSnapshot): UrlSegmentGroup {
+  let targetGroup: UrlSegmentGroup|undefined;
+
+  function createSegmentGroupFromRouteRecursive(currentRoute: ActivatedRouteSnapshot) {
+    const childOutlets: {[outlet: string]: UrlSegmentGroup} = {};
+    for (const childSnapshot of currentRoute.children) {
+      const root = createSegmentGroupFromRouteRecursive(childSnapshot);
+      childOutlets[childSnapshot.outlet] = root;
+    }
+    const segmentGroup = new UrlSegmentGroup(currentRoute.url, childOutlets);
+    if (currentRoute === route) {
+      targetGroup = segmentGroup;
+    }
+    return segmentGroup;
+  }
+  const rootCandidate = createSegmentGroupFromRouteRecursive(route.root);
+  const rootSegmentGroup = createRoot(rootCandidate);
+
+  return targetGroup ?? rootSegmentGroup;
+}
+
+export function createUrlTreeFromSegmentGroup(
+    relativeTo: UrlSegmentGroup, commands: any[], queryParams: Params|null,
+    fragment: string|null): UrlTree {
+  let root = relativeTo;
+  while (root.parent) {
+    root = root.parent;
+  }
+  // There are no commands so the `UrlTree` goes to the same path as the one created from the
+  // `UrlSegmentGroup`. All we need to do is update the `queryParams` and `fragment` without
+  // applying any other logic.
+  if (commands.length === 0) {
+    return tree(root, root, root, queryParams, fragment);
+  }
+
+  const nav = computeNavigation(commands);
+
+  if (nav.toRoot()) {
+    return tree(root, root, new UrlSegmentGroup([], {}), queryParams, fragment);
+  }
+
+  const position = findStartingPositionForTargetGroup(nav, root, relativeTo);
+  const newSegmentGroup = position.processChildren ?
+      updateSegmentGroupChildren(position.segmentGroup, position.index, nav.commands) :
+      updateSegmentGroup(position.segmentGroup, position.index, nav.commands);
+  return tree(root, position.segmentGroup, newSegmentGroup, queryParams, fragment);
+}
 
 export function createUrlTree(
     route: ActivatedRoute, urlTree: UrlTree, commands: any[], queryParams: Params|null,
@@ -76,14 +187,24 @@ function tree(
     });
   }
 
+  let rootCandidate: UrlSegmentGroup;
   if (oldRoot === oldSegmentGroup) {
-    return new UrlTree(newSegmentGroup, qp, fragment);
+    rootCandidate = newSegmentGroup;
+  } else {
+    rootCandidate = replaceSegment(oldRoot, oldSegmentGroup, newSegmentGroup);
   }
 
-  const newRoot = replaceSegment(oldRoot, oldSegmentGroup, newSegmentGroup);
+  const newRoot = createRoot(squashSegmentGroup(rootCandidate));
   return new UrlTree(newRoot, qp, fragment);
 }
 
+/**
+ * Replaces the `oldSegment` which is located in some child of the `current` with the `newSegment`.
+ * This also has the effect of creating new `UrlSegmentGroup` copies to update references. This
+ * shouldn't be necessary but the fallback logic for an invalid ActivatedRoute in the creation uses
+ * the Router's current url tree. If we don't create new segment groups, we end up modifying that
+ * value.
+ */
 function replaceSegment(
     current: UrlSegmentGroup, oldSegment: UrlSegmentGroup,
     newSegment: UrlSegmentGroup): UrlSegmentGroup {
@@ -102,12 +223,16 @@ class Navigation {
   constructor(
       public isAbsolute: boolean, public numberOfDoubleDots: number, public commands: any[]) {
     if (isAbsolute && commands.length > 0 && isMatrixParams(commands[0])) {
-      throw new Error('Root segment cannot have matrix parameters');
+      throw new RuntimeError(
+          RuntimeErrorCode.ROOT_SEGMENT_MATRIX_PARAMS,
+          NG_DEV_MODE && 'Root segment cannot have matrix parameters');
     }
 
     const cmdWithOutlet = commands.find(isCommandWithOutlets);
     if (cmdWithOutlet && cmdWithOutlet !== last(commands)) {
-      throw new Error('{outlets:{}} has to be the last command');
+      throw new RuntimeError(
+          RuntimeErrorCode.MISPLACED_OUTLETS_COMMAND,
+          NG_DEV_MODE && '{outlets:{}} has to be the last command');
     }
   }
 
@@ -172,6 +297,28 @@ class Position {
   }
 }
 
+function findStartingPositionForTargetGroup(
+    nav: Navigation, root: UrlSegmentGroup, target: UrlSegmentGroup): Position {
+  if (nav.isAbsolute) {
+    return new Position(root, true, 0);
+  }
+
+  if (!target) {
+    // `NaN` is used only to maintain backwards compatibility with incorrectly mocked
+    // `ActivatedRouteSnapshot` in tests. In prior versions of this code, the position here was
+    // determined based on an internal property that was rarely mocked, resulting in `NaN`. In
+    // reality, this code path should _never_ be touched since `target` is not allowed to be falsey.
+    return new Position(root, false, NaN);
+  }
+  if (target.parent === null) {
+    return new Position(target, true, 0);
+  }
+
+  const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
+  const index = target.segments.length - 1 + modifier;
+  return createPositionApplyingDoubleDots(target, index, nav.numberOfDoubleDots);
+}
+
 function findStartingPosition(
     nav: Navigation, tree: UrlTree, segmentGroup: UrlSegmentGroup,
     lastPathIndex: number): Position {
@@ -201,7 +348,8 @@ function createPositionApplyingDoubleDots(
     dd -= ci;
     g = g.parent!;
     if (!g) {
-      throw new Error('Invalid number of \'../\'');
+      throw new RuntimeError(
+          RuntimeErrorCode.INVALID_DOUBLE_DOTS, NG_DEV_MODE && 'Invalid number of \'../\'');
     }
     ci = g.segments.length;
   }

@@ -43,7 +43,8 @@ export class LocalMetadataRegistry implements MetadataRegistry, MetadataReader {
 }
 
 /**
- * A `MetadataRegistry` which registers metdata with multiple delegate `MetadataRegistry` instances.
+ * A `MetadataRegistry` which registers metadata with multiple delegate `MetadataRegistry`
+ * instances.
  */
 export class CompoundMetadataRegistry implements MetadataRegistry {
   constructor(private registries: MetadataRegistry[]) {}

@@ -7,13 +7,9 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {GetTestability, setTestabilityGetter, Testability, TestabilityRegistry, ɵglobal as global} from '@angular/core';
+import {GetTestability, Testability, TestabilityRegistry, ɵglobal as global} from '@angular/core';
 
 export class BrowserGetTestability implements GetTestability {
-  static init() {
-    setTestabilityGetter(new BrowserGetTestability());
-  }
-
   addToWindow(registry: TestabilityRegistry): void {
     global['getAngularTestability'] = (elem: any, findInAncestors: boolean = true) => {
       const testability = registry.findTestabilityInTree(elem, findInAncestors);

@@ -20,12 +20,12 @@ export {Injectable, InjectableDecorator, InjectableProvider} from './injectable'
 export {Injector} from './injector';
 export {EnvironmentInjector} from './r3_injector';
 export {importProvidersFrom, ImportProvidersSource} from './provider_collection';
-export {INJECTOR_INITIALIZER} from './initializer_token';
+export {ENVIRONMENT_INITIALIZER} from './initializer_token';
 export {ProviderToken} from './provider_token';
-export {ɵɵinject, inject, ɵɵinvalidFactoryDep} from './injector_compatibility';
+export {ɵɵinject, inject, InjectOptions, ɵɵinvalidFactoryDep} from './injector_compatibility';
 export {INJECTOR} from './injector_token';
 export {ReflectiveInjector} from './reflective_injector';
-export {ClassProvider, ModuleWithProviders, ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, Provider, StaticClassProvider, StaticClassSansProvider, StaticProvider, TypeProvider, ValueProvider, ValueSansProvider} from './interface/provider';
+export {ClassProvider, ModuleWithProviders, ClassSansProvider, ImportedNgModuleProviders, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, Provider, StaticClassProvider, StaticClassSansProvider, StaticProvider, TypeProvider, ValueProvider, ValueSansProvider} from './interface/provider';
 export {ResolvedReflectiveFactory, ResolvedReflectiveProvider} from './reflective_provider';
 export {ReflectiveKey} from './reflective_key';
 export {InjectionToken} from './injection_token';

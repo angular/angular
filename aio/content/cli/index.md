@@ -10,7 +10,7 @@ Install the CLI using the `npm` package manager:
 
 <code-example format="shell" language="shell">
 
-npm install -g &commat;angular/cli
+npm install -g &commat;angular/cli<aio-angular-dist-tag class="pln"></aio-angular-dist-tag>
 
 </code-example>
 
@@ -87,7 +87,7 @@ Option names in the configuration file must use [camelCase](guide/glossary#case-
 
 Command syntax is shown as follows:
 
-`ng` *commandNameOrAlias* *requiredArg* [*optionalArg*] `[options]`
+`ng` *<command-name>* *<required-arg>* [*optional-arg*] `[options]`
 
 *   Most commands, and some options, have aliases.
     Aliases are shown in the syntax statement for each command.
@@ -105,13 +105,17 @@ Command syntax is shown as follows:
 
 *   Typically, the name of a generated artifact can be given as an argument to the command or specified with the `--name` option.
 
-*   Argument and option names can be given in either [camelCase or dash-case](guide/glossary#case-types).
-    `--myOptionName` is equivalent to `--my-option-name`.
+*   Arguments and option names must be given in [dash-case](guide/glossary#case-types).
+    For example: `--my-option-name`
 
 ### Boolean options
 
 Boolean options have two forms: `--this-option` sets the flag to `true`, `--no-this-option` sets it to `false`.
 If neither option is supplied, the flag remains in its default state, as listed in the reference documentation.
+
+### Array options
+
+Array options can be provided in two forms: `--option value1 value2` or `--option value1 --option value2`.
 
 ### Relative paths
 

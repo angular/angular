@@ -97,7 +97,7 @@ As a result, that new tab can be running a different version of the application 
 
 <div class="alert is-important">
 
-**IMPORTANT**: </br />
+**IMPORTANT**: <br />
 This guarantee is **stronger** than that provided by the normal web deployment model.
 Without a service worker, there is no guarantee that code lazily loaded later in a running application is from the same version as the initial code for the application.
 
@@ -239,7 +239,7 @@ This version hash is the "latest manifest hash" listed above.
 Both clients are on the latest version.
 Each client is listed by its ID from the `Clients` API in the browser.
 
-</div
+</div>
 
 #### Idle task queue
 

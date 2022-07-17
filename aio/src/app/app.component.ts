@@ -88,9 +88,9 @@ export class AppComponent implements OnInit {
   tocMaxHeight: string;
   private tocMaxHeightOffset = 0;
 
-  versionInfo: VersionInfo;
+  currentDocsVersionNode?: NavigationNode;
 
-  private currentUrl: string;
+  versionInfo: VersionInfo;
 
   get isOpened() { return this.dockSideNav && this.isSideNavDoc; }
   get mode() { return this.isOpened ? 'side' : 'over'; }
@@ -169,7 +169,8 @@ export class AppComponent implements OnInit {
     combineLatest([
       this.navigationService.versionInfo,
       this.navigationService.navigationViews.pipe(map(views => views.docVersions)),
-    ]).subscribe(([versionInfo, versions]) => {
+      this.locationService.currentUrl,
+    ]).subscribe(([versionInfo, versions, currentUrl]) => {
       // TODO(pbd): consider whether we can lookup the stable and next versions from the internet
       const computedVersions: NavigationNode[] = [
         { title: 'next', url: 'https://next.angular.io/' },
@@ -179,13 +180,22 @@ export class AppComponent implements OnInit {
       if (this.deployment.mode === 'archive') {
         computedVersions.push({ title: `v${versionInfo.major}` });
       }
-      this.docVersions = [...computedVersions, ...versions];
-
+      const allDocsVersionNodes = [...computedVersions, ...versions].map(version => ({
+        ...version,
+        // Update the urls so that they point to the same page the user is currently at
+        url: `${version.url}${(version.url?.endsWith('/') ? '' : '/' )}${currentUrl}`,
+      }));
       // Find the current version - either title matches the current deployment mode
       // or its title matches the major version of the current version info
-      this.currentDocVersion = this.docVersions.find(version =>
-        version.title === this.deployment.mode || version.title === `v${versionInfo.major}`) as NavigationNode;
-      this.currentDocVersion.title += ` (v${versionInfo.raw})`;
+      this.currentDocsVersionNode = allDocsVersionNodes.find(
+        version => version.title === this.deployment.mode || version.title === `v${versionInfo.major}`
+      );
+      this.docVersions = [
+        {
+          title: 'Docs Versions',
+          children : allDocsVersionNodes
+        }
+      ];
     });
 
     this.navigationService.navigationViews.subscribe(views => {
@@ -211,8 +221,6 @@ export class AppComponent implements OnInit {
       this.navigationService.currentNodes,   // ...needed to determine `sidenav` state
     ]).pipe(first())
       .subscribe(() => this.updateShell());
-
-    this.locationService.currentUrl.subscribe(url => this.currentUrl = url);
 
     // Start listening for SW version update events.
     this.swUpdatesService.enable();
@@ -254,14 +262,6 @@ export class AppComponent implements OnInit {
     }
 
     this.isTransitioning = false;
-  }
-
-  onDocVersionChange(versionIndex: number) {
-    const version = this.docVersions[versionIndex];
-    if (version.url) {
-      const versionUrl = version.url  + (!version.url.endsWith('/') ? '/' : '');
-      this.locationService.go(`${versionUrl}${this.currentUrl}`);
-    }
   }
 
   @HostListener('window:resize', ['$event.target.innerWidth'])

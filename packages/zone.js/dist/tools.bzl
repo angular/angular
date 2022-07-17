@@ -4,6 +4,7 @@ ES5_BUNDLES = [
     "zone-node",
     "zone-testing-node-bundle",
     "async-test",
+    "async-stack-tagging",
     "fake-async-test",
     "long-stack-trace-zone",
     "proxy",

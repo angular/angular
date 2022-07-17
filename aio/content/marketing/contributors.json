@@ -145,6 +145,14 @@
     "picture": "bonnie.jpg",
     "bio": "Bonnie has been specializing in Angular since 2013. She is the founder of ngHouston Angular Meetup and a regular panelist on Angular Air. She is also the very proud parent component of @thelittlestdev!"
   },
+  "bezael": {
+    "name": "Bezael Perez",
+    "picture": "bezael_perez.jpg",
+    "twitter": "bezaelperez",
+    "website": "https://medium.com/@bezael",
+    "bio": "Bezael is an Angular Developer and a GDE. He is a technical content creator on Youtube and Udemy. He has spoken at over 50 conferences internationally. He enjoys gaming, basketball, and soccer",
+    "groups": ["GDE"]
+  },
   "blove": {
     "name": "Brian Love",
     "picture": "brian-love.jpg",
@@ -239,6 +247,14 @@
     "twitter": "DanWahlin",
     "website": "https://codewithdan.com",
     "bio": "Dan Wahlin founded Wahlin Consulting which provides consulting and onsite/online training services on Web technologies such as JavaScript, Angular, TypeScript, Node.js, C#, ASP.NET Core, Web API, and Docker. He’s also published many developer courses on Pluralsight.com and Udemy.com. Dan is a Google GDE, Docker Captain, and Microsoft MVP and Regional Director and speaks at conferences and user groups around the world.  Dan has written several books on Web technologies, hundreds of technical articles and blog posts (https://blog.codewithdan.com) and runs the 'Code with Dan Web Weekly Newsletter' - a great way to stay up on the latest technologies. Follow Dan on Twitter @DanWahlin.",
+    "groups": ["GDE"]
+  },
+  "danywalls": {
+    "name": "Dany Paredes",
+    "picture": "danyparedes.jpg",
+    "twitter": "danywalls",
+    "website": "https://www.danywalls.com",
+    "bio": "Dany is a Google Developer Expert on Angular and loves sharing content and writing articles about Angular, Typescript, and Testing. In his spare time, he watches NBA games and enjoys the Beach.",
     "groups": ["GDE"]
   },
   "deborah": {
@@ -506,6 +522,14 @@
     "bio": "I am Senior Software Development Consultant in ThoughtWorks and GDE in Angular. Graduated in Computer Science from Federal University of Bahia, I have been worked with software development for more than 11 years. Since 2017, I started with Angular Framework and I went deep into front-end ecosystem and became more specialized in this area. I participate in a computer science community, Campinas Front-end, that promotes events in this area. In the end of 2016, I started to do technical talks. The passion for science is the engine that drives me to seek answers to the problems that computing aims to solve. Besides that, sharing knowledge and experiences is the path I choose to democratize the technology for all.",
     "groups": ["GDE"]
   },
+  "kevindavila": {
+    "name": "Kevin Davila",
+    "picture": "kevindavila.jpg",
+    "twitter": "kevindaviladev",
+    "website": "https://github.com/kevindaviladev",
+    "bio": "Kevin is a Google Developer Expert with a passion for web development. Share content and knowledge with everyone and be ready to learn as much as possible. Lover of Angular, Postgresql and frogs.",
+    "groups": ["GDE"]
+  },
   "kevinyang": {
     "name": "Kevin Yang",
     "picture": "kevinyang.jpg",
@@ -674,6 +698,14 @@
     "bio": "Chau works to bring the best engineering practices to web application production. He is the creator of AutoMapper TypeScript, @ngneat/tailwind for Angular, and a core member of NestJS. Also, he is one of Angular Vietnam’s founders. He blogs, lives stream, and maintains open-source projects.",
     "groups": ["GDE"]
   },
+  "nicobytes": {
+    "name": "Nicolas Molina",
+    "picture": "nicobytes.jpg",
+    "twitter": "nicobytes",
+    "website": "https://nicobytes.com",
+    "bio": "I'm Software Senior Developer. With more than 8 years of professional software development experience focusing in Web Development, Tech Management and skills for problem-solving. I'm passionate about sharing my knowledge with the community about Web Development and I do this through code contributions, videos, conferences, articles and, creating online content therefore I got recognized by Google like an GDE (Google Developer Expert) in Angular and by Microsoft like an MVP (Most Value Professional).",
+    "groups": ["GDE"]
+  },
   "nirkaufman": {
     "name": "Nir Kaufman",
     "picture": "nirkaufman.jpg",
@@ -782,6 +814,14 @@
     "website": "https://www.santoshyadav.dev",
     "bio": "Santosh is a GDE for Angular and loves to contribute to Open Source. He is the creator of ng deploy for netlify and core team member for NestJS Addons. He writes for AngularInDepth, mentors for DotNetTricks, organizes Pune Tech Meetup, and conducts free workshops on Angular.",
     "groups": ["GDE"]
+  },
+  "selintunc": {
+      "name": "Selin Tunc",
+      "picture": "selin.jpeg",
+      "twitter": "selintunc_",
+      "website": "https://www.linkedin.com/in/selinkaragulletunc",
+      "bio": "Selin is a Software Developer Expert using Angular and Java at Garanti BBVA Technology in Turkey. She is the first woman Angular GDE in Turkey. She spends her spare time with her family, especially her little son, and by keeping herself up-to-date.",
+      "groups": ["GDE"]
   },
   "shairez": {
     "name": "Shai Reznik",

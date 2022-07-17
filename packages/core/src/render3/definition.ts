@@ -17,12 +17,13 @@ import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
 
 import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefList, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeDefList, PipeTypesOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
+import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
 import {TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList} from './interfaces/projection';
 
 
-let _renderCompCount = 0;
+/** Counter used to generate unique IDs for component definitions. */
+let componentDefCount = 0;
 
 
 /**
@@ -288,6 +289,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
 
     const type = componentDefinition.type;
+    const standalone = componentDefinition.standalone === true;
     const declaredInputs: {[key: string]: string} = {} as any;
     const def: Mutable<ComponentDef<any>, keyof ComponentDef<any>> = {
       type: type,
@@ -309,16 +311,15 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
       directiveDefs: null!,  // assigned in noSideEffects
       pipeDefs: null!,       // assigned in noSideEffects
-      standalone: componentDefinition.standalone === true,
-      dependencies:
-          componentDefinition.standalone === true && componentDefinition.dependencies || null,
+      standalone,
+      dependencies: standalone && componentDefinition.dependencies || null,
       getStandaloneInjector: null,
       selectors: componentDefinition.selectors || EMPTY_ARRAY,
       viewQuery: componentDefinition.viewQuery || null,
       features: componentDefinition.features as DirectiveDefFeature[] || null,
       data: componentDefinition.data || {},
       encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
-      id: 'c',
+      id: `c${componentDefCount++}`,
       styles: componentDefinition.styles || EMPTY_ARRAY,
       _: null,
       setInput: null,
@@ -327,7 +328,6 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
     };
     const dependencies = componentDefinition.dependencies;
     const feature = componentDefinition.features;
-    def.id += _renderCompCount++;
     def.inputs = invertObject(componentDefinition.inputs, declaredInputs),
     def.outputs = invertObject(componentDefinition.outputs),
     feature && feature.forEach((fn) => fn(def));
@@ -356,10 +356,14 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
  * @codeGenApi
  */
 export function ɵɵsetComponentScope(
-    type: ComponentType<any>, directives: Type<any>[], pipes: Type<any>[]): void {
+    type: ComponentType<any>, directives: Type<any>[]|(() => Type<any>[]),
+    pipes: Type<any>[]|(() => Type<any>[])): void {
   const def = (type.ɵcmp as ComponentDef<any>);
-  def.directiveDefs = () => directives.map(extractDirectiveDef) as DirectiveDefList;
-  def.pipeDefs = () => pipes.map(getPipeDef) as PipeDefList;
+  def.directiveDefs = () =>
+      (typeof directives === 'function' ? directives() : directives).map(extractDirectiveDef) as
+      DirectiveDefList;
+  def.pipeDefs = () =>
+      (typeof pipes === 'function' ? pipes() : pipes).map(getPipeDef) as PipeDefList;
 }
 
 export function extractDirectiveDef(type: Type<any>): DirectiveDef<any>|ComponentDef<any>|null {

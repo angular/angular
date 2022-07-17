@@ -3,7 +3,7 @@ import { browser, element, by, ElementFinder, ElementArrayFinder } from 'protrac
 const expectedH1 = 'Tour of Heroes';
 const expectedTitle = `${expectedH1}`;
 const targetHero = { id: 15, name: 'Magneta' };
-const targetHeroDashboardIndex = 3;
+const targetHeroDashboardIndex = 2;
 const nameSuffix = 'X';
 const newHeroName = targetHero.name + nameSuffix;
 
@@ -132,7 +132,7 @@ describe('Tutorial part 6', () => {
       await getPageElts().appHeroesHref.click();
       const page = getPageElts();
       expect(await page.appHeroes.isPresent()).toBeTruthy();
-      expect(await page.allHeroes.count()).toEqual(10, 'number of heroes');
+      expect(await page.allHeroes.count()).toEqual(9, 'number of heroes');
     });
 
     it('can route to hero details', async () => {
@@ -161,7 +161,7 @@ describe('Tutorial part 6', () => {
 
       const page = getPageElts();
       expect(await page.appHeroes.isPresent()).toBeTruthy();
-      expect(await page.allHeroes.count()).toEqual(9, 'number of heroes');
+      expect(await page.allHeroes.count()).toEqual(8, 'number of heroes');
       const heroesAfter = await toHeroArray(page.allHeroes);
       // console.log(await Hero.fromLi(page.allHeroes[0]));
       const expectedHeroes =  heroesBefore.filter(h => h.name !== newHeroName);
@@ -228,7 +228,7 @@ describe('Tutorial part 6', () => {
       expect(await getPageElts().searchResults.count()).toBe(2);
     });
 
-    it(`continues search with 'e' and gets ${targetHero.name}`, async () => {
+    it(`continues search with 'n' and gets ${targetHero.name}`, async () => {
       await getPageElts().searchBox.sendKeys('n');
       await browser.sleep(1000);
       const page = getPageElts();

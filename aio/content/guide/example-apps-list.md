@@ -27,13 +27,6 @@ For more information, see [Launching your app with a root module](guide/bootstra
 Demonstrates the fundamental architecture of Angular applications.
 For more information, see [Introduction to Angular concepts](guide/architecture).
 
-### Setting the document title
-
-<live-example name="set-document-title"></live-example>
-
-Demonstrates customizing the document title in the browser.
-For more information, see [Set the document title](guide/set-document-title).
-
 ## Tour of Heroes tutorial application
 
 The Tour of Heroes is a comprehensive tutorial that guides you through the process of building an application with many of Angular's most popular features.

@@ -49,11 +49,14 @@ export type ɵOptionalKeys<T> = {
  * of its children. For example, if one of the controls in a group is invalid, the entire
  * group becomes invalid.
  *
- * `FormGroup` is one of the three fundamental building blocks used to define forms in Angular,
- * along with `FormControl` and `FormArray`.
+ * `FormGroup` is one of the four fundamental building blocks used to define forms in Angular,
+ * along with `FormControl`, `FormArray`, and `FormRecord`.
  *
  * When instantiating a `FormGroup`, pass in a collection of child controls as the first
  * argument. The key for each child registers the name for the control.
+ *
+ * `FormGroup` is intended for use cases where the keys are known ahead of time.
+ * If you need to dynamically add and remove controls, use {@link FormRecord} instead.
  *
  * `FormGroup` accepts an optional type parameter `TControl`, which is an object type with inner
  * control types as values.
@@ -70,6 +73,26 @@ export type ɵOptionalKeys<T> = {
  *
  * console.log(form.value);   // {first: 'Nancy', last; 'Drew'}
  * console.log(form.status);  // 'VALID'
+ * ```
+ *
+ * ### The type argument, and optional controls
+ *
+ * `FormGroup` accepts one generic argument, which is an object containing its inner controls.
+ * This type will usually be inferred automatically, but you can always specify it explicitly if you
+ * wish.
+ *
+ * If you have controls that are optional (i.e. they can be removed, you can use the `?` in the
+ * type):
+ *
+ * ```
+ * const form = new FormGroup<{
+ *   first: FormControl<string|null>,
+ *   middle?: FormControl<string|null>, // Middle name is optional.
+ *   last: FormControl<string|null>,
+ * }>({
+ *   first: new FormControl('Nancy'),
+ *   last: new FormControl('Drew'),
+ * });
  * ```
  *
  * ### Create a form group with a group-level validator
@@ -576,8 +599,6 @@ interface UntypedFormGroupCtor {
 
 /**
  * UntypedFormGroup is a non-strongly-typed version of @see FormGroup.
- * Note: this is used for migration purposes only. Please avoid using it directly in your code and
- * prefer `FormControl` instead, unless you have been migrated to it automatically.
  */
 export type UntypedFormGroup = FormGroup<any>;
 
@@ -585,52 +606,61 @@ export const UntypedFormGroup: UntypedFormGroupCtor = FormGroup;
 
 export const isFormGroup = (control: unknown): control is FormGroup => control instanceof FormGroup;
 
-export class FormRecord<TControl extends AbstractControl<ɵValue<TControl>, ɵRawValue<TControl>> =
-                                             AbstractControl> extends
-    FormGroup<{[key: string]: TControl}> {}
-
 /**
  * Tracks the value and validity state of a collection of `FormControl` instances, each of which has
  * the same value type.
  *
- * `FormRecord` is very similar to {@see FormGroup}, except it enforces that all controls in the group have the same type,
- * and can be used with an open-ended, dynamically changing set of controls.
+ * `FormRecord` is very similar to {@link FormGroup}, except it can be used with a dynamic keys,
+ * with controls added and removed as needed.
+ *
+ * `FormRecord` accepts one generic argument, which describes the type of the controls it contains.
+ *
+ * @usageNotes
+ *
+ * ```
+ * let numbers = new FormRecord({bill: new FormControl('415-123-456')});
+ * numbers.addControl('bob', new FormControl('415-234-567'));
+ * numbers.removeControl('bill');
+ * ```
  *
  * @publicApi
  */
+export class FormRecord<TControl extends AbstractControl = AbstractControl> extends
+    FormGroup<{[key: string]: TControl}> {}
+
 export interface FormRecord<TControl> {
   /**
    * Registers a control with the records's list of controls.
    *
-   * {@see FormGroup#registerControl}
+   * See `FormGroup#registerControl` for additional information.
    */
   registerControl(name: string, control: TControl): TControl;
 
   /**
    * Add a control to this group.
    *
-   * {@see FormGroup#addControl}
+   * See `FormGroup#addControl` for additional information.
    */
   addControl(name: string, control: TControl, options?: {emitEvent?: boolean}): void;
 
   /**
    * Remove a control from this group.
    *
-   * {@see FormGroup#removeControl}
+   * See `FormGroup#removeControl` for additional information.
    */
   removeControl(name: string, options?: {emitEvent?: boolean}): void;
 
   /**
    * Replace an existing control.
    *
-   * {@see FormGroup#setControl}
+   * See `FormGroup#setControl` for additional information.
    */
   setControl(name: string, control: TControl, options?: {emitEvent?: boolean}): void;
 
   /**
    * Check whether there is an enabled control with the given name in the group.
    *
-   * {@see FormGroup#contains}
+   * See `FormGroup#contains` for additional information.
    */
   contains(controlName: string): boolean;
 
@@ -638,7 +668,7 @@ export interface FormRecord<TControl> {
    * Sets the value of the `FormRecord`. It accepts an object that matches
    * the structure of the group, with control names as keys.
    *
-   * {@see FormGroup#setValue}
+   * See `FormGroup#setValue` for additional information.
    */
   setValue(value: {[key: string]: ɵValue<TControl>}, options?: {
     onlySelf?: boolean,
@@ -650,7 +680,7 @@ export interface FormRecord<TControl> {
    * names as keys, and does its best to match the values to the correct controls
    * in the group.
    *
-   * {@see FormGroup#patchValue}
+   * See `FormGroup#patchValue` for additional information.
    */
   patchValue(value: {[key: string]: ɵValue<TControl>}, options?: {
     onlySelf?: boolean,
@@ -661,7 +691,7 @@ export interface FormRecord<TControl> {
    * Resets the `FormRecord`, marks all descendants `pristine` and `untouched` and sets
    * the value of all descendants to null.
    *
-   * {@see FormGroup#reset}
+   * See `FormGroup#reset` for additional information.
    */
   reset(value?: {[key: string]: ɵValue<TControl>}, options?: {
     onlySelf?: boolean,
@@ -671,7 +701,7 @@ export interface FormRecord<TControl> {
   /**
    * The aggregate value of the `FormRecord`, including any disabled controls.
    *
-   * {@see FormGroup#getRawValue}
+   * See `FormGroup#getRawValue` for additional information.
    */
   getRawValue(): {[key: string]: ɵRawValue<TControl>};
 }

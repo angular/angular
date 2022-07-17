@@ -51,7 +51,7 @@ setSecretVar CI_SECRET_PAYLOAD_FIREBASE_TOKEN "$ANGULAR_PAYLOAD_TOKEN";
 # Define SauceLabs environment variables for CircleCI.
 ####################################################################################################
 setPublicVar SAUCE_USERNAME "angular-framework";
-setSecretVar SAUCE_ACCESS_KEY "0c731274ed5f-cbc9-16f4-021a-9835e39f";
+setSecretVar SAUCE_ACCESS_KEY "f4bf7c639c5a-c6bb-d6a4-a4b5-800aa111";
 # TODO(josephperrott): Remove environment variables once all saucelabs tests are via bazel method.
 setPublicVar SAUCE_LOG_FILE /tmp/angular/sauce-connect.log
 setPublicVar SAUCE_READY_FILE /tmp/angular/sauce-connect-ready-file.lock
@@ -71,10 +71,9 @@ setPublicVar SAUCE_READY_FILE_TIMEOUT 120
 # the `save_cache` path configuration in `config.yml`
 setPublicVar COMPONENTS_REPO_TMP_DIR "/tmp/angular-components-repo"
 setPublicVar COMPONENTS_REPO_URL "https://github.com/angular/components.git"
-# TODO(BRANCH_RENAME_CLEANUP): fixup branch name to point to main branch
-setPublicVar COMPONENTS_REPO_BRANCH "main-branch-rename-do-not-delete"
+setPublicVar COMPONENTS_REPO_BRANCH "main"
 # **NOTE**: When updating the commit SHA, also update the cache key in the CircleCI `config.yml`.
-setPublicVar COMPONENTS_REPO_COMMIT "e65f5f5bafcd00dbb64387878fb866283909a2dd"
+setPublicVar COMPONENTS_REPO_COMMIT "7a24e95bafbdeb697f74a48e275c2442bcbefc74"
 
 ####################################################################################################
 # Create shell script in /tmp for Bazel actions to access CI envs without

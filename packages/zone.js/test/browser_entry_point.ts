@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import '../lib/common/error-rewrite';
-
 // import 'core-js/features/set';
 // import 'core-js/features/map';
 // List all tests here:
@@ -30,3 +29,4 @@ import './jasmine-patch.spec';
 import './browser/messageport.spec';
 import './extra/cordova.spec';
 import './browser/queue-microtask.spec';
+import './zone-spec/async-tagging-console.spec';

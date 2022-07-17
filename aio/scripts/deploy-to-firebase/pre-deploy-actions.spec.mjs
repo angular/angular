@@ -153,7 +153,8 @@ describe('deploy-to-firebase/pre-deploy-actions:', () => {
   });
 
   describe('undo.checkPayloadSize()', () => {
-    // This is a no-op, so nothing to test.
+    // This method is a no-op, so there is nothing to test.
+    it('does not need tests', () => expect().nothing());
   });
 
   describe('undo.disableServiceWorker()', () => {

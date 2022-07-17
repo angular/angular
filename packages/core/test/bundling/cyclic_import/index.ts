@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, NgModule, ɵrenderComponent as renderComponent} from '@angular/core';
+import {ApplicationRef, Component, NgModule} from '@angular/core';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 import {TriggerComponent} from './trigger';
 
@@ -19,8 +20,10 @@ export class DepComponent {
 
 @NgModule({
   declarations: [DepComponent, TriggerComponent],
+  imports: [BrowserModule],
+  bootstrap: [TriggerComponent],
 })
 export class Module {
 }
 
-renderComponent(TriggerComponent);
+(window as any).appReady = platformBrowser().bootstrapModule(Module, {ngZone: 'noop'});

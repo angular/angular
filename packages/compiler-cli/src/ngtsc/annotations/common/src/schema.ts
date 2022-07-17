@@ -32,7 +32,7 @@ export function extractSchemas(
       throw createValueHasWrongTypeError(
           rawExpr, result, `${context}.schemas must be an array of schemas`);
     }
-    // Since `id` is the `ts.Identifer` within the schema ref's declaration file, it's safe to
+    // Since `id` is the `ts.Identifier` within the schema ref's declaration file, it's safe to
     // use `id.text` here to figure out which schema is in use. Even if the actual reference was
     // renamed when the user imported it, these names will match.
     switch (id.text) {

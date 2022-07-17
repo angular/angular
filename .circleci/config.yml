@@ -31,12 +31,12 @@ var_3: &cache_key v6-angular-node-14-{{ checksum "month.txt" }}-{{ checksum ".ba
 var_4: &cache_key_fallback v6-angular-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
 
 # Windows needs its own cache key because binaries in node_modules are different.
-var_3_win: &cache_key_win v7-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}
-var_4_win: &cache_key_win_fallback v7-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
+var_3_win: &cache_key_win v8-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}
+var_4_win: &cache_key_win_fallback v8-angular-win-node-14-{{ checksum "month.txt" }}-{{ checksum ".bazelversion" }}
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
-var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-e65f5f5bafcd00dbb64387878fb866283909a2dd
+var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-7a24e95bafbdeb697f74a48e275c2442bcbefc74
 var_6: &components_repo_unit_tests_cache_key_fallback v1-angular-components-{{ checksum "month.txt" }}
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages`.
@@ -64,8 +64,6 @@ var_10: &only_on_main_branch
     branches:
       only:
         - main
-        # TODO(BRANCH_RENAME_CLEANUP): remove
-        - master
 
 # Filter to run a job on all releasable branches.
 var_11: &only_release_branches
@@ -73,8 +71,6 @@ var_11: &only_release_branches
     branches:
       only:
         - main
-        # TODO(BRANCH_RENAME_CLEANUP): remove
-        - master
         - /\d+\.\d+\.x/
 
 # CircleCI orbs
@@ -308,7 +304,7 @@ jobs:
           path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
           destination: core/todo/bundle.br
 
-  # NOTE: This is currently limited to master builds only. See the `monitoring` configuration.
+  # NOTE: This is currently limited to main builds only. See the `monitoring` configuration.
   saucelabs:
     executor:
       name: default-executor
@@ -446,7 +442,7 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - run: node scripts/build/build-packages-dist.js
+      - run: yarn build
 
       # Save the npm packages from //packages/... for other workflow jobs to read
       - persist_to_workspace:
@@ -812,10 +808,9 @@ workflows:
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
             - legacy-unit-tests-saucelabs
-      # TODO(devversion): re-enable once `angular/components` is using `rules_nodejs` v5.
-      #- components-repo-unit-tests:
-      #    requires:
-      #      - build-npm-packages
+      - components-repo-unit-tests:
+          requires:
+            - build-npm-packages
       - test_zonejs:
           requires:
             - setup

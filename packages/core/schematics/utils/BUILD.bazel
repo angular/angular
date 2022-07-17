@@ -10,7 +10,6 @@ ts_library(
         "//packages/compiler-cli/private",
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
-        "@npm//@types/inquirer",
         "@npm//@types/node",
         "@npm//typescript",
     ],

@@ -77,7 +77,7 @@ For the most part, you specify the modules in the same way you would for a regul
 Then, you use the `upgrade/static` helpers to let the two frameworks know about assets they can use from each other.
 This is known as "upgrading" and "downgrading".
 
-<div class="alert is-helpful">
+<div class="callout is-helpful">
 
 <header>Definitions:</header>
 

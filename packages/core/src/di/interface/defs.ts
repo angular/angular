@@ -82,7 +82,7 @@ export interface ɵɵInjectorDef<T> {
  * A `Type` which has a `ɵprov: ɵɵInjectableDeclaration` static field.
  *
  * `InjectableType`s contain their own Dependency Injection metadata and are usable in an
- * `InjectorDef`-based `StaticInjector.
+ * `InjectorDef`-based `StaticInjector`.
  *
  * @publicApi
  */

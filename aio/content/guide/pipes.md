@@ -42,7 +42,7 @@ To use pipes you should have a basic understanding of the following:
 
 ## Using a pipe in a template
 
-To apply a pipe, use the pipe \(`|\`) character within a template expression as shown in the following code example, along with the *name* of the pipe, which is `date` for the built-in [`DatePipe`](api/common/DatePipe).
+To apply a pipe, use the pipe \(`|`) character within a template expression as shown in the following code example, along with the *name* of the pipe, which is `date` for the built-in [`DatePipe`](api/common/DatePipe).
 The tabs in the example show the following:
 
 | Files                         | Details |

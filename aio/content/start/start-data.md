@@ -166,7 +166,7 @@ This section shows you how to use the cart service to display the products in th
 
 1.  Verify that your cart works as expected:
 
-    1.  Click **My Store*.
+    1.  Click **My Store**.
     1.  Click on a product name to display its details.
     1.  Click **Buy** to add the product to the cart.
     1.  Click **Checkout** to see the cart.
@@ -266,7 +266,8 @@ This section guides you through modifying the `ShippingComponent` to retrieve sh
 
     <code-example header="src/app/shipping/shipping.component.ts" path="getting-started/src/app/shipping/shipping.component.ts" region="inject-cart-service"></code-example>
 
-1.  Define a `shippingCosts` property that sets the `shippingCosts` property using the `getShippingPrices()` method from the `CartService`.
+1. Define a `shippingCosts` property that sets the `shippingCosts` property using the `getShippingPrices()` method from the `CartService`.
+   Initialize the `shippingCosts` property inside `ngOnInit()` method.
 
     <code-example header="src/app/shipping/shipping.component.ts" path="getting-started/src/app/shipping/shipping.component.ts" region="props"></code-example>
 

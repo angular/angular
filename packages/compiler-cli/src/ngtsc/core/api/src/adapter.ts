@@ -43,7 +43,8 @@ export interface NgCompilerAdapter extends
     // incompatible with the `ts.CompilerHost` version which isn't. The combination of these two
     // still satisfies `ts.ModuleResolutionHost`.
         Omit<ts.ModuleResolutionHost, 'getCurrentDirectory'>,
-    Pick<ExtendedTsCompilerHost, 'getCurrentDirectory'|ExtendedCompilerHostMethods> {
+    Pick<ExtendedTsCompilerHost, 'getCurrentDirectory'|ExtendedCompilerHostMethods>,
+    SourceFileTypeIdentifier {
   /**
    * A path to a single file which represents the entrypoint of an Angular Package Format library,
    * if the current program is one.
@@ -86,7 +87,9 @@ export interface NgCompilerAdapter extends
    * Resolved list of root directories explicitly set in, or inferred from, the tsconfig.
    */
   readonly rootDirs: ReadonlyArray<AbsoluteFsPath>;
+}
 
+export interface SourceFileTypeIdentifier {
   /**
    * Distinguishes between shim files added by Angular to the compilation process (both those
    * intended for output, like ngfactory files, as well as internal shims like ngtypecheck files)
@@ -96,4 +99,14 @@ export interface NgCompilerAdapter extends
    * `true` if a file was written by the user, and `false` if a file was added by the compiler.
    */
   isShim(sf: ts.SourceFile): boolean;
+
+  /**
+   * Distinguishes between resource files added by Angular to the project and original files in the
+   * user's program.
+   *
+   * This is necessary only for the language service because it adds resource files as root files
+   * when they are read. This is done to indicate to TS Server that these resources are part of the
+   * project and ensures that projects are retained properly when navigating around the workspace.
+   */
+  isResource(sf: ts.SourceFile): boolean;
 }

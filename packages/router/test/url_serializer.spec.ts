@@ -376,12 +376,11 @@ describe('url serializer', () => {
 
   describe('error handling', () => {
     it('should throw when invalid characters inside children', () => {
-      expect(() => url.parse('/one/(left#one)'))
-          .toThrowError('Cannot parse url \'/one/(left#one)\'');
+      expect(() => url.parse('/one/(left#one)')).toThrowError();
     });
 
     it('should throw when missing closing )', () => {
-      expect(() => url.parse('/one/(left')).toThrowError('Cannot parse url \'/one/(left\'');
+      expect(() => url.parse('/one/(left')).toThrowError();
     });
   });
 });

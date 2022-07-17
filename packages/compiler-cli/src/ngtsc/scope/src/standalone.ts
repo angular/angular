@@ -50,21 +50,21 @@ export class StandaloneComponentScopeReader implements ComponentScopeReader {
 
           const dirMeta = this.metaReader.getDirectiveMetadata(ref);
           if (dirMeta !== null) {
-            dependencies.add(dirMeta);
+            dependencies.add({...dirMeta, ref});
             isPoisoned = isPoisoned || dirMeta.isPoisoned || !dirMeta.isStandalone;
             continue;
           }
 
           const pipeMeta = this.metaReader.getPipeMetadata(ref);
           if (pipeMeta !== null) {
-            dependencies.add(pipeMeta);
+            dependencies.add({...pipeMeta, ref});
             isPoisoned = isPoisoned || !pipeMeta.isStandalone;
             continue;
           }
 
           const ngModuleMeta = this.metaReader.getNgModuleMetadata(ref);
           if (ngModuleMeta !== null) {
-            dependencies.add(ngModuleMeta);
+            dependencies.add({...ngModuleMeta, ref});
 
             let ngModuleScope: ExportScope|null;
             if (ref.node.getSourceFile().isDeclarationFile) {

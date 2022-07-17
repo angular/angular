@@ -232,7 +232,7 @@
           "amexio-canvas": {
             "desc": "Amexio Canvas is Drag and Drop Environment to create Fully Responsive Web and Smart Device HTML5/Angular Apps. Code will be auto generated and hot deployed by the Canvas for live testing. Out of the box 50+ Material Design Theme support. Commit your code to GitHub public or private repository.",
             "title": "Amexio Canvas Web Based Drag and Drop IDE by MetaMagic",
-            "url": "https://amexio.tech/"
+            "url": "https://api.amexio.org/"
           }
         }
       },
@@ -541,6 +541,16 @@
             "desc": "A modern and powerful gantt chart component for Angular",
             "title": "Angular Gantt Chart Component",
             "url": "https://github.com/worktile/ngx-gantt"
+          },
+          "ngx-youi": {
+            "desc": "NGX-YOUI is an Angular UI Library that can be highly customized with content and styles. You can easily integrate with other CSS frameworks and UI Library, such as Tailwind, Bootstrap, PrimeNG, Angular Material etc.",
+            "title": "NGX-YOUI",
+            "url": "https://ngx-youi.github.io/NGX-YOUI/"
+          },
+          "ngx-cookie-service": {
+            "desc": "NGX Cookie Service is an Angular Library that can be used to read, set and delete browser cookies",
+            "title": "NGX Cookie Service",
+            "url": "https://github.com/stevermeister/ngx-cookie-service"
           }
         }
       }
@@ -647,6 +657,11 @@
             "title": "Rangle’s Angular Training Book",
             "desc": "It's a free book, drawn from years of collective experience and aligned with the best practices of modern software development. The book covers the most important Angular topics, from getting started with the Angular toolchain to writing Angular applications in a scalable and maintainable manner.",
             "url": "https://angular-training-guide.rangle.io/"
+          },
+          "angular-from-scratch": {
+            "title": "Angular from Scratch",
+            "desc": "Learn Angular from Scratch, building a sales application",
+            "url": "https://leanpub.com/book-angular"
           }
         }
       },
@@ -775,6 +790,11 @@
             "desc": "Whether you're already an architect or you'd like to become one, come learn how to keep your apps clean and fast (especially at the enterprise level). Four weeks of training includes live office hours every week with an Angular GDE, diversity discounts, and scholarships available!",
             "title": "Angular Architect Training",
             "url": "https://www.angularnation.net/"
+          },
+          "platzi": {
+            "desc": "An online education platform with a complete path in Angular and TypeScript from zero to advanced. Platzi helps students from all over the world acquire new, in-demand skills.",
+            "title": "Platzi (Español)",
+            "url": "https://platzi.com/angular-io"
           }
         }
       },

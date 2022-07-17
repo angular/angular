@@ -42,13 +42,13 @@
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
+    "name": "BROWSER_MODULE_PROVIDERS_MARKER"
+  },
+  {
     "name": "BaseControlValueAccessor"
   },
   {
     "name": "BrowserDomAdapter"
-  },
-  {
-    "name": "BrowserGetTestability"
   },
   {
     "name": "BrowserModule"
@@ -114,9 +114,6 @@
     "name": "DEFAULT_VALUE_ACCESSOR"
   },
   {
-    "name": "DOCUMENT"
-  },
-  {
     "name": "DOCUMENT2"
   },
   {
@@ -148,6 +145,9 @@
   },
   {
     "name": "EMPTY_PAYLOAD"
+  },
+  {
+    "name": "ENVIRONMENT_INITIALIZER"
   },
   {
     "name": "EVENT_MANAGER_PLUGINS"
@@ -190,9 +190,6 @@
   },
   {
     "name": "INJECTOR_DEF_TYPES"
-  },
-  {
-    "name": "INJECTOR_INITIALIZER"
   },
   {
     "name": "INJECTOR_SCOPE"
@@ -354,13 +351,13 @@
     "name": "Optional"
   },
   {
+    "name": "PLATFORM_DESTROY_LISTENERS"
+  },
+  {
     "name": "PLATFORM_ID"
   },
   {
     "name": "PLATFORM_INITIALIZER"
-  },
-  {
-    "name": "PLATFORM_ON_DESTROY"
   },
   {
     "name": "PlatformRef"
@@ -447,6 +444,15 @@
     "name": "Subscription"
   },
   {
+    "name": "TESTABILITY"
+  },
+  {
+    "name": "TESTABILITY_GETTER"
+  },
+  {
+    "name": "TESTABILITY_PROVIDERS"
+  },
+  {
     "name": "THROW_IF_NOT_FOUND"
   },
   {
@@ -529,9 +535,6 @@
   },
   {
     "name": "_randomChar"
-  },
-  {
-    "name": "_renderCompCount"
   },
   {
     "name": "_symbolIterator"
@@ -630,6 +633,9 @@
     "name": "collectStylingFromTAttrs"
   },
   {
+    "name": "componentDefCount"
+  },
+  {
     "name": "composeAsyncValidators"
   },
   {
@@ -693,9 +699,6 @@
     "name": "deepForEach"
   },
   {
-    "name": "defaultErrorLogger"
-  },
-  {
     "name": "defaultIterableDiffersFactory"
   },
   {
@@ -711,16 +714,7 @@
     "name": "detachView"
   },
   {
-    "name": "detectChangesInRootView"
-  },
-  {
-    "name": "detectChangesInternal"
-  },
-  {
     "name": "diPublicInInjector"
-  },
-  {
-    "name": "domRendererFactory3"
   },
   {
     "name": "empty"
@@ -765,13 +759,13 @@
     "name": "findStylingValue"
   },
   {
-    "name": "flatten"
-  },
-  {
     "name": "flattenStyles"
   },
   {
     "name": "flattenUnsubscriptionErrors"
+  },
+  {
+    "name": "forEachSingleProvider"
   },
   {
     "name": "forkJoinInternal"
@@ -999,7 +993,7 @@
     "name": "initTNodeFlags"
   },
   {
-    "name": "inject"
+    "name": "initializeInputAndOutputAliases"
   },
   {
     "name": "injectArgs"
@@ -1032,13 +1026,13 @@
     "name": "instructionState"
   },
   {
+    "name": "internalImportProvidersFrom"
+  },
+  {
     "name": "invertObject"
   },
   {
     "name": "invokeHostBindingsInCreationMode"
-  },
-  {
-    "name": "isAnimationProp"
   },
   {
     "name": "isArray"
@@ -1074,7 +1068,7 @@
     "name": "isFunction"
   },
   {
-    "name": "isInCheckNoChangesMode"
+    "name": "isImportedNgModuleProviders"
   },
   {
     "name": "isInlineTemplate"
@@ -1098,9 +1092,6 @@
     "name": "isObject"
   },
   {
-    "name": "isObservable"
-  },
-  {
     "name": "isOptionsObj"
   },
   {
@@ -1108,9 +1099,6 @@
   },
   {
     "name": "isPresent"
-  },
-  {
-    "name": "isProceduralRenderer"
   },
   {
     "name": "isPromise"
@@ -1126,9 +1114,6 @@
   },
   {
     "name": "isTemplateNode"
-  },
-  {
-    "name": "isTemplateNode2"
   },
   {
     "name": "isTypeProvider"
@@ -1177,6 +1162,9 @@
   },
   {
     "name": "markAsComponentHost"
+  },
+  {
+    "name": "markDirtyIfOnPush"
   },
   {
     "name": "markDuplicates"
@@ -1428,9 +1416,6 @@
     "name": "setInputsFromAttrs"
   },
   {
-    "name": "setIsInCheckNoChangesMode"
-  },
-  {
     "name": "setSelectedIndex"
   },
   {
@@ -1462,9 +1447,6 @@
   },
   {
     "name": "stringifyCSSSelector"
-  },
-  {
-    "name": "stringifyForError"
   },
   {
     "name": "subscribeTo"

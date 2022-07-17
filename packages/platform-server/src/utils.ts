@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, importProvidersFrom, Injector, NgModuleFactory, NgModuleRef, PlatformRef, Provider, StaticProvider, Type, ɵbootstrapApplication as bootstrapApplication, ɵisPromise} from '@angular/core';
+import {ApplicationRef, ImportedNgModuleProviders, importProvidersFrom, NgModuleFactory, NgModuleRef, PlatformRef, Provider, StaticProvider, Type, ɵinternalBootstrapApplication as internalBootstrapApplication, ɵisPromise} from '@angular/core';
 import {BrowserModule, ɵTRANSITION_ID} from '@angular/platform-browser';
 import {first} from 'rxjs/operators';
 
@@ -34,7 +34,7 @@ function _render<T>(
     platform: PlatformRef,
     bootstrapPromise: Promise<NgModuleRef<T>|ApplicationRef>): Promise<string> {
   return bootstrapPromise.then((moduleOrApplicationRef) => {
-    const environmentInjector = (moduleOrApplicationRef as {injector: Injector}).injector;
+    const environmentInjector = moduleOrApplicationRef.injector;
     const transitionId = environmentInjector.get(ɵTRANSITION_ID, null);
     if (!transitionId) {
       throw new Error(
@@ -121,14 +121,14 @@ export function renderModule<T>(
  * })
  * class RootComponent {}
  *
- * const output: string = await renderApplication(RootComponent, 'server-app');
+ * const output: string = await renderApplication(RootComponent, {appId: 'server-app'});
  * ```
  *
  * @param rootComponent A reference to a Standalone Component that should be rendered.
- * @param appId A string identifier for the application. The id is used to prefix all
- *              server-generated stylings and state keys of the application in TransferState use
- * cases.
  * @param options Additional configuration for the render operation:
+ *  - `appId` - a string identifier of this application. The appId is used to prefix all
+ *              server-generated stylings and state keys of the application in TransferState
+ *              use-cases.
  *  - `document` - the full document HTML of the page to render, as a string.
  *  - `url` - the URL for the current render request.
  *  - `providers` - set of application level providers for the current render request.
@@ -136,21 +136,23 @@ export function renderModule<T>(
  * @returns A Promise, that returns serialized (to a string) rendered page, once resolved.
  *
  * @publicApi
+ * @developerPreview
  */
-export function renderApplication<T>(rootComponent: Type<T>, appId: string, options: {
+export function renderApplication<T>(rootComponent: Type<T>, options: {
+  appId: string,
   document?: string,
   url?: string,
-  providers?: Provider[],
+  providers?: Array<Provider|ImportedNgModuleProviders>,
   platformProviders?: Provider[],
 }): Promise<string> {
-  const {document, url, platformProviders} = options;
+  const {document, url, platformProviders, appId} = options;
   const platform = _getPlatform(platformDynamicServer, {document, url, platformProviders});
   const appProviders = [
-    ...importProvidersFrom(BrowserModule.withServerTransition({appId})),
-    ...importProvidersFrom(ServerModule),
+    importProvidersFrom(BrowserModule.withServerTransition({appId})),
+    importProvidersFrom(ServerModule),
     ...(options.providers ?? []),
   ];
-  return _render(platform, bootstrapApplication({rootComponent, appProviders}));
+  return _render(platform, internalBootstrapApplication({rootComponent, appProviders}));
 }
 
 /**

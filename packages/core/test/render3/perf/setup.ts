@@ -5,18 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {addToViewTree, createLContainer, createLView, createTNode, createTView, getOrCreateTNode, refreshView, renderView} from '../../../src/render3/instructions/shared';
 import {ComponentTemplate, DirectiveDefList} from '../../../src/render3/interfaces/definition';
 import {TAttributes, TElementNode, TNodeType} from '../../../src/render3/interfaces/node';
-import {domRendererFactory3, RendererFactory3} from '../../../src/render3/interfaces/renderer';
 import {LView, LViewFlags, TVIEW, TView, TViewType} from '../../../src/render3/interfaces/view';
 import {insertView} from '../../../src/render3/node_manipulation';
 
-import {MicroBenchmarkRendererFactory} from './noop_renderer';
+import {MicroBenchmarkDomRendererFactory, MicroBenchmarkRendererFactory} from './noop_renderer';
 
 const isBrowser = typeof process === 'undefined';
-const rendererFactory: RendererFactory3 =
-    isBrowser ? domRendererFactory3 : new MicroBenchmarkRendererFactory;
+const rendererFactory =
+    isBrowser ? new MicroBenchmarkDomRendererFactory() : new MicroBenchmarkRendererFactory();
 const renderer = rendererFactory.createRenderer(null, null);
 
 export function createAndRenderLView(

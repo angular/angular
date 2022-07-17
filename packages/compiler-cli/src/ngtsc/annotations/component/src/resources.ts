@@ -417,7 +417,7 @@ export function makeResourceNotFoundError(
  * Additionally, the references to external resources would require libraries to ship
  * external resources exclusively for the class metadata.
  */
-export function transformDecoratorToInlineResources(
+export function transformDecoratorResources(
     dec: Decorator, component: Map<string, ts.Expression>, styles: string[],
     template: ParsedTemplateWithSource): Decorator {
   if (dec.name !== 'Component') {
@@ -426,7 +426,7 @@ export function transformDecoratorToInlineResources(
 
   // If no external resources are referenced, preserve the original decorator
   // for the best source map experience when the decorator is emitted in TS.
-  if (!component.has('templateUrl') && !component.has('styleUrls')) {
+  if (!component.has('templateUrl') && !component.has('styleUrls') && !component.has('styles')) {
     return dec;
   }
 
@@ -438,13 +438,22 @@ export function transformDecoratorToInlineResources(
     metadata.set('template', ts.factory.createStringLiteral(template.content));
   }
 
-  // Set the `styles` property if the `styleUrls` property is set.
-  if (metadata.has('styleUrls')) {
+  if (metadata.has('styleUrls') || metadata.has('styles')) {
+    metadata.delete('styles');
     metadata.delete('styleUrls');
-    metadata.set(
-        'styles',
-        ts.factory.createArrayLiteralExpression(
-            styles.map(s => ts.factory.createStringLiteral(s))));
+
+    if (styles.length > 0) {
+      const styleNodes = styles.reduce((result, style) => {
+        if (style.trim().length > 0) {
+          result.push(ts.factory.createStringLiteral(style));
+        }
+        return result;
+      }, [] as ts.StringLiteral[]);
+
+      if (styleNodes.length > 0) {
+        metadata.set('styles', ts.factory.createArrayLiteralExpression(styleNodes));
+      }
+    }
   }
 
   // Convert the metadata to TypeScript AST object literal element nodes.

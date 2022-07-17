@@ -1,6 +1,5 @@
 load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
-load("//tools:defaults.bzl", "pkg_npm", "ts_library")
-load("//tools:extract_typings_rule.bzl", "extract_typings")
+load("//tools:defaults.bzl", "extract_types", "pkg_npm", "ts_library")
 
 ts_library(
     name = "tools",
@@ -55,7 +54,7 @@ esbuild(
     ],
 )
 
-extract_typings(
+extract_types(
     name = "api_type_definitions",
     deps = [":tools"],
 )

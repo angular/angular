@@ -109,7 +109,7 @@ You can think of `.metadata.json` as a diagram of the overall structure of a dec
 
 <div class="alert is-helpful">
 
-Angular's [schema.ts](https://github.com/angular/angular/blob/master/packages/compiler-cli/src/metadata/schema.ts) describes the JSON format as a collection of TypeScript interfaces.
+Angular's [schema.ts](https://github.com/angular/angular/blob/main/packages/compiler-cli/src/metadata/schema.ts) describes the JSON format as a collection of TypeScript interfaces.
 
 </div>
 
@@ -124,7 +124,7 @@ Define metadata objects with the following limited syntax:
 |:---                       |:---     |
 | Literal object            | `{cherry: true, apple: true, mincemeat: false}`                        |
 | Literal array             | `['cherries', 'flour', 'sugar']`                                       |
-| Spread in literal array   | `['apples', 'flour', &hellip;the_rest]`                                |
+| Spread in literal array   | `['apples', 'flour', ...]`                                             |
 | Calls                     | `bake(ingredients)`                                                    |
 | New                       | `new Oven()`                                                           |
 | Property access           | `pie.slice`                                                            |
@@ -389,7 +389,7 @@ export class TypicalModule {}
 </code-example>
 
 The Angular [`RouterModule`](api/router/RouterModule) exports two macro static methods, `forRoot` and `forChild`, to help declare root and child routes.
-Review the [source code](https://github.com/angular/angular/blob/master/packages/router/src/router_module.ts#L139 "RouterModule.forRoot source code")
+Review the [source code](https://github.com/angular/angular/blob/main/packages/router/src/router_module.ts#L139 "RouterModule.forRoot source code")
 for these methods to see how macros can simplify configuration of complex [NgModules](guide/ngmodules).
 
 <a id="metadata-rewriting"></a>

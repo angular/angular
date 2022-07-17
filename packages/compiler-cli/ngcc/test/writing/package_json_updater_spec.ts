@@ -8,7 +8,7 @@
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {JsonObject} from '../../src/packages/entry_point';
+import {JsonObject} from '../../src/utils';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 
 runInEachFileSystem(() => {
@@ -151,6 +151,14 @@ runInEachFileSystem(() => {
           .toThrowError('Trying to apply a `PackageJsonUpdate` that has already been applied.');
       expect(() => update.writeChanges(_('/bar/package.json')))
           .toThrowError('Trying to apply a `PackageJsonUpdate` that has already been applied.');
+    });
+
+    it('should throw, if trying to update a synthesized `package.json` file', () => {
+      const update = updater.createUpdate().addChange(['foo'], 'updated');
+
+      expect(() => update.writeChanges(_('/foo/package.json'), {
+        synthesized: true
+      })).toThrowError('Trying to update a non-existent (synthesized) `package.json` file.');
     });
 
     describe('(property positioning)', () => {

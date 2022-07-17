@@ -164,7 +164,9 @@ export class HttpParams {
       this.map = new Map<string, string[]>();
       Object.keys(options.fromObject).forEach(key => {
         const value = (options.fromObject as any)[key];
-        this.map!.set(key, Array.isArray(value) ? value : [value]);
+        // convert the values to strings
+        const values = Array.isArray(value) ? value.map(valueToString) : [valueToString(value)];
+        this.map!.set(key, values);
       });
     } else {
       this.map = null;

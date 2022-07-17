@@ -7,6 +7,8 @@
  */
 
 import {I18nPluralPipe, NgLocalization} from '@angular/common';
+import {Component} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 
 {
   describe('I18nPluralPipe', () => {
@@ -59,6 +61,25 @@ import {I18nPluralPipe, NgLocalization} from '@angular/common';
       it('should not support bad arguments', () => {
         expect(() => pipe.transform(0, 'hey' as any)).toThrowError();
       });
+    });
+
+    it('should be available as a standalone pipe', () => {
+      @Component({
+        selector: 'test-component',
+        imports: [I18nPluralPipe],
+        template: '{{ value | i18nPlural:mapping }}',
+        standalone: true,
+      })
+      class TestComponent {
+        value = 1;
+        mapping = mapping;
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const content = fixture.nativeElement.textContent;
+      expect(content).toBe('One message.');
     });
   });
 }

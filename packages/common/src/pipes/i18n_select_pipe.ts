@@ -7,6 +7,7 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
+
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
@@ -26,7 +27,11 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * @publicApi
  */
-@Pipe({name: 'i18nSelect', pure: true})
+@Pipe({
+  name: 'i18nSelect',
+  pure: true,
+  standalone: true,
+})
 export class I18nSelectPipe implements PipeTransform {
   /**
    * @param value a string to be internationalized.

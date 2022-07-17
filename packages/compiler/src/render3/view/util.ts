@@ -175,7 +175,6 @@ function mapToExpression(
     map: {[key: string]: string|string[]}, keepDeclared?: boolean): o.Expression {
   return o.literalMap(Object.getOwnPropertyNames(map).map(key => {
     // canonical syntax: `dirProp: publicProp`
-    // if there is no `:`, use dirProp = elProp
     const value = map[key];
     let declaredName: string;
     let publicName: string;
@@ -186,12 +185,9 @@ function mapToExpression(
       minifiedName = key;
       needsDeclaredName = publicName !== declaredName;
     } else {
-      [declaredName, publicName] = splitAtColon(key, [key, value]);
-      minifiedName = declaredName;
-      // Only include the declared name if extracted from the key, i.e. the key contains a colon.
-      // Otherwise the declared name should be omitted even if it is different from the public name,
-      // as it may have already been minified.
-      needsDeclaredName = publicName !== declaredName && key.includes(':');
+      minifiedName = declaredName = key;
+      publicName = value;
+      needsDeclaredName = false;
     }
     return {
       key: minifiedName,

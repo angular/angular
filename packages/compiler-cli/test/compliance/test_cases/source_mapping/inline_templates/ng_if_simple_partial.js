@@ -1,6 +1,6 @@
-.ɵɵelementStart(0, "div");\n // SOURCE: "/ng_if_simple.ts" "<div *"
+.ɵɵelementStart(0, "div");\n     // SOURCE: "/ng_if_simple.ts" "<div *"
 …
-.ɵɵtext(1);\n // SOURCE: "/ng_if_simple.ts" "{{ name }}"
+.ɵɵtext(1);\n     // SOURCE: "/ng_if_simple.ts" "{{ name }}"
 …
 // TODO: Work out how to fix the broken segment for the last item in a template
 .ɵɵelem // SOURCE: "/ng_if_simple.ts" "</div>'"

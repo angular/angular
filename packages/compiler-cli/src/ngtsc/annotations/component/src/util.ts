@@ -7,12 +7,14 @@
  */
 
 import {AnimationTriggerNames} from '@angular/compiler';
+import {isResolvedModuleWithProviders, ResolvedModuleWithProviders,} from '@angular/compiler-cli/src/ngtsc/annotations/ng_module';
+import {ErrorCode, makeDiagnostic} from '@angular/compiler-cli/src/ngtsc/diagnostics';
 import ts from 'typescript';
 
 import {Reference} from '../../../imports';
-import {ForeignFunctionResolver, ResolvedValue} from '../../../partial_evaluator';
+import {ForeignFunctionResolver, ResolvedValue, ResolvedValueMap, SyntheticValue} from '../../../partial_evaluator';
 import {ClassDeclaration, isNamedClassDeclaration} from '../../../reflection';
-import {createValueHasWrongTypeError} from '../../common';
+import {createValueHasWrongTypeError, getOriginNodeForDiagnostics} from '../../common';
 
 /**
  * Collect the animation names from the static evaluation result.
@@ -92,6 +94,19 @@ export function validateAndFlattenComponentImports(imports: ResolvedValue, expr:
                 `'imports' must be an array of components, directives, pipes, or NgModules`)
                 .toDiagnostic());
       }
+    } else if (isLikelyModuleWithProviders(ref)) {
+      let origin = expr;
+      if (ref instanceof SyntheticValue) {
+        // The `ModuleWithProviders` type originated from a foreign function declaration, in which
+        // case the original foreign call is available which is used to get a more accurate origin
+        // node that points at the specific call expression.
+        origin = getOriginNodeForDiagnostics(ref.value.mwpCall, expr);
+      }
+      diagnostics.push(makeDiagnostic(
+          ErrorCode.COMPONENT_UNKNOWN_IMPORT, origin,
+          `'imports' contains a ModuleWithProviders value, likely the result of a 'Module.forRoot()'-style call. ` +
+              `These calls are not used to configure components and are not valid in standalone component imports - ` +
+              `consider importing them in the application bootstrap instead.`));
     } else {
       diagnostics.push(
           createValueHasWrongTypeError(
@@ -102,4 +117,25 @@ export function validateAndFlattenComponentImports(imports: ResolvedValue, expr:
   }
 
   return {imports: flattened, diagnostics};
+}
+
+/**
+ * Inspects `value` to determine if it resembles a `ModuleWithProviders` value. This is an
+ * approximation only suitable for error reporting as any resolved object with an `ngModule`
+ * key is considered a `ModuleWithProviders`.
+ */
+function isLikelyModuleWithProviders(value: ResolvedValue):
+    value is SyntheticValue<ResolvedModuleWithProviders>|ResolvedValueMap {
+  if (value instanceof SyntheticValue && isResolvedModuleWithProviders(value)) {
+    // This is a `ModuleWithProviders` as extracted from a foreign function call.
+    return true;
+  }
+
+  if (value instanceof Map && value.has('ngModule')) {
+    // A resolved `Map` with `ngModule` property would have been extracted from locally declared
+    // functions that return a `ModuleWithProviders` object.
+    return true;
+  }
+
+  return false;
 }

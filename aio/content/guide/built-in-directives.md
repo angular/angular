@@ -50,7 +50,7 @@ Add or remove multiple CSS classes simultaneously with `ngClass`.
 
 <div class="alert is-helpful">
 
-To add or remove a *single* class, use [class binding](guide/attribute-binding#class-binding) rather than `NgClass`.
+To add or remove a *single* class, use [class binding](guide/class-binding) rather than `NgClass`.
 
 </div>
 
@@ -251,16 +251,12 @@ then uses this template repeatedly to create a new set of elements and bindings 
 in the list.
 For more information about shorthand, see the [Structural Directives](guide/structural-directives#shorthand) guide.
 
-<a id="one-per-element"></a>
 
 ## Repeating elements when a condition is true
 
 To repeat a block of HTML when a particular condition is true, put the `*ngIf` on a container element that wraps an `*ngFor` element.
-One or both elements can be an `<ng-container>` so you don't have to introduce extra levels of HTML.
 
-Because structural directives add and remove nodes from the DOM, apply only one structural directive per element.
-
-For more information about `NgFor` see the [NgForOf API reference](api/common/NgForOf).
+For more information see [one structural directive per element](guide/structural-directives#one-per-element).
 
 <a id="ngfor-with-trackby"></a>
 

@@ -13,7 +13,7 @@
  */
 
 import {resetFakeAsyncZone} from './fake_async';
-import {TestBed} from './test_bed';
+import {TestBedImpl} from './test_bed';
 
 declare var global: any;
 
@@ -33,9 +33,9 @@ if (_global.afterEach) {
 
 function getCleanupHook(expectedTeardownValue: boolean) {
   return () => {
-    // TODO(alxhub): find a better type here
-    if ((TestBed as any).shouldTearDownTestingModule() === expectedTeardownValue) {
-      TestBed.resetTestingModule();
+    const testBed = TestBedImpl.INSTANCE;
+    if (testBed.shouldTearDownTestingModule() === expectedTeardownValue) {
+      testBed.resetTestingModule();
       resetFakeAsyncZone();
     }
   };

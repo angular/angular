@@ -28,7 +28,11 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
  *
  * @publicApi
  */
-@Pipe({name: 'i18nPlural', pure: true})
+@Pipe({
+  name: 'i18nPlural',
+  pure: true,
+  standalone: true,
+})
 export class I18nPluralPipe implements PipeTransform {
   constructor(private _localization: NgLocalization) {}
 

@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load("//tools:defaults.bzl", "nodejs_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -25,8 +25,6 @@ filegroup(
         "//packages/zone.js/bundles:zone.umd.js",
         "//packages/zone.js/bundles:zone-testing.umd.js",
         "//packages/zone.js/bundles:task-tracking.umd.js",
-        "//:test-events.js",
-        "//:third_party/shims_for_internal_tests.js",
         # Including systemjs because it defines `__eval`, which produces correct stack traces.
         "@npm//:node_modules/systemjs/dist/system.src.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",

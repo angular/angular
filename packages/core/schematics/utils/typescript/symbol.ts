@@ -41,7 +41,7 @@ export function isNullableType(typeChecker: ts.TypeChecker, node: ts.Node) {
   let hasSeenNullableType = false;
 
   // Trace the type of the node back to a type node, walk
-  // through all of its sub-nodes and look for nullable tyes.
+  // through all of its sub-nodes and look for nullable types.
   if (typeNode) {
     (function walk(current: ts.Node) {
       if (current.kind === ts.SyntaxKind.NullKeyword ||

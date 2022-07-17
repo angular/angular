@@ -341,3 +341,47 @@ export declare class Module {
     static ɵinj: i0.ɵɵInjectorDeclaration<Module>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: forward_ref.js
+ ****************************************************************************************************/
+import { Component, forwardRef } from '@angular/core';
+import * as i0 from "@angular/core";
+export class TestComponent {
+}
+TestComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+TestComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestComponent, isStandalone: true, selector: "test", ngImport: i0, template: '<other-standalone></other-standalone>', isInline: true, dependencies: [{ kind: "component", type: i0.forwardRef(function () { return StandaloneComponent; }), selector: "other-standalone" }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'test',
+                    standalone: true,
+                    imports: [forwardRef(() => StandaloneComponent)],
+                    template: '<other-standalone></other-standalone>',
+                }]
+        }] });
+export class StandaloneComponent {
+}
+StandaloneComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandaloneComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+StandaloneComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: StandaloneComponent, isStandalone: true, selector: "other-standalone", ngImport: i0, template: '', isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: StandaloneComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'other-standalone',
+                    standalone: true,
+                    template: '',
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: forward_ref.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestComponent, "test", never, {}, {}, never, never, true>;
+}
+export declare class StandaloneComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<StandaloneComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<StandaloneComponent, "other-standalone", never, {}, {}, never, never, true>;
+}
+

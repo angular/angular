@@ -10,7 +10,7 @@ import {AnimationTriggerNames, compileClassMetadata, compileComponentFromMetadat
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
-import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {absoluteFrom, relative} from '../../../file_system';
 import {assertSuccessfulReferenceEmit, ImportedFile, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
 import {DependencyTracker} from '../../../incremental/api';
@@ -26,13 +26,13 @@ import {TypeCheckContext} from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {getSourceFile} from '../../../util/src/typescript';
 import {Xi18nContext} from '../../../xi18n';
-import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, isExpressionForwardReference, readBaseClass, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, wrapFunctionExpressionsInParens} from '../../common';
+import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getDirectiveDiagnostics, getProviderDiagnostics, isExpressionForwardReference, readBaseClass, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, wrapFunctionExpressionsInParens,} from '../../common';
 import {extractDirectiveMetadata, parseFieldArrayValue} from '../../directive';
-import {NgModuleSymbol} from '../../ng_module';
+import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
 
 import {checkCustomElementSelectorForErrors, makeCyclicImportInfo} from './diagnostics';
 import {ComponentAnalysisData, ComponentResolutionData} from './metadata';
-import {_extractTemplateStyleUrls, extractComponentStyleUrls, extractStyleResources, extractTemplate, makeResourceNotFoundError, ParsedTemplateWithSource, parseTemplateDeclaration, preloadAndParseTemplate, ResourceTypeForDiagnostics, StyleUrlMeta, transformDecoratorToInlineResources} from './resources';
+import {_extractTemplateStyleUrls, extractComponentStyleUrls, extractStyleResources, extractTemplate, makeResourceNotFoundError, ParsedTemplateWithSource, parseTemplateDeclaration, preloadAndParseTemplate, ResourceTypeForDiagnostics, StyleUrlMeta, transformDecoratorResources} from './resources';
 import {ComponentSymbol} from './symbol';
 import {animationTriggerResolver, collectAnimationNames, validateAndFlattenComponentImports} from './util';
 
@@ -259,10 +259,19 @@ export class ComponentDecoratorHandler implements
       }
       diagnostics.push(makeDiagnostic(
           ErrorCode.COMPONENT_NOT_STANDALONE, component.get('imports')!,
-          `'imports' is only valid on a component that is standalone.`));
+          `'imports' is only valid on a component that is standalone.`,
+          [makeRelatedInformation(
+              node.name, `Did you forget to add 'standalone: true' to this @Component?`)]));
+      // Poison the component so that we don't spam further template type-checking errors that
+      // result from misconfigured imports.
+      isPoisoned = true;
     } else if (component.has('imports')) {
       const expr = component.get('imports')!;
-      const imported = this.evaluator.evaluate(expr);
+      const importResolvers = combineResolvers([
+        createModuleWithProvidersResolver(this.reflector, this.isCore),
+        forwardRefResolver,
+      ]);
+      const imported = this.evaluator.evaluate(expr, importResolvers);
       const {imports: flattened, diagnostics: importDiagnostics} =
           validateAndFlattenComponentImports(imported, expr);
 
@@ -275,16 +284,6 @@ export class ComponentDecoratorHandler implements
           diagnostics = [];
         }
         diagnostics.push(...importDiagnostics);
-      }
-
-      const validationDiagnostics =
-          validateStandaloneImports(resolvedImports, rawImports, this.metaReader, this.scopeReader);
-      if (validationDiagnostics.length > 0) {
-        isPoisoned = true;
-        if (diagnostics === undefined) {
-          diagnostics = [];
-        }
-        diagnostics.push(...validationDiagnostics);
       }
     }
 
@@ -430,7 +429,7 @@ export class ComponentDecoratorHandler implements
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, inputs, this.reflector),
         classMetadata: extractClassMetadata(
             node, this.reflector, this.isCore, this.annotateForClosureCompiler,
-            dec => transformDecoratorToInlineResources(dec, component, styles, template)),
+            dec => transformDecoratorResources(dec, component, styles, template)),
         template,
         providersRequiringFactory,
         viewProvidersRequiringFactory,
@@ -547,7 +546,8 @@ export class ComponentDecoratorHandler implements
     const binder = new R3TargetBinder(scope.matcher);
     ctx.addTemplate(
         new Reference(node), binder, meta.template.diagNodes, scope.pipes, scope.schemas,
-        meta.template.sourceMapping, meta.template.file, meta.template.errors);
+        meta.template.sourceMapping, meta.template.file, meta.template.errors,
+        meta.meta.isStandalone);
   }
 
   extendedTemplateCheck(
@@ -722,37 +722,53 @@ export class ComponentDecoratorHandler implements
         symbol.usedPipes = declarations.filter(isUsedPipe).map(getSemanticReference);
       }
 
-      // Scan through the directives/pipes actually used in the template and check whether any
-      // import which needs to be generated would create a cycle.
       const cyclesFromDirectives = new Map<UsedDirective, Cycle>();
       const cyclesFromPipes = new Map<UsedPipe, Cycle>();
-      for (const usedDep of declarations) {
-        const cycle = this._checkForCyclicImport(usedDep.importedFile, usedDep.type, context);
-        if (cycle !== null) {
-          switch (usedDep.kind) {
-            case R3TemplateDependencyKind.Directive:
-              cyclesFromDirectives.set(usedDep, cycle);
-              break;
-            case R3TemplateDependencyKind.Pipe:
-              cyclesFromPipes.set(usedDep, cycle);
-              break;
+
+      // Scan through the directives/pipes actually used in the template and check whether any
+      // import which needs to be generated would create a cycle. This check is skipped for
+      // standalone components as the dependencies of a standalone component have already been
+      // imported directly by the user, so Angular won't introduce any imports that aren't already
+      // in the user's program.
+      if (!metadata.isStandalone) {
+        for (const usedDep of declarations) {
+          const cycle = this._checkForCyclicImport(usedDep.importedFile, usedDep.type, context);
+          if (cycle !== null) {
+            switch (usedDep.kind) {
+              case R3TemplateDependencyKind.Directive:
+                cyclesFromDirectives.set(usedDep, cycle);
+                break;
+              case R3TemplateDependencyKind.Pipe:
+                cyclesFromPipes.set(usedDep, cycle);
+                break;
+            }
           }
         }
       }
+      // Check whether any usages of standalone components in imports requires the dependencies
+      // array to be wrapped in a closure. This check is technically a heuristic as there's no
+      // direct way to check whether a `Reference` came from a `forwardRef`. Instead, we check if
+      // the reference is `synthetic`, implying it came from _any_ foreign function resolver,
+      // including the `forwardRef` resolver.
+      const standaloneImportMayBeForwardDeclared =
+          analysis.resolvedImports !== null && analysis.resolvedImports.some(ref => ref.synthetic);
 
       const cycleDetected = cyclesFromDirectives.size !== 0 || cyclesFromPipes.size !== 0;
       if (!cycleDetected) {
         // No cycle was detected. Record the imports that need to be created in the cycle detector
         // so that future cyclic import checks consider their production.
         for (const {type, importedFile} of declarations) {
-          this._recordSyntheticImport(importedFile, type, context);
+          this.maybeRecordSyntheticImport(importedFile, type, context);
         }
 
         // Check whether the dependencies arrays in ɵcmp need to be wrapped in a closure.
         // This is required if any dependency reference is to a declaration in the same file
         // but declared after this component.
-        const wrapDirectivesAndPipesInClosure =
+        const declarationIsForwardDeclared =
             declarations.some(decl => isExpressionForwardReference(decl.type, node.name, context));
+
+        const wrapDirectivesAndPipesInClosure =
+            declarationIsForwardDeclared || standaloneImportMayBeForwardDeclared;
 
         data.declarations = declarations;
         data.declarationListEmitMode = wrapDirectivesAndPipesInClosure ?
@@ -799,6 +815,12 @@ export class ComponentDecoratorHandler implements
               relatedMessages);
         }
       }
+    }
+
+    if (analysis.resolvedImports !== null && analysis.rawImports !== null) {
+      const standaloneDiagnostics = validateStandaloneImports(
+          analysis.resolvedImports, analysis.rawImports, this.metaReader, this.scopeReader);
+      diagnostics.push(...standaloneDiagnostics);
     }
 
     if (analysis.providersRequiringFactory !== null &&
@@ -873,7 +895,7 @@ export class ComponentDecoratorHandler implements
       styles.push(styleText);
     }
 
-    analysis.meta.styles = styles;
+    analysis.meta.styles = styles.filter(s => s.trim().length > 0);
   }
 
   compileFull(
@@ -931,7 +953,7 @@ export class ComponentDecoratorHandler implements
     return this.cycleAnalyzer.wouldCreateCycle(origin, imported);
   }
 
-  private _recordSyntheticImport(
+  private maybeRecordSyntheticImport(
       importedFile: ImportedFile, expr: Expression, origin: ts.SourceFile): void {
     const imported = resolveImportedFile(this.moduleResolver, importedFile, expr, origin);
     if (imported === null) {

@@ -20,6 +20,13 @@ const INITIAL_VALUE = {
 };
 const NOT_SUPPORTED: any = 'NOT_SUPPORTED';
 
+function getInputPropertyMapName(name: string): string {
+  return `input_${name}`;
+}
+
+function getOutputPropertyMapName(name: string): string {
+  return `output_${name}`;
+}
 
 export class UpgradeNg1ComponentAdapterBuilder {
   // TODO(issue/24571): remove '!'.
@@ -33,7 +40,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
   propertyMap: {[name: string]: string} = {};
   directive: IDirective|null = null;
   // TODO(issue/24571): remove '!'.
-  template !: string;
+  template!: string;
 
   constructor(public name: string) {
     const selector =
@@ -76,9 +83,9 @@ export class UpgradeNg1ComponentAdapterBuilder {
 
         // QUESTION: What about `=*`? Ignore? Throw? Support?
 
-        const inputName = `input_${attrName}`;
+        const inputName = getInputPropertyMapName(attrName);
         const inputNameRename = `${inputName}: ${attrName}`;
-        const outputName = `output_${attrName}`;
+        const outputName = getOutputPropertyMapName(attrName);
         const outputNameRename = `${outputName}: ${attrName}`;
         const outputNameRenameChange = `${outputNameRename}Change`;
 
@@ -225,8 +232,9 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     const ng1Changes: any = {};
     Object.keys(changes).forEach(name => {
       const change: SimpleChange = changes[name];
-      this.setComponentProperty(name, change.currentValue);
-      ng1Changes[this.propertyMap[name]] = change;
+      const propertyMapName = getInputPropertyMapName(name);
+      this.setComponentProperty(propertyMapName, change.currentValue);
+      ng1Changes[this.propertyMap[propertyMapName]] = change;
     });
 
     if (isFunction(this.destinationObj!.$onChanges)) {

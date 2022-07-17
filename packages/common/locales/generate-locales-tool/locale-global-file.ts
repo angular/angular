@@ -9,7 +9,7 @@
 import {CldrLocaleData} from './cldr-data';
 import {fileHeader} from './file-header';
 import {BaseCurrencies} from './locale-base-currencies';
-import {generateDayPeriodsSupplementalString} from './locale-extra-file';
+import {generateLocaleExtraDataArrayCode} from './locale-extra-file';
 import {generateBasicLocaleString} from './locale-file';
 import {getPluralFunction} from './plural-function';
 
@@ -19,7 +19,7 @@ import {getPluralFunction} from './plural-function';
 export function generateLocaleGlobalFile(
     locale: string, localeData: CldrLocaleData, baseCurrencies: BaseCurrencies) {
   const basicLocaleData = generateBasicLocaleString(locale, localeData, baseCurrencies);
-  const extraLocaleData = generateDayPeriodsSupplementalString(locale, localeData);
+  const extraLocaleData = generateLocaleExtraDataArrayCode(locale, localeData);
   const data = basicLocaleData.replace(/\]$/, `, ${extraLocaleData}]`);
   return `${fileHeader}
   (function(global) {

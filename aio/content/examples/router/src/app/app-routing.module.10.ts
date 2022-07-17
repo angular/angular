@@ -40,6 +40,7 @@ export class ResolvedChildATitle implements Resolve<string> {
 
 
 // #docregion custom-page-title
+@Injectable({providedIn: 'root'})
 export class TemplatePageTitleStrategy extends TitleStrategy {
   constructor(private readonly title: Title) {
     super();

@@ -303,8 +303,8 @@ describe('standalone components, directives and pipes', () => {
              parent: this.inj,
            });
 
-           const rhsInj =
-               createEnvironmentInjector([{provide: Service, useClass: EnvOverrideService}]);
+           const rhsInj = createEnvironmentInjector(
+               [{provide: Service, useClass: EnvOverrideService}], this.envInj);
 
            this.vcRef.createComponent(InnerCmp, {injector: lhsInj, environmentInjector: rhsInj});
          }
@@ -352,8 +352,8 @@ describe('standalone components, directives and pipes', () => {
          constructor(readonly envInj: EnvironmentInjector) {}
 
          ngOnInit(): void {
-           const rhsInj =
-               createEnvironmentInjector([{provide: Service, useClass: EnvOverrideService}]);
+           const rhsInj = createEnvironmentInjector(
+               [{provide: Service, useClass: EnvOverrideService}], this.envInj);
 
            this.vcRef.createComponent(InnerCmp, {environmentInjector: rhsInj});
          }
@@ -451,6 +451,42 @@ describe('standalone components, directives and pipes', () => {
     const fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
     expect(fixture.nativeElement.innerHTML).toBe('<div red="true">blue</div>');
+  });
+
+  it('should deduplicate declarations', () => {
+    @Component({selector: 'test-red', standalone: true, template: 'red(<ng-content></ng-content>)'})
+    class RedComponent {
+    }
+
+    @Component({selector: 'test-blue', template: 'blue(<ng-content></ng-content>)'})
+    class BlueComponent {
+    }
+
+    @NgModule({declarations: [BlueComponent], exports: [BlueComponent]})
+    class BlueModule {
+    }
+
+    @NgModule({exports: [BlueModule]})
+    class BlueAModule {
+    }
+
+    @NgModule({exports: [BlueModule]})
+    class BlueBModule {
+    }
+
+    @Component({
+      selector: 'standalone',
+      standalone: true,
+      template: `<test-red><test-blue>orange</test-blue></test-red>`,
+      imports: [RedComponent, RedComponent, BlueAModule, BlueBModule],
+    })
+    class TestComponent {
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML)
+        .toBe('<test-red>red(<test-blue>blue(orange)</test-blue>)</test-red>');
   });
 
   it('should error when forwardRef does not resolve to a truthy value', () => {
@@ -628,6 +664,83 @@ describe('standalone components, directives and pipes', () => {
           .toThrowError(
               `The 'schemas' was specified for the AppCmp but is only valid on a component that is standalone.`);
     });
+  });
+
+  describe('unknown template elements', () => {
+    const unknownElErrorRegex = (tag: string) => {
+      const prefix =
+          `'${tag}' is not a known element \\(used in the 'AppCmp' component template\\):`;
+      const message1 = `1. If '${
+          tag}' is an Angular component, then verify that it is included in the '@Component.imports' of this component.`;
+      const message2 = `2. If '${
+          tag}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.`;
+      return new RegExp(`${prefix}\s*\n\s*${message1}\s*\n\s*${message2}`);
+    };
+
+    it('should warn the user when an unknown element is present', () => {
+      const spy = spyOn(console, 'error');
+      @Component({
+        standalone: true,
+        template: '<unknown-tag></unknown-tag>',
+      })
+      class AppCmp {
+      }
+
+      TestBed.createComponent(AppCmp);
+
+      const errorRegex = unknownElErrorRegex('unknown-tag');
+      expect(spy).toHaveBeenCalledOnceWith(jasmine.stringMatching(errorRegex));
+    });
+
+    it('should warn the user when multiple unknown elements are present', () => {
+      const spy = spyOn(console, 'error');
+      @Component({
+        standalone: true,
+        template: '<unknown-tag-A></unknown-tag-A><unknown-tag-B></unknown-tag-B>',
+      })
+      class AppCmp {
+      }
+
+      TestBed.createComponent(AppCmp);
+
+      const errorRegexA = unknownElErrorRegex('unknown-tag-A');
+      const errorRegexB = unknownElErrorRegex('unknown-tag-B');
+
+      expect(spy).toHaveBeenCalledWith(jasmine.stringMatching(errorRegexA));
+      expect(spy).toHaveBeenCalledWith(jasmine.stringMatching(errorRegexB));
+    });
+
+    it('should not warn the user when an unknown element is present inside an ng-template', () => {
+      const spy = spyOn(console, 'error');
+      @Component({
+        standalone: true,
+        template: '<ng-template><unknown-tag></unknown-tag><ng-template>',
+      })
+      class AppCmp {
+      }
+
+      TestBed.createComponent(AppCmp);
+
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should warn the user when an unknown element is present in an instantiated embedded view',
+       () => {
+         const spy = spyOn(console, 'error');
+         @Component({
+           standalone: true,
+           template: '<ng-template [ngIf]="true"><unknown-tag></unknown-tag><ng-template>',
+           imports: [CommonModule],
+         })
+         class AppCmp {
+         }
+
+         const fixture = TestBed.createComponent(AppCmp);
+         fixture.detectChanges();
+
+         const errorRegex = unknownElErrorRegex('unknown-tag');
+         expect(spy).toHaveBeenCalledOnceWith(jasmine.stringMatching(errorRegex));
+       });
   });
 
   /*

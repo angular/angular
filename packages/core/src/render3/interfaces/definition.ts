@@ -226,7 +226,8 @@ export interface DirectiveDef<T> {
  */
 export interface ComponentDef<T> extends DirectiveDef<T> {
   /**
-   * Runtime unique component ID.
+   * Unique ID for the component. Used in view encapsulation and
+   * to keep track of the injector in standalone components.
    */
   readonly id: string;
 
@@ -323,7 +324,8 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   tView: TView|null;
 
   /**
-   * A function added by the {@see ɵɵStandaloneFeature} and used by the framework to create standalone injectors.
+   * A function added by the {@link ɵɵStandaloneFeature} and used by the framework to create
+   * standalone injectors.
    */
   getStandaloneInjector: ((parentInjector: EnvironmentInjector) => EnvironmentInjector | null)|null;
 

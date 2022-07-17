@@ -13,6 +13,7 @@ import { ElementRef } from '@angular/core';
 import { EnvironmentInjector } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import * as i0 from '@angular/core';
+import { ImportedNgModuleProviders } from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
 import { Location as Location_2 } from '@angular/common';
@@ -85,6 +86,8 @@ export class ActivationEnd {
     snapshot: ActivatedRouteSnapshot;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.ActivationEnd;
 }
 
 // @public
@@ -95,6 +98,8 @@ export class ActivationStart {
     snapshot: ActivatedRouteSnapshot;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.ActivationStart;
 }
 
 // @public
@@ -131,6 +136,15 @@ export interface CanLoad {
 }
 
 // @public
+export interface CanMatch {
+    // (undocumented)
+    canMatch(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+}
+
+// @public
+export type CanMatchFn = (route: Route, segments: UrlSegment[]) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+
+// @public
 export class ChildActivationEnd {
     constructor(
     snapshot: ActivatedRouteSnapshot);
@@ -138,6 +152,8 @@ export class ChildActivationEnd {
     snapshot: ActivatedRouteSnapshot;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.ChildActivationEnd;
 }
 
 // @public
@@ -148,6 +164,8 @@ export class ChildActivationStart {
     snapshot: ActivatedRouteSnapshot;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.ChildActivationStart;
 }
 
 // @public
@@ -161,10 +179,17 @@ export class ChildrenOutletContexts {
     onOutletDeactivated(): Map<string, OutletContext>;
     // (undocumented)
     onOutletReAttached(contexts: Map<string, OutletContext>): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<ChildrenOutletContexts, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<ChildrenOutletContexts>;
 }
 
 // @public
 export function convertToParamMap(params: Params): ParamMap;
+
+// @public
+export function createUrlTreeFromSnapshot(relativeTo: ActivatedRouteSnapshot, commands: any[], queryParams?: Params | null, fragment?: string | null): UrlTree;
 
 // @public
 export type Data = {
@@ -193,8 +218,44 @@ export class DefaultUrlSerializer implements UrlSerializer {
 export type DetachedRouteHandle = {};
 
 // @public
-type Event_2 = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll;
+type Event_2 = RouterEvent | NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized | GuardsCheckStart | GuardsCheckEnd | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll | ResolveStart | ResolveEnd;
 export { Event_2 as Event }
+
+// @public
+export const enum EventType {
+    // (undocumented)
+    ActivationEnd = 14,
+    // (undocumented)
+    ActivationStart = 13,
+    // (undocumented)
+    ChildActivationEnd = 12,
+    // (undocumented)
+    ChildActivationStart = 11,
+    // (undocumented)
+    GuardsCheckEnd = 8,
+    // (undocumented)
+    GuardsCheckStart = 7,
+    // (undocumented)
+    NavigationCancel = 2,
+    // (undocumented)
+    NavigationEnd = 1,
+    // (undocumented)
+    NavigationError = 3,
+    // (undocumented)
+    NavigationStart = 0,
+    // (undocumented)
+    ResolveEnd = 6,
+    // (undocumented)
+    ResolveStart = 5,
+    // (undocumented)
+    RouteConfigLoadEnd = 10,
+    // (undocumented)
+    RouteConfigLoadStart = 9,
+    // (undocumented)
+    RoutesRecognized = 4,
+    // (undocumented)
+    Scroll = 15
+}
 
 // @public
 export interface ExtraOptions {
@@ -230,6 +291,8 @@ export class GuardsCheckEnd extends RouterEvent {
     // (undocumented)
     toString(): string;
     // (undocumented)
+    readonly type = EventType.GuardsCheckEnd;
+    // (undocumented)
     urlAfterRedirects: string;
 }
 
@@ -244,6 +307,8 @@ export class GuardsCheckStart extends RouterEvent {
     state: RouterStateSnapshot;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.GuardsCheckStart;
     // (undocumented)
     urlAfterRedirects: string;
 }
@@ -290,11 +355,22 @@ export class NavigationCancel extends RouterEvent {
     constructor(
     id: number,
     url: string,
-    reason: string);
-    // (undocumented)
+    reason: string,
+    code?: NavigationCancellationCode | undefined);
+    readonly code?: NavigationCancellationCode | undefined;
     reason: string;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.NavigationCancel;
+}
+
+// @public
+export const enum NavigationCancellationCode {
+    GuardRejected = 3,
+    NoDataFromResolver = 2,
+    Redirect = 0,
+    SupersededByNewNavigation = 1
 }
 
 // @public
@@ -306,6 +382,8 @@ export class NavigationEnd extends RouterEvent {
     // (undocumented)
     toString(): string;
     // (undocumented)
+    readonly type = EventType.NavigationEnd;
+    // (undocumented)
     urlAfterRedirects: string;
 }
 
@@ -314,11 +392,15 @@ export class NavigationError extends RouterEvent {
     constructor(
     id: number,
     url: string,
-    error: any);
+    error: any,
+    target?: RouterStateSnapshot | undefined);
     // (undocumented)
     error: any;
+    readonly target?: RouterStateSnapshot | undefined;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.NavigationError;
 }
 
 // @public
@@ -330,24 +412,30 @@ export class NavigationStart extends RouterEvent {
     constructor(
     id: number,
     url: string,
-    navigationTrigger?: 'imperative' | 'popstate' | 'hashchange',
+    navigationTrigger?: NavigationTrigger,
     restoredState?: {
         [k: string]: any;
         navigationId: number;
     } | null);
-    navigationTrigger?: 'imperative' | 'popstate' | 'hashchange';
+    navigationTrigger?: NavigationTrigger;
     restoredState?: {
         [k: string]: any;
         navigationId: number;
     } | null;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.NavigationStart;
 }
 
 // @public
 export class NoPreloading implements PreloadingStrategy {
     // (undocumented)
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NoPreloading, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<NoPreloading>;
 }
 
 // @public
@@ -383,6 +471,10 @@ export type Params = {
 export class PreloadAllModules implements PreloadingStrategy {
     // (undocumented)
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<PreloadAllModules, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<PreloadAllModules>;
 }
 
 // @public
@@ -423,6 +515,8 @@ export class ResolveEnd extends RouterEvent {
     // (undocumented)
     toString(): string;
     // (undocumented)
+    readonly type = EventType.ResolveEnd;
+    // (undocumented)
     urlAfterRedirects: string;
 }
 
@@ -438,6 +532,8 @@ export class ResolveStart extends RouterEvent {
     // (undocumented)
     toString(): string;
     // (undocumented)
+    readonly type = EventType.ResolveStart;
+    // (undocumented)
     urlAfterRedirects: string;
 }
 
@@ -447,6 +543,7 @@ export interface Route {
     canActivateChild?: any[];
     canDeactivate?: any[];
     canLoad?: any[];
+    canMatch?: Array<Type<CanMatch> | InjectionToken<CanMatchFn>>;
     children?: Routes;
     component?: Type<any>;
     data?: Data;
@@ -456,7 +553,7 @@ export interface Route {
     outlet?: string;
     path?: string;
     pathMatch?: 'prefix' | 'full';
-    providers?: Provider[];
+    providers?: Array<Provider | ImportedNgModuleProviders>;
     redirectTo?: string;
     resolve?: ResolveData;
     runGuardsAndResolvers?: RunGuardsAndResolvers;
@@ -471,6 +568,8 @@ export class RouteConfigLoadEnd {
     route: Route;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.RouteConfigLoadEnd;
 }
 
 // @public
@@ -481,6 +580,8 @@ export class RouteConfigLoadStart {
     route: Route;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.RouteConfigLoadStart;
 }
 
 // @public
@@ -569,7 +670,7 @@ export class RouterLink implements OnChanges {
     // (undocumented)
     get urlTree(): UrlTree | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLink, ":not(a):not(area)[routerLink]", never, { "queryParams": "queryParams"; "fragment": "fragment"; "queryParamsHandling": "queryParamsHandling"; "preserveFragment": "preserveFragment"; "skipLocationChange": "skipLocationChange"; "replaceUrl": "replaceUrl"; "state": "state"; "relativeTo": "relativeTo"; "routerLink": "routerLink"; }, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLink, ":not(a):not(area)[routerLink]", never, { "queryParams": "queryParams"; "fragment": "fragment"; "queryParamsHandling": "queryParamsHandling"; "preserveFragment": "preserveFragment"; "skipLocationChange": "skipLocationChange"; "replaceUrl": "replaceUrl"; "state": "state"; "relativeTo": "relativeTo"; "routerLink": "routerLink"; }, {}, never, never, true>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterLink, [null, null, { attribute: "tabindex"; }, null, null]>;
 }
@@ -597,7 +698,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
         exact: boolean;
     } | IsActiveMatchOptions;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActiveOptions": "routerLinkActiveOptions"; "ariaCurrentWhenActive": "ariaCurrentWhenActive"; "routerLinkActive": "routerLinkActive"; }, { "isActiveChange": "isActiveChange"; }, ["links", "linksWithHrefs"], never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActiveOptions": "routerLinkActiveOptions"; "ariaCurrentWhenActive": "ariaCurrentWhenActive"; "routerLinkActive": "routerLinkActive"; }, { "isActiveChange": "isActiveChange"; }, ["links", "linksWithHrefs"], never, true>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterLinkActive, [null, null, null, null, { optional: true; }, { optional: true; }]>;
 }
@@ -629,7 +730,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     // (undocumented)
     get urlTree(): UrlTree | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkWithHref, "a[routerLink],area[routerLink]", never, { "target": "target"; "queryParams": "queryParams"; "fragment": "fragment"; "queryParamsHandling": "queryParamsHandling"; "preserveFragment": "preserveFragment"; "skipLocationChange": "skipLocationChange"; "replaceUrl": "replaceUrl"; "state": "state"; "relativeTo": "relativeTo"; "routerLink": "routerLink"; }, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkWithHref, "a[routerLink],area[routerLink]", never, { "target": "target"; "queryParams": "queryParams"; "fragment": "fragment"; "queryParamsHandling": "queryParamsHandling"; "preserveFragment": "preserveFragment"; "skipLocationChange": "skipLocationChange"; "replaceUrl": "replaceUrl"; "state": "state"; "relativeTo": "relativeTo"; "routerLink": "routerLink"; }, {}, never, never, true>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterLinkWithHref, never>;
 }
@@ -644,7 +745,7 @@ export class RouterModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<RouterModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<RouterModule, [typeof i1.RouterOutlet, typeof i2.RouterLink, typeof i2.RouterLinkWithHref, typeof i3.RouterLinkActive, typeof i4.ɵEmptyOutletComponent], never, [typeof i1.RouterOutlet, typeof i2.RouterLink, typeof i2.RouterLinkWithHref, typeof i3.RouterLinkActive, typeof i4.ɵEmptyOutletComponent]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<RouterModule, never, [typeof i1.RouterOutlet, typeof i2.RouterLink, typeof i2.RouterLinkWithHref, typeof i3.RouterLinkActive, typeof i4.ɵEmptyOutletComponent], [typeof i1.RouterOutlet, typeof i2.RouterLink, typeof i2.RouterLinkWithHref, typeof i3.RouterLinkActive, typeof i4.ɵEmptyOutletComponent]>;
 }
 
 // @public
@@ -675,7 +776,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // (undocumented)
     ngOnInit(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], {}, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], {}, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, true>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterOutlet, [null, null, { attribute: "name"; }, null, null]>;
 }
@@ -685,7 +786,7 @@ export interface RouterOutletContract {
     activatedRoute: ActivatedRoute | null;
     activatedRouteData: Data;
     activateEvents?: EventEmitter<unknown>;
-    activateWith(activatedRoute: ActivatedRoute, environmnetInjector: EnvironmentInjector | null): void;
+    activateWith(activatedRoute: ActivatedRoute, environmentInjector: EnvironmentInjector | null): void;
     // @deprecated
     activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
     attach(ref: ComponentRef<unknown>, activatedRoute: ActivatedRoute): void;
@@ -745,6 +846,8 @@ export class RoutesRecognized extends RouterEvent {
     // (undocumented)
     toString(): string;
     // (undocumented)
+    readonly type = EventType.RoutesRecognized;
+    // (undocumented)
     urlAfterRedirects: string;
 }
 
@@ -765,6 +868,8 @@ export class Scroll {
     readonly routerEvent: NavigationEnd;
     // (undocumented)
     toString(): string;
+    // (undocumented)
+    readonly type = EventType.Scroll;
 }
 
 // @public
@@ -841,6 +946,10 @@ export class UrlSegmentGroup {
 export abstract class UrlSerializer {
     abstract parse(url: string): UrlTree;
     abstract serialize(tree: UrlTree): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<UrlSerializer, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<UrlSerializer>;
 }
 
 // @public

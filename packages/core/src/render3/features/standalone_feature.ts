@@ -7,7 +7,7 @@
  */
 import {ɵɵinject as inject} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable as defineInjectable} from '../../di/interface/defs';
-import {importProvidersFrom} from '../../di/provider_collection';
+import {internalImportProvidersFrom} from '../../di/provider_collection';
 import {EnvironmentInjector} from '../../di/r3_injector';
 import {OnDestroy} from '../../interface/lifecycle_hooks';
 import {ComponentDef} from '../interfaces/definition';
@@ -19,7 +19,7 @@ import {createEnvironmentInjector} from '../ng_module_ref';
  * collected from the imports graph rooted at a given standalone component.
  */
 class StandaloneService implements OnDestroy {
-  cachedInjectors = new Map<ComponentDef<unknown>, EnvironmentInjector|null>();
+  cachedInjectors = new Map<string, EnvironmentInjector|null>();
 
   constructor(private _injector: EnvironmentInjector) {}
 
@@ -28,16 +28,16 @@ class StandaloneService implements OnDestroy {
       return null;
     }
 
-    if (!this.cachedInjectors.has(componentDef)) {
-      const providers = importProvidersFrom(componentDef.type);
+    if (!this.cachedInjectors.has(componentDef.id)) {
+      const providers = internalImportProvidersFrom(false, componentDef.type);
       const standaloneInjector = providers.length > 0 ?
           createEnvironmentInjector(
-              providers, this._injector, `Standalone[${componentDef.type.name}]`) :
+              [providers], this._injector, `Standalone[${componentDef.type.name}]`) :
           null;
-      this.cachedInjectors.set(componentDef, standaloneInjector);
+      this.cachedInjectors.set(componentDef.id, standaloneInjector);
     }
 
-    return this.cachedInjectors.get(componentDef)!;
+    return this.cachedInjectors.get(componentDef.id)!;
   }
 
   ngOnDestroy() {
@@ -61,9 +61,9 @@ class StandaloneService implements OnDestroy {
 }
 
 /**
- * A feature that acts as a setup code for the {@see StandaloneService}.
+ * A feature that acts as a setup code for the {@link StandaloneService}.
  *
- * The most important responsaibility of this feature is to expose the "getStandaloneInjector"
+ * The most important responsibility of this feature is to expose the "getStandaloneInjector"
  * function (an entry points to a standalone injector creation) on a component definition object. We
  * go through the features infrastructure to make sure that the standalone injector creation logic
  * is tree-shakable and not included in applications that don't use standalone components.

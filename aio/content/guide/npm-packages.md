@@ -123,9 +123,9 @@ The following `devDependencies` are provided in the default `package.json` file 
 | [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli) | The Angular build tools.                                                                        |
 | [`@angular/cli`](https://github.com/angular/angular-cli)                  | The Angular CLI tools.                                                                          |
 | `@angular/compiler-cli`                                                   | The Angular compiler, which is invoked by the Angular CLI's `ng build` and `ng serve` commands. |
-| `@types/&hellip; `                                                        | TypeScript definition files for 3rd party libraries such as Jasmine and Node.js.                |
-| `jasmine/&hellip; `                                                       | Packages to support the [Jasmine](https://jasmine.github.io) test library.                      |
-| `karma/&hellip; `                                                         | Packages to support the [karma](https://www.npmjs.com/package/karma) test runner.               |
+| `@types/... `                                                             | TypeScript definition files for 3rd party libraries such as Jasmine and Node.js.                |
+| `jasmine/... `                                                            | Packages to support the [Jasmine](https://jasmine.github.io) test library.                      |
+| `karma/... `                                                              | Packages to support the [karma](https://www.npmjs.com/package/karma) test runner.               |
 | [`typescript`](https://www.npmjs.com/package/typescript)                  | The TypeScript language server, including the *tsc* TypeScript compiler.                        |
 
 ## Related information

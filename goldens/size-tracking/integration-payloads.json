@@ -2,7 +2,7 @@
   "cli-hello-world": {
     "uncompressed": {
       "runtime": 1083,
-      "main": 126738,
+      "main": 125830,
       "polyfills": 33824
     }
   },
@@ -12,50 +12,50 @@
       "main": "TODO(i): temporarily increase the payload size limit from 17597 - this needs to be investigate further what caused the increase.",
       "main": "Likely there is a missing PURE annotation https://github.com/angular/angular/pull/43344",
       "main": "Tracking issue: https://github.com/angular/angular/issues/43568",
-      "main": 20826,
+      "main": 23891,
       "polyfills": 33848
     }
   },
   "cli-hello-world-ivy-compat": {
     "uncompressed": {
       "runtime": 1102,
-      "main": 133348,
+      "main": 132816,
       "polyfills": 33957
     }
   },
   "cli-hello-world-ivy-i18n": {
     "uncompressed": {
       "runtime": 926,
-      "main": 125862,
+      "main": 125487,
       "polyfills": 35252
     }
   },
   "cli-hello-world-lazy": {
     "uncompressed": {
       "runtime": 2835,
-      "main": 237828,
+      "main": 238214,
       "polyfills": 33842,
-      "src_app_lazy_lazy_module_ts": 795
+      "src_app_lazy_lazy_module_ts": 780
     }
   },
   "forms": {
     "uncompressed": {
       "runtime": 1063,
-      "main": 158922,
+      "main": 158224,
       "polyfills": 33804
     }
   },
   "animations": {
     "uncompressed": {
       "runtime": 1070,
-      "main": 157739,
+      "main": 157064,
       "polyfills": 33814
     }
   },
   "standalone-bootstrap": {
     "uncompressed": {
       "runtime": 1090,
-      "main": 87940,
+      "main": 83515,
       "polyfills": 33945
     }
   },

@@ -176,6 +176,9 @@ export class CheckboxRequiredValidator extends RequiredValidator {
 export const COMPOSITION_BUFFER_MODE: InjectionToken<boolean>;
 
 // @public
+export type ControlConfig<T> = [T | FormControlState<T>, (ValidatorFn | (ValidatorFn[]))?, (AsyncValidatorFn | AsyncValidatorFn[])?];
+
+// @public
 export abstract class ControlContainer extends AbstractControlDirective {
     get formDirective(): Form | null;
     name: string | number | null;
@@ -276,16 +279,21 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
 
 // @public
 export class FormBuilder {
-    array<T>(controls: Array<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray<ɵElement<T>>;
-    // (undocumented)
+    array<T>(controls: Array<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray<ɵElement<T, null>>;
+    // @deprecated (undocumented)
     control<T>(formState: T | FormControlState<T>, opts: FormControlOptions & {
         initialValueIsDefault: true;
     }): FormControl<T>;
     // (undocumented)
-    control<T>(formState: T | FormControlState<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl<T | null>;
+    control<T>(formState: T | FormControlState<T>, opts: FormControlOptions & {
+        nonNullable: true;
+    }): FormControl<T>;
+    // @deprecated (undocumented)
+    control<T>(formState: T | FormControlState<T>, opts: FormControlOptions, asyncValidator: AsyncValidatorFn | AsyncValidatorFn[]): FormControl<T | null>;
     // (undocumented)
+    control<T>(formState: T | FormControlState<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl<T | null>;
     group<T extends {}>(controls: T, options?: AbstractControlOptions | null): FormGroup<{
-        [K in keyof T]: ɵElement<T[K]>;
+        [K in keyof T]: ɵElement<T[K], null>;
     }>;
     // @deprecated
     group(controls: {
@@ -293,6 +301,10 @@ export class FormBuilder {
     }, options: {
         [key: string]: any;
     }): FormGroup;
+    get nonNullable(): NonNullableFormBuilder;
+    record<T>(controls: {
+        [key: string]: T;
+    }, options?: AbstractControlOptions | null): FormRecord<ɵElement<T, null>>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormBuilder, never>;
     // (undocumented)
@@ -374,7 +386,9 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
 // @public
 export interface FormControlOptions extends AbstractControlOptions {
+    // @deprecated (undocumented)
     initialValueIsDefault?: boolean;
+    nonNullable?: boolean;
 }
 
 // @public
@@ -493,13 +507,13 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
     static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupName, [{ optional: true; host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }]>;
 }
 
-// @public (undocumented)
-export class FormRecord<TControl extends AbstractControl<ɵValue<TControl>, ɵRawValue<TControl>> = AbstractControl> extends FormGroup<{
+// @public
+export class FormRecord<TControl extends AbstractControl = AbstractControl> extends FormGroup<{
     [key: string]: TControl;
 }> {
 }
 
-// @public
+// @public (undocumented)
 export interface FormRecord<TControl> {
     addControl(name: string, control: TControl, options?: {
         emitEvent?: boolean;
@@ -706,6 +720,22 @@ export class NgSelectOption implements OnDestroy {
 }
 
 // @public
+export abstract class NonNullableFormBuilder {
+    abstract array<T>(controls: Array<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray<ɵElement<T, never>>;
+    abstract control<T>(formState: T | FormControlState<T>, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl<T>;
+    abstract group<T extends {}>(controls: T, options?: AbstractControlOptions | null): FormGroup<{
+        [K in keyof T]: ɵElement<T[K], never>;
+    }>;
+    abstract record<T>(controls: {
+        [key: string]: T;
+    }, options?: AbstractControlOptions | null): FormRecord<ɵElement<T, never>>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NonNullableFormBuilder, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<NonNullableFormBuilder>;
+}
+
+// @public
 export class NumberValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
     registerOnChange(fn: (_: number | null) => void): void;
     writeValue(value: number): void;
@@ -811,11 +841,8 @@ export const UntypedFormArray: UntypedFormArrayCtor;
 
 // @public
 export class UntypedFormBuilder extends FormBuilder {
-    // (undocumented)
     array(controlsConfig: any[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): UntypedFormArray;
-    // (undocumented)
     control(formState: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): UntypedFormControl;
-    // (undocumented)
     group(controlsConfig: {
         [key: string]: any;
     }, options?: AbstractControlOptions | null): UntypedFormGroup;

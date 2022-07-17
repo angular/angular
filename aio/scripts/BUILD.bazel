@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load("//tools:defaults.bzl", "nodejs_binary")
 
 package(default_visibility = ["//visibility:public"])
 

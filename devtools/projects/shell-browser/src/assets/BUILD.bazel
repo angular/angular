@@ -6,5 +6,8 @@ filegroup(
         "*.svg",
         "**/*.png",
         "*.css",
-    ]),
+    ]) + [
+        "//third_party/github.com/google/material-design-icons:material-design-icons",
+        "//third_party/github.com/google/material-design-icons:LICENSE",
+    ],
 )

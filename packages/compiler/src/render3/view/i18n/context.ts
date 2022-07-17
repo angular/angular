@@ -35,7 +35,7 @@ function setupRegistry() {
  *
  * @param index Instruction index of i18nStart, which initiates this context
  * @param ref Reference to a translation const that represents the content if thus context
- * @param level Nestng level defined for child contexts
+ * @param level Nesting level defined for child contexts
  * @param templateIndex Instruction index of a template which this context belongs to
  * @param meta Meta information (id, meaning, description, etc) associated with this context
  */
@@ -159,7 +159,7 @@ export class I18nContext {
         const isTemplateTag = key.endsWith('NG-TEMPLATE');
         if (isTemplateTag) {
           // current template's content is placed before or after
-          // parent template tag, depending on the open/close atrribute
+          // parent template tag, depending on the open/close attribute
           phs.splice(tmplIdx + (isCloseTag ? 0 : 1), 0, ...values);
         } else {
           const idx = isCloseTag ? values.length - 1 : 0;

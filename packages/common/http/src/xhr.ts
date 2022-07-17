@@ -221,7 +221,7 @@ export class HttpXhrBackend implements HttpBackend {
       // The sentHeaders flag tracks whether the HttpResponseHeaders event
       // has been sent on the stream. This is necessary to track if progress
       // is enabled since the event will be sent on only the first download
-      // progerss event.
+      // progress event.
       let sentHeaders = false;
 
       // The download progress event handler, which is only registered if

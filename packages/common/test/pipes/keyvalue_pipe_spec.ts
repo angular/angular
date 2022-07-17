@@ -7,8 +7,10 @@
  */
 
 import {KeyValuePipe} from '@angular/common';
+import {JsonPipe} from '@angular/common/public_api';
 import {defaultComparator} from '@angular/common/src/pipes/keyvalue_pipe';
-import {ɵdefaultKeyValueDiffers as defaultKeyValueDiffers} from '@angular/core';
+import {Component, ɵdefaultKeyValueDiffers as defaultKeyValueDiffers} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 
 describe('KeyValuePipe', () => {
   it('should return null when given null', () => {
@@ -149,6 +151,24 @@ describe('KeyValuePipe', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       expect(pipe.transform(value)).toEqual(null);
     });
+  });
+
+  it('should be available as a standalone pipe', () => {
+    @Component({
+      selector: 'test-component',
+      imports: [KeyValuePipe, JsonPipe],
+      template: '{{ value | keyvalue | json }}',
+      standalone: true,
+    })
+    class TestComponent {
+      value = {'b': 1, 'a': 2};
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+
+    const content = fixture.nativeElement.textContent;
+    expect(content.replace(/\s/g, '')).toBe('[{"key":"a","value":2},{"key":"b","value":1}]');
   });
 });
 

@@ -145,13 +145,11 @@ describe('preview-server', () => {
       ]);
     });
 
-    it('should respond with 500 if the CircleCI API request errors', async () => {
+    it('should respond with 500 if any of the CircleCI API requests errors', async () => {
       await curl(payload(BuildNums.BUILD_INFO_ERROR)).then(h.verifyResponse(500));
       await curl(payload(BuildNums.BUILD_INFO_404)).then(h.verifyResponse(500));
-    });
-
-    it('should respond with 204 if the build on CircleCI failed', async () => {
-      await curl(payload(BuildNums.BUILD_INFO_BUILD_FAILED)).then(h.verifyResponse(204));
+      await curl(payload(BuildNums.PIPELINE_INFO_ERROR)).then(h.verifyResponse(500));
+      await curl(payload(BuildNums.PIPELINE_INFO_404)).then(h.verifyResponse(500));
     });
 
     it('should respond with 500 if the github org from CircleCI does not match what is configured', async () => {

@@ -320,7 +320,7 @@ The following *AfterContent* hooks take action based on changing values in a *co
 
 <a id="no-unidirectional-flow-worries"></a>
 
-<div class="alert is-helpful">
+<div class="callout is-helpful">
 
 <header>No need to wait for content updates</header>
 
@@ -329,7 +329,7 @@ There's no need to [delay the update to ensure proper rendering](#wait-a-tick "D
 
 Angular calls both *AfterContent* hooks before calling either of the *AfterView* hooks.
 Angular completes composition of the projected content *before* finishing the composition of this component's view.
-There is a small window between the `AfterContent&hellip;` and `AfterView&hellip;` hooks that lets you modify the host view.
+There is a small window between the `AfterContent...` and `AfterView...` hooks that lets you modify the host view.
 
 </div>
 

@@ -401,7 +401,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       // so that a component can use DI tokens provided in MgModules. For this reason, we can not
       // rely on the provided injector, since it might be detached from the DI tree (for example, if
       // it was created via `Injector.create` without specifying a parent injector, or if an
-      // injector is retrieved from an `NgModuleRef` created via `createNgModuleRef` using an
+      // injector is retrieved from an `NgModuleRef` created via `createNgModule` using an
       // NgModule outside of a module tree). Instead, we always use `ViewContainerRef`'s parent
       // injector, which is normally connected to the DI tree, which includes module injector
       // subtree.

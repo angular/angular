@@ -1,6 +1,6 @@
 # Angular Roadmap
 
-<p class="roadmap-last-updated">Last updated: 2022-04-01</p>
+<p class="roadmap-last-updated">Last updated: 2022-05-23</p>
 
 Angular receives a large number of feature requests, both from inside Google and from the broader open-source community.
 At the same time, our list of projects contains plenty of maintenance tasks, code refactorings, and potential performance improvements.
@@ -14,37 +14,43 @@ For example, features are released in the next minor after they are complete, or
 
 ## In progress
 
-### Rollout strict typings for `@angular/forms`
-
-In Q4 2021 we designed a solution for introducing strict typings for forms and in Q1 2022 we concluded the corresponding [request for comments](https://github.com/angular/angular/discussions/44513).
-Currently, we are implementing a rollout strategy with an automated migration step that will enable the improvements for existing projects.
-We are first testing the solution with more than 2,500 projects at Google to ensure a smooth migration path for the external community.
-
 ### Implement APIs for optional NgModules
 
-In the process of making Angular simpler, we are working on introducing APIs that allow developers to initialize applications, instantiate components, and use the router without NgModules.
-We will share an RFC to start a design discussion with the community, followed by a series of pull request with the implementation.
-In the first part of this project we finalized the design of standalone components, directives, and pipes \([RFC](https://github.com/angular/angular/discussions/43784)\).
+In the process of making Angular simpler, we are working on introducing APIs that allow developers to initialize applications, instantiate components, and use the router without NgModules. Angular v14 introduces developer preview of the APIs for standalone components, directives, and pipes. In the next few quarters we'll collect feedback from developers and finalize the project making the APIs stable. As the next step we will work on improving use cases such as `TestBed`, Angular elements, etc.
 
 ### Improve image performance
 
-The [Aurora](https://web.dev/introducing-aurora/) and the Angular teams have started a collaboration to design and implement a new directive that would help Angular users to leverage various image optimization techniques. We are in the process of initial research and design.
+The [Aurora](https://web.dev/introducing-aurora/) and the Angular teams are working on the implementation of an image directive that aims to improve [Core Web Vitals](https://web.dev/vitals). Currently, the project is in a prototyping phase and the teams are validating the image directive with partners.
 
 ### Investigate micro frontend architecture for scalable development processes
 
-We conducted a series of 40 interviews to understand the requirements for micro-frontend architecture of the community.
-We will follow up with a broader community survey and share analysis of the results publicly.
+We conducted a series of 40 interviews to understand the requirements for micro-frontend architecture of the community. We followed up with a broader community survey. As the next step, we'll share analysis of the results publicly.
 
 ### Investigate modern bundles
 
 To improve development experience by speeding up build times research modern bundles.
-As part of the project experiment with [esbuild](https://esbuild.github.io) and other open source solutions, compare them with the state of the art tooling in Angular CLI, and report the findings.
+As part of the project experiment with [esbuild](https://esbuild.github.io) and other open source solutions, compare them with the state of the art tooling in Angular CLI, and report the findings. In Angular v14 we're releasing an [experimental support](https://github.com/angular/angular-cli/pull/22995) for esbuild. Next, the team will focus on validating the new prototype and implementing watch and Sass support.
+
+### Modern CSS
+
+The Web ecosystem evolves constantly and we want to reflect the latest modern standards in Angular. In this project we aim to provide guidelines on using modern CSS features in Angular to ensure developers follow best practices for layout, styling, etc.
+
+### Support adding directives to host elements
+
+A [long-standing feature request](https://github.com/angular/angular/issues/8785) is to add the ability to add directives to host elements.
+The feature lets developers augment their own components with additional behaviors without using inheritance.
+The project requires substantial effort in terms of the definition of APIs, semantics, and implementation.
+
+### Better stack traces
+
+The Angular and the Chrome DevTools are working together to enable more readable stack traces for error messages.
 
 ### New CDK primitives
 
-We are working on new CDK primitives to facilitate creating custom components based on the WAI-ARIA design patterns for [Menu &amp; Menubar](https://www.w3.org/TR/wai-aria-practices-1.1/#menu), [Listbox](https://www.w3.org/TR/wai-aria-practices-1.1/#Listbox), [Combobox](https://www.w3.org/TR/wai-aria-practices-1.1/#combobox), and [Dialog](https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_modal).
+We are working on new CDK primitives to facilitate creating custom components based on the WAI-ARIA design patterns for [Listbox](https://www.w3.org/TR/wai-aria-practices-1.1/#Listbox) and [Combobox](https://www.w3.org/TR/wai-aria-practices-1.1/#combobox). Angular v14 introduced stable [menu and dialog primitives](https://material.angular.io/cdk/categories) as part of this project.
 
 ### Enhanced Angular Material components by integrating MDC Web
+
 [MDC Web](https://material.io/develop/web) is a library created by the Google Material Design team that provides reusable primitives for building Material Design components.
 The Angular team is incorporating these primitives into Angular Material.
 Using MDC Web aligns Angular Material more closely with the Material Design specification, expand accessibility, improve component quality, and improve the velocity of our team.
@@ -55,9 +61,7 @@ We are evaluating components in Angular Material against accessibility standards
 
 ### Documentation refactoring
 
-Ensure all existing documentation fits into a consistent set of content types.
-Update excessive use of tutorial-style documentation into independent topics.
-We want to ensure the content outside the main tutorials is self-sufficient without being tightly coupled to a series of guides.
+Ensure all existing documentation fits into a consistent set of content types. Update excessive use of tutorial-style documentation into independent topics. We want to ensure the content outside the main tutorials is self-sufficient without being tightly coupled to a series of guides. In Q2 2022, we refactored the [template content](https://github.com/angular/angular/pull/45897). The next steps are to introduce better structure for components and dependency injection.
 
 ## Future
 
@@ -80,28 +84,24 @@ Additionally, this lets us take advantage of built-in async/await syntax, which 
 
 Distributing the Angular compiler as a plugin of the TypeScript compiler will substantially improve build performance for developers and reduce maintenance costs.
 
-### Support adding directives to host elements
-
-A long-standing feature request is to add the ability to add directives to host elements.
-The feature lets developers augment their own components with additional behaviors without using inheritance.
-The project requires substantial effort in terms of the definition of APIs, semantics, and implementation.
-
 ### Ergonomic component level code-splitting APIs
 
 A common problem with web applications is their slow initial load time.
 A way to improve it is to apply more granular code-splitting on a component level.
 To encourage this practice, we will be working on more ergonomic code-splitting APIs.
 
-### Publish guides on advanced concepts
-
-Develop and publish an in-depth guide on change detection.
-Develop content for performance profiling of Angular applications.
-Cover how change detection interacts with Zone.js and explain when it gets triggered, how to profile its duration, as well as common practices for performance optimization.
-
 ### Ensure smooth adoption for future RxJS changes (version 8 and beyond)
 
 We want to ensure Angular developers are taking advantage of the latest capabilities of RxJS and have a smooth transition to the next major releases of the framework.
 For this purpose, we will explore and document the scope of the changes in v7 and beyond RxJS, and plan an update strategy.
+
+### Introduce dependency injection debugging APIs
+
+To improve the debugging utilities of Angular and Angular DevTools, we'll work on APIs that provide access the dependency injection runtime. As part of the project we'll expose debugging methods that allow us to explore the injector hierarchy and the dependencies across their associated providers.
+
+### Support two-dimensional drag-and-drop
+
+As part of this project we'd like to implement mixed orientation support for the Angular CDK drag and drop. This is one of the most highly [requested features](https://github.com/angular/components/issues/13372) in the repository.
 
 <details class="completed-details" open="true">
   <summary>
@@ -113,6 +113,29 @@ For this purpose, we will explore and document the scope of the changes in v7 an
     </span>
   </summary>
   <div class="details-content">
+
+
+### Allow binding to protected fields in templates
+
+*Completed Q2 2022*
+
+To improve the encapsulation of Angular components we enabled binding to protected members of the component instance. This way you'll no longer have to expose a field or a method as public to use it inside your templates.
+
+### Publish guides on advanced concepts
+
+*Completed Q2 2022*
+
+Develop and publish an in-depth guide on change detection.
+Develop content for performance profiling of Angular applications.
+Cover how change detection interacts with Zone.js and explain when it gets triggered, how to profile its duration, as well as common practices for performance optimization.
+
+### Rollout strict typings for `@angular/forms`
+
+*Completed Q2 2022*
+
+In Q4 2021 we designed a solution for introducing strict typings for forms and in Q1 2022 we concluded the corresponding [request for comments](https://github.com/angular/angular/discussions/44513).
+Currently, we are implementing a rollout strategy with an automated migration step that will enable the improvements for existing projects.
+We are first testing the solution with more than 2,500 projects at Google to ensure a smooth migration path for the external community.
 
 ### Remove legacy [View Engine](guide/glossary#ve)
 

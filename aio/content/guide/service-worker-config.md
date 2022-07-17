@@ -21,7 +21,7 @@ All file paths must begin with `/`, which corresponds to the deployment director
 
 <a id="glob-patterns"></a>
 
-Unless otherwise commented, patterns use a limited glob format:
+Unless otherwise commented, patterns use a **limited*** glob format that internally will be converted into regex:
 
 | Glob formats | Details |
 |:---          |:---     |
@@ -29,6 +29,32 @@ Unless otherwise commented, patterns use a limited glob format:
 | `*`          | Matches 0 or more characters excluding `/`                                                             |
 | `?`          | Matches exactly one character excluding `/`                                                            |
 | `!` prefix   | Marks the pattern as being negative, meaning that only files that don't match the pattern are included |
+
+<div class="alert is-helpful">
+
+  **\*** Pay attention that some characters with a special meaning in a regular expression are not escaped and also the pattern is not wrapped in `^`/`$` in the internal glob to regex conversion.
+
+  *   `$` is a special character in regex that matches the end of the string and will not be automatically escaped when converting the glob pattern to a regular expression.
+      If you want to literally match the `$` character, you have to escape it yourself (with `\\$`).
+
+      <div class="alert is-important">
+
+        For example, the glob pattern `/foo/bar/$value` results in an unmatchable expression, because it is impossible to have a string that has any characters after it has ended.
+
+      </div>
+
+  *   The pattern will not be automatically wrapped in `^` and `$` when converting it to a regular expression.
+      Therefore, the patterns will partially match the request URLs.
+      If you want your patterns to match the beginning and/or end of URLs, you can add `^`/`$` yourself.
+
+      <div class="alert is-important">
+
+        For example, the glob pattern `/foo/bar/*.js` will match both `.js` and `.json` files.
+        If you want to only match `.js` files, use `/foo/bar/*.js$`.
+
+      </div>
+
+</div>
 
 Example patterns:
 

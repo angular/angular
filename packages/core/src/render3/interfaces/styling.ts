@@ -137,7 +137,7 @@ export const enum StylingRange {
   /// Next pointer mask.
   NEXT_MASK = 0x001FFFC,
 
-  // Mask to remove nagative bit. (interpret number as positive)
+  // Mask to remove negative bit. (interpret number as positive)
   UNSIGNED_MASK = 0x7FFF,
 
   /**

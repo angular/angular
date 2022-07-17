@@ -119,11 +119,11 @@ The following table provides the status for Angular versions under support.
 
 | Version | Status | Released   | Active ends | LTS ends   |
 |:---     |:---    |:---        |:---         |:---        |
-| ^13.0.0 | Active | 2021-11-04 | 2022-05-04  | 2023-05-04 |
+| ^14.0.0 | Active | 2022-06-02 | 2022-12-02  | 2023-12-02 |
+| ^13.0.0 | LTS    | 2021-11-04 | 2022-06-02  | 2023-05-04 |
 | ^12.0.0 | LTS    | 2021-05-12 | 2021-11-12  | 2022-11-12 |
-| ^11.0.0 | LTS    | 2020-11-11 | 2021-05-11  | 2022-05-11 |
 
-Angular versions v2 to v10 are no longer under support.
+Angular versions v2 to v11 are no longer under support.
 
 ### LTS fixes
 
@@ -147,7 +147,7 @@ To help ensure that you have sufficient time and a clear path to update, this is
 
 | Deprecation stages | Details |
 |:---                |:---     |
-| Announcement       | We announce deprecated APIs and features in the [change log](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log"). Deprecated APIs appear in the [documentation](api?status=deprecated) with ~~strikethrough~~. When we announce a deprecation, we also announce a recommended update path. For convenience, [Deprecations](guide/deprecations) contains a summary of deprecated APIs and features.                            |
+| Announcement       | We announce deprecated APIs and features in the [change log](https://github.com/angular/angular/blob/main/CHANGELOG.md "Angular change log"). Deprecated APIs appear in the [documentation](api?status=deprecated) with ~~strikethrough~~. When we announce a deprecation, we also announce a recommended update path. For convenience, [Deprecations](guide/deprecations) contains a summary of deprecated APIs and features.                            |
 | Deprecation period | When an API or a feature is deprecated, it is still present in the next two major releases. After that, deprecated APIs and features are candidates for removal. A deprecation can be announced in any release, but the removal of a deprecated API or feature happens only in major release. Until a deprecated API or feature is removed, it is maintained according to the LTS support policy, meaning that only critical and security issues are fixed. |
 | npm dependencies   | We only make npm dependency updates that require changes to your applications in a major release. In minor releases, we update peer dependencies by expanding the supported versions, but we do not require projects to update these dependencies until a future major version. This means that during minor Angular releases, npm dependency updates within Angular applications and libraries are optional.                                               |
 
@@ -157,19 +157,19 @@ To help ensure that you have sufficient time and a clear path to update, this is
 
 Angular is a collection of many packages, sub-projects, and tools.
 To prevent accidental use of private APIs and so that you can clearly understand what is covered by the practices described here &mdash; we document what is and is not considered our public API surface.
-For details, see [Supported Public API Surface of Angular](https://github.com/angular/angular/blob/master/docs/PUBLIC_API.md "Supported Public API Surface of Angular").
+For details, see [Supported Public API Surface of Angular](https://github.com/angular/angular/blob/main/docs/PUBLIC_API.md "Supported Public API Surface of Angular").
 
 Any changes to the public API surface are done using the versioning, support, and depreciation policies previously described.
 
-<a id="labs"></a>
+<a id="developer-preview"></a>
 
-## Angular Labs
+## Developer Preview
 
-Angular Labs is an initiative to cultivate new features and iterate on them quickly.
-Angular Labs provides a safe place for exploration and experimentation by the Angular team.
+Occasionally we introduce new APIs under the label of "Developer Preview". These are APIs that are fully functional and polished, but that we are not ready to stabilize under our normal deprecation policy.
 
-Angular Labs projects are not ready for production use, and no commitment is made to bring them to production.
-The policies and practices that are described in this document do not apply to Angular Labs projects.
+This may be because we want to gather feedback from real applications before stabilization, or because the associated documentation or migration tooling is not fully complete.
+
+The policies and practices that are described in this document do not apply to APIs marked as Developer Preview. Such APIs can change at any time, even in new patch versions of the framework. Teams should decide for themselves whether the benefits of using Developer Preview APIs are worth the risk of breaking changes outside of our normal use of semantic versioning.
 
 <!-- links -->
 

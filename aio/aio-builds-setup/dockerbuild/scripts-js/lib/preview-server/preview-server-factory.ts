@@ -120,13 +120,7 @@ export class PreviewServerFactory {
           return;
         }
 
-        const { pr, sha, org, repo, success } = await buildRetriever.getGithubInfo(buildNum);
-
-        if (!success) {
-          res.sendStatus(204);
-          logger.log(`PR:${pr}, Build:${buildNum} - Skipping preview processing because this build did not succeed.`);
-          return;
-        }
+        const { pr, sha, org, repo } = await buildRetriever.getGithubInfo(buildNum);
 
         assert(cfg.githubOrg === org,
           `Invalid webhook: expected "githubOrg" property to equal "${cfg.githubOrg}" but got "${org}".`);

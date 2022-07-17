@@ -81,10 +81,10 @@ export class ApplicationRef {
     bootstrap<C>(componentFactory: ComponentFactory<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
     readonly components: ComponentRef<any>[];
     readonly componentTypes: Type<any>[];
-    // (undocumented)
     destroy(): void;
     get destroyed(): boolean;
     detachView(viewRef: ViewRef): void;
+    get injector(): EnvironmentInjector;
     readonly isStable: Observable<boolean>;
     tick(): void;
     get viewCount(): number;
@@ -113,6 +113,13 @@ export interface AttributeDecorator {
     (name: string): any;
     // (undocumented)
     new (name: string): Attribute;
+}
+
+// @public
+export interface BootstrapOptions {
+    ngZone?: NgZone | 'zone.js' | 'noop';
+    ngZoneEventCoalescing?: boolean;
+    ngZoneRunCoalescing?: boolean;
 }
 
 // @public
@@ -181,14 +188,11 @@ export interface Component extends Directive {
     encapsulation?: ViewEncapsulation;
     // @deprecated
     entryComponents?: Array<Type<any> | any[]>;
-    // (undocumented)
     imports?: (Type<any> | any[])[];
     interpolation?: [string, string];
     moduleId?: string;
     preserveWhitespaces?: boolean;
-    // (undocumented)
     schemas?: SchemaMetadata[];
-    // (undocumented)
     standalone?: boolean;
     styles?: string[];
     styleUrls?: string[];
@@ -230,6 +234,22 @@ export abstract class ComponentFactoryResolver {
 }
 
 // @public
+export interface ComponentMirror<C> {
+    get inputs(): ReadonlyArray<{
+        readonly propName: string;
+        readonly templateName: string;
+    }>;
+    get isStandalone(): boolean;
+    get ngContentSelectors(): ReadonlyArray<string>;
+    get outputs(): ReadonlyArray<{
+        readonly propName: string;
+        readonly templateName: string;
+    }>;
+    get selector(): string;
+    get type(): Type<C>;
+}
+
+// @public
 export abstract class ComponentRef<C> {
     abstract get changeDetectorRef(): ChangeDetectorRef;
     abstract get componentType(): Type<any>;
@@ -239,6 +259,7 @@ export abstract class ComponentRef<C> {
     abstract get instance(): C;
     abstract get location(): ElementRef;
     abstract onDestroy(callback: Function): void;
+    abstract setInput(name: string, value: unknown): void;
 }
 
 // @public
@@ -261,11 +282,13 @@ export const ContentChild: ContentChildDecorator;
 // @public
 export interface ContentChildDecorator {
     (selector: ProviderToken<unknown> | Function | string, opts?: {
+        descendants?: boolean;
         read?: any;
         static?: boolean;
     }): any;
     // (undocumented)
     new (selector: ProviderToken<unknown> | Function | string, opts?: {
+        descendants?: boolean;
         read?: any;
         static?: boolean;
     }): ContentChild;
@@ -293,10 +316,21 @@ export interface ContentChildrenDecorator {
 }
 
 // @public
-export function createEnvironmentInjector(providers: Provider[], parent?: EnvironmentInjector | null, debugName?: string | null): EnvironmentInjector;
+export function createComponent<C>(component: Type<C>, options: {
+    environmentInjector: EnvironmentInjector;
+    hostElement?: Element;
+    elementInjector?: Injector;
+    projectableNodes?: Node[][];
+}): ComponentRef<C>;
 
 // @public
-export function createNgModuleRef<T>(ngModule: Type<T>, parentInjector?: Injector): NgModuleRef<T>;
+export function createEnvironmentInjector(providers: Array<Provider | ImportedNgModuleProviders>, parent: EnvironmentInjector, debugName?: string | null): EnvironmentInjector;
+
+// @public
+export function createNgModule<T>(ngModule: Type<T>, parentInjector?: Injector): NgModuleRef<T>;
+
+// @public @deprecated
+export const createNgModuleRef: typeof createNgModule;
 
 // @public
 export function createPlatform(injector: Injector): PlatformRef;
@@ -413,7 +447,6 @@ export interface Directive {
         [key: string]: any;
     };
     selector?: string;
-    // (undocumented)
     standalone?: boolean;
 }
 
@@ -453,12 +486,16 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
 export function enableProdMode(): void;
 
 // @public
+export const ENVIRONMENT_INITIALIZER: InjectionToken<() => void>;
+
+// @public
 export abstract class EnvironmentInjector implements Injector {
     // (undocumented)
     abstract destroy(): void;
     abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
     // @deprecated (undocumented)
     abstract get(token: any, notFoundValue?: any): any;
+    abstract runInContext<ReturnT>(fn: () => ReturnT): ReturnT;
 }
 
 // @public
@@ -580,7 +617,13 @@ export interface HostListenerDecorator {
 }
 
 // @public
-export function importProvidersFrom(...sources: ImportProvidersSource[]): Provider[];
+export interface ImportedNgModuleProviders {
+    // (undocumented)
+    ɵproviders: Provider[];
+}
+
+// @public
+export function importProvidersFrom(...sources: ImportProvidersSource[]): ImportedNgModuleProviders;
 
 // @public
 export type ImportProvidersSource = Type<unknown> | ModuleWithProviders<unknown> | Array<ImportProvidersSource>;
@@ -593,8 +636,19 @@ export interface Inject {
 // @public
 export const Inject: InjectDecorator;
 
-// @public
-export const inject: typeof ɵɵinject;
+// @public (undocumented)
+export function inject<T>(token: ProviderToken<T>): T;
+
+// @public @deprecated (undocumented)
+export function inject<T>(token: ProviderToken<T>, flags?: InjectFlags): T | null;
+
+// @public (undocumented)
+export function inject<T>(token: ProviderToken<T>, options: InjectOptions & {
+    optional?: false;
+}): T;
+
+// @public (undocumented)
+export function inject<T>(token: ProviderToken<T>, options: InjectOptions): T | null;
 
 // @public
 export interface Injectable {
@@ -634,7 +688,7 @@ export interface InjectDecorator {
     new (token: any): Inject;
 }
 
-// @public
+// @public @deprecated
 export enum InjectFlags {
     Default = 0,
     Host = 1,
@@ -655,6 +709,14 @@ export class InjectionToken<T> {
     toString(): string;
     // (undocumented)
     readonly ɵprov: unknown;
+}
+
+// @public
+export interface InjectOptions {
+    host?: boolean;
+    optional?: boolean;
+    self?: boolean;
+    skipSelf?: boolean;
 }
 
 // @public
@@ -679,9 +741,6 @@ export abstract class Injector {
     // (undocumented)
     static ɵprov: unknown;
 }
-
-// @public
-export const INJECTOR_INITIALIZER: InjectionToken<() => void>;
 
 // @public
 export interface InjectorType<T> extends Type<T> {
@@ -965,7 +1024,6 @@ export const PACKAGE_ROOT_URL: InjectionToken<string>;
 export interface Pipe {
     name: string;
     pure?: boolean;
-    // (undocumented)
     standalone?: boolean;
 }
 
@@ -1071,6 +1129,9 @@ export class QueryList<T> implements Iterable<T> {
     // (undocumented)
     toString(): string;
 }
+
+// @public
+export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C> | null;
 
 // @public @deprecated
 export abstract class ReflectiveInjector implements Injector {
@@ -1272,7 +1333,7 @@ export abstract class TemplateRef<C> {
 
 // @public
 export class Testability implements PublicTestability {
-    constructor(_ngZone: NgZone);
+    constructor(_ngZone: NgZone, registry: TestabilityRegistry, testabilityGetter: GetTestability);
     // @deprecated
     decreasePendingRequestCount(): number;
     findProviders(using: any, provider: string, exactMatch: boolean): any[];
@@ -1290,7 +1351,6 @@ export class Testability implements PublicTestability {
 
 // @public
 export class TestabilityRegistry {
-    constructor();
     findTestabilityInTree(elem: Node, findInAncestors?: boolean): Testability | null;
     getAllRootElements(): any[];
     getAllTestabilities(): Testability[];

@@ -10,6 +10,7 @@ import { DebugElement } from '@angular/core';
 import { DebugNode } from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';
+import { ImportedNgModuleProviders } from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { NgZone } from '@angular/core';
@@ -24,7 +25,7 @@ import { Version } from '@angular/core';
 
 // @public
 export interface ApplicationConfig {
-    providers: Provider[];
+    providers: Array<Provider | ImportedNgModuleProviders>;
 }
 
 // @public
@@ -32,7 +33,7 @@ export function bootstrapApplication(rootComponent: Type<unknown>, options?: App
 
 // @public
 export class BrowserModule {
-    constructor(parentModule: BrowserModule | null);
+    constructor(providersAlreadyPresent: boolean | null);
     static withServerTransition(params: {
         appId: string;
     }): ModuleWithProviders<BrowserModule>;
@@ -175,6 +176,9 @@ export type MetaDefinition = {
 
 // @public
 export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef;
+
+// @public
+export function provideProtractorTestingSupport(): Provider[];
 
 // @public
 export interface SafeHtml extends SafeValue {

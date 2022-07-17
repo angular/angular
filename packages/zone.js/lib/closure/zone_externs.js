@@ -179,7 +179,7 @@ Zone.prototype.cancelTask = function(task) {};
  */
 var ZoneSpec = function() {};
 /**
- * @type {!string} The name of the zone. Usefull when debugging Zones.
+ * @type {!string} The name of the zone. Useful when debugging Zones.
  */
 ZoneSpec.prototype.name;
 

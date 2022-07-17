@@ -244,56 +244,6 @@ function createDiv() {
            ]);
          });
 
-      it('should provide a warning if a non-animatable CSS property is used in the animation',
-         () => {
-           const steps = [animate(1000, style({display: 'block'}))];
-
-           expect(getValidationWarningsForAnimationSequence(steps)).toEqual([
-             'The following provided properties are not animatable: display' +
-             '\n   (see: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)'
-           ]);
-         });
-
-      it('should not provide a non-animatable warning if an animatable CSS property is used in the animation',
-         () => {
-           const steps = [animate('1.5s', style({borderRadius: '1rem'}))];
-
-           expect(getValidationWarningsForAnimationSequence(steps)).toEqual([]);
-         });
-
-      it('should provide a warning if multiple non-animatable CSS properties are used in the animation',
-         () => {
-           const steps = [
-             state('state', style({
-                     display: 'block',
-                   })),
-             style({textAlign: 'right'}), animate(1000, style({'font-family': 'sans-serif'}))
-           ];
-
-           expect(getValidationWarningsForAnimationSequence(steps)).toEqual([
-             'The following provided properties are not animatable: display, textAlign, font-family' +
-             '\n   (see: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)'
-           ]);
-         });
-
-      it('should provide a warnings if both invalid and non-animatable CSS properties are used in the animation',
-         () => {
-           const steps = [
-             state('state', style({
-                     display: 'block',
-                     abc: 123,
-                   })),
-             style({textAlign: 'right'}),
-             animate(1000, style({'font-family': 'sans-serif', xyz: 456}))
-           ];
-
-           expect(getValidationWarningsForAnimationSequence(steps)).toEqual([
-             'The following provided properties are not recognized: abc, xyz',
-             'The following provided properties are not animatable: display, textAlign, font-family' +
-                 '\n   (see: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)'
-           ]);
-         });
-
       it('should allow a vendor-prefixed property to be used in an animation sequence without throwing an error',
          () => {
            const steps = [

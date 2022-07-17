@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {animate, state, style, transition, trigger} from '@angular/animations';
 import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
-import {APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, InjectionToken, Injector, Input, LOCALE_ID, NgModule, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Type, VERSION} from '@angular/core';
+import {ANIMATION_MODULE_TYPE, APP_INITIALIZER, Compiler, Component, createPlatformFactory, CUSTOM_ELEMENTS_SCHEMA, Directive, ErrorHandler, Inject, inject as _inject, InjectionToken, Injector, Input, LOCALE_ID, NgModule, NgModuleRef, OnDestroy, Pipe, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, Sanitizer, StaticProvider, Testability, TestabilityRegistry, Type, VERSION} from '@angular/core';
 import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref';
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
-import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {inject, TestBed} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {provideAnimations, provideNoopAnimations} from '@angular/platform-browser/animations';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {bootstrapApplication} from '../../src/browser';
@@ -315,6 +316,58 @@ function bootstrap(
             'make sure it has the `@Component` decorator.';
         expect(() => bootstrapApplication(NonAnnotatedClass)).toThrowError(msg);
       });
+
+      describe('with animations', () => {
+        @Component({
+          standalone: true,
+          selector: 'hello-app',
+          template: `
+            <div
+              @myAnimation
+              (@myAnimation.start)="onStart($event)">Hello from AnimationCmp!</div>`,
+          animations: [trigger(
+              'myAnimation', [transition('void => *', [style({opacity: 1}), animate(5)])])],
+        })
+        class AnimationCmp {
+          renderer = _inject(ANIMATION_MODULE_TYPE, {optional: true}) ?? 'not found';
+          startEvent?: {};
+          onStart(event: {}) {
+            this.startEvent = event;
+          }
+        }
+
+        it('should enable animations when using provideAnimations()', async () => {
+          const appRef = await bootstrapApplication(AnimationCmp, {
+            providers: [provideAnimations()],
+          });
+          const cmp = appRef.components[0].instance;
+
+          // Wait until animation is completed.
+          await new Promise(resolve => setTimeout(resolve, 10));
+
+          expect(cmp.renderer).toBe('BrowserAnimations');
+          expect(cmp.startEvent.triggerName).toEqual('myAnimation');
+          expect(cmp.startEvent.phaseName).toEqual('start');
+
+          expect(el.innerText).toBe('Hello from AnimationCmp!');
+        });
+
+        it('should use noop animations renderer when using provideNoopAnimations()', async () => {
+          const appRef = await bootstrapApplication(AnimationCmp, {
+            providers: [provideNoopAnimations()],
+          });
+          const cmp = appRef.components[0].instance;
+
+          // Wait until animation is completed.
+          await new Promise(resolve => setTimeout(resolve, 10));
+
+          expect(cmp.renderer).toBe('NoopAnimations');
+          expect(cmp.startEvent.triggerName).toEqual('myAnimation');
+          expect(cmp.startEvent.phaseName).toEqual('start');
+
+          expect(el.innerText).toBe('Hello from AnimationCmp!');
+        });
+      });
     });
 
     it('should throw if bootstrapped Directive is not a Component', done => {
@@ -449,7 +502,9 @@ function bootstrap(
                return compiler.compileModuleAsync(AsyncModule).then(factory => {
                  expect(() => factory.create(ref.injector))
                      .toThrowError(
-                         `BrowserModule has already been loaded. If you need access to common directives such as NgIf and NgFor from a lazy loaded module, import CommonModule instead.`);
+                         'Providers from the `BrowserModule` have already been loaded. ' +
+                         'If you need access to common directives such as NgIf and NgFor, ' +
+                         'import the `CommonModule` instead.');
                });
              })
              .then(() => done(), err => done.fail(err));
@@ -577,22 +632,16 @@ function bootstrap(
       }, done.fail);
     });
 
-    it('should register each application with the testability registry', done => {
-      const refPromise1: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp, testProviders);
-      const refPromise2: Promise<ComponentRef<any>> = bootstrap(HelloRootCmp2, testProviders);
+    it('should register each application with the testability registry', async () => {
+      const ngModuleRef1: NgModuleRef<unknown> = await bootstrap(HelloRootCmp, testProviders);
+      const ngModuleRef2: NgModuleRef<unknown> = await bootstrap(HelloRootCmp2, testProviders);
 
-      Promise.all([refPromise1, refPromise2]).then((refs: ComponentRef<any>[]) => {
-        const registry = refs[0].injector.get(TestabilityRegistry);
-        const testabilities =
-            [refs[0].injector.get(Testability), refs[1].injector.get(Testability)];
+      // The `TestabilityRegistry` is provided in the "platform", so the same instance is available
+      // to both `NgModuleRef`s and it can be retrieved from any ref (we use the first one).
+      const registry = ngModuleRef1.injector.get(TestabilityRegistry);
 
-        Promise.all(testabilities).then((testabilities: Testability[]) => {
-          expect(registry.findTestabilityInTree(el)).toEqual(testabilities[0]);
-          expect(registry.findTestabilityInTree(el2)).toEqual(testabilities[1]);
-
-          done();
-        }, done.fail);
-      }, done.fail);
+      expect(registry.findTestabilityInTree(el)).toEqual(ngModuleRef1.injector.get(Testability));
+      expect(registry.findTestabilityInTree(el2)).toEqual(ngModuleRef2.injector.get(Testability));
     });
 
     it('should allow to pass schemas', done => {

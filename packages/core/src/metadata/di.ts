@@ -249,6 +249,8 @@ export interface ContentChildDecorator {
    * **Metadata Properties**:
    *
    * * **selector** - The directive type or the name used for querying.
+   * * **descendants** - If `true` (default) include all descendants of the element. If `false` then
+   * only query direct children of the element.
    * * **read** - Used to read a different token from the queried element.
    * * **static** - True to resolve query results before change detection runs,
    * false to resolve after change detection. Defaults to false.
@@ -281,9 +283,10 @@ export interface ContentChildDecorator {
    *
    * @Annotation
    */
-  (selector: ProviderToken<unknown>|Function|string, opts?: {read?: any, static?: boolean}): any;
+  (selector: ProviderToken<unknown>|Function|string,
+   opts?: {descendants?: boolean, read?: any, static?: boolean}): any;
   new(selector: ProviderToken<unknown>|Function|string,
-      opts?: {read?: any, static?: boolean}): ContentChild;
+      opts?: {descendants?: boolean, read?: any, static?: boolean}): ContentChild;
 }
 
 /**

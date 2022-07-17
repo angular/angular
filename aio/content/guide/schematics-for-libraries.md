@@ -178,7 +178,7 @@ The Schematics framework provides a file templating system, which supports both 
 The system operates on placeholders defined inside files or paths that loaded in the input `Tree`.
 It fills these in using values passed into the `Rule`.
 
-For details of these data structures and syntax, see the [Schematics README](https://github.com/angular/angular-cli/blob/master/packages/angular_devkit/schematics/README.md).
+For details of these data structures and syntax, see the [Schematics README](https://github.com/angular/angular-cli/blob/main/packages/angular_devkit/schematics/README.md).
 
 1.  Create the main file `index.ts` and add the source code for your schematic factory function.
 1.  First, import the schematics definitions you will need.
@@ -260,7 +260,7 @@ See a complete example of the following schematic rule function.
 
 <code-example header="projects/my-lib/schematics/my-service/index.ts" path="schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts"></code-example>
 
-For more information about rules and utility methods, see [Provided Rules](https://github.com/angular/angular-cli/tree/master/packages/angular_devkit/schematics#provided-rules).
+For more information about rules and utility methods, see [Provided Rules](https://github.com/angular/angular-cli/tree/main/packages/angular_devkit/schematics#provided-rules).
 
 ## Running your library schematic
 

@@ -68,7 +68,7 @@ export class Project {
       const dirPath = fs.dirname(filePath);
       fs.ensureDir(dirPath);
       fs.writeFile(filePath, contents);
-      if (projectFilePath.endsWith('.ts')) {
+      if (projectFilePath.endsWith('.ts') && !projectFilePath.endsWith('.d.ts')) {
         entryFiles.push(filePath);
       }
     }
@@ -153,7 +153,8 @@ export class Project {
     const ngCompiler = this.ngLS.compilerFactory.getOrCreate();
 
     for (const sf of program.getSourceFiles()) {
-      if (sf.isDeclarationFile || sf.fileName.endsWith('.ngtypecheck.ts')) {
+      if (sf.isDeclarationFile || sf.fileName.endsWith('.ngtypecheck.ts') ||
+          !sf.fileName.endsWith('.ts')) {
         continue;
       }
 

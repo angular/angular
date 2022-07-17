@@ -210,7 +210,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       binder: R3TargetBinder<TypeCheckableDirectiveMeta>, template: TmplAstNode[],
       pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
       schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping, file: ParseSourceFile,
-      parseErrors: ParseError[]|null): void {
+      parseErrors: ParseError[]|null, isStandalone: boolean): void {
     if (!this.host.shouldCheckComponent(ref.node)) {
       return;
     }
@@ -263,8 +263,16 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       templateDiagnostics,
     });
 
+    const usedPipes: Reference<ClassDeclaration<ts.ClassDeclaration>>[] = [];
+    for (const name of boundTarget.getUsedPipes()) {
+      if (!pipes.has(name)) {
+        continue;
+      }
+      usedPipes.push(pipes.get(name)!);
+    }
+
     const inliningRequirement =
-        requiresInlineTypeCheckBlock(ref.node, shimData.file, pipes, this.reflector);
+        requiresInlineTypeCheckBlock(ref, shimData.file, usedPipes, this.reflector);
 
     // If inlining is not supported, but is required for either the TCB or one of its directive
     // dependencies, then exit here with an error.
@@ -286,6 +294,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       boundTarget,
       pipes,
       schemas,
+      isStandalone
     };
     this.perf.eventCount(PerfEvent.GenerateTcb);
     if (inliningRequirement !== TcbInliningRequirement.None &&
@@ -359,7 +368,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     // Use a `ts.Printer` to generate source code.
     const printer = ts.createPrinter({omitTrailingSemicolon: true});
 
-    // Begin with the intial section of the code text.
+    // Begin with the initial section of the code text.
     let code = textParts[0];
 
     // Process each operation and use the printer to generate source code for it, inserting it into
