@@ -3981,6 +3981,45 @@ describe('animation tests', function() {
     expect(pcp.duration).toEqual(7333);  // 2s + 3s + 2000 + 111 + 222
   });
 
+  it('should keep (transition from/to) styles defined in different timelines', () => {
+    @Component({
+      selector: 'cmp',
+      template: '<div @animation *ngIf="exp"></div>',
+      animations: [trigger(
+          'animation',
+          [transition(':enter', [group([
+                        style({opacity: 0, color: 'red'}),
+                        // Note: the objective of this test is to make sure the animation
+                        // transitions from opacity 0 and color red to opacity 1 and color blue,
+                        // even though the two styles are defined in different timelines
+                        animate(500, style({opacity: 1, color: 'blue'})),
+                      ])])])]
+    })
+    class Cmp {
+      exp: boolean = false;
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+
+    const engine = TestBed.inject(ɵAnimationEngine);
+    const fixture = TestBed.createComponent(Cmp);
+    const cmp = fixture.componentInstance;
+    cmp.exp = true;
+
+    fixture.detectChanges();
+    engine.flush();
+
+    const players = getLog();
+    expect(players.length).toEqual(1);
+
+    const [player] = players;
+
+    expect(player.keyframes).toEqual([
+      new Map<string, string|number>([['opacity', '0'], ['color', 'red'], ['offset', 0]]),
+      new Map<string, string|number>([['opacity', '1'], ['color', 'blue'], ['offset', 1]]),
+    ]);
+  });
+
   describe('errors for not using the animation module', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
