@@ -730,7 +730,7 @@ export class TimelineBuilder {
       const val = interpolateParams(value, params, errors);
       this._pendingStyles.set(prop, val);
       if (!this._localTimelineStyles.has(prop)) {
-        this._backFill.set(prop, this._globalTimelineStyles.get(prop) || AUTO_STYLE);
+        this._backFill.set(prop, this._globalTimelineStyles.get(prop) ?? AUTO_STYLE);
       }
       this._updateStyle(prop, val);
     }
