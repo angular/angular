@@ -40,9 +40,9 @@
   },
   "forms": {
     "uncompressed": {
-      "runtime": 1063,
-      "main": 158224,
-      "polyfills": 33804
+      "runtime": 1060,
+      "main": 157621,
+      "polyfills": 33915
     }
   },
   "animations": {
