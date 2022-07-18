@@ -6,7 +6,6 @@
 
 import { ChildrenOutletContexts } from '@angular/router';
 import { Compiler } from '@angular/core';
-import { DefaultTitleStrategy } from '@angular/router';
 import { ExtraOptions } from '@angular/router';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/router';
@@ -37,7 +36,7 @@ export class RouterTestingModule {
 export function setupTestingRouter(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location_2, compiler: Compiler, injector: Injector, routes: Route[][], opts?: ExtraOptions | UrlHandlingStrategy | null, urlHandlingStrategy?: UrlHandlingStrategy, routeReuseStrategy?: RouteReuseStrategy, titleStrategy?: TitleStrategy): Router;
 
 // @public
-export function setupTestingRouterInternal(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location_2, compiler: Compiler, injector: Injector, routes: Route[][], opts?: ExtraOptions | UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy, routeReuseStrategy?: RouteReuseStrategy, defaultTitleStrategy?: DefaultTitleStrategy, titleStrategy?: TitleStrategy): Router;
+export function setupTestingRouterInternal(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location_2, compiler: Compiler, injector: Injector, routes: Route[][], titleStrategy: TitleStrategy, opts?: ExtraOptions | UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy, routeReuseStrategy?: RouteReuseStrategy): Router;
 
 // (No @packageDocumentation comment for this package)
 
