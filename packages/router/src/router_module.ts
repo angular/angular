@@ -18,7 +18,7 @@ import {RouterOutlet} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {Event, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, stringifyEvent} from './events';
 import {Route, Routes} from './models';
-import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
+import {TitleStrategy} from './page_title_strategy';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, Router} from './router';
 import {RouterConfigLoader, ROUTES} from './router_config_loader';
@@ -64,9 +64,9 @@ export const ROUTER_PROVIDERS: Provider[] = [
     provide: Router,
     useFactory: setupRouter,
     deps: [
-      UrlSerializer, ChildrenOutletContexts, Location, Injector, Compiler, ROUTES,
-      ROUTER_CONFIGURATION, DefaultTitleStrategy, [TitleStrategy, new Optional()],
-      [UrlHandlingStrategy, new Optional()], [RouteReuseStrategy, new Optional()]
+      UrlSerializer, ChildrenOutletContexts, Location, Injector, Compiler, ROUTES, TitleStrategy,
+      ROUTER_CONFIGURATION, [UrlHandlingStrategy, new Optional()],
+      [RouteReuseStrategy, new Optional()]
     ]
   },
   ChildrenOutletContexts,
@@ -465,9 +465,9 @@ export interface ExtraOptions {
 
 export function setupRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
-    injector: Injector, compiler: Compiler, config: Route[][], opts: ExtraOptions = {},
-    defaultTitleStrategy: DefaultTitleStrategy, titleStrategy?: TitleStrategy,
-    urlHandlingStrategy?: UrlHandlingStrategy, routeReuseStrategy?: RouteReuseStrategy) {
+    injector: Injector, compiler: Compiler, config: Route[][], titleStrategy: TitleStrategy,
+    opts: ExtraOptions = {}, urlHandlingStrategy?: UrlHandlingStrategy,
+    routeReuseStrategy?: RouteReuseStrategy) {
   const router =
       new Router(null, urlSerializer, contexts, location, injector, compiler, flatten(config));
 
@@ -479,7 +479,7 @@ export function setupRouter(
     router.routeReuseStrategy = routeReuseStrategy;
   }
 
-  router.titleStrategy = titleStrategy ?? defaultTitleStrategy;
+  router.titleStrategy = titleStrategy;
 
   assignExtraOptionsToRouter(opts, router);
 

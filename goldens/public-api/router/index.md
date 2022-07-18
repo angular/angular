@@ -878,6 +878,10 @@ export abstract class TitleStrategy {
     buildTitle(snapshot: RouterStateSnapshot): string | undefined;
     getResolvedTitleForRoute(snapshot: ActivatedRouteSnapshot): any;
     abstract updateTitle(snapshot: RouterStateSnapshot): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<TitleStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<TitleStrategy>;
 }
 
 // @public
