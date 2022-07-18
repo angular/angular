@@ -1,22 +1,85 @@
+@use 'sass:map';
 @use '@angular/material' as mat;
 @use '@angular/cdk';
-@use '@material/snackbar' as mdc-snackbar;
+@use '@material/snackbar/snackbar' as mdc-snackbar;
+@use '@material/snackbar/snackbar-theme' as mdc-snackbar-theme;
 
 
 @include mat.private-disable-mdc-fallback-declarations {
   // Include the styles without the animations since we
   // reuse the same animation as the non-MDC version.
-  @include mdc-snackbar.core-styles($query: mat.$private-mdc-base-styles-without-animation-query);
+  @include mdc-snackbar.static-styles($query: mat.$private-mdc-base-styles-without-animation-query);
 }
 
-// MDC sets the position as fixed and sets the container on the bottom center of the page (or
-// otherwise can be set to be "leading"). Our overlay handles a more advanced configuration
-// of positions, so we'll defer logic there.
 .mat-mdc-snack-bar-container {
+  @include mat.private-disable-mdc-fallback-declarations {
+    // The styles weren't included in `static-styles` so we need to add them ourselves.
+    @include mdc-snackbar-theme.min-width(
+      mdc-snackbar-theme.$min-width,
+      $query: mat.$private-mdc-base-styles-query
+    );
+    @include mdc-snackbar-theme.max-width(
+      mdc-snackbar-theme.$max-width,
+      $query: mat.$private-mdc-base-styles-query
+    );
+    @include mdc-snackbar-theme.viewport-margin(
+      mdc-snackbar-theme.$viewport-margin-narrow,
+      $query: mat.$private-mdc-base-styles-query
+    );
+
+    // MDC has the `container-elevation` which sounds like it should work, but it ends up applying
+    // the shadow on the outer container instead of the `.mdc-snackbar__surface` which causes
+    // a white background behind the rounded corners, because the `border-radius` is on the
+    // surface element.
+    @include mdc-snackbar-theme.elevation(mdc-snackbar-theme.$elevation);
+
+    @include mdc-snackbar-theme.theme-styles(map.merge(mdc-snackbar-theme.$light-theme, (
+      container-color: inherit,
+      supporting-text-color: inherit,
+      container-shape: mdc-snackbar-theme.$shape-radius,
+      supporting-text-font: inherit,
+      supporting-text-line-height: inherit,
+      supporting-text-size: inherit,
+      supporting-text-weight: inherit,
+
+      // Removed to match the previous appearance.
+      supporting-text-tracking: null,
+
+      // We're not using any of these since the button styling goes through `mat-button`.
+      action-label-text-color: null,
+      action-focus-state-layer-opacity: null,
+      action-hover-state-layer-opacity: null,
+      action-pressed-state-layer-opacity: null,
+      icon-focus-state-layer-opacity: null,
+      icon-hover-state-layer-opacity: null,
+      icon-pressed-state-layer-opacity: null,
+    )));
+  }
+
+  // MDC sets the position as fixed and sets the container on the bottom center of the page (or
+  // otherwise can be set to be "leading"). Our overlay handles a more advanced configuration
+  // of positions, so we'll defer logic there.
   position: static;
 
   @include cdk.high-contrast(active, off) {
     border: solid 1px;
+  }
+
+  // The `mat-mdc-button` and `:not(:disabled)` here are redundant, but we need them to increase
+  // the specificity over the button styles that may bleed in from the rest of the app.
+  .mat-mdc-button.mat-mdc-snack-bar-action:not(:disabled) {
+    // MDC's `action-label-text-color` should be able to do this, but the button theme has a
+    // higher specificity so it ends up overriding it. Define our own variable that we can
+    // use to control the color instead.
+    color: var(--mat-mdc-snack-bar-button-color, transparent);
+
+    // Darken the ripples in the button so they're visible against the dark background.
+    --mat-mdc-button-persistent-ripple-color: currentColor;
+
+    .mat-ripple-element {
+      background-color: currentColor;
+      opacity: 0.1;
+    }
   }
 }
 

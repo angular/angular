@@ -1,50 +1,31 @@
 @use '@angular/material' as mat;
 @use '@material/theme/theme-color' as mdc-theme-color;
-@use '@material/snackbar' as mdc-snackbar;
+@use '@material/snackbar/snackbar-theme' as mdc-snackbar-theme;
 @use 'sass:color';
 @use 'sass:map';
 
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
-
-  $orig-fill-color: mdc-snackbar.$fill-color;
-  $orig-label-ink-color: mdc-snackbar.$label-ink-color;
-  $orig-dismiss-ink-color: mdc-snackbar.$dismiss-ink-color;
+  $is-dark-theme: map.get($config, is-dark);
+  $accent: map.get($config, accent);
 
   @include mat.private-using-mdc-theme($config) {
-    mdc-snackbar.$fill-color: color.mix(
-      mdc-theme-color.prop-value(on-surface),
-      mdc-theme-color.prop-value(surface),
-      80%
-    );
-    mdc-snackbar.$label-ink-color: rgba(
-      mdc-theme-color.prop-value(surface),
-      mdc-theme-color.text-emphasis(high)
-    );
-    mdc-snackbar.$dismiss-ink-color: rgba(
-      mdc-theme-color.prop-value(surface),
-      mdc-theme-color.text-emphasis(high)
-    );
+    .mat-mdc-snack-bar-container {
+      $button-color: if($is-dark-theme, currentColor, mat.get-color-from-palette($accent, text));
+      --mat-mdc-snack-bar-button-color: #{$button-color};
 
-    @include mdc-snackbar.core-styles($query: mat.$private-mdc-theme-styles-query);
-  }
-
-  mdc-snackbar.$fill-color: $orig-fill-color;
-  mdc-snackbar.$label-ink-color: $orig-label-ink-color;
-  mdc-snackbar.$dismiss-ink-color: $orig-dismiss-ink-color;
-
-  // Four classes is necessary to make it higher specificity than the mdc-button theme styles.
-  // This ensures the correct styles will be applied regardless of the order te mixins are
-  // @included.
-  .mat-mdc-simple-snack-bar .mat-mdc-snack-bar-actions .mdc-snackbar__action.mdc-snackbar__action {
-    $is-dark-theme: map.get($config, is-dark);
-    $accent: map.get($config, accent);
-    color: if($is-dark-theme, inherit, mat.get-color-from-palette($accent, text));
-
-    .mat-ripple-element {
-      background-color: currentColor;
-      opacity: 0.1;
+      @include mdc-snackbar-theme.theme((
+        container-color: color.mix(
+          mdc-theme-color.prop-value(on-surface),
+          mdc-theme-color.prop-value(surface),
+          80%
+        ),
+        supporting-text-color: rgba(
+          mdc-theme-color.prop-value(surface),
+          mdc-theme-color.text-emphasis(high)
+        )
+      ));
     }
   }
 }
@@ -53,7 +34,14 @@
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
   @include mat.private-using-mdc-typography($config) {
-    @include mdc-snackbar.core-styles($query: mat.$private-mdc-typography-styles-query);
+    .mat-mdc-snack-bar-container {
+      @include mdc-snackbar-theme.theme((
+        supporting-text-font: mat.font-family($config, body-2),
+        supporting-text-line-height: mat.line-height($config, body-2),
+        supporting-text-size: mat.font-size($config, body-2),
+        supporting-text-weight: mat.font-weight($config, body-2),
+      ));
+    }
   }
 }
 
