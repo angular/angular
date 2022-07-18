@@ -8,7 +8,7 @@ for the library's components. Additionally, Angular Material provides APIs for a
 styles to elements in your own application.
 
 Angular Material's theming APIs are built with [Sass](https://sass-lang.com). This document assumes
-familiary with CSS and Sass basics, including variables, functions, and mixins.
+familiarity with CSS and Sass basics, including variables, functions, and mixins.
 
 [theming-system]: https://material.angular.io/guide/theming
 

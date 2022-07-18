@@ -125,7 +125,7 @@ export class MatCardSubtitle {}
   },
 })
 export class MatCardActions {
-  // TODO(jelbourn): deprecate `align` in favor of `actionPositon` or `actionAlignment`
+  // TODO(jelbourn): deprecate `align` in favor of `actionPosition` or `actionAlignment`
   // as to not conflict with the native `align` attribute.
 
   /** Position of the actions inside the card. */

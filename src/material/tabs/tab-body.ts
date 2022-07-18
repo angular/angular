@@ -41,7 +41,7 @@ import {startWith, distinctUntilChanged} from 'rxjs/operators';
  *
  * In the case of a new tab body that should immediately be centered with an animating transition,
  * then left-origin-center or right-origin-center can be used, which will use left or right as its
- * psuedo-prior state.
+ * pseudo-prior state.
  */
 export type MatTabBodyPositionState =
   | 'left'

@@ -273,7 +273,7 @@ export class MatChip
   /** Emits when the chip is focused. */
   readonly _onFocus = new Subject<MatChipEvent>();
 
-  /** Emits when the chip is blured. */
+  /** Emits when the chip is blurred. */
   readonly _onBlur = new Subject<MatChipEvent>();
 
   /** Emitted when the chip is selected or deselected. */

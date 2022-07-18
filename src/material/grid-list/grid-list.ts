@@ -61,7 +61,7 @@ export class MatGridList implements MatGridListBase, OnInit, AfterContentChecked
   /** Number of columns being rendered. */
   private _cols: number;
 
-  /** Used for determiningthe position of each tile in the grid. */
+  /** Used for determining the position of each tile in the grid. */
   private _tileCoordinator: TileCoordinator;
 
   /**

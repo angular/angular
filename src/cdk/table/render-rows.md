@@ -1,7 +1,7 @@
 # Rendering Data Rows
 
 The table's primary responsibility is to render rows of cells. The types of rows that may be rendered are header,
-footer, and data rows. This document focuses on how the table tries to efficienctly render the data rows.
+footer, and data rows. This document focuses on how the table tries to efficiently render the data rows.
 
 ## Background
 

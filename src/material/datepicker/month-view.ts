@@ -255,9 +255,9 @@ export class MatMonthView<D> implements AfterContentInit, OnChanges, OnDestroy {
    * corresponds to the given cell, set `activeDate` to that date and fire `activeDateChange` with
    * that date.
    *
-   * This fucntion is used to match each component's model of the active date with the calendar
+   * This function is used to match each component's model of the active date with the calendar
    * body cell that was focused. It updates its value of `activeDate` synchronously and updates the
-   * parent's value asynchonously via the `activeDateChange` event. The child component receives an
+   * parent's value asynchronously via the `activeDateChange` event. The child component receives an
    * updated value asynchronously via the `activeCell` Input.
    */
   _updateActiveDate(event: MatCalendarUserEvent<number>) {

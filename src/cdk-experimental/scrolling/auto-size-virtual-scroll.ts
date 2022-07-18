@@ -210,7 +210,7 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
     if (scrollDelta < 0) {
       // The content offset we would expect based on the average item size.
       const predictedOffset = renderedRange.start * this._averager.getAverageItemSize();
-      // The difference between the predicted size of the unrendered content at the beginning and
+      // The difference between the predicted size of the un-rendered content at the beginning and
       // the actual available space to scroll over. We need to reduce this to zero by the time the
       // user scrolls to the top.
       // - 0 indicates that the predicted size and available space are the same.

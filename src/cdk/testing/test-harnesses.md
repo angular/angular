@@ -439,7 +439,7 @@ interface MyMenuItemHarnessFilters extends BaseHarnessFilters {
 class MyMenuHarness extends ComponentHarness {
   static hostSelector = 'my-menu';
 
-  /** Creates a `HarnessPredicate` used to locatr a particular `MyMenuHarness`. */
+  /** Creates a `HarnessPredicate` used to locate a particular `MyMenuHarness`. */
   static with(options: MyMenuHarnessFilters): HarnessPredicate<MyMenuHarness> {
     return new HarnessPredicate(MyMenuHarness, options)
         .addOption('trigger text', options.triggerText,
@@ -460,7 +460,7 @@ class MyMenuHarness extends ComponentHarness {
 class MyMenuItemHarness extends ComponentHarness {
   static hostSelector = 'my-menu-item';
 
-  /** Creates a `HarnessPredicate` used to locatr a particular `MyMenuItemHarness`. */
+  /** Creates a `HarnessPredicate` used to locate a particular `MyMenuItemHarness`. */
   static with(options: MyMenuItemHarnessFilters): HarnessPredicate<MyMenuItemHarness> {
     return new HarnessPredicate(MyMenuItemHarness, options)
         .addOption('text', options.text,

@@ -145,7 +145,7 @@ export class CdkEditable implements AfterViewInit, OnDestroy {
         )
         .subscribe(this.editEventDispatcher.editing);
 
-      // Keydown must be used here or else key autorepeat does not work properly on some platforms.
+      // Keydown must be used here or else key auto-repeat does not work properly on some platforms.
       fromEvent<KeyboardEvent>(element, 'keydown')
         .pipe(takeUntil(this.destroyed))
         .subscribe(this.focusDispatcher.keyObserver);

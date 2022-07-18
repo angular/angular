@@ -11,7 +11,7 @@ export interface MapDirectionsResponse {
 }
 ```
 
-The most common usecase for the component and class would be to use the `MapDirectionsService` to request a route between two points on the map, and then render them on the map using the `MapDirectionsRenderer`.
+The most common use-case for the component and class would be to use the `MapDirectionsService` to request a route between two points on the map, and then render them on the map using the `MapDirectionsRenderer`.
 
 ## Loading the Library
 

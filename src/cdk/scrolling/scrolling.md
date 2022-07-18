@@ -135,7 +135,7 @@ some cases where you want to have the viewport scroll one of its parent elements
 if you want to have some non-virtualized content that the user can scroll through before or after
 the virtualized content.
 
-To configure a `cdk-vritual-scroll-viewport` to use one of its parent elements as the scrolling
+To configure a `cdk-virtual-scroll-viewport` to use one of its parent elements as the scrolling
 element, apply `cdkVirtualScrollingElement` to the scrolling parent element.
 
 <!-- example(cdk-virtual-scroll-parent-scrolling) -->

@@ -22,7 +22,7 @@ export interface StickyUpdate {
 
 /**
  * If provided, CdkTable will call the methods below when it updates the size/
- * postion/etc of its sticky rows and columns.
+ * position/etc of its sticky rows and columns.
  */
 export interface StickyPositioningListener {
   /** Called when CdkTable updates its sticky start columns. */

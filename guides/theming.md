@@ -385,7 +385,7 @@ Angular Material supports rendering highly visible outlines on focused elements.
 enable these strong focus indicators via two Sass mixins:
 `strong-focus-indicators` and `strong-focus-indicators-theme`.
 
-The `strong-focus-indicators` mixin emits structal indicator styles for all components. This mixin
+The `strong-focus-indicators` mixin emits structural indicator styles for all components. This mixin
 should be included exactly once in an application, similar to the `core` mixin described above.
 
 The `strong-focus-indicators-theme` mixin emits only the indicator's color styles. This mixin should

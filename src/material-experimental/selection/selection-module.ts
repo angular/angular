@@ -7,7 +7,7 @@
  */
 
 // TODO(yifange): Move the table-specific code to a separate module from the other selection
-// behaviors once we move it out of experiemental.
+// behaviors once we move it out of experimental.
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatTableModule} from '@angular/material/table';

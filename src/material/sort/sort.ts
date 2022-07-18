@@ -91,7 +91,7 @@ export class MatSort
 
   /**
    * The direction to set when an MatSortable is initially sorted.
-   * May be overriden by the MatSortable's sort start.
+   * May be overridden by the MatSortable's sort start.
    */
   @Input('matSortStart') start: SortDirection = 'asc';
 
@@ -115,7 +115,7 @@ export class MatSort
 
   /**
    * Whether to disable the user from clearing the sort by finishing the sort direction cycle.
-   * May be overriden by the MatSortable's disable clear input.
+   * May be overridden by the MatSortable's disable clear input.
    */
   @Input('matSortDisableClear')
   get disableClear(): boolean {

@@ -36,7 +36,7 @@ let dialogElementUid = 0;
   },
 })
 export class MatDialogClose implements OnInit, OnChanges {
-  /** Screenreader label for the button. */
+  /** Screen-reader label for the button. */
   @Input('aria-label') ariaLabel: string;
 
   /** Default to "button" to prevents accidental form submits. */

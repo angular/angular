@@ -67,9 +67,9 @@ shown.
 ### Accessibility
 
 `MatTooltip` adds an `aria-describedby` description that provides a reference
-to a visually hidden element containing the tooltip's message. This provides screenreaders the
-information needed to read out the tooltip's contents when the end-user focuses on tooltip's
-trigger. The element referenced by `aria-describedby` is not the tooltip itself,
+to a visually hidden element containing the tooltip's message. This provides screen-readers
+the information needed to read out the tooltip's contents when the end-user focuses on
+tooltip's trigger. The element referenced by `aria-describedby` is not the tooltip itself,
 but instead an invisible copy of the tooltip content that is always present in the DOM.
 
 Avoid interactions that exclusively show a tooltip with pointer events like click and mouseenter.

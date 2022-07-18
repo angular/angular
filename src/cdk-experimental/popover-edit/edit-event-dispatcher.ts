@@ -191,7 +191,7 @@ export class EditEventDispatcher<R> {
     this._editRef = ref;
   }
 
-  /** Unsets the currently active EditRef, if the specified editRef is active. */
+  /** Unset the currently active EditRef, if the specified editRef is active. */
   unsetActiveEditRef(ref: R) {
     if (this._editRef !== ref) {
       return;

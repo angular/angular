@@ -69,7 +69,7 @@ export abstract class ResizeStrategy {
 }
 
 /**
- * The optimially performing resize strategy for &lt;table&gt; elements with table-layout: fixed.
+ * The optimally performing resize strategy for &lt;table&gt; elements with table-layout: fixed.
  * Tested against and outperformed:
  *   CSS selector
  *   CSS selector w/ CSS variable

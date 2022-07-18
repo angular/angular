@@ -10,10 +10,10 @@
  * A pending copy-to-clipboard operation.
  *
  * The implementation of copying text to the clipboard modifies the DOM and
- * forces a relayout. This relayout can take too long if the string is large,
+ * forces a re-layout. This re-layout can take too long if the string is large,
  * causing the execCommand('copy') to happen too long after the user clicked.
  * This results in the browser refusing to copy. This object lets the
- * relayout happen in a separate tick from copying by providing a copy function
+ * re-layout happen in a separate tick from copying by providing a copy function
  * that can be called later.
  *
  * Destroy must be called when no longer in use, regardless of whether `copy` is

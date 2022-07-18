@@ -69,7 +69,7 @@ export class MatPaginator extends _MatPaginatorBase<MatPaginatorDefaultOptions> 
   /** If set, styles the "page size" form field with the designated style. */
   _formFieldAppearance?: MatFormFieldAppearance;
 
-  /** ID for the DOM node containing the pagiators's items per page label. */
+  /** ID for the DOM node containing the paginator's items per page label. */
   readonly _pageSizeLabelId = `mat-paginator-page-size-label-${nextUniqueId++}`;
 
   constructor(

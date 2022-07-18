@@ -180,7 +180,7 @@ abstract class RowViewRef<T> extends EmbeddedViewRef<RowContext<T>> {}
  * is false, there is only one template per data object). For each pair of data object and row
  * template, a `RenderRow` is added to the list of rows to render. If the data object and row
  * template pair has already been rendered, the previously used `RenderRow` is added; else a new
- * `RenderRow` is * created. Once the list is complete and all data objects have been itereated
+ * `RenderRow` is * created. Once the list is complete and all data objects have been iterated
  * through, a diff is performed to determine the changes that need to be made to the rendered rows.
  *
  * @docs-private
@@ -349,13 +349,13 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   private _stickyStyler: StickyStyler;
 
   /**
-   * CSS class added to any row or cell that has sticky positioning applied. May be overriden by
+   * CSS class added to any row or cell that has sticky positioning applied. May be overridden by
    * table subclasses.
    */
   protected stickyCssClass: string = 'cdk-table-sticky';
 
   /**
-   * Whether to manually add positon: sticky to all sticky cell elements. Not needed if
+   * Whether to manually add position: sticky to all sticky cell elements. Not needed if
    * the position is set in a selector associated with the value of stickyCssClass. May be
    * overridden by table subclasses
    */

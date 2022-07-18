@@ -11,7 +11,7 @@ export interface TagCollection {
   tags: Tag[];
   /** Map which maps tag names to their tag instances. */
   tagsByName: Map<string, Tag[]>;
-  /** List of tags which are unkown, or have errors. */
+  /** List of tags which are unknown, or have errors. */
   badTags: Tag[];
 }
 

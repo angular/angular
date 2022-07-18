@@ -134,7 +134,7 @@ export class DialogDemo {
   imports: [MatFormFieldModule, MatInputModule, DragDropModule],
 })
 export class JazzDialog {
-  private _dimesionToggle = false;
+  private _dimensionToggle = false;
 
   constructor(
     public dialogRef: MatDialogRef<JazzDialog>,
@@ -142,9 +142,9 @@ export class JazzDialog {
   ) {}
 
   togglePosition(): void {
-    this._dimesionToggle = !this._dimesionToggle;
+    this._dimensionToggle = !this._dimensionToggle;
 
-    if (this._dimesionToggle) {
+    if (this._dimensionToggle) {
       this.dialogRef.updateSize('500px', '500px').updatePosition({top: '25px', left: '25px'});
     } else {
       this.dialogRef.updateSize().updatePosition();

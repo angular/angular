@@ -358,7 +358,7 @@ export class DragRef<T = any> {
   /**
    * Function that can be used to customize the logic of how the position of the drag item
    * is limited while it's being dragged. Gets called with a point containing the current position
-   * of the user's pointer on the page, a reference to the item being dragged and its dimenstions.
+   * of the user's pointer on the page, a reference to the item being dragged and its dimensions.
    * Should return a point describing where the item should be rendered.
    */
   constrainPosition?: (
@@ -662,7 +662,7 @@ export class DragRef<T = any> {
       const isOverThreshold = distanceX + distanceY >= this._config.dragStartThreshold;
 
       // Only start dragging after the user has moved more than the minimum distance in either
-      // direction. Note that this is preferrable over doing something like `skip(minimumDistance)`
+      // direction. Note that this is preferable over doing something like `skip(minimumDistance)`
       // in the `pointerMove` subscription, because we're not guaranteed to have one move event
       // per pixel of movement (e.g. if the user moves their pointer quickly).
       if (isOverThreshold) {

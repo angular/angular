@@ -119,7 +119,7 @@ export class GoogleMapDemo {
   isBicyclingLayerDisplayed = false;
 
   mapTypeId: google.maps.MapTypeId;
-  mapTypeIds = ['hybrid', 'roadmap', 'sattelite', 'terrain'] as google.maps.MapTypeId[];
+  mapTypeIds = ['hybrid', 'roadmap', 'satellite', 'terrain'] as google.maps.MapTypeId[];
 
   markerClustererImagePath =
     'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m';

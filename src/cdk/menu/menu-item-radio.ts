@@ -35,7 +35,7 @@ export class CdkMenuItemRadio extends CdkMenuItemSelectable implements OnDestroy
   /** The unique selection dispatcher for this radio's `CdkMenuGroup`. */
   private readonly _selectionDispatcher = inject(UniqueSelectionDispatcher);
 
-  /** An ID to identify this radio item to the `UniqueSelectionDisptcher`. */
+  /** An ID to identify this radio item to the `UniqueSelectionDispatcher`. */
   private _id = `${nextId++}`;
 
   /** Function to unregister the selection dispatcher */

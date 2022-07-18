@@ -175,7 +175,7 @@ export const config = {
       // The MDC slide toggle uses a `button` which isn't able to block form submission.
       'should prevent the form from submit when being required',
 
-      // TODO: the focus origin functionality has to be implemeted for the MDC slide toggle.
+      // TODO: the focus origin functionality has to be implemented for the MDC slide toggle.
       'should not change focus origin if origin not specified',
     ],
     'mdc-snack-bar': [

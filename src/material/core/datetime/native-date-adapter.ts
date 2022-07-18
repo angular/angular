@@ -240,7 +240,7 @@ export class NativeDateAdapter extends DateAdapter<Date> {
    * very frequently, and the current valid rule is not always valid in previous years though.
    * We work around this problem building a new Date object which has its internal UTC
    * representation with the local date and time.
-   * @param dtf Intl.DateTimeFormat object, containg the desired string format. It must have
+   * @param dtf Intl.DateTimeFormat object, containing the desired string format. It must have
    *    timeZone set to 'utc' to work fine.
    * @param date Date from which we want to get the string representation according to dtf
    * @returns A Date object with its UTC representation based on the passed in date info

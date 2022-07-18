@@ -600,7 +600,7 @@ export class MatFormField
       // invisible and we can't calculate the outline gap. Mark the element as needing
       // to be checked the next time the zone stabilizes. We can't do this immediately
       // on the next change detection, because even if the element becomes visible,
-      // the `ClientRect` won't be reclaculated immediately. We reset the
+      // the `ClientRect` won't be recalculated immediately. We reset the
       // `_outlineGapCalculationNeededImmediately` flag some we don't run the checks twice.
       if (containerRect.width === 0 && containerRect.height === 0) {
         this._outlineGapCalculationNeededOnStable = true;

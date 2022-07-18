@@ -7,7 +7,7 @@
  */
 
 /**
- * Returns an error to be thrown when attempting to find an unexisting column.
+ * Returns an error to be thrown when attempting to find an nonexistent column.
  * @param id Id whose lookup failed.
  * @docs-private
  */

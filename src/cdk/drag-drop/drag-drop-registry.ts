@@ -207,7 +207,7 @@ export class DragDropRegistry<I extends {isDragging(): boolean}, C> implements O
     const streams: Observable<Event>[] = [this.scroll];
 
     if (shadowRoot && shadowRoot !== this._document) {
-      // Note that this is basically the same as `fromEvent` from rjxs, but we do it ourselves,
+      // Note that this is basically the same as `fromEvent` from rxjs, but we do it ourselves,
       // because we want to guarantee that the event is bound outside of the `NgZone`. With
       // `fromEvent` it'll only happen if the subscription is outside the `NgZone`.
       streams.push(

@@ -191,7 +191,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    * The selection of a position goes as follows:
    *  - If any positions fit completely within the viewport as-is,
    *      choose the first position that does so.
-   *  - If flexible dimensions are enabled and at least one satifies the given minimum width/height,
+   *  - If flexible dimensions are enabled and at least one satisfies the given minimum width/height,
    *      choose the position with the greatest available size modified by the positions' weight.
    *  - If pushing is enabled, take the position that went off-screen the least and push it
    *      on-screen.
@@ -633,7 +633,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
 
   /**
    * Gets the point at which the overlay can be "pushed" on-screen. If the overlay is larger than
-   * the viewport, the top-left corner will be pushed on-screen (with overflow occuring on the
+   * the viewport, the top-left corner will be pushed on-screen (with overflow occurring on the
    * right and bottom).
    *
    * @param start Starting point from which the overlay is pushed.
@@ -715,7 +715,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
 
     // Notify that the position has been changed along with its change properties.
     // We only emit if we've got any subscriptions, because the scroll visibility
-    // calculcations can be somewhat expensive.
+    // calculations can be somewhat expensive.
     if (this._positionChanges.observers.length) {
       const scrollableViewProperties = this._getScrollVisibility();
       const changeEvent = new ConnectedOverlayPositionChange(position, scrollableViewProperties);
@@ -831,7 +831,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
 
   /**
    * Sets the position and size of the overlay's sizing wrapper. The wrapper is positioned on the
-   * origin's connection point and stetches to the bounds of the viewport.
+   * origin's connection point and stretches to the bounds of the viewport.
    *
    * @param origin The point on the origin element where the overlay is connected.
    * @param position The position preference
@@ -1108,7 +1108,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   private _getOffset(position: ConnectedPosition, axis: 'x' | 'y') {
     if (axis === 'x') {
       // We don't do something like `position['offset' + axis]` in
-      // order to avoid breking minifiers that rename properties.
+      // order to avoid breaking minifiers that rename properties.
       return position.offsetX == null ? this._offsetX : position.offsetX;
     }
 

@@ -63,7 +63,7 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
   /** Tabindex for the toggle. */
   @Input() tabIndex: number | null;
 
-  /** Screenreader label for the button. */
+  /** Screen-reader label for the button. */
   @Input('aria-label') ariaLabel: string;
 
   /** Whether the toggle button is disabled. */

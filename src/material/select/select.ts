@@ -291,7 +291,7 @@ export abstract class _MatSelectBase<C>
   /** Unique id for this input. */
   private _uid = `mat-select-${nextUniqueId++}`;
 
-  /** Current `ariar-labelledby` value for the select trigger. */
+  /** Current `aria-labelledby` value for the select trigger. */
   private _triggerAriaLabelledBy: string | null = null;
 
   /**
