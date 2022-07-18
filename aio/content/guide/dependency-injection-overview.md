@@ -1,6 +1,8 @@
 # Dependency injection in Angular
 
-When you develop a smaller part of your system, like a module or a class, you may need external dependencies. For example, you may need an HTTP service to make backend calls. Dependency Injection, or DI, is a design pattern in which a class declares which dependencies it has, using constructor arguments, and the framework that provides those dependencies while instantiating that class. Angular supports this design pattern and you can use it in your applications to increase flexibility and modularity. 
+When you develop a smaller part of your system, like a module or a class, you may need external dependencies. For example, you may need an HTTP service to make backend calls. Dependency Injection, or DI, is a design pattern and mechanism for creating and delivering some parts of an application to other parts of an application that require them. Angular supports this design pattern and you can use it in your applications to increase flexibility and modularity. 
+
+In Angular, dependencies are typically services, but they also can be values, such as strings or functions. An injector for an application (created automatically during bootstrap) instantiates dependencies when needed, using a configured provider of the service or value. 
 
 <div class="alert is-helpful">
 
@@ -10,7 +12,7 @@ See the <live-example></live-example> for a working example containing the code 
 
 ## Prerequisites
 
-Before creating DI, you should be familiar with the following:
+You should be familiar with the Angular apps in general, and have the fundamental knowledge of Components, Directives, and NgModules. It's highly recommended that you complete the following tutorial:
 
 [Tour of Heroes app and tutorial](tutorial)
 
@@ -19,37 +21,22 @@ Before creating DI, you should be familiar with the following:
 <div class="card-container">
   <a href="guide/dependency-injection" class="docs-card" title="Understanding Dependency Injection">
     <section>Understanding Dependency Injection</section>
-    <p>Learn how DI works in Angular.</p>
-    <p class="card-footer">Introduction to DI</p>
+    <p>Learn basic principles of Dependency Injection in Angular.</p>
+    <p class="card-footer">Understanding Dependency Injection</p>
   </a>
-  <a href="guide/creating-injectable-service" class="docs-card" title="Creating an injectable service">
-    <section>Creating an injectable service</section>
-    <p>Describes how to create an injectable service.</p>
+  <a href="guide/creating-injectable-service" class="docs-card" title="Creating and injecting service">
+    <section>Creating and injecting service</section>
+    <p>Describes how to create a service and inject it in other services and components.</p>
     <p class="card-footer">Creating an injectable service</p>
   </a>
-  <a href="guide/inject-service-in-component" class="docs-card" title="Injecting services">
-    <section>Injecting services</section>
-    <p>Describes how to inject services in components.</p>
-    <p class="card-footer">injecting services</p>
-  </a>
-  <a href="guide/inject-service-in-service" class="docs-card" title="Injecting services in other services">
-    <section>Injecting services in other services</section>
-    <p>Describes how to inject services in other services.</p>
-    <p class="card-footer">Injecting services in other services</p>
-  </a>
-  <a href="guide/dependency-injection-providers"" class="docs-card" title="Defining Dependency providers">
-    <section>Defining Dependency providers</section>
-    <p>By configuring providers, you can make services available to the parts of your application that need them.</p>
-    <p class="card-footer">Defining Dependency providers</p>
-  </a>
-  <a href="guide/inject-object" class="docs-card" title="Injecting an object">
-    <section>Injecting an object</section>
-    <p>Describes how to inject an object.</p>
-    <p class="card-footer">Injecting an object</p>
+  <a href="guide/dependency-injection-providers" class="docs-card" title="Configuring dependency providers">
+    <section>Configuring dependency providers</section>
+    <p>Describes how to configure dependencies using the `providers` field on the `@Component` and `@NgModule` decorators. Also describes how to use `InjectionToken` to provide and inject values in DI, which can be helpful when you want to use a value other than classes as dependencies.</p>
+    <p class="card-footer">Configuring dependency providers</p>
   </a>
   <a href="guide/hierarchical-dependency-injection" class="docs-card" title="Hierarchical injectors">
     <section>Hierarchical injectors</section>
-    <p>Hierarchical DI enables you to share dependencies between different parts of the application only when and if you need to.</p>
+    <p>Hierarchical DI enables you to share dependencies between different parts of the application only when and if you need to. This is an advanced topic.</p>
     <p class="card-footer">Hierarchical injectors</p>
   </a>
 </div>

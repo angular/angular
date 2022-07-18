@@ -1,6 +1,19 @@
-# Understanding Dependency injection
+# Understanding dependency injection
 
-Dependency injection, or DI, is one of the fundamental concepts in Angular. DI is wired into the Angular framework and allows classes with Angular decorators, such as Components, Directives, Pipes and Injectables, to configure dependencies that they need. You can *inject* a service into a class using its constructor, giving that class access to a particular dependency.
+Dependency injection, or DI, is one of the fundamental concepts in Angular. DI is wired into the Angular framework and allows classes with Angular decorators, such as Components, Directives, Pipes, and Injectables, to configure dependencies that they need. 
+
+Two main roles exist in the DI system: dependency consumer and dependency provider. 
+
+Angular facilitates the interaction between dependency consumers and dependency providers using an abstraction called [Injector](guide/glossary#injector). When a dependency is requested, the Injector checks its registry to see if there is an instance already available there and if not, a new instance is created and stored in the registry. Angular creates an application-wide injector (also known as "root" injector) during the application bootstrap process, as well as any additional injectors as needed. You don't need to create injectors manually, but it's important to know that there is a layer that connects providers and consumers.
+
+This topic covers basic scenarios of how a class can act as a dependency. However, Angular allows you to use functions, objects, primitive types such as string or Boolean, or any other types as dependencies as well. For more information, see [Dependency providers](guide/dependency-injection-providers].
+
+## Providing dependency
+
+Imagine there is a class called HeroService that needs to act as a dependency in a component.
+
+The first step is to add the @Injectable decorator to indicate that the class can be injected.
+
 
 ## Creating DI
 
