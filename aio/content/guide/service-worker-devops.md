@@ -57,16 +57,18 @@ If an update is found, it is downloaded and cached automatically, and is served 
 ### Resource integrity
 
 One of the potential side effects of long caching is inadvertently caching a resource that's not valid.
-In a normal HTTP cache, a hard refresh or the cache expiring limits the negative effects of caching an file that's not valid.
+In a normal HTTP cache, a hard refresh or the cache expiring limits the negative effects of caching a file that's not valid.
 A service worker ignores such constraints and effectively long-caches the entire application.
-As a result, the service worker must get the correct content.
+It's important that the service worker gets the correct content, so it keeps hashes of the resources to maintain their integrity.
+
+#### Hashed content
 
 To ensure resource integrity, the Angular service worker validates the hashes of all resources for which it has a hash.
-Typically for an application created with the [Angular CLI](cli), this is everything in the `dist` directory covered by the user's `src/ngsw-config.json` configuration.
+For an application created with the [Angular CLI](cli), this is everything in the `dist` directory covered by the user's `src/ngsw-config.json` configuration.
 
 If a particular file fails validation, the Angular service worker attempts to re-fetch the content using a "cache-busting" URL parameter to prevent browser or intermediate caching.
 If that content also fails validation, the service worker considers the entire version of the application to not be valid and stops serving the application.
-If necessary, the service worker enters a safe mode where requests fall back on the network. The service worker doesn't use its cache if there's a high risk of serving content that is not valid, broken, or outdated.
+If necessary, the service worker enters a safe mode where requests fall back on the network. The service worker doesn't use its cache if there's a high risk of serving content that is broken, outdated, or not valid.
 
 Hash mismatches can occur for a variety of reasons:
 
@@ -138,11 +140,12 @@ The value of the header or query parameter is ignored and can be empty or omitte
 ### Service worker requests when the server can't be reached
 
 All requests pass through the service worker to the service unless
-the [service worker is explicitly bypassed](guide/service-worker-devops#bypassing-the-service-worker).
+the [service worker is explicitly bypassed](#bypassing-the-service-worker).
 The service worker either returns a cached response or sends the request to the server, depending on the state and configuration of the cache. 
 The service worker only caches responses to non-mutating requests, such as `GET` and `HEAD`.
 
-If the service worker doesn't receive a response, it returns a [504 Gateway Timeout](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504) status. A `504` status could be returned because the server is offline or the client was disconnected.
+If the service worker receives an error from the service or it doesn't receive a response, it returns an error status that indicates the result of the call.
+For example, if the service worker doesn't receive a response, it creates a [504 Gateway Timeout](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504) status to return. The `504` status in this example could be returned because the server is offline or the client is disconnected.
 
 ## Debugging the Angular service worker
 
@@ -305,7 +308,8 @@ When the service worker's request for `ngsw.json` returns a `404`, then the serv
 
 <!-- vale Angular.Google_Acronyms = NO -->
 
-Also included in the `@angular/service-worker` NPM package is a small script `safety-worker.js`, which when loaded un-registers itself from the browser and remove the service worker caches.
+A small script, `safety-worker.js`, is also included in the `@angular/service-worker` NPM package.
+When loaded, it un-registers itself from the browser and removes the service worker caches.
 This script can be used as a last resort to get rid of unwanted service workers already installed on client pages.
 
 <!-- vale Angular.Google_Acronyms = YES -->
@@ -334,7 +338,7 @@ You might have already encountered the error `The script resource is behind a re
 This can be a problem if you have to change your application's location.
 If you setup a redirect from the old location, such as `example.com`, to the new location, `www.example.com` in this example, the worker stops working.
 Also, the redirect won't even trigger for users who are loading the site entirely from Service Worker.
-The old worker, which was registered at `example.com`, tries to update and sends requests to the old location `example.com`. This request is redirected to the new location `www.example.com` and creates the error: `The script resource is behind a redirect, which is disallowed`.
+The old worker, which was registered at `example.com`, tries to update and sends a request to the old location `example.com`. This request is redirected to the new location `www.example.com` and creates the error: `The script resource is behind a redirect, which is disallowed`.
 
 To remedy this, you might need to deactivate the old worker using one of the preceding techniques: [Fail-safe](#fail-safe) or [Safety Worker](#safety-worker).
 
