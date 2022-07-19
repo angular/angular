@@ -49,7 +49,6 @@ esbuild(
         "dependency-graph",
         "magic-string",
         "semver",
-        "source-map",
         "sourcemap-codec",
         "tslib",
         "yargs",
