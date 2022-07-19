@@ -10,7 +10,7 @@ export class MessagesComponent implements OnInit {
 
   messages: string[] = [];
 
-  constructor(public messageService: MessageService) {}
+  constructor(private messageService: MessageService) {}
 
   ngOnInit(): void {
     this.messages = [...this.messageService.messages];
