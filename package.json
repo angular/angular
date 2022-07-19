@@ -160,7 +160,7 @@
     "selenium-webdriver": "3.5.0",
     "semver-dsl": "^1.0.1",
     "shelljs": "^0.8.5",
-    "source-map": "^0.6.1",
+    "source-map": "0.7.4",
     "source-map-support": "0.5.21",
     "sourcemap-codec": "^1.4.8",
     "start-server-and-test": "^1.10.11",
