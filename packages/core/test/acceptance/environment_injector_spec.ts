@@ -141,6 +141,12 @@ describe('environment injector', () => {
       expect(returnValue).toBe(3);
     });
 
+    it('works with an NgModuleRef injector', () => {
+      const ref = TestBed.inject(NgModuleRef);
+      const returnValue = ref.injector.runInContext(() => 3);
+      expect(returnValue).toBe(3);
+    });
+
     it('should make inject() available', () => {
       const TOKEN = new InjectionToken<string>('TOKEN');
       const injector = createEnvironmentInjector(
