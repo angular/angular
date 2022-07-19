@@ -50,6 +50,14 @@ export interface PlatformConfig {
 export const INITIAL_CONFIG = new InjectionToken<PlatformConfig>('Server.INITIAL_CONFIG');
 
 /**
+ * The DI token for setting the server context. This is used to indicate how the page was
+ * generated for analytics purposes.
+ *
+ * @publicApi
+ */
+export const SERVER_CONTEXT = new InjectionToken<string>('Server.SERVER_CONTEXT');
+
+/**
  * A function that will be executed when calling `renderApplication`, `renderModuleFactory` or
  * `renderModule` just before current platform state is rendered to string.
  *

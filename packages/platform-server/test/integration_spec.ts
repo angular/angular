@@ -10,10 +10,10 @@ import {animate, AnimationBuilder, state, style, transition, trigger} from '@ang
 import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationRef, CompilerFactory, Component, destroyPlatform, getPlatform, HostBinding, HostListener, importProvidersFrom, Inject, Injectable, Input, NgModule, NgZone, OnInit, PLATFORM_ID, PlatformRef, Type, ViewEncapsulation} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, destroyPlatform, getPlatform, HostListener, Inject, Injectable, Input, NgModule, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation} from '@angular/core';
 import {inject, waitForAsync} from '@angular/core/testing';
 import {BrowserModule, makeStateKey, Title, TransferState} from '@angular/platform-browser';
-import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, renderModule, renderModuleFactory, ServerModule, ServerTransferStateModule} from '@angular/platform-server';
+import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, renderModule, renderModuleFactory, SERVER_CONTEXT, ServerModule, ServerTransferStateModule} from '@angular/platform-server';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 
@@ -698,7 +698,7 @@ describe('platform-server integration', () => {
     let doc: string;
     let called: boolean;
     let expectedOutput =
-        '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 textcontent="fine">fine</h1></app></body></html>';
+        '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 textcontent="fine">fine</h1></app></body><!--This page was rendered with: Angular platform-server.--></html>';
 
     beforeEach(() => {
       // PlatformConfig takes in a parsed document so that it can be cached across requests.
@@ -740,6 +740,21 @@ describe('platform-server integration', () => {
 
     // Run the set of tests with regular and standalone components.
     [true, false].forEach((isStandalone: boolean) => {
+      it('should render custom context', waitForAsync(() => {
+           const options = {
+             document: doc,
+             platformProviders: [{provide: SERVER_CONTEXT, useValue: 'custom-engine'}]
+           };
+           const bootstrap = isStandalone ?
+               renderApplication(MyAsyncServerAppStandalone, {...options, appId: 'simple-cmp'}) :
+               renderModule(AsyncServerModule, options);
+           bootstrap.then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 textcontent="fine">fine</h1></app></body><!--This page was rendered with: custom-engine.--></html>');
+             called = true;
+           });
+         }));
+
       it(`using ${isStandalone ? 'renderApplication' : 'renderModule'} should work`,
          waitForAsync(() => {
            const options = {document: doc};
@@ -760,7 +775,7 @@ describe('platform-server integration', () => {
            bootstrap.then(output => {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                 '<svg><use xlink:href="#clear"></use></svg></app></body></html>');
+                 '<svg><use xlink:href="#clear"></use></svg></app></body><!--This page was rendered with: Angular platform-server.--></html>');
              called = true;
            });
          }));
@@ -800,7 +815,7 @@ describe('platform-server integration', () => {
                renderModule(ExampleStylesModule, options);
            bootstrap.then(output => {
              expect(output).toMatch(
-                 /<html><head><style ng-transition="example-styles">div\[_ngcontent-sc\d+\] {color: blue; } \[_nghost-sc\d+\] { color: red; }<\/style><\/head><body><app _nghost-sc\d+="" ng-version="0.0.0-PLACEHOLDER"><div _ngcontent-sc\d+="">Works!<\/div><\/app><\/body><\/html>/);
+                 /<html><head><style ng-transition="example-styles">div\[_ngcontent-sc\d+\] {color: blue; } \[_nghost-sc\d+\] { color: red; }<\/style><\/head><body><app _nghost-sc\d+="" ng-version="0.0.0-PLACEHOLDER"><div _ngcontent-sc\d+="">Works!<\/div><\/app><\/body><!--This page was rendered with: Angular platform-server.--><\/html>/);
              called = true;
            });
          }));
@@ -813,7 +828,7 @@ describe('platform-server integration', () => {
            bootstrap.then(output => {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                 '<my-child ng-reflect-attr="false">Works!</my-child></app></body></html>');
+                 '<my-child ng-reflect-attr="false">Works!</my-child></app></body><!--This page was rendered with: Angular platform-server.--></html>');
              called = true;
            });
          }));
@@ -826,7 +841,7 @@ describe('platform-server integration', () => {
            bootstrap.then(output => {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                 '<input name=""></app></body></html>');
+                 '<input name=""></app></body><!--This page was rendered with: Angular platform-server.--></html>');
              called = true;
            });
          }));
@@ -843,7 +858,7 @@ describe('platform-server integration', () => {
            bootstrap.then(output => {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                 '<div><b>foo</b> bar</div></app></body></html>');
+                 '<div><b>foo</b> bar</div></app></body><!--This page was rendered with: Angular platform-server.--></html>');
              called = true;
            });
          }));
@@ -856,7 +871,7 @@ describe('platform-server integration', () => {
            bootstrap.then(output => {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                 '<input hidden=""><input></app></body></html>');
+                 '<input hidden=""><input></app></body><!--This page was rendered with: Angular platform-server.--></html>');
              called = true;
            });
          }));
@@ -872,7 +887,7 @@ describe('platform-server integration', () => {
              // title should be added by the render hook.
              expect(output).toBe(
                  '<html><head><title>RenderHook</title></head><body>' +
-                 '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+                 '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body><!--This page was rendered with: Angular platform-server.--></html>');
              called = true;
            });
          }));
@@ -889,7 +904,7 @@ describe('platform-server integration', () => {
              // title should be added by the render hook.
              expect(output).toBe(
                  '<html><head><title>RenderHook</title><meta name="description"></head>' +
-                 '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+                 '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body><!--This page was rendered with: Angular platform-server.--></html>');
              expect(consoleSpy).toHaveBeenCalled();
              called = true;
            });
@@ -906,7 +921,7 @@ describe('platform-server integration', () => {
              // title should be added by the render hook.
              expect(output).toBe(
                  '<html><head><title>AsyncRenderHook</title></head><body>' +
-                 '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+                 '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body><!--This page was rendered with: Angular platform-server.--></html>');
              called = true;
            });
          }));
@@ -924,7 +939,7 @@ describe('platform-server integration', () => {
              // title should be added by the render hook.
              expect(output).toBe(
                  '<html><head><meta name="description"><title>AsyncRenderHook</title></head>' +
-                 '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+                 '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body><!--This page was rendered with: Angular platform-server.--></html>');
              expect(consoleSpy).toHaveBeenCalled();
              called = true;
            });
@@ -1215,7 +1230,7 @@ describe('platform-server integration', () => {
   describe('ServerTransferStoreModule', () => {
     let called = false;
     const defaultExpectedOutput =
-        '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!</app><script id="transfer-state" type="application/json">{&q;test&q;:10}</script></body></html>';
+        '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!</app><script id="transfer-state" type="application/json">{&q;test&q;:10}</script></body><!--This page was rendered with: Angular platform-server.--></html>';
 
     beforeEach(() => {
       called = false;
@@ -1251,7 +1266,7 @@ describe('platform-server integration', () => {
                '<html><head></head><body><esc-app ng-version="0.0.0-PLACEHOLDER">Works!</esc-app>' +
                '<script id="transfer-state" type="application/json">' +
                '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
-               'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}</script></body></html>');
+               'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}</script></body><!--This page was rendered with: Angular platform-server.--></html>');
            called = true;
          });
        }));

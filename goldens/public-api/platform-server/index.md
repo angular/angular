@@ -24,6 +24,9 @@ export const BEFORE_APP_SERIALIZED: InjectionToken<(() => void | Promise<void>)[
 export const INITIAL_CONFIG: InjectionToken<PlatformConfig>;
 
 // @public
+export const SERVER_CONTEXT: InjectionToken<string>;
+
+// @public
 export interface PlatformConfig {
     baseUrl?: string;
     document?: string;

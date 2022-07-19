@@ -8,7 +8,7 @@
 
 export {PlatformState} from './platform_state';
 export {platformDynamicServer, platformServer, ServerModule} from './server';
-export {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig} from './tokens';
+export {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig, SERVER_CONTEXT} from './tokens';
 export {ServerTransferStateModule} from './transfer_state';
 export {renderApplication, renderModule, renderModuleFactory} from './utils';
 

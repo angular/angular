@@ -21,7 +21,7 @@ import {PlatformState} from './platform_state';
 import {ServerEventManagerPlugin} from './server_events';
 import {ServerRendererFactory2} from './server_renderer';
 import {ServerStylesHost} from './styles_host';
-import {INITIAL_CONFIG, PlatformConfig} from './tokens';
+import {INITIAL_CONFIG, PlatformConfig, SERVER_CONTEXT} from './tokens';
 
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: DOCUMENT, useFactory: _document, deps: [Injector]},
@@ -80,8 +80,11 @@ export class ServerModule {
 
 function _document(injector: Injector) {
   let config: PlatformConfig|null = injector.get(INITIAL_CONFIG, null);
-  const document = config && config.document ? parseDocument(config.document, config.url) :
-                                               getDOM().createHtmlDocument();
+  let context: string = injector.get(SERVER_CONTEXT, 'Angular platform-server');
+  const document =
+      config?.document ? parseDocument(config.document, config.url) : getDOM().createHtmlDocument();
+  document.documentElement.appendChild(
+      document.createComment(`This page was rendered with: ${context}.`));
   // Tell ivy about the global document
   ɵsetDocument(document);
   return document;
