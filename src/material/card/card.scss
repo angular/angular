@@ -1,4 +1,3 @@
-@use 'sass:math';
 @use '../core/mdc-helpers/mdc-helpers';
 @use '@material/card' as mdc-card;
 
@@ -44,13 +43,6 @@ $mat-card-default-padding: 16px !default;
   // Apply default padding for the header region. Omit any bottom padding because we assume
   // this region will be followed by another region that includes top padding.
   padding: $mat-card-default-padding $mat-card-default-padding 0;
-
-  // When a subtitle is inside of a header, we want to move it up slightly to reduce the space with
-  // the title, and add a margin bottom to create space underneath the header.
-  .mat-mdc-card-subtitle {
-    margin-top: -(math.div($mat-card-default-padding, 2));
-    margin-bottom: $mat-card-default-padding;
-  }
 }
 
 // Primary card content. MDC does not have a pre-made section for primary content.
@@ -81,10 +73,7 @@ $mat-card-default-padding: 16px !default;
   // and subtitle go first (projected into a single div), followed by the media.
   display: flex;
   justify-content: space-between;
-
-  // Apply default padding for the title-group region. Omit any bottom padding because we assume
-  // this region will be followed by another region that includes top padding.
-  padding: $mat-card-default-padding $mat-card-default-padding 0;
+  width: 100%;
 }
 
 // Avatar image for a card. MDC does not specifically have a card avatar or a "common" avatar.
@@ -96,10 +85,20 @@ $mat-card-default-padding: 16px !default;
   width: $mat-card-header-size;
   border-radius: 50%;
   flex-shrink: 0;
+  margin-bottom: $mat-card-default-padding;
 
   // Makes `<img>` tags behave like `background-size: cover`. Not supported
   // in IE, but we're using it as a progressive enhancement.
   object-fit: cover;
+
+  // When a title and subtitle are used alongside an avatar,
+  // reduce the spacing between them to better align with the avatar.
+  & ~ .mat-mdc-card-header-text {
+    .mat-mdc-card-subtitle,
+    .mat-mdc-card-title {
+      line-height: normal;
+    }
+  }
 }
 
 // Specifically sized small image, specific to Angular Material.

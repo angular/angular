@@ -13,8 +13,10 @@
   </mat-card>
 
   <mat-card [appearance]="appearance">
-    <mat-card-subtitle>Subtitle</mat-card-subtitle>
-    <mat-card-title>Card with title and footer</mat-card-title>
+    <mat-card-header>
+      <mat-card-subtitle>Subtitle</mat-card-subtitle>
+      <mat-card-title>Card with title and footer</mat-card-title>
+    </mat-card-header>
     <mat-card-content>
       <p>This is supporting text.</p>
       <p>{{longText}}</p>
@@ -26,8 +28,10 @@
   </mat-card>
 
   <mat-card [appearance]="appearance">
-    <mat-card-subtitle>Subtitle</mat-card-subtitle>
-    <mat-card-title>Card with title, footer, and inset-divider</mat-card-title>
+    <mat-card-header>
+      <mat-card-subtitle>Subtitle</mat-card-subtitle>
+      <mat-card-title>Card with title, footer, and inset-divider</mat-card-title>
+    </mat-card-header>
     <mat-card-content>
       <p>This is supporting text.</p>
       <p>{{longText}}</p>
@@ -41,7 +45,9 @@
 
   <mat-card [appearance]="appearance">
     <img mat-card-image src="https://material.angularjs.org/latest/img/washedout.png">
-    <mat-card-title>Content Title</mat-card-title>
+    <mat-card-header>
+      <mat-card-title>Content Title</mat-card-title>
+    </mat-card-header>
     <mat-card-content>
       <p>Here is some content</p>
     </mat-card-content>
@@ -64,7 +70,9 @@
   </mat-card>
 
   <mat-card class="demo-card-blue mat-card-flat" [appearance]="appearance">
-    <mat-card-title>Easily customizable</mat-card-title>
+    <mat-card-header>
+      <mat-card-title>Easily customizable</mat-card-title>
+    </mat-card-header>
     <mat-card-actions>
       <button mat-button>First</button>
       <button mat-button>Second</button>
@@ -75,44 +83,52 @@
   <h2>Cards with media area</h2>
 
   <mat-card [appearance]="appearance">
-    <mat-card-title-group>
-      <mat-card-title>Card</mat-card-title>
-      <mat-card-subtitle>Small</mat-card-subtitle>
-      <img mat-card-sm-image>
-    </mat-card-title-group>
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title>Card</mat-card-title>
+        <mat-card-subtitle>Small</mat-card-subtitle>
+        <img mat-card-sm-image>
+      </mat-card-title-group>
+    </mat-card-header>
     <mat-card-content>
       {{longText}}
     </mat-card-content>
   </mat-card>
 
   <mat-card [appearance]="appearance">
-    <mat-card-title-group>
-      <mat-card-title>Card</mat-card-title>
-      <mat-card-subtitle>Medium</mat-card-subtitle>
-      <img mat-card-md-image>
-    </mat-card-title-group>
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title>Card</mat-card-title>
+        <mat-card-subtitle>Medium</mat-card-subtitle>
+        <img mat-card-md-image>
+      </mat-card-title-group>
+    </mat-card-header>
     <mat-card-content>
       {{longText}}
     </mat-card-content>
   </mat-card>
 
   <mat-card [appearance]="appearance">
-    <mat-card-title-group>
-      <mat-card-title>Card</mat-card-title>
-      <mat-card-subtitle>Large</mat-card-subtitle>
-      <img mat-card-lg-image>
-    </mat-card-title-group>
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title>Card</mat-card-title>
+        <mat-card-subtitle>Large</mat-card-subtitle>
+        <img mat-card-lg-image>
+      </mat-card-title-group>
+    </mat-card-header>
     <mat-card-content>
       {{longText}}
     </mat-card-content>
   </mat-card>
 
   <mat-card [appearance]="appearance">
-    <mat-card-title-group>
-      <mat-card-title>Card</mat-card-title>
-      <mat-card-subtitle>Extra large</mat-card-subtitle>
-      <img mat-card-xl-image>
-    </mat-card-title-group>
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title>Card</mat-card-title>
+        <mat-card-subtitle>Extra large</mat-card-subtitle>
+        <img mat-card-xl-image>
+      </mat-card-title-group>
+    </mat-card-header>
     <mat-card-content>
       {{longText}}
     </mat-card-content>
