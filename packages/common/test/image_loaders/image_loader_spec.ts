@@ -12,12 +12,14 @@ import {provideCloudinaryLoader} from '@angular/common/src/directives/ng_optimiz
 import {provideImageKitLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imagekit_loader';
 import {provideImgixLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imgix_loader';
 import {isValidPath} from '@angular/common/src/directives/ng_optimized_image/util';
-import {createEnvironmentInjector, ValueProvider} from '@angular/core';
+import {createEnvironmentInjector, EnvironmentInjector, ValueProvider} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 
 describe('Built-in image directive loaders', () => {
   describe('Imgix loader', () => {
     function createImgixLoader(path: string): ImageLoader {
-      const injector = createEnvironmentInjector([provideImgixLoader(path)]);
+      const injector = createEnvironmentInjector(
+          [provideImgixLoader(path)], TestBed.inject(EnvironmentInjector));
       return injector.get(IMAGE_LOADER);
     }
 
@@ -65,7 +67,8 @@ describe('Built-in image directive loaders', () => {
 
   describe('Cloudinary loader', () => {
     function createCloudinaryLoader(path: string): ImageLoader {
-      const injector = createEnvironmentInjector([provideCloudinaryLoader(path)]);
+      const injector = createEnvironmentInjector(
+          [provideCloudinaryLoader(path)], TestBed.inject(EnvironmentInjector));
       return injector.get(IMAGE_LOADER);
     }
 
@@ -117,7 +120,8 @@ describe('Built-in image directive loaders', () => {
 
   describe('ImageKit loader', () => {
     function createImageKitLoader(path: string): ImageLoader {
-      const injector = createEnvironmentInjector([provideImageKitLoader(path)]);
+      const injector = createEnvironmentInjector(
+          [provideImageKitLoader(path)], TestBed.inject(EnvironmentInjector));
       return injector.get(IMAGE_LOADER);
     }
 
@@ -167,7 +171,8 @@ describe('Built-in image directive loaders', () => {
 
   describe('Cloudflare loader', () => {
     function createCloudflareLoader(path: string): ImageLoader {
-      const injector = createEnvironmentInjector([provideCloudflareLoader(path)]);
+      const injector = createEnvironmentInjector(
+          [provideCloudflareLoader(path)], TestBed.inject(EnvironmentInjector));
       return injector.get(IMAGE_LOADER);
     }
     it('should construct an image loader with the given path', () => {
