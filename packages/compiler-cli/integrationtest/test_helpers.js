@@ -52,7 +52,6 @@ const requiredNodeModules = {
   'buffer-from': resolveNpmTreeArtifact('npm/node_modules/buffer-from'),
   'reflect-metadata': resolveNpmTreeArtifact('npm/node_modules/reflect-metadata'),
   'rxjs': resolveNpmTreeArtifact('npm/node_modules/rxjs'),
-  'source-map': resolveNpmTreeArtifact('npm/node_modules/source-map'),
   'source-map-support': resolveNpmTreeArtifact('npm/node_modules/source-map-support'),
   'typescript': resolveNpmTreeArtifact('npm/node_modules/typescript'),
   'zone.js': resolveNpmTreeArtifact('angular/packages/zone.js/npm_package'),
