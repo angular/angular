@@ -73,6 +73,7 @@ spec_bundle(
     # `chokidar` and `fsevents`. These rely on native bindings and break with ESBuild.
     external = ["@angular-devkit/core/node"],
     platform = "node",
+    target = "es2020",
     deps = [":unit_tests_lib"],
 )
 
