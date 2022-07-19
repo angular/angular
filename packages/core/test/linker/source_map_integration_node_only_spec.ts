@@ -65,30 +65,29 @@ describe('jit source mapping', () => {
     function declareTests({ngUrl, templateDecorator}: TestConfig) {
       const generatedUrl = 'ng:///MyComp.js';
 
-      it('should use the right source url in html parse errors', fakeAsync(() => {
-           const template = '<div>\n  </error>';
-           @Component({...templateDecorator(template)})
-           class MyComp {
-           }
+      it('should use the right source url in html parse errors', async () => {
+        const template = '<div>\n  </error>';
+        @Component({...templateDecorator(template)})
+        class MyComp {
+        }
 
-           expect(() => {
-             resolveCompileAndCreateComponent(MyComp, template);
-           }).toThrowError(new RegExp(`${escapeRegExp(ngUrl)}@1:2`));
-         }));
+        await expectAsync(resolveCompileAndCreateComponent(MyComp, template))
+            .toBeRejectedWithError(new RegExp(`${escapeRegExp(ngUrl)}@1:2`));
+      });
 
-      it('should create a sourceMap for templates', fakeAsync(() => {
-           const template = `Hello World!`;
+      it('should create a sourceMap for templates', async () => {
+        const template = `Hello World!`;
 
-           @Component({...templateDecorator(template)})
-           class MyComp {
-           }
+        @Component({...templateDecorator(template)})
+        class MyComp {
+        }
 
-           resolveCompileAndCreateComponent(MyComp, template);
+        await resolveCompileAndCreateComponent(MyComp, template);
 
-           const sourceMap = jitEvaluator.getSourceMap(generatedUrl);
-           expect(sourceMap.sources).toEqual([generatedUrl, ngUrl]);
-           expect(sourceMap.sourcesContent).toEqual([' ', template]);
-         }));
+        const sourceMap = jitEvaluator.getSourceMap(generatedUrl);
+        expect(sourceMap.sources).toEqual([generatedUrl, ngUrl]);
+        expect(sourceMap.sourcesContent).toEqual([' ', template]);
+      });
 
 
       it('should report source location for di errors', async () => {
@@ -108,7 +107,7 @@ describe('jit source mapping', () => {
         TestBed.configureTestingModule({declarations: [SomeDir]});
         let error: any;
         try {
-          resolveCompileAndCreateComponent(MyComp, template);
+          await resolveCompileAndCreateComponent(MyComp, template);
         } catch (e) {
           error = e;
         }
@@ -139,7 +138,7 @@ describe('jit source mapping', () => {
         TestBed.configureTestingModule({declarations: [SomeDir]});
         let error: any;
         try {
-          resolveCompileAndCreateComponent(MyComp, template);
+          await resolveCompileAndCreateComponent(MyComp, template);
         } catch (e) {
           error = e;
         }
@@ -161,7 +160,7 @@ describe('jit source mapping', () => {
           }
         }
 
-        const comp = resolveCompileAndCreateComponent(MyComp, template);
+        const comp = await resolveCompileAndCreateComponent(MyComp, template);
 
         let error: any;
         try {
@@ -187,7 +186,7 @@ describe('jit source mapping', () => {
           }
         }
 
-        const comp = resolveCompileAndCreateComponent(MyComp, template);
+        const comp = await resolveCompileAndCreateComponent(MyComp, template);
 
         let error: any;
         const errorHandler = TestBed.inject(ErrorHandler);
@@ -208,18 +207,15 @@ describe('jit source mapping', () => {
     }
   });
 
-  function compileAndCreateComponent(comType: any) {
+  async function compileAndCreateComponent(comType: any) {
     TestBed.configureTestingModule({declarations: [comType]});
 
-    let error: any;
-    TestBed.compileComponents().catch((e) => error = e);
+    await TestBed.compileComponents();
+
     if (resourceLoader.hasPendingRequests()) {
       resourceLoader.flush();
     }
-    tick();
-    if (error) {
-      throw error;
-    }
+
     return TestBed.createComponent(comType);
   }
 
@@ -227,9 +223,9 @@ describe('jit source mapping', () => {
     return (_url: string) => Promise.resolve(contents);
   }
 
-  function resolveCompileAndCreateComponent(comType: any, template: string) {
-    resolveComponentResources(createResolver(template));
-    return compileAndCreateComponent(comType);
+  async function resolveCompileAndCreateComponent(comType: any, template: string) {
+    await resolveComponentResources(createResolver(template));
+    return await compileAndCreateComponent(comType);
   }
 
   let ɵcompilerFacade: CompilerFacade;
