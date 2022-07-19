@@ -141,6 +141,19 @@ describe('environment injector', () => {
       expect(returnValue).toBe(3);
     });
 
+    it('should work with an NgModuleRef injector', () => {
+      const ref = TestBed.inject(NgModuleRef);
+      const returnValue = ref.injector.runInContext(() => 3);
+      expect(returnValue).toBe(3);
+    });
+
+    it('should return correct injector reference', () => {
+      const ngModuleRef = TestBed.inject(NgModuleRef);
+      const ref1 = ngModuleRef.injector.runInContext(() => inject(Injector));
+      const ref2 = ngModuleRef.injector.get(Injector);
+      expect(ref1).toBe(ref2);
+    });
+
     it('should make inject() available', () => {
       const TOKEN = new InjectionToken<string>('TOKEN');
       const injector = createEnvironmentInjector(

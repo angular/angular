@@ -44,13 +44,11 @@ export function createNgModule<T>(
  * @deprecated Use `createNgModule` instead.
  */
 export const createNgModuleRef = createNgModule;
-export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T>,
-                                                                         EnvironmentInjector {
+export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T> {
   // tslint:disable-next-line:require-internal-with-underscore
   _bootstrapComponents: Type<any>[] = [];
   // tslint:disable-next-line:require-internal-with-underscore
   _r3Injector: R3Injector;
-  override injector: EnvironmentInjector = this;
   override instance: T;
   destroyCbs: (() => void)[]|null = [];
 
@@ -86,19 +84,11 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
     // the module might be trying to use this ref in its constructor for DI which will cause a
     // circular error that will eventually error out, because the injector isn't created yet.
     this._r3Injector.resolveInjectorInitializers();
-    this.instance = this.get(ngModuleType);
+    this.instance = this._r3Injector.get(ngModuleType);
   }
 
-  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
-      injectFlags: InjectFlags = InjectFlags.Default): any {
-    if (token === Injector || token === viewEngine_NgModuleRef || token === INJECTOR) {
-      return this;
-    }
-    return this._r3Injector.get(token, notFoundValue, injectFlags);
-  }
-
-  runInContext<ReturnT>(fn: () => ReturnT): ReturnT {
-    return this.injector.runInContext(fn);
+  override get injector(): EnvironmentInjector {
+    return this._r3Injector;
   }
 
   override destroy(): void {
