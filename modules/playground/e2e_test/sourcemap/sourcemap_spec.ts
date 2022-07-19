@@ -14,40 +14,38 @@ import {RawSourceMap, SourceMapConsumer} from 'source-map';
 describe('sourcemaps', function() {
   const URL = '/';
 
-  it('should map sources', function() {
-    browser.get(URL);
+  it('should map sources', async function() {
+    await browser.get(URL);
 
-    $('error-app .errorButton').click();
+    await $('error-app .errorButton').click();
 
-    browser.manage().logs().get(logging.Type.BROWSER).then(async function(logs: any) {
-      let errorLine: number|null = null;
-      let errorColumn: number|null = null;
-      logs.forEach(function(log: any) {
-        const match = log.message.match(/\.createError\s+\(.+:(\d+):(\d+)/m);
-        if (match) {
-          errorLine = parseInt(match[1]);
-          errorColumn = parseInt(match[2]);
-        }
-      });
+    const logs = await browser.manage().logs().get(logging.Type.BROWSER);
 
-      expect(errorLine).not.toBeNull();
-      expect(errorColumn).not.toBeNull();
-
-      const content =
-          readFileSync(require.resolve('../../src/sourcemap/index.js')).toString('utf8');
-      const marker = '//# sourceMappingURL=data:application/json;base64,';
-      const index = content.indexOf(marker);
-      const sourceMapData =
-          Buffer.from(content.substring(index + marker.length), 'base64').toString('utf8');
-
-      const decoder = await new SourceMapConsumer(JSON.parse(sourceMapData) as RawSourceMap);
-      const originalPosition =
-          decoder.originalPositionFor({line: errorLine!, column: errorColumn!});
-      const sourceCodeLines = readFileSync(require.resolve('../../src/sourcemap/index.ts'), {
-                                encoding: 'utf-8'
-                              }).split('\n');
-      expect(sourceCodeLines[originalPosition.line! - 1])
-          .toMatch(/throw new Error\(\'Sourcemap test\'\)/);
+    let errorLine: number|null = null;
+    let errorColumn: number|null = null;
+    logs.forEach(function(log: any) {
+      const match = log.message.match(/\.createError\s+\(.+:(\d+):(\d+)/m);
+      if (match) {
+        errorLine = parseInt(match[1]);
+        errorColumn = parseInt(match[2]);
+      }
     });
+
+    expect(errorLine).not.toBeNull();
+    expect(errorColumn).not.toBeNull();
+
+    const content = readFileSync(require.resolve('../../src/sourcemap/index.js')).toString('utf8');
+    const marker = '//# sourceMappingURL=data:application/json;base64,';
+    const index = content.indexOf(marker);
+    const sourceMapData =
+        Buffer.from(content.substring(index + marker.length), 'base64').toString('utf8');
+
+    const decoder = await new SourceMapConsumer(JSON.parse(sourceMapData) as RawSourceMap);
+    const originalPosition = decoder.originalPositionFor({line: errorLine!, column: errorColumn!});
+    const sourceCodeLines = readFileSync(require.resolve('../../src/sourcemap/index.ts'), {
+                              encoding: 'utf-8'
+                            }).split('\n');
+    expect(sourceCodeLines[originalPosition.line! - 1])
+        .toMatch(/throw new Error\(\'Sourcemap test\'\)/);
   });
 });
