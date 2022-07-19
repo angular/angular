@@ -13,6 +13,7 @@ import {first} from 'rxjs/operators';
 import {PlatformState} from './platform_state';
 import {platformDynamicServer, platformServer, ServerModule} from './server';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
+import {TRANSFER_STATE_SERIALIZATION_PROVIDERS} from './transfer_state';
 
 interface PlatformOptions {
   document?: string;
@@ -150,6 +151,7 @@ export function renderApplication<T>(rootComponent: Type<T>, options: {
   const appProviders = [
     importProvidersFrom(BrowserModule.withServerTransition({appId})),
     importProvidersFrom(ServerModule),
+    ...TRANSFER_STATE_SERIALIZATION_PROVIDERS,
     ...(options.providers ?? []),
   ];
   return _render(platform, internalCreateApplication({rootComponent, appProviders}));
