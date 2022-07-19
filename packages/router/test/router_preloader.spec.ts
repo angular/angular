@@ -111,12 +111,12 @@ describe('RouterPreloader', () => {
              const injector: any = getLoadedInjector(c[0]);
              const loadedRoutes: Route[] = getLoadedRoutes(c[0])!;
              expect(loadedRoutes[0].path).toEqual('LoadedModule1');
-             expect(injector._parent).toBe((testModule as any)._r3Injector);
+             expect(injector.parent).toBe((testModule as any)._r3Injector);
 
              const injector2: any = getLoadedInjector(loadedRoutes[0]);
              const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
              expect(loadedRoutes2[0].path).toEqual('LoadedModule2');
-             expect(injector2._parent).toBe(injector);
+             expect(injector2.parent).toBe(injector);
 
              expect(events.map(e => e.toString())).toEqual([
                'RouteConfigLoadStart(path: lazy)',
@@ -213,11 +213,11 @@ describe('RouterPreloader', () => {
 
              const injector = getLoadedInjector(c[0]) as any;
              const loadedRoutes = getLoadedRoutes(c[0])!;
-             expect(injector._parent).toBe((testModule as any)._r3Injector);
+             expect(injector.parent).toBe((testModule as any)._r3Injector);
 
              const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
              const injector3: any = getLoadedInjector(loadedRoutes2[0]);
-             expect(injector3._parent).toBe(module2.injector);
+             expect(injector3.parent).toBe(module2.injector);
            })));
   });
 
