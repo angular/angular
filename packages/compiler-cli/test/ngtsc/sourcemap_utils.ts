@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {MappingItem, RawSourceMap, SourceMapConsumer} from 'source-map';
+
 import {NgtscTestEnvironment} from './env';
 
 class TestSourceFile {
@@ -63,8 +64,8 @@ export interface SegmentMapping {
  * @param generatedFileName The name of the generated file to process.
  * @returns An array of segment mappings for each mapped segment in the given generated file.
  */
-export function getMappedSegments(
-    env: NgtscTestEnvironment, generatedFileName: string): SegmentMapping[] {
+export async function getMappedSegments(
+    env: NgtscTestEnvironment, generatedFileName: string): Promise<SegmentMapping[]> {
   const generated = new TestSourceFile(generatedFileName, env.getContents(generatedFileName));
   const sourceMapFileName = generated.getSourceMapFileName(generated.contents);
 
@@ -72,7 +73,7 @@ export function getMappedSegments(
   const mappings: MappingItem[] = [];
 
   const mapContents = env.getContents(sourceMapFileName);
-  const sourceMapConsumer = new SourceMapConsumer(JSON.parse(mapContents) as RawSourceMap);
+  const sourceMapConsumer = await new SourceMapConsumer(JSON.parse(mapContents) as RawSourceMap);
   sourceMapConsumer.eachMapping(item => {
     if (!sources.has(item.source)) {
       sources.set(item.source, new TestSourceFile(item.source, env.getContents(item.source)));
