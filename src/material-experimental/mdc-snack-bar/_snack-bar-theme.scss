@@ -34,13 +34,15 @@
   $config: mat.private-typography-to-2018-config(
       mat.get-typography-config($config-or-theme));
   @include mat.private-using-mdc-typography($config) {
-    .mat-mdc-snack-bar-container {
-      @include mdc-snackbar-theme.theme((
-        supporting-text-font: mat.font-family($config, body-2),
-        supporting-text-line-height: mat.line-height($config, body-2),
-        supporting-text-size: mat.font-size($config, body-2),
-        supporting-text-weight: mat.font-weight($config, body-2),
-      ));
+    @if ($config) {
+      .mat-mdc-snack-bar-container {
+        @include mdc-snackbar-theme.theme((
+          supporting-text-font: mat.font-family($config, body-2),
+          supporting-text-line-height: mat.line-height($config, body-2),
+          supporting-text-size: mat.font-size($config, body-2),
+          supporting-text-weight: mat.font-weight($config, body-2),
+        ));
+      }
     }
   }
 }
