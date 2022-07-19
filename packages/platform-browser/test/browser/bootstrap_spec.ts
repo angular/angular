@@ -14,7 +14,7 @@ import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {inject, TestBed} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule, TransferState} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {provideAnimations, provideNoopAnimations} from '@angular/platform-browser/animations';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -317,6 +317,23 @@ function bootstrap(
         expect(() => bootstrapApplication(NonAnnotatedClass)).toThrowError(msg);
       });
 
+      it('should have the TransferState token available', async () => {
+        let state: TransferState|undefined;
+        @Component({
+          selector: 'hello-app',
+          standalone: true,
+          template: '...',
+        })
+        class StandaloneComponent {
+          constructor() {
+            state = _inject(TransferState);
+          }
+        }
+
+        await bootstrapApplication(StandaloneComponent);
+        expect(state).toBeInstanceOf(TransferState);
+      });
+
       describe('with animations', () => {
         @Component({
           standalone: true,
@@ -381,6 +398,22 @@ function bootstrap(
             new Error(`HelloRootDirectiveIsNotCmp cannot be used as an entry component.`));
         done();
       });
+    });
+
+    it('should have the TransferState token available in NgModule bootstrap', async () => {
+      let state: TransferState|undefined;
+      @Component({
+        selector: 'hello-app',
+        template: '...',
+      })
+      class NonStandaloneComponent {
+        constructor() {
+          state = _inject(TransferState);
+        }
+      }
+
+      await bootstrap(NonStandaloneComponent);
+      expect(state).toBeInstanceOf(TransferState);
     });
 
     it('should retrieve sanitizer', inject([Injector], (injector: Injector) => {

@@ -45,7 +45,7 @@ export class BrowserModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<BrowserModule, never, never, [typeof i1.CommonModule, typeof i0.ApplicationModule]>;
 }
 
-// @public
+// @public @deprecated
 export class BrowserTransferStateModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<BrowserTransferStateModule, never>;
