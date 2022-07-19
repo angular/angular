@@ -380,6 +380,10 @@ export class Driver implements Debuggable, UpdateSource {
         }
         break;
       }
+      case 'request': {
+        await this.scope.fetch(urlToOpen);
+        break;
+      }
       default:
         break;
     }

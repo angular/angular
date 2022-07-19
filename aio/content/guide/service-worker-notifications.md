@@ -61,6 +61,7 @@ The Angular service worker supports the following operations:
 | `openWindow`                | Opens a new tab at the specified URL, which is resolved relative to the service worker scope.                                                                                                            |
 | `focusLastFocusedOrOpen`    | Focuses the last focused client. If there is no client open, then it opens a new tab at the specified URL, which is resolved relative to the service worker scope.                                       |
 | `navigateLastFocusedOrOpen` | Focuses the last focused client and navigates it to the specified URL, which is resolved relative to the service worker scope. If there is no client open, then it opens a new tab at the specified URL. |
+| `request`                     | Send a simple GET request to the specified URL.                                                                                                                                                          |
 
 <div class="alert is-important">
 
