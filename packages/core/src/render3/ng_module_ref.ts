@@ -98,7 +98,7 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   }
 
   runInContext<ReturnT>(fn: () => ReturnT): ReturnT {
-    return this.injector.runInContext(fn);
+    return this._r3Injector.runInContext(fn);
   }
 
   override destroy(): void {
