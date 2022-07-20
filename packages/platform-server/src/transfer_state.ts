@@ -19,8 +19,7 @@ export const TRANSFER_STATE_SERIALIZATION_PROVIDERS: Provider[] = [{
   multi: true,
 }];
 
-export function serializeTransferStateFactory(
-    doc: Document, appId: string, transferStore: TransferState) {
+function serializeTransferStateFactory(doc: Document, appId: string, transferStore: TransferState) {
   return () => {
     const store = (transferStore as unknown as {store: {}}).store;
     const isStateEmpty = Object.keys(store).length === 0;
@@ -45,9 +44,9 @@ export function serializeTransferStateFactory(
  * The `renderApplication` makes all providers from this module available in the application.
  *
  * @publicApi
+ * @deprecated no longer needed, you can inject the `TransferState` in an app without providing
+ *     this module.
  */
-@NgModule({
-  providers: TRANSFER_STATE_SERIALIZATION_PROVIDERS,
-})
+@NgModule({})
 export class ServerTransferStateModule {
 }
