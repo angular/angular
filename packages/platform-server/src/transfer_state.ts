@@ -21,9 +21,7 @@ export const TRANSFER_STATE_SERIALIZATION_PROVIDERS: Provider[] = [{
 
 function serializeTransferStateFactory(doc: Document, appId: string, transferStore: TransferState) {
   return () => {
-    const store = (transferStore as unknown as {store: {}}).store;
-    const isStateEmpty = Object.keys(store).length === 0;
-    if (isStateEmpty) {
+    if (transferStore.isEmpty) {
       // The state is empty, nothing to transfer,
       // avoid creating an extra `<script>` tag in this case.
       return;
