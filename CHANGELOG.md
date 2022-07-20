@@ -1,3 +1,22 @@
+<a name="14.0.7"></a>
+# 14.0.7 (2022-07-20)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5bdbb6285b](https://github.com/angular/angular/commit/5bdbb6285b77f070347a5878bbd8218f6e01b5e8) | fix | make sure falsy values are added to _globalTimelineStyles ([#46863](https://github.com/angular/angular/pull/46863)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [41253f9c46](https://github.com/angular/angular/commit/41253f9c467aa9742ef0b69ddd063043fe0300e2) | fix | inputs/outputs incorrectly parsed in jit mode ([#46813](https://github.com/angular/angular/pull/46813)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4e77c7fbf3](https://github.com/angular/angular/commit/4e77c7fbf38f27741617303165068e1cb1ef6354) | fix | do not invoke jasmine `done` callback multiple times with `waitForAsync` |
+## Special Thanks
+Andrew Kushnir, Andrew Scott, Bob Watson, Cédric Exbrayat, Doug Parker, George Kalpakas, Jessica Janiuk, Kristiyan Kostadinov, Paul Gschwendtner, acvi, dario-piotrowicz, jnizet and piyush132000
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.0-rc.0"></a>
 # 14.1.0-rc.0 (2022-07-13)
 ## Deprecations
