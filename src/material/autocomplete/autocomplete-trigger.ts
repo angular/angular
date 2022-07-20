@@ -836,6 +836,11 @@ export abstract class _MatAutocompleteTriggerBase
         event.preventDefault();
       }
     });
+
+    // Subscribe to the pointer events stream so that it doesn't get picked up by other overlays.
+    // TODO(crisbeto): we should switch `_getOutsideClickStream` eventually to use this stream,
+    // but the behvior isn't exactly the same and it ends up breaking some internal tests.
+    overlayRef.outsidePointerEvents().subscribe();
   }
 }
 
