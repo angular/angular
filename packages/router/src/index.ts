@@ -22,7 +22,7 @@ export {provideRoutes, ROUTER_INITIALIZER, RouterModule} from './router_module';
 export {ChildrenOutletContexts, OutletContext} from './router_outlet_context';
 export {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} from './router_preloader';
 export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
-export {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
+export {convertToParamMap, defaultUrlMatcher, ParamMap, Params, PRIMARY_OUTLET} from './shared';
 export {UrlHandlingStrategy} from './url_handling_strategy';
 export {DefaultUrlSerializer, IsActiveMatchOptions, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 export {VERSION} from './version';
