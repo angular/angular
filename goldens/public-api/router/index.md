@@ -209,6 +209,9 @@ export class DefaultTitleStrategy extends TitleStrategy {
 }
 
 // @public
+export function defaultUrlMatcher(segments: UrlSegment[], segmentGroup: UrlSegmentGroup, route: Route): UrlMatchResult | null;
+
+// @public
 export class DefaultUrlSerializer implements UrlSerializer {
     parse(url: string): UrlTree;
     serialize(tree: UrlTree): string;
