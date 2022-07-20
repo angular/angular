@@ -1,3 +1,21 @@
+<a name="14.0.6"></a>
+# 14.0.6 "chromium-pinball" (2022-07-20)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cc510216a](https://github.com/angular/components/commit/cc510216a6d1cae887558879a5d1fe8122e8929f) | fix | **autocomplete:** prevent outside clicks from going to other overlays ([#25243](https://github.com/angular/components/pull/25243)) |
+| [b73b2fb85](https://github.com/angular/components/commit/b73b2fb85874e84b84b35ffcc02819af3f971356) | fix | **checkbox:** incorrect animation state when going from pre-checked to indeterminate ([#25297](https://github.com/angular/components/pull/25297)) |
+| [e7b359286](https://github.com/angular/components/commit/e7b3592866f144996ff3895bed7b64670f2b4dd2) | fix | **slider:** add cancelable checks to touchmove and touchend events ([#25301](https://github.com/angular/components/pull/25301)) |
+| [d7e422668](https://github.com/angular/components/commit/d7e422668b19b4bc865717b1808d991e7d1d068c) | fix | **tabs:** disable tab label color transition when animations are disabled ([#25308](https://github.com/angular/components/pull/25308)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [43bfbac51](https://github.com/angular/components/commit/43bfbac51514dcb64fc227512adfdadf84567f31) | fix | **mdc-slider:** thumb incorrectly positioned when inside an overlay ([#25288](https://github.com/angular/components/pull/25288)) |
+## Special Thanks
+Alka Vats, John Vandenberg, Kristiyan Kostadinov and Oliver Kierepka
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.5"></a>
 # 14.0.5 "metal-hamster" (2022-07-14)
 ### cdk
