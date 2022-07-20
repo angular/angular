@@ -126,6 +126,13 @@ export class TransferState {
   }
 
   /**
+   * Indicates whether the state is empty.
+   */
+  get isEmpty(): boolean {
+    return Object.keys(this.store).length === 0;
+  }
+
+  /**
    * Register a callback to provide the value for a key when `toJson` is called.
    */
   onSerialize<T>(key: StateKey<T>, callback: () => T): void {

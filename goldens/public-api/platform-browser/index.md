@@ -228,6 +228,7 @@ export class Title {
 export class TransferState {
     get<T>(key: StateKey<T>, defaultValue: T): T;
     hasKey<T>(key: StateKey<T>): boolean;
+    get isEmpty(): boolean;
     onSerialize<T>(key: StateKey<T>, callback: () => T): void;
     remove<T>(key: StateKey<T>): void;
     set<T>(key: StateKey<T>, value: T): void;
