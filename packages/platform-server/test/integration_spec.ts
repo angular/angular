@@ -474,7 +474,6 @@ class EscapedComponent {
   imports: [
     BrowserModule.withServerTransition({appId: 'transfer'}),
     ServerModule,
-    ServerTransferStateModule,
   ]
 })
 class TransferStoreModule {
@@ -486,7 +485,6 @@ class TransferStoreModule {
   imports: [
     BrowserModule.withServerTransition({appId: 'transfer'}),
     ServerModule,
-    ServerTransferStateModule,
   ]
 })
 class EscapedTransferStoreModule {
