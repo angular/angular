@@ -1,3 +1,71 @@
+<a name="14.1.0"></a>
+# 14.1.0 (2022-07-20)
+## Deprecations
+### core
+- The `createNgModuleRef` is deprecated in favor of newly added `createNgModule` one.
+- The bit field signature of `inject()` has been deprecated, in favor of the
+  new options object. Correspondingly, `InjectFlags` is deprecated as well.
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [55308f2df5](https://github.com/angular/angular/commit/55308f2df5b0f6e8e40e3c4085c463a5b83c5ed1) | feat | add `provideAnimations()` and `provideNoopAnimations()` functions ([#46793](https://github.com/angular/angular/pull/46793)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4a2e7335b1](https://github.com/angular/angular/commit/4a2e7335b180190800cf2c5db8ed1c8841dbf473) | feat | make the `CommonModule` pipes standalone ([#46401](https://github.com/angular/angular/pull/46401)) |
+| [a7597dd080](https://github.com/angular/angular/commit/a7597dd08026a4071758323d54ccbfb382e0c780) | feat | make the CommonModule directives standalone ([#46469](https://github.com/angular/angular/pull/46469)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [33ce3883a5](https://github.com/angular/angular/commit/33ce3883a5d962adf5ee7feffd3426feefe0c0b5) | feat | Add extended diagnostic to warn when missing let on ngForOf ([#46683](https://github.com/angular/angular/pull/46683)) |
+| [6f11a58040](https://github.com/angular/angular/commit/6f11a580406877e440c43df31fae3d5f120cafed) | feat | Add extended diagnostic to warn when text attributes are intended to be bindings ([#46161](https://github.com/angular/angular/pull/46161)) |
+| [9e836c232f](https://github.com/angular/angular/commit/9e836c232ff66043bc101b905dae4c8bde18bc58) | feat | warn when style suffixes are used with attribute bindings ([#46651](https://github.com/angular/angular/pull/46651)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [93c65e7b14](https://github.com/angular/angular/commit/93c65e7b1468bb0c696dec1bc3362422a2ca5170) | feat | add extended diagnostic for non-nullable optional chains ([#46686](https://github.com/angular/angular/pull/46686)) |
+| [131d029da1](https://github.com/angular/angular/commit/131d029da16b7d486cdc200f00160b9a11871fb2) | feat | detect missing control flow directive imports in standalone components ([#46146](https://github.com/angular/angular/pull/46146)) |
+| [6b8e60c06a](https://github.com/angular/angular/commit/6b8e60c06a4f9a5fdbce9e7971d403ccb2bc6e8e) | fix | improve the missingControlFlowDirective message ([#46846](https://github.com/angular/angular/pull/46846)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e8e8e5f171](https://github.com/angular/angular/commit/e8e8e5f1718f605c62a671b0ff15fa4dff7d8229) | feat | add `createComponent` function |
+| [b5153814af](https://github.com/angular/angular/commit/b5153814af3e6b1ec8550ddf39584efd7cca36be) | feat | add `reflectComponentType` function |
+| [96c6139c9a](https://github.com/angular/angular/commit/96c6139c9ab35aa6ab2330a5a79a5906d5c2e8be) | feat | add ability to set inputs on ComponentRef ([#46641](https://github.com/angular/angular/pull/46641)) |
+| [a6d5fe202c](https://github.com/angular/angular/commit/a6d5fe202cafb419f3beb8d09711132124b6aa9a) | feat | alias `createNgModuleRef` as `createNgModule` ([#46789](https://github.com/angular/angular/pull/46789)) |
+| [71e606d3c3](https://github.com/angular/angular/commit/71e606d3c3cfdcf93a6e40f84fd69aa75c5cca42) | feat | expose EnvironmentInjector on ApplicationRef ([#46665](https://github.com/angular/angular/pull/46665)) |
+| [19e6d9ccd3](https://github.com/angular/angular/commit/19e6d9ccd36c7776fcee7de541bba413fd6dcabf) | feat | import AsyncStackTaggingZone if available ([#46693](https://github.com/angular/angular/pull/46693)) |
+| [a7a14df5f8](https://github.com/angular/angular/commit/a7a14df5f8ff2d1e6a4dba3ac53f4479a6646810) | feat | introduce `EnvironmentInjector.runInContext` API ([#46653](https://github.com/angular/angular/pull/46653)) |
+| [fa52b6e906](https://github.com/angular/angular/commit/fa52b6e906e549e1c6b4a4f4428596d093fb0549) | feat | options object to supersede bit flags for `inject()` ([#46649](https://github.com/angular/angular/pull/46649)) |
+| [af20112222](https://github.com/angular/angular/commit/af20112222fcfa961ff9a2dee4050dd59aa4156e) | feat | support the descendants option for ContentChild queries ([#46638](https://github.com/angular/angular/pull/46638)) |
+| [945a3ad359](https://github.com/angular/angular/commit/945a3ad359cd2fe3456f635b0fe36effbfe8d5c2) | fix | Fix `runInContext` for `NgModuleRef` injector ([#46877](https://github.com/angular/angular/pull/46877)) |
+| [bb7c80477b](https://github.com/angular/angular/commit/bb7c80477b1258f48971b67b2eade6a4b41337f2) | fix | make parent injector argument required in `createEnvironmentInjector` ([#46397](https://github.com/angular/angular/pull/46397)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [82acbf919b](https://github.com/angular/angular/commit/82acbf919bae2ddb6a46f41239aa2a101901f089) | feat | improve error message for nullish header ([#46059](https://github.com/angular/angular/pull/46059)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [53ca936366](https://github.com/angular/angular/commit/53ca936366fb908278571bae5fcc7fa08b19a5a0) | feat | Add ability to create `UrlTree` from any `ActivatedRouteSnapshot` ([#45877](https://github.com/angular/angular/pull/45877)) |
+| [de058bba99](https://github.com/angular/angular/commit/de058bba9979f68de2320118b537e6be4dbb888d) | feat | Add CanMatch guard to control whether a Route should match ([#46021](https://github.com/angular/angular/pull/46021)) |
+| [6c1357dd7d](https://github.com/angular/angular/commit/6c1357dd7d5f466575398ebc32c581068d9bf2df) | feat | Add stable cancelation code to `NavigationCancel` event ([#46675](https://github.com/angular/angular/pull/46675)) |
+| [a4ce273e50](https://github.com/angular/angular/commit/a4ce273e50551e6c6bc8f3a86591b04760de7ba4) | feat | Add the target `RouterStateSnapshot` to `NavigationError` ([#46731](https://github.com/angular/angular/pull/46731)) |
+| [abe3759e24](https://github.com/angular/angular/commit/abe3759e2417c0396d75e226edcef2fae99e363b) | fix | allow to return `UrlTree` from `CanMatchFn` ([#46455](https://github.com/angular/angular/pull/46455)) |
+| [e8c7dd10e9](https://github.com/angular/angular/commit/e8c7dd10e93d338456131e11d600bf758ee48634) | fix | Ensure `APP_INITIALIZER` of `enabledBlocking` option completes ([#46026](https://github.com/angular/angular/pull/46026)) |
+| [ce20ed067f](https://github.com/angular/angular/commit/ce20ed067f12714ee6488ffe07f1a1c18bb60a15) | fix | Ensure Route injector is created before running CanMatch guards ([#46394](https://github.com/angular/angular/pull/46394)) |
+| [6a7b818d94](https://github.com/angular/angular/commit/6a7b818d94fdd13d81a01285e3e4be953a29cc06) | fix | Ensure target `RouterStateSnapshot` is defined in `NavigationError` ([#46842](https://github.com/angular/angular/pull/46842)) |
+| [f94c6f433d](https://github.com/angular/angular/commit/f94c6f433dba3924b79f137cfcc49d2dfd4d679c) | fix | Expose CanMatchFn as public API ([#46394](https://github.com/angular/angular/pull/46394)) |
+| [e8ae0fe3e9](https://github.com/angular/angular/commit/e8ae0fe3e91e2e805146fad0d2f0976b1f886112) | fix | Fix cancellation code for canLoad rejections ([#46752](https://github.com/angular/angular/pull/46752)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e9cb0454dc](https://github.com/angular/angular/commit/e9cb0454dce2113cfd5ba11deeca6cdcf47d47f0) | feat | more closely align `UpgradeModule#bootstrap()` with `angular.bootstrap()` ([#46214](https://github.com/angular/angular/pull/46214)) |
+## Special Thanks
+AleksanderBodurri, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Cédric Exbrayat, Dmitrij Kuba, Dylan Hunn, George Kalpakas, Jessica Janiuk, JiaLiPassion, Joey Perrott, John Vandenberg, JoostK, Keith Li, Or'el Ben-Ya'ir, Paul Gschwendtner, Pawel Kozlowski, SyedAhm3r, arturovt, mariu, markostanimirovic and mgechev
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.0.7"></a>
 # 14.0.7 (2022-07-20)
 ### animations
@@ -14,50 +82,6 @@
 | [4e77c7fbf3](https://github.com/angular/angular/commit/4e77c7fbf38f27741617303165068e1cb1ef6354) | fix | do not invoke jasmine `done` callback multiple times with `waitForAsync` |
 ## Special Thanks
 Andrew Kushnir, Andrew Scott, Bob Watson, Cédric Exbrayat, Doug Parker, George Kalpakas, Jessica Janiuk, Kristiyan Kostadinov, Paul Gschwendtner, acvi, dario-piotrowicz, jnizet and piyush132000
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.1.0-rc.0"></a>
-# 14.1.0-rc.0 (2022-07-13)
-## Deprecations
-### core
-- The `createNgModuleRef` is deprecated in favor of newly added `createNgModule` one.
-### animations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [55308f2df5](https://github.com/angular/angular/commit/55308f2df5b0f6e8e40e3c4085c463a5b83c5ed1) | feat | add `provideAnimations()` and `provideNoopAnimations()` functions ([#46793](https://github.com/angular/angular/pull/46793)) |
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [33ce3883a5](https://github.com/angular/angular/commit/33ce3883a5d962adf5ee7feffd3426feefe0c0b5) | feat | Add extended diagnostic to warn when missing let on ngForOf ([#46683](https://github.com/angular/angular/pull/46683)) |
-| [9e836c232f](https://github.com/angular/angular/commit/9e836c232ff66043bc101b905dae4c8bde18bc58) | feat | warn when style suffixes are used with attribute bindings ([#46651](https://github.com/angular/angular/pull/46651)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [93c65e7b14](https://github.com/angular/angular/commit/93c65e7b1468bb0c696dec1bc3362422a2ca5170) | feat | add extended diagnostic for non-nullable optional chains ([#46686](https://github.com/angular/angular/pull/46686)) |
-| [93d17ee888](https://github.com/angular/angular/commit/93d17ee888fc14c740daad5c74f17f0863cddddd) | fix | only consider used pipes for inline type-check requirement ([#46807](https://github.com/angular/angular/pull/46807)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a6d5fe202c](https://github.com/angular/angular/commit/a6d5fe202cafb419f3beb8d09711132124b6aa9a) | feat | alias `createNgModuleRef` as `createNgModule` ([#46789](https://github.com/angular/angular/pull/46789)) |
-| [71e606d3c3](https://github.com/angular/angular/commit/71e606d3c3cfdcf93a6e40f84fd69aa75c5cca42) | feat | expose EnvironmentInjector on ApplicationRef ([#46665](https://github.com/angular/angular/pull/46665)) |
-| [19e6d9ccd3](https://github.com/angular/angular/commit/19e6d9ccd36c7776fcee7de541bba413fd6dcabf) | feat | import AsyncStackTaggingZone if available ([#46693](https://github.com/angular/angular/pull/46693)) |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c0ca3fc71a](https://github.com/angular/angular/commit/c0ca3fc71aabc8902c7ed68f8f6a0efd9d1a6d81) | fix | expose ControlConfig in public API ([#46594](https://github.com/angular/angular/pull/46594)) |
-| [e9b5dac9ec](https://github.com/angular/angular/commit/e9b5dac9ecaa86914079a37176985c628c403aba) | fix | Move all remaining errors in Forms to use RuntimeErrorCode. ([#46654](https://github.com/angular/angular/pull/46654)) |
-### localize
-| Commit | Type | Description |
-| -- | -- | -- |
-| [392c56749a](https://github.com/angular/angular/commit/392c56749a0302f7e374ffcf36b2eac1a2353c8a) | fix | add `--project` option to `ng-add` schematic ([#46664](https://github.com/angular/angular/pull/46664)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a4ce273e50](https://github.com/angular/angular/commit/a4ce273e50551e6c6bc8f3a86591b04760de7ba4) | feat | Add the target `RouterStateSnapshot` to `NavigationError` ([#46731](https://github.com/angular/angular/pull/46731)) |
-| [e8ae0fe3e9](https://github.com/angular/angular/commit/e8ae0fe3e91e2e805146fad0d2f0976b1f886112) | fix | Fix cancellation code for canLoad rejections ([#46752](https://github.com/angular/angular/pull/46752)) |
-## Special Thanks
-Alan Agius, Andrew Kushnir, Andrew Scott, Bob Watson, Dylan Hunn, George Kalpakas, Ivaylo Kirov, Jessica Janiuk, JiaLiPassion, John Vandenberg, JoostK, Joshua VanAllen, Lukas Matta, Marcin Wosinek, Nicolas Molina Monroy, Or'el Ben-Ya'ir, Paul Gschwendtner, Pawel Kozlowski, SoulsMark, Uday Sony, dario-piotrowicz, markostanimirovic and zhysky
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -81,33 +105,6 @@ Alan Agius, Andrew Scott, Bob Watson, Dylan Hunn, George Kalpakas, Ivaylo Kirov,
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="14.1.0-next.4"></a>
-# 14.1.0-next.4 (2022-07-06)
-## Deprecations
-### core
-- The bit field signature of `inject()` has been deprecated, in favor of the
-  new options object. Correspondingly, `InjectFlags` is deprecated as well.
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [6f11a58040](https://github.com/angular/angular/commit/6f11a580406877e440c43df31fae3d5f120cafed) | feat | Add extended diagnostic to warn when text attributes are intended to be bindings ([#46161](https://github.com/angular/angular/pull/46161)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [96c6139c9a](https://github.com/angular/angular/commit/96c6139c9ab35aa6ab2330a5a79a5906d5c2e8be) | feat | add ability to set inputs on ComponentRef ([#46641](https://github.com/angular/angular/pull/46641)) |
-| [a7a14df5f8](https://github.com/angular/angular/commit/a7a14df5f8ff2d1e6a4dba3ac53f4479a6646810) | feat | introduce `EnvironmentInjector.runInContext` API ([#46653](https://github.com/angular/angular/pull/46653)) |
-| [fa52b6e906](https://github.com/angular/angular/commit/fa52b6e906e549e1c6b4a4f4428596d093fb0549) | feat | options object to supersede bit flags for `inject()` ([#46649](https://github.com/angular/angular/pull/46649)) |
-| [af20112222](https://github.com/angular/angular/commit/af20112222fcfa961ff9a2dee4050dd59aa4156e) | feat | support the descendants option for ContentChild queries ([#46638](https://github.com/angular/angular/pull/46638)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [6c1357dd7d](https://github.com/angular/angular/commit/6c1357dd7d5f466575398ebc32c581068d9bf2df) | feat | Add stable cancelation code to `NavigationCancel` event ([#46675](https://github.com/angular/angular/pull/46675)) |
-| [e8c7dd10e9](https://github.com/angular/angular/commit/e8c7dd10e93d338456131e11d600bf758ee48634) | fix | Ensure `APP_INITIALIZER` of `enabledBlocking` option completes ([#46026](https://github.com/angular/angular/pull/46026)) |
-## Special Thanks
-Alan Agius, Alex Rickabaugh, Andrew Scott, Aristeidis Bampakos, Bob Watson, George Kalpakas, Paul Gschwendtner and Pawel Kozlowski
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="14.0.5"></a>
 # 14.0.5 (2022-07-06)
 ### router
@@ -116,39 +113,6 @@ Alan Agius, Alex Rickabaugh, Andrew Scott, Aristeidis Bampakos, Bob Watson, Geor
 | [a3bd65e2b8](https://github.com/angular/angular/commit/a3bd65e2b87a2b5676c920778598fa6afd2cda9f) | fix | Ensure `APP_INITIALIZER` of `enabledBlocking` option completes ([#46634](https://github.com/angular/angular/pull/46634)) |
 ## Special Thanks
 Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Bob Watson, George Kalpakas, Paul Gschwendtner and Pawel Kozlowski
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.1.0-next.3"></a>
-# 14.1.0-next.3 (2022-06-29)
-### animations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4eb1ca11f0](https://github.com/angular/angular/commit/4eb1ca11f0fbc7683115fc382420b3e75f248b4c) | fix | cleanup DOM elements when the root view is removed ([#45143](https://github.com/angular/angular/pull/45143)) |
-| [b417370383](https://github.com/angular/angular/commit/b41737038377af480763226a904b67e7d8e283ae) | fix | enable shadowElements to leave when their parent does ([#46459](https://github.com/angular/angular/pull/46459)) |
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4a2e7335b1](https://github.com/angular/angular/commit/4a2e7335b180190800cf2c5db8ed1c8841dbf473) | feat | make the `CommonModule` pipes standalone ([#46401](https://github.com/angular/angular/pull/46401)) |
-| [a7597dd080](https://github.com/angular/angular/commit/a7597dd08026a4071758323d54ccbfb382e0c780) | feat | make the CommonModule directives standalone ([#46469](https://github.com/angular/angular/pull/46469)) |
-| [1c39aace0e](https://github.com/angular/angular/commit/1c39aace0e74b02338729e5fb61e322ab06a9e14) | fix | handle CSS custom properties in NgStyle ([#46451](https://github.com/angular/angular/pull/46451)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [8b6f4215a3](https://github.com/angular/angular/commit/8b6f4215a3c13a44d989d6068f6fb4625f3bab67) | fix | trigger `ApplicationRef.destroy` when Platform is destroyed ([#46497](https://github.com/angular/angular/pull/46497)) |
-| [606d94299a](https://github.com/angular/angular/commit/606d94299ac929243e8fa10fe7e00dee6d40064b) | fix | Update ngfor error code to be negative ([#46555](https://github.com/angular/angular/pull/46555)) |
-| [f86e0948f8](https://github.com/angular/angular/commit/f86e0948f80d398a8c4da9032372e083acc5d7a2) | fix | Updates error to use RuntimeError code ([#46526](https://github.com/angular/angular/pull/46526)) |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [0a5c8c0bc4](https://github.com/angular/angular/commit/0a5c8c0bc45ec58bcd297c7b001b88aec5c5e14d) | fix | Convert existing reactive errors to use RuntimeErrorCode. ([#46560](https://github.com/angular/angular/pull/46560)) |
-| [f6a096e3d4](https://github.com/angular/angular/commit/f6a096e3d4db9dfc31ab9228f37e119b87e5f8cf) | fix | Update a Forms validator error to use RuntimeError ([#46537](https://github.com/angular/angular/pull/46537)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ee39cf62bc](https://github.com/angular/angular/commit/ee39cf62bc3f3d60d1dfe7064fe34565e5429b84) | fix | Ensure that new `RouterOutlet` instances work after old ones are destroyed ([#46554](https://github.com/angular/angular/pull/46554)) |
-## Special Thanks
-Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Bezael, Chad Ramos, Chellappan, Cédric Exbrayat, Dylan Hunn, George Kalpakas, Jeremy Meiss, Jessica Janiuk, Joey Perrott, KMathy, Kristiyan Kostadinov, Paul Gschwendtner, Pawel Kozlowski, Ramesh Thiruchelvam, Vaibhav Kumar, arturovt, dario-piotrowicz and renovate[bot]
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -183,37 +147,6 @@ Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Bezael, Chad Ramos, C
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="14.1.0-next.2"></a>
-# 14.1.0-next.2 (2022-06-22)
-### animations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [342effeb7d](https://github.com/angular/angular/commit/342effeb7d4d078ea51a7c345497794a7834b3c0) | fix | reset the start and done fns on player reset ([#46364](https://github.com/angular/angular/pull/46364)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ddd6d66203](https://github.com/angular/angular/commit/ddd6d662038336f9a8e7d68a8b5cda2c3ca1c1d7) | fix | deduplicate imports of standalone components in JIT compiler ([#46439](https://github.com/angular/angular/pull/46439)) |
-| [3d8787c961](https://github.com/angular/angular/commit/3d8787c961176e15a7583d415f778054378ea06e) | fix | handle NgModules with standalone pipes in TestBed correctly ([#46407](https://github.com/angular/angular/pull/46407)) |
-| [bb7c80477b](https://github.com/angular/angular/commit/bb7c80477b1258f48971b67b2eade6a4b41337f2) | fix | make parent injector argument required in `createEnvironmentInjector` ([#46397](https://github.com/angular/angular/pull/46397)) |
-### http
-| Commit | Type | Description |
-| -- | -- | -- |
-| [82acbf919b](https://github.com/angular/angular/commit/82acbf919bae2ddb6a46f41239aa2a101901f089) | feat | improve error message for nullish header ([#46059](https://github.com/angular/angular/pull/46059)) |
-### platform-server
-| Commit | Type | Description |
-| -- | -- | -- |
-| [08d3db232c](https://github.com/angular/angular/commit/08d3db232cb758701c41277996f1b41773f98e0d) | fix | invalid style attribute being generated for null values ([#46433](https://github.com/angular/angular/pull/46433)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [abe3759e24](https://github.com/angular/angular/commit/abe3759e2417c0396d75e226edcef2fae99e363b) | fix | allow to return `UrlTree` from `CanMatchFn` ([#46455](https://github.com/angular/angular/pull/46455)) |
-| [ce20ed067f](https://github.com/angular/angular/commit/ce20ed067f12714ee6488ffe07f1a1c18bb60a15) | fix | Ensure Route injector is created before running CanMatch guards ([#46394](https://github.com/angular/angular/pull/46394)) |
-| [f94c6f433d](https://github.com/angular/angular/commit/f94c6f433dba3924b79f137cfcc49d2dfd4d679c) | fix | Expose CanMatchFn as public API ([#46394](https://github.com/angular/angular/pull/46394)) |
-## Special Thanks
-4javier, Aakash, Alan Agius, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Dany Paredes, Derek Cormier, Dmitrij Kuba, JoostK, Kristiyan Kostadinov, Paul Gschwendtner, Ramesh Thiruchelvam, arturovt, behrooz bozorg chami, dario-piotrowicz, markostanimirovic, renovate[bot] and web-dave
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="14.0.3"></a>
 # 14.0.3 (2022-06-22)
 ### animations
@@ -234,31 +167,6 @@ Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Bezael, Chad Ramos, C
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="14.1.0-next.1"></a>
-# 14.1.0-next.1 (2022-06-15)
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [8b9c32d4dc](https://github.com/angular/angular/commit/8b9c32d4dccca5417adce1ca6067adf0805d6d08) | fix | allow null in ngComponentOutlet ([#46280](https://github.com/angular/angular/pull/46280)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [131d029da1](https://github.com/angular/angular/commit/131d029da16b7d486cdc200f00160b9a11871fb2) | feat | detect missing control flow directive imports in standalone components ([#46146](https://github.com/angular/angular/pull/46146)) |
-| [04acc6b14d](https://github.com/angular/angular/commit/04acc6b14d502597a98537019822f1a1217c9a61) | fix | don't emit empty providers array ([#46301](https://github.com/angular/angular/pull/46301)) |
-| [f35f4751b5](https://github.com/angular/angular/commit/f35f4751b54dcb9e65f2d72aeea87651314159e8) | fix | use inline type-check blocks for components outside `rootDir` ([#46096](https://github.com/angular/angular/pull/46096)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b1a3dec58d](https://github.com/angular/angular/commit/b1a3dec58d0dc21d76f757d4085c7581d89dc7dd) | fix | Resolve forwardRef declarations for jit ([#46334](https://github.com/angular/angular/pull/46334)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [de058bba99](https://github.com/angular/angular/commit/de058bba9979f68de2320118b537e6be4dbb888d) | feat | Add CanMatch guard to control whether a Route should match ([#46021](https://github.com/angular/angular/pull/46021)) |
-## Special Thanks
-Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Badawi7, Daniel Schmitz, Derek Cormier, Jessica Janiuk, JiaLiPassion, JoostK, Kevin Davila, Kristiyan Kostadinov, Paul Draper, Paul Gschwendtner, Tom Eustace, Totati, Younes Jaaidi, alefra, dario-piotrowicz, markostanimirovic, mgechev, piyush132000, sten-bone and vivekkoya
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="14.0.2"></a>
 # 14.0.2 (2022-06-15)
 ### common
@@ -276,21 +184,6 @@ Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Badawi7, Daniel Schmitz, Derek Co
 | [3fd8948b4a](https://github.com/angular/angular/commit/3fd8948b4a04dc504be3d4dd751a5554673423bb) | fix | Resolve forwardRef declarations for jit ([#46334](https://github.com/angular/angular/pull/46334)) |
 ## Special Thanks
 Alex Rickabaugh, Andrew Scott, Badawi7, Daniel Schmitz, Derek Cormier, JoostK, Kevin Davila, Kristiyan Kostadinov, Paul Draper, Paul Gschwendtner, Tom Eustace, Totati, Younes Jaaidi, alefra, dario-piotrowicz, markostanimirovic, mgechev, piyush132000, sten-bone and vivekkoya
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="14.1.0-next.0"></a>
-# 14.1.0-next.0 (2022-06-08)
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [53ca936366](https://github.com/angular/angular/commit/53ca936366fb908278571bae5fcc7fa08b19a5a0) | feat | Add ability to create `UrlTree` from any `ActivatedRouteSnapshot` ([#45877](https://github.com/angular/angular/pull/45877)) |
-### upgrade
-| Commit | Type | Description |
-| -- | -- | -- |
-| [e9cb0454dc](https://github.com/angular/angular/commit/e9cb0454dce2113cfd5ba11deeca6cdcf47d47f0) | feat | more closely align `UpgradeModule#bootstrap()` with `angular.bootstrap()` ([#46214](https://github.com/angular/angular/pull/46214)) |
-## Special Thanks
-AleksanderBodurri, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, George Kalpakas, Jessica Janiuk, Joey Perrott, Keith Li, SyedAhm3r, mariu and mgechev
 
 <!-- CHANGELOG SPLIT MARKER -->
 
