@@ -1,3 +1,15 @@
+## [0.11.7](https://github.com/angular/angular/compare/zone.js-0.11.6...zone.js-0.11.7) (2022-07-20)
+
+### Bug Fixes
+
+* **zone.js:** do not invoke jasmine done callback multiple times with `waitForAsync` ([4e77c7fbf38](https://github.com/angular/angular/commit/4e77c7fbf38f27741617303165068e1cb1ef6354))
+
+### Features
+
+* **zone.js:** add AsyncStackTaggingZoneSpec implementation ([#46693](https://github.com/angular/angular/issues/46693)) ([848a009](https://github.com/angular/angular/commit/848a00956e693ba8ab648c86cca034ed2e3c807c))
+* **zone.js:** include jasmine `describe` block name when raising unexpected task error ([de86285](https://github.com/angular/angular/commit/de86285f2ee1c3a78489c8c40a15fc78f75e2620))
+* **zone.js:** include zone name when sync-test zone reports tasks ([72c2567](https://github.com/angular/angular/commit/72c2567847c37b07e468a501a4b13edc791ae9ed))
+
 ## [0.11.6](https://github.com/angular/angular/compare/zone.js-0.11.5...zone.js-0.11.6) (2022-06-02)
 
 ### Bug Fixes
