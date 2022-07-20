@@ -87,7 +87,7 @@ The following template binds the value of `htmlSnippet`, once by interpolating i
 Interpolated content is always escaped &mdash;the HTML isn't interpreted and the browser displays angle brackets in the element's text content.
 
 For the HTML to be interpreted, bind it to an HTML property such as `innerHTML`.
-But binding a value that an attacker might control into `innerHTML` normally causes an XSS vulnerability
+But binding a value that an attacker might control into `innerHTML` normally causes an XSS vulnerability.
 For example, one could execute JavaScript in a following way:
 
 <code-example header="src/app/inner-html-binding.component.ts (class)" path="security/src/app/inner-html-binding.component.ts" region="class"></code-example>
