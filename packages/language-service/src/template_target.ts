@@ -11,7 +11,7 @@ import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {findFirstMatchingNode} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
-import * as ts from 'typescript/lib/typescript';
+import * as tss from 'typescript/lib/tsserverlibrary';
 
 import {isBoundEventWithSyntheticHandler, isTemplateNodeWithKeyAndValue, isWithin, isWithinKeyValue, TemplateInfo} from './utils';
 
@@ -264,12 +264,12 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
 }
 
 function findFirstMatchingNodeForSourceSpan(
-    tcb: ts.Node, sourceSpan: ParseSourceSpan|e.AbsoluteSourceSpan) {
+    tcb: tss.Node, sourceSpan: ParseSourceSpan|e.AbsoluteSourceSpan) {
   return findFirstMatchingNode(
       tcb,
       {
         withSpan: sourceSpan,
-        filter: (node: ts.Node): node is ts.Node => true,
+        filter: (node: tss.Node): node is tss.Node => true,
       },
   );
 }
@@ -278,8 +278,8 @@ function findFirstMatchingNodeForSourceSpan(
  * A tcb nodes for the template at a given position, include the tcb node of the template.
  */
 interface TcbNodesInfoForTemplate {
-  componentTcbNode: ts.Node;
-  nodes: ts.Node[];
+  componentTcbNode: tss.Node;
+  nodes: tss.Node[];
 }
 
 /**
@@ -299,13 +299,13 @@ export function getTcbNodesOfTemplateAtPosition(
     return null;
   }
 
-  const tcbNodes: (ts.Node|null)[] = [];
+  const tcbNodes: (tss.Node|null)[] = [];
   if (target.context.kind === TargetNodeKind.RawExpression) {
     const targetNode = target.context.node;
     if (targetNode instanceof e.PropertyRead) {
       const tsNode = findFirstMatchingNode(tcb, {
         withSpan: targetNode.nameSpan,
-        filter: (node): node is ts.PropertyAccessExpression => ts.isPropertyAccessExpression(node)
+        filter: (node): node is tss.PropertyAccessExpression => tss.isPropertyAccessExpression(node)
       });
       tcbNodes.push(tsNode?.name ?? null);
     } else {
@@ -321,7 +321,7 @@ export function getTcbNodesOfTemplateAtPosition(
   }
 
   return {
-    nodes: tcbNodes.filter((n): n is ts.Node => n !== null),
+    nodes: tcbNodes.filter((n): n is tss.Node => n !== null),
     componentTcbNode: tcb,
   };
 }
