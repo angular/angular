@@ -61,7 +61,7 @@ export class NgClass implements DoCheck {
   }
 
   @Input('ngClass')
-  set ngClass(value: string|string[]|Set<string>|{[klass: string]: any}) {
+  set ngClass(value: string|string[]|Set<string>|{[klass: string]: any}|null|undefined) {
     this._removeClasses(this._rawClass);
     this._applyClasses(this._initialClasses);
 

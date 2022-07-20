@@ -403,7 +403,7 @@ export class NgClass implements DoCheck {
     // (undocumented)
     set ngClass(value: string | string[] | Set<string> | {
         [klass: string]: any;
-    });
+    } | null | undefined);
     // (undocumented)
     ngDoCheck(): void;
     // (undocumented)
