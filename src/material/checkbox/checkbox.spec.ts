@@ -557,6 +557,21 @@ describe('MatCheckbox', () => {
           'mat-checkbox-anim-unchecked-indeterminate',
         );
       }));
+
+      it('should transition correctly from initially checked to indeterminate', () => {
+        testComponent.isIndeterminate = false;
+        testComponent.isChecked = true;
+        fixture.detectChanges();
+
+        expect(checkboxNativeElement.className).not.toMatch(/^mat\-checkbox\-anim/g);
+
+        testComponent.isIndeterminate = testComponent.isChecked = true;
+        fixture.detectChanges();
+
+        expect(checkboxNativeElement.classList).toContain(
+          'mat-checkbox-anim-checked-indeterminate',
+        );
+      });
     });
 
     describe(`when MAT_CHECKBOX_CLICK_ACTION is 'check'`, () => {

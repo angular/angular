@@ -332,7 +332,7 @@ export abstract class _MatCheckboxBase<E>
     if (oldState === newState || !element) {
       return;
     }
-    if (this._currentAnimationClass.length > 0) {
+    if (this._currentAnimationClass) {
       element.classList.remove(this._currentAnimationClass);
     }
 
@@ -438,7 +438,9 @@ export abstract class _MatCheckboxBase<E>
         if (newState === TransitionCheckState.Checked) {
           return this._animationClasses.uncheckedToChecked;
         } else if (newState == TransitionCheckState.Indeterminate) {
-          return this._animationClasses.uncheckedToIndeterminate;
+          return this._checked
+            ? this._animationClasses.checkedToIndeterminate
+            : this._animationClasses.uncheckedToIndeterminate;
         }
         break;
       case TransitionCheckState.Unchecked:

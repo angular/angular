@@ -24,6 +24,7 @@ export const config = {
       'should not remove margin if initial label is set through binding',
       'should re-add margin if label is added asynchronously',
       'should properly update margin if label content is projected',
+      'should transition correctly from initially checked to indeterminate',
 
       // TODO: the focus origin behavior needs to be implemented in the MDC checkbox
       'should not change focus origin if origin not specified',
