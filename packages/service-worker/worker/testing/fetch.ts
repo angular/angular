@@ -115,7 +115,7 @@ export class MockRequest extends MockBody implements Request {
   url: string;
 
   constructor(input: string|Request, init: RequestInit = {}) {
-    super(init !== undefined ? (init.body as (string | null)) || null : null);
+    super((init.body as string | null) ?? null);
     if (typeof input !== 'string') {
       throw 'Not implemented';
     }
