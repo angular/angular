@@ -1,4 +1,11 @@
-import {waitForAsync, fakeAsync, tick, ComponentFixture, TestBed} from '@angular/core/testing';
+import {
+  waitForAsync,
+  fakeAsync,
+  tick,
+  ComponentFixture,
+  TestBed,
+  flush,
+} from '@angular/core/testing';
 import {
   Component,
   ViewChild,
@@ -462,6 +469,36 @@ describe('Overlay', () => {
     expect(() => overlayRef.addPanelClass([''])).not.toThrow();
     expect(() => overlayRef.removePanelClass([''])).not.toThrow();
   });
+
+  it('should detach a component-based overlay when the view is destroyed', fakeAsync(() => {
+    const overlayRef = overlay.create();
+    const paneElement = overlayRef.overlayElement;
+
+    overlayRef.attach(componentPortal);
+    viewContainerFixture.detectChanges();
+
+    expect(paneElement.childNodes.length).not.toBe(0);
+
+    viewContainerFixture.destroy();
+    flush();
+
+    expect(paneElement.childNodes.length).toBe(0);
+  }));
+
+  it('should detach a template-based overlay when the view is destroyed', fakeAsync(() => {
+    const overlayRef = overlay.create();
+    const paneElement = overlayRef.overlayElement;
+
+    overlayRef.attach(templatePortal);
+    viewContainerFixture.detectChanges();
+
+    expect(paneElement.childNodes.length).not.toBe(0);
+
+    viewContainerFixture.destroy();
+    flush();
+
+    expect(paneElement.childNodes.length).toBe(0);
+  }));
 
   describe('positioning', () => {
     let config: OverlayConfig;

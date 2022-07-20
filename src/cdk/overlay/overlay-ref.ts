@@ -158,6 +158,26 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     }
 
     this._outsideClickDispatcher.add(this);
+
+    // TODO(crisbeto): the null check is here, because the portal outlet returns `any`.
+    // We should be guaranteed for the result to be `ComponentRef | EmbeddedViewRef`, but
+    // `instanceof EmbeddedViewRef` doesn't appear to work at the moment.
+    if (typeof attachResult?.onDestroy === 'function') {
+      // In most cases we control the portal and we know when it is being detached so that
+      // we can finish the disposal process. The exception is if the user passes in a custom
+      // `ViewContainerRef` that isn't destroyed through the overlay API. Note that we use
+      // `detach` here instead of `dispose`, because we don't know if the user intends to
+      // reattach the overlay at a later point. It also has the advantage of waiting for animations.
+      attachResult.onDestroy(() => {
+        if (this.hasAttached()) {
+          // We have to delay the `detach` call, because detaching immediately prevents
+          // other destroy hooks from running. This is likely a framework bug similar to
+          // https://github.com/angular/angular/issues/46119
+          this._ngZone.runOutsideAngular(() => Promise.resolve().then(() => this.detach()));
+        }
+      });
+    }
+
     return attachResult;
   }
 
