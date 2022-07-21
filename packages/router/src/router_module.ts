@@ -221,8 +221,7 @@ export function getBootstrapListener() {
     const router = injector.get(Router);
     const bootstrapDone = injector.get(BOOTSTRAP_DONE);
 
-    // Default case
-    if (injector.get(INITIAL_NAVIGATION, null, InjectFlags.Optional) === null) {
+    if (injector.get(INITIAL_NAVIGATION) === InitialNavigation.EnabledNonBlocking) {
       router.initialNavigation();
     }
 
@@ -274,7 +273,7 @@ const BOOTSTRAP_DONE =
 
 function provideEnabledBlockingInitialNavigation(): Provider {
   return [
-    {provide: INITIAL_NAVIGATION, useValue: 'enabledBlocking'},
+    {provide: INITIAL_NAVIGATION, useValue: InitialNavigation.EnabledBlocking},
     {
       provide: APP_INITIALIZER,
       multi: true,
@@ -351,8 +350,32 @@ function provideEnabledBlockingInitialNavigation(): Provider {
   ];
 }
 
-const INITIAL_NAVIGATION =
-    new InjectionToken<'disabled'|'enabledBlocking'>(NG_DEV_MODE ? 'initial navigation' : '');
+/**
+ * This and the INITIAL_NAVIGATION token are used internally only. The public API side of this is
+ * configured through the `ExtraOptions`.
+ *
+ * When set to `EnabledBlocking`, the initial navigation starts before the root
+ * component is created. The bootstrap is blocked until the initial navigation is complete. This
+ * value is required for [server-side rendering](guide/universal) to work.
+ *
+ * When set to `EnabledNonBlocking`, the initial navigation starts after the root component has been
+ * created. The bootstrap is not blocked on the completion of the initial navigation.
+ *
+ * When set to `Disabled`, the initial navigation is not performed. The location listener is set up
+ * before the root component gets created. Use if there is a reason to have more control over when
+ * the router starts its initial navigation due to some complex initialization logic.
+ *
+ * @see ExtraOptions
+ */
+const enum InitialNavigation {
+  EnabledBlocking,
+  EnabledNonBlocking,
+  Disabled,
+}
+
+const INITIAL_NAVIGATION = new InjectionToken<InitialNavigation>(
+    NG_DEV_MODE ? 'initial navigation' : '',
+    {providedIn: 'root', factory: () => InitialNavigation.EnabledNonBlocking});
 
 function provideDisabledInitialNavigation(): Provider[] {
   return [
@@ -366,7 +389,7 @@ function provideDisabledInitialNavigation(): Provider[] {
         };
       }
     },
-    {provide: INITIAL_NAVIGATION, useValue: 'disabled'}
+    {provide: INITIAL_NAVIGATION, useValue: InitialNavigation.Disabled}
   ];
 }
 
