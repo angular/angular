@@ -38,9 +38,6 @@ export type ErrorHandler = (error: any) => any;
  * more control over when the router starts its initial navigation due to some complex
  * initialization logic.
  *
- * The following values have been [deprecated](guide/releases#deprecation-practices) since v11,
- * and should not be used for new applications.
- *
  * @see `forRoot()`
  *
  * @publicApi
