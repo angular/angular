@@ -1,70 +1,41 @@
-@use 'sass:map';
-@use 'sass:meta';
-@use 'sass:color';
+@use '../core/mdc-helpers/mdc-helpers';
 @use '../core/theming/theming';
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/linear-progress' as mdc-linear-progress;
+@use 'sass:color';
 
-// Approximates the correct buffer color by using a mix between the theme color
-// and the theme's background color.
-@function _get-buffer-color($theme, $background) {
-  $theme-color: theming.get-color-from-palette($theme);
-  // Return fallback color if the theme uses variables to define colors.
-  @if (meta.type-of($theme-color) != 'color' or meta.type-of($background) != 'color') {
-    @return theming.get-color-from-palette($theme, lighter);
-  }
-  @return color.mix($theme-color, $background, $weight: 25%);
+
+@mixin _palette-styles($color) {
+  // TODO(crisbeto): the buffer color should come from somewhere in MDC, however at the time of
+  // writing, their buffer color is hardcoded to #e6e6e6 which both doesn't account for theming
+  // and doesn't match the Material design spec. For now we approximate the buffer background by
+  // applying an opacity to the color of the bar.
+  $buffer-color: color.adjust(mdc-theme-color.prop-value($color), $alpha: -0.75);
+  @include mdc-linear-progress.bar-color($color, $query: mdc-helpers.$mdc-theme-styles-query);
+  @include mdc-linear-progress.buffer-color($buffer-color,
+    $query: mdc-helpers.$mdc-theme-styles-query);
 }
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $primary: map.get($config, primary);
-  $accent: map.get($config, accent);
-  $warn: map.get($config, warn);
-  $background: map.get(map.get($config, background), background);
+  @include mdc-helpers.using-mdc-theme($config) {
+    .mat-mdc-progress-bar {
+      @include _palette-styles(primary);
 
-  .mat-progress-bar-background {
-    fill: _get-buffer-color($primary, $background);
-  }
+      &.mat-accent {
+        @include _palette-styles(secondary);
+      }
 
-  .mat-progress-bar-buffer {
-    background-color: _get-buffer-color($primary, $background);
-  }
-
-  .mat-progress-bar-fill::after {
-    background-color: theming.get-color-from-palette($primary);
-  }
-
-  .mat-progress-bar.mat-accent {
-    .mat-progress-bar-background {
-      fill: _get-buffer-color($accent, $background);
-    }
-
-    .mat-progress-bar-buffer {
-      background-color: _get-buffer-color($accent, $background);
-    }
-
-    .mat-progress-bar-fill::after {
-      background-color: theming.get-color-from-palette($accent);
-    }
-  }
-
-  .mat-progress-bar.mat-warn {
-    .mat-progress-bar-background {
-      fill: _get-buffer-color($warn, $background);
-    }
-
-    .mat-progress-bar-buffer {
-      background-color: _get-buffer-color($warn, $background);
-    }
-
-    .mat-progress-bar-fill::after {
-      background-color: theming.get-color-from-palette($warn);
+      &.mat-warn {
+        @include _palette-styles(error);
+      }
     }
   }
 }
 
 @mixin typography($config-or-theme) {}
 
-@mixin _density($config-or-theme) {}
+@mixin density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -77,11 +48,10 @@
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);
     }
   }
 }
-

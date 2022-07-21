@@ -6,7 +6,7 @@ import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
 import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
 import {MatInputModule} from '@angular/material-experimental/mdc-input';
 import {MatListModule} from '@angular/material-experimental/mdc-list';
-import {MatProgressBarModule} from '@angular/material-experimental/mdc-progress-bar';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatChipsModule} from '@angular/material-experimental/mdc-chips';
 import {MatMenuModule} from '@angular/material-experimental/mdc-menu';
 import {MatRadioModule} from '@angular/material-experimental/mdc-radio';

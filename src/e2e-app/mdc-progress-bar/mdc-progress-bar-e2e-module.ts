@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatProgressBarModule} from '@angular/material-experimental/mdc-progress-bar';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MdcProgressBarE2E} from './mdc-progress-bar-e2e';
 
 @NgModule({

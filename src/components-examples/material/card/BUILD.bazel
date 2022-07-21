@@ -20,7 +20,7 @@ ng_module(
         "//src/material/divider",
         "//src/material/legacy-card",
         "//src/material/legacy-card/testing",
-        "//src/material/progress-bar",
+        "//src/material/legacy-progress-bar",
         "@npm//@angular/platform-browser",
         "@npm//@angular/platform-browser-dynamic",
         "@npm//@types/jasmine",

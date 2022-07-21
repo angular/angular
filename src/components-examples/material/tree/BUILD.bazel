@@ -19,7 +19,7 @@ ng_module(
         "//src/material/checkbox",
         "//src/material/icon",
         "//src/material/input",
-        "//src/material/progress-bar",
+        "//src/material/legacy-progress-bar",
         "//src/material/tree",
         "//src/material/tree/testing",
         "@npm//@angular/platform-browser",

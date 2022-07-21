@@ -40,6 +40,8 @@ entryPoints = [
     "menu/testing",
     "paginator",
     "paginator/testing",
+    "legacy-progress-bar",
+    "legacy-progress-bar/testing",
     "progress-bar",
     "progress-bar/testing",
     "progress-spinner",

@@ -1,294 +1,33 @@
-@use '@angular/cdk';
+@use '../core/mdc-helpers/mdc-helpers';
+@use '@material/linear-progress' as mdc-linear-progress;
 
-@use '../core/style/vendor-prefixes';
-@use '../core/style/private';
+@include mdc-helpers.disable-mdc-fallback-declarations {
+  @include mdc-linear-progress.core-styles($query: mdc-helpers.$mdc-base-styles-query);
+}
 
-$height: 4px !default;
-$full-animation-duration: 2000ms !default;
-$piece-animation-duration: 250ms !default;
-
-
-.mat-progress-bar {
-  @include private.private-animation-noop();
+.mat-mdc-progress-bar {
+  // Explicitly set to `block` since the browser defaults custom elements to `inline`.
   display: block;
-  // Height is provided for mat-progress-bar to act as a default.
-  height: $height;
-  overflow: hidden;
-  position: relative;
-  transition: opacity $piece-animation-duration linear;
-  width: 100%;
 
-  // Base styles that are re-used across all of the progress bar children.
-  .mat-progress-bar-element, .mat-progress-bar-fill::after {
-    height: 100%;
-    position: absolute;
-    width: 100%;
-  }
-
-  // The progress bar background is used to show the bubble animation scrolling behind a
-  // buffering progress bar.
-  .mat-progress-bar-background {
-    // The width is set to be 10px longer than the container as it will be translated 10px
-    // during the background scroll animation.
-    width: calc(100% + 10px);
-
-    @include cdk.high-contrast(active, off) {
-      display: none;
-    }
-  }
-
-  // The progress bar buffer is the bar indicator showing the buffer value and is only visible
-  // beyond the current value of the primary progress bar.
-  .mat-progress-bar-buffer {
-    transform-origin: top left;
-    transition: transform $piece-animation-duration ease;
-
-    @include cdk.high-contrast(active, off) {
-      border-top: solid 5px;
-      opacity: 0.5;
-    }
-  }
-
-  // The secondary progress bar is only used in the indeterminate animation, because of this it
-  // is hidden in other uses.
-  .mat-progress-bar-secondary {
-    display: none;
-  }
-
-  // The progress bar fill fills the progress bar with the indicator color.
-  .mat-progress-bar-fill {
-    animation: none;
-    transform-origin: top left;
-    transition: transform $piece-animation-duration ease;
-
-    @include cdk.high-contrast(active, off) {
-      border-top: solid $height;
-    }
-  }
-
-  // A pseudo element is created for each progress bar bar that fills with the indicator color.
-  .mat-progress-bar-fill::after {
-    animation: none;
-    content: '';
-    display: inline-block;
-    left: 0;
-  }
-
-  // Reverse the apparent directionality of progress vars for rtl.
-  &[dir='rtl'],
-  [dir='rtl'] & {
-    transform: rotateY(180deg);
-  }
-
+  // Inverts the progress bar horizontally in `query` mode.
   &[mode='query'] {
-    transform: rotateZ(180deg);
-
-    &[dir='rtl'],
-    [dir='rtl'] & {
-      transform: rotateZ(180deg) rotateY(180deg);
-    }
+    transform: scaleX(-1);
   }
 
-  &[mode='indeterminate'],
-  &[mode='query'] {
-    .mat-progress-bar-fill {
-      transition: none;
-    }
-    .mat-progress-bar-primary {
-      // Avoids stacked animation tearing in Firefox >= 57.
-      @include vendor-prefixes.backface-visibility(hidden);
-      animation: mat-progress-bar-primary-indeterminate-translate
-          $full-animation-duration infinite linear;
-      left: -145.166611%;
-    }
-    .mat-progress-bar-primary.mat-progress-bar-fill::after {
-      // Avoids stacked animation tearing in Firefox >= 57.
-      @include vendor-prefixes.backface-visibility(hidden);
-      animation: mat-progress-bar-primary-indeterminate-scale
-          $full-animation-duration infinite linear;
-    }
-    .mat-progress-bar-secondary {
-      // Avoids stacked animation tearing in Firefox >= 57.
-      @include vendor-prefixes.backface-visibility(hidden);
-      animation: mat-progress-bar-secondary-indeterminate-translate
-          $full-animation-duration infinite linear;
-      left: -54.888891%;
-      display: block;
-    }
-    .mat-progress-bar-secondary.mat-progress-bar-fill::after {
-      // Avoids stacked animation tearing in Firefox >= 57.
-      @include vendor-prefixes.backface-visibility(hidden);
-      animation: mat-progress-bar-secondary-indeterminate-scale
-          $full-animation-duration infinite linear;
-    }
-  }
-
-  &[mode='buffer'] {
-    .mat-progress-bar-background {
-      // Avoids stacked animation tearing in Firefox >= 57.
-      @include vendor-prefixes.backface-visibility(hidden);
-      animation: mat-progress-bar-background-scroll
-          $piece-animation-duration infinite linear;
-
-      // Needs to be explicit here so it can overwrite the `display: none`
-      // in all other variants in high contrast mode.
-      display: block;
-    }
-  }
-
-  // Disabled animations handling.
   &._mat-animation-noopable {
-    .mat-progress-bar-fill,
-    .mat-progress-bar-fill::after,
-    .mat-progress-bar-buffer,
-    .mat-progress-bar-primary,
-    .mat-progress-bar-primary.mat-progress-bar-fill::after,
-    .mat-progress-bar-secondary,
-    .mat-progress-bar-secondary.mat-progress-bar-fill::after,
-    .mat-progress-bar-background {
+    .mdc-linear-progress__buffer-dots,
+    .mdc-linear-progress__primary-bar,
+    .mdc-linear-progress__secondary-bar,
+    .mdc-linear-progress__bar-inner.mdc-linear-progress__bar-inner {
+      // Disable the loading animations.
       animation: none;
-
-      // Use a 1ms transition, because we have an event that
-      // is dispatched based on a `transitionend` being fired.
-      transition-duration: 1ms;
     }
-  }
-}
 
-
-// The values used for animations in mat-progress-bar, both timing and transformation, can be
-// considered magic values. They are sourced from the Material Design example spec and duplicate
-// the values of the original designers definitions.
-//
-// The indeterminate state is essentially made up of two progress bars, one primary (the one that
-// is shown in both the determinate and indeterminate states) and one secondary, which essentially
-// mirrors the primary progress bar in appearance but is only shown to assist with the
-// indeterminate animations.
-
-// KEYFRAME BLOCK                      DESCRIPTION
-// primary-indeterminate-translate     Translation of the primary progressbar across the screen
-// primary-indeterminate-scale         Scaling of the primary bar as it's being translated
-//                                     across the screen
-// secondary-indeterminate-translate   Translation of the secondary bar across the screen
-// secondary-indeterminate-scale       Scaling of the secondary bar as it's being translated
-//                                     across the screen
-//
-// Because two different transform animations need to be applied at once, the translation is
-// applied to the outer element and the scaling is applied to the inner element, which provides the
-// illusion necessary to make the animation work.
-
-
-// Progress Bar Timing functions:
-// $mat-progress-bar-primary-indeterminate-translate-step-1 has no timing function.
-$primary-indeterminate-translate-step-2:
-    cubic-bezier(0.5, 0, 0.701732, 0.495819) !default;
-$primary-indeterminate-translate-step-3:
-    cubic-bezier(0.302435, 0.381352, 0.55, 0.956352) !default;
-// $mat-progress-bar-primary-indeterminate-translate-step-4 has no timing function.
-
-// $mat-progress-bar-primary-indeterminate-scale-step-1 has no timing function
-$primary-indeterminate-scale-step-2:
-    cubic-bezier(0.334731, 0.12482, 0.785844, 1) !default;
-$primary-indeterminate-scale-step-3:
-    cubic-bezier(0.06, 0.11, 0.6, 1) !default;
-// $mat-progress-bar-primary-indeterminate-scale-step-4 has no timing function
-
-$secondary-indeterminate-translate-step-1:
-    cubic-bezier(0.15, 0, 0.515058, 0.409685) !default;
-$secondary-indeterminate-translate-step-2:
-    cubic-bezier(0.31033, 0.284058, 0.8, 0.733712) !default;
-$secondary-indeterminate-translate-step-3:
-    cubic-bezier(0.4, 0.627035, 0.6, 0.902026) !default;
-// $mat-progress-bar-secondary-indeterminate-translate-step-4 has no timing function
-
-$secondary-indeterminate-scale-step-1:
-    cubic-bezier(0.15, 0, 0.515058, 0.409685) !default;
-$secondary-indeterminate-scale-step-2:
-    cubic-bezier(0.31033, 0.284058, 0.8, 0.733712) !default;
-$secondary-indeterminate-scale-step-3:
-    cubic-bezier(0.4, 0.627035, 0.6, 0.902026) !default;
-// $mat-progress-bar-secondary-indeterminate-scale-step-4 has no timing function
-
-
-// Animations for indeterminate and query mode.
-
-// Primary indicator.
-@keyframes mat-progress-bar-primary-indeterminate-translate {
-  0% {
-    transform: translateX(0);
-  }
-  20% {
-    animation-timing-function: $primary-indeterminate-translate-step-2;
-    transform: translateX(0);
-  }
-  59.15% {
-    animation-timing-function: $primary-indeterminate-translate-step-3;
-    transform: translateX(83.67142%);
-  }
-  100% {
-    transform: translateX(200.611057%);
-  }
-}
-
-@keyframes mat-progress-bar-primary-indeterminate-scale {
-  0% {
-    transform: scaleX(0.08);
-  }
-  36.65% {
-    animation-timing-function: $primary-indeterminate-scale-step-2;
-    transform: scaleX(0.08);
-  }
-  69.15% {
-    animation-timing-function: $primary-indeterminate-scale-step-3;
-    transform: scaleX(0.661479);
-  }
-  100% {
-    transform: scaleX(0.08);
-  }
-}
-
-// Secondary indicator.
-@keyframes mat-progress-bar-secondary-indeterminate-translate {
-  0% {
-    animation-timing-function: $secondary-indeterminate-translate-step-1;
-    transform: translateX(0);
-  }
-  25% {
-    animation-timing-function: $secondary-indeterminate-translate-step-2;
-
-    transform: translateX(37.651913%);
-  }
-  48.35% {
-    animation-timing-function: $secondary-indeterminate-translate-step-3;
-    transform: translateX(84.386165%);
-  }
-  100% {
-    transform: translateX(160.277782%);
-  }
-}
-
-@keyframes mat-progress-bar-secondary-indeterminate-scale {
-  0% {
-    animation-timing-function: $secondary-indeterminate-scale-step-1;
-    transform: scaleX(0.08);
-  }
-  19.15% {
-    animation-timing-function: $secondary-indeterminate-scale-step-2;
-    transform: scaleX(0.457104);
-  }
-  44.15% {
-    animation-timing-function: $secondary-indeterminate-scale-step-3;
-    transform: scaleX(0.72796);
-  }
-  100% {
-    transform: scaleX(0.08);
-  }
-}
-
-// Animation for buffer mode.
-@keyframes mat-progress-bar-background-scroll {
-  to {
-    // Needs to be in multiples of the size of the buffer circles.
-    transform: translateX(-$height * 2);
+    .mdc-linear-progress__primary-bar,
+    .mdc-linear-progress__buffer-bar {
+      // There's a `transitionend` event that depends on this element. Add a very short
+      // transition when animations are disabled so that the event can still fire.
+      transition: transform 1ms;
+    }
   }
 }

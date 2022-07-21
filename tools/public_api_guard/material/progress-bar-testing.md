@@ -4,21 +4,21 @@
 
 ```ts
 
-import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
+import { ComponentHarnessConstructor } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
+import { LegacyProgressBarHarnessFilters as ProgressBarHarnessFilters } from '@angular/material/legacy-progress-bar/testing';
 
 // @public
 export class MatProgressBarHarness extends ComponentHarness {
     getMode(): Promise<string | null>;
     getValue(): Promise<number | null>;
+    // (undocumented)
     static hostSelector: string;
-    static with(options?: ProgressBarHarnessFilters): HarnessPredicate<MatProgressBarHarness>;
+    static with<T extends MatProgressBarHarness>(this: ComponentHarnessConstructor<T>, options?: ProgressBarHarnessFilters): HarnessPredicate<T>;
 }
 
-// @public
-export interface ProgressBarHarnessFilters extends BaseHarnessFilters {
-}
+export { ProgressBarHarnessFilters }
 
 // (No @packageDocumentation comment for this package)
 

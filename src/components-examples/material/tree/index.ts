@@ -4,7 +4,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatLegacyProgressBarModule} from '@angular/material/legacy-progress-bar';
 import {MatTreeModule} from '@angular/material/tree';
 import {TreeChecklistExample} from './tree-checklist/tree-checklist-example';
 import {TreeDynamicExample} from './tree-dynamic/tree-dynamic-example';
@@ -38,7 +38,7 @@ const EXAMPLES = [
     MatCheckboxModule,
     MatIconModule,
     MatInputModule,
-    MatProgressBarModule,
+    MatLegacyProgressBarModule,
     MatTreeModule,
   ],
   declarations: EXAMPLES,

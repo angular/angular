@@ -2,7 +2,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatLegacyProgressBarModule} from '@angular/material/legacy-progress-bar';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSliderModule} from '@angular/material/slider';
 import {ProgressBarBufferExample} from './progress-bar-buffer/progress-bar-buffer-example';
@@ -34,7 +34,7 @@ const EXAMPLES = [
   imports: [
     CommonModule,
     MatLegacyCardModule,
-    MatProgressBarModule,
+    MatLegacyProgressBarModule,
     MatRadioModule,
     MatSliderModule,
     FormsModule,

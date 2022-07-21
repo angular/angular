@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatDividerModule} from '@angular/material/divider';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatLegacyProgressBarModule} from '@angular/material/legacy-progress-bar';
 import {CardFancyExample} from './card-fancy/card-fancy-example';
 import {CardOverviewExample} from './card-overview/card-overview-example';
 import {CardHarnessExample} from './card-harness/card-harness-example';
@@ -32,7 +32,7 @@ const EXAMPLES = [
 ];
 
 @NgModule({
-  imports: [MatButtonModule, MatLegacyCardModule, MatDividerModule, MatProgressBarModule],
+  imports: [MatButtonModule, MatLegacyCardModule, MatDividerModule, MatLegacyProgressBarModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
 })

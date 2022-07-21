@@ -75,7 +75,6 @@ $mat-mdc-mdc-text-field-outlined-idle-border, $mat-mdc-mdc-text-field-placeholde
 @forward '../../mdc-list/list-theme' as mat-mdc-list-*;
 @forward '../../mdc-menu/menu-theme' as mat-mdc-menu-*;
 @forward '../../mdc-paginator/paginator-theme' as mat-mdc-paginator-*;
-@forward '../../mdc-progress-bar/progress-bar-theme' as mat-mdc-progress-bar-*;
 @forward '../../mdc-progress-spinner/progress-spinner-theme' as mat-mdc-progress-spinner-*;
 @forward '../../mdc-input/input-theme' as mat-mdc-input-*;
 @forward '../../mdc-form-field/form-field-density' as mat-mdc-*;
@@ -99,7 +98,6 @@ $mat-mdc-mdc-text-field-outlined-idle-border, $mat-mdc-mdc-text-field-placeholde
 @import '../../mdc-tabs/tabs-theme';
 @import '../../mdc-table/table-theme';
 @import '../../mdc-paginator/paginator-theme';
-@import '../../mdc-progress-bar/progress-bar-theme';
 @import '../../mdc-progress-spinner/progress-spinner-theme';
 @import '../../mdc-input/input-theme';
 @import '../../mdc-form-field/form-field-theme';

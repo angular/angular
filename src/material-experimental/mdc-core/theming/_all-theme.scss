@@ -18,7 +18,6 @@
 @use '../../mdc-tabs/tabs-theme';
 @use '../../mdc-table/table-theme';
 @use '../../mdc-paginator/paginator-theme';
-@use '../../mdc-progress-bar/progress-bar-theme';
 @use '../../mdc-progress-spinner/progress-spinner-theme';
 @use '../../mdc-input/input-theme';
 @use '../../mdc-form-field/form-field-theme';
@@ -38,7 +37,7 @@
     @include list-theme.theme($theme-or-color-config);
     @include menu-theme.theme($theme-or-color-config);
     @include paginator-theme.theme($theme-or-color-config);
-    @include progress-bar-theme.theme($theme-or-color-config);
+    @include mat.progress-bar-theme($theme-or-color-config);
     @include progress-spinner-theme.theme($theme-or-color-config);
     @include radio-theme.theme($theme-or-color-config);
     @include select-theme.theme($theme-or-color-config);

@@ -20,7 +20,7 @@ ng_module(
         "//src/material/form-field",
         "//src/material/icon",
         "//src/material/input",
-        "//src/material/progress-bar",
+        "//src/material/legacy-progress-bar",
         "//src/material/tree",
     ],
 )

@@ -1,5 +1,6 @@
 @use '../../core/theming/theming';
 @use '../../legacy-card/card-theme';
+@use '../../legacy-progress-bar/progress-bar-theme';
 @use '../../legacy-tooltip/tooltip-theme';
 
 // Create a theme.
@@ -7,6 +8,7 @@
   $dedupe-key: 'angular-material-legacy-theme';
   @include theming.private-check-duplicate-theme-styles($theme-or-color-config, $dedupe-key) {
     @include card-theme.theme($theme-or-color-config);
+    @include progress-bar-theme.theme($theme-or-color-config);
     @include tooltip-theme.theme($theme-or-color-config);
   }
 }

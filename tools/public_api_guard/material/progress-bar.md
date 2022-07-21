@@ -12,68 +12,51 @@ import { _Constructor } from '@angular/material/core';
 import { ElementRef } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import * as i0 from '@angular/core';
-import * as i2 from '@angular/common';
-import * as i3 from '@angular/material/core';
-import { InjectionToken } from '@angular/core';
+import * as i2 from '@angular/material/core';
+import { MAT_LEGACY_PROGRESS_BAR_DEFAULT_OPTIONS as MAT_PROGRESS_BAR_DEFAULT_OPTIONS } from '@angular/material/legacy-progress-bar';
+import { MAT_LEGACY_PROGRESS_BAR_LOCATION as MAT_PROGRESS_BAR_LOCATION } from '@angular/material/legacy-progress-bar';
+import { MAT_LEGACY_PROGRESS_BAR_LOCATION_FACTORY as MAT_PROGRESS_BAR_LOCATION_FACTORY } from '@angular/material/legacy-progress-bar';
+import { MatLegacyProgressBarDefaultOptions as MatProgressBarDefaultOptions } from '@angular/material/legacy-progress-bar';
+import { MatLegacyProgressBarLocation as MatProgressBarLocation } from '@angular/material/legacy-progress-bar';
 import { NgZone } from '@angular/core';
-import { NumberInput } from '@angular/cdk/coercion';
 import { OnDestroy } from '@angular/core';
-import { ThemePalette } from '@angular/material/core';
+import { LegacyProgressAnimationEnd as ProgressAnimationEnd } from '@angular/material/legacy-progress-bar';
 
-// @public
-export const MAT_PROGRESS_BAR_DEFAULT_OPTIONS: InjectionToken<MatProgressBarDefaultOptions>;
+export { MAT_PROGRESS_BAR_DEFAULT_OPTIONS }
 
-// @public
-export const MAT_PROGRESS_BAR_LOCATION: InjectionToken<MatProgressBarLocation>;
+export { MAT_PROGRESS_BAR_LOCATION }
 
-// @public
-export function MAT_PROGRESS_BAR_LOCATION_FACTORY(): MatProgressBarLocation;
+export { MAT_PROGRESS_BAR_LOCATION_FACTORY }
 
-// @public
-export class MatProgressBar extends _MatProgressBarBase implements CanColor, AfterViewInit, OnDestroy {
-    constructor(elementRef: ElementRef, _ngZone: NgZone, _animationMode?: string | undefined,
-    location?: MatProgressBarLocation, defaults?: MatProgressBarDefaultOptions,
-    _changeDetectorRef?: ChangeDetectorRef | undefined);
+// @public (undocumented)
+export class MatProgressBar extends _MatProgressBarBase implements AfterViewInit, OnDestroy, CanColor {
+    constructor(elementRef: ElementRef<HTMLElement>, _ngZone: NgZone, _changeDetectorRef: ChangeDetectorRef, _animationMode?: string | undefined, defaults?: MatProgressBarDefaultOptions);
     readonly animationEnd: EventEmitter<ProgressAnimationEnd>;
     // (undocumented)
     _animationMode?: string | undefined;
-    _bufferTransform(): {
-        transform: string;
-    } | null;
     get bufferValue(): number;
     set bufferValue(v: number);
+    _getBufferBarFlexBasis(): string;
+    _getPrimaryBarTransform(): string;
+    _isIndeterminate(): boolean;
     _isNoopAnimation: boolean;
-    mode: ProgressBarMode;
+    get mode(): ProgressBarMode;
+    set mode(value: ProgressBarMode);
     // (undocumented)
     ngAfterViewInit(): void;
     // (undocumented)
     ngOnDestroy(): void;
-    _primaryTransform(): {
-        transform: string;
-    };
-    // (undocumented)
-    _primaryValueBar: ElementRef;
-    progressbarId: string;
-    _rectangleFillValue: string;
     get value(): number;
-    set value(v: NumberInput);
+    set value(v: number);
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatProgressBar, "mat-progress-bar", ["matProgressBar"], { "color": "color"; "value": "value"; "bufferValue": "bufferValue"; "mode": "mode"; }, { "animationEnd": "animationEnd"; }, never, never, false>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatProgressBar, [null, null, { optional: true; }, { optional: true; }, { optional: true; }, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatProgressBar, [null, null, null, { optional: true; }, { optional: true; }]>;
 }
 
-// @public
-export interface MatProgressBarDefaultOptions {
-    color?: ThemePalette;
-    mode?: ProgressBarMode;
-}
+export { MatProgressBarDefaultOptions }
 
-// @public
-export interface MatProgressBarLocation {
-    // (undocumented)
-    getPathname: () => string;
-}
+export { MatProgressBarLocation }
 
 // @public (undocumented)
 export class MatProgressBarModule {
@@ -82,14 +65,10 @@ export class MatProgressBarModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatProgressBarModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatProgressBarModule, [typeof i1.MatProgressBar], [typeof i2.CommonModule, typeof i3.MatCommonModule], [typeof i1.MatProgressBar, typeof i3.MatCommonModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatProgressBarModule, [typeof i1.MatProgressBar], never, [typeof i1.MatProgressBar, typeof i2.MatCommonModule]>;
 }
 
-// @public
-export interface ProgressAnimationEnd {
-    // (undocumented)
-    value: number;
-}
+export { ProgressAnimationEnd }
 
 // @public (undocumented)
 export type ProgressBarMode = 'determinate' | 'indeterminate' | 'buffer' | 'query';

@@ -10,7 +10,7 @@ import {Component} from '@angular/core';
 import {ThemePalette} from '@angular/material-experimental/mdc-core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {MatProgressBarModule} from '@angular/material-experimental/mdc-progress-bar';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 

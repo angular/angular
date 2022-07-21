@@ -22,8 +22,6 @@ entryPoints = [
     "mdc-menu/testing",
     "mdc-paginator",
     "mdc-paginator/testing",
-    "mdc-progress-bar",
-    "mdc-progress-bar/testing",
     "mdc-progress-spinner",
     "mdc-progress-spinner/testing",
     "mdc-radio",

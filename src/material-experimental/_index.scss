@@ -45,8 +45,6 @@
   mdc-menu-density, mdc-menu-theme;
 @forward './mdc-paginator/paginator-theme' as mdc-paginator-* show mdc-paginator-color,
   mdc-paginator-typography, mdc-paginator-density, mdc-paginator-theme;
-@forward './mdc-progress-bar/progress-bar-theme' as mdc-progress-bar-* show mdc-progress-bar-color,
-  mdc-progress-bar-typography, mdc-progress-bar-density, mdc-progress-bar-theme;
 @forward './mdc-progress-spinner/progress-spinner-theme' as mdc-progress-spinner-* show
   mdc-progress-spinner-color, mdc-progress-spinner-typography, mdc-progress-spinner-density,
   mdc-progress-spinner-theme;

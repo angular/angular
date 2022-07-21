@@ -92,8 +92,10 @@
 @forward './menu/menu-theme' as menu-* show menu-theme, menu-color, menu-typography;
 @forward './paginator/paginator-theme' as paginator-* show paginator-theme, paginator-color,
   paginator-typography;
-@forward './progress-bar/progress-bar-theme' as progress-bar-* show progress-bar-theme,
-  progress-bar-color, progress-bar-typography;
+@forward './legacy-progress-bar/progress-bar-theme' as legacy-progress-bar-* show
+  legacy-progress-bar-theme, legacy-progress-bar-color, legacy-progress-bar-typography;
+@forward './progress-bar/progress-bar-theme' as progress-bar-* show
+  progress-bar-theme, progress-bar-color, progress-bar-typography;
 @forward './progress-spinner/progress-spinner-theme' as progress-spinner-* show
   progress-spinner-theme, progress-spinner-color, progress-spinner-typography;
 @forward './radio/radio-theme' as radio-* show radio-theme, radio-color, radio-typography;

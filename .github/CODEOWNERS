@@ -21,7 +21,7 @@
 /src/material/paginator/**                         @andrewseguin
 /src/material/prebuilt-themes/**                   @andrewseguin
 /src/material/legacy-prebuilt-themes/**            @andrewseguin
-/src/material/progress-bar/**                      @andrewseguin @crisbeto
+/src/material/legacy-progress-bar/**                      @andrewseguin @crisbeto
 /src/material/progress-spinner/**                  @andrewseguin @crisbeto
 /src/material/radio/**                             @andrewseguin @devversion
 /src/material/schematics/**                        @devversion @andrewseguin
@@ -41,255 +41,255 @@
 /src/material/tree/**                              @jelbourn @andrewseguin
 
 # Angular Material core
-/src/material/core/*                               @andrewseguin
-/src/material/core/testing/**                      @crisbeto
-/src/material/core/animation/**                    @andrewseguin
-/src/material/core/color/**                        @andrewseguin @devversion
-/src/material/core/common-behaviors/**             @andrewseguin @devversion
-/src/material/core/datetime/**                     @mmalerba
-/src/material/core/density/**                      @devversion
-/src/material/core/error/**                        @crisbeto @mmalerba
-/src/material/core/focus-indicators/**             @jelbourn
-/src/material/core/gestures/**                     @andrewseguin
-/src/material/core/label/**                        @mmalerba
-/src/material/core/line/**                         @andrewseguin
-/src/material/core/mdc-helpers/**                  @mmalerba
-/src/material/core/option/**                       @crisbeto
-/src/material/core/placeholder/**                  @mmalerba
-/src/material/core/ripple/**                       @devversion
-/src/material/core/selection/**                    @andrewseguin
-/src/material/core/selection/pseudo*/**            @crisbeto @andrewseguin
-/src/material/core/style/**                        @andrewseguin
-/src/material/core/theming/**                      @andrewseguin @jelbourn
-/src/material/core/typography/**                   @crisbeto
-/src/material/core/util/**                         @andrewseguin
-/src/material/legacy-core/*                        @andrewseguin
-/src/material/legacy-core/color/**                 @andrewseguin @devversion
-/src/material/legacy-core/density/**               @devversion
-/src/material/legacy-core/theming/**               @andrewseguin @jelbourn
-/src/material/legacy-core/typography/**            @crisbeto
+/src/material/core/*                                   @andrewseguin
+/src/material/core/testing/**                          @crisbeto
+/src/material/core/animation/**                        @andrewseguin
+/src/material/core/color/**                            @andrewseguin @devversion
+/src/material/core/common-behaviors/**                 @andrewseguin @devversion
+/src/material/core/datetime/**                         @mmalerba
+/src/material/core/density/**                          @devversion
+/src/material/core/error/**                            @crisbeto @mmalerba
+/src/material/core/focus-indicators/**                 @jelbourn
+/src/material/core/gestures/**                         @andrewseguin
+/src/material/core/label/**                            @mmalerba
+/src/material/core/line/**                             @andrewseguin
+/src/material/core/mdc-helpers/**                      @mmalerba
+/src/material/core/option/**                           @crisbeto
+/src/material/core/placeholder/**                      @mmalerba
+/src/material/core/ripple/**                           @devversion
+/src/material/core/selection/**                        @andrewseguin
+/src/material/core/selection/pseudo*/**                @crisbeto @andrewseguin
+/src/material/core/style/**                            @andrewseguin
+/src/material/core/theming/**                          @andrewseguin @jelbourn
+/src/material/core/typography/**                       @crisbeto
+/src/material/core/util/**                             @andrewseguin
+/src/material/legacy-core/*                            @andrewseguin
+/src/material/legacy-core/color/**                     @andrewseguin @devversion
+/src/material/legacy-core/density/**                   @devversion
+/src/material/legacy-core/theming/**                   @andrewseguin @jelbourn
+/src/material/legacy-core/typography/**                @crisbeto
 
 # Miscellaneous components
-/src/google-maps/**                                @crisbeto
-/src/youtube-player/**                             @crisbeto
+/src/google-maps/**                                    @crisbeto
+/src/youtube-player/**                                 @crisbeto
 
 # CDK
-/src/cdk/*                                         @andrewseguin
-/src/cdk/a11y/**                                   @jelbourn @devversion
-/src/cdk/accordion/**                              @andrewseguin
-/src/cdk/bidi/**                                   @andrewseguin
-/src/cdk/clipboard/**                              @andrewseguin
-/src/cdk/coercion/**                               @andrewseguin
-/src/cdk/collections/**                            @crisbeto @andrewseguin
-/src/cdk/dialog/**                                 @jelbourn @crisbeto
-/src/cdk/drag-drop/**                              @crisbeto
-/src/cdk/keycodes/**                               @andrewseguin
-/src/cdk/layout/**                                 @andrewseguin
-/src/cdk/menu/**                                   @mmalerba @crisbeto
-/src/cdk/observers/**                              @andrewseguin @crisbeto
-/src/cdk/overlay/**                                @jelbourn @crisbeto
-/src/cdk/platform/**                               @andrewseguin @devversion
-/src/cdk/portal/**                                 @andrewseguin
-/src/cdk/schematics/**                             @devversion @andrewseguin
-/src/cdk/scrolling/**                              @andrewseguin @crisbeto
-/src/cdk/stepper/**                                @mmalerba
-/src/cdk/table/**                                  @andrewseguin
-/src/cdk/testing/**                                @mmalerba @devversion
-/src/cdk/text-field/**                             @mmalerba
-/src/cdk/tree/**                                   @jelbourn @andrewseguin
+/src/cdk/*                                             @andrewseguin
+/src/cdk/a11y/**                                       @jelbourn @devversion
+/src/cdk/accordion/**                                  @andrewseguin
+/src/cdk/bidi/**                                       @andrewseguin
+/src/cdk/clipboard/**                                  @andrewseguin
+/src/cdk/coercion/**                                   @andrewseguin
+/src/cdk/collections/**                                @crisbeto @andrewseguin
+/src/cdk/dialog/**                                     @jelbourn @crisbeto
+/src/cdk/drag-drop/**                                  @crisbeto
+/src/cdk/keycodes/**                                   @andrewseguin
+/src/cdk/layout/**                                     @andrewseguin
+/src/cdk/menu/**                                       @mmalerba @crisbeto
+/src/cdk/observers/**                                  @andrewseguin @crisbeto
+/src/cdk/overlay/**                                    @jelbourn @crisbeto
+/src/cdk/platform/**                                   @andrewseguin @devversion
+/src/cdk/portal/**                                     @andrewseguin
+/src/cdk/schematics/**                                 @devversion @andrewseguin
+/src/cdk/scrolling/**                                  @andrewseguin @crisbeto
+/src/cdk/stepper/**                                    @mmalerba
+/src/cdk/table/**                                      @andrewseguin
+/src/cdk/testing/**                                    @mmalerba @devversion
+/src/cdk/text-field/**                                 @mmalerba
+/src/cdk/tree/**                                       @jelbourn @andrewseguin
 
 # Date adapters
-/src/material-moment-adapter/**                    @mmalerba
-/src/material-luxon-adapter/**                     @crisbeto
-/src/material-date-fns-adapter/**                  @crisbeto
+/src/material-moment-adapter/**                        @mmalerba
+/src/material-luxon-adapter/**                         @crisbeto
+/src/material-date-fns-adapter/**                      @crisbeto
 
 # Material experimental package
-/src/material-experimental/*                       @andrewseguin
-/src/material-experimental/column-resize/**        @andrewseguin
-/src/material-experimental/mdc-autocomplete/**     @crisbeto
-/src/material-experimental/mdc-button/**           @andrewseguin
-/src/material/card/**             @mmalerba
-/src/material-experimental/mdc-checkbox/**         @mmalerba
-/src/material-experimental/mdc-chips/**            @mmalerba
-/src/material-experimental/mdc-core/**             @crisbeto
-/src/material-experimental/mdc-dialog/**           @devversion
-/src/material-experimental/mdc-form-field/**       @devversion @mmalerba
-/src/material-experimental/mdc-input/**            @devversion @mmalerba
-/src/material-experimental/mdc-list/**             @mmalerba @devversion
-/src/material-experimental/mdc-menu/**             @crisbeto
-/src/material-experimental/mdc-select/**           @crisbeto
-/src/material-experimental/mdc-paginator/**        @crisbeto
-/src/material-experimental/mdc-progress-spinner/** @andrewseguin
-/src/material-experimental/mdc-progress-bar/**     @andrewseguin
-/src/material-experimental/mdc-radio/**            @mmalerba
-/src/material-experimental/mdc-snack-bar/**        @andrewseguin
-/src/material-experimental/mdc-slide-toggle/**     @crisbeto
-/src/material-experimental/mdc-slider/**           @devversion
-/src/material-experimental/mdc-tabs/**             @crisbeto
-/src/material-experimental/mdc-tooltip/**          @crisbeto
-/src/material-experimental/mdc-table/**            @andrewseguin
-/src/material-experimental/menubar/**              @jelbourn
-/src/material-experimental/popover-edit/**         @andrewseguin
-/src/material-experimental/selection/**            @andrewseguin
+/src/material-experimental/*                           @andrewseguin
+/src/material-experimental/column-resize/**            @andrewseguin
+/src/material-experimental/mdc-autocomplete/**         @crisbeto
+/src/material-experimental/mdc-button/**               @andrewseguin
+/src/material/card/**                                  @mmalerba
+/src/material-experimental/mdc-checkbox/**             @mmalerba
+/src/material-experimental/mdc-chips/**                @mmalerba
+/src/material-experimental/mdc-core/**                 @crisbeto
+/src/material-experimental/mdc-dialog/**               @devversion
+/src/material-experimental/mdc-form-field/**           @devversion @mmalerba
+/src/material-experimental/mdc-input/**                @devversion @mmalerba
+/src/material-experimental/mdc-list/**                 @mmalerba @devversion
+/src/material-experimental/mdc-menu/**                 @crisbeto
+/src/material-experimental/mdc-select/**               @crisbeto
+/src/material-experimental/mdc-paginator/**            @crisbeto
+/src/material-experimental/mdc-progress-spinner/**     @andrewseguin
+/src/material/progress-bar/**         @andrewseguin
+/src/material-experimental/mdc-radio/**                @mmalerba
+/src/material-experimental/mdc-snack-bar/**            @andrewseguin
+/src/material-experimental/mdc-slide-toggle/**         @crisbeto
+/src/material-experimental/mdc-slider/**               @devversion
+/src/material-experimental/mdc-tabs/**                 @crisbeto
+/src/material-experimental/mdc-tooltip/**              @crisbeto
+/src/material-experimental/mdc-table/**                @andrewseguin
+/src/material-experimental/menubar/**                  @jelbourn
+/src/material-experimental/popover-edit/**             @andrewseguin
+/src/material-experimental/selection/**                @andrewseguin
 
 # CDK experimental package
-/src/cdk-experimental/*                            @andrewseguin
-/src/cdk-experimental/column-resize/**             @andrewseguin
-/src/cdk-experimental/combobox/**                  @jelbourn
-/src/cdk-experimental/popover-edit/**              @andrewseguin
-/src/cdk-experimental/scrolling/**                 @mmalerba
-/src/cdk-experimental/table-scroll-container/**    @andrewseguin
-/src/cdk-experimental/listbox/**                   @jelbourn
-/src/cdk-experimental/selection/**                 @andrewseguin
+/src/cdk-experimental/*                                @andrewseguin
+/src/cdk-experimental/column-resize/**                 @andrewseguin
+/src/cdk-experimental/combobox/**                      @jelbourn
+/src/cdk-experimental/popover-edit/**                  @andrewseguin
+/src/cdk-experimental/scrolling/**                     @mmalerba
+/src/cdk-experimental/table-scroll-container/**        @andrewseguin
+/src/cdk-experimental/listbox/**                       @jelbourn
+/src/cdk-experimental/selection/**                     @andrewseguin
 
 # Docs examples & guides
-/guides/**                                         @jelbourn
-/src/components-examples/**                        @andrewseguin
+/guides/**                                             @jelbourn
+/src/components-examples/**                            @andrewseguin
 
 # Dev-app
-/src/dev-app/*                                     @devversion
-/src/dev-app/autocomplete/**                       @crisbeto
-/src/dev-app/badge/**                              @andrewseguin
-/src/dev-app/baseline/**                           @mmalerba
-/src/dev-app/bottom-sheet/**                       @andrewseguin @crisbeto
-/src/dev-app/button-toggle/**                      @andrewseguin
-/src/dev-app/mdc-autocomplete/**                   @crisbeto
-/src/dev-app/button/**                             @andrewseguin
-/src/dev-app/card/**                               @andrewseguin
-/src/dev-app/cdk-dialog/**                         @crisbeto
-/src/dev-app/cdk-experimental-combobox/**          @jelbourn
-/src/dev-app/cdk-experimental-listbox/**           @jelbourn
-/src/dev-app/checkbox/**                           @jelbourn @devversion
-/src/dev-app/chips/**                              @andrewseguin
-/src/dev-app/clipboard/**                          @andrewseguin
-/src/dev-app/column-resize/**                      @andrewseguin
-/src/dev-app/connected-overlay/**                  @jelbourn @crisbeto
-/src/dev-app/dataset/**                            @andrewseguin
-/src/dev-app/datepicker/**                         @mmalerba @crisbeto @zarend
-/src/dev-app/dev-app/**                            @mmalerba
-/src/dev-app/dialog/**                             @andrewseguin @crisbeto
-/src/dev-app/drag-drop/**                          @crisbeto
-/src/dev-app/drawer/**                             @mmalerba
-/src/dev-app/example/**                            @andrewseguin
-/src/dev-app/examples-page/**                      @andrewseguin
-/src/dev-app/expansion/**                          @andrewseguin
-/src/dev-app/focus-origin/**                       @mmalerba
-/src/dev-app/focus-trap/**                         @jelbourn
-/src/dev-app/google-map/**                         @crisbeto
-/src/dev-app/grid-list/**                          @andrewseguin
-/src/dev-app/icon/**                               @andrewseguin
-/src/dev-app/input/**                              @mmalerba
-/src/dev-app/layout/**                             @andrewseguin
-/src/dev-app/cdk-menu/**                           @mmalerba @crisbeto
-/src/dev-app/input-modality/**                     @jelbourn
-/src/dev-app/list/**                               @andrewseguin @crisbeto @devversion
-/src/dev-app/live-announcer/**                     @jelbourn
-/src/dev-app/mdc-button/**                         @andrewseguin
+/src/dev-app/*                                         @devversion
+/src/dev-app/autocomplete/**                           @crisbeto
+/src/dev-app/badge/**                                  @andrewseguin
+/src/dev-app/baseline/**                               @mmalerba
+/src/dev-app/bottom-sheet/**                           @andrewseguin @crisbeto
+/src/dev-app/button-toggle/**                          @andrewseguin
+/src/dev-app/mdc-autocomplete/**                       @crisbeto
+/src/dev-app/button/**                                 @andrewseguin
+/src/dev-app/card/**                                   @andrewseguin
+/src/dev-app/cdk-dialog/**                             @crisbeto
+/src/dev-app/cdk-experimental-combobox/**              @jelbourn
+/src/dev-app/cdk-experimental-listbox/**               @jelbourn
+/src/dev-app/checkbox/**                               @jelbourn @devversion
+/src/dev-app/chips/**                                  @andrewseguin
+/src/dev-app/clipboard/**                              @andrewseguin
+/src/dev-app/column-resize/**                          @andrewseguin
+/src/dev-app/connected-overlay/**                      @jelbourn @crisbeto
+/src/dev-app/dataset/**                                @andrewseguin
+/src/dev-app/datepicker/**                             @mmalerba @crisbeto @zarend
+/src/dev-app/dev-app/**                                @mmalerba
+/src/dev-app/dialog/**                                 @andrewseguin @crisbeto
+/src/dev-app/drag-drop/**                              @crisbeto
+/src/dev-app/drawer/**                                 @mmalerba
+/src/dev-app/example/**                                @andrewseguin
+/src/dev-app/examples-page/**                          @andrewseguin
+/src/dev-app/expansion/**                              @andrewseguin
+/src/dev-app/focus-origin/**                           @mmalerba
+/src/dev-app/focus-trap/**                             @jelbourn
+/src/dev-app/google-map/**                             @crisbeto
+/src/dev-app/grid-list/**                              @andrewseguin
+/src/dev-app/icon/**                                   @andrewseguin
+/src/dev-app/input/**                                  @mmalerba
+/src/dev-app/layout/**                                 @andrewseguin
+/src/dev-app/cdk-menu/**                               @mmalerba @crisbeto
+/src/dev-app/input-modality/**                         @jelbourn
+/src/dev-app/list/**                                   @andrewseguin @crisbeto @devversion
+/src/dev-app/live-announcer/**                         @jelbourn
+/src/dev-app/mdc-button/**                             @andrewseguin
 # Note to implementer: please repossess
-/src/dev-app/mdc-card/**                           @mmalerba
-/src/dev-app/mdc-checkbox/**                       @mmalerba
-/src/dev-app/mdc-chips/**                          @mmalerba
-/src/dev-app/mdc-dialog/**                         @devversion
-/src/dev-app/mdc-input/**                          @devversion @mmalerba
-/src/dev-app/mdc-list/**                           @mmalerba
-/src/dev-app/mdc-menu/**                           @crisbeto
-/src/dev-app/mdc-paginator/**                      @crisbeto
-/src/dev-app/mdc-progress-bar/**                   @crisbeto
-/src/dev-app/mdc-progress-spinner/**               @mmalerba
-/src/dev-app/mdc-radio/**                          @mmalerba
-/src/dev-app/mdc-select/**                         @crisbeto
-/src/dev-app/mdc-snack-bar/**                      @andrewseguin
-/src/dev-app/mdc-snack-bar/**                      @andrewseguin
-/src/dev-app/mdc-slide-toggle/**                   @crisbeto
-/src/dev-app/mdc-slider/**                         @devversion
-/src/dev-app/mdc-table/**                          @andrewseguin
-/src/dev-app/mdc-tabs/**                           @crisbeto
-/src/dev-app/mdc-tooltip/**                        @crisbeto
-/src/dev-app/menu/**                               @crisbeto
-/src/dev-app/menubar/**                            @jelbourn
-/src/dev-app/overlay/**                            @jelbourn @crisbeto
-/src/dev-app/paginator/**                          @andrewseguin
-/src/dev-app/platform/**                           @andrewseguin @devversion
-/src/dev-app/portal/**                             @andrewseguin
-/src/dev-app/popover-edit/**                       @andrewseguin
-/src/dev-app/progress-bar/**                       @andrewseguin @crisbeto
-/src/dev-app/progress-spinner/**                   @andrewseguin @crisbeto
-/src/dev-app/radio/**                              @andrewseguin @devversion
-/src/dev-app/ripple/**                             @devversion
-/src/dev-app/screen-type/**                        @andrewseguin
-/src/dev-app/select/**                             @crisbeto
-/src/dev-app/sidenav/**                            @mmalerba
-/src/dev-app/slide-toggle/**                       @devversion
-/src/dev-app/slider/**                             @mmalerba
-/src/dev-app/snack-bar/**                          @andrewseguin @crisbeto
-/src/dev-app/stepper/**                            @mmalerba
-/src/dev-app/table/**                              @andrewseguin
-/src/dev-app/table-scroll-container/**             @andrewseguin
-/src/dev-app/tabs/**                               @andrewseguin
-/src/dev-app/toolbar/**                            @devversion
-/src/dev-app/tooltip/**                            @andrewseguin
-/src/dev-app/tree/**                               @andrewseguin
-/src/dev-app/typography/**                         @crisbeto
-/src/dev-app/virtual-scroll/**                     @mmalerba
-/src/dev-app/youtube-player/**                     @crisbeto
-/src/dev-app/selection/**                          @andrewseguin
+/src/dev-app/mdc-card/**                               @mmalerba
+/src/dev-app/mdc-checkbox/**                           @mmalerba
+/src/dev-app/mdc-chips/**                              @mmalerba
+/src/dev-app/mdc-dialog/**                             @devversion
+/src/dev-app/mdc-input/**                              @devversion @mmalerba
+/src/dev-app/mdc-list/**                               @mmalerba
+/src/dev-app/mdc-menu/**                               @crisbeto
+/src/dev-app/mdc-paginator/**                          @crisbeto
+/src/dev-app/mdc-progress-bar/**                       @crisbeto
+/src/dev-app/mdc-progress-spinner/**                   @mmalerba
+/src/dev-app/mdc-radio/**                              @mmalerba
+/src/dev-app/mdc-select/**                             @crisbeto
+/src/dev-app/mdc-snack-bar/**                          @andrewseguin
+/src/dev-app/mdc-snack-bar/**                          @andrewseguin
+/src/dev-app/mdc-slide-toggle/**                       @crisbeto
+/src/dev-app/mdc-slider/**                             @devversion
+/src/dev-app/mdc-table/**                              @andrewseguin
+/src/dev-app/mdc-tabs/**                               @crisbeto
+/src/dev-app/mdc-tooltip/**                            @crisbeto
+/src/dev-app/menu/**                                   @crisbeto
+/src/dev-app/menubar/**                                @jelbourn
+/src/dev-app/overlay/**                                @jelbourn @crisbeto
+/src/dev-app/paginator/**                              @andrewseguin
+/src/dev-app/platform/**                               @andrewseguin @devversion
+/src/dev-app/portal/**                                 @andrewseguin
+/src/dev-app/popover-edit/**                           @andrewseguin
+/src/dev-app/progress-bar/**                           @andrewseguin @crisbeto
+/src/dev-app/progress-spinner/**                       @andrewseguin @crisbeto
+/src/dev-app/radio/**                                  @andrewseguin @devversion
+/src/dev-app/ripple/**                                 @devversion
+/src/dev-app/screen-type/**                            @andrewseguin
+/src/dev-app/select/**                                 @crisbeto
+/src/dev-app/sidenav/**                                @mmalerba
+/src/dev-app/slide-toggle/**                           @devversion
+/src/dev-app/slider/**                                 @mmalerba
+/src/dev-app/snack-bar/**                              @andrewseguin @crisbeto
+/src/dev-app/stepper/**                                @mmalerba
+/src/dev-app/table/**                                  @andrewseguin
+/src/dev-app/table-scroll-container/**                 @andrewseguin
+/src/dev-app/tabs/**                                   @andrewseguin
+/src/dev-app/toolbar/**                                @devversion
+/src/dev-app/tooltip/**                                @andrewseguin
+/src/dev-app/tree/**                                   @andrewseguin
+/src/dev-app/typography/**                             @crisbeto
+/src/dev-app/virtual-scroll/**                         @mmalerba
+/src/dev-app/youtube-player/**                         @crisbeto
+/src/dev-app/selection/**                              @andrewseguin
 
 # E2E app
-/src/e2e-app/*                                     @andrewseguin
-/src/e2e-app/block-scroll-strategy/**              @andrewseguin @crisbeto
-/src/e2e-app/button/**                             @andrewseguin
-/src/e2e-app/button-toggle/**                      @andrewseguin
-/src/e2e-app/card/**                               @andrewseguin
-/src/e2e-app/checkbox/**                           @andrewseguin @devversion
-/src/e2e-app/component-harness/**                  @mmalerba
-/src/e2e-app/dialog/**                             @andrewseguin @crisbeto
-/src/e2e-app/e2e-app/**                            @andrewseguin
-/src/e2e-app/example-viewer/**                     @andrewseguin
-/src/e2e-app/expansion/**                          @andrewseguin
-/src/e2e-app/grid-list/**                          @andrewseguin
-/src/e2e-app/icon/**                               @andrewseguin
-/src/e2e-app/input/**                              @mmalerba
-/src/e2e-app/list/**                               @andrewseguin
-/src/e2e-app/mdc-button/**                         @andrewseguin
+/src/e2e-app/*                                         @andrewseguin
+/src/e2e-app/block-scroll-strategy/**                  @andrewseguin @crisbeto
+/src/e2e-app/button/**                                 @andrewseguin
+/src/e2e-app/button-toggle/**                          @andrewseguin
+/src/e2e-app/card/**                                   @andrewseguin
+/src/e2e-app/checkbox/**                               @andrewseguin @devversion
+/src/e2e-app/component-harness/**                      @mmalerba
+/src/e2e-app/dialog/**                                 @andrewseguin @crisbeto
+/src/e2e-app/e2e-app/**                                @andrewseguin
+/src/e2e-app/example-viewer/**                         @andrewseguin
+/src/e2e-app/expansion/**                              @andrewseguin
+/src/e2e-app/grid-list/**                              @andrewseguin
+/src/e2e-app/icon/**                                   @andrewseguin
+/src/e2e-app/input/**                                  @mmalerba
+/src/e2e-app/list/**                                   @andrewseguin
+/src/e2e-app/mdc-button/**                             @andrewseguin
 # Note to implementer: please repossess
-/src/e2e-app/mdc-card/**                           @mmalerba
-/src/e2e-app/mdc-checkbox/**                       @mmalerba
-/src/e2e-app/mdc-chips/**                          @mmalerba
-/src/e2e-app/mdc-dialog/**                         @devversion
-/src/e2e-app/mdc-input/**                          @devversion
-/src/e2e-app/mdc-menu/**                           @crisbeto
-/src/e2e-app/mdc-progress-bar/**                   @crisbeto
-/src/e2e-app/mdc-progress-spinner/**               @mmalerba
-/src/e2e-app/mdc-radio/**                          @mmalerba
-/src/e2e-app/mdc-slider/**                         @andrewseguin
-/src/e2e-app/mdc-slide-toggle/**                   @crisbeto
-/src/e2e-app/mdc-tabs/**                           @crisbeto
-/src/e2e-app/mdc-table/**                          @andrewseguin
-/src/e2e-app/menu/**                               @crisbeto
-/src/e2e-app/progress-bar/**                       @andrewseguin @crisbeto
-/src/e2e-app/progress-spinner/**                   @andrewseguin @crisbeto
-/src/e2e-app/radio/**                              @andrewseguin @devversion
-/src/e2e-app/select/**                             @crisbeto
-/src/e2e-app/sidenav/**                            @mmalerba
-/src/e2e-app/slide-toggle/**                       @devversion
-/src/e2e-app/stepper/**                            @mmalerba
-/src/e2e-app/tabs/**                               @andrewseguin
-/src/e2e-app/test-util/**                          @andrewseguin
-/src/e2e-app/toolbar/**                            @devversion
-/src/e2e-app/virtual-scroll/**                     @mmalerba
+/src/e2e-app/mdc-card/**                               @mmalerba
+/src/e2e-app/mdc-checkbox/**                           @mmalerba
+/src/e2e-app/mdc-chips/**                              @mmalerba
+/src/e2e-app/mdc-dialog/**                             @devversion
+/src/e2e-app/mdc-input/**                              @devversion
+/src/e2e-app/mdc-menu/**                               @crisbeto
+/src/e2e-app/mdc-progress-bar/**                       @crisbeto
+/src/e2e-app/mdc-progress-spinner/**                   @mmalerba
+/src/e2e-app/mdc-radio/**                              @mmalerba
+/src/e2e-app/mdc-slider/**                             @andrewseguin
+/src/e2e-app/mdc-slide-toggle/**                       @crisbeto
+/src/e2e-app/mdc-tabs/**                               @crisbeto
+/src/e2e-app/mdc-table/**                              @andrewseguin
+/src/e2e-app/menu/**                                   @crisbeto
+/src/e2e-app/progress-bar/**                           @andrewseguin @crisbeto
+/src/e2e-app/progress-spinner/**                       @andrewseguin @crisbeto
+/src/e2e-app/radio/**                                  @andrewseguin @devversion
+/src/e2e-app/select/**                                 @crisbeto
+/src/e2e-app/sidenav/**                                @mmalerba
+/src/e2e-app/slide-toggle/**                           @devversion
+/src/e2e-app/stepper/**                                @mmalerba
+/src/e2e-app/tabs/**                                   @andrewseguin
+/src/e2e-app/test-util/**                              @andrewseguin
+/src/e2e-app/toolbar/**                                @devversion
+/src/e2e-app/virtual-scroll/**                         @mmalerba
 
 # Universal app
-/src/universal-app/**                              @devversion
+/src/universal-app/**                                  @devversion
 
 # Integration tests
-/integration/**                                    @andrewseguin @devversion
+/integration/**                                        @andrewseguin @devversion
 
 # Tooling
-/.circleci/**                                      @angular/dev-infra-components
-/.yarn/**                                          @angular/dev-infra-components
-/scripts/**                                        @angular/dev-infra-components
-/test/**                                           @angular/dev-infra-components
-/tools/**                                          @angular/dev-infra-components
+/.circleci/**                                          @angular/dev-infra-components
+/.yarn/**                                              @angular/dev-infra-components
+/scripts/**                                            @angular/dev-infra-components
+/test/**                                               @angular/dev-infra-components
+/tools/**                                              @angular/dev-infra-components
 
 # Public API golden files
 /tools/public_api_guard/cdk/a11y**                 @jelbourn @devversion
@@ -333,7 +333,7 @@
 /tools/public_api_guard/material/list**            @andrewseguin @crisbeto @devversion
 /tools/public_api_guard/material/menu**            @crisbeto
 /tools/public_api_guard/material/paginator**       @andrewseguin
-/tools/public_api_guard/material/progress-bar**    @andrewseguin @crisbeto
+/tools/public_api_guard/material/legacy-progress-bar**    @andrewseguin @crisbeto
 /tools/public_api_guard/material/progress-spinner**@andrewseguin @crisbeto
 /tools/public_api_guard/material/radio**           @andrewseguin @devversion
 /tools/public_api_guard/material/select**          @crisbeto
@@ -353,13 +353,13 @@
 /tools/public_api_guard/youtube-player/**          @andrewseguin
 
 # Misc
-/.github/**                                        @angular/dev-infra-components
-/.husky/**                                         @angular/dev-infra-components
-/.github/CODEOWNERS                                @angular/dev-infra-components @andrewseguin @jelbourn
-/.github/ISSUE_TEMPLATE/**                         @andrewseguin @jelbourn
-/.vscode/**                                        @angular/dev-infra-components @mmalerba
-/.ng-dev/**                                        @angular/dev-infra-components
-/goldens/size-test.yml                             @andrewseguin @mmalerba @crisbeto
-/goldens/**                                        @angular/dev-infra-components
-/src/*                                             @angular/dev-infra-components
-/*                                                 @angular/dev-infra-components
+/.github/**                                            @angular/dev-infra-components
+/.husky/**                                             @angular/dev-infra-components
+/.github/CODEOWNERS                                    @angular/dev-infra-components @andrewseguin @jelbourn
+/.github/ISSUE_TEMPLATE/**                             @andrewseguin @jelbourn
+/.vscode/**                                            @angular/dev-infra-components @mmalerba
+/.ng-dev/**                                            @angular/dev-infra-components
+/goldens/size-test.yml                                 @andrewseguin @mmalerba @crisbeto
+/goldens/**                                            @angular/dev-infra-components
+/src/*                                                 @angular/dev-infra-components
+/*                                                     @angular/dev-infra-components

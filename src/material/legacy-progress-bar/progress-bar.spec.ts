@@ -2,18 +2,28 @@ import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {ApplicationRef, Component, DebugElement, Provider, Type} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '../../cdk/testing/private';
-import {MatProgressBarModule, MAT_PROGRESS_BAR_DEFAULT_OPTIONS} from './index';
-import {MatProgressBar} from './progress-bar';
+import {MatLegacyProgressBarModule, MAT_LEGACY_PROGRESS_BAR_LOCATION} from './index';
+import {MatLegacyProgressBar, MAT_LEGACY_PROGRESS_BAR_DEFAULT_OPTIONS} from './progress-bar';
 
-describe('MDC-based MatProgressBar', () => {
+describe('MatProgressBar', () => {
+  let fakePath: string;
+
   function createComponent<T>(
     componentType: Type<T>,
     providers: Provider[] = [],
   ): ComponentFixture<T> {
+    fakePath = '/fake-path';
+
     TestBed.configureTestingModule({
-      imports: [MatProgressBarModule],
+      imports: [MatLegacyProgressBarModule],
       declarations: [componentType],
-      providers,
+      providers: [
+        {
+          provide: MAT_LEGACY_PROGRESS_BAR_LOCATION,
+          useValue: {getPathname: () => fakePath},
+        },
+        ...providers,
+      ],
     }).compileComponents();
 
     return TestBed.createComponent<T>(componentType);
@@ -25,11 +35,11 @@ describe('MDC-based MatProgressBar', () => {
     const fixture = createComponent(BasicProgressBar);
     const host = fixture.nativeElement as Element;
     const element = host.children[0];
-    const children = element.children;
-    expect(children.length).toBe(3);
+    expect(element.children.length).toBe(1);
 
-    const ariaHidden = Array.from(children).map(child => child.getAttribute('aria-hidden'));
-    expect(ariaHidden).toEqual(['true', 'true', 'true']);
+    const div = element.querySelector('div')!;
+    expect(div).toBeTruthy();
+    expect(div.getAttribute('aria-hidden')).toBe('true');
   });
 
   describe('with animation', () => {
@@ -75,47 +85,76 @@ describe('MDC-based MatProgressBar', () => {
         expect(progressComponent.bufferValue).toBe(100);
       });
 
-      it('should set the proper transform based on the current value', () => {
+      it('should return the transform attribute for bufferValue and mode', () => {
         const fixture = createComponent(BasicProgressBar);
         fixture.detectChanges();
 
         const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'))!;
         const progressComponent = progressElement.componentInstance;
-        const primaryStyles = progressElement.nativeElement.querySelector(
-          '.mdc-linear-progress__primary-bar',
-        ).style;
-        const bufferStyles = progressElement.nativeElement.querySelector(
-          '.mdc-linear-progress__buffer-bar',
-        ).style;
 
-        // Parse out and round the value since different
-        // browsers return the value with a different precision.
-        const getBufferValue = () => Math.floor(parseInt(bufferStyles.flexBasis));
-
-        expect(primaryStyles.transform).toBe('scaleX(0)');
-        expect(getBufferValue()).toBe(100);
+        expect(progressComponent._primaryTransform()).toEqual({transform: 'scale3d(0, 1, 1)'});
+        expect(progressComponent._bufferTransform()).toBe(null);
 
         progressComponent.value = 40;
-        fixture.detectChanges();
-        expect(primaryStyles.transform).toBe('scaleX(0.4)');
-        expect(getBufferValue()).toBe(100);
+        expect(progressComponent._primaryTransform()).toEqual({transform: 'scale3d(0.4, 1, 1)'});
+        expect(progressComponent._bufferTransform()).toBe(null);
 
         progressComponent.value = 35;
         progressComponent.bufferValue = 55;
-        fixture.detectChanges();
-        expect(primaryStyles.transform).toBe('scaleX(0.35)');
-        expect(getBufferValue()).toBe(100);
+        expect(progressComponent._primaryTransform()).toEqual({transform: 'scale3d(0.35, 1, 1)'});
+        expect(progressComponent._bufferTransform()).toBe(null);
 
         progressComponent.mode = 'buffer';
-        fixture.detectChanges();
-        expect(primaryStyles.transform).toBe('scaleX(0.35)');
-        expect(getBufferValue()).toEqual(55);
+        expect(progressComponent._primaryTransform()).toEqual({transform: 'scale3d(0.35, 1, 1)'});
+        expect(progressComponent._bufferTransform()).toEqual({transform: 'scale3d(0.55, 1, 1)'});
 
         progressComponent.value = 60;
         progressComponent.bufferValue = 60;
+        expect(progressComponent._primaryTransform()).toEqual({transform: 'scale3d(0.6, 1, 1)'});
+        expect(progressComponent._bufferTransform()).toEqual({transform: 'scale3d(0.6, 1, 1)'});
+      });
+
+      it('should prefix SVG references with the current path', () => {
+        const fixture = createComponent(BasicProgressBar);
         fixture.detectChanges();
-        expect(primaryStyles.transform).toBe('scaleX(0.6)');
-        expect(getBufferValue()).toEqual(60);
+
+        const rect = fixture.debugElement.query(By.css('rect'))!.nativeElement;
+        expect(rect.getAttribute('fill')).toMatch(/^url\(['"]?\/fake-path#.*['"]?\)$/);
+      });
+
+      it('should account for location hash when prefixing the SVG references', () => {
+        fakePath = '/fake-path#anchor';
+
+        const fixture = createComponent(BasicProgressBar);
+        fixture.detectChanges();
+
+        const rect = fixture.debugElement.query(By.css('rect'))!.nativeElement;
+        expect(rect.getAttribute('fill')).not.toContain('#anchor#');
+      });
+
+      it('should not be able to tab into the underlying SVG element', () => {
+        const fixture = createComponent(BasicProgressBar);
+        fixture.detectChanges();
+
+        const svg = fixture.debugElement.query(By.css('svg'))!.nativeElement;
+        expect(svg.getAttribute('focusable')).toBe('false');
+      });
+
+      it('should use latest path when prefixing the SVG references', () => {
+        let fixture = createComponent(BasicProgressBar);
+        fixture.detectChanges();
+
+        let rect = fixture.debugElement.query(By.css('rect'))!.nativeElement;
+        expect(rect.getAttribute('fill')).toMatch(/^url\(['"]?\/fake-path#.*['"]?\)$/);
+
+        fixture.destroy();
+        fakePath = '/another-fake-path';
+
+        fixture = TestBed.createComponent(BasicProgressBar);
+        fixture.detectChanges();
+        rect = fixture.debugElement.query(By.css('rect'))!.nativeElement;
+
+        expect(rect.getAttribute('fill')).toMatch(/^url\(['"]?\/another-fake-path#.*['"]?\)$/);
       });
 
       it('should remove the `aria-valuenow` attribute in indeterminate mode', () => {
@@ -167,7 +206,7 @@ describe('MDC-based MatProgressBar', () => {
       it('should be able to configure the default progress bar options via DI', () => {
         const fixture = createComponent(BasicProgressBar, [
           {
-            provide: MAT_PROGRESS_BAR_DEFAULT_OPTIONS,
+            provide: MAT_LEGACY_PROGRESS_BAR_DEFAULT_OPTIONS,
             useValue: {
               mode: 'buffer',
               color: 'warn',
@@ -186,16 +225,14 @@ describe('MDC-based MatProgressBar', () => {
 
         const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'))!;
         const progressComponent = progressElement.componentInstance;
-        const primaryBar = progressElement.nativeElement.querySelector(
-          '.mdc-linear-progress__primary-bar',
-        );
+        const primaryBar = progressElement.nativeElement.querySelector('.mat-progress-bar-primary');
 
-        expect(primaryBar.style.transform).toBe('scaleX(0)');
+        expect(primaryBar.style.transform).toBe('scale3d(0, 1, 1)');
 
         progressComponent.value = 40;
         fixture.detectChanges();
 
-        expect(primaryBar.style.transform).toBe('scaleX(0.4)');
+        expect(primaryBar.style.transform).toBe('scale3d(0.4, 1, 1)');
       });
 
       it('should update the DOM transform when the bufferValue has changed', () => {
@@ -204,25 +241,23 @@ describe('MDC-based MatProgressBar', () => {
 
         const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'))!;
         const progressComponent = progressElement.componentInstance;
-        const bufferBar = progressElement.nativeElement.querySelector(
-          '.mdc-linear-progress__buffer-bar',
-        );
+        const bufferBar = progressElement.nativeElement.querySelector('.mat-progress-bar-buffer');
 
         progressComponent.mode = 'buffer';
         fixture.detectChanges();
 
-        expect(bufferBar.style.flexBasis).toBe('0%');
+        expect(bufferBar.style.transform).toBeFalsy();
 
         progressComponent.bufferValue = 40;
         fixture.detectChanges();
 
-        expect(bufferBar.style.flexBasis).toBe('40%');
+        expect(bufferBar.style.transform).toBe('scale3d(0.4, 1, 1)');
       });
     });
 
     describe('animation trigger on determinate setting', () => {
       let fixture: ComponentFixture<BasicProgressBar>;
-      let progressComponent: MatProgressBar;
+      let progressComponent: MatLegacyProgressBar;
       let primaryValueBar: DebugElement;
 
       beforeEach(() => {
@@ -230,7 +265,7 @@ describe('MDC-based MatProgressBar', () => {
 
         const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'))!;
         progressComponent = progressElement.componentInstance;
-        primaryValueBar = progressElement.query(By.css('.mdc-linear-progress__primary-bar'))!;
+        primaryValueBar = progressElement.query(By.css('.mat-progress-bar-primary'))!;
       });
 
       it('should trigger output event on primary value bar animation end', () => {
@@ -243,31 +278,30 @@ describe('MDC-based MatProgressBar', () => {
         expect(animationEndSpy).not.toHaveBeenCalled();
 
         // On animation end, output should be emitted.
-        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend', true);
+        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend');
         expect(animationEndSpy).toHaveBeenCalledWith({value: 40});
       });
     });
 
     describe('animation trigger on buffer setting', () => {
       let fixture: ComponentFixture<BufferProgressBar>;
-      let progressElement: DebugElement;
-      let progressComponent: MatProgressBar;
+      let progressComponent: MatLegacyProgressBar;
       let primaryValueBar: DebugElement;
 
       beforeEach(() => {
         fixture = createComponent(BufferProgressBar);
 
-        progressElement = fixture.debugElement.query(By.css('mat-progress-bar'))!;
+        const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'))!;
         progressComponent = progressElement.componentInstance;
-        primaryValueBar = progressElement.query(By.css('.mdc-linear-progress__primary-bar'))!;
+        primaryValueBar = progressElement.query(By.css('.mat-progress-bar-primary'))!;
       });
 
       it('should bind on transitionend eventListener on primaryBarValue', () => {
-        spyOn(progressElement.nativeElement, 'addEventListener');
+        spyOn(primaryValueBar.nativeElement, 'addEventListener');
         fixture.detectChanges();
 
-        expect(progressElement.nativeElement.addEventListener).toHaveBeenCalled();
-        expect(progressElement.nativeElement.addEventListener.calls.mostRecent().args[0]).toBe(
+        expect(primaryValueBar.nativeElement.addEventListener).toHaveBeenCalled();
+        expect(primaryValueBar.nativeElement.addEventListener.calls.mostRecent().args[0]).toBe(
           'transitionend',
         );
       });
@@ -282,7 +316,7 @@ describe('MDC-based MatProgressBar', () => {
         expect(animationEndSpy).not.toHaveBeenCalled();
 
         // On animation end, output should be emitted.
-        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend', true);
+        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend');
         expect(animationEndSpy).toHaveBeenCalledWith({value: 40});
       });
 
@@ -297,7 +331,7 @@ describe('MDC-based MatProgressBar', () => {
         expect(animationEndSpy).not.toHaveBeenCalled();
 
         // On animation end, output should be emitted.
-        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend', true);
+        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend');
         expect(animationEndSpy).toHaveBeenCalledWith({value: 40});
       });
 
@@ -311,7 +345,7 @@ describe('MDC-based MatProgressBar', () => {
         progressComponent.value = 30;
         progressComponent.bufferValue = 60;
         // On animation end, output should be emitted.
-        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend', true);
+        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend');
 
         expect(appRef.tick).not.toHaveBeenCalled();
 
@@ -320,7 +354,7 @@ describe('MDC-based MatProgressBar', () => {
         progressComponent.value = 40;
         progressComponent.bufferValue = 70;
         // On animation end, output should be emitted.
-        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend', true);
+        dispatchFakeEvent(primaryValueBar.nativeElement, 'transitionend');
 
         expect(appRef.tick).toHaveBeenCalled();
         expect(animationEndSpy).toHaveBeenCalledWith({value: 40});

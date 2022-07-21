@@ -9,11 +9,11 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatCommonModule} from '@angular/material/core';
-import {MatProgressBar} from './progress-bar';
+import {MatLegacyProgressBar} from './progress-bar';
 
 @NgModule({
   imports: [CommonModule, MatCommonModule],
-  exports: [MatProgressBar, MatCommonModule],
-  declarations: [MatProgressBar],
+  exports: [MatLegacyProgressBar, MatCommonModule],
+  declarations: [MatLegacyProgressBar],
 })
-export class MatProgressBarModule {}
+export class MatLegacyProgressBarModule {}

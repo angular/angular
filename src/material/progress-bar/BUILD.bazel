@@ -16,36 +16,38 @@ ng_module(
     name = "progress-bar",
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["**/*.spec.ts"],
+        exclude = [
+            "**/*.spec.ts",
+        ],
     ),
-    assets = [":progress-bar.css"] + glob(["**/*.html"]),
+    assets = [":progress_bar_scss"] + glob(["**/*.html"]),
     deps = [
         "//src/material/core",
-        "@npm//@angular/animations",
-        "@npm//@angular/common",
+        "//src/material/legacy-progress-bar",
         "@npm//@angular/core",
-        "@npm//@angular/platform-browser",
-        "@npm//rxjs",
     ],
 )
 
 sass_library(
     name = "progress_bar_scss_lib",
     srcs = glob(["**/_*.scss"]),
-    deps = ["//src/material/core:core_scss_lib"],
+    deps = [
+        "//:mdc_sass_lib",
+        "//src/material/core:core_scss_lib",
+    ],
 )
 
 sass_binary(
     name = "progress_bar_scss",
     src = "progress-bar.scss",
     deps = [
-        "//src/cdk:sass_lib",
+        "//:mdc_sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )
 
 ng_test_library(
-    name = "unit_test_sources",
+    name = "progress_bar_tests_lib",
     srcs = glob(
         ["**/*.spec.ts"],
         exclude = ["**/*.e2e.spec.ts"],
@@ -59,7 +61,9 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [":unit_test_sources"],
+    deps = [
+        ":progress_bar_tests_lib",
+    ],
 )
 
 ng_e2e_test_library(
