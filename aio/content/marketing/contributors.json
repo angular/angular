@@ -846,6 +846,15 @@
     "bio": "Siddharth is a Full Stack JavaScript Developer and a GDE in Angular. He's passionate about sharing his knowledge on Angular, Firebase and the Web in general. He's the organizer of WebStack, a local community of developers focused on Web, Mobile, Voice and Server related technologies in general. WebStack hosts free monthly meetups every 2nd or 3rd Saturday of the month. Siddharth is also an avid photographer and loves traveling. Find him anywhere on the Web with `SiddAjmera`.",
     "groups": ["GDE"]
   },
+	"simonaco": {
+    "name": "Simona Cotin",
+    "picture": "simonacotin.jpg",
+    "twitter": "simona_cotin",
+    "website": "https://github.com/simonaco",
+    "bio": "Engineering manager working on Angular Framework and Tooling",
+    "groups": ["Angular"],
+    "lead": "madleinas"
+  },
   "simpulton": {
     "name": "Lukas Ruebbelke",
     "picture": "lukas.jpg",
