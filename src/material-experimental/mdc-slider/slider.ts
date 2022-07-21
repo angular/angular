@@ -127,7 +127,7 @@ export class MatSliderVisualThumb implements AfterViewInit, OnDestroy {
   private _activeRippleRef: RippleRef | undefined;
 
   /** Whether the slider thumb is currently being pressed. */
-  private _isActive: boolean = false;
+  readonly _isActive = false;
 
   /** Whether the slider thumb is currently being hovered. */
   private _isHovered: boolean = false;
@@ -201,14 +201,14 @@ export class MatSliderVisualThumb implements AfterViewInit, OnDestroy {
 
   private _onDragStart(event: MatSliderDragEvent): void {
     if (event.source._thumbPosition === this.thumbPosition) {
-      this._isActive = true;
+      (this as {_isActive: boolean})._isActive = true;
       this._showActiveRipple();
     }
   }
 
   private _onDragEnd(event: MatSliderDragEvent): void {
     if (event.source._thumbPosition === this.thumbPosition) {
-      this._isActive = false;
+      (this as {_isActive: boolean})._isActive = false;
       this._activeRippleRef?.fadeOut();
       // Happens when the user starts dragging a thumb, tabs away, and then stops dragging.
       if (!this._sliderInput._isFocused()) {
@@ -960,18 +960,30 @@ export class MatSlider
     // observer to ensure that the layout is correct (see #24590 and #25286).
     this._ngZone.runOutsideAngular(() => {
       this._resizeObserver = new ResizeObserver(entries => {
+        // Triggering a layout while the user is dragging can throw off the alignment.
+        if (this._isActive()) {
+          return;
+        }
+
         clearTimeout(this._resizeTimer);
         this._resizeTimer = setTimeout(() => {
           // The `layout` call is going to call `getBoundingClientRect` to update the dimensions
           // of the host. Since the `ResizeObserver` already calculated them, we can save some
           // work by returning them instead of having to check the DOM again.
-          this._cachedHostRect = entries[0]?.contentRect;
-          this._layout();
-          this._cachedHostRect = null;
+          if (!this._isActive()) {
+            this._cachedHostRect = entries[0]?.contentRect;
+            this._layout();
+            this._cachedHostRect = null;
+          }
         }, 50);
       });
       this._resizeObserver.observe(this._elementRef.nativeElement);
     });
+  }
+
+  /** Whether any of the thumbs are currently active. */
+  private _isActive(): boolean {
+    return this._getThumb(Thumb.START)._isActive || this._getThumb(Thumb.END)._isActive;
   }
 }
 
