@@ -277,14 +277,8 @@ function provideEnabledBlockingInitialNavigation(): Provider {
       useFactory: () => {
         const bootstrapDone = inject(BOOTSTRAP_DONE);
         return () => {
-          // Note that we emit the done event inside a promise to ensure there are no ordering
-          // issues with other BOOTSTRAP_LISTENERs that might be listening to router events.
-          // Specifically, this includes the RouterScroller. If the initial navigation unblocks and
-          // completes before the `provideRouterScroller`, it will miss the initial navigation.
-          Promise.resolve().then(() => {
-            bootstrapDone.next();
-            bootstrapDone.complete();
-          });
+          bootstrapDone.next();
+          bootstrapDone.complete();
         };
       }
     },
