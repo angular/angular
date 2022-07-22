@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵNgOptimizedImageModule as NgOptimizedImageModule} from '@angular/common';
+import {ɵNgOptimizedImage as NgOptimizedImage} from '@angular/common';
 import {Component} from '@angular/core';
 
 @Component({
   selector: 'image-distortion-passing',
   standalone: true,
-  imports: [NgOptimizedImageModule],
+  imports: [NgOptimizedImage],
   template: `
      <!-- All the images in this template should not throw -->
      <!-- This image is here for the sake of making sure the "LCP image is priority" assertion is passed -->
@@ -51,7 +51,7 @@ export class ImageDistortionPassingComponent {
 @Component({
   selector: 'image-distortion-failing',
   standalone: true,
-  imports: [NgOptimizedImageModule],
+  imports: [NgOptimizedImage],
   template: `
      <!-- With the exception of the priority image, all the images in this template should throw -->
      <!-- This image is here for the sake of making sure the "LCP image is priority" assertion is passed -->
