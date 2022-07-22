@@ -3433,7 +3433,7 @@ runInEachFileSystem(() => {
            const dtsContents = fs.readFile(_(`/node_modules/test-package/index.d.ts`));
            expect(dtsContents)
                .toContain(
-                   'static ɵdir: ɵngcc0.ɵɵDirectiveDeclaration<DerivedDir, "[base]", ["base1", "base2"], {}, {}, never, never, false>;');
+                   'static ɵdir: ɵngcc0.ɵɵDirectiveDeclaration<DerivedDir, "[base]", ["base1", "base2"], {}, {}, never, never, false, never>;');
          });
 
       it('should generate a component definition with CopyDefinitionFeature for an undecorated child component',
@@ -3511,7 +3511,7 @@ runInEachFileSystem(() => {
            const dtsContents = fs.readFile(_(`/node_modules/test-package/index.d.ts`));
            expect(dtsContents)
                .toContain(
-                   'static ɵcmp: ɵngcc0.ɵɵComponentDeclaration<DerivedCmp, "[base]", never, {}, {}, never, never, false>;');
+                   'static ɵcmp: ɵngcc0.ɵɵComponentDeclaration<DerivedCmp, "[base]", never, {}, {}, never, never, false, never>;');
          });
 
       it('should generate directive definitions with CopyDefinitionFeature for undecorated child directives in a long inheritance chain',
@@ -3589,13 +3589,13 @@ runInEachFileSystem(() => {
            const dtsContents = fs.readFile(_(`/node_modules/test-package/index.d.ts`));
            expect(dtsContents)
                .toContain(
-                   'static ɵdir: ɵngcc0.ɵɵDirectiveDeclaration<DerivedDir1, "[base]", never, {}, {}, never, never, false>;');
+                   'static ɵdir: ɵngcc0.ɵɵDirectiveDeclaration<DerivedDir1, "[base]", never, {}, {}, never, never, false, never>;');
            expect(dtsContents)
                .toContain(
-                   'static ɵdir: ɵngcc0.ɵɵDirectiveDeclaration<DerivedDir2, "[base]", never, {}, {}, never, never, false>;');
+                   'static ɵdir: ɵngcc0.ɵɵDirectiveDeclaration<DerivedDir2, "[base]", never, {}, {}, never, never, false, never>;');
            expect(dtsContents)
                .toContain(
-                   'static ɵdir: ɵngcc0.ɵɵDirectiveDeclaration<DerivedDir3, "[base]", never, {}, {}, never, never, false>;');
+                   'static ɵdir: ɵngcc0.ɵɵDirectiveDeclaration<DerivedDir3, "[base]", never, {}, {}, never, never, false, never>;');
          });
     });
 

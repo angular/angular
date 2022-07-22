@@ -439,6 +439,11 @@ export interface Directive {
     host?: {
         [key: string]: string;
     };
+    hostDirectives?: (Type<unknown> | {
+        directive: Type<unknown>;
+        inputs?: string[];
+        outputs?: string[];
+    })[];
     inputs?: string[];
     jit?: true;
     outputs?: string[];

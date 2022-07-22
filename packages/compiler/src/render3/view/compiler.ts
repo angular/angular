@@ -116,6 +116,10 @@ function addFeatures(
   if (meta.hasOwnProperty('template') && meta.isStandalone) {
     features.push(o.importExpr(R3.StandaloneFeature));
   }
+  if (meta.hostDirectives?.length) {
+    features.push(o.importExpr(R3.HostDirectivesFeature).callFn([createHostDirectivesArray(
+        meta.hostDirectives)]));
+  }
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
   }
@@ -267,6 +271,7 @@ export function createComponentType(meta: R3ComponentMetadata<R3TemplateDependen
   const typeParams = createBaseDirectiveTypeParams(meta);
   typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
   typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
+  typeParams.push(createHostDirectivesType(meta));
   return o.expressionType(o.importExpr(R3.ComponentDeclaration, typeParams));
 }
 
@@ -390,7 +395,7 @@ function stringAsType(str: string): o.Type {
   return o.expressionType(o.literal(str));
 }
 
-function stringMapAsType(map: {[key: string]: string|string[]}): o.Type {
+function stringMapAsLiteralExpression(map: {[key: string]: string|string[]}): o.LiteralMapExpr {
   const mapValues = Object.keys(map).map(key => {
     const value = Array.isArray(map[key]) ? map[key][0] : map[key];
     return {
@@ -399,7 +404,8 @@ function stringMapAsType(map: {[key: string]: string|string[]}): o.Type {
       quoted: true,
     };
   });
-  return o.expressionType(o.literalMap(mapValues));
+
+  return o.literalMap(mapValues);
 }
 
 function stringArrayAsType(arr: ReadonlyArray<string|null>): o.Type {
@@ -416,8 +422,8 @@ export function createBaseDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type
     typeWithParameters(meta.type.type, meta.typeArgumentCount),
     selectorForType !== null ? stringAsType(selectorForType) : o.NONE_TYPE,
     meta.exportAs !== null ? stringArrayAsType(meta.exportAs) : o.NONE_TYPE,
-    stringMapAsType(meta.inputs),
-    stringMapAsType(meta.outputs),
+    o.expressionType(stringMapAsLiteralExpression(meta.inputs)),
+    o.expressionType(stringMapAsLiteralExpression(meta.outputs)),
     stringArrayAsType(meta.queries.map(q => q.propertyName)),
   ];
 }
@@ -432,6 +438,7 @@ export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
   // so that future fields align.
   typeParams.push(o.NONE_TYPE);
   typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
+  typeParams.push(createHostDirectivesType(meta));
   return o.expressionType(o.importExpr(R3.DirectiveDeclaration, typeParams));
 }
 
@@ -811,4 +818,44 @@ function compileStyles(styles: string[], selector: string, hostSelector: string)
   return styles.map(style => {
     return shadowCss!.shimCssText(style, selector, hostSelector);
   });
+}
+
+function createHostDirectivesType(meta: R3DirectiveMetadata) {
+  if (!meta.hostDirectives?.length) {
+    return o.NONE_TYPE;
+  }
+
+  return o.expressionType(o.literalArr(meta.hostDirectives.map(hostMeta => o.literalMap([
+    {key: 'directive', value: o.typeofExpr(hostMeta.directive.type), quoted: false},
+    {key: 'inputs', value: stringMapAsLiteralExpression(hostMeta.inputs || {}), quoted: false},
+    {key: 'outputs', value: stringMapAsLiteralExpression(hostMeta.outputs || {}), quoted: false},
+  ]))));
+}
+
+export function createHostDirectivesArray(
+    hostDirectives: NonNullable<R3DirectiveMetadata['hostDirectives']>) {
+  return o.literalArr(hostDirectives.map(current => {
+    // Use a shorthand if there are no inputs or outputs.
+    if (!current.inputs && !current.outputs) {
+      return current.internalDirective;
+    }
+
+    const keys = [{key: 'directive', value: current.internalDirective, quoted: false}];
+
+    if (current.inputs) {
+      const inputsLiteral = conditionallyCreateMapObjectLiteral(current.inputs);
+      if (inputsLiteral) {
+        keys.push({key: 'inputs', value: inputsLiteral, quoted: false});
+      }
+    }
+
+    if (current.outputs) {
+      const outputsLiteral = conditionallyCreateMapObjectLiteral(current.outputs);
+      if (outputsLiteral) {
+        keys.push({key: 'outputs', value: outputsLiteral, quoted: false});
+      }
+    }
+
+    return o.literalMap(keys);
+  }));
 }

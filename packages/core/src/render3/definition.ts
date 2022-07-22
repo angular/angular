@@ -26,6 +26,66 @@ import {CssSelectorList} from './interfaces/projection';
 /** Counter used to generate unique IDs for component definitions. */
 let componentDefCount = 0;
 
+/**
+ * A map of input names.
+ *
+ * The format is in: `{[actualPropertyName: string]:(string|[string, string])}`.
+ *
+ * Given:
+ * ```
+ * class MyComponent {
+ *   @Input()
+ *   publicInput1: string;
+ *
+ *   @Input('publicInput2')
+ *   declaredInput2: string;
+ * }
+ * ```
+ *
+ * is described as:
+ * ```
+ * {
+ *   publicInput1: 'publicInput1',
+ *   declaredInput2: ['declaredInput2', 'publicInput2'],
+ * }
+ * ```
+ *
+ * Which the minifier may translate to:
+ * ```
+ * {
+ *   minifiedPublicInput1: 'publicInput1',
+ *   minifiedDeclaredInput2: [ 'publicInput2', 'declaredInput2'],
+ * }
+ * ```
+ *
+ * This allows the render to re-construct the minified, public, and declared names
+ * of properties.
+ *
+ * NOTE:
+ *  - Because declared and public name are usually same we only generate the array
+ *    `['declared', 'public']` format when they differ.
+ *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
+ *    inconsistent behavior in that it uses declared names rather than minified or public. For
+ *    this reason `NgOnChanges` will be deprecated and removed in future version and this
+ *    API will be simplified to be consistent with `output`.
+ */
+export type InputsDefinition<T> = {
+  [P in keyof T]?: string|[string, string]
+};
+
+/**
+ * A map of output names.
+ *
+ * The format is in: `{[actualPropertyName: string]:string}`.
+ *
+ * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
+ *
+ * This allows the render to re-construct the minified and non-minified names
+ * of properties.
+ */
+export type OutputsDefinition<T> = {
+  [P in keyof T]?: string
+};
 
 /**
  * Create a component definition object.
@@ -69,62 +129,11 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
    */
   vars: number;
 
-  /**
-   * A map of input names.
-   *
-   * The format is in: `{[actualPropertyName: string]:(string|[string, string])}`.
-   *
-   * Given:
-   * ```
-   * class MyComponent {
-   *   @Input()
-   *   publicInput1: string;
-   *
-   *   @Input('publicInput2')
-   *   declaredInput2: string;
-   * }
-   * ```
-   *
-   * is described as:
-   * ```
-   * {
-   *   publicInput1: 'publicInput1',
-   *   declaredInput2: ['publicInput2', 'declaredInput2'],
-   * }
-   * ```
-   *
-   * Which the minifier may translate to:
-   * ```
-   * {
-   *   minifiedPublicInput1: 'publicInput1',
-   *   minifiedDeclaredInput2: ['publicInput2', 'declaredInput2'],
-   * }
-   * ```
-   *
-   * This allows the render to re-construct the minified, public, and declared names
-   * of properties.
-   *
-   * NOTE:
-   *  - Because declared and public name are usually same we only generate the array
-   *    `['public', 'declared']` format when they differ.
-   *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
-   *    inconsistent behavior in that it uses declared names rather than minified or public. For
-   *    this reason `NgOnChanges` will be deprecated and removed in future version and this
-   *    API will be simplified to be consistent with `output`.
-   */
-  inputs?: {[P in keyof T]?: string | [string, string]};
+  /** Inputs defined on the directive and their name mapping. */
+  inputs?: InputsDefinition<T>;
 
-  /**
-   * A map of output names.
-   *
-   * The format is in: `{[actualPropertyName: string]:string}`.
-   *
-   * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
-   *
-   * This allows the render to re-construct the minified and non-minified names
-   * of properties.
-   */
-  outputs?: {[P in keyof T]?: string};
+  /** Outputs defined on the directive and their name mapping. */
+  outputs?: OutputsDefinition<T>;
 
   /**
    * Function executed by the parent template to allow child directive to apply host bindings.
@@ -326,6 +335,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       setInput: null,
       schemas: componentDefinition.schemas || null,
       tView: null,
+      applyHostDirectives: null,
     };
     const dependencies = componentDefinition.dependencies;
     const feature = componentDefinition.features;
@@ -504,7 +514,7 @@ export function ɵɵsetNgModuleScope(type: any, scope: {
  *
 
  */
-function invertObject<T>(
+export function invertObject<T>(
     obj?: {[P in keyof T]?: string|[string, string]},
     secondary?: {[key: string]: string}): {[P in keyof T]: string} {
   if (obj == null) return EMPTY_OBJ as any;
@@ -552,62 +562,11 @@ export const ɵɵdefineDirective =
       /** The selectors that will be used to match nodes to this directive. */
       selectors?: CssSelectorList;
 
-      /**
-       * A map of input names.
-       *
-       * The format is in: `{[actualPropertyName: string]:(string|[string, string])}`.
-       *
-       * Given:
-       * ```
-       * class MyComponent {
-       *   @Input()
-       *   publicInput1: string;
-       *
-       *   @Input('publicInput2')
-       *   declaredInput2: string;
-       * }
-       * ```
-       *
-       * is described as:
-       * ```
-       * {
-       *   publicInput1: 'publicInput1',
-       *   declaredInput2: ['declaredInput2', 'publicInput2'],
-       * }
-       * ```
-       *
-       * Which the minifier may translate to:
-       * ```
-       * {
-       *   minifiedPublicInput1: 'publicInput1',
-       *   minifiedDeclaredInput2: [ 'publicInput2', 'declaredInput2'],
-       * }
-       * ```
-       *
-       * This allows the render to re-construct the minified, public, and declared names
-       * of properties.
-       *
-       * NOTE:
-       *  - Because declared and public name are usually same we only generate the array
-       *    `['declared', 'public']` format when they differ.
-       *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
-       *    inconsistent behavior in that it uses declared names rather than minified or public. For
-       *    this reason `NgOnChanges` will be deprecated and removed in future version and this
-       *    API will be simplified to be consistent with `output`.
-       */
-      inputs?: {[P in keyof T]?: string | [string, string]};
+      /** Inputs defined on the directive and their name mapping. */
+      inputs?: InputsDefinition<T>;
 
-      /**
-       * A map of output names.
-       *
-       * The format is in: `{[actualPropertyName: string]:string}`.
-       *
-       * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
-       *
-       * This allows the render to re-construct the minified and non-minified names
-       * of properties.
-       */
-      outputs?: {[P in keyof T]?: string};
+      /** Outputs defined on the directive and their name mapping. */
+      outputs?: OutputsDefinition<T>;
 
       /**
        * A list of optional features to apply.

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileDirectiveFromMetadata, ConstantPool, makeBindingParser, outputAst as o, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostMetadata, R3PartialDeclaration, R3QueryMetadata} from '@angular/compiler';
+import {compileDirectiveFromMetadata, ConstantPool, makeBindingParser, outputAst as o, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareHostDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostMetadata, R3PartialDeclaration, R3QueryMetadata} from '@angular/compiler';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {Range} from '../../ast/ast_host';
@@ -71,6 +71,9 @@ export function toR3DirectiveMeta<TExpression>(
     name: typeName,
     usesInheritance: metaObj.has('usesInheritance') ? metaObj.getBoolean('usesInheritance') : false,
     isStandalone: metaObj.has('isStandalone') ? metaObj.getBoolean('isStandalone') : false,
+    hostDirectives: metaObj.has('hostDirectives') ?
+        toHostDirectivesMetadata(metaObj.getArray('hostDirectives')) :
+        null,
   };
 }
 
@@ -152,6 +155,39 @@ function toQueryMetadata<TExpression>(obj: AstObject<R3DeclareQueryMetadata, TEx
     read: obj.has('read') ? obj.getOpaque('read') : null,
     static: obj.has('static') ? obj.getBoolean('static') : false,
   };
+}
+
+/**
+ * Derives the host directives structure from the AST object.
+ */
+function toHostDirectivesMetadata<TExpression>(
+    hostDirectives: AstValue<o.Expression|R3DeclareHostDirectiveMetadata, TExpression>[]) {
+  return hostDirectives.map(hostDirective => {
+    let type: o.WrappedNodeExpr<TExpression>;
+    let inputs: R3DeclareHostDirectiveMetadata['inputs']|null;
+    let outputs: R3DeclareHostDirectiveMetadata['outputs']|null;
+
+    if (hostDirective.isObject()) {
+      const hostObject =
+          (hostDirective as AstValue<R3DeclareHostDirectiveMetadata, TExpression>).getObject();
+      type = hostObject.getOpaque('directive');
+      inputs = hostObject.has('inputs') ? hostObject.getObject('inputs').toLiteral(toInputMapping) :
+                                          null;
+      outputs = hostObject.has('outputs') ?
+          hostObject.getObject('outputs').toLiteral(value => value.getString()) :
+          null;
+    } else {
+      type = hostDirective.getOpaque();
+      inputs = outputs = null;
+    }
+
+    return {
+      directive: wrapReference(type),
+      internalDirective: type,
+      inputs,
+      outputs,
+    };
+  });
 }
 
 export function createSourceSpan(range: Range, code: string, sourceUrl: string): ParseSourceSpan {

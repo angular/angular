@@ -312,6 +312,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     imports: null,
     schemas: null,
     decorator: null,
+    hostDirectives: null,
   };
 }
 

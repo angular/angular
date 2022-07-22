@@ -67,17 +67,18 @@ export function readStringType(type: ts.TypeNode): string|null {
   return type.literal.text;
 }
 
-export function readStringMapType(type: ts.TypeNode): {[key: string]: string} {
+export function readMapType<T>(
+    type: ts.TypeNode, valueTransform: (type: ts.TypeNode) => T | null): {[key: string]: T} {
   if (!ts.isTypeLiteralNode(type)) {
     return {};
   }
-  const obj: {[key: string]: string} = {};
+  const obj: {[key: string]: T} = {};
   type.members.forEach(member => {
     if (!ts.isPropertySignature(member) || member.type === undefined || member.name === undefined ||
-        !ts.isStringLiteral(member.name)) {
+        (!ts.isStringLiteral(member.name) && !ts.isIdentifier(member.name))) {
       return;
     }
-    const value = readStringType(member.type);
+    const value = valueTransform(member.type);
     if (value === null) {
       return null;
     }

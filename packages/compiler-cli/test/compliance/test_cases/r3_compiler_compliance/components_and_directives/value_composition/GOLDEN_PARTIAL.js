@@ -43,15 +43,15 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class ChildComponent {
     static ɵfac: i0.ɵɵFactoryDeclaration<ChildComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ChildComponent, "child", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ChildComponent, "child", never, {}, {}, never, never, false, never>;
 }
 export declare class SomeDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[some-directive]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[some-directive]", never, {}, {}, never, never, false, never>;
 }
 export declare class MyComponent {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -96,11 +96,11 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class SomeDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "div.foo[some-directive]:not([title]):not(.baz)", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "div.foo[some-directive]:not([title]):not(.baz)", never, {}, {}, never, never, false, never>;
 }
 export declare class OtherDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<OtherDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<OtherDirective, ":not(span[title]):not(.baz)", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<OtherDirective, ":not(span[title]):not(.baz)", never, {}, {}, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -137,7 +137,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class SomeComponent {
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<SomeComponent, "#my-app", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SomeComponent, "#my-app", never, {}, {}, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -182,11 +182,11 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class RouterOutlet {
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterOutlet, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", never, {}, {}, never, never, false, never>;
 }
 export declare class EmptyOutletComponent {
     static ɵfac: i0.ɵɵFactoryDeclaration<EmptyOutletComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<EmptyOutletComponent, "ng-component", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<EmptyOutletComponent, "ng-component", never, {}, {}, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -233,7 +233,7 @@ export declare class MyComponent {
     cdr: ChangeDetectorRef;
     constructor(el: ElementRef, vcr: ViewContainerRef, cdr: ChangeDetectorRef);
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -284,12 +284,12 @@ import * as i0 from "@angular/core";
 export declare class IfDirective {
     constructor(template: TemplateRef<any>);
     static ɵfac: i0.ɵɵFactoryDeclaration<IfDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<IfDirective, "[if]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<IfDirective, "[if]", never, {}, {}, never, never, false, never>;
 }
 export declare class MyComponent {
     salutation: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -356,12 +356,12 @@ import * as i0 from "@angular/core";
 export declare class MyComp {
     names: string[];
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComp, "my-comp", never, { "names": "names"; }, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComp, "my-comp", never, { "names": "names"; }, {}, never, never, false, never>;
 }
 export declare class MyApp {
     customName: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -456,7 +456,7 @@ import * as i0 from "@angular/core";
 export declare class MyComp {
     names: string[];
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComp, "my-comp", never, { "names": "names"; }, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComp, "my-comp", never, { "names": "names"; }, {}, never, never, false, never>;
 }
 export declare class MyApp {
     n0: string;
@@ -469,7 +469,7 @@ export declare class MyApp {
     n7: string;
     n8: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -538,12 +538,12 @@ export declare class ObjectComp {
         [key: string]: any;
     };
     static ɵfac: i0.ɵɵFactoryDeclaration<ObjectComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<ObjectComp, "object-comp", never, { "config": "config"; }, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ObjectComp, "object-comp", never, { "config": "config"; }, {}, never, never, false, never>;
 }
 export declare class MyApp {
     name: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -617,13 +617,13 @@ export declare class NestedComp {
         [key: string]: any;
     };
     static ɵfac: i0.ɵɵFactoryDeclaration<NestedComp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<NestedComp, "nested-comp", never, { "config": "config"; }, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<NestedComp, "nested-comp", never, { "config": "config"; }, {}, never, never, false, never>;
 }
 export declare class MyApp {
     name: string;
     duration: number;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -673,7 +673,7 @@ import * as i0 from "@angular/core";
 export declare class MyApp {
     multiplier: number;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;

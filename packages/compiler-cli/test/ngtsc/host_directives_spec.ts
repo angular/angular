@@ -1,0 +1,511 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import ts from 'typescript';
+
+import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
+import {loadStandardTestFiles} from '../../src/ngtsc/testing';
+
+import {NgtscTestEnvironment} from './env';
+
+const testFiles = loadStandardTestFiles();
+
+runInEachFileSystem(() => {
+  describe('ngtsc host directives compilation', () => {
+    let env!: NgtscTestEnvironment;
+
+    beforeEach(() => {
+      env = NgtscTestEnvironment.setup(testFiles);
+      env.tsconfig({strictTemplates: true});
+    });
+
+    it('should generate a basic hostDirectives definition', () => {
+      env.write('test.ts', `
+        import {Directive, Component} from '@angular/core';
+
+        @Directive({
+          selector: '[dir-a]',
+          standalone: true
+        })
+        export class DirectiveA {}
+
+        @Directive({
+          selector: '[dir-b]',
+          standalone: true
+        })
+        export class DirectiveB {}
+
+        @Component({
+          selector: 'my-comp',
+          template: '',
+          hostDirectives: [DirectiveA, DirectiveB]
+        })
+        export class MyComp {}
+      `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const dtsContents = env.getContents('test.d.ts');
+
+      expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveA');
+      expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveB');
+      expect(jsContents)
+          .toContain('features: [i0.ɵɵHostDirectivesFeature([DirectiveA, DirectiveB])]');
+      expect(dtsContents)
+          .toContain(
+              'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, {}, never, never, false, ' +
+              '[{ directive: typeof DirectiveA; inputs: {}; outputs: {}; }, ' +
+              '{ directive: typeof DirectiveB; inputs: {}; outputs: {}; }]>;');
+    });
+
+    it('should generate a hostDirectives definition that has inputs and outputs', () => {
+      env.write('test.ts', `
+        import {Directive, Component, Input, Output, EventEmitter} from '@angular/core';
+
+        @Directive({
+          selector: '[dir-a]',
+          standalone: true
+        })
+        export class HostDir {
+          @Input() value: number;
+          @Input() color: string;
+          @Output() opened = new EventEmitter();
+          @Output() closed = new EventEmitter();
+        }
+
+        @Component({
+          selector: 'my-comp',
+          template: '',
+          hostDirectives: [{
+            directive: HostDir,
+            inputs: ['value', 'color: colorAlias'],
+            outputs: ['opened', 'closedAlias'],
+          }],
+        })
+        export class MyComp {}
+      `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const dtsContents = env.getContents('test.d.ts');
+
+      expect(jsContents).toContain('ɵɵdefineDirective({ type: HostDir');
+      expect(jsContents)
+          .toContain(
+              'features: [i0.ɵɵHostDirectivesFeature([{ directive: HostDir, ' +
+              'inputs: { value: "value", color: "colorAlias" }, ' +
+              'outputs: { opened: "opened", closedAlias: "closedAlias" } }])]');
+      expect(dtsContents)
+          .toContain(
+              'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
+              '{}, never, never, false, [{ directive: typeof HostDir; ' +
+              'inputs: { "value": "value"; "color": "colorAlias"; }; ' +
+              'outputs: { "opened": "opened"; "closedAlias": "closedAlias"; }; }]>;');
+    });
+
+    it('should generate hostDirectives definitions for a chain of host directives', () => {
+      env.write('test.ts', `
+        import {Directive, Component} from '@angular/core';
+
+        @Directive({standalone: true})
+        export class DirectiveA {
+        }
+
+        @Directive({
+          standalone: true,
+          hostDirectives: [DirectiveA],
+        })
+        export class DirectiveB {
+        }
+
+        @Directive({
+          standalone: true,
+          hostDirectives: [DirectiveB],
+        })
+        export class DirectiveC {
+        }
+
+        @Component({
+          selector: 'my-comp',
+          template: '',
+          hostDirectives: [DirectiveC],
+        })
+        export class MyComp {
+        }
+      `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const dtsContents = env.getContents('test.d.ts');
+
+      expect(jsContents).toContain('ɵɵdefineDirective({ type: DirectiveA, standalone: true });');
+      expect(jsContents)
+          .toContain(
+              'ɵɵdefineDirective({ type: DirectiveB, standalone: true, ' +
+              'features: [i0.ɵɵHostDirectivesFeature([DirectiveA])] });');
+      expect(jsContents)
+          .toContain(
+              'ɵɵdefineDirective({ type: DirectiveC, standalone: true, ' +
+              'features: [i0.ɵɵHostDirectivesFeature([DirectiveB])] });');
+      expect(jsContents)
+          .toContain(
+              'ɵɵdefineComponent({ type: MyComp, selectors: [["my-comp"]],' +
+              ' features: [i0.ɵɵHostDirectivesFeature([DirectiveC])]');
+
+      expect(dtsContents)
+          .toContain(
+              'ɵɵDirectiveDeclaration<DirectiveA, never, never, {}, ' +
+              '{}, never, never, true, never>;');
+      expect(dtsContents)
+          .toContain(
+              'ɵɵDirectiveDeclaration<DirectiveB, never, never, {}, ' +
+              '{}, never, never, true, [{ directive: typeof DirectiveA; ' +
+              'inputs: {}; outputs: {}; }]>;');
+      expect(dtsContents)
+          .toContain(
+              'ɵɵDirectiveDeclaration<DirectiveC, never, never, {}, ' +
+              '{}, never, never, true, [{ directive: typeof DirectiveB; ' +
+              'inputs: {}; outputs: {}; }]>;');
+      expect(dtsContents)
+          .toContain(
+              'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
+              '{}, never, never, false, [{ directive: typeof DirectiveC; ' +
+              'inputs: {}; outputs: {}; }]>;');
+    });
+
+    it('should generate a hostDirectives definition with forward references', () => {
+      env.write('test.ts', `
+        import {Component, Directive, forwardRef, Input} from '@angular/core';
+
+        @Component({
+          selector: 'my-component',
+          template: '',
+          hostDirectives: [forwardRef(() => DirectiveB)]
+        })
+        export class MyComponent {
+        }
+
+        @Directive({
+          standalone: true,
+          hostDirectives: [{directive: forwardRef(() => DirectiveA), inputs: ['value']}],
+        })
+        export class DirectiveB {
+        }
+
+        @Directive({standalone: true})
+        export class DirectiveA {
+          @Input() value: any;
+        }
+      `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const dtsContents = env.getContents('test.d.ts');
+
+      expect(jsContents)
+          .toContain(
+              'features: [i0.ɵɵHostDirectivesFeature([' +
+              'forwardRef(() => DirectiveB)])]');
+      expect(jsContents)
+          .toContain(
+              'features: [i0.ɵɵHostDirectivesFeature([{ ' +
+              'directive: forwardRef(() => DirectiveA), inputs: { value: "value" } }])]');
+      expect(jsContents)
+          .toContain(
+              'ɵɵdefineDirective({ type: DirectiveA, ' +
+              'inputs: { value: "value" }, standalone: true });');
+
+      expect(dtsContents)
+          .toContain(
+              'ɵɵComponentDeclaration<MyComponent, "my-component", ' +
+              'never, {}, {}, never, never, false, [{ directive: typeof DirectiveB; ' +
+              'inputs: {}; outputs: {}; }]>;');
+
+      expect(dtsContents)
+          .toContain(
+              'ɵɵDirectiveDeclaration<DirectiveB, never, never, {}, ' +
+              '{}, never, never, true, [{ directive: typeof DirectiveA; ' +
+              'inputs: { "value": "value"; }; outputs: {}; }]>;');
+
+      expect(dtsContents)
+          .toContain(
+              'ɵɵDirectiveDeclaration<DirectiveA, never, never, ' +
+              '{ "value": "value"; }, {}, never, never, true, never>;');
+    });
+
+    it('should generate a definition if the host directives are imported from other files', () => {
+      env.write('dir-a.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive({
+          selector: '[dir-a]',
+          standalone: true
+        })
+        export class DirectiveA {}
+      `);
+
+      env.write('dir-b.ts', `
+        import {Directive, Input, Output, EventEmitter} from '@angular/core';
+
+        @Directive({
+          selector: '[dir-b]',
+          standalone: true
+        })
+        export class DirectiveB {
+          @Input() input: any;
+          @Output() output = new EventEmitter<any>();
+        }
+      `);
+
+      env.write('test.ts', `
+        import {Component, forwardRef} from '@angular/core';
+        import {DirectiveA} from './dir-a';
+        import {DirectiveB} from './dir-b';
+
+        @Component({
+          selector: 'my-comp',
+          template: '',
+          hostDirectives: [
+            forwardRef(() => DirectiveA),
+            {
+              directive: forwardRef(() => DirectiveB),
+              inputs: ['input: inputAlias'],
+              output: ['output: outputAlias']
+            }
+          ]
+        })
+        export class MyComp {}
+      `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const dtsContents = env.getContents('test.d.ts');
+
+      expect(jsContents).toContain(`import { DirectiveA } from './dir-a'`);
+      expect(jsContents).toContain(`import { DirectiveB } from './dir-b'`);
+      expect(jsContents)
+          .toContain(
+              'features: [i0.ɵɵHostDirectivesFeature([' +
+              'forwardRef(() => DirectiveA), { directive: forwardRef(() => DirectiveB), ' +
+              'inputs: { input: "inputAlias" } }])]');
+
+      expect(dtsContents).toContain('import * as i1 from "./dir-a";');
+      expect(dtsContents).toContain('import * as i2 from "./dir-b";');
+      expect(dtsContents)
+          .toContain(
+              'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
+              '{}, never, never, false, [{ directive: typeof i1.DirectiveA; ' +
+              'inputs: {}; outputs: {}; }, { directive: typeof i2.DirectiveB; ' +
+              'inputs: { "input": "inputAlias"; }; outputs: {}; }]>;');
+    });
+
+    it('should generate a hostDirectives definition referring to external directives', () => {
+      env.write('node_modules/external/index.d.ts', `
+        import {ɵɵDirectiveDeclaration} from '@angular/core';
+
+        export declare class ExternalDir {
+          static ɵdir: ɵɵDirectiveDeclaration<ExternalDir, '[test]', never, never,
+            {input: "input"}, {output: "output"}, never, never, true, never>;
+        }
+      `);
+
+      env.write('test.ts', `
+        import {Component, Directive, NgModule} from '@angular/core';
+        import {ExternalDir} from 'external';
+
+        @Component({
+          template: '',
+          hostDirectives: [{directive: ExternalDir, inputs: ['input: inputAlias', 'output: outputAlias']}]
+        })
+        export class MyComp {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      const dtsContents = env.getContents('test.d.ts');
+
+      expect(jsContents).toContain(`import { ExternalDir } from 'external';`);
+      expect(jsContents)
+          .toContain(
+              'features: [i0.ɵɵHostDirectivesFeature([{ directive: ExternalDir, ' +
+              'inputs: { input: "inputAlias", output: "outputAlias" } }])]');
+
+      expect(dtsContents).toContain('import * as i1 from "external";');
+      expect(dtsContents)
+          .toContain(
+              'ɵɵComponentDeclaration<MyComp, "ng-component", never, {}, ' +
+              '{}, never, never, false, [{ directive: typeof i1.ExternalDir; ' +
+              'inputs: { "input": "inputAlias"; "output": "outputAlias"; }; outputs: {}; }]>;');
+    });
+
+    it('should reference host directives by their external name', () => {
+      env.write('node_modules/external/index.d.ts', `
+        import {InternalDir} from './internal';
+        export {InternalDir as ExternalDir} from './internal';
+      `);
+
+      env.write('node_modules/external/internal.d.ts', `
+        export declare class InternalDir {
+          static ɵdir: ɵɵDirectiveDeclaration<ExternalDir, '[test]', never, never, {}, {}, never, never, true, never>;
+        }
+      `);
+
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+        import {ExternalDir} from 'external';
+
+        @Component({
+          template: '',
+          hostDirectives: [ExternalDir]
+        })
+        export class MyComp {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      const dtsContents = env.getContents('test.d.ts');
+
+      expect(jsContents).toContain(`import { ExternalDir } from 'external';`);
+      expect(jsContents).toContain('features: [i0.ɵɵHostDirectivesFeature([ExternalDir])]');
+
+      expect(dtsContents).toContain('import * as i1 from "external";');
+      expect(dtsContents)
+          .toContain(
+              'ɵɵComponentDeclaration<MyComp, "ng-component", never, {}, {}, ' +
+              'never, never, false, [{ directive: typeof i1.ExternalDir; inputs: {}; outputs: {}; }]>;');
+    });
+
+    describe('validations', () => {
+      function extractMessage(diag: ts.Diagnostic) {
+        return typeof diag.messageText === 'string' ? diag.messageText :
+                                                      diag.messageText.messageText;
+      }
+
+      it('should throw if a host directive is not standalone', () => {
+        env.write('test.ts', `
+          import {Directive, Component, NgModule} from '@angular/core';
+
+          @Directive({
+            selector: '[dir-a]'
+          })
+          export class HostDir {}
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [HostDir],
+          })
+          export class Dir {}
+
+          @Component({
+            template: '<div dir></div>'
+          })
+          export class MyComp {}
+
+          @NgModule({
+            declarations: [HostDir, Dir, MyComp]
+          })
+          export class MyModule {}
+        `);
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+
+        expect(messages).toEqual([
+          jasmine.stringContaining('Error: Host directive HostDir must be standalone'),
+        ]);
+      });
+
+      it('should throw if a host directive is a component', () => {
+        env.write('test.ts', `
+          import {Directive, Component, NgModule} from '@angular/core';
+
+          @Component({
+            template: '',
+            standalone: true,
+          })
+          export class HostComp {}
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [HostComp],
+          })
+          export class Dir {}
+
+          @Component({
+            template: '<div dir></div>'
+          })
+          export class MyComp {}
+
+          @NgModule({
+            declarations: [Dir, MyComp]
+          })
+          export class MyModule {}
+        `);
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+
+        expect(messages).toEqual([
+          jasmine.stringContaining('Error: Host directive HostComp cannot be a component'),
+        ]);
+      });
+
+      it('should throw if hostDirectives is not an array', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '',
+            hostDirectives: {}
+          })
+          export class MyComp {}
+        `);
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+        expect(messages).toContain('hostDirectives must be an array');
+      });
+
+      it('should throw if a host directive is not a reference', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          const hostA = {};
+
+          @Component({
+            template: '',
+            hostDirectives: [hostA]
+          })
+          export class MyComp {}
+        `);
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+        expect(messages).toEqual(['Host directive must be a reference']);
+      });
+
+      it('should throw if a host directive is not a reference to a class', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          function hostA() {}
+
+          @Component({
+            template: '',
+            hostDirectives: [hostA]
+          })
+          export class MyComp {}
+        `);
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+        expect(messages).toEqual(['Host directive reference must be a class']);
+      });
+    });
+  });
+});

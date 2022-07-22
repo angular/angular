@@ -166,6 +166,7 @@ export interface R3DirectiveMetadataFacade {
   providers: Provider[]|null;
   viewQueries: R3QueryMetadataFacade[];
   isStandalone: boolean;
+  hostDirectives: (Type|{directive: Type, inputs?: string[], outputs?: string[]})[]|null;
 }
 
 export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
@@ -199,6 +200,7 @@ export interface R3DeclareDirectiveFacade {
   usesInheritance?: boolean;
   usesOnChanges?: boolean;
   isStandalone?: boolean;
+  hostDirectives?: (Type|{directive: Type, inputs?: string[], outputs?: string[]})[]|null;
 }
 
 export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {

@@ -13,9 +13,9 @@ import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {FactoryFn} from '../definition_factory';
 
-import {TAttributes, TConstantsOrFactory} from './node';
+import {TAttributes, TConstantsOrFactory, TContainerNode, TElementContainerNode, TElementNode} from './node';
 import {CssSelectorList} from './projection';
-import {TView} from './view';
+import {LView, TView} from './view';
 
 
 /**
@@ -205,6 +205,14 @@ export interface DirectiveDef<T> {
    * The features applied to this directive
    */
   readonly features: DirectiveDefFeature[]|null;
+
+  /**
+   * Function that will apply the host directives to the list of matches during directive matching.
+   * Patched onto the definition by the `HostDirectivesFeature`.
+   */
+  applyHostDirectives:
+      ((tView: TView, viewData: LView, tNode: TElementNode|TContainerNode|TElementContainerNode,
+        matches: any[]) => void)|null;
 
   setInput:
       (<U extends T>(

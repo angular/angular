@@ -11,9 +11,9 @@ import ts from 'typescript';
 import {Reference} from '../../imports';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
 
-import {DirectiveMeta, MetadataReader, MetaKind, NgModuleMeta, PipeMeta} from './api';
+import {DirectiveMeta, HostDirectiveMeta, MetadataReader, MetaKind, NgModuleMeta, PipeMeta} from './api';
 import {ClassPropertyMapping} from './property_mapping';
-import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readBooleanType, readStringArrayType, readStringMapType, readStringType} from './util';
+import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readBooleanType, readMapType, readStringArrayType, readStringType} from './util';
 
 /**
  * A `MetadataReader` that can read metadata from `.d.ts` files, which have static Ivy properties
@@ -95,10 +95,14 @@ export class DtsMetadataReader implements MetadataReader {
     const isStandalone =
         def.type.typeArguments.length > 7 && (readBooleanType(def.type.typeArguments[7]) ?? false);
 
-    const inputs =
-        ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[3]));
-    const outputs =
-        ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[4]));
+    const inputs = ClassPropertyMapping.fromMappedObject(
+        readMapType(def.type.typeArguments[3], readStringType));
+    const outputs = ClassPropertyMapping.fromMappedObject(
+        readMapType(def.type.typeArguments[4], readStringType));
+    const hostDirectives = def.type.typeArguments.length > 8 ?
+        readHostDirectivesType(def.type.typeArguments[8], this.checker) :
+        null;
+
     return {
       kind: MetaKind.Directive,
       ref,
@@ -108,6 +112,7 @@ export class DtsMetadataReader implements MetadataReader {
       exportAs: readStringArrayType(def.type.typeArguments[2]),
       inputs,
       outputs,
+      hostDirectives,
       queries: readStringArrayType(def.type.typeArguments[5]),
       ...extractDirectiveTypeCheckMeta(clazz, inputs, this.reflector),
       baseClass: readBaseClass(clazz, this.checker, this.reflector),
@@ -188,4 +193,31 @@ function readBaseClass(clazz: ClassDeclaration, checker: ts.TypeChecker, reflect
     }
   }
   return null;
+}
+
+
+function readHostDirectivesType(type: ts.TypeNode, checker: ts.TypeChecker) {
+  if (!ts.isTupleTypeNode(type) || type.elements.length === 0) {
+    return null;
+  }
+
+  const result = type.elements.reduce((results, hostDirType) => {
+    const def = readMapType(hostDirType, type => type);
+
+    if (def.directive && ts.isTypeQueryNode(def.directive)) {
+      const symbol = checker.getSymbolAtLocation(def.directive.exprName);
+
+      if (symbol && symbol.valueDeclaration && isNamedClassDeclaration(symbol.valueDeclaration)) {
+        results.push({
+          directive: new Reference(symbol.valueDeclaration),
+          inputs: ClassPropertyMapping.fromMappedObject(readMapType(def.inputs, readStringType)),
+          outputs: ClassPropertyMapping.fromMappedObject(readMapType(def.outputs, readStringType))
+        });
+      }
+    }
+
+    return results;
+  }, [] as HostDirectiveMeta[]);
+
+  return result.length ? result : null;
 }

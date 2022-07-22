@@ -61,7 +61,7 @@ export declare class MyService {
 export declare class MyComponent {
     constructor(name: string, other: string, s1: MyService, s2: MyService, s4: MyService, s3: MyService, s5: MyService, s6: MyService);
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, [{ attribute: "name"; }, { attribute: unknown; }, null, { host: true; }, { self: true; }, { skipSelf: true; }, { optional: true; }, { optional: true; self: true; }]>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -413,7 +413,7 @@ export declare class MyOtherPipe implements PipeTransform {
 }
 export declare class MyApp {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;

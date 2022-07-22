@@ -2696,5 +2696,188 @@ suppress
         expectCompleteReuse(env.getReuseTsProgram());
       });
     });
+
+    describe('host directives', () => {
+      beforeEach(() => {
+        env.tsconfig({strictTemplates: true});
+      });
+
+      it('should check bindings to host directive inputs', () => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule, Input} from '@angular/core';
+
+          @Directive({
+            standalone: true,
+          })
+          class HostDir {
+            @Input() input: number;
+            @Input() otherInput: string;
+          }
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [{directive: HostDir, inputs: ['input', 'otherInput: alias']}]
+          })
+          class Dir {}
+
+          @Component({
+            selector: 'test',
+            template: '<div dir [input]="person.name" [alias]="person.age"></div>',
+          })
+          class TestCmp {
+            person: {
+              name: string;
+              age: number;
+            };
+          }
+
+          @NgModule({
+            declarations: [TestCmp, Dir],
+          })
+          class Module {}
+        `);
+
+
+        const messages = env.driveDiagnostics().map(d => d.messageText);
+
+        expect(messages).toEqual([
+          `Type 'string' is not assignable to type 'number'.`,
+          `Type 'number' is not assignable to type 'string'.`
+        ]);
+      });
+
+      it('should check bindings to host directive outputs', () => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule, Output, EventEmitter} from '@angular/core';
+
+          @Directive({
+            standalone: true,
+          })
+          class HostDir {
+            @Output() stringEvent = new EventEmitter<string>();
+            @Output() numberEvent = new EventEmitter<number>();
+          }
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [
+              {directive: HostDir, outputs: ['stringEvent', 'numberEvent: numberAlias']}
+            ]
+          })
+          class Dir {}
+
+          @Component({
+            selector: 'test',
+            template: \`
+              <div
+                dir
+                (numberAlias)="handleStringEvent($event)"
+                (stringEvent)="handleNumberEvent($event)"></div>
+            \`,
+          })
+          class TestCmp {
+            handleStringEvent(event: string): void {}
+            handleNumberEvent(event: number): void {}
+          }
+
+          @NgModule({
+            declarations: [TestCmp, Dir],
+          })
+          class Module {}
+        `);
+
+
+        const messages = env.driveDiagnostics().map(d => d.messageText);
+
+        expect(messages).toEqual([
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'string' is not assignable to parameter of type 'number'.`
+        ]);
+      });
+
+      it('should not pick up host directive inputs/outputs that have not been exposed', () => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule, Input, Output} from '@angular/core';
+
+          @Directive({
+            standalone: true,
+          })
+          class HostDir {
+            @Input() input: number;
+            @Input() otherInput: string;
+          }
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [HostDir]
+          })
+          class Dir {}
+
+          @Component({
+            selector: 'test',
+            template: '<div dir [input]="person.name" (output)="handleStringEvent($event)"></div>',
+          })
+          class TestCmp {
+            person: {
+              name: string;
+            };
+            handleStringEvent(event: string): void {}
+          }
+
+          @NgModule({
+            declarations: [TestCmp, Dir],
+          })
+          class Module {}
+        `);
+
+
+        const messages = env.driveDiagnostics().map(d => d.messageText);
+
+        // These messages are expected to refer to the native
+        // typings since the inputs/outputs haven't been exposed.
+        expect(messages).toEqual([
+          `Argument of type 'Event' is not assignable to parameter of type 'string'.`,
+          `Can't bind to 'input' since it isn't a known property of 'div'.`
+        ]);
+      });
+
+      it('should check references to host directives', () => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule, Output, EventEmitter} from '@angular/core';
+
+          @Directive({
+            standalone: true,
+            exportAs: 'hostDir',
+          })
+          class HostDir {}
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [HostDir]
+          })
+          class Dir {}
+
+          @Component({
+            selector: 'test',
+            template: '<div dir #hostDir="hostDir">{{ render(hostDir) }}</div>',
+          })
+          class TestCmp {
+            render(input: string): string { return input; }
+          }
+
+          @NgModule({
+            declarations: [TestCmp, Dir],
+          })
+          class Module {}
+        `);
+
+
+        const messages = env.driveDiagnostics().map(d => d.messageText);
+
+        expect(messages).toEqual([
+          `Argument of type 'HostDir' is not assignable to parameter of type 'string'.`,
+        ]);
+      });
+    });
   });
 });

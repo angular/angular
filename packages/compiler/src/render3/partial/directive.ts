@@ -9,7 +9,7 @@ import * as o from '../../output/output_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {convertFromMaybeForwardRefExpression, R3CompiledExpression} from '../util';
 import {R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from '../view/api';
-import {createDirectiveType} from '../view/compiler';
+import {createDirectiveType, createHostDirectivesArray} from '../view/compiler';
 import {asLiteral, conditionallyCreateMapObjectLiteral, DefinitionMap} from '../view/util';
 
 import {R3DeclareDirectiveMetadata, R3DeclareQueryMetadata} from './api';
@@ -70,6 +70,7 @@ export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata):
   if (meta.queries.length > 0) {
     definitionMap.set('queries', o.literalArr(meta.queries.map(compileQuery)));
   }
+
   if (meta.viewQueries.length > 0) {
     definitionMap.set('viewQueries', o.literalArr(meta.viewQueries.map(compileQuery)));
   }
@@ -81,8 +82,13 @@ export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata):
   if (meta.usesInheritance) {
     definitionMap.set('usesInheritance', o.literal(true));
   }
+
   if (meta.lifecycle.usesOnChanges) {
     definitionMap.set('usesOnChanges', o.literal(true));
+  }
+
+  if (meta.hostDirectives?.length) {
+    definitionMap.set('hostDirectives', createHostDirectivesArray(meta.hostDirectives));
   }
 
   definitionMap.set('ngImport', o.importExpr(R3.core));

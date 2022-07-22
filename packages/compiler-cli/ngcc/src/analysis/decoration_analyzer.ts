@@ -16,6 +16,7 @@ import {absoluteFromSourceFile, LogicalFileSystem, ReadonlyFileSystem} from '../
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../../src/ngtsc/metadata';
+import {HostDirectivesResolver} from '../../../src/ngtsc/metadata/src/host_directives_resolver';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../../src/ngtsc/perf';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../../src/ngtsc/scope';
@@ -98,7 +99,9 @@ export class DecorationAnalyzer {
   importGraph = new ImportGraph(this.typeChecker, NOOP_PERF_RECORDER);
   cycleAnalyzer = new CycleAnalyzer(this.importGraph);
   injectableRegistry = new InjectableClassRegistry(this.reflectionHost);
-  typeCheckScopeRegistry = new TypeCheckScopeRegistry(this.scopeRegistry, this.fullMetaReader);
+  hostDirectivesResolver = new HostDirectivesResolver(this.fullMetaReader);
+  typeCheckScopeRegistry = new TypeCheckScopeRegistry(
+      this.scopeRegistry, this.fullMetaReader, this.hostDirectivesResolver);
   handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[] = [
     new ComponentDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.fullMetaReader,
@@ -111,13 +114,13 @@ export class DecorationAnalyzer {
         CycleHandlingStrategy.UseRemoteScoping, this.refEmitter, NOOP_DEPENDENCY_TRACKER,
         this.injectableRegistry,
         /* semanticDepGraphUpdater */ null, !!this.compilerOptions.annotateForClosureCompiler,
-        NOOP_PERF_RECORDER),
+        NOOP_PERF_RECORDER, this.hostDirectivesResolver),
 
     // See the note in ngtsc about why this cast is needed.
     // clang-format off
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.scopeRegistry,
-        this.fullMetaReader, this.injectableRegistry, this.isCore,
+        this.fullMetaReader, this.injectableRegistry, this.refEmitter, this.isCore,
         /* semanticDepGraphUpdater */ null,
         !!this.compilerOptions.annotateForClosureCompiler,
         // In ngcc we want to compile undecorated classes with Angular features. As of

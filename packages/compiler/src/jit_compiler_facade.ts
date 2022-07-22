@@ -357,6 +357,7 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
     providers: facade.providers != null ? new WrappedNodeExpr(facade.providers) : null,
     viewQueries: facade.viewQueries.map(convertToR3QueryMetadata),
     fullInheritance: false,
+    hostDirectives: convertHostDirectivesToMetadata(facade),
   };
 }
 
@@ -382,6 +383,7 @@ function convertDeclareDirectiveFacadeToMetadata(
     typeArgumentCount: 0,
     fullInheritance: false,
     isStandalone: declaration.isStandalone ?? false,
+    hostDirectives: convertHostDirectivesToMetadata(declaration),
   };
 }
 
@@ -396,6 +398,29 @@ function convertHostDeclarationToMetadata(host: R3DeclareDirectiveFacade['host']
       styleAttr: host.styleAttribute,
     },
   };
+}
+
+function convertHostDirectivesToMetadata(metadata: R3DeclareDirectiveFacade|
+                                         R3DirectiveMetadataFacade) {
+  if (metadata.hostDirectives?.length) {
+    return metadata.hostDirectives.map(hostDirective => {
+      return typeof hostDirective === 'function' ?
+          {
+            directive: wrapReference(hostDirective),
+            internalDirective: new WrappedNodeExpr(hostDirective),
+            inputs: null,
+            outputs: null
+          } :
+          {
+            directive: wrapReference(hostDirective.directive),
+            internalDirective: new WrappedNodeExpr(hostDirective.directive),
+            inputs: hostDirective.inputs ? parseInputOutputs(hostDirective.inputs) : null,
+            outputs: hostDirective.outputs ? parseInputOutputs(hostDirective.outputs) : null,
+          };
+    });
+  }
+
+  return null;
 }
 
 function convertOpaqueValuesToExpressions(obj: {[key: string]: OpaqueValue}):
