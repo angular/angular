@@ -69,6 +69,7 @@ $button-icon-size: 28px;
 }
 
 .mat-paginator-icon {
+  display: inline-block;
   width: $button-icon-size;
   fill: currentColor;
 
