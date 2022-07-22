@@ -5,15 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ExternalExpr} from '@angular/compiler';
-import ts from 'typescript';
 
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {OwningModule, Reference} from '../../imports';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {loadFakeCore, makeProgram} from '../../testing';
-
 import {DtsMetadataReader} from '../src/dts';
 
 runInEachFileSystem(() => {
@@ -177,5 +174,68 @@ runInEachFileSystem(() => {
       // best guess owning module.
       expect(withOwningModule.exports[1].bestGuessOwningModule).toEqual(owningModule);
     });
+  });
+
+  it('should identify host directives', () => {
+    const mainPath = absoluteFrom('/main.d.ts');
+    const {program} = makeProgram(
+        [{
+          name: mainPath,
+          contents: `
+            import * as i0 from '@angular/core';
+
+            export declare class SimpleHostDir {
+              static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[test]", never, {}, {}, never, never, true, never>
+            }
+
+            export declare class AdvancedHostDir {
+              static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[test]", never, {"input": "inputAlias"}, {"output": "outputAlias"}, never, never, true, never>
+            }
+
+            export declare class Dir {
+              static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[test]", never, {}, {}, never, never, true, [
+                {directive: typeof SimpleHostDir; inputs: {}; outputs: {};},
+                {directive: typeof AdvancedHostDir; inputs: { "inputAlias": "customInputAlias"; }; outputs: { "outputAlias": "customOutputAlias"; };}
+              ]>
+            }
+          `
+        }],
+        {
+          skipLibCheck: true,
+          lib: ['es6', 'dom'],
+        });
+
+    const sf = getSourceFileOrError(program, mainPath);
+    const clazz = sf.statements[3];
+
+    if (!isNamedClassDeclaration(clazz)) {
+      return fail('Expected class declaration');
+    }
+
+    const typeChecker = program.getTypeChecker();
+    const dtsReader = new DtsMetadataReader(typeChecker, new TypeScriptReflectionHost(typeChecker));
+
+    const meta = dtsReader.getDirectiveMetadata(new Reference(clazz))!;
+    const hostDirectives = meta.hostDirectives?.map(hostDir => ({
+                                                      name: hostDir.directive.debugName,
+                                                      directive: hostDir.directive,
+                                                      inputs: hostDir.inputs,
+                                                      outputs: hostDir.outputs
+                                                    }));
+
+    expect(hostDirectives).toEqual([
+      {
+        name: 'SimpleHostDir',
+        directive: jasmine.any(Reference),
+        inputs: {},
+        outputs: {},
+      },
+      {
+        name: 'AdvancedHostDir',
+        directive: jasmine.any(Reference),
+        inputs: {inputAlias: 'customInputAlias'},
+        outputs: {outputAlias: 'customOutputAlias'}
+      }
+    ]);
   });
 });

@@ -416,6 +416,7 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     providers: metadata.providers || null,
     viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery),
     isStandalone: !!metadata.standalone,
+    hostDirectives: null,
   };
 }
 

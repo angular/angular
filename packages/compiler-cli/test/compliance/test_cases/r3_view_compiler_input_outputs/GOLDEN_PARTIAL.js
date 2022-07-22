@@ -41,7 +41,7 @@ export declare class MyComponent {
     componentOutput: any;
     originalComponentOutput: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, { "componentInput": "componentInput"; "originalComponentInput": "renamedComponentInput"; }, { "componentOutput": "componentOutput"; "originalComponentOutput": "renamedComponentOutput"; }, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, { "componentInput": "componentInput"; "originalComponentInput": "renamedComponentInput"; }, { "componentOutput": "componentOutput"; "originalComponentOutput": "renamedComponentOutput"; }, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
@@ -92,7 +92,7 @@ export declare class MyDirective {
     directiveOutput: any;
     originalDirectiveOutput: any;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-directive]", never, { "directiveInput": "directiveInput"; "originalDirectiveInput": "renamedDirectiveInput"; }, { "directiveOutput": "directiveOutput"; "originalDirectiveOutput": "renamedDirectiveOutput"; }, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-directive]", never, { "directiveInput": "directiveInput"; "originalDirectiveInput": "renamedDirectiveInput"; }, { "directiveOutput": "directiveOutput"; "originalDirectiveOutput": "renamedDirectiveOutput"; }, never, never, false, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;

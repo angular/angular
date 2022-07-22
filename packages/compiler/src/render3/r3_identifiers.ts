@@ -324,6 +324,9 @@ export class Identifiers {
 
   static ProvidersFeature: o.ExternalReference = {name: 'ɵɵProvidersFeature', moduleName: CORE};
 
+  static HostDirectivesFeature:
+      o.ExternalReference = {name: 'ɵɵHostDirectivesFeature', moduleName: CORE};
+
   static listener: o.ExternalReference = {name: 'ɵɵlistener', moduleName: CORE};
 
   static getInheritedFactory: o.ExternalReference = {

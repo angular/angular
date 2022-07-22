@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createMayBeForwardRefExpression, emitDistinctChangesOnlyDefaultValue, Expression, ExternalExpr, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3QueryMetadata, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {createMayBeForwardRefExpression, emitDistinctChangesOnlyDefaultValue, Expression, ExternalExpr, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3HostDirectiveMetadata, R3QueryMetadata, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
-import {Reference} from '../../../imports';
-import {ClassPropertyMapping} from '../../../metadata';
-import {DynamicValue, EnumValue, PartialEvaluator} from '../../../partial_evaluator';
-import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
+import {Reference, ReferenceEmitter} from '../../../imports';
+import {ClassPropertyMapping, HostDirectiveMeta} from '../../../metadata';
+import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValue} from '../../../partial_evaluator';
+import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {HandlerFlags} from '../../../transform';
-import {createSourceSpan, createValueHasWrongTypeError, getConstructorDependencies, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
+import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getConstructorDependencies, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 const QUERY_TYPES = new Set([
@@ -33,13 +33,14 @@ const QUERY_TYPES = new Set([
  */
 export function extractDirectiveMetadata(
     clazz: ClassDeclaration, decorator: Readonly<Decorator|null>, reflector: ReflectionHost,
-    evaluator: PartialEvaluator, isCore: boolean, flags: HandlerFlags,
+    evaluator: PartialEvaluator, refEmitter: ReferenceEmitter, isCore: boolean, flags: HandlerFlags,
     annotateForClosureCompiler: boolean, defaultSelector: string|null = null): {
   decorator: Map<string, ts.Expression>,
   metadata: R3DirectiveMetadata,
   inputs: ClassPropertyMapping,
   outputs: ClassPropertyMapping,
   isStructural: boolean;
+  hostDirectives: HostDirectiveMeta[] | null, rawHostDirectives: ts.Expression | null,
 }|undefined {
   let directive: Map<string, ts.Expression>;
   if (decorator === null || decorator.args === null || decorator.args.length === 0) {
@@ -181,11 +182,14 @@ export function extractDirectiveMetadata(
 
   // Detect if the component inherits from another class
   const usesInheritance = reflector.hasBaseClass(clazz);
+  const sourceFile = clazz.getSourceFile();
   const type = wrapTypeReference(reflector, clazz);
   const internalType = new WrappedNodeExpr(reflector.getInternalNameOfClass(clazz));
-
   const inputs = ClassPropertyMapping.fromMappedObject({...inputsFromMeta, ...inputsFromFields});
   const outputs = ClassPropertyMapping.fromMappedObject({...outputsFromMeta, ...outputsFromFields});
+  const rawHostDirectives = directive.get('hostDirectives') || null;
+  const hostDirectives =
+      rawHostDirectives === null ? null : extractHostDirectives(rawHostDirectives, evaluator);
 
   const metadata: R3DirectiveMetadata = {
     name: clazz.name.text,
@@ -208,6 +212,9 @@ export function extractDirectiveMetadata(
     exportAs,
     providers,
     isStandalone,
+    hostDirectives:
+        hostDirectives?.map(hostDir => toHostDirectiveMetadata(hostDir, sourceFile, refEmitter)) ||
+        null,
   };
   return {
     decorator: directive,
@@ -215,6 +222,8 @@ export function extractDirectiveMetadata(
     inputs,
     outputs,
     isStructural,
+    hostDirectives,
+    rawHostDirectives,
   };
 }
 
@@ -511,11 +520,15 @@ function parseFieldToPropertyMapping(
     directive: Map<string, ts.Expression>, field: string,
     evaluator: PartialEvaluator): {[field: string]: string} {
   const metaValues = parseFieldArrayValue(directive, field, evaluator);
-  if (!metaValues) {
-    return EMPTY_OBJECT;
-  }
+  return metaValues ? parseInputOutputMappingArray(metaValues) : EMPTY_OBJECT;
+}
 
-  return metaValues.reduce((results, value) => {
+function parseInputOutputMappingArray(values: string[]) {
+  return values.reduce((results, value) => {
+    if (typeof value !== 'string') {
+      throw new Error('Mapping value must be a string');
+    }
+
     // Either the value is 'field' or 'field: property'. In the first case, `property` will
     // be undefined, in which case the field name should also be used as the property name.
     const [field, property] = value.split(':', 2).map(str => str.trim());
@@ -613,4 +626,76 @@ function evaluateHostExpressionBindings(
   }
 
   return bindings;
+}
+
+/**
+ * Extracts and prepares the host directives metadata from an array literal expression.
+ * @param rawHostDirectives Expression that defined the `hostDirectives`.
+ */
+function extractHostDirectives(
+    rawHostDirectives: ts.Expression, evaluator: PartialEvaluator): HostDirectiveMeta[] {
+  const resolved = evaluator.evaluate(rawHostDirectives, forwardRefResolver);
+  if (!Array.isArray(resolved)) {
+    throw createValueHasWrongTypeError(
+        rawHostDirectives, resolved, 'hostDirectives must be an array');
+  }
+
+  return resolved.map(value => {
+    const hostReference = value instanceof Map ? value.get('directive') : value;
+
+    if (!(hostReference instanceof Reference)) {
+      throw createValueHasWrongTypeError(
+          rawHostDirectives, hostReference, 'Host directive must be a reference');
+    }
+
+    if (!isNamedClassDeclaration(hostReference.node)) {
+      throw createValueHasWrongTypeError(
+          rawHostDirectives, hostReference, 'Host directive reference must be a class');
+    }
+
+    const meta: HostDirectiveMeta = {
+      directive: hostReference as Reference<ClassDeclaration>,
+      isForwardReference: hostReference.synthetic,
+      inputs: parseHostDirectivesMapping('inputs', value, hostReference.node, rawHostDirectives),
+      outputs: parseHostDirectivesMapping('outputs', value, hostReference.node, rawHostDirectives),
+    };
+
+    return meta;
+  });
+}
+
+/**
+ * Parses the expression that defines the `inputs` or `outputs` of a host directive.
+ * @param field Name of the field that is being parsed.
+ * @param resolvedValue Evaluated value of the expression that defined the field.
+ * @param classReference Reference to the host directive class.
+ * @param sourceExpression Expression that the host directive is referenced in.
+ */
+function parseHostDirectivesMapping(
+    field: 'inputs'|'outputs', resolvedValue: ResolvedValue, classReference: ClassDeclaration,
+    sourceExpression: ts.Expression): {[publicName: string]: string}|null {
+  if (resolvedValue instanceof Map && resolvedValue.has(field)) {
+    const nameForErrors = `@Directive.hostDirectives.${classReference.name.text}.${field}`;
+    const rawInputs = resolvedValue.get(field);
+
+    if (isStringArrayOrDie(rawInputs, nameForErrors, sourceExpression)) {
+      return parseInputOutputMappingArray(rawInputs);
+    }
+  }
+
+  return null;
+}
+
+/** Converts the parsed host directive information into metadata. */
+function toHostDirectiveMetadata(
+    hostDirective: HostDirectiveMeta, context: ts.SourceFile,
+    refEmitter: ReferenceEmitter): R3HostDirectiveMetadata {
+  return {
+    directive: toR3Reference(
+        hostDirective.directive.node, hostDirective.directive, hostDirective.directive, context,
+        context, refEmitter),
+    isForwardReference: hostDirective.isForwardReference,
+    inputs: hostDirective.inputs || null,
+    outputs: hostDirective.outputs || null
+  };
 }

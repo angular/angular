@@ -113,10 +113,24 @@ export enum MetaKind {
 }
 
 /**
+ * Possible ways that a directive can be matched.
+ */
+export enum MatchSource {
+  /** The directive was matched by its selector. */
+  Selector,
+
+  /** The directive was applied as a host directive. */
+  HostDirective,
+}
+
+/**
  * Metadata collected for a directive within an NgModule's scope.
  */
 export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
   kind: MetaKind.Directive;
+
+  /** Way in which the directive was matched. */
+  matchSource: MatchSource;
 
   ref: Reference<ClassDeclaration>;
   /**
@@ -175,6 +189,24 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
    * If this is `null`, no decorator exists, meaning it's probably from a .d.ts file.
    */
   decorator: ts.Decorator|null;
+
+  /** Additional directives applied to the directive host. */
+  hostDirectives: HostDirectiveMeta[]|null;
+}
+
+/** Metadata collected about an additional directive that is being applied to a directive host. */
+export interface HostDirectiveMeta {
+  /** Reference to the host directive class. */
+  directive: Reference<ClassDeclaration>;
+
+  /** Whether the reference to the host directive is a forward reference. */
+  isForwardReference: boolean;
+
+  /** Inputs from the host directive that have been exposed. */
+  inputs: {[publicName: string]: string}|null;
+
+  /** Outputs from the host directive that have been exposed. */
+  outputs: {[publicName: string]: string}|null;
 }
 
 /**

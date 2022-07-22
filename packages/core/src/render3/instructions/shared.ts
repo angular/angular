@@ -1311,6 +1311,8 @@ function findDirectiveDefMatches(
         } else {
           matches.push(def);
         }
+
+        def.applyHostDirectives?.(tView, viewData, tNode, matches);
       }
     }
   }

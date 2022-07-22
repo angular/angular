@@ -34,11 +34,11 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class OtherCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<OtherCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<OtherCmp, "other-cmp", never, {}, {}, never, never, true>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<OtherCmp, "other-cmp", never, {}, {}, never, never, true, never>;
 }
 export declare class StandaloneCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<StandaloneCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<StandaloneCmp, "ng-component", never, {}, {}, never, never, true>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<StandaloneCmp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
 /****************************************************************************************************
@@ -63,7 +63,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class StandaloneDir {
     static ɵfac: i0.ɵɵFactoryDeclaration<StandaloneDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<StandaloneDir, never, never, {}, {}, never, never, true>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<StandaloneDir, never, never, {}, {}, never, never, true, never>;
 }
 
 /****************************************************************************************************
@@ -217,7 +217,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class NotStandaloneDir {
     static ɵfac: i0.ɵɵFactoryDeclaration<NotStandaloneDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NotStandaloneDir, "[not-standalone]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NotStandaloneDir, "[not-standalone]", never, {}, {}, never, never, false, never>;
 }
 export declare class NotStandalonePipe {
     transform(value: any): any;
@@ -231,7 +231,7 @@ export declare class NotStandaloneStuffModule {
 }
 export declare class IndirectDir {
     static ɵfac: i0.ɵɵFactoryDeclaration<IndirectDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<IndirectDir, "[indirect]", never, {}, {}, never, never, true>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<IndirectDir, "[indirect]", never, {}, {}, never, never, true, never>;
 }
 export declare class IndirectPipe {
     transform(value: any): any;
@@ -245,7 +245,7 @@ export declare class SomeModule {
 }
 export declare class DirectDir {
     static ɵfac: i0.ɵɵFactoryDeclaration<DirectDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<DirectDir, "[direct]", never, {}, {}, never, never, true>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<DirectDir, "[direct]", never, {}, {}, never, never, true, never>;
 }
 export declare class DirectPipe {
     transform(value: any): any;
@@ -255,7 +255,7 @@ export declare class DirectPipe {
 export declare class TestCmp {
     data: boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, true>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, true, never>;
 }
 
 /****************************************************************************************************
@@ -283,7 +283,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class RecursiveComponent {
     static ɵfac: i0.ɵɵFactoryDeclaration<RecursiveComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<RecursiveComponent, "recursive-cmp", never, {}, {}, never, never, true>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<RecursiveComponent, "recursive-cmp", never, {}, {}, never, never, true, never>;
 }
 
 /****************************************************************************************************
@@ -329,11 +329,11 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class StandaloneCmp {
     static ɵfac: i0.ɵɵFactoryDeclaration<StandaloneCmp, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<StandaloneCmp, "standalone-cmp", never, {}, {}, never, never, true>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<StandaloneCmp, "standalone-cmp", never, {}, {}, never, never, true, never>;
 }
 export declare class StandaloneDir {
     static ɵfac: i0.ɵɵFactoryDeclaration<StandaloneDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<StandaloneDir, never, never, {}, {}, never, never, true>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<StandaloneDir, never, never, {}, {}, never, never, true, never>;
 }
 export declare class Module {
     static ɵfac: i0.ɵɵFactoryDeclaration<Module, never>;
@@ -378,10 +378,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestComponent {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<TestComponent, "test", never, {}, {}, never, never, true>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestComponent, "test", never, {}, {}, never, never, true, never>;
 }
 export declare class StandaloneComponent {
     static ɵfac: i0.ɵɵFactoryDeclaration<StandaloneComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<StandaloneComponent, "other-standalone", never, {}, {}, never, never, true>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<StandaloneComponent, "other-standalone", never, {}, {}, never, never, true, never>;
 }
 

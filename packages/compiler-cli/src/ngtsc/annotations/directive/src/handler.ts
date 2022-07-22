@@ -9,15 +9,15 @@
 import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, FactoryTarget, makeBindingParser, R3ClassMetadata, R3DirectiveMetadata, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {Reference} from '../../../imports';
+import {Reference, ReferenceEmitter} from '../../../imports';
 import {extractSemanticTypeParameters, SemanticDepGraphUpdater} from '../../../incremental/semantic_graph';
-import {ClassPropertyMapping, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
+import {ClassPropertyMapping, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, HostDirectiveMeta, InjectableClassRegistry, MatchSource, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost} from '../../../reflection';
 import {LocalModuleScopeRegistry} from '../../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../../transform';
-import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata} from '../../common';
+import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata, validateHostDirectives} from '../../common';
 
 import {extractDirectiveMetadata} from './shared';
 import {DirectiveSymbol} from './symbol';
@@ -42,6 +42,8 @@ export interface DirectiveHandlerData {
   isPoisoned: boolean;
   isStructural: boolean;
   decorator: ts.Decorator|null;
+  hostDirectives: HostDirectiveMeta[]|null;
+  rawHostDirectives: ts.Expression|null;
 }
 
 export class DirectiveDecoratorHandler implements
@@ -50,7 +52,8 @@ export class DirectiveDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
       private metaReader: MetadataReader, private injectableRegistry: InjectableClassRegistry,
-      private isCore: boolean, private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
+      private refEmitter: ReferenceEmitter, private isCore: boolean,
+      private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean,
       private compileUndecoratedClassesWithAngularFeatures: boolean, private perf: PerfRecorder) {}
 
@@ -91,7 +94,7 @@ export class DirectiveDecoratorHandler implements
     this.perf.eventCount(PerfEvent.AnalyzeDirective);
 
     const directiveResult = extractDirectiveMetadata(
-        node, decorator, this.reflector, this.evaluator, this.isCore, flags,
+        node, decorator, this.reflector, this.evaluator, this.refEmitter, this.isCore, flags,
         this.annotateForClosureCompiler);
     if (directiveResult === undefined) {
       return {};
@@ -109,6 +112,8 @@ export class DirectiveDecoratorHandler implements
         inputs: directiveResult.inputs,
         outputs: directiveResult.outputs,
         meta: analysis,
+        hostDirectives: directiveResult.hostDirectives,
+        rawHostDirectives: directiveResult.rawHostDirectives,
         classMetadata: extractClassMetadata(
             node, this.reflector, this.isCore, this.annotateForClosureCompiler),
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
@@ -135,6 +140,7 @@ export class DirectiveDecoratorHandler implements
     const ref = new Reference(node);
     this.metaRegistry.registerDirectiveMetadata({
       kind: MetaKind.Directive,
+      matchSource: MatchSource.Selector,
       ref,
       name: node.name.text,
       selector: analysis.meta.selector,
@@ -144,6 +150,7 @@ export class DirectiveDecoratorHandler implements
       queries: analysis.meta.queries.map(query => query.propertyName),
       isComponent: false,
       baseClass: analysis.baseClass,
+      hostDirectives: analysis.hostDirectives,
       ...analysis.typeCheckMeta,
       isPoisoned: analysis.isPoisoned,
       isStructural: analysis.isStructural,
@@ -176,6 +183,14 @@ export class DirectiveDecoratorHandler implements
         node, this.metaReader, this.evaluator, this.reflector, this.scopeRegistry, 'Directive');
     if (directiveDiagnostics !== null) {
       diagnostics.push(...directiveDiagnostics);
+    }
+
+    const hostDirectivesDiagnotics = analysis.hostDirectives && analysis.rawHostDirectives ?
+        validateHostDirectives(
+            analysis.rawHostDirectives, analysis.hostDirectives, this.metaReader) :
+        null;
+    if (hostDirectivesDiagnotics !== null) {
+      diagnostics.push(...hostDirectivesDiagnotics);
     }
 
     return {diagnostics: diagnostics.length > 0 ? diagnostics : undefined};

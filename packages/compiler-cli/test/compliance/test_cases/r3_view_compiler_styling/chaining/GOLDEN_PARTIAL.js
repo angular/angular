@@ -34,7 +34,7 @@ export declare class MyComponent {
     yesToOrange: boolean;
     yesToTomato: boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false, never>;
 }
 
 /****************************************************************************************************
@@ -73,7 +73,7 @@ export declare class MyComponent {
     border: string;
     transition: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false, never>;
 }
 
 /****************************************************************************************************
@@ -124,7 +124,7 @@ export declare class MyComponent {
     yesToOrange: boolean;
     yesToTomato: boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false, never>;
 }
 
 /****************************************************************************************************
@@ -159,7 +159,7 @@ import * as i0 from "@angular/core";
 export declare class MyComponent {
     one: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false, never>;
 }
 
 /****************************************************************************************************
@@ -204,7 +204,7 @@ export declare class MyComponent {
     two: string;
     three: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false, never>;
 }
 
 /****************************************************************************************************
@@ -257,7 +257,7 @@ export declare class MyComponent {
     yesToApple: boolean;
     yesToOrange: boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false, never>;
 }
 
 /****************************************************************************************************
@@ -306,7 +306,7 @@ export declare class MyComponent {
     transition: string;
     width: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false, never>;
 }
 
 /****************************************************************************************************
@@ -357,6 +357,6 @@ export declare class MyComponent {
     border: string;
     yesToOrange: boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, false, never>;
 }
 

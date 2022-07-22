@@ -326,6 +326,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       setInput: null,
       schemas: componentDefinition.schemas || null,
       tView: null,
+      applyHostDirectives: null,
     };
     const dependencies = componentDefinition.dependencies;
     const feature = componentDefinition.features;

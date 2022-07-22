@@ -122,6 +122,11 @@ export interface R3DirectiveMetadata {
    * Whether or not the component or directive is standalone.
    */
   isStandalone: boolean;
+
+  /**
+   * Additional directives applied to the directive host.
+   */
+  hostDirectives: R3HostDirectiveMetadata[]|null;
 }
 
 /**
@@ -388,4 +393,21 @@ export interface R3HostMetadata {
   properties: {[key: string]: string};
 
   specialAttributes: {styleAttr?: string; classAttr?: string;};
+}
+
+/**
+ * Information needed to compile a host directive for the render3 runtime.
+ */
+export interface R3HostDirectiveMetadata {
+  /** An expression representing the host directive class itself. */
+  directive: R3Reference;
+
+  /** Whether the expression referring to the host directive is a forward reference. */
+  isForwardReference: boolean;
+
+  /** Inputs from the host directive that will be exposed on the host. */
+  inputs: {[publicName: string]: string}|null;
+
+  /** Outputs from the host directive that will be exposed on the host. */
+  outputs: {[publicName: string]: string}|null;
 }

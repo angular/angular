@@ -202,7 +202,7 @@ export class NgModuleDecoratorHandler implements
       // Look through the declarations to make sure they're all a part of the current compilation.
       for (const ref of declarationRefs) {
         if (ref.node.getSourceFile().isDeclarationFile) {
-          const errorNode: ts.Expression = ref.getOriginForDiagnostics(rawDeclarations);
+          const errorNode = ref.getOriginForDiagnostics(rawDeclarations);
 
           diagnostics.push(makeDiagnostic(
               ErrorCode.NGMODULE_INVALID_DECLARATION, errorNode,

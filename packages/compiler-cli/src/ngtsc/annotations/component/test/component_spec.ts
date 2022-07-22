@@ -14,7 +14,7 @@ import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
 import {absoluteFrom} from '../../../file_system';
 import {runInEachFileSystem} from '../../../file_system/testing';
 import {ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
-import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../../metadata';
+import {CompoundMetadataReader, DtsMetadataReader, HostDirectivesResolver, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../../perf';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../../reflection';
@@ -57,7 +57,9 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
   const refEmitter = new ReferenceEmitter([]);
   const injectableRegistry = new InjectableClassRegistry(reflectionHost);
   const resourceRegistry = new ResourceRegistry();
-  const typeCheckScopeRegistry = new TypeCheckScopeRegistry(scopeRegistry, metaReader);
+  const hostDirectivesResolver = new HostDirectivesResolver(metaReader);
+  const typeCheckScopeRegistry =
+      new TypeCheckScopeRegistry(scopeRegistry, metaReader, hostDirectivesResolver);
   const resourceLoader = new StubResourceLoader();
 
   const handler = new ComponentDecoratorHandler(
@@ -87,6 +89,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       /* semanticDepGraphUpdater */ null,
       /* annotateForClosureCompiler */ false,
       NOOP_PERF_RECORDER,
+      hostDirectivesResolver,
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};
 }

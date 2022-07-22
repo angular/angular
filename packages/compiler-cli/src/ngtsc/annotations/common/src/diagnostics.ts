@@ -10,7 +10,7 @@ import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {Reference} from '../../../imports';
-import {InjectableClassRegistry, MetadataReader} from '../../../metadata';
+import {HostDirectiveMeta, InjectableClassRegistry, MetadataReader} from '../../../metadata';
 import {describeResolvedType, DynamicValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
 import {ClassDeclaration, ReflectionHost} from '../../../reflection';
 import {DeclarationData, LocalModuleScopeRegistry} from '../../../scope';
@@ -148,6 +148,39 @@ export function getDirectiveDiagnostics(
   }
 
   addDiagnostics(checkInheritanceOfDirective(node, reader, reflector, evaluator));
+  return diagnostics;
+}
+
+export function validateHostDirectives(
+    origin: ts.Expression, hostDirectives: HostDirectiveMeta[], metaReader: MetadataReader) {
+  const diagnostics: ts.DiagnosticWithLocation[] = [];
+
+  for (const current of hostDirectives) {
+    const hostMeta = metaReader.getDirectiveMetadata(current.directive);
+
+    if (hostMeta === null) {
+      diagnostics.push(makeDiagnostic(
+          ErrorCode.HOST_DIRECTIVE_INVALID, current.directive.getOriginForDiagnostics(origin),
+          `${
+              current.directive
+                  .debugName} must be a standalone directive to be used as a host directive`));
+      continue;
+    }
+
+    if (!hostMeta.isStandalone) {
+      diagnostics.push(makeDiagnostic(
+          ErrorCode.HOST_DIRECTIVE_NOT_STANDALONE,
+          current.directive.getOriginForDiagnostics(origin),
+          `Host directive ${hostMeta.name} must be standalone`));
+    }
+
+    if (hostMeta.isComponent) {
+      diagnostics.push(makeDiagnostic(
+          ErrorCode.HOST_DIRECTIVE_COMPONENT, current.directive.getOriginForDiagnostics(origin),
+          `Host directive ${hostMeta.name} cannot be a component`));
+    }
+  }
+
   return diagnostics;
 }
 

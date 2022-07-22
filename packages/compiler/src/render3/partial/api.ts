@@ -118,6 +118,11 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
    * Whether the directive is standalone. Defaults to false.
    */
   isStandalone?: boolean;
+
+  /**
+   * Additional directives applied to the directive host.
+   */
+  hostDirectives?: R3DeclareHostDirectiveMetadata[];
 }
 
 /**
@@ -529,4 +534,14 @@ export interface R3DeclareClassMetadata extends R3PartialDeclaration {
    * omitted if no properties have any decorators.
    */
   propDecorators?: o.Expression;
+}
+
+/**
+ * Describes the shape of the object literal that can be
+ * passed in as a part of the `hostDirectives` array.
+ */
+export interface R3DeclareHostDirectiveMetadata {
+  directive: o.Expression;
+  inputs?: string[];
+  outputs?: string[];
 }

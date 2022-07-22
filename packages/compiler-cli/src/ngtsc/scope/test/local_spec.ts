@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 import {Reference, ReferenceEmitter} from '../../imports';
-import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, LocalMetadataRegistry, MetadataRegistry, MetaKind, PipeMeta} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, LocalMetadataRegistry, MatchSource, MetadataRegistry, MetaKind, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {LocalModuleScope, ScopeData} from '../src/api';
 import {DtsModuleScopeResolver} from '../src/dependency';
@@ -289,6 +289,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
   const name = ref.debugName!;
   return {
     kind: MetaKind.Directive,
+    matchSource: MatchSource.Selector,
     ref,
     name,
     selector: `[${ref.debugName}]`,
@@ -312,6 +313,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     imports: null,
     schemas: null,
     decorator: null,
+    hostDirectives: null,
   };
 }
 
