@@ -18,9 +18,10 @@ export function isAbsoluteURL(src: string): boolean {
 }
 
 // Assembles directive details string, useful for error messages.
-export function imgDirectiveDetails(rawSrc: string) {
-  return `The NgOptimizedImage directive (activated on an <img> element ` +
-      `with the \`rawSrc="${rawSrc}"\`)`;
+export function imgDirectiveDetails(rawSrc: string, includeRawSrc = true) {
+  const rawSrcInfo =
+      includeRawSrc ? `(activated on an <img> element with the \`rawSrc="${rawSrc}"\`) ` : '';
+  return `The NgOptimizedImage directive ${rawSrcInfo}has detected that`;
 }
 
 // Invokes a callback for each element in the array. Also invokes a callback

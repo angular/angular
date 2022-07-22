@@ -14,7 +14,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {withHead} from '@angular/private/testing';
 
 import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '../../src/directives/ng_optimized_image/image_loaders/image_loader';
-import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidRawSrcset, NgOptimizedImageModule, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
+import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidRawSrcset, NgOptimizedImage, NgOptimizedImageModule, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
 describe('Image directive', () => {
@@ -78,12 +78,12 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              `NG0${
-                  RuntimeErrorCode
-                      .UNEXPECTED_SRC_ATTR}: The NgOptimizedImage directive (activated on an <img> element with the ` +
-              '`rawSrc="path/img.png"`) has detected that the `src` has already been set (to `path/img2.png`). ' +
-              'Please remove the `src` attribute from this image. The NgOptimizedImage directive will use ' +
-              'the `rawSrc` to compute the final image URL and set the `src` itself.');
+              'NG02950: The NgOptimizedImage directive (activated on an <img> ' +
+              'element with the `rawSrc="path/img.png"`) has detected that both ' +
+              '`src` and `rawSrc` have been set. Supplying both of these attributes ' +
+              'is not necessary and will break lazy loading. ' +
+              'The NgOptimizedImage directive will set `src` itself based on the ' +
+              'value of `rawSrc`. To fix this, please remove the `src` attribute.');
     });
 
     it('should throw if both `rawSrc` and `srcset` is present', () => {
@@ -96,13 +96,13 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              `NG0${
-                  RuntimeErrorCode
-                      .UNEXPECTED_SRCSET_ATTR}: The NgOptimizedImage directive (activated on an <img> element with the ` +
-              '`rawSrc="img-100.png"`) has detected that the `srcset` has been set. ' +
-              'Please replace the `srcset` attribute from this image with `rawSrcset`. ' +
-              'The NgOptimizedImage directive uses `rawSrcset` to set the `srcset` attribute' +
-              'at a time that does not disrupt lazy loading.');
+              'NG02951: The NgOptimizedImage directive (activated on an <img> ' +
+              'element with the `rawSrc="img-100.png"`) has detected that both ' +
+              '`srcset` and `rawSrcset` have been set. Supplying both of these ' +
+              'attributes is not necessary and will break lazy loading. ' +
+              'The NgOptimizedImage directive will set `srcset` itself based ' +
+              'on the value of `rawSrcset`. To fix this, please remove the `srcset` ' +
+              'attribute.');
     });
 
     it('should throw if `rawSrc` contains a Base64-encoded image (that starts with `data:`)', () => {
@@ -114,13 +114,11 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              `NG0${
-                  RuntimeErrorCode
-                      .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`rawSrc\` was set ` +
-              'to a Base64-encoded string (' + ANGULAR_LOGO_BASE64.substring(0, 50) + '...). ' +
+              'NG02952: The NgOptimizedImage directive has detected that `rawSrc` ' +
+              'is a Base64-encoded string (data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDov...). ' +
               'Base64-encoded strings are not supported by the NgOptimizedImage directive. ' +
-              'Use a regular `src` attribute (instead of `rawSrc`) to disable the NgOptimizedImage ' +
-              'directive for this element.');
+              'To fix this, disable the NgOptimizedImage directive for this element by ' +
+              'removing `rawSrc` and using a regular `src` attribute instead.');
     });
 
     it('should throw if `rawSrc` contains a `blob:` URL', (done) => {
@@ -140,7 +138,7 @@ describe('Image directive', () => {
         // Note: use RegExp to partially match the error message, since the blob URL
         // is created dynamically, so it might be different for each invocation.
         const errorMessageRegExp =
-            /NG02952: The NgOptimizedImage directive has detected that the `rawSrc` was set to a blob URL \(blob:/;
+            /NG02952: The NgOptimizedImage directive (.*?) has detected that `rawSrc` was set to a blob URL \(blob:/;
         expect(() => {
           const template = '<img rawSrc="' + blobURL + '" width="50" height="50">';
           const fixture = createTestComponent(template);
@@ -159,12 +157,11 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              `NG0${
-                  RuntimeErrorCode
-                      .REQUIRED_INPUT_MISSING}: The NgOptimizedImage directive (activated on an <img> ` +
-              'element with the `rawSrc="img.png"`) has detected that these required attributes are missing:' +
-              '`width`. Including "width" and "height" attributes will prevent image-related layout shifts. ' +
-              'Please include "width" and "height" attributes on the image tag.');
+              'NG02954: The NgOptimizedImage directive (activated on an <img> ' +
+              'element with the `rawSrc="img.png"`) has detected that these ' +
+              'required attributes are missing:`width`. Including "width" and ' +
+              '"height" attributes will prevent image-related layout shifts. ' +
+              'To fix this, include "width" and "height" attributes on the image tag.');
     });
 
     it('should throw if `width` is 0', () => {
@@ -176,11 +173,10 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              `NG0${
-                  RuntimeErrorCode
-                      .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`width\` ` +
-              'has an invalid value: expecting a number that represents the width ' +
-              'in pixels, but got: `0`.');
+              'NG02952: The NgOptimizedImage directive (activated on an <img> ' +
+              'element with the `rawSrc="img.png"`) has detected that `width` ' +
+              'has an invalid value (`0`). To fix this, provide `width` as ' +
+              'a number greater than 0.');
     });
 
     it('should throw if `width` has an invalid value', () => {
@@ -192,11 +188,10 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              `NG0${
-                  RuntimeErrorCode
-                      .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`width\` ` +
-              'has an invalid value: expecting a number that represents the width ' +
-              'in pixels, but got: `10px`.');
+              'NG02952: The NgOptimizedImage directive (activated on an <img> ' +
+              'element with the `rawSrc="img.png"`) has detected that `width` ' +
+              'has an invalid value (`10px`). To fix this, provide `width` ' +
+              'as a number greater than 0.');
     });
 
     it('should throw if `height` is not set', () => {
@@ -208,12 +203,11 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              `NG0${
-                  RuntimeErrorCode
-                      .REQUIRED_INPUT_MISSING}: The NgOptimizedImage directive (activated on an <img> ` +
-              'element with the `rawSrc="img.png"`) has detected that these required attributes are missing:' +
-              '`height`. Including "width" and "height" attributes will prevent image-related layout shifts. ' +
-              'Please include "width" and "height" attributes on the image tag.');
+              'NG02954: The NgOptimizedImage directive (activated on an <img> ' +
+              'element with the `rawSrc="img.png"`) has detected that these required ' +
+              'attributes are missing:`height`. Including "width" and "height" ' +
+              'attributes will prevent image-related layout shifts. ' +
+              'To fix this, include "width" and "height" attributes on the image tag.');
     });
 
     it('should throw if `height` is 0', () => {
@@ -225,11 +219,10 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              `NG0${
-                  RuntimeErrorCode
-                      .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`height\` ` +
-              'has an invalid value: expecting a number that represents the height ' +
-              'in pixels, but got: `0`.');
+              'NG02952: The NgOptimizedImage directive (activated on an <img> ' +
+              'element with the `rawSrc="img.png"`) has detected that `height` ' +
+              'has an invalid value (`0`). To fix this, provide `height` as a number ' +
+              'greater than 0.');
     });
 
     it('should throw if `height` has an invalid value', () => {
@@ -241,11 +234,9 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              `NG0${
-                  RuntimeErrorCode
-                      .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`height\` ` +
-              'has an invalid value: expecting a number that represents the height ' +
-              'in pixels, but got: `10%`.');
+              'NG02952: The NgOptimizedImage directive (activated on an <img> element ' +
+              'with the `rawSrc="img.png"`) has detected that `height` has an invalid ' +
+              'value (`10%`). To fix this, provide `height` as a number greater than 0.');
     });
 
     it('should throw if `rawSrc` value is not provided', () => {
@@ -257,10 +248,10 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              `NG0${
-                  RuntimeErrorCode
-                      .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`rawSrc\` ` +
-              'has an invalid value: expecting a non-empty string, but got: `` (empty string).');
+              'NG02952: The NgOptimizedImage directive (activated on an <img> ' +
+              'element with the `rawSrc=""`) has detected that `rawSrc` has an ' +
+              'invalid value (``). ' +
+              'To fix this, change the value to a non-empty string.');
     });
 
     it('should throw if `rawSrc` value is set to an empty string', () => {
@@ -272,13 +263,14 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              `NG0${
-                  RuntimeErrorCode
-                      .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`rawSrc\` ` +
-              'has an invalid value: expecting a non-empty string, but got: `  ` (empty string).');
+              'NG02952: The NgOptimizedImage directive (activated on an <img> element ' +
+              'with the `rawSrc="  "`) has detected that `rawSrc` has an invalid value ' +
+              '(`  `). To fix this, change the value to a non-empty string.');
     });
 
     describe('invalid `rawSrcset` values', () => {
+      const mockDirectiveInstance = {rawSrc: 'img.png'} as NgOptimizedImage;
+
       it('should throw for empty rawSrcSet', () => {
         const imageLoader = (config: ImageLoaderConfig) => {
           const width = config.width ? `-${config.width}` : ``;
@@ -294,10 +286,10 @@ describe('Image directive', () => {
           fixture.detectChanges();
         })
             .toThrowError(
-                `NG0${
-                    RuntimeErrorCode
-                        .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`rawSrcset\` ` +
-                'has an invalid value: expecting a non-empty string, but got: `` (empty string).');
+                'NG02952: The NgOptimizedImage directive (activated on an <img> ' +
+                'element with the `rawSrc="img"`) has detected that `rawSrcset` ' +
+                'has an invalid value (``). ' +
+                'To fix this, change the value to a non-empty string.');
       });
 
       it('should throw for invalid rawSrcSet', () => {
@@ -315,11 +307,11 @@ describe('Image directive', () => {
           fixture.detectChanges();
         })
             .toThrowError(
-                `NG0${
-                    RuntimeErrorCode
-                        .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`rawSrcset\` has an invalid value: ` +
-                `expecting width descriptors (e.g. "100w, 200w") or density descriptors (e.g. "1x, 2x"), ` +
-                `but got: \`100q, 200q\``);
+                'NG02952: The NgOptimizedImage directive (activated on an <img> element ' +
+                'with the `rawSrc="img"`) has detected that `rawSrcset` has an invalid value ' +
+                '(`100q, 200q`). To fix this, supply `rawSrcset` using a comma-separated list ' +
+                'of one or more width descriptors (e.g. "100w, 200w") or density descriptors ' +
+                '(e.g. "1x, 2x").');
       });
 
       it('should throw if rawSrcset exceeds the density cap', () => {
@@ -339,7 +331,8 @@ describe('Image directive', () => {
             .toThrowError(
                 `NG0${
                     RuntimeErrorCode
-                        .INVALID_INPUT}: The NgOptimizedImage directive has detected that the \`rawSrcset\` contains an unsupported image density:` +
+                        .INVALID_INPUT}: The NgOptimizedImage directive (activated on an <img> element with the \`rawSrc="img"\`) ` +
+                `has detected that the \`rawSrcset\` contains an unsupported image density:` +
                 `\`1x, 2x, 3x, 4x, 5x\`. NgOptimizedImage generally recommends a max image density of ` +
                 `${RECOMMENDED_SRCSET_DENSITY_CAP}x but supports image densities up to ` +
                 `${ABSOLUTE_SRCSET_DENSITY_CAP}x. The human eye cannot distinguish between image densities ` +
@@ -351,67 +344,67 @@ describe('Image directive', () => {
 
       it('should throw if width srcset is missing a comma', () => {
         expect(() => {
-          assertValidRawSrcset('100w 200w');
+          assertValidRawSrcset(mockDirectiveInstance, '100w 200w');
         }).toThrowError();
       });
 
       it('should throw if density srcset is missing a comma', () => {
         expect(() => {
-          assertValidRawSrcset('1x 2x');
+          assertValidRawSrcset(mockDirectiveInstance, '1x 2x');
         }).toThrowError();
       });
 
       it('should throw if density srcset has too many digits', () => {
         expect(() => {
-          assertValidRawSrcset('100x, 2x');
+          assertValidRawSrcset(mockDirectiveInstance, '100x, 2x');
         }).toThrowError();
       });
 
       it('should throw if width srcset includes a file name', () => {
         expect(() => {
-          assertValidRawSrcset('a.png 100w, b.png 200w');
+          assertValidRawSrcset(mockDirectiveInstance, 'a.png 100w, b.png 200w');
         }).toThrowError();
       });
 
       it('should throw if density srcset includes a file name', () => {
         expect(() => {
-          assertValidRawSrcset('a.png 1x, b.png 2x');
+          assertValidRawSrcset(mockDirectiveInstance, 'a.png 1x, b.png 2x');
         }).toThrowError();
       });
 
       it('should throw if srcset starts with a letter', () => {
         expect(() => {
-          assertValidRawSrcset('a100w, 200w');
+          assertValidRawSrcset(mockDirectiveInstance, 'a100w, 200w');
         }).toThrowError();
       });
 
       it('should throw if srcset starts with another non-digit', () => {
         expect(() => {
-          assertValidRawSrcset('--100w, 200w');
+          assertValidRawSrcset(mockDirectiveInstance, '--100w, 200w');
         }).toThrowError();
       });
 
       it('should throw if first descriptor in srcset is junk', () => {
         expect(() => {
-          assertValidRawSrcset('foo, 1x');
+          assertValidRawSrcset(mockDirectiveInstance, 'foo, 1x');
         }).toThrowError();
       });
 
       it('should throw if later descriptors in srcset are junk', () => {
         expect(() => {
-          assertValidRawSrcset('100w, foo');
+          assertValidRawSrcset(mockDirectiveInstance, '100w, foo');
         }).toThrowError();
       });
 
       it('should throw if srcset has a density descriptor after a width descriptor', () => {
         expect(() => {
-          assertValidRawSrcset('100w, 1x');
+          assertValidRawSrcset(mockDirectiveInstance, '100w, 1x');
         }).toThrowError();
       });
 
       it('should throw if srcset has a width descriptor after a density descriptor', () => {
         expect(() => {
-          assertValidRawSrcset('1x, 200w');
+          assertValidRawSrcset(mockDirectiveInstance, '1x, 200w');
         }).toThrowError();
       });
     });
@@ -439,12 +432,11 @@ describe('Image directive', () => {
           fixture.detectChanges();
         })
             .toThrowError(
-                `NG0${
-                    RuntimeErrorCode
-                        .UNEXPECTED_INPUT_CHANGE}: The NgOptimizedImage directive (activated on an <img> element ` +
-                `with the \`rawSrc="img.png"\`) has detected that the \`${inputName}\` is ` +
-                `updated after the initialization. The NgOptimizedImage directive will not ` +
-                `react to this input change.`);
+                'NG02953: The NgOptimizedImage directive (activated on an <img> element ' +
+                `with the \`rawSrc="img.png"\`) has detected that \`${inputName}\` was updated ` +
+                'after initialization. The NgOptimizedImage directive will not react ' +
+                `to this input change. To fix this, switch \`${inputName}\` a static value or ` +
+                'wrap the image element in an *ngIf that is gated on the necessary value.');
       });
     });
   });
@@ -498,10 +490,11 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              'NG02952: The NgOptimizedImage directive has detected that the `loading` ' +
-              'attribute was used on an image that was marked "priority". ' +
-              'Images marked "priority" are always eagerly loaded and this behavior ' +
-              'cannot be overwritten by using the "loading" attribute.');
+              'NG02952: The NgOptimizedImage directive (activated on an <img> element ' +
+              'with the `rawSrc="path/img.png"`) has detected that the `loading` attribute ' +
+              'was used on an image that was marked "priority". Setting `loading` on priority ' +
+              'images is not allowed because these images will always be eagerly loaded. ' +
+              'To fix this, remove the “loading” attribute from the priority image.');
     });
 
     it('should support setting loading priority to "auto"', () => {
@@ -525,9 +518,10 @@ describe('Image directive', () => {
         fixture.detectChanges();
       })
           .toThrowError(
-              'NG02952: The NgOptimizedImage directive has detected that the `loading` ' +
-              'attribute has an invalid value: expecting "lazy", "eager", or "auto"' +
-              ' but got: `fast`.');
+              'NG02952: The NgOptimizedImage directive (activated on an <img> element ' +
+              'with the `rawSrc="path/img.png"`) has detected that the `loading` attribute ' +
+              'has an invalid value (`fast`). To fix this, provide a valid value ("lazy", ' +
+              '"eager", or "auto").');
     });
   });
 
@@ -563,6 +557,7 @@ describe('Image directive', () => {
       // a preconnect warning for local environments).
       return 'https://angular.io/assets/images/logos/angular/angular.svg';
     };
+
     it('should log a warning if there is no preconnect link for a priority image',
        withHead('', () => {
          setupTestingModule({imageLoader});
@@ -575,11 +570,12 @@ describe('Image directive', () => {
          expect(consoleWarnSpy.calls.count()).toBe(1);
          expect(consoleWarnSpy.calls.argsFor(0)[0])
              .toBe(
-                 'NG02956: The NgOptimizedImage directive (activated on an <img> ' +
-                 'element with the `rawSrc="a.png"`) has detected that this image ' +
-                 'contains the "priority" attribute, but doesn\'t have a corresponding ' +
-                 'preconnect tag. Please add the following element into the <head> of ' +
-                 'the document to optimize loading of this image:' +
+                 'NG02956: The NgOptimizedImage directive (activated on an <img> element ' +
+                 'with the `rawSrc="a.png"`) has detected that there is no preconnect tag ' +
+                 'present for this image. Preconnecting to the origin(s) that serve ' +
+                 'priority images ensures that these images are delivered as soon as ' +
+                 'possible. To fix this, please add the following element into the <head> ' +
+                 'of the document:' +
                  '\n  <link rel="preconnect" href="https://angular.io">');
        }));
 
@@ -608,11 +604,11 @@ describe('Image directive', () => {
          expect(consoleWarnSpy.calls.count()).toBe(1);
          expect(consoleWarnSpy.calls.argsFor(0)[0])
              .toBe(
-                 'NG02956: The NgOptimizedImage directive (activated on an ' +
-                 '<img> element with the `rawSrc="a.png"`) has detected that ' +
-                 'this image contains the "priority" attribute, but doesn\'t have ' +
-                 'a corresponding preconnect tag. Please add the following element ' +
-                 'into the <head> of the document to optimize loading of this image:' +
+                 'NG02956: The NgOptimizedImage directive (activated on an <img> element ' +
+                 'with the `rawSrc="a.png"`) has detected that there is no preconnect tag ' +
+                 'present for this image. Preconnecting to the origin(s) that serve priority ' +
+                 'images ensures that these images are delivered as soon as possible. ' +
+                 'To fix this, please add the following element into the <head> of the document:' +
                  '\n  <link rel="preconnect" href="https://angular.io">');
        }));
 
@@ -630,11 +626,11 @@ describe('Image directive', () => {
              expect(consoleWarnSpy.calls.count()).toBe(1);
              expect(consoleWarnSpy.calls.argsFor(0)[0])
                  .toBe(
-                     'NG02956: The NgOptimizedImage directive (activated on an ' +
-                     '<img> element with the `rawSrc="a.png"`) has detected that ' +
-                     'this image contains the "priority" attribute, but doesn\'t have ' +
-                     'a corresponding preconnect tag. Please add the following element ' +
-                     'into the <head> of the document to optimize loading of this image:' +
+                     'NG02956: The NgOptimizedImage directive (activated on an <img> element ' +
+                     'with the `rawSrc="a.png"`) has detected that there is no preconnect tag ' +
+                     'present for this image. Preconnecting to the origin(s) that serve priority ' +
+                     'images ensures that these images are delivered as soon as possible. ' +
+                     'To fix this, please add the following element into the <head> of the document:' +
                      '\n  <link rel="preconnect" href="https://angular.io">');
            }));
 

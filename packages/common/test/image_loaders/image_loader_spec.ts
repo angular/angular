@@ -15,6 +15,17 @@ import {isValidPath} from '@angular/common/src/directives/ng_optimized_image/uti
 import {createEnvironmentInjector, EnvironmentInjector, ValueProvider} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
+const absoluteUrlError = (src: string, path: string) =>
+    `NG02959: Image loader has detected a \`<img>\` tag with an invalid ` +
+    `\`rawSrc\` attribute: ${src}. This image loader expects \`rawSrc\` ` +
+    `to be a relative URL - however the provided value is an absolute URL. ` +
+    `To fix this, provide \`rawSrc\` as a path relative to the base URL ` +
+    `configured for this loader (\`${path}\`).`;
+
+const invalidPathError = (path: string, formats: string) =>
+    `NG02959: Image loader has detected an invalid path (\`${path}\`). ` +
+    `To fix this, supply a path using one of the following formats: ${formats}`;
+
 describe('Built-in image directive loaders', () => {
   describe('Imgix loader', () => {
     function createImgixLoader(path: string): ImageLoader {
@@ -55,13 +66,7 @@ describe('Built-in image directive loaders', () => {
       const path = 'https://somesite.imgix.net';
       const src = 'https://angular.io/img.png';
       const loader = createImgixLoader(path);
-      expect(() => loader({src}))
-          .toThrowError(
-              `NG02959: Image loader has detected an absolute URL used for one ` +
-              `of the \`rawSrc\` attributes on an \`<img>\` tag: ${src}. ` +
-              `The absolute URLs are not supported by this image loader. Please update ` +
-              `the \`rawSrc\` attribute of that \`<img>\` tag to use a path relative to the ` +
-              `base URL configured for this loader (\`${path}\`).`);
+      expect(() => loader({src})).toThrowError(absoluteUrlError(src, path));
     });
   });
 
@@ -86,22 +91,15 @@ describe('Built-in image directive loaders', () => {
         const path = 'https://res.cloudinary.com/mysite';
         const src = 'https://angular.io/img.png';
         const loader = createCloudinaryLoader(path);
-        expect(() => loader({src}))
-            .toThrowError(
-                `NG02959: Image loader has detected an absolute URL used for one ` +
-                `of the \`rawSrc\` attributes on an \`<img>\` tag: ${src}. ` +
-                `The absolute URLs are not supported by this image loader. Please update ` +
-                `the \`rawSrc\` attribute of that \`<img>\` tag to use a path relative to the ` +
-                `base URL configured for this loader (\`${path}\`).`);
+        expect(() => loader({src})).toThrowError(absoluteUrlError(src, path));
       });
 
       it('should throw if the path is invalid', () => {
         expect(() => provideCloudinaryLoader('my-cloudinary-account'))
-            .toThrowError(
-                `NG02959: Image loader has detected an invalid path. ` +
-                `Expecting a path matching one of the following formats: ` +
-                `https://res.cloudinary.com/mysite or https://mysite.cloudinary.com ` +
-                `or https://subdomain.mysite.com - but got: \`my-cloudinary-account\``);
+            .toThrowError(invalidPathError(
+                'my-cloudinary-account',
+                'https://res.cloudinary.com/mysite or https://mysite.cloudinary.com ' +
+                    'or https://subdomain.mysite.com'));
       });
 
       it('should handle a trailing forward slash on the path', () => {
@@ -137,22 +135,14 @@ describe('Built-in image directive loaders', () => {
         const path = 'https://ik.imageengine.io/imagetest';
         const src = 'https://angular.io/img.png';
         const loader = createImageKitLoader(path);
-        expect(() => loader({src}))
-            .toThrowError(
-                `NG02959: Image loader has detected an absolute URL used for one ` +
-                `of the \`rawSrc\` attributes on an \`<img>\` tag: ${src}. ` +
-                `The absolute URLs are not supported by this image loader. Please update ` +
-                `the \`rawSrc\` attribute of that \`<img>\` tag to use a path relative to the ` +
-                `base URL configured for this loader (\`${path}\`).`);
+        expect(() => loader({src})).toThrowError(absoluteUrlError(src, path));
       });
 
       it('should throw if the path is invalid', () => {
         expect(() => provideImageKitLoader('my-imagekit-account'))
-            .toThrowError(
-                `NG02959: Image loader has detected an invalid path. ` +
-                `Expecting a path matching one of the following formats: ` +
-                `https://ik.imagekit.io/mysite or https://subdomain.mysite.com - ` +
-                `but got: \`my-imagekit-account\``);
+            .toThrowError(invalidPathError(
+                'my-imagekit-account',
+                'https://ik.imagekit.io/mysite or https://subdomain.mysite.com'));
       });
 
       it('should handle a trailing forward slash on the path', () => {
@@ -190,13 +180,7 @@ describe('Built-in image directive loaders', () => {
       const path = 'https://mysite.com';
       const src = 'https://angular.io/img.png';
       const loader = createCloudflareLoader(path);
-      expect(() => loader({src}))
-          .toThrowError(
-              `NG02959: Image loader has detected an absolute URL used for one ` +
-              `of the \`rawSrc\` attributes on an \`<img>\` tag: ${src}. ` +
-              `The absolute URLs are not supported by this image loader. Please update ` +
-              `the \`rawSrc\` attribute of that \`<img>\` tag to use a path relative to the ` +
-              `base URL configured for this loader (\`${path}\`).`);
+      expect(() => loader({src})).toThrowError(absoluteUrlError(src, path));
     });
   });
 
