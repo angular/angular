@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, ɵIMAGE_LOADER as IMAGE_LOADER, ɵNgOptimizedImageModule as NgOptimizedImageModule} from '@angular/common';
+import {DOCUMENT, ɵIMAGE_LOADER as IMAGE_LOADER, ɵNgOptimizedImage as NgOptimizedImage} from '@angular/common';
 import {Component, Inject} from '@angular/core';
 
 @Component({
   selector: 'preconnect-check',
   standalone: true,
-  imports: [NgOptimizedImageModule],
+  imports: [NgOptimizedImage],
   template: `
     <img rawSrc="/e2e/a.png" width="50" height="50" priority>
     <img rawSrc="/e2e/b.png" width="50" height="50" priority>

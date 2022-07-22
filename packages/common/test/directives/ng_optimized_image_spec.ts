@@ -14,7 +14,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {withHead} from '@angular/private/testing';
 
 import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '../../src/directives/ng_optimized_image/image_loaders/image_loader';
-import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidRawSrcset, NgOptimizedImage, NgOptimizedImageModule, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
+import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidRawSrcset, NgOptimizedImage, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
 describe('Image directive', () => {
@@ -995,7 +995,7 @@ function setupTestingModule(config?: {imageLoader?: ImageLoader, extraProviders?
     declarations: [TestComponent],
     // Note: the `NgOptimizedImage` directive is experimental and is not a part of the
     // `CommonModule` yet, so it's imported separately.
-    imports: [CommonModule, NgOptimizedImageModule],
+    imports: [CommonModule, NgOptimizedImage],
     providers,
   });
 }
