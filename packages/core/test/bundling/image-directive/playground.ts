@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵNgOptimizedImageModule as NgOptimizedImageModule, ɵprovideImgixLoader as provideImgixLoader} from '@angular/common';
+import {ɵNgOptimizedImage as NgOptimizedImage, ɵprovideImgixLoader as provideImgixLoader} from '@angular/common';
 import {Component} from '@angular/core';
 
 @Component({
@@ -43,7 +43,7 @@ import {Component} from '@angular/core';
     </main>
   `,
   standalone: true,
-  imports: [NgOptimizedImageModule],
+  imports: [NgOptimizedImage],
   providers: [provideImgixLoader('https://aurora-project.imgix.net')],
 })
 export class PlaygroundComponent {
