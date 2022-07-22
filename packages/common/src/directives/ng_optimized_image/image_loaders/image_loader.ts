@@ -72,17 +72,16 @@ function throwInvalidPathError(path: unknown, exampleUrls: string[]): never {
   const exampleUrlsMsg = exampleUrls.join(' or ');
   throw new RuntimeError(
       RuntimeErrorCode.INVALID_LOADER_ARGUMENTS,
-      `Image loader has detected an invalid path. ` +
-          `Expecting a path matching one of the following formats: ${exampleUrlsMsg}` +
-          ` - but got: \`${path}\``);
+      `Image loader has detected an invalid path (\`${path}\`). ` +
+          `To fix this, supply a path using one of the following formats: ${exampleUrlsMsg}`);
 }
 
 function throwUnexpectedAbsoluteUrlError(path: string, url: string): never {
   throw new RuntimeError(
       RuntimeErrorCode.INVALID_LOADER_ARGUMENTS,
-      `Image loader has detected an absolute URL used for one of the \`rawSrc\` ` +
-          `attributes on an \`<img>\` tag: ${url}. The absolute URLs are not ` +
-          `supported by this image loader. Please update the \`rawSrc\` attribute ` +
-          `of that \`<img>\` tag to use a path relative to the base URL configured ` +
-          `for this loader (\`${path}\`).`);
+      `Image loader has detected a \`<img>\` tag with an invalid \`rawSrc\` attribute: ${url}. ` +
+          `This image loader expects \`rawSrc\` to be a relative URL - ` +
+          `however the provided value is an absolute URL. ` +
+          `To fix this, provide \`rawSrc\` as a path relative to the base URL ` +
+          `configured for this loader (\`${path}\`).`);
 }

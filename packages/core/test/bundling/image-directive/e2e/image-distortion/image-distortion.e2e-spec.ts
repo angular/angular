@@ -18,12 +18,13 @@ describe('NgOptimizedImage directive', () => {
     const logs = await collectBrowserLogs(logging.Level.WARNING);
     expect(logs.length).toEqual(0);
   });
+
   it('should warn if there is image distortion', async () => {
     await browser.get('/e2e/image-distortion-failing');
     const logs = await collectBrowserLogs(logging.Level.WARNING);
 
     expect(logs.length).toEqual(5);
-    // Image loading order is not gaurenteed, so all logs, rather than single entry
+    // Image loading order is not guaranteed, so all logs, rather than single entry
     // needs to be checked in order to test whether a given error message is present.
     const expectErrorMessageInLogs = (logs: logging.Entry[], message: string) => {
       expect(logs.some((log) => {
@@ -59,7 +60,7 @@ describe('NgOptimizedImage directive', () => {
             'Intrinsic image size: 250w x 250h (aspect-ratio: 1). ' +
             'Rendered image size: 250w x 30h (aspect-ratio: 8.333333333333334). ' +
             'This issue can occur if \\"width\\" and \\"height\\" attributes are added to an image ' +
-            'without updating the corresponding image styling. In most cases, ' +
+            'without updating the corresponding image styling. To fix this, adjust image styling. In most cases, ' +
             'adding \\"height: auto\\" or \\"width: auto\\" to the image styling will fix this issue.');
 
     expectErrorMessageInLogs(
@@ -70,7 +71,7 @@ describe('NgOptimizedImage directive', () => {
             'Intrinsic image size: 250w x 250h (aspect-ratio: 1). ' +
             'Rendered image size: 30w x 250h (aspect-ratio: 0.12). ' +
             'This issue can occur if \\"width\\" and \\"height\\" attributes are added to an image ' +
-            'without updating the corresponding image styling. In most cases, ' +
+            'without updating the corresponding image styling. To fix this, adjust image styling. In most cases, ' +
             'adding \\"height: auto\\" or \\"width: auto\\" to the image styling will fix this issue.');
 
     // Image with incorrect width/height attributes AND incorrect styling
