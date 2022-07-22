@@ -66,9 +66,10 @@ export class LCPImageObserver implements OnDestroy {
         const directiveDetails = imgDirectiveDetails(imgRawSrc);
         console.warn(formatRuntimeError(
             RuntimeErrorCode.LCP_IMG_MISSING_PRIORITY,
-            `${directiveDetails}: the image was detected as the Largest Contentful Paint (LCP) ` +
-                `element, so its loading should be prioritized for optimal performance. Please ` +
-                `add the "priority" attribute if this image is above the fold.`));
+            `${directiveDetails} this image is the Largest Contentful Paint (LCP) ` +
+                `element but was not marked "priority". This image should be marked ` +
+                `"priority" in order to prioritize its loading. ` +
+                `To fix this, add the "priority" attribute.`));
       }
     });
     observer.observe({type: 'largest-contentful-paint', buffered: true});

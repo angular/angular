@@ -104,7 +104,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    */
   @Input()
   set width(value: string|number|undefined) {
-    ngDevMode && assertGreaterThanZeroNumber(value, 'width');
+    ngDevMode && assertGreaterThanZeroNumber(this, value, 'width');
     this._width = inputToInteger(value);
   }
   get width(): number|undefined {
@@ -116,7 +116,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    */
   @Input()
   set height(value: string|number|undefined) {
-    ngDevMode && assertGreaterThanZeroNumber(value, 'height');
+    ngDevMode && assertGreaterThanZeroNumber(this, value, 'height');
     this._height = inputToInteger(value);
   }
   get height(): number|undefined {
@@ -155,8 +155,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() {
     if (ngDevMode) {
-      assertNonEmptyInput('rawSrc', this.rawSrc);
-      assertValidRawSrcset(this.rawSrcset);
+      assertNonEmptyInput(this, 'rawSrc', this.rawSrc);
+      assertValidRawSrcset(this, this.rawSrcset);
       assertNoConflictingSrc(this);
       assertNoConflictingSrcset(this);
       assertNotBase64Image(this);
@@ -302,12 +302,10 @@ function assertNoConflictingSrc(dir: NgOptimizedImage) {
   if (dir.src) {
     throw new RuntimeError(
         RuntimeErrorCode.UNEXPECTED_SRC_ATTR,
-        `${
-            imgDirectiveDetails(
-                dir.rawSrc)} has detected that the \`src\` has already been set (to ` +
-            `\`${dir.src}\`). Please remove the \`src\` attribute from this image. ` +
-            `The NgOptimizedImage directive will use the \`rawSrc\` to compute ` +
-            `the final image URL and set the \`src\` itself.`);
+        `${imgDirectiveDetails(dir.rawSrc)} both \`src\` and \`rawSrc\` have been set. ` +
+            `Supplying both of these attributes is not necessary and will break lazy loading. ` +
+            `The NgOptimizedImage directive will set \`src\` itself based on the value of \`rawSrc\`. ` +
+            `To fix this, please remove the \`src\` attribute.`);
   }
 }
 
@@ -316,10 +314,10 @@ function assertNoConflictingSrcset(dir: NgOptimizedImage) {
   if (dir.srcset) {
     throw new RuntimeError(
         RuntimeErrorCode.UNEXPECTED_SRCSET_ATTR,
-        `${imgDirectiveDetails(dir.rawSrc)} has detected that the \`srcset\` has been set. ` +
-            `Please replace the \`srcset\` attribute from this image with \`rawSrcset\`. ` +
-            `The NgOptimizedImage directive uses \`rawSrcset\` to set the \`srcset\` attribute` +
-            `at a time that does not disrupt lazy loading.`);
+        `${imgDirectiveDetails(dir.rawSrc)} both \`srcset\` and \`rawSrcset\` have been set. ` +
+            `Supplying both of these attributes is not necessary and will break lazy loading. ` +
+            `The NgOptimizedImage directive will set \`srcset\` itself based on the value of ` +
+            `\`rawSrcset\`. To fix this, please remove the \`srcset\` attribute.`);
   }
 }
 
@@ -332,11 +330,10 @@ function assertNotBase64Image(dir: NgOptimizedImage) {
     }
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
-        `The NgOptimizedImage directive has detected that the \`rawSrc\` was set ` +
-            `to a Base64-encoded string (${rawSrc}). Base64-encoded strings are ` +
-            `not supported by the NgOptimizedImage directive. Use a regular \`src\` ` +
-            `attribute (instead of \`rawSrc\`) to disable the NgOptimizedImage ` +
-            `directive for this element.`);
+        `${imgDirectiveDetails(dir.rawSrc, false)} \`rawSrc\` is a Base64-encoded string ` +
+            `(${rawSrc}). Base64-encoded strings are not supported by the NgOptimizedImage directive. ` +
+            `To fix this, disable the NgOptimizedImage directive for this element ` +
+            `by removing \`rawSrc\` and using a regular \`src\` attribute instead.`);
   }
 }
 
@@ -346,56 +343,56 @@ function assertNotBlobURL(dir: NgOptimizedImage) {
   if (rawSrc.startsWith('blob:')) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
-        `The NgOptimizedImage directive has detected that the \`rawSrc\` was set ` +
-            `to a blob URL (${rawSrc}). Blob URLs are not supported by the ` +
-            `NgOptimizedImage directive. Use a regular \`src\` attribute ` +
-            `(instead of \`rawSrc\`) to disable the NgOptimizedImage directive ` +
-            `for this element.`);
+        `${imgDirectiveDetails(dir.rawSrc)} \`rawSrc\` was set to a blob URL (${rawSrc}). ` +
+            `Blob URLs are not supported by the NgOptimizedImage directive. ` +
+            `To fix this, disable the NgOptimizedImage directive for this element ` +
+            `by removing \`rawSrc\` and using a regular \`src\` attribute instead.`);
   }
 }
 
 // Verifies that the input is set to a non-empty string.
-function assertNonEmptyInput(name: string, value: unknown) {
+function assertNonEmptyInput(dir: NgOptimizedImage, name: string, value: unknown) {
   const isString = typeof value === 'string';
   const isEmptyString = isString && value.trim() === '';
   if (!isString || isEmptyString) {
-    const extraMessage = isEmptyString ? ' (empty string)' : '';
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
-        `The NgOptimizedImage directive has detected that the \`${name}\` has an invalid value: ` +
-            `expecting a non-empty string, but got: \`${value}\`${extraMessage}.`);
+        `${imgDirectiveDetails(dir.rawSrc)} \`${name}\` has an invalid value ` +
+            `(\`${value}\`). To fix this, change the value to a non-empty string.`);
   }
 }
 
 // Verifies that the `rawSrcset` is in a valid format, e.g. "100w, 200w" or "1x, 2x"
-export function assertValidRawSrcset(value: unknown) {
+export function assertValidRawSrcset(dir: NgOptimizedImage, value: unknown) {
   if (value == null) return;
-  assertNonEmptyInput('rawSrcset', value);
+  assertNonEmptyInput(dir, 'rawSrcset', value);
   const stringVal = value as string;
   const isValidWidthDescriptor = VALID_WIDTH_DESCRIPTOR_SRCSET.test(stringVal);
   const isValidDensityDescriptor = VALID_DENSITY_DESCRIPTOR_SRCSET.test(stringVal);
 
   if (isValidDensityDescriptor) {
-    assertUnderDensityCap(stringVal);
+    assertUnderDensityCap(dir, stringVal);
   }
 
   const isValidSrcset = isValidWidthDescriptor || isValidDensityDescriptor;
   if (!isValidSrcset) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
-        `The NgOptimizedImage directive has detected that the \`rawSrcset\` has an invalid value: ` +
-            `expecting width descriptors (e.g. "100w, 200w") or density descriptors (e.g. "1x, 2x"), ` +
-            `but got: \`${stringVal}\``);
+        `${imgDirectiveDetails(dir.rawSrc)} \`rawSrcset\` has an invalid value (\`${value}\`). ` +
+            `To fix this, supply \`rawSrcset\` using a comma-separated list of one or more width ` +
+            `descriptors (e.g. "100w, 200w") or density descriptors (e.g. "1x, 2x").`);
   }
 }
 
-function assertUnderDensityCap(value: string) {
+function assertUnderDensityCap(dir: NgOptimizedImage, value: string) {
   const underDensityCap =
       value.split(',').every(num => num === '' || parseFloat(num) <= ABSOLUTE_SRCSET_DENSITY_CAP);
   if (!underDensityCap) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
-        `The NgOptimizedImage directive has detected that the \`rawSrcset\` contains an unsupported image density:` +
+        `${
+            imgDirectiveDetails(
+                dir.rawSrc)} the \`rawSrcset\` contains an unsupported image density:` +
             `\`${value}\`. NgOptimizedImage generally recommends a max image density of ` +
             `${RECOMMENDED_SRCSET_DENSITY_CAP}x but supports image densities up to ` +
             `${ABSOLUTE_SRCSET_DENSITY_CAP}x. The human eye cannot distinguish between image densities ` +
@@ -410,9 +407,10 @@ function assertUnderDensityCap(value: string) {
 function postInitInputChangeError(dir: NgOptimizedImage, inputName: string): {} {
   return new RuntimeError(
       RuntimeErrorCode.UNEXPECTED_INPUT_CHANGE,
-      `${imgDirectiveDetails(dir.rawSrc)} has detected that the \`${
-          inputName}\` is updated after the ` +
-          `initialization. The NgOptimizedImage directive will not react to this input change.`);
+      `${imgDirectiveDetails(dir.rawSrc)} \`${inputName}\` was updated after initialization. ` +
+          `The NgOptimizedImage directive will not react to this input change. ` +
+          `To fix this, switch \`${inputName}\` a static value or wrap the image element ` +
+          `in an *ngIf that is gated on the necessary value.`);
 }
 
 // Verify that none of the listed inputs has changed.
@@ -434,16 +432,17 @@ function assertNoPostInitInputChange(
 }
 
 // Verifies that a specified input is a number greater than 0.
-function assertGreaterThanZeroNumber(inputValue: unknown, inputName: string) {
+function assertGreaterThanZeroNumber(
+    dir: NgOptimizedImage, inputValue: unknown, inputName: string) {
   const validNumber = typeof inputValue === 'number' && inputValue > 0;
   const validString =
       typeof inputValue === 'string' && /^\d+$/.test(inputValue.trim()) && parseInt(inputValue) > 0;
   if (!validNumber && !validString) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
-        `The NgOptimizedImage directive has detected that the \`${inputName}\` has an invalid ` +
-            `value: expecting a number that represents the ${inputName} in pixels, but got: ` +
-            `\`${inputValue}\`.`);
+        `${imgDirectiveDetails(dir.rawSrc)} \`${inputName}\` has an invalid value ` +
+            `(\`${inputValue}\`). To fix this, provide \`${inputName}\` ` +
+            `as a number greater than 0.`);
   }
 }
 
@@ -480,26 +479,26 @@ function assertNoImageDistortion(
     if (inaccurateDimensions) {
       console.warn(formatRuntimeError(
           RuntimeErrorCode.INVALID_INPUT,
-          `${imgDirectiveDetails(dir.rawSrc)} has detected that the aspect ratio of the ` +
-              `image does not match the aspect ratio indicated by the width and height attributes. ` +
-              `Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h (aspect-ratio: ${
-                  intrinsicAspectRatio}). ` +
-              `Supplied width and height attributes: ${suppliedWidth}w x ${
-                  suppliedHeight}h (aspect-ratio: ${suppliedAspectRatio}). ` +
+          `${imgDirectiveDetails(dir.rawSrc)} the aspect ratio of the image does not match ` +
+              `the aspect ratio indicated by the width and height attributes. ` +
+              `Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h ` +
+              `(aspect-ratio: ${intrinsicAspectRatio}). Supplied width and height attributes: ` +
+              `${suppliedWidth}w x ${suppliedHeight}h (aspect-ratio: ${suppliedAspectRatio}). ` +
               `To fix this, update the width and height attributes.`));
     } else {
       if (stylingDistortion) {
         console.warn(formatRuntimeError(
             RuntimeErrorCode.INVALID_INPUT,
-            `${imgDirectiveDetails(dir.rawSrc)} has detected that the aspect ratio of the ` +
-                `rendered image does not match the image's intrinsic aspect ratio. ` +
-                `Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h (aspect-ratio: ${
-                    intrinsicAspectRatio}). ` +
-                `Rendered image size: ${renderedWidth}w x ${renderedHeight}h (aspect-ratio: ${
-                    renderedAspectRatio}). ` +
-                `This issue can occur if "width" and "height" attributes are added to an image ` +
-                `without updating the corresponding image styling. In most cases, ` +
-                `adding "height: auto" or "width: auto" to the image styling will fix this issue.`));
+            `${imgDirectiveDetails(dir.rawSrc)} the aspect ratio of the rendered image ` +
+                `does not match the image's intrinsic aspect ratio. ` +
+                `Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h ` +
+                `(aspect-ratio: ${intrinsicAspectRatio}). Rendered image size: ` +
+                `${renderedWidth}w x ${renderedHeight}h (aspect-ratio: ` +
+                `${renderedAspectRatio}). This issue can occur if "width" and "height" ` +
+                `attributes are added to an image without updating the corresponding ` +
+                `image styling. To fix this, adjust image styling. In most cases, ` +
+                `adding "height: auto" or "width: auto" to the image styling will fix ` +
+                `this issue.`));
       }
     }
   });
@@ -513,10 +512,10 @@ function assertNonEmptyWidthAndHeight(dir: NgOptimizedImage) {
   if (missingAttributes.length > 0) {
     throw new RuntimeError(
         RuntimeErrorCode.REQUIRED_INPUT_MISSING,
-        `${imgDirectiveDetails(dir.rawSrc)} has detected that these required attributes` +
-            ` are missing:\`${missingAttributes.join(',')}\`. Including "width" and "height" ` +
-            `attributes will prevent image-related layout shifts. Please include "width" and ` +
-            `"height" attributes on the image tag.`);
+        `${imgDirectiveDetails(dir.rawSrc)} these required attributes ` +
+            `are missing:\`${missingAttributes.join(',')}\`. ` +
+            `Including "width" and "height" attributes will prevent image-related layout shifts. ` +
+            `To fix this, include "width" and "height" attributes on the image tag.`);
   }
 }
 
@@ -526,17 +525,18 @@ function assertValidLoadingInput(dir: NgOptimizedImage) {
   if (dir.loading && dir.priority) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
-        `The NgOptimizedImage directive has detected that the \`loading\` attribute ` +
-            `was used on an image that was marked "priority". Images marked "priority" ` +
-            `are always eagerly loaded and this behavior cannot be overwritten by using ` +
-            `the "loading" attribute.`);
+        `${imgDirectiveDetails(dir.rawSrc)} the \`loading\` attribute ` +
+            `was used on an image that was marked "priority". ` +
+            `Setting \`loading\` on priority images is not allowed ` +
+            `because these images will always be eagerly loaded. ` +
+            `To fix this, remove the “loading” attribute from the priority image.`);
   }
   const validInputs = ['auto', 'eager', 'lazy'];
   if (typeof dir.loading === 'string' && !validInputs.includes(dir.loading)) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
-        `The NgOptimizedImage directive has detected that the \`loading\` attribute ` +
-            `has an invalid value: expecting "lazy", "eager", or "auto" but got: ` +
-            `\`${dir.loading}\`.`);
+        `${imgDirectiveDetails(dir.rawSrc)} the \`loading\` attribute ` +
+            `has an invalid value (\`${dir.loading}\`). ` +
+            `To fix this, provide a valid value ("lazy", "eager", or "auto").`);
   }
 }
