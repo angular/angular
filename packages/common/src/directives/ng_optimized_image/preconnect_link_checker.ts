@@ -102,10 +102,10 @@ export class PreconnectLinkChecker {
     if (!this.preconnectLinks.has(imgUrl.origin)) {
       console.warn(formatRuntimeError(
           RuntimeErrorCode.PRIORITY_IMG_MISSING_PRECONNECT_TAG,
-          `${imgDirectiveDetails(rawSrc)} has detected that this image ` +
-              `contains the "priority" attribute, but doesn't have a corresponding ` +
-              `preconnect tag. Please add the following element into ` +
-              `the <head> of the document to optimize loading of this image:\n` +
+          `${imgDirectiveDetails(rawSrc)} there is no preconnect tag present for this image. ` +
+              `Preconnecting to the origin(s) that serve priority images ensures that these ` +
+              `images are delivered as soon as possible. To fix this, please add the following ` +
+              `element into the <head> of the document:\n` +
               `  <link rel="preconnect" href="${imgUrl.origin}">`));
     }
   }
