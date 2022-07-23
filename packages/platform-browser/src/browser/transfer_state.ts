@@ -9,15 +9,29 @@
 import {DOCUMENT} from '@angular/common';
 import {APP_ID, inject, Injectable, NgModule} from '@angular/core';
 
-export function escapeHtml(text: string): string {
-  const escapedText: {[k: string]: string} = {
-    '&': '&a;',
-    '"': '&q;',
-    '\'': '&s;',
-    '<': '&l;',
-    '>': '&g;',
-  };
-  return text.replace(/[&"'<>]/g, s => escapedText[s]);
+const CONTENT_REGEX = /[&<]/g;
+
+/**
+ * Note: this method has been copied from Svelte and has been optimized
+ * https://github.com/sveltejs/svelte/pull/5701
+ */
+export function escapeHtml(text: string) {
+	const str = String(text);
+
+	const pattern = CONTENT_REGEX;
+	pattern.lastIndex = 0;
+
+	let escaped = '';
+	let last = 0;
+
+  while (pattern.test(str)) {
+    const i = pattern.lastIndex - 1;
+    const ch = str[i];
+    escaped += str.substring(last, i) + (ch === '&' ? '&amp;' : (ch === '"' ? '&quot;' : '&lt;'));
+    last = i + 1;
+  }
+
+	return escaped + str.substring(last);
 }
 
 export function unescapeHtml(text: string): string {
