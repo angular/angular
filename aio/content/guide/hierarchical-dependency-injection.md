@@ -32,7 +32,7 @@ With hierarchical dependency injection, you can isolate sections of the applicat
 Injectors in Angular have rules that you can leverage to
 achieve the desired visibility of injectables in your applications.
 By understanding these rules, you can determine in which
-NgModule, Component or Directive you should declare a provider.
+NgModule, Component, or Directive you should declare a provider.
 
 Angular has two injector hierarchies:
 
@@ -450,7 +450,7 @@ Now, in the `ChildComponent` class, add a provider for `FlowerService` to demons
 <code-example header="providers-viewproviders/src/app/child.component.ts" path="providers-viewproviders/src/app/child/child.component.1.ts" region="flowerservice"></code-example>
 
 Now that the `FlowerService` is provided in the `@Component()` decorator, when the `<app-child>` requests the service, the injector has only to look as far as the `ElementInjector` in the `<app-child>`.
-It won't have to continue the search any further through the injector tree.
+It b't have to continue the search any further through the injector tree.
 
 The next step is to add a binding to the `ChildComponent` template.
 
@@ -465,7 +465,7 @@ Emoji from FlowerService: &#x1F33B;
 
 </code-example>
 
-In the logical tree, this would be represented as follows:
+In the logical tree, this is represented as follows:
 
 <code-example format="html" language="html">
 
