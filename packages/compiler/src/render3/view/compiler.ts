@@ -117,7 +117,7 @@ function addFeatures(
     features.push(o.importExpr(R3.StandaloneFeature));
   }
   if (meta.hostDirectives?.length) {
-    features.push(o.importExpr(R3.HostDirectivesFeature).callFn([createHostDirectivesArray(
+    features.push(o.importExpr(R3.HostDirectivesFeature).callFn([createHostDirectivesFeatureArg(
         meta.hostDirectives)]));
   }
   if (features.length) {
@@ -832,30 +832,43 @@ function createHostDirectivesType(meta: R3DirectiveMetadata) {
   ]))));
 }
 
-export function createHostDirectivesArray(
+export function createHostDirectivesFeatureArg(
     hostDirectives: NonNullable<R3DirectiveMetadata['hostDirectives']>) {
-  return o.literalArr(hostDirectives.map(current => {
+  const expressions: o.Expression[] = [];
+  let hasForwardRef = false;
+
+  for (const current of hostDirectives) {
     // Use a shorthand if there are no inputs or outputs.
     if (!current.inputs && !current.outputs) {
-      return current.internalDirective;
-    }
+      expressions.push(current.directive.type);
+    } else {
+      const keys = [{key: 'directive', value: current.directive.type, quoted: false}];
 
-    const keys = [{key: 'directive', value: current.internalDirective, quoted: false}];
-
-    if (current.inputs) {
-      const inputsLiteral = conditionallyCreateMapObjectLiteral(current.inputs);
-      if (inputsLiteral) {
-        keys.push({key: 'inputs', value: inputsLiteral, quoted: false});
+      if (current.inputs) {
+        const inputsLiteral = conditionallyCreateMapObjectLiteral(current.inputs);
+        if (inputsLiteral) {
+          keys.push({key: 'inputs', value: inputsLiteral, quoted: false});
+        }
       }
-    }
 
-    if (current.outputs) {
-      const outputsLiteral = conditionallyCreateMapObjectLiteral(current.outputs);
-      if (outputsLiteral) {
-        keys.push({key: 'outputs', value: outputsLiteral, quoted: false});
+      if (current.outputs) {
+        const outputsLiteral = conditionallyCreateMapObjectLiteral(current.outputs);
+        if (outputsLiteral) {
+          keys.push({key: 'outputs', value: outputsLiteral, quoted: false});
+        }
       }
+
+      expressions.push(o.literalMap(keys));
     }
 
-    return o.literalMap(keys);
-  }));
+    if (current.isForwardReference) {
+      hasForwardRef = true;
+    }
+  }
+
+  // If there's a forward reference, we generate a `function() { return [HostDir] }`,
+  // otherwise we can save some bytes by using a plain array, e.g. `[HostDir]`.
+  return hasForwardRef ?
+      new o.FunctionExpr([], [new o.ReturnStatement(o.literalArr(expressions))]) :
+      o.literalArr(expressions);
 }

@@ -13,8 +13,7 @@ import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} f
 import {TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reexport, Reference, ReferenceEmitter, RelativePathStrategy} from '../../imports';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
-import {ClassPropertyMapping, CompoundMetadataReader, DirectiveMeta, LocalMetadataRegistry, MetadataReader, MetaKind} from '../../metadata';
-import {HostDirectivesResolver} from '../../metadata/src/host_directives_resolver';
+import {ClassPropertyMapping, CompoundMetadataReader, DirectiveMeta, HostDirectivesResolver, MatchSource, MetadataReader, MetaKind} from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
 import {TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
@@ -25,10 +24,9 @@ import {ProgramTypeCheckAdapter, TemplateDiagnostic, TemplateTypeChecker, TypeCh
 import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig} from '../api/api';
 import {TemplateTypeCheckerImpl} from '../src/checker';
 import {DomSchemaChecker} from '../src/dom';
-import {Environment} from '../src/environment';
 import {OutOfBandDiagnosticRecorder} from '../src/oob';
 import {TypeCheckShimGenerator} from '../src/shim';
-import {generateTypeCheckBlock, TcbGenericContextBehavior} from '../src/type_check_block';
+import {TcbGenericContextBehavior} from '../src/type_check_block';
 import {TypeCheckFile} from '../src/type_check_file';
 
 export function typescriptLibDts(): TestFile {
@@ -679,6 +677,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
     if (decl.type === 'directive') {
       scope.dependencies.push({
         kind: MetaKind.Directive,
+        matchSource: MatchSource.Selector,
         ref: new Reference(declClass),
         baseClass: null,
         name: decl.name,
@@ -710,6 +709,8 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
                         getSourceFileOrError(program, hostDecl.directive.file) :
                         sf,
                     hostDecl.directive.name)),
+                origin: sf,
+                isForwardReference: false,
                 inputs: ClassPropertyMapping.fromMappedObject(hostDecl.directive.inputs || {}),
                 outputs: ClassPropertyMapping.fromMappedObject(hostDecl.directive.outputs || {}),
               };

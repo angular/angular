@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, R3ClassMetadata, R3ComponentMetadata, R3TemplateDependency, R3TemplateDependencyMetadata, SchemaMetadata} from '@angular/compiler';
+import {AnimationTriggerNames, R3ClassMetadata, R3ComponentMetadata, R3TemplateDependencyMetadata, SchemaMetadata} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../../imports';
-import {ClassPropertyMapping, ComponentResources, DirectiveTypeCheckMeta} from '../../../metadata';
+import {ClassPropertyMapping, ComponentResources, DirectiveTypeCheckMeta, HostDirectiveMeta} from '../../../metadata';
 import {ClassDeclaration} from '../../../reflection';
 import {SubsetOfKeys} from '../../../util/src/typescript';
 
@@ -74,11 +74,7 @@ export interface ComponentAnalysisData {
   decorator: ts.Decorator|null;
 
   /** Additional directives applied to the component host. */
-  hostDirectives: {
-    directive: Reference<ClassDeclaration>,
-    inputs: ClassPropertyMapping|null,
-    outputs: ClassPropertyMapping|null
-  }[]|null;
+  hostDirectives: HostDirectiveMeta[]|null;
 }
 
 export type ComponentResolutionData =

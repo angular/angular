@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileDirectiveFromMetadata, ConstantPool, makeBindingParser, outputAst as o, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareHostDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostMetadata, R3PartialDeclaration, R3QueryMetadata} from '@angular/compiler';
+import {compileDirectiveFromMetadata, ConstantPool, makeBindingParser, outputAst as o, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareHostDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3PartialDeclaration, R3QueryMetadata} from '@angular/compiler';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {Range} from '../../ast/ast_host';
@@ -72,7 +72,7 @@ export function toR3DirectiveMeta<TExpression>(
     usesInheritance: metaObj.has('usesInheritance') ? metaObj.getBoolean('usesInheritance') : false,
     isStandalone: metaObj.has('isStandalone') ? metaObj.getBoolean('isStandalone') : false,
     hostDirectives: metaObj.has('hostDirectives') ?
-        toHostDirectivesMetadata(metaObj.getArray('hostDirectives')) :
+        toHostDirectivesMetadata(metaObj.getValue('hostDirectives')) :
         null,
   };
 }
@@ -161,8 +161,27 @@ function toQueryMetadata<TExpression>(obj: AstObject<R3DeclareQueryMetadata, TEx
  * Derives the host directives structure from the AST object.
  */
 function toHostDirectivesMetadata<TExpression>(
-    hostDirectives: AstValue<o.Expression|R3DeclareHostDirectiveMetadata, TExpression>[]) {
-  return hostDirectives.map(hostDirective => {
+    hostDirectives: AstValue<
+        (o.Expression | R3DeclareHostDirectiveMetadata)[]|o.FunctionExpr|undefined, TExpression>):
+    R3HostDirectiveMetadata[] {
+  let hostDirectivesArray: AstValue<o.Expression|R3DeclareHostDirectiveMetadata, TExpression>[];
+  let isForwardReference: boolean;
+
+  if (hostDirectives.isFunction()) {
+    isForwardReference = true;
+    hostDirectivesArray = (hostDirectives as unknown as AstValue<Function, TExpression>)
+                              .getFunctionReturnValue<any>()
+                              .getArray();
+  } else if (hostDirectives.isArray()) {
+    isForwardReference = false;
+    hostDirectivesArray = hostDirectives.getArray();
+  } else {
+    throw new FatalLinkerError(
+        hostDirectives.expression,
+        'Unsupported input, expected an array of host directives or a function that returns an array of host directives');
+  }
+
+  return hostDirectivesArray.map(hostDirective => {
     let type: o.WrappedNodeExpr<TExpression>;
     let inputs: R3DeclareHostDirectiveMetadata['inputs']|null;
     let outputs: R3DeclareHostDirectiveMetadata['outputs']|null;
@@ -181,12 +200,7 @@ function toHostDirectivesMetadata<TExpression>(
       inputs = outputs = null;
     }
 
-    return {
-      directive: wrapReference(type),
-      internalDirective: type,
-      inputs,
-      outputs,
-    };
+    return {directive: wrapReference(type), isForwardReference, inputs, outputs};
   });
 }
 

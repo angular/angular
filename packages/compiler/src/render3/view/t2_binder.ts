@@ -21,7 +21,7 @@ import {getAttrsForDirectiveMatching} from './util';
  * target.
  */
 export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetBinder<DirectiveT> {
-  constructor(private hostDirectivesResolver: SelectorMatcher<DirectiveT[]>) {}
+  constructor(private directiveMatcher: SelectorMatcher<DirectiveT[]>) {}
 
   /**
    * Perform a binding operation on the given `Target` and return a `BoundTarget` which contains
@@ -47,7 +47,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
     //     them. TODO(alxhub): handle multiple directives claiming an input/output/etc.
     //   - references: Map of #references to their targets.
     const {directives, bindings, references} =
-        DirectiveBinder.apply(target.template, this.hostDirectivesResolver);
+        DirectiveBinder.apply(target.template, this.directiveMatcher);
     // Finally, run the TemplateBinder to bind references, variables, and other entities within the
     // template. This extracts all the metadata that doesn't depend on directive matching.
     const {expressions, symbols, nestingLevel, usedPipes} =

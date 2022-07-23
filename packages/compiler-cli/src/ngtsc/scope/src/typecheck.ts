@@ -10,8 +10,7 @@ import {CssSelector, SchemaMetadata, SelectorMatcher} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {DirectiveMeta, flattenInheritedDirectiveMetadata, MetadataReader, MetaKind} from '../../metadata';
-import {HostDirectivesResolver} from '../../metadata/src/host_directives_resolver';
+import {DirectiveMeta, flattenInheritedDirectiveMetadata, HostDirectivesResolver, MetadataReader, MetaKind} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
 import {ComponentScopeKind, ComponentScopeReader} from './api';

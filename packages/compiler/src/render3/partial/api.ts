@@ -122,7 +122,7 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
   /**
    * Additional directives applied to the directive host.
    */
-  hostDirectives?: (o.Expression|R3DeclareHostDirectiveMetadata)[];
+  hostDirectives?: (o.Expression|R3DeclareHostDirectiveMetadata)[]|o.FunctionExpr;
 }
 
 /**

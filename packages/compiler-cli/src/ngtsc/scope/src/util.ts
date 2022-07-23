@@ -15,7 +15,7 @@ import {ClassDeclaration} from '../../reflection';
 import {ComponentScopeKind, ComponentScopeReader} from './api';
 
 export function getDiagnosticNode(
-    ref: Reference<ClassDeclaration>, rawExpr: ts.Expression|null): ts.Expression {
+    ref: Reference<ClassDeclaration>, rawExpr: ts.Expression|null): ts.Node {
   // Show the diagnostic on the node within `rawExpr` which references the declaration
   // in question. `rawExpr` represents the raw expression from which `ref` was partially evaluated,
   // so use that to find the right node. Note that by the type system, `rawExpr` might be `null`, so

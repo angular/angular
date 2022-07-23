@@ -12,6 +12,13 @@ import {DirectiveDef} from '../interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode} from '../interfaces/node';
 import {LView, TView} from '../interfaces/view';
 
+/** Values that can be used to define a host directive. */
+type HostDirectiveDefiniton = Type<unknown>|{
+  directive: Type<unknown>;
+  inputs?: InputsDefinition<unknown>;
+  outputs?: OutputsDefinition<unknown>;
+};
+
 /**
  * This feature add the host directives behavior to a directive definition by patching a
  * function onto it. The expectation is that the runtime will invoke the function during
@@ -32,12 +39,11 @@ import {LView, TView} from '../interfaces/view';
  *
  * @codeGenApi
  */
-export function ɵɵHostDirectivesFeature(rawHostDirectives: (Type<unknown>|{
-  directive: Type<unknown>,
-  inputs?: InputsDefinition<unknown>,
-  outputs?: OutputsDefinition<unknown>,
-})[]) {
-  const hostDirectives = rawHostDirectives.map(
+export function ɵɵHostDirectivesFeature(rawHostDirectives: HostDirectiveDefiniton[]|
+                                        (() => HostDirectiveDefiniton[])) {
+  const unwrappedHostDirectives =
+      Array.isArray(rawHostDirectives) ? rawHostDirectives : rawHostDirectives();
+  const hostDirectives = unwrappedHostDirectives.map(
       dir => typeof dir === 'function' ? {directive: dir, inputs: EMPTY_OBJ, outputs: EMPTY_OBJ} : {
         directive: dir.directive,
         inputs: invertObject(dir.inputs),

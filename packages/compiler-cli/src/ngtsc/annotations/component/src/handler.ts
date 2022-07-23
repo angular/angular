@@ -16,8 +16,7 @@ import {assertSuccessfulReferenceEmit, ImportedFile, ModuleResolver, Reference, 
 import {DependencyTracker} from '../../../incremental/api';
 import {extractSemanticTypeParameters, SemanticDepGraphUpdater} from '../../../incremental/semantic_graph';
 import {IndexingContext} from '../../../indexer';
-import {DirectiveMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaKind, PipeMeta, ResourceRegistry} from '../../../metadata';
-import {HostDirectivesResolver} from '../../../metadata/src/host_directives_resolver';
+import {DirectiveMeta, extractDirectiveTypeCheckMeta, HostDirectivesResolver, InjectableClassRegistry, MatchSource, MetadataReader, MetadataRegistry, MetaKind, PipeMeta, ResourceRegistry} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
@@ -471,6 +470,7 @@ export class ComponentDecoratorHandler implements
     const ref = new Reference(node);
     this.metaRegistry.registerDirectiveMetadata({
       kind: MetaKind.Directive,
+      matchSource: MatchSource.Selector,
       ref,
       name: node.name.text,
       selector: analysis.meta.selector,
@@ -668,7 +668,7 @@ export class ComponentDecoratorHandler implements
 
         switch (dep.kind) {
           case MetaKind.Directive:
-            if (!used.has(dep.ref.node)) {
+            if (!used.has(dep.ref.node) || dep.matchSource !== MatchSource.Selector) {
               continue;
             }
             const dirType = this.refEmitter.emit(dep.ref, context);
@@ -850,6 +850,13 @@ export class ComponentDecoratorHandler implements
         node, this.metaReader, this.evaluator, this.reflector, this.scopeRegistry, 'Component');
     if (directiveDiagnostics !== null) {
       diagnostics.push(...directiveDiagnostics);
+    }
+
+    const hostDirectivesDiagnotics = analysis.hostDirectives ?
+        this.hostDirectivesResolver.validate(analysis.hostDirectives) :
+        null;
+    if (hostDirectivesDiagnotics !== null) {
+      diagnostics.push(...hostDirectivesDiagnotics);
     }
 
     if (diagnostics.length > 0) {

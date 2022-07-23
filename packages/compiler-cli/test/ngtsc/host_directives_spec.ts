@@ -213,12 +213,10 @@ runInEachFileSystem(() => {
 
       expect(jsContents)
           .toContain(
-              'features: [i0.ɵɵHostDirectivesFeature([' +
-              'forwardRef(() => DirectiveB)])]');
+              'features: [i0.ɵɵHostDirectivesFeature(function () { return [DirectiveB]; })]');
       expect(jsContents)
           .toContain(
-              'features: [i0.ɵɵHostDirectivesFeature([{ ' +
-              'directive: forwardRef(() => DirectiveA), inputs: { value: "value" } }])]');
+              'features: [i0.ɵɵHostDirectivesFeature(function () { return [{ directive: DirectiveA, inputs: { value: "value" } }]; })]');
       expect(jsContents)
           .toContain(
               'ɵɵdefineDirective({ type: DirectiveA, ' +
@@ -295,9 +293,8 @@ runInEachFileSystem(() => {
       expect(jsContents).toContain(`import { DirectiveB } from './dir-b'`);
       expect(jsContents)
           .toContain(
-              'features: [i0.ɵɵHostDirectivesFeature([' +
-              'forwardRef(() => DirectiveA), { directive: forwardRef(() => DirectiveB), ' +
-              'inputs: { input: "inputAlias" } }])]');
+              'features: [i0.ɵɵHostDirectivesFeature(function () { ' +
+              'return [i1.DirectiveA, { directive: i2.DirectiveB, inputs: { input: "inputAlias" } }]; })]');
 
       expect(dtsContents).toContain('import * as i1 from "./dir-a";');
       expect(dtsContents).toContain('import * as i2 from "./dir-b";');
@@ -315,7 +312,7 @@ runInEachFileSystem(() => {
 
         export declare class ExternalDir {
           static ɵdir: ɵɵDirectiveDeclaration<ExternalDir, '[test]', never, never,
-            {input: "input"}, {output: "output"}, never, never, true, never>;
+            {input: "input"}, {output: "output"}, never, true, never>;
         }
       `);
 
@@ -334,10 +331,10 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain(`import { ExternalDir } from 'external';`);
+      expect(jsContents).toContain(`import * as i1 from "external";`);
       expect(jsContents)
           .toContain(
-              'features: [i0.ɵɵHostDirectivesFeature([{ directive: ExternalDir, ' +
+              'features: [i0.ɵɵHostDirectivesFeature([{ directive: i1.ExternalDir, ' +
               'inputs: { input: "inputAlias", output: "outputAlias" } }])]');
 
       expect(dtsContents).toContain('import * as i1 from "external";');
@@ -356,7 +353,7 @@ runInEachFileSystem(() => {
 
       env.write('node_modules/external/internal.d.ts', `
         export declare class InternalDir {
-          static ɵdir: ɵɵDirectiveDeclaration<ExternalDir, '[test]', never, never, {}, {}, never, never, true, never>;
+          static ɵdir: ɵɵDirectiveDeclaration<ExternalDir, '[test]', never, never, {}, {}, never, true, never>;
         }
       `);
 
@@ -375,8 +372,8 @@ runInEachFileSystem(() => {
       const jsContents = env.getContents('test.js');
       const dtsContents = env.getContents('test.d.ts');
 
-      expect(jsContents).toContain(`import { ExternalDir } from 'external';`);
-      expect(jsContents).toContain('features: [i0.ɵɵHostDirectivesFeature([ExternalDir])]');
+      expect(jsContents).toContain(`import * as i1 from "external";`);
+      expect(jsContents).toContain('features: [i0.ɵɵHostDirectivesFeature([i1.ExternalDir])]');
 
       expect(dtsContents).toContain('import * as i1 from "external";');
       expect(dtsContents)
@@ -395,33 +392,17 @@ runInEachFileSystem(() => {
         env.write('test.ts', `
           import {Directive, Component, NgModule} from '@angular/core';
 
-          @Directive({
-            selector: '[dir-a]'
-          })
+          @Directive()
           export class HostDir {}
 
           @Directive({
-            selector: '[dir]',
             hostDirectives: [HostDir],
           })
           export class Dir {}
-
-          @Component({
-            template: '<div dir></div>'
-          })
-          export class MyComp {}
-
-          @NgModule({
-            declarations: [HostDir, Dir, MyComp]
-          })
-          export class MyModule {}
         `);
 
         const messages = env.driveDiagnostics().map(extractMessage);
-
-        expect(messages).toEqual([
-          jasmine.stringContaining('Error: Host directive HostDir must be standalone'),
-        ]);
+        expect(messages).toEqual(['Host directive HostDir must be standalone']);
       });
 
       it('should throw if a host directive is a component', () => {
@@ -435,27 +416,13 @@ runInEachFileSystem(() => {
           export class HostComp {}
 
           @Directive({
-            selector: '[dir]',
             hostDirectives: [HostComp],
           })
           export class Dir {}
-
-          @Component({
-            template: '<div dir></div>'
-          })
-          export class MyComp {}
-
-          @NgModule({
-            declarations: [Dir, MyComp]
-          })
-          export class MyModule {}
         `);
 
         const messages = env.driveDiagnostics().map(extractMessage);
-
-        expect(messages).toEqual([
-          jasmine.stringContaining('Error: Host directive HostComp cannot be a component'),
-        ]);
+        expect(messages).toEqual(['Host directive HostComp cannot be a component']);
       });
 
       it('should throw if hostDirectives is not an array', () => {
@@ -505,6 +472,37 @@ runInEachFileSystem(() => {
 
         const messages = env.driveDiagnostics().map(extractMessage);
         expect(messages).toEqual(['Host directive reference must be a class']);
+      });
+
+      it('should only throw host directive error once in a chain of directives', () => {
+        env.write('test.ts', `
+          import {Directive, Component, NgModule} from '@angular/core';
+
+          @Directive({
+            selector: '[dir-b]',
+          })
+          export class HostDirB {}
+
+          @Directive({
+            selector: '[dir-a]',
+            standalone: true,
+            hostDirectives: [HostDirB]
+          })
+          export class HostDirA {}
+
+          @Component({
+            selector: '[dir]',
+            template: '',
+            hostDirectives: [HostDirA],
+          })
+          export class Host {}
+        `);
+
+        // What we're checking here is that the errors aren't produced recursively. If that were
+        // the case, the same error would show up more than once in the diagnostics since `HostDirB`
+        // is in the chain of both `Host` and `HostDirA`.
+        const messages = env.driveDiagnostics().map(extractMessage);
+        expect(messages).toEqual(['Host directive HostDirB must be standalone']);
       });
     });
   });

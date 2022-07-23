@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createMayBeForwardRefExpression, emitDistinctChangesOnlyDefaultValue, Expression, ExternalExpr, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3QueryMetadata, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {createMayBeForwardRefExpression, emitDistinctChangesOnlyDefaultValue, Expression, ExternalExpr, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3HostDirectiveMetadata, R3QueryMetadata, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
@@ -40,7 +40,7 @@ export function extractDirectiveMetadata(
   inputs: ClassPropertyMapping,
   outputs: ClassPropertyMapping,
   isStructural: boolean;
-  hostDirectives: null | HostDirectiveMeta[]
+  hostDirectives: HostDirectiveMeta[] | null
 }|undefined {
   let directive: Map<string, ts.Expression>;
   if (decorator === null || decorator.args === null || decorator.args.length === 0) {
@@ -188,7 +188,7 @@ export function extractDirectiveMetadata(
   const inputs = ClassPropertyMapping.fromMappedObject({...inputsFromMeta, ...inputsFromFields});
   const outputs = ClassPropertyMapping.fromMappedObject({...outputsFromMeta, ...outputsFromFields});
   const hostDirectives = directive.has('hostDirectives') ?
-      extractHostDirectives(directive.get('hostDirectives')!, evaluator, sourceFile, reflector) :
+      extractHostDirectives(directive.get('hostDirectives')!, evaluator) :
       null;
 
   const metadata: R3DirectiveMetadata = {
@@ -632,22 +632,15 @@ function evaluateHostExpressionBindings(
  * @param hostDirectivesExpression Expression that defined the `hostDirectives`.
  */
 function extractHostDirectives(
-    hostDirectivesExpression: ts.Expression, evaluator: PartialEvaluator, context: ts.SourceFile,
-    reflector: ReflectionHost) {
-  const resolved = evaluator.evaluate(hostDirectivesExpression);
+    hostDirectivesExpression: ts.Expression, evaluator: PartialEvaluator): HostDirectiveMeta[] {
+  const resolved = evaluator.evaluate(hostDirectivesExpression, forwardRefResolver);
   if (!Array.isArray(resolved)) {
     throw createValueHasWrongTypeError(
         hostDirectivesExpression, resolved, 'hostDirectives must be an array');
   }
 
   return resolved.map(value => {
-    let hostReference = value instanceof Map ? value.get('directive') : value;
-    let forwardRefNode: ts.Node|null = null;
-
-    if (hostReference instanceof DynamicValue && ts.isCallExpression(hostReference.node)) {
-      forwardRefNode = hostReference.node;
-      hostReference = evaluator.evaluate(hostReference.node, forwardRefResolver);
-    }
+    const hostReference = value instanceof Map ? value.get('directive') : value;
 
     if (!(hostReference instanceof Reference)) {
       throw createValueHasWrongTypeError(
@@ -661,8 +654,8 @@ function extractHostDirectives(
 
     return {
       directive: hostReference as Reference<ClassDeclaration>,
-      internalDirective: forwardRefNode || hostReference.getIdentityIn(context) ||
-          reflector.getInternalNameOfClass(hostReference.node),
+      isForwardReference: hostReference.synthetic,
+      origin: hostDirectivesExpression,
       inputs:
           parseHostDirectivesMapping('inputs', value, hostReference.node, hostDirectivesExpression),
       outputs: parseHostDirectivesMapping(
@@ -680,7 +673,7 @@ function extractHostDirectives(
  */
 function parseHostDirectivesMapping(
     field: 'inputs'|'outputs', resolvedValue: ResolvedValue, classReference: ClassDeclaration,
-    sourceExpression: ts.Expression) {
+    sourceExpression: ts.Expression): ClassPropertyMapping|null {
   if (resolvedValue instanceof Map && resolvedValue.has(field)) {
     const nameForErrors = `@Directive.hostDirectives.${classReference.name.text}.${field}`;
     const rawInputs = resolvedValue.get(field);
@@ -695,18 +688,13 @@ function parseHostDirectivesMapping(
 
 /** Converts the parsed host directive information into metadata. */
 function toHostDirectiveMetadata(
-    hostDirective: {
-      internalDirective: ts.Node,
-      directive: Reference<ClassDeclaration>,
-      inputs: ClassPropertyMapping|null,
-      outputs: ClassPropertyMapping|null
-    },
-    context: ts.SourceFile, refEmitter: ReferenceEmitter) {
+    hostDirective: HostDirectiveMeta, context: ts.SourceFile,
+    refEmitter: ReferenceEmitter): R3HostDirectiveMetadata {
   return {
-    internalDirective: new WrappedNodeExpr(hostDirective.internalDirective),
     directive: toR3Reference(
         hostDirective.directive.node, hostDirective.directive, hostDirective.directive, context,
         context, refEmitter),
+    isForwardReference: hostDirective.isForwardReference,
     inputs: hostDirective.inputs?.toJointMappedObject() || null,
     outputs: hostDirective.outputs?.toDirectMappedObject() || null
   };

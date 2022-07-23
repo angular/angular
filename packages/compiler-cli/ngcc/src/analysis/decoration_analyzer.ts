@@ -15,8 +15,7 @@ import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
 import {absoluteFromSourceFile, LogicalFileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
-import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../../src/ngtsc/metadata';
-import {HostDirectivesResolver} from '../../../src/ngtsc/metadata/src/host_directives_resolver';
+import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, HostDirectivesResolver, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../../src/ngtsc/perf';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../../src/ngtsc/scope';
@@ -128,7 +127,7 @@ export class DecorationAnalyzer {
         // in ngtsc, but we want to ensure compatibility in ngcc for outdated libraries that
         // have not migrated to explicit decorators. See: https://hackmd.io/@alx/ryfYYuvzH.
         /* compileUndecoratedClassesWithAngularFeatures */ true,
-        NOOP_PERF_RECORDER
+        NOOP_PERF_RECORDER, this.hostDirectivesResolver
     ) as DecoratorHandler<unknown, unknown, SemanticSymbol|null,unknown>,
     // clang-format on
     // Pipe handler must be before injectable handler in list so pipe factories are printed

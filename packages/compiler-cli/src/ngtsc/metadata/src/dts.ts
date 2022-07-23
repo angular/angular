@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {Reference} from '../../imports';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
 
-import {DirectiveMeta, HostDirectiveMeta, MetadataReader, MetaKind, NgModuleMeta, PipeMeta} from './api';
+import {DirectiveMeta, HostDirectiveMeta, MatchSource, MetadataReader, MetaKind, NgModuleMeta, PipeMeta} from './api';
 import {ClassPropertyMapping} from './property_mapping';
 import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readBooleanType, readMapType, readStringArrayType, readStringType} from './util';
 
@@ -105,6 +105,7 @@ export class DtsMetadataReader implements MetadataReader {
 
     return {
       kind: MetaKind.Directive,
+      matchSource: MatchSource.Selector,
       ref,
       name: clazz.name.text,
       isComponent,
@@ -196,28 +197,31 @@ function readBaseClass(clazz: ClassDeclaration, checker: ts.TypeChecker, reflect
 }
 
 
-function readHostDirectivesType(type: ts.TypeNode, checker: ts.TypeChecker) {
+function readHostDirectivesType(type: ts.TypeNode, checker: ts.TypeChecker): HostDirectiveMeta[]|
+    null {
   if (!ts.isTupleTypeNode(type) || type.elements.length === 0) {
     return null;
   }
 
-  const result = type.elements.reduce((results, hostDirType) => {
+  const result: HostDirectiveMeta[] = [];
+
+  for (const hostDirType of type.elements) {
     const def = readMapType(hostDirType, type => type);
 
     if (def.directive && ts.isTypeQueryNode(def.directive)) {
       const symbol = checker.getSymbolAtLocation(def.directive.exprName);
 
       if (symbol && symbol.valueDeclaration && isNamedClassDeclaration(symbol.valueDeclaration)) {
-        results.push({
+        result.push({
           directive: new Reference(symbol.valueDeclaration),
+          origin: type,
+          isForwardReference: false,
           inputs: ClassPropertyMapping.fromMappedObject(readMapType(def.inputs, readStringType)),
           outputs: ClassPropertyMapping.fromMappedObject(readMapType(def.outputs, readStringType))
         });
       }
     }
-
-    return results;
-  }, [] as HostDirectiveMeta[]);
+  }
 
   return result.length ? result : null;
 }

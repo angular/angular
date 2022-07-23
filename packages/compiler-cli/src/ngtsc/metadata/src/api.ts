@@ -113,10 +113,24 @@ export enum MetaKind {
 }
 
 /**
+ * Possible ways that a directive can be matched.
+ */
+export enum MatchSource {
+  /** The directive was matched by its selector. */
+  Selector,
+
+  /** The directive was applied as a host directive. */
+  HostDirective,
+}
+
+/**
  * Metadata collected for a directive within an NgModule's scope.
  */
 export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
   kind: MetaKind.Directive;
+
+  /** Way in which the directive was matched. */
+  matchSource: MatchSource;
 
   ref: Reference<ClassDeclaration>;
   /**
@@ -182,8 +196,19 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
 
 /** Metadata collected about an additional directive that is being applied to a directive host. */
 export interface HostDirectiveMeta {
+  /** Reference to the host directive class. */
   directive: Reference<ClassDeclaration>;
+
+  /** Node in which the host directive was declared. Used for diagnostics. */
+  origin: ts.Node;
+
+  /** Whether the reference to the host directive is a forward reference. */
+  isForwardReference: boolean;
+
+  /** Inputs from the host directive that have been exposed. */
   inputs: ClassPropertyMapping|null;
+
+  /** Outputs from the host directive that have been exposed. */
   outputs: ClassPropertyMapping|null;
 }
 
