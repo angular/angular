@@ -55,7 +55,7 @@
   "standalone-bootstrap": {
     "uncompressed": {
       "runtime": 1090,
-      "main": 83515,
+      "main": 84051,
       "polyfills": 33945
     }
   },

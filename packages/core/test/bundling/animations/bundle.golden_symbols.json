@@ -114,6 +114,9 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "ChangeDetectorRef"
+  },
+  {
     "name": "CommonModule"
   },
   {
@@ -196,6 +199,9 @@
   },
   {
     "name": "ElementRef"
+  },
+  {
+    "name": "EmbeddedViewRef"
   },
   {
     "name": "EmulatedEncapsulationDomRenderer2"
@@ -387,6 +393,9 @@
     "name": "RootComponent"
   },
   {
+    "name": "RootViewRef"
+  },
+  {
     "name": "RuntimeError"
   },
   {
@@ -484,6 +493,12 @@
   },
   {
     "name": "ViewEncapsulation"
+  },
+  {
+    "name": "ViewRef"
+  },
+  {
+    "name": "ViewRef2"
   },
   {
     "name": "WebAnimationsPlayer"
@@ -934,6 +949,9 @@
   },
   {
     "name": "injectArgs"
+  },
+  {
+    "name": "injectChangeDetectorRef"
   },
   {
     "name": "injectElementRef"

@@ -192,6 +192,9 @@
     "name": "ElementRef"
   },
   {
+    "name": "EmbeddedViewRef"
+  },
+  {
     "name": "EmptyError"
   },
   {
@@ -751,6 +754,9 @@
   },
   {
     "name": "ViewRef"
+  },
+  {
+    "name": "ViewRef2"
   },
   {
     "name": "ViewportScroller"

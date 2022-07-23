@@ -26,12 +26,12 @@ import {destroyLView, detachView, renderDetachView} from './node_manipulation';
 // the multiple @extends by making the annotation @implements instead
 export interface viewEngine_ChangeDetectorRef_interface extends viewEngine_ChangeDetectorRef {}
 
-export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_InternalViewRef,
-                                   viewEngine_ChangeDetectorRef_interface {
+export class ViewRef<T> extends viewEngine_EmbeddedViewRef<T> implements
+    viewEngine_InternalViewRef, viewEngine_ChangeDetectorRef_interface {
   private _appRef: ViewRefTracker|null = null;
   private _attachedToViewContainer = false;
 
-  get rootNodes(): any[] {
+  override get rootNodes(): any[] {
     const lView = this._lView;
     const tView = lView[TVIEW];
     return collectNativeNodes(tView, lView, tView.firstChild, []);
@@ -57,21 +57,23 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
        *
        * This may be different from `_lView` if the `_cdRefInjectingView` is an embedded view.
        */
-      private _cdRefInjectingView?: LView) {}
+      private _cdRefInjectingView?: LView) {
+    super();
+  }
 
-  get context(): T {
+  override get context(): T {
     return this._lView[CONTEXT] as unknown as T;
   }
 
-  set context(value: T) {
+  override set context(value: T) {
     this._lView[CONTEXT] = value as unknown as {};
   }
 
-  get destroyed(): boolean {
+  override get destroyed(): boolean {
     return (this._lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
   }
 
-  destroy(): void {
+  override destroy(): void {
     if (this._appRef) {
       this._appRef.detachView(this);
     } else if (this._attachedToViewContainer) {
@@ -93,7 +95,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
     destroyLView(this._lView[TVIEW], this._lView);
   }
 
-  onDestroy(callback: Function) {
+  override onDestroy(callback: Function) {
     storeCleanupWithContext(this._lView[TVIEW], this._lView, null, callback);
   }
 
@@ -128,7 +130,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * }
    * ```
    */
-  markForCheck(): void {
+  override markForCheck(): void {
     markViewDirty(this._cdRefInjectingView || this._lView);
   }
 
@@ -185,7 +187,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * }
    * ```
    */
-  detach(): void {
+  override detach(): void {
     this._lView[FLAGS] &= ~LViewFlags.Attached;
   }
 
@@ -245,7 +247,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * }
    * ```
    */
-  reattach(): void {
+  override reattach(): void {
     this._lView[FLAGS] |= LViewFlags.Attached;
   }
 
@@ -270,7 +272,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    *
    * See {@link ChangeDetectorRef#detach detach} for more information.
    */
-  detectChanges(): void {
+  override detectChanges(): void {
     detectChangesInternal(this._lView[TVIEW], this._lView, this.context as unknown as {});
   }
 
@@ -280,7 +282,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * This is used in development mode to verify that running change detection doesn't
    * introduce other changes.
    */
-  checkNoChanges(): void {
+  override checkNoChanges(): void {
     if (ngDevMode) {
       checkNoChangesInternal(this._lView[TVIEW], this._lView, this.context as unknown as {});
     }

@@ -8,7 +8,7 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {computeMsgId} from '@angular/compiler';
-import {ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, InjectionToken, Injector, Input, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, OnInit, Pipe, PipeTransform, QueryList, Renderer2, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
+import {ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, ComponentRef, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, InjectionToken, Injector, Input, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, OnInit, Pipe, PipeTransform, QueryList, Renderer2, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {ComponentFixture, TestBed, TestComponentRenderer} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
@@ -1226,6 +1226,20 @@ describe('ViewContainerRef', () => {
           .toEqual(
               '<child vcref="">**A**</child><child>**C**</child><child>**C**</child><child>**B**</child>');
     });
+
+    it('should return an EmbeddedViewRef instance', () => {
+      @Component({template: `<ng-template vcref #tplRef [tplRef]="tplRef"></ng-template>`})
+      class TestComponent {
+        @ViewChild(VCRefDirective, {static: true}) vcRef!: VCRefDirective;
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent, VCRefDirective]});
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      const ref = fixture.componentInstance.vcRef.createView('');
+
+      expect(ref instanceof EmbeddedViewRef).toBe(true);
+    });
   });
 
   describe('createComponent', () => {
@@ -1687,6 +1701,24 @@ describe('ViewContainerRef', () => {
                   '[Child Component A]');
         });
       });
+    });
+
+    it('should return an instance of ComponentRef', () => {
+      @Component({selector: 'app', template: ''})
+      class App {
+        constructor(public viewContainerRef: ViewContainerRef, public injector: Injector) {}
+      }
+
+      @Component({template: ''})
+      class Child {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Child]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const ref = fixture.componentInstance.viewContainerRef.createComponent(Child);
+
+      expect(ref instanceof ComponentRef).toBe(true);
     });
   });
 

@@ -27,6 +27,9 @@
     "name": "CLEAN_PROMISE"
   },
   {
+    "name": "ChangeDetectorRef"
+  },
+  {
     "name": "ComponentFactory"
   },
   {
@@ -64,6 +67,9 @@
   },
   {
     "name": "ElementRef"
+  },
+  {
+    "name": "EmbeddedViewRef"
   },
   {
     "name": "EnvironmentInjector"
@@ -198,6 +204,9 @@
     "name": "RefCountSubscriber"
   },
   {
+    "name": "RootViewRef"
+  },
+  {
     "name": "RuntimeError"
   },
   {
@@ -247,6 +256,12 @@
   },
   {
     "name": "ViewEncapsulation"
+  },
+  {
+    "name": "ViewRef"
+  },
+  {
+    "name": "ViewRef2"
   },
   {
     "name": "_DOM"
@@ -516,6 +531,9 @@
     "name": "injectArgs"
   },
   {
+    "name": "injectChangeDetectorRef"
+  },
+  {
     "name": "injectElementRef"
   },
   {
@@ -544,6 +562,9 @@
   },
   {
     "name": "isComponentDef"
+  },
+  {
+    "name": "isComponentHost"
   },
   {
     "name": "isFunction"

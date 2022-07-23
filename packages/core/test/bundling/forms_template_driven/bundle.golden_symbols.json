@@ -156,6 +156,9 @@
     "name": "ElementRef"
   },
   {
+    "name": "EmbeddedViewRef"
+  },
+  {
     "name": "EmulatedEncapsulationDomRenderer2"
   },
   {
@@ -499,6 +502,9 @@
   },
   {
     "name": "ViewRef"
+  },
+  {
+    "name": "ViewRef2"
   },
   {
     "name": "_DOM"
