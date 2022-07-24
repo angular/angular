@@ -136,6 +136,7 @@ export async function runOneBuild(
     'i18nInMissingTranslations',
     'preserveWhitespaces',
     'createExternalSymbolFactoryReexports',
+    'extendedDiagnostics',
   ]);
 
   const userOverrides = Object.entries(userOptions)
