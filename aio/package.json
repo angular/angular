@@ -173,7 +173,6 @@
     "semver": "^7.3.5",
     "shelljs": "^0.8.5",
     "stemmer": "^2.0.0",
-    "timezone-mock": "^1.1.3",
     "tree-kill": "^1.1.0",
     "ts-node": "^10.8.1",
     "tsec": "^0.2.2",
