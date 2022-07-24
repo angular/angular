@@ -90,7 +90,6 @@ TEST_DEPS = APPLICATION_DEPS + [
     "@aio_npm//karma-jasmine",
     "@aio_npm//karma-jasmine-html-reporter",
     "@aio_npm//puppeteer",
-    "@aio_npm//timezone-mock",
 ]
 
 architect(

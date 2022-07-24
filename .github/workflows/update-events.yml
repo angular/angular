@@ -1,0 +1,42 @@
+name: Update AIO events
+
+on:
+  workflow_dispatch:
+    inputs: {}
+  schedule:
+    # Run every day at 15:00.
+    - cron: 0 15 * * *
+
+# Declare default permissions as read only.
+permissions:
+  contents: read
+
+jobs:
+  update_events:
+    name: Update `events.json` (if necessary)
+    if: github.repository == 'angular/angular'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
+        with:
+          # Setting `persist-credentials: false` prevents the github-action account from being the
+          # account that is attempted to be used for authentication, instead the remote is set to
+          # an authenticated URL.
+          persist-credentials: false
+      - name: Install AIO dependencies
+        run: yarn --cwd=aio install
+      - name: Generate `events.json`
+        run: node aio/scripts/generate-events/index.mjs --ignore-invalid-dates
+      - name: Create a PR (if necessary)
+        uses: gkalpak/dev-infra/github-actions/create-pr-for-changes@88c198ae1a3462223cb5c1e83338e4b94b435283
+        with:
+          branch-prefix: docs-update-events
+          pr-title: 'docs: update events'
+          pr-description: |
+            Generated `events.json` with the latest events retrieved from the Firebase DB.
+          pr-labels: |
+            action: review
+            comp: docs
+            target: patch
+          angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}

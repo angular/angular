@@ -11596,11 +11596,6 @@ timers-ext@^0.1.7:
     es5-ext "~0.10.46"
     next-tick "1"
 
-timezone-mock@^1.1.3:
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/timezone-mock/-/timezone-mock-1.3.4.tgz#16cc40bfad10d461f8a41ed7396eeb6ea1e1b2b3"
-  integrity sha512-B0CGmOgMPVUZqp63eU/FGcDaL68JjHeiVnCF24K99Kj6AwCV15BHWMLCv8ZKSUq5oyVHTtg7p1ajOWfXB+0wnQ==
-
 title-case@^2.1.0:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/title-case/-/title-case-2.1.1.tgz#3e127216da58d2bc5becf137ab91dae3a7cd8faa"
