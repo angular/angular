@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { ConnectableObservable, Observable, of } from 'rxjs';
 import { catchError, publishLast } from 'rxjs/operators';
 
-import { Event } from './events.component';
+import { AngularEvent } from './events.component';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 import { Logger } from 'app/shared/logger.service';
 
@@ -12,7 +12,7 @@ const eventsPath = CONTENT_URL_PREFIX + 'events.json';
 
 @Injectable()
 export class EventsService {
-  events: Observable<Event[]>;
+  events: Observable<AngularEvent[]>;
 
   constructor(private http: HttpClient, private logger: Logger) {
     this.events = this.getEvents();
@@ -26,7 +26,7 @@ export class EventsService {
       }),
       publishLast()
     );
-    (events as ConnectableObservable<Event[]>).connect();
+    (events as ConnectableObservable<AngularEvent[]>).connect();
     return events;
   }
 }
