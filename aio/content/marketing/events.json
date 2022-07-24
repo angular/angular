@@ -1,337 +1,1099 @@
 [
-   {
-    "name": "NG Poland",
-    "location": "Warsaw, Poland",
-    "linkUrl": "https://ng-poland.pl/",
+  {
     "date": {
-      "start": "2022-10-25",
-      "end": "2022-10-25"
+      "start": "2019-01-09"
     },
-    "workshopsDate": {
-      "start": "2022-10-24",
-      "end": "2022-10-24"
-    }
+    "name": "ngAtl"
   },
   {
-    "name": "JS Poland",
-    "location": "Warsaw, Poland",
-    "linkUrl": "https://js-poland.pl/",
     "date": {
-      "start": "2022-10-26",
-      "end": "2022-10-26"
+      "start": "2019-02-23"
     },
-    "workshopsDate": {
-      "start": "2022-10-24",
-      "end": "2022-10-24"
-    }
+    "name": "ngIndia"
   },
   {
-    "name": "NG-DE",
-    "location": "Berlin, Germany",
-    "linkUrl": "https://ng-de.org/",
     "date": {
-      "start": "2022-10-06",
-      "end": "2022-10-07"
+      "start": "2019-03-07"
     },
-    "workshopsDate": {
-      "start": "2022-10-05",
-      "end": "2022-10-05"
-    }
+    "name": "MVPMix"
   },
   {
-    "name": "ng-conf",
-    "location": " Salt Lake City, Utah or Online",
-    "linkUrl": "https://2022.ng-conf.org/",
     "date": {
-      "start": "2022-08-31",
-      "end": "2022-09-02"
+      "start": "2019-04-05"
     },
-    "workshopsDate": {
-      "start": "2022-08-29",
-      "end": "2022-08-30"
-    }
+    "name": "JSFest"
   },
   {
-    "name": "ngIndia",
-    "location": "Delhi, India",
-    "linkUrl": "https://www.ng-ind.com/",
     "date": {
-      "start": "2022-05-21",
-      "end": "2022-05-21"
-    }
-  },
-  {
-    "name": "Angular Global Summit",
-    "location": "Online",
-    "linkUrl": "https://link.geekle.us/angular/offsite",
-    "date": {
-      "start": "2022-03-29",
-      "end": "2022-03-30"
-    }
-  },
-  {
-    "name": "Angular Global Summit",
-    "location": "Online",
-    "linkUrl": "https://link.geekle.us/angular/offsite",
-    "date": {
-      "start": "2021-06-01",
-      "end": "2021-06-02"
-    }
-  },
-  {
-    "name": "ng-conf",
-    "location": "Online",
-    "linkUrl": "https://www.2021.ng-conf.org/",
-    "date": {
-      "start": "2021-04-22",
-      "end": "2021-04-23"
+      "start": "2019-04-09"
     },
-    "workshopsDate": {
-      "start": "2021-04-12",
-      "end": "2021-04-15"
-    }
+    "name": "Google Cloud Next"
   },
   {
-    "name": "ng-china",
-    "location": "Online",
-    "linkUrl": "https://ng-china.org/",
     "date": {
-      "start": "2020-11-21",
-      "end": "2020-11-22"
-    }
-  },
-  {
-    "name": "EnterpriseNG",
-    "location": "Online",
-    "linkUrl": "https://www.ng-conf.org/",
-    "date": {
-      "start": "2020-11-19",
-      "end": "2020-11-20"
-    }
-  },
-  {
-    "name": "ngrome",
-    "location": "Online",
-    "linkUrl": "https://ngrome.io/",
-    "date": {
-      "start": "2020-10-20",
-      "end": "2020-10-20"
-    }
-  },
-  {
-    "name": "DevReach",
-    "location": "Online",
-    "linkUrl": "https://www.telerik.com/devreach/online/agenda-thursday#sessions",
-    "date": {
-      "start": "2020-10-19",
-      "end": "2020-10-23"
-    }
-  },
-  {
-    "name": "ngVikings",
-    "location": "Oslo, Norway",
-    "linkUrl": "https://ngvikings.org/",
-    "date": {
-      "start": "2020-05-25",
-      "end": "2020-05-26"
+      "start": "2019-04-13"
     },
-    "workshopsDate": {
-      "start": "2020-05-27",
-      "end": "2020-05-27"
-    }
+    "name": "IT-KONEKT"
   },
   {
-    "name": "ng-conf",
-    "location": "Salt Lake City, Utah",
-    "linkUrl": "https://ng-conf.org/",
     "date": {
-      "start": "2020-04-01",
-      "end": "2020-04-03"
-    }
-  },
-  {
-    "name": "ngIndia",
-    "location": "Delhi, India",
-    "linkUrl": "https://www.ng-ind.com/",
-    "date": {
-      "start": "2020-02-29",
-      "end": "2020-02-29"
-    }
-  },
-  {
-    "name": "ReactiveConf",
-    "location": "Prague, Czech Republic",
-    "linkUrl": "https://reactiveconf.com/",
-    "date": {
-      "start": "2019-10-30",
-      "end": "2019-11-01"
-    }
-  },
-  {
-    "name": "NG Rome MMXIX",
-    "location": "Rome, Italy",
-    "linkUrl": "https://ngrome.io",
-    "tooltip": "NG Rome MMXIX - The Italian Angular Conference",
-    "date": {
-      "start": "2019-10-07",
-      "end": "2019-10-07"
+      "start": "2019-05-01"
     },
-    "workshopsDate": {
-      "start": "2019-10-06",
-      "end": "2019-10-06"
-    }
+    "name": "ng-conf"
   },
   {
-    "name": "AngularConnect",
-    "location": "London, UK",
-    "linkUrl": "https://www.angularconnect.com/?utm_source=angular.io&utm_medium=referral",
     "date": {
-      "start": "2019-09-19",
-      "end": "2019-09-20"
-    }
-  },
-  {
-    "name": "NG-DE",
-    "location": "Berlin, Germany",
-    "linkUrl": "https://ng-de.org/",
-    "date": {
-      "start": "2019-08-30",
-      "end": "2019-08-31"
+      "start": "2019-05-07"
     },
-    "workshopsDate": {
-      "start": "2019-08-29",
-      "end": "2019-08-29"
-    }
+    "name": "Google I/O"
   },
   {
-    "name": "ng-japan",
-    "location": "Tokyo, Japan",
-    "linkUrl": "https://ngjapan.org/",
     "date": {
-      "start": "2019-07-13",
-      "end": "2019-07-13"
-    }
-  },
-  {
-    "name": "ngVikings",
-    "location": "Copenhagen, Denmark",
-    "linkUrl": "https://ngvikings.org/",
-    "date": {
-      "start": "2019-05-27",
-      "end": "2019-05-28"
+      "start": "2019-05-16"
     },
-    "workshopsDate": {
-      "start": "2019-05-26",
-      "end": "2019-05-26"
-    }
+    "name": "FullStack"
   },
   {
-    "name": "ng-conf",
-    "location": "Salt Lake City, Utah",
-    "linkUrl": "https://ng-conf.org/",
     "date": {
-      "start": "2019-05-01",
-      "end": "2019-05-03"
-    }
+      "start": "2019-05-26"
+    },
+    "name": "ng-vikings"
   },
   {
-    "name": "ng-India",
-    "location": "Gurgaon, India",
-    "linkUrl": "https://www.ng-ind.com/",
     "date": {
-      "start": "2019-02-23",
-      "end": "2019-02-23"
-    }
+      "start": "2019-06-06"
+    },
+    "name": "WeRDevs"
   },
   {
-    "name": "ngAtlanta",
-    "location": "Atlanta, Georgia",
-    "linkUrl": "https://ng-atl.org/",
     "date": {
-      "start": "2019-01-09",
-      "end": "2019-01-12"
-    }
+      "start": "2019-06-07"
+    },
+    "name": "JSNation"
   },
   {
-    "name": "AngularConnect",
-    "location": "London, United Kingdom",
-    "linkUrl": "https://past.angularconnect.com/2018",
     "date": {
-      "start": "2018-11-05",
-      "end": "2018-11-07"
-    }
+      "start": "2019-06-11"
+    },
+    "name": "AngularMix @ DevInt"
   },
   {
-    "name": "ReactiveConf",
-    "location": "Prague, Czech Republic",
-    "linkUrl": "https://reactiveconf.com/",
     "date": {
-      "start": "2018-10-29",
-      "end": "2018-10-31"
-    }
+      "start": "2019-06-12"
+    },
+    "name": "AngularUp"
   },
   {
-    "name": "AngularMix",
-    "location": "Orlando, Florida",
-    "linkUrl": "https://angularmix.com/",
     "date": {
-      "start": "2018-10-10",
-      "end": "2018-10-12"
-    }
+      "start": "2019-06-19"
+    },
+    "name": "Developer Week NYC"
   },
   {
-    "name": "Angular Conf Australia",
-    "location": "Melbourne, Australia",
-    "linkUrl": "https://www.angularconf.com.au/",
     "date": {
-      "start": "2018-06-22",
-      "end": "2018-06-22"
-    }
+      "start": "2019-07-06"
+    },
+    "name": "ng-MY"
   },
   {
-    "name": "ng-japan",
-    "location": "Tokyo, Japan",
-    "linkUrl": "https://ngjapan.org/en.html",
     "date": {
-      "start": "2018-06-16",
-      "end": "2018-06-16"
-    }
+      "start": "2019-07-13"
+    },
+    "name": "ng-Japan"
   },
   {
-    "name": "WeAreDevelopers",
-    "location": "Vienna, Austria",
-    "linkUrl": "https://www.wearedevelopers.com/",
-    "tooltip": "WeAreDevs",
     "date": {
-      "start": "2018-05-16",
-      "end": "2018-05-18"
-    }
+      "start": "2019-08-01"
+    },
+    "name": "Angular Denver"
   },
   {
-    "name": "ng-conf",
-    "location": "Salt Lake City, Utah",
-    "linkUrl": "https://ng-conf.org/",
     "date": {
-      "start": "2018-04-18",
-      "end": "2018-04-20"
-    }
+      "start": "2019-08-31"
+    },
+    "name": "buildersconf"
   },
   {
-    "name": "ngVikings",
-    "location": "Helsinki, Finland",
-    "linkUrl": "https://ngvikings.org/",
     "date": {
-      "start": "2018-03-01",
-      "end": "2018-03-02"
-    }
+      "start": "2019-09-19"
+    },
+    "name": "Angular Connect"
   },
   {
-    "name": "ngAtlanta",
-    "location": "Atlanta, Georgia",
-    "linkUrl": "https://ng-atl.org/",
     "date": {
-      "start": "2018-01-30",
-      "end": "2018-01-30"
-    }
+      "start": "2019-08-11"
+    },
+    "name": "JSConf US"
+  },
+  {
+    "date": {
+      "start": "2019-10-07"
+    },
+    "name": "ngRome"
+  },
+  {
+    "date": {
+      "start": "2019-10-16"
+    },
+    "name": "Connect Tech"
+  },
+  {
+    "date": {
+      "start": "2019-10-21"
+    },
+    "name": "NWA Tech Summit"
+  },
+  {
+    "date": {
+      "start": "2019-10-27"
+    },
+    "name": "GDE Summit"
+  },
+  {
+    "date": {
+      "start": "2019-11-04"
+    },
+    "name": "Devoxx BE"
+  },
+  {
+    "date": {
+      "start": "2019-11-11"
+    },
+    "name": "Chrome Dev Summit"
+  },
+  {
+    "date": {
+      "start": "2019-11-14"
+    },
+    "name": "ISTA"
+  },
+  {
+    "date": {
+      "start": "2019-11-18"
+    },
+    "name": "DevIntersections Vegas"
+  },
+  {
+    "date": {
+      "start": "2019-11-21"
+    },
+    "name": "ngPoland"
+  },
+  {
+    "date": {
+      "start": "2019-11-22"
+    },
+    "name": "jsPoland"
+  },
+  {
+    "date": {
+      "start": "2019-11-23"
+    },
+    "name": "ngChina"
+  },
+  {
+    "date": {
+      "start": "2019-11-23"
+    },
+    "name": "jsTalks"
+  },
+  {
+    "date": {
+      "start": "2019-11-26"
+    },
+    "name": "FrontEnd Con"
+  },
+  {
+    "date": {
+      "start": "2019-12-05"
+    },
+    "name": "ng-BE"
+  },
+  {
+    "date": {
+      "start": "2020-02-23"
+    },
+    "name": "ngIndia"
+  },
+  {
+    "date": {
+      "start": "2020-04-01"
+    },
+    "name": "ng-conf"
+  },
+  {
+    "date": {
+      "start": "2020-04-07"
+    },
+    "name": "Angular Toronto"
+  },
+  {
+    "date": {
+      "start": "2020-04-09"
+    },
+    "name": "Angular Sydney"
+  },
+  {
+    "date": {
+      "start": "2020-04-15"
+    },
+    "name": "SofiaJS"
+  },
+  {
+    "date": {
+      "start": "2020-05-07"
+    },
+    "name": "JS Vidcon"
+  },
+  {
+    "date": {
+      "start": "2020-05-07"
+    },
+    "name": "GDG Indore"
+  },
+  {
+    "date": {
+      "start": "2020-05-14"
+    },
+    "name": "ngMorocco"
+  },
+  {
+    "date": {
+      "start": "2020-05-15"
+    },
+    "name": "Web Day"
+  },
+  {
+    "date": {
+      "start": "2020-05-20"
+    },
+    "name": "Warsaw meetup"
+  },
+  {
+    "date": {
+      "start": "2020-05-25"
+    },
+    "name": "ngVikings"
+  },
+  {
+    "date": {
+      "start": "2020-06-02"
+    },
+    "name": "JNation"
+  },
+  {
+    "date": {
+      "start": "2020-06-10"
+    },
+    "name": "Angular Uruguay"
+  },
+  {
+    "date": {
+      "start": "2020-06-15"
+    },
+    "name": "ngTurkey"
+  },
+  {
+    "date": {
+      "start": "2020-06-17"
+    },
+    "name": "Angular San Diego"
+  },
+  {
+    "date": {
+      "start": "2020-06-18"
+    },
+    "name": "JSNation"
+  },
+  {
+    "date": {
+      "start": "2020-06-19"
+    },
+    "name": "GDG Reading"
+  },
+  {
+    "date": {
+      "start": "2020-06-22"
+    },
+    "name": "Angular Israel"
+  },
+  {
+    "date": {
+      "start": "2020-06-24"
+    },
+    "name": "ngHeidelberg"
+  },
+  {
+    "date": {
+      "start": "2020-06-25"
+    },
+    "name": "Angular Seattle (Reactive)"
+  },
+  {
+    "date": {
+      "start": "2020-06-25"
+    },
+    "name": "Angular Belarus"
+  },
+  {
+    "date": {
+      "start": "2020-06-26"
+    },
+    "name": "Kulkul Workshop"
+  },
+  {
+    "date": {
+      "start": "2020-07-01"
+    },
+    "name": "Angular Rome"
+  },
+  {
+    "date": {
+      "start": "2020-07-08"
+    },
+    "name": "Angular Birmingham"
+  },
+  {
+    "date": {
+      "start": "2020-07-08"
+    },
+    "name": "Angular-IL"
+  },
+  {
+    "date": {
+      "start": "2020-07-09"
+    },
+    "name": "Angular Bogota"
+  },
+  {
+    "date": {
+      "start": "2020-07-10"
+    },
+    "name": "web.dev Live India"
+  },
+  {
+    "date": {
+      "start": "2020-07-13"
+    },
+    "name": "Angular Kansas City"
+  },
+  {
+    "date": {
+      "start": "2020-07-14"
+    },
+    "name": "Angular MTV online"
+  },
+  {
+    "date": {
+      "start": "2020-07-21"
+    },
+    "name": "DevBG"
+  },
+  {
+    "date": {
+      "start": "2020-07-21"
+    },
+    "name": "Reactive Forms Barcelona"
+  },
+  {
+    "date": {
+      "start": "2020-07-22"
+    },
+    "linkUrl": "https://kommunity.com/ngturkey/events/build-like-google-with-stephen-fluin-angular-turkey-0e685d3b",
+    "name": "ngTurkey"
+  },
+  {
+    "date": {
+      "start": "2020-07-24"
+    },
+    "name": "Angular NL"
+  },
+  {
+    "date": {
+      "start": "2020-07-25"
+    },
+    "linkUrl": "https://ng-girls.org/kc-2020/",
+    "name": "ngGirls"
+  },
+  {
+    "date": {
+      "start": "2020-07-29"
+    },
+    "linkUrl": "https://techcommunity.microsoft.com/t5/azure-developer-community-blog/create-frontend-a-one-of-a-kind-live-event-from-microsoft-about/ba-p/1524677",
+    "name": "Create: Frontend"
+  },
+  {
+    "date": {
+      "start": "2020-08-03"
+    },
+    "name": "JavaScript Israel"
+  },
+  {
+    "date": {
+      "start": "2020-08-04"
+    },
+    "name": "Angular MTV"
+  },
+  {
+    "date": {
+      "start": "2020-08-11"
+    },
+    "name": "Angular Kharkiv"
+  },
+  {
+    "date": {
+      "start": "2020-08-12"
+    },
+    "name": "ngCopenhagen"
+  },
+  {
+    "date": {
+      "start": "2020-08-14"
+    },
+    "name": "NgConf Colombia"
+  },
+  {
+    "date": {
+      "start": "2020-08-18"
+    },
+    "name": "Angular Arizona"
+  },
+  {
+    "date": {
+      "start": "2020-08-18"
+    },
+    "name": "ng-be August session"
+  },
+  {
+    "date": {
+      "start": "2020-08-20"
+    },
+    "name": "Angular London"
+  },
+  {
+    "date": {
+      "start": "2020-09-04"
+    },
+    "name": "ThisDot State of Angular"
+  },
+  {
+    "date": {
+      "start": "2020-09-16"
+    },
+    "name": "Angular Warsaw"
+  },
+  {
+    "date": {
+      "start": "2020-09-19"
+    },
+    "name": "JavaScript LA"
+  },
+  {
+    "date": {
+      "start": "2020-09-24"
+    },
+    "name": "Dutch Angular"
+  },
+  {
+    "date": {
+      "start": "2020-09-29"
+    },
+    "linkUrl": "http://infoshare.pl/",
+    "name": "Infoshare.pl"
+  },
+  {
+    "date": {
+      "start": "2020-10-01"
+    },
+    "name": "GIDS.WEB Live 2020"
+  },
+  {
+    "date": {
+      "start": "2020-10-01"
+    },
+    "name": "Angular Online This Dot Labs"
+  },
+  {
+    "date": {
+      "start": "2020-10-07"
+    },
+    "name": "Astea Conference"
+  },
+  {
+    "date": {
+      "start": "2020-10-09"
+    },
+    "name": "TSConf"
+  },
+  {
+    "date": {
+      "start": "2020-10-15"
+    },
+    "name": "GDG DevFest Norway"
+  },
+  {
+    "date": {
+      "start": "2020-10-16"
+    },
+    "linkUrl": "https://devfestturkey.com/registration",
+    "name": "GDG Devfest Turkey (Anatolia)"
+  },
+  {
+    "date": {
+      "start": "2020-10-17"
+    },
+    "linkUrl": "https://gdg.community.dev/events/details/google-gdg-london-presents-devfest-uk-ireland-2020-with-google-developer-groups/",
+    "name": "GDG Devfest UK + Ireland"
+  },
+  {
+    "date": {
+      "start": "2020-10-18"
+    },
+    "linkUrl": "https://www.meetup.com/GCDCSaudi/events/273405502/",
+    "name": "GDG Devfest Saudi"
+  },
+  {
+    "date": {
+      "start": "2020-10-20"
+    },
+    "name": "ngrome"
+  },
+  {
+    "date": {
+      "start": "2020-10-20"
+    },
+    "linkUrl": "https://www.meetup.com/angular-heidelberg/events/273768194/",
+    "name": "ngHeidelberg"
+  },
+  {
+    "date": {
+      "start": "2020-10-24"
+    },
+    "name": "Angular Honduras"
+  },
+  {
+    "date": {
+      "start": "2020-10-27"
+    },
+    "name": "Firebase Summit"
+  },
+  {
+    "date": {
+      "start": "2020-10-11"
+    },
+    "linkUrl": "http://dev-con.ro/",
+    "name": "Dev-Con.ro"
+  },
+  {
+    "date": {
+      "start": "2020-11-12"
+    },
+    "linkUrl": "https://www.meetup.com/Dutch-Angular-group/events/",
+    "name": "Dutch Angular"
+  },
+  {
+    "date": {
+      "start": "2020-11-20"
+    },
+    "name": "ngChina"
+  },
+  {
+    "date": {
+      "start": "2020-11-24"
+    },
+    "name": "Allianz Developer Conference"
+  },
+  {
+    "date": {
+      "start": "2021-01-21"
+    },
+    "name": "NWC JS"
+  },
+  {
+    "date": {
+      "start": "2021-01-26"
+    },
+    "name": "Angular Utah"
+  },
+  {
+    "date": {
+      "start": "2021-01-28"
+    },
+    "name": "Discord Q&A"
+  },
+  {
+    "date": {
+      "start": "2021-02-04"
+    },
+    "name": "Contributor Days"
+  },
+  {
+    "date": {
+      "start": "2021-02-09"
+    },
+    "name": "Angular Nation"
+  },
+  {
+    "date": {
+      "start": "2021-03-05"
+    },
+    "name": "ng-conf Honduras"
+  },
+  {
+    "date": {
+      "start": "2021-03-08"
+    },
+    "name": "IWD/Techknow"
+  },
+  {
+    "date": {
+      "start": "2021-03-16"
+    },
+    "name": "SAP user group"
+  },
+  {
+    "date": {
+      "start": "2021-03-30"
+    },
+    "name": "College OSS Consortium"
+  },
+  {
+    "date": {
+      "start": "2021-04-01"
+    },
+    "name": "State of Angular"
+  },
+  {
+    "date": {
+      "start": "2021-04-05"
+    },
+    "name": "Adventures in Angular‌"
+  },
+  {
+    "date": {
+      "start": "2021-04-21"
+    },
+    "name": "ng-conf"
+  },
+  {
+    "date": {
+      "start": "2021-05-18"
+    },
+    "name": "Google I/O"
+  },
+  {
+    "date": {
+      "start": "2021-05-23"
+    },
+    "name": "dev.pro JSConf"
+  },
+  {
+    "date": {
+      "start": "2021-05-25"
+    },
+    "name": "Daily Dev"
+  },
+  {
+    "date": {
+      "start": "2021-06-01"
+    },
+    "name": "Angular Singapore"
+  },
+  {
+    "date": {
+      "start": "2021-06-03"
+    },
+    "name": "OpenJS World 2021"
+  },
+  {
+    "date": {
+      "start": "2021-06-03"
+    },
+    "name": "State of Angular EcoSystem"
+  },
+  {
+    "date": {
+      "start": "2021-06-06"
+    },
+    "name": "JSNation"
+  },
+  {
+    "date": {
+      "start": "2021-06-25"
+    },
+    "name": "I/O GDG North Lebanon"
+  },
+  {
+    "date": {
+      "start": "2021-06-29"
+    },
+    "name": "Future of Testing: Mobile"
+  },
+  {
+    "date": {
+      "start": "2021-06-30"
+    },
+    "name": "AngularRDU"
+  },
+  {
+    "date": {
+      "start": "2021-07-09"
+    },
+    "name": "ngRome"
+  },
+  {
+    "date": {
+      "start": "2021-07-13"
+    },
+    "name": "AWT: Angular KC"
+  },
+  {
+    "date": {
+      "start": "2021-07-15"
+    },
+    "name": "JUG BG"
+  },
+  {
+    "date": {
+      "start": "2021-07-15"
+    },
+    "name": "WebRush"
+  },
+  {
+    "date": {
+      "start": "2021-07-19"
+    },
+    "name": "AWT: Angular MTV"
+  },
+  {
+    "date": {
+      "start": "2021-07-26"
+    },
+    "name": "AWT: ATL Angular"
+  },
+  {
+    "date": {
+      "start": "2021-08-17"
+    },
+    "name": "AWT: Angular SF"
+  },
+  {
+    "date": {
+      "start": "2021-08-20"
+    },
+    "name": "Syntax 2021"
+  },
+  {
+    "date": {
+      "start": "2021-08-30"
+    },
+    "name": "Twitter Spaces: Web Performance & UX"
+  },
+  {
+    "date": {
+      "start": "2021-08-26"
+    },
+    "name": "AWT: Angular Nation"
+  },
+  {
+    "date": {
+      "start": "2021-09-16"
+    },
+    "name": "Web Rush"
+  },
+  {
+    "date": {
+      "start": "2021-09-23"
+    },
+    "name": "AWT: Angular Seattle"
+  },
+  {
+    "date": {
+      "start": "2021-09-28"
+    },
+    "name": "iJS"
+  },
+  {
+    "date": {
+      "start": "2021-09-29"
+    },
+    "name": "AWT: Angular Athens"
+  },
+  {
+    "date": {
+      "start": "2021-10-13"
+    },
+    "name": "AWT: GDG Memphis"
+  },
+  {
+    "date": {
+      "start": "2021-10-14"
+    },
+    "name": "State of Angular"
+  },
+  {
+    "date": {
+      "start": "2021-10-26"
+    },
+    "name": "DevReach"
+  },
+  {
+    "date": {
+      "start": "2021-10-20"
+    },
+    "name": "The Angular Podcast"
+  },
+  {
+    "date": {
+      "start": "2021-10-20"
+    },
+    "name": "Angular Copenhagen"
+  },
+  {
+    "date": {
+      "start": "2021-11-10"
+    },
+    "name": "Angular Sussex"
+  },
+  {
+    "date": {
+      "start": "2021-11-12"
+    },
+    "linkUrl": "http://angularday.it/",
+    "name": "AngularDay.it"
+  },
+  {
+    "date": {
+      "start": "2021-11-17"
+    },
+    "name": "Angular Cairo"
+  },
+  {
+    "date": {
+      "start": "2021-12-02"
+    },
+    "name": "EnterpriseNG"
+  },
+  {
+    "date": {
+      "start": "2021-12-03"
+    },
+    "name": "EnterpriseNG"
+  },
+  {
+    "date": {
+      "start": "2021-12-01"
+    },
+    "name": "Angular Tokyo"
+  },
+  {
+    "date": {
+      "start": "2021-12-08"
+    },
+    "name": "Angular Belgrade"
+  },
+  {
+    "date": {
+      "start": "2021-12-15"
+    },
+    "name": "Angular Mega Meetup (Athens, Dutch, UK)"
+  },
+  {
+    "date": {
+      "start": "2021-12-10"
+    },
+    "name": "Midwest DevFest"
+  },
+  {
+    "date": {
+      "start": "2022-01-18"
+    },
+    "name": "AWT: Europe & Africa"
+  },
+  {
+    "date": {
+      "start": "2022-01-21"
+    },
+    "name": "NGPoland"
+  },
+  {
+    "date": {
+      "start": "2022-01-25"
+    },
+    "name": "Angular World Tour: Kenya"
+  },
+  {
+    "date": {
+      "start": "2022-01-28"
+    },
+    "name": "ng-Keralam"
+  },
+  {
+    "date": {
+      "start": "2022-02-22"
+    },
+    "name": "NG Yerevan"
+  },
+  {
+    "date": {
+      "start": "2022-02-22"
+    },
+    "name": "The State of JS Survey Stream"
+  },
+  {
+    "date": {
+      "start": "2022-03-01"
+    },
+    "name": "State of Angular"
+  },
+  {
+    "date": {
+      "start": "2022-03-22"
+    },
+    "name": "Angular Pakistan"
+  },
+  {
+    "date": {
+      "start": "2022-03-23"
+    },
+    "name": "Munich Meetup"
+  },
+  {
+    "date": {
+      "start": "2022-03-30"
+    },
+    "name": "Hubs Web Conference"
+  },
+  {
+    "date": {
+      "start": "2022-04-26"
+    },
+    "name": "AWT: Isreal"
+  },
+  {
+    "date": {
+      "start": "2022-05-11"
+    },
+    "name": "Google I/O"
+  },
+  {
+    "date": {
+      "start": "2022-05-18"
+    },
+    "name": "Angular Belgrade"
+  },
+  {
+    "date": {
+      "start": "2022-05-25"
+    },
+    "name": "Ioniconf"
+  },
+  {
+    "date": {
+      "start": "2022-05-25"
+    },
+    "name": "Angular Athens x VueJS Athens"
+  },
+  {
+    "date": {
+      "start": "2022-05-26"
+    },
+    "name": "Google I/O Extended: GDG NYC"
+  },
+  {
+    "date": {
+      "start": "2022-05-27"
+    },
+    "name": "CityJS Greece"
+  },
+  {
+    "date": {
+      "start": "2022-05-18"
+    },
+    "name": "Angular World Tour: Hungary"
+  },
+  {
+    "date": {
+      "start": "2022-06-03"
+    },
+    "name": "RenderATL"
+  },
+  {
+    "date": {
+      "start": "2022-06-16"
+    },
+    "name": "OpenSource@Google"
+  },
+  {
+    "date": {
+      "start": "2022-08-31"
+    },
+    "name": "ng-conf"
+  },
+  {
+    "date": {
+      "start": "2022-09-12"
+    },
+    "name": "DevReach"
+  },
+  {
+    "date": {
+      "start": "2022-10-06"
+    },
+    "name": "NG-DE"
+  },
+  {
+    "date": {
+      "start": "2022-10-06"
+    },
+    "name": "Nordic.js"
+  },
+  {
+    "date": {
+      "start": "2022-10-07"
+    },
+    "name": "angularday"
+  },
+  {
+    "date": {
+      "start": "2022-10-18"
+    },
+    "name": "Codemotion Milan"
+  },
+  {
+    "date": {
+      "start": "2022-10-25"
+    },
+    "name": "NG-Poland"
+  },
+  {
+    "date": {
+      "start": "2022-10-26"
+    },
+    "name": "JS Poland"
+  },
+  {
+    "date": {
+      "start": "2022-10-27"
+    },
+    "name": "Porto Tech Hub"
+  },
+  {
+    "date": {
+      "start": "2022-11-10"
+    },
+    "name": "JavaScript Day (JetBrains)"
+  },
+  {
+    "date": {
+      "start": "2022-12-02"
+    },
+    "name": "ngRome"
+  },
+  {
+    "date": {
+      "start": "2022-12-06"
+    },
+    "name": "Angular Contributor Days"
   }
 ]
