@@ -1,6 +1,6 @@
-@use '@angular/material' as mat;
 @use '@material/ripple/functions' as mdc-ripple-functions;
 @use '@material/textfield' as mdc-textfield;
+@use '../core/style/layout-common';
 
 // MDC text-field uses `@material/ripple` in order to show a focus and hover effect for
 // text-fields. This is unnecessary because the ripples bring in a lot of unnecessary
@@ -11,7 +11,7 @@
 // uses the exact same logic to compute the colors as in the default MDC text-field ripples.
 @mixin private-form-field-focus-overlay() {
   .mat-mdc-form-field-focus-overlay {
-    @include mat.private-fill;
+    @include layout-common.fill;
     opacity: 0;
   }
 }

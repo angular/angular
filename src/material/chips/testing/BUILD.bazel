@@ -27,7 +27,7 @@ ng_test_library(
         "//src/cdk/testing/private",
         "//src/cdk/testing/testbed",
         "//src/material/chips",
-        "//src/material/form-field",
+        "//src/material/legacy-form-field",
         "//src/material/icon",
         "//src/material/icon/testing",
         "@npm//@angular/platform-browser",

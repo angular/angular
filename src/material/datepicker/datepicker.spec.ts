@@ -30,13 +30,13 @@ import {
   NG_VALIDATORS,
 } from '@angular/forms';
 import {MAT_DATE_LOCALE, MatNativeDateModule, NativeDateModule} from '@angular/material/core';
-import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
+import {MatLegacyFormField, MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {DEC, JAN, JUL, JUN, SEP} from '../testing';
 import {By} from '@angular/platform-browser';
 import {_supportsShadowDom} from '@angular/cdk/platform';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Subject} from 'rxjs';
-import {MatInputModule} from '../input/index';
+import {MatLegacyInputModule} from '../legacy-input/index';
 import {MatDatepicker} from './datepicker';
 import {MatDatepickerInput} from './datepicker-input';
 import {MatDatepickerToggle} from './datepicker-toggle';
@@ -62,8 +62,8 @@ describe('MatDatepicker', () => {
       imports: [
         FormsModule,
         MatDatepickerModule,
-        MatFormFieldModule,
-        MatInputModule,
+        MatLegacyFormFieldModule,
+        MatLegacyInputModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
         ...imports,
@@ -2597,7 +2597,7 @@ class DatepickerWithCustomIcon {}
 class FormFieldDatepicker {
   @ViewChild('d') datepicker: MatDatepicker<Date>;
   @ViewChild(MatDatepickerInput) datepickerInput: MatDatepickerInput<Date>;
-  @ViewChild(MatFormField) formField: MatFormField;
+  @ViewChild(MatLegacyFormField) formField: MatLegacyFormField;
 }
 
 @Component({

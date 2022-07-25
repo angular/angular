@@ -1,6 +1,6 @@
 import {Component, NgModule} from '@angular/core';
-import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
-import {MatInputModule} from '@angular/material-experimental/mdc-input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 
 /**
  * Basic component using `MatFormField` and `MatInput`. Other parts of the form-field

@@ -54,9 +54,9 @@ import {
 import {ErrorStateMatcher, MatOption, MatOptionSelectionChange} from '@angular/material/core';
 import {
   FloatLabelType,
-  MatFormFieldModule,
+  MatLegacyFormFieldModule,
   MAT_FORM_FIELD_DEFAULT_OPTIONS,
-} from '@angular/material/form-field';
+} from '@angular/material/legacy-form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
@@ -89,7 +89,7 @@ describe('MatSelect', () => {
   function configureMatSelectTestingModule(declarations: any[], providers: Provider[] = []) {
     TestBed.configureTestingModule({
       imports: [
-        MatFormFieldModule,
+        MatLegacyFormFieldModule,
         MatSelectModule,
         ReactiveFormsModule,
         FormsModule,
@@ -2682,7 +2682,7 @@ describe('MatSelect', () => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         imports: [
-          MatFormFieldModule,
+          MatLegacyFormFieldModule,
           MatSelectModule,
           ReactiveFormsModule,
           FormsModule,

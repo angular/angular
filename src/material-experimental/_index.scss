@@ -35,10 +35,6 @@
   mdc-chips-density, mdc-chips-theme;
 @forward './mdc-dialog/dialog-theme' as mdc-dialog-* show mdc-dialog-color, mdc-dialog-typography,
   mdc-dialog-density, mdc-dialog-theme;
-@forward './mdc-form-field/form-field-theme' as mdc-form-field-* show mdc-form-field-color,
-  mdc-form-field-typography, mdc-form-field-density, mdc-form-field-theme;
-@forward './mdc-input/input-theme' as mdc-input-* show mdc-input-color, mdc-input-typography,
-  mdc-input-density, mdc-input-theme;
 @forward './mdc-list/list-theme' as mdc-list-* show mdc-list-color, mdc-list-typography,
   mdc-list-density, mdc-list-theme;
 @forward './mdc-menu/menu-theme' as mdc-menu-* show mdc-menu-color, mdc-menu-typography,

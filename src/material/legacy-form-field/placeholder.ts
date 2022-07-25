@@ -17,4 +17,4 @@ import {Directive} from '@angular/core';
 @Directive({
   selector: 'mat-placeholder',
 })
-export class MatPlaceholder {}
+export class MatLegacyPlaceholder {}

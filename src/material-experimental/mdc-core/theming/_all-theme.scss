@@ -19,8 +19,6 @@
 @use '../../mdc-table/table-theme';
 @use '../../mdc-paginator/paginator-theme';
 @use '../../mdc-progress-spinner/progress-spinner-theme';
-@use '../../mdc-input/input-theme';
-@use '../../mdc-form-field/form-field-theme';
 
 @mixin all-mdc-component-themes($theme-or-color-config) {
   $dedupe-key: 'angular-material-mdc-theme';
@@ -45,8 +43,8 @@
     @include slider-theme.theme($theme-or-color-config);
     @include snack-bar-theme.theme($theme-or-color-config);
     @include table-theme.theme($theme-or-color-config);
-    @include form-field-theme.theme($theme-or-color-config);
-    @include input-theme.theme($theme-or-color-config);
+    @include mat.form-field-theme($theme-or-color-config);
+    @include mat.input-theme($theme-or-color-config);
     @include tabs-theme.theme($theme-or-color-config);
     @include mat.tooltip-theme($theme-or-color-config);
   }

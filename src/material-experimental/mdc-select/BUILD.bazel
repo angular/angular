@@ -15,7 +15,7 @@ ng_module(
     deps = [
         "//src/cdk/overlay",
         "//src/material-experimental/mdc-core",
-        "//src/material-experimental/mdc-form-field",
+        "//src/material/form-field",
         "//src/material/select",
     ],
 )
@@ -53,7 +53,7 @@ ng_test_library(
         "//src/cdk/scrolling",
         "//src/cdk/testing/private",
         "//src/material-experimental/mdc-core",
-        "//src/material-experimental/mdc-form-field",
+        "//src/material/form-field",
         "//src/material/core",
         "//src/material/select",
         "@npm//@angular/forms",

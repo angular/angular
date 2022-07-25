@@ -4,7 +4,7 @@ import {HarnessLoader, parallel, TestKey} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatChipsModule} from '@angular/material/chips';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatIconHarness} from '@angular/material/icon/testing';
 import {MatChipListHarness} from './chip-list-harness';
@@ -31,7 +31,7 @@ export function runHarnessTests(
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [chipsModule, MatFormFieldModule, NoopAnimationsModule, iconModule],
+      imports: [chipsModule, MatLegacyFormFieldModule, NoopAnimationsModule, iconModule],
       declarations: [ChipsHarnessTest],
     }).compileComponents();
 

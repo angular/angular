@@ -1,92 +1,96 @@
-<div class="mat-form-field-wrapper">
-  <div class="mat-form-field-flex" #connectionContainer
-       (click)="_control.onContainerClick && _control.onContainerClick($event)">
+<ng-template #labelTemplate>
+  <!--
+    MDC recommends that the text-field is a `<label>` element. This rather complicates the
+    setup because it would require every form-field control to explicitly set `aria-labelledby`.
+    This is because the `<label>` itself contains more than the actual label (e.g. prefix, suffix
+    or other projected content), and screen readers could potentially read out undesired content.
+    Excluding elements from being printed out requires them to be marked with `aria-hidden`, or
+    the form control is set to a scoped element for the label (using `aria-labelledby`). Both of
+    these options seem to complicate the setup because we know exactly what content is rendered
+    as part of the label, and we don't want to spend resources on walking through projected content
+    to set `aria-hidden`. Nor do we want to set `aria-labelledby` on every form control if we could
+    simply link the label to the control using the label `for` attribute.
 
-    <!-- Outline used for outline appearance. -->
-    <ng-container *ngIf="appearance == 'outline'">
-      <div class="mat-form-field-outline">
-        <div class="mat-form-field-outline-start"></div>
-        <div class="mat-form-field-outline-gap"></div>
-        <div class="mat-form-field-outline-end"></div>
-      </div>
-      <div class="mat-form-field-outline mat-form-field-outline-thick">
-        <div class="mat-form-field-outline-start"></div>
-        <div class="mat-form-field-outline-gap"></div>
-        <div class="mat-form-field-outline-end"></div>
-      </div>
-    </ng-container>
+    *Note*: We add aria-owns as a workaround for an issue in JAWS & NVDA where the label isn't
+    read if it comes before the control in the DOM.
+  -->
+  <label matFormFieldFloatingLabel
+         [floating]="_shouldLabelFloat()"
+         *ngIf="_hasFloatingLabel()"
+         (cdkObserveContent)="_refreshOutlineNotchWidth()"
+         [cdkObserveContentDisabled]="!_hasOutline()"
+         [id]="_labelId"
+         [attr.for]="_control.id"
+         [attr.aria-owns]="_control.id">
+    <ng-content select="mat-label"></ng-content>
+    <!--
+      We set the required marker as a separate element, in order to make it easier to target if
+      apps want to override it and to be able to set `aria-hidden` so that screen readers don't
+      pick it up.
+     -->
+    <span
+      *ngIf="!hideRequiredMarker && _control.required"
+      aria-hidden="true"
+      class="mat-mdc-form-field-required-marker mdc-floating-label--required"></span>
+  </label>
+</ng-template>
 
-    <div
-      class="mat-form-field-prefix"
-      *ngIf="_prefixChildren.length"
-      (cdkObserveContent)="updateOutlineGap()"
-      [cdkObserveContentDisabled]="appearance != 'outline'">
-      <ng-content select="[matPrefix]"></ng-content>
+<div class="mat-mdc-text-field-wrapper mdc-text-field" #textField
+     [class.mdc-text-field--filled]="!_hasOutline()"
+     [class.mdc-text-field--outlined]="_hasOutline()"
+     [class.mdc-text-field--no-label]="!_hasFloatingLabel()"
+     [class.mdc-text-field--disabled]="_control.disabled"
+     [class.mdc-text-field--invalid]="_control.errorState"
+     (click)="_control.onContainerClick && _control.onContainerClick($event)">
+  <div class="mat-mdc-form-field-focus-overlay" *ngIf="!_hasOutline() && !_control.disabled"></div>
+  <div class="mat-mdc-form-field-flex">
+    <div *ngIf="_hasOutline()" matFormFieldNotchedOutline
+         [matFormFieldNotchedOutlineOpen]="_shouldLabelFloat()"
+         [matFormFieldNotchedOutlineLabelWidth]="_labelWidth">
+      <ng-template [ngIf]="!_forceDisplayInfixLabel()">
+        <ng-template [ngTemplateOutlet]="labelTemplate"></ng-template>
+      </ng-template>
     </div>
 
-    <div class="mat-form-field-infix" #inputContainer>
+    <div class="mat-mdc-form-field-icon-prefix" *ngIf="_hasIconPrefix" #iconPrefixContainer>
+      <ng-content select="[matPrefix], [matIconPrefix]"></ng-content>
+    </div>
+    <div class="mat-mdc-form-field-text-prefix" *ngIf="_hasTextPrefix" #textPrefixContainer>
+      <ng-content select="[matTextPrefix]"></ng-content>
+    </div>
+
+    <div class="mat-mdc-form-field-infix">
+      <ng-template [ngIf]="!_hasOutline() || _forceDisplayInfixLabel()">
+        <ng-template [ngTemplateOutlet]="labelTemplate"></ng-template>
+      </ng-template>
+
       <ng-content></ng-content>
-
-      <span class="mat-form-field-label-wrapper">
-        <!-- We add aria-owns as a workaround for an issue in JAWS & NVDA where the label isn't
-             read if it comes before the control in the DOM. -->
-        <label class="mat-form-field-label"
-               (cdkObserveContent)="updateOutlineGap()"
-               [cdkObserveContentDisabled]="appearance != 'outline'"
-               [id]="_labelId"
-               [attr.for]="_control.id"
-               [attr.aria-owns]="_control.id"
-               [class.mat-empty]="_control.empty && !_shouldAlwaysFloat()"
-               [class.mat-form-field-empty]="_control.empty && !_shouldAlwaysFloat()"
-               [class.mat-accent]="color == 'accent'"
-               [class.mat-warn]="color == 'warn'"
-               #label
-               *ngIf="_hasFloatingLabel()"
-               [ngSwitch]="_hasLabel()">
-
-          <!-- @breaking-change 8.0.0 remove in favor of mat-label element an placeholder attr. -->
-          <ng-container *ngSwitchCase="false">
-            <ng-content select="mat-placeholder"></ng-content>
-            <span>{{_control.placeholder}}</span>
-          </ng-container>
-
-          <ng-content select="mat-label" *ngSwitchCase="true"></ng-content>
-
-          <!-- @breaking-change 8.0.0 remove `mat-placeholder-required` class -->
-          <span
-            class="mat-placeholder-required mat-form-field-required-marker"
-            aria-hidden="true"
-            *ngIf="!hideRequiredMarker && _control.required && !_control.disabled">&#32;*</span>
-        </label>
-      </span>
     </div>
 
-    <div class="mat-form-field-suffix" *ngIf="_suffixChildren.length">
-      <ng-content select="[matSuffix]"></ng-content>
+    <div class="mat-mdc-form-field-text-suffix" *ngIf="_hasTextSuffix">
+      <ng-content select="[matTextSuffix]"></ng-content>
+    </div>
+    <div class="mat-mdc-form-field-icon-suffix" *ngIf="_hasIconSuffix">
+      <ng-content select="[matSuffix], [matIconSuffix]"></ng-content>
     </div>
   </div>
 
-  <!-- Underline used for legacy, standard, and box appearances. -->
-  <div class="mat-form-field-underline"
-       *ngIf="appearance != 'outline'">
-    <span class="mat-form-field-ripple"
-          [class.mat-accent]="color == 'accent'"
-          [class.mat-warn]="color == 'warn'"></span>
+  <div matFormFieldLineRipple *ngIf="!_hasOutline()"></div>
+</div>
+
+<div class="mat-mdc-form-field-subscript-wrapper mat-mdc-form-field-bottom-align"
+     [class.mat-mdc-form-field-subscript-dynamic-size]="subscriptSizing === 'dynamic'"
+     [ngSwitch]="_getDisplayedMessages()">
+  <div class="mat-mdc-form-field-error-wrapper" *ngSwitchCase="'error'"
+       [@transitionMessages]="_subscriptAnimationState">
+    <ng-content select="mat-error"></ng-content>
   </div>
 
-  <div class="mat-form-field-subscript-wrapper"
-       [ngSwitch]="_getDisplayedMessages()">
-    <div *ngSwitchCase="'error'" [@transitionMessages]="_subscriptAnimationState">
-      <ng-content select="mat-error"></ng-content>
-    </div>
-
-    <div class="mat-form-field-hint-wrapper" *ngSwitchCase="'hint'"
-      [@transitionMessages]="_subscriptAnimationState">
-      <!-- TODO(mmalerba): use an actual <mat-hint> once all selectors are switched to mat-* -->
-      <div *ngIf="hintLabel" [id]="_hintLabelId" class="mat-hint">{{hintLabel}}</div>
-      <ng-content select="mat-hint:not([align='end'])"></ng-content>
-      <div class="mat-form-field-hint-spacer"></div>
-      <ng-content select="mat-hint[align='end']"></ng-content>
-    </div>
+  <div class="mat-mdc-form-field-hint-wrapper" *ngSwitchCase="'hint'"
+       [@transitionMessages]="_subscriptAnimationState">
+    <mat-hint *ngIf="hintLabel" [id]="_hintLabelId">{{hintLabel}}</mat-hint>
+    <ng-content select="mat-hint:not([align='end'])"></ng-content>
+    <div class="mat-mdc-form-field-hint-spacer"></div>
+    <ng-content select="mat-hint[align='end']"></ng-content>
   </div>
 </div>

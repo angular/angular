@@ -1,7 +1,8 @@
 @use 'sass:map';
 @use 'sass:math';
-@use '@angular/material' as mat;
 @use '@material/theme/theme-color' as mdc-theme-color;
+@use '../core/theming/palette';
+@use '../core/mdc-helpers/mdc-helpers';
 
 // Width of the Material Design form-field select arrow.
 $mat-form-field-select-arrow-width: 10px;
@@ -73,7 +74,7 @@ $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-widt
 }
 
 @mixin private-form-field-native-select-color($config) {
-  @include mat.private-using-mdc-theme($config) {
+  @include mdc-helpers.using-mdc-theme($config) {
     // These values are taken from the MDC select implementation:
     // https://github.com/material-components/material-components-web/blob/master/packages/mdc-select/_select-theme.scss
     $dropdown-icon-color: rgba(mdc-theme-color.prop-value(on-surface), 0.54);
@@ -87,11 +88,11 @@ $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-widt
       // reset the color of the options to something dark.
       @if (map.get($config, is-dark)) {
         option {
-          color: mat.$private-dark-primary-text;
+          color: palette.$dark-primary-text;
         }
 
         option:disabled {
-          color: mat.$private-dark-disabled-text;
+          color: palette.$dark-disabled-text;
         }
       }
     }

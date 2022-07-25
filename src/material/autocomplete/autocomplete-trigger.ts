@@ -45,7 +45,7 @@ import {
   _MatOptionBase,
   MatOptionSelectionChange,
 } from '@angular/material/core';
-import {MAT_FORM_FIELD, MatFormField} from '@angular/material/form-field';
+import {MAT_FORM_FIELD, MatLegacyFormField} from '@angular/material/legacy-form-field';
 import {defer, fromEvent, merge, Observable, of as observableOf, Subject, Subscription} from 'rxjs';
 import {delay, filter, map, switchMap, take, tap, startWith} from 'rxjs/operators';
 
@@ -202,7 +202,7 @@ export abstract class _MatAutocompleteTriggerBase
     private _changeDetectorRef: ChangeDetectorRef,
     @Inject(MAT_AUTOCOMPLETE_SCROLL_STRATEGY) scrollStrategy: any,
     @Optional() private _dir: Directionality,
-    @Optional() @Inject(MAT_FORM_FIELD) @Host() private _formField: MatFormField,
+    @Optional() @Inject(MAT_FORM_FIELD) @Host() private _formField: MatLegacyFormField,
     @Optional() @Inject(DOCUMENT) private _document: any,
     private _viewportRuler: ViewportRuler,
     @Optional()

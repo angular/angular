@@ -58,7 +58,7 @@ import {
   FloatLabelType,
   MatFormFieldModule,
   MAT_FORM_FIELD_DEFAULT_OPTIONS,
-} from '@angular/material-experimental/mdc-form-field';
+} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {LiveAnnouncer} from '@angular/cdk/a11y';

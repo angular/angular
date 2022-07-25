@@ -11,5 +11,5 @@
 // need to import the base form-field control harness through a separate entry-point.
 export {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
 
-export {FormFieldHarnessFilters} from '@angular/material/form-field/testing';
 export * from './form-field-harness';
+export {FormFieldHarnessFilters} from '@angular/material/form-field/testing';

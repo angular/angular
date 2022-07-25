@@ -43,11 +43,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Subject} from 'rxjs';
-import {MatInputModule} from '../input/index';
+import {MatLegacyInputModule} from '../legacy-input/index';
 import {MatChip} from './chip';
 import {MatChipInputEvent} from './chip-input';
 import {MatChipEvent, MatChipList, MatChipRemove, MatChipsModule} from './index';
@@ -1498,8 +1498,8 @@ describe('MatChipList', () => {
         FormsModule,
         ReactiveFormsModule,
         MatChipsModule,
-        MatFormFieldModule,
-        MatInputModule,
+        MatLegacyFormFieldModule,
+        MatLegacyInputModule,
         animationsModule,
       ],
       declarations: [component],

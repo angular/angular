@@ -1,8 +1,8 @@
 @use 'sass:map';
 @use 'sass:math';
-@use '@angular/material' as mat;
 @use '@material/density' as mdc-density;
 @use '@material/textfield' as mdc-textfield;
+@use '../core/theming/theming';
 
 @use './form-field-sizing';
 
@@ -40,7 +40,7 @@
 // specification. In order to support density, we need to adjust the vertical spacing to be
 // based on the density scale.
 @mixin private-form-field-density($config-or-theme) {
-  $density-scale: mat.get-density-config($config-or-theme);
+  $density-scale: theming.get-density-config($config-or-theme);
   // Height of the form field that is based on the current density scale.
   $height: mdc-density.prop-value(
     $density-config: mdc-textfield.$density-config,

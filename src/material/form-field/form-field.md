@@ -29,7 +29,7 @@ There are a couple differences in behavior to be aware of between the different 
 We recommend that text prefix and suffixes in the `fill` and `outline` appearances only be used in
 conjunction with the `floatLabel="always"` option. This is because the resting label and the input
 value do not have  the same alignment, and it is therefore impossible to align the prefix or suffix
-in a way that looks good when compared with both. In the `standard` and `legacy` appearances, the 
+in a way that looks good when compared with both. In the `standard` and `legacy` appearances, the
 resting label and input value align, so this isn't an issue. We plan to improve support for text
 prefix and suffixes in the future so they can be used without `floatLabel="always"`.
 

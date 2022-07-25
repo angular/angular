@@ -36,7 +36,7 @@ import {
   Validators,
 } from '@angular/forms';
 import {CanUpdateErrorState, ErrorStateMatcher, mixinErrorState} from '@angular/material/core';
-import {MatFormFieldControl} from '@angular/material/form-field';
+import {MatLegacyFormFieldControl} from '@angular/material/legacy-form-field';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
 import {MatChip, MatChipEvent, MatChipSelectionChange} from './chip';
@@ -104,7 +104,7 @@ export class MatChipListChange {
     '(keydown)': '_keydown($event)',
     '[id]': '_uid',
   },
-  providers: [{provide: MatFormFieldControl, useExisting: MatChipList}],
+  providers: [{provide: MatLegacyFormFieldControl, useExisting: MatChipList}],
   styleUrls: ['chips.css'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -112,7 +112,7 @@ export class MatChipListChange {
 export class MatChipList
   extends _MatChipListBase
   implements
-    MatFormFieldControl<any>,
+    MatLegacyFormFieldControl<any>,
     ControlValueAccessor,
     AfterContentInit,
     DoCheck,

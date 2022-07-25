@@ -82,11 +82,15 @@
   divider-typography;
 @forward './expansion/expansion-theme' as expansion-* show expansion-theme, expansion-color,
   expansion-typography;
-@forward './form-field/form-field-theme' as form-field-* show form-field-theme, form-field-color,
-  form-field-typography;
+@forward './form-field/form-field-theme' as form-field-* show form-field-theme,
+  form-field-color, form-field-typography;
+@forward './legacy-form-field/form-field-theme' as legacy-form-field-* show legacy-form-field-theme,
+  legacy-form-field-color, legacy-form-field-typography;
 @forward './grid-list/grid-list-theme' as grid-list-* show grid-list-theme, grid-list-color,
   grid-list-typography;
 @forward './icon/icon-theme' as icon-* show icon-theme, icon-color, icon-typography;
+@forward './legacy-input/input-theme' as legacy-input-* show legacy-input-theme, legacy-input-color,
+  legacy-input-typography;
 @forward './input/input-theme' as input-* show input-theme, input-color, input-typography;
 @forward './list/list-theme' as list-* show list-theme, list-color, list-typography;
 @forward './menu/menu-theme' as menu-* show menu-theme, menu-color, menu-typography;

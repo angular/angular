@@ -4,7 +4,7 @@ import {PlatformModule} from '@angular/cdk/platform';
 import {dispatchKeyboardEvent} from '../../cdk/testing/private';
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {waitForAsync, ComponentFixture, fakeAsync, TestBed, flush} from '@angular/core/testing';
-import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
+import {MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Subject} from 'rxjs';

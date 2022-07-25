@@ -26,7 +26,7 @@ import { HasTabIndex } from '@angular/material/core';
 import * as i0 from '@angular/core';
 import * as i4 from '@angular/material/core';
 import { InjectionToken } from '@angular/core';
-import { MatFormFieldControl } from '@angular/material/form-field';
+import { MatFormFieldControl } from '@angular/material/legacy-form-field';
 import { NgControl } from '@angular/forms';
 import { NgForm } from '@angular/forms';
 import { NgZone } from '@angular/core';

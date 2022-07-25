@@ -3,7 +3,7 @@
 @use '@angular/material' as mat;
 @use '@material/density' as mdc-density;
 @use '@material/typography' as mdc-typography;
-@use '../mdc-form-field/form-field-theme';
+@use '../../material/form-field/form-field-theme';
 
 @use './paginator-variables';
 

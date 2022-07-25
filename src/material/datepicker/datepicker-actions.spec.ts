@@ -3,8 +3,8 @@ import {ComponentFixture, TestBed, flush, fakeAsync, tick} from '@angular/core/t
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatNativeDateModule} from '@angular/material/core';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {CommonModule} from '@angular/common';
 import {MatDatepickerModule} from './datepicker-module';
 import {MatDatepicker} from './datepicker';
@@ -16,8 +16,8 @@ describe('MatDatepickerActions', () => {
         CommonModule,
         FormsModule,
         MatDatepickerModule,
-        MatFormFieldModule,
-        MatInputModule,
+        MatLegacyFormFieldModule,
+        MatLegacyInputModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
         MatNativeDateModule,

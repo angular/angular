@@ -14,8 +14,8 @@ component_benchmark(
     ng_deps = [
         "@npm//@angular/core",
         "@npm//@angular/platform-browser",
-        "//src/material-experimental/mdc-form-field",
-        "//src/material-experimental/mdc-input",
+        "//src/material/form-field",
+        "//src/material/input",
     ],
     ng_srcs = [":app.module.ts"],
     prefix = "",

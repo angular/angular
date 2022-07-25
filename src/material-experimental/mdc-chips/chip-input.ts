@@ -20,7 +20,7 @@ import {
   Optional,
   Output,
 } from '@angular/core';
-import {MatFormField, MAT_FORM_FIELD} from '@angular/material-experimental/mdc-form-field';
+import {MatFormField, MAT_FORM_FIELD} from '@angular/material/form-field';
 import {MatChipsDefaultOptions, MAT_CHIPS_DEFAULT_OPTIONS} from './tokens';
 import {MatChipGrid} from './chip-grid';
 import {MatChipTextControl} from './chip-text-control';

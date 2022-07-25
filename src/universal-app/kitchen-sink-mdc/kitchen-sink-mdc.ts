@@ -3,8 +3,8 @@ import {MatAutocompleteModule} from '@angular/material-experimental/mdc-autocomp
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatCardModule} from '@angular/material/card';
 import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
-import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
-import {MatInputModule} from '@angular/material-experimental/mdc-input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 import {MatListModule} from '@angular/material-experimental/mdc-list';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatChipsModule} from '@angular/material-experimental/mdc-chips';

@@ -37,13 +37,13 @@ import {
 } from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatOption, MatOptionSelectionChange} from '@angular/material/core';
-import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
+import {MatLegacyFormField, MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {EMPTY, Observable, Subject, Subscription} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
-import {MatInputModule} from '../input/index';
+import {MatLegacyInputModule} from '../legacy-input/index';
 
 import {
   getMatAutocompleteMissingPanelError,
@@ -66,8 +66,8 @@ describe('MatAutocomplete', () => {
     TestBed.configureTestingModule({
       imports: [
         MatAutocompleteModule,
-        MatFormFieldModule,
-        MatInputModule,
+        MatLegacyFormFieldModule,
+        MatLegacyInputModule,
         FormsModule,
         ReactiveFormsModule,
         NoopAnimationsModule,
@@ -3441,7 +3441,7 @@ class SimpleAutocomplete implements OnDestroy {
 
   @ViewChild(MatAutocompleteTrigger, {static: true}) trigger: MatAutocompleteTrigger;
   @ViewChild(MatAutocomplete) panel: MatAutocomplete;
-  @ViewChild(MatFormField) formField: MatFormField;
+  @ViewChild(MatLegacyFormField) formField: MatLegacyFormField;
   @ViewChildren(MatOption) options: QueryList<MatOption>;
 
   states: {code: string; name: string; height?: number; disabled?: boolean}[] = [

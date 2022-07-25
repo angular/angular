@@ -48,8 +48,8 @@ import {MatStepHeader, MatStepperModule} from './index';
 import {MatStep, MatStepper} from './stepper';
 import {MatStepperNext, MatStepperPrevious} from './stepper-button';
 import {MatStepperIntl} from './stepper-intl';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '../input/input-module';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '../legacy-input/input-module';
 
 const VALID_REGEX = /valid/;
 let dir: {value: Direction; readonly change: EventEmitter<Direction>};
@@ -1349,7 +1349,7 @@ describe('MatStepper', () => {
             useValue: {showError: showErrorByDefault},
           },
         ],
-        [MatFormFieldModule, MatInputModule],
+        [MatLegacyFormFieldModule, MatLegacyInputModule],
       );
       fixture.detectChanges();
       stepper = fixture.debugElement.query(By.css('mat-stepper'))!.componentInstance;
@@ -1412,7 +1412,7 @@ describe('MatStepper', () => {
             useValue: {displayDefaultIndicatorType: false},
           },
         ],
-        [MatFormFieldModule, MatInputModule],
+        [MatLegacyFormFieldModule, MatLegacyInputModule],
       );
       fixture.detectChanges();
       stepper = fixture.debugElement.query(By.css('mat-stepper'))!.componentInstance;

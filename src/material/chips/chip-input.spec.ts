@@ -4,7 +4,7 @@ import {PlatformModule} from '@angular/cdk/platform';
 import {dispatchKeyboardEvent} from '../../cdk/testing/private';
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {waitForAsync, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Subject} from 'rxjs';
@@ -23,7 +23,7 @@ describe('MatChipInput', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [PlatformModule, MatChipsModule, MatFormFieldModule, NoopAnimationsModule],
+      imports: [PlatformModule, MatChipsModule, MatLegacyFormFieldModule, NoopAnimationsModule],
       declarations: [TestChipInput],
       providers: [
         {
@@ -211,7 +211,7 @@ describe('MatChipInput', () => {
 
       TestBed.resetTestingModule()
         .configureTestingModule({
-          imports: [MatChipsModule, MatFormFieldModule, PlatformModule, NoopAnimationsModule],
+          imports: [MatChipsModule, MatLegacyFormFieldModule, PlatformModule, NoopAnimationsModule],
           declarations: [TestChipInput],
           providers: [
             {

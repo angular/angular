@@ -4,8 +4,8 @@ size_test(
     name = "basic",
     file = "basic.ts",
     deps = [
-        "//src/material-experimental/mdc-form-field",
-        "//src/material-experimental/mdc-input",
+        "//src/material/form-field",
+        "//src/material/input",
     ],
 )
 
@@ -13,7 +13,7 @@ size_test(
     name = "advanced",
     file = "advanced.ts",
     deps = [
-        "//src/material-experimental/mdc-form-field",
-        "//src/material-experimental/mdc-input",
+        "//src/material/form-field",
+        "//src/material/input",
     ],
 )

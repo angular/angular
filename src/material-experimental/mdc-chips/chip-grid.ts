@@ -38,7 +38,7 @@ import {
   ErrorStateMatcher,
   mixinErrorState,
 } from '@angular/material-experimental/mdc-core';
-import {MatFormFieldControl} from '@angular/material-experimental/mdc-form-field';
+import {MatFormFieldControl} from '@angular/material/form-field';
 import {MatChipTextControl} from './chip-text-control';
 import {Observable, Subject, merge} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';

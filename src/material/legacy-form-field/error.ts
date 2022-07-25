@@ -6,16 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Directive, ElementRef, InjectionToken, Input} from '@angular/core';
+import {Attribute, Directive, ElementRef, Input} from '@angular/core';
+import {MAT_ERROR} from '@angular/material/form-field';
 
 let nextUniqueId = 0;
-
-/**
- * Injection token that can be used to reference instances of `MatError`. It serves as
- * alternative token to the actual `MatError` class which could cause unnecessary
- * retention of the class and its directive metadata.
- */
-export const MAT_ERROR = new InjectionToken<MatError>('MatError');
 
 /** Single error message to be shown underneath the form field. */
 @Directive({
@@ -25,9 +19,9 @@ export const MAT_ERROR = new InjectionToken<MatError>('MatError');
     '[attr.id]': 'id',
     'aria-atomic': 'true',
   },
-  providers: [{provide: MAT_ERROR, useExisting: MatError}],
+  providers: [{provide: MAT_ERROR, useExisting: MatLegacyError}],
 })
-export class MatError {
+export class MatLegacyError {
   @Input() id: string = `mat-error-${nextUniqueId++}`;
 
   constructor(@Attribute('aria-live') ariaLive: string, elementRef: ElementRef) {

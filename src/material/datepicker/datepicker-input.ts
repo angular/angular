@@ -9,8 +9,8 @@
 import {Directive, ElementRef, forwardRef, Inject, Input, OnDestroy, Optional} from '@angular/core';
 import {NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidatorFn, Validators} from '@angular/forms';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats, ThemePalette} from '@angular/material/core';
-import {MatFormField, MAT_FORM_FIELD} from '@angular/material/form-field';
-import {MAT_INPUT_VALUE_ACCESSOR} from '@angular/material/input';
+import {MatLegacyFormField, MAT_FORM_FIELD} from '@angular/material/legacy-form-field';
+import {MAT_INPUT_VALUE_ACCESSOR} from '@angular/material/legacy-input';
 import {Subscription} from 'rxjs';
 import {MatDatepickerInputBase, DateFilterFn} from './datepicker-input-base';
 import {MatDatepickerControl, MatDatepickerPanel} from './datepicker-base';
@@ -124,7 +124,7 @@ export class MatDatepickerInput<D>
     elementRef: ElementRef<HTMLInputElement>,
     @Optional() dateAdapter: DateAdapter<D>,
     @Optional() @Inject(MAT_DATE_FORMATS) dateFormats: MatDateFormats,
-    @Optional() @Inject(MAT_FORM_FIELD) private _formField?: MatFormField,
+    @Optional() @Inject(MAT_FORM_FIELD) private _formField?: MatLegacyFormField,
   ) {
     super(elementRef, dateAdapter, dateFormats);
     this._validator = Validators.compose(super._getValidators());

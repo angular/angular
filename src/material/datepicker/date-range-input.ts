@@ -22,7 +22,11 @@ import {
   OnChanges,
   SimpleChanges,
 } from '@angular/core';
-import {MatFormFieldControl, MatFormField, MAT_FORM_FIELD} from '@angular/material/form-field';
+import {
+  MatLegacyFormFieldControl,
+  MatLegacyFormField,
+  MAT_FORM_FIELD,
+} from '@angular/material/legacy-form-field';
 import {ThemePalette, DateAdapter} from '@angular/material/core';
 import {NgControl, ControlContainer} from '@angular/forms';
 import {Subject, merge, Subscription} from 'rxjs';
@@ -62,13 +66,13 @@ let nextUniqueId = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   providers: [
-    {provide: MatFormFieldControl, useExisting: MatDateRangeInput},
+    {provide: MatLegacyFormFieldControl, useExisting: MatDateRangeInput},
     {provide: MAT_DATE_RANGE_INPUT_PARENT, useExisting: MatDateRangeInput},
   ],
 })
 export class MatDateRangeInput<D>
   implements
-    MatFormFieldControl<DateRange<D>>,
+    MatLegacyFormFieldControl<DateRange<D>>,
     MatDatepickerControl<D>,
     MatDateRangeInputParent<D>,
     MatDateRangePickerInput<D>,
@@ -255,7 +259,7 @@ export class MatDateRangeInput<D>
     private _elementRef: ElementRef<HTMLElement>,
     @Optional() @Self() control: ControlContainer,
     @Optional() private _dateAdapter: DateAdapter<D>,
-    @Optional() @Inject(MAT_FORM_FIELD) private _formField?: MatFormField,
+    @Optional() @Inject(MAT_FORM_FIELD) private _formField?: MatLegacyFormField,
   ) {
     if (!_dateAdapter && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw createMissingDateImplError('DateAdapter');

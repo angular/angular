@@ -13,8 +13,8 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {ErrorStateMatcher, MatNativeDateModule} from '@angular/material/core';
 import {MatDatepickerModule} from './datepicker-module';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '../../cdk/testing/private';
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {BACKSPACE} from '@angular/cdk/keycodes';
@@ -32,8 +32,8 @@ describe('MatDateRangeInput', () => {
       imports: [
         FormsModule,
         MatDatepickerModule,
-        MatFormFieldModule,
-        MatInputModule,
+        MatLegacyFormFieldModule,
+        MatLegacyInputModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
         MatNativeDateModule,

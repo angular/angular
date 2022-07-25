@@ -1,11 +1,12 @@
 @forward '../core/style/form-common.import';
 @forward '../core/typography/typography-utils.import';
 @forward 'form-field-legacy-theme' hide $legacy-dedupe, legacy-color, legacy-theme,
-legacy-typography, private-form-field-legacy-density;
+  legacy-typography, private-form-field-legacy-density;
 @forward 'form-field-legacy-theme' as mat-* hide $mat-legacy-dedupe, mat-legacy-color,
-mat-legacy-label-floating, mat-legacy-label-floating-print, mat-legacy-theme, mat-legacy-typography;
+  mat-legacy-label-floating, mat-legacy-label-floating-print, mat-legacy-theme,
+  mat-legacy-typography;
 @forward 'form-field-legacy-theme' as mat-form-field-* hide mat-form-field-legacy-label-floating,
-mat-form-field-legacy-label-floating-print, mat-form-field-private-form-field-legacy-density;
+  mat-form-field-legacy-label-floating-print, mat-form-field-private-form-field-legacy-density;
 
 @import '../core/theming/palette';
 @import '../core/theming/theming';

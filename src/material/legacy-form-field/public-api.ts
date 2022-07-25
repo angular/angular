@@ -6,21 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './directives/label';
-export * from './directives/error';
-export * from './directives/hint';
-export * from './directives/prefix';
-export * from './directives/suffix';
+export * from './form-field-module';
+export * from './error';
 export * from './form-field';
-export * from './module';
+export * from './hint';
+export * from './placeholder';
+export * from './prefix';
+export * from './suffix';
+export * from './label';
 
 export {
   MAT_FORM_FIELD,
-  MatFormFieldControl,
+  MAT_FORM_FIELD_DEFAULT_OPTIONS,
+  MatFormFieldControl as MatLegacyFormFieldControl,
   getMatFormFieldDuplicatedHintError,
   getMatFormFieldMissingControlError,
   getMatFormFieldPlaceholderConflictError,
-  _MAT_HINT,
-  MatPlaceholder,
   matFormFieldAnimations,
+  MAT_SUFFIX,
+  MAT_ERROR,
+  MAT_PREFIX,
 } from '@angular/material/form-field';

@@ -16,7 +16,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {MatPaginatorIntl, _MatPaginatorBase} from '@angular/material/paginator';
-import {MatFormFieldAppearance} from '@angular/material-experimental/mdc-form-field';
+import {MatFormFieldAppearance} from '@angular/material/form-field';
 
 // Note that while `MatPaginatorDefaultOptions` and `MAT_PAGINATOR_DEFAULT_OPTIONS` are identical
 // between the MDC and non-MDC versions, we have to duplicate them, because the type of

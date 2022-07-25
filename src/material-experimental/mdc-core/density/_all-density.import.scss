@@ -50,23 +50,6 @@ $mat-mdc-table-mdc-data-table-selected-row-fill-color,
 $mat-mdc-table-mdc-data-table-sort-icon-active-color, $mat-mdc-table-mdc-data-table-sort-icon-color,
 $mat-mdc-table-mdc-data-table-stroke-color, $mat-mdc-table-mdc-data-table-table-divider-color;
 @forward '../../mdc-paginator/paginator-variables' as mat-mdc-paginator-*;
-@forward '../../mdc-form-field/form-field-sizing';
-@forward '../../mdc-form-field/form-field-native-select' hide private-form-field-native-select,
-private-form-field-native-select-color;
-@forward '../../mdc-form-field/form-field-native-select' as mat-mdc-* hide
-$mat-mdc-mat-form-field-select-arrow-height, $mat-mdc-mat-form-field-select-arrow-width,
-$mat-mdc-mat-form-field-select-horizontal-end-padding;
-@forward '../../mdc-form-field/mdc-text-field-theme-variable-refresh' hide
-private-text-field-refresh-theme-variables;
-@forward '../../mdc-form-field/mdc-text-field-theme-variable-refresh' as mat-mdc-* hide
-$mat-mdc-mdc-text-field-background, $mat-mdc-mdc-text-field-bottom-line-hover,
-$mat-mdc-mdc-text-field-bottom-line-idle, $mat-mdc-mdc-text-field-disabled-background,
-$mat-mdc-mdc-text-field-disabled-border, $mat-mdc-mdc-text-field-disabled-border-border,
-$mat-mdc-mdc-text-field-disabled-ink-color, $mat-mdc-mdc-text-field-disabled-label-color,
-$mat-mdc-mdc-text-field-disabled-placeholder-ink-color, $mat-mdc-mdc-text-field-focused-label-color,
-$mat-mdc-mdc-text-field-ink-color, $mat-mdc-mdc-text-field-label,
-$mat-mdc-mdc-text-field-outlined-disabled-border, $mat-mdc-mdc-text-field-outlined-hover-border,
-$mat-mdc-mdc-text-field-outlined-idle-border, $mat-mdc-mdc-text-field-placeholder-ink-color;
 @forward '../core-theme.import';
 @forward '../../mdc-autocomplete/autocomplete-theme' as mat-mdc-autocomplete-*;
 @forward '../../mdc-dialog/dialog-theme' as mat-mdc-dialog-*;
@@ -76,11 +59,6 @@ $mat-mdc-mdc-text-field-outlined-idle-border, $mat-mdc-mdc-text-field-placeholde
 @forward '../../mdc-menu/menu-theme' as mat-mdc-menu-*;
 @forward '../../mdc-paginator/paginator-theme' as mat-mdc-paginator-*;
 @forward '../../mdc-progress-spinner/progress-spinner-theme' as mat-mdc-progress-spinner-*;
-@forward '../../mdc-input/input-theme' as mat-mdc-input-*;
-@forward '../../mdc-form-field/form-field-density' as mat-mdc-*;
-@forward '../../mdc-form-field/form-field-subscript' as mat-mdc-*;
-@forward '../../mdc-form-field/form-field-focus-overlay' as mat-mdc-*;
-@forward '../../mdc-form-field/form-field-theme' as mat-mdc-form-field-*;
 @forward '../theming/all-theme';
 @forward 'all-density' show all-mdc-component-densities;
 

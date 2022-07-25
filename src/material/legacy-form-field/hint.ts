@@ -18,7 +18,7 @@ let nextUniqueId = 0;
  * *Note*: This is not part of the public API as the MDC-based form-field will not
  * need a lightweight token for `MatHint` and we want to reduce breaking changes.
  */
-export const _MAT_HINT = new InjectionToken<MatHint>('MatHint');
+export const _MAT_HINT = new InjectionToken<MatLegacyHint>('MatHint');
 
 /** Hint text to be shown underneath the form field control. */
 @Directive({
@@ -30,9 +30,9 @@ export const _MAT_HINT = new InjectionToken<MatHint>('MatHint');
     // Remove align attribute to prevent it from interfering with layout.
     '[attr.align]': 'null',
   },
-  providers: [{provide: _MAT_HINT, useExisting: MatHint}],
+  providers: [{provide: _MAT_HINT, useExisting: MatLegacyHint}],
 })
-export class MatHint {
+export class MatLegacyHint {
   /** Whether to align the hint label at the start or end of the line. */
   @Input() align: 'start' | 'end' = 'start';
 

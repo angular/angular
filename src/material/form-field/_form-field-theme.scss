@@ -1,254 +1,132 @@
-@use 'sass:map';
-@use 'sass:math';
+@use '@material/textfield' as mdc-textfield;
+@use '@material/floating-label' as mdc-floating-label;
+@use '@material/notched-outline' as mdc-notched-outline;
+@use '@material/line-ripple' as mdc-line-ripple;
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/typography/typography' as mdc-typography;
+
 @use '../core/theming/theming';
 @use '../core/typography/typography';
-@use '../core/typography/typography-utils';
+@use '../core/mdc-helpers/mdc-helpers';
+@use './form-field-density';
+@use './form-field-subscript';
+@use './form-field-focus-overlay';
+@use './form-field-native-select';
+@use './mdc-text-field-theme-variable-refresh';
 
-@use './form-field-fill-theme.scss';
-@use './form-field-legacy-theme.scss';
-@use './form-field-outline-theme.scss';
-@use './form-field-standard-theme.scss';
 
-// Color styles that apply to all appearances of the form-field.
-@mixin color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
-  $primary: map.get($config, primary);
-  $accent: map.get($config, accent);
-  $warn: map.get($config, warn);
-  $background: map.get($config, background);
-  $foreground: map.get($config, foreground);
-  $is-dark-theme: map.get($config, is-dark);
+// Mixin that overwrites the default MDC text-field color styles to be based on
+// the given theme palette. The MDC text-field is styled using `primary` by default.
+@mixin _color-styles($palette-name,
+  $query: mdc-helpers.$mdc-theme-styles-query) {
+  $orig-focused-label-color: mdc-textfield.$focused-label-color;
+  mdc-textfield.$focused-label-color: rgba(mdc-theme-color.prop-value($palette-name), 0.87);
 
-  // Label colors. Required is used for the `*` star shown in the label.
-  $label-color:
-    theming.get-color-from-palette($foreground, secondary-text, if($is-dark-theme, 0.7, 0.6));
-  $focused-label-color: theming.get-color-from-palette($primary, text);
-  $required-label-color: theming.get-color-from-palette($accent, text);
+  @include mdc-textfield.caret-color($palette-name, $query);
+  @include mdc-textfield.line-ripple-color($palette-name, $query);
 
-  // Underline colors.
-  $underline-color-base:
-    theming.get-color-from-palette($foreground, divider, if($is-dark-theme, 1, 0.87));
-  $underline-color-accent: theming.get-color-from-palette($accent, text);
-  $underline-color-warn: theming.get-color-from-palette($warn, text);
-  $underline-focused-color: theming.get-color-from-palette($primary, text);
-
-  .mat-form-field-label {
-    color: $label-color;
+  .mdc-text-field--focused {
+    @include mdc-textfield.focused_($query);
   }
 
-  .mat-hint {
-    color: $label-color;
+  .mdc-text-field--invalid {
+    @include mdc-textfield.invalid_($query);
   }
 
-  .mat-form-field.mat-focused .mat-form-field-label {
-    color: $focused-label-color;
-
-    &.mat-accent {
-      color: $underline-color-accent;
-    }
-
-    &.mat-warn {
-      color: $underline-color-warn;
-    }
+  .mdc-text-field--outlined {
+    @include mdc-textfield.focused-outline-color($palette-name, $query);
   }
 
-  .mat-focused .mat-form-field-required-marker {
-    color: $required-label-color;
-  }
-
-  .mat-form-field-ripple {
-    background-color: $underline-color-base;
-  }
-
-  .mat-form-field.mat-focused {
-    .mat-form-field-ripple {
-      background-color: $underline-focused-color;
-
-      &.mat-accent {
-        background-color: $underline-color-accent;
-      }
-
-      &.mat-warn {
-        background-color: $underline-color-warn;
-      }
-    }
-  }
-
-  .mat-form-field-type-mat-native-select.mat-focused:not(.mat-form-field-invalid) {
-    .mat-form-field-infix::after {
-      color: $underline-focused-color;
-    }
-
-    &.mat-accent .mat-form-field-infix::after {
-      color: $underline-color-accent;
-    }
-
-    &.mat-warn .mat-form-field-infix::after {
-      color: $underline-color-warn;
-    }
-  }
-
-  // Styling for the error state of the form field. Note that while the same can be
-  // achieved with the ng-* classes, we use this approach in order to ensure that the same
-  // logic is used to style the error state and to show the error messages.
-  .mat-form-field.mat-form-field-invalid {
-    .mat-form-field-label {
-      color: $underline-color-warn;
-
-      &.mat-accent,
-      .mat-form-field-required-marker {
-        color: $underline-color-warn;
-      }
-    }
-
-    .mat-form-field-ripple,
-    .mat-form-field-ripple.mat-accent {
-      background-color: $underline-color-warn;
-    }
-  }
-
-  .mat-error {
-    color: $underline-color-warn;
-  }
-
-  @include form-field-legacy-theme.legacy-color($config);
-  @include form-field-standard-theme.standard-color($config);
-  @include form-field-fill-theme.fill-color($config);
-  @include form-field-outline-theme.outline-color($config);
+  mdc-textfield.$focused-label-color: $orig-focused-label-color;
 }
 
-// Used to make instances of the _mat-form-field-label-floating mixin negligibly different,
-// and prevent Google's CSS Optimizer from collapsing the declarations. This is needed because some
-// of the selectors contain pseudo-classes not recognized in all browsers. If a browser encounters
-// an unknown pseudo-class it will discard the entire rule set.
-$dedupe: 0;
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  @include mdc-helpers.using-mdc-theme($config) {
+    @include mdc-text-field-theme-variable-refresh.private-text-field-refresh-theme-variables() {
+      @include mdc-textfield.without-ripple($query: mdc-helpers.$mdc-theme-styles-query);
+      @include mdc-floating-label.core-styles($query: mdc-helpers.$mdc-theme-styles-query);
+      @include mdc-notched-outline.core-styles($query: mdc-helpers.$mdc-theme-styles-query);
+      @include mdc-line-ripple.core-styles($query: mdc-helpers.$mdc-theme-styles-query);
+      @include form-field-subscript.private-form-field-subscript-color();
+      @include form-field-focus-overlay.private-form-field-focus-overlay-color();
+      @include form-field-native-select.private-form-field-native-select-color($config);
 
-// Applies a floating label above the form field control itself.
-@mixin _label-floating($font-scale, $infix-padding, $infix-margin-top) {
-  transform: translateY(-$infix-margin-top - $infix-padding + $dedupe)
-             scale($font-scale);
-  width: math.div(100%, $font-scale) + $dedupe;
+      .mat-mdc-form-field.mat-accent {
+        @include _color-styles(secondary);
+      }
 
-  $dedupe: $dedupe + 0.00001 !global;
+      .mat-mdc-form-field.mat-warn {
+        @include _color-styles(error);
+      }
+
+      // This fixes an issue where the notch appears to be thicker than the rest of the outline when
+      // zoomed in on Chrome. The border inconsistency seems to be some kind of rendering artifact
+      // that arises from a combination of the fact that the notch contains text, while the leading
+      // and trailing outline do not, combined with the fact that the border is semi-transparent.
+      // Experimentally, I discovered that adding a transparent left border fixes the inconsistency.
+      // Note: class name is repeated to achieve sufficient specificity over the various MDC states.
+      // (hover, focus, etc.)
+      // TODO(mmalerba): port this fix into MDC
+      .mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field {
+        &.mat-mdc-form-field .mdc-notched-outline__notch {
+          border-left: 1px solid transparent;
+        }
+      }
+
+      [dir='rtl'] {
+        .mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field {
+          &.mat-mdc-form-field .mdc-notched-outline__notch {
+            border-left: none;
+            border-right: 1px solid transparent;
+          }
+        }
+      }
+    }
+  }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
+  $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
-  // The unit-less line-height from the font config.
-  $line-height: typography-utils.line-height($config, input);
+  @include mdc-helpers.using-mdc-typography($config) {
+    @include mdc-textfield.without-ripple($query: mdc-helpers.$mdc-typography-styles-query);
+    @include mdc-floating-label.core-styles($query: mdc-helpers.$mdc-typography-styles-query);
+    @include mdc-notched-outline.core-styles($query: mdc-helpers.$mdc-typography-styles-query);
+    @include mdc-line-ripple.core-styles($query: mdc-helpers.$mdc-typography-styles-query);
+    @include form-field-subscript.private-form-field-subscript-typography($config);
 
-  // The amount to scale the font for the floating label and subscript.
-  $subscript-font-scale: 0.75;
-  // The amount to scale the font for the prefix and suffix icons.
-  $prefix-suffix-icon-font-scale: 1.5;
-
-  // The padding on the infix. Mocks show half of the text size.
-  $infix-padding: 0.5em;
-  // The margin applied to the form-field-infix to reserve space for the floating label.
-  // If the line-height is given as a unitless number, coerce it to `em`.
-  $infix-margin-top: $subscript-font-scale *
-      typography-utils.private-coerce-unitless-to-em($line-height);
-  // Font size to use for the label and subscript text.
-  $subscript-font-size: $subscript-font-scale * 100%;
-  // Font size to use for the for the prefix and suffix icons.
-  $prefix-suffix-icon-font-size: $prefix-suffix-icon-font-scale * 100%;
-  // The space between the bottom of the .mat-form-field-flex area and the subscript wrapper.
-  // Mocks show half of the text size, but this margin is applied to an element with the subscript
-  // text font size, so we need to divide by the scale factor to make it half of the original text
-  // size.
-  $subscript-margin-top: math.div(0.5em, $subscript-font-scale);
-  // The padding applied to the form-field-wrapper to reserve space for the subscript, since it's
-  // absolutely positioned. This is a combination of the subscript's margin and line-height, but we
-  // need to multiply by the subscript font scale factor since the wrapper has a larger font size.
-  $wrapper-padding-bottom: ($subscript-margin-top + $line-height) * $subscript-font-scale;
-
-  .mat-form-field {
-    @include typography-utils.typography-level($config, input);
-  }
-
-  .mat-form-field-wrapper {
-    padding-bottom: $wrapper-padding-bottom;
-  }
-
-  .mat-form-field-prefix,
-  .mat-form-field-suffix {
-    // Allow icons in a prefix or suffix to adapt to the correct size.
-    .mat-icon {
-      font-size: $prefix-suffix-icon-font-size;
-      line-height: $line-height;
+    // MDC uses `subtitle1` for the input value, placeholder and floating label. The spec
+    // shows `body1` for text fields though, so we manually override the typography.
+    // Note: Form controls inherit the typography from the parent form field.
+    .mat-mdc-form-field,
+    .mat-mdc-floating-label {
+      @include mdc-typography.typography(body1, $query: mdc-helpers.$mdc-typography-styles-query);
     }
 
-    // Allow icon buttons in a prefix or suffix to adapt to the correct size.
-    .mat-icon-button {
-      height: $prefix-suffix-icon-font-scale * 1em;
-      width: $prefix-suffix-icon-font-scale * 1em;
-
-      .mat-icon {
-        height: typography-utils.private-coerce-unitless-to-em($line-height);
-        line-height: $line-height;
+    // Above, we updated the floating label to use the `body1` typography level. The MDC notched
+    // outline overrides this accidentally (only when the label floats) to a `rem`-based value.
+    // This results in different label widths when floated/docked and ultimately breaks the notch
+    // width as it has been measured in the docked state (where `body1` is applied). We try to
+    // unset these styles set by the `mdc-notched-outline`:
+    // https://github.com/material-components/material-components-web/blob/master/packages/mdc-notched-outline/_mixins.scss#L272-L292.
+    .mat-mdc-form-field .mdc-text-field--outlined {
+      // For the non-upgraded notch label (i.e. when rendered on the server), also
+      // use the correct `body1` typography level.
+      .mdc-floating-label--float-above {
+        font-size: calc(#{
+            mdc-typography.get-size(body1)} * var(--mat-mdc-form-field-floating-label-scale, 0.75));
+      }
+      .mdc-notched-outline--upgraded .mdc-floating-label--float-above {
+        font-size: mdc-typography.get-size(body1);
       }
     }
   }
-
-  .mat-form-field-infix {
-    padding: $infix-padding 0;
-    // Throws off the baseline if we do it as a real margin, so we do it as a border instead.
-    border-top: $infix-margin-top solid transparent;
-  }
-
-  .mat-form-field-can-float {
-    &.mat-form-field-should-float .mat-form-field-label,
-    .mat-input-server:focus + .mat-form-field-label-wrapper .mat-form-field-label {
-      @include _label-floating(
-              $subscript-font-scale, $infix-padding, $infix-margin-top);
-    }
-
-    // Server-side rendered matInput with a label attribute but label not shown
-    // (used as a pure CSS stand-in for mat-form-field-should-float).
-    .mat-input-server[label]:not(:label-shown) + .mat-form-field-label-wrapper
-        .mat-form-field-label {
-      @include _label-floating(
-              $subscript-font-scale, $infix-padding, $infix-margin-top);
-    }
-  }
-
-  .mat-form-field-label-wrapper {
-    top: -$infix-margin-top;
-    padding-top: $infix-margin-top;
-  }
-
-  .mat-form-field-label {
-    top: $infix-margin-top + $infix-padding;
-  }
-
-  .mat-form-field-underline {
-    // We want the underline to start at the end of the content box, not the padding box,
-    // so we move it up by the padding amount.
-    bottom: $wrapper-padding-bottom;
-  }
-
-  .mat-form-field-subscript-wrapper {
-    font-size: $subscript-font-size;
-    margin-top: $subscript-margin-top;
-
-    // We want the subscript to start at the end of the content box, not the padding box,
-    // so we move it up by the padding amount (adjusted for the smaller font size);
-    top: calc(100% - #{math.div($wrapper-padding-bottom, $subscript-font-scale)});
-  }
-
-  @include form-field-legacy-theme.legacy-typography($config);
-  @include form-field-standard-theme.standard-typography($config);
-  @include form-field-fill-theme.fill-typography($config);
-  @include form-field-outline-theme.outline-typography($config);
 }
 
 @mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
-  @include form-field-legacy-theme.private-form-field-legacy-density($density-scale);
-  @include form-field-standard-theme.private-form-field-standard-density($density-scale);
-  @include form-field-fill-theme.private-form-field-fill-density($density-scale);
-  @include form-field-outline-theme.private-form-field-outline-density($density-scale);
+  @include form-field-density.private-form-field-density($density-scale);
 }
 
 @mixin theme($theme-or-color-config) {

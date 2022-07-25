@@ -10,11 +10,11 @@ ts_library(
     ),
     deps = [
         "//src/cdk/testing",
-        "//src/material-experimental/mdc-input/testing",
-        "//src/material-experimental/mdc-select/testing",
         "//src/material/datepicker/testing",
         "//src/material/form-field/testing",
         "//src/material/form-field/testing/control",
+        "//src/material/legacy-input/testing",
+        "//src/material/select/testing",
     ],
 )
 
@@ -25,28 +25,23 @@ filegroup(
 
 ng_test_library(
     name = "unit_tests_lib",
-    srcs = glob(
-        ["**/*.spec.ts"],
-        exclude = ["shared.spec.ts"],
-    ),
+    srcs = glob(["**/*.spec.ts"]),
     deps = [
         ":testing",
-        "//src/material-experimental/mdc-autocomplete",
-        "//src/material-experimental/mdc-core",
-        "//src/material-experimental/mdc-form-field",
-        "//src/material-experimental/mdc-input",
-        "//src/material-experimental/mdc-input/testing",
-        "//src/material-experimental/mdc-select",
-        "//src/material-experimental/mdc-select/testing",
+        "//src/material/autocomplete",
+        "//src/material/core",
         "//src/material/datepicker",
         "//src/material/datepicker/testing",
+        "//src/material/legacy-form-field",
+        "//src/material/legacy-input",
+        "//src/material/legacy-input/testing",
+        "//src/material/select",
+        "//src/material/select/testing",
         "//src/material/form-field/testing:harness_tests_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [
-        ":unit_tests_lib",
-    ],
+    deps = [":unit_tests_lib"],
 )

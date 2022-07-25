@@ -14,85 +14,56 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    assets = [
-        ":form-field.css",
-        ":form-field-fill.css",
-        ":form-field-input.css",
-        ":form-field-legacy.css",
-        ":form-field-outline.css",
-        ":form-field-standard.css",
-    ] + glob(["**/*.html"]),
+    assets = [":form_field_scss"] + glob(["**/*.html"]),
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/bidi",
-        "//src/cdk/coercion",
         "//src/cdk/observers",
         "//src/cdk/platform",
         "//src/material/core",
-        "@npm//@angular/animations",
-        "@npm//@angular/common",
-        "@npm//@angular/core",
         "@npm//@angular/forms",
-        "@npm//@angular/platform-browser",
         "@npm//rxjs",
     ],
 )
 
 sass_library(
     name = "form_field_scss_lib",
-    srcs = glob(["**/_*.scss"]),
-    deps = ["//src/material/core:core_scss_lib"],
+    srcs = [
+        "_form-field-theme.scss",
+        "_mdc-text-field-theme-variable-refresh.scss",
+    ],
+    deps = [
+        ":form_field_partials",
+        "//:mdc_sass_lib",
+        "//src/material/core:core_scss_lib",
+    ],
 )
 
 sass_binary(
     name = "form_field_scss",
     src = "form-field.scss",
     deps = [
-        "//src/cdk:sass_lib",
+        ":form_field_partials",
+        "//:mdc_sass_lib",
+        "//src/material:sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )
 
-sass_binary(
-    name = "form_field_fill_scss",
-    src = "form-field-fill.scss",
-    deps = [
-        "//src/cdk:sass_lib",
-        "//src/material/core:core_scss_lib",
+sass_library(
+    name = "form_field_partials",
+    srcs = [
+        "_form-field-density.scss",
+        "_form-field-focus-overlay.scss",
+        "_form-field-high-contrast.scss",
+        "_form-field-native-select.scss",
+        "_form-field-sizing.scss",
+        "_form-field-subscript.scss",
+        "_mdc-text-field-structure-overrides.scss",
+        "_mdc-text-field-textarea-overrides.scss",
     ],
-)
-
-sass_binary(
-    name = "form_field_input_scss",
-    src = "form-field-input.scss",
     deps = [
-        "//src/cdk:sass_lib",
-        "//src/material/core:core_scss_lib",
-    ],
-)
-
-sass_binary(
-    name = "form_field_legacy_scss",
-    src = "form-field-legacy.scss",
-    deps = [
-        "//src/cdk:sass_lib",
-        "//src/material/core:core_scss_lib",
-    ],
-)
-
-sass_binary(
-    name = "form_field_outline_scss",
-    src = "form-field-outline.scss",
-    deps = [
-        "//src/cdk:sass_lib",
-        "//src/material/core:core_scss_lib",
-    ],
-)
-
-sass_binary(
-    name = "form_field_standard_scss",
-    src = "form-field-standard.scss",
-    deps = [
+        "//:mdc_sass_lib",
         "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
     ],

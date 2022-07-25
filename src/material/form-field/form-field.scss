@@ -1,21 +1,51 @@
-@use '@angular/cdk';
+@use '@material/textfield' as mdc-textfield;
+@use '@material/floating-label' as mdc-floating-label;
+@use '@material/notched-outline' as mdc-notched-outline;
+@use '@material/line-ripple' as mdc-line-ripple;
+@use '../core/mdc-helpers/mdc-helpers';
+@use '../core/style/vendor-prefixes';
+@use './form-field-sizing';
+@use './form-field-subscript';
+@use './form-field-focus-overlay';
+@use './form-field-high-contrast';
+@use './form-field-native-select';
+@use './mdc-text-field-textarea-overrides';
+@use './mdc-text-field-structure-overrides';
 
-@use '../core/style/variables';
+// Base styles for MDC text-field, notched-outline, floating label and line-ripple.
+@include mdc-helpers.disable-mdc-fallback-declarations {
+  @include mdc-textfield.without-ripple(
+    $query: mdc-helpers.$mdc-base-styles-without-animation-query);
+  @include mdc-floating-label.core-styles(
+    $query: mdc-helpers.$mdc-base-styles-without-animation-query);
+  @include mdc-notched-outline.core-styles(
+    $query: mdc-helpers.$mdc-base-styles-without-animation-query);
+  @include mdc-line-ripple.core-styles(
+    $query: mdc-helpers.$mdc-base-styles-without-animation-query);
+}
 
-// Styles that apply to all appearances of the form-field.
+// MDC text-field overwrites.
+@include mdc-text-field-textarea-overrides.private-text-field-textarea-overrides();
+@include mdc-text-field-structure-overrides.private-text-field-structure-overrides();
 
-// Min amount of space between start and end hint.
-$hint-min-space: 1em !default;
-// Infix stretches to fit the container, but naturally wants to be this wide. We set this in order
-// to have a a consistent natural size for the various types of controls that can go in a form
-// field.
-$default-infix-width: 180px !default;
+// Include the subscript, focus-overlay, native select and high-contrast styles.
+@include form-field-subscript.private-form-field-subscript();
+@include form-field-focus-overlay.private-form-field-focus-overlay();
+@include form-field-native-select.private-form-field-native-select();
+@include form-field-high-contrast.private-form-field-high-contrast();
 
+// Host element of the form-field. It contains the mdc-text-field wrapper
+// and the subscript wrapper.
+.mat-mdc-form-field {
+  // The scale to use for the form-field's label when its in the floating position.
+  --mat-mdc-form-field-floating-label-scale: 0.75;
 
-.mat-form-field {
-  display: inline-block;
-  position: relative;
-
+  display: inline-flex;
+  // This container contains the text-field and the subscript. The subscript
+  // should be displayed below the text-field. Hence the column direction.
+  flex-direction: column;
+  // This allows the form-field to shrink down when used inside flex or grid layouts.
+  min-width: 0;
   // To avoid problems with text-align.
   text-align: left;
 
@@ -24,230 +54,97 @@ $default-infix-width: 180px !default;
   }
 }
 
-// Global wrapper. We need to apply margin to the element for spacing, but
-// cannot apply it to the host element directly.
-.mat-form-field-wrapper {
-  position: relative;
-}
-
-// We use a flex layout to baseline align the prefix and suffix elements.
-// The underline is outside of it so it can cover all of the elements under this flex container.
-.mat-form-field-flex {
+// Container that contains the prefixes, infix and suffixes. These elements should
+// be aligned vertically in the baseline and in a single row.
+.mat-mdc-form-field-flex {
   display: inline-flex;
   align-items: baseline;
   box-sizing: border-box;
   width: 100%;
 }
 
-.mat-form-field-prefix,
-.mat-form-field-suffix {
-  white-space: nowrap;
-  flex: none;
-  position: relative;
-}
-
-.mat-form-field-infix {
-  display: block;
-  position: relative;
-  flex: auto;
-  min-width: 0;
-  width: $default-infix-width;
-
-  // In high contrast mode IE/Edge will render all of the borders, even if they're transparent.
-  // Since we can't remove the border altogether or replace it with a margin, because it'll throw
-  // off the baseline, and we can't use a base64-encoded 1x1 transparent image because of CSP,
-  // we work around it by setting a linear gradient that goes from `transparent` to `transparent`.
-  @include cdk.high-contrast(active, off) {
-    border-image: linear-gradient(transparent, transparent);
-  }
-}
-
-// Used to hide the label overflow on IE, since IE doesn't take transform into account when
-// determining overflow.
-.mat-form-field-label-wrapper {
-  position: absolute;
-  left: 0;
-  box-sizing: content-box;
+// The MDC text-field should stretch to the width of the host `<mat-form-field>` element.
+// This allows developers to control the width without needing custom CSS overrides.
+.mat-mdc-text-field-wrapper {
   width: 100%;
-  height: 100%;
-  overflow: hidden;
-  pointer-events: none;  // We shouldn't catch mouse events (let them through).
+}
 
-  [dir='rtl'] & {
-    // Usually this isn't necessary since the element is 100% wide, but
-    // when we've got a `select` node, we need to set a `max-width` on it.
-    left: auto;
-    right: 0;
+// Vertically center icons.
+.mat-mdc-form-field-icon-prefix,
+.mat-mdc-form-field-icon-suffix {
+  align-self: center;
+  // The line-height can cause the prefix/suffix container to be taller than the actual icons,
+  // breaking the vertical centering. To prevent this we set the line-height to 0.
+  line-height: 0;
+}
+
+// The prefix/suffix needs a little extra padding between the icon and the infix. Because we need to
+// support arbitrary height input elements, we use a different DOM structure for prefix and suffix
+// icons, and therefore can't rely on MDC for these styles.
+.mat-mdc-form-field-icon-prefix,
+[dir='rtl'] .mat-mdc-form-field-icon-suffix {
+  padding: 0 form-field-sizing.$mat-form-field-icon-prefix-infix-padding 0 0;
+}
+.mat-mdc-form-field-icon-suffix,
+[dir='rtl'] .mat-mdc-form-field-icon-prefix {
+  padding: 0 0 0 form-field-sizing.$mat-form-field-icon-prefix-infix-padding;
+}
+
+.mat-mdc-form-field-icon-prefix,
+.mat-mdc-form-field-icon-suffix {
+  & > .mat-icon {
+    padding: 12px;
+    // It's common for apps to apply `box-sizing: border-box`
+    // globally which will break the alignment.
+    box-sizing: content-box;
   }
 }
 
-// The label itself. This is invisible unless it is. The logic to show it is
-// basically `empty || (float && (!empty || focused))`. Float is dependent on the
-// `floatingPlaceholder` property.
-.mat-form-field-label {
-  // The label is after the form field control, but needs to be aligned top-left of the infix <div>.
-  position: absolute;
-  left: 0;
-
-  font: inherit;
-  pointer-events: none;  // We shouldn't catch mouse events (let them through).
-
-  // Put ellipsis text overflow.
-  width: 100%;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-
-  transform-origin: 0 0;
-  transition: transform variables.$swift-ease-out-duration
-    variables.$swift-ease-out-timing-function, color variables.$swift-ease-out-duration
-    variables.$swift-ease-out-timing-function, width variables.$swift-ease-out-duration
-    variables.$swift-ease-out-timing-function;
-
-  // Hide the label initially, and only show it when it's floating or the control is empty.
-  display: none;
-
-  [dir='rtl'] & {
-    transform-origin: 100% 0;
-    left: auto;
-    right: 0;
-  }
-
-  .mat-form-field-disabled & {
-    @include cdk.high-contrast(active, off) {
-      color: GrayText;
-    }
-  }
-}
-
-.mat-form-field-empty.mat-form-field-label,
-.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
-  display: block;
-}
-
-// Pseudo-class for Chrome and Safari auto-fill to move the label to the floating position.
-// This is necessary because these browsers do not actually fire any events when a form auto-fill is
-// occurring. Once the autofill is committed, a change event happen and the regular mat-form-field
-// classes take over to fulfill this behaviour.
-// @breaking-change 8.0.0 will rely on AutofillMonitor instead.
-.mat-form-field-autofill-control:-webkit-autofill + .mat-form-field-label-wrapper
-    .mat-form-field-label {
-  // The form field will be considered empty if it is autofilled, and therefore the label will
-  // be shown. Therefore we need to override it to hidden...
-  display: none;
-
-  // ...and re-show it only if it's able to float.
-  .mat-form-field-can-float & {
-    display: block;
-    transition: none;
-  }
-}
-
-// Server-side rendered matInput with focus or a placeholder attribute but placeholder not shown
-// (used as a pure CSS stand-in for mat-form-field-should-float).
-// stylelint-disable material/no-prefixes
-.mat-input-server:focus + .mat-form-field-label-wrapper .mat-form-field-label,
-.mat-input-server[placeholder]:not(:placeholder-shown) + .mat-form-field-label-wrapper
-    .mat-form-field-label {
-  display: none;
-
-  .mat-form-field-can-float & {
-    display: block;
-  }
-}
-// stylelint-enable material/no-prefixes
-
-// Disable the label animation when the control is not empty (this prevents label
-// animating up when the value is set programmatically).
-.mat-form-field-label:not(.mat-form-field-empty) {
-  transition: none;
-}
-
-.mat-form-field-underline {
-  position: absolute;
-  width: 100%;
-  // Need this so that the underline doesn't block the hover effect.
-  pointer-events: none;
-  // We transform the height slightly higher to fix inconsistent underline height for some DPIs.
-  // Without this we observed that at zoom levels between 50% and 100% some form-field underlines
-  // would disappear. The issue appears to be related to fractional pixels since (e.g. underlines
-  // with their top at x.6 would disappear, but ones with there top at x.7 were fine). The exact
-  // fractions that caused problems seemed to depend on the screen resolution and zoom level. We
-  // experimentally discovered that adding a very slight scale factor fixes the issue.
-  // `scale3d` must be used rather than `scaleY`, as `scaleY` causes a jitter effect in Chrome.
-  transform: scale3d(1, 1.0001, 1);
-}
-
-.mat-form-field-ripple {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  transform-origin: 50%;
-  transform: scaleX(0.5);
-  opacity: 0;
-  transition: background-color variables.$swift-ease-in-duration
-    variables.$swift-ease-in-timing-function;
-}
-
-.mat-form-field.mat-focused,
-.mat-form-field.mat-form-field-invalid {
-  .mat-form-field-ripple {
-    opacity: 1;
-    // Note that we transition this to `none`, rather than `scaleX(1)`, because the scaling
-    // seems to cause some rendering artifacts on adjacent form fields (see #21612).
-    transform: none;
-    transition: transform 300ms variables.$swift-ease-out-timing-function,
-                opacity 100ms variables.$swift-ease-out-timing-function,
-                background-color 300ms variables.$swift-ease-out-timing-function;
-  }
-}
-
-// Wrapper for the hints and error messages.
-.mat-form-field-subscript-wrapper {
-  position: absolute;
-  box-sizing: border-box;
-  width: 100%;
-  overflow: hidden; // prevents multi-line errors from overlapping the control
-}
-
-// Scale down icons in the label and hint to be the same size as the text.
-.mat-form-field-subscript-wrapper,
-.mat-form-field-label-wrapper {
+// Scale down icons in the subscript and floating label to be the same size
+// as the text.
+.mat-mdc-form-field-subscript-wrapper,
+.mat-mdc-form-field label {
   .mat-icon {
     width: 1em;
     height: 1em;
     font-size: inherit;
-    vertical-align: baseline;
   }
 }
 
-// Clears the floats on the hints. This is necessary for the hint animation to work.
-.mat-form-field-hint-wrapper {
-  display: flex;
-}
-
-// Spacer used to make sure start and end hints have enough space between them.
-.mat-form-field-hint-spacer {
-  flex: 1 0 $hint-min-space;
-}
-
-// Single error message displayed beneath the form field underline.
-.mat-error {
-  display: block;
-}
-
-// Element that can used to reliably align content in relation to the form field control.
-.mat-form-field-control-wrapper {
+// Infix that contains the projected content (usually an input or a textarea). We ensure
+// that the projected form-field control and content can stretch as needed, but we also
+// apply a default infix width to make the form-field's look natural.
+.mat-mdc-form-field-infix {
+  flex: auto;
+  min-width: 0;
+  width: form-field-sizing.$mat-form-field-default-infix-width;
+  // Needed so that the floating label does not overlap with prefixes or suffixes.
   position: relative;
+  box-sizing: border-box;
 }
 
-.mat-form-field-hint-end {
-  order: 1;
+// In the form-field theme, we add a 1px left margin to the notch to fix a rendering bug in Chrome.
+// Here we apply negative margin to offset the effect on the layout and a clip-path to ensure the
+// left border is completely hidden. (Though the border is transparent, it still creates a triangle
+// shaped artifact where it meets the top and bottom borders.)
+.mat-mdc-form-field .mdc-notched-outline__notch {
+  margin-left: -1px;
+  @include vendor-prefixes.clip-path(inset(-9em -999em -9em 1px));
+
+  [dir='rtl'] & {
+    margin-left: 0;
+    margin-right: -1px;
+    @include vendor-prefixes.clip-path(inset(-9em 1px -9em -999em));
+  }
 }
 
-.mat-form-field._mat-animation-noopable {
-  .mat-form-field-label,
-  .mat-form-field-ripple {
-    transition: none;
+// In order to make it possible for developers to disable animations for form-fields,
+// we only activate the animation styles if animations are not explicitly disabled.
+.mat-mdc-form-field:not(.mat-form-field-no-animations) {
+  @include mdc-helpers.disable-mdc-fallback-declarations {
+    @include mdc-textfield.without-ripple($query: animation);
+    @include mdc-floating-label.core-styles($query: animation);
+    @include mdc-notched-outline.core-styles($query: animation);
+    @include mdc-line-ripple.core-styles($query: animation);
   }
 }

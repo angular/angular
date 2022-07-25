@@ -36,7 +36,7 @@ import {
   mixinDisabled,
   CanDisable,
 } from '@angular/material/core';
-import {MatFormFieldAppearance} from '@angular/material/form-field';
+import {MatLegacyFormFieldAppearance} from '@angular/material/legacy-form-field';
 
 /** The default page size if there is no page size and there are no provided page size options. */
 const DEFAULT_PAGE_SIZE = 50;
@@ -77,7 +77,7 @@ export interface MatPaginatorDefaultOptions {
   showFirstLastButtons?: boolean;
 
   /** The default form-field appearance to apply to the page size options selector. */
-  formFieldAppearance?: MatFormFieldAppearance;
+  formFieldAppearance?: MatLegacyFormFieldAppearance;
 }
 
 /** Injection token that can be used to provide the default options for the paginator module. */
@@ -384,7 +384,7 @@ export abstract class _MatPaginatorBase<
 })
 export class MatPaginator extends _MatPaginatorBase<MatPaginatorDefaultOptions> {
   /** If set, styles the "page size" form field with the designated style. */
-  _formFieldAppearance?: MatFormFieldAppearance;
+  _formFieldAppearance?: MatLegacyFormFieldAppearance;
 
   constructor(
     intl: MatPaginatorIntl,

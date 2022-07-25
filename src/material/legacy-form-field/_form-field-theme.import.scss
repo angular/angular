@@ -1,0 +1,29 @@
+@forward '../core/style/form-common.import';
+@forward 'form-field-fill-theme' as mat-* hide $mat-fill-dedupe, mat-fill-color, mat-fill-theme,
+mat-fill-typography;
+@forward 'form-field-fill-theme' as mat-form-field-* hide
+mat-form-field-private-form-field-fill-density;
+@forward 'form-field-legacy-theme' as mat-* hide $mat-legacy-dedupe, mat-legacy-color,
+mat-legacy-theme, mat-legacy-typography;
+@forward 'form-field-legacy-theme' as mat-form-field-* hide
+mat-form-field-private-form-field-legacy-density;
+@forward 'form-field-outline-theme' as mat-* hide $mat-outline-dedupe, mat-outline-color,
+mat-outline-theme, mat-outline-typography;
+@forward 'form-field-outline-theme' as mat-form-field-* hide
+mat-form-field-private-form-field-outline-density;
+@forward '../core/typography/typography-utils.import';
+@forward 'form-field-standard-theme' as mat-* hide mat-standard-color, mat-standard-theme,
+mat-standard-typography;
+@forward 'form-field-standard-theme' as mat-form-field-* hide
+mat-form-field-private-form-field-standard-density;
+@forward 'form-field-theme' hide $dedupe, color, density, theme, typography;
+@forward 'form-field-theme' as mat-form-field-* hide mat-form-field-label-floating;
+
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/style/form-common';
+@import '../core/typography/typography-utils';
+@import './form-field-fill-theme.scss';
+@import './form-field-legacy-theme.scss';
+@import './form-field-outline-theme.scss';
+@import './form-field-standard-theme.scss';

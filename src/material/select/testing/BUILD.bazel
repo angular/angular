@@ -29,7 +29,7 @@ ng_test_library(
         "//src/cdk/overlay",
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
-        "//src/material/form-field",
+        "//src/material/legacy-form-field",
         "//src/material/select",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
@@ -45,7 +45,7 @@ ng_test_library(
     deps = [
         ":harness_tests_lib",
         ":testing",
-        "//src/material/form-field",
+        "//src/material/legacy-form-field",
         "//src/material/select",
     ],
 )

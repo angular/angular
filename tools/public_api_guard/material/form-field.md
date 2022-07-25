@@ -4,22 +4,19 @@
 
 ```ts
 
-import { _AbstractConstructor } from '@angular/material/core';
 import { AbstractControlDirective } from '@angular/forms';
 import { AfterContentChecked } from '@angular/core';
 import { AfterContentInit } from '@angular/core';
 import { AfterViewInit } from '@angular/core';
 import { AnimationTriggerMetadata } from '@angular/animations';
 import { BooleanInput } from '@angular/cdk/coercion';
-import { CanColor } from '@angular/material/core';
 import { ChangeDetectorRef } from '@angular/core';
-import { _Constructor } from '@angular/material/core';
 import { Directionality } from '@angular/cdk/bidi';
 import { ElementRef } from '@angular/core';
 import * as i0 from '@angular/core';
-import * as i10 from '@angular/cdk/observers';
-import * as i8 from '@angular/common';
-import * as i9 from '@angular/material/core';
+import * as i10 from '@angular/material/core';
+import * as i11 from '@angular/common';
+import * as i12 from '@angular/cdk/observers';
 import { InjectionToken } from '@angular/core';
 import { NgControl } from '@angular/forms';
 import { NgZone } from '@angular/core';
@@ -30,7 +27,7 @@ import { QueryList } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
 
 // @public
-export type FloatLabelType = 'always' | 'never' | 'auto';
+export type FloatLabelType = 'always' | 'auto';
 
 // @public
 export function getMatFormFieldDuplicatedHintError(align: string): Error;
@@ -51,9 +48,6 @@ export const MAT_FORM_FIELD: InjectionToken<MatFormField>;
 export const MAT_FORM_FIELD_DEFAULT_OPTIONS: InjectionToken<MatFormFieldDefaultOptions>;
 
 // @public
-export const _MAT_HINT: InjectionToken<MatHint>;
-
-// @public
 export const MAT_PREFIX: InjectionToken<MatPrefix>;
 
 // @public
@@ -71,39 +65,40 @@ export class MatError {
 }
 
 // @public
-export class MatFormField extends _MatFormFieldBase implements AfterContentInit, AfterContentChecked, AfterViewInit, OnDestroy, CanColor {
-    constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, _defaults: MatFormFieldDefaultOptions, _platform: Platform, _ngZone: NgZone, _animationMode: string);
+export class MatFormField implements AfterContentInit, AfterContentChecked, AfterViewInit, OnDestroy {
+    constructor(_elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _ngZone: NgZone, _dir: Directionality, _platform: Platform, _defaults?: MatFormFieldDefaultOptions | undefined, _animationMode?: string | undefined, _document?: any);
     _animateAndLockLabel(): void;
-    _animationsEnabled: boolean;
+    // (undocumented)
+    _animationMode?: string | undefined;
     get appearance(): MatFormFieldAppearance;
     set appearance(value: MatFormFieldAppearance);
-    // (undocumented)
-    _appearance: MatFormFieldAppearance;
-    _canLabelFloat(): boolean;
-    // (undocumented)
-    _connectionContainerRef: ElementRef;
-    // (undocumented)
+    color: ThemePalette;
     get _control(): MatFormFieldControl<any>;
     set _control(value: MatFormFieldControl<any>);
     // (undocumented)
-    _controlNonStatic: MatFormFieldControl<any>;
-    // (undocumented)
-    _controlStatic: MatFormFieldControl<any>;
-    // (undocumented)
     _errorChildren: QueryList<MatError>;
+    // (undocumented)
+    _floatingLabel: MatFormFieldFloatingLabel | undefined;
     get floatLabel(): FloatLabelType;
     set floatLabel(value: FloatLabelType);
+    _forceDisplayInfixLabel(): boolean | 0;
+    // (undocumented)
+    _formFieldControl: MatFormFieldControl<any>;
     getConnectedOverlayOrigin(): ElementRef;
     _getDisplayedMessages(): 'error' | 'hint';
     getLabelId(): string | null;
     // (undocumented)
     _hasFloatingLabel(): boolean;
     // (undocumented)
-    _hasLabel(): boolean;
+    _hasIconPrefix: boolean;
     // (undocumented)
-    _hasPlaceholder(): boolean;
+    _hasIconSuffix: boolean;
     // (undocumented)
-    _hideControlPlaceholder(): boolean;
+    _hasOutline(): boolean;
+    // (undocumented)
+    _hasTextPrefix: boolean;
+    // (undocumented)
+    _hasTextSuffix: boolean;
     get hideRequiredMarker(): boolean;
     set hideRequiredMarker(value: BooleanInput);
     // (undocumented)
@@ -113,13 +108,16 @@ export class MatFormField extends _MatFormFieldBase implements AfterContentInit,
     // (undocumented)
     readonly _hintLabelId: string;
     // (undocumented)
-    _inputContainerRef: ElementRef;
+    _iconPrefixContainer: ElementRef<HTMLElement>;
     // (undocumented)
-    _labelChildNonStatic: MatLabel;
+    _labelChildNonStatic: MatLabel | undefined;
     // (undocumented)
-    _labelChildStatic: MatLabel;
+    _labelChildStatic: MatLabel | undefined;
     // (undocumented)
     readonly _labelId: string;
+    _labelWidth: number;
+    // (undocumented)
+    _lineRipple: MatFormFieldLineRipple | undefined;
     // (undocumented)
     ngAfterContentChecked(): void;
     // (undocumented)
@@ -129,22 +127,27 @@ export class MatFormField extends _MatFormFieldBase implements AfterContentInit,
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
-    _placeholderChild: MatPlaceholder;
+    _notchedOutline: MatFormFieldNotchedOutline | undefined;
     // (undocumented)
     _prefixChildren: QueryList<MatPrefix>;
+    _refreshOutlineNotchWidth(): void;
     _shouldAlwaysFloat(): boolean;
     _shouldForward(prop: keyof AbstractControlDirective): boolean;
     // (undocumented)
     _shouldLabelFloat(): boolean;
     _subscriptAnimationState: string;
+    get subscriptSizing(): SubscriptSizing;
+    set subscriptSizing(value: SubscriptSizing);
     // (undocumented)
     _suffixChildren: QueryList<MatSuffix>;
-    updateOutlineGap(): void;
-    protected _validateControlChild(): void;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatFormField, "mat-form-field", ["matFormField"], { "color": "color"; "appearance": "appearance"; "hideRequiredMarker": "hideRequiredMarker"; "hintLabel": "hintLabel"; "floatLabel": "floatLabel"; }, {}, ["_controlNonStatic", "_controlStatic", "_labelChildNonStatic", "_labelChildStatic", "_placeholderChild", "_errorChildren", "_hintChildren", "_prefixChildren", "_suffixChildren"], ["[matPrefix]", "*", "mat-placeholder", "mat-label", "[matSuffix]", "mat-error", "mat-hint:not([align='end'])", "mat-hint[align='end']"], false>;
+    _textField: ElementRef<HTMLElement>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatFormField, [null, null, { optional: true; }, { optional: true; }, null, null, { optional: true; }]>;
+    _textPrefixContainer: ElementRef<HTMLElement>;
+    // (undocumented)
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatFormField, "mat-form-field", ["matFormField"], { "hideRequiredMarker": "hideRequiredMarker"; "color": "color"; "floatLabel": "floatLabel"; "appearance": "appearance"; "subscriptSizing": "subscriptSizing"; "hintLabel": "hintLabel"; }, {}, ["_labelChildNonStatic", "_labelChildStatic", "_formFieldControl", "_prefixChildren", "_suffixChildren", "_errorChildren", "_hintChildren"], ["mat-label", "[matPrefix], [matIconPrefix]", "[matTextPrefix]", "*", "[matTextSuffix]", "[matSuffix], [matIconSuffix]", "mat-error", "mat-hint:not([align='end'])", "mat-hint[align='end']"], false>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatFormField, [null, null, null, null, null, { optional: true; }, { optional: true; }, null]>;
 }
 
 // @public
@@ -153,7 +156,7 @@ export const matFormFieldAnimations: {
 };
 
 // @public
-export type MatFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
+export type MatFormFieldAppearance = 'fill' | 'outline';
 
 // @public
 export abstract class MatFormFieldControl<T> {
@@ -185,6 +188,34 @@ export interface MatFormFieldDefaultOptions {
     color?: ThemePalette;
     floatLabel?: FloatLabelType;
     hideRequiredMarker?: boolean;
+    subscriptSizing?: SubscriptSizing;
+}
+
+// @public
+class MatFormFieldFloatingLabel {
+    constructor(_elementRef: ElementRef<HTMLElement>);
+    get element(): HTMLElement;
+    floating: boolean;
+    getWidth(): number;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatFormFieldFloatingLabel, "label[matFormFieldFloatingLabel]", never, { "floating": "floating"; }, {}, never, never, false>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatFormFieldFloatingLabel, never>;
+}
+
+// @public
+class MatFormFieldLineRipple implements OnDestroy {
+    constructor(_elementRef: ElementRef<HTMLElement>, ngZone: NgZone);
+    // (undocumented)
+    activate(): void;
+    // (undocumented)
+    deactivate(): void;
+    // (undocumented)
+    ngOnDestroy(): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatFormFieldLineRipple, "div[matFormFieldLineRipple]", never, {}, {}, never, never, false>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatFormFieldLineRipple, never>;
 }
 
 // @public (undocumented)
@@ -194,7 +225,22 @@ export class MatFormFieldModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatFormFieldModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatFormFieldModule, [typeof i1.MatError, typeof i2.MatFormField, typeof i3.MatHint, typeof i4.MatLabel, typeof i5.MatPlaceholder, typeof i6.MatPrefix, typeof i7.MatSuffix], [typeof i8.CommonModule, typeof i9.MatCommonModule, typeof i10.ObserversModule], [typeof i9.MatCommonModule, typeof i1.MatError, typeof i2.MatFormField, typeof i3.MatHint, typeof i4.MatLabel, typeof i5.MatPlaceholder, typeof i6.MatPrefix, typeof i7.MatSuffix]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatFormFieldModule, [typeof i1.MatFormField, typeof i2.MatLabel, typeof i3.MatError, typeof i4.MatHint, typeof i5.MatPrefix, typeof i6.MatSuffix, typeof i7.MatFormFieldFloatingLabel, typeof i8.MatFormFieldNotchedOutline, typeof i9.MatFormFieldLineRipple], [typeof i10.MatCommonModule, typeof i11.CommonModule, typeof i12.ObserversModule], [typeof i1.MatFormField, typeof i2.MatLabel, typeof i4.MatHint, typeof i3.MatError, typeof i5.MatPrefix, typeof i6.MatSuffix, typeof i10.MatCommonModule]>;
+}
+
+// @public
+class MatFormFieldNotchedOutline implements AfterViewInit {
+    constructor(_elementRef: ElementRef<HTMLElement>, _ngZone: NgZone);
+    // (undocumented)
+    _getNotchWidth(): string | null;
+    labelWidth: number;
+    // (undocumented)
+    ngAfterViewInit(): void;
+    open: boolean;
+    // (undocumented)
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatFormFieldNotchedOutline, "div[matFormFieldNotchedOutline]", never, { "labelWidth": "matFormFieldNotchedOutlineLabelWidth"; "open": "matFormFieldNotchedOutlineOpen"; }, {}, never, ["*"], false>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatFormFieldNotchedOutline, never>;
 }
 
 // @public
@@ -215,29 +261,30 @@ export class MatLabel {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLabel, never>;
 }
 
-// @public @deprecated
-export class MatPlaceholder {
-    // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatPlaceholder, "mat-placeholder", never, {}, {}, never, never, false>;
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatPlaceholder, never>;
-}
-
 // @public
 export class MatPrefix {
+    constructor(elementRef: ElementRef);
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatPrefix, "[matPrefix]", never, {}, {}, never, never, false>;
+    _isText: boolean;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatPrefix, "[matPrefix], [matIconPrefix], [matTextPrefix]", never, {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatPrefix, never>;
 }
 
 // @public
 export class MatSuffix {
+    constructor(elementRef: ElementRef);
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatSuffix, "[matSuffix]", never, {}, {}, never, never, false>;
+    _isText: boolean;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatSuffix, "[matSuffix], [matIconSuffix], [matTextSuffix]", never, {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatSuffix, never>;
 }
+
+// @public
+export type SubscriptSizing = 'fixed' | 'dynamic';
 
 // (No @packageDocumentation comment for this package)
 

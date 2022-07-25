@@ -22,7 +22,7 @@ import * as i5 from '@angular/material/core';
 import * as i6 from '@angular/common';
 import * as i7 from '@angular/cdk/scrolling';
 import { InjectionToken } from '@angular/core';
-import { MatFormField } from '@angular/material/form-field';
+import { MatFormField } from '@angular/material/legacy-form-field';
 import { MatOptgroup } from '@angular/material/core';
 import { _MatOptgroupBase } from '@angular/material/core';
 import { MatOption } from '@angular/material/core';

@@ -12,10 +12,10 @@
 /src/material/dialog/**                            @andrewseguin @crisbeto
 /src/material/divider/**                           @andrewseguin @crisbeto
 /src/material/expansion/**                         @andrewseguin
-/src/material/form-field/**                        @mmalerba
+/src/material/legacy-form-field/**                 @mmalerba
 /src/material/grid-list/**                         @andrewseguin
 /src/material/icon/**                              @andrewseguin
-/src/material/input/**                             @mmalerba
+/src/material/legacy-input/**                      @mmalerba
 /src/material/list/**                              @andrewseguin @crisbeto @devversion
 /src/material/menu/**                              @crisbeto
 /src/material/paginator/**                         @andrewseguin
@@ -39,6 +39,7 @@
 /src/material/legacy-tooltip/**                    @andrewseguin
 /src/material/tooltip/**                           @andrewseguin
 /src/material/tree/**                              @jelbourn @andrewseguin
+/src/material/input/**                                 @devversion @mmalerba
 
 # Angular Material core
 /src/material/core/*                                   @andrewseguin
@@ -114,7 +115,6 @@
 /src/material-experimental/mdc-core/**                 @crisbeto
 /src/material-experimental/mdc-dialog/**               @devversion
 /src/material-experimental/mdc-form-field/**           @devversion @mmalerba
-/src/material-experimental/mdc-input/**                @devversion @mmalerba
 /src/material-experimental/mdc-list/**                 @mmalerba @devversion
 /src/material-experimental/mdc-menu/**                 @crisbeto
 /src/material-experimental/mdc-select/**               @crisbeto
@@ -329,7 +329,7 @@
 /tools/public_api_guard/material/form-field**      @mmalerba
 /tools/public_api_guard/material/grid-list**       @andrewseguin
 /tools/public_api_guard/material/icon**            @andrewseguin
-/tools/public_api_guard/material/input**           @mmalerba
+/tools/public_api_guard/material/legacy-input**    @mmalerba
 /tools/public_api_guard/material/list**            @andrewseguin @crisbeto @devversion
 /tools/public_api_guard/material/menu**            @crisbeto
 /tools/public_api_guard/material/paginator**       @andrewseguin

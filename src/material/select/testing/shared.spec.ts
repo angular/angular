@@ -4,14 +4,14 @@ import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatSelectHarness} from './select-harness';
 
 /** Shared tests to run on both the original and MDC-based select. */
 export function runHarnessTests(
-  formFieldModule: typeof MatFormFieldModule,
+  formFieldModule: typeof MatLegacyFormFieldModule,
   selectModule: typeof MatSelectModule,
   selectHarness: typeof MatSelectHarness,
 ) {

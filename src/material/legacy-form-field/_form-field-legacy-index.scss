@@ -1,0 +1,29 @@
+@forward 'form-field-fill-theme' hide $fill-dedupe, fill-color, fill-theme, fill-typography,
+  private-form-field-fill-density;
+@forward 'form-field-fill-theme' as mat-legacy-* hide $mat-legacy-fill-dedupe,
+  mat-legacy-fill-color, mat-legacy-fill-label-floating, mat-legacy-fill-theme,
+  mat-legacy-fill-typography;
+@forward 'form-field-fill-theme' as mat-legacy-form-field-* hide
+  mat-legacy-form-field-fill-label-floating, mat-legacy-form-field-private-form-field-fill-density;
+@forward 'form-field-legacy-theme' hide $legacy-dedupe, legacy-color, legacy-theme,
+  legacy-typography, private-form-field-legacy-density;
+@forward 'form-field-legacy-theme' as mat-legacy-* hide $mat-legacy-legacy-dedupe,
+  mat-legacy-legacy-color, mat-legacy-legacy-label-floating, mat-legacy-legacy-label-floating-print,
+  mat-legacy-legacy-theme, mat-legacy-legacy-typography;
+@forward 'form-field-legacy-theme' as mat-legacy-form-field-* hide
+  mat-legacy-form-field-legacy-label-floating, mat-legacy-form-field-legacy-label-floating-print,
+  mat-legacy-form-field-private-form-field-legacy-density;
+@forward 'form-field-outline-theme' hide $outline-dedupe, outline-color, outline-theme,
+  outline-typography, private-form-field-outline-density;
+@forward 'form-field-outline-theme' as mat-legacy-* hide $mat-legacy-outline-dedupe,
+  mat-legacy-outline-color, mat-legacy-outline-label-floating, mat-legacy-outline-theme,
+  mat-legacy-outline-typography;
+@forward 'form-field-outline-theme' as mat-legacy-form-field-* hide
+  mat-legacy-form-field-outline-label-floating,
+  mat-legacy-form-field-private-form-field-outline-density;
+@forward 'form-field-standard-theme' as mat-legacy-* hide mat-legacy-standard-color,
+  mat-legacy-standard-theme, mat-legacy-standard-typography;
+@forward 'form-field-standard-theme' as mat-legacy-form-field-* hide
+  mat-legacy-form-field-private-form-field-standard-density;
+@forward 'form-field-theme' hide $dedupe, color, density, theme, typography;
+@forward 'form-field-theme' as mat-legacy-form-field-* hide mat-legacy-form-field-label-floating;

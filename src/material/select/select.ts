@@ -86,7 +86,11 @@ import {
   mixinTabIndex,
   _MatOptionBase,
 } from '@angular/material/core';
-import {MAT_FORM_FIELD, MatFormField, MatFormFieldControl} from '@angular/material/form-field';
+import {
+  MAT_FORM_FIELD,
+  MatLegacyFormField,
+  MatLegacyFormFieldControl,
+} from '@angular/material/legacy-form-field';
 import {defer, merge, Observable, Subject} from 'rxjs';
 import {
   distinctUntilChanged,
@@ -247,7 +251,7 @@ export abstract class _MatSelectBase<C>
     ControlValueAccessor,
     CanDisable,
     HasTabIndex,
-    MatFormFieldControl<any>,
+    MatLegacyFormFieldControl<any>,
     CanUpdateErrorState,
     CanDisableRipple
 {
@@ -521,7 +525,7 @@ export abstract class _MatSelectBase<C>
     @Optional() private _dir: Directionality,
     @Optional() _parentForm: NgForm,
     @Optional() _parentFormGroup: FormGroupDirective,
-    @Optional() @Inject(MAT_FORM_FIELD) protected _parentFormField: MatFormField,
+    @Optional() @Inject(MAT_FORM_FIELD) protected _parentFormField: MatLegacyFormField,
     @Self() @Optional() ngControl: NgControl,
     @Attribute('tabindex') tabIndex: string,
     @Inject(MAT_SELECT_SCROLL_STRATEGY) scrollStrategyFactory: any,
@@ -1210,7 +1214,7 @@ export abstract class _MatSelectBase<C>
   },
   animations: [matSelectAnimations.transformPanelWrap, matSelectAnimations.transformPanel],
   providers: [
-    {provide: MatFormFieldControl, useExisting: MatSelect},
+    {provide: MatLegacyFormFieldControl, useExisting: MatSelect},
     {provide: MAT_OPTION_PARENT_COMPONENT, useExisting: MatSelect},
   ],
 })
