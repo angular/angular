@@ -7,58 +7,44 @@
  */
 
 interface Console {
-  scheduleAsyncTask(name: string, recurring?: boolean): number;
-  startAsyncTask(task: number): void;
-  finishAsyncTask(task: number): void;
-  cancelAsyncTask(task: number): void;
+  createTask(name: string): ConsoleTask;
+}
+
+interface ConsoleTask {
+  run<T>(f: () => T): void;
 }
 
 interface Task {
-  asyncId?: number;
+  consoleTask?: ConsoleTask;
 }
 
 class AsyncStackTaggingZoneSpec implements ZoneSpec {
-  scheduleAsyncTask: Console['scheduleAsyncTask'];
-  startAsyncTask: Console['startAsyncTask'];
-  finishAsyncTask: Console['finishAsyncTask'];
-  cancelAsyncTask: Console['finishAsyncTask'];
+  createTask: Console['createTask'];
 
   constructor(namePrefix: string, consoleAsyncStackTaggingImpl: Console = console) {
     this.name = 'asyncStackTagging for ' + namePrefix;
-    this.scheduleAsyncTask = consoleAsyncStackTaggingImpl?.scheduleAsyncTask ?? (() => {});
-    this.startAsyncTask = consoleAsyncStackTaggingImpl?.startAsyncTask ?? (() => {});
-    this.finishAsyncTask = consoleAsyncStackTaggingImpl?.finishAsyncTask ?? (() => {});
-    this.cancelAsyncTask = consoleAsyncStackTaggingImpl?.cancelAsyncTask ?? (() => {});
+    this.createTask = consoleAsyncStackTaggingImpl?.createTask ?? (() => {});
   }
 
   // ZoneSpec implementation below.
 
   name: string;
 
-  onScheduleTask(delegate: ZoneDelegate, current: Zone, target: Zone, task: Task): Task {
-    task.asyncId = this.scheduleAsyncTask(
-        task.source || task.type, task.data?.isPeriodic || task.type === 'eventTask');
+  onScheduleTask(delegate: ZoneDelegate, _current: Zone, target: Zone, task: Task): Task {
+    task.consoleTask = this.createTask(`Zone - ${task.source || task.type}`);
     return delegate.scheduleTask(target, task);
   }
 
   onInvokeTask(
-      delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task, applyThis: any,
+      delegate: ZoneDelegate, _currentZone: Zone, targetZone: Zone, task: Task, applyThis: any,
       applyArgs?: any[]) {
-    task.asyncId && this.startAsyncTask(task.asyncId);
-    try {
-      return delegate.invokeTask(targetZone, task, applyThis, applyArgs);
-    } finally {
-      task.asyncId && this.finishAsyncTask(task.asyncId);
-      if (task.type !== 'eventTask' && !task.data?.isPeriodic) {
-        task.asyncId = undefined;
-      }
+    let ret;
+    if (task.consoleTask) {
+      ret = task.consoleTask.run(() => delegate.invokeTask(targetZone, task, applyThis, applyArgs));
+    } else {
+      ret = delegate.invokeTask(targetZone, task, applyThis, applyArgs);
     }
-  }
-
-  onCancelTask(delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task) {
-    task.asyncId && this.cancelAsyncTask(task.asyncId);
-    task.asyncId = undefined;
-    return delegate.cancelTask(targetZone, task);
+    return ret;
   }
 }
 
