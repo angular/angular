@@ -8,8 +8,9 @@
 
 
 <span class="mdc-evolution-chip__cell mdc-evolution-chip__cell--primary" role="gridcell">
-  <button
+  <span
     matChipAction
+    [attr.role]="editable ? 'button' : null"
     [tabIndex]="tabIndex"
     [disabled]="disabled"
     [attr.aria-label]="ariaLabel">
@@ -27,7 +28,7 @@
 
       <span class="mat-mdc-chip-primary-focus-indicator mat-mdc-focus-indicator"></span>
     </span>
-  </button>
+  </span>
 </span>
 
 <span

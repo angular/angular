@@ -25,7 +25,7 @@
         <mat-chip disabled>
           <mat-icon matChipAvatar>home</mat-icon>
           Home
-          <button matChipRemove>
+          <button matChipRemove aria-label="Remove chip">
             <mat-icon>cancel</mat-icon>
           </button>
         </mat-chip>
@@ -33,7 +33,7 @@
         <mat-chip highlighted="true" color="accent">
           <mat-chip-avatar>P</mat-chip-avatar>
           Portel
-          <button matChipRemove>
+          <button matChipRemove aria-label="Remove chip">
             <mat-icon>cancel</mat-icon>
           </button>
         </mat-chip>
@@ -45,7 +45,7 @@
 
         <mat-chip>
           Koby
-          <button matChipRemove>
+          <button matChipRemove aria-label="Remove chip">
             <mat-icon>cancel</mat-icon>
           </button>
         </mat-chip>
@@ -85,7 +85,7 @@
         <mat-chip highlighted="true" color="warn" *ngIf="visible"
                  (destroyed)="displayMessage('chip destroyed')" (removed)="toggleVisible()">
           With Events
-          <button matChipRemove>
+          <button matChipRemove aria-label="Remove chip">
             <mat-icon>cancel</mat-icon>
           </button>
         </mat-chip>
@@ -152,7 +152,7 @@
                    (removed)="remove(person)"
                    (edited)="edit(person, $event)">
             {{person.name}}
-            <button matChipRemove>
+            <button matChipRemove aria-label="Remove contributor">
               <mat-icon>cancel</mat-icon>
             </button>
           </mat-chip-row>
@@ -171,7 +171,7 @@
         <mat-chip-grid #chipGrid2 [(ngModel)]="selectedPeople" required [disabled]="disableInputs">
           <mat-chip-row *ngFor="let person of people" (removed)="remove(person)">
             {{person.name}}
-            <button matChipRemove>
+            <button matChipRemove aria-label="Remove contributor">
               <mat-icon>cancel</mat-icon>
             </button>
           </mat-chip-row>

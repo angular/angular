@@ -259,6 +259,16 @@ describe('MDC-based Row Chips', () => {
         return chipNativeElement.querySelector('.mat-chip-edit-input')!;
       }
 
+      it('should set the role of the primary action based on whether it is editable', () => {
+        testComponent.editable = false;
+        fixture.detectChanges();
+        expect(primaryAction.hasAttribute('role')).toBe(false);
+
+        testComponent.editable = true;
+        fixture.detectChanges();
+        expect(primaryAction.getAttribute('role')).toBe('button');
+      });
+
       it('should not delete the chip on DELETE or BACKSPACE', () => {
         spyOn(testComponent, 'chipDestroy');
         keyDownOnPrimaryAction(DELETE, 'Delete');

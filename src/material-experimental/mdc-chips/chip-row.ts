@@ -81,6 +81,13 @@ export interface MatChipEditedEvent extends MatChipEvent {
 export class MatChipRow extends MatChip implements AfterViewInit {
   protected override basicChipAttrName = 'mat-basic-chip-row';
 
+  /**
+   * The editing action has to be triggered in a timeout. While we're waiting on it, a blur
+   * event might occur which will interrupt the editing. This flag is used to avoid interruptions
+   * while the editing action is being initialized.
+   */
+  private _editStartPending = false;
+
   @Input() editable: boolean = false;
 
   /** Emitted when the chip is edited. */
@@ -120,7 +127,7 @@ export class MatChipRow extends MatChip implements AfterViewInit {
 
     this.role = 'row';
     this._onBlur.pipe(takeUntil(this.destroyed)).subscribe(() => {
-      if (this._isEditing) {
+      if (this._isEditing && !this._editStartPending) {
         this._onEditFinish();
       }
     });
@@ -175,18 +182,19 @@ export class MatChipRow extends MatChip implements AfterViewInit {
     // The value depends on the DOM so we need to extract it before we flip the flag.
     const value = this.value;
 
-    // Make the primary action non-interactive so that it doesn't
-    // navigate when the user presses the arrow keys while editing.
-    this.primaryAction.isInteractive = false;
     this._isEditing = true;
+    this._editStartPending = true;
 
     // Defer initializing the input so it has time to be added to the DOM.
-    setTimeout(() => this._getEditInput().initialize(value));
+    setTimeout(() => {
+      this._getEditInput().initialize(value);
+      this._editStartPending = false;
+    });
   }
 
   private _onEditFinish() {
     this._isEditing = false;
-    this.primaryAction.isInteractive = true;
+    this._editStartPending = false;
     this.edited.emit({chip: this, value: this._getEditInput().getValue()});
 
     // If the edit input is still focused or focus was returned to the body after it was destroyed,
