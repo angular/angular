@@ -52,8 +52,7 @@ export abstract class TemplateRef<C> {
   abstract readonly elementRef: ElementRef;
 
   /**
-   * Instantiates an embedded view based on this template,
-   * and attaches it to the view container.
+   * Instantiates an unattached embedded view based on this template.
    * @param context The data-binding context of the embedded view, as declared
    * in the `<ng-template>` usage.
    * @param injector Injector to be used within the embedded view.
