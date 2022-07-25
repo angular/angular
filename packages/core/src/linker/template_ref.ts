@@ -53,7 +53,7 @@ export abstract class TemplateRef<C> {
 
   /**
    * Instantiates an embedded view based on this template,
-   * and attaches it to the view container.
+   * and take your templateRef as argument and would render the passed templateRef in your ViewContainerRef.
    * @param context The data-binding context of the embedded view, as declared
    * in the `<ng-template>` usage.
    * @param injector Injector to be used within the embedded view.
