@@ -74,7 +74,7 @@ After the browser refreshes, the list of heroes appears.
 
 <header>Interactive elements</header>
 
-Inside the `<li>` element, add a `<button>` element to wrap the hero's details, and then make the hero clickable. To improve accessibility, use HTML elements that are inherently interactive instead of adding an event listeners to a non-interactive elements. In this case, the interactive  `<button>` element is instead of adding an event to the `<li>` element.
+Inside the `<li>` element, add a `<button>` element to wrap the hero's details, and then make the hero clickable. To improve accessibility, use HTML elements that are inherently interactive instead of adding an event listener to a non-interactive element. In this case, the interactive `<button>` element is used instead of adding an event to the `<li>` element.
 
 For more details on accessibility, see [Accessibility in Angular](guide/accessibility).
 
