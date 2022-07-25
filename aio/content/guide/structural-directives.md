@@ -2,7 +2,7 @@
 
 This guide is about structural directives and provides conceptual information on how such directives work, how Angular interprets their shorthand syntax, and how to add template guard properties to catch template type errors.
 
-Structural directives are directives which change the DOM layout by adding and removing DOM element.
+Structural directives are directives which change the DOM layout by adding and removing DOM elements.
 
 Angular provides a set of built-in structural directives (such as `NgIf`, `NgForOf`, `NgSwitch` and others) which are commonly used in all Angular projects. For more information see [Built-in directives](guide/built-in-directives).
 
