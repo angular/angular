@@ -4,7 +4,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatLegacyTooltipModule} from '@angular/material/legacy-tooltip';
 import {TooltipAutoHideExample} from './tooltip-auto-hide/tooltip-auto-hide-example';
@@ -49,7 +49,7 @@ const EXAMPLES = [
     CommonModule,
     MatButtonModule,
     MatCheckboxModule,
-    MatInputModule,
+    MatLegacyInputModule,
     MatSelectModule,
     MatLegacyTooltipModule,
     ReactiveFormsModule,

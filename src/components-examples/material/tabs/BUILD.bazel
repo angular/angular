@@ -19,7 +19,7 @@ ng_module(
         "//src/material/button-toggle",
         "//src/material/checkbox",
         "//src/material/icon",
-        "//src/material/input",
+        "//src/material/legacy-input",
         "//src/material/tabs",
         "//src/material/tabs/testing",
         "@npm//@angular/forms",

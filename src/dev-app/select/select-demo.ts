@@ -13,9 +13,9 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {ErrorStateMatcher, ThemePalette} from '@angular/material/core';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
-import {FloatLabelType, MatFormFieldModule} from '@angular/material/form-field';
+import {FloatLabelType, MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 
 /** Error any time control is invalid */
@@ -39,9 +39,9 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     MatButtonModule,
     MatLegacyCardModule,
     MatDialogModule,
-    MatFormFieldModule,
+    MatLegacyFormFieldModule,
     MatIconModule,
-    MatInputModule,
+    MatLegacyInputModule,
     MatSelectModule,
     ReactiveFormsModule,
   ],

@@ -12,8 +12,8 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatSelectModule} from '@angular/material/select';
 import {
   MatSnackBar,
@@ -34,8 +34,8 @@ import {
     FormsModule,
     MatButtonModule,
     MatCheckboxModule,
-    MatFormFieldModule,
-    MatInputModule,
+    MatLegacyFormFieldModule,
+    MatLegacyInputModule,
     MatSelectModule,
     MatSnackBarModule,
   ],

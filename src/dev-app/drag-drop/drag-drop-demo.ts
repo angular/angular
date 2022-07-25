@@ -17,8 +17,8 @@ import {
 } from '@angular/cdk/drag-drop';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatSelectModule} from '@angular/material/select';
 
 @Component({
@@ -32,9 +32,9 @@ import {MatSelectModule} from '@angular/material/select';
     CommonModule,
     DragDropModule,
     FormsModule,
-    MatFormFieldModule,
+    MatLegacyFormFieldModule,
     MatIconModule,
-    MatInputModule,
+    MatLegacyInputModule,
     MatSelectModule,
   ],
 })

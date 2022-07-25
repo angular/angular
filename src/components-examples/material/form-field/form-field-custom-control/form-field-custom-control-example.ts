@@ -19,7 +19,11 @@ import {
   NgControl,
   Validators,
 } from '@angular/forms';
-import {MAT_FORM_FIELD, MatFormField, MatFormFieldControl} from '@angular/material/form-field';
+import {
+  MAT_FORM_FIELD,
+  MatLegacyFormField,
+  MatLegacyFormFieldControl,
+} from '@angular/material/legacy-form-field';
 import {Subject} from 'rxjs';
 
 /** @title Form field with custom telephone number input control. */
@@ -43,13 +47,15 @@ export class MyTel {
   selector: 'example-tel-input',
   templateUrl: 'example-tel-input-example.html',
   styleUrls: ['example-tel-input-example.css'],
-  providers: [{provide: MatFormFieldControl, useExisting: MyTelInput}],
+  providers: [{provide: MatLegacyFormFieldControl, useExisting: MyTelInput}],
   host: {
     '[class.example-floating]': 'shouldLabelFloat',
     '[id]': 'id',
   },
 })
-export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyTel>, OnDestroy {
+export class MyTelInput
+  implements ControlValueAccessor, MatLegacyFormFieldControl<MyTel>, OnDestroy
+{
   static nextId = 0;
   @ViewChild('area') areaInput: HTMLInputElement;
   @ViewChild('exchange') exchangeInput: HTMLInputElement;
@@ -137,7 +143,7 @@ export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyT
     private _formBuilder: FormBuilder,
     private _focusMonitor: FocusMonitor,
     private _elementRef: ElementRef<HTMLElement>,
-    @Optional() @Inject(MAT_FORM_FIELD) public _formField: MatFormField,
+    @Optional() @Inject(MAT_FORM_FIELD) public _formField: MatLegacyFormField,
     @Optional() @Self() public ngControl: NgControl,
   ) {
     if (this.ngControl != null) {

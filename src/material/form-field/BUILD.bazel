@@ -29,6 +29,7 @@ ng_module(
 sass_library(
     name = "form_field_scss_lib",
     srcs = [
+        "_form-field-theme.import.scss",
         "_form-field-theme.scss",
         "_mdc-text-field-theme-variable-refresh.scss",
     ],

@@ -11,9 +11,9 @@ ng_module(
     ],
     deps = [
         "//src/material/checkbox",
-        "//src/material/form-field",
-        "//src/material/input",
         "//src/material/legacy-card",
+        "//src/material/legacy-form-field",
+        "//src/material/legacy-input",
         "//src/material/radio",
         "//src/material/select",
         "//src/material/toolbar",

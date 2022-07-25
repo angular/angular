@@ -9,6 +9,7 @@
 @use '../../../card/card-theme';
 @use '../../../progress-bar/progress-bar-theme';
 @use '../../../tooltip/tooltip-theme';
+@use '../../../input/input-theme';
 
 // Includes all of the density styles.
 @mixin all-component-densities($config-or-theme) {
@@ -37,6 +38,7 @@
   @include card-theme.density($config);
   @include progress-bar-theme.density($config);
   @include tooltip-theme.density($config);
+  @include input-theme.density($config);
 }
 
 

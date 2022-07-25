@@ -11,8 +11,8 @@ import {MatPaginatorModule, PageEvent} from '@angular/material/paginator';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @Component({
@@ -24,8 +24,8 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     CommonModule,
     FormsModule,
     MatLegacyCardModule,
-    MatFormFieldModule,
-    MatInputModule,
+    MatLegacyFormFieldModule,
+    MatLegacyInputModule,
     MatPaginatorModule,
     MatSlideToggleModule,
   ],

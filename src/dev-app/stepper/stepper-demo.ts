@@ -18,8 +18,8 @@ import {ThemePalette} from '@angular/material/core';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatStepperModule} from '@angular/material/stepper';
 
@@ -32,8 +32,8 @@ import {MatStepperModule} from '@angular/material/stepper';
     FormsModule,
     MatButtonModule,
     MatCheckboxModule,
-    MatFormFieldModule,
-    MatInputModule,
+    MatLegacyFormFieldModule,
+    MatLegacyInputModule,
     MatStepperModule,
     MatSelectModule,
     ReactiveFormsModule,

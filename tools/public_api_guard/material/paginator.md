@@ -18,7 +18,7 @@ import * as i4 from '@angular/material/select';
 import * as i5 from '@angular/material/legacy-tooltip';
 import * as i6 from '@angular/material/core';
 import { InjectionToken } from '@angular/core';
-import { MatFormFieldAppearance } from '@angular/material/legacy-form-field';
+import { MatLegacyFormFieldAppearance } from '@angular/material/legacy-form-field';
 import { NumberInput } from '@angular/cdk/coercion';
 import { OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
@@ -42,7 +42,7 @@ export function MAT_PAGINATOR_INTL_PROVIDER_FACTORY(parentIntl: MatPaginatorIntl
 // @public
 export class MatPaginator extends _MatPaginatorBase<MatPaginatorDefaultOptions> {
     constructor(intl: MatPaginatorIntl, changeDetectorRef: ChangeDetectorRef, defaults?: MatPaginatorDefaultOptions);
-    _formFieldAppearance?: MatFormFieldAppearance;
+    _formFieldAppearance?: MatLegacyFormFieldAppearance;
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatPaginator, "mat-paginator", ["matPaginator"], { "disabled": "disabled"; }, {}, never, never, false>;
     // (undocumented)
@@ -97,7 +97,7 @@ export abstract class _MatPaginatorBase<O extends {
 
 // @public
 export interface MatPaginatorDefaultOptions {
-    formFieldAppearance?: MatFormFieldAppearance;
+    formFieldAppearance?: MatLegacyFormFieldAppearance;
     hidePageSize?: boolean;
     pageSize?: number;
     pageSizeOptions?: number[];

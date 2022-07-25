@@ -25,7 +25,6 @@ import * as i9 from '@angular/material/core';
 import { InjectionToken } from '@angular/core';
 import { MAT_ERROR } from '@angular/material/form-field';
 import { MAT_FORM_FIELD } from '@angular/material/form-field';
-import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MAT_PREFIX } from '@angular/material/form-field';
 import { MAT_SUFFIX } from '@angular/material/form-field';
 import { matFormFieldAnimations } from '@angular/material/form-field';
@@ -49,7 +48,8 @@ export { MAT_ERROR }
 
 export { MAT_FORM_FIELD }
 
-export { MAT_FORM_FIELD_DEFAULT_OPTIONS }
+// @public
+export const MAT_FORM_FIELD_DEFAULT_OPTIONS: InjectionToken<MatLegacyFormFieldDefaultOptions>;
 
 // @public
 export const _MAT_HINT: InjectionToken<MatLegacyHint>;
@@ -72,7 +72,7 @@ export class MatLegacyError {
 }
 
 // @public
-export class MatLegacyFormField extends _MatLegacyFormFieldBase implements AfterContentInit, AfterContentChecked, AfterViewInit, OnDestroy, CanColor {
+export class MatLegacyFormField extends _MatFormFieldBase implements AfterContentInit, AfterContentChecked, AfterViewInit, OnDestroy, CanColor {
     constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, _defaults: MatLegacyFormFieldDefaultOptions, _platform: Platform, _ngZone: NgZone, _animationMode: string);
     _animateAndLockLabel(): void;
     _animationsEnabled: boolean;

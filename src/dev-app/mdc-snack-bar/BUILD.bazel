@@ -13,10 +13,10 @@ ng_module(
         "//src/cdk/bidi",
         "//src/material-experimental/mdc-button",
         "//src/material-experimental/mdc-checkbox",
-        "//src/material-experimental/mdc-form-field",
-        "//src/material-experimental/mdc-input",
         "//src/material-experimental/mdc-select",
         "//src/material-experimental/mdc-snack-bar",
+        "//src/material/form-field",
+        "//src/material/input",
         "@npm//@angular/forms",
     ],
 )

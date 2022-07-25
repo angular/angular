@@ -1,13 +1,13 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {MatFormFieldHarness} from '@angular/material/form-field/testing';
+import {MatLegacyFormFieldHarness} from '@angular/material/legacy-form-field/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {FormFieldHarnessExample} from './form-field-harness-example';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {ReactiveFormsModule} from '@angular/forms';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MatInputHarness} from '@angular/material/input/testing';
+import {MatLegacyInputHarness} from '@angular/material/legacy-input/testing';
 
 describe('FormFieldHarnessExample', () => {
   let fixture: ComponentFixture<FormFieldHarnessExample>;
@@ -15,7 +15,12 @@ describe('FormFieldHarnessExample', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatFormFieldModule, MatInputModule, ReactiveFormsModule, NoopAnimationsModule],
+      imports: [
+        MatLegacyFormFieldModule,
+        MatLegacyInputModule,
+        ReactiveFormsModule,
+        NoopAnimationsModule,
+      ],
       declarations: [FormFieldHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(FormFieldHarnessExample);
@@ -24,28 +29,28 @@ describe('FormFieldHarnessExample', () => {
   });
 
   it('should be able to load harnesses', async () => {
-    const formFields = await loader.getAllHarnesses(MatFormFieldHarness);
+    const formFields = await loader.getAllHarnesses(MatLegacyFormFieldHarness);
     expect(formFields.length).toBe(1);
   });
 
   it('should be able to get control of form-field', async () => {
-    const formField = await loader.getHarness(MatFormFieldHarness);
-    expect((await formField.getControl()) instanceof MatInputHarness).toBe(true);
+    const formField = await loader.getHarness(MatLegacyFormFieldHarness);
+    expect((await formField.getControl()) instanceof MatLegacyInputHarness).toBe(true);
   });
 
   it('should be able to get error messages and hints of form-field', async () => {
-    const formField = await loader.getHarness(MatFormFieldHarness);
+    const formField = await loader.getHarness(MatLegacyFormFieldHarness);
     expect(await formField.getTextErrors()).toEqual([]);
     expect(await formField.getTextHints()).toEqual(['Hint']);
 
     fixture.componentInstance.requiredControl.setValue('');
-    await ((await formField.getControl()) as MatInputHarness)?.blur();
+    await ((await formField.getControl()) as MatLegacyInputHarness)?.blur();
     expect(await formField.getTextErrors()).toEqual(['Error']);
     expect(await formField.getTextHints()).toEqual([]);
   });
 
   it('should be able to check if form field is invalid', async () => {
-    const formField = await loader.getHarness(MatFormFieldHarness);
+    const formField = await loader.getHarness(MatLegacyFormFieldHarness);
     expect(await formField.isControlValid()).toBe(true);
 
     fixture.componentInstance.requiredControl.setValue('');

@@ -18,7 +18,7 @@ ng_module(
         "//src/cdk/testing/testbed",
         "//src/material/button",
         "//src/material/checkbox",
-        "//src/material/input",
+        "//src/material/legacy-input",
         "//src/material/legacy-tooltip",
         "//src/material/legacy-tooltip/testing",
         "//src/material/select",

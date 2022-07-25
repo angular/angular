@@ -13,7 +13,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRipple} from '@angular/material/core';
 import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 
 @Component({
   selector: 'ripple-demo',
@@ -26,7 +26,7 @@ import {MatInputModule} from '@angular/material/input';
     MatButtonModule,
     MatCheckboxModule,
     MatIconModule,
-    MatInputModule,
+    MatLegacyInputModule,
   ],
 })
 export class RippleDemo {

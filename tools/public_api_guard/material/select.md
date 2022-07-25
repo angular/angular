@@ -32,8 +32,8 @@ import * as i5 from '@angular/cdk/scrolling';
 import * as i6 from '@angular/material/legacy-form-field';
 import { InjectionToken } from '@angular/core';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { MatFormField } from '@angular/material/legacy-form-field';
-import { MatFormFieldControl } from '@angular/material/legacy-form-field';
+import { MatLegacyFormField } from '@angular/material/legacy-form-field';
+import { MatLegacyFormFieldControl } from '@angular/material/legacy-form-field';
 import { MatOptgroup } from '@angular/material/core';
 import { MatOption } from '@angular/material/core';
 import { _MatOptionBase } from '@angular/material/core';
@@ -112,8 +112,8 @@ export const matSelectAnimations: {
 };
 
 // @public
-export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements AfterContentInit, OnChanges, OnDestroy, OnInit, DoCheck, ControlValueAccessor, CanDisable, HasTabIndex, MatFormFieldControl<any>, CanUpdateErrorState, CanDisableRipple {
-    constructor(_viewportRuler: ViewportRuler, _changeDetectorRef: ChangeDetectorRef, _ngZone: NgZone, _defaultErrorStateMatcher: ErrorStateMatcher, elementRef: ElementRef, _dir: Directionality, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _parentFormField: MatFormField, ngControl: NgControl, tabIndex: string, scrollStrategyFactory: any, _liveAnnouncer: LiveAnnouncer, _defaultOptions?: MatSelectConfig | undefined);
+export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements AfterContentInit, OnChanges, OnDestroy, OnInit, DoCheck, ControlValueAccessor, CanDisable, HasTabIndex, MatLegacyFormFieldControl<any>, CanUpdateErrorState, CanDisableRipple {
+    constructor(_viewportRuler: ViewportRuler, _changeDetectorRef: ChangeDetectorRef, _ngZone: NgZone, _defaultErrorStateMatcher: ErrorStateMatcher, elementRef: ElementRef, _dir: Directionality, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _parentFormField: MatLegacyFormField, ngControl: NgControl, tabIndex: string, scrollStrategyFactory: any, _liveAnnouncer: LiveAnnouncer, _defaultOptions?: MatSelectConfig | undefined);
     ariaLabel: string;
     ariaLabelledby: string;
     protected _canOpen(): boolean;
@@ -179,7 +179,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
     readonly _panelDoneAnimatingStream: Subject<string>;
     get panelOpen(): boolean;
     // (undocumented)
-    protected _parentFormField: MatFormField;
+    protected _parentFormField: MatLegacyFormField;
     get placeholder(): string;
     set placeholder(value: string);
     protected abstract _positioningSettled(): void;
@@ -239,7 +239,7 @@ export class MatSelectModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatSelectModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatSelectModule, [typeof i1.MatSelect, typeof i1.MatSelectTrigger], [typeof i2.CommonModule, typeof i3.OverlayModule, typeof i4.MatOptionModule, typeof i4.MatCommonModule], [typeof i5.CdkScrollableModule, typeof i6.MatFormFieldModule, typeof i1.MatSelect, typeof i1.MatSelectTrigger, typeof i4.MatOptionModule, typeof i4.MatCommonModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatSelectModule, [typeof i1.MatSelect, typeof i1.MatSelectTrigger], [typeof i2.CommonModule, typeof i3.OverlayModule, typeof i4.MatOptionModule, typeof i4.MatCommonModule], [typeof i5.CdkScrollableModule, typeof i6.MatLegacyFormFieldModule, typeof i1.MatSelect, typeof i1.MatSelectTrigger, typeof i4.MatOptionModule, typeof i4.MatCommonModule]>;
 }
 
 // @public

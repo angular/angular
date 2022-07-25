@@ -26,6 +26,7 @@ import {
   ViewChild,
   ViewEncapsulation,
   OnDestroy,
+  InjectionToken,
 } from '@angular/core';
 import {CanColor, mixinColor, ThemePalette} from '@angular/material/core';
 import {fromEvent, merge, Subject} from 'rxjs';
@@ -47,7 +48,6 @@ import {
   MatFormFieldControl,
   MAT_ERROR,
   MAT_FORM_FIELD,
-  MAT_FORM_FIELD_DEFAULT_OPTIONS,
   MAT_PREFIX,
   MAT_SUFFIX,
 } from '@angular/material/form-field';
@@ -60,7 +60,7 @@ const outlineGapPadding = 5;
  * Boilerplate for applying mixins to MatFormField.
  * @docs-private
  */
-const _MatLegacyFormFieldBase = mixinColor(
+const _MatFormFieldBase = mixinColor(
   class {
     constructor(public _elementRef: ElementRef) {}
   },
@@ -90,6 +90,14 @@ export interface MatLegacyFormFieldDefaultOptions {
    */
   floatLabel?: FloatLabelType;
 }
+
+/**
+ * Injection token that can be used to configure the
+ * default options for all form field within an app.
+ */
+export const MAT_FORM_FIELD_DEFAULT_OPTIONS = new InjectionToken<MatLegacyFormFieldDefaultOptions>(
+  'MAT_FORM_FIELD_DEFAULT_OPTIONS',
+);
 
 /** Container for form controls that applies Material Design styling and behavior. */
 @Component({
@@ -137,7 +145,7 @@ export interface MatLegacyFormFieldDefaultOptions {
   providers: [{provide: MAT_FORM_FIELD, useExisting: MatLegacyFormField}],
 })
 export class MatLegacyFormField
-  extends _MatLegacyFormFieldBase
+  extends _MatFormFieldBase
   implements AfterContentInit, AfterContentChecked, AfterViewInit, OnDestroy, CanColor
 {
   /**

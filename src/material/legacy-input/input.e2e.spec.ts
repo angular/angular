@@ -1,7 +1,7 @@
 import {browser, by, element} from 'protractor';
 
 describe('input', () => {
-  beforeEach(async () => await browser.get('/mdc-input'));
+  beforeEach(async () => await browser.get('/input'));
 
   describe('text input', () => {
     it('should update input value when user types', async () => {

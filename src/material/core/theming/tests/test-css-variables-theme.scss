@@ -18,7 +18,6 @@
 @use '../../../expansion/expansion-theme';
 @use '../../../grid-list/grid-list-theme';
 @use '../../../icon/icon-theme';
-@use '../../../input/input-theme';
 @use '../../../list/list-theme';
 @use '../../../menu/menu-theme';
 @use '../../../paginator/paginator-theme';
@@ -34,7 +33,6 @@
 @use '../../../toolbar/toolbar-theme';
 @use '../../../tree/tree-theme';
 @use '../../../snack-bar/snack-bar-theme';
-@use '../../../form-field/form-field-theme';
 @use '../../../legacy-core/theming/all-theme' as legacy-all-theme;
 
 // Recursively replaces all of the values inside a Sass map with a different value.
@@ -77,10 +75,8 @@
   @include dialog-theme.theme($css-var-theme);
   @include divider-theme.theme($css-var-theme);
   @include expansion-theme.theme($css-var-theme);
-  @include form-field-theme.theme($css-var-theme);
   @include grid-list-theme.theme($css-var-theme);
   @include icon-theme.theme($css-var-theme);
-  @include input-theme.theme($css-var-theme);
   @include list-theme.theme($css-var-theme);
   @include menu-theme.theme($css-var-theme);
   @include paginator-theme.theme($css-var-theme);

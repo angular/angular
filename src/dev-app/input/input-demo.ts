@@ -14,9 +14,9 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {ErrorStateMatcher} from '@angular/material/core';
-import {FloatLabelType, MatFormFieldModule} from '@angular/material/form-field';
+import {FloatLabelType, MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
@@ -38,9 +38,9 @@ const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA
     MatButtonToggleModule,
     MatLegacyCardModule,
     MatCheckboxModule,
-    MatFormFieldModule,
+    MatLegacyFormFieldModule,
     MatIconModule,
-    MatInputModule,
+    MatLegacyInputModule,
     MatSelectModule,
     MatTabsModule,
     MatToolbarModule,

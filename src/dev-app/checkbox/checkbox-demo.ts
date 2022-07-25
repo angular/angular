@@ -13,8 +13,8 @@ import {MatPseudoCheckboxModule, ThemePalette} from '@angular/material/core';
 import {CommonModule} from '@angular/common';
 import {CheckboxExamplesModule} from '@angular/components-examples/material/checkbox';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatSelectModule} from '@angular/material/select';
 
 export interface Task {
@@ -111,8 +111,8 @@ export class MatCheckboxDemoNestedChecklist {
     CommonModule,
     FormsModule,
     MatCheckboxModule,
-    MatFormFieldModule,
-    MatInputModule,
+    MatLegacyFormFieldModule,
+    MatLegacyInputModule,
     MatSelectModule,
     MatPseudoCheckboxModule,
     ReactiveFormsModule,

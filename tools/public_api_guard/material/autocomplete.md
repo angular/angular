@@ -22,7 +22,7 @@ import * as i5 from '@angular/material/core';
 import * as i6 from '@angular/common';
 import * as i7 from '@angular/cdk/scrolling';
 import { InjectionToken } from '@angular/core';
-import { MatFormField } from '@angular/material/legacy-form-field';
+import { MatLegacyFormField } from '@angular/material/legacy-form-field';
 import { MatOptgroup } from '@angular/material/core';
 import { _MatOptgroupBase } from '@angular/material/core';
 import { MatOption } from '@angular/material/core';
@@ -191,7 +191,7 @@ export class MatAutocompleteTrigger extends _MatAutocompleteTriggerBase {
 
 // @public
 export abstract class _MatAutocompleteTriggerBase implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
-    constructor(_element: ElementRef<HTMLInputElement>, _overlay: Overlay, _viewContainerRef: ViewContainerRef, _zone: NgZone, _changeDetectorRef: ChangeDetectorRef, scrollStrategy: any, _dir: Directionality, _formField: MatFormField, _document: any, _viewportRuler: ViewportRuler, _defaults?: MatAutocompleteDefaultOptions | undefined);
+    constructor(_element: ElementRef<HTMLInputElement>, _overlay: Overlay, _viewContainerRef: ViewContainerRef, _zone: NgZone, _changeDetectorRef: ChangeDetectorRef, scrollStrategy: any, _dir: Directionality, _formField: MatLegacyFormField, _document: any, _viewportRuler: ViewportRuler, _defaults?: MatAutocompleteDefaultOptions | undefined);
     protected abstract _aboveClass: string;
     get activeOption(): _MatOptionBase | null;
     autocomplete: _MatAutocompleteBase;

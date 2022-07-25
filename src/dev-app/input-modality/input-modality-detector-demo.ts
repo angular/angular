@@ -13,8 +13,8 @@ import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSelectModule} from '@angular/material/select';
 
@@ -26,8 +26,8 @@ import {MatSelectModule} from '@angular/material/select';
     A11yModule,
     CommonModule,
     MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
+    MatLegacyFormFieldModule,
+    MatLegacyInputModule,
     MatRadioModule,
     MatSelectModule,
   ],

@@ -10,12 +10,12 @@ import {Component} from '@angular/core';
 import {FormControl, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ErrorStateMatcher, ThemePalette} from '@angular/material-experimental/mdc-core';
 import {MatSelectChange, MatSelectModule} from '@angular/material-experimental/mdc-select';
-import {FloatLabelType, MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
+import {FloatLabelType} from '@angular/material/form-field';
 import {CommonModule} from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
-import {MatInputModule} from '@angular/material-experimental/mdc-input';
+import {MatInputModule} from '@angular/material/input';
 
 /** Error any time control is invalid */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -37,7 +37,6 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     FormsModule,
     MatButtonModule,
     MatCardModule,
-    MatFormFieldModule,
     MatIconModule,
     MatInputModule,
     MatSelectModule,

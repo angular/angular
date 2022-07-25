@@ -1,7 +1,7 @@
 import {MatInputModule} from '@angular/material/input';
-import {MatNativeSelectHarness} from './native-select-harness';
 import {runNativeSelectHarnessTests} from './shared-native-select.spec';
+import {MatNativeSelectHarness} from './native-select-harness';
 
-describe('Non-MDC-based MatNativeSelectHarness', () => {
+describe('MDC-based MatNativeSelectHarness', () => {
   runNativeSelectHarnessTests(MatInputModule, MatNativeSelectHarness);
 });

@@ -10,8 +10,8 @@ import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSelectModule} from '@angular/material/select';
 import {MatToolbarModule} from '@angular/material/toolbar';
@@ -25,8 +25,8 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     CommonModule,
     MatLegacyCardModule,
     MatCheckboxModule,
-    MatFormFieldModule,
-    MatInputModule,
+    MatLegacyFormFieldModule,
+    MatLegacyInputModule,
     MatRadioModule,
     MatSelectModule,
     MatToolbarModule,

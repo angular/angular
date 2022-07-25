@@ -1,5 +1,5 @@
 `matInput` is a directive that allows native `<input>` and `<textarea>` elements to work with
-[`<mat-form-field>`](https://material.angular.io/components/form-field/overview). 
+[`<mat-form-field>`](https://material.angular.io/components/form-field/overview).
 
 <!-- example(input-overview) -->
 

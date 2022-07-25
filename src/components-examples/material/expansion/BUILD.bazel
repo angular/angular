@@ -20,7 +20,7 @@ ng_module(
         "//src/material/expansion",
         "//src/material/expansion/testing",
         "//src/material/icon",
-        "//src/material/input",
+        "//src/material/legacy-input",
         "@npm//@angular/platform-browser",
         "@npm//@angular/platform-browser-dynamic",
         "@npm//@types/jasmine",

@@ -15,9 +15,9 @@ import { ElementRef } from '@angular/core';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { FormGroupDirective } from '@angular/forms';
 import * as i0 from '@angular/core';
-import * as i2 from '@angular/cdk/text-field';
+import * as i2 from '@angular/material/core';
 import * as i3 from '@angular/material/form-field';
-import * as i4 from '@angular/material/core';
+import * as i4 from '@angular/cdk/text-field';
 import { InjectionToken } from '@angular/core';
 import { MatFormField } from '@angular/material/form-field';
 import { MatFormFieldControl } from '@angular/material/form-field';
@@ -37,7 +37,7 @@ export const MAT_INPUT_VALUE_ACCESSOR: InjectionToken<{
     value: any;
 }>;
 
-// @public
+// @public (undocumented)
 export class MatInput extends _MatInputBase implements MatFormFieldControl<any>, OnChanges, OnDestroy, AfterViewInit, DoCheck, CanUpdateErrorState {
     constructor(_elementRef: ElementRef<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>, _platform: Platform, ngControl: NgControl, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _defaultErrorStateMatcher: ErrorStateMatcher, inputValueAccessor: any, _autofillMonitor: AutofillMonitor, ngZone: NgZone, _formField?: MatFormField | undefined);
     autofilled: boolean;
@@ -54,6 +54,9 @@ export class MatInput extends _MatInputBase implements MatFormFieldControl<any>,
     focus(options?: FocusOptions): void;
     _focusChanged(isFocused: boolean): void;
     focused: boolean;
+    // (undocumented)
+    protected _formField?: MatFormField | undefined;
+    protected _getPlaceholder(): string | null;
     get id(): string;
     set id(value: string);
     // (undocumented)
@@ -116,7 +119,7 @@ export class MatInputModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatInputModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatInputModule, [typeof i1.MatInput], [typeof i2.TextFieldModule, typeof i3.MatFormFieldModule, typeof i4.MatCommonModule], [typeof i2.TextFieldModule, typeof i3.MatFormFieldModule, typeof i1.MatInput]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatInputModule, [typeof i1.MatInput], [typeof i2.MatCommonModule, typeof i3.MatFormFieldModule], [typeof i1.MatInput, typeof i3.MatFormFieldModule, typeof i4.TextFieldModule, typeof i2.MatCommonModule]>;
 }
 
 // (No @packageDocumentation comment for this package)

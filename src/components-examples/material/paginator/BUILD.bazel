@@ -16,7 +16,7 @@ ng_module(
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
         "//src/components-examples/private:localize_types",
-        "//src/material/input",
+        "//src/material/legacy-input",
         "//src/material/paginator",
         "//src/material/paginator/testing",
         "@npm//@angular/forms",

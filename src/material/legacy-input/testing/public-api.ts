@@ -8,9 +8,9 @@
 
 export {
   InputHarnessFilters,
-  MatInputHarness,
-  MatNativeSelectHarness,
-  MatNativeOptionHarness,
+  MatInputHarness as MatLegacyInputHarness,
+  MatNativeSelectHarness as MatLegacyNativeSelectHarness,
+  MatNativeOptionHarness as MatLegacyNativeOptionHarness,
   NativeOptionHarnessFilters,
   NativeSelectHarnessFilters,
 } from '@angular/material/input/testing';

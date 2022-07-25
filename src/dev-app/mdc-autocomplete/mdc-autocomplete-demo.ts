@@ -12,8 +12,7 @@ import {CommonModule} from '@angular/common';
 import {MatAutocompleteModule} from '@angular/material-experimental/mdc-autocomplete';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatCardModule} from '@angular/material/card';
-import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
-import {MatInputModule} from '@angular/material-experimental/mdc-input';
+import {MatInputModule} from '@angular/material/input';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
@@ -38,7 +37,6 @@ export interface StateGroup {
     MatAutocompleteModule,
     MatButtonModule,
     MatCardModule,
-    MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
   ],

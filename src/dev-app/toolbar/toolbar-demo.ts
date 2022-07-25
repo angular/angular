@@ -9,9 +9,9 @@
 import {Component} from '@angular/core';
 import {ToolbarExamplesModule} from '@angular/components-examples/material/toolbar';
 import {MatButtonModule} from '@angular/material/button';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
@@ -22,9 +22,9 @@ import {MatToolbarModule} from '@angular/material/toolbar';
   standalone: true,
   imports: [
     MatButtonModule,
-    MatFormFieldModule,
+    MatLegacyFormFieldModule,
     MatIconModule,
-    MatInputModule,
+    MatLegacyInputModule,
     MatSelectModule,
     MatToolbarModule,
     ToolbarExamplesModule,

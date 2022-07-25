@@ -11,8 +11,7 @@ import {CommonModule} from '@angular/common';
 import {MatPaginatorModule, PageEvent} from '@angular/material-experimental/mdc-paginator';
 import {FormsModule} from '@angular/forms';
 import {MatCardModule} from '@angular/material/card';
-import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
-import {MatInputModule} from '@angular/material-experimental/mdc-input';
+import {MatInputModule} from '@angular/material/input';
 import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-toggle';
 
 @Component({
@@ -24,7 +23,6 @@ import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-tog
     CommonModule,
     FormsModule,
     MatCardModule,
-    MatFormFieldModule,
     MatInputModule,
     MatPaginatorModule,
     MatSlideToggleModule,

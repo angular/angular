@@ -3,7 +3,6 @@
 @use '@angular/material' as mat;
 @use '@material/density' as mdc-density;
 @use '@material/typography' as mdc-typography;
-@use '../../material/form-field/form-field-theme';
 
 @use './paginator-variables';
 
@@ -73,10 +72,10 @@
     // so we set its density to be -4 or denser.
     @if ((meta.type-of($density-scale) == 'number' and $density-scale >= -4) or
          $density-scale == maximum) {
-      @include form-field-theme.density(-4);
+      @include mat.private-form-field-density(-4);
     }
     @else {
-      @include form-field-theme.density($density-scale);
+      @include mat.private-form-field-density($density-scale);
     }
   }
 

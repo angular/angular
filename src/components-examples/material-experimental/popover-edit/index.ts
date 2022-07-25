@@ -5,7 +5,7 @@ import {MatPopoverEditModule} from '@angular/material-experimental/popover-edit'
 import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatListModule} from '@angular/material/list';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTableModule} from '@angular/material/table';
@@ -34,7 +34,7 @@ const EXAMPLES = [
     MatButtonModule,
     MatCheckboxModule,
     MatIconModule,
-    MatInputModule,
+    MatLegacyInputModule,
     MatListModule,
     MatPopoverEditModule,
     MatSnackBarModule,

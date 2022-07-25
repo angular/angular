@@ -1,0 +1,11 @@
+@forward '../core/style/form-common.import';
+@forward '../core/typography/typography-utils.import';
+@forward '../core/style/vendor-prefixes.import';
+@forward 'input-theme' hide color, theme, typography;
+@forward 'input-theme' as mat-legacy-input-* hide mat-legacy-input-density;
+
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/style/form-common';
+@import '../core/typography/typography-utils';
+@import '../core/style/vendor-prefixes';

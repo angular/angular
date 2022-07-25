@@ -253,7 +253,7 @@ $dedupe: 0;
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
-  @include theming.private-check-duplicate-theme-styles($theme, 'legacy-mat-form-field') {
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-form-field') {
     $color: theming.get-color-config($theme);
     $density: theming.get-density-config($theme);
     $typography: theming.get-typography-config($theme);

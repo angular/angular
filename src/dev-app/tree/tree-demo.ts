@@ -14,9 +14,9 @@ import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatExpansionModule} from '@angular/material/expansion';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatLegacyProgressBarModule} from '@angular/material/legacy-progress-bar';
 import {MatTreeModule} from '@angular/material/tree';
 
@@ -34,9 +34,9 @@ import {MatTreeModule} from '@angular/material/tree';
     MatButtonModule,
     MatExpansionModule,
     MatCheckboxModule,
-    MatFormFieldModule,
+    MatLegacyFormFieldModule,
     MatIconModule,
-    MatInputModule,
+    MatLegacyInputModule,
     MatTreeModule,
     MatLegacyProgressBarModule,
   ],

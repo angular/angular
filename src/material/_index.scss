@@ -34,6 +34,8 @@
 @forward './table/table-flex-styles' show private-table-flex-styles;
 @forward './core/style/menu-common' as private-menu-common-*;
 @forward './core/style/button-common' as private-button-common-*;
+// The form field density mixin needs to be exposed, because the paginator depends on it.
+@forward './form-field/form-field-theme' as private-form-field-* show private-form-field-density;
 
 // Structural
 @forward './core/core' show core;

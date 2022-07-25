@@ -12,8 +12,7 @@ import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
 import {MatPseudoCheckboxModule, ThemePalette} from '@angular/material-experimental/mdc-core';
-import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
-import {MatInputModule} from '@angular/material-experimental/mdc-input';
+import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material-experimental/mdc-select';
 import {CommonModule} from '@angular/common';
 
@@ -110,7 +109,6 @@ export class MatCheckboxDemoNestedChecklist {
     CommonModule,
     FormsModule,
     MatCheckboxModule,
-    MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatPseudoCheckboxModule,

@@ -1,86 +1,19 @@
-@use 'sass:map';
-@use 'sass:math';
-@use '../core/theming/palette';
 @use '../core/theming/theming';
-@use '../core/style/form-common';
 @use '../core/typography/typography';
-@use '../core/typography/typography-utils';
-@use '../core/style/vendor-prefixes';
-
+@use '../core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $primary: map.get($config, primary);
-  $accent: map.get($config, accent);
-  $warn: map.get($config, warn);
-  $foreground: map.get($config, foreground);
-
-  .mat-form-field-type-mat-native-select .mat-form-field-infix::after {
-    color: theming.get-color-from-palette($foreground, secondary-text);
-  }
-
-  .mat-input-element:disabled,
-  .mat-form-field-type-mat-native-select.mat-form-field-disabled .mat-form-field-infix::after {
-    color: theming.get-color-from-palette($foreground, disabled-text);
-  }
-
-  .mat-input-element {
-    caret-color: theming.get-color-from-palette($primary, text);
-
-    @include vendor-prefixes.input-placeholder {
-      color: form-common.private-control-placeholder-color($config);
-    }
-
-    // On dark themes we set the native `select` color to some shade of white,
-    // however the color propagates to all of the `option` elements, which are
-    // always on a white background inside the dropdown, causing them to blend in.
-    // Since we can't change background of the dropdown, we need to explicitly
-    // reset the color of the options to something dark.
-    @if (map.get($config, is-dark)) {
-      &:not(.mat-native-select-inline) {
-        option {
-          color: palette.$dark-primary-text;
-        }
-
-        option:disabled {
-          color: palette.$dark-disabled-text;
-        }
-      }
-    }
-  }
-
-  .mat-form-field.mat-accent .mat-input-element {
-    caret-color: theming.get-color-from-palette($accent, text);
-  }
-
-  .mat-form-field.mat-warn .mat-input-element,
-  .mat-form-field-invalid .mat-input-element {
-    caret-color: theming.get-color-from-palette($warn, text);
-  }
-
-  .mat-form-field-type-mat-native-select.mat-form-field-invalid .mat-form-field-infix::after {
-    color: theming.get-color-from-palette($warn, text);
-  }
+  @include mdc-helpers.using-mdc-theme($config) {}
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
+  $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
-  // The unit-less line-height from the font config.
-  $line-height: typography-utils.line-height($config, input);
-
-  // The amount of space between the top of the line and the top of the actual text
-  // (as a fraction of the font-size).
-  $line-spacing: math.div($line-height - 1, 2);
-
-  // <input> elements seem to have their height set slightly too large on Safari causing the text to
-  // be misaligned w.r.t. the placeholder. Adding this margin corrects it.
-  input.mat-input-element {
-    margin-top: typography-utils.private-coerce-unitless-to-em(-$line-spacing);
-  }
+  @include mdc-helpers.using-mdc-typography($config) {}
 }
 
-@mixin _density($config-or-theme) {}
+@mixin density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -93,7 +26,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);

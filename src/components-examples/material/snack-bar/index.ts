@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {
@@ -28,7 +28,7 @@ const EXAMPLES = [
 ];
 
 @NgModule({
-  imports: [FormsModule, MatButtonModule, MatInputModule, MatSelectModule, MatSnackBarModule],
+  imports: [FormsModule, MatButtonModule, MatLegacyInputModule, MatSelectModule, MatSnackBarModule],
   declarations: [...EXAMPLES, PizzaPartyComponent],
   exports: EXAMPLES,
 })

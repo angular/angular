@@ -2,8 +2,8 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {AutocompleteAutoActiveFirstOptionExample} from './autocomplete-auto-active-first-option/autocomplete-auto-active-first-option-example';
 import {AutocompleteDisplayExample} from './autocomplete-display/autocomplete-display-example';
@@ -40,8 +40,8 @@ const EXAMPLES = [
   imports: [
     CommonModule,
     MatAutocompleteModule,
-    MatFormFieldModule,
-    MatInputModule,
+    MatLegacyFormFieldModule,
+    MatLegacyInputModule,
     MatSlideToggleModule,
     FormsModule,
     ReactiveFormsModule,

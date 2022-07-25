@@ -7,7 +7,7 @@
 import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
-import { MatFormFieldControlHarness } from '@angular/material/legacy-form-field/testing/control';
+import { MatFormFieldControlHarness } from '@angular/material/form-field/testing/control';
 
 // @public
 export interface CalendarCellHarnessFilters extends BaseHarnessFilters {

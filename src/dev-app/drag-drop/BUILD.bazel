@@ -11,9 +11,9 @@ ng_module(
     ],
     deps = [
         "//src/cdk/drag-drop",
-        "//src/material/form-field",
         "//src/material/icon",
-        "//src/material/input",
+        "//src/material/legacy-form-field",
+        "//src/material/legacy-input",
         "//src/material/select",
     ],
 )

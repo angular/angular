@@ -14,8 +14,8 @@ ng_module(
         "//src/components-examples/material/checkbox",
         "//src/material/checkbox",
         "//src/material/core",
-        "//src/material/form-field",
-        "//src/material/input",
+        "//src/material/legacy-form-field",
+        "//src/material/legacy-input",
         "//src/material/select",
     ],
 )

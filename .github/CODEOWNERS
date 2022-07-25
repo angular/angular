@@ -114,7 +114,7 @@
 /src/material-experimental/mdc-chips/**                @mmalerba
 /src/material-experimental/mdc-core/**                 @crisbeto
 /src/material-experimental/mdc-dialog/**               @devversion
-/src/material-experimental/mdc-form-field/**           @devversion @mmalerba
+/src/material/form-field/**                            @devversion @mmalerba
 /src/material-experimental/mdc-list/**                 @mmalerba @devversion
 /src/material-experimental/mdc-menu/**                 @crisbeto
 /src/material-experimental/mdc-select/**               @crisbeto

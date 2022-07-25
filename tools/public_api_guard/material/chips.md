@@ -26,7 +26,7 @@ import { HasTabIndex } from '@angular/material/core';
 import * as i0 from '@angular/core';
 import * as i4 from '@angular/material/core';
 import { InjectionToken } from '@angular/core';
-import { MatFormFieldControl } from '@angular/material/legacy-form-field';
+import { MatLegacyFormFieldControl } from '@angular/material/legacy-form-field';
 import { NgControl } from '@angular/forms';
 import { NgForm } from '@angular/forms';
 import { NgZone } from '@angular/core';
@@ -179,7 +179,7 @@ export interface MatChipInputEvent {
 }
 
 // @public
-export class MatChipList extends _MatChipListBase implements MatFormFieldControl<any>, ControlValueAccessor, AfterContentInit, DoCheck, OnInit, OnDestroy, CanUpdateErrorState {
+export class MatChipList extends _MatChipListBase implements MatLegacyFormFieldControl<any>, ControlValueAccessor, AfterContentInit, DoCheck, OnInit, OnDestroy, CanUpdateErrorState {
     constructor(_elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _defaultErrorStateMatcher: ErrorStateMatcher, ngControl: NgControl);
     _allowFocusEscape(): void;
     ariaOrientation: 'horizontal' | 'vertical';

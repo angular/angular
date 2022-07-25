@@ -1,0 +1,2 @@
+@forward 'input-theme' hide color, theme, typography;
+@forward 'input-theme' as mat-legacy-input-* hide mat-legacy-input-density;

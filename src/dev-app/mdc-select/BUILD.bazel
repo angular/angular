@@ -11,11 +11,11 @@ ng_module(
     ],
     deps = [
         "//src/material-experimental/mdc-button",
-        "//src/material-experimental/mdc-form-field",
-        "//src/material-experimental/mdc-input",
         "//src/material-experimental/mdc-select",
         "//src/material/card",
+        "//src/material/form-field",
         "//src/material/icon",
+        "//src/material/input",
         "@npm//@angular/forms",
     ],
 )

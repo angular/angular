@@ -24,8 +24,8 @@ ng_test_library(
     srcs = glob(["**/*.spec.ts"]),
     deps = [
         ":testing",
-        "//src/material-experimental/mdc-input",
         "//src/material/input/testing:harness_tests_lib",
+        "//src/material/legacy-input",
     ],
 )
 

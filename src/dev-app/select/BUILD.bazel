@@ -12,10 +12,10 @@ ng_module(
     deps = [
         "//src/material/button",
         "//src/material/dialog",
-        "//src/material/form-field",
         "//src/material/icon",
-        "//src/material/input",
         "//src/material/legacy-card",
+        "//src/material/legacy-form-field",
+        "//src/material/legacy-input",
         "//src/material/select",
         "@npm//@angular/forms",
     ],

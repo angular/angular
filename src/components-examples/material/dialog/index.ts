@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatMenuModule} from '@angular/material/menu';
 import {
   DialogContentExample,
@@ -65,7 +65,7 @@ const EXAMPLES = [
     CommonModule,
     MatButtonModule,
     MatDialogModule,
-    MatInputModule,
+    MatLegacyInputModule,
     MatMenuModule,
     FormsModule,
   ],

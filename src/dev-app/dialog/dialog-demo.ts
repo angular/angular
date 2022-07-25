@@ -20,8 +20,8 @@ import {
   MatDialogRef,
   MatDialogModule,
 } from '@angular/material/dialog';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatSelectModule} from '@angular/material/select';
 
 const defaultDialogConfig = new MatDialogConfig();
@@ -37,8 +37,8 @@ const defaultDialogConfig = new MatDialogConfig();
     MatLegacyCardModule,
     MatCheckboxModule,
     MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
+    MatLegacyFormFieldModule,
+    MatLegacyInputModule,
     MatSelectModule,
   ],
 })
@@ -131,7 +131,7 @@ export class DialogDemo {
   encapsulation: ViewEncapsulation.None,
   styles: [`.hidden-dialog { opacity: 0; }`],
   standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, DragDropModule],
+  imports: [MatLegacyFormFieldModule, MatLegacyInputModule, DragDropModule],
 })
 export class JazzDialog {
   private _dimensionToggle = false;

@@ -3,7 +3,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatStepperModule} from '@angular/material/stepper';
 import {StepperEditableExample} from './stepper-editable/stepper-editable-example';
@@ -57,7 +57,7 @@ const EXAMPLES = [
     FormsModule,
     MatButtonModule,
     MatIconModule,
-    MatInputModule,
+    MatLegacyInputModule,
     MatRadioModule,
     MatStepperModule,
     ReactiveFormsModule,

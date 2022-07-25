@@ -15,7 +15,7 @@ import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
 import {ThemePalette} from '@angular/material/core';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
@@ -40,7 +40,7 @@ export interface DemoColor {
     MatLegacyCardModule,
     MatCheckboxModule,
     MatChipsModule,
-    MatFormFieldModule,
+    MatLegacyFormFieldModule,
     MatIconModule,
     MatToolbarModule,
   ],

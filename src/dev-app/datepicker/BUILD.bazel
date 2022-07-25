@@ -16,9 +16,9 @@ ng_module(
         "//src/material/checkbox",
         "//src/material/core",
         "//src/material/datepicker",
-        "//src/material/form-field",
         "//src/material/icon",
-        "//src/material/input",
+        "//src/material/legacy-form-field",
+        "//src/material/legacy-input",
         "//src/material/select",
     ],
 )

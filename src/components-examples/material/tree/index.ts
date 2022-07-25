@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatLegacyProgressBarModule} from '@angular/material/legacy-progress-bar';
 import {MatTreeModule} from '@angular/material/tree';
 import {TreeChecklistExample} from './tree-checklist/tree-checklist-example';
@@ -37,7 +37,7 @@ const EXAMPLES = [
     MatButtonModule,
     MatCheckboxModule,
     MatIconModule,
-    MatInputModule,
+    MatLegacyInputModule,
     MatLegacyProgressBarModule,
     MatTreeModule,
   ],

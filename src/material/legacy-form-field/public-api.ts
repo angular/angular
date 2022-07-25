@@ -17,7 +17,6 @@ export * from './label';
 
 export {
   MAT_FORM_FIELD,
-  MAT_FORM_FIELD_DEFAULT_OPTIONS,
   MatFormFieldControl as MatLegacyFormFieldControl,
   getMatFormFieldDuplicatedHintError,
   getMatFormFieldMissingControlError,

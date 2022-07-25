@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatSliderModule} from '@angular/material/slider';
 import {SliderConfigurableExample} from './slider-configurable/slider-configurable-example';
 import {SliderFormattingExample} from './slider-formatting/slider-formatting-example';
@@ -30,7 +30,7 @@ const EXAMPLES = [
     FormsModule,
     MatLegacyCardModule,
     MatCheckboxModule,
-    MatInputModule,
+    MatLegacyInputModule,
     MatSliderModule,
   ],
   declarations: EXAMPLES,

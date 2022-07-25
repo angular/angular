@@ -11,8 +11,7 @@ import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {TooltipPosition, MatTooltipModule} from '@angular/material/tooltip';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
-import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
-import {MatInputModule} from '@angular/material-experimental/mdc-input';
+import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material-experimental/mdc-select';
 
 @Component({
@@ -25,7 +24,6 @@ import {MatSelectModule} from '@angular/material-experimental/mdc-select';
     ReactiveFormsModule,
     MatTooltipModule,
     MatButtonModule,
-    MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
   ],

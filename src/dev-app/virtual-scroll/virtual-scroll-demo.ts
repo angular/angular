@@ -12,8 +12,8 @@ import {ScrollingModule as ExperimentalScrollingModule} from '@angular/cdk-exper
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatSelectModule} from '@angular/material/select';
 import {BehaviorSubject} from 'rxjs';
 import {CdkScrollingExamplesModule} from '@angular/components-examples/cdk/scrolling';
@@ -35,8 +35,8 @@ type State = {
     ExperimentalScrollingModule,
     FormsModule,
     MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
+    MatLegacyFormFieldModule,
+    MatLegacyInputModule,
     MatSelectModule,
     ScrollingModule,
     CdkScrollingExamplesModule,

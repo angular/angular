@@ -4,7 +4,7 @@ import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatChipsModule} from '@angular/material/chips';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {ChipsAutocompleteExample} from './chips-autocomplete/chips-autocomplete-example';
 import {ChipsDragDropExample} from './chips-drag-drop/chips-drag-drop-example';
@@ -46,7 +46,7 @@ const EXAMPLES = [
     MatButtonModule,
     MatChipsModule,
     MatIconModule,
-    MatFormFieldModule,
+    MatLegacyFormFieldModule,
     ReactiveFormsModule,
   ],
   declarations: EXAMPLES,

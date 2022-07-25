@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {InputClearableExample} from './input-clearable/input-clearable-example';
 import {InputErrorStateMatcherExample} from './input-error-state-matcher/input-error-state-matcher-example';
 import {InputErrorsExample} from './input-errors/input-errors-example';
@@ -40,7 +40,7 @@ const EXAMPLES = [
     CommonModule,
     MatButtonModule,
     MatIconModule,
-    MatInputModule,
+    MatLegacyInputModule,
     FormsModule,
     ReactiveFormsModule,
   ],

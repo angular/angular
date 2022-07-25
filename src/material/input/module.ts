@@ -8,8 +8,8 @@
 
 import {TextFieldModule} from '@angular/cdk/text-field';
 import {NgModule} from '@angular/core';
-import {MatCommonModule} from '@angular/material-experimental/mdc-core';
-import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
+import {MatCommonModule} from '@angular/material/core';
+import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInput} from './input';
 
 @NgModule({

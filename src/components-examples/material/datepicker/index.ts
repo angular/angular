@@ -6,7 +6,7 @@ import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatNativeDateModule, MAT_DATE_LOCALE} from '@angular/material/core';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {DateRangePickerComparisonExample} from './date-range-picker-comparison/date-range-picker-comparison-example';
 import {DateRangePickerFormsExample} from './date-range-picker-forms/date-range-picker-forms-example';
 import {DateRangePickerOverviewExample} from './date-range-picker-overview/date-range-picker-overview-example';
@@ -98,7 +98,7 @@ const EXAMPLES = [
     MatButtonModule,
     MatLegacyCardModule,
     MatDatepickerModule,
-    MatInputModule,
+    MatLegacyInputModule,
     MatIconModule,
     MatNativeDateModule,
     ReactiveFormsModule,

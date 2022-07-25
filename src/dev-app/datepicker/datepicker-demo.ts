@@ -38,9 +38,9 @@ import {
   DateRange,
   MatDatepickerModule,
 } from '@angular/material/datepicker';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatSelectModule} from '@angular/material/select';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -188,9 +188,9 @@ export class CustomHeaderNgContent<D> {
     MatButtonModule,
     MatCheckboxModule,
     MatDatepickerModule,
-    MatFormFieldModule,
+    MatLegacyFormFieldModule,
     MatIconModule,
-    MatInputModule,
+    MatLegacyInputModule,
     MatNativeDateModule,
     MatSelectModule,
     ReactiveFormsModule,

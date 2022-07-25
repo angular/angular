@@ -7,8 +7,8 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
-import {MatInputModule} from '@angular/material-experimental/mdc-input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 import {MdcInputE2E} from './mdc-input-e2e';
 
 @NgModule({
