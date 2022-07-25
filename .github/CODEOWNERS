@@ -285,11 +285,11 @@
 /integration/**                                        @andrewseguin @devversion
 
 # Tooling
-/.circleci/**                                          @angular/dev-infra-components
-/.yarn/**                                              @angular/dev-infra-components
-/scripts/**                                            @angular/dev-infra-components
-/test/**                                               @angular/dev-infra-components
-/tools/**                                              @angular/dev-infra-components
+/.circleci/**                                          @devversion @josephperrott
+/.yarn/**                                              @devversion @josephperrott
+/scripts/**                                            @devversion @josephperrott
+/test/**                                               @devversion @josephperrott
+/tools/**                                              @devversion @josephperrott
 
 # Public API golden files
 /tools/public_api_guard/cdk/a11y**                 @jelbourn @devversion
@@ -353,13 +353,13 @@
 /tools/public_api_guard/youtube-player/**          @andrewseguin
 
 # Misc
-/.github/**                                            @angular/dev-infra-components
-/.husky/**                                             @angular/dev-infra-components
-/.github/CODEOWNERS                                    @angular/dev-infra-components @andrewseguin @jelbourn
+/.github/**                                            @devversion @josephperrott
+/.husky/**                                             @devversion @josephperrott
+/.github/CODEOWNERS                                    @devversion @josephperrott @andrewseguin @jelbourn
 /.github/ISSUE_TEMPLATE/**                             @andrewseguin @jelbourn
-/.vscode/**                                            @angular/dev-infra-components @mmalerba
-/.ng-dev/**                                            @angular/dev-infra-components
+/.vscode/**                                            @devversion @josephperrott @mmalerba
+/.ng-dev/**                                            @devversion @josephperrott
 /goldens/size-test.yml                                 @andrewseguin @mmalerba @crisbeto
-/goldens/**                                            @angular/dev-infra-components
-/src/*                                                 @angular/dev-infra-components
-/*                                                     @angular/dev-infra-components
+/goldens/**                                            @andrewseguin @mmalerba @crisbeto
+/src/*                                                 @devversion @josephperrott
+/*                                                     @devversion @josephperrott
