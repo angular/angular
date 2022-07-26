@@ -1664,12 +1664,16 @@ function refreshContainsDirtyView(lView: LView) {
        lContainer = getNextLContainer(lContainer)) {
     for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
       const embeddedLView = lContainer[i];
-      if (embeddedLView[FLAGS] & LViewFlags.RefreshTransplantedView) {
-        const embeddedTView = embeddedLView[TVIEW];
-        ngDevMode && assertDefined(embeddedTView, 'TView must be allocated');
-        refreshView(embeddedTView, embeddedLView, embeddedTView.template, embeddedLView[CONTEXT]!);
-      } else if (embeddedLView[TRANSPLANTED_VIEWS_TO_REFRESH] > 0) {
-        refreshContainsDirtyView(embeddedLView);
+      if (viewAttachedToChangeDetector(embeddedLView)) {
+        if (embeddedLView[FLAGS] & LViewFlags.RefreshTransplantedView) {
+          const embeddedTView = embeddedLView[TVIEW];
+          ngDevMode && assertDefined(embeddedTView, 'TView must be allocated');
+          refreshView(
+              embeddedTView, embeddedLView, embeddedTView.template, embeddedLView[CONTEXT]!);
+
+        } else if (embeddedLView[TRANSPLANTED_VIEWS_TO_REFRESH] > 0) {
+          refreshContainsDirtyView(embeddedLView);
+        }
       }
     }
   }
