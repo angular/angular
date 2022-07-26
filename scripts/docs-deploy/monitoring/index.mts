@@ -2,7 +2,7 @@ import {$, cd} from 'zx';
 
 import {ProductionDeployment} from '../deploy-to-site.mjs';
 import {cloneDocsRepositoryForMajor} from '../clone-docs-repo.mjs';
-import {ActiveReleaseTrains} from '@angular/dev-infra-private/ng-dev';
+import {ActiveReleaseTrains} from '@angular/ng-dev';
 import {getReleaseRepoWithApi} from '../github-versioning.mjs';
 import {installDepsForDocsSite} from '../docs-deps-install.mjs';
 import {sites} from '../utils.mjs';

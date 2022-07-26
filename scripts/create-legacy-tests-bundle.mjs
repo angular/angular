@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import {createLinkerEsbuildPlugin} from '@angular/dev-infra-private/shared-scripts/angular-linker/esbuild-plugin.mjs';
+import {createLinkerEsbuildPlugin} from '@angular/build-tooling/shared-scripts/angular-linker/esbuild-plugin.mjs';
 import child_process from 'child_process';
 import esbuild from 'esbuild';
 import fs from 'fs';

@@ -6,11 +6,7 @@
  */
 
 import sh from 'shelljs';
-import {
-  isVersionBranch,
-  getConfig,
-  assertValidGithubConfig,
-} from '@angular/dev-infra-private/ng-dev';
+import {isVersionBranch, getConfig, assertValidGithubConfig} from '@angular/ng-dev';
 
 if (process.env.CIRCLE_PR_NUMBER !== undefined) {
   console.info('Skipping notifications for pull requests.');

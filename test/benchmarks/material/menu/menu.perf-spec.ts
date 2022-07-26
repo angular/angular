@@ -7,7 +7,7 @@
  */
 
 import {$, by, element, ElementFinder, Key} from 'protractor';
-import {runBenchmark} from '@angular/dev-infra-private/bazel/benchmark/driver-utilities';
+import {runBenchmark} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 
 // Clicking to close a menu is problematic. This is a solution that uses `.sendKeys()` avoids
 // issues with `.click()`.

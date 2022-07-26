@@ -4,7 +4,7 @@
  */
 
 import sh from 'shelljs';
-import {BuiltPackage} from '@angular/dev-infra-private/ng-dev';
+import {BuiltPackage} from '@angular/ng-dev';
 import {fileURLToPath} from 'url';
 import {join, dirname} from 'path';
 

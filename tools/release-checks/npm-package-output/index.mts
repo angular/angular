@@ -1,6 +1,6 @@
 import semver from 'semver';
 import {checkReleasePackage} from './check-package.mjs';
-import {BuiltPackage, Log, ReleasePrecheckError} from '@angular/dev-infra-private/ng-dev';
+import {BuiltPackage, Log, ReleasePrecheckError} from '@angular/ng-dev';
 
 /** Asserts that the given built packages are valid for public consumption. */
 export async function assertValidNpmPackageOutput(

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as url from 'url';
 
-import {BuiltPackage} from '@angular/dev-infra-private/ng-dev';
+import {BuiltPackage} from '@angular/ng-dev';
 import {getPackageJsonOfProject} from './utils.mjs';
 
 export async function installBuiltPackagesInRepo(repoPath: string, builtPackages: BuiltPackage[]) {

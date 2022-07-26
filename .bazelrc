@@ -83,11 +83,11 @@ build:remote --google_default_credentials=true
 
 # Setup the toolchain and platform for the remote build execution. The platform
 # is provided by the shared dev-infra package and targets k8 remote containers.
-build:remote --crosstool_top=@npm//@angular/dev-infra-private/bazel/remote-execution/cpp:cc_toolchain_suite
-build:remote --extra_toolchains=@npm//@angular/dev-infra-private/bazel/remote-execution/cpp:cc_toolchain
-build:remote --extra_execution_platforms=@npm//@angular/dev-infra-private/bazel/remote-execution:platform_with_network
-build:remote --host_platform=@npm//@angular/dev-infra-private/bazel/remote-execution:platform_with_network
-build:remote --platforms=@npm//@angular/dev-infra-private/bazel/remote-execution:platform_with_network
+build:remote --crosstool_top=@npm//@angular/build-tooling/bazel/remote-execution/cpp:cc_toolchain_suite
+build:remote --extra_toolchains=@npm//@angular/build-tooling/bazel/remote-execution/cpp:cc_toolchain
+build:remote --extra_execution_platforms=@npm//@angular/build-tooling/bazel/remote-execution:platform_with_network
+build:remote --host_platform=@npm//@angular/build-tooling/bazel/remote-execution:platform_with_network
+build:remote --platforms=@npm//@angular/build-tooling/bazel/remote-execution:platform_with_network
 
 ################################
 #  Sandbox settings            #

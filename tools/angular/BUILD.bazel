@@ -1,4 +1,4 @@
-load("@npm//@angular/dev-infra-private/bazel/esbuild:index.bzl", "esbuild_config")
+load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", "esbuild_config")
 load(":index.bzl", "create_angular_bundle_targets")
 
 package(default_visibility = ["//visibility:public"])
@@ -7,7 +7,7 @@ esbuild_config(
     name = "esbuild_config",
     config_file = "esbuild.config.mjs",
     deps = [
-        "@npm//@angular/dev-infra-private/shared-scripts/angular-linker:js_lib",
+        "@npm//@angular/build-tooling/shared-scripts/angular-linker:js_lib",
     ],
 )
 

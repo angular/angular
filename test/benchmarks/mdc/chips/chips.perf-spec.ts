@@ -7,7 +7,7 @@
  */
 
 import {$, browser} from 'protractor';
-import {runBenchmark} from '@angular/dev-infra-private/bazel/benchmark/driver-utilities';
+import {runBenchmark} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 
 async function runRenderBenchmark(testId: string, showBtnId: string) {
   return runBenchmark({

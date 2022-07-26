@@ -1,4 +1,4 @@
-import {Log, ReleasePrecheckError} from '@angular/dev-infra-private/ng-dev';
+import {Log, ReleasePrecheckError} from '@angular/ng-dev';
 import {join, dirname} from 'path';
 import {fileURLToPath} from 'url';
 import {existsSync, readFileSync} from 'fs';

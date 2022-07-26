@@ -109,7 +109,7 @@ sass_repositories(
 
 # Setup repositories for browsers provided by the shared dev-infra package.
 load(
-    "@npm//@angular/dev-infra-private/bazel/browsers:browser_repositories.bzl",
+    "@npm//@angular/build-tooling/bazel/browsers:browser_repositories.bzl",
     _dev_infra_browser_repositories = "browser_repositories",
 )
 

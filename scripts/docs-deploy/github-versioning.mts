@@ -5,7 +5,7 @@ import {
   assertValidGithubConfig,
   getConfig,
   getNextBranchName,
-} from '@angular/dev-infra-private/ng-dev';
+} from '@angular/ng-dev';
 
 import {githubAccessToken} from './utils.mjs';
 

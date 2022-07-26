@@ -6,7 +6,7 @@ import {
   assertValidReleaseConfig,
   fetchLongTermSupportBranchesFromNpm,
   getConfig,
-} from '@angular/dev-infra-private/ng-dev';
+} from '@angular/ng-dev';
 
 import {sites} from './utils.mjs';
 

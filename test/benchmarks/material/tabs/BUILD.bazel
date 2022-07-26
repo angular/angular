@@ -1,4 +1,4 @@
-load("@npm//@angular/dev-infra-private/bazel/benchmark/component_benchmark:component_benchmark.bzl", "component_benchmark")
+load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:component_benchmark.bzl", "component_benchmark")
 
 # TODO(wagnermaciel): Update this target to provide indigo-pink in a way that doesn't require having to import it with
 # stylesUrls inside the components once `component_benchmark` supports asset injection.
@@ -7,7 +7,7 @@ component_benchmark(
     name = "benchmark",
     driver = ":tabs.perf-spec.ts",
     driver_deps = [
-        "@npm//@angular/dev-infra-private/bazel/benchmark/driver-utilities",
+        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
         "@npm//protractor",
         "@npm//@types/jasmine",
     ],

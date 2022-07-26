@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createLinkerEsbuildPlugin} from '@angular/dev-infra-private/shared-scripts/angular-linker/esbuild-plugin.mjs';
+import {createLinkerEsbuildPlugin} from '@angular/build-tooling/shared-scripts/angular-linker/esbuild-plugin.mjs';
 
 export default {
   // Note: We support `.mjs` here as this is the extension used by Angular APF packages.

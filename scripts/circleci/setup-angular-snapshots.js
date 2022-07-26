@@ -28,10 +28,11 @@ const snapshotPackages = [
 
 /** List of packages which should not be updated to a snapshot build. */
 const ignorePackages = [
-  // Skip update for the shared dev-infra package. We do not want to update to a snapshot
+  // Skip update for the shared dev-infra packages. We do not want to update to a snapshot
   // version of the dev-infra tooling as that could break tooling from running snapshot
   // tests for the actual snapshot Angular framework code.
-  '@angular/dev-infra-private',
+  '@angular/build-tooling',
+  '@angular/ng-dev',
 ];
 
 const {writeFileSync} = require('fs');

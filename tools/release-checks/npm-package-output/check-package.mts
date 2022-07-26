@@ -1,4 +1,4 @@
-import {Log, bold, yellow} from '@angular/dev-infra-private/ng-dev';
+import {Log, bold, yellow} from '@angular/ng-dev';
 import {existsSync} from 'fs';
 import glob from 'glob';
 import {basename, dirname, join} from 'path';

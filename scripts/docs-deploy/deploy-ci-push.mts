@@ -5,7 +5,7 @@ import {
   getBranchesForMajorVersions,
   getVersionForVersionBranch,
   isVersionBranch,
-} from '@angular/dev-infra-private/ng-dev';
+} from '@angular/ng-dev';
 import {firebaseConfig, sites} from './utils.mjs';
 
 import {buildAndDeployWithSnapshots} from './snapshot-deploy.mjs';

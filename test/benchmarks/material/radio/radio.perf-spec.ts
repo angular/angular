@@ -7,7 +7,7 @@
  */
 
 import {$, browser} from 'protractor';
-import {runBenchmark} from '@angular/dev-infra-private/bazel/benchmark/driver-utilities';
+import {runBenchmark} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 
 describe('radio button performance benchmarks', () => {
   beforeAll(() => {

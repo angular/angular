@@ -1,4 +1,4 @@
-load("@npm//@angular/dev-infra-private/bazel/api-golden:index.bzl", "api_golden_test")
+load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", "api_golden_test")
 
 def generate_test_targets(targets, types = []):
     """Macro for generating `api_golden_test` Bazel test targets. Since there are multiple

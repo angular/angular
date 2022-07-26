@@ -24,7 +24,7 @@
       "enabled": false
     },
     {
-      "matchPackageNames": ["@angular/dev-infra-private", "angular/dev-infra"],
+      "matchPackageNames": ["@angular/ng-dev", "@angular/build-tooling", "angular/dev-infra"],
       "groupName": "angular shared dev-infra code",
       "enabled": true
     },

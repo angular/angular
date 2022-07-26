@@ -1,5 +1,5 @@
 import semver from 'semver';
-import {ReleaseConfig} from '@angular/dev-infra-private/ng-dev';
+import {ReleaseConfig} from '@angular/ng-dev';
 import {assertValidFrameworkPeerDependency} from '../tools/release-checks/check-framework-peer-dependency.mjs';
 import {assertValidUpdateMigrationCollections} from '../tools/release-checks/check-migration-collections.mjs';
 import {assertValidNpmPackageOutput} from '../tools/release-checks/npm-package-output/index.mjs';
