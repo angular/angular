@@ -1,10 +1,10 @@
-# Creating an injecting services
+# Creating an injectable service
 
 Service is a broad category encompassing any value, function, or feature that an application needs. A service is typically a class with a narrow, well-defined purpose. A component is one type of class that can use DI.
 
 Angular distinguishes components from services to increase modularity and reusability. By separating a component's view-related features from other kinds of processing, you can make your component classes lean and efficient.
 
-Ideally, a component's job is to enable the user experience and nothing more. A component should present properties and methods for data binding, in order to mediate between the view (rendered by the template) and the application logic (which often includes some notion of a model).
+Ideally, a component's job is to enable the user experience and nothing more. A component should present properties and methods for data binding, to mediate between the view (rendered by the template) and the application logic (which often includes some notion of a model).
 
 A component can delegate certain tasks to services, such as fetching data from the server, validating user input, or logging directly to the console. By defining such processing tasks in an injectable service class, you make those tasks available to any component. You can also make your application more adaptable by injecting different providers of the same kind of service, as appropriate in different circumstances.
 
@@ -90,5 +90,5 @@ In this example, the `getHeroes()` method uses the `Logger` service by logging a
 ## What's next
 
 * [How to configure dependencies in DI](guide/dependency-injection-providers)
-* [How to use `InjectionTokens` to provide and inject values other than services/classes](guide/dependency-injection-providers#Specifying-a-provider-token)
+* [How to use `InjectionTokens` to provide and inject values other than services/classes](guide/dependency-injection-providers#Configuring-dependency-providers)
 * [Dependency Injection in Action](guide/dependency-injection-in-action)

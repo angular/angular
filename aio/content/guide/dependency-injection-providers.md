@@ -84,7 +84,7 @@ You inject both `Logger` and `UserService` into the factory provider so the inje
 
 * The `useFactory` field specifies that the provider is a factory function whose implementation is `heroServiceFactory`.
 
-* The `deps` property is an array of [provider tokens](guide/dependency-injection-providers#specifying-an-alternative-class-provider).
+* The `deps` property is an array of provider tokens.
 The `Logger` and `UserService` classes serve as tokens for their own class providers.
 The injector resolves these tokens and injects the corresponding services into the matching `heroServiceFactory` factory function parameters.
 
