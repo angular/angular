@@ -139,6 +139,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     userPointerPosition: Point,
     dragRef: DragRef,
     dimensions: ClientRect,
+    pickupPositionInElement: Point,
   ) => Point;
 
   /** Class to be added to the preview element. */

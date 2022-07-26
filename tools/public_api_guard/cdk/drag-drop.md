@@ -55,7 +55,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     dropContainer: CdkDropListInternal,
     _document: any, _ngZone: NgZone, _viewContainerRef: ViewContainerRef, config: DragDropConfig, _dir: Directionality, dragDrop: DragDrop, _changeDetectorRef: ChangeDetectorRef, _selfHandle?: CdkDragHandle | undefined, _parentDrag?: CdkDrag<any> | undefined);
     boundaryElement: string | ElementRef<HTMLElement> | HTMLElement;
-    constrainPosition?: (userPointerPosition: Point, dragRef: DragRef, dimensions: ClientRect) => Point;
+    constrainPosition?: (userPointerPosition: Point, dragRef: DragRef, dimensions: ClientRect, pickupPositionInElement: Point) => Point;
     data: T;
     get disabled(): boolean;
     set disabled(value: BooleanInput);
@@ -359,7 +359,7 @@ export class DragDropRegistry<I extends {
 export class DragRef<T = any> {
     constructor(element: ElementRef<HTMLElement> | HTMLElement, _config: DragRefConfig, _document: Document, _ngZone: NgZone, _viewportRuler: ViewportRuler, _dragDropRegistry: DragDropRegistry<DragRef, DropListRefInternal>);
     readonly beforeStarted: Subject<void>;
-    constrainPosition?: (userPointerPosition: Point, dragRef: DragRef, dimensions: ClientRect) => Point;
+    constrainPosition?: (userPointerPosition: Point, dragRef: DragRef, dimensions: ClientRect, pickupPositionInElement: Point) => Point;
     data: T;
     get disabled(): boolean;
     set disabled(value: boolean);

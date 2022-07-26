@@ -1082,6 +1082,7 @@ describe('CdkDrag', () => {
         jasmine.objectContaining({x: 300, y: 300}),
         jasmine.any(DragRef),
         jasmine.anything(),
+        jasmine.objectContaining({x: jasmine.any(Number), y: jasmine.any(Number)}),
       );
 
       const elementRect = dragElement.getBoundingClientRect();
@@ -3685,6 +3686,7 @@ describe('CdkDrag', () => {
         jasmine.objectContaining({x: 200, y: 200}),
         jasmine.any(DragRef),
         jasmine.anything(),
+        jasmine.objectContaining({x: jasmine.any(Number), y: jasmine.any(Number)}),
       );
       expect(Math.floor(previewRect.top)).toBe(50);
       expect(Math.floor(previewRect.left)).toBe(50);

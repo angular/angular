@@ -365,6 +365,7 @@ export class DragRef<T = any> {
     userPointerPosition: Point,
     dragRef: DragRef,
     dimensions: ClientRect,
+    pickupPositionInElement: Point,
   ) => Point;
 
   constructor(
@@ -1239,7 +1240,7 @@ export class DragRef<T = any> {
   private _getConstrainedPointerPosition(point: Point): Point {
     const dropContainerLock = this._dropContainer ? this._dropContainer.lockAxis : null;
     let {x, y} = this.constrainPosition
-      ? this.constrainPosition(point, this, this._initialClientRect!)
+      ? this.constrainPosition(point, this, this._initialClientRect!, this._pickupPositionInElement)
       : point;
 
     if (this.lockAxis === 'x' || dropContainerLock === 'x') {
