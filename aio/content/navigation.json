@@ -939,11 +939,6 @@
                   "tooltip": "About Components, Templates, and Views."
                 },
                 {
-                  "url": "guide/architecture-services",
-                  "title": "Intro to Services and DI",
-                  "tooltip": "About services and dependency injection."
-                },
-                {
                   "url": "guide/architecture-next-steps",
                   "title": "Next Steps",
                   "tooltip": "Beyond the basics."
@@ -1098,11 +1093,6 @@
               "title": "Dependency injection",
               "tooltip": "Using dependency injection in Angular.",
               "children": [
-                {
-                  "url": "guide/hierarchical-dependency-injection",
-                  "title": "Hierarchical Injectors",
-                  "tooltip": "An injector tree parallels the component tree and supports nested dependencies."
-                },
                 {
                   "url": "guide/dependency-injection-in-action",
                   "title": "DI in Action",
