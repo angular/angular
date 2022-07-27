@@ -11,6 +11,7 @@ import {
   Component,
   Directive,
   Inject,
+  InjectionToken,
   Injector,
   TemplateRef,
   ViewChild,
@@ -123,6 +124,15 @@ describe('Dialog', () => {
     expect(dialogInjector.get<DirectiveWithViewContainer>(DirectiveWithViewContainer)).toBeTruthy(
       'Expected the dialog component to be created with the injector from the viewContainerRef.',
     );
+  });
+
+  it('should use custom injector', () => {
+    const token = new InjectionToken<string>('message');
+    const injector = Injector.create({providers: [{provide: token, useValue: 'hello'}]});
+    const dialogRef = dialog.open(PizzaMsg, {injector});
+    viewContainerFixture.detectChanges();
+
+    expect(dialogRef.componentInstance?.dialogInjector.get(token)).toBe('hello');
   });
 
   it('should open a dialog with a component and no ViewContainerRef', () => {

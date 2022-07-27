@@ -333,7 +333,7 @@ export class Dialog implements OnDestroy {
       });
     }
 
-    return Injector.create({parent: userInjector || this._injector, providers});
+    return Injector.create({parent: config.injector || userInjector || this._injector, providers});
   }
 
   /**
