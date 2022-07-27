@@ -6,7 +6,7 @@
 """
 
 load("//integration:npm_package_archives.bzl", "NPM_PACKAGE_ARCHIVES", "npm_package_archive_label")
-load("@npm//@angular/dev-infra-private/bazel/integration:index.bzl", "integration_test")
+load("@npm//@angular/build-tooling/bazel/integration:index.bzl", "integration_test")
 
 # The generated npm packages should ALWAYS be replaced in integration tests
 # so we pass them to the `check_npm_packages` attribute of npm_integration_test
@@ -41,8 +41,8 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
     data = kwargs.pop("data", [])
 
     if setup_chromium:
-        data.append("@npm//@angular/dev-infra-private/bazel/browsers/chromium")
-        toolchains.append("@npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias")
+        data.append("@npm//@angular/build-tooling/bazel/browsers/chromium")
+        toolchains.append("@npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias")
         environment.update({
             "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
             "CHROME_BIN": "$(CHROMIUM)",

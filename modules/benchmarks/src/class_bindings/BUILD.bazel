@@ -1,4 +1,4 @@
-load("@npm//@angular/dev-infra-private/bazel/benchmark/component_benchmark:component_benchmark.bzl", "component_benchmark")
+load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:component_benchmark.bzl", "component_benchmark")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
@@ -6,7 +6,7 @@ component_benchmark(
     name = "benchmark",
     driver = ":class_bindings.perf-spec.ts",
     driver_deps = [
-        "@npm//@angular/dev-infra-private/bazel/benchmark/driver-utilities",
+        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
         "@npm//@types/jasmine",
         "@npm//protractor",
     ],

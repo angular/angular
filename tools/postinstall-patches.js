@@ -61,7 +61,7 @@ ls('node_modules/@types').filter(f => f.startsWith('babel__')).forEach(pkg => {
   }
 });
 
-log('\n# patch: use local version of @angular/* and zone.js in Starlark files from @angular/dev-infra-private');
+log('\n# patch: use local version of @angular/* and zone.js in Starlark files from dev-infra');
 
 const ngDevPatches = new Map();
 const captureNgDevPatches = (files, patches) =>
@@ -77,7 +77,7 @@ const _captureNgDevPatch = (search, replace, files) => {
 // Patches for the component benchmark rule.
 captureNgDevPatches(
     [
-      'node_modules/@angular/dev-infra-private/bazel/benchmark/component_benchmark/component_benchmark.bzl',
+      'node_modules/@angular/build-tooling/bazel/benchmark/component_benchmark/component_benchmark.bzl',
     ],
     [
       ['@npm//@angular/platform-browser', '@angular//packages/platform-browser'],
@@ -92,8 +92,8 @@ captureNgDevPatches(
 // Patches for the app bundling
 captureNgDevPatches(
     [
-      'node_modules/@angular/dev-infra-private/bazel/app-bundling/index.bzl',
-      'node_modules/@angular/dev-infra-private/bazel/app-bundling/esbuild.config-tmpl.mjs',
+      'node_modules/@angular/build-tooling/bazel/app-bundling/index.bzl',
+      'node_modules/@angular/build-tooling/bazel/app-bundling/esbuild.config-tmpl.mjs',
     ],
     [
       // The app bundle config accesses the linker entry-point as well, so we need
@@ -118,8 +118,8 @@ captureNgDevPatches(
 // Patches for angular linker
 captureNgDevPatches(
     [
-      'node_modules/@angular/dev-infra-private/shared-scripts/angular-linker/BUILD.bazel',
-      'node_modules/@angular/dev-infra-private/shared-scripts/angular-linker/esbuild-plugin.mjs',
+      'node_modules/@angular/build-tooling/shared-scripts/angular-linker/BUILD.bazel',
+      'node_modules/@angular/build-tooling/shared-scripts/angular-linker/esbuild-plugin.mjs',
     ],
     [
       [
@@ -132,7 +132,7 @@ captureNgDevPatches(
       ],
     ]);
 
-// Apply the captured patches for the `@angular/dev-infra-private` package.
+// Apply the captured patches for the `@angular/build-tooling` package.
 for (const [fileName, patches] of ngDevPatches.entries()) {
   for (const patch of patches) {
     sed('-i', patch[0], patch[1], fileName);

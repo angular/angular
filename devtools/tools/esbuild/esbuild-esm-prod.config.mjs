@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { createLinkerEsbuildPlugin } from '@angular/dev-infra-private/shared-scripts/angular-linker/esbuild-plugin.mjs';
-import { createEsbuildAngularOptimizePlugin } from '@angular/dev-infra-private/shared-scripts/angular-optimization/esbuild-plugin.mjs';
+import { createLinkerEsbuildPlugin } from '@angular/build-tooling/shared-scripts/angular-linker/esbuild-plugin.mjs';
+import { createEsbuildAngularOptimizePlugin } from '@angular/build-tooling/shared-scripts/angular-optimization/esbuild-plugin.mjs';
 import { GLOBAL_DEFS_FOR_TERSER_WITH_AOT } from '@angular/compiler-cli/private/tooling.js';
 import baseEsbuildConfig from './esbuild-base.config.mjs';
 
@@ -26,7 +26,7 @@ export default {
       // DevTools also relies on Angular CDK and Material packages that are consumed via npm.
       // Because of this, we set unknownDeclarationVersionHandling to ignore so that we bypass
       // selecting a linker for our CDK and Material dependencies based on our local framework
-      // version (0.0.0-PLACEHOLDER). 
+      // version (0.0.0-PLACEHOLDER).
       // Instead this option defaults to the latest linker version, which should
       // be correct, except for the small time interval where we rollout a new
       // declaration version and target a material release that hasn't been compiled

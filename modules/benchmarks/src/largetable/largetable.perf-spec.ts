@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {runBenchmark, verifyNoBrowserErrors} from '@angular/dev-infra-private/bazel/benchmark/driver-utilities';
+import {runBenchmark, verifyNoBrowserErrors} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 import {$} from 'protractor';
 
 interface Worker {

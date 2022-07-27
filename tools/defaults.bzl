@@ -9,13 +9,13 @@ load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//typescript:index.bzl", "tsc")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
-load("@npm//@angular/dev-infra-private/bazel/app-bundling:index.bzl", _app_bundle = "app_bundle")
-load("@npm//@angular/dev-infra-private/bazel/http-server:index.bzl", _http_server = "http_server")
-load("@npm//@angular/dev-infra-private/bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
-load("@npm//@angular/dev-infra-private/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
-load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
-load("@npm//@angular/dev-infra-private/bazel:extract_types.bzl", _extract_types = "extract_types")
-load("@npm//@angular/dev-infra-private/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
+load("@npm//@angular/build-tooling/bazel/app-bundling:index.bzl", _app_bundle = "app_bundle")
+load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", _http_server = "http_server")
+load("@npm//@angular/build-tooling/bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
+load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
+load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract_js_module_output")
+load("@npm//@angular/build-tooling/bazel:extract_types.bzl", _extract_types = "extract_types")
+load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
 load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
@@ -350,8 +350,8 @@ def karma_web_test_suite(name, **kwargs):
         bootstrap = bootstrap,
         deps = deps,
         browsers = [
-            "@npm//@angular/dev-infra-private/bazel/browsers/chromium:chromium",
-            "@npm//@angular/dev-infra-private/bazel/browsers/firefox:firefox",
+            "@npm//@angular/build-tooling/bazel/browsers/chromium:chromium",
+            "@npm//@angular/build-tooling/bazel/browsers/firefox:firefox",
         ],
         data = data,
         tags = tags,
@@ -388,7 +388,7 @@ def protractor_web_test_suite(**kwargs):
     """Default values for protractor_web_test_suite"""
 
     _protractor_web_test_suite(
-        browsers = ["@npm//@angular/dev-infra-private/bazel/browsers/chromium:chromium"],
+        browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
         **kwargs
     )
 

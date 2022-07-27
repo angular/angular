@@ -1,8 +1,8 @@
 # Re-export of Bazel rules with devtools-wide defaults
 
-load("@npm//@angular/dev-infra-private/bazel/spec-bundling:index.bzl", "spec_bundle")
-load("@npm//@angular/dev-infra-private/bazel/karma:index.bzl", _karma_web_test_suite = "karma_web_test_suite")
-load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
+load("@npm//@angular/build-tooling/bazel/spec-bundling:index.bzl", "spec_bundle")
+load("@npm//@angular/build-tooling/bazel/karma:index.bzl", _karma_web_test_suite = "karma_web_test_suite")
+load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract_js_module_output")
 
 def karma_web_test_suite(name, **kwargs):
     test_deps = kwargs.get("deps", [])
@@ -35,10 +35,10 @@ def karma_web_test_suite(name, **kwargs):
     if not hasattr(kwargs, "browsers"):
         kwargs["tags"] = ["native"] + kwargs.get("tags", [])
         kwargs["browsers"] = [
-            "@npm//@angular/dev-infra-private/bazel/browsers/chromium:chromium",
+            "@npm//@angular/build-tooling/bazel/browsers/chromium:chromium",
 
             # todo(aleksanderbodurri): enable when firefox support is done
-            # "@npm//@angular/dev-infra-private/bazel/browsers/firefox:firefox",
+            # "@npm//@angular/build-tooling/bazel/browsers/firefox:firefox",
         ]
 
     # Default test suite with all configured browsers.
