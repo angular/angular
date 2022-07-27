@@ -320,6 +320,12 @@ For example, if the client requested `https://my-server.com/dashboard` and you a
 
 Now, on every HTTP request made as part of rendering the application on the server, Angular can correctly resolve the request URL to an absolute URL, using the provided `options.url`.
 
+### Optimizing hydration
+
+When the page is loaded in the browser, Angular will bootstrap as usual and replace the content of the DOM. This process is called hydration.
+This hydration process can cause some flicker _(specially for lazy loaded routes)_. In order to avoid the flicker, it is recommended to set the [`initialNavigation`](https://angular.io/api/router/InitialNavigation) option to `enabledBlocking` when using Server-Side Rendering.
+Using this option, Angular will wait for the route to be loaded before bootstrapping and hydrating. 
+
 ### Useful scripts
 
 | Scripts                                                                                                    | Details |
