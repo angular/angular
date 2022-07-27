@@ -8,7 +8,7 @@ ts_library(
     srcs = ["js-web-frameworks.perf-spec.ts"],
     tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
-        "@npm//@angular/dev-infra-private/bazel/benchmark/driver-utilities",
+        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
         "@npm//protractor",
     ],
 )
