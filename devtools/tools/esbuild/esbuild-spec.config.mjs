@@ -18,19 +18,19 @@ import baseEsbuildConfig from './esbuild-base.config.mjs';
   // Note: This needs to be a NPM module path as this ESBuild config is generated and can
   // end up in arbitrary Bazel packages or differently-named consumer workspaces.
   const {createLinkerEsbuildPlugin} = await import(
-    '@angular/dev-infra-private/shared-scripts/angular-linker/esbuild-plugin.mjs'
+    '@angular/build-tooling/shared-scripts/angular-linker/esbuild-plugin.mjs'
   );
 
   return await createLinkerEsbuildPlugin(
     /.*/,
     /* ensureNoPartialDeclaration */ true,
-    
+
     // DevTools relies on angular framework packages that are consumed,
     // locally via bazel. These packages have a version of 0.0.0-PLACEHOLDER.
     // DevTools also relies on Angular CDK and Material packages that are consumed via npm.
     // Because of this, we set unknownDeclarationVersionHandling to ignore so that we bypass
     // selecting a linker for our CDK and Material dependencies based on our local framework
-    // version (0.0.0-PLACEHOLDER). 
+    // version (0.0.0-PLACEHOLDER).
     // Instead this option defaults to the latest linker version, which should
     // be correct, except for the small time interval where we rollout a new
     // declaration version and target a Material release that hasn't been compiled

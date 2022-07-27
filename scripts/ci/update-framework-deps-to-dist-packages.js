@@ -30,10 +30,10 @@ const skipped = [];
 function updateDeps(dependencies) {
   for (const packageName of Object.keys(dependencies)) {
     // We're only interested to update packages in the `@angular` scope and `zone.js`.
-    // The shared dev-infra package is not updated as it's not a package that is part of
-    // the Angular framework.
+    // The shared dev-infra packages are not updated as it's not a package that is part
+    // of the Angular framework.
     if ((!packageName.startsWith('@angular/') && packageName !== 'zone.js') ||
-        packageName === '@angular/dev-infra-private') {
+        packageName === '@angular/build-tooling' || packageName === '@angular/ng-dev') {
       continue;
     }
 

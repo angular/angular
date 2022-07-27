@@ -24,7 +24,7 @@
     "/ ": "",
     "postinstall": "node scripts/webdriver-manager-update.js && node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js",
     "prepare": "husky install",
-    "ng-dev": "cross-env TS_NODE_PROJECT=$PWD/.ng-dev/tsconfig.json TS_NODE_TRANSPILE_ONLY=1 node --no-warnings --loader ts-node/esm node_modules/@angular/dev-infra-private/ng-dev/bundles/cli.mjs",
+    "ng-dev": "cross-env TS_NODE_PROJECT=$PWD/.ng-dev/tsconfig.json TS_NODE_TRANSPILE_ONLY=1 node --no-warnings --loader ts-node/esm node_modules/@angular/ng-dev/bundles/cli.mjs",
     "build": "ts-node --esm --project scripts/tsconfig.json scripts/build/build-packages-dist.mts",
     "test": "bazelisk test",
     "test:ci": "bazelisk test -- //... -//devtools/... -//aio/...",
@@ -179,7 +179,8 @@
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
-    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#6d9c069f7ba8bedd07d376444d65472154026ce8",
+    "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#1addc303bef0b6acc0dca0961e9e642629f3a5cd",
+    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#865c7687cdca2bd512040330e1677eecaa26e46a",
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^5.0.0",
     "@bazel/ibazel": "^0.16.0",
