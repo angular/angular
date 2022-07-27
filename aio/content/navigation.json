@@ -292,24 +292,9 @@
               "tooltip": "Example of creating an injectable service."
             },
             {
-              "url": "guide/inject-service-in-component",
-              "title": "Injecting services",
-              "tooltip": "Injecting services results in making them visible to a component."
-            },
-            {
-              "url": "guide/inject-service-in-service",
-              "title": "Injecting services in other services",
-              "tooltip": "When a service depends on another service, follow the same pattern as injecting into a component."
-            },
-            {
               "url": "guide/dependency-injection-providers",
               "title": "Defining Dependency providers",
               "tooltip": "A provider factory function is a plain function that Angular can call to create a dependency."
-            },
-            {
-              "url": "guide/inject-object",
-              "title": "Injecting an object",
-              "tooltip": "Example of injecting an object."
             },
             {
               "url": "guide/hierarchical-dependency-injection",

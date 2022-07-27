@@ -90,5 +90,5 @@ In this example, the `getHeroes()` method uses the `Logger` service by logging a
 ## What's next
 
 * [How to configure dependencies in DI](guide/dependency-injection-providers)
-* [How to use `InjectionTokens` to provide and inject values other than services/classes](guide/dependency-injection-providers#Configuring-dependency-providers)
+* [How to use `InjectionTokens` to provide and inject values other than services/classes](guide/dependency-injection-providers#configuring-dependency-providers)
 * [Dependency Injection in Action](guide/dependency-injection-in-action)
