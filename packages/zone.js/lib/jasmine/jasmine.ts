@@ -332,10 +332,6 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
 
       if (!isChildOfAmbientZone) throw new Error('Unexpected Zone: ' + Zone.current.name);
 
-
-      Error.stackTraceLimit = Infinity;
-      let context = new Error().stack;
-
       // This is the zone which will be used for running individual tests.
       // It will be a proxy zone, so that the tests function can retroactively install
       // different zones.
