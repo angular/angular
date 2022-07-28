@@ -10,6 +10,20 @@
 @use '../../../progress-bar/progress-bar-theme';
 @use '../../../tooltip/tooltip-theme';
 @use '../../../input/input-theme';
+@use '../../../core/option/option-theme';
+@use '../../../core/option/optgroup-theme';
+
+@mixin private-all-unmigrated-component-densities($config) {
+  @include expansion-theme.density($config);
+  @include stepper-theme.density($config);
+  @include toolbar-theme.density($config);
+  @include tree-theme.density($config);
+  @include paginator-theme.density($config);
+  @include button-toggle-theme.density($config);
+  @include card-theme.density($config);
+  @include progress-bar-theme.density($config);
+  @include tooltip-theme.density($config);
+}
 
 // Includes all of the density styles.
 @mixin all-component-densities($config-or-theme) {
@@ -27,18 +41,11 @@
   // not possible as it would introduce a circular dependency for density because the `mat-core`
   // mixin that is transitively loaded by the `all-theme` file, imports `all-density` which
   // would then load `all-theme` again. This ultimately results a circular dependency.
-
-  @include expansion-theme.density($config);
-  @include stepper-theme.density($config);
-  @include toolbar-theme.density($config);
-  @include tree-theme.density($config);
-  @include paginator-theme.density($config);
   @include form-field-theme.density($config);
-  @include button-toggle-theme.density($config);
-  @include card-theme.density($config);
-  @include progress-bar-theme.density($config);
-  @include tooltip-theme.density($config);
   @include input-theme.density($config);
+  @include option-theme.density($config);
+  @include optgroup-theme.density($config);
+  @include private-all-unmigrated-component-densities($config);
 }
 
 

@@ -45,7 +45,7 @@ export const IMPORT_REPLACEMENTS: {[component: string]: {old: string; new: strin
   },
   'core': {
     old: '@angular/material/core',
-    new: '@angular/material-experimental/mdc-core',
+    new: '@angular/material/core',
   },
   'list': {
     old: '@angular/material/list',

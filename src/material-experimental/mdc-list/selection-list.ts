@@ -29,7 +29,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {ThemePalette} from '@angular/material-experimental/mdc-core';
+import {ThemePalette} from '@angular/material/core';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {MatListBase} from './list-base';

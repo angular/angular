@@ -23,7 +23,7 @@ ng_module(
     ] + glob(["**/*.html"]),
     deps = [
         "//src:dev_mode_types",
-        "//src/material-experimental/mdc-core",
+        "//src/material/core",
         "//src/material/form-field",
         "@npm//@angular/animations",
         "@npm//@angular/common",
@@ -77,7 +77,7 @@ ng_test_library(
         "//src/cdk/platform",
         "//src/cdk/testing",
         "//src/cdk/testing/private",
-        "//src/material-experimental/mdc-core",
+        "//src/material/core",
         "//src/material/form-field",
         "//src/material/input",
         "@npm//@angular/animations",

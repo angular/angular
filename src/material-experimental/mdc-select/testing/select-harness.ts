@@ -13,7 +13,7 @@ import {
   MatOptgroupHarness,
   OptionHarnessFilters,
   OptgroupHarnessFilters,
-} from '@angular/material-experimental/mdc-core/testing';
+} from '@angular/material/core/testing';
 import {SelectHarnessFilters} from './select-harness-filters';
 
 /** Harness for interacting with an MDC-based mat-select in tests. */

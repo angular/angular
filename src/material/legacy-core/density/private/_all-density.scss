@@ -1,4 +1,5 @@
 @use '../../../core/theming/theming';
+@use '../../../core/density/private/all-density';
 
 // Add legacy theme imports here, e.g.:
 // @use '../../../<legacy-component>/<legacy-component>-theme';
@@ -22,6 +23,7 @@
 
   // Add legacy density includes here, e.g.:
   // @include <legacy-component>-theme.density($config);
+  @include all-density.private-all-unmigrated-component-densities($config);
 }
 
 

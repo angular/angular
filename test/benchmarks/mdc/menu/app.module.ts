@@ -16,7 +16,7 @@ import {MatMenuModule} from '@angular/material-experimental/mdc-menu';
   selector: 'app-root',
   templateUrl: './menu.html',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['//src/material-experimental/mdc-core/theming/prebuilt/indigo-pink.css'],
+  styleUrls: ['//src/material/core/theming/prebuilt/indigo-pink.css'],
 })
 export class MenuBenchmarkApp {}
 

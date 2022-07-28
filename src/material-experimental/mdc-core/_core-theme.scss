@@ -1,16 +1,14 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 
-@use './option/option-theme';
-@use './option/optgroup-theme';
 @use './elevation';
 
 
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
 
-  @include option-theme.color($config);
-  @include optgroup-theme.color($config);
+  @include mat.option-color($config);
+  @include mat.optgroup-color($config);
 
   @if $config != null {
     // Provides external CSS classes for each elevation value. Each CSS class is formatted as
@@ -42,15 +40,15 @@
   $config: mat.private-typography-to-2018-config(
     mat.get-typography-config($config-or-theme));
 
-  @include option-theme.typography($config-or-theme);
-  @include optgroup-theme.typography($config-or-theme);
+  @include mat.option-typography($config-or-theme);
+  @include mat.optgroup-typography($config-or-theme);
 }
 
 @mixin density($config-or-theme) {
   $density-scale: mat.get-density-config($config-or-theme);
 
-  @include option-theme.density($density-scale);
-  @include optgroup-theme.density($density-scale);
+  @include mat.private-option-density($density-scale);
+  @include mat.private-optgroup-density($density-scale);
 }
 
 // Mixin that renders all of the core styles that depend on the theme.

@@ -11,7 +11,7 @@ ts_library(
     deps = [
         "//src/cdk/coercion",
         "//src/cdk/testing",
-        "//src/material-experimental/mdc-core/testing",
+        "//src/material/core/testing",
         "//src/material/form-field/testing/control",
         "//src/material/select/testing",
     ],

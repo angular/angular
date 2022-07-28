@@ -9,7 +9,7 @@
 import {Component} from '@angular/core';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {CommonModule} from '@angular/common';
-import {ThemePalette} from '@angular/material-experimental/mdc-core';
+import {ThemePalette} from '@angular/material/core';
 import {
   MatChipInputEvent,
   MatChipEditedEvent,

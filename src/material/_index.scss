@@ -36,9 +36,13 @@
 @forward './core/style/button-common' as private-button-common-*;
 // The form field density mixin needs to be exposed, because the paginator depends on it.
 @forward './form-field/form-field-theme' as private-form-field-* show private-form-field-density;
+// These mixins are exposed privately, because `mdc-core` uses them.
+@forward './core/option/option-theme' as private-option-* show private-option-density;
+@forward './core/option/optgroup-theme' as private-optgroup-* show private-optgroup-density;
 
 // Structural
 @forward './core/core' show core;
+@forward './legacy-core/core' as legacy-* show legacy-core;
 @forward './core/ripple/ripple' show ripple;
 @forward './core/focus-indicators/focus-indicators' show strong-focus-indicators;
 @forward './core/focus-indicators/private' as private-strong-focus-indicators-*;
@@ -54,11 +58,16 @@
 
 // Component themes
 @forward './core/core-theme' as core-* show core-color, core-theme;
+@forward './legacy-core/core-theme' as legacy-core-* show legacy-core-color, legacy-core-theme;
 @forward './core/ripple/ripple-theme' as ripple-* show ripple-color, ripple-theme;
+@forward './legacy-core/option/option-theme' as legacy-option-* show legacy-option-color,
+  legacy-option-typography, legacy-option-theme;
 @forward './core/option/option-theme' as option-* show option-color, option-typography,
   option-theme;
 @forward './core/option/optgroup-theme' as optgroup-* show optgroup-color, optgroup-typography,
   optgroup-theme;
+@forward './legacy-core/option/optgroup-theme' as legacy-optgroup-* show legacy-optgroup-color,
+  legacy-optgroup-typography, legacy-optgroup-theme;
 @forward './core/selection/pseudo-checkbox/pseudo-checkbox-theme' as pseudo-checkbox-* show
   pseudo-checkbox-color, pseudo-checkbox-typography, pseudo-checkbox-theme;
 @forward './core/focus-indicators/focus-indicators-theme' as strong-focus-indicators-* show

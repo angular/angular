@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './option/index';
 export {
   AnimationCurves,
   AnimationDurations,
@@ -55,6 +54,12 @@ export {
   ShowOnDirtyErrorStateMatcher,
   ThemePalette,
   VERSION,
+  MatOptionModule,
+  MatOptionSelectionChange,
+  MatOption,
+  MatOptgroup,
+  MatOptionParentComponent,
+  MAT_OPTION_PARENT_COMPONENT,
   // Note: These need to be exposed privately for cross-package type inference. e.g. if the
   // experimental package uses a mixin, TS will try to write an explicit type reference that
   // is equivalent to e.g. `CanColorCtor`. For this it needs these two helpers as otherwise it

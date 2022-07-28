@@ -69,6 +69,8 @@
 /src/material/legacy-core/density/**                   @devversion
 /src/material/legacy-core/theming/**                   @andrewseguin @jelbourn
 /src/material/legacy-core/typography/**                @crisbeto
+/src/material/legacy-core/option/**                    @crisbeto
+/src/material/legacy-core/testing/**                   @crisbeto
 
 # Miscellaneous components
 /src/google-maps/**                                    @crisbeto

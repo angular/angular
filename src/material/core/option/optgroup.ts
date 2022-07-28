@@ -7,14 +7,14 @@
  */
 
 import {
-  ChangeDetectionStrategy,
   Component,
-  InjectionToken,
-  Input,
   ViewEncapsulation,
-  Directive,
+  ChangeDetectionStrategy,
+  Input,
   Inject,
   Optional,
+  InjectionToken,
+  Directive,
 } from '@angular/core';
 import {CanDisable, mixinDisabled} from '../common-behaviors/disabled';
 import {MatOptionParentComponent, MAT_OPTION_PARENT_COMPONENT} from './option-parent';
@@ -82,11 +82,10 @@ export const MAT_OPTGROUP = new InjectionToken<MatOptgroup>('MatOptgroup');
   inputs: ['disabled'],
   styleUrls: ['optgroup.css'],
   host: {
-    'class': 'mat-optgroup',
+    'class': 'mat-mdc-optgroup',
     '[attr.role]': '_inert ? null : "group"',
     '[attr.aria-disabled]': '_inert ? null : disabled.toString()',
     '[attr.aria-labelledby]': '_inert ? null : _labelId',
-    '[class.mat-optgroup-disabled]': 'disabled',
   },
   providers: [{provide: MAT_OPTGROUP, useExisting: MatOptgroup}],
 })

@@ -24,7 +24,7 @@ import {
   MatCheckboxDefaultOptions,
   _MatCheckboxBase,
 } from '@angular/material/checkbox';
-import {CanColor, CanDisable} from '@angular/material-experimental/mdc-core';
+import {CanColor, CanDisable} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 export const MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR: any = {

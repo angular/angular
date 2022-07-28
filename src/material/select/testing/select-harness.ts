@@ -15,11 +15,11 @@ import {
 } from '@angular/cdk/testing';
 import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
 import {
-  MatOptionHarness,
-  MatOptgroupHarness,
+  MatLegacyOptionHarness,
+  MatLegacyOptgroupHarness,
   OptionHarnessFilters,
   OptgroupHarnessFilters,
-} from '@angular/material/core/testing';
+} from '@angular/material/legacy-core/testing';
 import {SelectHarnessFilters} from './select-harness-filters';
 
 export abstract class _MatSelectHarnessBase<
@@ -161,17 +161,17 @@ export abstract class _MatSelectHarnessBase<
 
 /** Harness for interacting with a standard mat-select in tests. */
 export class MatSelectHarness extends _MatSelectHarnessBase<
-  typeof MatOptionHarness,
-  MatOptionHarness,
+  typeof MatLegacyOptionHarness,
+  MatLegacyOptionHarness,
   OptionHarnessFilters,
-  typeof MatOptgroupHarness,
-  MatOptgroupHarness,
+  typeof MatLegacyOptgroupHarness,
+  MatLegacyOptgroupHarness,
   OptgroupHarnessFilters
 > {
   static hostSelector = '.mat-select';
   protected _prefix = 'mat';
-  protected _optionClass = MatOptionHarness;
-  protected _optionGroupClass = MatOptgroupHarness;
+  protected _optionClass = MatLegacyOptionHarness;
+  protected _optionGroupClass = MatLegacyOptgroupHarness;
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatSelectHarness` that meets

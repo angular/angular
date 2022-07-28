@@ -16,7 +16,7 @@ import {MatChipsModule} from '@angular/material-experimental/mdc-chips';
   selector: 'app-root',
   templateUrl: './chips.html',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['//src/material-experimental/mdc-core/theming/prebuilt/indigo-pink.css'],
+  styleUrls: ['//src/material/core/theming/prebuilt/indigo-pink.css'],
 })
 export class ChipsBenchmarkApp {
   isSingleChipVisible = false;

@@ -6,27 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {FocusableOption, FocusOrigin} from '@angular/cdk/a11y';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-import {ENTER, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
+import {ENTER, hasModifierKey, SPACE} from '@angular/cdk/keycodes';
 import {
-  AfterViewChecked,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
-  ElementRef,
-  EventEmitter,
-  Inject,
-  Input,
-  OnDestroy,
-  Optional,
-  Output,
-  QueryList,
   ViewEncapsulation,
+  ChangeDetectionStrategy,
+  ElementRef,
+  ChangeDetectorRef,
+  Optional,
+  Inject,
   Directive,
+  AfterViewChecked,
+  OnDestroy,
+  Input,
+  Output,
+  EventEmitter,
+  QueryList,
 } from '@angular/core';
-import {FocusOptions, FocusableOption, FocusOrigin} from '@angular/cdk/a11y';
 import {Subject} from 'rxjs';
-import {MatOptgroup, _MatOptgroupBase, MAT_OPTGROUP} from './optgroup';
+import {MatOptgroup, MAT_OPTGROUP, _MatOptgroupBase} from './optgroup';
 import {MatOptionParentComponent, MAT_OPTION_PARENT_COMPONENT} from './option-parent';
 
 /**
@@ -250,16 +250,16 @@ export class _MatOptionBase<T = any> implements FocusableOption, AfterViewChecke
   host: {
     'role': 'option',
     '[attr.tabindex]': '_getTabIndex()',
-    '[class.mat-selected]': 'selected',
-    '[class.mat-option-multiple]': 'multiple',
-    '[class.mat-active]': 'active',
+    '[class.mdc-list-item--selected]': 'selected',
+    '[class.mat-mdc-option-multiple]': 'multiple',
+    '[class.mat-mdc-option-active]': 'active',
+    '[class.mdc-list-item--disabled]': 'disabled',
     '[id]': 'id',
     '[attr.aria-selected]': '_getAriaSelected()',
     '[attr.aria-disabled]': 'disabled.toString()',
-    '[class.mat-option-disabled]': 'disabled',
     '(click)': '_selectViaInteraction()',
     '(keydown)': '_handleKeydown($event)',
-    'class': 'mat-option mat-focus-indicator',
+    'class': 'mat-mdc-option mat-mdc-focus-indicator mdc-list-item',
   },
   styleUrls: ['option.css'],
   templateUrl: 'option.html',

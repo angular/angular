@@ -2,7 +2,7 @@ import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {ApplicationRef, Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MatButtonModule, MatButton, MatFabDefaultOptions, MAT_FAB_DEFAULT_OPTIONS} from './index';
-import {MatRipple, ThemePalette} from '@angular/material-experimental/mdc-core';
+import {MatRipple, ThemePalette} from '@angular/material/core';
 import {createMouseEvent, dispatchEvent} from '@angular/cdk/testing/private';
 
 describe('MDC-based MatButton', () => {

@@ -12,8 +12,8 @@ ng_module(
     ],
     deps = [
         "//src/material-experimental/mdc-checkbox",
-        "//src/material-experimental/mdc-core",
         "//src/material-experimental/mdc-select",
+        "//src/material/core",
         "//src/material/form-field",
         "//src/material/input",
         "@npm//@angular/forms",

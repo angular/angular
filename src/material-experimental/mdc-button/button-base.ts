@@ -16,7 +16,7 @@ import {
   mixinColor,
   mixinDisabled,
   mixinDisableRipple,
-} from '@angular/material-experimental/mdc-core';
+} from '@angular/material/core';
 import {FocusOrigin} from '@angular/cdk/a11y';
 
 /** Inputs common to all buttons. */

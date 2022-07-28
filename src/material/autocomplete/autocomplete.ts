@@ -29,15 +29,14 @@ import {
   Directive,
 } from '@angular/core';
 import {
-  CanDisableRipple,
   MAT_OPTGROUP,
   MAT_OPTION_PARENT_COMPONENT,
   _MatOptgroupBase,
   _MatOptionBase,
-  mixinDisableRipple,
-  MatOption,
-  MatOptgroup,
-} from '@angular/material/core';
+  MatLegacyOption,
+  MatLegacyOptgroup,
+} from '@angular/material/legacy-core';
+import {CanDisableRipple, mixinDisableRipple} from '@angular/material/core';
 import {Subscription} from 'rxjs';
 
 /**
@@ -311,9 +310,9 @@ export abstract class _MatAutocompleteBase
 })
 export class MatAutocomplete extends _MatAutocompleteBase {
   /** Reference to all option groups within the autocomplete. */
-  @ContentChildren(MAT_OPTGROUP, {descendants: true}) optionGroups: QueryList<MatOptgroup>;
+  @ContentChildren(MAT_OPTGROUP, {descendants: true}) optionGroups: QueryList<MatLegacyOptgroup>;
   /** Reference to all options within the autocomplete. */
-  @ContentChildren(MatOption, {descendants: true}) options: QueryList<MatOption>;
+  @ContentChildren(MatLegacyOption, {descendants: true}) options: QueryList<MatLegacyOption>;
   protected _visibleClass = 'mat-autocomplete-visible';
   protected _hiddenClass = 'mat-autocomplete-hidden';
 }

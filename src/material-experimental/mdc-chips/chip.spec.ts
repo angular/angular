@@ -1,7 +1,7 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatRipple} from '@angular/material-experimental/mdc-core';
+import {MatRipple} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {Subject} from 'rxjs';
 import {MatChip, MatChipEvent, MatChipSet, MatChipsModule} from './index';

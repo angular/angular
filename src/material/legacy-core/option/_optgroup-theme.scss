@@ -1,0 +1,46 @@
+@use 'sass:map';
+@use '../../core/theming/theming';
+@use '../../core/typography/typography';
+@use '../../core/typography/typography-utils';
+
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $foreground: map.get($config, foreground);
+
+  .mat-optgroup-label {
+    color: theming.get-color-from-palette($foreground, secondary-text);
+  }
+
+  .mat-optgroup-disabled .mat-optgroup-label {
+    color: theming.get-color-from-palette($foreground, hint-text);
+  }
+}
+
+@mixin typography($config-or-theme) {
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
+  .mat-optgroup-label {
+    @include typography-utils.typography-level($config, body-2);
+  }
+}
+
+@mixin _density($config-or-theme) {}
+
+@mixin theme($theme-or-color-config) {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-optgroup') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
+
+    @if $color != null {
+      @include color($color);
+    }
+    @if $density != null {
+      @include _density($density);
+    }
+    @if $typography != null {
+      @include typography($typography);
+    }
+  }
+}

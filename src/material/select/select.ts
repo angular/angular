@@ -68,24 +68,26 @@ import {
   Validators,
 } from '@angular/forms';
 import {
-  _countGroupLabelsBeforeOption,
-  _getOptionScrollPosition,
   CanDisable,
   CanDisableRipple,
   CanUpdateErrorState,
   ErrorStateMatcher,
   HasTabIndex,
-  MAT_OPTGROUP,
-  MAT_OPTION_PARENT_COMPONENT,
-  MatOptgroup,
-  MatOption,
-  MatOptionSelectionChange,
   mixinDisabled,
   mixinDisableRipple,
   mixinErrorState,
   mixinTabIndex,
-  _MatOptionBase,
 } from '@angular/material/core';
+import {
+  _countGroupLabelsBeforeOption,
+  _getOptionScrollPosition,
+  MAT_OPTGROUP,
+  MAT_OPTION_PARENT_COMPONENT,
+  MatOptionSelectionChange,
+  _MatOptionBase,
+  MatLegacyOption,
+  MatLegacyOptgroup,
+} from '@angular/material/legacy-core';
 import {
   MAT_FORM_FIELD,
   MatLegacyFormField,
@@ -261,7 +263,7 @@ export abstract class _MatSelectBase<C>
   // TODO(crisbeto): this is only necessary for the non-MDC select, but it's technically a
   // public API so we have to keep it. It should be deprecated and removed eventually.
   /** All of the defined groups of options. */
-  abstract optionGroups: QueryList<MatOptgroup>;
+  abstract optionGroups: QueryList<MatLegacyOptgroup>;
 
   /** User-supplied override of the trigger element. */
   abstract customTrigger: {};
@@ -314,10 +316,10 @@ export abstract class _MatSelectBase<C>
   @Input('aria-describedby') userAriaDescribedBy: string;
 
   /** Deals with the selection logic. */
-  _selectionModel: SelectionModel<MatOption>;
+  _selectionModel: SelectionModel<MatLegacyOption>;
 
   /** Manages keyboard events for options in the panel. */
-  _keyManager: ActiveDescendantKeyManager<MatOption>;
+  _keyManager: ActiveDescendantKeyManager<MatLegacyOption>;
 
   /** `View -> model callback called when value changes` */
   _onChange: (value: any) => void = () => {};
@@ -461,7 +463,11 @@ export abstract class _MatSelectBase<C>
    * Function used to sort the values in a select in multiple mode.
    * Follows the same logic as `Array.prototype.sort`.
    */
-  @Input() sortComparator: (a: MatOption, b: MatOption, options: MatOption[]) => number;
+  @Input() sortComparator: (
+    a: MatLegacyOption,
+    b: MatLegacyOption,
+    options: MatLegacyOption[],
+  ) => number;
 
   /** Unique id of the element. */
   @Input()
@@ -555,7 +561,7 @@ export abstract class _MatSelectBase<C>
   }
 
   ngOnInit() {
-    this._selectionModel = new SelectionModel<MatOption>(this.multiple);
+    this._selectionModel = new SelectionModel<MatLegacyOption>(this.multiple);
     this.stateChanges.next();
 
     // We need `distinctUntilChanged` here, because some browsers will
@@ -708,7 +714,7 @@ export abstract class _MatSelectBase<C>
   }
 
   /** The currently selected option. */
-  get selected(): MatOption | MatOption[] {
+  get selected(): MatLegacyOption | MatLegacyOption[] {
     return this.multiple ? this._selectionModel?.selected || [] : this._selectionModel?.selected[0];
   }
 
@@ -771,7 +777,7 @@ export abstract class _MatSelectBase<C>
       if (selectedOption && previouslySelectedOption !== selectedOption) {
         // We set a duration on the live announcement, because we want the live element to be
         // cleared after a while so that users can't navigate to it using the arrow keys.
-        this._liveAnnouncer.announce((selectedOption as MatOption).viewValue, 10000);
+        this._liveAnnouncer.announce((selectedOption as MatLegacyOption).viewValue, 10000);
       }
     }
   }
@@ -913,8 +919,8 @@ export abstract class _MatSelectBase<C>
    * Finds and selects and option based on its value.
    * @returns Option that has the corresponding value.
    */
-  private _selectOptionByValue(value: any): MatOption | undefined {
-    const correspondingOption = this.options.find((option: MatOption) => {
+  private _selectOptionByValue(value: any): MatLegacyOption | undefined {
+    const correspondingOption = this.options.find((option: MatLegacyOption) => {
       // Skip options that are already in the model. This allows us to handle cases
       // where the same primitive value is selected multiple times.
       if (this._selectionModel.isSelected(option)) {
@@ -956,7 +962,7 @@ export abstract class _MatSelectBase<C>
 
   /** Sets up a key manager to listen to keyboard events on the overlay panel. */
   private _initKeyManager() {
-    this._keyManager = new ActiveDescendantKeyManager<MatOption>(this.options)
+    this._keyManager = new ActiveDescendantKeyManager<MatLegacyOption>(this.options)
       .withTypeAhead(this._typeaheadDebounceInterval)
       .withVerticalOrientation()
       .withHorizontalOrientation(this._isRtl() ? 'rtl' : 'ltr')
@@ -1011,7 +1017,7 @@ export abstract class _MatSelectBase<C>
   }
 
   /** Invoked when an option is clicked. */
-  private _onSelect(option: MatOption, isUserInput: boolean): void {
+  private _onSelect(option: MatLegacyOption, isUserInput: boolean): void {
     const wasSelected = this._selectionModel.isSelected(option);
 
     if (option.value == null && !this._multiple) {
@@ -1071,9 +1077,9 @@ export abstract class _MatSelectBase<C>
     let valueToEmit: any = null;
 
     if (this.multiple) {
-      valueToEmit = (this.selected as MatOption[]).map(option => option.value);
+      valueToEmit = (this.selected as MatLegacyOption[]).map(option => option.value);
     } else {
-      valueToEmit = this.selected ? (this.selected as MatOption).value : fallbackValue;
+      valueToEmit = this.selected ? (this.selected as MatLegacyOption).value : fallbackValue;
     }
 
     this._value = valueToEmit;
@@ -1238,9 +1244,9 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
    */
   _offsetY = 0;
 
-  @ContentChildren(MatOption, {descendants: true}) options: QueryList<MatOption>;
+  @ContentChildren(MatLegacyOption, {descendants: true}) options: QueryList<MatLegacyOption>;
 
-  @ContentChildren(MAT_OPTGROUP, {descendants: true}) optionGroups: QueryList<MatOptgroup>;
+  @ContentChildren(MAT_OPTGROUP, {descendants: true}) optionGroups: QueryList<MatLegacyOptgroup>;
 
   @ContentChild(MAT_SELECT_TRIGGER) customTrigger: MatSelectTrigger;
 

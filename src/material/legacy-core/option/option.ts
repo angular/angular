@@ -7,21 +7,21 @@
  */
 
 import {
-  Component,
-  ViewEncapsulation,
   ChangeDetectionStrategy,
-  ElementRef,
   ChangeDetectorRef,
-  Optional,
+  Component,
+  ElementRef,
   Inject,
+  Optional,
+  ViewEncapsulation,
 } from '@angular/core';
 import {
-  _MatOptionBase,
   MAT_OPTION_PARENT_COMPONENT,
+  _MatOptionBase,
   MatOptionParentComponent,
   MAT_OPTGROUP,
 } from '@angular/material/core';
-import {MatOptgroup} from './optgroup';
+import {MatLegacyOptgroup} from './optgroup';
 
 /**
  * Single option inside of a `<mat-select>` element.
@@ -32,28 +32,28 @@ import {MatOptgroup} from './optgroup';
   host: {
     'role': 'option',
     '[attr.tabindex]': '_getTabIndex()',
-    '[class.mdc-list-item--selected]': 'selected',
-    '[class.mat-mdc-option-multiple]': 'multiple',
-    '[class.mat-mdc-option-active]': 'active',
-    '[class.mdc-list-item--disabled]': 'disabled',
+    '[class.mat-selected]': 'selected',
+    '[class.mat-option-multiple]': 'multiple',
+    '[class.mat-active]': 'active',
     '[id]': 'id',
     '[attr.aria-selected]': '_getAriaSelected()',
     '[attr.aria-disabled]': 'disabled.toString()',
+    '[class.mat-option-disabled]': 'disabled',
     '(click)': '_selectViaInteraction()',
     '(keydown)': '_handleKeydown($event)',
-    'class': 'mat-mdc-option mat-mdc-focus-indicator mdc-list-item',
+    'class': 'mat-option mat-focus-indicator',
   },
   styleUrls: ['option.css'],
   templateUrl: 'option.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatOption<T = any> extends _MatOptionBase<T> {
+export class MatLegacyOption<T = any> extends _MatOptionBase<T> {
   constructor(
     element: ElementRef<HTMLElement>,
     changeDetectorRef: ChangeDetectorRef,
     @Optional() @Inject(MAT_OPTION_PARENT_COMPONENT) parent: MatOptionParentComponent,
-    @Optional() @Inject(MAT_OPTGROUP) group: MatOptgroup,
+    @Optional() @Inject(MAT_OPTGROUP) group: MatLegacyOptgroup,
   ) {
     super(element, changeDetectorRef, parent, group);
   }

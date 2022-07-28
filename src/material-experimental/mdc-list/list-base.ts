@@ -26,7 +26,7 @@ import {
   RippleGlobalOptions,
   RippleRenderer,
   RippleTarget,
-} from '@angular/material-experimental/mdc-core';
+} from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {Subscription, merge} from 'rxjs';
 import {

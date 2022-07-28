@@ -1,12 +1,12 @@
-<mat-pseudo-checkbox *ngIf="multiple" class="mat-option-pseudo-checkbox"
+<mat-pseudo-checkbox *ngIf="multiple" class="mat-mdc-option-pseudo-checkbox"
     [state]="selected ? 'checked' : 'unchecked'" [disabled]="disabled"></mat-pseudo-checkbox>
 
-<span class="mat-option-text"><ng-content></ng-content></span>
+<span class="mdc-list-item__primary-text"><ng-content></ng-content></span>
 
 <!-- See a11y notes inside optgroup.ts for context behind this element. -->
 <span class="cdk-visually-hidden" *ngIf="group && group._inert">({{ group.label }})</span>
 
-<div class="mat-option-ripple" mat-ripple
+<div class="mat-mdc-option-ripple" mat-ripple
      [matRippleTrigger]="_getHostElement()"
      [matRippleDisabled]="disabled || disableRipple">
 </div>

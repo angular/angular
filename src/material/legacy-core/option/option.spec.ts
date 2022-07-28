@@ -8,12 +8,12 @@ import {
   dispatchEvent,
 } from '../../../cdk/testing/private';
 import {SPACE, ENTER} from '@angular/cdk/keycodes';
-import {MatOption, MatOptionModule, MAT_OPTION_PARENT_COMPONENT} from './index';
+import {MatLegacyOption, MatLegacyOptionModule, MAT_OPTION_PARENT_COMPONENT} from './index';
 
-describe('MatOption component', () => {
+describe('MatLegacyOption component', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [MatOptionModule],
+      imports: [MatLegacyOptionModule],
       declarations: [BasicOption],
     }).compileComponents();
   }));
@@ -22,8 +22,8 @@ describe('MatOption component', () => {
     const fixture = TestBed.createComponent(BasicOption);
     fixture.detectChanges();
 
-    const optionInstance: MatOption = fixture.debugElement.query(
-      By.directive(MatOption),
+    const optionInstance: MatLegacyOption = fixture.debugElement.query(
+      By.directive(MatLegacyOption),
     )!.componentInstance;
     const completeSpy = jasmine.createSpy('complete spy');
     const subscription = optionInstance._stateChanges.subscribe({complete: completeSpy});
@@ -37,8 +37,8 @@ describe('MatOption component', () => {
     const fixture = TestBed.createComponent(BasicOption);
     fixture.detectChanges();
 
-    const optionInstance: MatOption = fixture.debugElement.query(
-      By.directive(MatOption),
+    const optionInstance: MatLegacyOption = fixture.debugElement.query(
+      By.directive(MatLegacyOption),
     )!.componentInstance;
 
     optionInstance.select();
@@ -60,8 +60,8 @@ describe('MatOption component', () => {
     const fixture = TestBed.createComponent(BasicOption);
     fixture.detectChanges();
 
-    const optionInstance: MatOption = fixture.debugElement.query(
-      By.directive(MatOption),
+    const optionInstance: MatLegacyOption = fixture.debugElement.query(
+      By.directive(MatLegacyOption),
     )!.componentInstance;
 
     optionInstance.deselect();
@@ -85,7 +85,9 @@ describe('MatOption component', () => {
     fixture.componentInstance.id = 'custom-option';
     fixture.detectChanges();
 
-    const optionInstance = fixture.debugElement.query(By.directive(MatOption))!.componentInstance;
+    const optionInstance = fixture.debugElement.query(
+      By.directive(MatLegacyOption),
+    )!.componentInstance;
 
     expect(optionInstance.id).toBe('custom-option');
   });
@@ -94,9 +96,9 @@ describe('MatOption component', () => {
     const fixture = TestBed.createComponent(BasicOption);
     fixture.detectChanges();
 
-    const optionDebugElement = fixture.debugElement.query(By.directive(MatOption))!;
+    const optionDebugElement = fixture.debugElement.query(By.directive(MatLegacyOption))!;
     const optionNativeElement: HTMLElement = optionDebugElement.nativeElement;
-    const optionInstance: MatOption = optionDebugElement.componentInstance;
+    const optionInstance: MatLegacyOption = optionDebugElement.componentInstance;
     const spy = jasmine.createSpy('selection change spy');
     const subscription = optionInstance.onSelectionChange.subscribe(spy);
 
@@ -112,9 +114,9 @@ describe('MatOption component', () => {
     const fixture = TestBed.createComponent(BasicOption);
     fixture.detectChanges();
 
-    const optionDebugElement = fixture.debugElement.query(By.directive(MatOption))!;
+    const optionDebugElement = fixture.debugElement.query(By.directive(MatLegacyOption))!;
     const optionNativeElement: HTMLElement = optionDebugElement.nativeElement;
-    const optionInstance: MatOption = optionDebugElement.componentInstance;
+    const optionInstance: MatLegacyOption = optionDebugElement.componentInstance;
     const spy = jasmine.createSpy('selection change spy');
     const subscription = optionInstance.onSelectionChange.subscribe(spy);
 
@@ -130,15 +132,14 @@ describe('MatOption component', () => {
     const fixture = TestBed.createComponent(BasicOption);
     fixture.detectChanges();
 
-    const optionDebugElement = fixture.debugElement.query(By.directive(MatOption))!;
+    const optionDebugElement = fixture.debugElement.query(By.directive(MatLegacyOption))!;
     const optionNativeElement: HTMLElement = optionDebugElement.nativeElement;
-    const optionInstance: MatOption = optionDebugElement.componentInstance;
+    const optionInstance: MatLegacyOption = optionDebugElement.componentInstance;
     const spy = jasmine.createSpy('selection change spy');
     const subscription = optionInstance.onSelectionChange.subscribe(spy);
 
     [ENTER, SPACE].forEach(key => {
-      const event = createKeyboardEvent('keydown', key);
-      Object.defineProperty(event, 'shiftKey', {get: () => true});
+      const event = createKeyboardEvent('keydown', key, undefined, {shift: true});
       dispatchEvent(optionNativeElement, event);
       fixture.detectChanges();
 
@@ -153,13 +154,13 @@ describe('MatOption component', () => {
     let fixture: ComponentFixture<BasicOption>;
     let optionDebugElement: DebugElement;
     let optionNativeElement: HTMLElement;
-    let optionInstance: MatOption;
+    let optionInstance: MatLegacyOption;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(BasicOption);
       fixture.detectChanges();
 
-      optionDebugElement = fixture.debugElement.query(By.directive(MatOption))!;
+      optionDebugElement = fixture.debugElement.query(By.directive(MatLegacyOption))!;
       optionNativeElement = optionDebugElement.nativeElement;
       optionInstance = optionDebugElement.componentInstance;
     });
@@ -199,9 +200,11 @@ describe('MatOption component', () => {
 
   it('should have a focus indicator', () => {
     const fixture = TestBed.createComponent(BasicOption);
-    const optionNativeElement = fixture.debugElement.query(By.directive(MatOption))!.nativeElement;
+    const optionNativeElement = fixture.debugElement.query(
+      By.directive(MatLegacyOption),
+    )!.nativeElement;
 
-    expect(optionNativeElement.classList.contains('mat-mdc-focus-indicator')).toBe(true);
+    expect(optionNativeElement.classList.contains('mat-focus-indicator')).toBe(true);
   });
 
   describe('inside inert group', () => {
@@ -210,7 +213,7 @@ describe('MatOption component', () => {
     beforeEach(waitForAsync(() => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
-        imports: [MatOptionModule],
+        imports: [MatLegacyOptionModule],
         declarations: [InsideGroup],
         providers: [
           {

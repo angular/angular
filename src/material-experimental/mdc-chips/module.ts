@@ -9,11 +9,7 @@
 import {ENTER} from '@angular/cdk/keycodes';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {
-  ErrorStateMatcher,
-  MatCommonModule,
-  MatRippleModule,
-} from '@angular/material-experimental/mdc-core';
+import {ErrorStateMatcher, MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatChip} from './chip';
 import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './tokens';
 import {MatChipEditInput} from './chip-edit-input';

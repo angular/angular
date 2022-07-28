@@ -8,7 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MatCommonModule, MatRippleModule} from '@angular/material-experimental/mdc-core';
+import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {PortalModule} from '@angular/cdk/portal';
 import {ObserversModule} from '@angular/cdk/observers';
 import {A11yModule} from '@angular/cdk/a11y';

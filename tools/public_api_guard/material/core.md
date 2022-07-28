@@ -13,7 +13,6 @@ import { _Constructor as _Constructor_2 } from '@angular/material/core';
 import { ElementRef } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { FocusableOption } from '@angular/cdk/a11y';
-import { FocusOptions as FocusOptions_2 } from '@angular/cdk/a11y';
 import { FocusOrigin } from '@angular/cdk/a11y';
 import { FormGroupDirective } from '@angular/forms';
 import { HighContrastModeDetector } from '@angular/cdk/a11y';
@@ -280,7 +279,7 @@ export class _MatOptionBase<T = any> implements FocusableOption, AfterViewChecke
     get disabled(): boolean;
     set disabled(value: BooleanInput);
     get disableRipple(): boolean;
-    focus(_origin?: FocusOrigin, options?: FocusOptions_2): void;
+    focus(_origin?: FocusOrigin, options?: FocusOptions): void;
     _getAriaSelected(): boolean | null;
     _getHostElement(): HTMLElement;
     getLabel(): string;

@@ -1,0 +1,34 @@
+@use '../core/theming/theming';
+@use '../core/core-theme';
+@use '../core/ripple/ripple-theme';
+@use '../core/selection/pseudo-checkbox/pseudo-checkbox-theme';
+@use './option/option-theme';
+@use './option/optgroup-theme';
+
+
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  @include core-theme.color($config-or-theme);
+}
+
+// Mixin that renders all of the core styles that depend on the theme.
+@mixin theme($theme-or-color-config) {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  // Wrap the sub-theme includes in the duplicate theme styles mixin. This ensures that
+  // there won't be multiple warnings. e.g. if `mat-core-theme` reports a warning, then
+  // the imported themes (such as `mat-ripple-theme`) should not report again.
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-core') {
+    // Legacy-specific themes.
+    @include option-theme.theme($theme);
+    @include optgroup-theme.theme($theme);
+
+    // Non-legacy themes that are forwarded.
+    @include ripple-theme.theme($theme);
+    @include pseudo-checkbox-theme.theme($theme);
+
+    $color: theming.get-color-config($theme);
+    @if $color != null {
+      @include color($color);
+    }
+  }
+}

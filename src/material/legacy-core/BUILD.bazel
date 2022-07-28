@@ -3,6 +3,8 @@ load(
     "//tools:defaults.bzl",
     "markdown_to_html",
     "ng_module",
+    "ng_test_library",
+    "ng_web_test_suite",
     "sass_binary",
     "sass_library",
 )
@@ -16,8 +18,12 @@ ng_module(
         exclude = ["**/*.spec.ts"],
     ),
     assets = [
-        # TODO: add component targets CSS here.
+        ":option/option.css",
+        ":option/optgroup.css",
     ] + glob(["**/*.html"]),
+    deps = [
+        "//src/material/core",
+    ],
 )
 
 ALL_THEMING_FILES = [
@@ -50,7 +56,20 @@ sass_library(
     srcs = ALL_THEMING_FILES,
     deps = MATERIAL_SCSS_LIBS + [
         "//src/cdk:sass_lib",
+        "//src/material/core:theming_scss_lib",
     ],
+)
+
+sass_binary(
+    name = "option_scss",
+    src = "option/option.scss",
+    deps = ["//src/material/core:core_scss_lib"],
+)
+
+sass_binary(
+    name = "optgroup_scss",
+    src = "option/optgroup.scss",
+    deps = ["//src/material/core:core_scss_lib"],
 )
 
 sass_binary(
@@ -87,4 +106,29 @@ markdown_to_html(
 filegroup(
     name = "source-files",
     srcs = glob(["**/*.ts"]),
+)
+
+#################
+#  Test targets
+#################
+
+ng_test_library(
+    name = "unit_test_sources",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
+    deps = [
+        ":legacy-core",
+        "//src/cdk/keycodes",
+        "//src/cdk/platform",
+        "//src/cdk/testing/private",
+        "//src/material/testing",
+        "@npm//@angular/platform-browser",
+    ],
+)
+
+ng_web_test_suite(
+    name = "unit_tests",
+    deps = [":unit_test_sources"],
 )

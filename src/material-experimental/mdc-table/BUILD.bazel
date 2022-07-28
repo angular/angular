@@ -20,8 +20,8 @@ ng_module(
     assets = [":table_scss"] + glob(["**/*.html"]),
     deps = [
         "//src/cdk/table",
-        "//src/material-experimental/mdc-core",
         "//src/material-experimental/mdc-paginator",
+        "//src/material/core",
         "//src/material/sort",
         "//src/material/table",
         "@npm//@angular/core",

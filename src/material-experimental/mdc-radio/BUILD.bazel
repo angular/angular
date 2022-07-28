@@ -22,7 +22,7 @@ ng_module(
         "//src/cdk/a11y",
         "//src/cdk/coercion",
         "//src/cdk/collections",
-        "//src/material-experimental/mdc-core",
+        "//src/material/core",
         "//src/material/radio",
         "@npm//@angular/forms",
         "@npm//@material/radio",

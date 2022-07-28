@@ -6,6 +6,7 @@
 
 import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
+import { ComponentHarnessConstructor } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 
 // @public
@@ -14,7 +15,7 @@ export class MatOptgroupHarness extends ComponentHarness {
     getOptions(filter?: OptionHarnessFilters): Promise<MatOptionHarness[]>;
     static hostSelector: string;
     isDisabled(): Promise<boolean>;
-    static with(options?: OptgroupHarnessFilters): HarnessPredicate<MatOptgroupHarness>;
+    static with<T extends MatOptgroupHarness>(this: ComponentHarnessConstructor<T>, options?: OptgroupHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
@@ -26,7 +27,7 @@ export class MatOptionHarness extends ComponentHarness {
     isDisabled(): Promise<boolean>;
     isMultiple(): Promise<boolean>;
     isSelected(): Promise<boolean>;
-    static with(options?: OptionHarnessFilters): HarnessPredicate<MatOptionHarness>;
+    static with<T extends MatOptionHarness>(this: ComponentHarnessConstructor<T>, options?: OptionHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public (undocumented)

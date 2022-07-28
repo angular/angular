@@ -23,8 +23,8 @@ ng_test_library(
     srcs = glob(["**/*.spec.ts"]),
     deps = [
         ":testing",
-        "//src/material-experimental/mdc-core",
         "//src/material/core/testing:harness_tests_lib",
+        "//src/material/legacy-core",
     ],
 )
 

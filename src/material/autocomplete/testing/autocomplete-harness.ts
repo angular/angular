@@ -15,11 +15,11 @@ import {
   TestElement,
 } from '@angular/cdk/testing';
 import {
-  MatOptgroupHarness,
-  MatOptionHarness,
+  MatLegacyOptgroupHarness,
+  MatLegacyOptionHarness,
   OptgroupHarnessFilters,
   OptionHarnessFilters,
-} from '@angular/material/core/testing';
+} from '@angular/material/legacy-core/testing';
 import {AutocompleteHarnessFilters} from './autocomplete-harness-filters';
 
 export abstract class _MatAutocompleteHarnessBase<
@@ -136,16 +136,16 @@ export abstract class _MatAutocompleteHarnessBase<
 
 /** Harness for interacting with a standard mat-autocomplete in tests. */
 export class MatAutocompleteHarness extends _MatAutocompleteHarnessBase<
-  typeof MatOptionHarness,
-  MatOptionHarness,
+  typeof MatLegacyOptionHarness,
+  MatLegacyOptionHarness,
   OptionHarnessFilters,
-  typeof MatOptgroupHarness,
-  MatOptgroupHarness,
+  typeof MatLegacyOptgroupHarness,
+  MatLegacyOptgroupHarness,
   OptgroupHarnessFilters
 > {
   protected _prefix = 'mat';
-  protected _optionClass = MatOptionHarness;
-  protected _optionGroupClass = MatOptgroupHarness;
+  protected _optionClass = MatLegacyOptionHarness;
+  protected _optionGroupClass = MatLegacyOptgroupHarness;
 
   /** The selector for the host element of a `MatAutocomplete` instance. */
   static hostSelector = '.mat-autocomplete-trigger';

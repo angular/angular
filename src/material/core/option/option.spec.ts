@@ -6,7 +6,7 @@ import {
   dispatchKeyboardEvent,
   createKeyboardEvent,
   dispatchEvent,
-} from '../../../cdk/testing/private';
+} from '@angular/cdk/testing/private';
 import {SPACE, ENTER} from '@angular/cdk/keycodes';
 import {MatOption, MatOptionModule, MAT_OPTION_PARENT_COMPONENT} from './index';
 
@@ -137,7 +137,8 @@ describe('MatOption component', () => {
     const subscription = optionInstance.onSelectionChange.subscribe(spy);
 
     [ENTER, SPACE].forEach(key => {
-      const event = createKeyboardEvent('keydown', key, undefined, {shift: true});
+      const event = createKeyboardEvent('keydown', key);
+      Object.defineProperty(event, 'shiftKey', {get: () => true});
       dispatchEvent(optionNativeElement, event);
       fixture.detectChanges();
 
@@ -200,7 +201,7 @@ describe('MatOption component', () => {
     const fixture = TestBed.createComponent(BasicOption);
     const optionNativeElement = fixture.debugElement.query(By.directive(MatOption))!.nativeElement;
 
-    expect(optionNativeElement.classList.contains('mat-focus-indicator')).toBe(true);
+    expect(optionNativeElement.classList.contains('mat-mdc-focus-indicator')).toBe(true);
   });
 
   describe('inside inert group', () => {

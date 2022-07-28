@@ -25,7 +25,7 @@ ng_module(
         "//src/cdk/bidi",
         "//src/cdk/coercion",
         "//src/cdk/platform",
-        "//src/material-experimental/mdc-core",
+        "//src/material/core",
         "@npm//@angular/forms",
         "@npm//@material/base",
         "@npm//@material/slider",

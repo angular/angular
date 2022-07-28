@@ -28,11 +28,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {
-  MAT_RIPPLE_GLOBAL_OPTIONS,
-  RippleGlobalOptions,
-  ThemePalette,
-} from '@angular/material-experimental/mdc-core';
+import {MAT_RIPPLE_GLOBAL_OPTIONS, RippleGlobalOptions, ThemePalette} from '@angular/material/core';
 import {MatListBase, MatListItemBase} from './list-base';
 import {LIST_OPTION, ListOption, MatListOptionCheckboxPosition} from './list-option-types';
 import {MatListItemLine, MatListItemTitle} from './list-item-sections';

@@ -1,30 +1,29 @@
-@use 'sass:map';
+@use '@material/theme/theme' as mdc-theme;
+
 @use '../theming/theming';
 @use '../typography/typography';
-@use '../typography/typography-utils';
+@use '../mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $foreground: map.get($config, foreground);
 
-  .mat-optgroup-label {
-    color: theming.get-color-from-palette($foreground, secondary-text);
-  }
-
-  .mat-optgroup-disabled .mat-optgroup-label {
-    color: theming.get-color-from-palette($foreground, hint-text);
+  @include mdc-helpers.using-mdc-theme($config) {
+    .mat-mdc-optgroup-label {
+      // Since this will usually be rendered in an overlay,
+      // we have to explicitly set the default color.
+      @include mdc-theme.prop(color, text-primary-on-background);
+    }
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
+  $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
-  .mat-optgroup-label {
-    @include typography-utils.typography-level($config, body-2);
-  }
 }
 
-@mixin _density($config-or-theme) {}
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -37,7 +36,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);

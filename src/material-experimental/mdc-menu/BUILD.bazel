@@ -23,7 +23,7 @@ ng_module(
     deps = [
         "//src/cdk/overlay",
         "//src/cdk/scrolling",
-        "//src/material-experimental/mdc-core",
+        "//src/material/core",
         "//src/material/menu",
         "@npm//@angular/animations",
         "@npm//@angular/common",
@@ -66,7 +66,7 @@ ng_test_library(
         "//src/cdk/overlay",
         "//src/cdk/scrolling",
         "//src/cdk/testing/private",
-        "//src/material-experimental/mdc-core",
+        "//src/material/core",
         "//src/material/menu",
         "@npm//@angular/platform-browser",
         "@npm//rxjs",

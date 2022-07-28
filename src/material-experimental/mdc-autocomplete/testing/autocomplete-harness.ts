@@ -12,7 +12,7 @@ import {
   MatOptionHarness,
   OptgroupHarnessFilters,
   OptionHarnessFilters,
-} from '@angular/material-experimental/mdc-core/testing';
+} from '@angular/material/core/testing';
 import {_MatAutocompleteHarnessBase} from '@angular/material/autocomplete/testing';
 import {AutocompleteHarnessFilters} from './autocomplete-harness-filters';
 

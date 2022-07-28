@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {ThemePalette} from '@angular/material-experimental/mdc-core';
+import {ThemePalette} from '@angular/material/core';
 import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';

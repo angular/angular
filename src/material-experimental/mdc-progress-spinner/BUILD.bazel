@@ -22,7 +22,7 @@ ng_module(
     assets = [":progress_spinner_scss"] + glob(["**/*.html"]),
     deps = [
         "//src/cdk/platform",
-        "//src/material-experimental/mdc-core",
+        "//src/material/core",
         "//src/material/progress-spinner",
         "@npm//@angular/common",
         "@npm//@angular/core",

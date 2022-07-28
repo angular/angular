@@ -1,5 +1,8 @@
 @use '../../core/typography/typography';
+@use '../../core/typography/all-typography';
 @use '../../core/theming/theming';
+@use '../option/option-theme';
+@use '../option/optgroup-theme';
 @use '../../legacy-card/card-theme';
 @use '../../legacy-progress-bar/progress-bar-theme';
 @use '../../legacy-tooltip/tooltip-theme';
@@ -22,6 +25,9 @@
   // mixin that is transitively loaded by the `all-theme` file, imports `all-typography` which
   // would then load `all-theme` again. This ultimately results a circular dependency.
 
+  @include all-typography.private-all-unmigrated-component-typographies($config);
+  @include option-theme.typography($config);
+  @include optgroup-theme.typography($config);
   @include card-theme.typography($config);
   @include progress-bar-theme.typography($config);
   @include tooltip-theme.typography($config);

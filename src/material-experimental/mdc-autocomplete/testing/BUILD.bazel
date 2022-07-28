@@ -10,8 +10,8 @@ ts_library(
     ),
     deps = [
         "//src/cdk/testing",
-        "//src/material-experimental/mdc-core/testing",
         "//src/material/autocomplete/testing",
+        "//src/material/core/testing",
     ],
 )
 

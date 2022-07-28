@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatCommonModule, MatOptionModule} from '@angular/material-experimental/mdc-core';
+import {MatCommonModule, MatOptionModule} from '@angular/material/core';
 import {CommonModule} from '@angular/common';
 import {CdkScrollableModule} from '@angular/cdk/scrolling';
 import {OverlayModule} from '@angular/cdk/overlay';

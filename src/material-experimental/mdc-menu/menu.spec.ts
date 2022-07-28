@@ -29,7 +29,7 @@ import {
   ENTER,
 } from '@angular/cdk/keycodes';
 import {MatMenu, MatMenuModule, MatMenuItem} from './index';
-import {MatRipple} from '@angular/material-experimental/mdc-core';
+import {MatRipple} from '@angular/material/core';
 import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,

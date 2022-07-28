@@ -37,6 +37,39 @@
 @use '../../tree/tree-theme';
 @use '../theming/theming';
 
+@mixin private-all-unmigrated-component-typographies($config) {
+  @include badge-theme.typography($config);
+  @include typography.typography-hierarchy($config);
+  @include autocomplete-theme.typography($config);
+  @include bottom-sheet-theme.typography($config);
+  @include button-theme.typography($config);
+  @include button-toggle-theme.typography($config);
+  @include checkbox-theme.typography($config);
+  @include chips-theme.typography($config);
+  @include divider-theme.typography($config);
+  @include table-theme.typography($config);
+  @include datepicker-theme.typography($config);
+  @include dialog-theme.typography($config);
+  @include expansion-theme.typography($config);
+  @include grid-list-theme.typography($config);
+  @include icon-theme.typography($config);
+  @include menu-theme.typography($config);
+  @include paginator-theme.typography($config);
+  @include progress-spinner-theme.typography($config);
+  @include radio-theme.typography($config);
+  @include select-theme.typography($config);
+  @include sidenav-theme.typography($config);
+  @include slide-toggle-theme.typography($config);
+  @include slider-theme.typography($config);
+  @include stepper-theme.typography($config);
+  @include sort-theme.typography($config);
+  @include tabs-theme.typography($config);
+  @include toolbar-theme.typography($config);
+  @include list-theme.typography($config);
+  @include snack-bar-theme.typography($config);
+  @include tree-theme.typography($config);
+}
+
 
 // Includes all of the typographic styles.
 @mixin all-component-typographies($config-or-theme: null) {
@@ -53,44 +86,14 @@
   // not possible as it would introduce a circular dependency for typography because the `mat-core`
   // mixin that is transitively loaded by the `all-theme` file, imports `all-typography` which
   // would then load `all-theme` again. This ultimately results a circular dependency.
-
-  @include badge-theme.typography($config);
-  @include typography.typography-hierarchy($config);
-  @include autocomplete-theme.typography($config);
-  @include bottom-sheet-theme.typography($config);
-  @include button-theme.typography($config);
-  @include button-toggle-theme.typography($config);
+  @include private-all-unmigrated-component-typographies($config);
   @include card-theme.typography($config);
-  @include checkbox-theme.typography($config);
-  @include chips-theme.typography($config);
-  @include divider-theme.typography($config);
-  @include table-theme.typography($config);
-  @include datepicker-theme.typography($config);
-  @include dialog-theme.typography($config);
-  @include expansion-theme.typography($config);
-  @include form-field-theme.typography($config);
-  @include grid-list-theme.typography($config);
-  @include icon-theme.typography($config);
-  @include input-theme.typography($config);
-  @include menu-theme.typography($config);
-  @include paginator-theme.typography($config);
   @include progress-bar-theme.typography($config);
-  @include progress-spinner-theme.typography($config);
-  @include radio-theme.typography($config);
-  @include select-theme.typography($config);
-  @include sidenav-theme.typography($config);
-  @include slide-toggle-theme.typography($config);
-  @include slider-theme.typography($config);
-  @include stepper-theme.typography($config);
-  @include sort-theme.typography($config);
-  @include tabs-theme.typography($config);
-  @include toolbar-theme.typography($config);
-  @include tooltip-theme.typography($config);
-  @include list-theme.typography($config);
   @include option-theme.typography($config);
   @include optgroup-theme.typography($config);
-  @include snack-bar-theme.typography($config);
-  @include tree-theme.typography($config);
+  @include tooltip-theme.typography($config);
+  @include form-field-theme.typography($config);
+  @include input-theme.typography($config);
 }
 
 // @deprecated Use `all-component-typographies`.

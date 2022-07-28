@@ -20,7 +20,7 @@ import {
   dispatchFakeEvent,
   dispatchKeyboardEvent,
   wrappedErrorMessage,
-} from '../../cdk/testing/private';
+} from '@angular/cdk/testing/private';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -51,8 +51,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import {ErrorStateMatcher} from '@angular/material/core';
-import {MatOption, MatOptionSelectionChange} from '@angular/material-experimental/mdc-core';
+import {MatOption, MatOptionSelectionChange, ErrorStateMatcher} from '@angular/material/core';
 import {MAT_SELECT_CONFIG, MatSelectConfig} from '@angular/material/select';
 import {
   FloatLabelType,

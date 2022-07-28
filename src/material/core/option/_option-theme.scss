@@ -1,64 +1,77 @@
-@use 'sass:map';
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/theme/theme' as mdc-theme;
+@use '@material/list/evolution-mixins' as mdc-list-mixins;
+@use '@material/typography' as mdc-typography;
+@use '@material/ripple' as mdc-ripple;
+
 @use '../theming/theming';
 @use '../typography/typography';
-@use '../typography/typography-utils';
+@use '../mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $foreground: map.get($config, foreground);
-  $background: map.get($config, background);
-  $primary: map.get($config, primary);
-  $accent: map.get($config, accent);
-  $warn: map.get($config, warn);
 
-  .mat-option {
-    color: theming.get-color-from-palette($foreground, text);
+  @include mdc-helpers.using-mdc-theme($config) {
+    .mat-mdc-option {
+      // Since this will usually be rendered in an overlay,
+      // we have explicitly set the default color.
+      @include mdc-theme.prop(color, text-primary-on-background);
 
-    &:hover:not(.mat-option-disabled),
-    &:focus:not(.mat-option-disabled) {
-      background: theming.get-color-from-palette($background, hover);
+      &:hover:not(.mdc-list-item--disabled),
+      &:focus:not(.mdc-list-item--disabled),
+      &.mat-mdc-option-active,
+
+      // In multiple mode there is a checkbox to show that the option is selected.
+      &.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) {
+        $color: mdc-theme-color.$on-surface;
+        background: rgba($color, mdc-ripple.states-opacity($color, hover));
+      }
     }
 
-    // In multiple mode there is a checkbox to show that the option is selected.
-    &.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
-      background: theming.get-color-from-palette($background, hover);
+    .mat-primary {
+      .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+        @include mdc-list-mixins.list-primary-text-ink-color(primary,
+          $query: mdc-helpers.$mdc-theme-styles-query);
+      }
     }
 
-    &.mat-active {
-      background: theming.get-color-from-palette($background, hover);
-      color: theming.get-color-from-palette($foreground, text);
+    .mat-accent {
+      .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+        @include mdc-list-mixins.list-primary-text-ink-color(secondary,
+          $query: mdc-helpers.$mdc-theme-styles-query);
+      }
     }
 
-    &.mat-option-disabled {
-      color: theming.get-color-from-palette($foreground, hint-text);
+    .mat-warn {
+      .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+        @include mdc-list-mixins.list-primary-text-ink-color(error,
+          $query: mdc-helpers.$mdc-theme-styles-query);
+      }
     }
-  }
-
-  .mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
-    color: theming.get-color-from-palette($primary, text);
-  }
-
-  .mat-accent .mat-option.mat-selected:not(.mat-option-disabled) {
-    color: theming.get-color-from-palette($accent, text);
-  }
-
-  .mat-warn .mat-option.mat-selected:not(.mat-option-disabled) {
-    color: theming.get-color-from-palette($warn, text);
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
+  $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
-  .mat-option {
-    font: {
-      family: typography-utils.font-family($config);
-      size: typography-utils.font-size($config, subheading-2);
+
+  @include mdc-helpers.using-mdc-typography($config) {
+    // MDC uses the `subtitle1` level for list items, but
+    // the spec shows `body1` as the correct level.
+    .mat-mdc-option {
+      @include mdc-typography.typography(body1,
+        $query: mdc-helpers.$mdc-typography-styles-query,
+        // Exclude these properties, because they cause some build
+        // issues internally and they aren't used for anything.
+        $exclude-props: (text-decoration, text-transform)
+      );
     }
   }
 }
 
-@mixin _density($config-or-theme) {}
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -71,7 +84,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);

@@ -18,7 +18,7 @@ import {
   MAT_OPTION_PARENT_COMPONENT,
   MatOptgroup,
   MatOption,
-} from '@angular/material-experimental/mdc-core';
+} from '@angular/material/core';
 import {_MatAutocompleteBase} from '@angular/material/autocomplete';
 import {panelAnimation} from './animations';
 

@@ -21,7 +21,7 @@ ng_module(
     deps = [
         "//src/cdk/overlay",
         "//src/cdk/portal",
-        "//src/material-experimental/mdc-core",
+        "//src/material/core",
         "//src/material/dialog",
         "@npm//@material/dialog",
     ],

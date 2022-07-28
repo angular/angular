@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 import {FormControl, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {ErrorStateMatcher, ThemePalette} from '@angular/material-experimental/mdc-core';
+import {ErrorStateMatcher, ThemePalette} from '@angular/material/core';
 import {MatSelectChange, MatSelectModule} from '@angular/material-experimental/mdc-select';
 import {FloatLabelType} from '@angular/material/form-field';
 import {CommonModule} from '@angular/common';

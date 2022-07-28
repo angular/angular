@@ -33,11 +33,7 @@ import {
   NgForm,
   Validators,
 } from '@angular/forms';
-import {
-  CanUpdateErrorState,
-  ErrorStateMatcher,
-  mixinErrorState,
-} from '@angular/material-experimental/mdc-core';
+import {CanUpdateErrorState, ErrorStateMatcher, mixinErrorState} from '@angular/material/core';
 import {MatFormFieldControl} from '@angular/material/form-field';
 import {MatChipTextControl} from './chip-text-control';
 import {Observable, Subject, merge} from 'rxjs';

@@ -22,7 +22,7 @@ import {
   waitForAsync,
 } from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
-import {ThemePalette} from '@angular/material-experimental/mdc-core';
+import {ThemePalette} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {
   MatListModule,

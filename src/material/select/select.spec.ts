@@ -20,7 +20,7 @@ import {
   dispatchFakeEvent,
   dispatchKeyboardEvent,
   wrappedErrorMessage,
-} from '../../cdk/testing/private';
+} from '@angular/cdk/testing/private';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -51,7 +51,8 @@ import {
   Validators,
   FormBuilder,
 } from '@angular/forms';
-import {ErrorStateMatcher, MatOption, MatOptionSelectionChange} from '@angular/material/core';
+import {ErrorStateMatcher} from '@angular/material/core';
+import {MatLegacyOption, MatOptionSelectionChange} from '@angular/material/legacy-core';
 import {
   FloatLabelType,
   MatLegacyFormFieldModule,
@@ -2858,7 +2859,7 @@ describe('MatSelect', () => {
 
     describe('comparing by value', () => {
       it('should have a selection', fakeAsync(() => {
-        const selectedOption = instance.select.selected as MatOption;
+        const selectedOption = instance.select.selected as MatLegacyOption;
         expect(selectedOption.value.value).toEqual('pizza-1');
       }));
 
@@ -2867,7 +2868,7 @@ describe('MatSelect', () => {
         fixture.detectChanges();
         flush();
 
-        const selectedOption = instance.select.selected as MatOption;
+        const selectedOption = instance.select.selected as MatLegacyOption;
         expect(instance.selectedFood.value).toEqual('tacos-2');
         expect(selectedOption.value.value).toEqual('tacos-2');
       }));
@@ -5219,7 +5220,7 @@ class BasicSelect {
   typeaheadDebounceInterval: number;
 
   @ViewChild(MatSelect, {static: true}) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 }
 
 @Component({
@@ -5243,7 +5244,7 @@ class NgModelSelect {
   isDisabled: boolean;
 
   @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 }
 
 @Component({
@@ -5333,7 +5334,7 @@ class SelectInitWithoutOptions {
   control = new FormControl('pizza-1');
 
   @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 
   addOptions() {
     this.foods = [
@@ -5499,8 +5500,8 @@ class MultiSelect {
   control = new FormControl<string[] | null>(null);
 
   @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
-  sortComparator: (a: MatOption, b: MatOption, options: MatOption[]) => number;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
+  sortComparator: (a: MatLegacyOption, b: MatLegacyOption, options: MatLegacyOption[]) => number;
 }
 
 @Component({
@@ -5606,7 +5607,7 @@ class FalsyValueSelect {
     {value: 1, viewValue: 'Pizza'},
   ];
   control = new FormControl<number | null>(null);
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 }
 
 @Component({
@@ -5663,7 +5664,7 @@ class SelectWithGroups {
   ];
 
   @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 }
 
 @Component({
@@ -5862,7 +5863,7 @@ class NgModelCompareWithSelect {
   comparator: ((f1: any, f2: any) => boolean) | null = this.compareByValue;
 
   @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 
   useCompareByValue() {
     this.comparator = this.compareByValue;
@@ -5929,7 +5930,7 @@ class SingleSelectWithPreselectedArrayValues {
   selectedFoods = this.foods[1].value;
 
   @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 }
 
 @Component({
@@ -5958,7 +5959,7 @@ class SelectWithoutOptionCentering {
   control = new FormControl('pizza-1');
 
   @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 }
 
 @Component({
@@ -6027,7 +6028,7 @@ class MultiSelectWithLotsOfOptions {
 })
 class SelectWithResetOptionAndFormControl {
   @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
   control = new FormControl('');
 }
 

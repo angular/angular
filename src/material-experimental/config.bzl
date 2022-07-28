@@ -9,7 +9,6 @@ entryPoints = [
     "mdc-chips",
     "mdc-chips/testing",
     "mdc-core",
-    "mdc-core/testing",
     "mdc-dialog",
     "mdc-dialog/testing",
     "mdc-list",

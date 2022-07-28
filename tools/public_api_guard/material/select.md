@@ -27,17 +27,18 @@ import { HasTabIndex } from '@angular/material/core';
 import * as i0 from '@angular/core';
 import * as i2 from '@angular/common';
 import * as i3 from '@angular/cdk/overlay';
-import * as i4 from '@angular/material/core';
-import * as i5 from '@angular/cdk/scrolling';
-import * as i6 from '@angular/material/legacy-form-field';
+import * as i4 from '@angular/material/legacy-core';
+import * as i5 from '@angular/material/core';
+import * as i6 from '@angular/cdk/scrolling';
+import * as i7 from '@angular/material/legacy-form-field';
 import { InjectionToken } from '@angular/core';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatLegacyFormField } from '@angular/material/legacy-form-field';
 import { MatLegacyFormFieldControl } from '@angular/material/legacy-form-field';
-import { MatOptgroup } from '@angular/material/core';
-import { MatOption } from '@angular/material/core';
-import { _MatOptionBase } from '@angular/material/core';
-import { MatOptionSelectionChange } from '@angular/material/core';
+import { MatLegacyOptgroup } from '@angular/material/legacy-core';
+import { MatLegacyOption } from '@angular/material/legacy-core';
+import { _MatOptionBase } from '@angular/material/legacy-core';
+import { MatOptionSelectionChange } from '@angular/material/legacy-core';
 import { NgControl } from '@angular/forms';
 import { NgForm } from '@angular/forms';
 import { NgZone } from '@angular/core';
@@ -86,9 +87,9 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
     // (undocumented)
     open(): void;
     // (undocumented)
-    optionGroups: QueryList<MatOptgroup>;
+    optionGroups: QueryList<MatLegacyOptgroup>;
     // (undocumented)
-    options: QueryList<MatOption>;
+    options: QueryList<MatLegacyOption>;
     // (undocumented)
     protected _panelDoneAnimating(isOpen: boolean): void;
     // (undocumented)
@@ -140,7 +141,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
     get id(): string;
     set id(value: string);
     _isRtl(): boolean;
-    _keyManager: ActiveDescendantKeyManager<MatOption>;
+    _keyManager: ActiveDescendantKeyManager<MatLegacyOption>;
     get multiple(): boolean;
     set multiple(value: BooleanInput);
     // (undocumented)
@@ -165,7 +166,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
     open(): void;
     readonly openedChange: EventEmitter<boolean>;
     readonly _openedStream: Observable<void>;
-    abstract optionGroups: QueryList<MatOptgroup>;
+    abstract optionGroups: QueryList<MatLegacyOptgroup>;
     abstract options: QueryList<_MatOptionBase>;
     readonly optionSelectionChanges: Observable<MatOptionSelectionChange>;
     protected _overlayDir: CdkConnectedOverlay;
@@ -190,13 +191,13 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
     set required(value: BooleanInput);
     protected abstract _scrollOptionIntoView(index: number): void;
     _scrollStrategy: ScrollStrategy;
-    get selected(): MatOption | MatOption[];
+    get selected(): MatLegacyOption | MatLegacyOption[];
     readonly selectionChange: EventEmitter<C>;
-    _selectionModel: SelectionModel<MatOption>;
+    _selectionModel: SelectionModel<MatLegacyOption>;
     setDescribedByIds(ids: string[]): void;
     setDisabledState(isDisabled: boolean): void;
     get shouldLabelFloat(): boolean;
-    sortComparator: (a: MatOption, b: MatOption, options: MatOption[]) => number;
+    sortComparator: (a: MatLegacyOption, b: MatLegacyOption, options: MatLegacyOption[]) => number;
     toggle(): void;
     trigger: ElementRef;
     get triggerValue(): string;
@@ -239,7 +240,7 @@ export class MatSelectModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatSelectModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatSelectModule, [typeof i1.MatSelect, typeof i1.MatSelectTrigger], [typeof i2.CommonModule, typeof i3.OverlayModule, typeof i4.MatOptionModule, typeof i4.MatCommonModule], [typeof i5.CdkScrollableModule, typeof i6.MatLegacyFormFieldModule, typeof i1.MatSelect, typeof i1.MatSelectTrigger, typeof i4.MatOptionModule, typeof i4.MatCommonModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatSelectModule, [typeof i1.MatSelect, typeof i1.MatSelectTrigger], [typeof i2.CommonModule, typeof i3.OverlayModule, typeof i4.MatLegacyOptionModule, typeof i5.MatCommonModule], [typeof i6.CdkScrollableModule, typeof i7.MatLegacyFormFieldModule, typeof i1.MatSelect, typeof i1.MatSelectTrigger, typeof i4.MatLegacyOptionModule, typeof i5.MatCommonModule]>;
 }
 
 // @public

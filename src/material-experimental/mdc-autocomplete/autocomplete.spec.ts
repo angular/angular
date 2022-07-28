@@ -36,7 +36,7 @@ import {
   tick,
 } from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatOption, MatOptionSelectionChange} from '@angular/material-experimental/mdc-core';
+import {MatOption, MatOptionSelectionChange} from '@angular/material/core';
 import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {By} from '@angular/platform-browser';

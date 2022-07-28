@@ -36,7 +36,7 @@ import {
   tick,
 } from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatOption, MatOptionSelectionChange} from '@angular/material/core';
+import {MatLegacyOption, MatOptionSelectionChange} from '@angular/material/legacy-core';
 import {MatLegacyFormField, MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -3442,7 +3442,7 @@ class SimpleAutocomplete implements OnDestroy {
   @ViewChild(MatAutocompleteTrigger, {static: true}) trigger: MatAutocompleteTrigger;
   @ViewChild(MatAutocomplete) panel: MatAutocomplete;
   @ViewChild(MatLegacyFormField) formField: MatLegacyFormField;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 
   states: {code: string; name: string; height?: number; disabled?: boolean}[] = [
     {code: 'AL', name: 'Alabama'},
@@ -3499,7 +3499,7 @@ class NgIfAutocomplete {
   options = ['One', 'Two', 'Three'];
 
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
-  @ViewChildren(MatOption) matOptions: QueryList<MatOption>;
+  @ViewChildren(MatLegacyOption) matOptions: QueryList<MatLegacyOption>;
 
   constructor() {
     this.filteredOptions = this.optionCtrl.valueChanges.pipe(
@@ -3626,7 +3626,7 @@ class AutocompleteWithNativeInput {
   options = ['En', 'To', 'Tre', 'Fire', 'Fem'];
 
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
-  @ViewChildren(MatOption) matOptions: QueryList<MatOption>;
+  @ViewChildren(MatLegacyOption) matOptions: QueryList<MatLegacyOption>;
 
   constructor() {
     this.filteredOptions = this.optionCtrl.valueChanges.pipe(
@@ -3829,5 +3829,5 @@ class AutocompleteWithActivatedEvent {
 
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
   @ViewChild(MatAutocomplete) autocomplete: MatAutocomplete;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 }

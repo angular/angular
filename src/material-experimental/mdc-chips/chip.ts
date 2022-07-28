@@ -39,7 +39,7 @@ import {
   mixinTabIndex,
   mixinDisabled,
   RippleGlobalOptions,
-} from '@angular/material-experimental/mdc-core';
+} from '@angular/material/core';
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {Subject} from 'rxjs';
 import {take} from 'rxjs/operators';

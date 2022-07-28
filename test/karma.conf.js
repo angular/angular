@@ -57,7 +57,7 @@ module.exports = config => {
         watched: true,
       },
       {
-        pattern: 'src/material-experimental/mdc-core/theming/prebuilt/indigo-pink.css',
+        pattern: 'src/material/legacy-core/theming/prebuilt/indigo-pink.css',
         included: true,
         watched: true,
       },

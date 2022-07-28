@@ -26,7 +26,7 @@ import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
     Check me!</mat-checkbox>
   `,
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['//src/material-experimental/mdc-core/theming/prebuilt/indigo-pink.css'],
+  styleUrls: ['//src/material/core/theming/prebuilt/indigo-pink.css'],
 })
 export class CheckboxBenchmarkApp {
   // isChecked is used to maintain the buttons checked state even after it has been hidden. This is

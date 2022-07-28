@@ -9,10 +9,7 @@
 import {Directive, forwardRef} from '@angular/core';
 import {NG_VALUE_ACCESSOR} from '@angular/forms';
 import {_MatAutocompleteTriggerBase} from '@angular/material/autocomplete';
-import {
-  _countGroupLabelsBeforeOption,
-  _getOptionScrollPosition,
-} from '@angular/material-experimental/mdc-core';
+import {_countGroupLabelsBeforeOption, _getOptionScrollPosition} from '@angular/material/core';
 
 /**
  * Provider that allows the autocomplete to register as a ControlValueAccessor.

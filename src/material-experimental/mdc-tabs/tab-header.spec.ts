@@ -19,7 +19,7 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import {MatRippleModule} from '@angular/material-experimental/mdc-core';
+import {MatRippleModule} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {MatTabHeader} from './tab-header';
 import {MatTabLabelWrapper} from './tab-label-wrapper';

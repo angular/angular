@@ -9,7 +9,7 @@
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ENTER, SPACE} from '@angular/cdk/keycodes';
 import {Directive, ElementRef, Inject, Input} from '@angular/core';
-import {HasTabIndex, mixinTabIndex} from '@angular/material-experimental/mdc-core';
+import {HasTabIndex, mixinTabIndex} from '@angular/material/core';
 import {MAT_CHIP} from './tokens';
 
 abstract class _MatChipActionBase {

@@ -9,7 +9,8 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {OverlayModule} from '@angular/cdk/overlay';
-import {MatOptionModule, MatCommonModule} from '@angular/material/core';
+import {MatCommonModule} from '@angular/material/core';
+import {MatLegacyOptionModule} from '@angular/material/legacy-core';
 import {CdkScrollableModule} from '@angular/cdk/scrolling';
 import {MatAutocomplete} from './autocomplete';
 import {
@@ -19,13 +20,13 @@ import {
 import {MatAutocompleteOrigin} from './autocomplete-origin';
 
 @NgModule({
-  imports: [OverlayModule, MatOptionModule, MatCommonModule, CommonModule],
+  imports: [OverlayModule, MatLegacyOptionModule, MatCommonModule, CommonModule],
   exports: [
     MatAutocomplete,
     MatAutocompleteTrigger,
     MatAutocompleteOrigin,
     CdkScrollableModule,
-    MatOptionModule,
+    MatLegacyOptionModule,
     MatCommonModule,
   ],
   declarations: [MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteOrigin],

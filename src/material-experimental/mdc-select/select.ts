@@ -26,7 +26,7 @@ import {
   MAT_OPTION_PARENT_COMPONENT,
   _countGroupLabelsBeforeOption,
   _getOptionScrollPosition,
-} from '@angular/material-experimental/mdc-core';
+} from '@angular/material/core';
 import {CdkOverlayOrigin, ConnectedPosition} from '@angular/cdk/overlay';
 import {MatFormFieldControl} from '@angular/material/form-field';
 import {takeUntil} from 'rxjs/operators';

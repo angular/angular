@@ -1,0 +1,27 @@
+@forward '../../core/theming/palette' hide $amber-palette, $blue-palette, $blue-gray-palette,
+$blue-grey-palette, $brown-palette, $cyan-palette, $dark-theme-background-palette,
+$dark-theme-foreground-palette, $deep-orange-palette, $deep-purple-palette, $gray-palette,
+$green-palette, $grey-palette, $indigo-palette, $light-blue-palette, $light-green-palette,
+$light-theme-background-palette, $light-theme-foreground-palette, $lime-palette, $orange-palette,
+$pink-palette, $purple-palette, $red-palette, $teal-palette, $yellow-palette;
+@forward '../../core/theming/palette' as mat-* hide $mat-black-12-opacity, $mat-black-6-opacity,
+$mat-black-87-opacity, $mat-dark-disabled-text, $mat-dark-dividers, $mat-dark-focused,
+$mat-dark-primary-text, $mat-dark-secondary-text, $mat-light-disabled-text, $mat-light-dividers,
+$mat-light-focused, $mat-light-primary-text, $mat-light-secondary-text, $mat-white-12-opacity,
+$mat-white-6-opacity, $mat-white-87-opacity;
+@forward '../../core/density/private/compatibility' as mat-*;
+@forward '../../core/theming/theming' as mat-*;
+@forward '../../core/typography/typography-utils' as mat-* hide mat-font-shorthand, mat-height,
+mat-typography-level;
+@forward '../../core/typography/typography-utils' as mat-line-* hide mat-line-font-family,
+mat-line-font-shorthand, mat-line-font-size, mat-line-font-weight, mat-line-letter-spacing,
+mat-line-typography-level;
+@forward '../../core/typography/typography-utils' as mat-typography-* hide
+mat-typography-font-family, mat-typography-font-size, mat-typography-font-weight,
+mat-typography-height, mat-typography-letter-spacing;
+@forward 'optgroup-theme' hide color, theme, typography;
+@forward 'optgroup-theme' as mat-optgroup-* hide mat-optgroup-density;
+
+@import '../../core/theming/palette';
+@import '../../core/theming/theming';
+@import '../../core/typography/typography-utils';
