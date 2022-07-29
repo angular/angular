@@ -2640,6 +2640,63 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(() => fixture.detectChanges()).not.toThrowError();
          }));
     });
+
+    describe('duplicate name error', () => {
+      it('should throw when adding a duplicate name that is not a radio button', fakeAsync(() => {
+           @Component({
+             template: `
+              <form>
+                <input ngModel name="first" />
+                <input ngModel name="first" />
+              </form>
+            `
+           })
+           class App {
+             first: string = '';
+           }
+
+           const fixture = initTest(App);
+           fixture.detectChanges();
+           expect(() => tick()).toThrowError();
+         }));
+
+      it('should not throw when adding a case insensitve duplicate name that is not a radio button',
+         fakeAsync(() => {
+           @Component({
+             template: `
+              <form>
+                <input ngModel name="first" />
+                <input ngModel name="First" />
+              </form>
+            `
+           })
+           class App {
+             first: string = '';
+           }
+
+           const fixture = initTest(App);
+           fixture.detectChanges();
+           expect(() => tick()).not.toThrowError();
+         }));
+
+      it('should not throw when adding a duplicate name that is a radio button', fakeAsync(() => {
+           @Component({
+             template: `
+              <form>
+                <input ngModel name="first" type="radio" />
+                <input ngModel name="first" type="radio" />
+              </form>
+            `
+           })
+           class App {
+             first: string = '';
+           }
+
+           const fixture = initTest(App);
+           fixture.detectChanges();
+           expect(() => tick()).not.toThrowError();
+         }));
+    });
   });
 }
 

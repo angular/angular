@@ -366,10 +366,19 @@
     "name": "R3ViewContainerRef"
   },
   {
+    "name": "RADIO_VALUE_ACCESSOR"
+  },
+  {
     "name": "REQUIRED_VALIDATOR"
   },
   {
+    "name": "RadioControlRegistry"
+  },
+  {
     "name": "RadioControlRegistryModule"
+  },
+  {
+    "name": "RadioControlValueAccessor"
   },
   {
     "name": "RefCountOperator"

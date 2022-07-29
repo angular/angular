@@ -18,7 +18,9 @@ import {Form} from './form_interface';
 import {NgControl} from './ng_control';
 import {NgModel} from './ng_model';
 import {NgModelGroup} from './ng_model_group';
+import {RadioControlValueAccessor} from './radio_control_value_accessor';
 import {setUpControl, setUpFormContainer, syncPendingControls} from './shared';
+import {duplicateFormNonRadioNames} from './template_driven_errors';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 export const formDirectiveProvider: any = {
@@ -193,6 +195,11 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
           <FormControl>container.registerControl(dir.name, dir.control);
       setUpControl(dir.control, dir);
       dir.control.updateValueAndValidity({emitEvent: false});
+      this._directives.forEach(d => {
+        if (!(d.valueAccessor instanceof RadioControlValueAccessor) &&
+            !(dir.valueAccessor instanceof RadioControlValueAccessor) && d.name === dir.name)
+          throw duplicateFormNonRadioNames(dir.name);
+      });
       this._directives.add(dir);
     });
   }
