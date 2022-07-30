@@ -2679,6 +2679,24 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(() => tick()).not.toThrowError();
          }));
 
+      it('should throw if duplicate is standalone', fakeAsync(() => {
+           @Component({
+             template: `
+              <form>
+                <input ngModel name="first" />
+                <input ngModel name="first" ngModelOptions="{standalone: true}" />
+              </form>
+            `
+           })
+           class App {
+             first: string = '';
+           }
+
+           const fixture = initTest(App);
+           fixture.detectChanges();
+           expect(() => tick()).toThrowError();
+         }));
+
       it('should not throw when adding a duplicate name that is a radio button', fakeAsync(() => {
            @Component({
              template: `
@@ -2695,6 +2713,81 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            const fixture = initTest(App);
            fixture.detectChanges();
            expect(() => tick()).not.toThrowError();
+         }));
+
+      it('should not throw when rebinding a list in an ngFor', fakeAsync(() => {
+           @Component({
+             template: `
+              <form>
+                <ng-container ngModelGroup="group">
+                  <div *ngFor="let item of items; index as i">
+                    <input [(ngModel)]="item.value" name="name-{{i}}">
+                  </div>
+                </ng-container>
+              </form>
+            `
+           })
+           class App {
+             private _counter = 0;
+             group = {};
+             items: {value: string}[] = [];
+
+             add(amount: number) {
+               for (let i = 0; i < amount; i++) {
+                 this.items.push({value: `${this._counter++}`});
+               }
+             }
+
+             remove(index: number) {
+               this.items.splice(index, 1);
+             }
+           }
+
+           const getValues = () =>
+               fixture.debugElement.queryAll(By.css('input')).map(el => el.nativeElement.value);
+           const fixture = initTest(App);
+           fixture.componentInstance.add(3);
+           fixture.detectChanges();
+           tick();
+           expect(getValues()).toEqual(['0', '1', '2']);
+
+           fixture.componentInstance.remove(1);
+           fixture.detectChanges();
+           expect(() => tick()).not.toThrowError();
+           expect(getValues()).toEqual(['0', '2']);
+         }));
+
+      it('should throw when adding new control', fakeAsync(() => {
+           @Component({
+             template: `
+              <form>
+                <ng-container ngModelGroup="group">
+                  <div *ngFor="let item of items; index as i">
+                    <input [(ngModel)]="item.value" name="name-{{i.name}}">
+                  </div>
+                </ng-container>
+              </form>
+            `
+           })
+           class App {
+             private _counter = 0;
+             items: {value: string, name: string}[] = [];
+
+             add() {
+               this.items.push({value: `${this._counter++}`, name: `item`});
+             }
+           }
+
+           const getValues = () =>
+               fixture.debugElement.queryAll(By.css('input')).map(el => el.nativeElement.value);
+           const fixture = initTest(App);
+           fixture.componentInstance.add();
+           fixture.detectChanges();
+           tick();
+
+           fixture.componentInstance.add();
+           fixture.detectChanges();
+           expect(() => tick()).toThrowError();
          }));
     });
   });
