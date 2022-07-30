@@ -216,7 +216,7 @@ export class EmailValidator extends AbstractValidatorDirective {
 
 // @public
 export interface Form {
-    addControl(dir: NgControl): void;
+    addControl(dir: NgControl, changes: SimpleChanges): void;
     addFormGroup(dir: AbstractFormGroupDirective): void;
     getControl(dir: NgControl): FormControl;
     getFormGroup(dir: AbstractFormGroupDirective): FormGroup;
@@ -632,7 +632,7 @@ export class NgControlStatusGroup extends AbstractControlStatus {
 // @public
 export class NgForm extends ControlContainer implements Form, AfterViewInit {
     constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
-    addControl(dir: NgModel): void;
+    addControl(dir: NgModel, changes: SimpleChanges): void;
     addFormGroup(dir: NgModelGroup): void;
     get control(): FormGroup;
     get controls(): {
