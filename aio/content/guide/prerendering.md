@@ -24,7 +24,7 @@ When you add prerendering to your application, the following build options are a
 | `browserTarget` | Specify the target to build.                                                                                                                       |
 | `serverTarget`  | Specify the Server target to use for prerendering the application.                                                                                 |
 | `routes`        | Define an array of additional routes to prerender.                                                                                                 |
-| `guessRoutes`   | Whether builder should extract routes and guess which paths to render.Defaults to `true`.                                                          |
+| `guessRoutes`   | Whether builder should extract routes and guess which paths to render. Defaults to `true`.                                                          |
 | `routesFile`    | Specify a file that contains a list of all routes to prerender, separated by newlines. This option is useful if you have a large number of routes. |
 | `numProcesses`  | Specify the number of CPUs to be used while running the prerendering command.                                                                      |
 
