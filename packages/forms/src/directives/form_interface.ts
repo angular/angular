@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SimpleChanges} from '@angular/core';
+
 import {FormControl} from '../model/form_control';
 import {FormGroup} from '../model/form_group';
 
@@ -28,8 +30,10 @@ export interface Form {
    * Add a control to this form.
    *
    * @param dir The control directive to add to the form.
+   * @param changes The controls current changes in order to check for name change before checking
+   *     for dupes
    */
-  addControl(dir: NgControl): void;
+  addControl(dir: NgControl, changes: SimpleChanges): void;
 
   /**
    * @description

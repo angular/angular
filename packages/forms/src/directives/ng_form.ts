@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Self} from '@angular/core';
+import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Self, SimpleChanges} from '@angular/core';
 
 import {AbstractControl, FormHooks} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
@@ -187,19 +187,27 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    * and validity, and adds the instance to the internal list of directives.
    *
    * @param dir The `NgModel` directive instance.
+   * @param changes The `NgModel`'s current changes
    */
-  addControl(dir: NgModel): void {
+  addControl(dir: NgModel, changes: SimpleChanges): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
       (dir as {control: FormControl}).control =
           <FormControl>container.registerControl(dir.name, dir.control);
       setUpControl(dir.control, dir);
       dir.control.updateValueAndValidity({emitEvent: false});
-      this._directives.forEach(d => {
-        if (!(d.valueAccessor instanceof RadioControlValueAccessor) &&
-            !(dir.valueAccessor instanceof RadioControlValueAccessor) && d.name === dir.name)
-          throw duplicateFormNonRadioNames(dir.name);
-      });
+      /**
+       * We need to check the directives for duplicates on the names when a control is registered
+       * but given ngFor can produce duplicates *for a short time* we need to skip the validation
+       * when changes contain a previous value on the name, since the duplicate will be deleted
+       */
+      if (changes != null && changes['name'] != null && changes['name'].previousValue == null) {
+        this._directives.forEach(d => {
+          if (!(d.valueAccessor instanceof RadioControlValueAccessor) &&
+              !(dir.valueAccessor instanceof RadioControlValueAccessor) && d.name === dir.name)
+            throw duplicateFormNonRadioNames(dir.name);
+        });
+      }
       this._directives.add(dir);
     });
   }

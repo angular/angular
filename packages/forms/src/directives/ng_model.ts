@@ -233,7 +233,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
           this.formDirective.removeControl({name: oldName, path: this._getPath(oldName)});
         }
       }
-      this._setUpControl();
+      this._setUpControl(changes);
     }
     if ('isDisabled' in changes) {
       this._updateDisabled(changes);
@@ -278,9 +278,9 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     this.update.emit(newValue);
   }
 
-  private _setUpControl(): void {
+  private _setUpControl(changes: SimpleChanges): void {
     this._setUpdateStrategy();
-    this._isStandalone() ? this._setUpStandalone() : this.formDirective.addControl(this);
+    this._isStandalone() ? this._setUpStandalone() : this.formDirective.addControl(this, changes);
     this._registered = true;
   }
 
