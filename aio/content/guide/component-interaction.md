@@ -165,7 +165,7 @@ The `CountdownLocalVarParentComponent` that hosts the timer component is as foll
 
 The parent component cannot data bind to the child's `start` and `stop` methods nor to its `seconds` property.
 
-Place a local variable, `#timer`, on the tag `<countdown-timer>` representing the child component.
+Place a local variable, `#timer`, on the tag `<app-countdown-timer>` representing the child component.
 That gives you a reference to the child component and the ability to access *any of its properties or methods* from within the parent template.
 
 This example wires parent buttons to the child's `start` and `stop` and uses interpolation to display the child's `seconds` property.
