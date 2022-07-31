@@ -72,7 +72,7 @@ email.reset();
 console.log(email.value); // null
 ```
 
-TypeScript will enforce that you always handle the possibility that the control has become `null`. If you want to make this control non-nullable, you may use the `nonNullable` option. This will cause the control to reset to its intial value, instead of `null`:
+TypeScript will enforce that you always handle the possibility that the control has become `null`. If you want to make this control non-nullable, you may use the `nonNullable` option. This will cause the control to reset to its initial value, instead of `null`:
 
 ```ts
 const email = new FormControl('angularrox@gmail.com', {nonNullable: true});
