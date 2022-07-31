@@ -1992,17 +1992,33 @@ export function handleError(lView: LView, error: any): void {
  */
 export function setInputsForProperty(
     tView: TView, lView: LView, inputs: PropertyAliasValue, publicName: string, value: any): void {
-  for (let i = 0; i < inputs.length;) {
-    const index = inputs[i++] as number;
-    const privateName = inputs[i++] as string;
+  for (let i = 0; i < inputs.length; i += 2) {
+    const index = inputs[i] as number;
+    const privateName = inputs[i + 1] as string;
     const instance = lView[index];
     ngDevMode && assertIndexInRange(lView, index);
-    const def = tView.data[index] as DirectiveDef<any>;
-    if (def.setInput !== null) {
-      def.setInput!(instance, value, publicName, privateName);
-    } else {
-      instance[privateName] = value;
-    }
+    setInput(tView, instance, index, publicName, privateName, value);
+  }
+}
+
+/**
+ * Sets a single input on a directive instance.
+ *
+ * @param tView Current TView.
+ * @param instance Directive instance to which to write the input.
+ * @param index Index at which to find the directive's defintion in the TView.
+ * @param publicName Public name of the input.
+ * @param privateName Private name of the input.
+ * @param value New value that should be assigned.
+ */
+export function setInput(
+    tView: TView, instance: any, index: number, publicName: string, privateName: string,
+    value: unknown) {
+  const def = tView.data[index] as DirectiveDef<any>;
+  if (def.setInput !== null) {
+    def.setInput(instance, value, publicName, privateName);
+  } else {
+    instance[privateName] = value;
   }
 }
 

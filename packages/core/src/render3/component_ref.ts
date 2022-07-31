@@ -29,7 +29,7 @@ import {diPublicInInjector, getOrCreateNodeInjectorForNode, NodeInjector} from '
 import {throwProviderNotFoundError} from './errors_di';
 import {registerPostOrderHooks} from './hooks';
 import {reportUnknownPropertyError} from './instructions/element_validation';
-import {addToViewTree, CLEAN_PROMISE, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, markDirtyIfOnPush, registerHostBindingOpCodes, renderView, setInputsForProperty} from './instructions/shared';
+import {addToViewTree, CLEAN_PROMISE, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, markDirtyIfOnPush, registerHostBindingOpCodes, renderView, setInput} from './instructions/shared';
 import {ComponentDef, RenderFlags} from './interfaces/definition';
 import {PropertyAliasValue, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
@@ -288,17 +288,21 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
     let dataValue: PropertyAliasValue|undefined;
     if (inputData !== null && (dataValue = inputData[name])) {
       const lView = this._rootLView;
-      setInputsForProperty(lView[TVIEW], lView, dataValue, name, value);
-      markDirtyIfOnPush(lView, this._tNode.index);
-    } else {
-      if (ngDevMode) {
-        const cmpNameForError = stringifyForError(this.componentType);
-        let message =
-            `Can't set value of the '${name}' input on the '${cmpNameForError}' component. `;
-        message += `Make sure that the '${
-            name}' property is annotated with @Input() or a mapped @Input('${name}') exists.`;
-        reportUnknownPropertyError(message);
+      for (let i = 0; i < dataValue.length; i += 2) {
+        const index = dataValue[i] as number;
+        if (this._rootLView[index] === this.instance) {
+          setInput(lView[TVIEW], this.instance, index, name, dataValue[i + 1] as string, value);
+          markDirtyIfOnPush(lView, this._tNode.index);
+          break;
+        }
       }
+    } else if (ngDevMode) {
+      const cmpNameForError = stringifyForError(this.componentType);
+      let message =
+          `Can't set value of the '${name}' input on the '${cmpNameForError}' component. `;
+      message += `Make sure that the '${
+          name}' property is annotated with @Input() or a mapped @Input('${name}') exists.`;
+      reportUnknownPropertyError(message);
     }
   }
 
@@ -435,7 +439,7 @@ export function createRootComponentView(
  * Creates a root component and sets it up with features and host bindings.Shared by
  * renderComponent() and ViewContainerRef.createComponent().
  */
-export function createRootComponent<T>(
+function createRootComponent<T>(
     componentView: LView, componentDef: ComponentDef<T>, rootLView: LView, rootContext: RootContext,
     hostFeatures: HostFeature[]|null): any {
   const tView = rootLView[TVIEW];

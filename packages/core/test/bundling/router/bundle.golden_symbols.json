@@ -1560,6 +1560,9 @@
     "name": "markAsComponentHost"
   },
   {
+    "name": "markDirtyIfOnPush"
+  },
+  {
     "name": "markViewDirty"
   },
   {
@@ -1824,7 +1827,7 @@
     "name": "setInjectImplementation"
   },
   {
-    "name": "setInputsForProperty"
+    "name": "setInput"
   },
   {
     "name": "setInputsFromAttrs"

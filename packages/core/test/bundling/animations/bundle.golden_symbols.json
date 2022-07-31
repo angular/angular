@@ -1284,6 +1284,9 @@
     "name": "setInjectImplementation"
   },
   {
+    "name": "setInput"
+  },
+  {
     "name": "setInputsForProperty"
   },
   {

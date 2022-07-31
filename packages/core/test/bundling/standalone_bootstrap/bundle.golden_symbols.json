@@ -684,6 +684,9 @@
     "name": "makeRecord"
   },
   {
+    "name": "markDirtyIfOnPush"
+  },
+  {
     "name": "maybeWrapInNotSelector"
   },
   {
@@ -802,6 +805,9 @@
   },
   {
     "name": "setInjectImplementation"
+  },
+  {
+    "name": "setInput"
   },
   {
     "name": "setSelectedIndex"
