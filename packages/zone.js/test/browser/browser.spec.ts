@@ -3141,7 +3141,7 @@ describe('Zone', function() {
     });
 
     // TODO: Re-enable via https://github.com/angular/angular/pull/41526
-    xdescribe('unhandle promise rejection', () => {
+    xdescribe('unhandled promise rejection', () => {
       const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
       const asyncTest = function(testFn: Function) {
         return (done: Function) => {

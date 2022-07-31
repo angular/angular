@@ -274,7 +274,7 @@ the previous compilation failed, such information may be unreliable.
 
 In theory, the compiler could simply not perform incremental compilation on top of a broken build,
 and assume that it must redo all analysis and re-emit all files, but this would result in
-devestatingly poor performance for common developer workflows that rely on automatically running
+devastatingly poor performance for common developer workflows that rely on automatically running
 builds and/or tests on every change. The compiler must deal with such scenarios more gracefully.
 
 ngtsc solves this problem by always performing its incremental steps from a "last known good"
