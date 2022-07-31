@@ -100,7 +100,7 @@ This package will provide following functionality.
        console.log('is MyError instanceof Error', (myError instanceof Error));
      ```
 
-     without `zone-error` patch, the example above will output `false`, with the patch, the reuslt will be `true`.
+     without `zone-error` patch, the example above will output `false`, with the patch, the result will be `true`.
 
   2. ZoneJsInternalStackFrames: remove zone.js stack from `stackTrace`, and add `zone`  information. Without this patch, a lot of `zone.js` invocation stack will be shown
      in stack frames.
