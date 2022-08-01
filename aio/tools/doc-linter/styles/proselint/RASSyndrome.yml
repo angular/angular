@@ -1,5 +1,6 @@
 extends: existence
 message: "'%s' is redundant."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
 level: error
 tokens:
   - ABM missile

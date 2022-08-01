@@ -1,5 +1,6 @@
 extends: consistency
 message: "Inconsistent spelling of '%s'."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
 level: error
 ignorecase: true
 either:
