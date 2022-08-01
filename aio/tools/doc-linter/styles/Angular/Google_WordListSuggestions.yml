@@ -2,7 +2,7 @@
 # tests for strings that should be considered for replacement before publishing
 extends: substitution
 message: "Consider using '%s' instead of '%s'."
-link: 'https://developers.google.com/style/word-list'
+link: 'https://angular.io/guide/docs-lint-errors#wordlist-messages'
 level: suggestion
 ignorecase: false
 action:

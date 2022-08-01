@@ -1,4 +1,4 @@
-# Content Contributor's Guide
+# Documentation contributor's guide
 
 Angular, as an open source project, depends on its community. This dependence is particularly important to the documentation. The more the community contributes to the documentation, the better the documentation becomes, which helps both new and experienced Angular developers.
 
@@ -6,9 +6,9 @@ The topics in this section cover ways in which you can contribute to the Angular
 
 ## Before you begin
 
-Before you get started with your contributions, we recommend that you review [Contributing to Angular](https://github.com/angular/angular/blob/main/CONTRIBUTING.md). That topic explains many of the tasks and guidelines you need to know before you make your first pull request.
+Before you get started with your contributions, review [Contributing to Angular](https://github.com/angular/angular/blob/main/CONTRIBUTING.md). That topic explains many of the tasks and guidelines you need to know before you make your first pull request.
 
-## Contributing to Angular
+## Contributing to Angular documentation
 
 <div class="card-container">
   <a href="guide/reviewing-content" class="docs-card" title="Reviewing content">
@@ -37,3 +37,4 @@ Before you get started with your contributions, we recommend that you review [Co
     <p class="card-footer">Localize documentation</p>
   </a>
 </div>
+

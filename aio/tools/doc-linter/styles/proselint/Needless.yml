@@ -4,6 +4,7 @@
 #
 extends: substitution
 message: Prefer '%s' over '%s'
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
 ignorecase: true
 swap:
   '(?:cell phone|cell-phone)': cellphone

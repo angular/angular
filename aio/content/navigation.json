@@ -1172,7 +1172,7 @@
           ]
         },
         {
-          "title": "Content Contributor's Guide",
+          "title": "Documentation Contributor's Guide",
           "tooltip": "Describes how to contribute to the Angular documentation.",
           "children": [
             {
@@ -1199,6 +1199,11 @@
               "url": "guide/docs-style-guide",
               "title": "Documentation Style Guide",
               "tooltip": "Style guide for documentation authors."
+            },
+            {
+              "url": "guide/docs-lint-errors",
+              "title": "Resolving documentation linter messages",
+              "tooltip": "More information about documentation lint errors."
             },
             {
               "url": "guide/localizing-angular",
