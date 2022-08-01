@@ -1,0 +1,22 @@
+<div class="example-listbox-container">
+  <!-- #docregion listbox -->
+  <label class="example-listbox-label" id="example-starter-pokemon-label">
+    Starter Pokemon
+  </label>
+  <ul cdkListbox
+      [cdkListboxValue]="starter"
+      (cdkListboxValueChange)="starter = $event.value"
+      aria-labelledby="example-starter-pokemon-label"
+      class="example-listbox">
+    <li *ngFor="let pokemon of starters"
+        [cdkOption]="pokemon"
+        class="example-option">
+      {{pokemon}}
+    </li>
+  </ul>
+  <!-- #enddocregion listbox -->
+</div>
+<p>
+  Your starter pokemon is <b>{{starter | json}}</b>&nbsp;
+  <button (click)="reset()">Reset</button>
+</p>

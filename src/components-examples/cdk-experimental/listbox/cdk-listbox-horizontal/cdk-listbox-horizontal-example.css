@@ -1,0 +1,35 @@
+.example-listbox {
+  display: flex;
+  width: 250px;
+  padding: 0;
+}
+
+.example-option {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  list-style: none;
+  padding: 12px;
+  border: solid black;
+  border-width: 1px 1px 1px 0;
+}
+
+.example-option:first-child {
+  border-left-width: 1px;
+}
+
+.example-option[aria-selected]::before {
+  content: '';
+  position: absolute;
+  border: 2px solid black;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  right: 3px;
+}
+
+.example-option:focus {
+  background: rgba(0, 0, 0, 0.2);
+}

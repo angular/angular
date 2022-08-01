@@ -95,10 +95,8 @@ class ListboxSelectionModel<T> extends SelectionModel<T> {
     '[id]': 'id',
     '[attr.aria-selected]': 'isSelected() || null',
     '[attr.tabindex]': '_getTabIndex()',
-    '[attr.aria-disabled]': 'disabled',
-    '[class.cdk-option-disabled]': 'disabled',
+    '[attr.aria-disabled]': 'disabled || null',
     '[class.cdk-option-active]': 'isActive()',
-    '[class.cdk-option-selected]': 'isSelected()',
     '(click)': '_clicked.next($event)',
     '(focus)': '_handleFocus()',
   },
@@ -245,8 +243,8 @@ export class CdkOption<T = unknown> implements ListKeyManagerOption, Highlightab
     'class': 'cdk-listbox',
     '[id]': 'id',
     '[attr.tabindex]': '_getTabIndex()',
-    '[attr.aria-disabled]': 'disabled',
-    '[attr.aria-multiselectable]': 'multiple',
+    '[attr.aria-disabled]': 'disabled || null',
+    '[attr.aria-multiselectable]': 'multiple || null',
     '[attr.aria-activedescendant]': '_getAriaActiveDescendant()',
     '[attr.aria-orientation]': 'orientation',
     '(focus)': '_handleFocus()',
@@ -360,28 +358,28 @@ export class CdkListbox<T = unknown>
    * Whether the keyboard navigation should wrap when the user presses arrow down on the last item
    * or arrow up on the first item.
    */
-  @Input('cdkListboxKeyboardNavigationWraps')
-  get keyboardNavigationWraps() {
-    return this._keyboardNavigationWraps;
+  @Input('cdkListboxNavigationWrapDisabled')
+  get navigationWrapDisabled() {
+    return this._navigationWrapDisabled;
   }
-  set keyboardNavigationWraps(wrap: BooleanInput) {
-    this._keyboardNavigationWraps = coerceBooleanProperty(wrap);
-    this.listKeyManager?.withWrap(this._keyboardNavigationWraps);
+  set navigationWrapDisabled(wrap: BooleanInput) {
+    this._navigationWrapDisabled = coerceBooleanProperty(wrap);
+    this.listKeyManager?.withWrap(!this._navigationWrapDisabled);
   }
-  private _keyboardNavigationWraps = true;
+  private _navigationWrapDisabled = false;
 
   /** Whether keyboard navigation should skip over disabled items. */
-  @Input('cdkListboxKeyboardNavigationSkipsDisabled')
-  get keyboardNavigationSkipsDisabled() {
-    return this._keyboardNavigationSkipsDisabled;
+  @Input('cdkListboxNavigatesDisabledOptions')
+  get navigateDisabledOptions() {
+    return this._navigateDisabledOptions;
   }
-  set keyboardNavigationSkipsDisabled(skip: BooleanInput) {
-    this._keyboardNavigationSkipsDisabled = coerceBooleanProperty(skip);
+  set navigateDisabledOptions(skip: BooleanInput) {
+    this._navigateDisabledOptions = coerceBooleanProperty(skip);
     this.listKeyManager?.skipPredicate(
-      this._keyboardNavigationSkipsDisabled ? this._skipDisabledPredicate : this._skipNonePredicate,
+      this._navigateDisabledOptions ? this._skipNonePredicate : this._skipDisabledPredicate,
     );
   }
-  private _keyboardNavigationSkipsDisabled = true;
+  private _navigateDisabledOptions = false;
 
   /** Emits when the selected value(s) in the listbox change. */
   @Output('cdkListboxValueChange') readonly valueChange = new Subject<ListboxValueChangeEvent<T>>();
@@ -862,14 +860,12 @@ export class CdkListbox<T = unknown>
   /** Initialize the key manager. */
   private _initKeyManager() {
     this.listKeyManager = new ActiveDescendantKeyManager(this.options)
-      .withWrap(this._keyboardNavigationWraps)
+      .withWrap(!this._navigationWrapDisabled)
       .withTypeAhead()
       .withHomeAndEnd()
       .withAllowedModifierKeys(['shiftKey'])
       .skipPredicate(
-        this._keyboardNavigationSkipsDisabled
-          ? this._skipDisabledPredicate
-          : this._skipNonePredicate,
+        this._navigateDisabledOptions ? this._skipNonePredicate : this._skipDisabledPredicate,
       );
 
     if (this.orientation === 'vertical') {

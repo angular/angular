@@ -1,0 +1,15 @@
+<!-- #docregion listbox -->
+<label class="example-listbox-label" id="example-shirt-size-label">
+  Shirt Size
+</label>
+<ul cdkListbox
+    cdkListboxOrientation="horizontal"
+    aria-labelledby="example-shirt-size-label"
+    class="example-listbox">
+  <li *ngFor="let size of sizes"
+      [cdkOption]="size"
+      class="example-option">
+    {{size}}
+  </li>
+</ul>
+<!-- #enddocregion listbox -->

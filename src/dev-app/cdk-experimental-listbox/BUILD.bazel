@@ -7,10 +7,8 @@ ng_module(
     srcs = glob(["**/*.ts"]),
     assets = [
         "cdk-listbox-demo.html",
-        "cdk-listbox-demo.css",
     ],
     deps = [
-        "//src/cdk-experimental/listbox",
-        "//src/material/legacy-select",
+        "//src/components-examples/cdk-experimental/listbox",
     ],
 )

@@ -1,0 +1,22 @@
+<div class="example-listbox-container">
+  <!-- #docregion listbox -->
+  <label class="example-listbox-label" id="example-appointment-label">
+    Appointment Time
+  </label>
+  <ul cdkListbox
+      [cdkListboxValue]="appointment"
+      [cdkListboxCompareWith]="compareDate"
+      (cdkListboxValueChange)="appointment = $event.value"
+      aria-labelledby="example-appointment-label"
+      class="example-listbox">
+    <li *ngFor="let time of slots"
+        [cdkOption]="time"
+        class="example-option">
+      {{formatTime(time)}}
+    </li>
+  </ul>
+  <!-- #enddocregion listbox -->
+</div>
+<p *ngIf="appointment[0]">
+  Your appointment  is scheduled for <b>{{formatAppointment() | json}}</b>&nbsp;
+</p>

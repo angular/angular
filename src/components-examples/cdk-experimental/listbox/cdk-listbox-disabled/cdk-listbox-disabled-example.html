@@ -1,0 +1,37 @@
+<form>
+  <p>
+    <input type="checkbox" [formControl]="canDrinkCtrl">&nbsp;
+    <label>I am 21 or older</label>
+  </p>
+  <section>
+    <div class="example-listbox-container" [class.example-disabled]="!canDrinkCtrl.value">
+      <!-- #docregion listbox -->
+      <label class="example-listbox-label" id="example-wine-type-label">
+        Wine Selection
+      </label>
+      <ul cdkListbox
+          [cdkListboxDisabled]="!canDrinkCtrl.value"
+          aria-labelledby="example-wine-type-label"
+          class="example-listbox">
+        <li cdkOption="cabernet"
+            class="example-option">
+          Cabernet Sauvignon
+        </li>
+        <li cdkOption="syrah"
+            class="example-option">
+          Syrah
+        </li>
+        <li cdkOption="zinfandel"
+            cdkOptionDisabled
+            class="example-option">
+          Zinfandel <span class="example-sold-out">(sold out)</span>
+        </li>
+        <li cdkOption="riesling"
+            class="example-option">
+          Riesling
+        </li>
+      </ul>
+      <!-- #enddocregion listbox -->
+    </div>
+  </section>
+</form>

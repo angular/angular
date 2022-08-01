@@ -1,0 +1,30 @@
+<div class="example-listbox-container">
+  <!-- #docregion listbox -->
+  <label class="example-listbox-label" id="example-flavor-label">
+    Flavor
+  </label>
+  <ul cdkListbox
+      cdkListboxNavigatesDisabledOptions
+      cdkListboxNavigationWrapDisabled
+      aria-labelledby="example-flavor-label"
+      class="example-listbox">
+    <li cdkOption="chocolate"
+        class="example-option">
+      Chocolate
+    </li>
+    <li cdkOption="pumpkin-spice"
+        cdkOptionDisabled
+        class="example-option">
+      Pumpkin Spice (seasonal)
+    </li>
+    <li cdkOption="strawberry"
+        class="example-option">
+      Strawberry
+    </li>
+    <li cdkOption="vanilla"
+        class="example-option">
+      Vanilla
+    </li>
+  </ul>
+  <!-- #enddocregion listbox -->
+</div>

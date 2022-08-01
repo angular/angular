@@ -1,0 +1,18 @@
+<div class="example-listbox-container">
+  <!-- #docregion listbox -->
+  <label class="example-listbox-label" id="example-spatula-label">
+    Spatula Features
+  </label>
+  <ul cdkListbox
+      cdkListboxMultiple
+      cdkListboxUseActiveDescendant
+      aria-labelledby="example-spatula-label"
+      class="example-listbox">
+    <li *ngFor="let feature of features"
+        [cdkOption]="feature"
+        class="example-option">
+      {{feature}}
+    </li>
+  </ul>
+  <!-- #enddocregion listbox -->
+</div>

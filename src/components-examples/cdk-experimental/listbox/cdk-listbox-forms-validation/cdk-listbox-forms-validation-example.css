@@ -1,0 +1,50 @@
+.example-listbox-container {
+  display: block;
+  width: 250px;
+  border: 1px solid black;
+}
+
+.example-listbox-invalid {
+  border-color: red;
+}
+
+.example-listbox-label {
+  display: block;
+  padding: 5px;
+}
+
+.example-listbox-invalid .example-listbox-label {
+  color: red;
+}
+
+.example-listbox {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  height: 200px;
+  overflow: auto;
+}
+
+.example-option {
+  position: relative;
+  padding: 5px 5px 5px 25px;
+}
+
+.example-option[aria-selected]::before {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 20px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="m9.55 18-5.7-5.7 1.425-1.425L9.55 15.15l9.175-9.175L20.15 7.4Z"/></svg>'); /* stylelint-disable-line */
+  background-size: cover;
+  position: absolute;
+  left: 2px;
+}
+
+.example-option:focus {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.example-listbox-errors {
+  color: red;
+}

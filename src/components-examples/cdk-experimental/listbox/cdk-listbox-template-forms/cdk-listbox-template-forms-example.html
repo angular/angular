@@ -1,0 +1,22 @@
+<div class="example-listbox-container">
+  <!-- #docregion listbox -->
+  <label class="example-listbox-label" id="example-toppings-label">
+    Choose Toppings
+  </label>
+  <ul cdkListbox
+      cdkListboxMultiple
+      [(ngModel)]="order"
+      aria-labelledby="example-toppings-label"
+      class="example-listbox">
+    <li *ngFor="let topping of toppings"
+        [cdkOption]="topping"
+        class="example-option">
+      {{topping}}
+    </li>
+  </ul>
+  <!-- #enddocregion listbox -->
+</div>
+<p>
+  Your order: <b>{{order | json}}</b>&nbsp;
+  <button (click)="order = []">Reset</button>
+</p>

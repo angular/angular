@@ -1,0 +1,21 @@
+<div class="example-listbox-container">
+  <!-- #docregion listbox -->
+  <label class="example-listbox-label" id="example-language-label">
+    Preferred Language
+  </label>
+  <ul cdkListbox
+      [formControl]="languageCtrl"
+      aria-labelledby="example-language-label"
+      class="example-listbox">
+    <li *ngFor="let language of languages"
+        [cdkOption]="language"
+        class="example-option">
+      {{language}}
+    </li>
+  </ul>
+  <!-- #enddocregion listbox -->
+</div>
+<p>
+  Your preferred language: <b>{{languageCtrl.value | json}}</b>&nbsp;
+  <button (click)="languageCtrl.reset()">Reset</button>
+</p>

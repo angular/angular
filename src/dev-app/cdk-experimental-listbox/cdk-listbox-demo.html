@@ -1,89 +1,59 @@
-<h2>formControl</h2>
-<ul #fruitForm="ngForm"
-    cdkListbox
-    class="demo-listbox"
-    [cdkListboxMultiple]="multiSelectable"
-    [cdkListboxUseActiveDescendant]="activeDescendant"
-    [cdkListboxCompareWith]="compare"
-    [cdkListboxKeyboardNavigationSkipsDisabled]="skipDisabled"
-    [formControl]="fruitControl">
-  <li cdkOption="apple">Apple</li>
-  <li cdkOption="orange">Orange</li>
-  <li cdkOption="grapefruit" cdkOptionDisabled>Grapefruit</li>
-  <li cdkOption="peach">Peach</li>
-  <li cdkOption="kiwi">Kiwi</li>
-</ul>
-<select [multiple]="multiSelectable" [formControl]="nativeFruitControl">
-  <option value="apple">Apple</option>
-  <option value="orange">Orange</option>
-  <option value="grapefruit">Grapefruit</option>
-  <option value="peach">Peach</option>
-</select>
 <div>
-  Errors: {{fruitForm.errors | json}}
+  <h4>Basic Listbox</h4>
+  <cdk-listbox-overview-example></cdk-listbox-overview-example>
 </div>
 
-<h2>ngModel</h2>
-<ul #fruitModel="ngModel"
-    cdkListbox
-    class="demo-listbox"
-    [cdkListboxMultiple]="multiSelectable"
-    [cdkListboxUseActiveDescendant]="activeDescendant"
-    [cdkListboxCompareWith]="compare"
-    [cdkListboxDisabled]="fruitControl.disabled"
-    [cdkListboxKeyboardNavigationSkipsDisabled]="skipDisabled"
-    [(ngModel)]="fruit">
-  <li cdkOption="apple">Apple</li>
-  <li cdkOption="orange">Orange</li>
-  <li cdkOption="grapefruit" cdkOptionDisabled>Grapefruit</li>
-  <li cdkOption="peach">Peach</li>
-</ul>
-<select [multiple]="multiSelectable" [(ngModel)]="nativeFruit">
-  <option value="apple">Apple</option>
-  <option value="orange">Orange</option>
-  <option value="grapefruit">Grapefruit</option>
-  <option value="peach">Peach</option>
-</select>
 <div>
-  Errors: {{fruitModel.errors | json}}
+  <h4>Multiselect Listbox</h4>
+  <cdk-listbox-multiple-example></cdk-listbox-multiple-example>
 </div>
 
-<h2>value binding</h2>
-<ul cdkListbox
-    class="demo-listbox"
-    [cdkListboxMultiple]="multiSelectable"
-    [cdkListboxUseActiveDescendant]="activeDescendant"
-    [cdkListboxCompareWith]="compare"
-    [cdkListboxDisabled]="fruitControl.disabled"
-    [cdkListboxKeyboardNavigationSkipsDisabled]="skipDisabled"
-    [cdkListboxValue]="fruit"
-    (cdkListboxValueChange)="fruit = $event.value">
-  <li cdkOption="apple">Apple</li>
-  <li cdkOption="orange">Orange</li>
-  <li cdkOption="grapefruit" cdkOptionDisabled>Grapefruit</li>
-  <li cdkOption="peach">Peach</li>
-</ul>
-<select [multiple]="multiSelectable" (change)="onNativeFruitChange($event)">
-  <option value="apple" [selected]="nativeFruit?.includes('apple')">Apple</option>
-  <option value="orange" [selected]="nativeFruit?.includes('orange')">Orange</option>
-  <option value="grapefruit" [selected]="nativeFruit?.includes('grapefruit')">Grapefruit</option>
-  <option value="peach" [selected]="nativeFruit?.includes('peach')">Peach</option>
-</select>
+<div>
+  <h4>Listbox with Value Binding</h4>
+  <cdk-listbox-value-binding-example></cdk-listbox-value-binding-example>
+</div>
 
-<p>
-  Listbox Control Value: {{fruitControl.value | json}}
-</p>
-<p>
-  Native Select Control Value: {{nativeFruitControl.value | json}}
-</p>
+<div>
+  <h4>Listbox with compareWith Function</h4>
+  <cdk-listbox-compare-with-example></cdk-listbox-compare-with-example>
+</div>
 
-<button (click)="toggleFormDisabled()">Disable Listbox: {{fruitControl.disabled ? 'Yes' : 'No'}}</button>
-<br>
-<button (click)="toggleMultiple()">Toggle Multiple: {{multiSelectable ? 'Multiple' : 'Single'}}</button>
-<br>
-<button (click)="toggleActiveDescendant()">Toggle Active Descendant: {{
-  activeDescendant ? 'Active Descendant' : 'Roving Tabindex'
-}}</button>
-<br>
-<button (click)="toggleDumbCompare()">Compare With: {{this.compare ? 'Apple === Orange' : 'Standard'}}</button>
-<button (click)="toggleSkipDisabled()">Skip Disabled: {{this.skipDisabled ? 'Yes' : 'No'}}</button>
+<div>
+  <h4>Listbox with Template-driven Forms</h4>
+  <cdk-listbox-template-forms-example></cdk-listbox-template-forms-example>
+</div>
+
+<div>
+  <h4>Listbox with Reactive Forms</h4>
+  <cdk-listbox-reactive-forms-example></cdk-listbox-reactive-forms-example>
+</div>
+
+<div>
+  <h4>Listbox with Forms Validation</h4>
+  <cdk-listbox-forms-validation-example></cdk-listbox-forms-validation-example>
+</div>
+
+<div>
+  <h4>Listbox with Disabled Options</h4>
+  <cdk-listbox-disabled-example></cdk-listbox-disabled-example>
+</div>
+
+<div>
+  <h4>Listbox with aria-activedescendant</h4>
+  <cdk-listbox-activedescendant-example></cdk-listbox-activedescendant-example>
+</div>
+
+<div>
+  <h4>Horizontal Listbox</h4>
+  <cdk-listbox-horizontal-example></cdk-listbox-horizontal-example>
+</div>
+
+<div>
+  <h4>Listbox with Custom Typeahead</h4>
+  <cdk-listbox-custom-typeahead-example></cdk-listbox-custom-typeahead-example>
+</div>
+
+<div>
+  <h4>Listbox with Custom Keyboard Navigation Options</h4>
+  <cdk-listbox-custom-navigation-example></cdk-listbox-custom-navigation-example>
+</div>
