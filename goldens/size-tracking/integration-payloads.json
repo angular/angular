@@ -26,16 +26,16 @@
   "cli-hello-world-ivy-i18n": {
     "uncompressed": {
       "runtime": 926,
-      "main": 124910,
-      "polyfills": 35252
+      "main": 124860,
+      "polyfills": 35246
     }
   },
   "cli-hello-world-lazy": {
     "uncompressed": {
       "runtime": 2835,
-      "main": 238737,
+      "main": 226893,
       "polyfills": 33842,
-      "src_app_lazy_lazy_module_ts": 780
+      "src_app_lazy_lazy_routes_ts": 487
     }
   },
   "forms": {
@@ -48,7 +48,7 @@
   "animations": {
     "uncompressed": {
       "runtime": 1070,
-      "main": 157064,
+      "main": 156816,
       "polyfills": 33814
     }
   },

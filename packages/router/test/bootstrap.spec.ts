@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
+import {APP_BASE_HREF, DOCUMENT, HashLocationStrategy, LocationStrategy, ɵgetDOM as getDOM} from '@angular/common';
 import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, Injectable, NgModule} from '@angular/core';
 import {inject} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {NavigationEnd, Resolve, Router, RouterModule} from '@angular/router';
+import {NavigationEnd, provideRouter, Resolve, Router, RouterModule, withEnabledBlockingInitialNavigation} from '@angular/router';
 
 // This is needed, because all files under `packages/` are compiled together as part of the
 // [legacy-unit-tests-saucelabs][1] CI job, including the `lib.webworker.d.ts` typings brought in by
@@ -80,20 +80,20 @@ describe('bootstrap', () => {
   it('should complete resolvers when initial navigation fails and initialNavigation = enabledBlocking',
      async () => {
        @NgModule({
-         imports: [
-           BrowserModule,
-           RouterModule.forRoot(
+         imports: [BrowserModule],
+         declarations: [RootCmp],
+         bootstrap: [RootCmp],
+         providers: [
+           ...testProviders, {provide: LocationStrategy, useClass: HashLocationStrategy},
+           provideRouter(
                [{
                  matcher: () => {
                    throw new Error('error in matcher');
                  },
                  children: []
                }],
-               {useHash: true, initialNavigation: 'enabledBlocking'})
+               withEnabledBlockingInitialNavigation())
          ],
-         declarations: [RootCmp],
-         bootstrap: [RootCmp],
-         providers: [...testProviders],
          schemas: [CUSTOM_ELEMENTS_SCHEMA]
        })
        class TestModule {

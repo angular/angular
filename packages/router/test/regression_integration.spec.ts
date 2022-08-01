@@ -6,14 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, Location} from '@angular/common';
+import {CommonModule, HashLocationStrategy, Location, LocationStrategy} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Injectable, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {ChildrenOutletContexts, Resolve, Router} from '@angular/router';
+import {ChildrenOutletContexts, Resolve, Router, RouterOutlet} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 import {of} from 'rxjs';
 import {delay, mapTo} from 'rxjs/operators';
+
+import {provideRouterForTesting} from '../testing/src/provide_router_for_testing';
 
 describe('Integration', () => {
   describe('routerLinkActive', () => {
@@ -298,14 +300,18 @@ describe('Integration', () => {
       class OneCmp {
       }
       TestBed.configureTestingModule({
-        imports: [RouterTestingModule.withRoutes(
-            [
-              {path: '', component: SimpleCmp},
-              {path: 'one', component: OneCmp, resolve: {x: DelayedResolve}}
-            ],
-            {useHash: true})],
         declarations: [SimpleCmp, RootCmp, OneCmp],
-        providers: [DelayedResolve],
+        imports: [RouterOutlet],
+        providers: [
+          DelayedResolve,
+          provideRouterForTesting(
+              [
+                {path: '', component: SimpleCmp},
+                {path: 'one', component: OneCmp, resolve: {x: DelayedResolve}}
+              ],
+              ),
+          {provide: LocationStrategy, useClass: HashLocationStrategy},
+        ],
       });
 
       router = TestBed.inject(Router);

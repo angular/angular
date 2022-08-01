@@ -1,15 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
+  standalone: true,
   selector: 'app-lazy',
-  templateUrl: './lazy.component.html',
-  styleUrls: ['./lazy.component.css']
+  template: '<p>lazy works!</p>',
 })
-export class LazyComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+export class LazyComponent {
 }

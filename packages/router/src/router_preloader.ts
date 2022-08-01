@@ -73,7 +73,7 @@ export class NoPreloading implements PreloadingStrategy {
  *
  * @publicApi
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class RouterPreloader implements OnDestroy {
   private subscription?: Subscription;
 

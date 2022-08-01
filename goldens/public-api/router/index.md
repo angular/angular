@@ -211,6 +211,9 @@ export type Data = {
 };
 
 // @public
+export type DebugTracingFeature = RouterFeature<RouterFeatureKind.DebugTracingFeature>;
+
+// @public
 export class DefaultTitleStrategy extends TitleStrategy {
     constructor(title: Title);
     // (undocumented)
@@ -233,6 +236,12 @@ export class DefaultUrlSerializer implements UrlSerializer {
 
 // @public
 export type DetachedRouteHandle = {};
+
+// @public
+export type DisabledInitialNavigationFeature = RouterFeature<RouterFeatureKind.DisabledInitialNavigationFeature>;
+
+// @public
+export type EnabledBlockingInitialNavigationFeature = RouterFeature<RouterFeatureKind.EnabledBlockingInitialNavigationFeature>;
 
 // @public
 type Event_2 = RouterEvent | NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized | GuardsCheckStart | GuardsCheckEnd | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll | ResolveStart | ResolveEnd;
@@ -275,21 +284,15 @@ export const enum EventType {
 }
 
 // @public
-export interface ExtraOptions {
-    anchorScrolling?: 'disabled' | 'enabled';
-    canceledNavigationResolution?: 'replace' | 'computed';
+export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOptions {
     enableTracing?: boolean;
     errorHandler?: ErrorHandler;
     initialNavigation?: InitialNavigation;
     malformedUriErrorHandler?: (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
-    onSameUrlNavigation?: 'reload' | 'ignore';
-    paramsInheritanceStrategy?: 'emptyOnly' | 'always';
     preloadingStrategy?: any;
     // @deprecated
     relativeLinkResolution?: 'legacy' | 'corrected';
     scrollOffset?: [number, number] | (() => [number, number]);
-    scrollPositionRestoration?: 'disabled' | 'enabled' | 'top';
-    urlUpdateStrategy?: 'deferred' | 'eager';
     useHash?: boolean;
 }
 
@@ -332,6 +335,18 @@ export class GuardsCheckStart extends RouterEvent {
 
 // @public
 export type InitialNavigation = 'disabled' | 'enabledBlocking' | 'enabledNonBlocking';
+
+// @public
+export type InitialNavigationFeature = EnabledBlockingInitialNavigationFeature | DisabledInitialNavigationFeature;
+
+// @public
+export type InMemoryScrollingFeature = RouterFeature<RouterFeatureKind.InMemoryScrollingFeature>;
+
+// @public
+export interface InMemoryScrollingOptions {
+    anchorScrolling?: 'disabled' | 'enabled';
+    scrollPositionRestoration?: 'disabled' | 'enabled' | 'top';
+}
 
 // @public
 export interface IsActiveMatchOptions {
@@ -495,6 +510,9 @@ export class PreloadAllModules implements PreloadingStrategy {
 }
 
 // @public
+export type PreloadingFeature = RouterFeature<RouterFeatureKind.PreloadingFeature>;
+
+// @public
 export abstract class PreloadingStrategy {
     // (undocumented)
     abstract preload(route: Route, fn: () => Observable<any>): Observable<any>;
@@ -502,6 +520,9 @@ export abstract class PreloadingStrategy {
 
 // @public
 export const PRIMARY_OUTLET = "primary";
+
+// @public
+export function provideRouter(routes: Routes, ...features: RouterFeatures[]): Provider[];
 
 // @public
 export function provideRoutes(routes: Routes): Provider[];
@@ -652,6 +673,17 @@ export const ROUTER_CONFIGURATION: InjectionToken<ExtraOptions>;
 export const ROUTER_INITIALIZER: InjectionToken<(compRef: ComponentRef<any>) => void>;
 
 // @public
+export interface RouterConfigOptions {
+    canceledNavigationResolution?: 'replace' | 'computed';
+    onSameUrlNavigation?: 'reload' | 'ignore';
+    paramsInheritanceStrategy?: 'emptyOnly' | 'always';
+    urlUpdateStrategy?: 'deferred' | 'eager';
+}
+
+// @public
+export type RouterConfigurationFeature = RouterFeature<RouterFeatureKind.RouterConfigurationFeature>;
+
+// @public
 export abstract class RouteReuseStrategy {
     abstract retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null;
     abstract shouldAttach(route: ActivatedRouteSnapshot): boolean;
@@ -668,6 +700,17 @@ export class RouterEvent {
     id: number;
     url: string;
 }
+
+// @public
+export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
+    // (undocumented)
+    ɵkind: FeatureKind;
+    // (undocumented)
+    ɵproviders: Provider[];
+}
+
+// @public
+export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature;
 
 // @public
 export class RouterLink implements OnChanges {
@@ -1001,6 +1044,24 @@ export class UrlTree {
 
 // @public (undocumented)
 export const VERSION: Version;
+
+// @public
+export function withDebugTracing(): DebugTracingFeature;
+
+// @public
+export function withDisabledInitialNavigation(): DisabledInitialNavigationFeature;
+
+// @public
+export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNavigationFeature;
+
+// @public
+export function withInMemoryScrolling(options?: InMemoryScrollingOptions): InMemoryScrollingFeature;
+
+// @public
+export function withPreloading(preloadingStrategy: Type<PreloadingStrategy>): PreloadingFeature;
+
+// @public
+export function withRouterConfig(options: RouterConfigOptions): RouterConfigurationFeature;
 
 // (No @packageDocumentation comment for this package)
 

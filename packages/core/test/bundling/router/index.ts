@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {APP_BASE_HREF} from '@angular/common';
-import {Component, NgModule, OnInit, ɵNgModuleFactory as NgModuleFactory} from '@angular/core';
-import {BrowserModule, platformBrowser} from '@angular/platform-browser';
-import {ActivatedRoute, Router, RouterModule, Routes} from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {ActivatedRoute, provideRouter, Router, RouterLinkActive, RouterLinkWithHref, RouterOutlet, Routes} from '@angular/router';
 
 @Component({
   selector: 'app-list',
@@ -19,6 +19,8 @@ import {ActivatedRoute, Router, RouterModule, Routes} from '@angular/router';
     <li><a routerLink="/item/3" routerLinkActive="active">List Item 3</a></li>
   </ul>
   `,
+  standalone: true,
+  imports: [RouterLinkWithHref, RouterLinkActive],
 })
 class ListComponent {
 }
@@ -28,6 +30,7 @@ class ListComponent {
   template: `
   Item {{id}}
   <p><button (click)="viewList()">Back to List</button></p>`,
+  standalone: true,
 })
 class ItemComponent implements OnInit {
   id = -1;
@@ -47,9 +50,10 @@ class ItemComponent implements OnInit {
 @Component({
   selector: 'app-root',
   template: `<router-outlet></router-outlet>`,
+  standalone: true,
+  imports: [RouterOutlet],
 })
 class RootComponent {
-  constructor() {}
 }
 
 const ROUTES: Routes = [
@@ -57,16 +61,9 @@ const ROUTES: Routes = [
   {path: 'item/:id', component: ItemComponent}
 ];
 
-@NgModule({
-  declarations: [RootComponent, ListComponent, ItemComponent],
-  imports: [BrowserModule, RouterModule.forRoot(ROUTES)],
-  providers: [{provide: APP_BASE_HREF, useValue: ''}]
-})
-class RouteExampleModule {
-  ngDoBootstrap(app: any) {
-    app.bootstrap(RootComponent);
-  }
-}
-
-(window as any).waitForApp = platformBrowser().bootstrapModuleFactory(
-    new NgModuleFactory(RouteExampleModule), {ngZone: 'noop'});
+(window as any).waitForApp = bootstrapApplication(RootComponent, {
+  providers: [
+    provideRouter(ROUTES),
+    {provide: APP_BASE_HREF, useValue: ''},
+  ]
+});

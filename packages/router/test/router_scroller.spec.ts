@@ -14,6 +14,7 @@ import {filter, switchMap} from 'rxjs/operators';
 import {Scroll} from '../src/events';
 import {RouterScroller} from '../src/router_scroller';
 
+// TODO: add tests that exercise the `withInMemoryScrolling` feature of the provideRouter function
 describe('RouterScroller', () => {
   it('defaults to disabled', () => {
     const events = new Subject<RouterEvent>();
