@@ -1,25 +1,30 @@
 @use 'sass:math';
 @use '@angular/cdk';
-
-@use '../core/style/menu-common';
-@use '../core/style/list-common';
-@use '../core/style/variables';
+@use '@material/menu-surface' as mdc-menu-surface;
+@use '@material/list/evolution-mixins' as mdc-list;
 @use '../core/style/vendor-prefixes';
+@use '../core/style/variables';
 
-$arrow-size: 5px !default;
-$arrow-margin: 4px !default;
-$panel-max-height: 256px !default;
-$item-height: 3em !default;
+$mat-select-arrow-size: 5px !default;
+$mat-select-arrow-margin: 4px !default;
+$mat-select-panel-max-height: 275px !default;
+$mat-select-placeholder-arrow-space: 2 *
+  ($mat-select-arrow-size + $mat-select-arrow-margin);
+$leading-width: 12px !default;
+$scale: 0.75 !default;
 
-$placeholder-arrow-space: 2 * ($arrow-size + $arrow-margin);
+// We base the select panel styling on top of MDC's menu styles and we
+// implement the trigger ourselves since MDC doesn't provide an equivalent.
 
-.mat-select {
+@include mdc-menu-surface.core-styles($query: structure);
+
+.mat-mdc-select {
   display: inline-block;
   width: 100%;
   outline: none;
 }
 
-.mat-select-trigger {
+.mat-mdc-select-trigger {
   display: inline-flex;
   align-items: center;
   cursor: pointer;
@@ -27,115 +32,88 @@ $placeholder-arrow-space: 2 * ($arrow-size + $arrow-margin);
   box-sizing: border-box;
   width: 100%;
 
-  .mat-select-disabled & {
+  .mat-mdc-select-disabled & {
     @include vendor-prefixes.user-select(none);
     cursor: default;
   }
 }
 
-.mat-select-value {
+.mat-mdc-select-value {
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.mat-select-value-text {
-  @include list-common.truncate-line();
+.mat-mdc-select-value-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.mat-select-arrow-wrapper {
-  height: 16px;
+.mat-mdc-select-arrow-wrapper {
+  height: 24px;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
 
-  // When used in a box appearance form-field the arrow should be shifted up 50%.
+  // When used in a box appearance form-field the arrow should be shifted up 40%.
   .mat-form-field-appearance-fill & {
-    transform: translateY(-50%);
+    transform: translateY(-40%);
   }
+}
 
-  // When used in a outline form-field the arrow should be shifted up 25%.
-  .mat-form-field-appearance-outline & {
-    transform: translateY(-25%);
-  }
+.mat-mdc-select-arrow {
+  width: $mat-select-arrow-size * 2;
+  height: $mat-select-arrow-size;
+  position: relative;
 
-  // When used in a standard appearance form-field the arrow should be shifted up 50%,
-  // but only if it's not empty and it has a label.
-  .mat-form-field-appearance-standard.mat-form-field-has-label
-    .mat-select:not(.mat-select-empty) & {
-      transform: translateY(-50%);
+  svg {
+    fill: currentColor;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    @include cdk.high-contrast(active, off) {
+      // On Chromium browsers the `currentColor` blends in with the
+      // background for SVGs so we have to fall back to `CanvasText`.
+      fill: CanvasText;
+
+      .mat-mdc-select-disabled & {
+        fill: GrayText;
+      }
     }
-
-  // Animate the arrow position, but only when the transitioning to empty (animate the arrow down)
-  // This is in line with the mat-form-field label animation
-  .mat-form-field-appearance-standard .mat-select.mat-select-empty & {
-    transition: transform variables.$swift-ease-out-duration
-      variables.$swift-ease-out-timing-function;
-  }
-
-  ._mat-animation-noopable.mat-form-field-appearance-standard .mat-select.mat-select-empty & {
-    transition: none;
   }
 }
 
-.mat-select-arrow {
-  width: 0;
-  height: 0;
-  border-left: $arrow-size solid transparent;
-  border-right: $arrow-size solid transparent;
-  border-top: $arrow-size solid;
-  margin: 0 $arrow-margin;
-
-  // On Safari the arrow won't necessarily get redrawn when the form field is focused or blurred,
-  // which means that its highlighted styling will be stuck in an incorrect state. We can get
-  // Safari to redraw it by adding a transform.
-  .mat-form-field.mat-focused & {
-    transform: translateX(0);
-  }
-}
-
-.mat-select-panel-wrap {
-  // Prevents width-issues of mat-select-panel with width: calc(100% + 32px)
-  // in IE11 due to the parents display: flex;
-  flex-basis: 100%;
-}
-
-.mat-select-panel {
-  @include menu-common.base();
-  padding-top: 0;
-  padding-bottom: 0;
-  max-height: $panel-max-height;
-  min-width: 100%; // prevents some animation twitching and test inconsistencies in IE11
-  border-radius: 4px;
+// Note that the `.mdc-menu-surface` is here in order to bump up the specificity
+// and avoid interference with `mat-menu` which uses the same mixins from MDC.
+.mdc-menu-surface.mat-mdc-select-panel {
+  width: 100%; // Ensures that the panel matches the overlay width.
+  max-height: $mat-select-panel-max-height;
+  position: static; // MDC uses `absolute` by default which will throw off our positioning.
   outline: 0;
 
+  @include mdc-list.list-base($query: structure);
   @include cdk.high-contrast(active, off) {
     outline: solid 1px;
   }
-}
 
-// Override optgroup and option to scale based on font-size of the trigger.
-.mat-select-panel {
-  .mat-optgroup-label,
-  .mat-option {
-    font-size: inherit;
-    line-height: $item-height;
-    height: $item-height;
+  .cdk-overlay-pane:not(.mat-mdc-select-panel-above) & {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    transform-origin: top center;
+  }
+
+  .mat-mdc-select-panel-above & {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    transform-origin: bottom center;
   }
 }
 
-.mat-form-field-type-mat-select {
-  &:not(.mat-form-field-disabled) .mat-form-field-flex {
-    cursor: pointer;
-  }
-
-  .mat-form-field-label {
-    width: calc(100% - #{$placeholder-arrow-space});
-  }
-}
-
-.mat-select-placeholder {
+.mat-mdc-select-placeholder {
   // Delay the transition until the label has animated about a third of the way through, in
   // order to prevent the placeholder from overlapping for a split second.
   transition: color variables.$swift-ease-out-duration
@@ -161,10 +139,35 @@ $placeholder-arrow-space: 2 * ($arrow-size + $arrow-margin);
   }
 }
 
+// Our MDC form field implementation is based on the MDC text field which doesn't include styles
+// for select. The select specific styles are not present as they don't use their text field as a
+// container. Below are the styles to account for the select arrow icon at the end.
+.mat-mdc-form-field-type-mat-select {
+  &.mat-form-field-appearance-fill {
+    .mat-mdc-floating-label {
+      max-width: calc(100% - #{$mat-select-placeholder-arrow-space});
+    }
+
+    .mdc-floating-label--float-above {
+      $arrow-scale: math.div($mat-select-placeholder-arrow-space, $scale);
+      max-width: calc(100% / #{$scale} - #{$arrow-scale});
+    }
+  }
+  &.mat-form-field-appearance-outline {
+    .mdc-notched-outline__notch {
+      max-width: calc(100% - #{2 * ($mat-select-placeholder-arrow-space + $leading-width)});
+    }
+
+    .mdc-text-field--label-floating .mdc-notched-outline__notch {
+      max-width: calc(100% - #{$leading-width * 2});
+    }
+  }
+}
+
 // Used to prevent inline elements from collapsing if their text bindings
 // become empty. This is preferrable to inserting a blank space, because the
 // space can be read out by screen readers (see #21725).
-.mat-select-min-line:empty::before {
+.mat-mdc-select-min-line:empty::before {
   content: ' ';
   white-space: pre;
   width: 1px;

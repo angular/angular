@@ -13,7 +13,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatRadioModule} from '@angular/material/radio';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
 @Component({
@@ -28,7 +28,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     MatLegacyFormFieldModule,
     MatLegacyInputModule,
     MatRadioModule,
-    MatSelectModule,
+    MatLegacySelectModule,
     MatToolbarModule,
   ],
 })

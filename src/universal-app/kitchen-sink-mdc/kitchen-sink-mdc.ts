@@ -18,7 +18,7 @@ import {MatDialog, MatDialogModule} from '@angular/material-experimental/mdc-dia
 import {MatIconModule} from '@angular/material/icon';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material-experimental/mdc-snack-bar';
 import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
-import {MatSelectModule} from '@angular/material-experimental/mdc-select';
+import {MatSelectModule} from '@angular/material/select';
 import {MatPaginatorModule} from '@angular/material-experimental/mdc-paginator';
 
 @Component({

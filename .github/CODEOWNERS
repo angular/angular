@@ -25,6 +25,7 @@
 /src/material/progress-spinner/**                  @andrewseguin @crisbeto
 /src/material/radio/**                             @andrewseguin @devversion
 /src/material/schematics/**                        @devversion @andrewseguin
+/src/material/legacy-select/**                     @crisbeto
 /src/material/select/**                            @crisbeto
 /src/material/sidenav/**                           @mmalerba
 /src/material/slide-toggle/**                      @devversion
@@ -119,7 +120,7 @@
 /src/material/form-field/**                            @devversion @mmalerba
 /src/material-experimental/mdc-list/**                 @mmalerba @devversion
 /src/material-experimental/mdc-menu/**                 @crisbeto
-/src/material-experimental/mdc-select/**               @crisbeto
+/src/material/select/**                                @crisbeto
 /src/material-experimental/mdc-paginator/**            @crisbeto
 /src/material-experimental/mdc-progress-spinner/**     @andrewseguin
 /src/material/progress-bar/**         @andrewseguin
@@ -338,7 +339,7 @@
 /tools/public_api_guard/material/legacy-progress-bar**    @andrewseguin @crisbeto
 /tools/public_api_guard/material/progress-spinner**@andrewseguin @crisbeto
 /tools/public_api_guard/material/radio**           @andrewseguin @devversion
-/tools/public_api_guard/material/select**          @crisbeto
+/tools/public_api_guard/material/legacy-select**   @crisbeto
 /tools/public_api_guard/material/sidenav**         @mmalerba
 /tools/public_api_guard/material/slide-toggle**    @devversion
 /tools/public_api_guard/material/slider**          @mmalerba

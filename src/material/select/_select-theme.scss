@@ -1,85 +1,85 @@
-@use 'sass:map';
-@use '../core/theming/theming';
-@use '../core/style/private';
-@use '../core/style/form-common';
-@use '../core/typography/typography';
-@use '../core/typography/typography-utils';
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/menu-surface' as mdc-menu-surface;
+@use '@material/list/evolution-mixins' as mdc-list;
+@use '@material/typography' as mdc-typography;
 
+@use '../core/theming/theming';
+@use '../core/typography/typography';
+@use '../core/mdc-helpers/mdc-helpers';
+
+
+// Gets the color to use for some text that is highlighted while a select has focus.
+@function _get-mdc-focused-text-color($palette) {
+  @return rgba(mdc-theme-color.prop-value($palette), 0.87);
+}
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $foreground: map.get($config, foreground);
-  $background: map.get($config, background);
-  $primary: map.get($config, primary);
-  $accent: map.get($config, accent);
-  $warn: map.get($config, warn);
 
-  .mat-select-value {
-    color: theming.get-color-from-palette($foreground, text);
-  }
+  @include mdc-helpers.using-mdc-theme($config) {
+    $disabled-color: rgba(mdc-theme-color.prop-value(on-surface), 0.38);
+    @include mdc-menu-surface.core-styles(mdc-helpers.$mdc-theme-styles-query);
+    @include mdc-list.without-ripple(mdc-helpers.$mdc-theme-styles-query);
 
-  .mat-select-placeholder {
-    color: form-common.private-control-placeholder-color($config);
-  }
-
-  .mat-select-disabled .mat-select-value {
-    color: theming.get-color-from-palette($foreground, disabled-text);
-  }
-
-  .mat-select-arrow {
-    color: theming.get-color-from-palette($foreground, secondary-text);
-  }
-
-  .mat-select-panel {
-    background: theming.get-color-from-palette($background, card);
-    @include private.private-theme-overridable-elevation(4, $config);
-
-    .mat-option.mat-selected:not(.mat-option-multiple) {
-      background: theming.get-color-from-palette($background, hover, 0.12);
-    }
-  }
-
-  .mat-form-field {
-    &.mat-focused {
-      &.mat-primary .mat-select-arrow {
-        color: theming.get-color-from-palette($primary, text);
-      }
-
-      &.mat-accent .mat-select-arrow {
-        color: theming.get-color-from-palette($accent, text);
-      }
-
-      &.mat-warn .mat-select-arrow {
-        color: theming.get-color-from-palette($warn, text);
-      }
+    .mat-mdc-select-value {
+      color: rgba(mdc-theme-color.prop-value(on-surface), 0.87);
     }
 
-    .mat-select.mat-select-invalid .mat-select-arrow {
-      color: theming.get-color-from-palette($warn, text);
+    .mat-mdc-select-placeholder {
+      color: rgba(mdc-theme-color.prop-value(on-surface), 0.6);
     }
 
-    .mat-select.mat-select-disabled .mat-select-arrow {
-      color: theming.get-color-from-palette($foreground, disabled-text);
+    .mat-mdc-select-disabled .mat-mdc-select-value {
+      color: $disabled-color;
+    }
+
+    .mat-mdc-select-arrow {
+      color: rgba(mdc-theme-color.prop-value(on-surface), 0.54);
+    }
+
+    .mat-mdc-form-field {
+      &.mat-focused {
+        &.mat-primary .mat-mdc-select-arrow {
+          color: _get-mdc-focused-text-color(primary);
+        }
+
+        &.mat-accent .mat-mdc-select-arrow {
+          color: _get-mdc-focused-text-color(secondary);
+        }
+
+        &.mat-warn .mat-mdc-select-arrow {
+          color: _get-mdc-focused-text-color(error);
+        }
+      }
+
+      .mat-mdc-select.mat-mdc-select-invalid .mat-mdc-select-arrow {
+        color: _get-mdc-focused-text-color(error);
+      }
+
+      .mat-mdc-select.mat-mdc-select-disabled .mat-mdc-select-arrow {
+        color: $disabled-color;
+      }
     }
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
+  $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
-  // The unit-less line-height from the font config.
-  $line-height: typography-utils.line-height($config, input);
+  @include mdc-helpers.using-mdc-typography($config) {
+    @include mdc-menu-surface.core-styles(mdc-helpers.$mdc-typography-styles-query);
 
-  .mat-select {
-    font-family: typography-utils.font-family($config);
-  }
+    .mat-mdc-select-panel {
+      @include mdc-list.list-base(mdc-helpers.$mdc-typography-styles-query);
+    }
 
-  .mat-select-trigger {
-    height: typography-utils.private-coerce-unitless-to-em($line-height);
+    .mat-mdc-select {
+      @include mdc-typography.typography(body1, $query: mdc-helpers.$mdc-typography-styles-query);
+    }
   }
 }
 
-@mixin _density($config-or-theme) {}
+@mixin density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -92,7 +92,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);

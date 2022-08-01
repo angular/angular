@@ -16,7 +16,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatRadioModule} from '@angular/material/radio';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 
 @Component({
   selector: 'input-modality-detector-demo',
@@ -29,7 +29,7 @@ import {MatSelectModule} from '@angular/material/select';
     MatLegacyFormFieldModule,
     MatLegacyInputModule,
     MatRadioModule,
-    MatSelectModule,
+    MatLegacySelectModule,
   ],
 })
 export class InputModalityDetectorDemo implements OnDestroy {

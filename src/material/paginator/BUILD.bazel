@@ -21,8 +21,8 @@ ng_module(
         "//src/cdk/coercion",
         "//src/material/button",
         "//src/material/core",
+        "//src/material/legacy-select",
         "//src/material/legacy-tooltip",
-        "//src/material/select",
         "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/forms",  # TODO(jelbourn): transitive dep via generated code
@@ -56,7 +56,7 @@ ng_test_library(
         ":paginator",
         "//src/cdk/testing/private",
         "//src/material/core",
-        "//src/material/select",
+        "//src/material/legacy-select",
         "@npm//@angular/platform-browser",
     ],
 )

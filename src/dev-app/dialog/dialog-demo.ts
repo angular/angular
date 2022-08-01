@@ -22,7 +22,7 @@ import {
 } from '@angular/material/dialog';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 
 const defaultDialogConfig = new MatDialogConfig();
 
@@ -39,7 +39,7 @@ const defaultDialogConfig = new MatDialogConfig();
     MatDialogModule,
     MatLegacyFormFieldModule,
     MatLegacyInputModule,
-    MatSelectModule,
+    MatLegacySelectModule,
   ],
 })
 export class DialogDemo {

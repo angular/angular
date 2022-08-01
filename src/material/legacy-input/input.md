@@ -1,5 +1,5 @@
 `matInput` is a directive that allows native `<input>` and `<textarea>` elements to work with
-[`<mat-form-field>`](https://material.angular.io/components/legacy-form-field/overview).
+[`<mat-form-field>`](https://material.angular.io/components/form-field/overview).
 
 <!-- example(input-overview) -->
 
@@ -35,7 +35,7 @@ be used with `matInput`:
 There are a number of `<mat-form-field>` features that can be used with any `<input matInput>` or
 `<textarea matInput>`. These include error messages, hint text, prefix & suffix, and theming. For
 additional information about these features, see the
-[form field documentation](https://material.angular.io/components/legacy-form-field/overview).
+[form field documentation](https://material.angular.io/components/form-field/overview).
 
 ### Placeholder
 
@@ -43,12 +43,12 @@ The placeholder is text shown when the `<mat-form-field>` label is floating but 
 It is used to give the user an additional hint about what they should type in the input. The
 placeholder can be specified by setting the `placeholder` attribute on the `<input>` or `<textarea>`
 element. In some cases that `<mat-form-field>` may use the placeholder as the label (see the
-[form field label documentation](https://material.angular.io/components/legacy-form-field/overview#floating-label)).
+[form field label documentation](https://material.angular.io/components/form-field/overview#floating-label)).
 
 ### Changing when error messages are shown
 
 The `<mat-form-field>` allows you to
-[associate error messages](https://material.angular.io/components/legacy-form-field/overview#error-messages)
+[associate error messages](https://material.angular.io/components/form-field/overview#error-messages)
 with your `matInput`. By default, these error messages are shown when the control is invalid and
 either the user has interacted with (touched) the element or the parent form has been submitted. If
 you wish to override this behavior (e.g. to show the error as soon as the invalid control is dirty

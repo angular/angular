@@ -12,6 +12,7 @@
 @use '../../../input/input-theme';
 @use '../../../core/option/option-theme';
 @use '../../../core/option/optgroup-theme';
+@use '../../../select/select-theme';
 
 @mixin private-all-unmigrated-component-densities($config) {
   @include expansion-theme.density($config);
@@ -45,6 +46,7 @@
   @include input-theme.density($config);
   @include option-theme.density($config);
   @include optgroup-theme.density($config);
+  @include select-theme.density($config);
   @include private-all-unmigrated-component-densities($config);
 }
 

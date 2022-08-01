@@ -17,7 +17,7 @@ import {ErrorStateMatcher} from '@angular/material/core';
 import {FloatLabelType, MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
@@ -41,7 +41,7 @@ const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA
     MatLegacyFormFieldModule,
     MatIconModule,
     MatLegacyInputModule,
-    MatSelectModule,
+    MatLegacySelectModule,
     MatTabsModule,
     MatToolbarModule,
     ReactiveFormsModule,

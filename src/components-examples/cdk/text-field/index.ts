@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {TextFieldAutofillDirectiveExample} from './text-field-autofill-directive/text-field-autofill-directive-example';
 import {TextFieldAutofillMonitorExample} from './text-field-autofill-monitor/text-field-autofill-monitor-example';
 import {TextFieldAutosizeTextareaExample} from './text-field-autosize-textarea/text-field-autosize-textarea-example';
@@ -21,7 +21,13 @@ const EXAMPLES = [
 ];
 
 @NgModule({
-  imports: [CommonModule, TextFieldModule, MatButtonModule, MatLegacyInputModule, MatSelectModule],
+  imports: [
+    CommonModule,
+    TextFieldModule,
+    MatButtonModule,
+    MatLegacyInputModule,
+    MatLegacySelectModule,
+  ],
   declarations: EXAMPLES,
   exports: EXAMPLES,
 })

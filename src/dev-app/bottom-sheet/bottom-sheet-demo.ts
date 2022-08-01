@@ -22,7 +22,7 @@ import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatListModule} from '@angular/material/list';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 
 const defaultConfig = new MatBottomSheetConfig();
 
@@ -41,7 +41,7 @@ const defaultConfig = new MatBottomSheetConfig();
     MatLegacyFormFieldModule,
     MatIconModule,
     MatLegacyInputModule,
-    MatSelectModule,
+    MatLegacySelectModule,
     MatListModule,
   ],
 })

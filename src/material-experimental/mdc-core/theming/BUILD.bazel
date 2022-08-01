@@ -31,7 +31,6 @@ sass_library(
         "//src/material-experimental/mdc-paginator:mdc_paginator_scss_lib",
         "//src/material-experimental/mdc-progress-spinner:mdc_progress_spinner_scss_lib",
         "//src/material-experimental/mdc-radio:mdc_radio_scss_lib",
-        "//src/material-experimental/mdc-select:mdc_select_scss_lib",
         "//src/material-experimental/mdc-slide-toggle:mdc_slide_toggle_scss_lib",
         "//src/material-experimental/mdc-slider:mdc_slider_scss_lib",
         "//src/material-experimental/mdc-snack-bar:mdc_snack_bar_scss_lib",

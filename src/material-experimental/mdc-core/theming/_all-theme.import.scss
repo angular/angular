@@ -23,11 +23,6 @@ $mat-mdc-chips-mdc-chips-ink-color-default;
 @forward '../../mdc-radio/radio-theme' as mat-mdc-radio-* hide
 $mat-mdc-radio-mdc-radio-baseline-theme-color, $mat-mdc-radio-mdc-radio-disabled-circle-color,
 $mat-mdc-radio-mdc-radio-unchecked-color;
-@forward '../../mdc-select/select-theme' hide color, density, theme, typography;
-@forward '../../mdc-select/select-theme' as mat-mdc-select-* hide
-$mat-mdc-select-mdc-select-disabled-dropdown-icon-color,
-$mat-mdc-select-mdc-select-disabled-label-color, $mat-mdc-select-mdc-select-dropdown-icon-color,
-$mat-mdc-select-mdc-select-ink-color, $mat-mdc-select-mdc-select-label-color;
 @forward '../../mdc-slide-toggle/slide-toggle-theme' hide color, density, theme, typography;
 @forward '../../mdc-slide-toggle/slide-toggle-theme' as mat-mdc-slide-toggle-* hide
 $mat-mdc-slide-toggle-mdc-switch-baseline-theme-color,
@@ -70,7 +65,6 @@ $mat-mdc-table-mdc-data-table-stroke-color, $mat-mdc-table-mdc-data-table-table-
 @import '../../mdc-list/list-theme';
 @import '../../mdc-menu/menu-theme';
 @import '../../mdc-radio/radio-theme';
-@import '../../mdc-select/select-theme';
 @import '../../mdc-slide-toggle/slide-toggle-theme';
 @import '../../mdc-snack-bar/snack-bar-theme';
 @import '../../mdc-tabs/tabs-theme';

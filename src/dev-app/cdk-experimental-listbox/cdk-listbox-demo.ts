@@ -10,7 +10,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {CdkListboxModule} from '@angular/cdk-experimental/listbox';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 
 function dumbCompare(o1: string, o2: string) {
   const equiv = new Set(['apple', 'orange']);
@@ -21,7 +21,13 @@ function dumbCompare(o1: string, o2: string) {
   templateUrl: 'cdk-listbox-demo.html',
   styleUrls: ['cdk-listbox-demo.css'],
   standalone: true,
-  imports: [CdkListboxModule, CommonModule, FormsModule, MatSelectModule, ReactiveFormsModule],
+  imports: [
+    CdkListboxModule,
+    CommonModule,
+    FormsModule,
+    MatLegacySelectModule,
+    ReactiveFormsModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CdkListboxDemo {

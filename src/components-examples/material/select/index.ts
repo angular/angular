@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {SelectCustomTriggerExample} from './select-custom-trigger/select-custom-trigger-example';
 import {SelectDisabledExample} from './select-disabled/select-disabled-example';
 import {SelectErrorStateMatcherExample} from './select-error-state-matcher/select-error-state-matcher-example';
@@ -63,7 +63,7 @@ const EXAMPLES = [
     FormsModule,
     MatCheckboxModule,
     MatLegacyInputModule,
-    MatSelectModule,
+    MatLegacySelectModule,
     ReactiveFormsModule,
     MatLegacyFormFieldModule,
   ],

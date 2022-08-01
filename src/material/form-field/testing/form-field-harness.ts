@@ -17,7 +17,7 @@ import {
 } from '@angular/cdk/testing';
 import {MatInputHarness} from '@angular/material/input/testing';
 import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
-import {MatSelectHarness} from '@angular/material-experimental/mdc-select/testing';
+import {MatSelectHarness} from '@angular/material/select/testing';
 import {
   MatDatepickerInputHarness,
   MatDateRangeInputHarness,

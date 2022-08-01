@@ -115,6 +115,8 @@
   progress-spinner-theme, progress-spinner-color, progress-spinner-typography;
 @forward './radio/radio-theme' as radio-* show radio-theme, radio-color, radio-typography;
 @forward './select/select-theme' as select-* show select-theme, select-color, select-typography;
+@forward './legacy-select/select-theme' as legacy-select-* show legacy-select-theme,
+  legacy-select-color, legacy-select-typography;
 @forward './sidenav/sidenav-theme' as sidenav-* show sidenav-theme, sidenav-color,
   sidenav-typography;
 @forward './slide-toggle/slide-toggle-theme' as slide-toggle-* show slide-toggle-theme,

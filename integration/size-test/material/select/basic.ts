@@ -1,5 +1,5 @@
 import {Component, NgModule} from '@angular/core';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 
 /**
  * Basic component using `MatSelect` and `MatOption`. Other supported parts of the
@@ -16,7 +16,7 @@ import {MatSelectModule} from '@angular/material/select';
 export class TestComponent {}
 
 @NgModule({
-  imports: [MatSelectModule],
+  imports: [MatLegacySelectModule],
   declarations: [TestComponent],
   bootstrap: [TestComponent],
 })

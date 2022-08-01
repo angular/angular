@@ -16,13 +16,13 @@ import {
   _MatFormFieldHarnessBase,
 } from '@angular/material/form-field/testing';
 import {MatLegacyInputHarness} from '@angular/material/legacy-input/testing';
-import {MatSelectHarness} from '@angular/material/select/testing';
+import {MatLegacySelectHarness} from '@angular/material/legacy-select/testing';
 
 // TODO(devversion): support support chip list harness
 /** Possible harnesses of controls which can be bound to a form-field. */
 export type FormFieldControlHarness =
   | MatLegacyInputHarness
-  | MatSelectHarness
+  | MatLegacySelectHarness
   | MatDatepickerInputHarness
   | MatDateRangeInputHarness;
 
@@ -54,7 +54,7 @@ export class MatLegacyFormFieldHarness extends _MatFormFieldHarnessBase<FormFiel
   protected _errors = this.locatorForAll('.mat-error');
   protected _hints = this.locatorForAll('mat-hint, .mat-hint');
   protected _inputControl = this.locatorForOptional(MatLegacyInputHarness);
-  protected _selectControl = this.locatorForOptional(MatSelectHarness);
+  protected _selectControl = this.locatorForOptional(MatLegacySelectHarness);
   protected _datepickerInputControl = this.locatorForOptional(MatDatepickerInputHarness);
   protected _dateRangeInputControl = this.locatorForOptional(MatDateRangeInputHarness);
 

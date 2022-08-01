@@ -11,8 +11,8 @@ ts_library(
     deps = [
         "//src/cdk/coercion",
         "//src/cdk/testing",
-        "//src/material/core/testing",
         "//src/material/form-field/testing/control",
+        "//src/material/legacy-core/testing",
         "//src/material/select/testing",
     ],
 )
@@ -27,15 +27,13 @@ ng_test_library(
     srcs = glob(["**/*.spec.ts"]),
     deps = [
         ":testing",
-        "//src/material-experimental/mdc-select",
-        "//src/material/form-field",
+        "//src/material/legacy-form-field",
+        "//src/material/legacy-select",
         "//src/material/select/testing:harness_tests_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [
-        ":unit_tests_lib",
-    ],
+    deps = [":unit_tests_lib"],
 )

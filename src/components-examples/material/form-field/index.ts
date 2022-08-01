@@ -7,7 +7,7 @@ import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatRadioModule} from '@angular/material/radio';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {FormFieldAppearanceExample} from './form-field-appearance/form-field-appearance-example';
 import {
   FormFieldCustomControlExample,
@@ -55,7 +55,7 @@ const EXAMPLES = [
     MatIconModule,
     MatLegacyInputModule,
     MatRadioModule,
-    MatSelectModule,
+    MatLegacySelectModule,
     ReactiveFormsModule,
   ],
   declarations: [...EXAMPLES, MyTelInput],

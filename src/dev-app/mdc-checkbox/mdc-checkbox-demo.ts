@@ -13,7 +13,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
 import {MatPseudoCheckboxModule, ThemePalette} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material-experimental/mdc-select';
+import {MatSelectModule} from '@angular/material/select';
 import {CommonModule} from '@angular/common';
 
 export interface Task {

@@ -9,22 +9,22 @@ import { ComponentHarness } from '@angular/cdk/testing';
 import { ComponentHarnessConstructor } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 import { MatFormFieldControlHarness } from '@angular/material/form-field/testing/control';
-import { MatLegacyOptgroupHarness } from '@angular/material/legacy-core/testing';
-import { MatLegacyOptionHarness } from '@angular/material/legacy-core/testing';
-import { OptgroupHarnessFilters } from '@angular/material/legacy-core/testing';
-import { OptionHarnessFilters } from '@angular/material/legacy-core/testing';
+import { MatOptgroupHarness } from '@angular/material/core/testing';
+import { MatOptionHarness } from '@angular/material/core/testing';
+import { OptgroupHarnessFilters } from '@angular/material/core/testing';
+import { OptionHarnessFilters } from '@angular/material/core/testing';
 
 // @public
-export class MatSelectHarness extends _MatSelectHarnessBase<typeof MatLegacyOptionHarness, MatLegacyOptionHarness, OptionHarnessFilters, typeof MatLegacyOptgroupHarness, MatLegacyOptgroupHarness, OptgroupHarnessFilters> {
+export class MatSelectHarness extends _MatSelectHarnessBase<typeof MatOptionHarness, MatOptionHarness, OptionHarnessFilters, typeof MatOptgroupHarness, MatOptgroupHarness, OptgroupHarnessFilters> {
     // (undocumented)
     static hostSelector: string;
     // (undocumented)
-    protected _optionClass: typeof MatLegacyOptionHarness;
+    protected _optionClass: typeof MatOptionHarness;
     // (undocumented)
-    protected _optionGroupClass: typeof MatLegacyOptgroupHarness;
+    protected _optionGroupClass: typeof MatOptgroupHarness;
     // (undocumented)
     protected _prefix: string;
-    static with(options?: SelectHarnessFilters): HarnessPredicate<MatSelectHarness>;
+    static with<T extends MatSelectHarness>(this: ComponentHarnessConstructor<T>, options?: SelectHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public (undocumented)

@@ -16,7 +16,7 @@ import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {FloatLabelType, MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatSelectChange, MatSelectModule} from '@angular/material/select';
+import {MatSelectChange, MatLegacySelectModule} from '@angular/material/legacy-select';
 
 /** Error any time control is invalid */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -42,7 +42,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     MatLegacyFormFieldModule,
     MatIconModule,
     MatLegacyInputModule,
-    MatSelectModule,
+    MatLegacySelectModule,
     ReactiveFormsModule,
   ],
 })

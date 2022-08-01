@@ -12,7 +12,7 @@ import {TooltipPosition, MatTooltipModule} from '@angular/material/tooltip';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material-experimental/mdc-select';
+import {MatSelectModule} from '@angular/material/select';
 
 @Component({
   selector: 'mdc-tooltip-demo',

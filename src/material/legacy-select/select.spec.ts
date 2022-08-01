@@ -13,7 +13,7 @@ import {
   ESCAPE,
 } from '@angular/cdk/keycodes';
 import {OverlayContainer} from '@angular/cdk/overlay';
-import {ScrollDispatcher} from '@angular/cdk/scrolling';
+import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
 import {
   createKeyboardEvent,
   dispatchEvent,
@@ -42,7 +42,6 @@ import {
 } from '@angular/core/testing';
 import {
   ControlValueAccessor,
-  FormBuilder,
   FormControl,
   FormGroup,
   FormGroupDirective,
@@ -50,21 +49,23 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
   Validators,
+  FormBuilder,
 } from '@angular/forms';
-import {MatOption, MatOptionSelectionChange, ErrorStateMatcher} from '@angular/material/core';
-import {MAT_SELECT_CONFIG, MatSelectConfig} from '@angular/material/select';
+import {ErrorStateMatcher} from '@angular/material/core';
+import {MatLegacyOption, MatOptionSelectionChange} from '@angular/material/legacy-core';
 import {
   FloatLabelType,
-  MatFormFieldModule,
+  MatLegacyFormFieldModule,
   MAT_FORM_FIELD_DEFAULT_OPTIONS,
-} from '@angular/material/form-field';
+} from '@angular/material/legacy-form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
+import {MAT_SELECT_CONFIG, MatSelectConfig} from '@angular/material/select';
 import {Subject, Subscription, EMPTY, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {MatSelectModule} from './index';
-import {MatSelect} from './select';
+import {MatLegacySelectModule} from './select-module';
+import {MatLegacySelect} from './select';
 import {
   getMatSelectDynamicMultipleError,
   getMatSelectNonArrayValueError,
@@ -74,10 +75,11 @@ import {
 /** Default debounce interval when typing letters to select an option. */
 const DEFAULT_TYPEAHEAD_DEBOUNCE_INTERVAL = 200;
 
-describe('MDC-based MatSelect', () => {
+describe('MatSelect', () => {
   let overlayContainerElement: HTMLElement;
   let dir: {value: 'ltr' | 'rtl'; change: Observable<string>};
   let scrolledSubject = new Subject();
+  let viewportRuler: ViewportRuler;
 
   /**
    * Configures the test module for MatSelect with the given declarations. This is broken out so
@@ -89,8 +91,8 @@ describe('MDC-based MatSelect', () => {
   function configureMatSelectTestingModule(declarations: any[], providers: Provider[] = []) {
     TestBed.configureTestingModule({
       imports: [
-        MatFormFieldModule,
-        MatSelectModule,
+        MatLegacyFormFieldModule,
+        MatLegacySelectModule,
         ReactiveFormsModule,
         FormsModule,
         NoopAnimationsModule,
@@ -140,7 +142,7 @@ describe('MDC-based MatSelect', () => {
         it('should set the role of the select to combobox', fakeAsync(() => {
           expect(select.getAttribute('role')).toEqual('combobox');
           expect(select.getAttribute('aria-autocomplete')).toBe('none');
-          expect(select.getAttribute('aria-haspopup')).toBe('listbox');
+          expect(select.getAttribute('aria-haspopup')).toBe('true');
         }));
 
         it('should point the aria-controls attribute to the listbox', fakeAsync(() => {
@@ -152,11 +154,11 @@ describe('MDC-based MatSelect', () => {
 
           const ariaControls = select.getAttribute('aria-controls');
           expect(ariaControls).toBeTruthy();
-          expect(ariaControls).toBe(document.querySelector('.mat-mdc-select-panel')!.id);
+          expect(ariaControls).toBe(document.querySelector('.mat-select-panel')!.id);
         }));
 
         it('should point the aria-owns attribute to the listbox on the trigger', fakeAsync(() => {
-          const trigger = select.querySelector('.mat-mdc-select-trigger')!;
+          const trigger = select.querySelector('.mat-select-trigger')!;
           expect(trigger.hasAttribute('aria-owns')).toBe(false);
 
           fixture.componentInstance.select.open();
@@ -165,7 +167,7 @@ describe('MDC-based MatSelect', () => {
 
           const ariaOwns = trigger.getAttribute('aria-owns');
           expect(ariaOwns).toBeTruthy();
-          expect(ariaOwns).toBe(document.querySelector('.mat-mdc-select-panel')!.id);
+          expect(ariaOwns).toBe(document.querySelector('.mat-select-panel')!.id);
         }));
 
         it('should set aria-expanded based on the select open state', fakeAsync(() => {
@@ -190,8 +192,8 @@ describe('MDC-based MatSelect', () => {
           fixture.componentInstance.ariaLabelledby = 'myLabelId';
           fixture.detectChanges();
 
-          const labelId = fixture.nativeElement.querySelector('label').id;
-          const valueId = fixture.nativeElement.querySelector('.mat-mdc-select-value').id;
+          const labelId = fixture.nativeElement.querySelector('.mat-form-field-label').id;
+          const valueId = fixture.nativeElement.querySelector('.mat-select-value').id;
 
           expect(select.getAttribute('aria-labelledby')).toBe(`${labelId} ${valueId} myLabelId`);
         }));
@@ -199,40 +201,23 @@ describe('MDC-based MatSelect', () => {
         it('should set aria-labelledby to the value and label IDs', fakeAsync(() => {
           fixture.detectChanges();
 
-          const labelId = fixture.nativeElement.querySelector('label').id;
-          const valueId = fixture.nativeElement.querySelector('.mat-mdc-select-value').id;
+          const labelId = fixture.nativeElement.querySelector('.mat-form-field-label').id;
+          const valueId = fixture.nativeElement.querySelector('.mat-select-value').id;
           expect(select.getAttribute('aria-labelledby')).toBe(`${labelId} ${valueId}`);
         }));
 
         it('should trim the trigger aria-labelledby when there is no label', fakeAsync(() => {
-          fixture.componentInstance.hasLabel = false;
-          fixture.detectChanges();
-          flush();
+          // Reset the `placeholder` which also controls the label of the form field.
+          fixture.componentInstance.select.placeholder = '';
           fixture.detectChanges();
 
           // Note that we assert that there are no spaces around the value.
-          const valueId = fixture.nativeElement.querySelector('.mat-mdc-select-value').id;
+          const valueId = fixture.nativeElement.querySelector('.mat-select-value').id;
           expect(select.getAttribute('aria-labelledby')).toBe(`${valueId}`);
         }));
 
         it('should set the tabindex of the select to 0 by default', fakeAsync(() => {
           expect(select.getAttribute('tabindex')).toEqual('0');
-        }));
-
-        it('should set `aria-describedby` to the id of the mat-hint', fakeAsync(() => {
-          expect(select.getAttribute('aria-describedby')).toBeNull();
-
-          fixture.componentInstance.hint = 'test';
-          fixture.detectChanges();
-          const hint = fixture.debugElement.query(By.css('mat-hint')).nativeElement;
-          expect(select.getAttribute('aria-describedby')).toBe(hint.getAttribute('id'));
-          expect(select.getAttribute('aria-describedby')).toMatch(/^mat-mdc-hint-\d+$/);
-        }));
-
-        it('should support user binding to `aria-describedby`', fakeAsync(() => {
-          fixture.componentInstance.ariaDescribedBy = 'test';
-          fixture.detectChanges();
-          expect(select.getAttribute('aria-describedby')).toBe('test');
         }));
 
         it('should be able to override the tabindex', fakeAsync(() => {
@@ -257,16 +242,16 @@ describe('MDC-based MatSelect', () => {
 
         it('should set the mat-select-required class for required selects', fakeAsync(() => {
           expect(select.classList).not.toContain(
-            'mat-mdc-select-required',
-            `Expected the mat-mdc-select-required class not to be set.`,
+            'mat-select-required',
+            `Expected the mat-select-required class not to be set.`,
           );
 
           fixture.componentInstance.isRequired = true;
           fixture.detectChanges();
 
           expect(select.classList)
-            .withContext(`Expected the mat-mdc-select-required class to be set.`)
-            .toContain('mat-mdc-select-required');
+            .withContext(`Expected the mat-select-required class to be set.`)
+            .toContain('mat-select-required');
         }));
 
         it('should set aria-invalid for selects that are invalid and touched', fakeAsync(() => {
@@ -308,10 +293,26 @@ describe('MDC-based MatSelect', () => {
           const labelFixture = TestBed.createComponent(SelectWithChangeEvent);
           labelFixture.detectChanges();
           select = labelFixture.debugElement.query(By.css('mat-select'))!.nativeElement;
-          const valueId = labelFixture.nativeElement.querySelector('.mat-mdc-select-value').id;
+          const valueId = labelFixture.nativeElement.querySelector('.mat-select-value').id;
 
           expect(select.getAttribute('aria-labelledby')?.trim()).toBe(valueId);
         });
+
+        it('should set `aria-describedby` to the id of the mat-hint', fakeAsync(() => {
+          expect(select.getAttribute('aria-describedby')).toBeNull();
+
+          fixture.componentInstance.hint = 'test';
+          fixture.detectChanges();
+          const hint = fixture.debugElement.query(By.css('.mat-hint')).nativeElement;
+          expect(select.getAttribute('aria-describedby')).toBe(hint.getAttribute('id'));
+          expect(select.getAttribute('aria-describedby')).toMatch(/^mat-hint-\d+$/);
+        }));
+
+        it('should support user binding to `aria-describedby`', fakeAsync(() => {
+          fixture.componentInstance.ariaDescribedBy = 'test';
+          fixture.detectChanges();
+          expect(select.getAttribute('aria-describedby')).toBe('test');
+        }));
 
         it('should select options via the UP/DOWN arrow keys on a closed select', fakeAsync(() => {
           const formControl = fixture.componentInstance.control;
@@ -950,7 +951,7 @@ describe('MDC-based MatSelect', () => {
           multiFixture.detectChanges();
           flush();
 
-          const panel = document.querySelector('.mat-mdc-select-panel')!;
+          const panel = document.querySelector('.mat-select-panel')!;
           expect(panel.getAttribute('aria-multiselectable')).toBe('true');
         }));
 
@@ -959,7 +960,7 @@ describe('MDC-based MatSelect', () => {
           fixture.detectChanges();
           flush();
 
-          const panel = document.querySelector('.mat-mdc-select-panel')!;
+          const panel = document.querySelector('.mat-select-panel')!;
           expect(panel.getAttribute('aria-multiselectable')).toBe('false');
         }));
 
@@ -1064,7 +1065,7 @@ describe('MDC-based MatSelect', () => {
           fixture.detectChanges();
           flush();
 
-          const panel = document.querySelector('.mat-mdc-select-panel')!;
+          const panel = document.querySelector('.mat-select-panel')!;
           expect(panel.getAttribute('role')).toBe('listbox');
         }));
 
@@ -1073,8 +1074,8 @@ describe('MDC-based MatSelect', () => {
           fixture.detectChanges();
           flush();
 
-          const labelId = fixture.nativeElement.querySelector('label').id;
-          const panel = document.querySelector('.mat-mdc-select-panel')!;
+          const labelId = fixture.nativeElement.querySelector('.mat-form-field-label').id;
+          const panel = document.querySelector('.mat-select-panel')!;
           expect(panel.getAttribute('aria-labelledby')).toBe(labelId);
         }));
 
@@ -1084,20 +1085,21 @@ describe('MDC-based MatSelect', () => {
           fixture.detectChanges();
           flush();
 
-          const labelId = fixture.nativeElement.querySelector('label').id;
-          const panel = document.querySelector('.mat-mdc-select-panel')!;
+          const labelId = fixture.nativeElement.querySelector('.mat-form-field-label').id;
+          const panel = document.querySelector('.mat-select-panel')!;
           expect(panel.getAttribute('aria-labelledby')).toBe(`${labelId} myLabelId`);
         }));
 
         it('should trim the custom panel aria-labelledby when there is no label', fakeAsync(() => {
-          fixture.componentInstance.hasLabel = false;
+          // Reset the `placeholder` which also controls the label of the form field.
+          fixture.componentInstance.select.placeholder = '';
           fixture.componentInstance.ariaLabelledby = 'myLabelId';
           fixture.componentInstance.select.open();
           fixture.detectChanges();
           flush();
 
           // Note that we assert that there are no spaces around the value.
-          const panel = document.querySelector('.mat-mdc-select-panel')!;
+          const panel = document.querySelector('.mat-select-panel')!;
           expect(panel.getAttribute('aria-labelledby')).toBe(`myLabelId`);
         }));
 
@@ -1107,7 +1109,7 @@ describe('MDC-based MatSelect', () => {
           fixture.detectChanges();
           flush();
 
-          const panel = document.querySelector('.mat-mdc-select-panel')!;
+          const panel = document.querySelector('.mat-select-panel')!;
           expect(panel.getAttribute('aria-label')).toBe('My label');
           expect(panel.hasAttribute('aria-labelledby')).toBe(false);
         }));
@@ -1121,7 +1123,7 @@ describe('MDC-based MatSelect', () => {
         beforeEach(fakeAsync(() => {
           fixture = TestBed.createComponent(BasicSelect);
           fixture.detectChanges();
-          trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+          trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
           trigger.click();
           fixture.detectChanges();
 
@@ -1149,9 +1151,7 @@ describe('MDC-based MatSelect', () => {
           flush();
 
           expect(options[1].getAttribute('aria-selected'))
-            .withContext(
-              'Expected selected single-select option to have ' + 'aria-selected="true".',
-            )
+            .withContext('Expected selected single-select option to have aria-selected="true".')
             .toEqual('true');
           options.splice(1, 1);
           expect(options.every(option => !option.hasAttribute('aria-selected')))
@@ -1167,9 +1167,7 @@ describe('MDC-based MatSelect', () => {
           const multiFixture = TestBed.createComponent(MultiSelect);
           multiFixture.detectChanges();
 
-          trigger = multiFixture.debugElement.query(
-            By.css('.mat-mdc-select-trigger'),
-          )!.nativeElement;
+          trigger = multiFixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
           trigger.click();
           multiFixture.detectChanges();
 
@@ -1195,7 +1193,7 @@ describe('MDC-based MatSelect', () => {
           flush();
 
           expect(options[1].getAttribute('aria-selected'))
-            .withContext('Expected selected multi-select option to have aria-selected="true".')
+            .withContext('Expected selected multi-select option to have ' + 'aria-selected="true".')
             .toEqual('true');
           options.splice(1, 1);
           expect(
@@ -1231,9 +1229,7 @@ describe('MDC-based MatSelect', () => {
         }));
 
         it('should remove the active state from options that have been deselected while closed', fakeAsync(() => {
-          let activeOptions = options.filter(option => {
-            return option.classList.contains('mat-mdc-option-active');
-          });
+          let activeOptions = options.filter(option => option.classList.contains('mat-active'));
           expect(activeOptions)
             .withContext('Expected first option to have active styles.')
             .toEqual([options[0]]);
@@ -1244,12 +1240,10 @@ describe('MDC-based MatSelect', () => {
           fixture.detectChanges();
           flush();
 
-          activeOptions = options.filter(option => {
-            return option.classList.contains('mat-mdc-option-active');
-          });
+          activeOptions = options.filter(option => option.classList.contains('mat-active'));
           expect(activeOptions)
             .withContext(
-              'Expected only selected option to be marked as active after it is ' + 'clicked.',
+              'Expected only selected option to be marked as active after ' + 'it is clicked.',
             )
             .toEqual([options[1]]);
 
@@ -1262,9 +1256,7 @@ describe('MDC-based MatSelect', () => {
           fixture.componentInstance.select.open();
           fixture.detectChanges();
 
-          activeOptions = options.filter(option => {
-            return option.classList.contains('mat-mdc-option-active');
-          });
+          activeOptions = options.filter(option => option.classList.contains('mat-active'));
           expect(activeOptions)
             .withContext(
               'Expected only selected option to be marked as active after the ' +
@@ -1282,7 +1274,7 @@ describe('MDC-based MatSelect', () => {
         beforeEach(fakeAsync(() => {
           fixture = TestBed.createComponent(SelectWithGroups);
           fixture.detectChanges();
-          trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+          trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
           trigger.click();
           fixture.detectChanges();
           groups = overlayContainerElement.querySelectorAll(
@@ -1295,8 +1287,8 @@ describe('MDC-based MatSelect', () => {
         }));
 
         it('should set the `aria-labelledby` attribute', fakeAsync(() => {
-          let group = groups[0];
-          let label = group.querySelector('.mat-mdc-optgroup-label') as HTMLElement;
+          const group = groups[0];
+          const label = group.querySelector('span')!;
 
           expect(label.getAttribute('id'))
             .withContext('Expected label to have an id.')
@@ -1314,14 +1306,12 @@ describe('MDC-based MatSelect', () => {
 
     describe('overlay panel', () => {
       let fixture: ComponentFixture<BasicSelect>;
-      let formField: HTMLElement;
       let trigger: HTMLElement;
 
       beforeEach(fakeAsync(() => {
         fixture = TestBed.createComponent(BasicSelect);
         fixture.detectChanges();
-        formField = fixture.debugElement.query(By.css('.mat-mdc-form-field'))!.nativeElement;
-        trigger = formField.querySelector('.mat-mdc-select-trigger') as HTMLElement;
+        trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
       }));
 
       it('should not throw when attempting to open too early', () => {
@@ -1373,35 +1363,63 @@ describe('MDC-based MatSelect', () => {
       }));
 
       it('should set the width of the overlay based on the trigger', fakeAsync(() => {
-        formField.style.width = '200px';
+        trigger.style.width = '200px';
 
         trigger.click();
         fixture.detectChanges();
         flush();
 
         const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
-        expect(pane.style.width).toBe('200px');
+        expect(pane.style.minWidth).toBe('200px');
+
+        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel');
+        const scrollContainerWidth = scrollContainer!.getBoundingClientRect().width;
+        expect(scrollContainerWidth).toBeCloseTo(
+          200 + 32,
+          0,
+          'Expected select panel width to be 100% + 32px of the select field trigger',
+        );
+      }));
+
+      it('should set the width of the overlay based on a larger trigger width', fakeAsync(() => {
+        // the trigger width exceeds the minimum width of the mat-select-panel
+        trigger.style.width = '400px';
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+        expect(pane.style.minWidth).toBe('400px');
+
+        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel');
+        const scrollContainerWidth = scrollContainer!.getBoundingClientRect().width;
+        expect(scrollContainerWidth).toBeCloseTo(
+          400 + 32,
+          0,
+          'Expected select panel width to be 100% + 32px of the select field trigger',
+        );
       }));
 
       it('should update the width of the panel on resize', fakeAsync(() => {
-        formField.style.width = '300px';
+        trigger.style.width = '300px';
 
         trigger.click();
         fixture.detectChanges();
         flush();
 
         const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
-        const initialWidth = parseInt(pane.style.width || '0');
+        const initialWidth = parseInt(pane.style.minWidth || '0');
 
         expect(initialWidth).toBeGreaterThan(0);
 
-        formField.style.width = '400px';
+        trigger.style.width = '400px';
         dispatchFakeEvent(window, 'resize');
         fixture.detectChanges();
         tick(1000);
         fixture.detectChanges();
 
-        expect(parseInt(pane.style.width || '0')).toBeGreaterThan(initialWidth);
+        expect(parseInt(pane.style.minWidth || '0')).toBeGreaterThan(initialWidth);
       }));
 
       it('should not attempt to open a select that does not have any options', fakeAsync(() => {
@@ -1429,7 +1447,7 @@ describe('MDC-based MatSelect', () => {
       }));
 
       it('should restore focus to the host before tabbing away', fakeAsync(() => {
-        const select = fixture.nativeElement.querySelector('.mat-mdc-select');
+        const select = fixture.nativeElement.querySelector('.mat-select');
 
         trigger.click();
         fixture.detectChanges();
@@ -1454,7 +1472,7 @@ describe('MDC-based MatSelect', () => {
 
         expect(fixture.componentInstance.select.panelOpen).toBe(true);
 
-        const panel = overlayContainerElement.querySelector('.mat-mdc-select-panel')!;
+        const panel = overlayContainerElement.querySelector('.mat-select-panel')!;
         dispatchKeyboardEvent(panel, 'keydown', TAB);
         fixture.detectChanges();
         flush();
@@ -1496,7 +1514,7 @@ describe('MDC-based MatSelect', () => {
         trigger.click();
         fixture.detectChanges();
 
-        const panel = overlayContainerElement.querySelector('.mat-mdc-select-panel') as HTMLElement;
+        const panel = overlayContainerElement.querySelector('.mat-select-panel') as HTMLElement;
 
         expect(panel.classList).toContain('custom-one');
         expect(panel.classList).toContain('custom-two');
@@ -1538,7 +1556,7 @@ describe('MDC-based MatSelect', () => {
 
         const groupFixture = TestBed.createComponent(SelectWithGroupsAndNgContainer);
         groupFixture.detectChanges();
-        trigger = groupFixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+        trigger = groupFixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
         trigger.click();
         groupFixture.detectChanges();
 
@@ -1551,7 +1569,7 @@ describe('MDC-based MatSelect', () => {
         'should not consider itself as blurred if the trigger loses focus while the ' +
           'panel is still open',
         fakeAsync(() => {
-          const selectElement = fixture.nativeElement.querySelector('.mat-mdc-select');
+          const selectElement = fixture.nativeElement.querySelector('.mat-select');
           const selectInstance = fixture.componentInstance.select;
 
           dispatchFakeEvent(selectElement, 'focus');
@@ -1576,18 +1594,16 @@ describe('MDC-based MatSelect', () => {
       let fixture: ComponentFixture<BasicSelect>;
       let trigger: HTMLElement;
       let formField: HTMLElement;
-      let label: HTMLLabelElement;
 
       beforeEach(fakeAsync(() => {
         fixture = TestBed.createComponent(BasicSelect);
         fixture.detectChanges();
-        trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
-        formField = fixture.debugElement.query(By.css('.mat-mdc-form-field'))!.nativeElement;
-        label = formField.querySelector('label')!;
+        trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
+        formField = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
       }));
 
       it('should not float label if no option is selected', fakeAsync(() => {
-        expect(label.classList.contains('mat-form-field-should-float'))
+        expect(formField.classList.contains('mat-form-field-should-float'))
           .withContext('Label should not be floating')
           .toBe(false);
       }));
@@ -1616,7 +1632,7 @@ describe('MDC-based MatSelect', () => {
 
         option = overlayContainerElement.querySelector('mat-option') as HTMLElement;
 
-        expect(option.classList).toContain('mdc-list-item--selected');
+        expect(option.classList).toContain('mat-selected');
         expect(fixture.componentInstance.options.first.selected).toBe(true);
         expect(fixture.componentInstance.select.selected).toBe(
           fixture.componentInstance.options.first,
@@ -1635,7 +1651,7 @@ describe('MDC-based MatSelect', () => {
         optionInstances[1].select();
         fixture.detectChanges();
 
-        expect(optionNodes[1].classList).toContain('mdc-list-item--selected');
+        expect(optionNodes[1].classList).toContain('mat-selected');
         expect(optionInstances[1].selected).toBe(true);
         expect(fixture.componentInstance.select.selected).toBe(optionInstances[1]);
       }));
@@ -1658,8 +1674,8 @@ describe('MDC-based MatSelect', () => {
         flush();
 
         options = overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
-        expect(options[1].classList).not.toContain('mdc-list-item--selected');
-        expect(options[2].classList).not.toContain('mdc-list-item--selected');
+        expect(options[1].classList).not.toContain('mat-selected');
+        expect(options[2].classList).not.toContain('mat-selected');
 
         const optionInstances = fixture.componentInstance.options.toArray();
         expect(optionInstances[1].selected).toBe(false);
@@ -1667,8 +1683,8 @@ describe('MDC-based MatSelect', () => {
       }));
 
       it('should deselect other options when one is programmatically selected', fakeAsync(() => {
-        let control = fixture.componentInstance.control;
-        let foods = fixture.componentInstance.foods;
+        const control = fixture.componentInstance.control;
+        const foods = fixture.componentInstance.foods;
 
         trigger.click();
         fixture.detectChanges();
@@ -1692,12 +1708,12 @@ describe('MDC-based MatSelect', () => {
         options = overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
 
         expect(options[0].classList).not.toContain(
-          'mdc-list-item--selected',
+          'mat-selected',
           'Expected first option to no longer be selected',
         );
         expect(options[1].classList)
           .withContext('Expected second option to be selected')
-          .toContain('mdc-list-item--selected');
+          .toContain('mat-selected');
 
         const optionInstances = fixture.componentInstance.options.toArray();
 
@@ -1710,13 +1726,15 @@ describe('MDC-based MatSelect', () => {
       }));
 
       it('should remove selection if option has been removed', fakeAsync(() => {
-        let select = fixture.componentInstance.select;
+        const select = fixture.componentInstance.select;
 
         trigger.click();
         fixture.detectChanges();
         flush();
 
-        let firstOption = overlayContainerElement.querySelectorAll('mat-option')[0] as HTMLElement;
+        const firstOption = overlayContainerElement.querySelectorAll(
+          'mat-option',
+        )[0] as HTMLElement;
 
         firstOption.click();
         fixture.detectChanges();
@@ -1744,9 +1762,9 @@ describe('MDC-based MatSelect', () => {
         fixture.detectChanges();
         flush();
 
-        const value = fixture.debugElement.query(By.css('.mat-mdc-select-value'))!.nativeElement;
+        const value = fixture.debugElement.query(By.css('.mat-select-value'))!.nativeElement;
 
-        expect(label.classList.contains('mdc-floating-label--float-above'))
+        expect(formField.classList.contains('mat-form-field-should-float'))
           .withContext('Label should be floating')
           .toBe(true);
         expect(value.textContent).toContain('Steak');
@@ -1810,7 +1828,7 @@ describe('MDC-based MatSelect', () => {
         fixture.detectChanges();
 
         expect(fixture.componentInstance.select.panelOpen).toBe(true);
-        expect(options[2].classList).not.toContain('mdc-list-item--selected');
+        expect(options[2].classList).not.toContain('mat-selected');
         expect(fixture.componentInstance.select.selected).toBeUndefined();
       }));
 
@@ -1819,7 +1837,7 @@ describe('MDC-based MatSelect', () => {
 
         const groupFixture = TestBed.createComponent(SelectWithGroups);
         groupFixture.detectChanges();
-        groupFixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement.click();
+        groupFixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement.click();
         groupFixture.detectChanges();
 
         const disabledGroup = overlayContainerElement.querySelectorAll('mat-optgroup')[1];
@@ -1829,7 +1847,7 @@ describe('MDC-based MatSelect', () => {
         groupFixture.detectChanges();
 
         expect(groupFixture.componentInstance.select.panelOpen).toBe(true);
-        expect(options[0].classList).not.toContain('mdc-list-item--selected');
+        expect(options[0].classList).not.toContain('mat-selected');
         expect(groupFixture.componentInstance.select.selected).toBeUndefined();
       }));
 
@@ -1858,7 +1876,7 @@ describe('MDC-based MatSelect', () => {
         fixture.destroy();
         fixture = TestBed.createComponent(BasicSelect);
 
-        let spy = jasmine.createSpy('option selection spy');
+        const spy = jasmine.createSpy('option selection spy');
         let subscription: Subscription;
 
         expect(fixture.componentInstance.select.options).toBeFalsy();
@@ -1867,7 +1885,7 @@ describe('MDC-based MatSelect', () => {
         }).not.toThrow();
 
         fixture.detectChanges();
-        trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+        trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
 
         trigger.click();
         fixture.detectChanges();
@@ -1884,9 +1902,9 @@ describe('MDC-based MatSelect', () => {
       }));
 
       it('should emit to `optionSelectionChanges` after the list of options has changed', fakeAsync(() => {
-        let spy = jasmine.createSpy('option selection spy');
-        let subscription = fixture.componentInstance.select.optionSelectionChanges.subscribe(spy);
-        let selectFirstOption = () => {
+        const spy = jasmine.createSpy('option selection spy');
+        const subscription = fixture.componentInstance.select.optionSelectionChanges.subscribe(spy);
+        const selectFirstOption = () => {
           trigger.click();
           fixture.detectChanges();
           flush();
@@ -1934,19 +1952,19 @@ describe('MDC-based MatSelect', () => {
       beforeEach(fakeAsync(() => {
         fixture = TestBed.createComponent(BasicSelect);
         fixture.detectChanges();
-        trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+        trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
       }));
 
       it('should take an initial view value with reactive forms', fakeAsync(() => {
         fixture.componentInstance.control = new FormControl('pizza-1');
         fixture.detectChanges();
 
-        const value = fixture.debugElement.query(By.css('.mat-mdc-select-value'))!;
+        const value = fixture.debugElement.query(By.css('.mat-select-value'))!;
         expect(value.nativeElement.textContent)
           .withContext(`Expected trigger to be populated by the control's initial value.`)
           .toContain('Pizza');
 
-        trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+        trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
         trigger.click();
         fixture.detectChanges();
         flush();
@@ -1956,17 +1974,17 @@ describe('MDC-based MatSelect', () => {
         ) as NodeListOf<HTMLElement>;
         expect(options[1].classList)
           .withContext(`Expected option with the control's initial value to be selected.`)
-          .toContain('mdc-list-item--selected');
+          .toContain('mat-selected');
       }));
 
       it('should set the view value from the form', fakeAsync(() => {
-        let value = fixture.debugElement.query(By.css('.mat-mdc-select-value'))!;
+        let value = fixture.debugElement.query(By.css('.mat-select-value'))!;
         expect(value.nativeElement.textContent.trim()).toBe('Food');
 
         fixture.componentInstance.control.setValue('pizza-1');
         fixture.detectChanges();
 
-        value = fixture.debugElement.query(By.css('.mat-mdc-select-value'))!;
+        value = fixture.debugElement.query(By.css('.mat-select-value'))!;
         expect(value.nativeElement.textContent)
           .withContext(`Expected trigger to be populated by the control's new value.`)
           .toContain('Pizza');
@@ -1980,7 +1998,7 @@ describe('MDC-based MatSelect', () => {
         ) as NodeListOf<HTMLElement>;
         expect(options[1].classList)
           .withContext(`Expected option with the control's new value to be selected.`)
-          .toContain('mdc-list-item--selected');
+          .toContain('mat-selected');
       }));
 
       it('should update the form value when the view changes', fakeAsync(() => {
@@ -2009,7 +2027,7 @@ describe('MDC-based MatSelect', () => {
         fixture.componentInstance.control.setValue('gibberish');
         fixture.detectChanges();
 
-        const value = fixture.debugElement.query(By.css('.mat-mdc-select-value'))!;
+        const value = fixture.debugElement.query(By.css('.mat-select-value'))!;
         expect(value.nativeElement.textContent.trim())
           .withContext(`Expected trigger to show the placeholder.`)
           .toBe('Food');
@@ -2026,7 +2044,7 @@ describe('MDC-based MatSelect', () => {
           'mat-option',
         ) as NodeListOf<HTMLElement>;
         expect(options[1].classList).not.toContain(
-          'mdc-list-item--selected',
+          'mat-selected',
           `Expected option w/ the old value not to be selected.`,
         );
       }));
@@ -2038,7 +2056,7 @@ describe('MDC-based MatSelect', () => {
         fixture.componentInstance.control.reset();
         fixture.detectChanges();
 
-        const value = fixture.debugElement.query(By.css('.mat-mdc-select-value'))!;
+        const value = fixture.debugElement.query(By.css('.mat-select-value'))!;
         expect(value.nativeElement.textContent.trim())
           .withContext(`Expected trigger to show the placeholder.`)
           .toBe('Food');
@@ -2055,7 +2073,7 @@ describe('MDC-based MatSelect', () => {
           'mat-option',
         ) as NodeListOf<HTMLElement>;
         expect(options[1].classList).not.toContain(
-          'mdc-list-item--selected',
+          'mat-selected',
           `Expected option w/ the old value not to be selected.`,
         );
       }));
@@ -2155,18 +2173,18 @@ describe('MDC-based MatSelect', () => {
       }));
 
       it('should set an asterisk after the label if control is required', fakeAsync(() => {
-        const label = fixture.nativeElement.querySelector('.mat-mdc-form-field label');
-
-        expect(label.querySelector('.mat-mdc-form-field-required-marker'))
+        let requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'));
+        expect(requiredMarker)
           .withContext(`Expected label not to have an asterisk, as control was not required.`)
-          .toBeFalsy();
+          .toBeNull();
 
         fixture.componentInstance.isRequired = true;
         fixture.detectChanges();
 
-        expect(label.querySelector('.mat-mdc-form-field-required-marker'))
-          .withContext(`Expected label to have an asterisk, as control was required.`)
-          .toBeTruthy();
+        requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'));
+        expect(requiredMarker)
+          .not.withContext(`Expected label to have an asterisk, as control was required.`)
+          .toBeNull();
       }));
 
       it('should propagate the value set through the `value` property to the form field', fakeAsync(() => {
@@ -2188,7 +2206,7 @@ describe('MDC-based MatSelect', () => {
 
         fixture.componentInstance.control.disable();
         fixture.detectChanges();
-        let trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+        const trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
         expect(getComputedStyle(trigger).getPropertyValue('cursor'))
           .withContext(`Expected cursor to be default arrow on disabled control.`)
           .toEqual('default');
@@ -2238,6 +2256,39 @@ describe('MDC-based MatSelect', () => {
       );
     });
 
+    describe('animations', () => {
+      let fixture: ComponentFixture<BasicSelect>;
+      let formField: HTMLElement;
+
+      beforeEach(fakeAsync(() => {
+        fixture = TestBed.createComponent(BasicSelect);
+        fixture.detectChanges();
+        formField = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
+      }));
+
+      it('should float the label when the panel is open and unselected', fakeAsync(() => {
+        expect(formField.classList.contains('mat-form-field-should-float'))
+          .withContext('Expected label to initially have a normal position.')
+          .toBe(false);
+
+        fixture.componentInstance.select.open();
+        fixture.detectChanges();
+        flush();
+
+        expect(formField.classList)
+          .withContext('Expected label to animate up to floating position.')
+          .toContain('mat-form-field-should-float');
+
+        fixture.componentInstance.select.close();
+        fixture.detectChanges();
+        flush();
+
+        expect(formField.classList)
+          .not.withContext('Expected placeholder to animate back down to normal position.')
+          .toContain('mat-form-field-should-float');
+      }));
+    });
+
     describe('keyboard scrolling', () => {
       let fixture: ComponentFixture<BasicSelect>;
       let host: HTMLElement;
@@ -2259,7 +2310,7 @@ describe('MDC-based MatSelect', () => {
         fixture.detectChanges();
 
         host = fixture.debugElement.query(By.css('mat-select'))!.nativeElement;
-        panel = overlayContainerElement.querySelector('.mat-mdc-select-panel')! as HTMLElement;
+        panel = overlayContainerElement.querySelector('.mat-select-panel')! as HTMLElement;
       }));
 
       it('should not scroll to options that are completely in the view', fakeAsync(() => {
@@ -2279,8 +2330,9 @@ describe('MDC-based MatSelect', () => {
           dispatchKeyboardEvent(host, 'keydown', DOWN_ARROW);
         }
 
-        // <top padding> + <option index * height> - <panel height> = 8 + 16 * 48 - 275 = 501
-        expect(panel.scrollTop).withContext('Expected scroll to be at the 16th option.').toBe(501);
+        // <option index * height> - <panel height> = 16 * 48 - 256 = 512
+        // <option index * height> - <panel height> = 16 * 48 - 256 = 512
+        expect(panel.scrollTop).withContext('Expected scroll to be at the 16th option.').toBe(512);
       }));
 
       it('should scroll up to the active option', fakeAsync(() => {
@@ -2293,8 +2345,9 @@ describe('MDC-based MatSelect', () => {
           dispatchKeyboardEvent(host, 'keydown', UP_ARROW);
         }
 
-        // <top padding> + <option index * height> = 8 + 9 * 48 = 440
-        expect(panel.scrollTop).withContext('Expected scroll to be at the 9th option.').toBe(440);
+        // <option index * height> = 9 * 48 = 432
+        // <option index * height> = 9 * 48 = 432
+        expect(panel.scrollTop).withContext('Expected scroll to be at the 9th option.').toBe(432);
       }));
 
       it('should skip option group labels', fakeAsync(() => {
@@ -2308,7 +2361,7 @@ describe('MDC-based MatSelect', () => {
         flush();
 
         host = groupFixture.debugElement.query(By.css('mat-select'))!.nativeElement;
-        panel = overlayContainerElement.querySelector('.mat-mdc-select-panel')! as HTMLElement;
+        panel = overlayContainerElement.querySelector('.mat-select-panel')! as HTMLElement;
 
         for (let i = 0; i < 5; i++) {
           dispatchKeyboardEvent(host, 'keydown', DOWN_ARROW);
@@ -2316,9 +2369,11 @@ describe('MDC-based MatSelect', () => {
 
         // Note that we press down 5 times, but it will skip
         // 3 options because the second group is disabled.
-        // <top padding> + <(option index + group labels) * height> - <panel height> =
-        //    8 + (9 + 3) * 48 - 275 = 309
-        expect(panel.scrollTop).withContext('Expected scroll to be at the 9th option.').toBe(309);
+        // <(option index + group labels) * height> - <panel height> = (9 + 3) * 48 - 256 = 320
+        // Note that we press down 5 times, but it will skip
+        // 3 options because the second group is disabled.
+        // <(option index + group labels) * height> - <panel height> = (9 + 3) * 48 - 256 = 320
+        expect(panel.scrollTop).withContext('Expected scroll to be at the 9th option.').toBe(320);
       }));
 
       it('should scroll to the top when pressing HOME', fakeAsync(() => {
@@ -2334,19 +2389,18 @@ describe('MDC-based MatSelect', () => {
         dispatchKeyboardEvent(host, 'keydown', HOME);
         fixture.detectChanges();
 
-        // 8px is the top padding of the panel.
-        expect(panel.scrollTop).withContext('Expected panel to be scrolled to the top').toBe(8);
+        expect(panel.scrollTop).withContext('Expected panel to be scrolled to the top').toBe(0);
       }));
 
       it('should scroll to the bottom of the panel when pressing END', fakeAsync(() => {
         dispatchKeyboardEvent(host, 'keydown', END);
         fixture.detectChanges();
 
-        // <top padding> + <option amount> * <option height> - <panel height> =
-        //    8 + 30 * 48 - 275 = 1173
+        // <option amount> * <option height> - <panel height> = 30 * 48 - 256 = 1184
+        // <option amount> * <option height> - <panel height> = 30 * 48 - 256 = 1184
         expect(panel.scrollTop)
           .withContext('Expected panel to be scrolled to the bottom')
-          .toBe(1173);
+          .toBe(1184);
       }));
 
       it('should scroll to the active option when typing', fakeAsync(() => {
@@ -2358,8 +2412,9 @@ describe('MDC-based MatSelect', () => {
         }
         flush();
 
-        // <top padding> + <option index * height> - <panel height> = 8 + 16 * 48 - 275 = 501
-        expect(panel.scrollTop).withContext('Expected scroll to be at the 16th option.').toBe(501);
+        // <option index * height> - <panel height> = 16 * 48 - 256 = 512
+        // <option index * height> - <panel height> = 16 * 48 - 256 = 512
+        expect(panel.scrollTop).withContext('Expected scroll to be at the 16th option.').toBe(512);
       }));
 
       it('should scroll to top when going to first option in top group', fakeAsync(() => {
@@ -2371,7 +2426,7 @@ describe('MDC-based MatSelect', () => {
         flush();
 
         host = groupFixture.debugElement.query(By.css('mat-select'))!.nativeElement;
-        panel = overlayContainerElement.querySelector('.mat-mdc-select-panel')! as HTMLElement;
+        panel = overlayContainerElement.querySelector('.mat-select-panel')! as HTMLElement;
 
         for (let i = 0; i < 5; i++) {
           dispatchKeyboardEvent(host, 'keydown', DOWN_ARROW);
@@ -2420,7 +2475,7 @@ describe('MDC-based MatSelect', () => {
       fixture = TestBed.createComponent(SelectWithChangeEvent);
       fixture.detectChanges();
 
-      trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+      trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
     }));
 
     it('should emit an event when the selected option has changed', fakeAsync(() => {
@@ -2466,7 +2521,7 @@ describe('MDC-based MatSelect', () => {
       flush();
 
       fixture.detectChanges();
-      const trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+      const trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
       expect(getComputedStyle(trigger).getPropertyValue('cursor'))
         .withContext(`Expected cursor to be default arrow on disabled control.`)
         .toEqual('default');
@@ -2512,21 +2567,20 @@ describe('MDC-based MatSelect', () => {
       fixture.componentInstance.isShowing = true;
       fixture.detectChanges();
 
-      const formField = fixture.debugElement.query(By.css('.mat-mdc-form-field'))!.nativeElement;
-      const trigger = formField.querySelector('.mat-mdc-select-trigger');
-      formField.style.width = '300px';
+      const trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
+      trigger.style.width = '300px';
 
       trigger.click();
       fixture.detectChanges();
       flush();
 
-      const value = fixture.debugElement.query(By.css('.mat-mdc-select-value'))!;
+      const value = fixture.debugElement.query(By.css('.mat-select-value'))!;
       expect(value.nativeElement.textContent)
         .withContext(`Expected trigger to be populated by the control's initial value.`)
         .toContain('Pizza');
 
       const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
-      expect(pane.style.width).toEqual('300px');
+      expect(pane.style.minWidth).toEqual('300px');
 
       expect(fixture.componentInstance.select.panelOpen).toBe(true);
       expect(overlayContainerElement.textContent).toContain('Steak');
@@ -2545,7 +2599,7 @@ describe('MDC-based MatSelect', () => {
     beforeEach(fakeAsync(() => {
       fixture = TestBed.createComponent(ManySelects);
       fixture.detectChanges();
-      triggers = fixture.debugElement.queryAll(By.css('.mat-mdc-select-trigger'));
+      triggers = fixture.debugElement.queryAll(By.css('.mat-select-trigger'));
 
       triggers[0].nativeElement.click();
       fixture.detectChanges();
@@ -2555,7 +2609,7 @@ describe('MDC-based MatSelect', () => {
     }));
 
     it('should set the option id', fakeAsync(() => {
-      let firstOptionID = options[0].id;
+      const firstOptionID = options[0].id;
 
       expect(options[0].id)
         .withContext(`Expected option ID to have the correct prefix.`)
@@ -2585,58 +2639,89 @@ describe('MDC-based MatSelect', () => {
   describe('with floatLabel', () => {
     beforeEach(waitForAsync(() => configureMatSelectTestingModule([FloatLabelSelect])));
 
-    it('should be able to always float the label', fakeAsync(() => {
-      const fixture = TestBed.createComponent(FloatLabelSelect);
-      fixture.detectChanges();
-      const label = fixture.nativeElement.querySelector('.mat-mdc-form-field label');
+    let fixture: ComponentFixture<FloatLabelSelect>;
+    let formField: HTMLElement;
 
+    beforeEach(fakeAsync(() => {
+      fixture = TestBed.createComponent(FloatLabelSelect);
+      fixture.detectChanges();
+      formField = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
+    }));
+
+    it('should be able to disable the floating label', fakeAsync(() => {
+      fixture.componentInstance.floatLabel = 'never';
+      fixture.detectChanges();
+
+      expect(formField.classList.contains('mat-form-field-can-float'))
+        .withContext('Floating label should be disabled')
+        .toBe(false);
+
+      fixture.componentInstance.control.setValue('pizza-1');
+      fixture.detectChanges();
+
+      expect(formField.classList.contains('mat-form-field-can-float'))
+        .withContext('Floating label should be disabled')
+        .toBe(false);
+    }));
+
+    it('should be able to always float the label', fakeAsync(() => {
       expect(fixture.componentInstance.control.value).toBeFalsy();
 
       fixture.componentInstance.floatLabel = 'always';
       fixture.detectChanges();
 
-      expect(label.classList.contains('mdc-floating-label--float-above'))
+      expect(formField.classList.contains('mat-form-field-can-float'))
+        .withContext('Label should be able to float')
+        .toBe(true);
+      expect(formField.classList.contains('mat-form-field-should-float'))
         .withContext('Label should be floating')
         .toBe(true);
     }));
 
     it('should default to global floating label type', fakeAsync(() => {
+      fixture.destroy();
+
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         imports: [
-          MatFormFieldModule,
-          MatSelectModule,
+          MatLegacyFormFieldModule,
+          MatLegacySelectModule,
           ReactiveFormsModule,
           FormsModule,
           NoopAnimationsModule,
         ],
         declarations: [FloatLabelSelect],
-        providers: [{provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {floatLabel: 'always'}}],
+        providers: [
+          {
+            provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+            useValue: {floatLabel: 'always'},
+          },
+        ],
       });
 
-      const fixture = TestBed.createComponent(FloatLabelSelect);
+      fixture = TestBed.createComponent(FloatLabelSelect);
       fixture.componentInstance.floatLabel = null;
       fixture.detectChanges();
-      const label = fixture.nativeElement.querySelector('.mat-mdc-form-field label');
+      formField = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
 
-      expect(label.classList.contains('mdc-floating-label--float-above'))
+      expect(formField.classList.contains('mat-form-field-can-float'))
+        .withContext('Label should be able to float')
+        .toBe(true);
+      expect(formField.classList.contains('mat-form-field-should-float'))
         .withContext('Label should be floating')
         .toBe(true);
     }));
 
     it('should float the label on focus if it has a placeholder', fakeAsync(() => {
-      const fixture = TestBed.createComponent(FloatLabelSelect);
-      fixture.detectChanges();
       expect(fixture.componentInstance.placeholder).toBeTruthy();
 
       fixture.componentInstance.floatLabel = 'auto';
       fixture.detectChanges();
 
-      dispatchFakeEvent(fixture.nativeElement.querySelector('.mat-mdc-select'), 'focus');
+      dispatchFakeEvent(fixture.nativeElement.querySelector('.mat-select'), 'focus');
       fixture.detectChanges();
 
-      const label = fixture.nativeElement.querySelector('.mat-mdc-form-field label');
-      expect(label.classList.contains('mdc-floating-label--float-above'))
+      expect(formField.classList.contains('mat-form-field-should-float'))
         .withContext('Label should be floating')
         .toBe(true);
     }));
@@ -2674,7 +2759,7 @@ describe('MDC-based MatSelect', () => {
       const fixture = TestBed.createComponent(SelectWithPlainTabindex);
       fixture.detectChanges();
 
-      const debugElement = fixture.debugElement.query(By.directive(MatSelect))!;
+      const debugElement = fixture.debugElement.query(By.directive(MatLegacySelect))!;
       const select = debugElement.componentInstance;
 
       const spy = jasmine.createSpy('stateChanges complete');
@@ -2693,9 +2778,8 @@ describe('MDC-based MatSelect', () => {
       const fixture = TestBed.createComponent(BasicSelectInitiallyHidden);
       fixture.detectChanges();
 
-      const formField = fixture.debugElement.query(By.css('.mat-mdc-form-field'))!.nativeElement;
-      const trigger = formField.querySelector('.mat-mdc-select-trigger');
-      formField.style.width = '300px';
+      const trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
+      trigger.style.width = '200px';
       fixture.componentInstance.isVisible = true;
       fixture.detectChanges();
 
@@ -2704,7 +2788,7 @@ describe('MDC-based MatSelect', () => {
       flush();
 
       const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
-      expect(pane.style.width).toBe('300px');
+      expect(pane.style.minWidth).toBe('200px');
     }));
   });
 
@@ -2715,14 +2799,14 @@ describe('MDC-based MatSelect', () => {
       const fixture = TestBed.createComponent(BasicSelectNoPlaceholder);
 
       fixture.detectChanges();
-      const trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+      const trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
 
       trigger.click();
       fixture.detectChanges();
       flush();
 
       const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
-      expect(parseInt(pane.style.width as string)).toBeGreaterThan(0);
+      expect(parseInt(pane.style.minWidth as string)).toBeGreaterThan(0);
     }));
   });
 
@@ -2743,7 +2827,7 @@ describe('MDC-based MatSelect', () => {
       fixture.componentInstance.select.open();
       fixture.detectChanges();
 
-      const panel = overlayContainerElement.querySelector('.mat-mdc-select-panel')! as HTMLElement;
+      const panel = overlayContainerElement.querySelector('.mat-select-panel')! as HTMLElement;
       expect(panel.classList).toContain('mat-warn');
     }));
   });
@@ -2776,7 +2860,7 @@ describe('MDC-based MatSelect', () => {
 
     describe('comparing by value', () => {
       it('should have a selection', fakeAsync(() => {
-        const selectedOption = instance.select.selected as MatOption;
+        const selectedOption = instance.select.selected as MatLegacyOption;
         expect(selectedOption.value.value).toEqual('pizza-1');
       }));
 
@@ -2785,7 +2869,7 @@ describe('MDC-based MatSelect', () => {
         fixture.detectChanges();
         flush();
 
-        const selectedOption = instance.select.selected as MatOption;
+        const selectedOption = instance.select.selected as MatLegacyOption;
         expect(instance.selectedFood.value).toEqual('tacos-2');
         expect(selectedOption.value.value).toEqual('tacos-2');
       }));
@@ -2838,7 +2922,7 @@ describe('MDC-based MatSelect', () => {
     it('should not throw when reading selected value programmatically in single selection mode', fakeAsync(() => {
       expect(() => {
         const fixture = TestBed.createComponent(SelectEarlyAccessSibling);
-        const select = fixture.debugElement.query(By.directive(MatSelect)).componentInstance;
+        const select = fixture.debugElement.query(By.directive(MatLegacySelect)).componentInstance;
         // We're checking that accessing the getter won't throw.
         select.multiple = false;
         return select.selected;
@@ -2848,7 +2932,7 @@ describe('MDC-based MatSelect', () => {
     it('should not throw when reading selected value programmatically in multi selection mode', fakeAsync(() => {
       expect(() => {
         const fixture = TestBed.createComponent(SelectEarlyAccessSibling);
-        const select = fixture.debugElement.query(By.directive(MatSelect)).componentInstance;
+        const select = fixture.debugElement.query(By.directive(MatLegacySelect)).componentInstance;
         // We're checking that accessing the getter won't throw.
         select.multiple = true;
         return select.selected;
@@ -2889,7 +2973,7 @@ describe('MDC-based MatSelect', () => {
         .withContext('Expected form control to be invalid.')
         .toBe(true);
       expect(select.classList).not.toContain(
-        'mat-mdc-select-invalid',
+        'mat-select-invalid',
         'Expected select not to appear invalid.',
       );
       expect(select.getAttribute('aria-invalid'))
@@ -2899,7 +2983,7 @@ describe('MDC-based MatSelect', () => {
 
     it('should appear as invalid if it becomes touched', fakeAsync(() => {
       expect(select.classList).not.toContain(
-        'mat-mdc-select-invalid',
+        'mat-select-invalid',
         'Expected select not to appear invalid.',
       );
       expect(select.getAttribute('aria-invalid'))
@@ -2911,7 +2995,7 @@ describe('MDC-based MatSelect', () => {
 
       expect(select.classList)
         .withContext('Expected select to appear invalid.')
-        .toContain('mat-mdc-select-invalid');
+        .toContain('mat-select-invalid');
       expect(select.getAttribute('aria-invalid'))
         .withContext('Expected aria-invalid to be set to true.')
         .toBe('true');
@@ -2923,7 +3007,7 @@ describe('MDC-based MatSelect', () => {
 
       expect(select.classList)
         .withContext('Expected select to appear invalid.')
-        .toContain('mat-mdc-select-invalid');
+        .toContain('mat-select-invalid');
       expect(select.getAttribute('aria-invalid'))
         .withContext('Expected aria-invalid to be set to true.')
         .toBe('true');
@@ -2932,7 +3016,7 @@ describe('MDC-based MatSelect', () => {
       fixture.detectChanges();
 
       expect(select.classList).not.toContain(
-        'mat-mdc-select-invalid',
+        'mat-select-invalid',
         'Expected select not to appear invalid.',
       );
       expect(select.getAttribute('aria-invalid'))
@@ -2942,7 +3026,7 @@ describe('MDC-based MatSelect', () => {
 
     it('should appear as invalid when the parent form group is submitted', fakeAsync(() => {
       expect(select.classList).not.toContain(
-        'mat-mdc-select-invalid',
+        'mat-select-invalid',
         'Expected select not to appear invalid.',
       );
       expect(select.getAttribute('aria-invalid'))
@@ -2954,7 +3038,7 @@ describe('MDC-based MatSelect', () => {
 
       expect(select.classList)
         .withContext('Expected select to appear invalid.')
-        .toContain('mat-mdc-select-invalid');
+        .toContain('mat-select-invalid');
       expect(select.getAttribute('aria-invalid'))
         .withContext('Expected aria-invalid to be set to true.')
         .toBe('true');
@@ -2983,7 +3067,7 @@ describe('MDC-based MatSelect', () => {
       fixture.destroy();
 
       TestBed.resetTestingModule().configureTestingModule({
-        imports: [MatSelectModule, ReactiveFormsModule, FormsModule, NoopAnimationsModule],
+        imports: [MatLegacySelectModule, ReactiveFormsModule, FormsModule, NoopAnimationsModule],
         declarations: [SelectInsideFormGroup],
         providers: [{provide: ErrorStateMatcher, useValue: errorStateMatcher}],
       });
@@ -3013,8 +3097,7 @@ describe('MDC-based MatSelect', () => {
     }));
 
     it('should set an asterisk after the label if the FormControl is required', fakeAsync(() => {
-      const label = fixture.nativeElement.querySelector('.mat-mdc-form-field label');
-      expect(label.querySelector('.mat-mdc-form-field-required-marker')).toBeTruthy();
+      expect(fixture.nativeElement.querySelector('.mat-form-field-required-marker')).toBeTruthy();
     }));
   });
 
@@ -3049,7 +3132,7 @@ describe('MDC-based MatSelect', () => {
       flush();
       fixture.detectChanges();
 
-      const trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+      const trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
 
       expect(trigger.textContent).toContain('Pizza');
       expect(fixture.componentInstance.options.toArray()[1].selected).toBe(true);
@@ -3079,7 +3162,7 @@ describe('MDC-based MatSelect', () => {
       const fixture = TestBed.createComponent(FalsyValueSelect);
 
       fixture.detectChanges();
-      fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement.click();
+      fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement.click();
       fixture.componentInstance.control.setValue(0);
       fixture.detectChanges();
       flush();
@@ -3089,7 +3172,7 @@ describe('MDC-based MatSelect', () => {
         .toBe(true);
       expect(overlayContainerElement.querySelectorAll('mat-option')[0].classList)
         .withContext('Expected first option to be selected')
-        .toContain('mdc-list-item--selected');
+        .toContain('mat-selected');
     }));
   });
 
@@ -3103,7 +3186,7 @@ describe('MDC-based MatSelect', () => {
       fixture.detectChanges();
       flush();
 
-      const trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+      const trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
 
       fixture.detectChanges();
 
@@ -3113,7 +3196,7 @@ describe('MDC-based MatSelect', () => {
     it('should update the trigger based on the value', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicSelectOnPush);
       fixture.detectChanges();
-      const trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+      const trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
 
       fixture.componentInstance.control.setValue('pizza-1');
       fixture.detectChanges();
@@ -3146,7 +3229,7 @@ describe('MDC-based MatSelect', () => {
       fixture.componentInstance.control.setValue('pizza-1');
       fixture.detectChanges();
 
-      const label = fixture.debugElement.query(By.css('.mat-mdc-select-value'))!.nativeElement;
+      const label = fixture.debugElement.query(By.css('.mat-select-value'))!.nativeElement;
 
       expect(label.textContent)
         .withContext('Expected the displayed text to be "Pizza" in reverse.')
@@ -3161,14 +3244,12 @@ describe('MDC-based MatSelect', () => {
     let trigger: HTMLElement;
     let formField: HTMLElement;
     let options: NodeListOf<HTMLElement>;
-    let label: HTMLLabelElement;
 
     beforeEach(fakeAsync(() => {
       fixture = TestBed.createComponent(ResetValuesSelect);
       fixture.detectChanges();
-      trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
-      formField = fixture.debugElement.query(By.css('.mat-mdc-form-field'))!.nativeElement;
-      label = formField.querySelector('label')!;
+      trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
+      formField = fixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
 
       trigger.click();
       fixture.detectChanges();
@@ -3187,7 +3268,7 @@ describe('MDC-based MatSelect', () => {
 
       expect(fixture.componentInstance.control.value).toBeUndefined();
       expect(fixture.componentInstance.select.selected).toBeFalsy();
-      expect(label.classList).not.toContain('mdc-floating-label--float-above');
+      expect(formField.classList).not.toContain('mat-form-field-should-float');
       expect(trigger.textContent).not.toContain('Undefined');
     }));
 
@@ -3198,7 +3279,7 @@ describe('MDC-based MatSelect', () => {
 
       expect(fixture.componentInstance.control.value).toBeNull();
       expect(fixture.componentInstance.select.selected).toBeFalsy();
-      expect(label.classList).not.toContain('mdc-floating-label--float-above');
+      expect(formField.classList).not.toContain('mat-form-field-should-float');
       expect(trigger.textContent).not.toContain('Null');
     }));
 
@@ -3209,7 +3290,7 @@ describe('MDC-based MatSelect', () => {
 
       expect(fixture.componentInstance.control.value).toBeUndefined();
       expect(fixture.componentInstance.select.selected).toBeFalsy();
-      expect(label.classList).not.toContain('mdc-floating-label--float-above');
+      expect(formField.classList).not.toContain('mat-form-field-should-float');
       expect(trigger.textContent).not.toContain('None');
     }));
 
@@ -3222,7 +3303,7 @@ describe('MDC-based MatSelect', () => {
       fixture.detectChanges();
       flush();
 
-      expect(options[5].classList).not.toContain('mdc-list-item--selected');
+      expect(options[5].classList).not.toContain('mat-selected');
     }));
 
     it('should not reset when any other falsy option is selected', fakeAsync(() => {
@@ -3232,19 +3313,19 @@ describe('MDC-based MatSelect', () => {
 
       expect(fixture.componentInstance.control.value).toBe(false);
       expect(fixture.componentInstance.select.selected).toBeTruthy();
-      expect(label.classList).toContain('mdc-floating-label--float-above');
+      expect(formField.classList).toContain('mat-form-field-should-float');
       expect(trigger.textContent).toContain('Falsy');
     }));
 
     it('should not consider the reset values as selected when resetting the form control', fakeAsync(() => {
-      expect(label.classList).toContain('mdc-floating-label--float-above');
+      expect(formField.classList).toContain('mat-form-field-should-float');
 
       fixture.componentInstance.control.reset();
       fixture.detectChanges();
 
       expect(fixture.componentInstance.control.value).toBeNull();
       expect(fixture.componentInstance.select.selected).toBeFalsy();
-      expect(label.classList).not.toContain('mdc-floating-label--float-above');
+      expect(formField.classList).not.toContain('mat-form-field-should-float');
       expect(trigger.textContent).not.toContain('Null');
       expect(trigger.textContent).not.toContain('Undefined');
     }));
@@ -3258,7 +3339,7 @@ describe('MDC-based MatSelect', () => {
       configureMatSelectTestingModule([SelectWithResetOptionAndFormControl]);
       fixture = TestBed.createComponent(SelectWithResetOptionAndFormControl);
       fixture.detectChanges();
-      fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement.click();
+      fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement.click();
       fixture.detectChanges();
       options = Array.from(overlayContainerElement.querySelectorAll('mat-option'));
     }));
@@ -3302,7 +3383,7 @@ describe('MDC-based MatSelect', () => {
       fixture.detectChanges();
       expect(fixture.componentInstance.selectedFood).toBeFalsy();
 
-      const trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+      const trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
 
       trigger.click();
       fixture.detectChanges();
@@ -3336,7 +3417,7 @@ describe('MDC-based MatSelect', () => {
       fixture.componentInstance.selectedFood = 'sandwich-2';
       fixture.detectChanges();
 
-      const trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+      const trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
       expect(trigger.textContent).toContain('Sandwich');
 
       trigger.click();
@@ -3344,7 +3425,7 @@ describe('MDC-based MatSelect', () => {
 
       const option = overlayContainerElement.querySelectorAll('mat-option')[2];
 
-      expect(option.classList).toContain('mdc-list-item--selected');
+      expect(option.classList).toContain('mat-selected');
       expect(fixture.componentInstance.select.value).toBe('sandwich-2');
     }));
 
@@ -3354,7 +3435,7 @@ describe('MDC-based MatSelect', () => {
       fixture.detectChanges();
       expect(fixture.componentInstance.selectedFood).toBeFalsy();
 
-      const trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+      const trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
 
       trigger.click();
       fixture.detectChanges();
@@ -3381,7 +3462,7 @@ describe('MDC-based MatSelect', () => {
       fixture.detectChanges();
       flush();
 
-      const trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+      const trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
       fixture.detectChanges();
       expect(trigger.textContent).toContain('Pizza');
 
@@ -3390,7 +3471,7 @@ describe('MDC-based MatSelect', () => {
 
       const option = overlayContainerElement.querySelectorAll('mat-option')[1];
 
-      expect(option.classList).toContain('mdc-list-item--selected');
+      expect(option.classList).toContain('mat-selected');
       expect(fixture.componentInstance.select.value).toBe('pizza-1');
     }));
 
@@ -3400,7 +3481,7 @@ describe('MDC-based MatSelect', () => {
       fixture.detectChanges();
       expect(fixture.componentInstance.selectedFoods).toBeFalsy();
 
-      const trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+      const trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
 
       trigger.click();
       fixture.detectChanges();
@@ -3435,7 +3516,7 @@ describe('MDC-based MatSelect', () => {
       const fixture = TestBed.createComponent(BasicSelectWithoutForms);
 
       fixture.detectChanges();
-      fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement.click();
+      fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement.click();
       fixture.detectChanges();
       flush();
 
@@ -3454,7 +3535,7 @@ describe('MDC-based MatSelect', () => {
 
       fixture.detectChanges();
       select.focus(); // Focus manually since the programmatic click might not do it.
-      fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement.click();
+      fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement.click();
       fixture.detectChanges();
       flush();
 
@@ -3478,7 +3559,7 @@ describe('MDC-based MatSelect', () => {
 
       expect(instance.selectedFood).toBeFalsy();
 
-      fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement.click();
+      fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement.click();
       fixture.detectChanges();
       flush();
 
@@ -3493,11 +3574,11 @@ describe('MDC-based MatSelect', () => {
     it('should select the active option when tabbing away while open', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicSelectWithoutForms);
       fixture.detectChanges();
-      const select = fixture.nativeElement.querySelector('.mat-mdc-select');
+      const select = fixture.nativeElement.querySelector('.mat-select');
 
       expect(fixture.componentInstance.selectedFood).toBeFalsy();
 
-      const trigger = fixture.nativeElement.querySelector('.mat-mdc-select-trigger');
+      const trigger = fixture.nativeElement.querySelector('.mat-select-trigger');
 
       trigger.click();
       fixture.detectChanges();
@@ -3520,11 +3601,11 @@ describe('MDC-based MatSelect', () => {
     it('should not select the active option when tabbing away while close', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicSelectWithoutForms);
       fixture.detectChanges();
-      const select = fixture.nativeElement.querySelector('.mat-mdc-select');
+      const select = fixture.nativeElement.querySelector('.mat-select');
 
       expect(fixture.componentInstance.selectedFood).toBeFalsy();
 
-      const trigger = fixture.nativeElement.querySelector('.mat-mdc-select-trigger');
+      const trigger = fixture.nativeElement.querySelector('.mat-select-trigger');
 
       trigger.click();
       fixture.detectChanges();
@@ -3552,8 +3633,8 @@ describe('MDC-based MatSelect', () => {
         .withContext('Expected no value on init.')
         .toBeFalsy();
 
-      const select = fixture.nativeElement.querySelector('.mat-mdc-select');
-      const trigger = fixture.nativeElement.querySelector('.mat-mdc-select-trigger');
+      const select = fixture.nativeElement.querySelector('.mat-select');
+      const trigger = fixture.nativeElement.querySelector('.mat-select-trigger');
       trigger.click();
       fixture.detectChanges();
 
@@ -3582,7 +3663,7 @@ describe('MDC-based MatSelect', () => {
 
       const subscription = instance.select.selectionChange.subscribe(spy);
 
-      fixture.debugElement.query(By.css('.mat-mdc-select-trigger')).nativeElement.click();
+      fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement.click();
       fixture.detectChanges();
       flush();
 
@@ -3608,7 +3689,7 @@ describe('MDC-based MatSelect', () => {
 
         const subscription = instance.select.selectionChange.subscribe(spy);
 
-        fixture.debugElement.query(By.css('.mat-mdc-select-trigger')).nativeElement.click();
+        fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement.click();
         fixture.detectChanges();
         flush();
 
@@ -3618,7 +3699,7 @@ describe('MDC-based MatSelect', () => {
 
         expect(spy).not.toHaveBeenCalled();
 
-        fixture.debugElement.query(By.css('.mat-mdc-select-trigger')).nativeElement.click();
+        fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement.click();
         fixture.detectChanges();
         flush();
 
@@ -3642,7 +3723,7 @@ describe('MDC-based MatSelect', () => {
     beforeEach(fakeAsync(() => {
       fixture = TestBed.createComponent(SelectWithoutOptionCentering);
       fixture.detectChanges();
-      trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+      trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
     }));
 
     it('should not align the active option with the trigger if centering is disabled', fakeAsync(() => {
@@ -3650,7 +3731,7 @@ describe('MDC-based MatSelect', () => {
       fixture.detectChanges();
       flush();
 
-      const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-mdc-select-panel')!;
+      const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
 
       // The panel should be scrolled to 0 because centering the option disabled.
       // The panel should be scrolled to 0 because centering the option disabled.
@@ -3665,53 +3746,939 @@ describe('MDC-based MatSelect', () => {
   });
 
   describe('positioning', () => {
-    beforeEach(waitForAsync(() => configureMatSelectTestingModule([BasicSelect])));
+    beforeEach(waitForAsync(() =>
+      configureMatSelectTestingModule([
+        BasicSelect,
+        MultiSelect,
+        SelectWithGroups,
+        SelectWithIndirectDescendantGroups,
+      ])));
+
+    beforeEach(inject([ViewportRuler], (vr: ViewportRuler) => {
+      viewportRuler = vr;
+    }));
 
     let fixture: ComponentFixture<BasicSelect>;
     let trigger: HTMLElement;
     let formField: HTMLElement;
-    let formFieldWrapper: HTMLElement;
 
     beforeEach(fakeAsync(() => {
       fixture = TestBed.createComponent(BasicSelect);
       fixture.detectChanges();
-      formField = fixture.nativeElement.querySelector('.mat-mdc-form-field');
-      formFieldWrapper = formField.querySelector('.mat-mdc-text-field-wrapper') as HTMLElement;
-      trigger = formFieldWrapper.querySelector('.mat-mdc-select-trigger') as HTMLElement;
+      trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
+      formField = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
     }));
 
-    it('should position the panel under the form field by default', fakeAsync(() => {
-      formField.style.position = 'fixed';
-      formField.style.left = formField.style.top = '10%';
-      trigger.click();
-      fixture.detectChanges();
+    /**
+     * Asserts that the given option is aligned with the trigger.
+     * @param index The index of the option.
+     * @param selectInstance Instance of the `mat-select` component to check against.
+     */
+    function checkTriggerAlignedWithOption(
+      index: number,
+      selectInstance = fixture.componentInstance.select,
+    ): void {
+      const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+      const triggerTop = trigger.getBoundingClientRect().top;
+      const overlayTop = overlayPane.getBoundingClientRect().top;
+      const options = overlayPane.querySelectorAll('mat-option');
+      const optionTop = options[index].getBoundingClientRect().top;
+      const triggerFontSize = parseInt(window.getComputedStyle(trigger).fontSize || '0');
+      const triggerLineHeightEm = 1.125;
 
-      const panel = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
-      const paneRect = panel.getBoundingClientRect();
-      const formFieldWrapperRect = formFieldWrapper.getBoundingClientRect();
+      // Extra trigger height beyond the font size caused by the fact that the line-height is
+      // greater than 1em.
+      const triggerExtraLineSpaceAbove = ((1 - triggerLineHeightEm) * triggerFontSize) / 2;
+      const topDifference =
+        Math.floor(optionTop) -
+        Math.floor(triggerTop - triggerFontSize - triggerExtraLineSpaceAbove);
 
-      expect(panel.classList).not.toContain('mat-mdc-select-panel-above');
-      expect(Math.floor(paneRect.width)).toBe(Math.floor(formFieldWrapperRect.width));
-      expect(Math.floor(paneRect.left)).toBe(Math.floor(formFieldWrapperRect.left));
-      expect(Math.floor(paneRect.top)).toBe(Math.floor(formFieldWrapperRect.bottom));
-    }));
+      // Expect the coordinates to be within a pixel of each other. We can't rely on comparing
+      // the exact value, because different browsers report the various sizes with slight (< 1px)
+      // deviations.
+      // Expect the coordinates to be within a pixel of each other. We can't rely on comparing
+      // the exact value, because different browsers report the various sizes with slight (< 1px)
+      // deviations.
+      expect(Math.abs(topDifference) < 2)
+        .withContext(`Expected trigger to align with option ${index}.`)
+        .toBe(true);
 
-    it('should position the panel under the form field by default', fakeAsync(() => {
-      formField.style.position = 'fixed';
-      formField.style.left = '10%';
-      formField.style.bottom = '0';
-      trigger.click();
-      fixture.detectChanges();
+      // For the animation to start at the option's center, its origin must be the distance
+      // from the top of the overlay to the option top + half the option height (48/2 = 24).
+      const expectedOrigin = Math.floor(optionTop - overlayTop + 24);
+      const rawYOrigin = selectInstance._transformOrigin.split(' ')[1].trim();
+      const origin = Math.floor(parseInt(rawYOrigin));
 
-      const panel = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
-      const paneRect = panel.getBoundingClientRect();
-      const formFieldWrapperRect = formFieldWrapper.getBoundingClientRect();
+      // Because the origin depends on the Y axis offset, we also have to
+      // round down and check that the difference is within a pixel.
+      // Because the origin depends on the Y axis offset, we also have to
+      // round down and check that the difference is within a pixel.
+      expect(Math.abs(expectedOrigin - origin) < 2)
+        .withContext(`Expected panel animation to originate in the center of option ${index}.`)
+        .toBe(true);
+    }
 
-      expect(panel.classList).toContain('mat-mdc-select-panel-above');
-      expect(Math.floor(paneRect.width)).toBe(Math.floor(formFieldWrapperRect.width));
-      expect(Math.floor(paneRect.left)).toBe(Math.floor(formFieldWrapperRect.left));
-      expect(Math.floor(paneRect.bottom)).toBe(Math.floor(formFieldWrapperRect.top));
-    }));
+    describe('ample space to open', () => {
+      beforeEach(fakeAsync(() => {
+        // these styles are necessary because we are first testing the overlay's position
+        // if there is room for it to open to its full extent in either direction.
+        formField.style.position = 'fixed';
+        formField.style.top = '285px';
+        formField.style.left = '20px';
+      }));
+
+      it('should align the first option with trigger text if no option is selected', fakeAsync(() => {
+        // We shouldn't push it too far down for this one, because the default may
+        // end up being too much when running the tests on mobile browsers.
+        formField.style.top = '100px';
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
+
+        // The panel should be scrolled to 0 because centering the option is not possible.
+        // The panel should be scrolled to 0 because centering the option is not possible.
+        expect(scrollContainer.scrollTop)
+          .withContext(`Expected panel not to be scrolled.`)
+          .toEqual(0);
+        checkTriggerAlignedWithOption(0);
+      }));
+
+      it('should align a selected option too high to be centered with the trigger text', fakeAsync(() => {
+        // Select the second option, because it can't be scrolled any further downward
+        fixture.componentInstance.control.setValue('pizza-1');
+        fixture.detectChanges();
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
+
+        // The panel should be scrolled to 0 because centering the option is not possible.
+        // The panel should be scrolled to 0 because centering the option is not possible.
+        expect(scrollContainer.scrollTop)
+          .withContext(`Expected panel not to be scrolled.`)
+          .toEqual(0);
+        checkTriggerAlignedWithOption(1);
+      }));
+
+      it('should align a selected option in the middle with the trigger text', fakeAsync(() => {
+        // Select the fifth option, which has enough space to scroll to the center
+        fixture.componentInstance.control.setValue('chips-4');
+        fixture.detectChanges();
+        flush();
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
+
+        // The selected option should be scrolled to the center of the panel.
+        // This will be its original offset from the scrollTop - half the panel height + half
+        // the option height. 4 (index) * 48 (option height) = 192px offset from scrollTop
+        // 192 - 256/2 + 48/2 = 88px
+        // The selected option should be scrolled to the center of the panel.
+        // This will be its original offset from the scrollTop - half the panel height + half
+        // the option height. 4 (index) * 48 (option height) = 192px offset from scrollTop
+        // 192 - 256/2 + 48/2 = 88px
+        expect(scrollContainer.scrollTop)
+          .withContext(`Expected overlay panel to be scrolled to center the selected option.`)
+          .toEqual(88);
+
+        checkTriggerAlignedWithOption(4);
+      }));
+
+      it('should align a selected option at the scroll max with the trigger text', fakeAsync(() => {
+        // Select the last option in the list
+        fixture.componentInstance.control.setValue('sushi-7');
+        fixture.detectChanges();
+        flush();
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
+
+        // The selected option should be scrolled to the max scroll position.
+        // This will be the height of the scrollContainer - the panel height.
+        // 8 options * 48px = 384 scrollContainer height, 384 - 256 = 128px max scroll
+        // The selected option should be scrolled to the max scroll position.
+        // This will be the height of the scrollContainer - the panel height.
+        // 8 options * 48px = 384 scrollContainer height, 384 - 256 = 128px max scroll
+        expect(scrollContainer.scrollTop)
+          .withContext(`Expected overlay panel to be scrolled to its maximum position.`)
+          .toEqual(128);
+
+        checkTriggerAlignedWithOption(7);
+      }));
+
+      it('should account for preceding label groups when aligning the option', fakeAsync(() => {
+        fixture.destroy();
+
+        const groupFixture = TestBed.createComponent(SelectWithGroups);
+        groupFixture.detectChanges();
+        trigger = groupFixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
+        formField = groupFixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
+
+        formField.style.position = 'fixed';
+        formField.style.top = '200px';
+        formField.style.left = '100px';
+
+        // Select an option in the third group, which has a couple of group labels before it.
+        groupFixture.componentInstance.control.setValue('vulpix-7');
+        groupFixture.detectChanges();
+
+        trigger.click();
+        groupFixture.detectChanges();
+        flush();
+
+        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
+
+        // The selected option should be scrolled to the center of the panel.
+        // This will be its original offset from the scrollTop - half the panel height + half the
+        // option height. 10 (option index + 3 group labels before it) * 48 (option height) = 480
+        // 480 (offset from scrollTop) - 256/2 + 48/2 = 376px
+        // The selected option should be scrolled to the center of the panel.
+        // This will be its original offset from the scrollTop - half the panel height + half the
+        // option height. 10 (option index + 3 group labels before it) * 48 (option height) = 480
+        // 480 (offset from scrollTop) - 256/2 + 48/2 = 376px
+        expect(Math.floor(scrollContainer.scrollTop))
+          .withContext(`Expected overlay panel to be scrolled to center the selected option.`)
+          .toBe(376);
+
+        checkTriggerAlignedWithOption(7, groupFixture.componentInstance.select);
+      }));
+
+      it('should account for indirect preceding label groups when aligning the option', fakeAsync(() => {
+        fixture.destroy();
+
+        const groupFixture = TestBed.createComponent(SelectWithIndirectDescendantGroups);
+        groupFixture.detectChanges();
+        trigger = groupFixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
+        formField = groupFixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
+
+        formField.style.position = 'fixed';
+        formField.style.top = '200px';
+        formField.style.left = '100px';
+
+        // Select an option in the third group, which has a couple of group labels before it.
+        groupFixture.componentInstance.control.setValue('vulpix-7');
+        groupFixture.detectChanges();
+
+        trigger.click();
+        groupFixture.detectChanges();
+        flush();
+
+        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
+
+        // The selected option should be scrolled to the center of the panel.
+        // This will be its original offset from the scrollTop - half the panel height + half the
+        // option height. 10 (option index + 3 group labels before it) * 48 (option height) = 480
+        // 480 (offset from scrollTop) - 256/2 + 48/2 = 376px
+        // The selected option should be scrolled to the center of the panel.
+        // This will be its original offset from the scrollTop - half the panel height + half the
+        // option height. 10 (option index + 3 group labels before it) * 48 (option height) = 480
+        // 480 (offset from scrollTop) - 256/2 + 48/2 = 376px
+        expect(Math.floor(scrollContainer.scrollTop))
+          .withContext(`Expected overlay panel to be scrolled to center the selected option.`)
+          .toBe(376);
+
+        checkTriggerAlignedWithOption(7, groupFixture.componentInstance.select);
+      }));
+    });
+
+    describe('limited space to open vertically', () => {
+      beforeEach(fakeAsync(() => {
+        formField.style.position = 'fixed';
+        formField.style.left = '20px';
+      }));
+
+      it('should adjust position of centered option if there is little space above', fakeAsync(() => {
+        const selectMenuHeight = 256;
+        const selectMenuViewportPadding = 8;
+        const selectItemHeight = 48;
+        const selectedIndex = 4;
+        const fontSize = 16;
+        const lineHeightEm = 1.125;
+        const expectedExtraScroll = 5;
+
+        // Trigger element height.
+        const triggerHeight = fontSize * lineHeightEm;
+
+        // Ideal space above selected item in order to center it.
+        const idealSpaceAboveSelectedItem = (selectMenuHeight - selectItemHeight) / 2;
+
+        // Actual space above selected item.
+        const actualSpaceAboveSelectedItem = selectItemHeight * selectedIndex;
+
+        // Ideal scroll position to center.
+        const idealScrollTop = actualSpaceAboveSelectedItem - idealSpaceAboveSelectedItem;
+
+        // Top-most select-position that allows for perfect centering.
+        const topMostPositionForPerfectCentering =
+          idealSpaceAboveSelectedItem +
+          selectMenuViewportPadding +
+          (selectItemHeight - triggerHeight) / 2;
+
+        // Position of select relative to top edge of mat-form-field.
+        const formFieldTopSpace =
+          trigger.getBoundingClientRect().top - formField.getBoundingClientRect().top;
+
+        const formFieldTop =
+          topMostPositionForPerfectCentering - formFieldTopSpace - expectedExtraScroll;
+
+        formField.style.top = `${formFieldTop}px`;
+
+        // Select an option in the middle of the list
+        fixture.componentInstance.control.setValue('chips-4');
+        fixture.detectChanges();
+        flush();
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
+
+        expect(Math.ceil(scrollContainer.scrollTop))
+          .withContext(`Expected panel to adjust scroll position to fit in viewport.`)
+          .toEqual(Math.ceil(idealScrollTop + 5));
+
+        checkTriggerAlignedWithOption(4);
+      }));
+
+      it('should adjust position of centered option if there is little space below', fakeAsync(() => {
+        const selectMenuHeight = 256;
+        const selectMenuViewportPadding = 8;
+        const selectItemHeight = 48;
+        const selectedIndex = 4;
+        const fontSize = 16;
+        const lineHeightEm = 1.125;
+        const expectedExtraScroll = 5;
+
+        // Trigger element height.
+        const triggerHeight = fontSize * lineHeightEm;
+
+        // Ideal space above selected item in order to center it.
+        const idealSpaceAboveSelectedItem = (selectMenuHeight - selectItemHeight) / 2;
+
+        // Actual space above selected item.
+        const actualSpaceAboveSelectedItem = selectItemHeight * selectedIndex;
+
+        // Ideal scroll position to center.
+        const idealScrollTop = actualSpaceAboveSelectedItem - idealSpaceAboveSelectedItem;
+
+        // Bottom-most select-position that allows for perfect centering.
+        const bottomMostPositionForPerfectCentering =
+          idealSpaceAboveSelectedItem +
+          selectMenuViewportPadding +
+          (selectItemHeight - triggerHeight) / 2;
+
+        // Position of select relative to bottom edge of mat-form-field:
+        const formFieldBottomSpace =
+          formField.getBoundingClientRect().bottom - trigger.getBoundingClientRect().bottom;
+
+        const formFieldBottom =
+          bottomMostPositionForPerfectCentering - formFieldBottomSpace - expectedExtraScroll;
+
+        // Push the select to a position with not quite enough space on the bottom to open
+        // with the option completely centered (needs 113px at least: 256/2 - 48/2 + 9)
+        formField.style.bottom = `${formFieldBottom}px`;
+
+        // Select an option in the middle of the list
+        fixture.componentInstance.control.setValue('chips-4');
+        fixture.detectChanges();
+        flush();
+
+        fixture.detectChanges();
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
+
+        // Scroll should adjust by the difference between the bottom space available
+        // (56px from the bottom of the screen - 8px padding = 48px)
+        // and the height of the panel below the option (113px).
+        // 113px - 48px = 75px difference. Original scrollTop 88px - 75px = 23px
+        const difference =
+          Math.ceil(scrollContainer.scrollTop) - Math.ceil(idealScrollTop - expectedExtraScroll);
+
+        // Note that different browser/OS combinations report the different dimensions with
+        // slight deviations (< 1px). We round the expectation and check that the values
+        // are within a pixel of each other to avoid flakes.
+        // Note that different browser/OS combinations report the different dimensions with
+        // slight deviations (< 1px). We round the expectation and check that the values
+        // are within a pixel of each other to avoid flakes.
+        expect(Math.abs(difference) < 2)
+          .withContext(`Expected panel to adjust scroll position to fit in viewport.`)
+          .toBe(true);
+
+        checkTriggerAlignedWithOption(4);
+      }));
+
+      it('should fall back to "above" positioning if scroll adjustment will not help', fakeAsync(() => {
+        // Push the select to a position with not enough space on the bottom to open
+        formField.style.bottom = '56px';
+        fixture.detectChanges();
+
+        // Select an option that cannot be scrolled any farther upward
+        fixture.componentInstance.control.setValue('coke-0');
+        fixture.detectChanges();
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const overlayPane = document.querySelector('.cdk-overlay-pane')!;
+        const triggerBottom = trigger.getBoundingClientRect().bottom;
+        const overlayBottom = overlayPane.getBoundingClientRect().bottom;
+        const scrollContainer = overlayPane.querySelector('.mat-select-panel')!;
+
+        // Expect no scroll to be attempted
+        // Expect no scroll to be attempted
+        expect(scrollContainer.scrollTop)
+          .withContext(`Expected panel not to be scrolled.`)
+          .toEqual(0);
+
+        const difference = Math.floor(overlayBottom) - Math.floor(triggerBottom);
+
+        // Check that the values are within a pixel of each other. This avoids sub-pixel
+        // deviations between OS and browser versions.
+        // Check that the values are within a pixel of each other. This avoids sub-pixel
+        // deviations between OS and browser versions.
+        expect(Math.abs(difference) < 2)
+          .withContext(`Expected trigger bottom to align with overlay bottom.`)
+          .toEqual(true);
+
+        expect(fixture.componentInstance.select._transformOrigin)
+          .withContext(`Expected panel animation to originate at the bottom.`)
+          .toContain(`bottom`);
+      }));
+
+      it('should fall back to "below" positioning if scroll adjustment won\'t help', fakeAsync(() => {
+        // Push the select to a position with not enough space on the top to open
+        formField.style.top = '85px';
+
+        // Select an option that cannot be scrolled any farther downward
+        fixture.componentInstance.control.setValue('sushi-7');
+        fixture.detectChanges();
+        flush();
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const overlayPane = document.querySelector('.cdk-overlay-pane')!;
+        const triggerTop = trigger.getBoundingClientRect().top;
+        const overlayTop = overlayPane.getBoundingClientRect().top;
+        const scrollContainer = overlayPane.querySelector('.mat-select-panel')!;
+
+        // Expect scroll to remain at the max scroll position
+        // Expect scroll to remain at the max scroll position
+        expect(scrollContainer.scrollTop)
+          .withContext(`Expected panel to be at max scroll.`)
+          .toEqual(128);
+
+        expect(Math.floor(overlayTop))
+          .withContext(`Expected trigger top to align with overlay top.`)
+          .toEqual(Math.floor(triggerTop));
+
+        expect(fixture.componentInstance.select._transformOrigin)
+          .withContext(`Expected panel animation to originate at the top.`)
+          .toContain(`top`);
+      }));
+    });
+
+    describe('limited space to open horizontally', () => {
+      beforeEach(fakeAsync(() => {
+        formField.style.position = 'absolute';
+        formField.style.top = '200px';
+      }));
+
+      it('should stay within the viewport when overflowing on the left in ltr', fakeAsync(() => {
+        formField.style.left = '-100px';
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const panelLeft = document.querySelector('.mat-select-panel')!.getBoundingClientRect().left;
+
+        expect(panelLeft)
+          .withContext(`Expected select panel to be inside the viewport in ltr.`)
+          .toBeGreaterThan(0);
+      }));
+
+      it('should stay within the viewport when overflowing on the left in rtl', fakeAsync(() => {
+        dir.value = 'rtl';
+        formField.style.left = '-100px';
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const panelLeft = document.querySelector('.mat-select-panel')!.getBoundingClientRect().left;
+
+        expect(panelLeft)
+          .withContext(`Expected select panel to be inside the viewport in rtl.`)
+          .toBeGreaterThan(0);
+      }));
+
+      it('should stay within the viewport when overflowing on the right in ltr', fakeAsync(() => {
+        formField.style.right = '-100px';
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const viewportRect = viewportRuler.getViewportRect().right;
+        const panelRight = document
+          .querySelector('.mat-select-panel')!
+          .getBoundingClientRect().right;
+
+        expect(viewportRect - panelRight)
+          .withContext(`Expected select panel to be inside the viewport in ltr.`)
+          .toBeGreaterThan(0);
+      }));
+
+      it('should stay within the viewport when overflowing on the right in rtl', fakeAsync(() => {
+        dir.value = 'rtl';
+        formField.style.right = '-100px';
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const viewportRect = viewportRuler.getViewportRect().right;
+        const panelRight = document
+          .querySelector('.mat-select-panel')!
+          .getBoundingClientRect().right;
+
+        expect(viewportRect - panelRight)
+          .withContext(`Expected select panel to be inside the viewport in rtl.`)
+          .toBeGreaterThan(0);
+      }));
+
+      it('should keep the position within the viewport on repeat openings', fakeAsync(() => {
+        formField.style.left = '-100px';
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        let panelLeft = document.querySelector('.mat-select-panel')!.getBoundingClientRect().left;
+
+        expect(panelLeft)
+          .withContext(`Expected select panel to be inside the viewport.`)
+          .toBeGreaterThanOrEqual(0);
+
+        fixture.componentInstance.select.close();
+        fixture.detectChanges();
+        flush();
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        panelLeft = document.querySelector('.mat-select-panel')!.getBoundingClientRect().left;
+
+        expect(panelLeft)
+          .withContext(`Expected select panel continue being inside the viewport.`)
+          .toBeGreaterThanOrEqual(0);
+      }));
+    });
+
+    describe('when scrolled', () => {
+      const startingWindowHeight = window.innerHeight;
+
+      // Need to set the scrollTop two different ways to support
+      // both Chrome and Firefox.
+      function setScrollTop(num: number) {
+        document.body.scrollTop = num;
+        document.documentElement!.scrollTop = num;
+      }
+
+      beforeEach(fakeAsync(() => {
+        // Make the div above the select very tall, so the page will scroll
+        fixture.componentInstance.heightAbove = 2000;
+        fixture.detectChanges();
+        setScrollTop(0);
+
+        // Give the select enough horizontal space to open
+        formField.style.marginLeft = '20px';
+        formField.style.marginRight = '20px';
+      }));
+
+      it('should align the first option properly when scrolled', fakeAsync(() => {
+        // Give the select enough space to open
+        fixture.componentInstance.heightBelow = 400;
+        fixture.detectChanges();
+
+        // Space that is needed in order to show the menu below the trigger.
+        // 256 (height of the menu overlay) - 45 (estimated height of the trigger)
+        const requiredSpaceBelow = 256 - 45;
+
+        // Scroll the select into view. Make sure that there is enough space for the menu
+        // to open below the trigger (depending on the screen resolution)
+        setScrollTop(2000 - requiredSpaceBelow);
+
+        // In the iOS simulator (BrowserStack & SauceLabs), adding the content to the
+        // body causes karma's iframe for the test to stretch to fit that content once we attempt to
+        // scroll the page. Setting width / height / maxWidth / maxHeight on the iframe does not
+        // successfully constrain its size. As such, skip assertions in environments where the
+        // window size has changed since the start of the test.
+        if (window.innerHeight > startingWindowHeight) {
+          return;
+        }
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        checkTriggerAlignedWithOption(0);
+      }));
+
+      it('should align a centered option properly when scrolled', fakeAsync(() => {
+        // Give the select enough space to open
+        fixture.componentInstance.heightBelow = 400;
+        fixture.detectChanges();
+
+        fixture.componentInstance.control.setValue('chips-4');
+        fixture.detectChanges();
+        flush();
+
+        // Space that is needed in order to show the menu below the trigger.
+        // 256 (height of the menu overlay) - 45 (estimated height of the trigger)
+        // Even though there might be less options displayed below the trigger because the
+        // selected option is the fourth item, we want to make sure we have enough space here.
+        const requiredSpaceBelow = 256 - 45;
+
+        // Scroll the select into view. Make sure that there is enough space for the menu
+        // to open below the trigger (depending on the screen resolution)
+        setScrollTop(2000 - requiredSpaceBelow);
+
+        // In the iOS simulator (BrowserStack & SauceLabs), adding the content to the
+        // body causes karma's iframe for the test to stretch to fit that content once we attempt
+        // to scroll the page. Setting width / height / maxWidth / maxHeight on the iframe does
+        // not successfully constrain its size. As such, skip assertions in environments where the
+        // window size has changed since the start of the test.
+        if (window.innerHeight > startingWindowHeight) {
+          return;
+        }
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        checkTriggerAlignedWithOption(4);
+      }));
+
+      it('should align a centered option properly when scrolling while the panel is open', fakeAsync(() => {
+        fixture.componentInstance.heightBelow = 400;
+        fixture.componentInstance.heightAbove = 400;
+        fixture.componentInstance.control.setValue('chips-4');
+        fixture.detectChanges();
+        flush();
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        setScrollTop(100);
+        scrolledSubject.next();
+        fixture.detectChanges();
+
+        checkTriggerAlignedWithOption(4);
+      }));
+
+      it('should fall back to "above" positioning properly when scrolled', fakeAsync(() => {
+        // Give the select insufficient space to open below the trigger
+        fixture.componentInstance.heightAbove = 0;
+        fixture.componentInstance.heightBelow = 100;
+        trigger.style.marginTop = '2000px';
+        fixture.detectChanges();
+
+        // Scroll the select into view
+        setScrollTop(1400);
+
+        // In the iOS simulator (BrowserStack & SauceLabs), adding the content to the
+        // body causes karma's iframe for the test to stretch to fit that content once we attempt to
+        // scroll the page. Setting width / height / maxWidth / maxHeight on the iframe does not
+        // successfully constrain its size. As such, skip assertions in environments where the
+        // window size has changed since the start of the test.
+        if (window.innerHeight > startingWindowHeight) {
+          return;
+        }
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+        const triggerBottom = trigger.getBoundingClientRect().bottom;
+        const overlayBottom = overlayPane.getBoundingClientRect().bottom;
+        const difference = Math.floor(overlayBottom) - Math.floor(triggerBottom);
+
+        // Check that the values are within a pixel of each other. This avoids sub-pixel
+        // deviations between OS and browser versions.
+        // Check that the values are within a pixel of each other. This avoids sub-pixel
+        // deviations between OS and browser versions.
+        expect(Math.abs(difference) < 2)
+          .withContext(`Expected trigger bottom to align with overlay bottom.`)
+          .toEqual(true);
+      }));
+
+      it('should fall back to "below" positioning properly when scrolled', fakeAsync(() => {
+        // Give plenty of space for the select to open below the trigger
+        fixture.componentInstance.heightBelow = 2000;
+        fixture.detectChanges();
+
+        // Select an option too low in the list to fit in limited space above
+        fixture.componentInstance.control.setValue('sushi-7');
+        fixture.detectChanges();
+
+        // Scroll the select so that it has insufficient space to open above the trigger
+        setScrollTop(1950);
+
+        // In the iOS simulator (BrowserStack & SauceLabs), adding the content to the
+        // body causes karma's iframe for the test to stretch to fit that content once we attempt to
+        // scroll the page. Setting width / height / maxWidth / maxHeight on the iframe does not
+        // successfully constrain its size. As such, skip assertions in environments where the
+        // window size has changed since the start of the test.
+        if (window.innerHeight > startingWindowHeight) {
+          return;
+        }
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+        const triggerTop = trigger.getBoundingClientRect().top;
+        const overlayTop = overlayPane.getBoundingClientRect().top;
+
+        expect(Math.floor(overlayTop))
+          .withContext(`Expected trigger top to align with overlay top.`)
+          .toEqual(Math.floor(triggerTop));
+      }));
+    });
+
+    describe('x-axis positioning', () => {
+      beforeEach(fakeAsync(() => {
+        formField.style.position = 'fixed';
+        formField.style.left = '30px';
+      }));
+
+      it('should align the trigger and the selected option on the x-axis in ltr', fakeAsync(() => {
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const triggerLeft = trigger.getBoundingClientRect().left;
+        const firstOptionLeft = document
+          .querySelector('.cdk-overlay-pane mat-option')!
+          .getBoundingClientRect().left;
+
+        // Each option is 32px wider than the trigger, so it must be adjusted 16px
+        // to ensure the text overlaps correctly.
+        // Each option is 32px wider than the trigger, so it must be adjusted 16px
+        // to ensure the text overlaps correctly.
+        expect(Math.floor(firstOptionLeft))
+          .withContext(`Expected trigger to align with the selected option on the x-axis in LTR.`)
+          .toEqual(Math.floor(triggerLeft - 16));
+      }));
+
+      it('should align the trigger and the selected option on the x-axis in rtl', fakeAsync(() => {
+        dir.value = 'rtl';
+        fixture.detectChanges();
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const triggerRight = trigger.getBoundingClientRect().right;
+        const firstOptionRight = document
+          .querySelector('.cdk-overlay-pane mat-option')!
+          .getBoundingClientRect().right;
+
+        // Each option is 32px wider than the trigger, so it must be adjusted 16px
+        // to ensure the text overlaps correctly.
+        // Each option is 32px wider than the trigger, so it must be adjusted 16px
+        // to ensure the text overlaps correctly.
+        expect(Math.floor(firstOptionRight))
+          .withContext(`Expected trigger to align with the selected option on the x-axis in RTL.`)
+          .toEqual(Math.floor(triggerRight + 16));
+      }));
+    });
+
+    describe('x-axis positioning in multi select mode', () => {
+      let multiFixture: ComponentFixture<MultiSelect>;
+
+      beforeEach(fakeAsync(() => {
+        multiFixture = TestBed.createComponent(MultiSelect);
+        multiFixture.detectChanges();
+        formField = multiFixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
+        trigger = multiFixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
+
+        formField.style.position = 'fixed';
+        formField.style.left = '60px';
+      }));
+
+      it('should adjust for the checkbox in ltr', fakeAsync(() => {
+        trigger.click();
+        multiFixture.detectChanges();
+        flush();
+
+        const triggerLeft = trigger.getBoundingClientRect().left;
+        const firstOptionLeft = document
+          .querySelector('.cdk-overlay-pane mat-option')!
+          .getBoundingClientRect().left;
+
+        // 44px accounts for the checkbox size, margin and the panel's padding.
+        // 44px accounts for the checkbox size, margin and the panel's padding.
+        expect(Math.floor(firstOptionLeft))
+          .withContext(`Expected trigger label to align along x-axis, accounting for the checkbox.`)
+          .toEqual(Math.floor(triggerLeft - 40));
+      }));
+
+      it('should adjust for the checkbox in rtl', fakeAsync(() => {
+        dir.value = 'rtl';
+        trigger.click();
+        multiFixture.detectChanges();
+        flush();
+
+        const triggerRight = trigger.getBoundingClientRect().right;
+        const firstOptionRight = document
+          .querySelector('.cdk-overlay-pane mat-option')!
+          .getBoundingClientRect().right;
+
+        // 44px accounts for the checkbox size, margin and the panel's padding.
+        // 44px accounts for the checkbox size, margin and the panel's padding.
+        expect(Math.floor(firstOptionRight))
+          .withContext(`Expected trigger label to align along x-axis, accounting for the checkbox.`)
+          .toEqual(Math.floor(triggerRight + 40));
+      }));
+    });
+
+    describe('x-axis positioning with groups', () => {
+      let groupFixture: ComponentFixture<SelectWithGroups>;
+
+      beforeEach(fakeAsync(() => {
+        groupFixture = TestBed.createComponent(SelectWithGroups);
+        groupFixture.detectChanges();
+        formField = groupFixture.debugElement.query(By.css('.mat-form-field'))!.nativeElement;
+        trigger = groupFixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
+
+        formField.style.position = 'fixed';
+        formField.style.left = '60px';
+      }));
+
+      it('should adjust for the group padding in ltr', fakeAsync(() => {
+        groupFixture.componentInstance.control.setValue('oddish-1');
+        groupFixture.detectChanges();
+
+        trigger.click();
+        groupFixture.detectChanges();
+
+        groupFixture.whenStable().then(() => {
+          const group = document.querySelector('.cdk-overlay-pane mat-optgroup')!;
+          const triggerLeft = trigger.getBoundingClientRect().left;
+          const selectedOptionLeft = group
+            .querySelector('mat-option.mat-selected')!
+            .getBoundingClientRect().left;
+
+          // 32px is the 16px default padding plus 16px of padding when an option is in a group.
+          // 32px is the 16px default padding plus 16px of padding when an option is in a group.
+          expect(Math.floor(selectedOptionLeft))
+            .withContext(
+              `Expected trigger label to align along x-axis, accounting for the ` +
+                `padding in ltr.`,
+            )
+            .toEqual(Math.floor(triggerLeft - 32));
+        });
+      }));
+
+      it('should adjust for the group padding in rtl', fakeAsync(() => {
+        dir.value = 'rtl';
+        groupFixture.componentInstance.control.setValue('oddish-1');
+        groupFixture.detectChanges();
+
+        trigger.click();
+        groupFixture.detectChanges();
+        flush();
+
+        const group = document.querySelector('.cdk-overlay-pane mat-optgroup')!;
+        const triggerRight = trigger.getBoundingClientRect().right;
+        const selectedOptionRight = group
+          .querySelector('mat-option.mat-selected')!
+          .getBoundingClientRect().right;
+
+        // 32px is the 16px default padding plus 16px of padding when an option is in a group.
+        // 32px is the 16px default padding plus 16px of padding when an option is in a group.
+        expect(Math.floor(selectedOptionRight))
+          .withContext(
+            `Expected trigger label to align along x-axis, accounting for the ` + `padding in rtl.`,
+          )
+          .toEqual(Math.floor(triggerRight + 32));
+      }));
+
+      it('should not adjust if all options are within a group, except the selected one', fakeAsync(() => {
+        groupFixture.componentInstance.control.setValue('mime-11');
+        groupFixture.detectChanges();
+
+        trigger.click();
+        groupFixture.detectChanges();
+        flush();
+
+        const selected = document.querySelector('.cdk-overlay-pane mat-option.mat-selected')!;
+        const selectedOptionLeft = selected.getBoundingClientRect().left;
+        const triggerLeft = trigger.getBoundingClientRect().left;
+
+        // 16px is the default option padding
+        expect(Math.floor(selectedOptionLeft)).toEqual(Math.floor(triggerLeft - 16));
+      }));
+
+      it('should align the first option to the trigger, if nothing is selected', fakeAsync(() => {
+        // Push down the form field so there is space for the item to completely align.
+        formField.style.top = '100px';
+
+        const menuItemHeight = 48;
+        const triggerFontSize = 16;
+        const triggerLineHeightEm = 1.125;
+        const triggerHeight = triggerFontSize * triggerLineHeightEm;
+
+        trigger.click();
+        groupFixture.detectChanges();
+        flush();
+
+        const triggerTop = trigger.getBoundingClientRect().top;
+
+        const option = overlayContainerElement.querySelector('.cdk-overlay-pane mat-option');
+        const optionTop = option ? option.getBoundingClientRect().top : 0;
+
+        expect(Math.floor(optionTop + (menuItemHeight - triggerHeight) / 2))
+          .withContext('Expected trigger to align with the first option.')
+          .toBe(Math.floor(triggerTop));
+      }));
+
+      it('should not adjust if option centering is disabled any option under a group is selected', fakeAsync(() => {
+        groupFixture.componentInstance.select.disableOptionCentering = true;
+        groupFixture.componentInstance.control.setValue('oddish-1');
+        groupFixture.detectChanges();
+
+        trigger.click();
+        groupFixture.detectChanges();
+        flush();
+
+        const selected = document.querySelector('.cdk-overlay-pane mat-option.mat-selected')!;
+        const selectedOptionLeft = selected.getBoundingClientRect().left;
+        const triggerLeft = trigger.getBoundingClientRect().left;
+
+        // 16px is the default option padding
+        expect(Math.floor(selectedOptionLeft)).toEqual(Math.floor(triggerLeft - 16));
+      }));
+    });
   });
 
   describe('with multiple selection', () => {
@@ -3726,7 +4693,8 @@ describe('MDC-based MatSelect', () => {
       fixture = TestBed.createComponent(MultiSelect);
       testInstance = fixture.componentInstance;
       fixture.detectChanges();
-      trigger = fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement;
+
+      trigger = fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement;
     }));
 
     it('should be able to select multiple values', fakeAsync(() => {
@@ -3795,8 +4763,8 @@ describe('MDC-based MatSelect', () => {
 
       const optionInstances = testInstance.options.toArray();
 
-      expect(optionNodes[0].classList).toContain('mdc-list-item--selected');
-      expect(optionNodes[5].classList).toContain('mdc-list-item--selected');
+      expect(optionNodes[0].classList).toContain('mat-selected');
+      expect(optionNodes[5].classList).toContain('mat-selected');
 
       expect(optionInstances[0].selected).toBe(true);
       expect(optionInstances[5].selected).toBe(true);
@@ -3813,13 +4781,13 @@ describe('MDC-based MatSelect', () => {
       options[0].click();
       fixture.detectChanges();
 
-      expect(options[0].classList).toContain('mdc-list-item--selected');
+      expect(options[0].classList).toContain('mat-selected');
 
       testInstance.control.setValue(['eggs-5']);
       fixture.detectChanges();
 
-      expect(options[0].classList).not.toContain('mdc-list-item--selected');
-      expect(options[5].classList).toContain('mdc-list-item--selected');
+      expect(options[0].classList).not.toContain('mat-selected');
+      expect(options[5].classList).toContain('mat-selected');
     }));
 
     it('should not close the panel when clicking on options', fakeAsync(() => {
@@ -4134,7 +5102,7 @@ describe('MDC-based MatSelect', () => {
       const optionNodes = Array.from(overlayContainerElement.querySelectorAll('mat-option'));
       const optionInstances = testInstance.options.toArray();
 
-      expect(optionNodes.map(node => node.classList.contains('mdc-list-item--selected'))).toEqual([
+      expect(optionNodes.map(node => node.classList.contains('mat-selected'))).toEqual([
         true,
         true,
         true,
@@ -4164,18 +5132,14 @@ describe('MDC-based MatSelect', () => {
       );
       const optionInstances = testInstance.options.toArray();
 
-      expect(
-        optionNodes.some(option => {
-          return option.classList.contains('mdc-list-item--selected');
-        }),
-      ).toBe(false);
+      expect(optionNodes.some(option => option.classList.contains('mat-selected'))).toBe(false);
       expect(optionInstances.some(option => option.selected)).toBe(false);
 
       value.push('eggs-5');
       testInstance.control.setValue(value);
       fixture.detectChanges();
 
-      expect(optionNodes[5].classList).toContain('mdc-list-item--selected');
+      expect(optionNodes[5].classList).toContain('mat-selected');
       expect(optionInstances[5].selected).toBe(true);
     }));
   });
@@ -4218,7 +5182,6 @@ describe('MDC-based MatSelect', () => {
   template: `
     <div [style.height.px]="heightAbove"></div>
     <mat-form-field>
-      <mat-label *ngIf="hasLabel">Select a food</mat-label>
       <mat-select placeholder="Food" [formControl]="control" [required]="isRequired"
         [tabIndex]="tabIndexOverride" [aria-describedby]="ariaDescribedBy"
         [aria-label]="ariaLabel" [aria-labelledby]="ariaLabelledby"
@@ -4248,7 +5211,6 @@ class BasicSelect {
   isRequired: boolean;
   heightAbove = 0;
   heightBelow = 0;
-  hasLabel = true;
   hint: string;
   tabIndexOverride: number;
   ariaDescribedBy: string;
@@ -4258,8 +5220,8 @@ class BasicSelect {
   disableRipple: boolean;
   typeaheadDebounceInterval: number;
 
-  @ViewChild(MatSelect, {static: true}) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChild(MatLegacySelect, {static: true}) select: MatLegacySelect;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 }
 
 @Component({
@@ -4282,8 +5244,8 @@ class NgModelSelect {
   ];
   isDisabled: boolean;
 
-  @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 }
 
 @Component({
@@ -4328,7 +5290,7 @@ class NgIfSelect {
   ];
   control = new FormControl('pizza-1');
 
-  @ViewChild(MatSelect) select: MatSelect;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
 }
 
 @Component({
@@ -4372,8 +5334,8 @@ class SelectInitWithoutOptions {
   foods: any[];
   control = new FormControl('pizza-1');
 
-  @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 
   addOptions() {
     this.foods = [
@@ -4396,7 +5358,7 @@ class SelectInitWithoutOptions {
   ],
 })
 class CustomSelectAccessor implements ControlValueAccessor {
-  @ViewChild(MatSelect) select: MatSelect;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
 
   writeValue: (value?: any) => void = () => {};
   registerOnChange: (changeFn?: (value: any) => void) => void = () => {};
@@ -4478,7 +5440,7 @@ class BasicSelectOnPush {
   `,
 })
 class BasicSelectOnPushPreselected {
-  @ViewChild(MatSelect) select: MatSelect;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
   foods: any[] = [
     {value: 'steak-0', viewValue: 'Steak'},
     {value: 'pizza-1', viewValue: 'Pizza'},
@@ -4491,7 +5453,6 @@ class BasicSelectOnPushPreselected {
   selector: 'floating-label-select',
   template: `
     <mat-form-field [floatLabel]="floatLabel">
-      <mat-label>Select a food</mat-label>
       <mat-select [placeholder]="placeholder" [formControl]="control">
         <mat-option *ngFor="let food of foods" [value]="food.value">
           {{ food.viewValue }}
@@ -4502,15 +5463,15 @@ class BasicSelectOnPushPreselected {
 })
 class FloatLabelSelect {
   floatLabel: FloatLabelType | null = 'auto';
-  control = new FormControl('');
   placeholder = 'Food I want to eat right now';
+  control = new FormControl('');
   foods: any[] = [
     {value: 'steak-0', viewValue: 'Steak'},
     {value: 'pizza-1', viewValue: 'Pizza'},
     {value: 'tacos-2', viewValue: 'Tacos'},
   ];
 
-  @ViewChild(MatSelect) select: MatSelect;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
 }
 
 @Component({
@@ -4539,9 +5500,9 @@ class MultiSelect {
   ];
   control = new FormControl<string[] | null>(null);
 
-  @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
-  sortComparator: (a: MatOption, b: MatOption, options: MatOption[]) => number;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
+  sortComparator: (a: MatLegacyOption, b: MatLegacyOption, options: MatLegacyOption[]) => number;
 }
 
 @Component({
@@ -4599,7 +5560,7 @@ class BasicSelectNoPlaceholder {}
   `,
 })
 class BasicSelectWithTheming {
-  @ViewChild(MatSelect) select: MatSelect;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
   theme: string;
 }
 
@@ -4607,7 +5568,6 @@ class BasicSelectWithTheming {
   selector: 'reset-values-select',
   template: `
     <mat-form-field>
-      <mat-label>Select a food</mat-label>
       <mat-select [formControl]="control">
         <mat-option *ngFor="let food of foods" [value]="food.value">
           {{ food.viewValue }}
@@ -4628,7 +5588,7 @@ class ResetValuesSelect {
   ];
   control = new FormControl('' as string | boolean | null);
 
-  @ViewChild(MatSelect) select: MatSelect;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
 }
 
 @Component({
@@ -4648,7 +5608,7 @@ class FalsyValueSelect {
     {value: 1, viewValue: 'Pizza'},
   ];
   control = new FormControl<number | null>(null);
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 }
 
 @Component({
@@ -4704,9 +5664,31 @@ class SelectWithGroups {
     },
   ];
 
-  @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 }
+
+@Component({
+  selector: 'select-with-indirect-groups',
+  // Note that we need the blank `ngSwitch` in order to have
+  // a directive between `mat-select` and `mat-optgroup`.
+  template: `
+    <mat-form-field>
+      <mat-select placeholder="Pokemon" [formControl]="control">
+        <ng-container [ngSwitch]="true">
+          <mat-optgroup *ngFor="let group of pokemonTypes" [label]="group.name"
+            [disabled]="group.disabled">
+            <mat-option *ngFor="let pokemon of group.pokemon" [value]="pokemon.value">
+              {{ pokemon.viewValue }}
+            </mat-option>
+          </mat-optgroup>
+          <mat-option value="mime-11">Mr. Mime</mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+  `,
+})
+class SelectWithIndirectDescendantGroups extends SelectWithGroups {}
 
 @Component({
   selector: 'select-with-groups',
@@ -4749,8 +5731,7 @@ class InvalidSelectInForm {
   template: `
     <form [formGroup]="formGroup">
       <mat-form-field>
-        <mat-label>Food</mat-label>
-        <mat-select formControlName="food">
+        <mat-select placeholder="Food" formControlName="food">
           <mat-option *ngFor="let option of options" [value]="option.value">
             {{option.viewValue}}
           </mat-option>
@@ -4763,7 +5744,7 @@ class InvalidSelectInForm {
 })
 class SelectInsideFormGroup {
   @ViewChild(FormGroupDirective) formGroupDirective: FormGroupDirective;
-  @ViewChild(MatSelect) select: MatSelect;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
   options = [
     {value: 'steak-0', viewValue: 'Steak'},
     {value: 'pizza-1', viewValue: 'Pizza'},
@@ -4793,7 +5774,7 @@ class BasicSelectWithoutForms {
     {value: 'sandwich-2', viewValue: 'Sandwich'},
   ];
 
-  @ViewChild(MatSelect) select: MatSelect;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
 }
 
 @Component({
@@ -4814,7 +5795,7 @@ class BasicSelectWithoutFormsPreselected {
     {value: 'pizza-1', viewValue: 'Pizza'},
   ];
 
-  @ViewChild(MatSelect) select: MatSelect;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
 }
 
 @Component({
@@ -4836,7 +5817,7 @@ class BasicSelectWithoutFormsMultiple {
     {value: 'sandwich-2', viewValue: 'Sandwich'},
   ];
 
-  @ViewChild(MatSelect) select: MatSelect;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
 }
 
 @Component({
@@ -4882,8 +5863,8 @@ class NgModelCompareWithSelect {
   selectedFood: {value: string; viewValue: string} = {value: 'pizza-1', viewValue: 'Pizza'};
   comparator: ((f1: any, f2: any) => boolean) | null = this.compareByValue;
 
-  @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 
   useCompareByValue() {
     this.comparator = this.compareByValue;
@@ -4920,7 +5901,7 @@ class NgModelCompareWithSelect {
   `,
 })
 class CustomErrorBehaviorSelect {
-  @ViewChild(MatSelect) select: MatSelect;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
   control = new FormControl('');
   foods: any[] = [
     {value: 'steak-0', viewValue: 'Steak'},
@@ -4949,8 +5930,8 @@ class SingleSelectWithPreselectedArrayValues {
 
   selectedFoods = this.foods[1].value;
 
-  @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 }
 
 @Component({
@@ -4978,8 +5959,8 @@ class SelectWithoutOptionCentering {
   ];
   control = new FormControl('pizza-1');
 
-  @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
 }
 
 @Component({
@@ -5047,8 +6028,8 @@ class MultiSelectWithLotsOfOptions {
   `,
 })
 class SelectWithResetOptionAndFormControl {
-  @ViewChild(MatSelect) select: MatSelect;
-  @ViewChildren(MatOption) options: QueryList<MatOption>;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
+  @ViewChildren(MatLegacyOption) options: QueryList<MatLegacyOption>;
   control = new FormControl('');
 }
 
@@ -5080,7 +6061,7 @@ class SelectInNgContainer {}
   `,
 })
 class SelectInsideDynamicFormGroup {
-  @ViewChild(MatSelect) select: MatSelect;
+  @ViewChild(MatLegacySelect) select: MatLegacySelect;
   form: FormGroup;
 
   constructor(private _formBuilder: FormBuilder) {

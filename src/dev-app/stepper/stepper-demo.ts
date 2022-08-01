@@ -20,7 +20,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatStepperModule} from '@angular/material/stepper';
 
 @Component({
@@ -35,7 +35,7 @@ import {MatStepperModule} from '@angular/material/stepper';
     MatLegacyFormFieldModule,
     MatLegacyInputModule,
     MatStepperModule,
-    MatSelectModule,
+    MatLegacySelectModule,
     ReactiveFormsModule,
   ],
 })

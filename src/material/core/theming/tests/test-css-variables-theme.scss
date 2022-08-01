@@ -22,7 +22,6 @@
 @use '../../../paginator/paginator-theme';
 @use '../../../progress-spinner/progress-spinner-theme';
 @use '../../../radio/radio-theme';
-@use '../../../select/select-theme';
 @use '../../../sidenav/sidenav-theme';
 @use '../../../slide-toggle/slide-toggle-theme';
 @use '../../../slider/slider-theme';
@@ -80,7 +79,6 @@
   @include paginator-theme.theme($css-var-theme);
   @include progress-spinner-theme.theme($css-var-theme);
   @include radio-theme.theme($css-var-theme);
-  @include select-theme.theme($css-var-theme);
   @include sidenav-theme.theme($css-var-theme);
   @include slide-toggle-theme.theme($css-var-theme);
   @include slider-theme.theme($css-var-theme);

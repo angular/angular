@@ -1,0 +1,61 @@
+<!--
+ Note that the select trigger element specifies `aria-owns` pointing to the listbox overlay.
+ While aria-owns is not required for the ARIA 1.2 `role="combobox"` interaction pattern,
+ it fixes an issue with VoiceOver when the select appears inside of an `aria-model="true"`
+ element (e.g. a dialog). Without this `aria-owns`, the `aria-modal` on a dialog prevents
+ VoiceOver from "seeing" the select's listbox overlay for aria-activedescendant.
+ Using `aria-owns` re-parents the select overlay so that it works again.
+ See https://github.com/angular/components/issues/20694
+-->
+<div cdk-overlay-origin
+     [attr.aria-owns]="panelOpen ? id + '-panel' : null"
+     class="mat-select-trigger"
+     (click)="toggle()"
+     #origin="cdkOverlayOrigin"
+     #trigger>
+  <div class="mat-select-value" [ngSwitch]="empty" [attr.id]="_valueId">
+    <span class="mat-select-placeholder mat-select-min-line" *ngSwitchCase="true">{{placeholder}}</span>
+    <span class="mat-select-value-text" *ngSwitchCase="false" [ngSwitch]="!!customTrigger">
+      <span class="mat-select-min-line" *ngSwitchDefault>{{triggerValue}}</span>
+      <ng-content select="mat-select-trigger" *ngSwitchCase="true"></ng-content>
+    </span>
+  </div>
+
+  <div class="mat-select-arrow-wrapper"><div class="mat-select-arrow"></div></div>
+</div>
+
+<ng-template
+  cdk-connected-overlay
+  cdkConnectedOverlayLockPosition
+  cdkConnectedOverlayHasBackdrop
+  cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
+  [cdkConnectedOverlayPanelClass]="_overlayPanelClass"
+  [cdkConnectedOverlayScrollStrategy]="_scrollStrategy"
+  [cdkConnectedOverlayOrigin]="origin"
+  [cdkConnectedOverlayOpen]="panelOpen"
+  [cdkConnectedOverlayPositions]="_positions"
+  [cdkConnectedOverlayMinWidth]="_triggerRect?.width!"
+  [cdkConnectedOverlayOffsetY]="_offsetY"
+  (backdropClick)="close()"
+  (attach)="_onAttached()"
+  (detach)="close()">
+  <div class="mat-select-panel-wrap" [@transformPanelWrap]>
+    <div
+      #panel
+      role="listbox"
+      tabindex="-1"
+      class="mat-select-panel {{ _getPanelTheme() }}"
+      [attr.id]="id + '-panel'"
+      [attr.aria-multiselectable]="multiple"
+      [attr.aria-label]="ariaLabel || null"
+      [attr.aria-labelledby]="_getPanelAriaLabelledby()"
+      [ngClass]="panelClass"
+      [@transformPanel]="multiple ? 'showing-multiple' : 'showing'"
+      (@transformPanel.done)="_panelDoneAnimatingStream.next($event.toState)"
+      [style.transformOrigin]="_transformOrigin"
+      [style.font-size.px]="_triggerFontSize"
+      (keydown)="_handleKeydown($event)">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</ng-template>

@@ -56,7 +56,6 @@
   @include paginator-theme.theme($theme-or-color-config);
   @include progress-spinner-theme.theme($theme-or-color-config);
   @include radio-theme.theme($theme-or-color-config);
-  @include select-theme.theme($theme-or-color-config);
   @include sidenav-theme.theme($theme-or-color-config);
   @include slide-toggle-theme.theme($theme-or-color-config);
   @include slider-theme.theme($theme-or-color-config);
@@ -78,6 +77,7 @@
     @include tooltip-theme.theme($theme-or-color-config);
     @include form-field-theme.theme($theme-or-color-config);
     @include input-theme.theme($theme-or-color-config);
+    @include select-theme.theme($theme-or-color-config);
     @include private-all-unmigrated-component-themes($theme-or-color-config);
   }
 }

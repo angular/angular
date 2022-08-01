@@ -18,8 +18,8 @@ ng_module(
     assets = [":paginator.css"] + glob(["**/*.html"]),
     deps = [
         "//src/material-experimental/mdc-button",
-        "//src/material-experimental/mdc-select",
         "//src/material/paginator",
+        "//src/material/select",
         "//src/material/tooltip",
         "@npm//@angular/common",
         "@npm//@angular/core",
@@ -56,8 +56,8 @@ ng_test_library(
     deps = [
         ":mdc-paginator",
         "//src/cdk/testing/private",
-        "//src/material-experimental/mdc-select",
         "//src/material/core",
+        "//src/material/select",
         "@npm//@angular/platform-browser",
     ],
 )

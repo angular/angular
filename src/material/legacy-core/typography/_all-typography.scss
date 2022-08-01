@@ -8,6 +8,7 @@
 @use '../../legacy-tooltip/tooltip-theme';
 @use '../../legacy-input/input-theme';
 @use '../../legacy-form-field/form-field-theme';
+@use '../../legacy-select/select-theme';
 
 // Includes all of the typographic styles.
 @mixin all-legacy-component-typographies($config-or-theme: null) {
@@ -33,6 +34,7 @@
   @include tooltip-theme.typography($config);
   @include input-theme.typography($config);
   @include form-field-theme.typography($config);
+  @include select-theme.typography($config);
 }
 
 // @deprecated Use `all-legacy-component-typographies`.

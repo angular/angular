@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// Note that these have been copied over verbatim from
+// `material/select` so that we don't have to expose them publicly.
+
 /**
  * Returns an exception to be thrown when attempting to change a select's `multiple` option
  * after initialization.

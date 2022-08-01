@@ -8,7 +8,7 @@ import { AsyncFactoryFn } from '@angular/cdk/testing';
 import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
-import { MatSelectHarness } from '@angular/material/select/testing';
+import { MatLegacySelectHarness } from '@angular/material/legacy-select/testing';
 import { TestElement } from '@angular/cdk/testing';
 
 // @public
@@ -27,7 +27,7 @@ export class MatPaginatorHarness extends _MatPaginatorHarnessBase {
     // (undocumented)
     protected _rangeLabel: AsyncFactoryFn<TestElement>;
     // (undocumented)
-    protected _select: AsyncFactoryFn<MatSelectHarness | null>;
+    protected _select: AsyncFactoryFn<MatLegacySelectHarness | null>;
     static with(options?: PaginatorHarnessFilters): HarnessPredicate<MatPaginatorHarness>;
 }
 

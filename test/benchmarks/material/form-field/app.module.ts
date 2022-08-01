@@ -9,7 +9,7 @@
 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 
 /** component: mat-form-field */
@@ -67,7 +67,7 @@ export class FormFieldBenchmarkApp {
 
 @NgModule({
   declarations: [FormFieldBenchmarkApp],
-  imports: [BrowserModule, MatLegacyFormFieldModule, MatSelectModule, MatLegacyInputModule],
+  imports: [BrowserModule, MatLegacyFormFieldModule, MatLegacySelectModule, MatLegacyInputModule],
   bootstrap: [FormFieldBenchmarkApp],
 })
 export class AppModule {}

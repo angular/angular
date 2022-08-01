@@ -17,7 +17,7 @@ ng_module(
         "//src/cdk/testing/testbed",
         "//src/material/button",
         "//src/material/legacy-input",
-        "//src/material/select",
+        "//src/material/legacy-select",
         "//src/material/snack-bar",
         "//src/material/snack-bar/testing",
         "@npm//@angular/forms",

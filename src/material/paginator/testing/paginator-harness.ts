@@ -12,7 +12,7 @@ import {
   HarnessPredicate,
   TestElement,
 } from '@angular/cdk/testing';
-import {MatSelectHarness} from '@angular/material/select/testing';
+import {MatLegacySelectHarness} from '@angular/material/legacy-select/testing';
 import {coerceNumberProperty} from '@angular/cdk/coercion';
 import {PaginatorHarnessFilters} from './paginator-harness-filters';
 
@@ -124,7 +124,7 @@ export class MatPaginatorHarness extends _MatPaginatorHarnessBase {
   protected _firstPageButton = this.locatorForOptional('.mat-paginator-navigation-first');
   protected _lastPageButton = this.locatorForOptional('.mat-paginator-navigation-last');
   protected _select = this.locatorForOptional(
-    MatSelectHarness.with({
+    MatLegacySelectHarness.with({
       ancestor: '.mat-paginator-page-size',
     }),
   );

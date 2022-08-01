@@ -11,6 +11,6 @@ ng_module(
     ],
     deps = [
         "//src/cdk-experimental/listbox",
-        "//src/material/select",
+        "//src/material/legacy-select",
     ],
 )

@@ -13,7 +13,7 @@ import { MatDatepickerInputHarness } from '@angular/material/datepicker/testing'
 import { MatDateRangeInputHarness } from '@angular/material/datepicker/testing';
 import { MatFormFieldControlHarness } from '@angular/material/form-field/testing/control';
 import { MatInputHarness } from '@angular/material/input/testing';
-import { MatSelectHarness } from '@angular/material-experimental/mdc-select/testing';
+import { MatSelectHarness } from '@angular/material/select/testing';
 import { TestElement } from '@angular/cdk/testing';
 
 // @public

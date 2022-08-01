@@ -1,6 +1,6 @@
 import {A11yModule} from '@angular/cdk/a11y';
 import {NgModule} from '@angular/core';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {FocusMonitorDirectivesExample} from './focus-monitor-directives/focus-monitor-directives-example';
 import {FocusMonitorFocusViaExample} from './focus-monitor-focus-via/focus-monitor-focus-via-example';
 import {FocusMonitorOverviewExample} from './focus-monitor-overview/focus-monitor-overview-example';
@@ -14,7 +14,7 @@ const EXAMPLES = [
 ];
 
 @NgModule({
-  imports: [A11yModule, MatSelectModule],
+  imports: [A11yModule, MatLegacySelectModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
 })

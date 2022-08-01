@@ -1,9 +1,9 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Component, Provider, Type, ViewChild} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {dispatchMouseEvent} from '../../cdk/testing/private';
+import {dispatchMouseEvent} from '@angular/cdk/testing/private';
 import {ThemePalette} from '@angular/material/core';
-import {MatSelect} from '@angular/material/select';
+import {MatSelect} from '@angular/material/legacy-select';
 import {By} from '@angular/platform-browser';
 import {MatPaginator, MatPaginatorIntl, MatPaginatorModule} from './index';
 import {

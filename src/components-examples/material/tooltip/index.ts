@@ -5,7 +5,7 @@ import {ScrollingModule} from '@angular/cdk/scrolling';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatLegacyTooltipModule} from '@angular/material/legacy-tooltip';
 import {TooltipAutoHideExample} from './tooltip-auto-hide/tooltip-auto-hide-example';
 import {TooltipCustomClassExample} from './tooltip-custom-class/tooltip-custom-class-example';
@@ -50,7 +50,7 @@ const EXAMPLES = [
     MatButtonModule,
     MatCheckboxModule,
     MatLegacyInputModule,
-    MatSelectModule,
+    MatLegacySelectModule,
     MatLegacyTooltipModule,
     ReactiveFormsModule,
     ScrollingModule, // Required for the auto-scrolling example

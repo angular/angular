@@ -7,7 +7,7 @@
  */
 
 import {ComponentHarnessConstructor, HarnessPredicate} from '@angular/cdk/testing';
-import {MatSelectHarness} from '@angular/material-experimental/mdc-select/testing';
+import {MatSelectHarness} from '@angular/material/select/testing';
 import {
   PaginatorHarnessFilters,
   _MatPaginatorHarnessBase,

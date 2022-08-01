@@ -10,8 +10,8 @@ ts_library(
     ),
     deps = [
         "//src/cdk/testing",
-        "//src/material-experimental/mdc-select/testing",
         "//src/material/paginator/testing",
+        "//src/material/select/testing",
     ],
 )
 

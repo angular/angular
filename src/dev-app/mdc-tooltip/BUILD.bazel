@@ -11,9 +11,9 @@ ng_module(
     ],
     deps = [
         "//src/material-experimental/mdc-button",
-        "//src/material-experimental/mdc-select",
         "//src/material/form-field",
         "//src/material/input",
+        "//src/material/select",
         "//src/material/tooltip",
         "@npm//@angular/common",
         "@npm//@angular/forms",

@@ -12,7 +12,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
 @Component({
@@ -25,7 +25,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     MatLegacyFormFieldModule,
     MatIconModule,
     MatLegacyInputModule,
-    MatSelectModule,
+    MatLegacySelectModule,
     MatToolbarModule,
     ToolbarExamplesModule,
   ],

@@ -13,19 +13,20 @@ import {MatCommonModule} from '@angular/material/core';
 import {MatLegacyOptionModule} from '@angular/material/legacy-core';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {CdkScrollableModule} from '@angular/cdk/scrolling';
-import {MAT_SELECT_SCROLL_STRATEGY_PROVIDER, MatSelect, MatSelectTrigger} from './select';
+import {MAT_SELECT_SCROLL_STRATEGY_PROVIDER} from '@angular/material/select';
+import {MatLegacySelect, MatLegacySelectTrigger} from './select';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, MatLegacyOptionModule, MatCommonModule],
   exports: [
     CdkScrollableModule,
     MatLegacyFormFieldModule,
-    MatSelect,
-    MatSelectTrigger,
+    MatLegacySelect,
+    MatLegacySelectTrigger,
     MatLegacyOptionModule,
     MatCommonModule,
   ],
-  declarations: [MatSelect, MatSelectTrigger],
+  declarations: [MatLegacySelect, MatLegacySelectTrigger],
   providers: [MAT_SELECT_SCROLL_STRATEGY_PROVIDER],
 })
-export class MatSelectModule {}
+export class MatLegacySelectModule {}

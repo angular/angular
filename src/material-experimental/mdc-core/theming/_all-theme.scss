@@ -11,7 +11,6 @@
 @use '../../mdc-list/list-theme';
 @use '../../mdc-menu/menu-theme';
 @use '../../mdc-radio/radio-theme';
-@use '../../mdc-select/select-theme';
 @use '../../mdc-slide-toggle/slide-toggle-theme';
 @use '../../mdc-slider/slider-theme';
 @use '../../mdc-snack-bar/snack-bar-theme';
@@ -38,7 +37,7 @@
     @include mat.progress-bar-theme($theme-or-color-config);
     @include progress-spinner-theme.theme($theme-or-color-config);
     @include radio-theme.theme($theme-or-color-config);
-    @include select-theme.theme($theme-or-color-config);
+    @include mat.select-theme($theme-or-color-config);
     @include slide-toggle-theme.theme($theme-or-color-config);
     @include slider-theme.theme($theme-or-color-config);
     @include snack-bar-theme.theme($theme-or-color-config);

@@ -57,6 +57,9 @@ entryPoints = [
     "radio",
     "radio/testing",
     "select",
+    "select/testing",
+    "legacy-select",
+    "legacy-select/testing",
     "sidenav",
     "sidenav/testing",
     "slide-toggle",
@@ -81,7 +84,6 @@ entryPoints = [
     "tooltip/testing",
     "tree",
     "tree/testing",
-    "select/testing",
 ]
 
 # List of all non-testing entry-points of the Angular Material package.

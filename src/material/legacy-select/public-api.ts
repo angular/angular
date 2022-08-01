@@ -6,9 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './module';
-export * from './select';
+export * from './select-module';
 export * from './select-animations';
+export {
+  MatLegacySelectChange as MatSelectChange,
+  MatLegacySelect as MatSelect,
+  MatLegacySelectTrigger as MatSelectTrigger,
+} from './select';
+
 export {
   MAT_SELECT_CONFIG,
   MAT_SELECT_SCROLL_STRATEGY,

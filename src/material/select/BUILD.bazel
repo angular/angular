@@ -1,14 +1,4 @@
-load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
-load(
-    "//tools:defaults.bzl",
-    "markdown_to_html",
-    "ng_e2e_test_library",
-    "ng_module",
-    "ng_test_library",
-    "ng_web_test_suite",
-    "sass_binary",
-    "sass_library",
-)
+load("//tools:defaults.bzl", "markdown_to_html", "ng_module", "ng_test_library", "ng_web_test_suite", "sass_binary", "sass_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -16,9 +6,11 @@ ng_module(
     name = "select",
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["**/*.spec.ts"],
+        exclude = [
+            "**/*.spec.ts",
+        ],
     ),
-    assets = [":select.css"] + glob(["**/*.html"]),
+    assets = [":select_scss"] + glob(["**/*.html"]),
     deps = [
         "//src:dev_mode_types",
         "//src/cdk/a11y",
@@ -29,8 +21,7 @@ ng_module(
         "//src/cdk/overlay",
         "//src/cdk/scrolling",
         "//src/material/core",
-        "//src/material/legacy-core",
-        "//src/material/legacy-form-field",
+        "//src/material/form-field",
         "@npm//@angular/animations",
         "@npm//@angular/common",
         "@npm//@angular/core",
@@ -42,24 +33,25 @@ ng_module(
 sass_library(
     name = "select_scss_lib",
     srcs = glob(["**/_*.scss"]),
-    deps = ["//src/material/core:core_scss_lib"],
+    deps = [
+        "//:mdc_sass_lib",
+        "//src/material/core:core_scss_lib",
+    ],
 )
 
 sass_binary(
     name = "select_scss",
     src = "select.scss",
     deps = [
+        "//:mdc_sass_lib",
         "//src/cdk:sass_lib",
-        "//src/material/core:core_scss_lib",
+        "//src/material:sass_lib",
     ],
 )
 
 ng_test_library(
-    name = "unit_test_sources",
-    srcs = glob(
-        ["**/*.spec.ts"],
-        exclude = ["**/*.e2e.spec.ts"],
-    ),
+    name = "select_tests_lib",
+    srcs = glob(["**/*.spec.ts"]),
     deps = [
         ":select",
         "//src/cdk/a11y",
@@ -69,8 +61,7 @@ ng_test_library(
         "//src/cdk/scrolling",
         "//src/cdk/testing/private",
         "//src/material/core",
-        "//src/material/legacy-core",
-        "//src/material/legacy-form-field",
+        "//src/material/form-field",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
         "@npm//rxjs",
@@ -79,20 +70,9 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [":unit_test_sources"],
-)
-
-ng_e2e_test_library(
-    name = "e2e_test_sources",
-    srcs = glob(["**/*.e2e.spec.ts"]),
     deps = [
-        "//src/cdk/testing/private/e2e",
+        ":select_tests_lib",
     ],
-)
-
-e2e_test_suite(
-    name = "e2e_tests",
-    deps = [":e2e_test_sources"],
 )
 
 markdown_to_html(

@@ -41,7 +41,7 @@ import {
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
@@ -192,7 +192,7 @@ export class CustomHeaderNgContent<D> {
     MatIconModule,
     MatLegacyInputModule,
     MatNativeDateModule,
-    MatSelectModule,
+    MatLegacySelectModule,
     ReactiveFormsModule,
     CustomHeader,
     CustomHeaderNgContent,

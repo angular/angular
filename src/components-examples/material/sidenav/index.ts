@@ -6,7 +6,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
 import {MatRadioModule} from '@angular/material/radio';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {SidenavAutosizeExample} from './sidenav-autosize/sidenav-autosize-example';
@@ -59,7 +59,7 @@ const EXAMPLES = [
     MatListModule,
     MatRadioModule,
     MatSidenavModule,
-    MatSelectModule,
+    MatLegacySelectModule,
     MatToolbarModule,
     ReactiveFormsModule,
   ],

@@ -15,7 +15,7 @@ import {CheckboxExamplesModule} from '@angular/components-examples/material/chec
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 
 export interface Task {
   name: string;
@@ -113,7 +113,7 @@ export class MatCheckboxDemoNestedChecklist {
     MatCheckboxModule,
     MatLegacyFormFieldModule,
     MatLegacyInputModule,
-    MatSelectModule,
+    MatLegacySelectModule,
     MatPseudoCheckboxModule,
     ReactiveFormsModule,
     MatCheckboxDemoNestedChecklist,
