@@ -9,7 +9,7 @@ For example, you would use a pipe to show a date as **April 15, 1988** rather th
 
 <div class="alert is-helpful">
 
-For the sample application used in this topic, see the <live-example></live-example>.
+For the sample application used in this topic, see the <live-example name="pipes"></live-example>.
 
 </div>
 
