@@ -2382,12 +2382,12 @@ Currently, the `AdminModule` does not preload because `CanLoad` is blocking it.
 
 <a id="preload-canload"></a>
 
-#### `CanLoad` blocks preload
+#### `CanLoad` blocks preload of children
 
 The `PreloadAllModules` strategy does not load feature areas protected by a [CanLoad](#can-load-guard) guard.
 
 You added a `CanLoad` guard to the route in the `AdminModule` a few steps back to block loading of that module until the user is authorized.
-That `CanLoad` guard takes precedence over the preload strategy.
+That `CanLoad` guard takes precedence over the preload strategy for loading children routes.
 
 If you want to preload a module as well as guard against unauthorized access, remove the `canLoad()` guard method and rely on the [canActivate()](#can-activate-guard) guard alone.
 
