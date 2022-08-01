@@ -12,23 +12,28 @@ import {ChangeDetectionStrategy, Component, EnvironmentInjector, inject as coreI
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkWithHref, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkActive, RouterLinkWithHref, RouterModule, RouterOutlet, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {concat, defer, EMPTY, from, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/operators';
 
 import {CanActivateChildFn, CanActivateFn, CanMatch, CanMatchFn, ResolveFn} from '../src/models';
+import {withRouterConfig} from '../src/provide_router';
 import {forEach, wrapIntoObservable} from '../src/utils/collection';
 import {getLoadedRoutes} from '../src/utils/config';
-import {RouterTestingModule} from '../testing';
+import {provideRouterForTesting} from '../testing/src/provide_router_for_testing';
+
+const ROUTER_DIRECTIVES = [RouterLink, RouterLinkWithHref, RouterLinkActive, RouterOutlet];
 
 describe('Integration', () => {
   const noopConsole: Console = {log() {}, warn() {}};
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports:
-          [RouterTestingModule.withRoutes([{path: 'simple', component: SimpleCmp}]), TestModule],
-      providers: [{provide: Console, useValue: noopConsole}]
+      imports: [...ROUTER_DIRECTIVES, TestModule],
+      providers: [
+        {provide: Console, useValue: noopConsole},
+        provideRouterForTesting([{path: 'simple', component: SimpleCmp}])
+      ]
     });
   });
 
@@ -5465,7 +5470,12 @@ describe('Integration', () => {
          }
 
          TestBed.configureTestingModule({
-           imports: [RouterTestingModule.withRoutes([{path: '', component: SimpleComponent}])],
+           imports: [
+             ...ROUTER_DIRECTIVES,
+           ],
+           providers: [
+             provideRouterForTesting([{path: '', component: SimpleComponent}]),
+           ],
            declarations: [LinkComponent, SimpleComponent]
          });
 
@@ -6568,8 +6578,10 @@ describe('Integration', () => {
 
     it('should be injectable', () => {
       TestBed.configureTestingModule({
-        imports: [RouterTestingModule],
-        providers: [{provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy}]
+        providers: [
+          {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
+          provideRouterForTesting()
+        ]
       });
 
       const router = TestBed.inject(Router);
@@ -6598,7 +6610,6 @@ describe('Integration', () => {
 
          TestBed.configureTestingModule({
            declarations: [Container],
-           imports: [RouterTestingModule],
            providers: [{provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy}]
          });
 
@@ -6734,13 +6745,11 @@ describe('Integration', () => {
 
          @NgModule({
            declarations: [RootCmpWithCondOutlet, Tool1Component, Tool2Component],
-           imports: [
-             CommonModule,
-             RouterTestingModule.withRoutes([
-               {path: 'a', outlet: 'toolpanel', component: Tool1Component},
-               {path: 'b', outlet: 'toolpanel', component: Tool2Component},
-             ]),
-           ],
+           imports: [CommonModule, ...ROUTER_DIRECTIVES],
+           providers: [provideRouterForTesting([
+             {path: 'a', outlet: 'toolpanel', component: Tool1Component},
+             {path: 'b', outlet: 'toolpanel', component: Tool2Component},
+           ])]
          })
          class TestModule {
          }
@@ -6791,12 +6800,15 @@ describe('Integration', () => {
            declarations: [RootCmpWithCondOutlet],
            imports: [
              CommonModule,
-             RouterTestingModule.withRoutes([
+             ...ROUTER_DIRECTIVES,
+           ],
+           providers: [
+             {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
+             provideRouterForTesting([
                {path: 'a', component: SimpleCmp},
                {path: 'b', component: BlankCmp},
              ]),
-           ],
-           providers: [{provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy}]
+           ]
          })
          class TestModule {
          }
@@ -6856,14 +6868,15 @@ describe('Integration', () => {
            declarations: [Root, Parent, Child],
            imports: [
              CommonModule,
-             RouterTestingModule.withRoutes([
-               {path: 'a', component: Parent, children: [{path: 'b', component: Child}]},
-               {path: 'c', component: SimpleCmp}
-             ]),
+             ...ROUTER_DIRECTIVES,
            ],
            providers: [
              {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
-             {provide: CREATED_COMPS, useValue: []}
+             {provide: CREATED_COMPS, useValue: []},
+             provideRouterForTesting([
+               {path: 'a', component: Parent, children: [{path: 'b', component: Child}]},
+               {path: 'c', component: SimpleCmp}
+             ]),
            ]
          })
          class TestModule {
@@ -6914,11 +6927,12 @@ describe('Integration', () => {
 
          @NgModule({
            declarations: [Root, ComponentB],
-           imports: [RouterTestingModule.withRoutes([
-             {path: 'a', loadChildren: () => LoadedModule}, {path: 'b', component: ComponentB}
-           ])],
+           imports: [ROUTER_DIRECTIVES],
            providers: [
              {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
+             provideRouterForTesting([
+               {path: 'a', loadChildren: () => LoadedModule}, {path: 'b', component: ComponentB}
+             ])
            ]
          })
          class TestModule {
@@ -6946,50 +6960,27 @@ describe('Integration', () => {
 
 describe('Testing router options', () => {
   describe('should configure the router', () => {
-    it('assigns errorHandler', () => {
-      function errorHandler(error: any) {
-        throw error;
-      }
-      TestBed.configureTestingModule(
-          {imports: [RouterTestingModule.withRoutes([], {errorHandler})]});
-      const router: Router = TestBed.inject(Router);
-      expect(router.errorHandler).toBe(errorHandler);
-    });
-
-    it('assigns malformedUriErrorHandler', () => {
-      function malformedUriErrorHandler(e: URIError, urlSerializer: UrlSerializer, url: string) {
-        return urlSerializer.parse('/error');
-      }
-      TestBed.configureTestingModule(
-          {imports: [RouterTestingModule.withRoutes([], {malformedUriErrorHandler})]});
-      const router: Router = TestBed.inject(Router);
-      expect(router.malformedUriErrorHandler).toBe(malformedUriErrorHandler);
-    });
-
     it('assigns onSameUrlNavigation', () => {
-      TestBed.configureTestingModule(
-          {imports: [RouterTestingModule.withRoutes([], {onSameUrlNavigation: 'reload'})]});
+      TestBed.configureTestingModule({
+        providers: [provideRouterForTesting([], withRouterConfig({onSameUrlNavigation: 'reload'}))]
+      });
       const router: Router = TestBed.inject(Router);
       expect(router.onSameUrlNavigation).toBe('reload');
     });
 
     it('assigns paramsInheritanceStrategy', () => {
-      TestBed.configureTestingModule(
-          {imports: [RouterTestingModule.withRoutes([], {paramsInheritanceStrategy: 'always'})]});
+      TestBed.configureTestingModule({
+        providers:
+            [provideRouterForTesting([], withRouterConfig({paramsInheritanceStrategy: 'always'}))]
+      });
       const router: Router = TestBed.inject(Router);
       expect(router.paramsInheritanceStrategy).toBe('always');
     });
 
-    it('assigns relativeLinkResolution', () => {
-      TestBed.configureTestingModule(
-          {imports: [RouterTestingModule.withRoutes([], {relativeLinkResolution: 'corrected'})]});
-      const router: Router = TestBed.inject(Router);
-      expect(router.relativeLinkResolution).toBe('corrected');
-    });
-
     it('assigns urlUpdateStrategy', () => {
-      TestBed.configureTestingModule(
-          {imports: [RouterTestingModule.withRoutes([], {urlUpdateStrategy: 'eager'})]});
+      TestBed.configureTestingModule({
+        providers: [provideRouterForTesting([], withRouterConfig({urlUpdateStrategy: 'eager'}))]
+      });
       const router: Router = TestBed.inject(Router);
       expect(router.urlUpdateStrategy).toBe('eager');
     });
@@ -7285,7 +7276,7 @@ class LazyComponent {
 
 
 @NgModule({
-  imports: [RouterTestingModule, CommonModule],
+  imports: [CommonModule, ...ROUTER_DIRECTIVES],
 
   exports: [
     BlankCmp,

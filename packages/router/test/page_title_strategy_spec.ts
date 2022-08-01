@@ -10,7 +10,8 @@ import {DOCUMENT} from '@angular/common';
 import {Component, Inject, Injectable, NgModule} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Router, RouterModule, RouterStateSnapshot, TitleStrategy} from '@angular/router';
-import {RouterTestingModule} from '@angular/router/testing';
+
+import {provideRouterForTesting} from '../testing/src/provide_router_for_testing';
 
 describe('title strategy', () => {
   describe('DefaultTitleStrategy', () => {
@@ -20,9 +21,9 @@ describe('title strategy', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         imports: [
-          RouterTestingModule,
           TestModule,
         ],
+        providers: [provideRouterForTesting()]
       });
       router = TestBed.inject(Router);
       document = TestBed.inject(DOCUMENT);
@@ -117,10 +118,12 @@ describe('title strategy', () => {
 
          TestBed.configureTestingModule({
            imports: [
-             RouterTestingModule,
              TestModule,
            ],
-           providers: [{provide: TitleStrategy, useClass: TemplatePageTitleStrategy}]
+           providers: [
+             provideRouterForTesting(),
+             {provide: TitleStrategy, useClass: TemplatePageTitleStrategy}
+           ]
          });
          const router = TestBed.inject(Router);
          const document = TestBed.inject(DOCUMENT);

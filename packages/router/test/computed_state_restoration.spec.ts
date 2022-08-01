@@ -11,11 +11,11 @@ import {SpyLocation} from '@angular/common/testing';
 import {Component, Injectable, NgModule} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {CanActivate, CanDeactivate, Resolve, Router, RouterModule, UrlTree} from '@angular/router';
+import {CanActivate, CanDeactivate, Resolve, Router, RouterModule, RouterOutlet, UrlTree, withRouterConfig} from '@angular/router';
 import {EMPTY, Observable, of} from 'rxjs';
 
 import {isUrlTree} from '../src/url_tree';
-import {RouterTestingModule} from '../testing';
+import {provideRouterForTesting} from '../testing/src/provide_router_for_testing';
 
 describe('`restoredState#ɵrouterPageId`', () => {
   @Injectable({providedIn: 'root'})
@@ -486,7 +486,11 @@ function advance(fixture: ComponentFixture<any>, millis?: number): void {
 
 @NgModule({
   imports: [
-    RouterTestingModule.withRoutes([], {canceledNavigationResolution: 'computed'}), CommonModule
+    RouterOutlet,
+    CommonModule,
+  ],
+  providers: [
+    provideRouterForTesting([], withRouterConfig({canceledNavigationResolution: 'computed'})),
   ],
   exports: [SimpleCmp, RootCmp, ThrowingCmp],
   declarations: [SimpleCmp, RootCmp, ThrowingCmp]

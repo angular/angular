@@ -1,8 +1,5 @@
 [
   {
-    "name": "ALLOW_MULTIPLE_PLATFORMS"
-  },
-  {
     "name": "APP_BASE_HREF"
   },
   {
@@ -30,9 +27,6 @@
     "name": "ApplicationInitStatus"
   },
   {
-    "name": "ApplicationModule"
-  },
-  {
     "name": "ApplicationRef"
   },
   {
@@ -45,22 +39,13 @@
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
-    "name": "BROWSER_MODULE_PROVIDERS_MARKER"
-  },
-  {
     "name": "BehaviorSubject"
   },
   {
     "name": "BrowserDomAdapter"
   },
   {
-    "name": "BrowserModule"
-  },
-  {
     "name": "BrowserPlatformLocation"
-  },
-  {
-    "name": "BrowserViewportScroller"
   },
   {
     "name": "BrowserXhr"
@@ -97,9 +82,6 @@
   },
   {
     "name": "CombineLatestSubscriber"
-  },
-  {
-    "name": "CommonModule"
   },
   {
     "name": "Compiler"
@@ -154,9 +136,6 @@
   },
   {
     "name": "DoOperator"
-  },
-  {
-    "name": "DomEventsPlugin"
   },
   {
     "name": "DomRendererFactory2"
@@ -228,9 +207,6 @@
     "name": "GuardsCheckStart"
   },
   {
-    "name": "HashLocationStrategy"
-  },
-  {
     "name": "INITIAL_NAVIGATION"
   },
   {
@@ -244,6 +220,9 @@
   },
   {
     "name": "INJECTOR_SCOPE"
+  },
+  {
+    "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
   },
   {
     "name": "InjectFlags"
@@ -261,13 +240,7 @@
     "name": "ItemComponent"
   },
   {
-    "name": "KeyEventsPlugin"
-  },
-  {
     "name": "LOCALE_ID2"
-  },
-  {
-    "name": "LOCATION_INITIALIZED"
   },
   {
     "name": "LQueries_"
@@ -393,9 +366,6 @@
     "name": "NgOnChangesFeatureImpl"
   },
   {
-    "name": "NgProbeToken"
-  },
-  {
     "name": "NgZone"
   },
   {
@@ -415,9 +385,6 @@
   },
   {
     "name": "Observable"
-  },
-  {
-    "name": "Optional"
   },
   {
     "name": "OuterSubscriber"
@@ -441,13 +408,7 @@
     "name": "PlatformLocation"
   },
   {
-    "name": "PlatformRef"
-  },
-  {
     "name": "Position"
-  },
-  {
-    "name": "PreloadingStrategy"
   },
   {
     "name": "QUERY_PARAM_RE"
@@ -471,25 +432,13 @@
     "name": "ROUTER_CONFIGURATION"
   },
   {
-    "name": "ROUTER_FORROOT_GUARD"
-  },
-  {
-    "name": "ROUTER_INITIALIZER"
-  },
-  {
     "name": "ROUTER_PRELOADER"
-  },
-  {
-    "name": "ROUTER_PROVIDERS"
   },
   {
     "name": "ROUTER_SCROLLER"
   },
   {
     "name": "ROUTES"
-  },
-  {
-    "name": "ROUTES2"
   },
   {
     "name": "Recognizer"
@@ -516,13 +465,7 @@
     "name": "ResolveStart"
   },
   {
-    "name": "RootComponent"
-  },
-  {
     "name": "RootViewRef"
-  },
-  {
-    "name": "RouteExampleModule"
   },
   {
     "name": "RouteTitleKey"
@@ -546,16 +489,7 @@
     "name": "RouterLinkWithHref"
   },
   {
-    "name": "RouterModule"
-  },
-  {
     "name": "RouterOutlet"
-  },
-  {
-    "name": "RouterPreloader"
-  },
-  {
-    "name": "RouterScroller"
   },
   {
     "name": "RouterState"
@@ -576,9 +510,6 @@
     "name": "SEGMENT_RE"
   },
   {
-    "name": "SERVER_TRANSITION_PROVIDERS"
-  },
-  {
     "name": "SafeSubscriber"
   },
   {
@@ -594,9 +525,6 @@
     "name": "ScanSubscriber"
   },
   {
-    "name": "Scroll"
-  },
-  {
     "name": "SecurityContext"
   },
   {
@@ -610,9 +538,6 @@
   },
   {
     "name": "SimpleOuterSubscriber"
-  },
-  {
-    "name": "SkipSelf"
   },
   {
     "name": "StandaloneService"
@@ -642,12 +567,6 @@
     "name": "TESTABILITY"
   },
   {
-    "name": "TESTABILITY_GETTER"
-  },
-  {
-    "name": "TESTABILITY_PROVIDERS"
-  },
-  {
     "name": "THROW_IF_NOT_FOUND"
   },
   {
@@ -658,9 +577,6 @@
   },
   {
     "name": "TRACKED_LVIEWS"
-  },
-  {
-    "name": "TRANSITION_ID"
   },
   {
     "name": "TakeLastOperator"
@@ -682,12 +598,6 @@
   },
   {
     "name": "TemplateRef"
-  },
-  {
-    "name": "Testability"
-  },
-  {
-    "name": "TestabilityRegistry"
   },
   {
     "name": "ThrowIfEmptyOperator"
@@ -747,9 +657,6 @@
     "name": "ViewRef"
   },
   {
-    "name": "ViewportScroller"
-  },
-  {
     "name": "_DOM"
   },
   {
@@ -784,9 +691,6 @@
   },
   {
     "name": "_symbolIterator"
-  },
-  {
-    "name": "_testabilityGetter"
   },
   {
     "name": "_wrapInTimeout"
@@ -829,9 +733,6 @@
   },
   {
     "name": "applyView"
-  },
-  {
-    "name": "attachInjectFlag"
   },
   {
     "name": "attachPatchData"
@@ -952,9 +853,6 @@
   },
   {
     "name": "createNodeInjector"
-  },
-  {
-    "name": "createPlatformFactory"
   },
   {
     "name": "createResultForNode"
@@ -1269,9 +1167,6 @@
     "name": "getPipeDef"
   },
   {
-    "name": "getPlatform"
-  },
-  {
     "name": "getProjectionNodes"
   },
   {
@@ -1279,9 +1174,6 @@
   },
   {
     "name": "getResolve"
-  },
-  {
-    "name": "getScrollRestorationProperty"
   },
   {
     "name": "getSelectedIndex"
@@ -1539,9 +1431,6 @@
     "name": "lookupTokenUsingNodeInjector"
   },
   {
-    "name": "makeParamDecorator"
-  },
-  {
     "name": "makeRecord"
   },
   {
@@ -1623,9 +1512,6 @@
     "name": "noMatch2"
   },
   {
-    "name": "noSideEffects"
-  },
-  {
     "name": "nodeChildrenAsMap"
   },
   {
@@ -1656,9 +1542,6 @@
     "name": "onLeave"
   },
   {
-    "name": "optionsReducer"
-  },
-  {
     "name": "paramCompareMap"
   },
   {
@@ -1668,12 +1551,6 @@
     "name": "pipeFromArray"
   },
   {
-    "name": "platformBrowser"
-  },
-  {
-    "name": "platformCore"
-  },
-  {
     "name": "prioritizedGuardValue"
   },
   {
@@ -1681,12 +1558,6 @@
   },
   {
     "name": "promise"
-  },
-  {
-    "name": "provideForRootGuard"
-  },
-  {
-    "name": "provideInitialNavigation"
   },
   {
     "name": "provideRoutes"
@@ -1758,7 +1629,7 @@
     "name": "resolveForwardRef"
   },
   {
-    "name": "routerNgProbeToken"
+    "name": "rootRoute"
   },
   {
     "name": "rxSubscriber"
@@ -1771,9 +1642,6 @@
   },
   {
     "name": "scheduleArray"
-  },
-  {
-    "name": "scheduleMicroTask"
   },
   {
     "name": "searchTokensOnInjector"
@@ -1828,9 +1696,6 @@
   },
   {
     "name": "setUpAttributes"
-  },
-  {
-    "name": "setupRouter"
   },
   {
     "name": "shallowEqual"
@@ -1983,12 +1848,6 @@
     "name": "ɵɵdefineInjectable"
   },
   {
-    "name": "ɵɵdefineInjector"
-  },
-  {
-    "name": "ɵɵdefineNgModule"
-  },
-  {
     "name": "ɵɵdirectiveInject"
   },
   {
@@ -2005,9 +1864,6 @@
   },
   {
     "name": "ɵɵinjectAttribute"
-  },
-  {
-    "name": "ɵɵinvalidFactory"
   },
   {
     "name": "ɵɵlistener"
