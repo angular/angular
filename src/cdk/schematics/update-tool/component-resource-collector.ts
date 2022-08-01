@@ -99,10 +99,11 @@ export class ComponentResourceCollector {
             // Need to add an offset of one to the start because the template quotes are
             // not part of the template content.
             const templateStartIdx = el.getStart() + 1;
+            const content = stripBom(el.text);
             this.resolvedStylesheets.push({
               filePath,
               container: node,
-              content: el.text,
+              content,
               inline: true,
               start: templateStartIdx,
               getCharacterAndLineOfPosition: pos =>
@@ -175,7 +176,9 @@ export class ComponentResourceCollector {
     filePath: WorkspacePath,
     container: ts.ClassDeclaration | null,
   ): ResolvedResource | null {
-    const fileContent = this._fileSystem.read(filePath);
+    // Strip the BOM to avoid issues with the Sass compiler. See:
+    // https://github.com/angular/components/issues/24227#issuecomment-1200934258
+    const fileContent = stripBom(this._fileSystem.read(filePath) || '');
 
     if (!fileContent) {
       return null;
@@ -192,4 +195,9 @@ export class ComponentResourceCollector {
       getCharacterAndLineOfPosition: pos => getLineAndCharacterFromPosition(lineStartsMap, pos),
     };
   }
+}
+
+/** Strips the BOM from a string. */
+function stripBom(content: string): string {
+  return content.replace(/\uFEFF/g, '');
 }
