@@ -1,5 +1,6 @@
 extends: existence
 message: "'%s' is corporate speak."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
 ignorecase: true
 level: error
 tokens:

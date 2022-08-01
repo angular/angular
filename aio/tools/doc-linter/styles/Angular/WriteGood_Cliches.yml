@@ -1,5 +1,6 @@
 extends: existence
 message: "'%s' is a cliché"
+link: 'https://angular.io/guide/docs-lint-errors#cliches'
 ignorecase: true
 level: warning
 tokens:

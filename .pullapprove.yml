@@ -1056,6 +1056,8 @@ groups:
           'aio/content/guide/docs-style-guide.md',
           'aio/content/examples/docs-style-guide/**/{*,.*}',
           'aio/content/images/guide/docs-style-guide/**/{*,.*}',
+          'aio/content/guide/docs-lint-errors.md',
+          'aio/content/images/guide/docs-lint-errors/**/{*,.*}',
           'aio/content/guide/localized-documentation.md',
           'aio/content/guide/localizing-angular.md',
           'aio/content/guide/reviewing-content.md',

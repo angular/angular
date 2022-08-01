@@ -1,5 +1,6 @@
 extends: existence
 message: "See if you can rewrite the sentence with '%s' to use more common words."
+link: 'https://angular.io/guide/docs-lint-errors#a-word-is-too-wordy-or-should-be-replaced-by-another'
 ignorecase: true
 level: suggestion
 tokens:
