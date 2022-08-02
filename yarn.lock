@@ -247,9 +247,10 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#1addc303bef0b6acc0dca0961e9e642629f3a5cd":
-  version "0.0.0-fa61d03a603e04af2b66f3598f1af01da1e1cfb1"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#1addc303bef0b6acc0dca0961e9e642629f3a5cd"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#74462a42d6d2a2bc632438c90d535853d5ed4910":
+  version "0.0.0-9c1ebb19ecd3fa1efb9c2f4548d3c543a1dfb776"
+  uid "74462a42d6d2a2bc632438c90d535853d5ed4910"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#74462a42d6d2a2bc632438c90d535853d5ed4910"
   dependencies:
     "@angular-devkit/build-angular" "14.1.0-rc.3"
     "@angular/benchpress" "0.3.0"
@@ -268,6 +269,7 @@
     "@types/send" "^0.17.1"
     "@types/tmp" "^0.2.1"
     "@types/uuid" "^8.3.1"
+    "@types/ws" "8.5.3"
     "@types/yargs" "^17.0.0"
     browser-sync "^2.27.7"
     clang-format "1.8.0"
@@ -379,9 +381,10 @@
     glob "8.0.3"
     yargs "^17.2.1"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#865c7687cdca2bd512040330e1677eecaa26e46a":
-  version "0.0.0-fa61d03a603e04af2b66f3598f1af01da1e1cfb1"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#865c7687cdca2bd512040330e1677eecaa26e46a"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#a77c03a300df62723c7c70897da7e54af519f3fe":
+  version "0.0.0-9c1ebb19ecd3fa1efb9c2f4548d3c543a1dfb776"
+  uid a77c03a300df62723c7c70897da7e54af519f3fe
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#a77c03a300df62723c7c70897da7e54af519f3fe"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.7.3"
@@ -4372,7 +4375,7 @@
   resolved "https://registry.yarnpkg.com/@types/which/-/which-2.0.1.tgz#27ecd67f915b7c3d6ba552135bb1eecd66e63501"
   integrity sha512-Jjakcv8Roqtio6w1gr0D7y6twbhx6gGgFGF5BLwajPpnOIOxFkakFhCq+LmyyeAz7BX6ULrjBOxdKaCDy+4+dQ==
 
-"@types/ws@^8.5.1":
+"@types/ws@8.5.3", "@types/ws@^8.5.1":
   version "8.5.3"
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.5.3.tgz#7d25a1ffbecd3c4f2d35068d0b283c037003274d"
   integrity sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w==
