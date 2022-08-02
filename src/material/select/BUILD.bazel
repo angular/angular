@@ -1,4 +1,14 @@
-load("//tools:defaults.bzl", "markdown_to_html", "ng_module", "ng_test_library", "ng_web_test_suite", "sass_binary", "sass_library")
+load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
+load(
+    "//tools:defaults.bzl",
+    "markdown_to_html",
+    "ng_e2e_test_library",
+    "ng_module",
+    "ng_test_library",
+    "ng_web_test_suite",
+    "sass_binary",
+    "sass_library",
+)
 
 package(default_visibility = ["//visibility:public"])
 
@@ -51,7 +61,10 @@ sass_binary(
 
 ng_test_library(
     name = "select_tests_lib",
-    srcs = glob(["**/*.spec.ts"]),
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["**/*.e2e.spec.ts"],
+    ),
     deps = [
         ":select",
         "//src/cdk/a11y",
@@ -73,6 +86,19 @@ ng_web_test_suite(
     deps = [
         ":select_tests_lib",
     ],
+)
+
+ng_e2e_test_library(
+    name = "e2e_test_sources",
+    srcs = glob(["**/*.e2e.spec.ts"]),
+    deps = [
+        "//src/cdk/testing/private/e2e",
+    ],
+)
+
+e2e_test_suite(
+    name = "e2e_tests",
+    deps = [":e2e_test_sources"],
 )
 
 markdown_to_html(

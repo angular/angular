@@ -11,8 +11,8 @@ describe('select', () => {
   // accidentally. This could happen because the select panel is removed from DOM
   // immediately when an option is clicked. Usually ripples still fade-in at that point.
   it('should not accidentally persist ripples', async () => {
-    const select = getElement('.mat-select');
-    const options = element.all(by.css('.mat-option'));
+    const select = getElement('.mat-mdc-select');
+    const options = element.all(by.css('.mat-mdc-option'));
     const ripples = element.all(by.css('.mat-ripple-element'));
 
     // Wait for select to be rendered.
