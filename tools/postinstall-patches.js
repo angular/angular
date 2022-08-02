@@ -139,6 +139,10 @@ for (const [fileName, patches] of ngDevPatches.entries()) {
   }
 }
 
+// TODO: Remove when https://github.com/bazelbuild/rules_nodejs/pull/3517 is available.
+sed('-i', 'private rootDirsRelative;', 'rootDirsRelative(fileName: string): string;',
+    'node_modules/@bazel/concatjs/internal/tsc_wrapped/compiler_host.d.ts');
+
 log('\n# patch: delete d.ts files referring to rxjs-compat');
 // more info in https://github.com/angular/angular/pull/33786
 rm('-rf', [
