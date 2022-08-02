@@ -14,6 +14,9 @@ import {isAbsoluteURL, isValidPath, normalizePath, normalizeSrc} from '../util';
 
 /**
  * Config options recognized by the image loader function.
+ *
+ * @publicApi
+ * @developerPreview
  */
 export interface ImageLoaderConfig {
   // Name of the image to be added to the image request URL
@@ -24,6 +27,9 @@ export interface ImageLoaderConfig {
 
 /**
  * Represents an image loader function.
+ *
+ * @publicApi
+ * @developerPreview
  */
 export type ImageLoader = (config: ImageLoaderConfig) => string;
 
@@ -36,6 +42,9 @@ const noopImageLoader = (config: ImageLoaderConfig) => config.src;
 /**
  * Special token that allows to configure a function that will be used to produce an image URL based
  * on the specified input.
+ *
+ * @publicApi
+ * @developerPreview
  */
 export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
   providedIn: 'root',

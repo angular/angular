@@ -17,7 +17,9 @@ import { NgModuleFactory } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OnChanges } from '@angular/core';
 import { OnDestroy } from '@angular/core';
+import { OnInit } from '@angular/core';
 import { PipeTransform } from '@angular/core';
+import { Provider } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
 import { Subscribable } from 'rxjs';
@@ -254,6 +256,20 @@ export class I18nSelectPipe implements PipeTransform {
     static ɵfac: i0.ɵɵFactoryDeclaration<I18nSelectPipe, never>;
     // (undocumented)
     static ɵpipe: i0.ɵɵPipeDeclaration<I18nSelectPipe, "i18nSelect", true>;
+}
+
+// @public
+export const IMAGE_LOADER: InjectionToken<ImageLoader>;
+
+// @public
+export type ImageLoader = (config: ImageLoaderConfig) => string;
+
+// @public
+export interface ImageLoaderConfig {
+    // (undocumented)
+    src: string;
+    // (undocumented)
+    width?: number;
 }
 
 // @public
@@ -518,6 +534,35 @@ export abstract class NgLocalization {
 }
 
 // @public
+export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
+    constructor(imageLoader: ImageLoader, renderer: Renderer2, imgElement: ElementRef, injector: Injector);
+    set height(value: string | number | undefined);
+    // (undocumented)
+    get height(): number | undefined;
+    loading?: string;
+    // (undocumented)
+    ngOnChanges(changes: SimpleChanges): void;
+    // (undocumented)
+    ngOnDestroy(): void;
+    // (undocumented)
+    ngOnInit(): void;
+    set priority(value: string | boolean | undefined);
+    // (undocumented)
+    get priority(): boolean;
+    rawSrc: string;
+    rawSrcset: string;
+    // (undocumented)
+    srcset?: string;
+    set width(value: string | number | undefined);
+    // (undocumented)
+    get width(): number | undefined;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[rawSrc]", never, { "rawSrc": "rawSrc"; "rawSrcset": "rawSrcset"; "width": "width"; "height": "height"; "loading": "loading"; "priority": "priority"; "src": "src"; "srcset": "srcset"; }, {}, never, never, true>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgOptimizedImage, never>;
+}
+
+// @public
 export class NgPlural {
     constructor(_localization: NgLocalization);
     // (undocumented)
@@ -742,6 +787,29 @@ interface PopStateEvent_2 {
     url?: string;
 }
 export { PopStateEvent_2 as PopStateEvent }
+
+// @public
+export const PRECONNECT_CHECK_BLOCKLIST: InjectionToken<(string | string[])[]>;
+
+// @public
+export const provideCloudflareLoader: (path: string, options?: {
+    ensurePreconnect?: boolean | undefined;
+}) => Provider[];
+
+// @public
+export const provideCloudinaryLoader: (path: string, options?: {
+    ensurePreconnect?: boolean | undefined;
+}) => Provider[];
+
+// @public
+export const provideImageKitLoader: (path: string, options?: {
+    ensurePreconnect?: boolean | undefined;
+}) => Provider[];
+
+// @public
+export const provideImgixLoader: (path: string, options?: {
+    ensurePreconnect?: boolean | undefined;
+}) => Provider[];
 
 // @public
 export function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void;
