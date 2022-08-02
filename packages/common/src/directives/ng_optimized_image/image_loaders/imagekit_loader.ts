@@ -21,6 +21,9 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  *                       should verify that there is a corresponding `<link rel="preconnect">`
  *                       present in the document's `<head>`.
  * @returns Set of providers to configure the ImageKit loader.
+ *
+ * @publicApi
+ * @developerPreview
  */
 export const provideImageKitLoader = createImageLoader(
     createImagekitURL,

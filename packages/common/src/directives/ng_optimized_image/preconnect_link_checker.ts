@@ -32,6 +32,9 @@ const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '
  *  {provide: PRECONNECT_CHECK_BLOCKLIST, multi: true,
  *   useValue: ['https://your-domain-1.com', 'https://your-domain-2.com']}
  * ```
+ *
+ * @publicApi
+ * @developerPreview
  */
 export const PRECONNECT_CHECK_BLOCKLIST =
     new InjectionToken<Array<string|string[]>>('PRECONNECT_CHECK_BLOCKLIST');
