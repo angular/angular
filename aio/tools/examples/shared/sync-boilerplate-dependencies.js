@@ -9,6 +9,16 @@
  * Updates the dependency versions of the top-level `package.json` files in each sub-folder of
  * `./boilerplate/` to match the ones in `./package.json`.
  */
+
+// !!! WARNING !!!
+//
+// This script is run as a [post-upgrade Renovate task][1]. Therefore, it needs to be able to run
+// even when dependencies are not installed (i.e. only rely on Node.js built-in modules).
+// See [here][2] for more info on why dependencies may not have been installed.
+//
+// [1]: https://docs.renovatebot.com/configuration-options/#postupgradetasks
+// [2]: https://docs.renovatebot.com/self-hosted-configuration/#skipinstalls
+
 const fs = require('fs');
 const path = require('path');
 
