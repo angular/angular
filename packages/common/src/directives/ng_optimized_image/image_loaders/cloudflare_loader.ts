@@ -17,6 +17,9 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  * @param path Your domain name
  * e.g. https://mysite.com
  * @returns Provider that provides an ImageLoader function
+ *
+ * @publicApi
+ * @developerPreview
  */
 export const provideCloudflareLoader = createImageLoader(
     createCloudflareURL,

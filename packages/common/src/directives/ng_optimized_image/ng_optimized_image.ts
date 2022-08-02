@@ -61,6 +61,9 @@ const ASPECT_RATIO_TOLERANCE = .1;
  *
  * @usageNotes
  * TODO: add Image directive usage notes.
+ *
+ * @publicApi
+ * @developerPreview
  */
 @Directive({
   standalone: true,
@@ -95,8 +98,10 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * descriptors to generate the final `srcset` property of the image.
    *
    * Example:
+   * ```
    * <img rawSrc="hello.jpg" rawSrcset="100w, 200w" />  =>
    * <img src="path/hello.jpg" srcset="path/hello.jpg?w=100 100w, path/hello.jpg?w=200 200w" />
+   * ```
    */
   @Input() rawSrcset!: string;
 
@@ -144,7 +149,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * Get a value of the `src` and `srcset` if they're set on a host <img> element.
+   * Get a value of the `src` and `srcset` if they're set on a host `<img>` element.
    * These inputs are needed to verify that there are no conflicting sources provided
    * at the same time (e.g. `src` and `rawSrc` together or `srcset` and `rawSrcset`,
    * thus causing an ambiguity on which src to use) and that images
