@@ -1,8 +1,8 @@
-.example-container .mat-form-field + .mat-form-field {
+.example-container mat-form-field + mat-form-field {
   margin-left: 8px;
 }
 
-.example-container .mat-form-field {
+.example-container mat-form-field {
   width: 220px;
 }
 
@@ -11,9 +11,14 @@
 }
 
 .example-container form > * {
-  margin: 5px 0;
+  margin: 12px 0;
 }
 
 .example-container .mat-radio-button {
   margin: 0 12px;
+}
+
+.example-form-fields {
+  display: flex;
+  align-items: flex-start;
 }

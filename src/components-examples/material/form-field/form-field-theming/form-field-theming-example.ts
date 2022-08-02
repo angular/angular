@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
-import {FormBuilder, FormControl, Validators} from '@angular/forms';
+import {NonNullableFormBuilder, Validators} from '@angular/forms';
+import {ThemePalette} from '@angular/material/core';
 
 /** @title Form field theming */
 @Component({
@@ -8,16 +9,14 @@ import {FormBuilder, FormControl, Validators} from '@angular/forms';
   styleUrls: ['form-field-theming-example.css'],
 })
 export class FormFieldThemingExample {
-  colorControl = new FormControl('primary');
-  fontSizeControl = new FormControl(16, Validators.min(10));
   options = this._formBuilder.group({
-    color: this.colorControl,
-    fontSize: this.fontSizeControl,
+    color: this._formBuilder.control('primary' as ThemePalette),
+    fontSize: this._formBuilder.control(16, Validators.min(10)),
   });
 
-  constructor(private _formBuilder: FormBuilder) {}
+  constructor(private _formBuilder: NonNullableFormBuilder) {}
 
   getFontSize() {
-    return Math.max(10, this.fontSizeControl.value || 0);
+    return Math.max(10, this.options.value.fontSize || 0);
   }
 }

@@ -9,25 +9,27 @@
       </mat-radio-group>
     </div>
 
-    <mat-form-field appearance="fill"
-        [hideRequiredMarker]="hideRequiredControl.value"
-        [floatLabel]="getFloatLabelValue()">
-      <input matInput placeholder="Simple placeholder" required>
-    </mat-form-field>
+    <div class="example-form-fields">
+      <mat-form-field appearance="fill"
+          [hideRequiredMarker]="hideRequiredControl.value"
+          [floatLabel]="getFloatLabelValue()">
+        <input matInput placeholder="Simple placeholder" required>
+      </mat-form-field>
 
-    <mat-form-field appearance="fill" [floatLabel]="getFloatLabelValue()">
-      <mat-label>Both a label and a placeholder</mat-label>
-      <input matInput placeholder="Simple placeholder">
-    </mat-form-field>
+      <mat-form-field appearance="fill" [floatLabel]="getFloatLabelValue()">
+        <mat-label>Both a label and a placeholder</mat-label>
+        <input matInput placeholder="Simple placeholder">
+      </mat-form-field>
 
-    <mat-form-field appearance="fill"
-        [hideRequiredMarker]="hideRequiredControl.value"
-        [floatLabel]="getFloatLabelValue()">
-      <mat-select required>
-        <mat-option>-- None --</mat-option>
-        <mat-option value="option">Option</mat-option>
-      </mat-select>
-      <mat-label><mat-icon>favorite</mat-icon> <b> Fancy</b> <i> label</i></mat-label>
-    </mat-form-field>
+      <mat-form-field appearance="fill"
+          [hideRequiredMarker]="hideRequiredControl.value"
+          [floatLabel]="getFloatLabelValue()">
+        <mat-select required>
+          <mat-option>-- None --</mat-option>
+          <mat-option value="option">Option</mat-option>
+        </mat-select>
+        <mat-label><mat-icon>favorite</mat-icon> <b> Fancy</b> <i> label</i></mat-label>
+      </mat-form-field>
+    </div>
   </form>
 </div>

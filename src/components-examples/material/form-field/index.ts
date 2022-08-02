@@ -3,11 +3,11 @@ import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
+import {MatInputModule} from '@angular/material/input';
 import {MatRadioModule} from '@angular/material/radio';
-import {MatLegacySelectModule} from '@angular/material/legacy-select';
+import {MatSelectModule} from '@angular/material/select';
 import {FormFieldAppearanceExample} from './form-field-appearance/form-field-appearance-example';
 import {
   FormFieldCustomControlExample,
@@ -51,11 +51,11 @@ const EXAMPLES = [
     CommonModule,
     MatButtonModule,
     MatCheckboxModule,
-    MatLegacyFormFieldModule,
+    MatFormFieldModule,
     MatIconModule,
-    MatLegacyInputModule,
+    MatInputModule,
     MatRadioModule,
-    MatLegacySelectModule,
+    MatSelectModule,
     ReactiveFormsModule,
   ],
   declarations: [...EXAMPLES, MyTelInput],

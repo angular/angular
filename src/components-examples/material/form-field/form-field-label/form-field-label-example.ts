@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {FormBuilder, FormControl} from '@angular/forms';
-import {FloatLabelType} from '@angular/material/legacy-form-field';
+import {FloatLabelType} from '@angular/material/form-field';
 
 /** @title Form field with label */
 @Component({

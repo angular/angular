@@ -1,11 +1,11 @@
-.example-panel-red.mat-select-panel {
+.example-panel-red.mat-mdc-select-panel {
   background: rgba(255, 0, 0, 0.5);
 }
 
-.example-panel-green.mat-select-panel {
+.example-panel-green.mat-mdc-select-panel {
   background: rgba(0, 255, 0, 0.5);
 }
 
-.example-panel-blue.mat-select-panel {
+.example-panel-blue.mat-mdc-select-panel {
   background: rgba(0, 0, 255, 0.5);
 }
