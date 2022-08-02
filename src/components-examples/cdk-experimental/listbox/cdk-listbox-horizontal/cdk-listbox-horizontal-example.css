@@ -20,7 +20,7 @@
   border-left-width: 1px;
 }
 
-.example-option[aria-selected]::before {
+.example-option[aria-selected='true']::before {
   content: '';
   position: absolute;
   border: 2px solid black;

@@ -115,7 +115,7 @@ describe('CdkOption and CdkListbox', () => {
       expect(listbox.value).toEqual([]);
       for (let i = 0; i < options.length; i++) {
         expect(options[i].isSelected()).toBeFalse();
-        expect(optionEls[i].hasAttribute('aria-selected')).toBeFalse();
+        expect(optionEls[i].getAttribute('aria-selected')).toBe('false');
       }
       expect(fixture.componentInstance.changedOption).toBeUndefined();
     });

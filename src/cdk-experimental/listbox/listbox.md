@@ -29,14 +29,18 @@ The available CSS classes are listed below, by directive.
 
 In addition to CSS classes, these directives add aria attributes that can be targeted in CSS.
 
-| Directive  | Attribute Selector               | Applied...                               |
-|:-----------|----------------------------------|------------------------------------------|
-| cdkOption  | \[aria-disabled="true"]          | If the option is disabled                |
-| cdkOption  | \[aria-selected="true"]          | If the option is selected                |
-| cdkListbox | \[aria-disabled="true"]          | If the listbox is selected               |
-| cdkListbox | \[aria-multiselectable="true"]   | If the listbox allows multiple selection |
-| cdkListbox | \[aria-orientation="horizontal"] | If the listbox is oriented horizontally  |
-| cdkListbox | \[aria-orientation="vertical"]   | If the listbox is oriented vertically    |
+| Directive  | Attribute Selector               | Applied...                              |
+|:-----------|----------------------------------|-----------------------------------------|
+| cdkOption  | \[aria-disabled="true"]          | If the option is disabled               |
+| cdkOption  | \[aria-disabled="false"]         | If the option is not disabled           |
+| cdkOption  | \[aria-selected="true"]          | If the option is selected               |
+| cdkOption  | \[aria-selected="false"]         | If the option is not selected           |
+| cdkListbox | \[aria-disabled="true"]          | If the listbox is disabled              |
+| cdkListbox | \[aria-disabled="false"]         | If the listbox is not disabled          |
+| cdkListbox | \[aria-multiselectable="true"]   | If the listbox is multiple selection    |
+| cdkListbox | \[aria-multiselectable="false"]  | If the listbox is single selection      |
+| cdkListbox | \[aria-orientation="horizontal"] | If the listbox is oriented horizontally |
+| cdkListbox | \[aria-orientation="vertical"]   | If the listbox is oriented vertically   |
 
 ### Getting started
 

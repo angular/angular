@@ -20,7 +20,7 @@
   padding: 5px 5px 5px 25px;
 }
 
-.example-option[aria-selected]::before {
+.example-option[aria-selected='true']::before {
   content: '';
   display: block;
   width: 20px;
