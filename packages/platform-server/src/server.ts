@@ -81,9 +81,14 @@ export class ServerModule {
 }
 
 function _document(injector: Injector) {
-  let config: PlatformConfig|null = injector.get(INITIAL_CONFIG, null);
-  const document = config && config.document ? parseDocument(config.document, config.url) :
-                                               getDOM().createHtmlDocument();
+  const config: PlatformConfig|null = injector.get(INITIAL_CONFIG, null);
+  let document: Document;
+  if (config && config.document) {
+    document = typeof config.document === 'string' ? parseDocument(config.document, config.url) :
+                                                     config.document;
+  } else {
+    document = getDOM().createHtmlDocument();
+  }
   // Tell ivy about the global document
   ɵsetDocument(document);
   return document;

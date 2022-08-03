@@ -51,7 +51,7 @@ export class PlatformState {
 // @public
 export function renderApplication<T>(rootComponent: Type<T>, options: {
     appId: string;
-    document?: string;
+    document?: string | Document;
     url?: string;
     providers?: Array<Provider | ImportedNgModuleProviders>;
     platformProviders?: Provider[];
@@ -59,7 +59,7 @@ export function renderApplication<T>(rootComponent: Type<T>, options: {
 
 // @public
 export function renderModule<T>(module: Type<T>, options: {
-    document?: string;
+    document?: string | Document;
     url?: string;
     extraProviders?: StaticProvider[];
 }): Promise<string>;
