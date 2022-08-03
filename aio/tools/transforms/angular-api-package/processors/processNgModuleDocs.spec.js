@@ -228,6 +228,18 @@ describe('processNgModuleDocs processor', () => {
       '"Pipe1" has no @ngModule tag. Docs of type "pipe" must have this tag. - doc "Pipe1" (pipe) ');
   });
 
+  it('should not error if a standalone pipe/directive does not have an `@ngModule` tag', () => {
+    expect(() => {
+      processor.$process([{
+        docType: 'directive', id: 'Directive1',
+        directiveOptions: { selector: 'dir1', standalone: true }
+      }]);
+    }).not.toThrow();
+    expect(() => {
+      processor.$process([{ docType: 'pipe', id: 'Pipe1', pipeOptions: { standalone: true } }]);
+    }).not.toThrow();
+  });
+
   it('should error if a pipe/directive has an @ngModule tag that does not match an NgModule doc', () => {
     const log = injector.get('log');
     expect(() => {
@@ -293,3 +305,4 @@ function createSymbolWithProvider(providedIn) {
   exportMap.set('ɵprov', { valueDeclaration });
   return { exports: exportMap };
 }
+
