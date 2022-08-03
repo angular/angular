@@ -1,3 +1,22 @@
+<a name="14.1.1"></a>
+# 14.1.1 "moissanite-mango" (2022-08-03)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [251c9abdf](https://github.com/angular/components/commit/251c9abdfe9c37caac132682fed0b9ca24bf681d) | fix | **dialog:** use config injector if provided ([#25332](https://github.com/angular/components/pull/25332)) |
+| [636dd60ee](https://github.com/angular/components/commit/636dd60ee1b162245537dd97964970cb88b68d83) | fix | **drag-drop:** expose pickup position in constrainPosition callback ([#25341](https://github.com/angular/components/pull/25341)) |
+| [aea1a5d67](https://github.com/angular/components/commit/aea1a5d67cc17b60d696f98068f39a0404f94a81) | fix | **overlay:** detach overlay when portal is destroyed from the outside ([#25212](https://github.com/angular/components/pull/25212)) |
+| [63ca33bc8](https://github.com/angular/components/commit/63ca33bc8642975ee7133c08041b5ceacccf6f3d) | fix | **schematics:** strip bom from sass files ([#25364](https://github.com/angular/components/pull/25364)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e045e8d49](https://github.com/angular/components/commit/e045e8d49247805bb531fcdcc950b6c5a10b1de8) | fix | **mdc-chips:** don't use button element if chip row isn't editable ([#25327](https://github.com/angular/components/pull/25327)) |
+| [394b93f18](https://github.com/angular/components/commit/394b93f18032e8d05e48c07bd36dbe44a83b87f5) | fix | **mdc-slider:** skip resizing while the user is dragging ([#25318](https://github.com/angular/components/pull/25318)) |
+## Special Thanks
+Amadou Sall, Kristiyan Kostadinov, Paul Gschwendtner and Serge
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.0"></a>
 # 14.1.0 "neon-plate" (2022-07-20)
 ### cdk
