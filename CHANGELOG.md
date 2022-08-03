@@ -1,3 +1,26 @@
+<a name="14.2.0-next.1"></a>
+# 14.2.0-next.1 "corundum-cat" (2022-08-03)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bf2723c8b](https://github.com/angular/components/commit/bf2723c8bde4bd966fe66d5e9d04b41c7b2ab493) | fix | **dialog:** use config injector if provided ([#25332](https://github.com/angular/components/pull/25332)) |
+| [82be1d709](https://github.com/angular/components/commit/82be1d709aecceeebf7a8c491ae7594f5b38016a) | fix | **drag-drop:** expose pickup position in constrainPosition callback ([#25341](https://github.com/angular/components/pull/25341)) |
+| [aea1a5d67](https://github.com/angular/components/commit/aea1a5d67cc17b60d696f98068f39a0404f94a81) | fix | **overlay:** detach overlay when portal is destroyed from the outside ([#25212](https://github.com/angular/components/pull/25212)) |
+| [96b2d3461](https://github.com/angular/components/commit/96b2d3461e69fa53ee387bb7bea2f2741702c795) | fix | **schematics:** strip bom from sass files ([#25364](https://github.com/angular/components/pull/25364)) |
+### cdk-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [aaa9d93c9](https://github.com/angular/components/commit/aaa9d93c927c630eba3e4743d6a38f186aa08094) | fix | **listbox:** fix issue with aria-selected ([#25373](https://github.com/angular/components/pull/25373)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f214a2ce0](https://github.com/angular/components/commit/f214a2ce0790cbb497805c71540d23469d419fb3) | fix | **mdc-chips:** don't use button element if chip row isn't editable ([#25327](https://github.com/angular/components/pull/25327)) |
+| [aa008def1](https://github.com/angular/components/commit/aa008def1624cc391b05aff53e1622621e35b32b) | fix | **mdc-slider:** skip resizing while the user is dragging ([#25318](https://github.com/angular/components/pull/25318)) |
+## Special Thanks
+Amadou Sall, Kristiyan Kostadinov, Miles Malerba, Paul Gschwendtner, Serge and Wagner Maciel
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.1"></a>
 # 14.1.1 "moissanite-mango" (2022-08-03)
 ### cdk
