@@ -78,6 +78,7 @@ spec_bundle(
     name = "spec_bundle",
     external = ["*/paths.js"],
     platform = "cjs-legacy",
+    target = "es2020",
     deps = [":test_lib"],
 )
 
