@@ -101,6 +101,14 @@
     "bio": "SDE III @cisco | GDE for Angular | Microsoft MVP | Author | Speaker | Passionate Programmer",
     "groups": ["GDE"]
   },
+  "antoniocardenas": {
+    "name": "Antonio Cardenas",
+    "picture": "antonio-cardenas.jpg",
+    "twitter": "yeoudev",
+    "website": "https://yeou.dev",
+    "bio": "Antonio is a senior Angular developer from Honduras, focus on immersive experiences and Web Performance, He is a public Speaker, Mentor and Facilitator for entrepreneurship programs as Techstars Startup Weekend, Content Creator and tech writer Cofounder of non profit organization @Macaotech, Love to share knowledge Typescript Coffe and Cats 🐱.",
+    "groups": ["GDE"]
+  },
   "armenvardanyan95": {
     "name": "Armen Vardanyan",
     "picture": "armen-vardanyan.jpg",
