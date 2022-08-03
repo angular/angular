@@ -30,10 +30,8 @@ export interface Form {
    * Add a control to this form.
    *
    * @param dir The control directive to add to the form.
-   * @param changes The controls current changes in order to check for name change before checking
-   *     for dupes
    */
-  addControl(dir: NgControl, changes: SimpleChanges): void;
+  addControl(dir: NgControl): void;
 
   /**
    * @description

@@ -18,9 +18,7 @@ import {Form} from './form_interface';
 import {NgControl} from './ng_control';
 import {NgModel} from './ng_model';
 import {NgModelGroup} from './ng_model_group';
-import {RadioControlValueAccessor} from './radio_control_value_accessor';
 import {setUpControl, setUpFormContainer, syncPendingControls} from './shared';
-import {duplicateFormNonRadioNames} from './template_driven_errors';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 export const formDirectiveProvider: any = {
@@ -108,7 +106,8 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    */
   public readonly submitted: boolean = false;
 
-  private _directives = new Set<NgModel>();
+  /** @internal */
+  _directives = new Set<NgModel>();
 
   /**
    * @description
@@ -187,27 +186,14 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    * and validity, and adds the instance to the internal list of directives.
    *
    * @param dir The `NgModel` directive instance.
-   * @param changes The `NgModel`'s current changes
    */
-  addControl(dir: NgModel, changes: SimpleChanges): void {
+  addControl(dir: NgModel): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
       (dir as {control: FormControl}).control =
           <FormControl>container.registerControl(dir.name, dir.control);
       setUpControl(dir.control, dir);
       dir.control.updateValueAndValidity({emitEvent: false});
-      /**
-       * We need to check the directives for duplicates on the names when a control is registered
-       * but given ngFor can produce duplicates *for a short time* we need to skip the validation
-       * when changes contain a previous value on the name, since the duplicate will be deleted
-       */
-      if (changes != null && changes['name'] != null && changes['name'].previousValue == null) {
-        this._directives.forEach(d => {
-          if (!(d.valueAccessor instanceof RadioControlValueAccessor) &&
-              !(dir.valueAccessor instanceof RadioControlValueAccessor) && d.name === dir.name)
-            throw duplicateFormNonRadioNames(dir.name);
-        });
-      }
       this._directives.add(dir);
     });
   }

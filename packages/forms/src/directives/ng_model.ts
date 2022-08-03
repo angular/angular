@@ -18,8 +18,9 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor'
 import {NgControl} from './ng_control';
 import {NgForm} from './ng_form';
 import {NgModelGroup} from './ng_model_group';
+import {RadioControlValueAccessor} from './radio_control_value_accessor';
 import {controlPath, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
-import {formGroupNameException, missingNameException, modelParentException} from './template_driven_errors';
+import {duplicateFormNonRadioNames, formGroupNameException, missingNameException, modelParentException} from './template_driven_errors';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 export const formControlBinding: any = {
@@ -231,6 +232,28 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
           // object with the same shape instead.
           const oldName = changes['name'].previousValue;
           this.formDirective.removeControl({name: oldName, path: this._getPath(oldName)});
+        }
+      }
+      if (ngDevMode) {
+        if (this.formDirective) {
+          /**
+           * We need to check the directives for duplicates on the names when a control is
+           * registered but given ngFor can produce duplicates *for a short time* we need to skip
+           * the validation when changes contain a previous value on the name, since the duplicate
+           * will be deleted. The promise is also necessary in order to add to the event stack prior
+           * to setup
+           */
+          Promise.resolve(null).then(() => {
+            if (changes != null && changes['name'] != null &&
+                changes['name'].previousValue == null) {
+              this.formDirective._directives.forEach((d: NgModel) => {
+                if (!(d.valueAccessor instanceof RadioControlValueAccessor) &&
+                    !(this.valueAccessor instanceof RadioControlValueAccessor) &&
+                    d.name === this.name)
+                  throw duplicateFormNonRadioNames(this.name);
+              });
+            }
+          });
         }
       }
       this._setUpControl(changes);

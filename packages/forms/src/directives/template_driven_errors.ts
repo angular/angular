@@ -65,7 +65,7 @@ export function modelGroupParentException(): Error {
 
 export function duplicateFormNonRadioNames(name: string): Error {
   return new RuntimeError(
-      RuntimeErrorCode.NGFORM_DUPLICATE_NONRADIO_NAME,
+      RuntimeErrorCode.NGMODEL_DUPLICATE_NAME,
       `
     Duplicate name "${
           name}" in form detected on non radio controls. This could lead to unintended results.
