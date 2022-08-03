@@ -1,3 +1,19 @@
+<a name="14.1.1"></a>
+# 14.1.1 (2022-08-03)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3606917732](https://github.com/angular/angular/commit/3606917732e5ad887426c1cbccf6e375eff905d6) | fix | improve the missing control flow directive message ([#46903](https://github.com/angular/angular/pull/46903)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [79825d3f10](https://github.com/angular/angular/commit/79825d3f1078c9b91eeb5e4699718ccde6c458b5) | fix | Do not call preload method when not necessary ([#47007](https://github.com/angular/angular/pull/47007)) |
+| [05f3f7445a](https://github.com/angular/angular/commit/05f3f7445a0bbe3c7ffed3aec308ca8888e77d99) | fix | Use correct return type for provideRoutes function ([#46941](https://github.com/angular/angular/pull/46941)) |
+## Special Thanks
+Alan Agius, Andrew Kushnir, Andrew Quinn, Andrew Scott, Aristeidis Bampakos, Asaf M, Bob Watson, Cédric Exbrayat, Durairaj Subramaniam, George Kalpakas, Ivaylo Kirov, J Rob Gant, Kristiyan Kostadinov, Marek Hám, Paul Gschwendtner, Roman Matusevich and Simona Cotin
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.0"></a>
 # 14.1.0 (2022-07-20)
 ## Deprecations
