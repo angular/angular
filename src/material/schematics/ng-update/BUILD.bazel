@@ -1,0 +1,96 @@
+load("//tools:defaults.bzl", "esbuild", "jasmine_node_test", "spec_bundle", "ts_library")
+
+## THIS ONE IS ESM
+# By default everything is ESM
+# ESBUild needs ESM for bundling. Cannot reliably use CJS as input.
+ts_library(
+    name = "ng_update_lib",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "test-cases/**/*.ts",
+        ],
+    ),
+    # Schematics can not yet run in ESM module. For now we continue to use CommonJS.
+    # TODO(ESM): remove this once the Angular CLI supports ESM schematics.
+    devmode_module = "commonjs",
+    deps = [
+        "//src/cdk/schematics",
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@schematics/angular",
+        "@npm//@types/node",
+        "@npm//typescript",
+    ],
+)
+
+esbuild(
+    name = "ng_update_index",
+    entry_point = ":index.ts",
+    external = [
+        "@angular/cdk/schematics",
+        "@schematics/angular",
+        "@angular-devkit/schematics",
+        "@angular-devkit/core",
+        "typescript",
+    ],
+    # TODO: Switch to ESM when Angular CLI supports it.
+    format = "cjs",
+    output = "index_bundled.js",
+    platform = "node",
+    target = "es2015",
+    visibility = ["//src/material/schematics:__pkg__"],
+    deps = [":ng_update_lib"],
+)
+
+#################
+## Specs
+#################
+
+filegroup(
+    name = "schematics_test_cases",
+    testonly = True,
+    srcs = glob([
+        "test-cases/**/*_input.ts",
+        "test-cases/**/*_expected_output.ts",
+    ]),
+)
+
+# This one is now ESM, the default in the repository
+# Needs to be ESM because we import frm `ng_update_lib` (which is also ESM)
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":ng_update_lib",
+        "//src/cdk/schematics",
+        "//src/cdk/schematics/testing",
+        "//src/material/schematics:paths",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@bazel/runfiles",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+    ],
+)
+
+spec_bundle(
+    name = "spec_bundle",
+    external = ["*/paths.js"],
+    platform = "cjs-legacy",
+    deps = [":test_lib"],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = [
+        ":ng_update_index",
+        ":schematics_test_cases",
+        "//src/cdk/schematics",
+        "//src/material/schematics:collection_assets",
+    ],
+    shard_count = 4,
+    deps = [
+        ":spec_bundle",
+    ],
+)

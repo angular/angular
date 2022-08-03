@@ -4,57 +4,52 @@
     "migration-v6": {
       "version": "6.0.0",
       "description": "Updates Angular Material to v6",
-      "factory": "./ng-update/index#updateToV6"
+      "factory": "./ng-update/index_bundled#updateToV6"
     },
     "migration-v7": {
       "version": "7.0.0",
       "description": "Updates Angular Material to v7",
-      "factory": "./ng-update/index#updateToV7"
+      "factory": "./ng-update/index_bundled#updateToV7"
     },
     "migration-v8": {
       "version": "8.0.0",
       "description": "Updates Angular Material to v8",
-      "factory": "./ng-update/index#updateToV8"
+      "factory": "./ng-update/index_bundled#updateToV8"
     },
     "migration-v9": {
       "version": "9.0.0-0",
       "description": "Updates Angular Material to v9",
-      "factory": "./ng-update/index#updateToV9"
+      "factory": "./ng-update/index_bundled#updateToV9"
     },
     "migration-v10": {
       "version": "10.0.0-0",
       "description": "Updates Angular Material to v10",
-      "factory": "./ng-update/index#updateToV10"
+      "factory": "./ng-update/index_bundled#updateToV10"
     },
     "migration-v11": {
       "version": "11.0.0-0",
       "description": "Updates Angular Material to v11",
-      "factory": "./ng-update/index#updateToV11"
+      "factory": "./ng-update/index_bundled#updateToV11"
     },
     "migration-v12": {
       "version": "12.0.0-0",
       "description": "Updates Angular Material to v12",
-      "factory": "./ng-update/index#updateToV12"
+      "factory": "./ng-update/index_bundled#updateToV12"
     },
     "migration-v13": {
       "version": "13.0.0-0",
       "description": "Updates Angular Material to v13",
-      "factory": "./ng-update/index#updateToV13"
+      "factory": "./ng-update/index_bundled#updateToV13"
     },
     "migration-v14": {
       "version": "14.0.0-0",
       "description": "Updates the Angular Material to v14",
-      "factory": "./ng-update/index#updateToV14"
+      "factory": "./ng-update/index_bundled#updateToV14"
     },
     "migration-v15": {
       "version": "15.0.0-0",
       "description": "Updates the Angular Material to v15",
-      "factory": "./ng-update/index#updateToV15"
-    },
-    "ng-post-update": {
-      "description": "Prints out results after ng-update.",
-      "factory": "./ng-update/index#postUpdate",
-      "private": true
+      "factory": "./ng-update/index_bundled#updateToV15"
     }
   }
 }

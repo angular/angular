@@ -9,6 +9,7 @@
 import {Migration, TargetVersion} from '@angular/cdk/schematics';
 import * as ts from 'typescript';
 import {materialModuleSpecifier} from '../../../ng-update/typescript/module-specifiers';
+import {materialSymbolMap} from './material-symbols';
 
 const ONLY_SUBPACKAGE_FAILURE_STR =
   `Importing from "@angular/material" is deprecated. ` +
@@ -23,12 +24,6 @@ const NO_IMPORT_NAMED_SYMBOLS_FAILURE_STR =
  * Angular Material library.
  */
 const ANGULAR_MATERIAL_FILEPATH_REGEX = new RegExp(`${materialModuleSpecifier}/(.*?)/`);
-
-/**
- * Mapping of Material symbol names to their module names. Used as a fallback if
- * we didn't manage to resolve the module name of a symbol using the type checker.
- */
-const ENTRY_POINT_MAPPINGS: {[name: string]: string} = require('./material-symbols.json');
 
 /**
  * Migration that updates imports which refer to the primary Angular Material
@@ -94,7 +89,7 @@ export class SecondaryEntryPointsMigration extends Migration<null> {
       // the symbols don't exist anymore (e.g. after we remove the top-level @angular/material).
       const moduleName =
         resolveModuleName(elementName, this.typeChecker) ||
-        ENTRY_POINT_MAPPINGS[elementName.text] ||
+        materialSymbolMap[elementName.text] ||
         null;
 
       if (!moduleName) {

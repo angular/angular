@@ -23,11 +23,11 @@ import {
   TargetVersion,
 } from '@angular/cdk/schematics';
 import {InsertChange} from '@schematics/angular/utility/change';
-import {readFileSync} from 'fs';
 import * as ts from 'typescript';
 
 import {findHammerScriptImportElements} from './find-hammer-script-tags';
 import {findMainModuleExpression} from './find-main-module';
+import {gestureConfigTemplate} from './gesture-config-template';
 import {isHammerJsUsedInTemplate} from './hammer-template-check';
 import {ImportManager} from './import-manager';
 import {removeElementFromArrayExpression} from './remove-array-element';
@@ -35,7 +35,6 @@ import {removeElementFromHtml} from './remove-element-from-html';
 
 const GESTURE_CONFIG_CLASS_NAME = 'GestureConfig';
 const GESTURE_CONFIG_FILE_NAME = 'gesture-config';
-const GESTURE_CONFIG_TEMPLATE_PATH = './gesture-config.template';
 
 const HAMMER_CONFIG_TOKEN_NAME = 'HAMMER_GESTURE_CONFIG';
 const HAMMER_CONFIG_TOKEN_MODULE = '@angular/platform-browser';
@@ -246,10 +245,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     const newConfigPath = join(sourceRoot, this._getAvailableGestureConfigFileName(sourceRoot));
 
     // Copy gesture config template into the CLI project.
-    this.fileSystem.create(
-      newConfigPath,
-      readFileSync(require.resolve(GESTURE_CONFIG_TEMPLATE_PATH), 'utf8'),
-    );
+    this.fileSystem.create(newConfigPath, gestureConfigTemplate);
 
     // Replace all Material gesture config references to resolve to the
     // newly copied gesture config.

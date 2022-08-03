@@ -1,10 +1,11 @@
-import {createTestCaseSetup, resolveBazelPath} from '@angular/cdk/schematics/testing';
+import {runfiles} from '@bazel/runfiles';
+import {createTestCaseSetup} from '@angular/cdk/schematics/testing';
 import {MIGRATION_PATH} from '../../../paths';
 
 describe('symbol removal check', () => {
   it('should report symbols that have been removed', async () => {
     const {runFixers} = await createTestCaseSetup('migration-v13', MIGRATION_PATH, [
-      resolveBazelPath(__dirname, './symbol-removal_input.ts'),
+      runfiles.resolvePackageRelative('test-cases/misc/symbol-removal_input.ts'),
     ]);
 
     const {logOutput} = await runFixers();

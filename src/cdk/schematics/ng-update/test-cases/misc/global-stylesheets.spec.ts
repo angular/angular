@@ -1,4 +1,4 @@
-import {resolveBazelPath} from '@angular/cdk/schematics/testing';
+import {runfiles} from '@bazel/runfiles';
 import {readFileSync} from 'fs';
 import {MIGRATION_PATH} from '../../../paths';
 import {createTestCaseSetup} from '../../../testing';
@@ -8,7 +8,7 @@ describe('global stylesheets migration', () => {
     const {runFixers, writeFile, appTree} = await createTestCaseSetup(
       'migration-v6',
       MIGRATION_PATH,
-      [resolveBazelPath(__dirname, './global-stylesheets_input.ts')],
+      [runfiles.resolvePackageRelative('ng-update/test-cases/misc/global-stylesheets_input.ts')],
     );
 
     const testStylesheetPath = 'projects/cdk-testing/src/test-cases/global-stylesheets-test.scss';
@@ -17,7 +17,10 @@ describe('global stylesheets migration', () => {
     // be picked up by the update-tool.
     writeFile(
       testStylesheetPath,
-      readFileSync(resolveBazelPath(__dirname, './global-stylesheets-test.scss'), 'utf8'),
+      readFileSync(
+        runfiles.resolvePackageRelative('ng-update/test-cases/misc/global-stylesheets-test.scss'),
+        'utf8',
+      ),
     );
     writeFile('/projects/cdk-testing/third_party/materialize.css/bundle.css', '');
 

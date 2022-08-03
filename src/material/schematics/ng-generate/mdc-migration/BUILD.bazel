@@ -88,7 +88,8 @@ jasmine_node_test(
     data = [
         ":mdc_migration_bundle",
         ":unit_tests_assets",
-        "//src/material/schematics:schematics_assets",
+        "//src/material/schematics:collection_assets",
+        "//src/material/schematics:ng_generate_assets",
     ],
     deps = [
         ":unit_tests_bundle",

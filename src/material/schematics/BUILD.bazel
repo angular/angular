@@ -4,12 +4,24 @@ load("//tools:defaults.bzl", "jasmine_node_test", "pkg_npm", "ts_library")
 package(default_visibility = ["//visibility:public"])
 
 copy_to_bin(
-    name = "schematics_assets",
+    name = "collection_assets",
     srcs = [
-        "ng-update/migrations/hammer-gestures-v9/gesture-config.template",
-    ] + glob([
+        "collection.json",
+        "migration.json",
+    ],
+)
+
+copy_to_bin(
+    name = "ng_generate_assets",
+    srcs = glob([
         "ng-generate/*/files/**/*",
-        "**/*.json",
+    ]),
+)
+
+copy_to_bin(
+    name = "schema_assets",
+    srcs = glob([
+        "**/schema.json",
     ]),
 )
 
@@ -19,12 +31,12 @@ ts_library(
         ["**/*.ts"],
         exclude = [
             "**/*.spec.ts",
-            "ng-update/test-cases/**/*.ts",
+            "paths.ts",
             "ng-generate/*/files/**/*.ts",
         ],
     ),
-    # Schematics do not need to run in browsers and can use `commonjs`
-    # as format instead the default `umd` format.
+    # Schematics can not yet run in ESM module. For now we continue to use CommonJS.
+    # TODO(ESM): remove this once the Angular CLI supports ESM schematics.
     devmode_module = "commonjs",
     prodmode_module = "commonjs",
     tsconfig = ":tsconfig.json",
@@ -41,6 +53,23 @@ ts_library(
     ],
 )
 
+ts_library(
+    name = "paths",
+    testonly = True,
+    srcs = ["paths.ts"],
+    data = [
+        ":collection_assets",
+    ],
+    # Schematics can not yet run in ESM module. For now we continue to use CommonJS.
+    # TODO(ESM): remove this once the Angular CLI supports ESM schematics.
+    devmode_module = "commonjs",
+    prodmode_module = "commonjs",
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "@npm//@bazel/runfiles",
+    ],
+)
+
 # This package is intended to be combined into the main @angular/material package as a dep.
 pkg_npm(
     name = "npm_package",
@@ -49,8 +78,11 @@ pkg_npm(
         "//src/material/schematics/ng-generate/mdc-migration:npm_package",
     ],
     deps = [
+        ":collection_assets",
+        ":ng_generate_assets",
+        ":schema_assets",
         ":schematics",
-        ":schematics_assets",
+        "//src/material/schematics/ng-update:ng_update_index",
     ],
 )
 
@@ -60,7 +92,9 @@ jasmine_node_test(
     name = "unit_tests",
     srcs = [":unit_test_sources"],
     data = [
-        ":schematics_assets",
+        ":collection_assets",
+        ":ng_generate_assets",
+        ":schema_assets",
         ":schematics_test_cases",
     ],
 )
@@ -81,6 +115,7 @@ ts_library(
     prodmode_module = "commonjs",
     tsconfig = ":tsconfig.json",
     deps = [
+        ":paths",
         ":schematics",
         "//src/cdk/schematics",
         "//src/cdk/schematics/testing",

@@ -1,8 +1,5 @@
-import {
-  createTestCaseSetup,
-  readFileContent,
-  resolveBazelPath,
-} from '@angular/cdk/schematics/testing';
+import {runfiles} from '@bazel/runfiles';
+import {createTestCaseSetup, readFileContent} from '@angular/cdk/schematics/testing';
 import {MIGRATION_PATH} from '../../../../paths';
 
 describe('v9 material imports', () => {
@@ -11,7 +8,7 @@ describe('v9 material imports', () => {
       '@angular/material package does not exist',
     async () => {
       const {runFixers, appTree} = await createTestCaseSetup('migration-v9', MIGRATION_PATH, [
-        resolveBazelPath(__dirname, './material-imports_input.ts'),
+        runfiles.resolvePackageRelative('test-cases/v9/misc/material-imports_input.ts'),
       ]);
 
       // Note: don't create a fake @angular/material package here, because
@@ -20,7 +17,11 @@ describe('v9 material imports', () => {
 
       expect(
         appTree.readContent('/projects/cdk-testing/src/test-cases/material-imports_input.ts'),
-      ).toBe(readFileContent(resolveBazelPath(__dirname, './material-imports_expected_output.ts')));
+      ).toBe(
+        readFileContent(
+          runfiles.resolvePackageRelative('test-cases/v9/misc/material-imports_expected_output.ts'),
+        ),
+      );
     },
   );
 });

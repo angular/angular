@@ -1,8 +1,5 @@
-import {
-  createTestCaseSetup,
-  readFileContent,
-  resolveBazelPath,
-} from '@angular/cdk/schematics/testing';
+import {runfiles} from '@bazel/runfiles';
+import {createTestCaseSetup, readFileContent} from '@angular/cdk/schematics/testing';
 import {MIGRATION_PATH} from '../../../../paths';
 
 describe('v8 material imports', () => {
@@ -10,7 +7,7 @@ describe('v8 material imports', () => {
     const {runFixers, appTree, writeFile} = await createTestCaseSetup(
       'migration-v8',
       MIGRATION_PATH,
-      [resolveBazelPath(__dirname, './material-imports_input.ts')],
+      [runfiles.resolvePackageRelative('test-cases/v8/misc/material-imports_input.ts')],
     );
     const materialPath = '/node_modules/@angular/material';
 
@@ -42,6 +39,10 @@ describe('v8 material imports', () => {
 
     expect(
       appTree.readContent('/projects/cdk-testing/src/test-cases/material-imports_input.ts'),
-    ).toBe(readFileContent(resolveBazelPath(__dirname, './material-imports_expected_output.ts')));
+    ).toBe(
+      readFileContent(
+        runfiles.resolvePackageRelative('test-cases/v8/misc/material-imports_expected_output.ts'),
+      ),
+    );
   });
 });

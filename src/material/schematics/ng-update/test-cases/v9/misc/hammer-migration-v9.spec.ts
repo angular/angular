@@ -1,8 +1,8 @@
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
 import {addPackageToPackageJson} from '@angular/cdk/schematics/ng-add/package-config';
-import {createTestCaseSetup, resolveBazelPath} from '@angular/cdk/schematics/testing';
-import {readFileSync} from 'fs';
+import {createTestCaseSetup} from '@angular/cdk/schematics/testing';
 import {MIGRATION_PATH} from '../../../../paths';
+import {gestureConfigTemplate} from '../../../migrations/hammer-gestures-v9/gesture-config-template';
 
 // Copied from `cdk/testing/private` which is ESM-only at this point. We temporarily copy
 // this helper as the ESM/CJS interop for schematic code with `cdk/testing/private` is
@@ -30,11 +30,6 @@ interface PackageJson {
 }
 
 describe('v9 HammerJS removal', () => {
-  const GESTURE_CONFIG_TEMPLATE_PATH = resolveBazelPath(
-    __dirname,
-    '../../../migrations/hammer-gestures-v9/gesture-config.template',
-  );
-
   let runner: SchematicTestRunner;
   let tree: UnitTestTree;
   let writeFile: (filePath: string, text: string) => void;
@@ -613,7 +608,7 @@ describe('v9 HammerJS removal', () => {
       expect(tree.readContent('/projects/cdk-testing/src/main.ts')).toContain(`import 'hammerjs';`);
       expect(tree.exists('/projects/cdk-testing/src/gesture-config.ts')).toBe(true);
       expect(tree.readContent('/projects/cdk-testing/src/gesture-config.ts')).toBe(
-        readFileSync(GESTURE_CONFIG_TEMPLATE_PATH, 'utf8'),
+        gestureConfigTemplate,
       );
     });
 
@@ -635,7 +630,7 @@ describe('v9 HammerJS removal', () => {
       expect(tree.readContent('/projects/cdk-testing/src/main.ts')).toContain(`import 'hammerjs';`);
       expect(tree.exists('/projects/cdk-testing/src/gesture-config.ts')).toBe(true);
       expect(tree.readContent('/projects/cdk-testing/src/gesture-config.ts')).toBe(
-        readFileSync(GESTURE_CONFIG_TEMPLATE_PATH, 'utf8'),
+        gestureConfigTemplate,
       );
     });
 
@@ -684,7 +679,7 @@ describe('v9 HammerJS removal', () => {
       expect(tree.readContent('/projects/cdk-testing/src/main.ts')).toContain(`import 'hammerjs';`);
       expect(tree.exists('/projects/cdk-testing/src/gesture-config.ts')).toBe(true);
       expect(tree.readContent('/projects/cdk-testing/src/gesture-config.ts')).toBe(
-        readFileSync(GESTURE_CONFIG_TEMPLATE_PATH, 'utf8'),
+        gestureConfigTemplate,
       );
     });
 
@@ -706,7 +701,7 @@ describe('v9 HammerJS removal', () => {
       expect(tree.readContent('/projects/cdk-testing/src/main.ts')).toContain(`import 'hammerjs';`);
       expect(tree.exists('/projects/cdk-testing/src/gesture-config-1.ts')).toBe(true);
       expect(tree.readContent('/projects/cdk-testing/src/gesture-config-1.ts')).toBe(
-        readFileSync(GESTURE_CONFIG_TEMPLATE_PATH, 'utf8'),
+        gestureConfigTemplate,
       );
     });
 

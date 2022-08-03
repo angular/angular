@@ -14,7 +14,7 @@ import {parse5} from '@angular/cdk/schematics';
  */
 export function findHammerScriptImportElements(htmlContent: string): parse5.Element[] {
   const document = parse5.parse(htmlContent, {sourceCodeLocationInfo: true});
-  const nodeQueue = [...document.childNodes];
+  const nodeQueue = [...(document as parse5.Document).childNodes];
   const result: parse5.Element[] = [];
 
   while (nodeQueue.length) {

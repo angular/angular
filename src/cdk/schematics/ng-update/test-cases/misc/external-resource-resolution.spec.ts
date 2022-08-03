@@ -1,4 +1,4 @@
-import {resolveBazelPath} from '@angular/cdk/schematics/testing';
+import {runfiles} from '@bazel/runfiles';
 import {MIGRATION_PATH} from '../../../paths';
 import {createTestCaseSetup} from '../../../testing';
 
@@ -7,7 +7,11 @@ describe('ng-update external resource resolution', () => {
     const {runFixers, writeFile, appTree} = await createTestCaseSetup(
       'migration-v6',
       MIGRATION_PATH,
-      [resolveBazelPath(__dirname, './external-resource-resolution_input.ts')],
+      [
+        runfiles.resolvePackageRelative(
+          'ng-update/test-cases/misc/external-resource-resolution_input.ts',
+        ),
+      ],
     );
 
     const testContent = `<div cdk-connected-overlay [origin]="test"></div>`;

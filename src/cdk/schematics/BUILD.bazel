@@ -85,6 +85,7 @@ ts_library(
         "//src/cdk/schematics/update-tool",
         "//src/cdk/testing/private",
         "@npm//@angular-devkit/schematics",
+        "@npm//@bazel/runfiles",
         "@npm//@schematics/angular",
         "@npm//@types/jasmine",
         "@npm//@types/node",
