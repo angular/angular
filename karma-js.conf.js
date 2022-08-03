@@ -7,8 +7,10 @@
  */
 
 const browserProvidersConf = require('./browser-providers.conf');
-const {generateSeed} = require('./tools/jasmine-seed-generator');
 const {hostname} = require('os');
+
+const seed = process.env.JASMINE_RANDOM_SEED || String(Math.random()).slice(-5);
+console.info(`Jasmine random seed: ${seed}`);
 
 module.exports = function(config) {
   const conf = {
@@ -17,7 +19,7 @@ module.exports = function(config) {
     client: {
       jasmine: {
         random: true,
-        seed: generateSeed('karma-js.conf'),
+        seed,
       },
       captureConsole: true,
     },
@@ -35,6 +37,10 @@ module.exports = function(config) {
 
       'node_modules/core-js-bundle/index.js',
       'node_modules/jasmine-ajax/lib/mock-ajax.js',
+
+      // ZoneJS configuration needed for some event manager tests. This config could
+      // affect all legacy tests but in reality is scoped to certain special tests.
+      'packages/platform-browser/test/dom/events/zone_event_unpatched_init.js',
 
       // Dependencies built by Bazel. See `config.yml` for steps running before
       // the legacy Saucelabs tests run.

@@ -63,7 +63,6 @@ export {
   NgModuleType as ɵNgModuleType,
   NO_CHANGE as ɵNO_CHANGE,
   PipeDef as ɵPipeDef,
-  renderComponent as ɵrenderComponent,
   RenderFlags as ɵRenderFlags,
   setClassMetadata as ɵsetClassMetadata,
   setLocaleId as ɵsetLocaleId,

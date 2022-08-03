@@ -104,6 +104,13 @@ aio-code {
       background-color: transparent;
       border: none;
       cursor: pointer;
+
+      &:hover, &:focus {
+        transform: scale(1.1);
+      }
+      &:active {
+        transform: translateY(2px) scale(1.05);
+      }
     }
   }
 }

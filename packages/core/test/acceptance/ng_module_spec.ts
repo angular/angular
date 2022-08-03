@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, createNgModuleRef, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, Directive, Injectable, InjectionToken, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element, ɵɵproperty as property} from '@angular/core';
+import {Component, createNgModule, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, Directive, Injectable, InjectionToken, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element, ɵɵproperty as property} from '@angular/core';
 import {KNOWN_CONTROL_FLOW_DIRECTIVES} from '@angular/core/src/render3/instructions/element_validation';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
@@ -634,7 +634,7 @@ describe('NgModule', () => {
       lines.forEach(line => expect(errorMessage).toMatch(line));
     });
 
-    KNOWN_CONTROL_FLOW_DIRECTIVES.forEach(directive => {
+    KNOWN_CONTROL_FLOW_DIRECTIVES.forEach((correspondingImport, directive) => {
       it(`should produce a warning when the '${directive}' directive ` +
              `is used in a template, but not imported in corresponding NgModule`,
          () => {
@@ -663,7 +663,8 @@ describe('NgModule', () => {
              `NG0303: Can't bind to '${
                  directive}' since it isn't a known property of 'div' \\(used in the 'App' component template\\).`,
              `If the '${directive}' is an Angular control flow directive, please make sure ` +
-                 `that the 'CommonModule' is a part of an @NgModule where this component is declared.`
+                 `that either the '${
+                     correspondingImport}' directive or the 'CommonModule' is a part of an @NgModule where this component is declared.`
            ];
            lines.forEach(line => expect(errorMessage).toMatch(line));
          });
@@ -690,7 +691,8 @@ describe('NgModule', () => {
              `NG0303: Can't bind to '${
                  directive}' since it isn't a known property of 'div' \\(used in the 'App' component template\\).`,
              `If the '${directive}' is an Angular control flow directive, please make sure ` +
-                 `that the 'CommonModule' is included in the '@Component.imports' of this component.`
+                 `that either the '${
+                     correspondingImport}' directive or the 'CommonModule' is included in the '@Component.imports' of this component.`
            ];
            lines.forEach(line => expect(errorMessage).toMatch(line));
          });
@@ -975,7 +977,7 @@ describe('NgModule', () => {
     });
   });
 
-  describe('createNgModuleRef function', () => {
+  describe('createNgModule function', () => {
     it('should create an NgModuleRef instance', () => {
       const TOKEN_A = new InjectionToken('A');
       const TOKEN_B = new InjectionToken('B');
@@ -996,14 +998,13 @@ describe('NgModule', () => {
       }
 
       // Simple case, just passing NgModule class.
-      const ngModuleRef = createNgModuleRef(AppModule);
+      const ngModuleRef = createNgModule(AppModule);
       expect(ngModuleRef).toBeAnInstanceOf(NgModuleRef);
       expect(ngModuleRef.injector.get(TOKEN_A)).toBe('TokenValueA');
       expect(ngModuleRef.injector.get(TOKEN_B, null)).toBe(null);
 
       // Both NgModule and parent Injector are present.
-      const ngModuleRef2 =
-          createNgModuleRef(ChildModule, ngModuleRef.injector /* parent injector */);
+      const ngModuleRef2 = createNgModule(ChildModule, ngModuleRef.injector /* parent injector */);
       expect(ngModuleRef2).toBeAnInstanceOf(NgModuleRef);
       expect(ngModuleRef2.injector.get(TOKEN_A)).toBe('TokenValueA');
       expect(ngModuleRef2.injector.get(TOKEN_B)).toBe('TokenValueB');

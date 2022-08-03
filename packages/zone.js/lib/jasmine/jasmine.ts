@@ -38,10 +38,6 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
   if (!ProxyZoneSpec) throw new Error('Missing: ProxyZoneSpec');
 
   const ambientZone = Zone.current;
-  // Create a synchronous-only zone in which to run `describe` blocks in order to raise an
-  // error if any asynchronous operations are attempted inside of a `describe` but outside of
-  // a `beforeEach` or `it`.
-  const syncZone = ambientZone.fork(new SyncTestZoneSpec('jasmine.describe'));
 
   const symbol = Zone.__symbol__;
 
@@ -100,7 +96,8 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
   ['describe', 'xdescribe', 'fdescribe'].forEach(methodName => {
     let originalJasmineFn: Function = jasmineEnv[methodName];
     jasmineEnv[methodName] = function(description: string, specDefinitions: Function) {
-      return originalJasmineFn.call(this, description, wrapDescribeInZone(specDefinitions));
+      return originalJasmineFn.call(
+          this, description, wrapDescribeInZone(description, specDefinitions));
     };
   });
   ['it', 'xit', 'fit'].forEach(methodName => {
@@ -198,8 +195,11 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
    * Gets a function wrapping the body of a Jasmine `describe` block to execute in a
    * synchronous-only zone.
    */
-  function wrapDescribeInZone(describeBody: Function): Function {
+  function wrapDescribeInZone(description: string, describeBody: Function): Function {
     return function(this: unknown) {
+      // Create a synchronous-only zone in which to run `describe` blocks in order to raise an
+      // error if any asynchronous operations are attempted inside of a `describe`.
+      const syncZone = ambientZone.fork(new SyncTestZoneSpec(`jasmine.describe#${description}`));
       return syncZone.run(describeBody, this, (arguments as any) as any[]);
     };
   }

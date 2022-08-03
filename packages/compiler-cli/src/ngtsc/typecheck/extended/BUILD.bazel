@@ -13,7 +13,12 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/api",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/invalid_banana_in_box",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/missing_control_flow_directive",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/missing_ngforof_let",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/nullish_coalescing_not_nullable",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/optional_chain_not_nullable",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/suffix_not_supported",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/text_attribute_not_binding",
         "@npm//typescript",
     ],
 )

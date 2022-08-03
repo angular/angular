@@ -17,7 +17,7 @@ Follow these guidelines for adding sources under `third_party`:
 1. Preserve the license for code. The best thing to do is copy the entire LICENSE file along with the sources.
 1. Indicate where the sources came from. Our convention is to create a directory based on the URL where the sources were fetched. Add version number or if missing, the retrieval date, as a comment in the build file just above the license() call. Example: https://github.com/angular/angular/blob/master/third_party/fonts.google.com/open-sans/BUILD.bazel
 1. Avoid changing the files you fetched. If you make any changes to the sources, first commit the original, then in a separate commit, make your edits. include another metadata file listing your changes, like https://github.com/bazelbuild/rules_nodejs/blob/master/third_party/github.com/source-map-support/LOCAL_MODS.md
-1. Any bundle or distribution which includes this code needs to propagate the LICENSE file or content. Talk to your TL to make sure this is done correctly. 
+1. Any bundle or distribution which includes this code needs to propagate the LICENSE file or content. Talk to your TL to make sure this is done correctly.
 
 ## Under Bazel
 

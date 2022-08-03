@@ -38,6 +38,8 @@ test --incompatible_strict_action_env
 # and https://github.com/bazelbuild/bazel/commit/03246077f948f2790a83520e7dccc2625650e6df
 build --nobuild_runfile_links
 
+build --enable_runfiles
+
 ###############################
 # Release support             #
 # Turn on these settings with #
@@ -51,8 +53,8 @@ build:release --workspace_status_command="yarn -s ng-dev release build-env-stamp
 build:release --stamp
 
 # Snapshots should also be stamped with version control information.
-build:snapshot --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
-build:snapshot --stamp
+build:snapshot-build --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
+build:snapshot-build --stamp
 
 ###############################
 # Output                      #
@@ -94,11 +96,11 @@ build:remote --cpu=k8
 build:remote --host_cpu=k8
 
 # Toolchain and platform related flags
-build:remote --crosstool_top=@npm//@angular/dev-infra-private/bazel/remote-execution/cpp:cc_toolchain_suite
-build:remote --extra_toolchains=@npm//@angular/dev-infra-private/bazel/remote-execution/cpp:cc_toolchain
-build:remote --extra_execution_platforms=@npm//@angular/dev-infra-private/bazel/remote-execution:platform
-build:remote --host_platform=@npm//@angular/dev-infra-private/bazel/remote-execution:platform
-build:remote --platforms=@npm//@angular/dev-infra-private/bazel/remote-execution:platform
+build:remote --crosstool_top=@npm//@angular/build-tooling/bazel/remote-execution/cpp:cc_toolchain_suite
+build:remote --extra_toolchains=@npm//@angular/build-tooling/bazel/remote-execution/cpp:cc_toolchain
+build:remote --extra_execution_platforms=@npm//@angular/build-tooling/bazel/remote-execution:platform
+build:remote --host_platform=@npm//@angular/build-tooling/bazel/remote-execution:platform
+build:remote --platforms=@npm//@angular/build-tooling/bazel/remote-execution:platform
 
 # Remote instance and caching
 build:remote --remote_instance_name=projects/internal-200822/instances/primary_instance

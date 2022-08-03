@@ -84,7 +84,6 @@ You can read more by following the links associated with the package names below
 | Deployment to                                                     | Package                                                                              |
 |:---                                                               |:---                                                                                  |
 | [Firebase hosting](https://firebase.google.com/docs/hosting)      | [`@angular/fire`](https://npmjs.org/package/@angular/fire)                           |
-| [Azure](https://azure.microsoft.com/en-us)                        | [`@azure/ng-deploy`](https://npmjs.org/package/@azure/ng-deploy)                     |
 | [Vercel](https://vercel.com/solutions/angular)                    | [`vercel init angular`](https://github.com/vercel/vercel/tree/main/examples/angular) |
 | [Netlify](https://www.netlify.com)                                | [`@netlify-builder/deploy`](https://npmjs.org/package/@netlify-builder/deploy)       |
 | [GitHub pages](https://pages.github.com)                          | [`angular-cli-ghpages`](https://npmjs.org/package/angular-cli-ghpages)               |

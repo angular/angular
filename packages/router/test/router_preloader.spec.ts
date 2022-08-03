@@ -39,7 +39,7 @@ describe('RouterPreloader', () => {
     });
   });
 
-  describe('should not load configurations with canLoad guard', () => {
+  describe('configurations with canLoad guard', () => {
     @NgModule({
       declarations: [LazyLoadedCmp],
       imports: [RouterModule.forChild([{path: 'LoadedModule1', component: LazyLoadedCmp}])]
@@ -56,7 +56,7 @@ describe('RouterPreloader', () => {
     });
 
 
-    it('should work',
+    it('should not load children',
        fakeAsync(inject([RouterPreloader, Router], (preloader: RouterPreloader, router: Router) => {
          preloader.preload().subscribe(() => {});
 
@@ -65,6 +65,17 @@ describe('RouterPreloader', () => {
          const c = router.config;
          expect((c[0] as any)._loadedConfig).not.toBeDefined();
        })));
+
+    it('should not call the preloading method because children will not be loaded anyways',
+       fakeAsync(() => {
+         const preloader = TestBed.inject(RouterPreloader);
+         const preloadingStrategy = TestBed.inject(PreloadingStrategy);
+         spyOn(preloadingStrategy, 'preload').and.callThrough();
+         preloader.preload().subscribe(() => {});
+
+         tick();
+         expect(preloadingStrategy.preload).not.toHaveBeenCalled();
+       }));
   });
 
   describe('should preload configurations', () => {
@@ -111,12 +122,12 @@ describe('RouterPreloader', () => {
              const injector: any = getLoadedInjector(c[0]);
              const loadedRoutes: Route[] = getLoadedRoutes(c[0])!;
              expect(loadedRoutes[0].path).toEqual('LoadedModule1');
-             expect(injector._parent).toBe((testModule as any)._r3Injector);
+             expect(injector.parent).toBe((testModule as any)._r3Injector);
 
              const injector2: any = getLoadedInjector(loadedRoutes[0]);
              const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
              expect(loadedRoutes2[0].path).toEqual('LoadedModule2');
-             expect(injector2._parent).toBe(injector);
+             expect(injector2.parent).toBe(injector);
 
              expect(events.map(e => e.toString())).toEqual([
                'RouteConfigLoadStart(path: lazy)',
@@ -213,11 +224,11 @@ describe('RouterPreloader', () => {
 
              const injector = getLoadedInjector(c[0]) as any;
              const loadedRoutes = getLoadedRoutes(c[0])!;
-             expect(injector._parent).toBe((testModule as any)._r3Injector);
+             expect(injector.parent).toBe((testModule as any)._r3Injector);
 
              const loadedRoutes2: Route[] = getLoadedRoutes(loadedRoutes[0])!;
              const injector3: any = getLoadedInjector(loadedRoutes2[0]);
-             expect(injector3._parent).toBe(module2.injector);
+             expect(injector3.parent).toBe(module2.injector);
            })));
   });
 

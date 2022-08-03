@@ -1530,7 +1530,7 @@ class Scope {
         // `TcbDirectiveCtorOp`. If not we, we fallback to using `any` – see below.
         directiveOp = new TcbDirectiveCtorOp(this.tcb, this, node, dir);
       } else {
-        // If inlining is not available, then we give up on infering the generic params, and use
+        // If inlining is not available, then we give up on inferring the generic params, and use
         // `any` type for the directive's generic parameters.
         directiveOp = new TcbGenericDirectiveTypeWithAnyParamsOp(this.tcb, this, node, dir);
       }

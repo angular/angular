@@ -5,11 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {Component, ɵrenderComponent as renderComponent} from '@angular/core';
+import {Component, NgModule} from '@angular/core';
+import {platformBrowser} from '@angular/platform-browser';
 
 @Component({selector: 'hello-world', template: 'Hello World!'})
-class HelloWorld {
+export class HelloWorldComponent {
 }
 
-renderComponent(HelloWorld);
+@NgModule({declarations: [HelloWorldComponent]})
+export class HelloWorldModule {
+}
+
+platformBrowser().bootstrapModule(HelloWorldModule);

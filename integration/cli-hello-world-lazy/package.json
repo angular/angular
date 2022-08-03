@@ -2,8 +2,8 @@
   "name": "cli-hello-world-lazy",
   "version": "0.0.0",
   "scripts": {
-    "build": "ng build --prod",
-    "e2e": "ng e2e --port 0 --prod",
+    "build": "ng build --configuration production",
+    "e2e": "ng e2e --port 0 --configuration production",
     "test": "yarn e2e && yarn build && node check-output-for-ngdevmode.js"
   },
   "private": true,

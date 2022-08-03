@@ -1,17 +1,20 @@
 {
-  "pinVersions": false,
-  "semanticCommits": true,
-  "semanticPrefix": "build",
-  "separateMajorMinor": false,
-  "prHourlyLimit": 1,
-  "stopUpdatingLabel": "action: merge",
-  "labels": ["target: patch", "comp: build & ci", "action: review"],
-  "timezone": "America/Tijuana",
-  "lockFileMaintenance": {
-    "enabled": true
-  },
-  "schedule": ["after 10pm every monday", "before 4am every tuesday"],
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "baseBranches": ["main"],
+  "enabledManagers": ["npm", "bazel", "github-actions"],
+  "stopUpdatingLabel": "action: merge",
+  "rangeStrategy": "replace",
+  "pinDigests": true,
+  "semanticCommits": "enabled",
+  "semanticCommitScope": "",
+  "semanticCommitType": "build",
+  "dependencyDashboard": true,
+  "commitBody": "See associated pull request for more information.",
+  "separateMajorMinor": false,
+  "prHourlyLimit": 3,
+  "timezone": "America/Tijuana",
+  "lockFileMaintenance": {"enabled": true},
+  "labels": ["target: patch", "comp: build & ci", "action: review"],
   "ignoreDeps": [
     "@angular/animations-12",
     "@angular/common-12",
@@ -37,67 +40,65 @@
     "selenium-webdriver",
     "watchr"
   ],
-  "packageFiles": [
-    "WORKSPACE",
-    "integration/bazel/WORKSPACE",
-    "package.json",
-    "packages/**/package.json",
-    "aio/package.json",
-    ".github/workflows/**/*.yml"
-  ],
   "packageRules": [
     {
-      "packagePatterns": [
-        "^@angular/.*",
-        "^@angular-devkit/.*",
-        "^@schematics/.*",
-        "angular/dev-infra"
-      ],
-      "groupName": "angular",
-      "pinVersions": false
-    },
-    {
-      "packagePatterns": ["^@babel/.*"],
-      "groupName": "babel",
-      "pinVersions": false
-    },
-    {
-      "packagePatterns": ["^@bazel/.*", "^build_bazel.*"],
-      "groupName": "bazel",
-      "pinVersions": false
-    },
-    {
-      "packageNames": ["typescript", "rxjs", "tslib"],
-      "separateMinorPatch": true
-    },
-    {
-      "packageNames": ["typescript", "rxjs", "tslib"],
-      "updateTypes": ["minor", "major"],
-      "enabled": false
-    },
-    {
-      "matchCurrentVersion": "0.0.0-PLACEHOLDER",
-      "enabled": false
-    },
-    {
-      "excludePackagePatterns": [
-        "^@angular/.*",
-        "^@angular-devkit/.*",
-        "^@schematics/.*",
-        "angular/dev-infra"
-      ],
       "matchPackagePatterns": ["*"],
       "matchUpdateTypes": ["minor", "patch"],
-      "matchCurrentVersion": ">=1",
       "groupName": "all non-major dependencies",
-      "groupSlug": "all-minor-patch",
-      "schedule": ["after 1am on Thursday"]
+      "schedule": ["after 10:00pm on monday", "before 04:00am on tuesday"]
     },
+
+    {
+      "matchPackagePatterns": ["^@bazel/.*", "^build_bazel.*"],
+      "groupName": "bazel setup",
+      "schedule": ["at any time"]
+    },
+
+    {
+      "matchPackagePrefixes": ["@angular/", "angular/", "@angular-devkit", "@schematics/"],
+      "followTag": "next",
+      "groupName": "cross-repo Angular dependencies",
+      "schedule": ["at any time"]
+    },
+
+    {
+      "matchPackagePrefixes": ["@angular/", "angular/", "@angular-devkit", "@schematics/"],
+      "matchPaths": ["packages/**"],
+      "followTag": null
+    },
+
+    {
+      "matchPackagePrefixes": ["@babel/"],
+      "groupName": "babel dependencies"
+    },
+
+    {
+      "matchPackagePrefixes": ["@angular-eslint/", "@typescript-eslint/"],
+      "groupName": "eslint dependencies"
+    },
+
+    {
+      "matchPackageNames": ["typescript", "tslib"],
+      "groupName": "typescript dependencies"
+    },
+
     {
       "matchPaths": [".github/workflows/scorecard.yml"],
-      "matchPackagePatterns": ["*"],
       "groupName": "scorecard action dependencies",
       "groupSlug": "scorecard-action"
-    }
+    },
+
+    {
+      "matchPaths": ["aio/tools/examples/shared/*"],
+      "postUpgradeTasks": {
+        "commands": ["yarn run sync-deps"],
+        "fileFilters": ["aio/tools/examples/shared/boilerplate/**"]
+      }
+    },
+
+    {"matchCurrentVersion": "0.0.0-PLACEHOLDER", "enabled": false},
+
+    {"matchPaths": ["integration/**"], "enabled": false},
+    {"matchPaths": ["integration/bazel_workspace_tests/**/WORKSPACE"], "enabled": true}
   ]
 }

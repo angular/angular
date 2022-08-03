@@ -232,7 +232,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * where the information is stored on a static method of the class.
    *
    * In this case the decorators are stored in the body of a method
-   * (`ctorParatemers`) attached to the constructor function.
+   * (`ctorParameters`) attached to the constructor function.
    *
    * Note that unlike ESM2015 this is a function expression rather than an arrow
    * function:

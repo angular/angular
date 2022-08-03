@@ -1,22 +1,22 @@
 import { ErrorHandler, Injector, VERSION } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { WindowToken } from 'app/shared/window';
 import { AppModule } from 'app/app.module';
 
 import { ReportingErrorHandler } from './reporting-error-handler';
+import { AnalyticsService } from './analytics.service';
 
 describe('ReportingErrorHandler service', () => {
   let handler: ReportingErrorHandler;
   let superHandler: jasmine.Spy;
-  let onerrorSpy: jasmine.Spy;
+  let reportErrorSpy: jasmine.Spy;
 
   beforeEach(() => {
-    onerrorSpy = jasmine.createSpy('onerror');
     superHandler = spyOn(ErrorHandler.prototype, 'handleError');
+    reportErrorSpy = jasmine.createSpy('analytics report error');
 
     const injector = Injector.create({providers: [
-      { provide: ErrorHandler, useClass: ReportingErrorHandler, deps: [WindowToken] },
-      { provide: WindowToken, useFactory: () => ({ onerror: onerrorSpy }), deps: [] }
+      { provide: AnalyticsService, useValue: {reportError: reportErrorSpy} },
+      { provide: ErrorHandler, useClass: ReportingErrorHandler, deps: [AnalyticsService] },
     ]});
 
     handler = injector.get(ErrorHandler) as unknown as ReportingErrorHandler;
@@ -39,15 +39,15 @@ describe('ReportingErrorHandler service', () => {
       superHandler.and.throwError('super handler error');
       handler.handleError(error);
 
-      expect(onerrorSpy).toHaveBeenCalledTimes(2);
+      expect(reportErrorSpy).toHaveBeenCalledTimes(2);
 
       // Error from super handler is reported first
-      expect(onerrorSpy.calls.argsFor(0)[0]).toEqual('super handler error');
-      expect(onerrorSpy.calls.argsFor(0)[4]).toEqual(jasmine.any(Error));
+      expect(reportErrorSpy.calls.argsFor(0)[0]).toEqual(
+        jasmine.stringContaining('super handler error\n'));
 
       // Then error from initial exception
-      expect(onerrorSpy.calls.argsFor(1)[0]).toEqual(`[v${VERSION.full}] initial error`);
-      expect(onerrorSpy.calls.argsFor(1)[4]).toEqual(error);
+      expect(reportErrorSpy.calls.argsFor(1)[0]).toEqual(
+        jasmine.stringContaining(`[v${VERSION.full}] initial error\n`));
     });
 
     it('should augment an error object with version info', () => {
@@ -71,41 +71,42 @@ describe('ReportingErrorHandler service', () => {
       }
     });
 
-    it('should send an error object to window.onerror', () => {
+    it('should send an error object to analytics', () => {
       const error = new Error('this is an error message');
       handler.handleError(error);
-      expect(onerrorSpy).toHaveBeenCalledWith(error.message, undefined, undefined, undefined, error);
+      expect(reportErrorSpy).toHaveBeenCalledWith(
+          jasmine.stringContaining('this is an error message\n'));
     });
 
-    it('should send a non-error object to window.onerror', () => {
+    it('should send a non-error object to analytics', () => {
       const error = {reason: 'this is an error message'};
       handler.handleError(error);
-      expect(onerrorSpy).toHaveBeenCalledWith(JSON.stringify(error));
+      expect(reportErrorSpy).toHaveBeenCalledWith(JSON.stringify(error));
     });
 
-    it('should send a non-error object with circular references to window.onerror', () => {
+    it('should send a non-error object with circular references to analytics', () => {
       const error = {
         reason: 'this is an error message',
         get self() { return this; },
         toString() { return `{reason: ${this.reason}}`; },
       };
       handler.handleError(error);
-      expect(onerrorSpy).toHaveBeenCalledWith('{reason: this is an error message}');
+      expect(reportErrorSpy).toHaveBeenCalledWith('{reason: this is an error message}');
     });
 
-    it('should send an error string to window.onerror (prefixed with version info)', () => {
+    it('should send an error string to analytics (prefixed with version info)', () => {
       const error = 'this is an error message';
       handler.handleError(error);
-      expect(onerrorSpy).toHaveBeenCalledWith(`[v${VERSION.full}] ${error}`);
+      expect(reportErrorSpy).toHaveBeenCalledWith(`[v${VERSION.full}] ${error}`);
     });
 
-    it('should send a non-object, non-string error stringified to window.onerror', () => {
+    it('should send a non-object, non-string error stringified to analytics', () => {
       handler.handleError(404);
       handler.handleError(false);
       handler.handleError(null);
       handler.handleError(undefined);
 
-      expect(onerrorSpy.calls.allArgs()).toEqual([
+      expect(reportErrorSpy.calls.allArgs()).toEqual([
         ['404'],
         ['false'],
         ['null'],

@@ -7,8 +7,9 @@
  */
 
 import {AsyncPipe, ɵgetDOM as getDOM} from '@angular/common';
-import {ChangeDetectorRef, EventEmitter} from '@angular/core';
-import {Subscribable, Unsubscribable} from 'rxjs';
+import {ChangeDetectorRef, Component, EventEmitter} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {of, Subscribable, Unsubscribable} from 'rxjs';
 
 {
   describe('AsyncPipe', () => {
@@ -259,6 +260,24 @@ import {Subscribable, Unsubscribable} from 'rxjs';
         const pipe = new AsyncPipe(null as any);
         expect(() => pipe.transform('some bogus object' as any)).toThrowError();
       });
+    });
+
+    it('should be available as a standalone pipe', () => {
+      @Component({
+        selector: 'test-component',
+        imports: [AsyncPipe],
+        template: '{{ value | async }}',
+        standalone: true,
+      })
+      class TestComponent {
+        value = of('foo');
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const content = fixture.nativeElement.textContent;
+      expect(content).toBe('foo');
     });
   });
 }

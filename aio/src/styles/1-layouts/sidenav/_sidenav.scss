@@ -36,11 +36,6 @@ mat-sidenav-container.sidenav-container {
     @media (max-width: 599px) {
       top: 56px;
     }
-
-    // Angular Version Selector
-    .doc-version {
-      padding: 8px;
-    }
   }
 }
 
@@ -88,6 +83,15 @@ aio-nav-menu {
         flex: 0 0 2.4rem;
         display: flex;
         align-items: center;
+      }
+    }
+
+    a.vertical-menu-item {
+      &[href^="http:"],
+      &[href^="https:"] {
+        .vertical-menu-item-text {
+          @include mixins.external-link-with-icon();
+        }
       }
     }
 

@@ -87,7 +87,7 @@ The following template binds the value of `htmlSnippet`, once by interpolating i
 Interpolated content is always escaped &mdash;the HTML isn't interpreted and the browser displays angle brackets in the element's text content.
 
 For the HTML to be interpreted, bind it to an HTML property such as `innerHTML`.
-But binding a value that an attacker might control into `innerHTML` normally causes an XSS vulnerability
+But binding a value that an attacker might control into `innerHTML` normally causes an XSS vulnerability.
 For example, one could execute JavaScript in a following way:
 
 <code-example header="src/app/inner-html-binding.component.ts (class)" path="security/src/app/inner-html-binding.component.ts" region="class"></code-example>
@@ -201,6 +201,7 @@ To enforce Trusted Types for your application, you must configure your applicati
 | `angular`               | This policy is used in security-reviewed code that is internal to Angular, and is required for Angular to function when Trusted Types are enforced. Any inline template values or content sanitized by Angular is treated as safe by this policy.                           |
 | `angular#unsafe-bypass` | This policy is used for applications that use any of the methods in Angular's [DomSanitizer](api/platform-browser/DomSanitizer) that bypass security, such as `bypassSecurityTrustHtml`. Any application that uses these methods must enable this policy.                   |
 | `angular#unsafe-jit`    | This policy is used by the [JIT compiler](api/core/Compiler). You must enable this policy if your application interacts directly with the JIT compiler or is running in JIT mode using the [platform browser dynamic](api/platform-browser-dynamic/platformBrowserDynamic). |
+| `angular#bundler`       | This policy is used by Angular CLI's bundler when creating lazy chunk files.                    |
 
 You should configure the HTTP headers for Trusted Types in the following locations:
 
@@ -230,6 +231,12 @@ The following is an example of a header specifically configured for Trusted Type
 
 Content-Security-Policy: trusted-types angular angular#unsafe-jit; require-trusted-types-for 'script';
 
+</code-example>
+
+The following is an example of a header specifically configured for Trusted Types and Angular applications that use lazy loading of modules:
+
+<code-example language="html">
+Content-Security-Policy: trusted-types angular angular#bundler; require-trusted-types-for 'script';
 </code-example>
 
 <div class="callout is-helpful">

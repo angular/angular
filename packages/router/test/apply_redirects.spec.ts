@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, NgModuleRef} from '@angular/core';
+import {EnvironmentInjector, Injectable, NgModuleRef} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Observable, of} from 'rxjs';
 import {delay, tap} from 'rxjs/operators';
@@ -75,7 +75,7 @@ describe('applyRedirects', () => {
     applyRedirects(testModule.injector, null!, serializer, tree('/a/1'), [
       {path: 'a/:id', redirectTo: 'a/:other'}
     ]).subscribe(() => {}, (e) => {
-      expect(e.message).toEqual('Cannot redirect to \'a/:other\'. Cannot find \':other\'.');
+      expect(e.message).toContain('Cannot redirect to \'a/:other\'. Cannot find \':other\'.');
     });
   });
 
@@ -225,6 +225,41 @@ describe('applyRedirects', () => {
         expect(getProvidersInjector(routes[0])).toBeDefined();
         // The second `Route` did not match at all so we should not create an injector for it
         expect(getProvidersInjector(routes[1])).not.toBeDefined();
+      }
+    });
+  });
+
+  it('should support CanMatch providers on the route', () => {
+    @Injectable({providedIn: 'root'})
+    class CanMatchGuard {
+      canMatch() {
+        return true;
+      }
+    }
+
+    const routes = [
+      {
+        path: 'a',
+        component: ComponentA,
+        canMatch: [CanMatchGuard],
+        providers: [CanMatchGuard],
+      },
+      {
+        path: 'a',
+        component: ComponentA,
+        providers: [],
+      }
+    ];
+    applyRedirects(testModule.injector, null!, serializer, tree('a'), routes).subscribe({
+      next: () => {
+        // The 'a' segment matched, so we needed to create the injector for the `Route`
+        expect(getProvidersInjector(routes[0])).toBeDefined();
+        // The second `Route` did not match because the first did so we should not create an
+        // injector for it
+        expect(getProvidersInjector(routes[1])).not.toBeDefined();
+      },
+      error: () => {
+        throw 'Should not be reached';
       }
     });
   });
@@ -803,7 +838,7 @@ describe('applyRedirects', () => {
                 throw 'Should not be reached';
               },
               e => {
-                expect(e.message).toEqual('Cannot match any routes. URL Segment: \'b\'');
+                expect(e.message).toContain('Cannot match any routes. URL Segment: \'b\'');
               });
     });
 
@@ -962,7 +997,7 @@ describe('applyRedirects', () => {
                   throw 'Should not be reached';
                 },
                 e => {
-                  expect(e.message).toEqual(`Cannot match any routes. URL Segment: 'b'`);
+                  expect(e.message).toContain(`Cannot match any routes. URL Segment: 'b'`);
                 });
       });
     });
@@ -1055,7 +1090,7 @@ describe('applyRedirects', () => {
                   throw 'Should not be reached';
                 },
                 e => {
-                  expect(e.message).toEqual('Cannot match any routes. URL Segment: \'a\'');
+                  expect(e.message).toContain('Cannot match any routes. URL Segment: \'a\'');
                 });
       });
     });
@@ -1095,7 +1130,7 @@ describe('applyRedirects', () => {
                 throw 'Should not be reached';
               },
               e => {
-                expect(e.message).toEqual('Cannot match any routes. URL Segment: \'a/c\'');
+                expect(e.message).toContain('Cannot match any routes. URL Segment: \'a/c\'');
               });
     });
   });
@@ -1225,7 +1260,7 @@ describe('applyRedirects', () => {
                 throw new Error('should not be reached');
               },
               (e) => {
-                expect(e.message).toEqual(
+                expect(e.message).toContain(
                     'Only absolute redirects can have named outlets. redirectTo: \'b(aux:c)\'');
               });
     });

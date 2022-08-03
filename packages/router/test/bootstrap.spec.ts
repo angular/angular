@@ -77,40 +77,40 @@ describe('bootstrap', () => {
     }
   }));
 
-  // TODO(#44355): bootstrapping fails when the initial navigation fails
-  xit('should complete resolvers when initial navigation fails and initialNavigation = enabledBlocking',
-      async () => {
-        @NgModule({
-          imports: [
-            BrowserModule,
-            RouterModule.forRoot(
-                [{
-                  matcher: () => {
-                    throw new Error('error in matcher');
-                  },
-                  children: []
-                }],
-                {useHash: true, initialNavigation: 'enabledBlocking'})
-          ],
-          declarations: [RootCmp],
-          bootstrap: [RootCmp],
-          providers: [...testProviders],
-          schemas: [CUSTOM_ELEMENTS_SCHEMA]
-        })
-        class TestModule {
-          constructor() {
-            log.push('TestModule');
-          }
-        }
+  it('should complete resolvers when initial navigation fails and initialNavigation = enabledBlocking',
+     async () => {
+       @NgModule({
+         imports: [
+           BrowserModule,
+           RouterModule.forRoot(
+               [{
+                 matcher: () => {
+                   throw new Error('error in matcher');
+                 },
+                 children: []
+               }],
+               {useHash: true, initialNavigation: 'enabledBlocking'})
+         ],
+         declarations: [RootCmp],
+         bootstrap: [RootCmp],
+         providers: [...testProviders],
+         schemas: [CUSTOM_ELEMENTS_SCHEMA]
+       })
+       class TestModule {
+         constructor(router: Router) {
+           log.push('TestModule');
+           router.events.subscribe(e => log.push(e.constructor.name));
+         }
+       }
 
-        await platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
-          const router = res.injector.get(Router);
-          expect(router.navigated).toEqual(false);
-          expect(router.getCurrentNavigation()).toBeNull();
-          expect(log).toContain('TestModule');
-          expect(log).toContain('NavigationError');
-        });
-      });
+       await platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
+         const router = res.injector.get(Router);
+         expect(router.navigated).toEqual(false);
+         expect(router.getCurrentNavigation()).toBeNull();
+         expect(log).toContain('TestModule');
+         expect(log).toContain('NavigationError');
+       });
+     });
 
   it('should wait for redirect when initialNavigation = enabledBlocking', async () => {
     @Injectable({providedIn: 'root'})
@@ -391,7 +391,7 @@ describe('bootstrap', () => {
      });
 
 
-  it('should restore the scrolling position', async (done) => {
+  it('should restore the scrolling position', async () => {
     @Component({
       selector: 'component-a',
       template: `
@@ -456,7 +456,6 @@ describe('bootstrap', () => {
     await router.navigateByUrl('/aa#marker3');
     expect(window.pageYOffset).toBeGreaterThanOrEqual(8900);
     expect(window.pageYOffset).toBeLessThan(9000);
-    done();
   });
 
   it('should cleanup "popstate" and "hashchange" listeners', async () => {
@@ -486,7 +485,7 @@ describe('bootstrap', () => {
     expect(window.removeEventListener).toHaveBeenCalledWith('hashchange', jasmine.any(Function));
   });
 
-  it('can schedule a navigation from the NavigationEnd event #37460', async (done) => {
+  it('can schedule a navigation from the NavigationEnd event #37460', (done) => {
     @NgModule({
       imports: [
         BrowserModule,
@@ -504,17 +503,19 @@ describe('bootstrap', () => {
     class TestModule {
     }
 
-    const res = await platformBrowserDynamic([]).bootstrapModule(TestModule);
-    const router = res.injector.get(Router);
-    router.events.subscribe(() => {
-      expect(router.getCurrentNavigation()?.id).toBeDefined();
-    });
-    router.events.subscribe(async (e) => {
-      if (e instanceof NavigationEnd && e.url === '/b') {
-        await router.navigate(['a']);
-        done();
-      }
-    });
-    await router.navigateByUrl('/b');
+    (async () => {
+      const res = await platformBrowserDynamic([]).bootstrapModule(TestModule);
+      const router = res.injector.get(Router);
+      router.events.subscribe(() => {
+        expect(router.getCurrentNavigation()?.id).toBeDefined();
+      });
+      router.events.subscribe(async (e) => {
+        if (e instanceof NavigationEnd && e.url === '/b') {
+          await router.navigate(['a']);
+          done();
+        }
+      });
+      await router.navigateByUrl('/b');
+    })();
   });
 });

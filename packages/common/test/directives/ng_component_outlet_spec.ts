@@ -267,6 +267,32 @@ describe('insert/remove', () => {
 
        expect(fixture.nativeElement).toHaveText('Value: child');
      }));
+
+  it('should be available as a standalone directive', () => {
+    @Component({
+      standalone: true,
+      template: 'Hello World',
+    })
+    class HelloWorldComp {
+    }
+
+    @Component({
+      selector: 'test-component',
+      imports: [NgComponentOutlet],
+      template: `
+        <ng-container *ngComponentOutlet="component"></ng-container>
+      `,
+      standalone: true,
+    })
+    class TestComponent {
+      component = HelloWorldComp;
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('Hello World');
+  });
 });
 
 const TEST_TOKEN = new InjectionToken('TestToken');

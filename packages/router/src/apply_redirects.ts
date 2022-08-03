@@ -6,19 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector} from '@angular/core';
+import {EnvironmentInjector, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {EmptyError, from, Observable, of, throwError} from 'rxjs';
-import {catchError, concatMap, first, last, map, mergeMap, scan, tap} from 'rxjs/operators';
+import {catchError, concatMap, first, last, map, mergeMap, scan, switchMap, tap} from 'rxjs/operators';
 
-import {CanLoadFn, LoadedRouterConfig, Route, Routes} from './models';
-import {prioritizedGuardValue} from './operators/prioritized_guard_value';
+import {RuntimeErrorCode} from './errors';
+import {NavigationCancellationCode} from './events';
+import {LoadedRouterConfig, Route, Routes} from './models';
+import {navigationCancelingError} from './navigation_canceling_error';
+import {runCanLoadGuards} from './operators/check_guards';
 import {RouterConfigLoader} from './router_config_loader';
-import {navigationCancelingError, Params, PRIMARY_OUTLET} from './shared';
+import {Params, PRIMARY_OUTLET} from './shared';
 import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
-import {forEach, wrapIntoObservable} from './utils/collection';
+import {forEach} from './utils/collection';
 import {getOrCreateRouteInjectorIfNeeded, getOutlet, sortByMatchingOutlets} from './utils/config';
-import {isImmediateMatch, match, noLeftoversInUrl, split} from './utils/config_matching';
-import {isCanLoad, isFunction, isUrlTree} from './utils/type_guards';
+import {isImmediateMatch, match, matchWithChecks, noLeftoversInUrl, split} from './utils/config_matching';
+
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 class NoMatch {
   public segmentGroup: UrlSegmentGroup|null;
@@ -41,14 +45,18 @@ function absoluteRedirect(newTree: UrlTree): Observable<any> {
 }
 
 function namedOutletsRedirect(redirectTo: string): Observable<any> {
-  return throwError(
-      new Error(`Only absolute redirects can have named outlets. redirectTo: '${redirectTo}'`));
+  return throwError(new RuntimeError(
+      RuntimeErrorCode.NAMED_OUTLET_REDIRECT,
+      NG_DEV_MODE &&
+          `Only absolute redirects can have named outlets. redirectTo: '${redirectTo}'`));
 }
 
 function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
-  return throwError(
-      navigationCancelingError(`Cannot load children because the guard of the route "path: '${
-          route.path}'" returned false`));
+  return throwError(navigationCancelingError(
+      NG_DEV_MODE &&
+          `Cannot load children because the guard of the route "path: '${
+              route.path}'" returned false`,
+      NavigationCancellationCode.GuardRejected));
 }
 
 /**
@@ -119,7 +127,9 @@ class ApplyRedirects {
   }
 
   private noMatchError(e: NoMatch): any {
-    return new Error(`Cannot match any routes. URL Segment: '${e.segmentGroup}'`);
+    return new RuntimeError(
+        RuntimeErrorCode.NO_MATCH,
+        NG_DEV_MODE && `Cannot match any routes. URL Segment: '${e.segmentGroup}'`);
   }
 
   private createUrlTree(rootCandidate: UrlSegmentGroup, queryParams: Params, fragment: string|null):
@@ -285,41 +295,45 @@ class ApplyRedirects {
       return of(new UrlSegmentGroup(segments, {}));
     }
 
-    const {matched, consumedSegments, remainingSegments} = match(rawSegmentGroup, route, segments);
-    if (!matched) return noMatch(rawSegmentGroup);
+    return matchWithChecks(rawSegmentGroup, route, segments, injector, this.urlSerializer)
+        .pipe(
+            switchMap(({matched, consumedSegments, remainingSegments}) => {
+              if (!matched) return noMatch(rawSegmentGroup);
 
-    // Only create the Route's `EnvironmentInjector` if it matches the attempted navigation
-    injector = getOrCreateRouteInjectorIfNeeded(route, injector);
-    const childConfig$ = this.getChildConfig(injector, route, segments);
+              // If the route has an injector created from providers, we should start using that.
+              injector = route._injector ?? injector;
+              const childConfig$ = this.getChildConfig(injector, route, segments);
 
-    return childConfig$.pipe(mergeMap((routerConfig: LoadedRouterConfig) => {
-      const childInjector = routerConfig.injector ?? injector;
-      const childConfig = routerConfig.routes;
+              return childConfig$.pipe(mergeMap((routerConfig: LoadedRouterConfig) => {
+                const childInjector = routerConfig.injector ?? injector;
+                const childConfig = routerConfig.routes;
 
-      const {segmentGroup: splitSegmentGroup, slicedSegments} =
-          split(rawSegmentGroup, consumedSegments, remainingSegments, childConfig);
-      // See comment on the other call to `split` about why this is necessary.
-      const segmentGroup =
-          new UrlSegmentGroup(splitSegmentGroup.segments, splitSegmentGroup.children);
+                const {segmentGroup: splitSegmentGroup, slicedSegments} =
+                    split(rawSegmentGroup, consumedSegments, remainingSegments, childConfig);
+                // See comment on the other call to `split` about why this is necessary.
+                const segmentGroup =
+                    new UrlSegmentGroup(splitSegmentGroup.segments, splitSegmentGroup.children);
 
-      if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
-        const expanded$ = this.expandChildren(childInjector, childConfig, segmentGroup);
-        return expanded$.pipe(
-            map((children: any) => new UrlSegmentGroup(consumedSegments, children)));
-      }
+                if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
+                  const expanded$ = this.expandChildren(childInjector, childConfig, segmentGroup);
+                  return expanded$.pipe(
+                      map((children: any) => new UrlSegmentGroup(consumedSegments, children)));
+                }
 
-      if (childConfig.length === 0 && slicedSegments.length === 0) {
-        return of(new UrlSegmentGroup(consumedSegments, {}));
-      }
+                if (childConfig.length === 0 && slicedSegments.length === 0) {
+                  return of(new UrlSegmentGroup(consumedSegments, {}));
+                }
 
-      const matchedOnOutlet = getOutlet(route) === outlet;
-      const expanded$ = this.expandSegment(
-          childInjector, segmentGroup, childConfig, slicedSegments,
-          matchedOnOutlet ? PRIMARY_OUTLET : outlet, true);
-      return expanded$.pipe(
-          map((cs: UrlSegmentGroup) =>
-                  new UrlSegmentGroup(consumedSegments.concat(cs.segments), cs.children)));
-    }));
+                const matchedOnOutlet = getOutlet(route) === outlet;
+                const expanded$ = this.expandSegment(
+                    childInjector, segmentGroup, childConfig, slicedSegments,
+                    matchedOnOutlet ? PRIMARY_OUTLET : outlet, true);
+                return expanded$.pipe(
+                    map((cs: UrlSegmentGroup) => new UrlSegmentGroup(
+                            consumedSegments.concat(cs.segments), cs.children)));
+              }));
+            }),
+        );
   }
 
   private getChildConfig(injector: EnvironmentInjector, route: Route, segments: UrlSegment[]):
@@ -335,7 +349,7 @@ class ApplyRedirects {
         return of({routes: route._loadedRoutes, injector: route._loadedInjector});
       }
 
-      return this.runCanLoadGuards(injector, route, segments)
+      return runCanLoadGuards(injector, route, segments, this.urlSerializer)
           .pipe(mergeMap((shouldLoadResult: boolean) => {
             if (shouldLoadResult) {
               return this.configLoader.loadChildren(injector, route)
@@ -349,39 +363,6 @@ class ApplyRedirects {
     }
 
     return of({routes: [], injector});
-  }
-
-  private runCanLoadGuards(injector: EnvironmentInjector, route: Route, segments: UrlSegment[]):
-      Observable<boolean> {
-    const canLoad = route.canLoad;
-    if (!canLoad || canLoad.length === 0) return of(true);
-
-    const canLoadObservables = canLoad.map((injectionToken: any) => {
-      const guard = injector.get(injectionToken);
-      let guardVal;
-      if (isCanLoad(guard)) {
-        guardVal = guard.canLoad(route, segments);
-      } else if (isFunction<CanLoadFn>(guard)) {
-        guardVal = guard(route, segments);
-      } else {
-        throw new Error('Invalid CanLoad guard');
-      }
-      return wrapIntoObservable(guardVal);
-    });
-
-    return of(canLoadObservables)
-        .pipe(
-            prioritizedGuardValue(),
-            tap((result: UrlTree|boolean) => {
-              if (!isUrlTree(result)) return;
-
-              const error: Error&{url?: UrlTree} = navigationCancelingError(
-                  `Redirecting to "${this.urlSerializer.serialize(result)}"`);
-              error.url = result;
-              throw error;
-            }),
-            map(result => result === true),
-        );
   }
 
   private lineralizeSegments(route: Route, urlTree: UrlTree): Observable<UrlSegment[]> {
@@ -403,11 +384,11 @@ class ApplyRedirects {
 
   private applyRedirectCommands(
       segments: UrlSegment[], redirectTo: string, posParams: {[k: string]: UrlSegment}): UrlTree {
-    return this.applyRedirectCreatreUrlTree(
+    return this.applyRedirectCreateUrlTree(
         redirectTo, this.urlSerializer.parse(redirectTo), segments, posParams);
   }
 
-  private applyRedirectCreatreUrlTree(
+  private applyRedirectCreateUrlTree(
       redirectTo: string, urlTree: UrlTree, segments: UrlSegment[],
       posParams: {[k: string]: UrlSegment}): UrlTree {
     const newRoot = this.createSegmentGroup(redirectTo, urlTree.root, segments, posParams);
@@ -456,8 +437,10 @@ class ApplyRedirects {
       posParams: {[k: string]: UrlSegment}): UrlSegment {
     const pos = posParams[redirectToUrlSegment.path.substring(1)];
     if (!pos)
-      throw new Error(
-          `Cannot redirect to '${redirectTo}'. Cannot find '${redirectToUrlSegment.path}'.`);
+      throw new RuntimeError(
+          RuntimeErrorCode.MISSING_REDIRECT,
+          NG_DEV_MODE &&
+              `Cannot redirect to '${redirectTo}'. Cannot find '${redirectToUrlSegment.path}'.`);
     return pos;
   }
 

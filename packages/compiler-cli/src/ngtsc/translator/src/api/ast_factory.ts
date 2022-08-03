@@ -23,7 +23,7 @@ export interface AstFactory<TStatement, TExpression> {
   attachComments(statement: TStatement, leadingComments: LeadingComment[]): void;
 
   /**
-   * Create a literal array expresion (e.g. `[expr1, expr2]`).
+   * Create a literal array expression (e.g. `[expr1, expr2]`).
    *
    * @param elements a collection of the expressions to appear in each array slot.
    */
@@ -58,7 +58,7 @@ export interface AstFactory<TStatement, TExpression> {
    * Create an expression that is calling the `callee` with the given `args`.
    *
    * @param callee an expression that evaluates to a function to be called.
-   * @param args the arugments to be passed to the call.
+   * @param args the arguments to be passed to the call.
    * @param pure whether to mark the call as pure (having no side-effects).
    */
   createCallExpression(callee: TExpression, args: TExpression[], pure: boolean): TExpression;

@@ -58,6 +58,7 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
             "//packages/zone.js/bundles:zone-patch-resize-observer.umd.js",
             "//packages/zone.js/bundles:zone-patch-message-port.umd.js",
             "//packages/zone.js/bundles:zone-patch-user-media.umd.js",
+            "//packages/zone.js/bundles:async-stack-tagging.umd.js",
             ":" + name + "_rollup.umd",
         ]
 
@@ -70,7 +71,7 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                             ":" + name + "_env_rollup.umd",
                         ] + bootstrap +
                         _karma_test_required_dist_files,
-            browsers = ["@npm//@angular/dev-infra-private/bazel/browsers/chromium:chromium"],
+            browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
             static_files = [
                 ":assets/sample.json",
                 ":assets/worker.js",
@@ -93,12 +94,11 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                     ":" + name + "_env_rollup.umd",
                     "//packages/zone.js/bundles:zone-testing-bundle.umd.min.js",
                 ] + _karma_test_required_dist_files,
-                browsers = ["@npm//@angular/dev-infra-private/bazel/browsers/chromium:chromium"],
+                browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
                 config_file = "//:karma-js.conf.js",
                 configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
                 data = [
                     "//:browser-providers.conf.js",
-                    "//tools:jasmine-seed-generator.js",
                 ],
                 static_files = [
                     ":assets/sample.json",

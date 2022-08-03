@@ -4,7 +4,7 @@ contact_links:
     url: https://angular.io/guide/security#report-issues
     about: Report a security issue in Angular Framework, CDK, Material, or CLI
   - name: Angular CLI
-    url: https://github.com/angular/angular/issues/new/choose
+    url: https://github.com/angular/angular-cli/issues/new/choose
     about: Issues and feature requests for Angular CLI
   - name: Angular Material and Components Development Kit (CDK)
     url: https://github.com/angular/components/issues/new/choose

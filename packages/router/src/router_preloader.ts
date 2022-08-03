@@ -8,9 +8,9 @@
 
 import {Compiler, createEnvironmentInjector, EnvironmentInjector, Injectable, OnDestroy} from '@angular/core';
 import {from, Observable, of, Subscription} from 'rxjs';
-import {catchError, concatMap, filter, map, mapTo, mergeAll, mergeMap, tap} from 'rxjs/operators';
+import {catchError, concatMap, filter, mergeAll, mergeMap} from 'rxjs/operators';
 
-import {Event, NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
+import {Event, NavigationEnd} from './events';
 import {LoadedRouterConfig, Route, Routes} from './models';
 import {Router} from './router';
 import {RouterConfigLoader} from './router_config_loader';
@@ -38,6 +38,7 @@ export abstract class PreloadingStrategy {
  *
  * @publicApi
  */
+@Injectable({providedIn: 'root'})
 export class PreloadAllModules implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> {
     return fn().pipe(catchError(() => of(null)));
@@ -53,6 +54,7 @@ export class PreloadAllModules implements PreloadingStrategy {
  *
  * @publicApi
  */
+@Injectable({providedIn: 'root'})
 export class NoPreloading implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> {
     return of(null);
@@ -108,7 +110,15 @@ export class RouterPreloader implements OnDestroy {
       const injectorForCurrentRoute = route._injector ?? injector;
       const injectorForChildren = route._loadedInjector ?? injectorForCurrentRoute;
 
-      if ((route.loadChildren && !route._loadedRoutes) ||
+      // Note that `canLoad` is only checked as a condition that prevents `loadChildren` and not
+      // `loadComponent`. `canLoad` guards only block loading of child routes by design. This
+      // happens as a consequence of needing to descend into children for route matching immediately
+      // while component loading is deferred until route activation. Because `canLoad` guards can
+      // have side effects, we cannot execute them here so we instead skip preloading altogether
+      // when present. Lastly, it remains to be decided whether `canLoad` should behave this way
+      // at all. Code splitting and lazy loading is separate from client-side authorization checks
+      // and should not be used as a security measure to prevent loading of code.
+      if ((route.loadChildren && !route._loadedRoutes && route.canLoad === undefined) ||
           (route.loadComponent && !route._loadedComponent)) {
         res.push(this.preloadConfig(injectorForCurrentRoute, route));
       } else if (route.children || route._loadedRoutes) {

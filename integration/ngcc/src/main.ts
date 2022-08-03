@@ -1,6 +1,6 @@
-import {Component, NgModule, ɵrenderComponent as renderComponent} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {Component, NgModule} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 @Component({
   selector: 'hello-world',
@@ -15,8 +15,10 @@ class HelloWorld {
 
 @NgModule({
   declarations: [HelloWorld],
-  imports: [CommonModule, MatButtonModule],
+  imports: [BrowserModule, MatButtonModule],
+  bootstrap: [HelloWorld],
 })
-class Module {}
+class Module {
+}
 
-renderComponent(HelloWorld);
+platformBrowser().bootstrapModule(Module);

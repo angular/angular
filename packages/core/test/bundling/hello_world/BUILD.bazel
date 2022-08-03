@@ -9,6 +9,7 @@ ng_module(
     srcs = ["index.ts"],
     deps = [
         "//packages/core",
+        "//packages/platform-browser",
     ],
 )
 
@@ -18,6 +19,7 @@ app_bundle(
     deps = [
         ":hello_world",
         "//packages/core",
+        "//packages/platform-browser",
         "@npm//rxjs",
     ],
 )
@@ -37,9 +39,9 @@ ts_library(
 jasmine_node_test(
     name = "test",
     data = [
+        ":bundle",
         ":bundle.debug.min.js",
         ":bundle.js",
-        ":bundle.min.js",
         ":bundle.min.js.br",
     ],
     deps = [":test_lib"],
@@ -52,7 +54,7 @@ js_expected_symbol_test(
 )
 
 http_server(
-    name = "devserver",
+    name = "prodserver",
     data = [
         "index.html",
         ":bundle.debug.min.js",

@@ -1,5 +1,5 @@
 load("//tools:defaults.bzl", "app_bundle", "ng_module", "ts_devserver", "ts_library")
-load("@npm//@angular/dev-infra-private/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
@@ -26,7 +26,7 @@ ts_library(
     srcs = ["expanding_rows.perf-spec.ts"],
     tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
     deps = [
-        "@npm//@angular/dev-infra-private/bazel/benchmark/driver-utilities",
+        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
         "@npm//protractor",
     ],
 )

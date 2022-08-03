@@ -11,31 +11,40 @@ import {Injector} from '../di/injector';
 import {InjectFlags} from '../di/interface/injector';
 import {ProviderToken} from '../di/provider_token';
 import {EnvironmentInjector} from '../di/r3_injector';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
-import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
+import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as AbstractComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {createElementRef, ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
 import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
+import {assertDefined, assertIndexInRange} from '../util/assert';
 import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider_flags';
 
 import {assertComponentType} from './assert';
-import {createRootComponent, createRootComponentView, createRootContext, LifecycleHooksFeature} from './component';
 import {getComponentDef} from './definition';
-import {NodeInjector} from './di';
-import {createLView, createTView, locateHostElement, renderView} from './instructions/shared';
-import {ComponentDef} from './interfaces/definition';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './interfaces/node';
-import {domRendererFactory3, RendererFactory3} from './interfaces/renderer';
-import {RNode} from './interfaces/renderer_dom';
-import {HEADER_OFFSET, LView, LViewFlags, TViewType} from './interfaces/view';
+import {diPublicInInjector, getOrCreateNodeInjectorForNode, NodeInjector} from './di';
+import {throwProviderNotFoundError} from './errors_di';
+import {registerPostOrderHooks} from './hooks';
+import {reportUnknownPropertyError} from './instructions/element_validation';
+import {addToViewTree, CLEAN_PROMISE, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, markDirtyIfOnPush, registerHostBindingOpCodes, renderView, setInputsForProperty} from './instructions/shared';
+import {ComponentDef, RenderFlags} from './interfaces/definition';
+import {PropertyAliasValue, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
+import {PlayerHandler} from './interfaces/player';
+import {Renderer, RendererFactory} from './interfaces/renderer';
+import {RElement, RNode} from './interfaces/renderer_dom';
+import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
-import {createElementNode, writeDirectClass} from './node_manipulation';
+import {createElementNode, writeDirectClass, writeDirectStyle} from './node_manipulation';
 import {extractAttrsAndClassesFromSelector, stringifyCSSSelectorList} from './node_selector_matcher';
-import {enterView, leaveView} from './state';
+import {enterView, getCurrentTNode, getLView, leaveView, setSelectedIndex} from './state';
+import {computeStaticStyling} from './styling/static_styling';
 import {setUpAttributes} from './util/attrs_utils';
+import {defaultScheduler} from './util/misc_utils';
+import {stringifyForError} from './util/stringify_utils';
+import {getRootContext} from './util/view_traversal_utils';
 import {getTNode} from './util/view_utils';
 import {RootViewRef, ViewRef} from './view_ref';
 
@@ -129,7 +138,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
   override create(
       injector: Injector, projectableNodes?: any[][]|undefined, rootSelectorOrNode?: any,
       environmentInjector?: viewEngine_NgModuleRef<any>|EnvironmentInjector|
-      undefined): viewEngine_ComponentRef<T> {
+      undefined): AbstractComponentRef<T> {
     environmentInjector = environmentInjector || this.ngModule;
 
     let realEnvironmentInjector = environmentInjector instanceof EnvironmentInjector ?
@@ -144,9 +153,15 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const rootViewInjector =
         realEnvironmentInjector ? new ChainedInjector(injector, realEnvironmentInjector) : injector;
 
-    const rendererFactory =
-        rootViewInjector.get(RendererFactory2, domRendererFactory3 as RendererFactory2) as
-        RendererFactory3;
+    const rendererFactory = rootViewInjector.get(RendererFactory2, null);
+    if (rendererFactory === null) {
+      throw new RuntimeError(
+          RuntimeErrorCode.RENDERER_NOT_FOUND,
+          ngDevMode &&
+              'Angular was not able to inject a renderer (RendererFactory2). ' +
+                  'Likely this is due to a broken DI hierarchy. ' +
+                  'Make sure that any injector used to create this component has a correct parent.');
+    }
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
     const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);
@@ -220,7 +235,6 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-vcref
       component = createRootComponent(
           componentView, this.componentDef, rootLView, rootContext, [LifecycleHooksFeature]);
-
       renderView(rootTView, rootLView, null);
     } finally {
       leaveView();
@@ -253,7 +267,7 @@ export function injectComponentFactoryResolver(): viewEngine_ComponentFactoryRes
  * method.
  *
  */
-export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
+export class ComponentRef<T> extends AbstractComponentRef<T> {
   override instance: T;
   override hostView: ViewRef<T>;
   override changeDetectorRef: ViewEngine_ChangeDetectorRef;
@@ -269,6 +283,25 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
     this.componentType = componentType;
   }
 
+  override setInput(name: string, value: unknown): void {
+    const inputData = this._tNode.inputs;
+    let dataValue: PropertyAliasValue|undefined;
+    if (inputData !== null && (dataValue = inputData[name])) {
+      const lView = this._rootLView;
+      setInputsForProperty(lView[TVIEW], lView, dataValue, name, value);
+      markDirtyIfOnPush(lView, this._tNode.index);
+    } else {
+      if (ngDevMode) {
+        const cmpNameForError = stringifyForError(this.componentType);
+        let message =
+            `Can't set value of the '${name}' input on the '${cmpNameForError}' component. `;
+        message += `Make sure that the '${
+            name}' property is annotated with @Input() or a mapped @Input('${name}') exists.`;
+        reportUnknownPropertyError(message);
+      }
+    }
+  }
+
   override get injector(): Injector {
     return new NodeInjector(this._tNode, this._rootLView);
   }
@@ -280,4 +313,215 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
   override onDestroy(callback: () => void): void {
     this.hostView.onDestroy(callback);
   }
+}
+
+
+
+/** Options that control how the component should be bootstrapped. */
+export interface CreateComponentOptions {
+  /** Which renderer factory to use. */
+  rendererFactory?: RendererFactory;
+
+  /** A custom sanitizer instance */
+  sanitizer?: Sanitizer;
+
+  /** A custom animation player handler */
+  playerHandler?: PlayerHandler;
+
+  /**
+   * Host element on which the component will be bootstrapped. If not specified,
+   * the component definition's `tag` is used to query the existing DOM for the
+   * element to bootstrap.
+   */
+  host?: RElement|string;
+
+  /** Module injector for the component. If unspecified, the injector will be NULL_INJECTOR. */
+  injector?: Injector;
+
+  /**
+   * List of features to be applied to the created component. Features are simply
+   * functions that decorate a component with a certain behavior.
+   *
+   * Typically, the features in this list are features that cannot be added to the
+   * other features list in the component definition because they rely on other factors.
+   *
+   * Example: `LifecycleHooksFeature` is a function that adds lifecycle hook capabilities
+   * to root components in a tree-shakable way. It cannot be added to the component
+   * features list because there's no way of knowing when the component will be used as
+   * a root component.
+   */
+  hostFeatures?: HostFeature[];
+
+  /**
+   * A function which is used to schedule change detection work in the future.
+   *
+   * When marking components as dirty, it is necessary to schedule the work of
+   * change detection in the future. This is done to coalesce multiple
+   * {@link markDirty} calls into a single changed detection processing.
+   *
+   * The default value of the scheduler is the `requestAnimationFrame` function.
+   *
+   * It is also useful to override this function for testing purposes.
+   */
+  scheduler?: (work: () => void) => void;
+}
+
+/** See CreateComponentOptions.hostFeatures */
+type HostFeature = (<T>(component: T, componentDef: ComponentDef<T>) => void);
+
+// TODO: A hack to not pull in the NullInjector from @angular/core.
+export const NULL_INJECTOR: Injector = {
+  get: (token: any, notFoundValue?: any) => {
+    throwProviderNotFoundError(token, 'NullInjector');
+  }
+};
+
+/**
+ * Creates the root component view and the root component node.
+ *
+ * @param rNode Render host element.
+ * @param def ComponentDef
+ * @param rootView The parent view where the host node is stored
+ * @param rendererFactory Factory to be used for creating child renderers.
+ * @param hostRenderer The current renderer
+ * @param sanitizer The sanitizer, if provided
+ *
+ * @returns Component view created
+ */
+export function createRootComponentView(
+    rNode: RElement|null, def: ComponentDef<any>, rootView: LView, rendererFactory: RendererFactory,
+    hostRenderer: Renderer, sanitizer?: Sanitizer|null): LView {
+  const tView = rootView[TVIEW];
+  const index = HEADER_OFFSET;
+  ngDevMode && assertIndexInRange(rootView, index);
+  rootView[index] = rNode;
+  // '#host' is added here as we don't know the real host DOM name (we don't want to read it) and at
+  // the same time we want to communicate the debug `TNode` that this is a special `TNode`
+  // representing a host element.
+  const tNode: TElementNode = getOrCreateTNode(tView, index, TNodeType.Element, '#host', null);
+  const mergedAttrs = tNode.mergedAttrs = def.hostAttrs;
+  if (mergedAttrs !== null) {
+    computeStaticStyling(tNode, mergedAttrs, true);
+    if (rNode !== null) {
+      setUpAttributes(hostRenderer, rNode, mergedAttrs);
+      if (tNode.classes !== null) {
+        writeDirectClass(hostRenderer, rNode, tNode.classes);
+      }
+      if (tNode.styles !== null) {
+        writeDirectStyle(hostRenderer, rNode, tNode.styles);
+      }
+    }
+  }
+
+  const viewRenderer = rendererFactory.createRenderer(rNode, def);
+  const componentView = createLView(
+      rootView, getOrCreateTComponentView(def), null,
+      def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[index], tNode,
+      rendererFactory, viewRenderer, sanitizer || null, null, null);
+
+  if (tView.firstCreatePass) {
+    diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), tView, def.type);
+    markAsComponentHost(tView, tNode);
+    initTNodeFlags(tNode, rootView.length, 1);
+  }
+
+  addToViewTree(rootView, componentView);
+
+  // Store component view at node index, with node as the HOST
+  return rootView[index] = componentView;
+}
+
+/**
+ * Creates a root component and sets it up with features and host bindings.Shared by
+ * renderComponent() and ViewContainerRef.createComponent().
+ */
+export function createRootComponent<T>(
+    componentView: LView, componentDef: ComponentDef<T>, rootLView: LView, rootContext: RootContext,
+    hostFeatures: HostFeature[]|null): any {
+  const tView = rootLView[TVIEW];
+  // Create directive instance with factory() and store at next index in viewData
+  const component = instantiateRootComponent(tView, rootLView, componentDef);
+
+  rootContext.components.push(component);
+  componentView[CONTEXT] = component;
+
+  if (hostFeatures !== null) {
+    for (const feature of hostFeatures) {
+      feature(component, componentDef);
+    }
+  }
+
+  // We want to generate an empty QueryList for root content queries for backwards
+  // compatibility with ViewEngine.
+  if (componentDef.contentQueries) {
+    const tNode = getCurrentTNode()!;
+    ngDevMode && assertDefined(tNode, 'TNode expected');
+    componentDef.contentQueries(RenderFlags.Create, component, tNode.directiveStart);
+  }
+
+  const rootTNode = getCurrentTNode()!;
+  ngDevMode && assertDefined(rootTNode, 'tNode should have been already created');
+  if (tView.firstCreatePass &&
+      (componentDef.hostBindings !== null || componentDef.hostAttrs !== null)) {
+    setSelectedIndex(rootTNode.index);
+
+    const rootTView = rootLView[TVIEW];
+    registerHostBindingOpCodes(
+        rootTView, rootTNode, rootLView, rootTNode.directiveStart, rootTNode.directiveEnd,
+        componentDef);
+
+    invokeHostBindingsInCreationMode(componentDef, component);
+  }
+  return component;
+}
+
+
+export function createRootContext(
+    scheduler?: (workFn: () => void) => void, playerHandler?: PlayerHandler|null): RootContext {
+  return {
+    components: [],
+    scheduler: scheduler || defaultScheduler,
+    clean: CLEAN_PROMISE,
+    playerHandler: playerHandler || null,
+    flags: RootContextFlags.Empty
+  };
+}
+
+/**
+ * Used to enable lifecycle hooks on the root component.
+ *
+ * Include this feature when calling `renderComponent` if the root component
+ * you are rendering has lifecycle hooks defined. Otherwise, the hooks won't
+ * be called properly.
+ *
+ * Example:
+ *
+ * ```
+ * renderComponent(AppComponent, {hostFeatures: [LifecycleHooksFeature]});
+ * ```
+ */
+export function LifecycleHooksFeature(): void {
+  const tNode = getCurrentTNode()!;
+  ngDevMode && assertDefined(tNode, 'TNode is required');
+  registerPostOrderHooks(getLView()[TVIEW], tNode);
+}
+
+/**
+ * Wait on component until it is rendered.
+ *
+ * This function returns a `Promise` which is resolved when the component's
+ * change detection is executed. This is determined by finding the scheduler
+ * associated with the `component`'s render tree and waiting until the scheduler
+ * flushes. If nothing is scheduled, the function returns a resolved promise.
+ *
+ * Example:
+ * ```
+ * await whenRendered(myComponent);
+ * ```
+ *
+ * @param component Component to wait upon
+ * @returns Promise which resolves when the component is rendered.
+ */
+export function whenRendered(component: any): Promise<null> {
+  return getRootContext(component).clean;
 }

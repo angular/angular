@@ -75,7 +75,7 @@ describe('Api pages', () => {
   });
 
   it('should show all overloads of interface methods', async () => {
-    await page.navigateTo('api/core/testing/TestBedStatic');
+    await page.navigateTo('api/core/testing/TestBed');
     expect(await (await page.getInstanceMethodOverloads('inject')).length).toEqual(2);
   });
 

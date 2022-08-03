@@ -19,8 +19,8 @@ import {LanguageServiceAdapter} from './adapters';
  * needed to produce an up-to-date understanding of the current program.
  *
  * TODO(alxhub): currently the options used for the compiler are specified at `CompilerFactory`
- * construction, and are not changable. In a real project, users can update `tsconfig.json`. We need
- * to properly handle a change in the compiler options, either by having an API to update the
+ * construction, and are not changeable. In a real project, users can update `tsconfig.json`. We
+ * need to properly handle a change in the compiler options, either by having an API to update the
  * `CompilerFactory` to use new options, or by replacing it entirely.
  */
 export class CompilerFactory {

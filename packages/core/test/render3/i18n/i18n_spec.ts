@@ -10,14 +10,12 @@ import {ɵɵi18nAttributes, ɵɵi18nPostprocess, ɵɵi18nStart} from '@angular/c
 import {ɵɵi18n} from '@angular/core/src/core';
 import {getTranslationForTemplate, i18nStartFirstCreatePass} from '@angular/core/src/render3/i18n/i18n_parse';
 import {getTIcu} from '@angular/core/src/render3/i18n/i18n_util';
-import {TElementNode, TNodeType} from '@angular/core/src/render3/interfaces/node';
-import {getCurrentTNode} from '@angular/core/src/render3/state';
+import {TNodeType} from '@angular/core/src/render3/interfaces/node';
+
 import {ɵɵelementEnd, ɵɵelementStart} from '../../../src/render3/instructions/all';
 import {I18nCreateOpCode, I18nUpdateOpCodes, TI18n, TIcu} from '../../../src/render3/interfaces/i18n';
-import {HEADER_OFFSET, LView, TVIEW, TView} from '../../../src/render3/interfaces/view';
-import {getNativeByIndex} from '../../../src/render3/util/view_utils';
+import {HEADER_OFFSET, TView} from '../../../src/render3/interfaces/view';
 import {matchTNode} from '../matchers';
-import {TemplateFixture} from '../render_util';
 import {matchDebug} from '../utils';
 import {ViewFixture} from '../view_fixture';
 
@@ -61,13 +59,18 @@ describe('Runtime i18n', () => {
   let tView: TView;
 
   function getOpCodes(
-      messageOrAtrs: string|string[], createTemplate: () => void,
-      updateTemplate: (() => void)|undefined, nbDecls: number, index: number): TI18n|
-      I18nUpdateOpCodes {
-    const fixture = new TemplateFixture(
-        {create: createTemplate, update: updateTemplate, decls: nbDecls, consts: [messageOrAtrs]});
-    tView = fixture.hostView[TVIEW];
-    return tView.data[index] as TI18n | I18nUpdateOpCodes;
+      messageOrAtrs: string|string[], createTemplate: () => void, decls: number,
+      index: number): TI18n|I18nUpdateOpCodes {
+    const fixture = new ViewFixture({decls, consts: [messageOrAtrs]});
+    fixture.enterView();
+    createTemplate();
+
+    // Make `tView` available for tests.
+    tView = fixture.tView;
+    const opCodes = fixture.tView.data[index] as TI18n | I18nUpdateOpCodes;
+
+    ViewFixture.cleanUp();
+    return opCodes;
   }
 
   describe('i18nStart', () => {
@@ -79,7 +82,7 @@ describe('Runtime i18n', () => {
                         ɵɵelementStart(0, 'div');
                         ɵɵi18nStart(index, 0);
                         ɵɵelementEnd();
-                      }, undefined, nbConsts, HEADER_OFFSET + index) as TI18n;
+                      }, nbConsts, HEADER_OFFSET + index) as TI18n;
 
       expect(opCodes).toEqual({
         create: matchDebug([
@@ -100,7 +103,7 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, HEADER_OFFSET + index);
+      }, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual({
         create: matchDebug([
@@ -125,7 +128,7 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, HEADER_OFFSET + index);
+      }, nbConsts, HEADER_OFFSET + index);
 
       expect((opCodes as any).update.debug).toEqual([`if (mask & 0b1) { (lView[${
           HEADER_OFFSET + 2}] as Text).textContent = \`Hello \${lView[i-1]}!\`; }`]);
@@ -150,7 +153,7 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, HEADER_OFFSET + index);
+      }, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual({
         create: matchDebug([
@@ -185,7 +188,7 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, HEADER_OFFSET + index);
+      }, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual({
         create: matchDebug([
@@ -208,7 +211,7 @@ describe('Runtime i18n', () => {
       opCodes = getOpCodes(message, () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0, 1);
-      }, undefined, nbConsts, index + HEADER_OFFSET);
+      }, nbConsts, index + HEADER_OFFSET);
 
       expect(opCodes).toEqual({
         create: matchDebug([
@@ -226,7 +229,7 @@ describe('Runtime i18n', () => {
       opCodes = getOpCodes(message, () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nStart(index, 0, 2);
-      }, undefined, nbConsts, index + HEADER_OFFSET);
+      }, nbConsts, index + HEADER_OFFSET);
 
       expect(opCodes).toEqual({
         create: matchDebug([
@@ -248,7 +251,7 @@ describe('Runtime i18n', () => {
                         ɵɵelementStart(0, 'div');
                         ɵɵi18nStart(index, 0);
                         ɵɵelementEnd();
-                      }, undefined, nbConsts, HEADER_OFFSET + index) as TI18n;
+                      }, nbConsts, HEADER_OFFSET + index) as TI18n;
 
       expect(opCodes).toEqual({
         create: matchDebug([
@@ -337,7 +340,7 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18n(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, HEADER_OFFSET + index);
+      }, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual({
         create: matchDebug([
@@ -431,7 +434,7 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nAttributes(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, HEADER_OFFSET + index);
+      }, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual(matchDebug([
         `if (mask & 0b1) { (lView[${
@@ -448,7 +451,7 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nAttributes(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, HEADER_OFFSET + index);
+      }, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual(matchDebug([
         `if (mask & 0b11) { (lView[${
@@ -467,7 +470,7 @@ describe('Runtime i18n', () => {
         ɵɵelementStart(0, 'div');
         ɵɵi18nAttributes(index, 0);
         ɵɵelementEnd();
-      }, undefined, nbConsts, HEADER_OFFSET + index);
+      }, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual(matchDebug([
         `if (mask & 0b11) { (lView[${HEADER_OFFSET + 0}] as Element).` +

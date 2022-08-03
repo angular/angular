@@ -1,0 +1,8 @@
+extends: existence
+message: "'%s' is hedging."
+ignorecase: true
+level: error
+tokens:
+  - I would argue that
+  - ', so to speak'
+  - to a certain degree

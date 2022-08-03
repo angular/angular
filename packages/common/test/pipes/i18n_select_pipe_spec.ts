@@ -7,6 +7,8 @@
  */
 
 import {I18nSelectPipe} from '@angular/common';
+import {Component} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 
 {
   describe('I18nSelectPipe', () => {
@@ -35,6 +37,25 @@ import {I18nSelectPipe} from '@angular/common';
 
       it('should throw on bad arguments', () => {
         expect(() => pipe.transform('male', 'hey' as any)).toThrowError();
+      });
+
+      it('should be available as a standalone pipe', () => {
+        @Component({
+          selector: 'test-component',
+          imports: [I18nSelectPipe],
+          template: '{{ value | i18nSelect:mapping }}',
+          standalone: true,
+        })
+        class TestComponent {
+          value = 'other';
+          mapping = mapping;
+        }
+
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+
+        const content = fixture.nativeElement.textContent;
+        expect(content).toBe('Invite them.');
       });
     });
   });

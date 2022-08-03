@@ -38,7 +38,7 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
      * `NgModule` doc.
      */
     processNgModuleExportDoc(exportDoc, errors) {
-      const options = exportDoc[`${exportDoc.docType}Options`];
+      const options = exportDoc[`${exportDoc.docType}Options`] || {};
 
       // Directives without a selector are considered abstract and do not need to be part of
       // any `@NgModule`.
@@ -47,9 +47,15 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
       }
 
       if (!exportDoc.ngModules || exportDoc.ngModules.length === 0) {
-        errors.push(createDocMessage(
-          `"${exportDoc.id}" has no @ngModule tag. Docs of type "${exportDoc.docType}" must have this tag.`,
-          exportDoc));
+        // Trigger an error for non-standalone components/pipes/directives only.
+        // Standalone types may not be a part of an NgModule, in which case
+        // we just exit this function without throwing an error.
+        if (!options.standalone) {
+          errors.push(createDocMessage(
+              `"${exportDoc.id}" has no @ngModule tag. Docs of type "${
+                  exportDoc.docType}" must have this tag.`,
+              exportDoc));
+        }
         return;
       }
 
@@ -73,8 +79,8 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
       if (Array.isArray(injectableDoc.ngModules)) {
         for (const ngModule of injectableDoc.ngModules) {
           if (isWrappedInQuotes(ngModule)) {
-            // `ngModule` is wrapped in quotes, so it will be one of `'any'`, `'root'` or `'platform'`
-            // and is not associated with a specific NgModule. So just use the string.
+            // `ngModule` is wrapped in quotes, so it will be one of `'any'`, `'root'` or
+            // `'platform'` and is not associated with a specific NgModule. So just use the string.
             ngModules.push(ngModule.slice(1, -1));
             continue;
           }
@@ -103,7 +109,9 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
         const providedInProp = properties?.find(prop => prop.name.text === 'providedIn');
         const providedInNode = providedInProp?.initializer;
         if (providedInNode) {
-          const providedIn = providedInNode.getSourceFile().text.slice(providedInNode.pos, providedInNode.end).trim();
+          const providedIn = providedInNode.getSourceFile()
+                                 .text.slice(providedInNode.pos, providedInNode.end)
+                                 .trim();
           this.processProvidedIn(providedIn, injectableDoc, ngModules, errors);
         }
       }
@@ -181,7 +189,6 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
       if (providers.length > 0) {
         ngModuleDoc.providers = providers;
       }
-
     }
   };
 
@@ -190,14 +197,15 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
 
     if (ngModuleDocs.length === 0) {
       errors.push(
-        createDocMessage(`The referenced "${ngModuleId}" does not match a public NgModule`, doc));
+          createDocMessage(`The referenced "${ngModuleId}" does not match a public NgModule`, doc));
       return null;
     }
 
     if (ngModuleDocs.length > 1) {
       errors.push(createDocMessage(
-        `The referenced "${ngModuleId}" is ambiguous. Matches: ${ngModuleDocs.map(d => d.id).join(', ')}`,
-        doc));
+          `The referenced "${ngModuleId}" is ambiguous. Matches: ${
+              ngModuleDocs.map(d => d.id).join(', ')}`,
+          doc));
       return null;
     }
 

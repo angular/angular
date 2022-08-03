@@ -72,7 +72,7 @@ email.reset();
 console.log(email.value); // null
 ```
 
-TypeScript will enforce that you always handle the possibility that the control has become `null`. If you want to make this control non-nullable, you may use the `nonNullable` option. This will cause the control to reset to its intial value, instead of `null`:
+TypeScript will enforce that you always handle the possibility that the control has become `null`. If you want to make this control non-nullable, you may use the `nonNullable` option. This will cause the control to reset to its initial value, instead of `null`:
 
 ```ts
 const email = new FormControl('angularrox@gmail.com', {nonNullable: true});
@@ -170,6 +170,12 @@ addresses.addControl('Andrew', new FormControl('2340 Folsom St'));
 Any control of type `string|null` can be added to this `FormRecord`.
 
 If you need a `FormGroup` that is both dynamic (open-ended) and heterogenous (the controls are different types), no improved type safety is possible, and you should use `UntypedFormGroup`.
+
+A `FormRecord` can also be built with the `FormBuilder`:
+
+```ts
+const addresses = fb.record({'Andrew': '2340 Folsom St'});
+```
 
 ## `FormBuilder` and `NonNullableFormBuilder`
 

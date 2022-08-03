@@ -76,7 +76,7 @@ Conversely, `customer` in the `<h1>` doesn't include Ebony or Chiho because the 
 
 ## Expression best practices
 
-When using template a expression, follow these best practices:
+When using a template expression, follow these best practices:
 
 * **Use short expressions**
 

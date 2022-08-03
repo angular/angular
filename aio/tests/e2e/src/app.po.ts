@@ -37,7 +37,9 @@ export class SitePage {
   }
   getTopMenuLink(path: string) { return element(by.css(`aio-top-menu a[href="${path}"]`)); }
 
-  ga() { return browser.executeScript<any[][]>('return window["ga"].q'); }
+  legacyGa() { return browser.executeScript<any[][]>('return window["ga"].q'); }
+  gtagQueue() { return browser.executeScript<any[][]>('return window["dataLayer"]'); }
+
   locationPath() { return browser.executeScript<string>('return document.location.pathname'); }
 
   async navigateTo(pageUrl: string, keepCookiesPopup = false) {

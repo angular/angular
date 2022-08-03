@@ -8,9 +8,8 @@
 
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
 import {EmitterVisitorContext} from '@angular/compiler/src/output/abstract_emitter';
-import {SourceMap} from '@angular/compiler/src/output/source_map';
 
-import {extractSourceMap, originalPositionFor} from './source_map_util';
+import {originalPositionFor} from './source_map_util';
 
 {
   describe('AbstractEmitter', () => {
@@ -43,11 +42,11 @@ import {extractSourceMap, originalPositionFor} from './source_map_util';
         expectMap(ctx, 1, 0, 'a.js', 0, 4);
       });
 
-      it('should be able to shift the content', () => {
+      it('should be able to shift the content', async () => {
         ctx.print(createSourceSpan(fileA, 0), 'fileA-0');
 
         const sm = ctx.toSourceMapGenerator('o.ts', 10).toJSON()!;
-        expect(originalPositionFor(sm, {line: 11, column: 0})).toEqual({
+        expect(await originalPositionFor(sm, {line: 11, column: 0})).toEqual({
           line: 1,
           column: 0,
           source: 'a.js',
@@ -113,16 +112,15 @@ import {extractSourceMap, originalPositionFor} from './source_map_util';
 
 // All lines / columns indexes are 0-based
 // Note: source-map line indexes are 1-based, column 0-based
-function expectMap(
+async function expectMap(
     ctx: EmitterVisitorContext, genLine: number, genCol: number, source: string|null = null,
     srcLine: number|null = null, srcCol: number|null = null) {
   const sm = ctx.toSourceMapGenerator('o.ts').toJSON()!;
   const genPosition = {line: genLine + 1, column: genCol};
-  const origPosition = originalPositionFor(sm, genPosition);
-  // TODO: Review use of `any` here (#19904)
-  expect(origPosition.source as any).toEqual(source);
-  expect(origPosition.line as any).toEqual(srcLine === null ? null : srcLine + 1);
-  expect(origPosition.column as any).toEqual(srcCol);
+  const origPosition = await originalPositionFor(sm, genPosition);
+  expect(origPosition.source).toEqual(source);
+  expect(origPosition.line).toEqual(srcLine === null ? null : srcLine + 1);
+  expect(origPosition.column).toEqual(srcCol);
 }
 
 // returns the number of segments per line

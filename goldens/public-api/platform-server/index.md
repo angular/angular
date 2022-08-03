@@ -81,7 +81,7 @@ export class ServerModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<ServerModule, never, [typeof i1.HttpClientModule, typeof i2.NoopAnimationsModule], [typeof i3.BrowserModule]>;
 }
 
-// @public
+// @public @deprecated
 export class ServerTransferStateModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<ServerTransferStateModule, never>;

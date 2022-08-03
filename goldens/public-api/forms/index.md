@@ -176,6 +176,9 @@ export class CheckboxRequiredValidator extends RequiredValidator {
 export const COMPOSITION_BUFFER_MODE: InjectionToken<boolean>;
 
 // @public
+export type ControlConfig<T> = [T | FormControlState<T>, (ValidatorFn | (ValidatorFn[]))?, (AsyncValidatorFn | AsyncValidatorFn[])?];
+
+// @public
 export abstract class ControlContainer extends AbstractControlDirective {
     get formDirective(): Form | null;
     name: string | number | null;
@@ -299,6 +302,9 @@ export class FormBuilder {
         [key: string]: any;
     }): FormGroup;
     get nonNullable(): NonNullableFormBuilder;
+    record<T>(controls: {
+        [key: string]: T;
+    }, options?: AbstractControlOptions | null): FormRecord<ɵElement<T, null>>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormBuilder, never>;
     // (undocumented)
@@ -502,7 +508,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
 }
 
 // @public
-export class FormRecord<TControl extends AbstractControl<ɵValue<TControl>, ɵRawValue<TControl>> = AbstractControl> extends FormGroup<{
+export class FormRecord<TControl extends AbstractControl = AbstractControl> extends FormGroup<{
     [key: string]: TControl;
 }> {
 }
@@ -720,6 +726,9 @@ export abstract class NonNullableFormBuilder {
     abstract group<T extends {}>(controls: T, options?: AbstractControlOptions | null): FormGroup<{
         [K in keyof T]: ɵElement<T[K], never>;
     }>;
+    abstract record<T>(controls: {
+        [key: string]: T;
+    }, options?: AbstractControlOptions | null): FormRecord<ɵElement<T, never>>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NonNullableFormBuilder, never>;
     // (undocumented)

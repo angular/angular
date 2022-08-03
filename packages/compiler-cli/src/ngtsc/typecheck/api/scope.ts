@@ -7,6 +7,7 @@
  */
 
 import ts from 'typescript';
+
 import {ClassDeclaration} from '../../reflection';
 import {SymbolWithValueDeclaration} from '../../util/src/typescript';
 

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgClass} from '@angular/common';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
@@ -114,6 +115,17 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
            detectChangesAndExpectClassName('bar');
          }));
 
+      it('should remove active classes when expression evaluates to undefined', waitForAsync(() => {
+           fixture = createTestComponent('<div [ngClass]="objExpr"></div>');
+
+           detectChangesAndExpectClassName('foo');
+
+           getComponent().objExpr = undefined;
+           detectChangesAndExpectClassName('');
+
+           getComponent().objExpr = {'foo': false, 'bar': true};
+           detectChangesAndExpectClassName('bar');
+         }));
 
       it('should allow multiple classes per expression', waitForAsync(() => {
            fixture = createTestComponent('<div [ngClass]="objExpr"></div>');
@@ -245,12 +257,30 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
            detectChangesAndExpectClassName('');
          }));
 
+      it('should remove active classes when switching from string to undefined',
+         waitForAsync(() => {
+           fixture = createTestComponent(`<div [ngClass]="strExpr"></div>`);
+           detectChangesAndExpectClassName('foo');
+
+           getComponent().strExpr = undefined;
+           detectChangesAndExpectClassName('');
+         }));
+
       it('should take initial classes into account when switching from string to null',
          waitForAsync(() => {
            fixture = createTestComponent(`<div class="foo" [ngClass]="strExpr"></div>`);
            detectChangesAndExpectClassName('foo');
 
            getComponent().strExpr = null;
+           detectChangesAndExpectClassName('foo');
+         }));
+
+      it('should take initial classes into account when switching from string to undefined',
+         waitForAsync(() => {
+           fixture = createTestComponent(`<div class="foo" [ngClass]="strExpr"></div>`);
+           detectChangesAndExpectClassName('foo');
+
+           getComponent().strExpr = undefined;
            detectChangesAndExpectClassName('foo');
          }));
 
@@ -274,6 +304,9 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
            getComponent().objExpr = null;
            detectChangesAndExpectClassName('init foo');
+
+           getComponent().objExpr = undefined;
+           detectChangesAndExpectClassName('init foo');
          }));
 
       it('should co-operate with the interpolated class attribute', waitForAsync(() => {
@@ -287,6 +320,9 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
            detectChangesAndExpectClassName(`init bar`);
 
            getComponent().objExpr = null;
+           detectChangesAndExpectClassName(`init foo`);
+
+           getComponent().objExpr = undefined;
            detectChangesAndExpectClassName(`init foo`);
          }));
 
@@ -313,6 +349,9 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
            detectChangesAndExpectClassName(`init bar`);
 
            getComponent().objExpr = null;
+           detectChangesAndExpectClassName(`init foo`);
+
+           getComponent().objExpr = undefined;
            detectChangesAndExpectClassName(`init foo`);
          }));
 
@@ -349,6 +388,9 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
            detectChangesAndExpectClassName('init bar baz foo');
 
            cmp.objExpr = null;
+           detectChangesAndExpectClassName('init baz');
+
+           cmp.objExpr = undefined;
            detectChangesAndExpectClassName('init baz');
          }));
     });
@@ -391,6 +433,23 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
         expect(leading.className).toBe('foo');
         expect(trailing.className).toBe('foo');
       });
+
+      it('should be available as a standalone directive', () => {
+        @Component({
+          selector: 'test-component',
+          imports: [NgClass],
+          template: `<div trailing-space [ngClass]="{foo: applyClasses}"></div>`,
+          standalone: true,
+        })
+        class TestComponent {
+          applyClasses = true;
+        }
+
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.firstChild.className).toBe('foo');
+      });
     });
   });
 }
@@ -401,8 +460,8 @@ class TestComponent {
   items: any[]|undefined;
   arrExpr: string[] = ['foo'];
   setExpr: Set<string> = new Set<string>();
-  objExpr: {[klass: string]: any}|null = {'foo': true, 'bar': false};
-  strExpr: string|null = 'foo';
+  objExpr: {[klass: string]: any}|null|undefined = {'foo': true, 'bar': false};
+  strExpr: string|null|undefined = 'foo';
 
   constructor() {
     this.setExpr.add('foo');

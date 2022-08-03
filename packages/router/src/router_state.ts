@@ -7,16 +7,14 @@
  */
 
 import {Type} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {Data, ResolveData, Route} from './models';
-import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
+import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET, RouteTitleKey} from './shared';
 import {equalSegments, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
-
-
 
 /**
  * Represents the state of the router as a tree of activated routes.
@@ -120,6 +118,10 @@ export class ActivatedRoute {
   _paramMap!: Observable<ParamMap>;
   /** @internal */
   _queryParamMap!: Observable<ParamMap>;
+
+  /** An Observable of the resolved route title */
+  readonly title: Observable<string|undefined> =
+      this.data?.pipe(map((d: Data) => d[RouteTitleKey])) ?? of(undefined);
 
   /** @internal */
   constructor(
@@ -304,6 +306,9 @@ export class ActivatedRouteSnapshot {
   /** @internal */
   // TODO(issue/24571): remove '!'.
   _queryParamMap!: ParamMap;
+
+  /** The resolved route title */
+  readonly title?: string = this.data?.[RouteTitleKey];
 
   /** @internal */
   constructor(

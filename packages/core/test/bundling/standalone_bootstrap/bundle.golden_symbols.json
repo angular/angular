@@ -60,9 +60,6 @@
     "name": "ConnectableSubscriber"
   },
   {
-    "name": "DOCUMENT"
-  },
-  {
     "name": "DOCUMENT2"
   },
   {
@@ -225,13 +222,13 @@
     "name": "Observable"
   },
   {
+    "name": "PLATFORM_DESTROY_LISTENERS"
+  },
+  {
     "name": "PLATFORM_ID"
   },
   {
     "name": "PLATFORM_INITIALIZER"
-  },
-  {
-    "name": "PLATFORM_ON_DESTROY"
   },
   {
     "name": "R3Injector"
@@ -318,9 +315,6 @@
     "name": "__forward_ref__"
   },
   {
-    "name": "_chromeNumKeyPadMap"
-  },
-  {
     "name": "_currentInjector"
   },
   {
@@ -340,9 +334,6 @@
   },
   {
     "name": "_randomChar"
-  },
-  {
-    "name": "componentDefCount"
   },
   {
     "name": "_wrapInTimeout"
@@ -393,6 +384,9 @@
     "name": "collectNativeNodes"
   },
   {
+    "name": "componentDefCount"
+  },
+  {
     "name": "concatStringsWithSpace"
   },
   {
@@ -420,9 +414,6 @@
     "name": "createNodeInjector"
   },
   {
-    "name": "createRootComponentView"
-  },
-  {
     "name": "createTView"
   },
   {
@@ -436,9 +427,6 @@
   },
   {
     "name": "detachMovedView"
-  },
-  {
-    "name": "domRendererFactory3"
   },
   {
     "name": "empty"
@@ -478,6 +466,12 @@
   },
   {
     "name": "forwardRef"
+  },
+  {
+    "name": "generateInitialInputs"
+  },
+  {
+    "name": "generatePropertyAliases"
   },
   {
     "name": "getClosureSafeProperty"
@@ -639,6 +633,9 @@
     "name": "isImportedNgModuleProviders"
   },
   {
+    "name": "isInlineTemplate"
+  },
+  {
     "name": "isLContainer"
   },
   {
@@ -651,9 +648,6 @@
     "name": "isPositive"
   },
   {
-    "name": "isProceduralRenderer"
-  },
-  {
     "name": "isPromise"
   },
   {
@@ -661,9 +655,6 @@
   },
   {
     "name": "isTemplateNode"
-  },
-  {
-    "name": "isTemplateNode2"
   },
   {
     "name": "isTypeProvider"

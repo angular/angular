@@ -164,6 +164,34 @@
       "angularCompilerOptions": {
         "linkerJitMode": true
       }
+    },
+    {
+      "description": "should not pass along empty array fields to the declaration",
+      "inputFiles": [
+        "empty_fields.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid injector definition",
+          "files": [
+            "empty_fields.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle providers passed in as a variable",
+      "inputFiles": [
+        "variable_providers.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid injector definition",
+          "files": [
+            "variable_providers.js"
+          ]
+        }
+      ]
     }
   ]
 }

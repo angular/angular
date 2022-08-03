@@ -584,3 +584,58 @@ export declare class ForwardModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<ForwardModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: empty_fields.js
+ ****************************************************************************************************/
+import { NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class FooModule {
+}
+FooModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FooModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+FooModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FooModule });
+FooModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FooModule });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FooModule, decorators: [{
+            type: NgModule,
+            args: [{
+                    providers: [],
+                    declarations: [],
+                    imports: [],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: empty_fields.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class FooModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<FooModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<FooModule, never, never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<FooModule>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: variable_providers.js
+ ****************************************************************************************************/
+import { InjectionToken, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+const PROVIDERS = [{ provide: new InjectionToken('token'), useValue: 1 }];
+export class FooModule {
+}
+FooModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FooModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+FooModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FooModule });
+FooModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FooModule, providers: PROVIDERS });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FooModule, decorators: [{
+            type: NgModule,
+            args: [{ providers: PROVIDERS }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: variable_providers.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class FooModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<FooModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<FooModule, never, never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<FooModule>;
+}
+

@@ -6,18 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '@angular/core';
-import {concat, defer, from, MonoTypeOperatorFunction, Observable, of} from 'rxjs';
-import {concatMap, first, map, mergeMap} from 'rxjs/operators';
+import {EnvironmentInjector, Injector} from '@angular/core';
+import {concat, defer, from, MonoTypeOperatorFunction, Observable, of, OperatorFunction, pipe} from 'rxjs';
+import {concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {ActivationStart, ChildActivationStart, Event} from '../events';
-import {CanActivateChildFn, CanActivateFn, CanDeactivateFn} from '../models';
+import {CanLoad, CanLoadFn, CanMatch, CanMatchFn, Route} from '../models';
+import {redirectingNavigationError} from '../navigation_canceling_error';
 import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
-import {UrlTree} from '../url_tree';
+import {isUrlTree, UrlSegment, UrlSerializer, UrlTree} from '../url_tree';
 import {wrapIntoObservable} from '../utils/collection';
 import {CanActivate, CanDeactivate, getCanActivateChild, getToken} from '../utils/preactivation';
-import {isBoolean, isCanActivate, isCanActivateChild, isCanDeactivate, isFunction} from '../utils/type_guards';
+import {isBoolean, isCanActivate, isCanActivateChild, isCanDeactivate, isCanLoad, isCanMatch} from '../utils/type_guards';
 
 import {prioritizedGuardValue} from './prioritized_guard_value';
 
@@ -113,15 +114,9 @@ function runCanActivate(
   const canActivateObservables = canActivate.map((c: any) => {
     return defer(() => {
       const guard = getToken(c, futureARS, moduleInjector);
-      let observable;
-      if (isCanActivate(guard)) {
-        observable = wrapIntoObservable(guard.canActivate(futureARS, futureRSS));
-      } else if (isFunction<CanActivateFn>(guard)) {
-        observable = wrapIntoObservable(guard(futureARS, futureRSS));
-      } else {
-        throw new Error('Invalid CanActivate guard');
-      }
-      return observable.pipe(first());
+      const guardVal = isCanActivate(guard) ? guard.canActivate(futureARS, futureRSS) :
+                                              guard(futureARS, futureRSS);
+      return wrapIntoObservable(guardVal).pipe(first());
     });
   });
   return of(canActivateObservables).pipe(prioritizedGuardValue());
@@ -141,15 +136,9 @@ function runCanActivateChild(
     return defer(() => {
       const guardsMapped = d.guards.map((c: any) => {
         const guard = getToken(c, d.node, moduleInjector);
-        let observable;
-        if (isCanActivateChild(guard)) {
-          observable = wrapIntoObservable(guard.canActivateChild(futureARS, futureRSS));
-        } else if (isFunction<CanActivateChildFn>(guard)) {
-          observable = wrapIntoObservable(guard(futureARS, futureRSS));
-        } else {
-          throw new Error('Invalid CanActivateChild guard');
-        }
-        return observable.pipe(first());
+        const guardVal = isCanActivateChild(guard) ? guard.canActivateChild(futureARS, futureRSS) :
+                                                     guard(futureARS, futureRSS);
+        return wrapIntoObservable(guardVal).pipe(first());
       });
       return of(guardsMapped).pipe(prioritizedGuardValue());
     });
@@ -164,15 +153,62 @@ function runCanDeactivate(
   if (!canDeactivate || canDeactivate.length === 0) return of(true);
   const canDeactivateObservables = canDeactivate.map((c: any) => {
     const guard = getToken(c, currARS, moduleInjector);
-    let observable;
-    if (isCanDeactivate(guard)) {
-      observable = wrapIntoObservable(guard.canDeactivate(component!, currARS, currRSS, futureRSS));
-    } else if (isFunction<CanDeactivateFn<any>>(guard)) {
-      observable = wrapIntoObservable(guard(component, currARS, currRSS, futureRSS));
-    } else {
-      throw new Error('Invalid CanDeactivate guard');
-    }
-    return observable.pipe(first());
+    const guardVal = isCanDeactivate(guard) ?
+        guard.canDeactivate(component!, currARS, currRSS, futureRSS) :
+        guard(component, currARS, currRSS, futureRSS);
+    return wrapIntoObservable(guardVal).pipe(first());
   });
   return of(canDeactivateObservables).pipe(prioritizedGuardValue());
+}
+
+export function runCanLoadGuards(
+    injector: EnvironmentInjector, route: Route, segments: UrlSegment[],
+    urlSerializer: UrlSerializer): Observable<boolean> {
+  const canLoad = route.canLoad;
+  if (canLoad === undefined || canLoad.length === 0) {
+    return of(true);
+  }
+
+  const canLoadObservables = canLoad.map((injectionToken: any) => {
+    const guard = injector.get<CanLoad|CanLoadFn>(injectionToken);
+    const guardVal = isCanLoad(guard) ? guard.canLoad(route, segments) : guard(route, segments);
+    return wrapIntoObservable(guardVal);
+  });
+
+  return of(canLoadObservables)
+      .pipe(
+          prioritizedGuardValue(),
+          redirectIfUrlTree(urlSerializer),
+      );
+}
+
+function redirectIfUrlTree(urlSerializer: UrlSerializer):
+    OperatorFunction<UrlTree|boolean, boolean> {
+  return pipe(
+      tap((result: UrlTree|boolean) => {
+        if (!isUrlTree(result)) return;
+
+        throw redirectingNavigationError(urlSerializer, result);
+      }),
+      map(result => result === true),
+  );
+}
+
+export function runCanMatchGuards(
+    injector: Injector, route: Route, segments: UrlSegment[],
+    urlSerializer: UrlSerializer): Observable<boolean> {
+  const canMatch = route.canMatch;
+  if (!canMatch || canMatch.length === 0) return of(true);
+
+  const canMatchObservables = canMatch.map(injectionToken => {
+    const guard = injector.get<CanMatch|CanMatchFn>(injectionToken);
+    const guardVal = isCanMatch(guard) ? guard.canMatch(route, segments) : guard(route, segments);
+    return wrapIntoObservable(guardVal);
+  });
+
+  return of(canMatchObservables)
+      .pipe(
+          prioritizedGuardValue(),
+          redirectIfUrlTree(urlSerializer),
+      );
 }

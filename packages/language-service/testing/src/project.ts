@@ -68,7 +68,7 @@ export class Project {
       const dirPath = fs.dirname(filePath);
       fs.ensureDir(dirPath);
       fs.writeFile(filePath, contents);
-      if (projectFilePath.endsWith('.ts')) {
+      if (projectFilePath.endsWith('.ts') && !projectFilePath.endsWith('.d.ts')) {
         entryFiles.push(filePath);
       }
     }
@@ -142,6 +142,26 @@ export class Project {
 
     diagnostics.push(...this.ngLS.getSemanticDiagnostics(fileName));
     return diagnostics;
+  }
+
+  getCodeFixesAtPosition(
+      projectFileName: string,
+      start: number,
+      end: number,
+      errorCodes: readonly number[],
+      ): readonly ts.CodeFixAction[] {
+    const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
+    return this.ngLS.getCodeFixesAtPosition(fileName, start, end, errorCodes, {}, {});
+  }
+
+  getCombinedCodeFix(projectFileName: string, fixId: string): ts.CombinedCodeActions {
+    const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
+    return this.ngLS.getCombinedCodeFix(
+        {
+          type: 'file',
+          fileName,
+        },
+        fixId, {}, {});
   }
 
   expectNoSourceDiagnostics(): void {

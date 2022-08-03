@@ -9,12 +9,14 @@ load("@npm//@bazel/terser:index.bzl", "terser_minified")
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//typescript:index.bzl", "tsc")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
-load("@npm//@angular/dev-infra-private/bazel/benchmark/app_bundling:index.bzl", _app_bundle = "app_bundle")
-load("@npm//@angular/dev-infra-private/bazel/http-server:index.bzl", _http_server = "http_server")
-load("@npm//@angular/dev-infra-private/bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
-load("@npm//@angular/dev-infra-private/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
-load("@npm//@angular/dev-infra-private/bazel:extract_js_module_output.bzl", "extract_js_module_output")
-load("@npm//@angular/dev-infra-private/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
+load("@npm//@angular/build-tooling/bazel/app-bundling:index.bzl", _app_bundle = "app_bundle")
+load("@npm//@angular/build-tooling/bazel/http-server:index.bzl", _http_server = "http_server")
+load("@npm//@angular/build-tooling/bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
+load("@npm//@angular/build-tooling/bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
+load("@npm//@angular/build-tooling/bazel:extract_js_module_output.bzl", "extract_js_module_output")
+load("@npm//@angular/build-tooling/bazel:extract_types.bzl", _extract_types = "extract_types")
+load("@npm//@angular/build-tooling/bazel/esbuild:index.bzl", _esbuild = "esbuild", _esbuild_config = "esbuild_config")
+load("@npm//tsec:index.bzl", _tsec_test = "tsec_test")
 
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
@@ -26,6 +28,7 @@ _INTERNAL_NG_PACKAGE_DEFAULT_ROLLUP = "//packages/bazel/src/ng_package:rollup_fo
 esbuild = _esbuild
 esbuild_config = _esbuild_config
 http_server = _http_server
+extract_types = _extract_types
 
 # Packages which are versioned together on npm
 ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
@@ -347,8 +350,8 @@ def karma_web_test_suite(name, **kwargs):
         bootstrap = bootstrap,
         deps = deps,
         browsers = [
-            "@npm//@angular/dev-infra-private/bazel/browsers/chromium:chromium",
-            "@npm//@angular/dev-infra-private/bazel/browsers/firefox:firefox",
+            "@npm//@angular/build-tooling/bazel/browsers/chromium:chromium",
+            "@npm//@angular/build-tooling/bazel/browsers/firefox:firefox",
         ],
         data = data,
         tags = tags,
@@ -369,7 +372,6 @@ def karma_web_test_suite(name, **kwargs):
         deps = deps,
         data = data + [
             "//:browser-providers.conf.js",
-            "//tools:jasmine-seed-generator.js",
         ],
         karma = "//tools/saucelabs:karma-saucelabs",
         tags = tags + [
@@ -386,7 +388,7 @@ def protractor_web_test_suite(**kwargs):
     """Default values for protractor_web_test_suite"""
 
     _protractor_web_test_suite(
-        browsers = ["@npm//@angular/dev-infra-private/bazel/browsers/chromium:chromium"],
+        browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
         **kwargs
     )
 
@@ -458,14 +460,14 @@ def jasmine_node_test(bootstrap = [], **kwargs):
     templated_args = ["--nobazel_run_linker"] + kwargs.pop("templated_args", [])
 
     for label in bootstrap:
-        deps += [label]
-        templated_args += ["--node_options=--require=$$(rlocation $(rootpath %s))" % label]
+        deps.append(label)
+        templated_args.append("--node_options=--require=$$(rlocation $(rootpath %s))" % label)
         if label.endswith("_es2015"):
             # If this label is a filegroup derived from a ts_library then automatically
             # add the ts_library target (which is the label sans `_es2015`) to deps so we pull
             # in all of its transitive deps. This removes the need for duplicate deps on the
             # target and makes the usage of this rule less verbose.
-            deps += [label[:-len("_es2015")]]
+            deps.append(label[:-len("_es2015")])
 
     _jasmine_node_test(
         deps = deps,
@@ -588,5 +590,12 @@ def api_golden_test(**kwargs):
 
 def api_golden_test_npm_package(**kwargs):
     _api_golden_test_npm_package(
+        **kwargs
+    )
+
+def tsec_test(**kwargs):
+    """Default values for tsec_test"""
+    _tsec_test(
+        use_runfiles_on_windows = True,  # We explicitly enable runfiles in .bazelrc
         **kwargs
     )

@@ -133,7 +133,7 @@ export class DtsRenderer {
           const dtsFile = dtsDeclaration.getSourceFile();
           const renderInfo = dtsMap.has(dtsFile) ? dtsMap.get(dtsFile)! : new DtsRenderInfo();
           renderInfo.classInfo.push({dtsDeclaration, compilation: compiledClass.compilation});
-          // Only add re-exports if the .d.ts tree is overlayed with the .js tree, as re-exports in
+          // Only add re-exports if the .d.ts tree is overlaid with the .js tree, as re-exports in
           // ngcc are only used to support deep imports into e.g. commonjs code. For a deep import
           // to work, the typing file and JS file must be in parallel trees. This logic will detect
           // the simplest version of this case, which is sufficient to handle most commonjs

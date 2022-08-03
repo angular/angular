@@ -46,6 +46,26 @@ import {HttpHeaders} from '@angular/common/http/src/headers';
 
         expect(headers.getAll('foo')).toEqual(['second']);
       });
+
+      it('should throw an error when null is passed as header', () => {
+        // Note: the `strictNullChecks` set to `false` in TS config would make `null`
+        // valid value within the headers object, thus this test verifies this scenario.
+        const headers = new HttpHeaders({foo: null!});
+        expect(() => headers.get('foo'))
+            .toThrowError(
+                'Unexpected value of the `foo` header provided. ' +
+                'Expecting either a string or an array, but got: `null`.');
+      });
+
+      it('should throw an error when undefined is passed as header', () => {
+        // Note: the `strictNullChecks` set to `false` in TS config would make `undefined`
+        // valid value within the headers object, thus this test verifies this scenario.
+        const headers = new HttpHeaders({bar: undefined!});
+        expect(() => headers.get('bar'))
+            .toThrowError(
+                'Unexpected value of the `bar` header provided. ' +
+                'Expecting either a string or an array, but got: `undefined`.');
+      });
     });
 
     describe('.set()', () => {

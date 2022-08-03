@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgForOf} from '@angular/common';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -114,13 +114,22 @@ let thisArg: any;
          detectChangesAndExpectText('1;2;3;');
        }));
 
-    it('should throw on non-iterable ref and suggest using an array', waitForAsync(() => {
+    it('should throw on non-iterable ref', waitForAsync(() => {
          fixture = createTestComponent();
 
          getComponent().items = <any>'whaaa';
          expect(() => fixture.detectChanges())
              .toThrowError(
-                 /Cannot find a differ supporting object 'whaaa' of type 'string'. NgFor only supports binding to Iterables such as Arrays/);
+                 `NG02200: Cannot find a differ supporting object 'whaaa' of type 'string'. NgFor only supports binding to Iterables, such as Arrays. Find more at https://angular.io/errors/NG02200`);
+       }));
+
+    it('should throw on non-iterable ref and suggest using an array ', waitForAsync(() => {
+         fixture = createTestComponent();
+
+         getComponent().items = <any>{'stuff': 'whaaa'};
+         expect(() => fixture.detectChanges())
+             .toThrowError(
+                 `NG02200: Cannot find a differ supporting object '\[object Object\]' of type 'object'. NgFor only supports binding to Iterables, such as Arrays. Did you mean to use the keyvalue pipe? Find more at https://angular.io/errors/NG02200`);
        }));
 
     it('should throw on ref changing to string', waitForAsync(() => {
@@ -379,6 +388,25 @@ let thisArg: any;
            getComponent().items = ['e', 'f', 'h'];
            detectChangesAndExpectText('efh');
          }));
+    });
+
+    it('should be available as a standalone directive', () => {
+      @Component({
+        selector: 'test-component',
+        imports: [NgForOf],
+        template: `
+          <ng-container *ngFor="let item of items">{{ item }}|</ng-container>
+        `,
+        standalone: true,
+      })
+      class TestComponent {
+        items = [1, 2, 3];
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('1|2|3|');
     });
   });
 }

@@ -332,11 +332,16 @@ export class NgModuleDecoratorHandler implements
     };
 
     const rawProviders = ngModule.has('providers') ? ngModule.get('providers')! : null;
-    const wrapperProviders = rawProviders !== null ?
-        new WrappedNodeExpr(
-            this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(rawProviders) :
-                                              rawProviders) :
-        null;
+    let wrappedProviders: WrappedNodeExpr<ts.Expression>|null = null;
+
+    // In most cases the providers will be an array literal. Check if it has any elements
+    // and don't include the providers if it doesn't which saves us a few bytes.
+    if (rawProviders !== null &&
+        (!ts.isArrayLiteralExpression(rawProviders) || rawProviders.elements.length > 0)) {
+      wrappedProviders = new WrappedNodeExpr(
+          this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(rawProviders) :
+                                            rawProviders);
+    }
 
     const topLevelImports: TopLevelImportedExpression[] = [];
     if (ngModule.has('imports')) {
@@ -378,7 +383,7 @@ export class NgModuleDecoratorHandler implements
       name,
       type,
       internalType,
-      providers: wrapperProviders,
+      providers: wrappedProviders,
     };
 
     const factoryMetadata: R3FactoryMetadata = {

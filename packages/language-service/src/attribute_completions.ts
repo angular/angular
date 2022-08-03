@@ -328,7 +328,7 @@ export function buildAttributeCompletionTable(
           }
         }
       } else {
-        // Hypothetically matching a structural directive is a litle different than a plain
+        // Hypothetically matching a structural directive is a little different than a plain
         // directive. Use of the '*' structural directive syntactic sugar means that the actual
         // directive is applied to a plain <ng-template> node, not the existing element with any
         // other attributes it might already have.

@@ -396,7 +396,7 @@ export function patchEventTarget(
         const options = buildEventListenerOptions(arguments[2], passive);
 
         if (unpatchedEvents) {
-          // check upatched list
+          // check unpatched list
           for (let i = 0; i < unpatchedEvents.length; i++) {
             if (eventName === unpatchedEvents[i]) {
               if (passive) {

@@ -18,6 +18,5 @@ export const runTests = (specFiles: string[]) => {
 
   const runner = new Jasmine({});
   runner.loadConfig(config);
-  runner.onComplete((passed: boolean) => process.exit(passed ? 0 : 1));
   runner.execute();
 };

@@ -96,7 +96,7 @@ function publishRepo {
     git config user.email "${COMMITTER_USER_EMAIL}" && \
     git add --all && \
     git commit -m "${COMMIT_MSG}" --quiet && \
-    git tag "${BUILD_VER}" && \
+    git tag "${BUILD_VER}" --force && \
     git push origin "${BRANCH}" --tags --force
   )
 }

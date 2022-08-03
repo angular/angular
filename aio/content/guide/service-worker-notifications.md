@@ -58,14 +58,16 @@ The Angular service worker supports the following operations:
 
 | Operations                  | Details |
 |:---                         |:---     |
-| `openWindow`                | Opens a new tab at the specified URL, which is resolved relative to the service worker scope.                                                                                                            |
-| `focusLastFocusedOrOpen`    | Focuses the last focused client. If there is no client open, then it opens a new tab at the specified URL, which is resolved relative to the service worker scope.                                       |
-| `navigateLastFocusedOrOpen` | Focuses the last focused client and navigates it to the specified URL, which is resolved relative to the service worker scope. If there is no client open, then it opens a new tab at the specified URL. |
+| `openWindow`                | Opens a new tab at the specified URL.                                                                                                            |
+| `focusLastFocusedOrOpen`    | Focuses the last focused client. If there is no client open, then it opens a new tab at the specified URL.                                       |
+| `navigateLastFocusedOrOpen` | Focuses the last focused client and navigates it to the specified URL. If there is no client open, then it opens a new tab at the specified URL. |
+| `sendRequest`               | Send a simple GET request to the specified URL.                                                                                                                                                          |
 
 <div class="alert is-important">
 
+URLs are resolved relative to the service worker's registration scope.<br />
 If an `onActionClick` item does not define a `url`, then the service worker's registration scope is used.
-  
+
 </div>
 
 ### Actions
@@ -86,14 +88,16 @@ In addition, using the `onActionClick` property on the `data` object, you can ti
       {"action": "foo", "title": "Open new tab"},
       {"action": "bar", "title": "Focus last"},
       {"action": "baz", "title": "Navigate last"},
-      {"action": "qux", "title": "Just notify existing clients"}
+      {"action": "qux", "title": "Send request in the background"}
+      {"action": "other", "title": "Just notify existing clients"}
     ],
     "data": {
       "onActionClick": {
         "default": {"operation": "openWindow"},
         "foo": {"operation": "openWindow", "url": "/absolute/path"},
         "bar": {"operation": "focusLastFocusedOrOpen", "url": "relative/path"},
-        "baz": {"operation": "navigateLastFocusedOrOpen", "url": "https://other.domain.com/"}
+        "baz": {"operation": "navigateLastFocusedOrOpen", "url": "https://other.domain.com/"},
+        "qux": {"operation": "sendRequest", "url": "https://yet.another.domain.com/"}
       }
     }
   }

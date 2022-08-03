@@ -303,8 +303,8 @@ describe('standalone components, directives and pipes', () => {
              parent: this.inj,
            });
 
-           const rhsInj =
-               createEnvironmentInjector([{provide: Service, useClass: EnvOverrideService}]);
+           const rhsInj = createEnvironmentInjector(
+               [{provide: Service, useClass: EnvOverrideService}], this.envInj);
 
            this.vcRef.createComponent(InnerCmp, {injector: lhsInj, environmentInjector: rhsInj});
          }
@@ -352,8 +352,8 @@ describe('standalone components, directives and pipes', () => {
          constructor(readonly envInj: EnvironmentInjector) {}
 
          ngOnInit(): void {
-           const rhsInj =
-               createEnvironmentInjector([{provide: Service, useClass: EnvOverrideService}]);
+           const rhsInj = createEnvironmentInjector(
+               [{provide: Service, useClass: EnvOverrideService}], this.envInj);
 
            this.vcRef.createComponent(InnerCmp, {environmentInjector: rhsInj});
          }
@@ -451,6 +451,42 @@ describe('standalone components, directives and pipes', () => {
     const fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
     expect(fixture.nativeElement.innerHTML).toBe('<div red="true">blue</div>');
+  });
+
+  it('should deduplicate declarations', () => {
+    @Component({selector: 'test-red', standalone: true, template: 'red(<ng-content></ng-content>)'})
+    class RedComponent {
+    }
+
+    @Component({selector: 'test-blue', template: 'blue(<ng-content></ng-content>)'})
+    class BlueComponent {
+    }
+
+    @NgModule({declarations: [BlueComponent], exports: [BlueComponent]})
+    class BlueModule {
+    }
+
+    @NgModule({exports: [BlueModule]})
+    class BlueAModule {
+    }
+
+    @NgModule({exports: [BlueModule]})
+    class BlueBModule {
+    }
+
+    @Component({
+      selector: 'standalone',
+      standalone: true,
+      template: `<test-red><test-blue>orange</test-blue></test-red>`,
+      imports: [RedComponent, RedComponent, BlueAModule, BlueBModule],
+    })
+    class TestComponent {
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML)
+        .toBe('<test-red>red(<test-blue>blue(orange)</test-blue>)</test-red>');
   });
 
   it('should error when forwardRef does not resolve to a truthy value', () => {

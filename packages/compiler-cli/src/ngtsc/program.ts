@@ -233,6 +233,7 @@ export class NgtscProgram implements api.Program {
 
   emit(opts?: {
     emitFlags?: api.EmitFlags|undefined;
+    forceEmit?: boolean;
     cancellationToken?: ts.CancellationToken | undefined;
     customTransformers?: api.CustomTransformers | undefined;
     emitCallback?: api.TsEmitCallback | undefined;
@@ -254,6 +255,8 @@ export class NgtscProgram implements api.Program {
         };
       }
     }
+
+    const forceEmit = opts?.forceEmit ?? false;
 
     this.compiler.perfRecorder.memory(PerfCheckpoint.PreEmit);
 
@@ -295,7 +298,7 @@ export class NgtscProgram implements api.Program {
           continue;
         }
 
-        if (this.compiler.incrementalCompilation.safeToSkipEmit(targetSourceFile)) {
+        if (!forceEmit && this.compiler.incrementalCompilation.safeToSkipEmit(targetSourceFile)) {
           this.compiler.perfRecorder.eventCount(PerfEvent.EmitSkipSourceFile);
           continue;
         }

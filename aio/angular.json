@@ -137,7 +137,9 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "headers": {
-              "Content-Security-Policy": "require-trusted-types-for 'script'; trusted-types angular angular#bundler angular#unsafe-bypass aio#analytics google#safe"
+              // Keep in sync with the `firebase.json` file.
+              // Note: Unlike in `firebase.json` we omit the `report-uri` for development.
+              "Content-Security-Policy": "require-trusted-types-for 'script'; trusted-types angular angular#bundler angular#unsafe-bypass aio#analytics google#safe goog#html"
             }
           },
           "configurations": {
@@ -176,11 +178,7 @@
             "tsConfig": "tsconfig.spec.json",
             "webWorkerTsConfig": "tsconfig.worker.json",
             "karmaConfig": "karma.conf.js",
-            "assets": [
-              "src/assets",
-              "src/pwa-manifest.json",
-              "src/google385281288605d160.html"
-            ],
+            "assets": ["src/assets", "src/pwa-manifest.json", "src/google385281288605d160.html"],
             "styles": [
               "src/styles/main.scss",
               {

@@ -65,161 +65,157 @@ describe('jit source mapping', () => {
     function declareTests({ngUrl, templateDecorator}: TestConfig) {
       const generatedUrl = 'ng:///MyComp.js';
 
-      it('should use the right source url in html parse errors', fakeAsync(() => {
-           const template = '<div>\n  </error>';
-           @Component({...templateDecorator(template)})
-           class MyComp {
-           }
+      it('should use the right source url in html parse errors', async () => {
+        const template = '<div>\n  </error>';
+        @Component({...templateDecorator(template)})
+        class MyComp {
+        }
 
-           expect(() => {
-             resolveCompileAndCreateComponent(MyComp, template);
-           }).toThrowError(new RegExp(`${escapeRegExp(ngUrl)}@1:2`));
-         }));
+        await expectAsync(resolveCompileAndCreateComponent(MyComp, template))
+            .toBeRejectedWithError(new RegExp(`${escapeRegExp(ngUrl)}@1:2`));
+      });
 
-      it('should create a sourceMap for templates', fakeAsync(() => {
-           const template = `Hello World!`;
+      it('should create a sourceMap for templates', async () => {
+        const template = `Hello World!`;
 
-           @Component({...templateDecorator(template)})
-           class MyComp {
-           }
+        @Component({...templateDecorator(template)})
+        class MyComp {
+        }
 
-           resolveCompileAndCreateComponent(MyComp, template);
+        await resolveCompileAndCreateComponent(MyComp, template);
 
-           const sourceMap = jitEvaluator.getSourceMap(generatedUrl);
-           expect(sourceMap.sources).toEqual([generatedUrl, ngUrl]);
-           expect(sourceMap.sourcesContent).toEqual([' ', template]);
-         }));
+        const sourceMap = jitEvaluator.getSourceMap(generatedUrl);
+        expect(sourceMap.sources).toEqual([generatedUrl, ngUrl]);
+        expect(sourceMap.sourcesContent).toEqual([' ', template]);
+      });
 
 
-      it('should report source location for di errors', fakeAsync(() => {
-           const template = `<div>\n    <div   someDir></div></div>`;
+      it('should report source location for di errors', async () => {
+        const template = `<div>\n    <div   someDir></div></div>`;
 
-           @Component({...templateDecorator(template)})
-           class MyComp {
-           }
+        @Component({...templateDecorator(template)})
+        class MyComp {
+        }
 
-           @Directive({selector: '[someDir]'})
-           class SomeDir {
-             constructor() {
-               throw new Error('Test');
-             }
-           }
+        @Directive({selector: '[someDir]'})
+        class SomeDir {
+          constructor() {
+            throw new Error('Test');
+          }
+        }
 
-           TestBed.configureTestingModule({declarations: [SomeDir]});
-           let error: any;
-           try {
-             resolveCompileAndCreateComponent(MyComp, template);
-           } catch (e) {
-             error = e;
-           }
-           // The error should be logged from the element
-           expect(jitEvaluator.getSourcePositionForStack(error.stack, generatedUrl)).toEqual({
-             line: 2,
-             column: 4,
-             source: ngUrl,
-           });
-         }));
+        TestBed.configureTestingModule({declarations: [SomeDir]});
+        let error: any;
+        try {
+          await resolveCompileAndCreateComponent(MyComp, template);
+        } catch (e) {
+          error = e;
+        }
+        // The error should be logged from the element
+        expect(await jitEvaluator.getSourcePositionForStack(error.stack, generatedUrl)).toEqual({
+          line: 2,
+          column: 4,
+          source: ngUrl,
+        });
+      });
 
-      it('should report di errors with multiple elements and directives', fakeAsync(() => {
-           const template = `<div someDir></div>|<div someDir="throw"></div>`;
+      it('should report di errors with multiple elements and directives', async () => {
+        const template = `<div someDir></div>|<div someDir="throw"></div>`;
 
-           @Component({...templateDecorator(template)})
-           class MyComp {
-           }
+        @Component({...templateDecorator(template)})
+        class MyComp {
+        }
 
-           @Directive({selector: '[someDir]'})
-           class SomeDir {
-             constructor(@Attribute('someDir') someDir: string) {
-               if (someDir === 'throw') {
-                 throw new Error('Test');
-               }
-             }
-           }
+        @Directive({selector: '[someDir]'})
+        class SomeDir {
+          constructor(@Attribute('someDir') someDir: string) {
+            if (someDir === 'throw') {
+              throw new Error('Test');
+            }
+          }
+        }
 
-           TestBed.configureTestingModule({declarations: [SomeDir]});
-           let error: any;
-           try {
-             resolveCompileAndCreateComponent(MyComp, template);
-           } catch (e) {
-             error = e;
-           }
-           // The error should be logged from the 2nd-element
-           expect(jitEvaluator.getSourcePositionForStack(error.stack, generatedUrl)).toEqual({
-             line: 1,
-             column: 20,
-             source: ngUrl,
-           });
-         }));
+        TestBed.configureTestingModule({declarations: [SomeDir]});
+        let error: any;
+        try {
+          await resolveCompileAndCreateComponent(MyComp, template);
+        } catch (e) {
+          error = e;
+        }
+        // The error should be logged from the 2nd-element
+        expect(await jitEvaluator.getSourcePositionForStack(error.stack, generatedUrl)).toEqual({
+          line: 1,
+          column: 20,
+          source: ngUrl,
+        });
+      });
 
-      it('should report source location for binding errors', fakeAsync(() => {
-           const template = `<div>\n    <span   [title]="createError()"></span></div>`;
+      it('should report source location for binding errors', async () => {
+        const template = `<div>\n    <span   [title]="createError()"></span></div>`;
 
-           @Component({...templateDecorator(template)})
-           class MyComp {
-             createError() {
-               throw new Error('Test');
-             }
-           }
+        @Component({...templateDecorator(template)})
+        class MyComp {
+          createError() {
+            throw new Error('Test');
+          }
+        }
 
-           const comp = resolveCompileAndCreateComponent(MyComp, template);
+        const comp = await resolveCompileAndCreateComponent(MyComp, template);
 
-           let error: any;
-           try {
-             comp.detectChanges();
-           } catch (e) {
-             error = e;
-           }
-           // the stack should point to the binding
-           expect(jitEvaluator.getSourcePositionForStack(error.stack, generatedUrl)).toEqual({
-             line: 2,
-             column: 12,
-             source: ngUrl,
-           });
-         }));
+        let error: any;
+        try {
+          comp.detectChanges();
+        } catch (e) {
+          error = e;
+        }
+        // the stack should point to the binding
+        expect(await jitEvaluator.getSourcePositionForStack(error.stack, generatedUrl)).toEqual({
+          line: 2,
+          column: 12,
+          source: ngUrl,
+        });
+      });
 
-      it('should report source location for event errors', fakeAsync(() => {
-           const template = `<div>\n    <span   (click)="createError()"></span></div>`;
+      it('should report source location for event errors', async () => {
+        const template = `<div>\n    <span   (click)="createError()"></span></div>`;
 
-           @Component({...templateDecorator(template)})
-           class MyComp {
-             createError() {
-               throw new Error('Test');
-             }
-           }
+        @Component({...templateDecorator(template)})
+        class MyComp {
+          createError() {
+            throw new Error('Test');
+          }
+        }
 
-           const comp = resolveCompileAndCreateComponent(MyComp, template);
+        const comp = await resolveCompileAndCreateComponent(MyComp, template);
 
-           let error: any;
-           const errorHandler = TestBed.inject(ErrorHandler);
-           spyOn(errorHandler, 'handleError').and.callFake((e: any) => error = e);
-           try {
-             comp.debugElement.children[0].children[0].triggerEventHandler('click', 'EVENT');
-           } catch (e) {
-             error = e;
-           }
-           expect(error).toBeTruthy();
-           // the stack should point to the binding
-           expect(jitEvaluator.getSourcePositionForStack(error.stack, generatedUrl)).toEqual({
-             line: 2,
-             column: 21,
-             source: ngUrl,
-           });
-         }));
+        let error: any;
+        const errorHandler = TestBed.inject(ErrorHandler);
+        spyOn(errorHandler, 'handleError').and.callFake((e: any) => error = e);
+        try {
+          comp.debugElement.children[0].children[0].triggerEventHandler('click', 'EVENT');
+        } catch (e) {
+          error = e;
+        }
+        expect(error).toBeTruthy();
+        // the stack should point to the binding
+        expect(await jitEvaluator.getSourcePositionForStack(error.stack, generatedUrl)).toEqual({
+          line: 2,
+          column: 21,
+          source: ngUrl,
+        });
+      });
     }
   });
 
-  function compileAndCreateComponent(comType: any) {
+  async function compileAndCreateComponent(comType: any) {
     TestBed.configureTestingModule({declarations: [comType]});
 
-    let error: any;
-    TestBed.compileComponents().catch((e) => error = e);
+    await TestBed.compileComponents();
+
     if (resourceLoader.hasPendingRequests()) {
       resourceLoader.flush();
     }
-    tick();
-    if (error) {
-      throw error;
-    }
+
     return TestBed.createComponent(comType);
   }
 
@@ -227,9 +223,9 @@ describe('jit source mapping', () => {
     return (_url: string) => Promise.resolve(contents);
   }
 
-  function resolveCompileAndCreateComponent(comType: any, template: string) {
-    resolveComponentResources(createResolver(template));
-    return compileAndCreateComponent(comType);
+  async function resolveCompileAndCreateComponent(comType: any, template: string) {
+    await resolveComponentResources(createResolver(template));
+    return await compileAndCreateComponent(comType);
   }
 
   let ɵcompilerFacade: CompilerFacade;
@@ -255,9 +251,9 @@ describe('jit source mapping', () => {
   }
 
   interface SourcePos {
-    source: string;
-    line: number;
-    column: number;
+    source: string|null;
+    line: number|null;
+    column: number|null;
   }
 
   /**
@@ -282,7 +278,7 @@ describe('jit source mapping', () => {
           .find(map => !!(map && map.file === genFile))!;
     }
 
-    getSourcePositionForStack(stack: string, genFile: string): SourcePos {
+    async getSourcePositionForStack(stack: string, genFile: string): Promise<SourcePos> {
       const urlRegexp = new RegExp(`(${escapeRegExp(genFile)}):(\\d+):(\\d+)`);
       const pos = stack.split('\n')
                       .map(line => urlRegexp.exec(line))
@@ -297,7 +293,7 @@ describe('jit source mapping', () => {
         throw new Error(`${genFile} was not mentioned in this stack:\n${stack}`);
       }
       const sourceMap = this.getSourceMap(pos.file);
-      return originalPositionFor(sourceMap, pos);
+      return await originalPositionFor(sourceMap, pos);
     }
   }
 });

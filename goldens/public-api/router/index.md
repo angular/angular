@@ -50,6 +50,7 @@ export class ActivatedRoute {
     get root(): ActivatedRoute;
     get routeConfig(): Route | null;
     snapshot: ActivatedRouteSnapshot;
+    readonly title: Observable<string | undefined>;
     // (undocumented)
     toString(): string;
     url: Observable<UrlSegment[]>;
@@ -73,6 +74,7 @@ export class ActivatedRouteSnapshot {
     queryParams: Params;
     get root(): ActivatedRouteSnapshot;
     readonly routeConfig: Route | null;
+    readonly title?: string;
     // (undocumented)
     toString(): string;
     url: UrlSegment[];
@@ -136,6 +138,15 @@ export interface CanLoad {
 }
 
 // @public
+export interface CanMatch {
+    // (undocumented)
+    canMatch(route: Route, segments: UrlSegment[]): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+}
+
+// @public
+export type CanMatchFn = (route: Route, segments: UrlSegment[]) => Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+
+// @public
 export class ChildActivationEnd {
     constructor(
     snapshot: ActivatedRouteSnapshot);
@@ -170,6 +181,10 @@ export class ChildrenOutletContexts {
     onOutletDeactivated(): Map<string, OutletContext>;
     // (undocumented)
     onOutletReAttached(contexts: Map<string, OutletContext>): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<ChildrenOutletContexts, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<ChildrenOutletContexts>;
 }
 
 // @public
@@ -194,6 +209,9 @@ export class DefaultTitleStrategy extends TitleStrategy {
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<DefaultTitleStrategy>;
 }
+
+// @public
+export function defaultUrlMatcher(segments: UrlSegment[], segmentGroup: UrlSegmentGroup, route: Route): UrlMatchResult | null;
 
 // @public
 export class DefaultUrlSerializer implements UrlSerializer {
@@ -342,13 +360,22 @@ export class NavigationCancel extends RouterEvent {
     constructor(
     id: number,
     url: string,
-    reason: string);
-    // (undocumented)
+    reason: string,
+    code?: NavigationCancellationCode | undefined);
+    readonly code?: NavigationCancellationCode | undefined;
     reason: string;
     // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.NavigationCancel;
+}
+
+// @public
+export const enum NavigationCancellationCode {
+    GuardRejected = 3,
+    NoDataFromResolver = 2,
+    Redirect = 0,
+    SupersededByNewNavigation = 1
 }
 
 // @public
@@ -370,9 +397,11 @@ export class NavigationError extends RouterEvent {
     constructor(
     id: number,
     url: string,
-    error: any);
+    error: any,
+    target?: RouterStateSnapshot | undefined);
     // (undocumented)
     error: any;
+    readonly target?: RouterStateSnapshot | undefined;
     // (undocumented)
     toString(): string;
     // (undocumented)
@@ -408,6 +437,10 @@ export class NavigationStart extends RouterEvent {
 export class NoPreloading implements PreloadingStrategy {
     // (undocumented)
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NoPreloading, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<NoPreloading>;
 }
 
 // @public
@@ -443,6 +476,10 @@ export type Params = {
 export class PreloadAllModules implements PreloadingStrategy {
     // (undocumented)
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<PreloadAllModules, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<PreloadAllModules>;
 }
 
 // @public
@@ -455,7 +492,7 @@ export abstract class PreloadingStrategy {
 export const PRIMARY_OUTLET = "primary";
 
 // @public
-export function provideRoutes(routes: Routes): any;
+export function provideRoutes(routes: Routes): Provider[];
 
 // @public
 export type QueryParamsHandling = 'merge' | 'preserve' | '';
@@ -511,6 +548,7 @@ export interface Route {
     canActivateChild?: any[];
     canDeactivate?: any[];
     canLoad?: any[];
+    canMatch?: Array<Type<CanMatch> | InjectionToken<CanMatchFn>>;
     children?: Routes;
     component?: Type<any>;
     data?: Data;
@@ -637,7 +675,7 @@ export class RouterLink implements OnChanges {
     // (undocumented)
     get urlTree(): UrlTree | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLink, ":not(a):not(area)[routerLink]", never, { "queryParams": "queryParams"; "fragment": "fragment"; "queryParamsHandling": "queryParamsHandling"; "preserveFragment": "preserveFragment"; "skipLocationChange": "skipLocationChange"; "replaceUrl": "replaceUrl"; "state": "state"; "relativeTo": "relativeTo"; "routerLink": "routerLink"; }, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLink, ":not(a):not(area)[routerLink]", never, { "queryParams": "queryParams"; "fragment": "fragment"; "queryParamsHandling": "queryParamsHandling"; "preserveFragment": "preserveFragment"; "skipLocationChange": "skipLocationChange"; "replaceUrl": "replaceUrl"; "state": "state"; "relativeTo": "relativeTo"; "routerLink": "routerLink"; }, {}, never, never, true>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterLink, [null, null, { attribute: "tabindex"; }, null, null]>;
 }
@@ -665,7 +703,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
         exact: boolean;
     } | IsActiveMatchOptions;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActiveOptions": "routerLinkActiveOptions"; "ariaCurrentWhenActive": "ariaCurrentWhenActive"; "routerLinkActive": "routerLinkActive"; }, { "isActiveChange": "isActiveChange"; }, ["links", "linksWithHrefs"], never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActiveOptions": "routerLinkActiveOptions"; "ariaCurrentWhenActive": "ariaCurrentWhenActive"; "routerLinkActive": "routerLinkActive"; }, { "isActiveChange": "isActiveChange"; }, ["links", "linksWithHrefs"], never, true>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterLinkActive, [null, null, null, null, { optional: true; }, { optional: true; }]>;
 }
@@ -697,22 +735,22 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     // (undocumented)
     get urlTree(): UrlTree | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkWithHref, "a[routerLink],area[routerLink]", never, { "target": "target"; "queryParams": "queryParams"; "fragment": "fragment"; "queryParamsHandling": "queryParamsHandling"; "preserveFragment": "preserveFragment"; "skipLocationChange": "skipLocationChange"; "replaceUrl": "replaceUrl"; "state": "state"; "relativeTo": "relativeTo"; "routerLink": "routerLink"; }, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkWithHref, "a[routerLink],area[routerLink]", never, { "target": "target"; "queryParams": "queryParams"; "fragment": "fragment"; "queryParamsHandling": "queryParamsHandling"; "preserveFragment": "preserveFragment"; "skipLocationChange": "skipLocationChange"; "replaceUrl": "replaceUrl"; "state": "state"; "relativeTo": "relativeTo"; "routerLink": "routerLink"; }, {}, never, never, true>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterLinkWithHref, never>;
 }
 
 // @public
 export class RouterModule {
-    constructor(guard: any, router: Router);
+    constructor(guard: any);
     static forChild(routes: Routes): ModuleWithProviders<RouterModule>;
     static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<RouterModule, [{ optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<RouterModule, [{ optional: true; }]>;
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<RouterModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<RouterModule, [typeof i1.RouterOutlet, typeof i2.RouterLink, typeof i2.RouterLinkWithHref, typeof i3.RouterLinkActive, typeof i4.ɵEmptyOutletComponent], never, [typeof i1.RouterOutlet, typeof i2.RouterLink, typeof i2.RouterLinkWithHref, typeof i3.RouterLinkActive, typeof i4.ɵEmptyOutletComponent]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<RouterModule, never, [typeof i1.RouterOutlet, typeof i2.RouterLink, typeof i2.RouterLinkWithHref, typeof i3.RouterLinkActive, typeof i4.ɵEmptyOutletComponent], [typeof i1.RouterOutlet, typeof i2.RouterLink, typeof i2.RouterLinkWithHref, typeof i3.RouterLinkActive, typeof i4.ɵEmptyOutletComponent]>;
 }
 
 // @public
@@ -743,7 +781,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // (undocumented)
     ngOnInit(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], {}, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterOutlet, "router-outlet", ["outlet"], {}, { "activateEvents": "activate"; "deactivateEvents": "deactivate"; "attachEvents": "attach"; "detachEvents": "detach"; }, never, never, true>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterOutlet, [null, null, { attribute: "name"; }, null, null]>;
 }
@@ -753,7 +791,7 @@ export interface RouterOutletContract {
     activatedRoute: ActivatedRoute | null;
     activatedRouteData: Data;
     activateEvents?: EventEmitter<unknown>;
-    activateWith(activatedRoute: ActivatedRoute, environmnetInjector: EnvironmentInjector | null): void;
+    activateWith(activatedRoute: ActivatedRoute, environmentInjector: EnvironmentInjector | null): void;
     // @deprecated
     activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
     attach(ref: ComponentRef<unknown>, activatedRoute: ActivatedRoute): void;
@@ -845,6 +883,10 @@ export abstract class TitleStrategy {
     buildTitle(snapshot: RouterStateSnapshot): string | undefined;
     getResolvedTitleForRoute(snapshot: ActivatedRouteSnapshot): any;
     abstract updateTitle(snapshot: RouterStateSnapshot): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<TitleStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<TitleStrategy>;
 }
 
 // @public
@@ -913,6 +955,10 @@ export class UrlSegmentGroup {
 export abstract class UrlSerializer {
     abstract parse(url: string): UrlTree;
     abstract serialize(tree: UrlTree): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<UrlSerializer, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<UrlSerializer>;
 }
 
 // @public

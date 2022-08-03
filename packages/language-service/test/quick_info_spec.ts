@@ -53,6 +53,7 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
            */
           title!: string;
           constNames!: [{readonly name: 'name'}];
+          constNamesOptional?: [{readonly name: 'name'}];
           birthday!: Date;
           anyValue!: any;
           myClick(event: any) {}
@@ -360,14 +361,14 @@ describe('quick info', () => {
 
       it('should work for safe keyed reads', () => {
         expectQuickInfo({
-          templateOverride: `<div>{{constNames?.[0¦]}}</div>`,
+          templateOverride: `<div>{{constNamesOptional?.[0¦]}}</div>`,
           expectedSpanText: '0',
           expectedDisplayString: '(property) 0: {\n    readonly name: "name";\n}'
         });
 
         expectQuickInfo({
-          templateOverride: `<div>{{constNames?.[0]?.na¦me}}</div>`,
-          expectedSpanText: 'constNames?.[0]?.name',
+          templateOverride: `<div>{{constNamesOptional?.[0]?.na¦me}}</div>`,
+          expectedSpanText: 'constNamesOptional?.[0]?.name',
           expectedDisplayString: '(property) name: "name"'
         });
       });

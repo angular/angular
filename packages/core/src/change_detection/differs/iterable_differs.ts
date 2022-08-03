@@ -251,11 +251,11 @@ export class IterableDiffers {
     if (factory != null) {
       return factory;
     } else {
-      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-          `Cannot find a differ supporting object '${iterable}' of type '${
-              getTypeNameForDebugging(iterable)}'` :
-          '';
-      throw new RuntimeError(RuntimeErrorCode.NO_SUPPORTING_DIFFER_FACTORY, errorMessage);
+      throw new RuntimeError(
+          RuntimeErrorCode.NO_SUPPORTING_DIFFER_FACTORY,
+          ngDevMode &&
+              `Cannot find a differ supporting object '${iterable}' of type '${
+                  getTypeNameForDebugging(iterable)}'`);
     }
   }
 }

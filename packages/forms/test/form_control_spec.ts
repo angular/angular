@@ -1467,7 +1467,10 @@ describe('FormControl', () => {
         // test for the specific error since without the error check it would still throw an error
         // but
         // not a meaningful one
-        expect(fn).toThrowError(`Expected validator to return Promise or Observable.`);
+        expect(fn).toThrowError(
+            'NG01101: Expected async validator to return Promise or Observable. ' +
+            'Are you using a synchronous validator where an async validator is expected? ' +
+            'Find more at https://angular.io/errors/NG01101');
       });
 
       it('should not emit value change events when emitEvent = false', () => {

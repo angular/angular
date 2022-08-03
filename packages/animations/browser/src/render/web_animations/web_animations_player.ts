@@ -24,6 +24,12 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _destroyed = false;
   private _finalKeyframe?: ɵStyleDataMap;
 
+  // the following original fns are persistent copies of the _onStartFns and _onDoneFns
+  // and are used to reset the fns to their original values upon reset()
+  // (since the _onStartFns and _onDoneFns get deleted after they are called)
+  private _originalOnDoneFns: Function[] = [];
+  private _originalOnStartFns: Function[] = [];
+
   // TODO(issue/24571): remove '!'.
   public readonly domPlayer!: DOMAnimation;
   public time = 0;
@@ -89,10 +95,12 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   }
 
   onStart(fn: () => void): void {
+    this._originalOnStartFns.push(fn);
     this._onStartFns.push(fn);
   }
 
   onDone(fn: () => void): void {
+    this._originalOnDoneFns.push(fn);
     this._onDoneFns.push(fn);
   }
 
@@ -132,6 +140,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     this._destroyed = false;
     this._finished = false;
     this._started = false;
+    this._onStartFns = this._originalOnStartFns;
+    this._onDoneFns = this._originalOnDoneFns;
   }
 
   private _resetDomPlayerState() {

@@ -18,7 +18,7 @@ import {I18nUpdateOpCodes, TI18n, TIcu} from './i18n';
 import {TConstants, TNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
-import {Renderer3, RendererFactory3} from './renderer';
+import {Renderer, RendererFactory} from './renderer';
 import {RComment, RElement} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';
 
@@ -168,8 +168,8 @@ export interface LView<T = unknown> extends Array<any> {
    * TView.cleanup saves an index to the necessary context in this array.
    *
    * After `LView` is created it is possible to attach additional instance specific functions at the
-   * end of the `lView[CLENUP]` because we know that no more `T` level cleanup functions will be
-   * addeded here.
+   * end of the `lView[CLEANUP]` because we know that no more `T` level cleanup functions will be
+   * added here.
    */
   [CLEANUP]: any[]|null;
 
@@ -186,10 +186,10 @@ export interface LView<T = unknown> extends Array<any> {
   readonly[INJECTOR]: Injector|null;
 
   /** Factory to be used for creating Renderer. */
-  [RENDERER_FACTORY]: RendererFactory3;
+  [RENDERER_FACTORY]: RendererFactory;
 
   /** Renderer to be used for this view. */
-  [RENDERER]: Renderer3;
+  [RENDERER]: Renderer;
 
   /** An optional custom sanitizer. */
   [SANITIZER]: Sanitizer|null;
@@ -516,7 +516,7 @@ export const enum TViewType {
 
   /**
    * `TView` associated with a template. Such as `*ngIf`, `<ng-template>` etc... A `Component`
-   * can have zero or more `Embedede` `TView`s.
+   * can have zero or more `Embedded` `TView`s.
    */
   Embedded = 2,
 }

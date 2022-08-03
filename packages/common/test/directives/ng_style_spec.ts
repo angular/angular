@@ -6,13 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgStyle} from '@angular/common';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
 {
   describe('NgStyle', () => {
     let fixture: ComponentFixture<TestComponent>;
+
+    const supportsCssVariables = typeof getComputedStyle !== 'undefined' &&
+        typeof CSS !== 'undefined' && typeof CSS.supports !== 'undefined' &&
+        CSS.supports('color', 'var(--fake-var)');
 
     function getComponent(): TestComponent {
       return fixture.componentInstance;
@@ -190,6 +194,37 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
       fixture.componentInstance.expr = 400;
 
       fixture.detectChanges();
+      expectNativeEl(fixture).toHaveCssStyle({'width': '400px'});
+    });
+
+    it('should handle CSS variables', () => {
+      if (!supportsCssVariables) {
+        return;
+      }
+
+      const template = `<div style="width: var(--width)" [ngStyle]="{'--width': expr}"></div>`;
+      fixture = createTestComponent(template);
+      fixture.componentInstance.expr = '100px';
+      fixture.detectChanges();
+
+      const target: HTMLElement = fixture.nativeElement.querySelector('div');
+      expect(getComputedStyle(target).getPropertyValue('width')).toEqual('100px');
+    });
+
+    it('should be available as a standalone directive', () => {
+      @Component({
+        selector: 'test-component',
+        imports: [NgStyle],
+        template: `<div [ngStyle]="{'width.px': expr}"></div>`,
+        standalone: true,
+      })
+      class TestComponent {
+        expr = 400;
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
       expectNativeEl(fixture).toHaveCssStyle({'width': '400px'});
     });
   });

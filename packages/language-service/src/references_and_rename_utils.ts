@@ -282,7 +282,7 @@ export function getRenameTextAndSpanAtPosition(
 }
 
 /**
- * Retrives the `PipeMeta` or `DirectiveMeta` of the given `ts.Node`'s parent class.
+ * Retrieves the `PipeMeta` or `DirectiveMeta` of the given `ts.Node`'s parent class.
  *
  * Returns `null` if the node has no parent class or there is no meta associated with the class.
  */

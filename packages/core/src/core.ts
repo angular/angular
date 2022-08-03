@@ -15,7 +15,7 @@ export * from './metadata';
 export * from './version';
 export {TypeDecorator} from './util/decorators';
 export * from './di';
-export {createPlatform, assertPlatform, destroyPlatform, getPlatform, PlatformRef, ApplicationRef, createPlatformFactory, NgProbeToken} from './application_ref';
+export {createPlatform, assertPlatform, destroyPlatform, getPlatform, BootstrapOptions, PlatformRef, ApplicationRef, createPlatformFactory, NgProbeToken} from './application_ref';
 export {enableProdMode, isDevMode} from './util/is_dev_mode';
 export {APP_ID, PACKAGE_ROOT_URL, PLATFORM_INITIALIZER, PLATFORM_ID, APP_BOOTSTRAP_LISTENER, ANIMATION_MODULE_TYPE} from './application_tokens';
 export {APP_INITIALIZER, ApplicationInitStatus} from './application_init';
@@ -36,7 +36,8 @@ export * from './core_private_export';
 export * from './core_render3_private_export';
 export {SecurityContext} from './sanitization/security';
 export {Sanitizer} from './sanitization/sanitizer';
-export {createNgModuleRef, createEnvironmentInjector} from './render3/ng_module_ref';
+export {createNgModule, createNgModuleRef, createEnvironmentInjector} from './render3/ng_module_ref';
+export {createComponent, reflectComponentType, ComponentMirror} from './render3/component';
 
 import {global} from './util/global';
 if (typeof ngDevMode !== 'undefined' && ngDevMode) {

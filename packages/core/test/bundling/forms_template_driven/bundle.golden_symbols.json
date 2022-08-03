@@ -114,9 +114,6 @@
     "name": "DEFAULT_VALUE_ACCESSOR"
   },
   {
-    "name": "DOCUMENT"
-  },
-  {
     "name": "DOCUMENT2"
   },
   {
@@ -354,13 +351,13 @@
     "name": "Optional"
   },
   {
+    "name": "PLATFORM_DESTROY_LISTENERS"
+  },
+  {
     "name": "PLATFORM_ID"
   },
   {
     "name": "PLATFORM_INITIALIZER"
-  },
-  {
-    "name": "PLATFORM_ON_DESTROY"
   },
   {
     "name": "PlatformRef"
@@ -514,9 +511,6 @@
   },
   {
     "name": "__forward_ref__"
-  },
-  {
-    "name": "_chromeNumKeyPadMap"
   },
   {
     "name": "_currentInjector"
@@ -718,9 +712,6 @@
   },
   {
     "name": "diPublicInInjector"
-  },
-  {
-    "name": "domRendererFactory3"
   },
   {
     "name": "empty"
@@ -999,6 +990,9 @@
     "name": "initTNodeFlags"
   },
   {
+    "name": "initializeInputAndOutputAliases"
+  },
+  {
     "name": "injectArgs"
   },
   {
@@ -1036,9 +1030,6 @@
   },
   {
     "name": "invokeHostBindingsInCreationMode"
-  },
-  {
-    "name": "isAnimationProp"
   },
   {
     "name": "isArray"
@@ -1098,9 +1089,6 @@
     "name": "isObject"
   },
   {
-    "name": "isObservable"
-  },
-  {
     "name": "isOptionsObj"
   },
   {
@@ -1108,9 +1096,6 @@
   },
   {
     "name": "isPresent"
-  },
-  {
-    "name": "isProceduralRenderer"
   },
   {
     "name": "isPromise"
@@ -1126,9 +1111,6 @@
   },
   {
     "name": "isTemplateNode"
-  },
-  {
-    "name": "isTemplateNode2"
   },
   {
     "name": "isTypeProvider"
@@ -1177,6 +1159,9 @@
   },
   {
     "name": "markAsComponentHost"
+  },
+  {
+    "name": "markDirtyIfOnPush"
   },
   {
     "name": "markDuplicates"

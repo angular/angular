@@ -107,7 +107,9 @@ export class CompilerFacadeImpl implements CompilerFacade {
       name: facade.name,
       type: wrapReference(facade.type),
       internalType: new WrappedNodeExpr(facade.type),
-      providers: new WrappedNodeExpr(facade.providers),
+      providers: facade.providers && facade.providers.length > 0 ?
+          new WrappedNodeExpr(facade.providers) :
+          null,
       imports: facade.imports.map(i => new WrappedNodeExpr(i)),
     };
     const res = compileInjector(meta);
@@ -635,10 +637,10 @@ function isOutput(value: any): value is Output {
 }
 
 function parseInputOutputs(values: string[]): StringMap {
-  return values.reduce((map, value) => {
-    const [field, property] = value.split(',').map(piece => piece.trim());
-    map[field] = property || field;
-    return map;
+  return values.reduce((results, value) => {
+    const [field, property] = value.split(':', 2).map(str => str.trim());
+    results[field] = property || field;
+    return results;
   }, {} as StringMap);
 }
 
@@ -661,8 +663,9 @@ function convertDeclareInjectorFacadeToMetadata(declaration: R3DeclareInjectorFa
     name: declaration.type.name,
     type: wrapReference(declaration.type),
     internalType: new WrappedNodeExpr(declaration.type),
-    providers: declaration.providers !== undefined ? new WrappedNodeExpr(declaration.providers) :
-                                                     null,
+    providers: declaration.providers !== undefined && declaration.providers.length > 0 ?
+        new WrappedNodeExpr(declaration.providers) :
+        null,
     imports: declaration.imports !== undefined ?
         declaration.imports.map(i => new WrappedNodeExpr(i)) :
         [],

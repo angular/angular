@@ -171,7 +171,7 @@ class MyDialog {
 </code-example>
 
 The most straightforward way to get accurate typings is to cast the return value of the relevant DOM methods to the correct type.
-For that, use the `NgElement` and `WithProperties` types \(both exported from `&commat;angular/elements`\):
+For that, use the `NgElement` and `WithProperties` types \(both exported from `@angular/elements`\):
 
 <code-example format="typescript" language="typescript">
 

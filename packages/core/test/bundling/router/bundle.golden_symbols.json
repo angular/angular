@@ -3,9 +3,6 @@
     "name": "ALLOW_MULTIPLE_PLATFORMS"
   },
   {
-    "name": "ANALYZE_FOR_ENTRY_COMPONENTS"
-  },
-  {
     "name": "APP_BASE_HREF"
   },
   {
@@ -40,6 +37,9 @@
   },
   {
     "name": "ArgumentOutOfRangeError"
+  },
+  {
+    "name": "BOOTSTRAP_DONE"
   },
   {
     "name": "BROWSER_MODULE_PROVIDERS"
@@ -138,9 +138,6 @@
     "name": "DEFAULT_SERIALIZER"
   },
   {
-    "name": "DOCUMENT"
-  },
-  {
     "name": "DOCUMENT2"
   },
   {
@@ -237,6 +234,9 @@
     "name": "HashLocationStrategy"
   },
   {
+    "name": "INITIAL_NAVIGATION"
+  },
+  {
     "name": "INITIAL_VALUE"
   },
   {
@@ -247,9 +247,6 @@
   },
   {
     "name": "INJECTOR_SCOPE"
-  },
-  {
-    "name": "Inject"
   },
   {
     "name": "InjectFlags"
@@ -408,9 +405,6 @@
     "name": "NoMatch"
   },
   {
-    "name": "NoPreloading"
-  },
-  {
     "name": "NodeInjector"
   },
   {
@@ -435,13 +429,13 @@
     "name": "OutletInjector"
   },
   {
+    "name": "PLATFORM_DESTROY_LISTENERS"
+  },
+  {
     "name": "PLATFORM_ID"
   },
   {
     "name": "PLATFORM_INITIALIZER"
-  },
-  {
-    "name": "PLATFORM_ON_DESTROY"
   },
   {
     "name": "PathLocationStrategy"
@@ -486,13 +480,22 @@
     "name": "ROUTER_INITIALIZER"
   },
   {
+    "name": "ROUTER_PRELOADER"
+  },
+  {
     "name": "ROUTER_PROVIDERS"
+  },
+  {
+    "name": "ROUTER_SCROLLER"
   },
   {
     "name": "ROUTES"
   },
   {
     "name": "ROUTES2"
+  },
+  {
+    "name": "Recognizer"
   },
   {
     "name": "RefCountOperator"
@@ -525,7 +528,7 @@
     "name": "RouteExampleModule"
   },
   {
-    "name": "RouteTitle"
+    "name": "RouteTitleKey"
   },
   {
     "name": "Router"
@@ -535,9 +538,6 @@
   },
   {
     "name": "RouterEvent"
-  },
-  {
-    "name": "RouterInitializer"
   },
   {
     "name": "RouterLink"
@@ -618,6 +618,9 @@
     "name": "SkipSelf"
   },
   {
+    "name": "StandaloneService"
+  },
+  {
     "name": "Subject"
   },
   {
@@ -673,6 +676,9 @@
   },
   {
     "name": "TakeSubscriber"
+  },
+  {
+    "name": "TakeWhileSubscriber"
   },
   {
     "name": "TapSubscriber"
@@ -756,9 +762,6 @@
     "name": "__forward_ref__"
   },
   {
-    "name": "_chromeNumKeyPadMap"
-  },
-  {
     "name": "_currentInjector"
   },
   {
@@ -778,9 +781,6 @@
   },
   {
     "name": "_randomChar"
-  },
-  {
-    "name": "componentDefCount"
   },
   {
     "name": "_stripIndexHtml"
@@ -885,6 +885,9 @@
     "name": "compare"
   },
   {
+    "name": "componentDefCount"
+  },
+  {
     "name": "computeStaticStyling"
   },
   {
@@ -966,9 +969,6 @@
     "name": "createRoot"
   },
   {
-    "name": "createRouterScroller"
-  },
-  {
     "name": "createTView"
   },
   {
@@ -1002,9 +1002,6 @@
     "name": "defaultMalformedUriErrorHandler"
   },
   {
-    "name": "defaultRouterHook"
-  },
-  {
     "name": "defaultScheduler"
   },
   {
@@ -1027,9 +1024,6 @@
   },
   {
     "name": "dispatch"
-  },
-  {
-    "name": "domRendererFactory3"
   },
   {
     "name": "empty"
@@ -1141,9 +1135,6 @@
   },
   {
     "name": "getAllRouteGuards"
-  },
-  {
-    "name": "getAppInitializer"
   },
   {
     "name": "getBeforeNodeForView"
@@ -1374,6 +1365,12 @@
     "name": "initTNodeFlags"
   },
   {
+    "name": "initializeInputAndOutputAliases"
+  },
+  {
+    "name": "inject"
+  },
+  {
     "name": "injectArgs"
   },
   {
@@ -1476,6 +1473,9 @@
     "name": "isNameOnlyAttributeMarker"
   },
   {
+    "name": "isNavigationCancelingError"
+  },
+  {
     "name": "isNodeMatchingSelector"
   },
   {
@@ -1491,22 +1491,19 @@
     "name": "isPositive"
   },
   {
-    "name": "isProceduralRenderer"
-  },
-  {
     "name": "isPromise"
   },
   {
     "name": "isPromise2"
   },
   {
+    "name": "isRedirectingNavigationCancelingError"
+  },
+  {
     "name": "isScheduler"
   },
   {
     "name": "isTemplateNode"
-  },
-  {
-    "name": "isTemplateNode2"
   },
   {
     "name": "isTypeProvider"
@@ -1522,6 +1519,9 @@
   },
   {
     "name": "joinWithSlash"
+  },
+  {
+    "name": "last"
   },
   {
     "name": "last2"
@@ -1566,6 +1566,9 @@
     "name": "matchSegments"
   },
   {
+    "name": "matchWithChecks"
+  },
+  {
     "name": "materializeViewResults"
   },
   {
@@ -1606,9 +1609,6 @@
   },
   {
     "name": "navigationCancelingError"
-  },
-  {
-    "name": "newObservableError"
   },
   {
     "name": "nextBindingIndex"
@@ -1671,6 +1671,9 @@
     "name": "pathCompareMap"
   },
   {
+    "name": "pipeFromArray"
+  },
+  {
     "name": "platformBrowser"
   },
   {
@@ -1689,7 +1692,7 @@
     "name": "provideForRootGuard"
   },
   {
-    "name": "provideLocationStrategy2"
+    "name": "provideInitialNavigation"
   },
   {
     "name": "provideRoutes"
@@ -1698,7 +1701,10 @@
     "name": "readPatchedLView"
   },
   {
-    "name": "recognize2"
+    "name": "redirectIfUrlTree"
+  },
+  {
+    "name": "redirectingNavigationError"
   },
   {
     "name": "refCount"
@@ -1815,6 +1821,9 @@
     "name": "setInjectImplementation"
   },
   {
+    "name": "setInputsForProperty"
+  },
+  {
     "name": "setInputsFromAttrs"
   },
   {
@@ -1825,6 +1834,9 @@
   },
   {
     "name": "setUpAttributes"
+  },
+  {
+    "name": "setupRouter"
   },
   {
     "name": "shallowEqual"
@@ -1957,6 +1969,9 @@
   },
   {
     "name": "ɵɵNgOnChangesFeature"
+  },
+  {
+    "name": "ɵɵStandaloneFeature"
   },
   {
     "name": "ɵɵattribute"

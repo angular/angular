@@ -16,7 +16,7 @@ Zone.__load_patch('electron', (global: any, Zone: ZoneType, api: _ZonePrivate) =
     try {
       // Try to load CallbacksRegistry class from @electron/remote src
       // since from electron 14+, the CallbacksRegistry is moved to @electron/remote
-      // pacakge and not exported to outside, so this is a hack to patch CallbacksRegistry.
+      // package and not exported to outside, so this is a hack to patch CallbacksRegistry.
       CallbacksRegistry =
           require('@electron/remote/dist/src/renderer/callbacks-registry').CallbacksRegistry;
     } catch (err) {

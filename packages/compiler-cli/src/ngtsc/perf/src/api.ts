@@ -153,6 +153,16 @@ export enum PerfPhase {
    * Tracks the number of `PerfPhase`s, and must appear at the end of the list.
    */
   LAST,
+
+  /**
+   * Time spent by the Angular Language Service calculating code fixes.
+   */
+  LsCodeFixes,
+
+  /**
+   * Time spent by the Angular Language Service to fix all detected same type errors.
+   */
+  LsCodeFixesAll,
 }
 
 /**

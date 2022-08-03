@@ -197,11 +197,6 @@ label[for='toggle-all'] {
 	transition: color 0.4s;
 }
 
-.todo-list li.completed label {
-	color: #d9d9d9;
-	text-decoration: line-through;
-}
-
 .todo-list li .destroy {
 	display: none;
 	position: absolute;

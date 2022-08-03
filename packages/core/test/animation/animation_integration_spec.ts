@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {animate, animateChild, AnimationEvent, AnimationOptions, AUTO_STYLE, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
+import {animate, animateChild, AnimationEvent, AnimationMetadata, AnimationOptions, AUTO_STYLE, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver as NoopAnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {ChangeDetectorRef, Component, HostBinding, HostListener, Inject, RendererFactory2, ViewChild} from '@angular/core';
@@ -3981,6 +3981,45 @@ describe('animation tests', function() {
     expect(pcp.duration).toEqual(7333);  // 2s + 3s + 2000 + 111 + 222
   });
 
+  it('should keep (transition from/to) styles defined in different timelines', () => {
+    @Component({
+      selector: 'cmp',
+      template: '<div @animation *ngIf="exp"></div>',
+      animations: [trigger(
+          'animation',
+          [transition(':enter', [group([
+                        style({opacity: 0, color: 'red'}),
+                        // Note: the objective of this test is to make sure the animation
+                        // transitions from opacity 0 and color red to opacity 1 and color blue,
+                        // even though the two styles are defined in different timelines
+                        animate(500, style({opacity: 1, color: 'blue'})),
+                      ])])])]
+    })
+    class Cmp {
+      exp: boolean = false;
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp]});
+
+    const engine = TestBed.inject(ɵAnimationEngine);
+    const fixture = TestBed.createComponent(Cmp);
+    const cmp = fixture.componentInstance;
+    cmp.exp = true;
+
+    fixture.detectChanges();
+    engine.flush();
+
+    const players = getLog();
+    expect(players.length).toEqual(1);
+
+    const [player] = players;
+
+    expect(player.keyframes).toEqual([
+      new Map<string, string|number>([['opacity', '0'], ['color', 'red'], ['offset', 0]]),
+      new Map<string, string|number>([['opacity', '1'], ['color', 'blue'], ['offset', 1]]),
+    ]);
+  });
+
   describe('errors for not using the animation module', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -4048,6 +4087,97 @@ describe('animation tests', function() {
                .toThrowError(syntheticPropError('@myAnimation.start', 'listener'));
          });
     });
+  });
+
+  describe('non-animatable css props', () => {
+    function buildAndAnimateSimpleTestComponent(triggerAnimationData: AnimationMetadata[]) {
+      @Component({
+        selector: 'cmp',
+        template: `
+          <div *ngIf="exp" [@myAnimation]="exp">
+            <p *ngIf="exp"></p>
+          </div>
+        `,
+        animations: [trigger('myAnimation', [transition('void => *', triggerAnimationData)])]
+      })
+      class Cmp {
+        exp: any = false;
+      }
+
+      TestBed.configureTestingModule({declarations: [Cmp]});
+      const engine = TestBed.inject(ɵAnimationEngine);
+      const fixture = TestBed.createComponent(Cmp);
+      const cmp = fixture.componentInstance;
+      cmp.exp = true;
+      fixture.detectChanges();
+      engine.flush();
+    }
+
+    it('should show a warning if the animation tries to transition a non-animatable property', () => {
+      const spyWarn = spyOn(console, 'warn');
+      buildAndAnimateSimpleTestComponent(
+          [style({display: 'block'}), animate(500, style({display: 'inline'}))]);
+      expect(spyWarn).toHaveBeenCalledOnceWith(
+          'Warning: The animation trigger "myAnimation" is attempting to animate the following' +
+          ' not animatable properties: display' +
+          '\n' +
+          '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)');
+    });
+
+    it('should not show a warning if the animation tries to transition an animatable property',
+       () => {
+         const spyWarn = spyOn(console, 'warn');
+         buildAndAnimateSimpleTestComponent(
+             [style({fontSize: 5}), animate(500, style({fontSize: 15}))]);
+         expect(spyWarn).not.toHaveBeenCalled();
+       });
+
+    it('should show a single warning if the animation tries to transition multiple non-animatable properties',
+       () => {
+         const spyWarn = spyOn(console, 'warn');
+         buildAndAnimateSimpleTestComponent([
+           style({display: 'block', fontStyle: 'normal'}),
+           animate(500, style({display: 'inline', fontStyle: 'italic'}))
+         ]);
+         expect(spyWarn).toHaveBeenCalledOnceWith(
+             'Warning: The animation trigger "myAnimation" is attempting to animate the following' +
+             ' not animatable properties: display, fontStyle' +
+             '\n' +
+             '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)');
+       });
+
+    it('should only warn on non-animatable properties if the animation tries to transition both animate and non-animatable properties',
+       () => {
+         const spyWarn = spyOn(console, 'warn');
+         buildAndAnimateSimpleTestComponent([
+           style({'flex-direction': 'column', fontSize: 5}),
+           animate(500, style({'flex-direction': 'row', fontSize: 10}))
+         ]);
+         expect(spyWarn).toHaveBeenCalledOnceWith(
+             'Warning: The animation trigger "myAnimation" is attempting to animate the following' +
+             ' not animatable properties: flex-direction' +
+             '\n' +
+             '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)');
+       });
+
+    it('should not show a warning if the animation uses but does not animate a non-animatable property',
+       () => {
+         const spyWarn = spyOn(console, 'warn');
+         buildAndAnimateSimpleTestComponent([transition('void => *', [style({display: 'block'})])]);
+         expect(spyWarn).not.toHaveBeenCalled();
+       });
+
+    it('should not show a warning if the same non-animatable property is used (with different values) on different elements in the same transition',
+       () => {
+         const spyWarn = spyOn(console, 'warn');
+         buildAndAnimateSimpleTestComponent([
+           style({position: 'relative'}),
+           query(':enter', [style({
+                   position: 'absolute',
+                 })]),
+         ]);
+         expect(spyWarn).not.toHaveBeenCalled();
+       });
   });
 });
 })();

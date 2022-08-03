@@ -1,11 +1,6 @@
 // #docplaster
-/*
-// #docregion as-generated
-import { Component, OnInit } from '@angular/core';
-// #enddocregion as-generated
-*/
 // #docregion imports
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Product } from '../products';
 // #enddocregion imports
 // #docregion as-generated
@@ -16,14 +11,10 @@ import { Product } from '../products';
   styleUrls: ['./product-alerts.component.css']
 })
 // #docregion input-decorator
-export class ProductAlertsComponent implements OnInit {
+export class ProductAlertsComponent {
 
 // #enddocregion as-generated
   @Input() product!: Product;
 // #docregion as-generated
-  constructor() { }
-
-  ngOnInit() {
-  }
 
 }

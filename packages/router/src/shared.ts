@@ -18,6 +18,13 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
 export const PRIMARY_OUTLET = 'primary';
 
 /**
+ * A private symbol used to store the value of `Route.title` inside the `Route.data` if it is a
+ * static string or `Route.resolve` if anything else. This allows us to reuse the existing route
+ * data/resolvers to support the title feature without new instrumentation in the `Router` pipeline.
+ */
+export const RouteTitleKey = Symbol('RouteTitle');
+
+/**
  * A collection of matrix and query URL parameters.
  * @see `convertToParamMap()`
  * @see `ParamMap`
@@ -111,19 +118,21 @@ export function convertToParamMap(params: Params): ParamMap {
   return new ParamsAsMap(params);
 }
 
-const NAVIGATION_CANCELING_ERROR = 'ngNavigationCancelingError';
-
-export function navigationCancelingError(message: string) {
-  const error = Error('NavigationCancelingError: ' + message);
-  (error as any)[NAVIGATION_CANCELING_ERROR] = true;
-  return error;
-}
-
-export function isNavigationCancelingError(error: Error) {
-  return error && (error as any)[NAVIGATION_CANCELING_ERROR];
-}
-
-// Matches the route configuration (`route`) against the actual URL (`segments`).
+/**
+ * Matches the route configuration (`route`) against the actual URL (`segments`).
+ *
+ * When no matcher is defined on a `Route`, this is the matcher used by the Router by default.
+ *
+ * @param segments The remaining unmatched segments in the current navigation
+ * @param segmentGroup The current segment group being matched
+ * @param route The `Route` to match against.
+ *
+ * @see UrlMatchResult
+ * @see Route
+ *
+ * @returns The resulting match information or `null` if the `route` should not match.
+ * @publicApi
+ */
 export function defaultUrlMatcher(
     segments: UrlSegment[], segmentGroup: UrlSegmentGroup, route: Route): UrlMatchResult|null {
   const parts = route.path!.split('/');

@@ -9,7 +9,17 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     INVALID_BANANA_IN_BOX = "invalidBananaInBox",
     // (undocumented)
-    NULLISH_COALESCING_NOT_NULLABLE = "nullishCoalescingNotNullable"
+    MISSING_CONTROL_FLOW_DIRECTIVE = "missingControlFlowDirective",
+    // (undocumented)
+    MISSING_NGFOROF_LET = "missingNgForOfLet",
+    // (undocumented)
+    NULLISH_COALESCING_NOT_NULLABLE = "nullishCoalescingNotNullable",
+    // (undocumented)
+    OPTIONAL_CHAIN_NOT_NULLABLE = "optionalChainNotNullable",
+    // (undocumented)
+    SUFFIX_NOT_SUPPORTED = "suffixNotSupported",
+    // (undocumented)
+    TEXT_ATTRIBUTE_NOT_BINDING = "textAttributeNotBinding"
 }
 
 // (No @packageDocumentation comment for this package)

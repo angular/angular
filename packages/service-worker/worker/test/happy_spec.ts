@@ -1035,6 +1035,55 @@ describe('Driver', () => {
         });
       });
 
+      describe('`sendRequest` operation', () => {
+        it('sends a GET request to the specified URL', async () => {
+          // Initialize the SW.
+          expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
+          await driver.initialized;
+          server.clearRequests();
+
+          // Trigger a `notificationlick` event.
+          const url = '/some/url';
+          await scope.handleClick(
+              {
+                title: 'Test notification',
+                body: 'This is a test notifiction.',
+                data: {
+                  onActionClick: {
+                    foo: {operation: 'sendRequest', url},
+                  },
+                },
+              },
+              'foo');
+
+          // Expect request to the server.
+          server.assertSawRequestFor('/some/url');
+        });
+
+        it('falls back to sending a request to `/` when no URL is specified', async () => {
+          // Initialize the SW.
+          expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
+          await driver.initialized;
+          server.clearRequests();
+
+          // Trigger a `notificationlick` event.
+          await scope.handleClick(
+              {
+                title: 'Test notification',
+                body: 'This is a test notifiction.',
+                data: {
+                  onActionClick: {
+                    bar: {operation: 'sendRequest'},
+                  },
+                },
+              },
+              'bar');
+
+          // Expect request to the server.
+          server.assertSawRequestFor('/');
+        });
+      });
+
       describe('No matching onActionClick field', () => {
         it('no client interaction', async () => {
           expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');

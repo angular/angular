@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "ng build --prod",
+    "build": "ng build --configuration production",
     "e2e": "ng e2e --port 0",
     "lint": "ng lint",
     "ng": "ng",

@@ -219,12 +219,12 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     this.visitExpression(text.value);
   }
   override visitReference(reference: TmplAstReference) {
-    const referenceIdentifer = this.targetToIdentifier(reference);
-    if (referenceIdentifer === null) {
+    const referenceIdentifier = this.targetToIdentifier(reference);
+    if (referenceIdentifier === null) {
       return;
     }
 
-    this.identifiers.add(referenceIdentifer);
+    this.identifiers.add(referenceIdentifier);
   }
   override visitVariable(variable: TmplAstVariable) {
     const variableIdentifier = this.targetToIdentifier(variable);

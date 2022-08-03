@@ -3141,7 +3141,7 @@ describe('Zone', function() {
     });
 
     // TODO: Re-enable via https://github.com/angular/angular/pull/41526
-    xdescribe('unhandle promise rejection', () => {
+    xdescribe('unhandled promise rejection', () => {
       const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
       const asyncTest = function(testFn: Function) {
         return (done: Function) => {
@@ -3398,145 +3398,140 @@ describe('Zone', function() {
   });
 
 
-  describe(
-      'pointer event in IE',
-      ifEnvSupports(
-          () => {
-            return getIEVersion() === 11;
-          },
-          () => {
-            const pointerEventsMap: {[key: string]: string} = {
-              'MSPointerCancel': 'pointercancel',
-              'MSPointerDown': 'pointerdown',
-              'MSPointerEnter': 'pointerenter',
-              'MSPointerHover': 'pointerhover',
-              'MSPointerLeave': 'pointerleave',
-              'MSPointerMove': 'pointermove',
-              'MSPointerOut': 'pointerout',
-              'MSPointerOver': 'pointerover',
-              'MSPointerUp': 'pointerup'
-            };
+  if (getIEVersion() === 11) {
+    describe('pointer event in IE', () => {
+      const pointerEventsMap: {[key: string]: string} = {
+        'MSPointerCancel': 'pointercancel',
+        'MSPointerDown': 'pointerdown',
+        'MSPointerEnter': 'pointerenter',
+        'MSPointerHover': 'pointerhover',
+        'MSPointerLeave': 'pointerleave',
+        'MSPointerMove': 'pointermove',
+        'MSPointerOut': 'pointerout',
+        'MSPointerOver': 'pointerover',
+        'MSPointerUp': 'pointerup'
+      };
 
-            let div: HTMLDivElement;
-            beforeEach(() => {
-              div = document.createElement('div');
-              document.body.appendChild(div);
-            });
-            afterEach(() => {
-              document.body.removeChild(div);
-            });
-            Object.keys(pointerEventsMap).forEach(key => {
-              it(`${key} and ${pointerEventsMap[key]} should both be triggered`, (done: DoneFn) => {
-                const logs: string[] = [];
-                div.addEventListener(key, (event: any) => {
-                  expect(event.type).toEqual(pointerEventsMap[key]);
-                  logs.push(`${key} triggered`);
-                });
-                div.addEventListener(pointerEventsMap[key], (event: any) => {
-                  expect(event.type).toEqual(pointerEventsMap[key]);
-                  logs.push(`${pointerEventsMap[key]} triggered`);
-                });
-                const evt1 = document.createEvent('Event');
-                evt1.initEvent(key, true, true);
-                div.dispatchEvent(evt1);
+      let div: HTMLDivElement;
+      beforeEach(() => {
+        div = document.createElement('div');
+        document.body.appendChild(div);
+      });
+      afterEach(() => {
+        document.body.removeChild(div);
+      });
+      Object.keys(pointerEventsMap).forEach(key => {
+        it(`${key} and ${pointerEventsMap[key]} should both be triggered`, (done: DoneFn) => {
+          const logs: string[] = [];
+          div.addEventListener(key, (event: any) => {
+            expect(event.type).toEqual(pointerEventsMap[key]);
+            logs.push(`${key} triggered`);
+          });
+          div.addEventListener(pointerEventsMap[key], (event: any) => {
+            expect(event.type).toEqual(pointerEventsMap[key]);
+            logs.push(`${pointerEventsMap[key]} triggered`);
+          });
+          const evt1 = document.createEvent('Event');
+          evt1.initEvent(key, true, true);
+          div.dispatchEvent(evt1);
 
-                setTimeout(() => {
-                  expect(logs).toEqual([`${key} triggered`, `${pointerEventsMap[key]} triggered`]);
-                });
+          setTimeout(() => {
+            expect(logs).toEqual([`${key} triggered`, `${pointerEventsMap[key]} triggered`]);
+          });
 
-                const evt2 = document.createEvent('Event');
-                evt2.initEvent(pointerEventsMap[key], true, true);
-                div.dispatchEvent(evt2);
+          const evt2 = document.createEvent('Event');
+          evt2.initEvent(pointerEventsMap[key], true, true);
+          div.dispatchEvent(evt2);
 
-                setTimeout(() => {
-                  expect(logs).toEqual([`${key} triggered`, `${pointerEventsMap[key]} triggered`]);
-                });
+          setTimeout(() => {
+            expect(logs).toEqual([`${key} triggered`, `${pointerEventsMap[key]} triggered`]);
+          });
 
-                setTimeout(done);
-              });
+          setTimeout(done);
+        });
 
-              it(`${key} and ${
-                     pointerEventsMap[key]} with same listener should not be triggered twice`,
-                 (done: DoneFn) => {
-                   const logs: string[] = [];
-                   const listener = function(event: any) {
-                     expect(event.type).toEqual(pointerEventsMap[key]);
-                     logs.push(`${key} triggered`);
-                   };
-                   div.addEventListener(key, listener);
-                   div.addEventListener(pointerEventsMap[key], listener);
+        it(`${key} and ${pointerEventsMap[key]} with same listener should not be triggered twice`,
+           (done: DoneFn) => {
+             const logs: string[] = [];
+             const listener = function(event: any) {
+               expect(event.type).toEqual(pointerEventsMap[key]);
+               logs.push(`${key} triggered`);
+             };
+             div.addEventListener(key, listener);
+             div.addEventListener(pointerEventsMap[key], listener);
 
-                   const evt1 = document.createEvent('Event');
-                   evt1.initEvent(key, true, true);
-                   div.dispatchEvent(evt1);
+             const evt1 = document.createEvent('Event');
+             evt1.initEvent(key, true, true);
+             div.dispatchEvent(evt1);
 
-                   setTimeout(() => {
-                     expect(logs).toEqual([`${key} triggered`]);
-                   });
+             setTimeout(() => {
+               expect(logs).toEqual([`${key} triggered`]);
+             });
 
-                   const evt2 = document.createEvent('Event');
-                   evt2.initEvent(pointerEventsMap[key], true, true);
-                   div.dispatchEvent(evt2);
+             const evt2 = document.createEvent('Event');
+             evt2.initEvent(pointerEventsMap[key], true, true);
+             div.dispatchEvent(evt2);
 
-                   setTimeout(() => {
-                     expect(logs).toEqual([`${pointerEventsMap[key]} triggered`]);
-                   });
+             setTimeout(() => {
+               expect(logs).toEqual([`${pointerEventsMap[key]} triggered`]);
+             });
 
-                   setTimeout(done);
-                 });
+             setTimeout(done);
+           });
 
-              it(`${key} and ${
-                     pointerEventsMap[key]} should be able to be removed with removeEventListener`,
-                 (done: DoneFn) => {
-                   const logs: string[] = [];
-                   const listener1 = function(event: any) {
-                     logs.push(`${key} triggered`);
-                   };
-                   const listener2 = function(event: any) {
-                     logs.push(`${pointerEventsMap[key]} triggered`);
-                   };
-                   div.addEventListener(key, listener1);
-                   div.addEventListener(pointerEventsMap[key], listener2);
+        it(`${key} and ${
+               pointerEventsMap[key]} should be able to be removed with removeEventListener`,
+           (done: DoneFn) => {
+             const logs: string[] = [];
+             const listener1 = function(event: any) {
+               logs.push(`${key} triggered`);
+             };
+             const listener2 = function(event: any) {
+               logs.push(`${pointerEventsMap[key]} triggered`);
+             };
+             div.addEventListener(key, listener1);
+             div.addEventListener(pointerEventsMap[key], listener2);
 
-                   div.removeEventListener(key, listener1);
-                   div.removeEventListener(key, listener2);
+             div.removeEventListener(key, listener1);
+             div.removeEventListener(key, listener2);
 
-                   const evt1 = document.createEvent('Event');
-                   evt1.initEvent(key, true, true);
-                   div.dispatchEvent(evt1);
+             const evt1 = document.createEvent('Event');
+             evt1.initEvent(key, true, true);
+             div.dispatchEvent(evt1);
 
-                   setTimeout(() => {
-                     expect(logs).toEqual([]);
-                   });
+             setTimeout(() => {
+               expect(logs).toEqual([]);
+             });
 
-                   const evt2 = document.createEvent('Event');
-                   evt2.initEvent(pointerEventsMap[key], true, true);
-                   div.dispatchEvent(evt2);
+             const evt2 = document.createEvent('Event');
+             evt2.initEvent(pointerEventsMap[key], true, true);
+             div.dispatchEvent(evt2);
 
-                   setTimeout(() => {
-                     expect(logs).toEqual([]);
-                   });
+             setTimeout(() => {
+               expect(logs).toEqual([]);
+             });
 
-                   div.addEventListener(key, listener1);
-                   div.addEventListener(pointerEventsMap[key], listener2);
+             div.addEventListener(key, listener1);
+             div.addEventListener(pointerEventsMap[key], listener2);
 
-                   div.removeEventListener(pointerEventsMap[key], listener1);
-                   div.removeEventListener(pointerEventsMap[key], listener2);
+             div.removeEventListener(pointerEventsMap[key], listener1);
+             div.removeEventListener(pointerEventsMap[key], listener2);
 
-                   div.dispatchEvent(evt1);
+             div.dispatchEvent(evt1);
 
-                   setTimeout(() => {
-                     expect(logs).toEqual([]);
-                   });
+             setTimeout(() => {
+               expect(logs).toEqual([]);
+             });
 
-                   div.dispatchEvent(evt2);
+             div.dispatchEvent(evt2);
 
-                   setTimeout(() => {
-                     expect(logs).toEqual([]);
-                   });
+             setTimeout(() => {
+               expect(logs).toEqual([]);
+             });
 
-                   setTimeout(done);
-                 });
-            });
-          }));
+             setTimeout(done);
+           });
+      });
+    });
+  }
 });

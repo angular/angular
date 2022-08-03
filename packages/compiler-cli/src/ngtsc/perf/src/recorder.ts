@@ -31,7 +31,7 @@ export class ActivePerfRecorder implements PerfRecorder {
   private currentPhaseEntered = this.zeroTime;
 
   /**
-   * Creates an `ActivePerfRecoder` with its zero point set to the current time.
+   * Creates an `ActivePerfRecorder` with its zero point set to the current time.
    */
   static zeroedToNow(): ActivePerfRecorder {
     return new ActivePerfRecorder(mark());

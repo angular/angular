@@ -36,16 +36,11 @@ export function makeNotStandaloneDiagnostic(
   if (scope !== null && scope.kind === ComponentScopeKind.NgModule) {
     // The directive/pipe in question is declared in an NgModule. Check if it's also exported.
     const isExported = scope.exported.dependencies.some(dep => dep.ref.node === ref.node);
-    if (isExported) {
-      relatedInformation = [makeRelatedInformation(
-          scope.ngModule.name,
-          `It can be imported using its NgModule '${scope.ngModule.name.text}' instead.`)];
-    } else {
-      relatedInformation = [makeRelatedInformation(
-          scope.ngModule.name,
-          `It's declared in the NgModule '${
-              scope.ngModule.name.text}', but is not exported. Consider exporting it.`)];
-    }
+    const relatedInfoMessageText = isExported ?
+        `It can be imported using its '${scope.ngModule.name.text}' NgModule instead.` :
+        `It's declared in the '${scope.ngModule.name.text}' NgModule, but is not exported. ` +
+            'Consider exporting it and importing the NgModule instead.';
+    relatedInformation = [makeRelatedInformation(scope.ngModule.name, relatedInfoMessageText)];
   } else {
     // TODO(alxhub): the above case handles directives/pipes in NgModules that are declared in the
     // current compilation, but not those imported from .d.ts dependencies. We could likely scan the

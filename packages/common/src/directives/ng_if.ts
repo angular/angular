@@ -148,7 +148,10 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  * @ngModule CommonModule
  * @publicApi
  */
-@Directive({selector: '[ngIf]'})
+@Directive({
+  selector: '[ngIf]',
+  standalone: true,
+})
 export class NgIf<T = unknown> {
   private _context: NgIfContext<T> = new NgIfContext<T>();
   private _thenTemplateRef: TemplateRef<NgIfContext<T>>|null = null;

@@ -248,7 +248,7 @@ export class RenameBuilder {
   findRenameLocationsAtTypescriptPosition(renameRequest: RenameRequest):
       readonly ts.RenameLocation[]|null {
     return this.compiler.perfRecorder.inPhase(PerfPhase.LsReferencesAndRenames, () => {
-      const renameInfo = getExpectedRenameTextAndInitalRenameEntries(renameRequest);
+      const renameInfo = getExpectedRenameTextAndInitialRenameEntries(renameRequest);
       if (renameInfo === null) {
         return null;
       }
@@ -372,7 +372,7 @@ export class RenameBuilder {
  * `ts.RenameLocation`s to have and creates an initial entry for indirect renames (one which is
  * required for the rename operation, but cannot be found by the native TS LS).
  */
-function getExpectedRenameTextAndInitalRenameEntries(renameRequest: RenameRequest):
+function getExpectedRenameTextAndInitialRenameEntries(renameRequest: RenameRequest):
     {expectedRenameText: string, entries: ts.RenameLocation[]}|null {
   let expectedRenameText: string;
   const entries: ts.RenameLocation[] = [];

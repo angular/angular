@@ -9,13 +9,10 @@
 
 import {TestBed} from '@angular/core/testing';
 import {RouterTestingModule} from '@angular/router/testing';
-import {Observable, Observer, of} from 'rxjs';
-import {every, mergeMap} from 'rxjs/operators';
 import {TestScheduler} from 'rxjs/testing';
 
 import {prioritizedGuardValue} from '../../src/operators/prioritized_guard_value';
 import {Router} from '../../src/router';
-import {UrlTree} from '../../src/url_tree';
 
 
 describe('prioritizedGuardValue operator', () => {
@@ -173,6 +170,31 @@ describe('prioritizedGuardValue operator', () => {
           .toBe(
               expected,
               urlLookup,
+              /* an error here maybe */);
+    });
+  });
+
+  it('should ignore invalid values', () => {
+    testScheduler.run(({hot, cold, expectObservable}) => {
+      const resultLookup = {
+        T: true,
+        U: undefined as any,
+        S: 'I am not a valid guard result' as any
+      };
+
+      const a = cold('       ----------(T|)', resultLookup);
+      const b = cold('       -----(U|)', resultLookup);
+      const c = cold('       -----(S|)', resultLookup);
+      const d = cold('       --(T|)', resultLookup);
+
+      const source = hot('---o---', {o: [a, b, c, d]});
+
+      const expected = '  -------------T---';
+
+      expectObservable(source.pipe(prioritizedGuardValue()))
+          .toBe(
+              expected,
+              resultLookup,
               /* an error here maybe */);
     });
   });

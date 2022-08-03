@@ -44,7 +44,6 @@ describe('TransferState', () => {
     TestBed.configureTestingModule({
       imports: [
         BrowserModule.withServerTransition({appId: APP_ID}),
-        BrowserTransferStateModule,
       ]
     });
     doc = TestBed.inject(DOCUMENT);
@@ -116,6 +115,19 @@ describe('TransferState', () => {
     value = 'changed';
 
     expect(transferState.toJson()).toBe('{"test":20,"delayed":"changed"}');
+  });
+
+  it('should provide an ability to detect whether the state is empty', () => {
+    const transferState = TestBed.inject(TransferState);
+
+    // The state is empty initially.
+    expect(transferState.isEmpty).toBeTrue();
+
+    transferState.set(TEST_KEY, 20);
+    expect(transferState.isEmpty).toBeFalse();
+
+    transferState.remove(TEST_KEY);
+    expect(transferState.isEmpty).toBeTrue();
   });
 });
 
