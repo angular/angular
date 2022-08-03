@@ -1,3 +1,43 @@
+<a name="14.2.0-next.0"></a>
+# 14.2.0-next.0 (2022-08-03)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e2ab99b95e](https://github.com/angular/angular/commit/e2ab99b95efd893c49d15c02cccd72ef82ea1cae) | fix | allow null/undefined to be passed to ngClass input ([#39280](https://github.com/angular/angular/pull/39280)) ([#46906](https://github.com/angular/angular/pull/46906)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d1e83e1b30](https://github.com/angular/angular/commit/d1e83e1b30f2cea9f2ed16bff2d3b969335072ab) | feat | add `createComponent` function ([#46685](https://github.com/angular/angular/pull/46685)) |
+| [10becab70e](https://github.com/angular/angular/commit/10becab70e0f2afee29da7b3358eedcc22f655a2) | feat | add `reflectComponentType` function ([#46685](https://github.com/angular/angular/pull/46685)) |
+| [4b377d3a6d](https://github.com/angular/angular/commit/4b377d3a6d069da23ec577f8deca761b01d4e2f5) | feat | introduce createApplication API ([#46475](https://github.com/angular/angular/pull/46475)) |
+| [796840209c](https://github.com/angular/angular/commit/796840209cd38aacc5061a31701efe7eda1f6587) | fix | align TestBed interfaces and implementation ([#46635](https://github.com/angular/angular/pull/46635)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [426af91a42](https://github.com/angular/angular/commit/426af91a42104d6ce227ab52c8c4db3e218f5e03) | feat | add `FormBuilder.record()` method ([#46485](https://github.com/angular/angular/pull/46485)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [598b72bd05](https://github.com/angular/angular/commit/598b72bd05ea33468c70ac35b8ea5286439f41d9) | feat | support fix the component missing member ([#46764](https://github.com/angular/angular/pull/46764)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [07606e3181](https://github.com/angular/angular/commit/07606e3181fc7aa9f9185eb771fc9c44f01fe344) | feat | add `isEmpty` method to the `TransferState` class ([#46915](https://github.com/angular/angular/pull/46915)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [10289f1f6e](https://github.com/angular/angular/commit/10289f1f6e3d5935304a38d4300d4dadfea66150) | feat | expose resolved route title ([#46826](https://github.com/angular/angular/pull/46826)) |
+| [8600732b09](https://github.com/angular/angular/commit/8600732b090a4c253eb89ffde6db3858e4a2021c) | feat | Expose the default matcher for `Routes` used by the `Router` ([#46913](https://github.com/angular/angular/pull/46913)) |
+| [26ea97688c](https://github.com/angular/angular/commit/26ea97688cba5850588d8da83abaf8b539577241) | feat | Make router directives standalone ([#46758](https://github.com/angular/angular/pull/46758)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [383090858c](https://github.com/angular/angular/commit/383090858caf04c27ee8b320cceca2da0ae54bb3) | feat | support `sendRequest` as a `notificationclick` action ([#46912](https://github.com/angular/angular/pull/46912)) |
+## Special Thanks
+Andrew Kushnir, Andrew Scott, Cédric Exbrayat, Emmanuel Roux, George Kalpakas, Ilia Mirkin, Jessica Janiuk, Paul Gschwendtner, Pawel Kozlowski, Tristan Sprößer, angular-robot[bot], dario-piotrowicz and ivanwonder
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.1"></a>
 # 14.1.1 (2022-08-03)
 ### core
