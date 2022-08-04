@@ -24,13 +24,27 @@ function isAbstractControlOptions(options: AbstractControlOptions|{[key: string]
 }
 
 /**
+ * The union of all validator types that can be accepted by a ControlConfig.
+ */
+type ValidatorConfig = ValidatorFn|AsyncValidatorFn|ValidatorFn[]|AsyncValidatorFn[];
+
+/**
+ * The compiler may not always be able to prove that the elements of the control config are a tuple
+ * (i.e. occur in a fixed order). This slightly looser type is used for inference, to catch cases
+ * where the compiler cannot prove order and position.
+ *
+ * For example, consider the simple case `fb.group({foo: ['bar', Validators.required]})`. The
+ * compiler will infer this as an array, not as a tuple.
+ */
+type PermissiveControlConfig<T> = Array<T|FormControlState<T>|ValidatorConfig>;
+
+/**
  * ControlConfig<T> is a tuple containing a value of type T, plus optional validators and async
  * validators.
  *
  * @publicApi
  */
 export type ControlConfig<T> = [T|FormControlState<T>, (ValidatorFn|(ValidatorFn[]))?, (AsyncValidatorFn|AsyncValidatorFn[])?];
-
 
 // Disable clang-format to produce clearer formatting for this multiline type.
 // clang-format off
@@ -68,12 +82,7 @@ export type ɵElement<T, N extends null> =
   // FormControlState object container, which produces a nullable control.
   [T] extends [FormControlState<infer U>] ? FormControl<U|N> :
   // A ControlConfig tuple, which produces a nullable control.
-  [T] extends [ControlConfig<infer U>] ? FormControl<U|N> :
-  // ControlConfig can be too much for the compiler to infer in the wrapped case. This is
-  // not surprising, since it's practically death-by-polymorphism (e.g. the optional validators
-  // members that might be arrays). Watch for ControlConfigs that might fall through.
-  [T] extends [Array<infer U|ValidatorFn|ValidatorFn[]|AsyncValidatorFn|AsyncValidatorFn[]>] ? FormControl<U|N> :
-  // Fallthough case: T is not a container type; use it directly as a value.
+  [T] extends [PermissiveControlConfig<infer U>] ? FormControl<Exclude<U, ValidatorConfig>|N> :
   FormControl<T|N>;
 
 // clang-format on
