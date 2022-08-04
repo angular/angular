@@ -55,12 +55,96 @@ export const RECOMMENDED_SRCSET_DENSITY_CAP = 2;
 const ASPECT_RATIO_TOLERANCE = .1;
 
 /**
- * ** EXPERIMENTAL **
+ * The directive that helps to improve image loading performance by following best practices.
  *
- * TODO: add Image directive description.
+ * The `NgOptimizedImage` ensures that the loading of the LCP image is prioritized by:
+ * - Automatically setting the `fetchpriority` attribute on the `<img>` tag
+ * - Lazy loading non-priority images by default
+ * - Asserting that there is a corresponding preconnect link tag in the document head
+ *
+ * In addition, the directive:
+ * - Generates appropriate asset URLs (if a corresponding loader function is provided)
+ * - Requires that `width` and `height` are set
+ * - Warns if `width` or `height` have been set incorrectly
+ * - Warns if the image will be visually distorted when rendered
  *
  * @usageNotes
- * TODO: add Image directive usage notes.
+ * The `NgOptimizedImage` directive is marked as [standalone](guide/standalone-components) and can
+ * be imported directly.
+ *
+ * Follow the steps below to enable and use the directive:
+ * 1. Import it into the necessary NgModule or a standalone Component.
+ * 2. Configure a loader that you want to use.
+ * 3. Update the necessary `<img>` tags in templates and replace `src` attributes with `rawSrc`.
+ *
+ * Step 1: import the `NgOptimizedImage` directive.
+ *
+ * ```typescript
+ * import { NgOptimizedImage } from '@angular/common';
+ *
+ * // Include it into the necessary NgModule
+ * @NgModule({
+ *   imports: [NgOptimizedImage],
+ * })
+ * class AppModule {}
+ *
+ * // ... or a standalone Component
+ * @Component({
+ *   standalone: true
+ *   imports: [NgOptimizedImage],
+ * })
+ * class MyStandaloneComponent {}
+ * ```
+ *
+ * Step 2: configure a loader.
+ *
+ * To use the **default loader**: no additional code changes are necessary. The URL returned by the
+ * generic loader will always match the value of "src". In other words, this loader applies no
+ * transformations to thr resource URL and the value of the `rawSrc` attribute will be used as is.
+ *
+ * To use an existing loader for a **third-party image service**: add the provider factory for your
+ * chosen service to the `providers` array. In the example below, the Imgix loader is used:
+ *
+ * ```typescript
+ * import {provideImgixLoader} from '@angular/common';
+ *
+ * // Call the function and add the result to the `providers` array:
+ * providers: [
+ *   provideImgixLoader("https://my.base.url/"),
+ * ],
+ * ```
+ *
+ * The `NgOptimizedImage` directive provides the following functions:
+ * - `provideCloudflareLoader`
+ * - `provideCloudinaryLoader`
+ * - `provideImageKitLoader`
+ * - `provideImgixLoader`
+ *
+ * If you use a different image provider, you can create a custom loader function as described
+ * below.
+ *
+ * To use a **custom loader**: provide your loader function as a value for the `IMAGE_LOADER` DI
+ * token.
+ *
+ * ```typescript
+ * import {IMAGE_LOADER, ImageLoaderConfig} from '@angular/common';
+ *
+ * // Configure the loader using the `IMAGE_LOADER` token.
+ * providers: [
+ *   {
+ *      provide: IMAGE_LOADER,
+ *      useValue: (config: ImageLoaderConfig) => {
+ *        return `https://example.com/${config.src}-${config.width}.jpg}`;
+ *      }
+ *   },
+ * ],
+ * ```
+ *
+ * Step 3: update `<img>` tags in templates to use `rawSrc` instead of `rawSrc`.
+ *
+ * ```
+ * <img rawSrc="logo.png" width="200" height="100">
+ * ```
  *
  * @publicApi
  * @developerPreview
