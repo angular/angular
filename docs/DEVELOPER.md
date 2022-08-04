@@ -66,6 +66,15 @@ yarn install
 
 To build Angular run:
 
+Windows users:\
+Powershell and cmd shells are not supported due to indirect Bazel requirements\
+Build might fail with error like-
+```shell
+BazelWorkspaceStatusAction stable-status.txt failed: Failed to determine workspace status
+```
+Use Git bash or equivalent until we add support for these shells as well
+https://github.com/angular/angular/issues/46780
+
 ```shell
 yarn build
 ```
