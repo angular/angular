@@ -11,8 +11,8 @@ ng_module(
     ]),
     deps = [
         "//src/material/button",
-        "//src/material/checkbox",
         "//src/material/core",
+        "//src/material/legacy-checkbox",
         "//src/material/legacy-input",
         "@npm//@angular/forms",
     ],

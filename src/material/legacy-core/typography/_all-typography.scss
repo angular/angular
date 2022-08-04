@@ -4,6 +4,7 @@
 @use '../option/option-theme';
 @use '../option/optgroup-theme';
 @use '../../legacy-card/card-theme';
+@use '../../legacy-checkbox/checkbox-theme';
 @use '../../legacy-progress-bar/progress-bar-theme';
 @use '../../legacy-tooltip/tooltip-theme';
 @use '../../legacy-input/input-theme';
@@ -36,6 +37,7 @@
   @include input-theme.typography($config);
   @include form-field-theme.typography($config);
   @include select-theme.typography($config);
+  @include checkbox-theme.typography($config);
   @include autocomplete-theme.typography($config);
 }
 

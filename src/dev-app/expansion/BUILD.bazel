@@ -12,8 +12,8 @@ ng_module(
     deps = [
         "//src/cdk/accordion",
         "//src/material/button",
-        "//src/material/checkbox",
         "//src/material/expansion",
+        "//src/material/legacy-checkbox",
         "//src/material/legacy-form-field",
         "//src/material/legacy-input",
         "//src/material/radio",

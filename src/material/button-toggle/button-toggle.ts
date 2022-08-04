@@ -87,13 +87,13 @@ export const MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR: any = {
 // Counter used to generate unique IDs.
 let uniqueIdCounter = 0;
 
-/** Change event object emitted by MatButtonToggle. */
+/** Change event object emitted by button toggle. */
 export class MatButtonToggleChange {
   constructor(
-    /** The MatButtonToggle that emits the event. */
+    /** The button toggle that emits the event. */
     public source: MatButtonToggle,
 
-    /** The value assigned to the MatButtonToggle. */
+    /** The value assigned to the button toggle. */
     public value: any,
   ) {}
 }

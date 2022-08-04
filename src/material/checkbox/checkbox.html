@@ -1,48 +1,51 @@
-<label [attr.for]="inputId" class="mat-checkbox-layout" #label>
-  <span class="mat-checkbox-inner-container"
-       [class.mat-checkbox-inner-container-no-side-margin]="!checkboxLabel.textContent || !checkboxLabel.textContent.trim()">
+<div class="mdc-form-field"
+     [class.mdc-form-field--align-end]="labelPosition == 'before'"
+     (click)="_preventBubblingFromLabel($event)">
+  <div #checkbox class="mdc-checkbox">
+    <!-- Render this element first so the input is on top. -->
+    <div class="mat-mdc-checkbox-touch-target" (click)="_onInputClick()"></div>
     <input #input
-           class="mat-checkbox-input cdk-visually-hidden" type="checkbox"
-           [id]="inputId"
-           [required]="required"
-           [checked]="checked"
-           [attr.value]="value"
-           [disabled]="disabled"
-           [attr.name]="name"
-           [tabIndex]="tabIndex"
+           type="checkbox"
+           class="mdc-checkbox__native-control"
+           [class.mdc-checkbox--selected]="checked"
+           [attr.aria-checked]="_getAriaChecked()"
            [attr.aria-label]="ariaLabel || null"
            [attr.aria-labelledby]="ariaLabelledby"
-           [attr.aria-checked]="_getAriaChecked()"
            [attr.aria-describedby]="ariaDescribedby"
-           (change)="_onInteractionEvent($event)"
-           (click)="_onInputClick($event)">
-    <span matRipple class="mat-checkbox-ripple mat-focus-indicator"
-         [matRippleTrigger]="label"
-         [matRippleDisabled]="_isRippleDisabled()"
-         [matRippleRadius]="20"
-         [matRippleCentered]="true"
-         [matRippleAnimation]="{enterDuration: _animationMode === 'NoopAnimations' ? 0 : 150}">
-      <span class="mat-ripple-element mat-checkbox-persistent-ripple"></span>
-    </span>
-    <span class="mat-checkbox-frame"></span>
-    <span class="mat-checkbox-background">
-      <svg version="1.1"
+           [attr.name]="name"
+           [attr.value]="value"
+           [checked]="checked"
+           [disabled]="disabled"
+           [id]="inputId"
+           [required]="required"
+           [tabIndex]="tabIndex"
+           (blur)="_onBlur()"
+           (click)="_onInputClick()"
+           (change)="_onInteractionEvent($event)"/>
+    <div class="mdc-checkbox__ripple"></div>
+    <div class="mdc-checkbox__background">
+      <svg class="mdc-checkbox__checkmark"
            focusable="false"
-           class="mat-checkbox-checkmark"
            viewBox="0 0 24 24"
            aria-hidden="true">
-        <path class="mat-checkbox-checkmark-path"
+        <path class="mdc-checkbox__checkmark-path"
               fill="none"
-              stroke="white"
-              d="M4.1,12.7 9,17.6 20.3,6.3"/>
+              d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
       </svg>
-      <!-- Element for rendering the indeterminate state checkbox. -->
-      <span class="mat-checkbox-mixedmark"></span>
-    </span>
-  </span>
-  <span class="mat-checkbox-label" #checkboxLabel (cdkObserveContent)="_onLabelTextChange()">
-    <!-- Add an invisible span so JAWS can read the label -->
-    <span style="display:none">&nbsp;</span>
+      <div class="mdc-checkbox__mixedmark"></div>
+    </div>
+    <div class="mat-mdc-checkbox-ripple mat-mdc-focus-indicator" mat-ripple
+      [matRippleTrigger]="checkbox"
+      [matRippleDisabled]="disableRipple || disabled"
+      [matRippleCentered]="true"></div>
+  </div>
+  <!--
+    Avoid putting a click handler on the <label/> to fix duplicate navigation stop on Talk Back
+    (#14385). Putting a click handler on the <label/> caused this bug because the browser produced
+    an unnecessary accessibility tree node.
+  -->
+  <label #label
+         [for]="inputId">
     <ng-content></ng-content>
-  </span>
-</label>
+  </label>
+</div>

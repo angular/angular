@@ -1,7 +1,10 @@
-@forward '../core/theming/theming.import';
-@forward '../core/typography/typography-utils.import';
-@forward 'checkbox-theme' hide color, theme, typography;
-@forward 'checkbox-theme' as mat-checkbox-* hide mat-checkbox-density;
-
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
+@forward 'checkbox-theme' hide color, density, private-checkbox-styles-with-color, theme,
+typography;
+@forward 'checkbox-theme' as mat-mdc-* hide $mat-mdc-mdc-checkbox-border-color,
+$mat-mdc-mdc-checkbox-disabled-color, mat-mdc-background-focus-density,
+mat-mdc-background-focus-indicator-checked-color, mat-mdc-background-focus-indicator-color,
+mat-mdc-color, mat-mdc-density, mat-mdc-theme, mat-mdc-typography;
+@forward 'checkbox-theme' as mat-mdc-checkbox-* hide $mat-mdc-checkbox-mdc-checkbox-border-color,
+$mat-mdc-checkbox-mdc-checkbox-disabled-color, mat-mdc-checkbox-background-focus-density,
+mat-mdc-checkbox-background-focus-indicator-checked-color,
+mat-mdc-checkbox-background-focus-indicator-color;

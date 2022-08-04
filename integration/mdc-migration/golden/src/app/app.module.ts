@@ -7,7 +7,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {MatAutocompleteModule} from '@angular/material-experimental/mdc-autocomplete';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatCardModule} from '@angular/material-experimental/mdc-card';
-import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatChipsModule} from '@angular/material-experimental/mdc-chips';
 import {MatFormFieldModule} from '@angular/material-experimental/mdc-form-field';
 import {MatIconModule} from '@angular/material/icon';

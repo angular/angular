@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {MatButtonModule} from '@angular/material/button';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatLegacyTooltipModule} from '@angular/material/legacy-tooltip';
@@ -48,7 +48,7 @@ const EXAMPLES = [
   imports: [
     CommonModule,
     MatButtonModule,
-    MatCheckboxModule,
+    MatLegacyCheckboxModule,
     MatLegacyInputModule,
     MatLegacySelectModule,
     MatLegacyTooltipModule,

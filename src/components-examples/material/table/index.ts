@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {MatRippleModule} from '@angular/material/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatIconModule} from '@angular/material/icon';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatPaginatorModule} from '@angular/material/paginator';
@@ -117,7 +117,7 @@ const EXAMPLES = [
     CommonModule,
     MatButtonModule,
     MatButtonToggleModule,
-    MatCheckboxModule,
+    MatLegacyCheckboxModule,
     MatIconModule,
     MatLegacyInputModule,
     MatPaginatorModule,

@@ -5,7 +5,6 @@
 @use '@material/list/evolution-variables' as mdc-list-variables;
 @use '@material/checkbox/checkbox-theme' as mdc-checkbox-theme;
 
-@use '../mdc-checkbox/checkbox-private';
 @use './list-option-trailing-avatar-compat';
 
 // For compatibility with the non-MDC list, we support avatars that are shown at the end
@@ -27,7 +26,7 @@
   // We can't use the MDC checkbox here directly, because this checkbox is purely
   // decorative and including the MDC one will bring in unnecessary JS.
   .mdc-checkbox {
-    $config: map.merge(checkbox-private.$private-checkbox-theme-config, (
+    $config: map.merge(mat.$private-checkbox-theme-config, (
       // Since this checkbox isn't interactive, we can exclude the focus/hover/press styles.
       selected-focus-icon-color: null,
       selected-hover-icon-color: null,

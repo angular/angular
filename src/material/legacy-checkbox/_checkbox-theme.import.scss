@@ -1,0 +1,7 @@
+@forward '../core/theming/theming.import';
+@forward '../core/typography/typography-utils.import';
+@forward 'checkbox-theme' hide color, theme, typography;
+@forward 'checkbox-theme' as mat-legacy-checkbox-* hide mat-legacy-checkbox-density;
+
+@import '../core/theming/theming';
+@import '../core/typography/typography-utils';

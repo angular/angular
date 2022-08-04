@@ -21,7 +21,6 @@ sass_library(
     deps = [
         "//src/material:sass_lib",
         "//src/material-experimental/mdc-button:mdc_button_scss_lib",
-        "//src/material-experimental/mdc-checkbox:mdc_checkbox_scss_lib",
         "//src/material-experimental/mdc-chips:mdc_chips_scss_lib",
         "//src/material-experimental/mdc-core:mdc_core_scss_lib",
         "//src/material-experimental/mdc-dialog:mdc_dialog_scss_lib",
@@ -37,6 +36,7 @@ sass_library(
         "//src/material-experimental/mdc-tabs:mdc_tabs_scss_lib",
         "//src/material/autocomplete:autocomplete_scss_lib",
         "//src/material/card:card_scss_lib",
+        "//src/material/checkbox:checkbox_scss_lib",
         "//src/material/form-field:form_field_scss_lib",
         "//src/material/input:input_scss_lib",
         "//src/material/progress-bar:progress_bar_scss_lib",

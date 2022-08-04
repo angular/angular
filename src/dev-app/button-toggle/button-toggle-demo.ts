@@ -10,7 +10,7 @@ import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatIconModule} from '@angular/material/icon';
 
 @Component({
@@ -18,7 +18,13 @@ import {MatIconModule} from '@angular/material/icon';
   templateUrl: 'button-toggle-demo.html',
   styleUrls: ['button-toggle-demo.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonToggleModule, MatCheckboxModule, MatIconModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatButtonToggleModule,
+    MatLegacyCheckboxModule,
+    MatIconModule,
+  ],
 })
 export class ButtonToggleDemo {
   isVertical = false;

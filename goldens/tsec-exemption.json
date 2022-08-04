@@ -3,7 +3,7 @@
   "ban-element-innerhtml-assignments": ["../src/material/icon/icon-registry.ts"],
   "ban-element-setattribute": [
     "../src/cdk/a11y/aria-describer/aria-reference.ts",
-    "../src/material-experimental/mdc-checkbox/checkbox.ts",
+    "../src/material/checkbox/checkbox.ts",
     "../src/material-experimental/mdc-list/interactive-list-base.ts",
     "../src/material-experimental/mdc-progress-spinner/progress-spinner.ts",
     "../src/material-experimental/mdc-slide-toggle/slide-toggle.ts",

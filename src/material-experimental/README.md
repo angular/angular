@@ -32,7 +32,7 @@ component by following these steps:
 
 3. Import the `NgModule` for the component you want to use. For example, the checkbox:
 ```ts
-  import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
+  import {MatCheckboxModule} from '@angular/material/checkbox';
 
   @NgModule({
     declarations: [MyComponent],

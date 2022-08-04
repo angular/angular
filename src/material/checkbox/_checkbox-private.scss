@@ -1,8 +1,9 @@
 @use 'sass:map';
 @use 'sass:color';
-@use '@angular/material' as mat;
 @use '@material/checkbox/checkbox-theme' as mdc-checkbox-theme;
 @use '@material/theme/theme-color' as mdc-theme-color;
+@use '../core/theming/theming';
+@use '../core/theming/palette';
 
 // Configuration used to define the theme-related CSS variables.
 $private-checkbox-theme-config: map.merge(mdc-checkbox-theme.$light-theme, (
@@ -30,8 +31,8 @@ $private-checkbox-theme-config: map.merge(mdc-checkbox-theme.$light-theme, (
   $disabled-color: rgba($on-surface, color.opacity(mdc-checkbox-theme.$disabled-color));
   $active-border-color: if(
           $is-dark,
-          mat.get-color-from-palette(mat.$gray-palette, 200),
-          mat.get-color-from-palette(mat.$gray-palette, 900)
+          theming.get-color-from-palette(palette.$gray-palette, 200),
+          theming.get-color-from-palette(palette.$gray-palette, 900)
   );
 
   @include mdc-checkbox-theme.theme((

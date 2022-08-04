@@ -1,6 +1,5 @@
 @use '@angular/material' as mat;
 @use '@material/checkbox' as mdc-checkbox;
-@use '../mdc-checkbox/checkbox-private';
 @use './list-option-trailing-avatar-compat';
 
 // Mixin that overrides the selected item and checkbox colors for list options. By
@@ -8,7 +7,7 @@
 // inside list options by default uses the `primary` color too.
 @mixin private-list-option-color-override($color-config, $color, $mdc-color) {
   & .mdc-list-item__start, & .mdc-list-item__end {
-    @include checkbox-private.private-checkbox-styles-with-color($color-config, $color, $mdc-color);
+    @include mat.private-checkbox-styles-with-color($color-config, $color, $mdc-color);
   }
 }
 

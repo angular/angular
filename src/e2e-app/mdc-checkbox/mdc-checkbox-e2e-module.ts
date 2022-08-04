@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MdcCheckboxE2e} from './mdc-checkbox-e2e';
 
 @NgModule({

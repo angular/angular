@@ -3,7 +3,7 @@ import {MatTableModule} from '@angular/material/table';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 
 import {MatSelectionColumnExample} from './mat-selection-column/mat-selection-column-example';
 import {MatSelectionListExample} from './mat-selection-list/mat-selection-list-example';
@@ -19,7 +19,7 @@ const EXAMPLES = [MatSelectionListExample, MatSelectionColumnExample];
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    MatCheckboxModule,
+    MatLegacyCheckboxModule,
   ],
   declarations: EXAMPLES,
   exports: EXAMPLES,

@@ -1,0 +1,523 @@
+@use 'sass:math';
+@use '@angular/cdk';
+
+@use '../core/style/elevation';
+@use '../core/style/checkbox-common';
+@use '../core/style/layout-common';
+@use '../core/style/vendor-prefixes';
+@use '../core/style/private';
+@use '../core/style/variables';
+
+// Manual calculation done on SVG
+$_path-length: 22.910259;
+$_indeterminate-checked-easing-function: cubic-bezier(0.14, 0, 0, 1);
+
+// The ripple size of the checkbox
+$_ripple-radius: 20px;
+
+// The amount of spacing between the checkbox and its label.
+$_item-spacing: variables.$toggle-padding;
+
+// The width of the line used to draw the checkmark / mixedmark.
+$_mark-stroke-size: math.div(2, 15) * checkbox-common.$size !default;
+
+
+// Fades in the background of the checkbox when it goes from unchecked -> {checked,indeterminate}.
+@keyframes mat-checkbox-fade-in-background {
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+// Fades out the background of the checkbox when it goes from {checked,indeterminate} -> unchecked.
+@keyframes mat-checkbox-fade-out-background {
+  0%, 50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+// "Draws" in the checkmark when the checkbox goes from unchecked -> checked.
+@keyframes mat-checkbox-unchecked-checked-checkmark-path {
+  0%, 50% {
+    stroke-dashoffset: $_path-length;
+  }
+
+  50% {
+    animation-timing-function: variables.$linear-out-slow-in-timing-function;
+  }
+
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+// Horizontally expands the mixedmark when the checkbox goes from unchecked -> indeterminate.
+@keyframes mat-checkbox-unchecked-indeterminate-mixedmark {
+  0%, 68.2% {
+    transform: scaleX(0);
+  }
+
+  68.2% {
+    animation-timing-function: cubic-bezier(0, 0, 0, 1);
+  }
+
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+// "Erases" the checkmark when the checkbox goes from checked -> unchecked.
+@keyframes mat-checkbox-checked-unchecked-checkmark-path {
+  from {
+    animation-timing-function: variables.$fast-out-linear-in-timing-function;
+    stroke-dashoffset: 0;
+  }
+
+  to {
+    stroke-dashoffset: $_path-length * -1;
+  }
+}
+
+
+// Rotates and fades out the checkmark when the checkbox goes from checked -> indeterminate. This
+// animation helps provide the illusion of the checkmark "morphing" into the mixedmark.
+@keyframes mat-checkbox-checked-indeterminate-checkmark {
+  from {
+    animation-timing-function: variables.$linear-out-slow-in-timing-function;
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+
+  to {
+    opacity: 0;
+    transform: rotate(45deg);
+  }
+}
+
+// Rotates and fades the checkmark back into position when the checkbox goes from indeterminate ->
+// checked. This animation helps provide the illusion that the mixedmark is "morphing" into the
+// checkmark.
+@keyframes mat-checkbox-indeterminate-checked-checkmark {
+  from {
+    animation-timing-function: $_indeterminate-checked-easing-function;
+    opacity: 0;
+    transform: rotate(45deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotate(360deg);
+  }
+}
+
+// Rotates and fades in the mixedmark when the checkbox goes from checked -> indeterminate. This
+// animation, similar to mat-checkbox-checked-indeterminate-checkmark, helps provide an illusion
+// of "morphing" from checkmark -> mixedmark.
+@keyframes mat-checkbox-checked-indeterminate-mixedmark {
+  from {
+    animation-timing-function: variables.$linear-out-slow-in-timing-function;
+    opacity: 0;
+    transform: rotate(-45deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+}
+
+// Rotates and fades out the mixedmark when the checkbox goes from indeterminate -> checked. This
+// animation, similar to mat-checkbox-indeterminate-checked-checkmark, helps provide an illusion
+// of "morphing" from mixedmark -> checkmark.
+@keyframes mat-checkbox-indeterminate-checked-mixedmark {
+  from {
+    animation-timing-function: $_indeterminate-checked-easing-function;
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+
+  to {
+    opacity: 0;
+    transform: rotate(315deg);
+  }
+}
+
+
+// Horizontally collapses and fades out the mixedmark when the checkbox goes from indeterminate ->
+// unchecked.
+@keyframes mat-checkbox-indeterminate-unchecked-mixedmark {
+  0% {
+    animation-timing-function: linear;
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  32.8%, 100% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+}
+
+// Applied to elements that appear to make up the outer box of the checkmark, such as the frame
+// that contains the border and the actual background element that contains the marks.
+%mat-checkbox-outer-box {
+  @include layout-common.fill;
+  border-radius: 2px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.mat-checkbox {
+  @include private.private-animation-noop();
+
+  // The host node defaults to `diplay: inline` so
+  // we have to change it in order for margins to work.
+  display: inline-block;
+
+  // Animation
+  transition: background variables.$swift-ease-out-duration
+    variables.$swift-ease-out-timing-function, elevation.private-transition-property-value();
+
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  // Avoids issues in some CSS grid layouts (see #25153).
+  position: relative;
+
+  .mat-ripple-element:not(.mat-checkbox-persistent-ripple) {
+    opacity: 0.16;
+  }
+
+  // Increase specificity because ripple styles are part of the `mat-core` mixin and can
+  // potentially overwrite the absolute position of the container.
+  .mat-checkbox-ripple {
+    position: absolute;
+    left: calc(50% - #{$_ripple-radius});
+    top: calc(50% - #{$_ripple-radius});
+    height: $_ripple-radius * 2;
+    width: $_ripple-radius * 2;
+    z-index: 1;
+    pointer-events: none;
+  }
+}
+
+.mat-checkbox-layout {
+  // Disable text selection on the label itself, because having text selected
+  // will prevent focus from reaching the label. Below we'll re-enable it only
+  // for the label's content so that people can still select the text.
+  @include vendor-prefixes.user-select(none);
+
+  // `cursor: inherit` ensures that the wrapper element gets the same cursor as the mat-checkbox
+  // (e.g. pointer by default, regular when disabled), instead of the browser default.
+  cursor: inherit;
+  align-items: baseline;
+  vertical-align: middle;
+  display: inline-flex;
+  white-space: nowrap;
+}
+
+.mat-checkbox-label {
+  // Re-enable text selection for the checkbox's content since
+  // we disabled it above in the `.mat-checkbox-layout`.
+  @include vendor-prefixes.user-select(auto);
+}
+
+.mat-checkbox-inner-container {
+  display: inline-block;
+  height: checkbox-common.$size;
+  line-height: 0;
+  margin: auto;
+  margin-right: $_item-spacing;
+  order: 0;
+  position: relative;
+  vertical-align: middle;
+  white-space: nowrap;
+  width: checkbox-common.$size;
+  flex-shrink: 0;
+
+  [dir='rtl'] & {
+    margin: {
+      left: $_item-spacing;
+      right: auto;
+    }
+  }
+}
+
+.mat-checkbox-inner-container-no-side-margin {
+  margin: {
+    left: 0;
+    right: 0;
+  }
+}
+
+.mat-checkbox-frame {
+  @extend %mat-checkbox-outer-box;
+
+  background-color: transparent;
+  transition: border-color checkbox-common.$transition-duration
+      variables.$linear-out-slow-in-timing-function;
+  border: {
+    width: checkbox-common.$border-width;
+    style: solid;
+  }
+
+  ._mat-animation-noopable & {
+    transition: none;
+  }
+}
+
+.mat-checkbox-background {
+  @extend %mat-checkbox-outer-box;
+
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  transition: background-color checkbox-common.$transition-duration
+    variables.$linear-out-slow-in-timing-function, opacity checkbox-common.$transition-duration
+    variables.$linear-out-slow-in-timing-function;
+
+  // force browser to show background-color when using the print function
+  @include vendor-prefixes.color-adjust(exact);
+
+  ._mat-animation-noopable & {
+    transition: none;
+  }
+
+  // `.mat-checkbox` here is redundant, but we need it to increase the specificity so that
+  // these styles don't get overwritten by the `background-color` from the theme.
+  .mat-checkbox & {
+    @include cdk.high-contrast(active, off) {
+      // Needs to be removed because it hides the checkbox outline.
+      background: none;
+    }
+  }
+}
+
+.mat-checkbox-persistent-ripple {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: none;
+
+  .mat-checkbox-inner-container:hover & {
+    opacity: 0.04;
+  }
+
+  .mat-checkbox.cdk-keyboard-focused & {
+    opacity: 0.12;
+  }
+
+  // We do this here, rather than having a `:not(.mat-checkbox-disabled)`
+  // above in the `:hover`, because the `:not` will bump the specificity
+  // a lot and will cause it to overide the focus styles.
+  &, .mat-checkbox.mat-checkbox-disabled .mat-checkbox-inner-container:hover & {
+    opacity: 0;
+  }
+
+  // Hover styles will be displayed after tapping on touch devices.
+  // Disable the hover styling if the user's device doesn't support hovering.
+  @media (hover: none) {
+    // Note that we only negate the `:hover` rather than setting it to always be `display: none`,
+    // in order to maintain the focus indication for hybrid touch + keyboard devices.
+    .mat-checkbox-inner-container:hover & {
+      display: none;
+    }
+  }
+}
+
+.mat-checkbox-checkmark {
+  @include layout-common.fill;
+  width: 100%;
+}
+
+.mat-checkbox-checkmark-path {
+  stroke: {
+    dashoffset: $_path-length;
+    dasharray: $_path-length;
+    width: $_mark-stroke-size;
+  }
+
+  @include cdk.high-contrast(black-on-white, off) {
+    // In the checkbox theme this `stroke` has !important which ends up overriding the browser's
+    // automatic color inversion so we need to re-invert it ourselves for black-on-white.
+    stroke: #000 !important;
+  }
+}
+
+.mat-checkbox-mixedmark {
+  $height: math.floor($_mark-stroke-size);
+
+  width: calc(100% - 6px);
+  height: $height;
+  opacity: 0;
+  transform: scaleX(0) rotate(0deg);
+  border-radius: 2px;
+
+  @include cdk.high-contrast(active, off) {
+    height: 0;
+    border-top: solid $height;
+    margin-top: $height;
+  }
+}
+
+.mat-checkbox-label-before {
+  .mat-checkbox-inner-container {
+    order: 1;
+    margin: {
+      left: $_item-spacing;
+      right: auto;
+    }
+
+    [dir='rtl'] & {
+      margin: {
+        left: auto;
+        right: $_item-spacing;
+      }
+    }
+  }
+}
+
+.mat-checkbox-checked {
+  .mat-checkbox-checkmark {
+    opacity: 1;
+  }
+
+  .mat-checkbox-checkmark-path {
+    stroke-dashoffset: 0;
+  }
+
+  .mat-checkbox-mixedmark {
+    transform: scaleX(1) rotate(-45deg);
+  }
+}
+
+.mat-checkbox-indeterminate {
+  .mat-checkbox-checkmark {
+    opacity: 0;
+    transform: rotate(45deg);
+  }
+
+  .mat-checkbox-checkmark-path {
+    stroke-dashoffset: 0;
+  }
+
+  .mat-checkbox-mixedmark {
+    opacity: 1;
+    transform: scaleX(1) rotate(0deg);
+  }
+}
+
+
+.mat-checkbox-unchecked {
+  .mat-checkbox-background {
+    background-color: transparent;
+  }
+}
+
+.mat-checkbox-disabled {
+  cursor: default;
+
+  @include cdk.high-contrast(active, off) {
+    opacity: 0.5;
+  }
+}
+
+.mat-checkbox-anim {
+  $indeterminate-change-duration: 500ms;
+
+  &-unchecked-checked {
+    .mat-checkbox-background {
+      animation: checkbox-common.$transition-duration * 2 linear 0ms
+        mat-checkbox-fade-in-background;
+    }
+
+    .mat-checkbox-checkmark-path {
+      // Instead of delaying the animation, we simply multiply its length by 2 and begin the
+      // animation at 50% in order to prevent a flash of styles applied to a checked checkmark
+      // as the background is fading in before the animation begins.
+      animation: checkbox-common.$transition-duration * 2 linear 0ms
+          mat-checkbox-unchecked-checked-checkmark-path;
+    }
+  }
+
+  &-unchecked-indeterminate {
+    .mat-checkbox-background {
+      animation: checkbox-common.$transition-duration * 2 linear 0ms
+        mat-checkbox-fade-in-background;
+    }
+
+    .mat-checkbox-mixedmark {
+      animation: checkbox-common.$transition-duration linear 0ms
+          mat-checkbox-unchecked-indeterminate-mixedmark;
+    }
+  }
+
+  &-checked-unchecked {
+    .mat-checkbox-background {
+      animation: checkbox-common.$transition-duration * 2 linear 0ms
+        mat-checkbox-fade-out-background;
+    }
+
+    .mat-checkbox-checkmark-path {
+      animation: checkbox-common.$transition-duration linear 0ms
+          mat-checkbox-checked-unchecked-checkmark-path;
+    }
+  }
+
+  &-checked-indeterminate {
+    .mat-checkbox-checkmark {
+      animation: checkbox-common.$transition-duration linear 0ms
+          mat-checkbox-checked-indeterminate-checkmark;
+    }
+
+    .mat-checkbox-mixedmark {
+      animation: checkbox-common.$transition-duration linear 0ms
+          mat-checkbox-checked-indeterminate-mixedmark;
+    }
+  }
+
+  &-indeterminate-checked {
+    .mat-checkbox-checkmark {
+      animation: $indeterminate-change-duration linear 0ms
+          mat-checkbox-indeterminate-checked-checkmark;
+    }
+
+    .mat-checkbox-mixedmark {
+      animation: $indeterminate-change-duration linear 0ms
+          mat-checkbox-indeterminate-checked-mixedmark;
+    }
+  }
+
+  &-indeterminate-unchecked {
+    .mat-checkbox-background {
+      animation: checkbox-common.$transition-duration * 2 linear 0ms
+        mat-checkbox-fade-out-background;
+    }
+
+    .mat-checkbox-mixedmark {
+      animation: $indeterminate-change-duration * 0.6 linear 0ms
+          mat-checkbox-indeterminate-unchecked-mixedmark;
+    }
+  }
+}
+
+.mat-checkbox-input {
+  // Move the input to the bottom and in the middle.
+  // Visual improvement to properly show browser popups when being required.
+  bottom: 0;
+  left: 50%;
+}
+
+// Checkboxes render focus indicators when the
+// associated visually-hidden input is focused.
+.mat-checkbox-input:focus ~ .mat-focus-indicator::before {
+  content: '';
+}

@@ -10,7 +10,7 @@ import {Component, ViewEncapsulation} from '@angular/core';
 import {MatCardAppearance, MatCardModule} from '@angular/material/card';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
-import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @Component({
   selector: 'mdc-card-demo',

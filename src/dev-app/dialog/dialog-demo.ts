@@ -12,7 +12,7 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -35,7 +35,7 @@ const defaultDialogConfig = new MatDialogConfig();
     FormsModule,
     MatButtonModule,
     MatLegacyCardModule,
-    MatCheckboxModule,
+    MatLegacyCheckboxModule,
     MatDialogModule,
     MatLegacyFormFieldModule,
     MatLegacyInputModule,

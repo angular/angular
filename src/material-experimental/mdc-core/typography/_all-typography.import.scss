@@ -7,14 +7,6 @@ mat-mdc-color, mat-mdc-density, mat-mdc-theme, mat-mdc-typography;
 $mat-mdc-button-mat-button-state-target;
 @forward '../../mdc-button/fab-theme' as mat-mdc-fab-*;
 @forward '../../mdc-button/icon-button-theme' as mat-mdc-icon-button-*;
-@forward '../../mdc-checkbox/checkbox-theme' hide color, density,
-private-checkbox-styles-with-color, theme, typography;
-@forward '../../mdc-checkbox/checkbox-theme' as mat-mdc-* hide $mat-mdc-mdc-checkbox-border-color,
-$mat-mdc-mdc-checkbox-disabled-color, mat-mdc-color, mat-mdc-density, mat-mdc-theme,
-mat-mdc-typography;
-@forward '../../mdc-checkbox/checkbox-theme' as mat-mdc-checkbox-* hide
-$mat-mdc-checkbox-mdc-checkbox-border-color, $mat-mdc-checkbox-mdc-checkbox-disabled-color,
-mat-mdc-checkbox-private-checkbox-styles-with-color;
 @forward '../../mdc-chips/chips-theme' hide color, density, theme, typography;
 @forward '../../mdc-chips/chips-theme' as mat-mdc-chips-* hide
 $mat-mdc-chips-mdc-chips-fill-color-default, $mat-mdc-chips-mdc-chips-icon-color,

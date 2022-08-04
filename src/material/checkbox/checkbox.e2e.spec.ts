@@ -1,8 +1,8 @@
 import {browser, by, element, Key} from 'protractor';
 
-describe('checkbox', () => {
+describe('MDC-based checkbox', () => {
   describe('check behavior', () => {
-    beforeEach(async () => await browser.get('/checkbox'));
+    beforeEach(async () => await browser.get('/mdc-checkbox'));
 
     it('should be checked when clicked, and unchecked when clicked again', async () => {
       const checkboxEl = element(by.id('test-checkbox'));

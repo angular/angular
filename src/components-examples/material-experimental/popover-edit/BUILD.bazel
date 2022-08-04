@@ -12,8 +12,8 @@ ng_module(
     deps = [
         "//src/material-experimental/popover-edit",
         "//src/material/button",
-        "//src/material/checkbox",
         "//src/material/icon",
+        "//src/material/legacy-checkbox",
         "//src/material/legacy-input",
         "//src/material/list",
         "//src/material/snack-bar",

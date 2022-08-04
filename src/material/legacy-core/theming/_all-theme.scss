@@ -6,6 +6,7 @@
 @use '../../legacy-tooltip/tooltip-theme';
 @use '../../legacy-input/input-theme';
 @use '../../legacy-form-field/form-field-theme';
+@use '../../legacy-checkbox/checkbox-theme';
 @use '../../legacy-select/select-theme';
 @use '../../legacy-autocomplete/autocomplete-theme';
 
@@ -20,6 +21,7 @@
     @include input-theme.theme($theme-or-color-config);
     @include form-field-theme.theme($theme-or-color-config);
     @include select-theme.theme($theme-or-color-config);
+    @include checkbox-theme.theme($theme-or-color-config);
     @include autocomplete-theme.theme($theme-or-color-config);
     @include all-theme.private-all-unmigrated-component-themes($theme-or-color-config);
   }

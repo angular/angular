@@ -10,7 +10,7 @@ import {Component} from '@angular/core';
 import {MatRadioModule} from '@angular/material-experimental/mdc-radio';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
-import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {CommonModule} from '@angular/common';
 
 @Component({

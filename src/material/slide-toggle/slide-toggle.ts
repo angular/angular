@@ -53,12 +53,12 @@ export const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR = {
   multi: true,
 };
 
-/** Change event object emitted by a MatSlideToggle. */
+/** Change event object emitted by a slide toggle. */
 export class MatSlideToggleChange {
   constructor(
-    /** The source MatSlideToggle of the event. */
+    /** The source slide toggle of the event. */
     public source: MatSlideToggle,
-    /** The new `checked` value of the MatSlideToggle. */
+    /** The new `checked` value of the slide toggle. */
     public checked: boolean,
   ) {}
 }

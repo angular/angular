@@ -12,7 +12,7 @@ import {CdkTreeExamplesModule} from '@angular/components-examples/cdk/tree';
 import {TreeExamplesModule} from '@angular/components-examples/material/tree';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -33,7 +33,7 @@ import {MatTreeModule} from '@angular/material/tree';
     TreeExamplesModule,
     MatButtonModule,
     MatExpansionModule,
-    MatCheckboxModule,
+    MatLegacyCheckboxModule,
     MatLegacyFormFieldModule,
     MatIconModule,
     MatLegacyInputModule,

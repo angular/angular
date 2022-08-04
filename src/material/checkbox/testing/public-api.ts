@@ -7,4 +7,4 @@
  */
 
 export * from './checkbox-harness';
-export * from './checkbox-harness-filters';
+export {CheckboxHarnessFilters} from './checkbox-harness-filters';

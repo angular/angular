@@ -75,12 +75,12 @@ export const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any = {
   multi: true,
 };
 
-/** Change event object emitted by MatRadio and MatRadioGroup. */
+/** Change event object emitted by radio button and radio group. */
 export class MatRadioChange {
   constructor(
-    /** The MatRadioButton that emits the change event. */
+    /** The radio button that emits the change event. */
     public source: _MatRadioButtonBase,
-    /** The value of the MatRadioButton. */
+    /** The value of the radio button. */
     public value: any,
   ) {}
 }

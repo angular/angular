@@ -9,7 +9,7 @@
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatRadioModule} from '@angular/material/radio';
@@ -24,7 +24,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
   imports: [
     CommonModule,
     MatLegacyCardModule,
-    MatCheckboxModule,
+    MatLegacyCheckboxModule,
     MatLegacyFormFieldModule,
     MatLegacyInputModule,
     MatRadioModule,

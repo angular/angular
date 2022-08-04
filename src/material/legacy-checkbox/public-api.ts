@@ -7,7 +7,7 @@
  */
 
 export * from './checkbox';
-export * from './module';
+export * from './checkbox-module';
 
 export {
   MAT_CHECKBOX_REQUIRED_VALIDATOR,

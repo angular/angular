@@ -21,7 +21,7 @@ import {
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {
   DateAdapter,
   MAT_DATE_FORMATS,
@@ -186,7 +186,7 @@ export class CustomHeaderNgContent<D> {
     CommonModule,
     FormsModule,
     MatButtonModule,
-    MatCheckboxModule,
+    MatLegacyCheckboxModule,
     MatDatepickerModule,
     MatLegacyFormFieldModule,
     MatIconModule,

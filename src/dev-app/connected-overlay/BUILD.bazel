@@ -15,7 +15,7 @@ ng_module(
         "//src/cdk/portal",
         "//src/components-examples/cdk/overlay",
         "//src/material/button",
-        "//src/material/checkbox",
+        "//src/material/legacy-checkbox",
         "//src/material/radio",
         "@npm//@angular/forms",
     ],

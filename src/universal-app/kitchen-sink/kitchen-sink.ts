@@ -8,7 +8,7 @@ import {MatLegacyAutocompleteModule} from '@angular/material/legacy-autocomplete
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatTableModule} from '@angular/material/table';
 import {MatDatepickerModule} from '@angular/material/datepicker';
@@ -104,7 +104,7 @@ export class KitchenSink {
     MatButtonModule,
     MatButtonToggleModule,
     MatLegacyCardModule,
-    MatCheckboxModule,
+    MatLegacyCheckboxModule,
     MatChipsModule,
     MatDatepickerModule,
     MatDialogModule,

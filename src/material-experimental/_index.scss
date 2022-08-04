@@ -23,8 +23,6 @@
   mdc-fab-density, mdc-fab-theme;
 @forward './mdc-button/icon-button-theme' as mdc-icon-button-* show mdc-icon-button-color,
   mdc-icon-button-typography, mdc-icon-button-density, mdc-icon-button-theme;
-@forward './mdc-checkbox/checkbox-theme' as mdc-checkbox-* show mdc-checkbox-color,
-  mdc-checkbox-typography, mdc-checkbox-density, mdc-checkbox-theme;
 @forward './mdc-chips/chips-theme' as mdc-chips-* show mdc-chips-color, mdc-chips-typography,
   mdc-chips-density, mdc-chips-theme;
 @forward './mdc-dialog/dialog-theme' as mdc-dialog-* show mdc-dialog-color, mdc-dialog-typography,

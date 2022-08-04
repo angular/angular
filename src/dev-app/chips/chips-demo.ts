@@ -12,7 +12,7 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
 import {ThemePalette} from '@angular/material/core';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
@@ -38,7 +38,7 @@ export interface DemoColor {
     FormsModule,
     MatButtonModule,
     MatLegacyCardModule,
-    MatCheckboxModule,
+    MatLegacyCheckboxModule,
     MatChipsModule,
     MatLegacyFormFieldModule,
     MatIconModule,

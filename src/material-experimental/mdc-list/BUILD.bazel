@@ -42,7 +42,7 @@ sass_library(
     deps = [
         "//:mdc_sass_lib",
         "//src/material:sass_lib",
-        "//src/material-experimental/mdc-checkbox:mdc_checkbox_scss_lib",
+        "//src/material/checkbox:checkbox_scss_lib",
         "//src/material/core:core_scss_lib",
     ],
 )
