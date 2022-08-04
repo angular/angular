@@ -1019,6 +1019,16 @@ describe('Typed Class', () => {
           t1 = null as unknown as RawValueType;
         }
       });
+
+      it('with array values', () => {
+        const c = fb.control([1, 2, 3]);
+        {
+          type RawValueType = number[]|null;
+          let t: RawValueType = c.getRawValue();
+          let t1 = c.getRawValue();
+          t1 = null as unknown as RawValueType;
+        }
+      });
     });
 
     describe('should build FormGroups', () => {
@@ -1060,12 +1070,39 @@ describe('Typed Class', () => {
         }
       });
 
+      it('from objects with FormControlStates nested inside ControlConfigs', () => {
+        const c = fb.group({foo: [{value: 'bar', disabled: true}, Validators.required]});
+        {
+          type ControlsType = {foo: FormControl<string|null>};
+          let t: ControlsType = c.controls;
+          let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+      });
+
       it('from objects with ControlConfigs and validators', () => {
         const c = fb.group({foo: ['bar', Validators.required]});
         {
           type ControlsType = {foo: FormControl<string|null>};
           let t: ControlsType = c.controls;
           let t1 = c.controls;
+          t1 = null as unknown as ControlsType;
+        }
+
+        const c2 = fb.group({foo: [[1, 2, 3], Validators.required]});
+        {
+          type ControlsType = {foo: FormControl<number[]|null>};
+          let t: ControlsType = c2.controls;
+          let t1 = c2.controls;
+          t1 = null as unknown as ControlsType;
+        }
+        expect(c2.controls.foo.value).toEqual([1, 2, 3]);
+
+        const c3 = fb.group({foo: [null, Validators.required]});
+        {
+          type ControlsType = {foo: FormControl<null>};
+          let t: ControlsType = c3.controls;
+          let t1 = c3.controls;
           t1 = null as unknown as ControlsType;
         }
       });
@@ -1482,6 +1519,15 @@ describe('Typed Class', () => {
         }
         c.reset();
         expect(c.value).toEqual({foo: 'bar'});
+
+        const c2 = fb.group({foo: [[1, 2, 3], Validators.required]});
+        {
+          type ControlsType = {foo: FormControl<number[]>};
+          let t: ControlsType = c2.controls;
+          let t1 = c2.controls;
+          t1 = null as unknown as ControlsType;
+        }
+        expect(c2.controls.foo.value).toEqual([1, 2, 3]);
       });
 
       it('from objects with ControlConfigs and validator lists', () => {
