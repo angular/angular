@@ -18,40 +18,41 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    assets = [":dialog.css"] + glob(["**/*.html"]),
+    assets = [":dialog_scss"] + glob(["**/*.html"]),
     deps = [
-        "//src:dev_mode_types",
-        "//src/cdk/a11y",
-        "//src/cdk/bidi",
         "//src/cdk/dialog",
-        "//src/cdk/keycodes",
         "//src/cdk/overlay",
-        "//src/cdk/platform",
         "//src/cdk/portal",
         "//src/material/core",
-        "@npm//@angular/animations",
-        "@npm//@angular/core",
-        "@npm//rxjs",
+        "@npm//@material/dialog",
     ],
 )
 
 sass_library(
     name = "dialog_scss_lib",
     srcs = glob(["**/_*.scss"]),
-    deps = ["//src/material/core:core_scss_lib"],
+    deps = [
+        "//:mdc_sass_lib",
+        "//src/material/core:core_scss_lib",
+    ],
 )
 
 sass_binary(
     name = "dialog_scss",
     src = "dialog.scss",
     deps = [
-        "//src/cdk:sass_lib",
+        ":dialog_scss_lib",
+        "//:mdc_sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )
 
+###########
+# Testing
+###########
+
 ng_test_library(
-    name = "unit_test_sources",
+    name = "dialog_tests_lib",
     srcs = glob(
         ["**/*.spec.ts"],
         exclude = ["**/*.e2e.spec.ts"],
@@ -60,6 +61,7 @@ ng_test_library(
         ":dialog",
         "//src/cdk/a11y",
         "//src/cdk/bidi",
+        "//src/cdk/dialog",
         "//src/cdk/keycodes",
         "//src/cdk/overlay",
         "//src/cdk/platform",
@@ -67,13 +69,16 @@ ng_test_library(
         "//src/cdk/testing/private",
         "@npm//@angular/common",
         "@npm//@angular/platform-browser",
+        "@npm//@material/dialog",
         "@npm//rxjs",
     ],
 )
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [":unit_test_sources"],
+    deps = [
+        ":dialog_tests_lib",
+    ],
 )
 
 ng_e2e_test_library(

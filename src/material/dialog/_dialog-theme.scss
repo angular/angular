@@ -1,31 +1,62 @@
 @use 'sass:map';
-@use '../core/style/private';
+@use '@material/dialog' as mdc-dialog;
+@use '@material/dialog/dialog-theme' as mdc-dialog-theme;
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/typography' as mdc-typography;
 @use '../core/theming/theming';
+@use '../core/mdc-helpers/mdc-helpers';
 @use '../core/typography/typography';
-@use '../core/typography/typography-utils';
-
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $background: map.get($config, background);
-  $foreground: map.get($config, foreground);
 
-  .mat-dialog-container {
-    @include private.private-theme-elevation(24, $config);
-    background: theming.get-color-from-palette($background, dialog);
-    color: theming.get-color-from-palette($foreground, text);
+  @include mdc-helpers.using-mdc-theme($config) {
+    .mat-mdc-dialog-container {
+      $surface: mdc-theme-color.$surface;
+      $on-surface: mdc-theme-color.$on-surface;
+      $text-emphasis-high: mdc-theme-color.text-emphasis(high);
+      $text-emphasis-medium: mdc-theme-color.text-emphasis(medium);
+
+      @include mdc-dialog-theme.theme((
+        container-color: $surface,
+        container-elevation: 24,
+        container-shadow-color: $on-surface,
+        with-divider-divider-color: rgba($on-surface, mdc-dialog.$scroll-divider-opacity),
+        subhead-color: rgba($on-surface, $text-emphasis-high),
+        supporting-text-color: rgba($on-surface, $text-emphasis-medium),
+      ));
+    }
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
+  $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
-  .mat-dialog-title {
-    @include typography-utils.typography-level($config, title);
+  @include mdc-helpers.using-mdc-typography($config) {
+    .mat-mdc-dialog-container {
+      $styles: mdc-typography.$styles;
+      $headline6: map.get($styles, headline6);
+
+      @include mdc-dialog-theme.theme((
+        subhead-font: map.get($headline6, font-family),
+        subhead-line-height: map.get($styles, headline6, line-height),
+        subhead-size: map.get($styles, headline6, font-size),
+        subhead-weight: map.get($styles, headline6, font-weight),
+        subhead-tracking: map.get($styles, headline6, letter-spacing),
+
+        supporting-text-font: map.get($styles, body1, font-family),
+        supporting-text-line-height: map.get($styles, body1, line-height),
+        supporting-text-size: map.get($styles, body1, font-size),
+        supporting-text-weight: map.get($styles, body1, font-weight),
+        supporting-text-tracking: map.get($styles, body1, letter-spacing),
+      ));
+    }
   }
 }
 
-@mixin _density($config-or-theme) {}
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -38,7 +69,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);

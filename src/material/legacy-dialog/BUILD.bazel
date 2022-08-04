@@ -1,6 +1,7 @@
 load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
 load(
     "//tools:defaults.bzl",
+    "markdown_to_html",
     "ng_e2e_test_library",
     "ng_module",
     "ng_test_library",
@@ -12,57 +13,54 @@ load(
 package(default_visibility = ["//visibility:public"])
 
 ng_module(
-    name = "mdc-dialog",
+    name = "legacy-dialog",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    assets = [":dialog_scss"] + glob(["**/*.html"]),
+    assets = [":dialog.css"] + glob(["**/*.html"]),
     deps = [
+        "//src:dev_mode_types",
+        "//src/cdk/a11y",
+        "//src/cdk/bidi",
+        "//src/cdk/dialog",
+        "//src/cdk/keycodes",
         "//src/cdk/overlay",
+        "//src/cdk/platform",
         "//src/cdk/portal",
         "//src/material/core",
         "//src/material/dialog",
-        "@npm//@material/dialog",
+        "@npm//@angular/animations",
+        "@npm//@angular/core",
+        "@npm//rxjs",
     ],
 )
 
 sass_library(
-    name = "mdc_dialog_scss_lib",
+    name = "legacy_dialog_scss_lib",
     srcs = glob(["**/_*.scss"]),
-    deps = [
-        "//:mdc_sass_lib",
-        "//src/material:sass_lib",
-        "//src/material/core:core_scss_lib",
-    ],
+    deps = ["//src/material/core:core_scss_lib"],
 )
 
 sass_binary(
     name = "dialog_scss",
     src = "dialog.scss",
     deps = [
-        ":mdc_dialog_scss_lib",
-        "//:mdc_sass_lib",
-        "//src/material:sass_lib",
+        "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )
 
-###########
-# Testing
-###########
-
 ng_test_library(
-    name = "dialog_tests_lib",
+    name = "unit_test_sources",
     srcs = glob(
         ["**/*.spec.ts"],
         exclude = ["**/*.e2e.spec.ts"],
     ),
     deps = [
-        ":mdc-dialog",
+        ":legacy-dialog",
         "//src/cdk/a11y",
         "//src/cdk/bidi",
-        "//src/cdk/dialog",
         "//src/cdk/keycodes",
         "//src/cdk/overlay",
         "//src/cdk/platform",
@@ -70,16 +68,13 @@ ng_test_library(
         "//src/cdk/testing/private",
         "@npm//@angular/common",
         "@npm//@angular/platform-browser",
-        "@npm//@material/dialog",
         "@npm//rxjs",
     ],
 )
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [
-        ":dialog_tests_lib",
-    ],
+    deps = [":unit_test_sources"],
 )
 
 ng_e2e_test_library(
@@ -96,4 +91,14 @@ e2e_test_suite(
         ":e2e_test_sources",
         "//src/cdk/testing/private/e2e",
     ],
+)
+
+markdown_to_html(
+    name = "overview",
+    srcs = [":dialog.md"],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )

@@ -1,0 +1,76 @@
+@use '@angular/cdk';
+
+$padding: 24px !default;
+$border-radius: 4px !default;
+$max-height: 65vh !default;
+$button-margin: 8px !default;
+
+.mat-dialog-container {
+  display: block;
+  padding: $padding;
+  border-radius: $border-radius;
+  box-sizing: border-box;
+  overflow: auto;
+  outline: 0;
+
+  // The dialog container should completely fill its parent overlay element.
+  width: 100%;
+  height: 100%;
+
+  // Since the dialog won't stretch to fit the parent, if the height
+  // isn't set, we have to inherit the min and max values explicitly.
+  min-height: inherit;
+  max-height: inherit;
+
+  @include cdk.high-contrast(active, off) {
+    outline: solid 1px;
+  }
+}
+
+.mat-dialog-content {
+  display: block;
+  margin: 0 $padding * -1;
+  padding: 0 $padding;
+  max-height: $max-height;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mat-dialog-title {
+  margin: 0 0 20px;
+  display: block;
+}
+
+.mat-dialog-actions {
+  padding: 8px 0;
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 52px;
+  align-items: center;
+
+  // Explicitly set a box-sizing since people commonly set `border-box`
+  // on all elements which will break the height of the dialog actions.
+  box-sizing: content-box;
+
+  // Pull the actions down to avoid their padding stacking with the dialog's padding.
+  margin-bottom: -$padding;
+
+  // .mat-dialog-actions-align-{center|end} are set by directive input "align"
+  // [align='center'] and [align='right'] are kept for backwards compability
+  &.mat-dialog-actions-align-center, &[align='center'] {
+    justify-content: center;
+  }
+  &.mat-dialog-actions-align-end, &[align='end'] {
+    justify-content: flex-end;
+  }
+
+  .mat-button-base + .mat-button-base,
+  .mat-mdc-button-base + .mat-mdc-button-base {
+    margin-left: $button-margin;
+
+    [dir='rtl'] & {
+      margin-left: 0;
+      margin-right: $button-margin;
+    }
+  }
+}

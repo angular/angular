@@ -45,7 +45,6 @@
   @include chips-theme.theme($theme-or-color-config);
   @include table-theme.theme($theme-or-color-config);
   @include datepicker-theme.theme($theme-or-color-config);
-  @include dialog-theme.theme($theme-or-color-config);
   @include divider-theme.theme($theme-or-color-config);
   @include expansion-theme.theme($theme-or-color-config);
   @include grid-list-theme.theme($theme-or-color-config);
@@ -78,6 +77,7 @@
     @include input-theme.theme($theme-or-color-config);
     @include select-theme.theme($theme-or-color-config);
     @include autocomplete-theme.theme($theme-or-color-config);
+    @include dialog-theme.theme($theme-or-color-config);
     @include private-all-unmigrated-component-themes($theme-or-color-config);
   }
 }

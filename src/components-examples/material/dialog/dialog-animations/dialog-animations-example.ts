@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MatLegacyDialog, MatLegacyDialogRef} from '@angular/material/legacy-dialog';
 
 /**
  * @title Dialog Animations
@@ -10,7 +10,7 @@ import {MatDialog, MatDialogRef} from '@angular/material/dialog';
   templateUrl: 'dialog-animations-example.html',
 })
 export class DialogAnimationsExample {
-  constructor(public dialog: MatDialog) {}
+  constructor(public dialog: MatLegacyDialog) {}
 
   openDialog(enterAnimationDuration: string, exitAnimationDuration: string): void {
     this.dialog.open(DialogAnimationsExampleDialog, {
@@ -26,5 +26,5 @@ export class DialogAnimationsExample {
   templateUrl: 'dialog-animations-example-dialog.html',
 })
 export class DialogAnimationsExampleDialog {
-  constructor(public dialogRef: MatDialogRef<DialogAnimationsExampleDialog>) {}
+  constructor(public dialogRef: MatLegacyDialogRef<DialogAnimationsExampleDialog>) {}
 }

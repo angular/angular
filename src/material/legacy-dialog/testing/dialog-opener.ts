@@ -8,44 +8,44 @@
 
 import {ComponentType} from '@angular/cdk/overlay';
 import {ChangeDetectionStrategy, Component, NgModule, ViewEncapsulation} from '@angular/core';
-import {_MatTestDialogOpenerBase} from '@angular/material/dialog/testing';
 import {
-  MatDialog,
-  MatDialogContainer,
-  MatDialogModule,
-  MatDialogConfig,
-} from '@angular/material-experimental/mdc-dialog';
+  MatLegacyDialog,
+  MatLegacyDialogConfig,
+  MatLegacyDialogContainer,
+  MatLegacyDialogModule,
+} from '@angular/material/legacy-dialog';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {_MatTestDialogOpenerBase} from '@angular/material/dialog/testing';
 
-/** Test component that immediately opens a dialog when bootstrapped. */
+/** Test component that immediately opens a dialog when created. */
 @Component({
   selector: 'mat-test-dialog-opener',
   template: '',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatTestDialogOpener<T = unknown, R = unknown> extends _MatTestDialogOpenerBase<
-  MatDialogContainer,
+export class MatTestLegacyDialogOpener<T = unknown, R = unknown> extends _MatTestDialogOpenerBase<
+  MatLegacyDialogContainer,
   T,
   R
 > {
-  constructor(dialog: MatDialog) {
+  constructor(dialog: MatLegacyDialog) {
     super(dialog);
   }
 
   /** Static method that prepares this class to open the provided component. */
   static withComponent<T = unknown, R = unknown>(
     component: ComponentType<T>,
-    config?: MatDialogConfig,
+    config?: MatLegacyDialogConfig,
   ) {
     _MatTestDialogOpenerBase.component = component;
     _MatTestDialogOpenerBase.config = config;
-    return MatTestDialogOpener as ComponentType<MatTestDialogOpener<T, R>>;
+    return MatTestLegacyDialogOpener as ComponentType<MatTestLegacyDialogOpener<T, R>>;
   }
 }
 
 @NgModule({
-  declarations: [MatTestDialogOpener],
-  imports: [MatDialogModule, NoopAnimationsModule],
+  declarations: [MatTestLegacyDialogOpener],
+  imports: [MatLegacyDialogModule, NoopAnimationsModule],
 })
-export class MatTestDialogOpenerModule {}
+export class MatTestLegacyDialogOpenerModule {}

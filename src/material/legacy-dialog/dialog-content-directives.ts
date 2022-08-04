@@ -8,17 +8,16 @@
 
 import {
   Directive,
-  ElementRef,
   Input,
   OnChanges,
   OnInit,
   Optional,
   SimpleChanges,
+  ElementRef,
 } from '@angular/core';
+import {MatLegacyDialog} from './dialog';
+import {MatLegacyDialogRef} from './dialog-ref';
 import {_closeDialogVia} from '@angular/material/dialog';
-
-import {MatDialog} from './dialog';
-import {MatDialogRef} from './dialog-ref';
 
 /** Counter used to generate unique IDs for dialog elements. */
 let dialogElementUid = 0;
@@ -35,8 +34,8 @@ let dialogElementUid = 0;
     '[attr.type]': 'type',
   },
 })
-export class MatDialogClose implements OnInit, OnChanges {
-  /** Screen-reader label for the button. */
+export class MatLegacyDialogClose implements OnInit, OnChanges {
+  /** Screen reader label for the button. */
   @Input('aria-label') ariaLabel: string;
 
   /** Default to "button" to prevents accidental form submits. */
@@ -48,11 +47,16 @@ export class MatDialogClose implements OnInit, OnChanges {
   @Input('matDialogClose') _matDialogClose: any;
 
   constructor(
+    /**
+     * Reference to the containing dialog.
+     * @deprecated `dialogRef` property to become private.
+     * @breaking-change 13.0.0
+     */
     // The dialog title directive is always used in combination with a `MatDialogRef`.
     // tslint:disable-next-line: lightweight-tokens
-    @Optional() public dialogRef: MatDialogRef<any>,
+    @Optional() public dialogRef: MatLegacyDialogRef<any>,
     private _elementRef: ElementRef<HTMLElement>,
-    private _dialog: MatDialog,
+    private _dialog: MatLegacyDialog,
   ) {}
 
   ngOnInit() {
@@ -94,19 +98,20 @@ export class MatDialogClose implements OnInit, OnChanges {
   selector: '[mat-dialog-title], [matDialogTitle]',
   exportAs: 'matDialogTitle',
   host: {
-    'class': 'mat-mdc-dialog-title mdc-dialog__title',
+    'class': 'mat-dialog-title',
     '[id]': 'id',
   },
 })
-export class MatDialogTitle implements OnInit {
-  @Input() id: string = `mat-mdc-dialog-title-${dialogElementUid++}`;
+export class MatLegacyDialogTitle implements OnInit {
+  /** Unique id for the dialog title. If none is supplied, it will be auto-generated. */
+  @Input() id: string = `mat-dialog-title-${dialogElementUid++}`;
 
   constructor(
     // The dialog title directive is always used in combination with a `MatDialogRef`.
     // tslint:disable-next-line: lightweight-tokens
-    @Optional() private _dialogRef: MatDialogRef<any>,
+    @Optional() private _dialogRef: MatLegacyDialogRef<any>,
     private _elementRef: ElementRef<HTMLElement>,
-    private _dialog: MatDialog,
+    private _dialog: MatLegacyDialog,
   ) {}
 
   ngOnInit() {
@@ -131,9 +136,9 @@ export class MatDialogTitle implements OnInit {
  */
 @Directive({
   selector: `[mat-dialog-content], mat-dialog-content, [matDialogContent]`,
-  host: {'class': 'mat-mdc-dialog-content mdc-dialog__content'},
+  host: {'class': 'mat-dialog-content'},
 })
-export class MatDialogContent {}
+export class MatLegacyDialogContent {}
 
 /**
  * Container for the bottom action buttons in a dialog.
@@ -142,27 +147,34 @@ export class MatDialogContent {}
 @Directive({
   selector: `[mat-dialog-actions], mat-dialog-actions, [matDialogActions]`,
   host: {
-    'class': 'mat-mdc-dialog-actions mdc-dialog__actions',
-    '[class.mat-mdc-dialog-actions-align-center]': 'align === "center"',
-    '[class.mat-mdc-dialog-actions-align-end]': 'align === "end"',
+    'class': 'mat-dialog-actions',
+    '[class.mat-dialog-actions-align-center]': 'align === "center"',
+    '[class.mat-dialog-actions-align-end]': 'align === "end"',
   },
 })
-export class MatDialogActions {
+export class MatLegacyDialogActions {
   /**
    * Horizontal alignment of action buttons.
    */
   @Input() align?: 'start' | 'center' | 'end' = 'start';
 }
 
+// TODO(crisbeto): this utility shouldn't be necessary anymore, because the dialog ref is provided
+// both to component and template dialogs through DI. We need to keep it around, because there are
+// some internal wrappers around `MatDialog` that happened to work by accident, because we had this
+// fallback logic in place.
 /**
  * Finds the closest MatDialogRef to an element by looking at the DOM.
  * @param element Element relative to which to look for a dialog.
  * @param openDialogs References to the currently-open dialogs.
  */
-function getClosestDialog(element: ElementRef<HTMLElement>, openDialogs: MatDialogRef<any>[]) {
+function getClosestDialog(
+  element: ElementRef<HTMLElement>,
+  openDialogs: MatLegacyDialogRef<any>[],
+) {
   let parent: HTMLElement | null = element.nativeElement.parentElement;
 
-  while (parent && !parent.classList.contains('mat-mdc-dialog-container')) {
+  while (parent && !parent.classList.contains('mat-dialog-container')) {
     parent = parent.parentElement;
   }
 

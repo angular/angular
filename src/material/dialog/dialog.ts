@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Overlay, OverlayContainer, ScrollStrategy} from '@angular/cdk/overlay';
-import {ComponentType} from '@angular/cdk/portal';
+import {ComponentType, Overlay, OverlayContainer, ScrollStrategy} from '@angular/cdk/overlay';
 import {Location} from '@angular/common';
 import {
+  ANIMATION_MODULE_TYPE,
   Inject,
   Injectable,
   InjectionToken,
@@ -20,31 +20,25 @@ import {
   TemplateRef,
   Type,
 } from '@angular/core';
-import {defer, Observable, Subject} from 'rxjs';
-import {startWith} from 'rxjs/operators';
 import {MatDialogConfig} from './dialog-config';
-import {MatDialogContainer, _MatDialogContainerBase} from './dialog-container';
+import {_MatDialogContainerBase, MatDialogContainer} from './dialog-container';
 import {MatDialogRef} from './dialog-ref';
-import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+import {defer, Observable, Subject} from 'rxjs';
 import {Dialog, DialogConfig} from '@angular/cdk/dialog';
+import {startWith} from 'rxjs/operators';
 
 /** Injection token that can be used to access the data that was passed in to a dialog. */
-export const MAT_DIALOG_DATA = new InjectionToken<any>('MatDialogData');
+export const MAT_DIALOG_DATA = new InjectionToken<any>('MatMdcDialogData');
 
 /** Injection token that can be used to specify default dialog options. */
 export const MAT_DIALOG_DEFAULT_OPTIONS = new InjectionToken<MatDialogConfig>(
-  'mat-dialog-default-options',
+  'mat-mdc-dialog-default-options',
 );
 
 /** Injection token that determines the scroll handling while the dialog is open. */
 export const MAT_DIALOG_SCROLL_STRATEGY = new InjectionToken<() => ScrollStrategy>(
-  'mat-dialog-scroll-strategy',
+  'mat-mdc-dialog-scroll-strategy',
 );
-
-/** @docs-private */
-export function MAT_DIALOG_SCROLL_STRATEGY_FACTORY(overlay: Overlay): () => ScrollStrategy {
-  return () => overlay.scrollStrategies.block();
-}
 
 /** @docs-private */
 export function MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(
@@ -59,6 +53,11 @@ export const MAT_DIALOG_SCROLL_STRATEGY_PROVIDER = {
   deps: [Overlay],
   useFactory: MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY,
 };
+
+/** @docs-private */
+export function MAT_DIALOG_SCROLL_STRATEGY_FACTORY(overlay: Overlay): () => ScrollStrategy {
+  return () => overlay.scrollStrategies.block();
+}
 
 // Counter for unique dialog ids.
 let uniqueId = 0;
@@ -258,7 +257,7 @@ export class MatDialog extends _MatDialogBase<MatDialogContainer> {
      * @deprecated `_location` parameter to be removed.
      * @breaking-change 10.0.0
      */
-    @Optional() _location: Location,
+    @Optional() location: Location,
     @Optional() @Inject(MAT_DIALOG_DEFAULT_OPTIONS) defaultOptions: MatDialogConfig,
     @Inject(MAT_DIALOG_SCROLL_STRATEGY) scrollStrategy: any,
     @Optional() @SkipSelf() parentDialog: MatDialog,
@@ -287,5 +286,7 @@ export class MatDialog extends _MatDialogBase<MatDialogContainer> {
       MAT_DIALOG_DATA,
       animationMode,
     );
+
+    this._idPrefix = 'mat-mdc-dialog-';
   }
 }

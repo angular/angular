@@ -94,7 +94,10 @@
 @forward './chips/chips-theme' as chips-* show chips-theme, chips-color, chips-typography;
 @forward './datepicker/datepicker-theme' as datepicker-* show datepicker-theme, datepicker-color,
   datepicker-typography, datepicker-date-range-colors;
+@forward './legacy-dialog/dialog-theme' as legacy-dialog-* show legacy-dialog-theme,
+  legacy-dialog-color, legacy-dialog-typography;
 @forward './dialog/dialog-theme' as dialog-* show dialog-theme, dialog-color, dialog-typography;
+@forward './dialog/dialog-legacy-padding' as dialog-* show dialog-legacy-padding;
 @forward './divider/divider-theme' as divider-* show divider-theme, divider-color,
   divider-typography;
 @forward './expansion/expansion-theme' as expansion-* show expansion-theme, expansion-color,

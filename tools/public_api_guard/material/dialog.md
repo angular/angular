@@ -4,12 +4,10 @@
 
 ```ts
 
-import { AnimationEvent as AnimationEvent_2 } from '@angular/animations';
 import { AnimationTriggerMetadata } from '@angular/animations';
 import { CdkDialogContainer } from '@angular/cdk/dialog';
-import { ChangeDetectorRef } from '@angular/core';
 import { ComponentFactoryResolver } from '@angular/core';
-import { ComponentType } from '@angular/cdk/portal';
+import { ComponentType } from '@angular/cdk/overlay';
 import { DialogRef } from '@angular/cdk/dialog';
 import { Direction } from '@angular/cdk/bidi';
 import { ElementRef } from '@angular/core';
@@ -83,7 +81,7 @@ export function MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay): (
 // @public
 export class MatDialog extends _MatDialogBase<MatDialogContainer> {
     constructor(overlay: Overlay, injector: Injector,
-    _location: Location_2, defaultOptions: MatDialogConfig, scrollStrategy: any, parentDialog: MatDialog,
+    location: Location_2, defaultOptions: MatDialogConfig, scrollStrategy: any, parentDialog: MatDialog,
     overlayContainer: OverlayContainer,
     animationMode?: 'NoopAnimations' | 'BrowserAnimations');
     // (undocumented)
@@ -132,10 +130,9 @@ export abstract class _MatDialogBase<C extends _MatDialogContainerBase> implemen
 
 // @public
 export class MatDialogClose implements OnInit, OnChanges {
-    constructor(
-    dialogRef: MatDialogRef<any>, _elementRef: ElementRef<HTMLElement>, _dialog: MatDialog);
+    constructor(dialogRef: MatDialogRef<any>, _elementRef: ElementRef<HTMLElement>, _dialog: MatDialog);
     ariaLabel: string;
-    // @deprecated
+    // (undocumented)
     dialogRef: MatDialogRef<any>;
     dialogResult: any;
     // (undocumented)
@@ -186,30 +183,24 @@ export class MatDialogConfig<D = any> {
 }
 
 // @public
-export class MatDialogContainer extends _MatDialogContainerBase {
-    constructor(elementRef: ElementRef, focusTrapFactory: FocusTrapFactory, document: any, dialogConfig: MatDialogConfig, checker: InteractivityChecker, ngZone: NgZone, overlayRef: OverlayRef, _changeDetectorRef: ChangeDetectorRef, focusMonitor?: FocusMonitor);
+export class MatDialogContainer extends _MatDialogContainerBase implements OnDestroy {
+    constructor(elementRef: ElementRef, focusTrapFactory: FocusTrapFactory, document: any, dialogConfig: MatDialogConfig, checker: InteractivityChecker, ngZone: NgZone, overlayRef: OverlayRef, _animationMode?: string | undefined, focusMonitor?: FocusMonitor);
+    _animationsEnabled: boolean;
     // (undocumented)
-    _getAnimationState(): {
-        value: "enter" | "void" | "exit";
-        params: {
-            enterAnimationDuration: string;
-            exitAnimationDuration: string;
-        };
-    };
-    _onAnimationDone({ toState, totalTime }: AnimationEvent_2): void;
-    _onAnimationStart({ toState, totalTime }: AnimationEvent_2): void;
+    protected _contentAttached(): void;
+    // (undocumented)
+    ngOnDestroy(): void;
     _startExitAnimation(): void;
-    _state: 'void' | 'enter' | 'exit';
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatDialogContainer, "mat-dialog-container", never, {}, {}, never, never, false>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatDialogContainer, [null, null, { optional: true; }, null, null, null, null, null, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatDialogContainer, [null, null, { optional: true; }, null, null, null, null, { optional: true; }, null]>;
 }
 
 // @public
 export abstract class _MatDialogContainerBase extends CdkDialogContainer<MatDialogConfig> {
     constructor(elementRef: ElementRef, focusTrapFactory: FocusTrapFactory, _document: any, dialogConfig: MatDialogConfig, interactivityChecker: InteractivityChecker, ngZone: NgZone, overlayRef: OverlayRef, focusMonitor?: FocusMonitor);
-    _animationStateChanged: EventEmitter<DialogAnimationEvent>;
+    _animationStateChanged: EventEmitter<LegacyDialogAnimationEvent>;
     // (undocumented)
     protected _captureInitialFocus(): void;
     protected _openAnimationDone(totalTime: number): void;
@@ -259,7 +250,7 @@ export class MatDialogRef<T, R = any> {
     updateSize(width?: string, height?: string): this;
 }
 
-// @public
+// @public (undocumented)
 export const enum MatDialogState {
     // (undocumented)
     CLOSED = 2,
@@ -272,6 +263,7 @@ export const enum MatDialogState {
 // @public
 export class MatDialogTitle implements OnInit {
     constructor(_dialogRef: MatDialogRef<any>, _elementRef: ElementRef<HTMLElement>, _dialog: MatDialog);
+    // (undocumented)
     id: string;
     // (undocumented)
     ngOnInit(): void;

@@ -1,0 +1,10 @@
+@forward '../core/style/private.import';
+@forward '../core/theming/theming.import';
+@forward '../core/typography/typography-utils.import';
+@forward 'dialog-theme' hide color, theme, typography;
+@forward 'dialog-theme' as mat-legacy-dialog-* hide mat-legacy-dialog-density;
+
+@import '../core/style/private';
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/typography/typography-utils';

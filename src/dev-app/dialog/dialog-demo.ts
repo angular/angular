@@ -14,17 +14,17 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatDialogConfig,
-  MatDialogRef,
-  MatDialogModule,
-} from '@angular/material/dialog';
+  MAT_LEGACY_DIALOG_DATA,
+  MatLegacyDialog,
+  MatLegacyDialogConfig,
+  MatLegacyDialogModule,
+  MatLegacyDialogRef,
+} from '@angular/material/legacy-dialog';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatLegacySelectModule} from '@angular/material/legacy-select';
 
-const defaultDialogConfig = new MatDialogConfig();
+const defaultDialogConfig = new MatLegacyDialogConfig();
 
 @Component({
   selector: 'dialog-demo',
@@ -36,14 +36,14 @@ const defaultDialogConfig = new MatDialogConfig();
     MatButtonModule,
     MatLegacyCardModule,
     MatLegacyCheckboxModule,
-    MatDialogModule,
+    MatLegacyDialogModule,
     MatLegacyFormFieldModule,
     MatLegacyInputModule,
     MatLegacySelectModule,
   ],
 })
 export class DialogDemo {
-  dialogRef: MatDialogRef<JazzDialog> | null;
+  dialogRef: MatLegacyDialogRef<JazzDialog> | null;
   lastAfterClosedResult: string;
   lastBeforeCloseResult: string;
   actionsAlignment: 'start' | 'center' | 'end';
@@ -74,7 +74,7 @@ export class DialogDemo {
 
   @ViewChild(TemplateRef) template: TemplateRef<any>;
 
-  constructor(public dialog: MatDialog, @Inject(DOCUMENT) doc: any) {
+  constructor(public dialog: MatLegacyDialog, @Inject(DOCUMENT) doc: any) {
     // Possible useful example for the open and closeAll events.
     // Adding a class to the body if a dialog opens and
     // removing it after all open dialogs are closed
@@ -137,8 +137,8 @@ export class JazzDialog {
   private _dimensionToggle = false;
 
   constructor(
-    public dialogRef: MatDialogRef<JazzDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    public dialogRef: MatLegacyDialogRef<JazzDialog>,
+    @Inject(MAT_LEGACY_DIALOG_DATA) public data: any,
   ) {}
 
   togglePosition(): void {
@@ -205,12 +205,12 @@ export class JazzDialog {
     </mat-dialog-actions>
   `,
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule],
+  imports: [MatLegacyDialogModule, MatButtonModule],
 })
 export class ContentElementDialog {
   actionsAlignment: 'start' | 'center' | 'end';
 
-  constructor(public dialog: MatDialog) {}
+  constructor(public dialog: MatLegacyDialog) {}
 
   showInStackedDialog() {
     this.dialog.open(IFrameDialog);
@@ -227,7 +227,7 @@ export class ContentElementDialog {
   `,
   ],
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule],
+  imports: [MatLegacyDialogModule, MatButtonModule],
   template: `
     <h2 mat-dialog-title>Neptune</h2>
 

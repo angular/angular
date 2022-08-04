@@ -5,7 +5,6 @@
 @use '../../mdc-button/fab-theme';
 @use '../../mdc-button/icon-button-theme';
 @use '../../mdc-chips/chips-theme';
-@use '../../mdc-dialog/dialog-theme';
 @use '../../mdc-list/list-theme';
 @use '../../mdc-menu/menu-theme';
 @use '../../mdc-radio/radio-theme';
@@ -23,7 +22,7 @@
     @include core-theme.theme($theme-or-color-config);
     @include mat.autocomplete-theme($theme-or-color-config);
     @include button-theme.theme($theme-or-color-config);
-    @include dialog-theme.theme($theme-or-color-config);
+    @include mat.dialog-theme($theme-or-color-config);
     @include fab-theme.theme($theme-or-color-config);
     @include icon-button-theme.theme($theme-or-color-config);
     @include mat.card-theme($theme-or-color-config);

@@ -9,7 +9,7 @@
 /src/material/legacy-checkbox/**                          @andrewseguin @devversion
 /src/material/chips/**                             @andrewseguin
 /src/material/datepicker/**                        @mmalerba @crisbeto @zarend
-/src/material/dialog/**                            @andrewseguin @crisbeto
+/src/material/legacy-dialog/**                            @andrewseguin @crisbeto
 /src/material/divider/**                           @andrewseguin @crisbeto
 /src/material/expansion/**                         @andrewseguin
 /src/material/legacy-form-field/**                 @mmalerba
@@ -116,7 +116,7 @@
 /src/material/checkbox/**             @mmalerba
 /src/material-experimental/mdc-chips/**                @mmalerba
 /src/material-experimental/mdc-core/**                 @crisbeto
-/src/material-experimental/mdc-dialog/**               @devversion
+/src/material/dialog/**               @devversion
 /src/material/form-field/**                            @devversion @mmalerba
 /src/material-experimental/mdc-list/**                 @mmalerba @devversion
 /src/material-experimental/mdc-menu/**                 @crisbeto
@@ -326,7 +326,7 @@
 /tools/public_api_guard/material/chips/testing**   @andrewseguin
 /tools/public_api_guard/material/core**            @andrewseguin
 /tools/public_api_guard/material/datepicker**      @mmalerba @crisbeto @zarend
-/tools/public_api_guard/material/dialog**          @andrewseguin @crisbeto
+/tools/public_api_guard/material/legacy-dialog**          @andrewseguin @crisbeto
 /tools/public_api_guard/material/divider**         @andrewseguin @crisbeto
 /tools/public_api_guard/material/expansion**       @andrewseguin
 /tools/public_api_guard/material/form-field**      @mmalerba

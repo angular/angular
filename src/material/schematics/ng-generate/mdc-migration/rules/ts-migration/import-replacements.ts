@@ -24,8 +24,8 @@ export const IMPORT_REPLACEMENTS: {[component: string]: {old: string; new: strin
     new: '@angular/material-experimental/mdc-chips',
   },
   'dialog': {
-    old: '@angular/material/dialog',
-    new: '@angular/material-experimental/mdc-dialog',
+    old: '@angular/material/legacy-dialog',
+    new: '@angular/material/dialog',
   },
   'autocomplete': {
     old: '@angular/material/autocomplete',

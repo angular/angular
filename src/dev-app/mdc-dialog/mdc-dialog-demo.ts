@@ -14,7 +14,7 @@ import {
   MatDialogConfig,
   MatDialogRef,
   MatDialogModule,
-} from '@angular/material-experimental/mdc-dialog';
+} from '@angular/material/dialog';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatCardModule} from '@angular/material/card';

@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatDialogModule} from '@angular/material-experimental/mdc-dialog';
+import {MatDialogModule} from '@angular/material/dialog';
 import {MdcDialogE2E, TestDialog} from './mdc-dialog-e2e';
 
 @NgModule({

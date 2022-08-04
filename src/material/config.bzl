@@ -27,6 +27,8 @@ entryPoints = [
     "legacy-core/testing",
     "datepicker",
     "datepicker/testing",
+    "legacy-dialog",
+    "legacy-dialog/testing",
     "dialog",
     "dialog/testing",
     "divider",

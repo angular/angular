@@ -25,8 +25,6 @@
   mdc-icon-button-typography, mdc-icon-button-density, mdc-icon-button-theme;
 @forward './mdc-chips/chips-theme' as mdc-chips-* show mdc-chips-color, mdc-chips-typography,
   mdc-chips-density, mdc-chips-theme;
-@forward './mdc-dialog/dialog-theme' as mdc-dialog-* show mdc-dialog-color, mdc-dialog-typography,
-  mdc-dialog-density, mdc-dialog-theme;
 @forward './mdc-list/list-theme' as mdc-list-* show mdc-list-color, mdc-list-typography,
   mdc-list-density, mdc-list-theme;
 @forward './mdc-menu/menu-theme' as mdc-menu-* show mdc-menu-color, mdc-menu-typography,
@@ -50,4 +48,3 @@
   mdc-tabs-density, mdc-tabs-theme;
 
 // Additional public APIs for individual components
-@forward './mdc-dialog/dialog-legacy-padding' as mdc-dialog-* show mdc-dialog-legacy-padding;

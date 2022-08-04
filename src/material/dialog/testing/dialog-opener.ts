@@ -9,23 +9,23 @@
 import {ComponentType} from '@angular/cdk/overlay';
 import {
   ChangeDetectionStrategy,
-  Directive,
   Component,
+  Directive,
   NgModule,
   OnDestroy,
   ViewEncapsulation,
 } from '@angular/core';
 import {
-  _MatDialogBase,
-  _MatDialogContainerBase,
   MatDialog,
   MatDialogConfig,
   MatDialogContainer,
   MatDialogModule,
+  _MatDialogBase,
+  _MatDialogContainerBase,
   MatDialogRef,
 } from '@angular/material/dialog';
-import {Subscription} from 'rxjs';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {Subscription} from 'rxjs';
 
 /** Base class for a component that immediately opens a dialog when created. */
 @Directive()
@@ -67,7 +67,7 @@ export class _MatTestDialogOpenerBase<C extends _MatDialogContainerBase, T, R>
   }
 }
 
-/** Test component that immediately opens a dialog when created. */
+/** Test component that immediately opens a dialog when bootstrapped. */
 @Component({
   selector: 'mat-test-dialog-opener',
   template: '',

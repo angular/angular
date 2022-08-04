@@ -12,7 +12,7 @@ import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatTableModule} from '@angular/material/table';
 import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatDialogModule, MatDialog} from '@angular/material/dialog';
+import {MatLegacyDialogModule, MatLegacyDialog} from '@angular/material/legacy-dialog';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatIconModule} from '@angular/material/icon';
@@ -78,7 +78,7 @@ export class KitchenSink {
 
   constructor(
     snackBar: MatSnackBar,
-    dialog: MatDialog,
+    dialog: MatLegacyDialog,
     viewportRuler: ViewportRuler,
     focusMonitor: FocusMonitor,
     elementRef: ElementRef<HTMLElement>,
@@ -107,7 +107,7 @@ export class KitchenSink {
     MatLegacyCheckboxModule,
     MatChipsModule,
     MatDatepickerModule,
-    MatDialogModule,
+    MatLegacyDialogModule,
     MatDividerModule,
     MatLegacyFormFieldModule,
     MatGridListModule,

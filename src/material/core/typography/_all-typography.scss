@@ -48,7 +48,6 @@
   @include divider-theme.typography($config);
   @include table-theme.typography($config);
   @include datepicker-theme.typography($config);
-  @include dialog-theme.typography($config);
   @include expansion-theme.typography($config);
   @include grid-list-theme.typography($config);
   @include icon-theme.typography($config);
@@ -94,6 +93,7 @@
   @include input-theme.typography($config);
   @include select-theme.typography($config);
   @include autocomplete-theme.typography($config);
+  @include dialog-theme.typography($config);
 }
 
 // @deprecated Use `all-component-typographies`.

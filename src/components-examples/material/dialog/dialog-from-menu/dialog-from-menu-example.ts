@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
+import {MatLegacyDialog} from '@angular/material/legacy-dialog';
 import {MatMenuTrigger} from '@angular/material/menu';
 /**
  * @title Dialog launched from a menu
@@ -11,7 +11,7 @@ import {MatMenuTrigger} from '@angular/material/menu';
 export class DialogFromMenuExample {
   @ViewChild('menuTrigger') menuTrigger: MatMenuTrigger;
 
-  constructor(public dialog: MatDialog) {}
+  constructor(public dialog: MatLegacyDialog) {}
 
   openDialog() {
     // #docregion focus-restoration

@@ -38,7 +38,6 @@ $mat-mdc-table-mdc-data-table-sort-icon-active-color, $mat-mdc-table-mdc-data-ta
 $mat-mdc-table-mdc-data-table-stroke-color, $mat-mdc-table-mdc-data-table-table-divider-color;
 @forward '../../mdc-paginator/paginator-variables' as mat-mdc-paginator-*;
 @forward '../core-theme.import';
-@forward '../../mdc-dialog/dialog-theme' as mat-mdc-dialog-*;
 @forward '../../mdc-list/interactive-list-theme' as mat-mdc-*;
 @forward '../../mdc-list/list-option-theme' as mat-mdc-*;
 @forward '../../mdc-list/list-theme' as mat-mdc-list-*;

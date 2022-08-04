@@ -5,8 +5,6 @@ entryPoints = [
     "mdc-chips",
     "mdc-chips/testing",
     "mdc-core",
-    "mdc-dialog",
-    "mdc-dialog/testing",
     "mdc-list",
     "mdc-list/testing",
     "mdc-menu",

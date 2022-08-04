@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DialogRef} from '@angular/cdk/dialog';
+/** Possible states of the lifecycle of a dialog. */
 import {FocusOrigin} from '@angular/cdk/a11y';
-import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
-import {GlobalPositionStrategy} from '@angular/cdk/overlay';
 import {merge, Observable, Subject} from 'rxjs';
-import {filter, take} from 'rxjs/operators';
+import {DialogRef} from '@angular/cdk/dialog';
 import {DialogPosition, MatDialogConfig} from './dialog-config';
 import {_MatDialogContainerBase} from './dialog-container';
+import {filter, take} from 'rxjs/operators';
+import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
+import {GlobalPositionStrategy} from '@angular/cdk/overlay';
 
-/** Possible states of the lifecycle of a dialog. */
 export const enum MatDialogState {
   OPEN,
   CLOSING,

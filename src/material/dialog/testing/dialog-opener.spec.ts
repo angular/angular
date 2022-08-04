@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {fakeAsync, flush, TestBed} from '@angular/core/testing';
+import {fakeAsync, TestBed, flush} from '@angular/core/testing';
 import {MatTestDialogOpenerModule, MatTestDialogOpener} from '@angular/material/dialog/testing';
 import {MAT_DIALOG_DATA, MatDialogRef, MatDialogState} from '@angular/material/dialog';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';

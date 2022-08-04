@@ -11,32 +11,32 @@ import {OverlayModule} from '@angular/cdk/overlay';
 import {PortalModule} from '@angular/cdk/portal';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
-import {MAT_DIALOG_SCROLL_STRATEGY_PROVIDER, MatDialog} from './dialog';
-import {MatDialogContainer} from './dialog-container';
+import {MAT_LEGACY_DIALOG_SCROLL_STRATEGY_PROVIDER, MatLegacyDialog} from './dialog';
+import {MatLegacyDialogContainer} from './dialog-container';
 import {
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogContent,
-  MatDialogTitle,
+  MatLegacyDialogActions,
+  MatLegacyDialogClose,
+  MatLegacyDialogContent,
+  MatLegacyDialogTitle,
 } from './dialog-content-directives';
 
 @NgModule({
   imports: [DialogModule, OverlayModule, PortalModule, MatCommonModule],
   exports: [
-    MatDialogContainer,
-    MatDialogClose,
-    MatDialogTitle,
-    MatDialogContent,
-    MatDialogActions,
+    MatLegacyDialogContainer,
+    MatLegacyDialogClose,
+    MatLegacyDialogTitle,
+    MatLegacyDialogContent,
+    MatLegacyDialogActions,
     MatCommonModule,
   ],
   declarations: [
-    MatDialogContainer,
-    MatDialogClose,
-    MatDialogTitle,
-    MatDialogActions,
-    MatDialogContent,
+    MatLegacyDialogContainer,
+    MatLegacyDialogClose,
+    MatLegacyDialogTitle,
+    MatLegacyDialogActions,
+    MatLegacyDialogContent,
   ],
-  providers: [MatDialog, MAT_DIALOG_SCROLL_STRATEGY_PROVIDER],
+  providers: [MatLegacyDialog, MAT_LEGACY_DIALOG_SCROLL_STRATEGY_PROVIDER],
 })
-export class MatDialogModule {}
+export class MatLegacyDialogModule {}

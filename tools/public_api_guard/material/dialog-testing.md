@@ -6,6 +6,7 @@
 
 import { AsyncFactoryFn } from '@angular/cdk/testing';
 import { BaseHarnessFilters } from '@angular/cdk/testing';
+import { ComponentHarnessConstructor } from '@angular/cdk/testing';
 import { ComponentType } from '@angular/cdk/overlay';
 import { ContentContainerComponentHarness } from '@angular/cdk/testing';
 import { DialogRole } from '@angular/material/dialog';
@@ -26,7 +27,7 @@ export interface DialogHarnessFilters extends BaseHarnessFilters {
 // @public
 export class MatDialogHarness extends _MatDialogHarnessBase {
     static hostSelector: string;
-    static with(options?: DialogHarnessFilters): HarnessPredicate<MatDialogHarness>;
+    static with<T extends MatDialogHarness>(this: ComponentHarnessConstructor<T>, options?: DialogHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
@@ -52,11 +53,11 @@ export class _MatDialogHarnessBase extends ContentContainerComponentHarness<MatD
 // @public
 export const enum MatDialogSection {
     // (undocumented)
-    ACTIONS = ".mat-dialog-actions",
+    ACTIONS = ".mat-mdc-dialog-actions",
     // (undocumented)
-    CONTENT = ".mat-dialog-content",
+    CONTENT = ".mat-mdc-dialog-content",
     // (undocumented)
-    TITLE = ".mat-dialog-title"
+    TITLE = ".mat-mdc-dialog-title"
 }
 
 // @public

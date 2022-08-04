@@ -10,7 +10,6 @@
 @use '../../../chips/chips-theme';
 @use '../../../table/table-theme';
 @use '../../../datepicker/datepicker-theme';
-@use '../../../dialog/dialog-theme';
 @use '../../../divider/divider-theme';
 @use '../../../expansion/expansion-theme';
 @use '../../../grid-list/grid-list-theme';
@@ -65,7 +64,6 @@
   @include chips-theme.theme($css-var-theme);
   @include table-theme.theme($css-var-theme);
   @include datepicker-theme.theme($css-var-theme);
-  @include dialog-theme.theme($css-var-theme);
   @include divider-theme.theme($css-var-theme);
   @include expansion-theme.theme($css-var-theme);
   @include grid-list-theme.theme($css-var-theme);

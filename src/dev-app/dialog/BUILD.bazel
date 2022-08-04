@@ -12,9 +12,9 @@ ng_module(
     deps = [
         "//src/cdk/drag-drop",
         "//src/material/button",
-        "//src/material/dialog",
         "//src/material/legacy-card",
         "//src/material/legacy-checkbox",
+        "//src/material/legacy-dialog",
         "//src/material/legacy-form-field",
         "//src/material/legacy-input",
         "//src/material/legacy-select",

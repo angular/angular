@@ -1,14 +1,14 @@
-import {browser, by, element, Key} from 'protractor';
 import {
-  expectToExist,
-  expectFocusOn,
-  pressKeys,
   clickElementAtPoint,
+  expectFocusOn,
+  expectToExist,
+  pressKeys,
   waitForElement,
 } from '../../cdk/testing/private/e2e';
+import {browser, by, element, Key} from 'protractor';
 
-describe('dialog', () => {
-  beforeEach(async () => await browser.get('/dialog'));
+describe('MDC-based dialog', () => {
+  beforeEach(async () => await browser.get('/mdc-dialog'));
 
   it('should open a dialog', async () => {
     await element(by.id('default')).click();
