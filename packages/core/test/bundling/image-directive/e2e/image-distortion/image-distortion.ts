@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵNgOptimizedImage as NgOptimizedImage} from '@angular/common';
+import {NgOptimizedImage} from '@angular/common';
 import {Component} from '@angular/core';
 
 @Component({
