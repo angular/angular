@@ -77,15 +77,14 @@ export const disabledAttrWarning = `
   you. We recommend using this approach to avoid 'changed after checked' errors.
 
   Example:
+  // Specify the \`disabled\` property at control creation time:
   form = new FormGroup({
     first: new FormControl({value: 'Nancy', disabled: true}, Validators.required),
     last: new FormControl('Drew', Validators.required)
   });
 
-  // To dynamically enable/disable the form control, you can use
+  // Controls can also be enabled/disabled after creation:
   form.get('first')?.enable();
-
-  // Or
   form.get('last')?.disable();
 `;
 
