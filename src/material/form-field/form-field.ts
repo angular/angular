@@ -114,12 +114,6 @@ const DEFAULT_SUBSCRIPT_SIZING: SubscriptSizing = 'fixed';
  */
 const FLOATING_LABEL_DEFAULT_DOCKED_TRANSFORM = `translateY(-50%)`;
 
-/**
- * Horizontal padding in pixels used by the MDC for the wrapper containing infix.
- * This value is extracted from MDC's Sass variables. See `$padding-horizontal`.
- */
-const WRAPPER_HORIZONTAL_PADDING = 16;
-
 /** Container for form controls that applies Material Design styling and behavior. */
 @Component({
   selector: 'mat-form-field',
@@ -669,19 +663,17 @@ export class MatFormField
     const textPrefixContainerWidth = textPrefixContainer?.getBoundingClientRect().width ?? 0;
     // If the directionality is RTL, the x-axis transform needs to be inverted. This
     // is because `transformX` does not change based on the page directionality.
-    const labelHorizontalOffset =
-      (this._dir.value === 'rtl' ? -1 : 1) *
-      // If there's an icon prefix, we subtract the default horizontal padding as we
-      // reset the horizontal padding in CSS too.
-      ((iconPrefixContainer ? iconPrefixContainerWidth - WRAPPER_HORIZONTAL_PADDING : 0) +
-        textPrefixContainerWidth);
+    const negate = this._dir.value === 'rtl' ? '-1' : '1';
+    const prefixWidth = `${iconPrefixContainerWidth + textPrefixContainerWidth}px`;
+    const labelOffset = `var(--mat-mdc-form-field-label-offset-x, 0px)`;
+    const labelHorizontalOffset = `calc(${negate} * (${prefixWidth} + ${labelOffset}))`;
 
     // Update the translateX of the floating label to account for the prefix container,
     // but allow the CSS to override this setting via a CSS variable when the label is
     // floating.
     floatingLabel.style.transform = `var(
         --mat-mdc-form-field-label-transform,
-        ${FLOATING_LABEL_DEFAULT_DOCKED_TRANSFORM} translateX(${labelHorizontalOffset}px
+        ${FLOATING_LABEL_DEFAULT_DOCKED_TRANSFORM} translateX(${labelHorizontalOffset})
     )`;
   }
 

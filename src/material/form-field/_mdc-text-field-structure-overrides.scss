@@ -57,6 +57,9 @@
   // structure for our form-field in order to support arbitrary height input elements.
   .mat-mdc-form-field-has-icon-prefix .mat-mdc-text-field-wrapper {
     padding-left: 0;
+    // Signal to the TypeScript label calculation code that the label should be offset 16px less
+    // due to resetting the padding above.
+    --mat-mdc-form-field-label-offset-x: -16px;
   }
   .mat-mdc-form-field-has-icon-suffix .mat-mdc-text-field-wrapper {
     padding-right: 0;
