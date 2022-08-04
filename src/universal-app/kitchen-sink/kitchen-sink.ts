@@ -4,7 +4,7 @@ import {ScrollingModule, ViewportRuler} from '@angular/cdk/scrolling';
 import {CdkTableModule, DataSource} from '@angular/cdk/table';
 import {Component, ElementRef, NgModule, ErrorHandler} from '@angular/core';
 import {MatNativeDateModule, MatRippleModule} from '@angular/material/core';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatLegacyAutocompleteModule} from '@angular/material/legacy-autocomplete';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
@@ -98,7 +98,7 @@ export class KitchenSink {
 
 @NgModule({
   imports: [
-    MatAutocompleteModule,
+    MatLegacyAutocompleteModule,
     MatBadgeModule,
     MatBottomSheetModule,
     MatButtonModule,

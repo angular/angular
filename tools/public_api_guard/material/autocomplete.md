@@ -18,17 +18,15 @@ import { ElementRef } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i4 from '@angular/cdk/overlay';
-import * as i5 from '@angular/material/legacy-core';
-import * as i6 from '@angular/material/core';
-import * as i7 from '@angular/common';
-import * as i8 from '@angular/cdk/scrolling';
+import * as i5 from '@angular/material/core';
+import * as i6 from '@angular/common';
+import * as i7 from '@angular/cdk/scrolling';
 import { InjectionToken } from '@angular/core';
-import { MatLegacyFormField } from '@angular/material/legacy-form-field';
-import { MatLegacyOptgroup } from '@angular/material/legacy-core';
-import { MatLegacyOption } from '@angular/material/legacy-core';
-import { _MatOptgroupBase } from '@angular/material/legacy-core';
-import { _MatOptionBase } from '@angular/material/legacy-core';
-import { _MatOptionBase as _MatOptionBase_2 } from '@angular/material/core';
+import { MatFormField } from '@angular/material/form-field';
+import { MatOptgroup } from '@angular/material/core';
+import { _MatOptgroupBase } from '@angular/material/core';
+import { MatOption } from '@angular/material/core';
+import { _MatOptionBase } from '@angular/material/core';
 import { MatOptionSelectionChange } from '@angular/material/core';
 import { NgZone } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -72,8 +70,8 @@ export const MAT_AUTOCOMPLETE_VALUE_ACCESSOR: any;
 export class MatAutocomplete extends _MatAutocompleteBase {
     // (undocumented)
     protected _hiddenClass: string;
-    optionGroups: QueryList<MatLegacyOptgroup>;
-    options: QueryList<MatLegacyOption>;
+    optionGroups: QueryList<MatOptgroup>;
+    options: QueryList<MatOption>;
     // (undocumented)
     protected _visibleClass: string;
     // (undocumented)
@@ -150,7 +148,7 @@ export class MatAutocompleteModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatAutocompleteModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatAutocompleteModule, [typeof i1.MatAutocomplete, typeof i2.MatAutocompleteTrigger, typeof i3.MatAutocompleteOrigin], [typeof i4.OverlayModule, typeof i5.MatLegacyOptionModule, typeof i6.MatCommonModule, typeof i7.CommonModule], [typeof i1.MatAutocomplete, typeof i2.MatAutocompleteTrigger, typeof i3.MatAutocompleteOrigin, typeof i8.CdkScrollableModule, typeof i5.MatLegacyOptionModule, typeof i6.MatCommonModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatAutocompleteModule, [typeof i1.MatAutocomplete, typeof i2.MatAutocompleteTrigger, typeof i3.MatAutocompleteOrigin], [typeof i4.OverlayModule, typeof i5.MatOptionModule, typeof i5.MatCommonModule, typeof i6.CommonModule], [typeof i7.CdkScrollableModule, typeof i1.MatAutocomplete, typeof i5.MatOptionModule, typeof i5.MatCommonModule, typeof i2.MatAutocompleteTrigger, typeof i3.MatAutocompleteOrigin]>;
 }
 
 // @public
@@ -193,9 +191,9 @@ export class MatAutocompleteTrigger extends _MatAutocompleteTriggerBase {
 
 // @public
 export abstract class _MatAutocompleteTriggerBase implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
-    constructor(_element: ElementRef<HTMLInputElement>, _overlay: Overlay, _viewContainerRef: ViewContainerRef, _zone: NgZone, _changeDetectorRef: ChangeDetectorRef, scrollStrategy: any, _dir: Directionality, _formField: MatLegacyFormField, _document: any, _viewportRuler: ViewportRuler, _defaults?: MatAutocompleteDefaultOptions | undefined);
+    constructor(_element: ElementRef<HTMLInputElement>, _overlay: Overlay, _viewContainerRef: ViewContainerRef, _zone: NgZone, _changeDetectorRef: ChangeDetectorRef, scrollStrategy: any, _dir: Directionality, _formField: MatFormField, _document: any, _viewportRuler: ViewportRuler, _defaults?: MatAutocompleteDefaultOptions | undefined);
     protected abstract _aboveClass: string;
-    get activeOption(): _MatOptionBase_2 | null;
+    get activeOption(): _MatOptionBase | null;
     autocomplete: _MatAutocompleteBase;
     autocompleteAttribute: string;
     get autocompleteDisabled(): boolean;

@@ -3,7 +3,6 @@
 @use '../all-theme';
 @use '../palette';
 @use '../theming';
-@use '../../../autocomplete/autocomplete-theme';
 @use '../../../badge/badge-theme';
 @use '../../../bottom-sheet/bottom-sheet-theme';
 @use '../../../button/button-theme';
@@ -60,7 +59,6 @@
     )
   ));
   $css-var-theme: replace-all-values($theme, var(--test-var));
-  @include autocomplete-theme.theme($css-var-theme);
   @include badge-theme.theme($css-var-theme);
   @include bottom-sheet-theme.theme($css-var-theme);
   @include button-theme.theme($css-var-theme);

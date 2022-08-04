@@ -8,10 +8,10 @@ import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
 import { ComponentHarnessConstructor } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
-import { MatLegacyOptgroupHarness } from '@angular/material/legacy-core/testing';
-import { MatLegacyOptionHarness } from '@angular/material/legacy-core/testing';
-import { OptgroupHarnessFilters } from '@angular/material/legacy-core/testing';
-import { OptionHarnessFilters } from '@angular/material/legacy-core/testing';
+import { MatOptgroupHarness } from '@angular/material/core/testing';
+import { MatOptionHarness } from '@angular/material/core/testing';
+import { OptgroupHarnessFilters } from '@angular/material/core/testing';
+import { OptionHarnessFilters } from '@angular/material/core/testing';
 
 // @public
 export interface AutocompleteHarnessFilters extends BaseHarnessFilters {
@@ -19,15 +19,15 @@ export interface AutocompleteHarnessFilters extends BaseHarnessFilters {
 }
 
 // @public
-export class MatAutocompleteHarness extends _MatAutocompleteHarnessBase<typeof MatLegacyOptionHarness, MatLegacyOptionHarness, OptionHarnessFilters, typeof MatLegacyOptgroupHarness, MatLegacyOptgroupHarness, OptgroupHarnessFilters> {
+export class MatAutocompleteHarness extends _MatAutocompleteHarnessBase<typeof MatOptionHarness, MatOptionHarness, OptionHarnessFilters, typeof MatOptgroupHarness, MatOptgroupHarness, OptgroupHarnessFilters> {
     static hostSelector: string;
     // (undocumented)
-    protected _optionClass: typeof MatLegacyOptionHarness;
+    protected _optionClass: typeof MatOptionHarness;
     // (undocumented)
-    protected _optionGroupClass: typeof MatLegacyOptgroupHarness;
+    protected _optionGroupClass: typeof MatOptgroupHarness;
     // (undocumented)
     protected _prefix: string;
-    static with(options?: AutocompleteHarnessFilters): HarnessPredicate<MatAutocompleteHarness>;
+    static with<T extends MatAutocompleteHarness>(this: ComponentHarnessConstructor<T>, options?: AutocompleteHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public (undocumented)

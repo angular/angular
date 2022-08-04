@@ -1,6 +1,6 @@
 # Angular Material components
 /src/material/*                                    @andrewseguin
-/src/material/autocomplete/**                      @crisbeto
+/src/material/legacy-autocomplete/**               @crisbeto
 /src/material/badge/**                             @jelbourn
 /src/material/bottom-sheet/**                      @jelbourn @crisbeto
 /src/material/button-toggle/**                     @andrewseguin
@@ -110,7 +110,7 @@
 # Material experimental package
 /src/material-experimental/*                           @andrewseguin
 /src/material-experimental/column-resize/**            @andrewseguin
-/src/material-experimental/mdc-autocomplete/**         @crisbeto
+/src/material/autocomplete/**                          @crisbeto
 /src/material-experimental/mdc-button/**               @andrewseguin
 /src/material/card/**                                  @mmalerba
 /src/material-experimental/mdc-checkbox/**             @mmalerba

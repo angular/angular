@@ -1,35 +1,32 @@
-@use 'sass:map';
-@use '../core/style/private';
+@use '@material/menu-surface/mixins' as mdc-menu-surface;
+@use '@material/list/evolution-mixins' as mdc-list;
 @use '../core/theming/theming';
+@use '../core/typography/typography';
+@use '../core/mdc-helpers/mdc-helpers';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $foreground: map.get($config, foreground);
-  $background: map.get($config, background);
+  @include mdc-helpers.using-mdc-theme($config) {
+    @include mdc-menu-surface.core-styles(mdc-helpers.$mdc-theme-styles-query);
+    @include mdc-list.without-ripple(mdc-helpers.$mdc-theme-styles-query);
+  }
+}
 
-  .mat-autocomplete-panel {
-    @include private.private-theme-overridable-elevation(4, $config);
-    background: theming.get-color-from-palette($background, card);
-    color: theming.get-color-from-palette($foreground, text);
+@mixin typography($config-or-theme) {
+  $config: typography.private-typography-to-2018-config(
+      theming.get-typography-config($config-or-theme));
+  @include mdc-helpers.using-mdc-typography($config) {
+    @include mdc-menu-surface.core-styles(mdc-helpers.$mdc-typography-styles-query);
 
-    // Selected options in autocompletes should not be gray, but we
-    // only want to override the background for selected options if
-    // they are *not* in hover or focus state. This change has to be
-    // made here because base option styles are shared between the
-    // autocomplete and the select.
-    .mat-option.mat-selected:not(.mat-active):not(:hover) {
-      background: theming.get-color-from-palette($background, card);
-
-      &:not(.mat-option-disabled) {
-        color: theming.get-color-from-palette($foreground, text);
-      }
+    .mat-mdc-autocomplete-panel {
+      // Note that we include this private mixin, because the public one adds
+      // a bunch of styles that we aren't using for the autocomplete panel.
+      @include mdc-list.list-base(mdc-helpers.$mdc-typography-styles-query);
     }
   }
 }
 
-@mixin typography($config-or-theme) {}
-
-@mixin _density($config-or-theme) {}
+@mixin density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -42,7 +39,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);

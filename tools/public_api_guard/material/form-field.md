@@ -76,6 +76,8 @@ export class MatFormField implements AfterContentInit, AfterContentChecked, Afte
     get _control(): MatFormFieldControl<any>;
     set _control(value: MatFormFieldControl<any>);
     // (undocumented)
+    _elementRef: ElementRef;
+    // (undocumented)
     _errorChildren: QueryList<MatError>;
     // (undocumented)
     _floatingLabel: MatFormFieldFloatingLabel | undefined;

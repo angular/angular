@@ -17,7 +17,7 @@ import {ErrorStateMatcher, ThemePalette} from '@angular/material/core';
 import {CommonModule} from '@angular/common';
 import {MdcFormFieldExamplesModule} from '@angular/components-examples/material-experimental/mdc-form-field';
 import {MatInputModule} from '@angular/material/input';
-import {MatAutocompleteModule} from '@angular/material-experimental/mdc-autocomplete';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatCardModule} from '@angular/material/card';

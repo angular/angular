@@ -1,6 +1,8 @@
 entryPoints = [
     "autocomplete",
     "autocomplete/testing",
+    "legacy-autocomplete",
+    "legacy-autocomplete/testing",
     "badge",
     "badge/testing",
     "bottom-sheet",

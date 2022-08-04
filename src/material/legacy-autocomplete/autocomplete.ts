@@ -16,11 +16,12 @@ import {
 import {
   MAT_OPTGROUP,
   MAT_OPTION_PARENT_COMPONENT,
-  MatOptgroup,
-  MatOption,
-} from '@angular/material/core';
+  _MatOptgroupBase,
+  _MatOptionBase,
+  MatLegacyOption,
+  MatLegacyOptgroup,
+} from '@angular/material/legacy-core';
 import {_MatAutocompleteBase} from '@angular/material/autocomplete';
-import {panelAnimation} from './animations';
 
 @Component({
   selector: 'mat-autocomplete',
@@ -31,16 +32,15 @@ import {panelAnimation} from './animations';
   exportAs: 'matAutocomplete',
   inputs: ['disableRipple'],
   host: {
-    'class': 'mat-mdc-autocomplete',
+    'class': 'mat-autocomplete',
   },
-  providers: [{provide: MAT_OPTION_PARENT_COMPONENT, useExisting: MatAutocomplete}],
-  animations: [panelAnimation],
+  providers: [{provide: MAT_OPTION_PARENT_COMPONENT, useExisting: MatLegacyAutocomplete}],
 })
-export class MatAutocomplete extends _MatAutocompleteBase {
+export class MatLegacyAutocomplete extends _MatAutocompleteBase {
   /** Reference to all option groups within the autocomplete. */
-  @ContentChildren(MAT_OPTGROUP, {descendants: true}) optionGroups: QueryList<MatOptgroup>;
+  @ContentChildren(MAT_OPTGROUP, {descendants: true}) optionGroups: QueryList<MatLegacyOptgroup>;
   /** Reference to all options within the autocomplete. */
-  @ContentChildren(MatOption, {descendants: true}) options: QueryList<MatOption>;
-  protected _visibleClass = 'mat-mdc-autocomplete-visible';
-  protected _hiddenClass = 'mat-mdc-autocomplete-hidden';
+  @ContentChildren(MatLegacyOption, {descendants: true}) options: QueryList<MatLegacyOption>;
+  protected _visibleClass = 'mat-autocomplete-visible';
+  protected _hiddenClass = 'mat-autocomplete-hidden';
 }

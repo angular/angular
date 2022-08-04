@@ -1,0 +1,11 @@
+<ng-template let-formFieldId="id">
+  <div class="mat-autocomplete-panel"
+       role="listbox"
+       [id]="id"
+       [attr.aria-label]="ariaLabel || null"
+       [attr.aria-labelledby]="_getPanelAriaLabelledby(formFieldId)"
+       [ngClass]="_classList"
+       #panel>
+    <ng-content></ng-content>
+  </div>
+</ng-template>

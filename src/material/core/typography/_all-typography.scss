@@ -40,7 +40,6 @@
 @mixin private-all-unmigrated-component-typographies($config) {
   @include badge-theme.typography($config);
   @include typography.typography-hierarchy($config);
-  @include autocomplete-theme.typography($config);
   @include bottom-sheet-theme.typography($config);
   @include button-theme.typography($config);
   @include button-toggle-theme.typography($config);
@@ -94,6 +93,7 @@
   @include form-field-theme.typography($config);
   @include input-theme.typography($config);
   @include select-theme.typography($config);
+  @include autocomplete-theme.typography($config);
 }
 
 // @deprecated Use `all-component-typographies`.

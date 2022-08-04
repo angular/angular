@@ -10,8 +10,8 @@ ng_module(
         ":autocomplete_demo_scss",
     ],
     deps = [
-        "//src/material/autocomplete",
         "//src/material/button",
+        "//src/material/legacy-autocomplete",
         "//src/material/legacy-card",
         "//src/material/legacy-form-field",
         "//src/material/legacy-input",

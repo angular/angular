@@ -1,5 +1,5 @@
 import {Component, NgModule, ErrorHandler} from '@angular/core';
-import {MatAutocompleteModule} from '@angular/material-experimental/mdc-autocomplete';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatCardModule} from '@angular/material/card';
 import {MatCheckboxModule} from '@angular/material-experimental/mdc-checkbox';

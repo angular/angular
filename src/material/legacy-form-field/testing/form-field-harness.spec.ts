@@ -1,4 +1,4 @@
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatLegacyAutocompleteModule} from '@angular/material/legacy-autocomplete';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {
@@ -18,7 +18,7 @@ describe('Non-MDC-based MatFormFieldHarness', () => {
   runHarnessTests(
     [
       MatLegacyFormFieldModule,
-      MatAutocompleteModule,
+      MatLegacyAutocompleteModule,
       MatLegacyInputModule,
       MatLegacySelectModule,
       MatNativeDateModule,

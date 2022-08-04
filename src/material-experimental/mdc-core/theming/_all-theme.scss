@@ -1,7 +1,6 @@
 @use '@angular/material' as mat;
 
 @use '../core-theme';
-@use '../../mdc-autocomplete/autocomplete-theme';
 @use '../../mdc-button/button-theme';
 @use '../../mdc-button/fab-theme';
 @use '../../mdc-button/icon-button-theme';
@@ -23,7 +22,7 @@
   $dedupe-key: 'angular-material-mdc-theme';
   @include mat.private-check-duplicate-theme-styles($theme-or-color-config, $dedupe-key) {
     @include core-theme.theme($theme-or-color-config);
-    @include autocomplete-theme.theme($theme-or-color-config);
+    @include mat.autocomplete-theme($theme-or-color-config);
     @include button-theme.theme($theme-or-color-config);
     @include dialog-theme.theme($theme-or-color-config);
     @include fab-theme.theme($theme-or-color-config);

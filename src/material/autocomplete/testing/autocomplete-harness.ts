@@ -15,11 +15,11 @@ import {
   TestElement,
 } from '@angular/cdk/testing';
 import {
-  MatLegacyOptgroupHarness,
-  MatLegacyOptionHarness,
+  MatOptgroupHarness,
+  MatOptionHarness,
   OptgroupHarnessFilters,
   OptionHarnessFilters,
-} from '@angular/material/legacy-core/testing';
+} from '@angular/material/core/testing';
 import {AutocompleteHarnessFilters} from './autocomplete-harness-filters';
 
 export abstract class _MatAutocompleteHarnessBase<
@@ -134,33 +134,34 @@ export abstract class _MatAutocompleteHarnessBase<
   }
 }
 
-/** Harness for interacting with a standard mat-autocomplete in tests. */
+/** Harness for interacting with an MDC-based mat-autocomplete in tests. */
 export class MatAutocompleteHarness extends _MatAutocompleteHarnessBase<
-  typeof MatLegacyOptionHarness,
-  MatLegacyOptionHarness,
+  typeof MatOptionHarness,
+  MatOptionHarness,
   OptionHarnessFilters,
-  typeof MatLegacyOptgroupHarness,
-  MatLegacyOptgroupHarness,
+  typeof MatOptgroupHarness,
+  MatOptgroupHarness,
   OptgroupHarnessFilters
 > {
-  protected _prefix = 'mat';
-  protected _optionClass = MatLegacyOptionHarness;
-  protected _optionGroupClass = MatLegacyOptgroupHarness;
+  protected _prefix = 'mat-mdc';
+  protected _optionClass = MatOptionHarness;
+  protected _optionGroupClass = MatOptgroupHarness;
 
   /** The selector for the host element of a `MatAutocomplete` instance. */
-  static hostSelector = '.mat-autocomplete-trigger';
+  static hostSelector = '.mat-mdc-autocomplete-trigger';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatAutocompleteHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for an autocomplete with specific
+   * attributes.
    * @param options Options for filtering which autocomplete instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: AutocompleteHarnessFilters = {}): HarnessPredicate<MatAutocompleteHarness> {
-    return new HarnessPredicate(MatAutocompleteHarness, options).addOption(
-      'value',
-      options.value,
-      (harness, value) => HarnessPredicate.stringMatches(harness.getValue(), value),
+  static with<T extends MatAutocompleteHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: AutocompleteHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options).addOption('value', options.value, (harness, value) =>
+      HarnessPredicate.stringMatches(harness.getValue(), value),
     );
   }
 }

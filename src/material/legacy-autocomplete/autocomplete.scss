@@ -1,0 +1,48 @@
+@use '@angular/cdk';
+
+@use '../core/style/menu-common';
+
+// The max-height of the panel, currently matching mat-select value.
+$panel-max-height: 256px !default;
+$panel-border-radius: 4px !default;
+
+.mat-autocomplete-panel {
+  @include menu-common.base();
+
+  visibility: hidden;
+  max-width: none;
+  max-height: $panel-max-height;
+  position: relative;
+  width: 100%;
+  border-bottom-left-radius: $panel-border-radius;
+  border-bottom-right-radius: $panel-border-radius;
+
+  &.mat-autocomplete-visible {
+    visibility: visible;
+  }
+
+  &.mat-autocomplete-hidden {
+    visibility: hidden;
+  }
+
+  .mat-autocomplete-panel-above & {
+    border-radius: 0;
+    border-top-left-radius: $panel-border-radius;
+    border-top-right-radius: $panel-border-radius;
+  }
+
+  // We need to offset horizontal dividers by their height, because
+  // they throw off the keyboard navigation inside the panel.
+  .mat-divider-horizontal {
+    margin-top: -1px;
+  }
+
+  @include cdk.high-contrast(active, off) {
+    outline: solid 1px;
+  }
+}
+
+// Prevent the overlay host node from affecting its surrounding layout.
+mat-autocomplete {
+  display: none;
+}

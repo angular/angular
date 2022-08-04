@@ -1,12 +1,4 @@
-load(
-    "//tools:defaults.bzl",
-    "markdown_to_html",
-    "ng_module",
-    "ng_test_library",
-    "ng_web_test_suite",
-    "sass_binary",
-    "sass_library",
-)
+load("//tools:defaults.bzl", "markdown_to_html", "ng_module", "ng_test_library", "ng_web_test_suite", "sass_binary", "sass_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -14,49 +6,47 @@ ng_module(
     name = "autocomplete",
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["**/*.spec.ts"],
+        exclude = [
+            "**/*.spec.ts",
+        ],
     ),
-    assets = [":autocomplete.css"] + glob(["**/*.html"]),
+    assets = [
+        ":autocomplete_scss",
+    ] + glob(["**/*.html"]),
     deps = [
-        "//src:dev_mode_types",
-        "//src/cdk/a11y",
-        "//src/cdk/bidi",
         "//src/cdk/coercion",
-        "//src/cdk/keycodes",
         "//src/cdk/overlay",
-        "//src/cdk/platform",
-        "//src/cdk/portal",
         "//src/cdk/scrolling",
         "//src/material/core",
-        "//src/material/legacy-core",
-        "//src/material/legacy-form-field",
+        "//src/material/form-field",
         "@npm//@angular/common",
-        "@npm//@angular/core",
-        "@npm//@angular/forms",
-        "@npm//rxjs",
     ],
 )
 
 sass_library(
     name = "autocomplete_scss_lib",
     srcs = glob(["**/_*.scss"]),
-    deps = ["//src/material/core:core_scss_lib"],
+    deps = [
+        "//:mdc_sass_lib",
+    ],
 )
 
 sass_binary(
     name = "autocomplete_scss",
     src = "autocomplete.scss",
     deps = [
+        "//:mdc_sass_lib",
         "//src/cdk:sass_lib",
-        "//src/material/core:core_scss_lib",
     ],
 )
 
 ng_test_library(
-    name = "unit_test_sources",
+    name = "autocomplete_tests_lib",
     srcs = glob(
         ["**/*.spec.ts"],
-        exclude = ["**/*.e2e.spec.ts"],
+        exclude = [
+            "**/*.e2e.spec.ts",
+        ],
     ),
     deps = [
         ":autocomplete",
@@ -67,9 +57,8 @@ ng_test_library(
         "//src/cdk/scrolling",
         "//src/cdk/testing/private",
         "//src/material/core",
-        "//src/material/legacy-core",
-        "//src/material/legacy-form-field",
-        "//src/material/legacy-input",
+        "//src/material/form-field",
+        "//src/material/input",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
         "@npm//rxjs",
@@ -78,7 +67,9 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [":unit_test_sources"],
+    deps = [
+        ":autocomplete_tests_lib",
+    ],
 )
 
 markdown_to_html(

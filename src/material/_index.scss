@@ -74,6 +74,8 @@
   strong-focus-indicators-color, strong-focus-indicators-theme;
 @forward './autocomplete/autocomplete-theme' as autocomplete-* show autocomplete-theme,
   autocomplete-color, autocomplete-typography;
+@forward './legacy-autocomplete/autocomplete-theme' as legacy-autocomplete-* show
+  legacy-autocomplete-theme, legacy-autocomplete-color, legacy-autocomplete-typography;
 @forward './badge/badge-theme' as badge-* show badge-theme, badge-color, badge-typography;
 @forward './bottom-sheet/bottom-sheet-theme' as bottom-sheet-* show bottom-sheet-theme,
   bottom-sheet-color, bottom-sheet-typography;

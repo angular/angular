@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './module';
 export * from './autocomplete';
-export * from './autocomplete-origin';
+export * from './autocomplete-module';
 export * from './autocomplete-trigger';
+export * from './autocomplete-origin';
 
 // Everything from `material/autocomplete`, except for `MatAutcomplete` and `MatAutocompleteModule`.
 export {

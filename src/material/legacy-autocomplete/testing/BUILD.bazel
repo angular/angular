@@ -9,9 +9,10 @@ ts_library(
         exclude = ["**/*.spec.ts"],
     ),
     deps = [
+        "//src/cdk/coercion",
         "//src/cdk/testing",
         "//src/material/autocomplete/testing",
-        "//src/material/core/testing",
+        "//src/material/legacy-core/testing",
     ],
 )
 
@@ -22,11 +23,14 @@ filegroup(
 
 ng_test_library(
     name = "unit_tests_lib",
-    srcs = glob(["**/*.spec.ts"]),
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["shared.spec.ts"],
+    ),
     deps = [
         ":testing",
-        "//src/material-experimental/mdc-autocomplete",
         "//src/material/autocomplete/testing:harness_tests_lib",
+        "//src/material/legacy-autocomplete",
     ],
 )
 

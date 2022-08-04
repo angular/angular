@@ -1,11 +1,13 @@
 <ng-template let-formFieldId="id">
-  <div class="mat-autocomplete-panel"
-       role="listbox"
-       [id]="id"
-       [attr.aria-label]="ariaLabel || null"
-       [attr.aria-labelledby]="_getPanelAriaLabelledby(formFieldId)"
-       [ngClass]="_classList"
-       #panel>
+  <div
+    class="mat-mdc-autocomplete-panel mdc-menu-surface mdc-menu-surface--open"
+    role="listbox"
+    [id]="id"
+    [ngClass]="_classList"
+    [attr.aria-label]="ariaLabel || null"
+    [attr.aria-labelledby]="_getPanelAriaLabelledby(formFieldId)"
+    [@panelAnimation]="isOpen ? 'visible' : 'hidden'"
+    #panel>
     <ng-content></ng-content>
   </div>
 </ng-template>

@@ -5,11 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {Directive, forwardRef} from '@angular/core';
 import {NG_VALUE_ACCESSOR} from '@angular/forms';
-import {_MatAutocompleteTriggerBase} from '@angular/material/autocomplete';
-import {_countGroupLabelsBeforeOption, _getOptionScrollPosition} from '@angular/material/core';
+import {
+  _MatAutocompleteBase,
+  _MatAutocompleteTriggerBase,
+  _MatAutocompleteOriginBase,
+} from '@angular/material/autocomplete';
 
 /**
  * Provider that allows the autocomplete to register as a ControlValueAccessor.
@@ -17,14 +19,14 @@ import {_countGroupLabelsBeforeOption, _getOptionScrollPosition} from '@angular/
  */
 export const MAT_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => MatAutocompleteTrigger),
+  useExisting: forwardRef(() => MatLegacyAutocompleteTrigger),
   multi: true,
 };
 
 @Directive({
   selector: `input[matAutocomplete], textarea[matAutocomplete]`,
   host: {
-    'class': 'mat-mdc-autocomplete-trigger',
+    'class': 'mat-autocomplete-trigger',
     '[attr.autocomplete]': 'autocompleteAttribute',
     '[attr.role]': 'autocompleteDisabled ? null : "combobox"',
     '[attr.aria-autocomplete]': 'autocompleteDisabled ? null : "list"',
@@ -43,6 +45,6 @@ export const MAT_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
   exportAs: 'matAutocompleteTrigger',
   providers: [MAT_AUTOCOMPLETE_VALUE_ACCESSOR],
 })
-export class MatAutocompleteTrigger extends _MatAutocompleteTriggerBase {
-  protected _aboveClass = 'mat-mdc-autocomplete-panel-above';
+export class MatLegacyAutocompleteTrigger extends _MatAutocompleteTriggerBase {
+  protected _aboveClass = 'mat-autocomplete-panel-above';
 }

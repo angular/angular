@@ -1,6 +1,6 @@
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
-import {MatAutocompleteModule} from '@angular/material-experimental/mdc-autocomplete';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatInputHarness} from '@angular/material/input/testing';
 import {MatSelectModule} from '@angular/material/select';
 import {MatSelectHarness} from '@angular/material/select/testing';

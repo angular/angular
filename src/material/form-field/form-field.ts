@@ -290,7 +290,7 @@ export class MatFormField
   private _needsOutlineLabelOffsetUpdateOnStable = false;
 
   constructor(
-    private _elementRef: ElementRef,
+    public _elementRef: ElementRef,
     private _changeDetectorRef: ChangeDetectorRef,
     private _ngZone: NgZone,
     private _dir: Directionality,
