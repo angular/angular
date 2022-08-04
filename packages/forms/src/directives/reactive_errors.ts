@@ -81,6 +81,12 @@ export const disabledAttrWarning = `
     first: new FormControl({value: 'Nancy', disabled: true}, Validators.required),
     last: new FormControl('Drew', Validators.required)
   });
+
+  // To dynamically enable/disable the form control, you can use
+  form.get('first')?.enable();
+
+  // Or
+  form.get('last')?.disable();
 `;
 
 export const asyncValidatorsDroppedWithOptsWarning = `
