@@ -22,7 +22,9 @@ Before you can build and test Angular, you must install and configure the
 following products on your development machine:
 
 * [Git](https://git-scm.com/) and/or the [**GitHub app**](https://desktop.github.com/) (for Mac and Windows);
-  [GitHub's Guide to Installing Git](https://help.github.com/articles/set-up-git) is a good source of information.
+  [GitHub's Guide to Installing Git](https://help.github.com/articles/set-up-git) is a good source of information.\
+  **Windows Users**: Git Bash or an equivalent shell is required\
+  *Windows Powershell and cmd shells are not supported [#46780](https://github.com/angular/angular/issues/46780) so some commands might fail*
 
 * [Node.js](https://nodejs.org), (version specified in the engines field of [`package.json`](../package.json)) which is used to run a development web server,
   run tests, and generate distributable files.
@@ -65,15 +67,6 @@ yarn install
 ## Building
 
 To build Angular run:
-
-Windows users:\
-Powershell and cmd shells are not supported due to indirect Bazel requirements\
-Build might fail with error like-
-```shell
-BazelWorkspaceStatusAction stable-status.txt failed: Failed to determine workspace status
-```
-Use Git bash or equivalent until we add support for these shells as well
-https://github.com/angular/angular/issues/46780
 
 ```shell
 yarn build
