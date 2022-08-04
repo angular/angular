@@ -91,7 +91,7 @@
     {
       "matchPaths": ["aio/tools/examples/shared/*"],
       "postUpgradeTasks": {
-        "commands": ["yarn run sync-deps"],
+        "commands": ["yarn --cwd=aio/tools/examples/shared run sync-deps"],
         "fileFilters": ["aio/tools/examples/shared/boilerplate/**"]
       }
     },
