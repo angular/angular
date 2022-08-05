@@ -4,7 +4,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AsyncSubject, Observable, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { htmlEscape } from 'safevalues';
-import { htmlFromStringKnownToSatisfyTypeContract } from 'safevalues/unsafe/reviewed';
+import { htmlSafeByReview } from 'safevalues/restricted/reviewed';
 
 import { DocumentContents, UnsafeDocumentContents } from './document-contents';
 export { DocumentContents } from './document-contents';
@@ -17,7 +17,7 @@ export const FETCHING_ERROR_ID = 'fetching-error';
 
 export const CONTENT_URL_PREFIX = 'generated/';
 export const DOC_CONTENT_URL_PREFIX = CONTENT_URL_PREFIX + 'docs/';
-const FETCHING_ERROR_CONTENTS = (path: string) => htmlFromStringKnownToSatisfyTypeContract(`
+const FETCHING_ERROR_CONTENTS = (path: string) => htmlSafeByReview(`
   <div class="nf-container l-flex-wrap flex-center">
     <div class="nf-icon material-icons">error_outline</div>
     <div class="nf-response l-flex-wrap center">
@@ -74,7 +74,7 @@ export class DocumentService {
                   null :
                   // SECURITY: HTML is authored by the documentation team and is fetched directly
                   // from the server
-                  htmlFromStringKnownToSatisfyTypeContract(data.contents, '^')
+                  htmlSafeByReview(data.contents, '^')
             })),
             catchError((error: HttpErrorResponse) =>
               error.status === 404 ? this.getFileNotFoundDoc(id) : this.getErrorDoc(id, error)

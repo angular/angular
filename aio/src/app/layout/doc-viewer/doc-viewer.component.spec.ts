@@ -3,7 +3,7 @@ import { Meta, Title } from '@angular/platform-browser';
 
 import { Observable, asapScheduler, of, lastValueFrom } from 'rxjs';
 import { EMPTY_HTML, htmlEscape } from 'safevalues';
-import { htmlFromStringKnownToSatisfyTypeContract } from 'safevalues/unsafe/reviewed';
+import { htmlSafeByReview } from 'safevalues/restricted/reviewed';
 
 import { FILE_NOT_FOUND_ID, FETCHING_ERROR_ID } from 'app/documents/document.service';
 import { CustomElementsModule } from 'app/custom-elements/custom-elements.module';
@@ -319,7 +319,7 @@ describe('DocViewerComponent', () => {
       beforeEach(() => swapViewsSpy.and.callThrough());
 
       it('should display the document contents', async () => {
-        const contents = htmlFromStringKnownToSatisfyTypeContract('<h1>Hello,</h1> <div>world!</div>', 'constant HTML');
+        const contents = htmlSafeByReview('<h1>Hello,</h1> <div>world!</div>', 'constant HTML');
         await doRender(contents);
 
         expect(docViewerEl.innerHTML).toContain(contents.toString());

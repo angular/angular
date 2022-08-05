@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 
-import { scriptUrl, unwrapScriptUrlForSink } from 'safevalues';
+import { trustedResourceUrl, unwrapResourceUrl } from 'safevalues';
 
 import { formatErrorEventForAnalytics } from './analytics-format-error';
 import { WindowToken } from '../shared/window';
@@ -82,7 +82,7 @@ export class AnalyticsService {
   private _installGlobalSiteTag() {
     const window = this.window;
     const url: TrustedScriptURL =
-      scriptUrl`https://www.googletagmanager.com/gtag/js?id=${environment.googleAnalyticsId}`;
+      trustedResourceUrl`https://www.googletagmanager.com/gtag/js?id=${environment.googleAnalyticsId}`;
 
     // Note: This cannot be an arrow function as `gtag.js` expects an actual `Arguments`
     // instance with e.g. `callee` to be set. Do not attempt to change this and keep this
@@ -103,7 +103,7 @@ export class AnalyticsService {
 
     const el = window.document.createElement('script');
     el.async = true;
-    el.src = unwrapScriptUrlForSink(url);
+    el.src = unwrapResourceUrl(url) as string;
     window.document.head.appendChild(el);
   }
 
