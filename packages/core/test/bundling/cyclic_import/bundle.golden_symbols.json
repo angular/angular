@@ -495,6 +495,9 @@
     "name": "detachMovedView"
   },
   {
+    "name": "detectChangesInternal"
+  },
+  {
     "name": "diPublicInInjector"
   },
   {
@@ -612,13 +615,13 @@
     "name": "getNullInjector"
   },
   {
+    "name": "getOrCreateComponentTView"
+  },
+  {
     "name": "getOrCreateInjectable"
   },
   {
     "name": "getOrCreateNodeInjectorForNode"
-  },
-  {
-    "name": "getOrCreateTComponentView"
   },
   {
     "name": "getOrCreateTNode"
@@ -867,9 +870,6 @@
     "name": "promise"
   },
   {
-    "name": "readPatchedLView"
-  },
-  {
     "name": "refCount"
   },
   {
@@ -904,9 +904,6 @@
   },
   {
     "name": "renderComponent"
-  },
-  {
-    "name": "renderComponentOrTemplate"
   },
   {
     "name": "renderView"
