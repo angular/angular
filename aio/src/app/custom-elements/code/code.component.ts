@@ -5,8 +5,8 @@ import { PrettyPrinter } from './pretty-printer.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { unwrapHtmlForSink } from 'safevalues';
-import { htmlFromStringKnownToSatisfyTypeContract } from 'safevalues/unsafe/reviewed';
+import { unwrapHtml } from 'safevalues';
+import { htmlSafeByReview } from 'safevalues/restricted/reviewed';
 import { fromOuterHTML } from 'app/shared/security';
 
 /**
@@ -149,7 +149,7 @@ export class CodeComponent implements OnChanges {
   private setCodeHtml(formattedCode: TrustedHTML) {
     // **Security:** Code example content is provided by docs authors and as such its considered to
     // be safe for innerHTML purposes.
-    this.codeContainer.nativeElement.innerHTML = unwrapHtmlForSink(formattedCode);
+    this.codeContainer.nativeElement.innerHTML = unwrapHtml(formattedCode);
   }
 
   /** Gets the textContent of the displayed code element. */
@@ -198,7 +198,7 @@ function leftAlign(text: TrustedHTML): TrustedHTML {
     }
   });
 
-  return htmlFromStringKnownToSatisfyTypeContract(
+  return htmlSafeByReview(
       lines.map(line => line.slice(indent)).join('\n').trim(),
       'safe manipulation of existing trusted HTML');
 }
