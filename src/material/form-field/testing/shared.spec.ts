@@ -189,7 +189,9 @@ export function runHarnessTests(
 
     fixture.componentInstance.requiredControl.setValue('');
     dispatchFakeEvent(fixture.nativeElement.querySelector('#with-errors input'), 'blur');
-    expect(await formFields[1].getTextErrors()).toEqual(['Error 1', 'Error 2']);
+    expect(await formFields[1].getTextErrors()).toEqual(
+      isMdcImplementation ? ['Error 1', 'Error 2'] : ['Error 1'],
+    );
   });
 
   it('should be able to get hint messages of form-field', async () => {
@@ -271,7 +273,7 @@ export function runHarnessTests(
       <input matInput [formControl]="requiredControl">
 
       <mat-error>Error 1</mat-error>
-      <mat-error>Error 2</mat-error>
+      <div matError>Error 2</div>
       <mat-hint align="start">Hint 1</mat-hint>
       <mat-hint align="end">Hint 2</mat-hint>
     </mat-form-field>

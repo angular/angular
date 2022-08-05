@@ -19,7 +19,7 @@ export const MAT_ERROR = new InjectionToken<MatError>('MatError');
 
 /** Single error message to be shown underneath the form-field. */
 @Directive({
-  selector: 'mat-error',
+  selector: 'mat-error, [matError]',
   host: {
     'class': 'mat-mdc-form-field-error mat-mdc-form-field-bottom-align',
     'aria-atomic': 'true',

@@ -83,7 +83,7 @@
      [ngSwitch]="_getDisplayedMessages()">
   <div class="mat-mdc-form-field-error-wrapper" *ngSwitchCase="'error'"
        [@transitionMessages]="_subscriptAnimationState">
-    <ng-content select="mat-error"></ng-content>
+    <ng-content select="mat-error, [matError]"></ng-content>
   </div>
 
   <div class="mat-mdc-form-field-hint-wrapper" *ngSwitchCase="'hint'"
