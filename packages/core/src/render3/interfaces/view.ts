@@ -175,8 +175,8 @@ export interface LView<T = unknown> extends Array<any> {
   /**
    * - For dynamic views, this is the context with which to render the template (e.g.
    *   `NgForContext`), or `{}` if not defined explicitly.
-   * - For root view of the root component the context contains change detection data.
-   * - For non-root components, the context is the component instance,
+   * - For root view of the root component it's a reference to the component instance itself.
+   * - For components, the context is a reference to the component instance itself.
    * - For inline views, the context is null.
    */
   [CONTEXT]: T;
@@ -787,16 +787,6 @@ export interface TView {
    * view. This means that the view is likely corrupted and we should try to recover it.
    */
   incompleteFirstPass: boolean;
-}
-
-/**
- * Contains information which is shared for all bootstrapped components.
- */
-export interface RootContext<T = unknown> {
-  /**
-   * The components that were instantiated within this context.
-   */
-  components: T[];
 }
 
 /** Single hook callback function. */
