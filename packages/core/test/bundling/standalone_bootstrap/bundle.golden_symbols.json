@@ -423,6 +423,9 @@
     "name": "detachMovedView"
   },
   {
+    "name": "detectChangesInternal"
+  },
+  {
     "name": "empty"
   },
   {
@@ -723,9 +726,6 @@
     "name": "promise"
   },
   {
-    "name": "readPatchedLView"
-  },
-  {
     "name": "refCount"
   },
   {
@@ -757,9 +757,6 @@
   },
   {
     "name": "renderComponent"
-  },
-  {
-    "name": "renderComponentOrTemplate"
   },
   {
     "name": "renderView"

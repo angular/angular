@@ -906,6 +906,9 @@
     "name": "detachView"
   },
   {
+    "name": "detectChangesInternal"
+  },
+  {
     "name": "diPublicInInjector"
   },
   {
@@ -1116,6 +1119,9 @@
     "name": "getNullInjector"
   },
   {
+    "name": "getOrCreateComponentTView"
+  },
+  {
     "name": "getOrCreateInjectable"
   },
   {
@@ -1126,9 +1132,6 @@
   },
   {
     "name": "getOrCreateRouteInjectorIfNeeded"
-  },
-  {
-    "name": "getOrCreateTComponentView"
   },
   {
     "name": "getOrCreateTNode"
@@ -1312,9 +1315,6 @@
   },
   {
     "name": "isContentQueryHost"
-  },
-  {
-    "name": "isCreationMode"
   },
   {
     "name": "isCssClassMatching"
@@ -1560,9 +1560,6 @@
     "name": "provideRoutes"
   },
   {
-    "name": "readPatchedLView"
-  },
-  {
     "name": "redirectIfUrlTree"
   },
   {
@@ -1603,9 +1600,6 @@
   },
   {
     "name": "renderComponent"
-  },
-  {
-    "name": "renderComponentOrTemplate"
   },
   {
     "name": "renderStringify"
