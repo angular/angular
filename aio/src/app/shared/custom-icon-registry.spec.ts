@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { ErrorHandler } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { unwrapHtmlForSink } from 'safevalues';
+import { unwrapHtml } from 'safevalues';
 import { concatHtmls } from 'safevalues/builders/html_builders';
 import { CustomIconRegistry, SvgIconInfo } from './custom-icon-registry';
 import { svg } from './security';
@@ -69,6 +69,6 @@ describe('CustomIconRegistry', () => {
 
 function createSvg(svgSrc: TrustedHTML): SVGElement {
   const div = document.createElement('div');
-  div.innerHTML = unwrapHtmlForSink(svgSrc);
+  div.innerHTML = unwrapHtml(svgSrc) as string;
   return div.querySelector('svg') as SVGElement;
 }
