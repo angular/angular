@@ -2,7 +2,7 @@
   "cli-hello-world": {
     "uncompressed": {
       "runtime": 1083,
-      "main": 125276,
+      "main": 124633,
       "polyfills": 33824
     }
   },
@@ -19,15 +19,15 @@
   "cli-hello-world-ivy-compat": {
     "uncompressed": {
       "runtime": 1102,
-      "main": 132262,
+      "main": 131619,
       "polyfills": 33957
     }
   },
   "cli-hello-world-ivy-i18n": {
     "uncompressed": {
       "runtime": 926,
-      "main": 124860,
-      "polyfills": 35246
+      "main": 124269,
+      "polyfills": 35252
     }
   },
   "cli-hello-world-lazy": {
@@ -41,21 +41,21 @@
   "forms": {
     "uncompressed": {
       "runtime": 1060,
-      "main": 157621,
+      "main": 156626,
       "polyfills": 33915
     }
   },
   "animations": {
     "uncompressed": {
       "runtime": 1070,
-      "main": 156816,
+      "main": 156225,
       "polyfills": 33814
     }
   },
   "standalone-bootstrap": {
     "uncompressed": {
       "runtime": 1090,
-      "main": 83515,
+      "main": 82906,
       "polyfills": 33945
     }
   },
