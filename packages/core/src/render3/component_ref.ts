@@ -32,7 +32,6 @@ import {reportUnknownPropertyError} from './instructions/element_validation';
 import {addToViewTree, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, markDirtyIfOnPush, registerHostBindingOpCodes, renderView, setInputsForProperty} from './instructions/shared';
 import {ComponentDef, RenderFlags} from './interfaces/definition';
 import {PropertyAliasValue, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
-import {PlayerHandler} from './interfaces/player';
 import {Renderer, RendererFactory} from './interfaces/renderer';
 import {RElement, RNode} from './interfaces/renderer_dom';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, TVIEW, TViewType} from './interfaces/view';
@@ -43,7 +42,6 @@ import {enterView, getCurrentTNode, getLView, leaveView, setSelectedIndex} from 
 import {computeStaticStyling} from './styling/static_styling';
 import {setUpAttributes} from './util/attrs_utils';
 import {stringifyForError} from './util/stringify_utils';
-import {getRootContext} from './util/view_traversal_utils';
 import {getTNode} from './util/view_utils';
 import {RootViewRef, ViewRef} from './view_ref';
 
