@@ -7362,10 +7362,15 @@ jake@^10.8.5:
     filelist "^1.0.1"
     minimatch "^3.0.4"
 
-jasmine-core@^4.1.0, jasmine-core@^4.2.0, jasmine-core@~4.2.0:
+jasmine-core@^4.1.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-4.2.0.tgz#0605bea284d6d78276f43c47de2532ecd4a73b00"
   integrity sha512-OcFpBrIhnbmb9wfI8cqPSJ50pv3Wg4/NSgoZIqHzIwO/2a9qivJWzv8hUvaREIMYYJBas6AvfXATFdVuzzCqVw==
+
+jasmine-core@^4.3.0, jasmine-core@~4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-4.3.0.tgz#aee841fbe7373c2586ed8d8d48f5cc4a88be8390"
+  integrity sha512-qybtBUesniQdW6n+QIHMng2vDOHscIC/dEXjW+JzO9+LoAZMb03RCUC5xFOv/btSKPm1xL42fn+RjlU4oB42Lg==
 
 jasmine-core@~2.8.0:
   version "2.8.0"
@@ -7388,13 +7393,13 @@ jasmine@2.8.0:
     glob "^7.0.6"
     jasmine-core "~2.8.0"
 
-jasmine@~4.2.0:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-4.2.1.tgz#55f81ab9d5d32f2645aa598d1356b6858407f4a9"
-  integrity sha512-LNZEKcScnjPRj5J92I1P515bxTvaHMRAERTyCoaGnWr87eOT6zv+b3M+kxKdH/06Gz4TnnXyHbXLiPtMHZ0ncw==
+jasmine@~4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-4.3.0.tgz#f99e9bc2a94e8281d2490482d53a3406760bd7f4"
+  integrity sha512-ieBmwkd8L1DXnvSnxx7tecXgA0JDgMXPAwBcqM4lLPedJeI9hTHuWifPynTC+dLe4Y+GkSPSlbqqrmYIgGzYUw==
   dependencies:
     glob "^7.1.6"
-    jasmine-core "^4.2.0"
+    jasmine-core "^4.3.0"
 
 jasminewd2@^2.1.0:
   version "2.2.0"
@@ -7703,10 +7708,10 @@ karma-jasmine-html-reporter@~2.0.0:
   resolved "https://registry.yarnpkg.com/karma-jasmine-html-reporter/-/karma-jasmine-html-reporter-2.0.0.tgz#76c26ce40e217dc36a630fbcd7b31c3462948bf2"
   integrity sha512-SB8HNNiazAHXM1vGEzf8/tSyEhkfxuDdhYdPBX2Mwgzt0OuF2gicApQ+uvXLID/gXyJQgvrM9+1/2SxZFUUDIA==
 
-karma-jasmine@~5.0.0:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/karma-jasmine/-/karma-jasmine-5.0.1.tgz#854e9204b62cfa07242a8c66b8ab83751a896d02"
-  integrity sha512-FkL1Kk+JAKmim8VWU8RXKZBpl0lLI7J8LijM0/q7oP7emfB6QMZV1Az+JgqGKSLpF0tYaav+KUVFQroZUxQTHA==
+karma-jasmine@~5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/karma-jasmine/-/karma-jasmine-5.1.0.tgz#3af4558a6502fa16856a0f346ec2193d4b884b2f"
+  integrity sha512-i/zQLFrfEpRyQoJF9fsCdTMOF5c2dK7C7OmsuKg2D0YSsuZSfQDiLuaiktbuio6F2wiCsZSnSnieIQ0ant/uzQ==
   dependencies:
     jasmine-core "^4.1.0"
 
@@ -7717,10 +7722,10 @@ karma-source-map-support@1.4.0:
   dependencies:
     source-map-support "^0.5.5"
 
-karma@~6.3.2:
-  version "6.3.20"
-  resolved "https://registry.yarnpkg.com/karma/-/karma-6.3.20.tgz#12f5c3b0e68f204607cb0a3a78d4751b42ef61a8"
-  integrity sha512-HRNQhMuKOwKpjYlWiJP0DUrJOh+QjaI/DTaD8b9rEm4Il3tJ8MijutVZH4ts10LuUFst/CedwTS6vieCN8yTSw==
+karma@~6.4.0:
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/karma/-/karma-6.4.0.tgz#82652dfecdd853ec227b74ed718a997028a99508"
+  integrity sha512-s8m7z0IF5g/bS5ONT7wsOavhW4i4aFkzD4u4wgzAQWT4HGUeWI3i21cK2Yz6jndMAeHETp5XuNsRoyGJZXVd4w==
   dependencies:
     "@colors/colors" "1.5.0"
     body-parser "^1.19.0"
