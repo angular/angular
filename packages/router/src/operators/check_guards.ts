@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector} from '@angular/core';
+import {EnvironmentInjector, ProviderToken} from '@angular/core';
 import {concat, defer, from, MonoTypeOperatorFunction, Observable, of, OperatorFunction, pipe} from 'rxjs';
 import {concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {ActivationStart, ChildActivationStart, Event} from '../events';
-import {Route} from '../models';
+import {CanActivateChild, CanActivateChildFn, CanActivateFn, Route} from '../models';
 import {redirectingNavigationError} from '../navigation_canceling_error';
 import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
@@ -109,16 +109,17 @@ function runCanActivate(
   const canActivate = futureARS.routeConfig ? futureARS.routeConfig.canActivate : null;
   if (!canActivate || canActivate.length === 0) return of(true);
 
-  const canActivateObservables = canActivate.map((c: any) => {
-    return defer(() => {
-      const closestInjector = getClosestRouteInjector(futureARS) ?? injector;
-      const guard = getTokenOrFunctionIdentity<any>(c, closestInjector);
-      const guardVal = isCanActivate(guard) ?
-          guard.canActivate(futureARS, futureRSS) :
-          closestInjector.runInContext<boolean|UrlTree>(() => guard(futureARS, futureRSS));
-      return wrapIntoObservable(guardVal).pipe(first());
-    });
-  });
+  const canActivateObservables =
+      canActivate.map((canActivate: CanActivateFn|ProviderToken<unknown>) => {
+        return defer(() => {
+          const closestInjector = getClosestRouteInjector(futureARS) ?? injector;
+          const guard = getTokenOrFunctionIdentity<CanActivate>(canActivate, closestInjector);
+          const guardVal = isCanActivate(guard) ?
+              guard.canActivate(futureARS, futureRSS) :
+              closestInjector.runInContext(() => (guard as CanActivateFn)(futureARS, futureRSS));
+          return wrapIntoObservable(guardVal).pipe(first());
+        });
+      });
   return of(canActivateObservables).pipe(prioritizedGuardValue());
 }
 
@@ -134,14 +135,16 @@ function runCanActivateChild(
 
   const canActivateChildGuardsMapped = canActivateChildGuards.map((d: any) => {
     return defer(() => {
-      const guardsMapped = d.guards.map((c: any) => {
-        const closestInjector = getClosestRouteInjector(d.node) ?? injector;
-        const guard = getTokenOrFunctionIdentity<any>(c, closestInjector);
-        const guardVal = isCanActivateChild(guard) ?
-            guard.canActivateChild(futureARS, futureRSS) :
-            closestInjector.runInContext(() => guard(futureARS, futureRSS));
-        return wrapIntoObservable(guardVal).pipe(first());
-      });
+      const guardsMapped =
+          d.guards.map((canActivateChild: CanActivateChildFn|ProviderToken<unknown>) => {
+            const closestInjector = getClosestRouteInjector(d.node) ?? injector;
+            const guard =
+                getTokenOrFunctionIdentity<CanActivateChild>(canActivateChild, closestInjector);
+            const guardVal = isCanActivateChild(guard) ?
+                guard.canActivateChild(futureARS, futureRSS) :
+                closestInjector.runInContext(() => guard(futureARS, futureRSS));
+            return wrapIntoObservable(guardVal).pipe(first());
+          });
       return of(guardsMapped).pipe(prioritizedGuardValue());
     });
   });

@@ -242,6 +242,10 @@ export {
   transitiveScopesFor as ɵtransitiveScopesFor,
 } from './render3/jit/module';
 export {
+  FactoryTarget as ɵɵFactoryTarget,
+  ɵɵngDeclareClassMetadata,
+  ɵɵngDeclareComponent,
+  ɵɵngDeclareDirective,
   ɵɵngDeclareFactory,
   ɵɵngDeclareInjectable,
   ɵɵngDeclareInjector,
