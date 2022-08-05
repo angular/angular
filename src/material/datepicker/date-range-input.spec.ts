@@ -1,4 +1,4 @@
-import {Type, Component, ViewChild, ElementRef, Directive} from '@angular/core';
+import {Type, Component, ViewChild, ElementRef, Directive, Provider} from '@angular/core';
 import {ComponentFixture, TestBed, inject, fakeAsync, tick, flush} from '@angular/core/testing';
 import {
   FormsModule,
@@ -10,6 +10,7 @@ import {
   NgModel,
 } from '@angular/forms';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {Directionality} from '@angular/cdk/bidi';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {ErrorStateMatcher, MatNativeDateModule} from '@angular/material/core';
 import {MatDatepickerModule} from './datepicker-module';
@@ -17,7 +18,7 @@ import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '../../cdk/testing/private';
 import {FocusMonitor} from '@angular/cdk/a11y';
-import {BACKSPACE} from '@angular/cdk/keycodes';
+import {BACKSPACE, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
 import {MatDateRangeInput} from './date-range-input';
 import {MatDateRangePicker} from './date-range-picker';
 import {MatStartDate, MatEndDate} from './date-range-input-parts';
@@ -27,6 +28,7 @@ describe('MatDateRangeInput', () => {
   function createComponent<T>(
     component: Type<T>,
     declarations: Type<any>[] = [],
+    providers: Provider[] = [],
   ): ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [
@@ -38,6 +40,7 @@ describe('MatDateRangeInput', () => {
         ReactiveFormsModule,
         MatNativeDateModule,
       ],
+      providers,
       declarations: [component, ...declarations],
     });
 
@@ -719,6 +722,98 @@ describe('MatDateRangeInput', () => {
     fixture.detectChanges();
 
     expect(start.nativeElement.focus).not.toHaveBeenCalled();
+  });
+
+  it('moves focus between fields with arrow keys when cursor is at edge (LTR)', () => {
+    const fixture = createComponent(StandardRangePicker);
+    fixture.detectChanges();
+    const {start, end} = fixture.componentInstance;
+
+    start.nativeElement.value = '09/10/2020';
+    end.nativeElement.value = '10/10/2020';
+
+    start.nativeElement.focus();
+    start.nativeElement.setSelectionRange(9, 9);
+    dispatchKeyboardEvent(start.nativeElement, 'keydown', RIGHT_ARROW);
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(start.nativeElement);
+
+    start.nativeElement.setSelectionRange(10, 10);
+    dispatchKeyboardEvent(start.nativeElement, 'keydown', LEFT_ARROW);
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(start.nativeElement);
+
+    start.nativeElement.setSelectionRange(10, 10);
+    dispatchKeyboardEvent(start.nativeElement, 'keydown', RIGHT_ARROW);
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(end.nativeElement);
+
+    end.nativeElement.setSelectionRange(1, 1);
+    dispatchKeyboardEvent(end.nativeElement, 'keydown', LEFT_ARROW);
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(end.nativeElement);
+
+    end.nativeElement.setSelectionRange(0, 0);
+    dispatchKeyboardEvent(end.nativeElement, 'keydown', RIGHT_ARROW);
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(end.nativeElement);
+
+    end.nativeElement.setSelectionRange(0, 0);
+    dispatchKeyboardEvent(end.nativeElement, 'keydown', LEFT_ARROW);
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(start.nativeElement);
+  });
+
+  it('moves focus between fields with arrow keys when cursor is at edge (RTL)', () => {
+    class RTL extends Directionality {
+      override readonly value = 'rtl';
+    }
+    const fixture = createComponent(
+      StandardRangePicker,
+      [],
+      [
+        {
+          provide: Directionality,
+          useFactory: () => new RTL(null),
+        },
+      ],
+    );
+    fixture.detectChanges();
+    const {start, end} = fixture.componentInstance;
+
+    start.nativeElement.value = '09/10/2020';
+    end.nativeElement.value = '10/10/2020';
+
+    start.nativeElement.focus();
+    start.nativeElement.setSelectionRange(9, 9);
+    dispatchKeyboardEvent(start.nativeElement, 'keydown', LEFT_ARROW);
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(start.nativeElement);
+
+    start.nativeElement.setSelectionRange(10, 10);
+    dispatchKeyboardEvent(start.nativeElement, 'keydown', RIGHT_ARROW);
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(start.nativeElement);
+
+    start.nativeElement.setSelectionRange(10, 10);
+    dispatchKeyboardEvent(start.nativeElement, 'keydown', LEFT_ARROW);
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(end.nativeElement);
+
+    end.nativeElement.setSelectionRange(1, 1);
+    dispatchKeyboardEvent(end.nativeElement, 'keydown', RIGHT_ARROW);
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(end.nativeElement);
+
+    end.nativeElement.setSelectionRange(0, 0);
+    dispatchKeyboardEvent(end.nativeElement, 'keydown', LEFT_ARROW);
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(end.nativeElement);
+
+    end.nativeElement.setSelectionRange(0, 0);
+    dispatchKeyboardEvent(end.nativeElement, 'keydown', RIGHT_ARROW);
+    fixture.detectChanges();
+    expect(document.activeElement).toBe(start.nativeElement);
   });
 
   it('should be able to get the input placeholder', () => {

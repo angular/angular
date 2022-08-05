@@ -893,6 +893,8 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpd
     // (undocumented)
     protected _getValueFromModel(modelValue: DateRange<D>): D | null;
     // (undocumented)
+    _onKeydown(event: KeyboardEvent): void;
+    // (undocumented)
     protected _shouldHandleChangeEvent(change: DateSelectionModelChange<DateRange<D>>): boolean;
     // (undocumented)
     protected _validator: ValidatorFn | null;
