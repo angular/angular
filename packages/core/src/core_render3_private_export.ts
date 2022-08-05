@@ -219,12 +219,6 @@ export {
   setDocument as ɵsetDocument
 } from './render3/interfaces/document';
 export {
-  Player as ɵPlayer,
-  PlayerFactory as ɵPlayerFactory,
-  PlayerHandler as ɵPlayerHandler,
-  PlayState as ɵPlayState,
-} from './render3/interfaces/player';
-export {
   compileComponent as ɵcompileComponent,
   compileDirective as ɵcompileDirective,
 } from './render3/jit/directive';
