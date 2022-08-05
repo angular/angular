@@ -7,7 +7,7 @@
 /src/material/button/**                            @andrewseguin
 /src/material/legacy-card/**                              @andrewseguin
 /src/material/legacy-checkbox/**                          @andrewseguin @devversion
-/src/material/chips/**                             @andrewseguin
+/src/material/legacy-chips/**                      @andrewseguin
 /src/material/datepicker/**                        @mmalerba @crisbeto @zarend
 /src/material/legacy-dialog/**                            @andrewseguin @crisbeto
 /src/material/divider/**                           @andrewseguin @crisbeto
@@ -114,7 +114,7 @@
 /src/material-experimental/mdc-button/**               @andrewseguin
 /src/material/card/**                                  @mmalerba
 /src/material/checkbox/**             @mmalerba
-/src/material-experimental/mdc-chips/**                @mmalerba
+/src/material/chips/**                                 @mmalerba @crisbeto
 /src/material-experimental/mdc-core/**                 @crisbeto
 /src/material/dialog/**               @devversion
 /src/material/form-field/**                            @devversion @mmalerba

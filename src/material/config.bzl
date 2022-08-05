@@ -21,6 +21,8 @@ entryPoints = [
     "legacy-checkbox/testing",
     "chips",
     "chips/testing",
+    "legacy-chips",
+    "legacy-chips/testing",
     "core",
     "core/testing",
     "legacy-core",

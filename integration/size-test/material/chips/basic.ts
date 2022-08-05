@@ -1,5 +1,5 @@
 import {Component, NgModule} from '@angular/core';
-import {MatChipsModule} from '@angular/material/chips';
+import {MatLegacyChipsModule} from '@angular/material/legacy-chips';
 
 /**
  * Basic component using `MatChipList` and `MatChip`. Other supported parts of the
@@ -15,7 +15,7 @@ import {MatChipsModule} from '@angular/material/chips';
 export class TestComponent {}
 
 @NgModule({
-  imports: [MatChipsModule],
+  imports: [MatLegacyChipsModule],
   declarations: [TestComponent],
   bootstrap: [TestComponent],
 })

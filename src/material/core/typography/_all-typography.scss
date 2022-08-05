@@ -44,7 +44,6 @@
   @include button-theme.typography($config);
   @include button-toggle-theme.typography($config);
   @include checkbox-theme.typography($config);
-  @include chips-theme.typography($config);
   @include divider-theme.typography($config);
   @include table-theme.typography($config);
   @include datepicker-theme.typography($config);
@@ -94,6 +93,7 @@
   @include select-theme.typography($config);
   @include autocomplete-theme.typography($config);
   @include dialog-theme.typography($config);
+  @include chips-theme.typography($config);
 }
 
 // @deprecated Use `all-component-typographies`.

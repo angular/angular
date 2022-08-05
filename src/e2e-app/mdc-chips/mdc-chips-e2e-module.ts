@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatChipsModule} from '@angular/material-experimental/mdc-chips';
+import {MatChipsModule} from '@angular/material/chips';
 import {MdcChipsE2e} from './mdc-chips-e2e';
 
 @NgModule({

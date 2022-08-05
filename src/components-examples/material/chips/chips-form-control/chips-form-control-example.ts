@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {MatChipInputEvent} from '@angular/material/chips';
+import {MatLegacyChipInputEvent} from '@angular/material/legacy-chips';
 
 /**
  * @title Chips with form control
@@ -14,7 +14,7 @@ export class ChipsFormControlExample {
   keywords = new Set(['angular', 'how-to', 'tutorial']);
   formControl = new FormControl(['angular']);
 
-  addKeywordFromInput(event: MatChipInputEvent) {
+  addKeywordFromInput(event: MatLegacyChipInputEvent) {
     if (event.value) {
       this.keywords.add(event.value);
       event.chipInput!.clear();

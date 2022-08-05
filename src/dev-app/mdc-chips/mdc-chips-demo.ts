@@ -10,11 +10,7 @@ import {Component} from '@angular/core';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {CommonModule} from '@angular/common';
 import {ThemePalette} from '@angular/material/core';
-import {
-  MatChipInputEvent,
-  MatChipEditedEvent,
-  MatChipsModule,
-} from '@angular/material-experimental/mdc-chips';
+import {MatChipInputEvent, MatChipEditedEvent, MatChipsModule} from '@angular/material/chips';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material-experimental/mdc-button';
 import {MatCardModule} from '@angular/material/card';

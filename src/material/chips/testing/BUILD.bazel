@@ -9,47 +9,33 @@ ts_library(
         exclude = ["**/*.spec.ts"],
     ),
     deps = [
+        "//src/cdk/coercion",
         "//src/cdk/testing",
+    ],
+)
+
+ng_test_library(
+    name = "unit_tests_lib",
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":testing",
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
+        "//src/material/chips",
+        "//src/material/icon",
+        "//src/material/icon/testing",
+        "@npm//@angular/forms",
+    ],
+)
+
+ng_web_test_suite(
+    name = "unit_tests",
+    deps = [
+        ":unit_tests_lib",
     ],
 )
 
 filegroup(
     name = "source-files",
     srcs = glob(["**/*.ts"]),
-)
-
-ng_test_library(
-    name = "harness_tests_lib",
-    srcs = ["shared.spec.ts"],
-    deps = [
-        ":testing",
-        "//src/cdk/testing",
-        "//src/cdk/testing/private",
-        "//src/cdk/testing/testbed",
-        "//src/material/chips",
-        "//src/material/icon",
-        "//src/material/icon/testing",
-        "//src/material/legacy-form-field",
-        "@npm//@angular/platform-browser",
-    ],
-)
-
-ng_test_library(
-    name = "unit_tests_lib",
-    srcs = glob(
-        ["**/*.spec.ts"],
-        exclude = ["shared.spec.ts"],
-    ),
-    deps = [
-        ":harness_tests_lib",
-        ":testing",
-        "//src/material/chips",
-        "//src/material/icon",
-        "//src/material/icon/testing",
-    ],
-)
-
-ng_web_test_suite(
-    name = "unit_tests",
-    deps = [":unit_tests_lib"],
 )

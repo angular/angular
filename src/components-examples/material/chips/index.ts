@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatLegacyAutocompleteModule} from '@angular/material/legacy-autocomplete';
-import {MatChipsModule} from '@angular/material/chips';
+import {MatLegacyChipsModule} from '@angular/material/legacy-chips';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {ChipsAutocompleteExample} from './chips-autocomplete/chips-autocomplete-example';
@@ -44,7 +44,7 @@ const EXAMPLES = [
     DragDropModule,
     MatLegacyAutocompleteModule,
     MatButtonModule,
-    MatChipsModule,
+    MatLegacyChipsModule,
     MatIconModule,
     MatLegacyFormFieldModule,
     ReactiveFormsModule,

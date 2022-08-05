@@ -7,7 +7,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatListModule} from '@angular/material-experimental/mdc-list';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
-import {MatChipsModule} from '@angular/material-experimental/mdc-chips';
+import {MatChipsModule} from '@angular/material/chips';
 import {MatMenuModule} from '@angular/material-experimental/mdc-menu';
 import {MatRadioModule} from '@angular/material-experimental/mdc-radio';
 import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-toggle';

@@ -1,0 +1,14 @@
+@forward '../core/style/private.import';
+@forward '../core/theming/theming.import';
+@forward '../core/typography/typography-utils.import';
+@forward 'chips-theme' hide $chip-remove-font-size, color, theme, typography;
+@forward 'chips-theme' as mat-* hide mat-chip-element-color, mat-chip-theme-color, mat-color,
+mat-density, mat-ripple-background, mat-theme, mat-typography;
+@forward 'chips-theme' as mat-chips-* hide $mat-chips-chip-remove-font-size,
+mat-chips-chip-element-color, mat-chips-chip-theme-color, mat-chips-density,
+mat-chips-ripple-background;
+
+@import '../core/style/private';
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/typography/typography-utils';

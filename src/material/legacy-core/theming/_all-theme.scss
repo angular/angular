@@ -10,6 +10,7 @@
 @use '../../legacy-select/select-theme';
 @use '../../legacy-autocomplete/autocomplete-theme';
 @use '../../legacy-dialog/dialog-theme';
+@use '../../legacy-chips/chips-theme';
 
 // Create a theme.
 @mixin all-legacy-component-themes($theme-or-color-config) {
@@ -25,6 +26,7 @@
     @include checkbox-theme.theme($theme-or-color-config);
     @include autocomplete-theme.theme($theme-or-color-config);
     @include dialog-theme.theme($theme-or-color-config);
+    @include chips-theme.theme($theme-or-color-config);
     @include all-theme.private-all-unmigrated-component-themes($theme-or-color-config);
   }
 }

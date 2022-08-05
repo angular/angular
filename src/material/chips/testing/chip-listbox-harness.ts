@@ -6,24 +6,51 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate, parallel} from '@angular/cdk/testing';
-import {MatChipOptionHarness} from './chip-option-harness';
+import {
+  ComponentHarness,
+  ComponentHarnessConstructor,
+  HarnessPredicate,
+  parallel,
+} from '@angular/cdk/testing';
 import {ChipListboxHarnessFilters, ChipOptionHarnessFilters} from './chip-harness-filters';
-import {_MatChipListHarnessBase} from './chip-list-harness';
+import {MatChipOptionHarness} from './chip-option-harness';
 
-/** Harness for interacting with a standard selectable chip list in tests. */
-export class MatChipListboxHarness extends _MatChipListHarnessBase {
-  /** The selector for the host element of a `MatChipList` instance. */
-  static hostSelector = '.mat-chip-list';
+/** Harness for interacting with a mat-chip-listbox in tests. */
+export class MatChipListboxHarness extends ComponentHarness {
+  static hostSelector = '.mat-mdc-chip-listbox';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatChipListHarness` that meets
-   * certain criteria.
-   * @param options Options for filtering which chip list instances are considered a match.
+   * Gets a `HarnessPredicate` that can be used to search for a chip listbox with specific
+   * attributes.
+   * @param options Options for narrowing the search.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: ChipListboxHarnessFilters = {}): HarnessPredicate<MatChipListboxHarness> {
-    return new HarnessPredicate(MatChipListboxHarness, options);
+  static with<T extends MatChipListboxHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: ChipListboxHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
+  }
+
+  /** Gets whether the chip listbox is disabled. */
+  async isDisabled(): Promise<boolean> {
+    return (await (await this.host()).getAttribute('aria-disabled')) === 'true';
+  }
+
+  /** Gets whether the chip listbox is required. */
+  async isRequired(): Promise<boolean> {
+    return (await (await this.host()).getAttribute('aria-required')) === 'true';
+  }
+
+  /** Gets whether the chip listbox is in multi selection mode. */
+  async isMultiple(): Promise<boolean> {
+    return (await (await this.host()).getAttribute('aria-multiselectable')) === 'true';
+  }
+
+  /** Gets whether the orientation of the chip list. */
+  async getOrientation(): Promise<'horizontal' | 'vertical'> {
+    const orientation = await (await this.host()).getAttribute('aria-orientation');
+    return orientation === 'vertical' ? 'vertical' : 'horizontal';
   }
 
   /**

@@ -12,6 +12,7 @@
 @use '../../legacy-select/select-theme';
 @use '../../legacy-autocomplete/autocomplete-theme';
 @use '../../legacy-dialog/dialog-theme';
+@use '../../legacy-chips/chips-theme';
 
 // Includes all of the typographic styles.
 @mixin all-legacy-component-typographies($config-or-theme: null) {
@@ -41,6 +42,7 @@
   @include checkbox-theme.typography($config);
   @include autocomplete-theme.typography($config);
   @include dialog-theme.typography($config);
+  @include chips-theme.typography($config);
 }
 
 // @deprecated Use `all-legacy-component-typographies`.

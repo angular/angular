@@ -1,10 +1,13 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {MatChipHarness, MatChipListboxHarness} from '@angular/material/chips/testing';
+import {
+  MatLegacyChipHarness,
+  MatLegacyChipListboxHarness,
+} from '@angular/material/legacy-chips/testing';
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {ChipsHarnessExample} from './chips-harness-example';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MatChipsModule} from '@angular/material/chips';
+import {MatLegacyChipsModule} from '@angular/material/legacy-chips';
 
 describe('ChipsHarnessExample', () => {
   let fixture: ComponentFixture<ChipsHarnessExample>;
@@ -12,7 +15,7 @@ describe('ChipsHarnessExample', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatChipsModule, NoopAnimationsModule],
+      imports: [MatLegacyChipsModule, NoopAnimationsModule],
       declarations: [ChipsHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(ChipsHarnessExample);
@@ -21,7 +24,7 @@ describe('ChipsHarnessExample', () => {
   });
 
   it('should get whether a chip list is disabled', async () => {
-    const chipList = await loader.getHarness(MatChipListboxHarness);
+    const chipList = await loader.getHarness(MatLegacyChipListboxHarness);
 
     expect(await chipList.isDisabled()).toBeFalse();
 
@@ -32,13 +35,13 @@ describe('ChipsHarnessExample', () => {
   });
 
   it('should get the orientation of a chip list', async () => {
-    const chipList = await loader.getHarness(MatChipListboxHarness);
+    const chipList = await loader.getHarness(MatLegacyChipListboxHarness);
 
     expect(await chipList.getOrientation()).toEqual('horizontal');
   });
 
   it('should be able to get the selected chips in a list', async () => {
-    const chipList = await loader.getHarness(MatChipListboxHarness);
+    const chipList = await loader.getHarness(MatLegacyChipListboxHarness);
     const chips = await chipList.getChips();
 
     expect((await chipList.getChips({selected: true})).length).toBe(0);
@@ -49,7 +52,7 @@ describe('ChipsHarnessExample', () => {
   });
 
   it('should be able to trigger chip removal', async () => {
-    const chip = await loader.getHarness(MatChipHarness);
+    const chip = await loader.getHarness(MatLegacyChipHarness);
     expect(fixture.componentInstance.remove).not.toHaveBeenCalled();
     await chip.remove();
     expect(fixture.componentInstance.remove).toHaveBeenCalled();

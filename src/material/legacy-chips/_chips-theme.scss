@@ -1,0 +1,127 @@
+@use 'sass:map';
+@use 'sass:meta';
+@use '../core/style/private';
+@use '../core/theming/theming';
+@use '../core/typography/typography';
+@use '../core/typography/typography-utils';
+
+$chip-remove-font-size: 18px;
+
+@mixin _element-color($foreground, $background) {
+  background-color: $background;
+  color: $foreground;
+
+  .mat-chip-remove {
+    color: $foreground;
+    opacity: 0.4;
+  }
+}
+
+
+// Applies the background color for a ripple element.
+// If the color value provided is not a Sass color,
+// we assume that we've been given a CSS variable.
+// Since we can't perform alpha-blending on a CSS variable,
+// we instead add the opacity directly to the ripple element.
+@mixin _ripple-background($palette, $default-contrast, $opacity) {
+  $background-color: theming.get-color-from-palette($palette, $default-contrast, $opacity);
+  background-color: $background-color;
+  @if (meta.type-of($background-color) != color) {
+    opacity: $opacity;
+  }
+}
+
+@mixin _palette-styles($palette) {
+  @include _element-color(theming.get-color-from-palette($palette, default-contrast),
+    theming.get-color-from-palette($palette));
+
+  .mat-ripple-element {
+    @include _ripple-background($palette, default-contrast, 0.1);
+  }
+}
+
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $is-dark-theme: map.get($config, is-dark);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
+
+  $unselected-background: theming.get-color-from-palette($background, unselected-chip);
+  $unselected-foreground: theming.get-color-from-palette($foreground, text);
+
+  .mat-chip.mat-standard-chip {
+    @include _element-color($unselected-foreground, $unselected-background);
+
+    &:not(.mat-chip-disabled) {
+      &:active {
+        @include private.private-theme-elevation(3, $config);
+      }
+
+      .mat-chip-remove:hover {
+        opacity: 0.54;
+      }
+    }
+
+    &.mat-chip-disabled {
+      opacity: 0.4;
+    }
+
+    &::after {
+      background: map.get($foreground, base);
+    }
+  }
+
+  .mat-chip.mat-standard-chip.mat-chip-selected {
+    &.mat-primary {
+      @include _palette-styles($primary);
+    }
+
+    &.mat-warn {
+      @include _palette-styles($warn);
+    }
+
+    &.mat-accent {
+      @include _palette-styles($accent);
+    }
+  }
+}
+
+@mixin typography($config-or-theme) {
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
+  .mat-chip {
+    font-size: typography-utils.font-size($config, body-2);
+    font-weight: typography-utils.font-weight($config, body-2);
+
+    .mat-chip-trailing-icon.mat-icon,
+    .mat-chip-remove.mat-icon {
+      font-size: $chip-remove-font-size;
+    }
+  }
+}
+
+@mixin _density($config-or-theme) {}
+
+@mixin theme($theme-or-color-config) {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-chips') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
+
+    @if $color != null {
+      @include color($color);
+    }
+    @if $density != null {
+      @include _density($density);
+    }
+    @if $typography != null {
+      @include typography($typography);
+    }
+  }
+}
+
+

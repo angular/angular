@@ -4,63 +4,86 @@
 
 ```ts
 
+import { AsyncFactoryFn } from '@angular/cdk/testing';
 import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
+import { ComponentHarnessConstructor } from '@angular/cdk/testing';
 import { ContentContainerComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
+import { TestElement } from '@angular/cdk/testing';
 import { TestKey } from '@angular/cdk/testing';
 
-// @public
+// @public (undocumented)
 export interface ChipAvatarHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public
+// @public (undocumented)
+export interface ChipGridHarnessFilters extends BaseHarnessFilters {
+}
+
+// @public (undocumented)
 export interface ChipHarnessFilters extends BaseHarnessFilters {
-    // @deprecated
-    selected?: boolean;
     text?: string | RegExp;
 }
 
-// @public
+// @public (undocumented)
 export interface ChipInputHarnessFilters extends BaseHarnessFilters {
     placeholder?: string | RegExp;
     value?: string | RegExp;
 }
 
-// @public
+// @public (undocumented)
 export interface ChipListboxHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public
-export interface ChipListHarnessFilters extends BaseHarnessFilters {
-}
-
-// @public
+// @public (undocumented)
 export interface ChipOptionHarnessFilters extends ChipHarnessFilters {
     selected?: boolean;
 }
 
-// @public
+// @public (undocumented)
 export interface ChipRemoveHarnessFilters extends BaseHarnessFilters {
+}
+
+// @public (undocumented)
+export interface ChipRowHarnessFilters extends ChipHarnessFilters {
+}
+
+// @public (undocumented)
+export interface ChipSetHarnessFilters extends BaseHarnessFilters {
+}
+
+// @public
+export class MatChipAvatarHarness extends ComponentHarness {
+    // (undocumented)
+    static hostSelector: string;
+    static with<T extends MatChipAvatarHarness>(this: ComponentHarnessConstructor<T>, options?: ChipAvatarHarnessFilters): HarnessPredicate<T>;
+}
+
+// @public
+export class MatChipGridHarness extends ComponentHarness {
+    getInput(filter?: ChipInputHarnessFilters): Promise<MatChipInputHarness | null>;
+    getRows(filter?: ChipRowHarnessFilters): Promise<MatChipRowHarness[]>;
+    // (undocumented)
+    static hostSelector: string;
+    isDisabled(): Promise<boolean>;
+    isInvalid(): Promise<boolean>;
+    isRequired(): Promise<boolean>;
+    static with<T extends MatChipGridHarness>(this: ComponentHarnessConstructor<T>, options?: ChipGridHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
 export class MatChipHarness extends ContentContainerComponentHarness {
-    // @deprecated
-    deselect(): Promise<void>;
     getAvatar(filter?: ChipAvatarHarnessFilters): Promise<MatChipAvatarHarness | null>;
     getRemoveButton(filter?: ChipRemoveHarnessFilters): Promise<MatChipRemoveHarness>;
     getText(): Promise<string>;
+    // (undocumented)
     static hostSelector: string;
     isDisabled(): Promise<boolean>;
-    // @deprecated
-    isSelected(): Promise<boolean>;
+    // (undocumented)
+    protected _primaryAction: AsyncFactoryFn<TestElement>;
     remove(): Promise<void>;
-    // @deprecated
-    select(): Promise<void>;
-    // @deprecated
-    toggle(): Promise<void>;
-    static with(options?: ChipHarnessFilters): HarnessPredicate<MatChipHarness>;
+    static with<T extends MatChipHarness>(this: ComponentHarnessConstructor<T>, options?: ChipHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
@@ -76,35 +99,31 @@ export class MatChipInputHarness extends ComponentHarness {
     isRequired(): Promise<boolean>;
     sendSeparatorKey(key: TestKey | string): Promise<void>;
     setValue(newValue: string): Promise<void>;
-    static with(options?: ChipInputHarnessFilters): HarnessPredicate<MatChipInputHarness>;
+    static with<T extends MatChipInputHarness>(this: ComponentHarnessConstructor<T>, options?: ChipInputHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
-export class MatChipListboxHarness extends _MatChipListHarnessBase {
+export class MatChipListboxHarness extends ComponentHarness {
     getChips(filter?: ChipOptionHarnessFilters): Promise<MatChipOptionHarness[]>;
+    getOrientation(): Promise<'horizontal' | 'vertical'>;
+    // (undocumented)
     static hostSelector: string;
+    isDisabled(): Promise<boolean>;
+    isMultiple(): Promise<boolean>;
+    isRequired(): Promise<boolean>;
     selectChips(filter?: ChipOptionHarnessFilters): Promise<void>;
-    static with(options?: ChipListboxHarnessFilters): HarnessPredicate<MatChipListboxHarness>;
+    static with<T extends MatChipListboxHarness>(this: ComponentHarnessConstructor<T>, options?: ChipListboxHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
-export class MatChipListHarness extends _MatChipListHarnessBase {
-    getChips(filter?: ChipHarnessFilters): Promise<MatChipHarness[]>;
-    getInput(filter?: ChipInputHarnessFilters): Promise<MatChipInputHarness>;
-    static hostSelector: string;
-    // @deprecated
-    selectChips(filter?: ChipHarnessFilters): Promise<void>;
-    static with(options?: ChipListHarnessFilters): HarnessPredicate<MatChipListHarness>;
-}
-
-// @public (undocumented)
 export class MatChipOptionHarness extends MatChipHarness {
     deselect(): Promise<void>;
+    // (undocumented)
     static hostSelector: string;
     isSelected(): Promise<boolean>;
     select(): Promise<void>;
     toggle(): Promise<void>;
-    static with(options?: ChipOptionHarnessFilters): HarnessPredicate<MatChipOptionHarness>;
+    static with<T extends MatChipHarness>(this: ComponentHarnessConstructor<T>, options?: ChipOptionHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
@@ -112,7 +131,23 @@ export class MatChipRemoveHarness extends ComponentHarness {
     click(): Promise<void>;
     // (undocumented)
     static hostSelector: string;
-    static with(options?: ChipRemoveHarnessFilters): HarnessPredicate<MatChipRemoveHarness>;
+    static with<T extends MatChipRemoveHarness>(this: ComponentHarnessConstructor<T>, options?: ChipRemoveHarnessFilters): HarnessPredicate<T>;
+}
+
+// @public
+export class MatChipRowHarness extends MatChipHarness {
+    // (undocumented)
+    static hostSelector: string;
+    isEditable(): Promise<boolean>;
+    isEditing(): Promise<boolean>;
+}
+
+// @public
+export class MatChipSetHarness extends ComponentHarness {
+    getChips(filter?: ChipHarnessFilters): Promise<MatChipHarness[]>;
+    // (undocumented)
+    static hostSelector: string;
+    static with<T extends MatChipSetHarness>(this: ComponentHarnessConstructor<T>, options?: ChipSetHarnessFilters): HarnessPredicate<T>;
 }
 
 // (No @packageDocumentation comment for this package)

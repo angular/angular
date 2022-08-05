@@ -2,8 +2,6 @@ entryPoints = [
     "column-resize",
     "mdc-button",
     "mdc-button/testing",
-    "mdc-chips",
-    "mdc-chips/testing",
     "mdc-core",
     "mdc-list",
     "mdc-list/testing",

@@ -20,7 +20,7 @@
   private-all-legacy-component-densities;
 @forward './core/theming/theming' show private-check-duplicate-theme-styles,
   private-legacy-get-theme, private-is-theme-object;
-  @forward './core/style/layout-common' as private-* show private-fill;
+@forward './core/style/layout-common' as private-* show private-fill;
 @forward './core/style/private' show private-theme-elevation, private-animation-noop;
 @forward './core/style/vendor-prefixes' as private-* show private-user-select,
   private-position-sticky, private-color-adjust, private-clip-path;
@@ -91,6 +91,8 @@
   checkbox-legacy-theme, checkbox-legacy-color, checkbox-legacy-typography;
 @forward './checkbox/checkbox-theme' as checkbox-* show checkbox-theme, checkbox-color,
   checkbox-typography;
+@forward './legacy-chips/chips-theme' as legacy-chips-* show legacy-chips-theme,
+  legacy-chips-color, legacy-chips-typography;
 @forward './chips/chips-theme' as chips-* show chips-theme, chips-color, chips-typography;
 @forward './datepicker/datepicker-theme' as datepicker-* show datepicker-theme, datepicker-color,
   datepicker-typography, datepicker-date-range-colors;

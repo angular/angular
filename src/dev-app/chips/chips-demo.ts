@@ -13,7 +13,7 @@ import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
-import {MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
+import {MatLegacyChipInputEvent, MatLegacyChipsModule} from '@angular/material/legacy-chips';
 import {ThemePalette} from '@angular/material/core';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -39,7 +39,7 @@ export interface DemoColor {
     MatButtonModule,
     MatLegacyCardModule,
     MatLegacyCheckboxModule,
-    MatChipsModule,
+    MatLegacyChipsModule,
     MatLegacyFormFieldModule,
     MatIconModule,
     MatToolbarModule,
@@ -79,7 +79,7 @@ export class ChipsDemo {
     this.message = message;
   }
 
-  add(event: MatChipInputEvent): void {
+  add(event: MatLegacyChipInputEvent): void {
     const value = (event.value || '').trim();
 
     // Add our person

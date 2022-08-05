@@ -1,0 +1,7 @@
+@forward 'chips-theme' hide $chip-remove-font-size, color, theme, typography;
+@forward 'chips-theme' as mat-legacy-* hide mat-legacy-chip-element-color,
+  mat-legacy-chip-theme-color, mat-color, mat-density, mat-ripple-background, mat-theme,
+  mat-typography;
+@forward 'chips-theme' as mat-legacy-chips-* hide $mat-legacy-chips-chip-remove-font-size,
+  mat-legacy-chips-chip-element-color, mat-legacy-chips-chip-theme-color, mat-legacy-chips-density,
+  mat-legacy-chips-ripple-background;

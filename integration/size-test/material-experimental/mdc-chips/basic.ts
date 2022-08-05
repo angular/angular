@@ -1,5 +1,5 @@
 import {Component, NgModule} from '@angular/core';
-import {MatChipsModule} from '@angular/material-experimental/mdc-chips';
+import {MatChipsModule} from '@angular/material/chips';
 
 /**
  * Basic component using `MatChipSet` and `MatChip`. Other supported parts of the
