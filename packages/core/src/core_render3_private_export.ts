@@ -24,6 +24,7 @@ export {
 export {
   NG_INJ_DEF as ɵNG_INJ_DEF,
   NG_PROV_DEF as ɵNG_PROV_DEF,
+  isInjectable as ɵisInjectable,
 } from './di/interface/defs';
 export {createInjector as ɵcreateInjector} from './di/create_injector';
 export {
@@ -241,10 +242,6 @@ export {
   transitiveScopesFor as ɵtransitiveScopesFor,
 } from './render3/jit/module';
 export {
-  FactoryTarget as ɵɵFactoryTarget,
-  ɵɵngDeclareClassMetadata,
-  ɵɵngDeclareComponent,
-  ɵɵngDeclareDirective,
   ɵɵngDeclareFactory,
   ɵɵngDeclareInjectable,
   ɵɵngDeclareInjector,
@@ -254,10 +251,7 @@ export {
 export {
   compilePipe as ɵcompilePipe,
 } from './render3/jit/pipe';
-export {
-  isStandalone as ɵisStandalone,
-  isInjectable as ɵisInjectable,
-} from './render3/jit/module';
+export { isStandalone as ɵisStandalone} from './render3/definition';
 export { Profiler as ɵProfiler, ProfilerEvent as ɵProfilerEvent } from './render3/profiler';
 export {
   publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils
