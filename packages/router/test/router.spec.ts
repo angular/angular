@@ -25,6 +25,9 @@ import {TreeNode} from '../src/utils/tree';
 import {createActivatedRouteSnapshot, Logger, provideTokenLogger} from './helpers';
 
 describe('Router', () => {
+  it('can be injected without RouterModule', () => {
+    expect(() => TestBed.inject(Router)).not.toThrow();
+  });
   describe('resetConfig', () => {
     class TestComponent {}
 
