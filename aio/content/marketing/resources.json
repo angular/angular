@@ -128,7 +128,7 @@
             "desc": "NativeScript is how you build cross-platform, native iOS and Android apps with Angular and TypeScript. Get 100% access to native APIs via JavaScript and reuse of packages from NPM, CocoaPods and Gradle. Open source and backed by Telerik.​​​",
             "logo": "",
             "title": "NativeScript",
-            "url": "https://docs.nativescript.org/angular/start/introduction"
+            "url": "https://docs.nativescript.org/tutorial/angular.html"
           },
           "angular-miniprogram": {
             "desc": "MiniProgram Platform for Angular.",
