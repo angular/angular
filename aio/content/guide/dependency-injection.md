@@ -25,7 +25,7 @@ The next step is to make it available in the DI by providing it.  A dependency c
 
 <code-example language="typescript">
 @Component({
-  selector: 'hero-list,
+  selector: 'hero-list',
   template: '...',
   providers: [HeroService]
 })
