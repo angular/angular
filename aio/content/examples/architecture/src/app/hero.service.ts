@@ -14,10 +14,11 @@ export class HeroService {
     private logger: Logger) { }
 
   getHeroes() {
-    this.backend.getAll(Hero).then( (heroes: Hero[]) => {
+    return this.backend.getAll(Hero).then((heroes: Hero[]) => {
       this.logger.log(`Fetched ${heroes.length} heroes.`);
-      this.heroes.push(...heroes); // fill cache
+      this.heroes.push(...heroes);
+
+      return this.heroes;
     });
-    return this.heroes;
   }
 }
