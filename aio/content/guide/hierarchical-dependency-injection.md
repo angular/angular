@@ -20,6 +20,7 @@ This topic uses the following pictographs.
 | <code>&#x1F994;</code> | hedgehog \(`🦔`\)       |
 
 </div>
+
 The applications you build with Angular can become quite large, and one way to manage this complexity is to split up the application into many small well encapsulated modules, that are by themselves split up into a well-defined tree of components.
 The applications you build with Angular can become quite large, and one way to manage this complexity is to split up the application into many small well-encapsulated modules, that are by themselves split up into a well-defined tree of components.
 
