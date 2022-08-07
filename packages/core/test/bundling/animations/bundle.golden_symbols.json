@@ -591,9 +591,6 @@
     "name": "attachPatchData"
   },
   {
-    "name": "autoRegisterModuleById"
-  },
-  {
     "name": "balanceProperties"
   },
   {
