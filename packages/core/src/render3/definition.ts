@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Mutable, Type} from '../interface/type';
-import {NgModuleDef, NgModuleType} from '../metadata/ng_module_def';
+import {NgModuleDef} from '../metadata/ng_module_def';
 import {SchemaMetadata} from '../metadata/schema';
 import {ViewEncapsulation} from '../metadata/view';
 import {noSideEffects} from '../util/closure';
@@ -374,8 +374,6 @@ function nonNull<T>(value: T|null): value is T {
   return value !== null;
 }
 
-export const autoRegisterModuleById: {[id: string]: NgModuleType} = {};
-
 /**
  * @codeGenApi
  */
@@ -415,9 +413,6 @@ export function ɵɵdefineNgModule<T>(def: {
       schemas: def.schemas || null,
       id: def.id || null,
     };
-    if (def.id != null) {
-      autoRegisterModuleById[def.id!] = def.type as unknown as NgModuleType;
-    }
     return res;
   });
 }

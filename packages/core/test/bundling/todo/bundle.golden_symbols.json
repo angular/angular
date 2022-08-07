@@ -513,9 +513,6 @@
     "name": "attachPatchData"
   },
   {
-    "name": "autoRegisterModuleById"
-  },
-  {
     "name": "baseElement"
   },
   {
