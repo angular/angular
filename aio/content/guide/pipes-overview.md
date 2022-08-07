@@ -18,12 +18,12 @@ For the sample application used in this topic, see the <live-example name="pipes
 Angular provides built-in pipes for typical data transformations, including transformations for internationalization (i18n), which use locale information to format data.
 The following are commonly used built-in pipes for data formatting:
 
-*   [`DatePipe`](api/common/DatePipe): Formats a date value according to locale rules.
-*   [`UpperCasePipe`](api/common/UpperCasePipe): Transforms text to all upper case.
-*   [`LowerCasePipe`](api/common/LowerCasePipe): Transforms text to all lower case.
-*   [`CurrencyPipe`](api/common/CurrencyPipe): Transforms a number to a currency string, formatted according to locale rules.
-*   [`DecimalPipe`](/api/common/DecimalPipe): Transforms a number into a string with a decimal point, formatted according to locale rules.
-*   [`PercentPipe`](api/common/PercentPipe): Transforms a number to a percentage string, formatted according to locale rules.
+*   [`DatePipe`](api/common/DatePipe "API reference for DatePipe"): Formats a date value according to locale rules.
+*   [`UpperCasePipe`](api/common/UpperCasePipe "API reference for UpperCasePipe"): Transforms text to all upper case.
+*   [`LowerCasePipe`](api/common/LowerCasePipe "API reference for LowerCasePipe"): Transforms text to all lower case.
+*   [`CurrencyPipe`](api/common/CurrencyPipe "API reference for CurrencyPipe"): Transforms a number to a currency string, formatted according to locale rules.
+*   [`DecimalPipe`](/api/common/DecimalPipe "API reference for DecimalPipe"): Transforms a number into a string with a decimal point, formatted according to locale rules.
+*   [`PercentPipe`](api/common/PercentPipe "API reference for PercentPipe"): Transforms a number to a percentage string, formatted according to locale rules.
 
 <div class="alert is-helpful">
 
