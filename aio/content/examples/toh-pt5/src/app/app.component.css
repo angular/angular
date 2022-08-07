@@ -16,6 +16,6 @@ nav a:hover {
   color: white;
   background-color: #42545C;
 }
-nav a.active {
+nav a:active {
   background-color: black;
 }
