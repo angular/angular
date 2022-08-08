@@ -1,3 +1,12 @@
+## [0.11.8](https://github.com/angular/angular/compare/zone.js-0.11.7...zone.js-0.11.8) (2022-08-08)
+
+
+### Features
+
+* **zone.js:** Update to the simpler Async Stack Tagging v2 API ([#46958](https://github.com/angular/angular/issues/46958)) ([f23232f](https://github.com/angular/angular/commit/f23232ff66559ddc28aec26d461355568c25530d))
+
+
+
 ## [0.11.7](https://github.com/angular/angular/compare/zone.js-0.11.6...zone.js-0.11.7) (2022-07-20)
 
 ### Bug Fixes
