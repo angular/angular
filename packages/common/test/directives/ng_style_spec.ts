@@ -55,6 +55,32 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
          expectNativeEl(fixture).toHaveCssStyle({'max-width': '30%'});
        }));
 
+    it('should remove styles with a null expression', waitForAsync(() => {
+         const template = `<div [ngStyle]="expr"></div>`;
+         fixture = createTestComponent(template);
+
+         getComponent().expr = {'max-width': '40px'};
+         fixture.detectChanges();
+         expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
+
+         getComponent().expr = null;
+         fixture.detectChanges();
+         expectNativeEl(fixture).not.toHaveCssStyle('max-width');
+       }));
+
+    it('should remove styles with an undefined expression', waitForAsync(() => {
+         const template = `<div [ngStyle]="expr"></div>`;
+         fixture = createTestComponent(template);
+
+         getComponent().expr = {'max-width': '40px'};
+         fixture.detectChanges();
+         expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
+
+         getComponent().expr = undefined;
+         fixture.detectChanges();
+         expectNativeEl(fixture).not.toHaveCssStyle('max-width');
+       }));
+
     it('should add and remove styles specified using style.unit notation', waitForAsync(() => {
          const template = `<div [ngStyle]="{'max-width.px': expr}"></div>`;
 

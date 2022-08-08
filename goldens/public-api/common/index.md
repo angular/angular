@@ -549,7 +549,7 @@ export class NgStyle implements DoCheck {
     // (undocumented)
     set ngStyle(values: {
         [klass: string]: any;
-    } | null);
+    } | null | undefined);
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgStyle, "[ngStyle]", never, { "ngStyle": "ngStyle"; }, {}, never, never, true>;
     // (undocumented)
