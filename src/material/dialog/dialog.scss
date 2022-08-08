@@ -1,4 +1,5 @@
 @use '@material/dialog' as mdc-dialog;
+@use '@material/dialog/variables' as mdc-dialog-variables;
 @use '@material/dialog/dialog-theme' as mdc-dialog-theme;
 @use './mdc-dialog-structure-overrides';
 @use '../core/mdc-helpers/mdc-helpers';
@@ -26,6 +27,9 @@ $_dialog-initial-theme: (
   supporting-text-size: 14px,
   supporting-text-weight: 500,
   supporting-text-tracking: 1px,
+
+  // Structure
+  container-shape: mdc-dialog-variables.$shape-radius,
 );
 
 // Dialog content max height. This has been copied from the standard dialog
@@ -36,7 +40,7 @@ $mat-dialog-content-max-height: 65vh !default;
 $mat-dialog-button-horizontal-margin: 8px !default;
 
 @include mdc-helpers.disable-mdc-fallback-declarations {
-  @include mdc-dialog.core-styles($query: mdc-helpers.$mdc-base-styles-query);
+  @include mdc-dialog.static-styles($query: mdc-helpers.$mdc-base-styles-query);
 }
 
 @include mdc-dialog-structure-overrides.private-dialog-structure-overrides(

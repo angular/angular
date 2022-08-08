@@ -19,8 +19,6 @@
 
       @include mdc-dialog-theme.theme((
         container-color: $surface,
-        container-elevation: 24,
-        container-shadow-color: $on-surface,
         with-divider-divider-color: rgba($on-surface, mdc-dialog.$scroll-divider-opacity),
         subhead-color: rgba($on-surface, $text-emphasis-high),
         supporting-text-color: rgba($on-surface, $text-emphasis-medium),
