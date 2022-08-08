@@ -65,9 +65,9 @@
 @forward './legacy-core/option/option-theme' as legacy-option-* show legacy-option-color,
   legacy-option-typography, legacy-option-theme;
 @forward './core/option/option-theme' as option-* show option-color, option-typography,
-  option-theme;
+  option-theme, option-density;
 @forward './core/option/optgroup-theme' as optgroup-* show optgroup-color, optgroup-typography,
-  optgroup-theme;
+  optgroup-theme, optgroup-density;
 @forward './legacy-core/option/optgroup-theme' as legacy-optgroup-* show legacy-optgroup-color,
   legacy-optgroup-typography, legacy-optgroup-theme;
 @forward './core/selection/pseudo-checkbox/pseudo-checkbox-theme' as pseudo-checkbox-* show
@@ -75,7 +75,7 @@
 @forward './core/focus-indicators/focus-indicators-theme' as strong-focus-indicators-* show
   strong-focus-indicators-color, strong-focus-indicators-theme;
 @forward './autocomplete/autocomplete-theme' as autocomplete-* show autocomplete-theme,
-  autocomplete-color, autocomplete-typography;
+  autocomplete-color, autocomplete-typography, autocomplete-density;
 @forward './legacy-autocomplete/autocomplete-theme' as legacy-autocomplete-* show
   legacy-autocomplete-theme, legacy-autocomplete-color, legacy-autocomplete-typography;
 @forward './badge/badge-theme' as badge-* show badge-theme, badge-color, badge-typography;
@@ -84,28 +84,30 @@
 @forward './button/button-theme' as button-* show button-theme, button-color, button-typography;
 @forward './button-toggle/button-toggle-theme' as button-toggle-* show button-toggle-theme,
   button-toggle-color, button-toggle-typography;
-@forward './card/card-theme' as card-* show card-theme, card-color, card-typography;
+@forward './card/card-theme' as card-* show card-theme, card-color, card-typography, card-density;
 @forward './legacy-card/card-theme' as legacy-card-* show legacy-card-theme, legacy-card-color,
   legacy-card-typography;
 @forward './legacy-checkbox/checkbox-theme' as legacy-checkbox-* show
   checkbox-legacy-theme, checkbox-legacy-color, checkbox-legacy-typography;
 @forward './checkbox/checkbox-theme' as checkbox-* show checkbox-theme, checkbox-color,
-  checkbox-typography;
+  checkbox-typography, checkbox-density;
 @forward './legacy-chips/chips-theme' as legacy-chips-* show legacy-chips-theme,
   legacy-chips-color, legacy-chips-typography;
-@forward './chips/chips-theme' as chips-* show chips-theme, chips-color, chips-typography;
+@forward './chips/chips-theme' as chips-* show chips-theme, chips-color, chips-typography,
+  chips-density;
 @forward './datepicker/datepicker-theme' as datepicker-* show datepicker-theme, datepicker-color,
   datepicker-typography, datepicker-date-range-colors;
 @forward './legacy-dialog/dialog-theme' as legacy-dialog-* show legacy-dialog-theme,
   legacy-dialog-color, legacy-dialog-typography;
-@forward './dialog/dialog-theme' as dialog-* show dialog-theme, dialog-color, dialog-typography;
+@forward './dialog/dialog-theme' as dialog-* show dialog-theme, dialog-color, dialog-typography,
+  dialog-density;
 @forward './dialog/dialog-legacy-padding' as dialog-* show dialog-legacy-padding;
 @forward './divider/divider-theme' as divider-* show divider-theme, divider-color,
   divider-typography;
 @forward './expansion/expansion-theme' as expansion-* show expansion-theme, expansion-color,
   expansion-typography;
 @forward './form-field/form-field-theme' as form-field-* show form-field-theme,
-  form-field-color, form-field-typography;
+  form-field-color, form-field-typography, form-field-density;
 @forward './legacy-form-field/form-field-theme' as legacy-form-field-* show legacy-form-field-theme,
   legacy-form-field-color, legacy-form-field-typography;
 @forward './grid-list/grid-list-theme' as grid-list-* show grid-list-theme, grid-list-color,
@@ -113,7 +115,8 @@
 @forward './icon/icon-theme' as icon-* show icon-theme, icon-color, icon-typography;
 @forward './legacy-input/input-theme' as legacy-input-* show legacy-input-theme, legacy-input-color,
   legacy-input-typography;
-@forward './input/input-theme' as input-* show input-theme, input-color, input-typography;
+@forward './input/input-theme' as input-* show input-theme, input-color, input-typography,
+  input-density;
 @forward './list/list-theme' as list-* show list-theme, list-color, list-typography;
 @forward './menu/menu-theme' as menu-* show menu-theme, menu-color, menu-typography;
 @forward './paginator/paginator-theme' as paginator-* show paginator-theme, paginator-color,
@@ -121,17 +124,20 @@
 @forward './legacy-progress-bar/progress-bar-theme' as legacy-progress-bar-* show
   legacy-progress-bar-theme, legacy-progress-bar-color, legacy-progress-bar-typography;
 @forward './progress-bar/progress-bar-theme' as progress-bar-* show
-  progress-bar-theme, progress-bar-color, progress-bar-typography;
+  progress-bar-theme, progress-bar-color, progress-bar-typography, progress-bar-density;
 @forward './progress-spinner/progress-spinner-theme' as progress-spinner-* show
   progress-spinner-theme, progress-spinner-color, progress-spinner-typography;
 @forward './radio/radio-theme' as radio-* show radio-theme, radio-color, radio-typography;
-@forward './select/select-theme' as select-* show select-theme, select-color, select-typography;
+@forward './select/select-theme' as select-* show select-theme, select-color, select-typography,
+  select-density;
 @forward './legacy-select/select-theme' as legacy-select-* show legacy-select-theme,
   legacy-select-color, legacy-select-typography;
 @forward './sidenav/sidenav-theme' as sidenav-* show sidenav-theme, sidenav-color,
   sidenav-typography;
-@forward './slide-toggle/slide-toggle-theme' as slide-toggle-* show slide-toggle-theme,
-  slide-toggle-color, slide-toggle-typography;
+@forward './legacy-slide-toggle/slide-toggle-theme' as legacy-slide-toggle-* show
+  legacy-slide-toggle-theme, legacy-slide-toggle-color, legacy-slide-toggle-typography;
+@forward './slide-toggle/slide-toggle-theme' as slide-toggle-* show
+slide-toggle-theme, slide-toggle-color, slide-toggle-typography, slide-toggle-density;
 @forward './slider/slider-theme' as slider-* show slider-theme, slider-color, slider-typography;
 @forward './snack-bar/snack-bar-theme' as snack-bar-* show snack-bar-theme, snack-bar-color,
   snack-bar-typography;
@@ -145,7 +151,7 @@
 @forward './legacy-tooltip/tooltip-theme' as legacy-tooltip-* show legacy-tooltip-theme,
   legacy-tooltip-color, legacy-tooltip-typography;
 @forward './tooltip/tooltip-theme' as tooltip-* show tooltip-theme, tooltip-color,
-  tooltip-typography;
+  tooltip-typography, tooltip-density;
 @forward './tree/tree-theme' as tree-* show tree-theme, tree-color, tree-typography;
 
 // MDC Helpers

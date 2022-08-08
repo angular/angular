@@ -19,7 +19,7 @@ import {MatProgressBarModule} from '@angular/material-experimental/mdc-progress-
 import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
 import {MatRadioModule} from '@angular/material-experimental/mdc-radio';
 import {MatSelectModule} from '@angular/material-experimental/mdc-select';
-import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-toggle';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatSliderModule} from '@angular/material-experimental/mdc-slider';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTableModule} from '@angular/material-experimental/mdc-table';

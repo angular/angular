@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-toggle';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MdcSlideToggleE2e} from './mdc-slide-toggle-e2e';
 
 @NgModule({

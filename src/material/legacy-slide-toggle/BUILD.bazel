@@ -1,6 +1,7 @@
 load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
 load(
     "//tools:defaults.bzl",
+    "markdown_to_html",
     "ng_e2e_test_library",
     "ng_module",
     "ng_test_library",
@@ -12,59 +13,52 @@ load(
 package(default_visibility = ["//visibility:public"])
 
 ng_module(
-    name = "mdc-slide-toggle",
+    name = "legacy-slide-toggle",
     srcs = glob(
         ["**/*.ts"],
-        exclude = [
-            "**/*.spec.ts",
-            "harness/**",
-        ],
+        exclude = ["**/*.spec.ts"],
     ),
-    assets = [":slide_toggle_scss"] + glob(["**/*.html"]),
+    assets = [":slide-toggle.css"] + glob(["**/*.html"]),
     deps = [
+        "//src/cdk/a11y",
         "//src/cdk/coercion",
+        "//src/cdk/observers",
         "//src/material/core",
         "//src/material/slide-toggle",
         "@npm//@angular/animations",
-        "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/forms",
-        "@npm//@material/switch",
+        "@npm//@angular/platform-browser",
     ],
 )
 
 sass_library(
-    name = "mdc_slide_toggle_scss_lib",
+    name = "legacy_slide_toggle_scss_lib",
     srcs = glob(["**/_*.scss"]),
-    deps = [
-        "//:mdc_sass_lib",
-        "//src/material:sass_lib",
-        "//src/material/core:core_scss_lib",
-    ],
+    deps = ["//src/material/core:core_scss_lib"],
 )
 
 sass_binary(
     name = "slide_toggle_scss",
     src = "slide-toggle.scss",
     deps = [
-        "//:mdc_sass_lib",
-        "//src/material:sass_lib",
+        "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )
 
 ng_test_library(
-    name = "slide_toggle_tests_lib",
+    name = "unit_test_sources",
     srcs = glob(
         ["**/*.spec.ts"],
         exclude = ["**/*.e2e.spec.ts"],
     ),
     deps = [
-        ":mdc-slide-toggle",
+        ":legacy-slide-toggle",
         "//src/cdk/a11y",
-        "//src/cdk/bidi",
+        "//src/cdk/observers",
         "//src/cdk/testing/private",
-        "//src/material/slide-toggle",
+        "//src/material/testing",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
     ],
@@ -72,9 +66,7 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [
-        ":slide_toggle_tests_lib",
-    ],
+    deps = [":unit_test_sources"],
 )
 
 ng_e2e_test_library(
@@ -91,4 +83,14 @@ e2e_test_suite(
         ":e2e_test_sources",
         "//src/cdk/testing/private/e2e",
     ],
+)
+
+markdown_to_html(
+    name = "overview",
+    srcs = [":slide-toggle.md"],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )

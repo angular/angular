@@ -20,7 +20,7 @@ ng_module(
         "//src/material/legacy-autocomplete/testing",
         "//src/material/legacy-form-field",
         "//src/material/legacy-input",
-        "//src/material/slide-toggle",
+        "//src/material/legacy-slide-toggle",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
         "@npm//@angular/platform-browser-dynamic",

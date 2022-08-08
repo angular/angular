@@ -1,91 +1,127 @@
 @use 'sass:map';
-@use '../core/style/private';
-@use '../core/theming/palette';
+@use 'sass:color';
+@use '@material/switch/switch-theme' as mdc-switch-theme;
+@use '@material/theme/color-palette' as mdc-color-palette;
+@use '@material/form-field' as mdc-form-field;
 @use '../core/theming/theming';
+@use '../core/mdc-helpers/mdc-helpers';
 @use '../core/typography/typography';
-@use '../core/typography/typography-utils';
 
-@mixin _checked-color($palette, $thumb-checked-hue) {
-  &.mat-checked {
-    .mat-slide-toggle-thumb {
-      background-color: theming.get-color-from-palette($palette, $thumb-checked-hue);
-    }
 
-    .mat-slide-toggle-bar {
-      // Opacity is determined from the specs for the selection controls.
-      // See: https://material.io/design/components/selection-controls.html#specs
-      background-color: theming.get-color-from-palette($palette, $thumb-checked-hue, 0.54);
-    }
+// Generates all color mapping for the properties that only change based on the theme.
+@function _get-theme-base-map($is-dark) {
+  $on-surface: if($is-dark, mdc-color-palette.$grey-100, mdc-color-palette.$grey-800);
+  $hairline: if($is-dark, mdc-color-palette.$grey-500, mdc-color-palette.$grey-300);
+  $on-surface-variant: if($is-dark, mdc-color-palette.$grey-200, mdc-color-palette.$grey-700);
+  $on-surface-state-content: if($is-dark, mdc-color-palette.$grey-50, mdc-color-palette.$grey-900);
+  $disabled-handle-color: mdc-color-palette.$grey-800;
+  $selected-icon-color: mdc-color-palette.$grey-100;
+  $icon-color: if($is-dark, mdc-color-palette.$grey-800, mdc-color-palette.$grey-100);
 
-    .mat-ripple-element {
-      // Set no opacity for the ripples because the ripple opacity will be adjusted dynamically
-      // based on the type of interaction with the slide-toggle (e.g. for hover, focus)
-      background-color: theming.get-color-from-palette($palette, $thumb-checked-hue);
-    }
-  }
+  @return (
+    disabled-selected-handle-color: $disabled-handle-color,
+    disabled-unselected-handle-color: $disabled-handle-color,
+
+    disabled-selected-track-color: $on-surface,
+    disabled-unselected-track-color: $on-surface,
+    unselected-focus-state-layer-color: $on-surface,
+    unselected-pressed-state-layer-color: $on-surface,
+    unselected-hover-state-layer-color: $on-surface,
+
+    unselected-focus-track-color: $hairline,
+    unselected-hover-track-color: $hairline,
+    unselected-pressed-track-color: $hairline,
+    unselected-track-color: $hairline,
+
+    unselected-focus-handle-color: $on-surface-state-content,
+    unselected-hover-handle-color: $on-surface-state-content,
+    unselected-pressed-handle-color: $on-surface-state-content,
+
+    handle-surface-color: surface,
+    unselected-handle-color: $on-surface-variant,
+
+    selected-icon-color: $selected-icon-color,
+    disabled-selected-icon-color: $icon-color,
+    disabled-unselected-icon-color: $icon-color,
+    unselected-icon-color: $icon-color,
+  );
+}
+
+// Generates the mapping for the properties that change based on the slide toggle color.
+@function _get-theme-color-map($color-palette) {
+  $state-content: color.scale($color-palette, $blackness: 50%);
+  $inverse: color.scale($color-palette, $lightness: 75%);
+
+  @return (
+    selected-focus-state-layer-color: $color-palette,
+    selected-handle-color: $color-palette,
+    selected-hover-state-layer-color: $color-palette,
+    selected-pressed-state-layer-color: $color-palette,
+
+    selected-focus-handle-color: $state-content,
+    selected-hover-handle-color: $state-content,
+    selected-pressed-handle-color: $state-content,
+
+    selected-focus-track-color: $inverse,
+    selected-hover-track-color: $inverse,
+    selected-pressed-track-color: $inverse,
+    selected-track-color: $inverse,
+  );
 }
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
+  $primary: theming.get-color-from-palette(map.get($config, primary));
+  $accent: theming.get-color-from-palette(map.get($config, accent));
+  $warn: theming.get-color-from-palette(map.get($config, warn));
   $is-dark: map.get($config, is-dark);
-  $primary: map.get($config, primary);
-  $accent: map.get($config, accent);
-  $warn: map.get($config, warn);
-  $background: map.get($config, background);
   $foreground: map.get($config, foreground);
 
-  // Color hues are based on the specs which briefly show the hues that are applied to a switch.
-  // The 2018 specs no longer describe how dark switches should look like. Due to the lack of
-  // information for dark themed switches, we partially keep the old behavior that is based on
-  // the previous specifications. For the checked color we always use the `default` hue because
-  // that follows MDC and also makes it easier for people to create a custom theme without needing
-  // to specify each hue individually.
-  $thumb-unchecked-hue: if($is-dark, 400, 50);
-  $thumb-checked-hue: default;
+  @include mdc-helpers.using-mdc-theme($config) {
+    // MDC's switch doesn't support a `color` property. We add support
+    // for it by adding a CSS class for accent and warn style.
+    .mat-mdc-slide-toggle {
+      @include mdc-form-field.core-styles($query: mdc-helpers.$mdc-theme-styles-query);
+      @include mdc-switch-theme.theme(_get-theme-base-map($is-dark));
 
-  $bar-unchecked-color: theming.get-color-from-palette($foreground, disabled);
-  $ripple-unchecked-color: theming.get-color-from-palette($foreground, base);
+      // MDC should set the disabled color on the label, but doesn't, so we do it here instead.
+      .mdc-switch--disabled + label {
+        color: theming.get-color-from-palette($foreground, disabled-text);
+      }
 
-  .mat-slide-toggle {
-    @include _checked-color($accent, $thumb-checked-hue);
+      &.mat-primary {
+        @include mdc-switch-theme.theme(_get-theme-color-map($primary));
+      }
 
-    &.mat-primary {
-      @include _checked-color($primary, $thumb-checked-hue);
+      &.mat-accent {
+        @include mdc-switch-theme.theme(_get-theme-color-map($accent));
+      }
+
+      &.mat-warn {
+        @include mdc-switch-theme.theme(_get-theme-color-map($warn));
+      }
     }
-
-    &.mat-warn {
-      @include _checked-color($warn, $thumb-checked-hue);
-    }
-
-    &:not(.mat-checked) .mat-ripple-element {
-      // Set no opacity for the ripples because the ripple opacity will be adjusted dynamically
-      // based on the type of interaction with the slide-toggle (e.g. for hover, focus)
-      background-color: $ripple-unchecked-color;
-    }
-  }
-
-  .mat-slide-toggle-thumb {
-    @include private.private-theme-elevation(1, $config);
-    background-color: theming.get-color-from-palette(palette.$grey-palette, $thumb-unchecked-hue);
-  }
-
-  .mat-slide-toggle-bar {
-    background-color: $bar-unchecked-color;
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
+  $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
-  .mat-slide-toggle-content {
-    font-family: typography-utils.font-family($config);
+  @include mdc-helpers.using-mdc-typography($config) {
+    @include mdc-form-field.core-styles($query: mdc-helpers.$mdc-typography-styles-query);
   }
 }
 
-@mixin _density($config-or-theme) {}
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+  .mat-mdc-slide-toggle {
+    @include mdc-switch-theme.theme(mdc-switch-theme.density($density-scale));
+  }
+}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
+
   @include theming.private-check-duplicate-theme-styles($theme, 'mat-slide-toggle') {
     $color: theming.get-color-config($theme);
     $density: theming.get-density-config($theme);
@@ -95,7 +131,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);

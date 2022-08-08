@@ -11,13 +11,6 @@ $mat-mdc-button-mat-button-state-target;
 @forward '../../mdc-radio/radio-theme' as mat-mdc-radio-* hide
 $mat-mdc-radio-mdc-radio-baseline-theme-color, $mat-mdc-radio-mdc-radio-disabled-circle-color,
 $mat-mdc-radio-mdc-radio-unchecked-color;
-@forward '../../mdc-slide-toggle/slide-toggle-theme' hide color, density, theme, typography;
-@forward '../../mdc-slide-toggle/slide-toggle-theme' as mat-mdc-slide-toggle-* hide
-$mat-mdc-slide-toggle-mdc-switch-baseline-theme-color,
-$mat-mdc-slide-toggle-mdc-switch-disabled-thumb-color,
-$mat-mdc-slide-toggle-mdc-switch-disabled-track-color,
-$mat-mdc-slide-toggle-mdc-switch-toggled-off-thumb-color,
-$mat-mdc-slide-toggle-mdc-switch-toggled-off-track-color;
 @forward '../../mdc-snack-bar/snack-bar-theme' hide color, density, theme, typography;
 @forward '../../mdc-snack-bar/snack-bar-theme' as mat-mdc-snack-bar-* hide
 $mat-mdc-snack-bar-mdc-snackbar-dismiss-ink-color, $mat-mdc-snack-bar-mdc-snackbar-fill-color,

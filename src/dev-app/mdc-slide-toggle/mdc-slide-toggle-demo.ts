@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-toggle';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {FormsModule} from '@angular/forms';
 
 @Component({

@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatSlideToggleModule} from '@angular/material/legacy-slide-toggle';
 import {SlideToggleComponent} from './slide-toggle.component';
 
 describe('SlideToggleComponent', () => {

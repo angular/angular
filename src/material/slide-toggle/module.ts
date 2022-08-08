@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ObserversModule} from '@angular/cdk/observers';
+import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatSlideToggle} from './slide-toggle';
@@ -20,12 +20,7 @@ import {MatSlideToggleRequiredValidator} from './slide-toggle-required-validator
 export class _MatSlideToggleRequiredValidatorModule {}
 
 @NgModule({
-  imports: [
-    _MatSlideToggleRequiredValidatorModule,
-    MatRippleModule,
-    MatCommonModule,
-    ObserversModule,
-  ],
+  imports: [_MatSlideToggleRequiredValidatorModule, MatCommonModule, MatRippleModule, CommonModule],
   exports: [_MatSlideToggleRequiredValidatorModule, MatSlideToggle, MatCommonModule],
   declarations: [MatSlideToggle],
 })

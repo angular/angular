@@ -26,7 +26,7 @@ import {MatRadioModule} from '@angular/material/radio';
 import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatSliderModule} from '@angular/material/slider';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
@@ -124,7 +124,7 @@ export class KitchenSink {
     MatLegacySelectModule,
     MatSidenavModule,
     MatSliderModule,
-    MatSlideToggleModule,
+    MatLegacySlideToggleModule,
     MatSnackBarModule,
     MatTabsModule,
     MatToolbarModule,

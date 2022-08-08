@@ -11,6 +11,7 @@
 @use '../../legacy-autocomplete/autocomplete-theme';
 @use '../../legacy-dialog/dialog-theme';
 @use '../../legacy-chips/chips-theme';
+@use '../../legacy-slide-toggle/slide-toggle-theme';
 
 // Create a theme.
 @mixin all-legacy-component-themes($theme-or-color-config) {
@@ -27,6 +28,7 @@
     @include autocomplete-theme.theme($theme-or-color-config);
     @include dialog-theme.theme($theme-or-color-config);
     @include chips-theme.theme($theme-or-color-config);
+    @include slide-toggle-theme.theme($theme-or-color-config);
     @include all-theme.private-all-unmigrated-component-themes($theme-or-color-config);
   }
 }

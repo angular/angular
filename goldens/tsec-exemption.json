@@ -6,7 +6,7 @@
     "../src/material/checkbox/checkbox.ts",
     "../src/material-experimental/mdc-list/interactive-list-base.ts",
     "../src/material-experimental/mdc-progress-spinner/progress-spinner.ts",
-    "../src/material-experimental/mdc-slide-toggle/slide-toggle.ts",
+    "../src/material/slide-toggle/slide-toggle.ts",
     "../src/material/icon/icon-registry.ts",
     "../src/material/icon/icon.ts"
   ]

@@ -15,8 +15,8 @@ export class SlideToggleStylesMigrator extends StyleMigrator {
 
   mixinChanges = [
     {
-      old: 'slide-toggle-theme',
-      new: ['mdc-slide-toggle-theme', 'mdc-slide-toggle-typography'],
+      old: 'legacy-slide-toggle-theme',
+      new: ['slide-toggle-theme', 'slide-toggle-typography'],
     },
   ];
 

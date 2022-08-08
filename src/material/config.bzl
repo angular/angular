@@ -72,6 +72,8 @@ entryPoints = [
     "sidenav/testing",
     "slide-toggle",
     "slide-toggle/testing",
+    "legacy-slide-toggle",
+    "legacy-slide-toggle/testing",
     "slider",
     "slider/testing",
     "snack-bar",

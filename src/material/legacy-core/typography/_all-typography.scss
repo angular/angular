@@ -13,6 +13,7 @@
 @use '../../legacy-autocomplete/autocomplete-theme';
 @use '../../legacy-dialog/dialog-theme';
 @use '../../legacy-chips/chips-theme';
+@use '../../legacy-slide-toggle/slide-toggle-theme';
 
 // Includes all of the typographic styles.
 @mixin all-legacy-component-typographies($config-or-theme: null) {
@@ -43,6 +44,7 @@
   @include autocomplete-theme.typography($config);
   @include dialog-theme.typography($config);
   @include chips-theme.typography($config);
+  @include slide-toggle-theme.typography($config);
 }
 
 // @deprecated Use `all-legacy-component-typographies`.

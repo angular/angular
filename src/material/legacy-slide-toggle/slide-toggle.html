@@ -1,0 +1,40 @@
+<label [attr.for]="inputId" class="mat-slide-toggle-label" #label>
+  <span class="mat-slide-toggle-bar"
+       [class.mat-slide-toggle-bar-no-side-margin]="!labelContent.textContent || !labelContent.textContent.trim()">
+
+    <input #input class="mat-slide-toggle-input cdk-visually-hidden" type="checkbox"
+           role="switch"
+           [id]="inputId"
+           [required]="required"
+           [tabIndex]="tabIndex"
+           [checked]="checked"
+           [disabled]="disabled"
+           [attr.name]="name"
+           [attr.aria-checked]="checked"
+           [attr.aria-label]="ariaLabel"
+           [attr.aria-labelledby]="ariaLabelledby"
+           [attr.aria-describedby]="ariaDescribedby"
+           (change)="_onChangeEvent($event)"
+           (click)="_onInputClick($event)">
+
+    <span class="mat-slide-toggle-thumb-container">
+      <span class="mat-slide-toggle-thumb"></span>
+      <span class="mat-slide-toggle-ripple mat-focus-indicator" mat-ripple
+           [matRippleTrigger]="label"
+           [matRippleDisabled]="disableRipple || disabled"
+           [matRippleCentered]="true"
+           [matRippleRadius]="20"
+           [matRippleAnimation]="{enterDuration: _noopAnimations ? 0 : 150}">
+
+        <span class="mat-ripple-element mat-slide-toggle-persistent-ripple"></span>
+      </span>
+    </span>
+
+  </span>
+
+  <span class="mat-slide-toggle-content" #labelContent (cdkObserveContent)="_onLabelTextChange()">
+    <!-- Add an invisible span so JAWS can read the label -->
+    <span style="display:none">&nbsp;</span>
+    <ng-content></ng-content>
+  </span>
+</label>

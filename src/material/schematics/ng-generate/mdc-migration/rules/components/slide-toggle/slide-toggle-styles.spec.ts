@@ -23,13 +23,13 @@ describe('slide-toggle styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.slide-toggle-theme($theme);
+        @include mat.legacy-slide-toggle-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-slide-toggle-theme($theme);
-        @include mat.mdc-slide-toggle-typography($theme);
+        @include mat.slide-toggle-theme($theme);
+        @include mat.slide-toggle-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('slide-toggle styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.slide-toggle-theme($theme);
+        @include arbitrary.legacy-slide-toggle-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-slide-toggle-theme($theme);
-        @include arbitrary.mdc-slide-toggle-typography($theme);
+        @include arbitrary.slide-toggle-theme($theme);
+        @include arbitrary.slide-toggle-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('slide-toggle styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.slide-toggle-theme($light-theme);
-        @include mat.slide-toggle-theme($dark-theme);
+        @include mat.legacy-slide-toggle-theme($light-theme);
+        @include mat.legacy-slide-toggle-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-slide-toggle-theme($light-theme);
-        @include mat.mdc-slide-toggle-typography($light-theme);
-        @include mat.mdc-slide-toggle-theme($dark-theme);
-        @include mat.mdc-slide-toggle-typography($dark-theme);
+        @include mat.slide-toggle-theme($light-theme);
+        @include mat.slide-toggle-typography($light-theme);
+        @include mat.slide-toggle-theme($dark-theme);
+        @include mat.slide-toggle-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('slide-toggle styles', () => {
         $theme: ();
 
 
-        @include mat.slide-toggle-theme($theme);
+        @include mat.legacy-slide-toggle-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('slide-toggle styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-slide-toggle-theme($theme);
-        @include mat.mdc-slide-toggle-typography($theme);
+        @include mat.slide-toggle-theme($theme);
+        @include mat.slide-toggle-typography($theme);
 
 
       `,

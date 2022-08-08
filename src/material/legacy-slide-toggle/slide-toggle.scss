@@ -1,0 +1,236 @@
+@use 'sass:math';
+@use '@angular/cdk';
+
+@use '../core/style/vendor-prefixes';
+@use '../core/style/variables';
+@use '../core/ripple/ripple';
+@use '../core/style/list-common';
+
+$thumb-size: 20px !default;
+$bar-border-radius: 8px !default;
+$height: 24px !default;
+$spacing: 8px !default;
+$ripple-radius: 20px !default;
+$bar-width: 36px !default;
+$bar-height: 14px !default;
+$bar-track-width: $bar-width - $thumb-size;
+
+
+.mat-slide-toggle {
+  display: inline-block;
+  height: $height;
+  max-width: 100%;
+
+  line-height: $height;
+  white-space: nowrap;
+  outline: none;
+
+  -webkit-tap-highlight-color: transparent;
+
+  &.mat-checked {
+    .mat-slide-toggle-thumb-container {
+      transform: translate3d($bar-track-width, 0, 0);
+
+      [dir='rtl'] & {
+        transform: translate3d(-$bar-track-width, 0, 0);
+      }
+    }
+  }
+
+  &.mat-disabled {
+    // The value is based on MDC.
+    opacity: 0.38;
+
+    .mat-slide-toggle-label, .mat-slide-toggle-thumb-container {
+      cursor: default;
+    }
+  }
+}
+
+// The label element is our root container for the slide-toggle / switch indicator and label text.
+// It has to be a label, to support accessibility for the visual hidden input.
+.mat-slide-toggle-label {
+  @include vendor-prefixes.user-select(none);
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  height: inherit;
+  cursor: pointer;
+}
+
+.mat-slide-toggle-content {
+  @include list-common.truncate-line();
+}
+
+// If the label should be placed before the thumb then we just change the orders.
+.mat-slide-toggle-label-before {
+  .mat-slide-toggle-label { order: 1; }
+  .mat-slide-toggle-bar { order: 2; }
+}
+
+// Apply the margin for slide-toggles and revert it for RTL toggles with labelPosition before.
+[dir='rtl'] .mat-slide-toggle-label-before .mat-slide-toggle-bar,
+.mat-slide-toggle-bar {
+  margin-right: $spacing;
+  margin-left: 0;
+}
+
+// Switch the margins in RTL mode and also switch it if the labelPosition is set to before.
+[dir='rtl'],
+.mat-slide-toggle-label-before {
+  .mat-slide-toggle-bar {
+    margin-left: $spacing;
+    margin-right: 0;
+  }
+}
+
+.mat-slide-toggle-bar-no-side-margin {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+// The container includes the visual thumb and the ripple container element.
+.mat-slide-toggle-thumb-container {
+  $thumb-bar-vertical-padding: math.div($thumb-size - $bar-height, 2);
+
+  position: absolute;
+  z-index: 1;
+
+  width: $thumb-size;
+  height: $thumb-size;
+  top: -$thumb-bar-vertical-padding;
+  left: 0;
+
+  transform: translate3d(0, 0, 0);
+  transition: variables.$swift-linear;
+  transition-property: transform;
+
+  ._mat-animation-noopable & {
+    transition: none;
+  }
+
+  [dir='rtl'] & {
+    left: auto;
+    right: 0;
+  }
+}
+
+// The visual thumb element that moves inside of the thumb bar.
+// The parent thumb-container container is responsible for the movement of the visual thumb.
+.mat-slide-toggle-thumb {
+  height: $thumb-size;
+  width: $thumb-size;
+  border-radius: 50%;
+  display: block;
+}
+
+// Horizontal bar for the slide-toggle.
+// The slide-toggle bar is shown behind the movable thumb element.
+.mat-slide-toggle-bar {
+  position: relative;
+
+  width: $bar-width;
+  height: $bar-height;
+
+  // Prevent shrinking of the bar container. It can happen that the content is long enough to
+  // shrink the bar and the thumb.
+  flex-shrink: 0;
+
+  border-radius: $bar-border-radius;
+}
+
+// The slide toggle shows a visually hidden input inside of the component, which is used
+// to take advantage of the native browser functionality.
+.mat-slide-toggle-input {
+  // Move the input to the bottom and in the middle of the thumb.
+  // Visual improvement to properly show browser popups when being required.
+  $horizontal-offset: math.div($thumb-size, 2);
+
+  bottom: 0;
+  left: $horizontal-offset;
+
+  [dir='rtl'] & {
+    left: auto;
+    right: $horizontal-offset;
+  }
+}
+
+.mat-slide-toggle-bar,
+.mat-slide-toggle-thumb {
+  transition: variables.$swift-linear;
+  transition-property: background-color;
+  transition-delay: 50ms;
+
+  ._mat-animation-noopable & {
+    transition: none;
+  }
+}
+
+// Ripple positioning for the slide-toggle. Moves the ripple container into the center of the thumb.
+// Increase specificity because ripple styles are part of the `mat-core` mixin and can
+// potentially overwrite the absolute position of the container.
+.mat-slide-toggle .mat-slide-toggle-ripple {
+  position: absolute;
+  top: calc(50% - #{$ripple-radius});
+  left: calc(50% - #{$ripple-radius});
+  height: $ripple-radius * 2;
+  width: $ripple-radius * 2;
+  z-index: 1;
+  pointer-events: none;
+
+  .mat-ripple-element:not(.mat-slide-toggle-persistent-ripple) {
+    // Although the specs describe an opacity of 16% for ripples if the slide-toggle is being
+    // pressed, we need to reduce the opacity a bit because besides the transient ripples,
+    // the persistent ripple will still show up and blend with the transient ripple.
+    opacity: 0.12;
+  }
+}
+
+.mat-slide-toggle-persistent-ripple {
+  width: 100%;
+  height: 100%;
+  transform: none;
+
+  .mat-slide-toggle-bar:hover & {
+    opacity: 0.04;
+  }
+
+  // As per specifications, the focus ripple should only show up if the slide-toggle has
+  // been focused through keyboard. We cannot account for `cdk-program-focused` because clicking
+  // on the label causes the focus origin to be `program` due to the focus redirection.
+  .mat-slide-toggle:not(.mat-disabled).cdk-keyboard-focused & {
+    opacity: 0.12;
+  }
+
+  // We do this here, rather than having a `:not(.mat-slide-toggle-disabled)`
+  // above in the `:hover`, because the `:not` will bump the specificity
+  // a lot and will cause it to overide the focus styles.
+  &, .mat-slide-toggle.mat-disabled .mat-slide-toggle-bar:hover & {
+    opacity: 0;
+  }
+
+  // Hover styles will be displayed after tapping on touch devices.
+  // Disable the hover styling if the user's device doesn't support hovering.
+  @media (hover: none) {
+    // Note that we only negate the `:hover` rather than setting it to always be `display: none`,
+    // in order to maintain the focus indication for hybrid touch + keyboard devices.
+    .mat-slide-toggle-bar:hover & {
+      display: none;
+    }
+  }
+}
+
+// Slide-toggles render focus indicators when the
+// associated visually-hidden input is focused.
+.mat-slide-toggle-input:focus ~ .mat-slide-toggle-thumb-container .mat-focus-indicator::before {
+  content: '';
+}
+
+// Custom styling to make the slide-toggle usable in high contrast mode.
+@include cdk.high-contrast(active, off) {
+  .mat-slide-toggle-thumb,
+  .mat-slide-toggle-bar {
+    border: 1px solid;
+  }
+}

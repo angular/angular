@@ -7,4 +7,7 @@
  */
 
 export * from './slide-toggle-harness';
-export {SlideToggleHarnessFilters} from '@angular/material/slide-toggle/testing';
+export {
+  _MatSlideToggleHarnessBase as _MatLegacySlideToggleHarnessBase,
+  SlideToggleHarnessFilters as LegacySlideToggleHarnessFilters,
+} from '@angular/material/slide-toggle/testing';

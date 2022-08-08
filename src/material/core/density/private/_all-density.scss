@@ -17,6 +17,7 @@
 @use '../../../select/select-theme';
 @use '../../../dialog/dialog-theme';
 @use '../../../chips/chips-theme';
+@use '../../../slide-toggle/slide-toggle-theme';
 
 @mixin private-all-unmigrated-component-densities($config) {
   @include expansion-theme.density($config);
@@ -55,6 +56,7 @@
   @include autocomplete-theme.density($config);
   @include dialog-theme.density($config);
   @include chips-theme.density($config);
+  @include slide-toggle-theme.density($config);
   @include private-all-unmigrated-component-densities($config);
 }
 

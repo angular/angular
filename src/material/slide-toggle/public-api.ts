@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './slide-toggle-module';
 export * from './slide-toggle';
 export * from './slide-toggle-config';
+export * from './module';
 export * from './slide-toggle-required-validator';

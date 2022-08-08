@@ -7,17 +7,23 @@
 import { AsyncFactoryFn } from '@angular/cdk/testing';
 import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
+import { ComponentHarnessConstructor } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 import { TestElement } from '@angular/cdk/testing';
 
 // @public
 export class MatSlideToggleHarness extends _MatSlideToggleHarnessBase {
+    // (undocumented)
     static hostSelector: string;
+    // (undocumented)
     isChecked(): Promise<boolean>;
     // (undocumented)
+    isRequired(): Promise<boolean>;
+    // (undocumented)
     protected _nativeElement: AsyncFactoryFn<TestElement>;
+    // (undocumented)
     toggle(): Promise<void>;
-    static with(options?: SlideToggleHarnessFilters): HarnessPredicate<MatSlideToggleHarness>;
+    static with<T extends MatSlideToggleHarness>(this: ComponentHarnessConstructor<T>, options?: SlideToggleHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public (undocumented)

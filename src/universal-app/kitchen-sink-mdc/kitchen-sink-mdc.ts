@@ -10,7 +10,7 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatMenuModule} from '@angular/material-experimental/mdc-menu';
 import {MatRadioModule} from '@angular/material-experimental/mdc-radio';
-import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-toggle';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatSliderModule} from '@angular/material-experimental/mdc-slider';
 import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';
 import {MatTableModule} from '@angular/material-experimental/mdc-table';

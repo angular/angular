@@ -72,8 +72,8 @@ export const IMPORT_REPLACEMENTS: {[component: string]: {old: string; new: strin
     new: '@angular/material-experimental/mdc-sidenav',
   },
   'slide-toggle': {
-    old: '@angular/material/slide-toggle',
-    new: '@angular/material-experimental/mdc-slide-toggle',
+    old: '@angular/material/legacy-slide-toggle',
+    new: '@angular/material/slide-toggle',
   },
   'slider': {
     old: '@angular/material/slider',

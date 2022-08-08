@@ -9,6 +9,7 @@
 import {
   AsyncFactoryFn,
   ComponentHarness,
+  ComponentHarnessConstructor,
   HarnessPredicate,
   TestElement,
 } from '@angular/cdk/testing';
@@ -99,23 +100,24 @@ export abstract class _MatSlideToggleHarnessBase extends ComponentHarness {
   }
 }
 
-/** Harness for interacting with a standard mat-slide-toggle in tests. */
+/** Harness for interacting with a MDC-based mat-slide-toggle in tests. */
 export class MatSlideToggleHarness extends _MatSlideToggleHarnessBase {
-  private _inputContainer = this.locatorFor('.mat-slide-toggle-bar');
-  protected _nativeElement = this.locatorFor('input');
-
-  /** The selector for the host element of a `MatSlideToggle` instance. */
-  static hostSelector = '.mat-slide-toggle';
+  protected _nativeElement = this.locatorFor('button');
+  static hostSelector = '.mat-mdc-slide-toggle';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatSlideToggleHarness` that meets
-   * certain criteria.
-   * @param options Options for filtering which slide toggle instances are considered a match.
+   * Gets a `HarnessPredicate` that can be used to search for a slide-toggle w/ specific attributes.
+   * @param options Options for narrowing the search:
+   *   - `selector` finds a slide-toggle whose host element matches the given selector.
+   *   - `label` finds a slide-toggle with specific label text.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: SlideToggleHarnessFilters = {}): HarnessPredicate<MatSlideToggleHarness> {
+  static with<T extends MatSlideToggleHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: SlideToggleHarnessFilters = {},
+  ): HarnessPredicate<T> {
     return (
-      new HarnessPredicate(MatSlideToggleHarness, options)
+      new HarnessPredicate(this, options)
         .addOption('label', options.label, (harness, label) =>
           HarnessPredicate.stringMatches(harness.getLabelText(), label),
         )
@@ -140,14 +142,17 @@ export class MatSlideToggleHarness extends _MatSlideToggleHarnessBase {
     );
   }
 
-  /** Toggle the checked state of the slide-toggle. */
   async toggle(): Promise<void> {
-    return (await this._inputContainer()).click();
+    return (await this._nativeElement()).click();
   }
 
-  /** Whether the slide-toggle is checked. */
+  override async isRequired(): Promise<boolean> {
+    const ariaRequired = await (await this._nativeElement()).getAttribute('aria-required');
+    return ariaRequired === 'true';
+  }
+
   async isChecked(): Promise<boolean> {
-    const checked = (await this._nativeElement()).getProperty<boolean>('checked');
+    const checked = (await this._nativeElement()).getAttribute('aria-checked');
     return coerceBooleanProperty(await checked);
   }
 }

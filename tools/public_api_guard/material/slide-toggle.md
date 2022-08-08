@@ -21,7 +21,7 @@ import { FocusOrigin } from '@angular/cdk/a11y';
 import { HasTabIndex } from '@angular/material/core';
 import * as i0 from '@angular/core';
 import * as i3 from '@angular/material/core';
-import * as i4 from '@angular/cdk/observers';
+import * as i4 from '@angular/common';
 import { InjectionToken } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { Provider } from '@angular/core';
@@ -41,16 +41,18 @@ export const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: {
     multi: boolean;
 };
 
-// @public
+// @public (undocumented)
 export class MatSlideToggle extends _MatSlideToggleBase<MatSlideToggleChange> {
     constructor(elementRef: ElementRef, focusMonitor: FocusMonitor, changeDetectorRef: ChangeDetectorRef, tabIndex: string, defaults: MatSlideToggleDefaultOptions, animationMode?: string);
+    get buttonId(): string;
     // (undocumented)
     protected _createChangeEvent(isChecked: boolean): MatSlideToggleChange;
-    focus(options?: FocusOptions, origin?: FocusOrigin): void;
-    _inputElement: ElementRef<HTMLInputElement>;
-    _onChangeEvent(event: Event): void;
-    _onInputClick(event: Event): void;
-    _onLabelTextChange(): void;
+    focus(): void;
+    // (undocumented)
+    _getAriaLabelledBy(): string | null;
+    _handleClick(): void;
+    _labelId: string;
+    _switchElement: ElementRef<HTMLElement>;
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatSlideToggle, "mat-slide-toggle", ["matSlideToggle"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "color": "color"; "tabIndex": "tabIndex"; }, {}, never, ["*"], false>;
     // (undocumented)
@@ -127,7 +129,7 @@ export class MatSlideToggleModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatSlideToggleModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatSlideToggleModule, [typeof i2.MatSlideToggle], [typeof _MatSlideToggleRequiredValidatorModule, typeof i3.MatRippleModule, typeof i3.MatCommonModule, typeof i4.ObserversModule], [typeof _MatSlideToggleRequiredValidatorModule, typeof i2.MatSlideToggle, typeof i3.MatCommonModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatSlideToggleModule, [typeof i2.MatSlideToggle], [typeof _MatSlideToggleRequiredValidatorModule, typeof i3.MatCommonModule, typeof i3.MatRippleModule, typeof i4.CommonModule], [typeof _MatSlideToggleRequiredValidatorModule, typeof i2.MatSlideToggle, typeof i3.MatCommonModule]>;
 }
 
 // @public

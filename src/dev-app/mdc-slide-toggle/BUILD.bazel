@@ -10,7 +10,7 @@ ng_module(
         ":mdc_slide_toggle_demo_scss",
     ],
     deps = [
-        "//src/material-experimental/mdc-slide-toggle",
+        "//src/material/slide-toggle",
         "@npm//@angular/forms",
     ],
 )

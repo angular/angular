@@ -12,7 +12,7 @@ import {MatPaginatorModule, PageEvent} from '@angular/material-experimental/mdc-
 import {FormsModule} from '@angular/forms';
 import {MatCardModule} from '@angular/material/card';
 import {MatInputModule} from '@angular/material/input';
-import {MatSlideToggleModule} from '@angular/material-experimental/mdc-slide-toggle';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'mdc-paginator-demo',

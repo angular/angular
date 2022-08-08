@@ -1,0 +1,105 @@
+@use 'sass:map';
+@use '../core/style/private';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/typography/typography';
+@use '../core/typography/typography-utils';
+
+@mixin _checked-color($palette, $thumb-checked-hue) {
+  &.mat-checked {
+    .mat-slide-toggle-thumb {
+      background-color: theming.get-color-from-palette($palette, $thumb-checked-hue);
+    }
+
+    .mat-slide-toggle-bar {
+      // Opacity is determined from the specs for the selection controls.
+      // See: https://material.io/design/components/selection-controls.html#specs
+      background-color: theming.get-color-from-palette($palette, $thumb-checked-hue, 0.54);
+    }
+
+    .mat-ripple-element {
+      // Set no opacity for the ripples because the ripple opacity will be adjusted dynamically
+      // based on the type of interaction with the slide-toggle (e.g. for hover, focus)
+      background-color: theming.get-color-from-palette($palette, $thumb-checked-hue);
+    }
+  }
+}
+
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $is-dark: map.get($config, is-dark);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
+
+  // Color hues are based on the specs which briefly show the hues that are applied to a switch.
+  // The 2018 specs no longer describe how dark switches should look like. Due to the lack of
+  // information for dark themed switches, we partially keep the old behavior that is based on
+  // the previous specifications. For the checked color we always use the `default` hue because
+  // that follows MDC and also makes it easier for people to create a custom theme without needing
+  // to specify each hue individually.
+  $thumb-unchecked-hue: if($is-dark, 400, 50);
+  $thumb-checked-hue: default;
+
+  $bar-unchecked-color: theming.get-color-from-palette($foreground, disabled);
+  $ripple-unchecked-color: theming.get-color-from-palette($foreground, base);
+
+  .mat-slide-toggle {
+    @include _checked-color($accent, $thumb-checked-hue);
+
+    &.mat-primary {
+      @include _checked-color($primary, $thumb-checked-hue);
+    }
+
+    &.mat-warn {
+      @include _checked-color($warn, $thumb-checked-hue);
+    }
+
+    &:not(.mat-checked) .mat-ripple-element {
+      // Set no opacity for the ripples because the ripple opacity will be adjusted dynamically
+      // based on the type of interaction with the slide-toggle (e.g. for hover, focus)
+      background-color: $ripple-unchecked-color;
+    }
+  }
+
+  .mat-slide-toggle-thumb {
+    @include private.private-theme-elevation(1, $config);
+    background-color: theming.get-color-from-palette(palette.$grey-palette, $thumb-unchecked-hue);
+  }
+
+  .mat-slide-toggle-bar {
+    background-color: $bar-unchecked-color;
+  }
+}
+
+@mixin typography($config-or-theme) {
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
+  .mat-slide-toggle-content {
+    font-family: typography-utils.font-family($config);
+  }
+}
+
+@mixin _density($config-or-theme) {}
+
+@mixin theme($theme-or-color-config) {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-slide-toggle') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
+
+    @if $color != null {
+      @include color($color);
+    }
+    @if $density != null {
+      @include _density($density);
+    }
+    @if $typography != null {
+      @include typography($typography);
+    }
+  }
+}
+

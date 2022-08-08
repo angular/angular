@@ -1,8 +1,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {MatSlideToggleHarness} from '@angular/material/slide-toggle/testing';
+import {MatLegacySlideToggleHarness} from '@angular/material/legacy-slide-toggle/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle';
 import {SlideToggleHarnessExample} from './slide-toggle-harness-example';
 import {ReactiveFormsModule} from '@angular/forms';
 
@@ -12,7 +12,7 @@ describe('SlideToggleHarnessExample', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatSlideToggleModule, ReactiveFormsModule],
+      imports: [MatLegacySlideToggleModule, ReactiveFormsModule],
       declarations: [SlideToggleHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(SlideToggleHarnessExample);
@@ -21,33 +21,37 @@ describe('SlideToggleHarnessExample', () => {
   });
 
   it('should load all slide-toggle harnesses', async () => {
-    const slideToggles = await loader.getAllHarnesses(MatSlideToggleHarness);
+    const slideToggles = await loader.getAllHarnesses(MatLegacySlideToggleHarness);
     expect(slideToggles.length).toBe(2);
   });
 
   it('should load slide-toggle with name', async () => {
     const slideToggles = await loader.getAllHarnesses(
-      MatSlideToggleHarness.with({name: 'first-name'}),
+      MatLegacySlideToggleHarness.with({name: 'first-name'}),
     );
     expect(slideToggles.length).toBe(1);
     expect(await slideToggles[0].getLabelText()).toBe('First');
   });
 
   it('should get disabled state', async () => {
-    const [enabledToggle, disabledToggle] = await loader.getAllHarnesses(MatSlideToggleHarness);
+    const [enabledToggle, disabledToggle] = await loader.getAllHarnesses(
+      MatLegacySlideToggleHarness,
+    );
     expect(await enabledToggle.isDisabled()).toBe(false);
     expect(await disabledToggle.isDisabled()).toBe(true);
   });
 
   it('should get label text', async () => {
-    const [firstToggle, secondToggle] = await loader.getAllHarnesses(MatSlideToggleHarness);
+    const [firstToggle, secondToggle] = await loader.getAllHarnesses(MatLegacySlideToggleHarness);
     expect(await firstToggle.getLabelText()).toBe('First');
     expect(await secondToggle.getLabelText()).toBe('Second');
   });
 
   it('should toggle slide-toggle', async () => {
     fixture.componentInstance.disabled = false;
-    const [checkedToggle, uncheckedToggle] = await loader.getAllHarnesses(MatSlideToggleHarness);
+    const [checkedToggle, uncheckedToggle] = await loader.getAllHarnesses(
+      MatLegacySlideToggleHarness,
+    );
     await checkedToggle.toggle();
     await uncheckedToggle.toggle();
     expect(await checkedToggle.isChecked()).toBe(false);

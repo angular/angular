@@ -13,7 +13,7 @@ import {FormsModule} from '@angular/forms';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle';
 
 @Component({
   selector: 'paginator-demo',
@@ -27,7 +27,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     MatLegacyFormFieldModule,
     MatLegacyInputModule,
     MatPaginatorModule,
-    MatSlideToggleModule,
+    MatLegacySlideToggleModule,
   ],
 })
 export class PaginatorDemo {

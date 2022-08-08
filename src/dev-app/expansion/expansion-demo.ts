@@ -21,7 +21,7 @@ import {
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatRadioModule} from '@angular/material/radio';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle';
 
 @Component({
   selector: 'expansion-demo',
@@ -38,7 +38,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     MatLegacyFormFieldModule,
     MatLegacyInputModule,
     MatRadioModule,
-    MatSlideToggleModule,
+    MatLegacySlideToggleModule,
   ],
 })
 export class ExpansionDemo {
