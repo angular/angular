@@ -61,6 +61,13 @@
   .mat-form-field-type-mat-native-select.mat-form-field-invalid .mat-form-field-infix::after {
     color: theming.get-color-from-palette($warn, text);
   }
+
+  .mat-form-field-disabled {
+    .mat-form-field-prefix,
+    .mat-form-field-suffix {
+      color: theming.get-color-from-palette($foreground, disabled-text);
+    }
+  }
 }
 
 @mixin typography($config-or-theme) {
