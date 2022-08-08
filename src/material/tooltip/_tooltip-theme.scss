@@ -1,6 +1,7 @@
 @use 'sass:map';
-@use '@material/tooltip/tooltip';
-@use '@material/tooltip' as tooltip-theme;
+@use '@material/tooltip/plain-tooltip-theme';
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/typography/typography' as mdc-typography;
 @use '../core/theming/theming';
 @use '../core/theming/palette';
 @use '../core/mdc-helpers/mdc-helpers';
@@ -9,12 +10,12 @@
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   @include mdc-helpers.using-mdc-theme($config) {
-    @include tooltip.core-styles($query: mdc-helpers.$mdc-theme-styles-query);
-    // We are defining our own tooltip background color because of concerns
-    // surrounding the 0.6 background color opacity of the MDC tooltip styles.
-    @include tooltip-theme.fill-color(
-      map.get(palette.$light-theme-background-palette, tooltip)
-    );
+    .mat-mdc-tooltip {
+      @include plain-tooltip-theme.theme((
+        container-color: map.get(palette.$light-theme-background-palette, tooltip),
+        supporting-text-color: mdc-theme-color.prop-value(text-primary-on-dark)
+      ));
+    }
   }
 }
 
@@ -22,7 +23,14 @@
   $config: typography.private-typography-to-2018-config(
           theming.get-typography-config($config-or-theme));
   @include mdc-helpers.using-mdc-typography($config) {
-    @include tooltip.core-styles($query: mdc-helpers.$mdc-typography-styles-query);
+    .mat-mdc-tooltip {
+      @include plain-tooltip-theme.theme((
+        supporting-text-font: mdc-typography.get-font(caption),
+        supporting-text-size: mdc-typography.get-size(caption),
+        supporting-text-weight: mdc-typography.get-weight(caption),
+        supporting-text-tracking: mdc-typography.get-tracking(caption),
+      ));
+    }
   }
 }
 

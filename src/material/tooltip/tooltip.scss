@@ -1,7 +1,21 @@
 @use '@material/tooltip/tooltip';
+@use '@material/tooltip/tooltip-theme';
+@use '@material/tooltip/plain-tooltip-theme';
+@use '../core/mdc-helpers/mdc-helpers';
 
-// Only include the structural styles, because we handle the animation ourselves.
-@include tooltip.core-styles($query: structure);
+@include mdc-helpers.disable-mdc-fallback-declarations {
+  // Only include the structural styles, because we handle the animation ourselves.
+  @include tooltip.static-styles($query: structure);
+  @include plain-tooltip-theme.theme-styles((
+    container-shape: tooltip-theme.$border-radius,
+    container-color: #fff,
+    supporting-text-color: #000,
+    supporting-text-font: inherit,
+    supporting-text-size: inherit,
+    supporting-text-tracking: inherit,
+    supporting-text-weight: inherit,
+  ));
+}
 
 .mat-mdc-tooltip {
   // We don't use MDC's positioning so this has to be relative.
