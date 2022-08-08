@@ -46,7 +46,7 @@ import * as Plotly from 'plotly.js-dist-min';
 class AppComponent implements OnInit {
   constructor(private ngZone: NgZone) {}
   ngOnInit() {
-    this.zone.runOutsideAngular(() => {
+    this.ngZone.runOutsideAngular(() => {
       Plotly.newPlot('chart', data);
     });
   }
