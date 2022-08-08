@@ -20,6 +20,8 @@ ts_library(
         "@npm//@angular-devkit/schematics",
         "@npm//@schematics/angular",
         "@npm//@types/node",
+        "@npm//postcss",
+        "@npm//postcss-scss",
         "@npm//typescript",
     ],
 )
