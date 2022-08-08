@@ -74,7 +74,7 @@ export function createUrlTreeFromSnapshot(
   return createUrlTreeFromSegmentGroup(relativeToUrlSegmentGroup, commands, queryParams, fragment);
 }
 
-function createSegmentGroupFromRoute(route: ActivatedRouteSnapshot): UrlSegmentGroup {
+export function createSegmentGroupFromRoute(route: ActivatedRouteSnapshot): UrlSegmentGroup {
   let targetGroup: UrlSegmentGroup|undefined;
 
   function createSegmentGroupFromRouteRecursive(currentRoute: ActivatedRouteSnapshot) {

@@ -12,7 +12,7 @@ import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject, Subscrip
 import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 
 import {createRouterState} from './create_router_state';
-import {createUrlTree} from './create_url_tree';
+import {createSegmentGroupFromRoute, createUrlTree, createUrlTreeFromSegmentGroup} from './create_url_tree';
 import {RuntimeErrorCode} from './errors';
 import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {NavigationBehaviorOptions, QueryParamsHandling, Route, Routes} from './models';
@@ -27,11 +27,12 @@ import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
 import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader, ROUTES} from './router_config_loader';
+import {USE_NEW_ROUTER_CREATE_URL_TREE_IMPLEMENTATION} from './router_create_url_tree_flag';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
 import {Params} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
-import {containsTree, createEmptyUrlTree, IsActiveMatchOptions, isUrlTree, UrlSerializer, UrlTree} from './url_tree';
+import {containsTree, createEmptyUrlTree, IsActiveMatchOptions, isUrlTree, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {flatten} from './utils/collection';
 import {standardizeConfig, validateConfig} from './utils/config';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
@@ -1173,7 +1174,51 @@ export class Router {
     if (q !== null) {
       q = this.removeEmptyProps(q);
     }
-    return createUrlTree(a, this.currentUrlTree, commands, q, f ?? null);
+
+    if (!USE_NEW_ROUTER_CREATE_URL_TREE_IMPLEMENTATION) {
+      return createUrlTree(a, this.currentUrlTree, commands, q, f ?? null);
+    } else {
+      let relativeToUrlSegmentGroup: UrlSegmentGroup|undefined;
+      try {
+        // It's actually important to use `this.routerState.snapshot.root` rather
+        // than
+        // `this.routerState.root.snapshot`. If you look at the `createRouterState`
+        // function, you'll see that `snapshot` is simply the "current"
+        // `RouterStateSnapshot` (the target snapshot of the navigation) while
+        // `root` is the snapshot that gets created from applying the
+        // `routeReuseStrategy` to the current and previous snapshots.  This means
+        // that `root.snapshot` is a router state which is potentially still
+        // pending. The `_futureSnapshot` is only applied after the router activates
+        // (`advanceActivatedRoute`) so if there's another navigation that happens
+        // before then, we need to ensure that we are using the correct snapshot
+        // from the `routerState`.
+        // TODO(atscott): write a test for this
+        const relativeToSnapshot = relativeTo?.snapshot || this.routerState.snapshot.root;
+        relativeToUrlSegmentGroup = createSegmentGroupFromRoute(relativeToSnapshot);
+      } catch (e: unknown) {
+        // This is strictly for backwards compatibility with tests that create
+        // invalid `ActivatedRoute` mocks.
+        // Note: the difference between having this fallback for invalid `ActivatedRoute` setups and
+        // just throwing is ~500 test failures. Fixing all of those tests by hand is not feasible at
+        // the moment.
+        if (NG_DEV_MODE) {
+          console.warn(
+              `The ActivatedRoute has an invalid structure. This is likely due to an incomplete mock in tests.`);
+        }
+        if (typeof commands[0] !== 'string' || !commands[0].startsWith('/')) {
+          // Navigations that were absolute in the old way of creating UrlTrees
+          // would still work because they wouldn't attempt to match the
+          // segments in the `ActivatedRoute` to the `currentUrlTree` but
+          // instead just replace the root segment with the navigation result.
+          // Non-absolute navigations would fail to apply the commands because
+          // the logic could not find the segment to replace (so they'd act like there were no
+          // commands).
+          commands = [];
+        }
+        relativeToUrlSegmentGroup = this.currentUrlTree.root;
+      }
+      return createUrlTreeFromSegmentGroup(relativeToUrlSegmentGroup, commands, q, f ?? null);
+    }
   }
 
   /**
