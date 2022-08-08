@@ -53,7 +53,6 @@
   @include menu-theme.typography($config);
   @include paginator-theme.typography($config);
   @include progress-spinner-theme.typography($config);
-  @include radio-theme.typography($config);
   @include sidenav-theme.typography($config);
   @include slider-theme.typography($config);
   @include stepper-theme.typography($config);
@@ -94,6 +93,7 @@
   @include dialog-theme.typography($config);
   @include chips-theme.typography($config);
   @include slide-toggle-theme.typography($config);
+  @include radio-theme.typography($config);
 }
 
 // @deprecated Use `all-component-typographies`.

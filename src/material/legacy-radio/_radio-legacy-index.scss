@@ -1,0 +1,2 @@
+@forward 'radio-theme' hide color, theme, typography;
+@forward 'radio-theme' as mat-legacy-radio-* hide mat-legacy-radio-color, mat-legacy-radio-density;

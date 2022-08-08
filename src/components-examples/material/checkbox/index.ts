@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
-import {MatRadioModule} from '@angular/material/radio';
+import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
 import {CheckboxConfigurableExample} from './checkbox-configurable/checkbox-configurable-example';
 import {CheckboxHarnessExample} from './checkbox-harness/checkbox-harness-example';
 import {CheckboxOverviewExample} from './checkbox-overview/checkbox-overview-example';
@@ -28,7 +28,7 @@ const EXAMPLES = [
     CommonModule,
     MatLegacyCardModule,
     MatLegacyCheckboxModule,
-    MatRadioModule,
+    MatLegacyRadioModule,
     FormsModule,
     ReactiveFormsModule,
   ],

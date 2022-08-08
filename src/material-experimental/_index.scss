@@ -32,8 +32,6 @@
 @forward './mdc-progress-spinner/progress-spinner-theme' as mdc-progress-spinner-* show
   mdc-progress-spinner-color, mdc-progress-spinner-typography, mdc-progress-spinner-density,
   mdc-progress-spinner-theme;
-@forward './mdc-radio/radio-theme' as mdc-radio-* show mdc-radio-color, mdc-radio-typography,
-  mdc-radio-density, mdc-radio-theme;
 @forward './mdc-slider/slider-theme' as mdc-slider-* show mdc-slider-color,
   mdc-slider-typography, mdc-slider-density, mdc-slider-theme;
 @forward './mdc-snack-bar/snack-bar-theme' as mdc-snack-bar-* show mdc-snack-bar-color,

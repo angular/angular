@@ -22,7 +22,7 @@ ng_module(
         "//src/material/input",
         "//src/material/input/testing",
         "//src/material/legacy-checkbox",
-        "//src/material/radio",
+        "//src/material/legacy-radio",
         "//src/material/select",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",

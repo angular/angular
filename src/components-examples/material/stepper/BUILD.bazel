@@ -20,7 +20,7 @@ ng_module(
         "//src/material/button",
         "//src/material/icon",
         "//src/material/legacy-input",
-        "//src/material/radio",
+        "//src/material/legacy-radio",
         "//src/material/stepper",
         "//src/material/stepper/testing",
         "@npm//@angular/common",

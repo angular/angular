@@ -18,7 +18,7 @@ ng_module(
         "//src/material/legacy-card",
         "//src/material/legacy-progress-bar",
         "//src/material/legacy-progress-bar/testing",
-        "//src/material/radio",
+        "//src/material/legacy-radio",
         "//src/material/slider",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",

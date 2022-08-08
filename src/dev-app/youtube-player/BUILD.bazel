@@ -10,7 +10,7 @@ ng_module(
         ":youtube_player_demo_scss",
     ],
     deps = [
-        "//src/material/radio",
+        "//src/material/legacy-radio",
         "//src/youtube-player",
         "@npm//@angular/forms",
     ],

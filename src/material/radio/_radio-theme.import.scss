@@ -1,8 +1,4 @@
-@forward '../core/theming/theming.import';
-@forward '../core/typography/typography-utils.import';
-@forward 'radio-theme' hide color, theme, typography;
-@forward 'radio-theme' as mat-radio-* hide mat-radio-color, mat-radio-density;
+@forward 'radio-theme' hide color, density, theme, typography;
+@forward 'radio-theme' as mat-mdc-radio-* hide $mat-mdc-radio-mdc-radio-baseline-theme-color,
+$mat-mdc-radio-mdc-radio-disabled-circle-color, $mat-mdc-radio-mdc-radio-unchecked-color;
 
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';

@@ -16,8 +16,8 @@ ng_module(
         "//src/material/legacy-checkbox",
         "//src/material/legacy-form-field",
         "//src/material/legacy-input",
+        "//src/material/legacy-radio",
         "//src/material/legacy-slide-toggle",
-        "//src/material/radio",
         "@npm//@angular/forms",
     ],
 )

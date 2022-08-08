@@ -6,9 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
-import {BooleanInput, coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
-import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {
   AfterContentInit,
   AfterViewInit,
@@ -33,7 +30,6 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   CanDisableRipple,
   HasTabIndex,
@@ -41,7 +37,44 @@ import {
   mixinTabIndex,
   ThemePalette,
 } from '@angular/material/core';
+import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
+import {BooleanInput, coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
+import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+
+// Increasing integer for generating unique ids for radio components.
+let nextUniqueId = 0;
+
+/** Change event object emitted by radio button and radio group. */
+export class MatRadioChange {
+  constructor(
+    /** The radio button that emits the change event. */
+    public source: _MatRadioButtonBase,
+    /** The value of the radio button. */
+    public value: any,
+  ) {}
+}
+
+/**
+ * Provider Expression that allows mat-radio-group to register as a ControlValueAccessor. This
+ * allows it to support [(ngModel)] and ngControl.
+ * @docs-private
+ */
+export const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => MatRadioGroup),
+  multi: true,
+};
+
+/**
+ * Injection token that can be used to inject instances of `MatRadioGroup`. It serves as
+ * alternative token to the actual `MatRadioGroup` class which could cause unnecessary
+ * retention of the class and its component metadata.
+ */
+export const MAT_RADIO_GROUP = new InjectionToken<_MatRadioGroupBase<_MatRadioButtonBase>>(
+  'MatRadioGroup',
+);
 
 export interface MatRadioDefaultOptions {
   color: ThemePalette;
@@ -60,39 +93,6 @@ export function MAT_RADIO_DEFAULT_OPTIONS_FACTORY(): MatRadioDefaultOptions {
     color: 'accent',
   };
 }
-
-// Increasing integer for generating unique ids for radio components.
-let nextUniqueId = 0;
-
-/**
- * Provider Expression that allows mat-radio-group to register as a ControlValueAccessor. This
- * allows it to support [(ngModel)] and ngControl.
- * @docs-private
- */
-export const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any = {
-  provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => MatRadioGroup),
-  multi: true,
-};
-
-/** Change event object emitted by radio button and radio group. */
-export class MatRadioChange {
-  constructor(
-    /** The radio button that emits the change event. */
-    public source: _MatRadioButtonBase,
-    /** The value of the radio button. */
-    public value: any,
-  ) {}
-}
-
-/**
- * Injection token that can be used to inject instances of `MatRadioGroup`. It serves as
- * alternative token to the actual `MatRadioGroup` class which could cause unnecessary
- * retention of the class and its component metadata.
- */
-export const MAT_RADIO_GROUP = new InjectionToken<_MatRadioGroupBase<_MatRadioButtonBase>>(
-  'MatRadioGroup',
-);
 
 /**
  * Base class with all of the `MatRadioGroup` functionality.
@@ -321,26 +321,6 @@ export abstract class _MatRadioGroupBase<T extends _MatRadioButtonBase>
     this.disabled = isDisabled;
     this._changeDetector.markForCheck();
   }
-}
-
-/**
- * A group of radio buttons. May contain one or more `<mat-radio-button>` elements.
- */
-@Directive({
-  selector: 'mat-radio-group',
-  exportAs: 'matRadioGroup',
-  providers: [
-    MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR,
-    {provide: MAT_RADIO_GROUP, useExisting: MatRadioGroup},
-  ],
-  host: {
-    'role': 'radiogroup',
-    'class': 'mat-radio-group',
-  },
-})
-export class MatRadioGroup extends _MatRadioGroupBase<MatRadioButton> {
-  @ContentChildren(forwardRef(() => MatRadioButton), {descendants: true})
-  _radios: QueryList<MatRadioButton>;
 }
 
 // Boilerplate for applying mixins to MatRadioButton.
@@ -668,26 +648,40 @@ export abstract class _MatRadioButtonBase
 }
 
 /**
- * A Material design radio-button. Typically placed inside of `<mat-radio-group>` elements.
+ * A group of radio buttons. May contain one or more `<mat-radio-button>` elements.
  */
+@Directive({
+  selector: 'mat-radio-group',
+  exportAs: 'matRadioGroup',
+  providers: [
+    MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR,
+    {provide: MAT_RADIO_GROUP, useExisting: MatRadioGroup},
+  ],
+  host: {
+    'role': 'radiogroup',
+    'class': 'mat-mdc-radio-group',
+  },
+})
+export class MatRadioGroup extends _MatRadioGroupBase<MatRadioButton> {
+  /** Child radio buttons. */
+  @ContentChildren(forwardRef(() => MatRadioButton), {descendants: true})
+  _radios: QueryList<MatRadioButton>;
+}
+
 @Component({
   selector: 'mat-radio-button',
   templateUrl: 'radio.html',
   styleUrls: ['radio.css'],
-  inputs: ['disableRipple', 'tabIndex'],
-  encapsulation: ViewEncapsulation.None,
-  exportAs: 'matRadioButton',
   host: {
-    'class': 'mat-radio-button',
-    '[class.mat-radio-checked]': 'checked',
-    '[class.mat-radio-disabled]': 'disabled',
-    '[class._mat-animation-noopable]': '_noopAnimations',
+    'class': 'mat-mdc-radio-button',
+    '[attr.id]': 'id',
     '[class.mat-primary]': 'color === "primary"',
     '[class.mat-accent]': 'color === "accent"',
     '[class.mat-warn]': 'color === "warn"',
+    '[class.mat-mdc-radio-checked]': 'checked',
+    '[class._mat-animation-noopable]': '_noopAnimations',
     // Needs to be removed since it causes some a11y issues (see #21266).
     '[attr.tabindex]': 'null',
-    '[attr.id]': 'id',
     '[attr.aria-label]': 'null',
     '[attr.aria-labelledby]': 'null',
     '[attr.aria-describedby]': 'null',
@@ -696,29 +690,32 @@ export abstract class _MatRadioButtonBase
     // the focus to the native element.
     '(focus)': '_inputElement.nativeElement.focus()',
   },
+  inputs: ['disableRipple', 'tabIndex'],
+  exportAs: 'matRadioButton',
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatRadioButton extends _MatRadioButtonBase {
   constructor(
     @Optional() @Inject(MAT_RADIO_GROUP) radioGroup: MatRadioGroup,
     elementRef: ElementRef,
-    changeDetector: ChangeDetectorRef,
-    focusMonitor: FocusMonitor,
-    radioDispatcher: UniqueSelectionDispatcher,
+    _changeDetector: ChangeDetectorRef,
+    _focusMonitor: FocusMonitor,
+    _radioDispatcher: UniqueSelectionDispatcher,
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
     @Optional()
     @Inject(MAT_RADIO_DEFAULT_OPTIONS)
-    providerOverride?: MatRadioDefaultOptions,
+    _providerOverride?: MatRadioDefaultOptions,
     @Attribute('tabindex') tabIndex?: string,
   ) {
     super(
       radioGroup,
       elementRef,
-      changeDetector,
-      focusMonitor,
-      radioDispatcher,
+      _changeDetector,
+      _focusMonitor,
+      _radioDispatcher,
       animationMode,
-      providerOverride,
+      _providerOverride,
       tabIndex,
     );
   }

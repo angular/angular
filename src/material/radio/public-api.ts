@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './radio-module';
 export * from './radio';
+export * from './module';

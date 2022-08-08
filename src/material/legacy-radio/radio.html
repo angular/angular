@@ -1,0 +1,40 @@
+<!-- TODO(jelbourn): render the radio on either side of the content -->
+<!-- TODO(mtlin): Evaluate trade-offs of using native radio vs. cost of additional bindings. -->
+<label [attr.for]="inputId" class="mat-radio-label" #label>
+  <!-- The actual 'radio' part of the control. -->
+  <span class="mat-radio-container">
+    <span class="mat-radio-outer-circle"></span>
+    <span class="mat-radio-inner-circle"></span>
+    <input #input class="mat-radio-input" type="radio"
+        [id]="inputId"
+        [checked]="checked"
+        [disabled]="disabled"
+        [attr.name]="name"
+        [attr.value]="value"
+        [required]="required"
+        [attr.aria-label]="ariaLabel"
+        [attr.aria-labelledby]="ariaLabelledby"
+        [attr.aria-describedby]="ariaDescribedby"
+        (change)="_onInputInteraction($event)"
+        (click)="_onInputClick($event)">
+
+    <!-- The ripple comes after the input so that we can target it with a CSS
+         sibling selector when the input is focused. -->
+    <span mat-ripple class="mat-radio-ripple mat-focus-indicator"
+         [matRippleTrigger]="label"
+         [matRippleDisabled]="_isRippleDisabled()"
+         [matRippleCentered]="true"
+         [matRippleRadius]="20"
+         [matRippleAnimation]="{enterDuration: _noopAnimations ? 0 : 150}">
+
+      <span class="mat-ripple-element mat-radio-persistent-ripple"></span>
+    </span>
+  </span>
+
+  <!-- The label content for radio control. -->
+  <span class="mat-radio-label-content" [class.mat-radio-label-before]="labelPosition == 'before'">
+    <!-- Add an invisible span so JAWS can read the label -->
+    <span style="display:none">&nbsp;</span>
+    <ng-content></ng-content>
+  </span>
+</label>

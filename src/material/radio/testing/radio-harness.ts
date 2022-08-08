@@ -162,27 +162,30 @@ export abstract class _MatRadioGroupHarnessBase<
   }
 }
 
-/** Harness for interacting with a standard mat-radio-group in tests. */
+/** Harness for interacting with an MDC-based mat-radio-group in tests. */
 export class MatRadioGroupHarness extends _MatRadioGroupHarnessBase<
   typeof MatRadioButtonHarness,
   MatRadioButtonHarness,
   RadioButtonHarnessFilters
 > {
   /** The selector for the host element of a `MatRadioGroup` instance. */
-  static hostSelector = '.mat-radio-group';
+  static hostSelector = '.mat-mdc-radio-group';
   protected _buttonClass = MatRadioButtonHarness;
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatRadioGroupHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a radio group with specific
+   * attributes.
    * @param options Options for filtering which radio group instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: RadioGroupHarnessFilters = {}): HarnessPredicate<MatRadioGroupHarness> {
-    return new HarnessPredicate(MatRadioGroupHarness, options).addOption(
+  static with<T extends MatRadioGroupHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: RadioGroupHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options).addOption(
       'name',
       options.name,
-      this._checkRadioGroupName,
+      MatRadioGroupHarness._checkRadioGroupName,
     );
   }
 }
@@ -261,19 +264,22 @@ export abstract class _MatRadioButtonHarnessBase extends ComponentHarness {
   }
 }
 
-/** Harness for interacting with a standard mat-radio-button in tests. */
+/** Harness for interacting with an MDC-based mat-radio-button in tests. */
 export class MatRadioButtonHarness extends _MatRadioButtonHarnessBase {
   /** The selector for the host element of a `MatRadioButton` instance. */
-  static hostSelector = '.mat-radio-button';
+  static hostSelector = '.mat-mdc-radio-button';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatRadioButtonHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a radio button with specific
+   * attributes.
    * @param options Options for filtering which radio button instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: RadioButtonHarnessFilters = {}): HarnessPredicate<MatRadioButtonHarness> {
-    return new HarnessPredicate(MatRadioButtonHarness, options)
+  static with<T extends MatRadioButtonHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: RadioButtonHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options)
       .addOption('label', options.label, (harness, label) =>
         HarnessPredicate.stringMatches(harness.getLabelText(), label),
       )
@@ -285,6 +291,6 @@ export class MatRadioButtonHarness extends _MatRadioButtonHarnessBase {
       );
   }
 
-  protected _textLabel = this.locatorFor('.mat-radio-label-content');
-  protected _clickLabel = this.locatorFor('.mat-radio-label');
+  protected _textLabel = this.locatorFor('label');
+  protected _clickLabel = this._textLabel;
 }

@@ -64,6 +64,8 @@ entryPoints = [
     "progress-spinner/testing",
     "radio",
     "radio/testing",
+    "legacy-radio",
+    "legacy-radio/testing",
     "select",
     "select/testing",
     "legacy-select",

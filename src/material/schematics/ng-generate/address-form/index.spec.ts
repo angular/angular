@@ -35,10 +35,10 @@ describe('Material address-form schematic', () => {
     const tree = await runner.runSchematicAsync('address-form', baseOptions, app).toPromise();
     const moduleContent = getFileContent(tree, '/projects/material/src/app/app.module.ts');
 
-    expect(moduleContent).toContain('MatInputModule');
+    expect(moduleContent).toContain('MatLegacyInputModule');
     expect(moduleContent).toContain('MatButtonModule');
-    expect(moduleContent).toContain('MatSelectModule');
-    expect(moduleContent).toContain('MatRadioModule');
+    expect(moduleContent).toContain('MatLegacySelectModule');
+    expect(moduleContent).toContain('MatLegacyRadioModule');
     expect(moduleContent).toContain('ReactiveFormsModule');
   });
 

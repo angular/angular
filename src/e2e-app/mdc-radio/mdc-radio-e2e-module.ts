@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatRadioModule} from '@angular/material-experimental/mdc-radio';
+import {MatRadioModule} from '@angular/material/radio';
 import {MdcRadioE2e} from './mdc-radio-e2e';
 
 @NgModule({

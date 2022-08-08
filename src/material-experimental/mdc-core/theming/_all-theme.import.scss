@@ -7,10 +7,6 @@ mat-mdc-color, mat-mdc-density, mat-mdc-theme, mat-mdc-typography;
 $mat-mdc-button-mat-button-state-target;
 @forward '../../mdc-button/fab-theme' as mat-mdc-fab-*;
 @forward '../../mdc-button/icon-button-theme' as mat-mdc-icon-button-*;
-@forward '../../mdc-radio/radio-theme' hide color, density, theme, typography;
-@forward '../../mdc-radio/radio-theme' as mat-mdc-radio-* hide
-$mat-mdc-radio-mdc-radio-baseline-theme-color, $mat-mdc-radio-mdc-radio-disabled-circle-color,
-$mat-mdc-radio-mdc-radio-unchecked-color;
 @forward '../../mdc-snack-bar/snack-bar-theme' hide color, density, theme, typography;
 @forward '../../mdc-snack-bar/snack-bar-theme' as mat-mdc-snack-bar-* hide
 $mat-mdc-snack-bar-mdc-snackbar-dismiss-ink-color, $mat-mdc-snack-bar-mdc-snackbar-fill-color,
@@ -39,7 +35,6 @@ $mat-mdc-table-mdc-data-table-stroke-color, $mat-mdc-table-mdc-data-table-table-
 @import '../../mdc-button/button-theme';
 @import '../../mdc-list/list-theme';
 @import '../../mdc-menu/menu-theme';
-@import '../../mdc-radio/radio-theme';
 @import '../../mdc-snack-bar/snack-bar-theme';
 @import '../../mdc-tabs/tabs-theme';
 @import '../../mdc-table/table-theme';

@@ -1,0 +1,8 @@
+@forward '../core/theming/theming.import';
+@forward '../core/typography/typography-utils.import';
+@forward 'radio-theme' hide color, theme, typography;
+@forward 'radio-theme' as mat-legacy-radio-* hide mat-legacy-radio-color, mat-legacy-radio-density;
+
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/typography/typography-utils';

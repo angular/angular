@@ -1,0 +1,223 @@
+@use 'sass:math';
+@use '@angular/cdk';
+
+@use '../core/style/variables';
+@use '../core/ripple/ripple';
+@use '../core/style/vendor-prefixes';
+
+
+$size: variables.$toggle-size !default;
+$ripple-radius: 20px;
+
+// Top-level host container.
+.mat-radio-button {
+  display: inline-block;
+  -webkit-tap-highlight-color: transparent;
+  outline: 0;
+}
+
+// Inner label container, wrapping entire element.
+// Enables focus by click.
+.mat-radio-label {
+  // Disable text selection on the label itself, because having text selected
+  // will prevent focus from reaching the label. Below we'll re-enable it only
+  // for the label's content so that people can still select the text.
+  @include vendor-prefixes.user-select(none);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  vertical-align: middle;
+
+  // Have the label span the rest of the radio button for maximum clickable area.
+  width: 100%;
+}
+
+// Container for radio circles and ripple.
+.mat-radio-container {
+  box-sizing: border-box;
+  display: inline-block;
+  position: relative;
+  width: $size;
+  height: $size;
+  // The radio container is inside of a inline-flex element and may shrink if the label
+  // is wide and text-wrapping is enabled.
+  flex-shrink: 0;
+}
+
+// The outer circle for the radio, always present.
+.mat-radio-outer-circle {
+  box-sizing: border-box;
+  display: block;
+  height: $size;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transition: border-color ease 280ms;
+  width: $size;
+  border: {
+    width: 2px;
+    style: solid;
+    radius: 50%;
+  }
+
+  ._mat-animation-noopable & {
+    transition: none;
+  }
+}
+
+// The inner circle for the radio, shown when checked.
+.mat-radio-inner-circle {
+  $transition-duration: 280ms;
+  $base-transition: transform ease $transition-duration, background-color ease $transition-duration;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: block;
+  height: $size;
+  left: 0;
+  position: absolute;
+  top: 0;
+  // On some zoom levels the `scale(0.001)` from below can cause the circle to be shown as a 1x1
+  // dot (see #22036). Ensure that it's hidden using `opacity`. There's a slight transition with
+  // a long delay so that switching the opacity only applies after the `transform` is done.
+  opacity: 0;
+  transition: $base-transition, opacity linear 1ms $transition-duration;
+  width: $size;
+
+  // Note: This starts from 0.001 instead of 0, because transitioning from 0 to 0.5 causes
+  // IE to flash the entire circle for a couple of frames, throwing off the entire animation.
+  transform: scale(0.001);
+
+  // force browser to show background-color when using the print function
+  @include vendor-prefixes.color-adjust(exact);
+
+  .mat-radio-checked & {
+    transform: scale(0.5);
+    opacity: 1;
+    transition: $base-transition;
+
+    @include cdk.high-contrast(active, off) {
+      // Since we use a background color to render the circle, it won't be
+      // displayed in high contrast mode. Use a border as a fallback.
+      border: solid math.div($size, 2);
+    }
+  }
+
+  ._mat-animation-noopable & {
+    transition: none;
+  }
+}
+
+// Text label next to radio.
+.mat-radio-label-content {
+  // Re-enable text selection for the button's content since
+  // we disabled it above in the `.mat-radio-label`.
+  @include vendor-prefixes.user-select(auto);
+  display: inline-block;
+  order: 0;
+  line-height: inherit;
+  padding-left: variables.$toggle-padding;
+  padding-right: 0;
+
+  [dir='rtl'] & {
+    padding-right: variables.$toggle-padding;
+    padding-left: 0;
+  }
+}
+
+// Alignment.
+.mat-radio-label-content.mat-radio-label-before {
+  order: -1;
+  padding-left: 0;
+  padding-right: variables.$toggle-padding;
+
+  [dir='rtl'] & {
+    padding-right: 0;
+    padding-left: variables.$toggle-padding;
+  }
+}
+
+// Basic disabled state.
+.mat-radio-disabled,
+.mat-radio-disabled .mat-radio-label {
+  cursor: default;
+}
+
+// Increase specificity because ripple styles are part of the `mat-core` mixin and can
+// potentially overwrite the absolute position of the container.
+.mat-radio-button .mat-radio-ripple {
+  position: absolute;
+  left: calc(50% - #{$ripple-radius});
+  top: calc(50% - #{$ripple-radius});
+  height: $ripple-radius * 2;
+  width: $ripple-radius * 2;
+  z-index: 1;
+  pointer-events: none;
+
+  .mat-ripple-element:not(.mat-radio-persistent-ripple) {
+    opacity: 0.16;
+  }
+}
+
+.mat-radio-persistent-ripple {
+  width: 100%;
+  height: 100%;
+  transform: none;
+
+  // Needs an explicit top/left so it stays aligned no matter how the text is aligned (see #22389).
+  top: 0;
+  left: 0;
+
+  .mat-radio-container:hover & {
+    opacity: 0.04;
+  }
+
+  .mat-radio-button:not(.mat-radio-disabled).cdk-keyboard-focused &,
+  .mat-radio-button:not(.mat-radio-disabled).cdk-program-focused & {
+    opacity: 0.12;
+  }
+
+  // We do this here, rather than having a `:not(.mat-radio-disabled)`
+  // above in the `:hover`, because the `:not` will bump the specificity
+  // a lot and will cause it to overide the focus styles.
+  &, .mat-radio-disabled .mat-radio-container:hover & {
+    opacity: 0;
+  }
+
+  // Hover styles will be displayed after tapping on touch devices.
+  // Disable the hover styling if the user's device doesn't support hovering.
+  @media (hover: none) {
+    // Note that we only negate the `:hover` rather than setting it to always be `display: none`,
+    // in order to maintain the focus indication for hybrid touch + keyboard devices.
+    .mat-radio-container:hover & {
+      display: none;
+    }
+  }
+}
+
+.mat-radio-input {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  cursor: inherit;
+
+  // Puts the input behind the circle while keeping it visible so that
+  // it allows `click` events to propagate up to the `label` wrapper.
+  z-index: -1;
+}
+
+// Radio renders focus indicators when the
+// associated visually-hidden input is focused.
+.mat-radio-input:focus ~ .mat-focus-indicator::before {
+  content: '';
+}
+
+@include cdk.high-contrast(active, off) {
+  .mat-radio-disabled {
+    opacity: 0.5;
+  }
+}

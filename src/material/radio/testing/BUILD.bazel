@@ -14,9 +14,17 @@ ts_library(
     ],
 )
 
-filegroup(
-    name = "source-files",
-    srcs = glob(["**/*.ts"]),
+ng_test_library(
+    name = "unit_tests_lib",
+    srcs = glob(
+        ["**/*.spec.ts"],
+        exclude = ["shared.spec.ts"],
+    ),
+    deps = [
+        ":harness_tests_lib",
+        ":testing",
+        "//src/material/radio",
+    ],
 )
 
 ng_test_library(
@@ -33,20 +41,14 @@ ng_test_library(
     ],
 )
 
-ng_test_library(
-    name = "unit_tests_lib",
-    srcs = glob(
-        ["**/*.spec.ts"],
-        exclude = ["shared.spec.ts"],
-    ),
+ng_web_test_suite(
+    name = "unit_tests",
     deps = [
-        ":harness_tests_lib",
-        ":testing",
-        "//src/material/radio",
+        ":unit_tests_lib",
     ],
 )
 
-ng_web_test_suite(
-    name = "unit_tests",
-    deps = [":unit_tests_lib"],
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )

@@ -1,0 +1,98 @@
+@use 'sass:map';
+@use '../core/theming/theming';
+@use '../core/typography/typography';
+@use '../core/typography/typography-utils';
+
+@mixin _color($palette) {
+  &.mat-radio-checked .mat-radio-outer-circle {
+    border-color: theming.get-color-from-palette($palette);
+  }
+
+  .mat-radio-inner-circle,
+  .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple),
+  &.mat-radio-checked .mat-radio-persistent-ripple,
+  &:active .mat-radio-persistent-ripple {
+    background-color: theming.get-color-from-palette($palette);
+  }
+}
+
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
+
+  .mat-radio-outer-circle {
+    border-color: theming.get-color-from-palette($foreground, secondary-text);
+  }
+
+  .mat-radio-button {
+    &.mat-primary {
+      @include _color($primary);
+    }
+
+    &.mat-accent {
+      @include _color($accent);
+    }
+
+    &.mat-warn {
+      @include _color($warn);
+    }
+
+    // This needs extra specificity, because the classes above are combined
+    // (e.g. `.mat-radio-button.mat-accent`) which increases their specificity a lot.
+    // TODO: consider making the selectors into descendants (`.mat-primary .mat-radio-button`).
+    &.mat-radio-disabled {
+      &.mat-radio-checked .mat-radio-outer-circle,
+      .mat-radio-outer-circle {
+        border-color: theming.get-color-from-palette($foreground, disabled);
+      }
+
+      .mat-radio-ripple .mat-ripple-element,
+      .mat-radio-inner-circle {
+        background-color: theming.get-color-from-palette($foreground, disabled);
+      }
+
+      .mat-radio-label-content {
+        color: theming.get-color-from-palette($foreground, disabled);
+      }
+    }
+
+    // Switch this to a solid color since we're using `opacity`
+    // to control how opaque the ripple should be.
+    .mat-ripple-element {
+      background-color: map.get($foreground, base);
+    }
+  }
+}
+
+@mixin typography($config-or-theme) {
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
+  .mat-radio-button {
+    font-family: typography-utils.font-family($config);
+  }
+}
+
+@mixin _density($config-or-theme) {}
+
+@mixin theme($theme-or-color-config) {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-radio') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
+
+    @if $color != null {
+      @include color($color);
+    }
+    @if $density != null {
+      @include _density($density);
+    }
+    @if $typography != null {
+      @include typography($typography);
+    }
+  }
+}

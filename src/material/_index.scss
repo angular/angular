@@ -128,6 +128,8 @@
 @forward './progress-spinner/progress-spinner-theme' as progress-spinner-* show
   progress-spinner-theme, progress-spinner-color, progress-spinner-typography;
 @forward './radio/radio-theme' as radio-* show radio-theme, radio-color, radio-typography;
+@forward './legacy-radio/radio-theme' as legacy-radio-* show legacy-radio-theme, legacy-radio-color,
+  legacy-radio-typography;
 @forward './select/select-theme' as select-* show select-theme, select-color, select-typography,
   select-density;
 @forward './legacy-select/select-theme' as legacy-select-* show legacy-select-theme,

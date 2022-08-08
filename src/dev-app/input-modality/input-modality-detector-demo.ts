@@ -15,7 +15,7 @@ import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatRadioModule} from '@angular/material/radio';
+import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
 import {MatLegacySelectModule} from '@angular/material/legacy-select';
 
 @Component({
@@ -28,7 +28,7 @@ import {MatLegacySelectModule} from '@angular/material/legacy-select';
     MatButtonModule,
     MatLegacyFormFieldModule,
     MatLegacyInputModule,
-    MatRadioModule,
+    MatLegacyRadioModule,
     MatLegacySelectModule,
   ],
 })

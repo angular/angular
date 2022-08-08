@@ -2,19 +2,15 @@ import {waitForAsync, ComponentFixture, fakeAsync, TestBed, tick} from '@angular
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {dispatchFakeEvent} from '../../cdk/testing/private';
-import {
-  MAT_RADIO_DEFAULT_OPTIONS,
-  MatRadioButton,
-  MatRadioChange,
-  MatRadioGroup,
-  MatRadioModule,
-} from './index';
+import {dispatchFakeEvent} from '@angular/cdk/testing/private';
 
-describe('MDC-based MatRadio', () => {
+import {MAT_RADIO_DEFAULT_OPTIONS, MatRadioChange} from '@angular/material/radio';
+import {MatLegacyRadioButton, MatLegacyRadioGroup, MatLegacyRadioModule} from './index';
+
+describe('MatRadio', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [MatRadioModule, FormsModule, ReactiveFormsModule],
+      imports: [MatLegacyRadioModule, FormsModule, ReactiveFormsModule],
       declarations: [
         DisableableRadioButton,
         FocusableRadioButton,
@@ -40,9 +36,8 @@ describe('MDC-based MatRadio', () => {
     let radioNativeElements: HTMLElement[];
     let radioLabelElements: HTMLLabelElement[];
     let radioInputElements: HTMLInputElement[];
-    let radioFormFieldElements: HTMLInputElement[];
-    let groupInstance: MatRadioGroup;
-    let radioInstances: MatRadioButton[];
+    let groupInstance: MatLegacyRadioGroup;
+    let radioInstances: MatLegacyRadioButton[];
     let testComponent: RadiosInsideRadioGroup;
 
     beforeEach(waitForAsync(() => {
@@ -51,10 +46,10 @@ describe('MDC-based MatRadio', () => {
 
       testComponent = fixture.debugElement.componentInstance;
 
-      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup))!;
-      groupInstance = groupDebugElement.injector.get<MatRadioGroup>(MatRadioGroup);
+      groupDebugElement = fixture.debugElement.query(By.directive(MatLegacyRadioGroup))!;
+      groupInstance = groupDebugElement.injector.get<MatLegacyRadioGroup>(MatLegacyRadioGroup);
 
-      radioDebugElements = fixture.debugElement.queryAll(By.directive(MatRadioButton));
+      radioDebugElements = fixture.debugElement.queryAll(By.directive(MatLegacyRadioButton));
       radioNativeElements = radioDebugElements.map(debugEl => debugEl.nativeElement);
       radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
 
@@ -63,9 +58,6 @@ describe('MDC-based MatRadio', () => {
       );
       radioInputElements = radioDebugElements.map(
         debugEl => debugEl.query(By.css('input'))!.nativeElement,
-      );
-      radioFormFieldElements = radioDebugElements.map(
-        debugEl => debugEl.query(By.css('.mdc-form-field'))!.nativeElement,
       );
     }));
 
@@ -245,8 +237,8 @@ describe('MDC-based MatRadio', () => {
       testComponent.isFirstDisabled = true;
       fixture.detectChanges();
 
-      dispatchFakeEvent(radioFormFieldElements[0], 'mousedown');
-      dispatchFakeEvent(radioFormFieldElements[0], 'mouseup');
+      dispatchFakeEvent(radioLabelElements[0], 'mousedown');
+      dispatchFakeEvent(radioLabelElements[0], 'mouseup');
 
       let rippleAmount = radioNativeElements[0].querySelectorAll(
         '.mat-ripple-element:not(.mat-radio-persistent-ripple)',
@@ -259,8 +251,8 @@ describe('MDC-based MatRadio', () => {
       testComponent.isFirstDisabled = false;
       fixture.detectChanges();
 
-      dispatchFakeEvent(radioFormFieldElements[0], 'mousedown');
-      dispatchFakeEvent(radioFormFieldElements[0], 'mouseup');
+      dispatchFakeEvent(radioLabelElements[0], 'mousedown');
+      dispatchFakeEvent(radioLabelElements[0], 'mouseup');
 
       rippleAmount = radioNativeElements[0].querySelectorAll(
         '.mat-ripple-element:not(.mat-radio-persistent-ripple)',
@@ -273,9 +265,9 @@ describe('MDC-based MatRadio', () => {
       testComponent.disableRipple = true;
       fixture.detectChanges();
 
-      for (const radioFormField of radioFormFieldElements) {
-        dispatchFakeEvent(radioFormField, 'mousedown');
-        dispatchFakeEvent(radioFormField, 'mouseup');
+      for (const radioLabel of radioLabelElements) {
+        dispatchFakeEvent(radioLabel, 'mousedown');
+        dispatchFakeEvent(radioLabel, 'mouseup');
 
         const rippleAmount = radioNativeElements[0].querySelectorAll(
           '.mat-ripple-element:not(.mat-radio-persistent-ripple)',
@@ -287,9 +279,9 @@ describe('MDC-based MatRadio', () => {
       testComponent.disableRipple = false;
       fixture.detectChanges();
 
-      for (const radioFormField of radioFormFieldElements) {
-        dispatchFakeEvent(radioFormField, 'mousedown');
-        dispatchFakeEvent(radioFormField, 'mouseup');
+      for (const radioLabel of radioLabelElements) {
+        dispatchFakeEvent(radioLabel, 'mousedown');
+        dispatchFakeEvent(radioLabel, 'mouseup');
 
         const rippleAmount = radioNativeElements[0].querySelectorAll(
           '.mat-ripple-element:not(.mat-radio-persistent-ripple)',
@@ -428,7 +420,7 @@ describe('MDC-based MatRadio', () => {
 
       expect(
         radioRippleNativeElements.every(element =>
-          element.classList.contains('mat-mdc-focus-indicator'),
+          element.classList.contains('mat-focus-indicator'),
         ),
       ).toBe(true);
     });
@@ -477,8 +469,8 @@ describe('MDC-based MatRadio', () => {
     let radioDebugElements: DebugElement[];
     let innerRadios: DebugElement[];
     let radioLabelElements: HTMLLabelElement[];
-    let groupInstance: MatRadioGroup;
-    let radioInstances: MatRadioButton[];
+    let groupInstance: MatLegacyRadioGroup;
+    let radioInstances: MatLegacyRadioButton[];
     let testComponent: RadioGroupWithNgModel;
     let groupNgModel: NgModel;
 
@@ -488,11 +480,11 @@ describe('MDC-based MatRadio', () => {
 
       testComponent = fixture.debugElement.componentInstance;
 
-      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup))!;
-      groupInstance = groupDebugElement.injector.get<MatRadioGroup>(MatRadioGroup);
+      groupDebugElement = fixture.debugElement.query(By.directive(MatLegacyRadioGroup))!;
+      groupInstance = groupDebugElement.injector.get<MatLegacyRadioGroup>(MatLegacyRadioGroup);
       groupNgModel = groupDebugElement.injector.get<NgModel>(NgModel);
 
-      radioDebugElements = fixture.debugElement.queryAll(By.directive(MatRadioButton));
+      radioDebugElements = fixture.debugElement.queryAll(By.directive(MatLegacyRadioButton));
       radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
       innerRadios = fixture.debugElement.queryAll(By.css('input[type="radio"]'));
 
@@ -570,6 +562,7 @@ describe('MDC-based MatRadio', () => {
       // Blur the input element in order to verify that the ng-touched state has been set to true.
       // The touched state should be only set to true after the form control has been blurred.
       dispatchFakeEvent(innerRadios[2].nativeElement, 'blur');
+
       expect(groupNgModel.valid).toBe(true);
       expect(groupNgModel.pristine).toBe(false);
       expect(groupNgModel.touched).toBe(true);
@@ -635,7 +628,7 @@ describe('MDC-based MatRadio', () => {
 
   describe('disableable', () => {
     let fixture: ComponentFixture<DisableableRadioButton>;
-    let radioInstance: MatRadioButton;
+    let radioInstance: MatLegacyRadioButton;
     let radioNativeElement: HTMLInputElement;
     let testComponent: DisableableRadioButton;
 
@@ -644,8 +637,8 @@ describe('MDC-based MatRadio', () => {
       fixture.detectChanges();
 
       testComponent = fixture.debugElement.componentInstance;
-      const radioDebugElement = fixture.debugElement.query(By.directive(MatRadioButton))!;
-      radioInstance = radioDebugElement.injector.get<MatRadioButton>(MatRadioButton);
+      const radioDebugElement = fixture.debugElement.query(By.directive(MatLegacyRadioButton))!;
+      radioInstance = radioDebugElement.injector.get<MatLegacyRadioButton>(MatLegacyRadioButton);
       radioNativeElement = radioDebugElement.nativeElement.querySelector('input');
     });
 
@@ -668,9 +661,9 @@ describe('MDC-based MatRadio', () => {
   describe('as standalone', () => {
     let fixture: ComponentFixture<StandaloneRadioButtons>;
     let radioDebugElements: DebugElement[];
-    let seasonRadioInstances: MatRadioButton[];
-    let weatherRadioInstances: MatRadioButton[];
-    let fruitRadioInstances: MatRadioButton[];
+    let seasonRadioInstances: MatLegacyRadioButton[];
+    let weatherRadioInstances: MatLegacyRadioButton[];
+    let fruitRadioInstances: MatLegacyRadioButton[];
     let fruitRadioNativeElements: HTMLElement[];
     let fruitRadioNativeInputs: HTMLElement[];
     let testComponent: StandaloneRadioButtons;
@@ -681,7 +674,7 @@ describe('MDC-based MatRadio', () => {
 
       testComponent = fixture.debugElement.componentInstance;
 
-      radioDebugElements = fixture.debugElement.queryAll(By.directive(MatRadioButton));
+      radioDebugElements = fixture.debugElement.queryAll(By.directive(MatLegacyRadioButton));
       seasonRadioInstances = radioDebugElements
         .filter(debugEl => debugEl.componentInstance.name == 'season')
         .map(debugEl => debugEl.componentInstance);
@@ -691,6 +684,7 @@ describe('MDC-based MatRadio', () => {
       fruitRadioInstances = radioDebugElements
         .filter(debugEl => debugEl.componentInstance.name == 'fruit')
         .map(debugEl => debugEl.componentInstance);
+
       fruitRadioNativeElements = radioDebugElements
         .filter(debugEl => debugEl.componentInstance.name == 'fruit')
         .map(debugEl => debugEl.nativeElement);
@@ -832,10 +826,8 @@ describe('MDC-based MatRadio', () => {
     });
 
     it('should forward focus to native input', () => {
-      let radioButtonEl = fixture.debugElement.query(
-        By.css('.mat-mdc-radio-button'),
-      )!.nativeElement;
-      let inputEl = fixture.debugElement.query(By.css('.mdc-radio__native-control'))!.nativeElement;
+      const radioButtonEl = fixture.debugElement.query(By.css('.mat-radio-button'))!.nativeElement;
+      const inputEl = fixture.debugElement.query(By.css('.mat-radio-input'))!.nativeElement;
 
       radioButtonEl.focus();
       // Focus events don't always fire in tests, so we need to fake it.
@@ -846,7 +838,7 @@ describe('MDC-based MatRadio', () => {
     });
 
     it('should allow specifying an explicit tabindex for a single radio-button', () => {
-      const radioButtonInput = fixture.debugElement.query(By.css('.mat-mdc-radio-button input'))!
+      const radioButtonInput = fixture.debugElement.query(By.css('.mat-radio-button input'))!
         .nativeElement as HTMLInputElement;
 
       expect(radioButtonInput.tabIndex)
@@ -866,7 +858,7 @@ describe('MDC-based MatRadio', () => {
       predefinedFixture.detectChanges();
 
       const radioButtonEl = predefinedFixture.debugElement.query(
-        By.css('.mat-mdc-radio-button'),
+        By.css('.mat-radio-button'),
       )!.nativeElement;
 
       expect(radioButtonEl.hasAttribute('tabindex')).toBe(false);
@@ -877,7 +869,7 @@ describe('MDC-based MatRadio', () => {
       predefinedFixture.detectChanges();
 
       const radioButtonInput = predefinedFixture.debugElement.query(
-        By.css('.mat-mdc-radio-button input'),
+        By.css('.mat-radio-button input'),
       )!.nativeElement as HTMLInputElement;
 
       expect(radioButtonInput.getAttribute('tabindex')).toBe('5');
@@ -888,38 +880,29 @@ describe('MDC-based MatRadio', () => {
       predefinedFixture.detectChanges();
 
       const radioButtonEl = predefinedFixture.debugElement.query(
-        By.css('.mat-mdc-radio-button'),
+        By.css('.mat-radio-button'),
       )!.nativeElement;
 
       expect(radioButtonEl.hasAttribute('aria-label')).toBe(false);
       expect(radioButtonEl.hasAttribute('aria-describedby')).toBe(false);
       expect(radioButtonEl.hasAttribute('aria-labelledby')).toBe(false);
     });
-
-    it('should remove the tabindex from the host element when disabled', () => {
-      const radioButton = fixture.debugElement.query(By.css('.mat-mdc-radio-button')).nativeElement;
-
-      fixture.componentInstance.disabled = true;
-      fixture.detectChanges();
-
-      expect(radioButton.hasAttribute('tabindex')).toBe(false);
-    });
   });
 
   describe('group interspersed with other tags', () => {
     let fixture: ComponentFixture<InterleavedRadioGroup>;
     let groupDebugElement: DebugElement;
-    let groupInstance: MatRadioGroup;
+    let groupInstance: MatLegacyRadioGroup;
     let radioDebugElements: DebugElement[];
-    let radioInstances: MatRadioButton[];
+    let radioInstances: MatLegacyRadioButton[];
 
     beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(InterleavedRadioGroup);
       fixture.detectChanges();
 
-      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup))!;
-      groupInstance = groupDebugElement.injector.get<MatRadioGroup>(MatRadioGroup);
-      radioDebugElements = fixture.debugElement.queryAll(By.directive(MatRadioButton));
+      groupDebugElement = fixture.debugElement.query(By.directive(MatLegacyRadioGroup))!;
+      groupInstance = groupDebugElement.injector.get<MatLegacyRadioGroup>(MatLegacyRadioGroup);
+      radioDebugElements = fixture.debugElement.queryAll(By.directive(MatLegacyRadioButton));
       radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
     }));
 
@@ -933,7 +916,7 @@ describe('MatRadioDefaultOverrides', () => {
   describe('when MAT_RADIO_DEFAULT_OPTIONS overridden', () => {
     beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
-        imports: [MatRadioModule, FormsModule],
+        imports: [MatLegacyRadioModule, FormsModule],
         declarations: [DefaultRadioButton, RadioButtonWithColorBinding],
         providers: [
           {
@@ -950,7 +933,7 @@ describe('MatRadioDefaultOverrides', () => {
         TestBed.createComponent(DefaultRadioButton);
       fixture.detectChanges();
       const radioDebugElement: DebugElement = fixture.debugElement.query(
-        By.directive(MatRadioButton),
+        By.directive(MatLegacyRadioButton),
       )!;
       expect(radioDebugElement.nativeElement.classList).toContain('mat-primary');
     });
@@ -960,7 +943,7 @@ describe('MatRadioDefaultOverrides', () => {
       );
       fixture.detectChanges();
       const radioDebugElement: DebugElement = fixture.debugElement.query(
-        By.directive(MatRadioButton),
+        By.directive(MatLegacyRadioButton),
       )!;
       expect(radioDebugElement.nativeElement.classList).not.toContain('mat-primary');
       expect(radioDebugElement.nativeElement.classList).toContain('mat-warn');
@@ -1061,7 +1044,7 @@ class RadioGroupWithNgModel {
   template: `<mat-radio-button>One</mat-radio-button>`,
 })
 class DisableableRadioButton {
-  @ViewChild(MatRadioButton) matRadioButton: MatRadioButton;
+  @ViewChild(MatLegacyRadioButton) matRadioButton: MatLegacyRadioButton;
 
   set disabled(value: boolean) {
     this.matRadioButton.disabled = value;
@@ -1077,16 +1060,15 @@ class DisableableRadioButton {
   `,
 })
 class RadioGroupWithFormControl {
-  @ViewChild(MatRadioGroup) group: MatRadioGroup;
+  @ViewChild(MatLegacyRadioGroup) group: MatLegacyRadioGroup;
   formControl = new FormControl('');
 }
 
 @Component({
-  template: `<mat-radio-button [disabled]="disabled" [tabIndex]="tabIndex"></mat-radio-button>`,
+  template: `<mat-radio-button [tabIndex]="tabIndex"></mat-radio-button>`,
 })
 class FocusableRadioButton {
   tabIndex: number;
-  disabled = false;
 }
 
 @Component({

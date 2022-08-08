@@ -1,4 +1,4 @@
-import {MatRadioGroupHarness} from '@angular/material/radio/testing';
+import {MatLegacyRadioGroupHarness} from '@angular/material/legacy-radio/testing';
 import {SeleniumWebDriverHarnessEnvironment} from '@angular/cdk/testing/selenium-webdriver';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {configureDriver} from './driver.js';
@@ -18,7 +18,7 @@ describe('app test', () => {
   });
 
   it('should work', async () => {
-    const group = await loader.getHarness(MatRadioGroupHarness);
+    const group = await loader.getHarness(MatLegacyRadioGroupHarness);
 
     expect(group).toBeDefined();
     expect(await group.getCheckedValue()).toBe(null);

@@ -20,6 +20,7 @@ import { FocusOrigin } from '@angular/cdk/a11y';
 import { HasTabIndex } from '@angular/material/core';
 import * as i0 from '@angular/core';
 import * as i2 from '@angular/material/core';
+import * as i3 from '@angular/common';
 import { InjectionToken } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
@@ -39,9 +40,9 @@ export const MAT_RADIO_GROUP: InjectionToken<_MatRadioGroupBase<_MatRadioButtonB
 // @public
 export const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any;
 
-// @public
+// @public (undocumented)
 export class MatRadioButton extends _MatRadioButtonBase {
-    constructor(radioGroup: MatRadioGroup, elementRef: ElementRef, changeDetector: ChangeDetectorRef, focusMonitor: FocusMonitor, radioDispatcher: UniqueSelectionDispatcher, animationMode?: string, providerOverride?: MatRadioDefaultOptions, tabIndex?: string);
+    constructor(radioGroup: MatRadioGroup, elementRef: ElementRef, _changeDetector: ChangeDetectorRef, _focusMonitor: FocusMonitor, _radioDispatcher: UniqueSelectionDispatcher, animationMode?: string, _providerOverride?: MatRadioDefaultOptions, tabIndex?: string);
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatRadioButton, "mat-radio-button", ["matRadioButton"], { "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; }, {}, never, ["*"], false>;
     // (undocumented)
@@ -114,7 +115,6 @@ export interface MatRadioDefaultOptions {
 
 // @public
 export class MatRadioGroup extends _MatRadioGroupBase<MatRadioButton> {
-    // (undocumented)
     _radios: QueryList<MatRadioButton>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatRadioGroup, "mat-radio-group", ["matRadioGroup"], {}, {}, ["_radios"], never, false>;
@@ -166,7 +166,7 @@ export class MatRadioModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatRadioModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatRadioModule, [typeof i1.MatRadioGroup, typeof i1.MatRadioButton], [typeof i2.MatRippleModule, typeof i2.MatCommonModule], [typeof i1.MatRadioGroup, typeof i1.MatRadioButton, typeof i2.MatCommonModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatRadioModule, [typeof i1.MatRadioGroup, typeof i1.MatRadioButton], [typeof i2.MatCommonModule, typeof i3.CommonModule, typeof i2.MatRippleModule], [typeof i2.MatCommonModule, typeof i1.MatRadioGroup, typeof i1.MatRadioButton]>;
 }
 
 // (No @packageDocumentation comment for this package)

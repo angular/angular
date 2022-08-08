@@ -1,82 +1,96 @@
 @use 'sass:map';
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/radio/radio-theme' as mdc-radio-theme;
+@use '@material/radio/radio' as mdc-radio;
+@use '@material/form-field' as mdc-form-field;
 @use '../core/theming/theming';
+@use '../core/mdc-helpers/mdc-helpers';
 @use '../core/typography/typography';
-@use '../core/typography/typography-utils';
+@use '../core/theming/palette';
 
-@mixin _color($palette) {
-  &.mat-radio-checked .mat-radio-outer-circle {
-    border-color: theming.get-color-from-palette($palette);
-  }
+@mixin _color-palette($color-palette) {
+  @include mdc-radio-theme.theme((
+    selected-focus-icon-color: $color-palette,
+    selected-hover-icon-color: $color-palette,
+    selected-icon-color: $color-palette,
+    selected-pressed-icon-color: $color-palette,
+  ));
 
-  .mat-radio-inner-circle,
-  .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple),
-  &.mat-radio-checked .mat-radio-persistent-ripple,
-  &:active .mat-radio-persistent-ripple {
-    background-color: theming.get-color-from-palette($palette);
-  }
+  --mat-mdc-radio-checked-ripple-color: #{$color-palette};
 }
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $primary: map.get($config, primary);
-  $accent: map.get($config, accent);
-  $warn: map.get($config, warn);
-  $background: map.get($config, background);
+  $primary: theming.get-color-from-palette(map.get($config, primary));
+  $accent: theming.get-color-from-palette(map.get($config, accent));
+  $warn: theming.get-color-from-palette(map.get($config, warn));
   $foreground: map.get($config, foreground);
 
-  .mat-radio-outer-circle {
-    border-color: theming.get-color-from-palette($foreground, secondary-text);
-  }
+  @include mdc-helpers.using-mdc-theme($config) {
+    $on-surface: rgba(mdc-theme-color.$on-surface, 0.54);
+    $is-dark: map-get($config, is-dark);
+    $active-border-color: if(
+            $is-dark,
+            theming.get-color-from-palette(palette.$gray-palette, 200),
+            theming.get-color-from-palette(palette.$gray-palette, 900)
+    );
 
-  .mat-radio-button {
-    &.mat-primary {
-      @include _color($primary);
-    }
+    .mat-mdc-radio-button {
+      @include mdc-form-field.core-styles($query: mdc-helpers.$mdc-theme-styles-query);
+      @include mdc-radio-theme.theme((
+        // The disabled colors don't use the `rgba` version, because
+        // MDC applies a separate opacity to disabled buttons.
+        disabled-selected-icon-color: mdc-theme-color.$on-surface,
+        disabled-unselected-icon-color: mdc-theme-color.$on-surface,
+        unselected-focus-icon-color: $active-border-color,
+        unselected-hover-icon-color: $active-border-color,
+        unselected-icon-color: $on-surface,
+        unselected-pressed-icon-color: $on-surface,
+      ));
 
-    &.mat-accent {
-      @include _color($accent);
-    }
+      --mat-mdc-radio-ripple-color: #{mdc-theme-color.prop-value(on-surface)};
 
-    &.mat-warn {
-      @include _color($warn);
-    }
-
-    // This needs extra specificity, because the classes above are combined
-    // (e.g. `.mat-radio-button.mat-accent`) which increases their specificity a lot.
-    // TODO: consider making the selectors into descendants (`.mat-primary .mat-radio-button`).
-    &.mat-radio-disabled {
-      &.mat-radio-checked .mat-radio-outer-circle,
-      .mat-radio-outer-circle {
-        border-color: theming.get-color-from-palette($foreground, disabled);
+      // MDC should set the disabled color on the label, but doesn't, so we do it here instead.
+      .mdc-radio--disabled + label {
+        color: theming.get-color-from-palette($foreground, disabled-text);
       }
 
-      .mat-radio-ripple .mat-ripple-element,
-      .mat-radio-inner-circle {
-        background-color: theming.get-color-from-palette($foreground, disabled);
+      &.mat-primary {
+        @include _color-palette($primary);
       }
 
-      .mat-radio-label-content {
-        color: theming.get-color-from-palette($foreground, disabled);
+      &.mat-accent {
+        @include _color-palette($accent);
       }
-    }
 
-    // Switch this to a solid color since we're using `opacity`
-    // to control how opaque the ripple should be.
-    .mat-ripple-element {
-      background-color: map.get($foreground, base);
+      &.mat-warn {
+        @include _color-palette($warn);
+      }
     }
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
+  $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
-  .mat-radio-button {
-    font-family: typography-utils.font-family($config);
+  @include mdc-helpers.using-mdc-typography($config) {
+    @include mdc-radio.without-ripple($query: mdc-helpers.$mdc-typography-styles-query);
+    @include mdc-form-field.core-styles($query: mdc-helpers.$mdc-typography-styles-query);
   }
 }
 
-@mixin _density($config-or-theme) {}
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+  .mat-mdc-radio-button .mdc-radio {
+    @include mdc-radio-theme.density($density-scale, $query: mdc-helpers.$mdc-base-styles-query);
+  }
+
+  @include mdc-helpers.if-touch-targets-unsupported($density-scale) {
+    .mat-mdc-radio-touch-target {
+      display: none;
+    }
+  }
+}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -89,7 +103,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);

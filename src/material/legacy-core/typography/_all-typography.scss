@@ -14,6 +14,7 @@
 @use '../../legacy-dialog/dialog-theme';
 @use '../../legacy-chips/chips-theme';
 @use '../../legacy-slide-toggle/slide-toggle-theme';
+@use '../../legacy-radio/radio-theme';
 
 // Includes all of the typographic styles.
 @mixin all-legacy-component-typographies($config-or-theme: null) {
@@ -45,6 +46,7 @@
   @include dialog-theme.typography($config);
   @include chips-theme.typography($config);
   @include slide-toggle-theme.typography($config);
+  @include radio-theme.typography($config);
 }
 
 // @deprecated Use `all-legacy-component-typographies`.

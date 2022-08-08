@@ -5,7 +5,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
-import {MatRadioModule} from '@angular/material/radio';
+import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
 import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatToolbarModule} from '@angular/material/toolbar';
@@ -57,7 +57,7 @@ const EXAMPLES = [
     MatLegacyCheckboxModule,
     MatIconModule,
     MatListModule,
-    MatRadioModule,
+    MatLegacyRadioModule,
     MatSidenavModule,
     MatLegacySelectModule,
     MatToolbarModule,

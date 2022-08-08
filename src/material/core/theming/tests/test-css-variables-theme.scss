@@ -17,7 +17,6 @@
 @use '../../../menu/menu-theme';
 @use '../../../paginator/paginator-theme';
 @use '../../../progress-spinner/progress-spinner-theme';
-@use '../../../radio/radio-theme';
 @use '../../../sidenav/sidenav-theme';
 @use '../../../slider/slider-theme';
 @use '../../../stepper/stepper-theme';
@@ -69,7 +68,6 @@
   @include menu-theme.theme($css-var-theme);
   @include paginator-theme.theme($css-var-theme);
   @include progress-spinner-theme.theme($css-var-theme);
-  @include radio-theme.theme($css-var-theme);
   @include sidenav-theme.theme($css-var-theme);
   @include slider-theme.theme($css-var-theme);
   @include stepper-theme.theme($css-var-theme);

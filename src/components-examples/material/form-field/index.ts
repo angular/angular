@@ -6,7 +6,7 @@ import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
-import {MatRadioModule} from '@angular/material/radio';
+import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
 import {MatSelectModule} from '@angular/material/select';
 import {FormFieldAppearanceExample} from './form-field-appearance/form-field-appearance-example';
 import {
@@ -54,7 +54,7 @@ const EXAMPLES = [
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatRadioModule,
+    MatLegacyRadioModule,
     MatSelectModule,
     ReactiveFormsModule,
   ],

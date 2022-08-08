@@ -18,7 +18,7 @@ ng_module(
         "//src/material/legacy-card",
         "//src/material/legacy-checkbox",
         "//src/material/legacy-checkbox/testing",
-        "//src/material/radio",
+        "//src/material/legacy-radio",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
         "@npm//@angular/platform-browser-dynamic",

@@ -3,7 +3,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
-import {MatRadioModule} from '@angular/material/radio';
+import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
 import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle';
 import {SlideToggleConfigurableExample} from './slide-toggle-configurable/slide-toggle-configurable-example';
 import {SlideToggleFormsExample} from './slide-toggle-forms/slide-toggle-forms-example';
@@ -30,7 +30,7 @@ const EXAMPLES = [
     MatButtonModule,
     MatLegacyCardModule,
     MatLegacyCheckboxModule,
-    MatRadioModule,
+    MatLegacyRadioModule,
     MatLegacySlideToggleModule,
     ReactiveFormsModule,
   ],

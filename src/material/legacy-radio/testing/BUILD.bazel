@@ -9,9 +9,15 @@ ts_library(
         exclude = ["**/*.spec.ts"],
     ),
     deps = [
+        "//src/cdk/coercion",
         "//src/cdk/testing",
         "//src/material/radio/testing",
     ],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )
 
 ng_test_library(
@@ -19,14 +25,12 @@ ng_test_library(
     srcs = glob(["**/*.spec.ts"]),
     deps = [
         ":testing",
-        "//src/material-experimental/mdc-radio",
+        "//src/material/legacy-radio",
         "//src/material/radio/testing:harness_tests_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [
-        ":unit_tests_lib",
-    ],
+    deps = [":unit_tests_lib"],
 )

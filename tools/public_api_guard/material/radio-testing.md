@@ -18,7 +18,7 @@ export class MatRadioButtonHarness extends _MatRadioButtonHarnessBase {
     static hostSelector: string;
     // (undocumented)
     protected _textLabel: AsyncFactoryFn<TestElement>;
-    static with(options?: RadioButtonHarnessFilters): HarnessPredicate<MatRadioButtonHarness>;
+    static with<T extends MatRadioButtonHarness>(this: ComponentHarnessConstructor<T>, options?: RadioButtonHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public (undocumented)
@@ -45,7 +45,7 @@ export class MatRadioGroupHarness extends _MatRadioGroupHarnessBase<typeof MatRa
     // (undocumented)
     protected _buttonClass: typeof MatRadioButtonHarness;
     static hostSelector: string;
-    static with(options?: RadioGroupHarnessFilters): HarnessPredicate<MatRadioGroupHarness>;
+    static with<T extends MatRadioGroupHarness>(this: ComponentHarnessConstructor<T>, options?: RadioGroupHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public (undocumented)
