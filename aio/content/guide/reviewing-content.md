@@ -1,57 +1,69 @@
-# Reviewing Content
+# Reviewing documentation
+
+You can review the Angular documentation, even if you never contributed to Angular before.
 
 Angular developers work best when they have access to accurate and complete documentation.
-Keeping existing content up-to-date is an essential part of ensuring that all developers have a great documentation experience.
+Keeping existing documentation up-to-date is an essential part of ensuring that all developers have a great development experience.
 
-This topic describes how you can help keep Angular content up-to-date by reviewing content.
+This topic describes how you can help keep the Angular documentation up-to-date by reviewing and updating it.
 
 ## Before you begin
 
-You can review content even if you've never contributed to Angular before.
-However, you may find it helpful to have the [Contributing to Angular](https://github.com/angular/angular/blob/main/CONTRIBUTING.md) guide available if you're filing your first pull request in the repository.
+Review the [Documentation contributor guide][AioDocContributorGuide] to get ready to review to update the documentation.
+The *Documentation contributor guide* describes how to prepare to update a documentation topic.
 
-## Reviewing content (`@reviewed`)
+You can edit a topic in the GitHub web interface or in your favorite code editor or integrated development environment (IDE).
+In either case, you want to edit in your own fork of the Angular source code repo.
 
-All of the task-based guides, tutorials, and conceptual topics that you find on Angular.io support a `@reviewed` tag.
-When present, this tag is followed by the date representing when a given topic was reviewed for accuracy and completeness.
-On the published topic, this reviewed information appears at the bottom of the topic; for example, `Last reviewed on` followed by the day of the week, month, day, and year.
+To review a documentation topic, you want to be able to edit the topic.
+Even if you don't find any problem, you want to update the `@reviewed` tag at the end of the topic before you finish.
+
+## Finding topics to review
+
+Find topic a topic that has not been reviewed in the past six months.
+
+At the bottom of some topics, there's an `@reviewed` tag that shows the date it was last reviewed.
+This is an example of such a tag taken from the bottom of a topic.
 
 <div class="lightbox">
 
-<img alt="Example of the last reviewed date specifying the day of the week, the month, the date, and the year on a page footer." src="generated/images/guide/contributors-guide/last-reviewed.png">
+<img alt="Example of the last reviewed date entry showing the date the topic was reviewed as month, day, and year" src="generated/images/guide/contributors-guide/last-reviewed.png">
 
 </div>
 
-This reviewed date indicates when someone last reviewed the topic to ensure that its contents were accurate.
+## Reviewing and updating a topic
 
-You can review a topic using either the GitHub user interface or in an editor on your local machine.
-You can also review any topic that you like.
- Previous experience in the subject of the topic is helpful, but not required.
+To review a topic, use either the GitHub user interface or directly edit the source markdown file of the topic on your own computer.
 
-**To review a topic:**
+Feel free to review any topic in which you have interest.
+Experience with the subject matter is helpful, but not required to provide copy edits.
 
-1.  Navigate to the topic that you want to review.
-1.  Locate the last reviewed date at the bottom of the topic and verify that the topic meets the [review criteria](#review-criteria).
+**To review and update a documentation topic:**
 
-    If the topic does not have a last reviewed date, you are welcome to add it to the topic.
-    To add a date, use the `YYYY-MM-DD` date format.
-    Example:
-    `@reviewed 2021-03-23`
-
-1.  Read through the topic.
-1.  If the topic requires an update, either [file an issue](https://github.com/angular/angular/blob/main/CONTRIBUTING.md#submit-issue) that describes the update required, or [create a pull request](https://github.com/angular/angular/blob/main/CONTRIBUTING.md#submit-pr) with the update.
-1.  Update the `@reviewed` tag, either through the [GitHub user interface](guide/updating-content-github-ui) or through Angular's [standard pull request process](https://github.com/angular/angular/blob/main/CONTRIBUTING.md#submit-pr).
-
-<a id="review-criteria"></a>
-
-### Review criteria
-
-In general, topics should be reviewed either every six months, or around every major release.
+1.  In your web browser, navigate to the topic that you want to review.
+2.  Locate the last reviewed date at the bottom of the topic. Verify that the topic has not been reviewed within the past six months.
+3.  Read through the topic.
+4.  If the topic requires an update, you can:
+    *  [File an issue][GithubAngularAngularBlobMainContributingMdSubmitIssue] that describes the update required.
+    *  Fix the issue and [create a pull request][GithubAngularAngularBlobMainContributingMdSubmitPr] with the update.
+5.  If the topic is accurate and doesn't need any revision, update, or add the `@reviewed` tag followed by the date you reviewed the topic. You can do this:
+    * By using the [GitHub user interface][AioGuideUpdatingContentGithubUi]
+    * By editing the file on your computer and creating a [standard pull request process][GithubAngularAngularBlobMainContributingMdSubmitPr] for Angular.
 
 <!-- links -->
 
+[AioDocContributorGuide]: guide/contributors-guide-overview "Documentation contributors guide | Angular"
+
+[AioGuideReviewingContentReviewCriteria]: guide/reviewing-content#review-criteria "Review criteria - Reviewing content | Angular"
+
+[AioGuideUpdatingContentGithubUi]: guide/updating-content-github-ui "Updating topics through the GitHub user interface | Angular"
+
 <!-- external links -->
+
+[GithubAngularAngularBlobMainContributingMd]: https://github.com/angular/angular/blob/main/CONTRIBUTING.md "Contributing to Angular | angular/angular | Github"
+[GithubAngularAngularBlobMainContributingMdSubmitIssue]: https://github.com/angular/angular/blob/main/CONTRIBUTING.md#submit-issue "Submitting an Issue - Contributing to Angular | angular/angular | GitHub"
+[GithubAngularAngularBlobMainContributingMdSubmitPr]: https://github.com/angular/angular/blob/main/CONTRIBUTING.md#submit-pr "Submitting a Pull Request (PR) - Contributing to Angular | angular/angular | GitHub"
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2022-08-08
