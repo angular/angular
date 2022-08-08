@@ -17,7 +17,7 @@ In the following example, the `HeroListComponent` class includes:
 * A `selectedHero` property that holds the last hero selected by the user.
 * A `selectHero()` method sets a `selectedHero` property when the user clicks to choose a hero from that list.
 
-The component initializes the `heroes` property by using the `HeroService` service, which is a TypeScript [parameter property](https://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) on the constructor. Angular's dependency injection system provides the `HeroService` service to the component.
+The component initializes the `heroes` property by using the `HeroService` service, which is a TypeScript [parameter property](https://www.typescriptlang.org/docs/handbook/2/classes.html#parameter-properties) on the constructor. Angular's dependency injection system provides the `HeroService` service to the component.
 
 <code-example header="src/app/hero-list.component.ts (class)" path="architecture/src/app/hero-list.component.ts" region="class"></code-example>
 
