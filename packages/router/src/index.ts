@@ -12,7 +12,7 @@ export {RouterLink, RouterLinkWithHref} from './directives/router_link';
 export {RouterLinkActive} from './directives/router_link_active';
 export {RouterOutlet, RouterOutletContract} from './directives/router_outlet';
 export {ActivationEnd, ActivationStart, ChildActivationEnd, ChildActivationStart, Event, EventType, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationCancellationCode as NavigationCancellationCode, NavigationEnd, NavigationError, NavigationStart, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouterEvent, RoutesRecognized, Scroll} from './events';
-export {CanActivate, CanActivateChild, CanDeactivate, CanLoad, CanMatch, CanMatchFn, Data, LoadChildren, LoadChildrenCallback, NavigationBehaviorOptions, QueryParamsHandling, Resolve, ResolveData, Route, Routes, RunGuardsAndResolvers, UrlMatcher, UrlMatchResult} from './models';
+export {CanActivate, CanActivateChild, CanActivateChildFn, CanActivateFn, CanDeactivate, CanDeactivateFn, CanLoad, CanLoadFn, CanMatch, CanMatchFn, Data, LoadChildren, LoadChildrenCallback, NavigationBehaviorOptions, QueryParamsHandling, Resolve, ResolveData, ResolveFn, Route, Routes, RunGuardsAndResolvers, UrlMatcher, UrlMatchResult} from './models';
 export {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
 export {BaseRouteReuseStrategy, DetachedRouteHandle, RouteReuseStrategy} from './route_reuse_strategy';
 export {Navigation, NavigationExtras, Router, UrlCreationOptions} from './router';

@@ -190,6 +190,10 @@ export function getInjectableDef<T>(type: any): ɵɵInjectableDeclaration<T>|nul
   return getOwnDefinition(type, NG_PROV_DEF) || getOwnDefinition(type, NG_INJECTABLE_DEF);
 }
 
+export function isInjectable(type: any): boolean {
+  return getInjectableDef(type) !== null;
+}
+
 /**
  * Return definition only if it is defined directly on `type` and is not inherited from a base
  * class of `type`.

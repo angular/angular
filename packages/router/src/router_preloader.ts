@@ -110,7 +110,15 @@ export class RouterPreloader implements OnDestroy {
       const injectorForCurrentRoute = route._injector ?? injector;
       const injectorForChildren = route._loadedInjector ?? injectorForCurrentRoute;
 
-      if ((route.loadChildren && !route._loadedRoutes) ||
+      // Note that `canLoad` is only checked as a condition that prevents `loadChildren` and not
+      // `loadComponent`. `canLoad` guards only block loading of child routes by design. This
+      // happens as a consequence of needing to descend into children for route matching immediately
+      // while component loading is deferred until route activation. Because `canLoad` guards can
+      // have side effects, we cannot execute them here so we instead skip preloading altogether
+      // when present. Lastly, it remains to be decided whether `canLoad` should behave this way
+      // at all. Code splitting and lazy loading is separate from client-side authorization checks
+      // and should not be used as a security measure to prevent loading of code.
+      if ((route.loadChildren && !route._loadedRoutes && route.canLoad === undefined) ||
           (route.loadComponent && !route._loadedComponent)) {
         res.push(this.preloadConfig(injectorForCurrentRoute, route));
       } else if (route.children || route._loadedRoutes) {

@@ -21,7 +21,7 @@ While Vale helps, it doesn't replace the reviewers that you're currently using t
 1.  [Install Vale][AioToolsDocLinterReadmeInstallValeInYourVsCodeIde] in your Visual Studio Code IDE.
     To install and use Vale in a different IDE, see [Installation][ValeDocsValeCliInstallation].
 2.  Fix the problems that Vale identifies in your IDE.
- 
+
 Log any problem you encounter with the documentation linter as a [new docs issue][GithubAngularAngularIssuesNewAssigneesLabelsTemplate3DocsBugYaml] in the repo.
 Be sure to specify that this is a linter issue in your description.
 
@@ -117,7 +117,7 @@ When necessary, you can apply these exceptions to your content.
     A *style exception* allows you to exclude text from an individual style test.
 
     To apply a style exception, surround the text that you do not want the linter to test with these HTML
-    `comment` elements. Between these comments, the linter ignores the style test in the comment, but 
+    `comment` elements. Between these comments, the linter ignores the style test in the comment, but
     still tests for all other styles that are in use.
 
     ```markdown
@@ -161,11 +161,11 @@ For more information, or to install Vale in another IDE or on another operating 
 
 Before you proceed, make sure that:
 
-1.  You have cloned the [`angular/angular` repo][GithubAngularAngular] on your system. You can work in a fork of the `angular/angular` repo, 
+1.  You have cloned the [`angular/angular` repo][GithubAngularAngular] on your system. You can work in a fork of the `angular/angular` repo,
     but it's easier if your Vale installation uses an up-to-date clone of the `angular/angular` repo.
 2.  You have a development or writing environment for `angular.io` in the `angular/angular` repo and you can build the `angular.io` docs.
     For information about how to create the authoring environment for `angular.io`, see [Angular documentation project][GithubAngularAngularTreeMainAioAngularDocumentationProjectHttpsangulario].
-3.  You have the required package manager installed on your system. If not, install it before continuing. 
+3.  You have the required package manager installed on your system. If not, install it before continuing.
     * [homebrew][BrewMain] on your macOS system.
     * [chocolatey][Chocolatey] on your Windows system.
 
@@ -246,14 +246,33 @@ To install Vale in a different IDE, see [Installation][ValeDocsValeCliInstallati
     *   On Windows, in the **File** menu, choose **Preferences**, and then choose **Settings**.
 4.  In the **User** settings, navigate to  **Extensions > Vale**.
 5.  Update the Vale extension settings as shown.
-    *   **Vale > Core : Use CLI**, checked.
-    *   **Vale > Server : Lint Context**, `0`.
-    *   **Vale > Server : Provide Fixes**, unchecked.
-    *   **Vale > Server : Server URL**, leave empty.
-    *   **Vale > Vale CLI : Config**, enter the full path to `vale.ini` from the preceding procedure and append the `vale.ini` filename.
-    *   **Vale > Vale CLI : Min Alert Level**, choose `inherited` or `suggestion`.
-    *   **Vale > Vale CLI  : Path**, enter the full path of the `vale` application that `which vale` or `where vale.exe` returned in a preceding step.
+    *   **Vale : Config**, enter the full path to `vale.ini` from the preceding procedure and append the `vale.ini` filename.
+    *   **Vale : Min Alert Level**, choose `inherited` or `suggestion`.
+    *   **Vale : Path**, enter the full path of the `vale` application that `which vale` or `where vale.exe` returned in a preceding step.
 6.  Restart Visual Studio Code to apply the new settings.
+
+<!-- vale Angular.Angular_CliReference = YES -->
+<!-- vale Angular.WriteGood_Illusions = YES -->
+
+### Known issues with the Visual Studio Code extension
+
+If you're having problems with the `0.15.0` version of the Vale extension to Visual Studio Code, try:
+
+1. Uninstalling version `0.15.0` of the Vale extension.
+2. Installing version `0.14.2` of the Vale extension.
+
+If you're using version `0.14.2`, the Vale extension settings to use are:
+
+<!-- vale Angular.WriteGood_Illusions = NO -->
+<!-- vale Angular.Angular_CliReference = NO -->
+
+*   **Vale > Core : Use CLI**, checked.
+*   **Vale > Server : Lint Context**, `0`.
+*   **Vale > Server : Provide Fixes**, unchecked.
+*   **Vale > Server : Server URL**, leave empty.
+*   **Vale > Vale CLI : Config**, enter the full path to `vale.ini` from the preceding procedure and append the `vale.ini` filename.
+*   **Vale > Vale CLI : Min Alert Level**, choose `inherited` or `suggestion`.
+*   **Vale > Vale CLI  : Path**, enter the full path of the `vale` application that `which vale` or `where vale.exe` returned in a preceding step.
 
 <!-- vale Angular.Angular_CliReference = YES -->
 <!-- vale Angular.WriteGood_Illusions = YES -->
@@ -301,4 +320,3 @@ If you're using another branch or fork of the `angular/angular` repo, be sure to
 <!-- end links -->
 
 <!-- @reviewed 2022-07-15 -->
-

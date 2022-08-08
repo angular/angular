@@ -39,7 +39,7 @@ describe('RouterPreloader', () => {
     });
   });
 
-  describe('should not load configurations with canLoad guard', () => {
+  describe('configurations with canLoad guard', () => {
     @NgModule({
       declarations: [LazyLoadedCmp],
       imports: [RouterModule.forChild([{path: 'LoadedModule1', component: LazyLoadedCmp}])]
@@ -56,7 +56,7 @@ describe('RouterPreloader', () => {
     });
 
 
-    it('should work',
+    it('should not load children',
        fakeAsync(inject([RouterPreloader, Router], (preloader: RouterPreloader, router: Router) => {
          preloader.preload().subscribe(() => {});
 
@@ -65,6 +65,17 @@ describe('RouterPreloader', () => {
          const c = router.config;
          expect((c[0] as any)._loadedConfig).not.toBeDefined();
        })));
+
+    it('should not call the preloading method because children will not be loaded anyways',
+       fakeAsync(() => {
+         const preloader = TestBed.inject(RouterPreloader);
+         const preloadingStrategy = TestBed.inject(PreloadingStrategy);
+         spyOn(preloadingStrategy, 'preload').and.callThrough();
+         preloader.preload().subscribe(() => {});
+
+         tick();
+         expect(preloadingStrategy.preload).not.toHaveBeenCalled();
+       }));
   });
 
   describe('should preload configurations', () => {

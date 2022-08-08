@@ -7,7 +7,7 @@ import {fromInnerHTML} from 'app/shared/security';
 import {TocService} from 'app/shared/toc.service';
 import {asapScheduler, Observable, of, timer} from 'rxjs';
 import {catchError, observeOn, switchMap, takeUntil, tap} from 'rxjs/operators';
-import {EMPTY_HTML, unwrapHtmlForSink} from 'safevalues';
+import {EMPTY_HTML, unwrapHtml} from 'safevalues';
 
 
 // Constants
@@ -65,9 +65,9 @@ export class DocViewerComponent implements OnDestroy {
       private elementsLoader: ElementsLoader) {
     this.hostElement = elementRef.nativeElement;
 
-    // Security: the initialDocViewerContent comes from the prerendered DOM and is considered to be
-    // secure
-    this.hostElement.innerHTML = unwrapHtmlForSink(initialDocViewerContent);
+    // Security: the initialDocViewerContent comes from the prerendered DOM and is
+    // considered to be secure
+    this.hostElement.innerHTML = unwrapHtml(initialDocViewerContent) as string;
 
     if (this.hostElement.firstElementChild) {
       this.currViewContainer = this.hostElement.firstElementChild as HTMLElement;
@@ -141,7 +141,7 @@ export class DocViewerComponent implements OnDestroy {
           } else {
             // Security: `doc.contents` is always authored by the documentation team
             //           and is considered to be safe.
-            this.nextViewContainer.innerHTML = unwrapHtmlForSink(doc.contents);
+            this.nextViewContainer.innerHTML = unwrapHtml(doc.contents) as string;
           }
         }),
         tap(() => addTitleAndToc = this.prepareTitleAndToc(this.nextViewContainer, doc.id)),

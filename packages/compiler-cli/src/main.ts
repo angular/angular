@@ -104,7 +104,8 @@ function createEmitCallback(
       TsickleHost,
       'shouldSkipTsickleProcessing'|'pathToModuleName'|'shouldIgnoreWarningsForPath'|
       'fileNameToModuleId'|'googmodule'|'untyped'|'convertIndexImportShorthand'|
-      'transformDecorators'|'transformTypesToClosure'> = {
+      'transformDecorators'|'transformTypesToClosure'|'generateExtraSuppressions'|
+      'rootDirsRelative'> = {
     shouldSkipTsickleProcessing: (fileName) => /\.d\.ts$/.test(fileName) ||
         // View Engine's generated files were never intended to be processed with tsickle.
         (!options.enableIvy && GENERATED_FILES.test(fileName)),
@@ -118,6 +119,11 @@ function createEmitCallback(
     // conflicts, we disable decorator transformations for tsickle.
     transformDecorators: false,
     transformTypesToClosure: true,
+    generateExtraSuppressions: true,
+    // Only used by the http://go/tsjs-migration-independent-javascript-imports migration in
+    // tsickle. This migration is not relevant externally and is only enabled when users
+    // would explicitly invoke `goog.tsMigrationExportsShim` (which is internal-only).
+    rootDirsRelative: (fileName) => fileName,
   };
 
   return ({

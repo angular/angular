@@ -19,7 +19,7 @@ import {NgModuleDef, NgModuleTransitiveScopes, NgModuleType} from '../../metadat
 import {deepForEach, flatten} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {EMPTY_ARRAY} from '../../util/empty';
-import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
+import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef, isStandalone} from '../definition';
 import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {maybeUnwrapFn} from '../util/misc_utils';
@@ -195,11 +195,6 @@ export function compileNgModuleDefs(
     // Make the property configurable in dev mode to allow overriding in tests
     configurable: !!ngDevMode,
   });
-}
-
-export function isStandalone<T>(type: Type<T>) {
-  const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
-  return def !== null ? def.standalone : false;
 }
 
 export function generateStandaloneInDeclarationsError(type: Type<any>, location: string) {

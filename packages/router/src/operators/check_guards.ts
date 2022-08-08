@@ -6,23 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, Injector} from '@angular/core';
+import {EnvironmentInjector, ProviderToken} from '@angular/core';
 import {concat, defer, from, MonoTypeOperatorFunction, Observable, of, OperatorFunction, pipe} from 'rxjs';
 import {concatMap, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {ActivationStart, ChildActivationStart, Event} from '../events';
-import {CanLoad, CanLoadFn, CanMatch, CanMatchFn, Route} from '../models';
+import {CanActivateChild, CanActivateChildFn, CanActivateFn, Route} from '../models';
 import {redirectingNavigationError} from '../navigation_canceling_error';
 import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
 import {isUrlTree, UrlSegment, UrlSerializer, UrlTree} from '../url_tree';
 import {wrapIntoObservable} from '../utils/collection';
-import {CanActivate, CanDeactivate, getCanActivateChild, getToken} from '../utils/preactivation';
+import {getClosestRouteInjector} from '../utils/config';
+import {CanActivate, CanDeactivate, getCanActivateChild, getTokenOrFunctionIdentity} from '../utils/preactivation';
 import {isBoolean, isCanActivate, isCanActivateChild, isCanDeactivate, isCanLoad, isCanMatch} from '../utils/type_guards';
 
 import {prioritizedGuardValue} from './prioritized_guard_value';
 
-export function checkGuards(moduleInjector: Injector, forwardEvent?: (evt: Event) => void):
+export function checkGuards(injector: EnvironmentInjector, forwardEvent?: (evt: Event) => void):
     MonoTypeOperatorFunction<NavigationTransition> {
   return mergeMap(t => {
     const {targetSnapshot, currentSnapshot, guards: {canActivateChecks, canDeactivateChecks}} = t;
@@ -30,13 +31,11 @@ export function checkGuards(moduleInjector: Injector, forwardEvent?: (evt: Event
       return of({...t, guardsResult: true});
     }
 
-    return runCanDeactivateChecks(
-               canDeactivateChecks, targetSnapshot!, currentSnapshot, moduleInjector)
+    return runCanDeactivateChecks(canDeactivateChecks, targetSnapshot!, currentSnapshot, injector)
         .pipe(
             mergeMap(canDeactivate => {
               return canDeactivate && isBoolean(canDeactivate) ?
-                  runCanActivateChecks(
-                      targetSnapshot!, canActivateChecks, moduleInjector, forwardEvent) :
+                  runCanActivateChecks(targetSnapshot!, canActivateChecks, injector, forwardEvent) :
                   of(canDeactivate);
             }),
             map(guardsResult => ({...t, guardsResult})));
@@ -45,26 +44,25 @@ export function checkGuards(moduleInjector: Injector, forwardEvent?: (evt: Event
 
 function runCanDeactivateChecks(
     checks: CanDeactivate[], futureRSS: RouterStateSnapshot, currRSS: RouterStateSnapshot,
-    moduleInjector: Injector) {
+    injector: EnvironmentInjector) {
   return from(checks).pipe(
       mergeMap(
-          check =>
-              runCanDeactivate(check.component, check.route, currRSS, futureRSS, moduleInjector)),
+          check => runCanDeactivate(check.component, check.route, currRSS, futureRSS, injector)),
       first(result => {
         return result !== true;
       }, true as boolean | UrlTree));
 }
 
 function runCanActivateChecks(
-    futureSnapshot: RouterStateSnapshot, checks: CanActivate[], moduleInjector: Injector,
+    futureSnapshot: RouterStateSnapshot, checks: CanActivate[], injector: EnvironmentInjector,
     forwardEvent?: (evt: Event) => void) {
   return from(checks).pipe(
       concatMap((check: CanActivate) => {
         return concat(
             fireChildActivationStart(check.route.parent, forwardEvent),
             fireActivationStart(check.route, forwardEvent),
-            runCanActivateChild(futureSnapshot, check.path, moduleInjector),
-            runCanActivate(futureSnapshot, check.route, moduleInjector));
+            runCanActivateChild(futureSnapshot, check.path, injector),
+            runCanActivate(futureSnapshot, check.route, injector));
       }),
       first(result => {
         return result !== true;
@@ -107,24 +105,27 @@ function fireChildActivationStart(
 
 function runCanActivate(
     futureRSS: RouterStateSnapshot, futureARS: ActivatedRouteSnapshot,
-    moduleInjector: Injector): Observable<boolean|UrlTree> {
+    injector: EnvironmentInjector): Observable<boolean|UrlTree> {
   const canActivate = futureARS.routeConfig ? futureARS.routeConfig.canActivate : null;
   if (!canActivate || canActivate.length === 0) return of(true);
 
-  const canActivateObservables = canActivate.map((c: any) => {
-    return defer(() => {
-      const guard = getToken(c, futureARS, moduleInjector);
-      const guardVal = isCanActivate(guard) ? guard.canActivate(futureARS, futureRSS) :
-                                              guard(futureARS, futureRSS);
-      return wrapIntoObservable(guardVal).pipe(first());
-    });
-  });
+  const canActivateObservables =
+      canActivate.map((canActivate: CanActivateFn|ProviderToken<unknown>) => {
+        return defer(() => {
+          const closestInjector = getClosestRouteInjector(futureARS) ?? injector;
+          const guard = getTokenOrFunctionIdentity<CanActivate>(canActivate, closestInjector);
+          const guardVal = isCanActivate(guard) ?
+              guard.canActivate(futureARS, futureRSS) :
+              closestInjector.runInContext(() => (guard as CanActivateFn)(futureARS, futureRSS));
+          return wrapIntoObservable(guardVal).pipe(first());
+        });
+      });
   return of(canActivateObservables).pipe(prioritizedGuardValue());
 }
 
 function runCanActivateChild(
     futureRSS: RouterStateSnapshot, path: ActivatedRouteSnapshot[],
-    moduleInjector: Injector): Observable<boolean|UrlTree> {
+    injector: EnvironmentInjector): Observable<boolean|UrlTree> {
   const futureARS = path[path.length - 1];
 
   const canActivateChildGuards = path.slice(0, path.length - 1)
@@ -134,12 +135,16 @@ function runCanActivateChild(
 
   const canActivateChildGuardsMapped = canActivateChildGuards.map((d: any) => {
     return defer(() => {
-      const guardsMapped = d.guards.map((c: any) => {
-        const guard = getToken(c, d.node, moduleInjector);
-        const guardVal = isCanActivateChild(guard) ? guard.canActivateChild(futureARS, futureRSS) :
-                                                     guard(futureARS, futureRSS);
-        return wrapIntoObservable(guardVal).pipe(first());
-      });
+      const guardsMapped =
+          d.guards.map((canActivateChild: CanActivateChildFn|ProviderToken<unknown>) => {
+            const closestInjector = getClosestRouteInjector(d.node) ?? injector;
+            const guard =
+                getTokenOrFunctionIdentity<CanActivateChild>(canActivateChild, closestInjector);
+            const guardVal = isCanActivateChild(guard) ?
+                guard.canActivateChild(futureARS, futureRSS) :
+                closestInjector.runInContext(() => guard(futureARS, futureRSS));
+            return wrapIntoObservable(guardVal).pipe(first());
+          });
       return of(guardsMapped).pipe(prioritizedGuardValue());
     });
   });
@@ -148,14 +153,16 @@ function runCanActivateChild(
 
 function runCanDeactivate(
     component: Object|null, currARS: ActivatedRouteSnapshot, currRSS: RouterStateSnapshot,
-    futureRSS: RouterStateSnapshot, moduleInjector: Injector): Observable<boolean|UrlTree> {
+    futureRSS: RouterStateSnapshot, injector: EnvironmentInjector): Observable<boolean|UrlTree> {
   const canDeactivate = currARS && currARS.routeConfig ? currARS.routeConfig.canDeactivate : null;
   if (!canDeactivate || canDeactivate.length === 0) return of(true);
   const canDeactivateObservables = canDeactivate.map((c: any) => {
-    const guard = getToken(c, currARS, moduleInjector);
+    const closestInjector = getClosestRouteInjector(currARS) ?? injector;
+    const guard = getTokenOrFunctionIdentity<any>(c, closestInjector);
     const guardVal = isCanDeactivate(guard) ?
-        guard.canDeactivate(component!, currARS, currRSS, futureRSS) :
-        guard(component, currARS, currRSS, futureRSS);
+        guard.canDeactivate(component, currARS, currRSS, futureRSS) :
+        closestInjector.runInContext<boolean|UrlTree>(
+            () => guard(component, currARS, currRSS, futureRSS));
     return wrapIntoObservable(guardVal).pipe(first());
   });
   return of(canDeactivateObservables).pipe(prioritizedGuardValue());
@@ -170,8 +177,10 @@ export function runCanLoadGuards(
   }
 
   const canLoadObservables = canLoad.map((injectionToken: any) => {
-    const guard = injector.get<CanLoad|CanLoadFn>(injectionToken);
-    const guardVal = isCanLoad(guard) ? guard.canLoad(route, segments) : guard(route, segments);
+    const guard = getTokenOrFunctionIdentity<any>(injectionToken, injector);
+    const guardVal = isCanLoad(guard) ?
+        guard.canLoad(route, segments) :
+        injector.runInContext<boolean|UrlTree>(() => guard(route, segments));
     return wrapIntoObservable(guardVal);
   });
 
@@ -195,14 +204,16 @@ function redirectIfUrlTree(urlSerializer: UrlSerializer):
 }
 
 export function runCanMatchGuards(
-    injector: Injector, route: Route, segments: UrlSegment[],
+    injector: EnvironmentInjector, route: Route, segments: UrlSegment[],
     urlSerializer: UrlSerializer): Observable<boolean> {
   const canMatch = route.canMatch;
   if (!canMatch || canMatch.length === 0) return of(true);
 
   const canMatchObservables = canMatch.map(injectionToken => {
-    const guard = injector.get<CanMatch|CanMatchFn>(injectionToken);
-    const guardVal = isCanMatch(guard) ? guard.canMatch(route, segments) : guard(route, segments);
+    const guard = getTokenOrFunctionIdentity(injectionToken, injector);
+    const guardVal = isCanMatch(guard) ?
+        guard.canMatch(route, segments) :
+        injector.runInContext<boolean|UrlTree>(() => guard(route, segments));
     return wrapIntoObservable(guardVal);
   });
 

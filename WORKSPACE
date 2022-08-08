@@ -123,7 +123,7 @@ load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories"
 
 web_test_repositories()
 
-load("@npm//@angular/dev-infra-private/bazel/browsers:browser_repositories.bzl", "browser_repositories")
+load("@npm//@angular/build-tooling/bazel/browsers:browser_repositories.bzl", "browser_repositories")
 
 browser_repositories()
 
@@ -158,10 +158,10 @@ cldr_xml_data_repository(
 # sass rules
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "3e0e115f380227f7f186bcfce29b125e4a02536b6c309f80912ee0d6b79a6e71",
-    strip_prefix = "rules_sass-030f696dcf32508b264c469f26d031f7996dea4c",
+    sha256 = "85b34f2e5e227aa586b6e0fd6942262e17b3cface596891eeef5a29a0b7467e3",
+    strip_prefix = "rules_sass-697e5a08bdd39aee49f2c6f4eb621ef59e677e49",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/030f696dcf32508b264c469f26d031f7996dea4c.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/697e5a08bdd39aee49f2c6f4eb621ef59e677e49.zip",
     ],
 )
 

@@ -11,7 +11,7 @@ import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {ApplicationRef, CompilerFactory, Component, destroyPlatform, getPlatform, HostBinding, HostListener, importProvidersFrom, Inject, Injectable, Input, NgModule, NgZone, OnInit, PLATFORM_ID, PlatformRef, Type, ViewEncapsulation} from '@angular/core';
-import {inject, waitForAsync} from '@angular/core/testing';
+import {inject, TestBed, waitForAsync} from '@angular/core/testing';
 import {BrowserModule, makeStateKey, Title, TransferState} from '@angular/platform-browser';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformState, renderModule, renderModuleFactory, ServerModule, ServerTransferStateModule} from '@angular/platform-server';
 import {Observable} from 'rxjs';
@@ -748,6 +748,38 @@ describe('platform-server integration', () => {
              expect(output).toBe(expectedOutput);
              called = true;
            });
+         }));
+
+      it(`using ${isStandalone ? 'renderApplication' : 'renderModule'} ` +
+             `should allow passing a document reference`,
+         waitForAsync(() => {
+           const document = TestBed.inject(DOCUMENT);
+
+           // Append root element based on the app selector.
+           const rootEl = document.createElement('app');
+           document.body.appendChild(rootEl);
+
+           // Append a special marker to verify that we use a correct instance
+           // of the document for rendering.
+           const markerEl = document.createComment('test marker');
+           document.body.appendChild(markerEl);
+
+           const options = {document};
+           const bootstrap = isStandalone ?
+               renderApplication(MyAsyncServerAppStandalone, {document, appId: 'simple-cmp'}) :
+               renderModule(AsyncServerModule, options);
+           bootstrap
+               .then(output => {
+                 expect(output).toBe(
+                     '<html><head><title>fakeTitle</title></head>' +
+                     '<body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 textcontent="fine">fine</h1></app>' +
+                     '<!--test marker--></body></html>');
+                 called = true;
+               })
+               .finally(() => {
+                 rootEl.remove();
+                 markerEl.remove();
+               });
          }));
 
       it('works with SVG elements', waitForAsync(() => {

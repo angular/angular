@@ -7,6 +7,7 @@
  */
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
+import {NG_PROV_DEF} from '../di/interface/defs';
 import {Mutable, Type} from '../interface/type';
 import {NgModuleDef, NgModuleType} from '../metadata/ng_module_def';
 import {SchemaMetadata} from '../metadata/schema';
@@ -741,6 +742,11 @@ export function getDirectiveDef<T>(type: any): DirectiveDef<T>|null {
 
 export function getPipeDef<T>(type: any): PipeDef<T>|null {
   return type[NG_PIPE_DEF] || null;
+}
+
+export function isStandalone<T>(type: Type<T>): boolean {
+  const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
+  return def !== null ? def.standalone : false;
 }
 
 export function getNgModuleDef<T>(type: any, throwNotFound: true): NgModuleDef<T>;

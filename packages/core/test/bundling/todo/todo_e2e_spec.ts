@@ -22,11 +22,9 @@ describe('functional test for todo', () => {
            // load the bundle
            require(path.join(PACKAGE, bundle));
            // the bundle attaches the following fields to the `window` global.
-           const {bootstrapApp, whenRendered} = window as any;
+           const {bootstrapApp} = window as any;
 
            await bootstrapApp();
-           const toDoAppComponent = (window as any).toDoAppComponent;
-           await whenRendered(toDoAppComponent);
 
            const styleContent =
                findStyleTextForSelector('.todo-list\\\[_ngcontent-[a-z]+-\\\w+\\\]');

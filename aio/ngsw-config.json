@@ -118,6 +118,7 @@
     "!/guide/cli-quickstart/{0,1}",
     "!/guide/displaying-data/{0,1}",
     "!/guide/i18n/{0,1}",
+    "!/guide/ivy/{0,1}",
     "!/guide/learning-angular*",
     "!/guide/metadata/{0,1}",
     "!/guide/ngmodule/{0,1}",

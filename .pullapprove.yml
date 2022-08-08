@@ -240,6 +240,8 @@ groups:
           'aio/content/examples/component-styles/**/{*,.*}',
           'aio/content/examples/content-projection/**/{*,.*}',
           'aio/content/guide/content-projection.md',
+          'aio/content/guide/creating-injectable-service.md',
+          'aio/content/guide/dependency-injection-overview.md',
           'aio/content/guide/dependency-injection.md',
           'aio/content/examples/dependency-injection/**/{*,.*}',
           'aio/content/images/guide/dependency-injection/**/{*,.*}',

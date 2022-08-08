@@ -213,7 +213,7 @@ It's visually simple: a few properties and the logs produced by a logger.
 </div>
 
 The code behind it customizes how and where the DI framework provides dependencies.
-The use cases illustrate different ways to use the [*provide* object literal](guide/dependency-injection-providers#provide) to associate a definition object with a DI token.
+The use cases illustrate different ways to use the *provide* object literal to associate a definition object with a DI token.
 
 <code-example header="hero-of-the-month.component.ts" path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="hero-of-the-month"></code-example>
 
@@ -389,8 +389,10 @@ But they did neither.
 
 When you use a class this way, it's called a *class interface*.
 
-As mentioned in [DI Providers](guide/dependency-injection-providers#di-and-interfaces), an interface is not a valid DI token because it is a TypeScript artifact that doesn't exist at run time.
-Use this abstract class interface to get the strong typing of an interface, and also use it as a provider token in the way you would a normal class.
+As mentioned in [Configuring dependency providers](guide/dependency-injection-providers),
+an interface is not a valid DI token because it is a TypeScript artifact that doesn't exist at run time.
+Use this abstract class interface to get the strong typing of an interface,
+and also use it as a provider token in the way you would a normal class.
 
 A class interface should define *only* the members that its consumers are allowed to call.
 Such a narrowing interface helps decouple the concrete class from its consumers.

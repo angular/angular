@@ -22,6 +22,7 @@ import * as ts from 'typescript/lib/tsserverlibrary';
 import {GetComponentLocationsForTemplateResponse, GetTcbResponse, GetTemplateLocationForComponentResponse} from '../api';
 
 import {LanguageServiceAdapter, LSParseConfigHost} from './adapters';
+import {ALL_CODE_FIXES_METAS, CodeFixes} from './codefixes';
 import {CompilerFactory} from './compiler_factory';
 import {CompletionBuilder, CompletionNodeContext} from './completions';
 import {DefinitionBuilder} from './definitions';
@@ -29,7 +30,7 @@ import {QuickInfoBuilder} from './quick_info';
 import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
 import {createLocationKey} from './references_and_rename_utils';
 import {getSignatureHelp} from './signature_help';
-import {getTargetAtPosition, TargetContext, TargetNodeKind} from './template_target';
+import {getTargetAtPosition, getTcbNodesOfTemplateAtPosition, TargetContext, TargetNodeKind} from './template_target';
 import {findTightestNode, getClassDeclFromDecoratorProp, getParentClassDeclaration, getPropertyAssignmentFromValue} from './ts_utils';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
 
@@ -47,6 +48,7 @@ export class LanguageService {
   private readonly programDriver: ProgramDriver;
   private readonly adapter: LanguageServiceAdapter;
   private readonly parseConfigHost: LSParseConfigHost;
+  private readonly codeFixes: CodeFixes;
 
   constructor(
       private readonly project: ts.server.Project,
@@ -60,6 +62,7 @@ export class LanguageService {
     this.adapter = new LanguageServiceAdapter(project);
     this.compilerFactory = new CompilerFactory(this.adapter, this.programDriver, this.options);
     this.watchConfigFile(project);
+    this.codeFixes = new CodeFixes(tsLS, ALL_CODE_FIXES_METAS);
   }
 
   getCompilerOptions(): CompilerOptions {
@@ -289,6 +292,39 @@ export class LanguageService {
     });
   }
 
+  getCodeFixesAtPosition(
+      fileName: string, start: number, end: number, errorCodes: readonly number[],
+      formatOptions: ts.FormatCodeSettings,
+      preferences: ts.UserPreferences): readonly ts.CodeFixAction[] {
+    return this.withCompilerAndPerfTracing<readonly ts.CodeFixAction[]>(
+        PerfPhase.LsCodeFixes, (compiler) => {
+          const templateInfo = getTemplateInfoAtPosition(fileName, start, compiler);
+          if (templateInfo === undefined) {
+            return [];
+          }
+          const diags = this.getSemanticDiagnostics(fileName);
+          if (diags.length === 0) {
+            return [];
+          }
+          return this.codeFixes.getCodeFixesAtPosition(
+              templateInfo, compiler, start, end, errorCodes, diags, formatOptions, preferences);
+        });
+  }
+
+  getCombinedCodeFix(
+      scope: ts.CombinedCodeFixScope, fixId: string, formatOptions: ts.FormatCodeSettings,
+      preferences: ts.UserPreferences): ts.CombinedCodeActions {
+    return this.withCompilerAndPerfTracing<ts.CombinedCodeActions>(
+        PerfPhase.LsCodeFixesAll, (compiler) => {
+          const diags = this.getSemanticDiagnostics(scope.fileName);
+          if (diags.length === 0) {
+            return {changes: []};
+          }
+          return this.codeFixes.getAllCodeActions(
+              compiler, diags, scope, fixId, formatOptions, preferences);
+        });
+  }
+
   getComponentLocationsForTemplate(fileName: string): GetComponentLocationsForTemplateResponse {
     return this.withCompilerAndPerfTracing<GetComponentLocationsForTemplateResponse>(
         PerfPhase.LsComponentLocations, (compiler) => {
@@ -351,36 +387,20 @@ export class LanguageService {
       if (templateInfo === undefined) {
         return undefined;
       }
-      const tcb = compiler.getTemplateTypeChecker().getTypeCheckBlock(templateInfo.component);
-      if (tcb === null) {
+
+      const selectionNodesInfo = getTcbNodesOfTemplateAtPosition(templateInfo, position, compiler);
+      if (selectionNodesInfo === null) {
         return undefined;
       }
-      const sf = tcb.getSourceFile();
 
-      let selections: ts.TextSpan[] = [];
-      const target = getTargetAtPosition(templateInfo.template, position);
-      if (target !== null) {
-        let selectionSpans: Array<ParseSourceSpan|AbsoluteSourceSpan>;
-        if ('nodes' in target.context) {
-          selectionSpans = target.context.nodes.map(n => n.sourceSpan);
-        } else {
-          selectionSpans = [target.context.node.sourceSpan];
-        }
-        const selectionNodes: ts.Node[] =
-            selectionSpans
-                .map(s => findFirstMatchingNode(tcb, {
-                       withSpan: s,
-                       filter: (node: ts.Node): node is ts.Node => true,
-                     }))
-                .filter((n): n is ts.Node => n !== null);
+      const sf = selectionNodesInfo.componentTcbNode.getSourceFile();
 
-        selections = selectionNodes.map(n => {
-          return {
-            start: n.getStart(sf),
-            length: n.getEnd() - n.getStart(sf),
-          };
-        });
-      }
+      const selections = selectionNodesInfo.nodes.map(n => {
+        return {
+          start: n.getStart(sf),
+          length: n.getEnd() - n.getStart(sf),
+        };
+      });
 
       return {
         fileName: sf.fileName,

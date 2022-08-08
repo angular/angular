@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { htmlFromStringKnownToSatisfyTypeContract } from 'safevalues/unsafe/reviewed';
+import { htmlSafeByReview } from 'safevalues/restricted/reviewed';
 
 import { from, Observable } from 'rxjs';
 import { first, map, share } from 'rxjs/operators';
@@ -51,7 +51,7 @@ export class PrettyPrinter {
     return this.prettyPrintOne.pipe(
       map(ppo => {
         try {
-          return htmlFromStringKnownToSatisfyTypeContract(
+          return htmlSafeByReview(
               ppo(code, language, linenums), 'prettify.js modifies already trusted HTML inline');
         } catch (err) {
           const msg = `Could not format code that begins '${code.toString().slice(0, 50)}...'.`;
