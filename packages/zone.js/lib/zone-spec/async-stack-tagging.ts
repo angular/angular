@@ -11,7 +11,7 @@ interface Console {
 }
 
 interface ConsoleTask {
-  run<T>(f: () => T): void;
+  run<T>(f: () => T): T;
 }
 
 interface Task {
