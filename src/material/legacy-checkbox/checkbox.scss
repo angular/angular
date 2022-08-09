@@ -19,7 +19,7 @@ $_ripple-radius: 20px;
 $_item-spacing: variables.$toggle-padding;
 
 // The width of the line used to draw the checkmark / mixedmark.
-$_mark-stroke-size: math.div(2, 15) * checkbox-common.$size !default;
+$_mark-stroke-size: math.div(2, 15) * checkbox-common.$legacy-size !default;
 
 
 // Fades in the background of the checkbox when it goes from unchecked -> {checked,indeterminate}.
@@ -232,7 +232,7 @@ $_mark-stroke-size: math.div(2, 15) * checkbox-common.$size !default;
 
 .mat-checkbox-inner-container {
   display: inline-block;
-  height: checkbox-common.$size;
+  height: checkbox-common.$legacy-size;
   line-height: 0;
   margin: auto;
   margin-right: $_item-spacing;
@@ -240,7 +240,7 @@ $_mark-stroke-size: math.div(2, 15) * checkbox-common.$size !default;
   position: relative;
   vertical-align: middle;
   white-space: nowrap;
-  width: checkbox-common.$size;
+  width: checkbox-common.$legacy-size;
   flex-shrink: 0;
 
   [dir='rtl'] & {
