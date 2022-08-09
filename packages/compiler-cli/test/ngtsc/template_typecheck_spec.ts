@@ -2878,6 +2878,107 @@ suppress
           `Argument of type 'HostDir' is not assignable to parameter of type 'string'.`,
         ]);
       });
+
+      it('should check bindings to inherited host directive inputs', () => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule, Input} from '@angular/core';
+
+          @Directive({
+            standalone: true
+          })
+          class HostDirParent {
+            @Input() input: number;
+            @Input() otherInput: string;
+          }
+
+          @Directive({
+            standalone: true,
+          })
+          class HostDir extends HostDirParent {}
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [{directive: HostDir, inputs: ['input', 'otherInput: alias']}]
+          })
+          class Dir {}
+
+          @Component({
+            selector: 'test',
+            template: '<div dir [input]="person.name" [alias]="person.age"></div>',
+          })
+          class TestCmp {
+            person: {
+              name: string;
+              age: number;
+            };
+          }
+
+          @NgModule({
+            declarations: [TestCmp, Dir],
+          })
+          class Module {}
+        `);
+
+        const messages = env.driveDiagnostics().map(d => d.messageText);
+
+        expect(messages).toEqual([
+          `Type 'string' is not assignable to type 'number'.`,
+          `Type 'number' is not assignable to type 'string'.`
+        ]);
+      });
+
+      it('should check bindings to inherited host directive outputs', () => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule, Output, EventEmitter} from '@angular/core';
+
+          @Directive({
+            standalone: true
+          })
+          class HostDirParent {
+            @Output() stringEvent = new EventEmitter<string>();
+            @Output() numberEvent = new EventEmitter<number>();
+          }
+
+          @Directive({
+            standalone: true,
+          })
+          class HostDir extends HostDirParent {}
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [
+              {directive: HostDir, outputs: ['stringEvent', 'numberEvent: numberAlias']}
+            ]
+          })
+          class Dir {}
+
+          @Component({
+            selector: 'test',
+            template: \`
+              <div
+                dir
+                (numberAlias)="handleStringEvent($event)"
+                (stringEvent)="handleNumberEvent($event)"></div>
+            \`,
+          })
+          class TestCmp {
+            handleStringEvent(event: string): void {}
+            handleNumberEvent(event: number): void {}
+          }
+
+          @NgModule({
+            declarations: [TestCmp, Dir],
+          })
+          class Module {}
+        `);
+
+        const messages = env.driveDiagnostics().map(d => d.messageText);
+
+        expect(messages).toEqual([
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'string' is not assignable to parameter of type 'number'.`
+        ]);
+      });
     });
   });
 });

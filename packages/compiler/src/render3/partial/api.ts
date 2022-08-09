@@ -541,7 +541,7 @@ export interface R3DeclareClassMetadata extends R3PartialDeclaration {
  * passed in as a part of the `hostDirectives` array.
  */
 export interface R3DeclareHostDirectiveMetadata {
-  directive: o.Expression;
+  directive: o.Expression|(() => o.Expression);
   inputs?: {[classPropertyName: string]: string|[string, string]};
   outputs?: {[classPropertyName: string]: string};
 }

@@ -418,7 +418,9 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     isStandalone: !!metadata.standalone,
 
     // TODO(crisbeto): enable this when implementing the host directives runtime.
-    // hostDirectives: metadata.hostDirectives || null,
+    // hostDirectives: metadata.hostDirectives?.map(
+    //                     directive => typeof directive === 'function' ? {directive} : directive)
+    //                     || null
     hostDirectives: null,
   };
 }

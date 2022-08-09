@@ -117,7 +117,7 @@ function addFeatures(
     features.push(o.importExpr(R3.StandaloneFeature));
   }
   if (meta.hostDirectives?.length) {
-    features.push(o.importExpr(R3.HostDirectivesFeature).callFn([createHostDirectivesFeatureArg(
+    features.push(o.importExpr(R3.HostDirectivesFeature).callFn([createHostDirectivesArg(
         meta.hostDirectives)]));
   }
   if (features.length) {
@@ -832,7 +832,7 @@ function createHostDirectivesType(meta: R3DirectiveMetadata) {
   ]))));
 }
 
-export function createHostDirectivesFeatureArg(
+export function createHostDirectivesArg(
     hostDirectives: NonNullable<R3DirectiveMetadata['hostDirectives']>) {
   const expressions: o.Expression[] = [];
   let hasForwardRef = false;

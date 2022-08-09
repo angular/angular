@@ -9,7 +9,7 @@ import * as o from '../../output/output_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {convertFromMaybeForwardRefExpression, R3CompiledExpression} from '../util';
 import {R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from '../view/api';
-import {createDirectiveType, createHostDirectivesFeatureArg} from '../view/compiler';
+import {createDirectiveType, createHostDirectivesArg} from '../view/compiler';
 import {asLiteral, conditionallyCreateMapObjectLiteral, DefinitionMap} from '../view/util';
 
 import {R3DeclareDirectiveMetadata, R3DeclareQueryMetadata} from './api';
@@ -88,7 +88,7 @@ export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata):
   }
 
   if (meta.hostDirectives?.length) {
-    definitionMap.set('hostDirectives', createHostDirectivesFeatureArg(meta.hostDirectives));
+    definitionMap.set('hostDirectives', createHostDirectivesArg(meta.hostDirectives));
   }
 
   definitionMap.set('ngImport', o.importExpr(R3.core));

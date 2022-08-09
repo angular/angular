@@ -64,7 +64,7 @@ export class TypeCheckScopeRegistry {
 
   constructor(
       private scopeReader: ComponentScopeReader, private metaReader: MetadataReader,
-      private hostDirectivesResolver: HostDirectivesResolver<DirectiveMeta>) {}
+      private hostDirectivesResolver: HostDirectivesResolver) {}
 
   /**
    * Computes the type-check scope information for the component declaration. If the NgModule
