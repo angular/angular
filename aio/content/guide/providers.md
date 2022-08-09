@@ -63,11 +63,11 @@ This means that any services listed in their provider arrays aren't available be
 When the Angular router lazy-loads a module, it creates a new injector.
 This injector is a child of the root application injector.
 Imagine a tree of injectors; there is a single root injector and then a child injector for each lazy loaded module.
-The router adds all of the providers from the root injector to the child injector.
-When the router creates a component within the lazy-loaded context, Angular prefers service instances created from these providers to the service instances of the application root injector.
+This child injector gets populated with all the module-specific providers, if any. 
+Look up resolution for every provider follows the [rules of dependency injection hierarchy](guide/hierarchical-dependency-injection#resolution-rules). 
 
-Any component created within a lazy loaded module's context, such as by router navigation, gets the local instance of the service, not the instance in the root application injector.
-Components in external modules continue to receive the instance created for the application root.
+Any component created within a lazy loaded module's context, such as by router navigation, gets its own local instance of child provided services, not the instance in the root application injector.
+Components in external modules continue to receive the instances created for the application root injector.
 
 Though you can provide services by lazy loading modules, not all services can be lazy loaded.
 For instance, some modules only work in the root module, such as the Router.
