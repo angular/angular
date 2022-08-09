@@ -1,0 +1,33 @@
+@use 'sass:math';
+@use '../../style/checkbox-common';
+
+// Padding inside of a pseudo checkbox.
+$padding: checkbox-common.$border-width * 2;
+
+/// Applies the styles that set the size of the pseudo checkbox
+@mixin size($box-size) {
+  $mark-size: $box-size - (2 * $padding);
+
+  .mat-pseudo-checkbox {
+    width: $box-size;
+    height: $box-size;
+  }
+
+  .mat-pseudo-checkbox-indeterminate::after {
+    top: math.div($box-size - checkbox-common.$border-width, 2) -
+      checkbox-common.$border-width;
+    width: $box-size - 6px;
+  }
+
+  .mat-pseudo-checkbox-checked::after {
+    top: math.div($box-size, 2) - math.div($mark-size, 4) -
+       math.div($box-size, 10) - checkbox-common.$border-width;
+    width: $mark-size;
+    height: math.div($mark-size - checkbox-common.$border-width, 2);
+  }
+}
+
+/// Applies the legacy size styles to the pseudo-checkbox
+@mixin legacy-size() {
+  @include size(checkbox-common.$legacy-size);
+}

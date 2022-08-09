@@ -2,17 +2,9 @@
 @use '../../style/checkbox-common';
 @use '../../style/private';
 @use '../../style/variables';
-
-// Padding inside of a pseudo checkbox.
-$_padding: checkbox-common.$border-width * 2;
-
-// Size of the checkmark in a pseudo checkbox.
-$_checkmark-size: checkbox-common.$size - (2 * $_padding);
-
+@use './pseudo-checkbox-common';
 
 .mat-pseudo-checkbox {
-  width: checkbox-common.$size;
-  height: checkbox-common.$size;
   border: checkbox-common.$border-width solid;
   border-radius: 2px;
   cursor: pointer;
@@ -51,22 +43,19 @@ $_checkmark-size: checkbox-common.$size - (2 * $_padding);
 }
 
 .mat-pseudo-checkbox-indeterminate::after {
-  top: math.div(checkbox-common.$size - checkbox-common.$border-width, 2) -
-      checkbox-common.$border-width;
   left: math.div(checkbox-common.$border-width, 2);
-  width: checkbox-common.$size - 6px;
   opacity: 1;
   border-radius: 2px;
 }
 
 .mat-pseudo-checkbox-checked::after {
-  top: math.div(checkbox-common.$size, 2) - math.div($_checkmark-size, 4) -
-       math.div(checkbox-common.$size, 10) - checkbox-common.$border-width;
-  left: $_padding - checkbox-common.$border-width * 1.5;
-  width: $_checkmark-size;
-  height: math.div($_checkmark-size - checkbox-common.$border-width, 2);
+  left: pseudo-checkbox-common.$padding - checkbox-common.$border-width * 1.5;
   border-left: checkbox-common.$border-width solid currentColor;
   transform: rotate(-45deg);
   opacity: 1;
   box-sizing: content-box;
 }
+
+// TODO(andrewseguin): Change this to the non-legacy size once
+// the above mixins have landed internally.
+@include pseudo-checkbox-common.size(checkbox-common.$legacy-size);

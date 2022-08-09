@@ -72,6 +72,8 @@
   legacy-optgroup-typography, legacy-optgroup-theme;
 @forward './core/selection/pseudo-checkbox/pseudo-checkbox-theme' as pseudo-checkbox-* show
   pseudo-checkbox-color, pseudo-checkbox-typography, pseudo-checkbox-theme;
+@forward './core/selection/pseudo-checkbox/pseudo-checkbox-common' as pseudo-checkbox-* show
+  pseudo-checkbox-legacy-size;
 @forward './core/focus-indicators/focus-indicators-theme' as strong-focus-indicators-* show
   strong-focus-indicators-color, strong-focus-indicators-theme;
 @forward './autocomplete/autocomplete-theme' as autocomplete-* show autocomplete-theme,
