@@ -151,11 +151,12 @@ export function extractDirectiveTypeCheckMeta(
 }
 
 function isRestricted(node: ts.Node): boolean {
-  return getModifiers(node)?.some(
-             ({kind}) => kind === ts.SyntaxKind.PrivateKeyword ||
-                 kind === ts.SyntaxKind.ProtectedKeyword ||
-                 kind === ts.SyntaxKind.ReadonlyKeyword) ||
-      false;
+  const modifiers = getModifiers(node);
+
+  return modifiers !== undefined && modifiers.some(({kind}) => {
+    return kind === ts.SyntaxKind.PrivateKeyword || kind === ts.SyntaxKind.ProtectedKeyword ||
+        kind === ts.SyntaxKind.ReadonlyKeyword;
+  });
 }
 
 function extractTemplateGuard(member: ClassMember): TemplateGuardMeta|null {

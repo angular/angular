@@ -747,7 +747,9 @@ function isVariableDeclarationDeclared(node: ts.VariableDeclaration): boolean {
     return false;
   }
   const varStmt = declList.parent;
-  return getModifiers(varStmt)?.some(mod => mod.kind === ts.SyntaxKind.DeclareKeyword) || false;
+  const modifiers = getModifiers(varStmt);
+  return modifiers !== undefined &&
+      modifiers.some(mod => mod.kind === ts.SyntaxKind.DeclareKeyword);
 }
 
 const EMPTY = {};

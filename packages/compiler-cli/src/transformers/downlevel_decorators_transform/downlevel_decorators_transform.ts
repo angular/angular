@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 import {Decorator, ReflectionHost} from '../../ngtsc/reflection';
-import {combineModifiers, createPropertyDeclaration, getDecorators, getModifiers, PARSED_TS_VERSION, updateClassDeclaration, updateConstructorDeclaration, updateParameterDeclaration} from '../../ngtsc/ts_compatibility';
+import {combineModifiers, createPropertyDeclaration, getDecorators, getModifiers, IS_AFTER_TS_48, updateClassDeclaration, updateConstructorDeclaration, updateParameterDeclaration} from '../../ngtsc/ts_compatibility';
 
 import {isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from './patch_alias_reference_resolution';
 
@@ -424,7 +424,7 @@ export function getDownlevelDecoratorsTransform(
       const name = (element.name as ts.Identifier).text;
       const mutable = ts.getMutableClone(element);
 
-      if (PARSED_TS_VERSION >= 4.8) {
+      if (IS_AFTER_TS_48) {
         // As of TS 4.8, the decorators are part of the `modifiers` array.
         (mutable as any).modifiers = decoratorsToKeep.length ?
             ts.setTextRange(

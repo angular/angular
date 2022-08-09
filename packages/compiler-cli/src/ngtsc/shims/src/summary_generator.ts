@@ -69,5 +69,8 @@ export class SummaryGenerator implements PerFileShimGenerator {
 }
 
 function isExported(decl: ts.Declaration): boolean {
-  return getModifiers(decl)?.some(mod => mod.kind == ts.SyntaxKind.ExportKeyword) || false;
+  const modifiers = getModifiers(decl);
+  return modifiers !== undefined &&
+      modifiers.some(mod => mod.kind == ts.SyntaxKind.ExportKeyword) ||
+      false;
 }

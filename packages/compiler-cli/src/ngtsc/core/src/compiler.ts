@@ -1108,7 +1108,9 @@ export function isAngularCorePackage(program: ts.Program): boolean {
       return false;
     }
     // It must be exported.
-    if (!getModifiers(stmt)?.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword)) {
+    const modifiers = getModifiers(stmt);
+    if (modifiers === undefined ||
+        !modifiers.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword)) {
       return false;
     }
     // It must declare ITS_JUST_ANGULAR.

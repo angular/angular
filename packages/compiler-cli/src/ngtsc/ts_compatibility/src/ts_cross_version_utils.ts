@@ -8,8 +8,11 @@
 
 import ts from 'typescript';
 
-/** Whether the current version of TypeScript is greater than 4.8. */
-export const PARSED_TS_VERSION = parseFloat(ts.versionMajorMinor);
+/** Whether the current TypeScript version is after 4.8. */
+export const IS_AFTER_TS_48 = isAfterVersion(4, 8);
+
+/** Whether the current TypeScript version is after 4.7. */
+const IS_AFTER_TS_47 = isAfterVersion(4, 7);
 
 /** Equivalent of `ts.ModifierLike` which is only present in TS 4.8+. */
 export type ModifierLike = ts.Modifier|ts.Decorator;
@@ -26,8 +29,7 @@ type Ts47UpdateTypeParameterDeclarationFn =
  * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.7.
  * We should remove it once we have dropped support for the older versions.
  */
-export const updateTypeParameterDeclaration: Ts47UpdateTypeParameterDeclarationFn =
-    PARSED_TS_VERSION >= 4.7 ?
+export const updateTypeParameterDeclaration: Ts47UpdateTypeParameterDeclarationFn = IS_AFTER_TS_47 ?
     (ts.factory.updateTypeParameterDeclaration as any) :
     (node, _modifiers, name, constraint, defaultType) =>
         (ts.factory.updateTypeParameterDeclaration as any)(node, name, constraint, defaultType);
@@ -45,8 +47,7 @@ type Ts48UpdateParameterDeclarationFn =
  * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.8.
  * We should remove it once we have dropped support for the older versions.
  */
-export const updateParameterDeclaration: Ts48UpdateParameterDeclarationFn =
-    PARSED_TS_VERSION >= 4.8 ?
+export const updateParameterDeclaration: Ts48UpdateParameterDeclarationFn = IS_AFTER_TS_48 ?
     (ts.factory.updateParameterDeclaration as any) :
     (node, modifiers, dotDotDotToken, name, questionToken, type, initializer) => (
         ts.factory.updateParameterDeclaration as any)(
@@ -64,7 +65,7 @@ type Ts48UpdateImportDeclarationFn =
  * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.8.
  * We should remove it once we have dropped support for the older versions.
  */
-export const updateImportDeclaration: Ts48UpdateImportDeclarationFn = PARSED_TS_VERSION >= 4.8 ?
+export const updateImportDeclaration: Ts48UpdateImportDeclarationFn = IS_AFTER_TS_48 ?
     (ts.factory.updateImportDeclaration as any) :
     (node, modifiers, importClause, moduleSpecifier, assertClause) =>
         (ts.factory.updateImportDeclaration as any)(
@@ -84,7 +85,7 @@ type Ts48UpdateClassDeclarationFn =
  * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.8.
  * We should remove it once we have dropped support for the older versions.
  */
-export const updateClassDeclaration: Ts48UpdateClassDeclarationFn = PARSED_TS_VERSION >= 4.8 ?
+export const updateClassDeclaration: Ts48UpdateClassDeclarationFn = IS_AFTER_TS_48 ?
     (ts.factory.updateClassDeclaration as any) :
     (node, combinedModifiers, name, typeParameters, heritageClauses, members) => (
         ts.factory.updateClassDeclaration as any)(
@@ -106,7 +107,7 @@ type Ts48UpdateMethodDeclarationFn =
  * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.8.
  * We should remove it once we have dropped support for the older versions.
  */
-export const updateMethodDeclaration: Ts48UpdateMethodDeclarationFn = PARSED_TS_VERSION >= 4.8 ?
+export const updateMethodDeclaration: Ts48UpdateMethodDeclarationFn = IS_AFTER_TS_48 ?
     (ts.factory.updateMethodDeclaration as any) :
     (node, modifiers, asteriskToken, name, questionToken, typeParameters, parameters, type, body) =>
         (ts.factory.updateMethodDeclaration as any)(
@@ -127,7 +128,7 @@ type Ts48UpdatePropertyDeclarationFn =
  * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.8.
  * We should remove it once we have dropped support for the older versions.
  */
-export const updatePropertyDeclaration: Ts48UpdatePropertyDeclarationFn = PARSED_TS_VERSION >= 4.8 ?
+export const updatePropertyDeclaration: Ts48UpdatePropertyDeclarationFn = IS_AFTER_TS_48 ?
     (ts.factory.updatePropertyDeclaration as any) :
     (node, modifiers, name, questionOrExclamationToken, type, initializer) => (
         ts.factory.updatePropertyDeclaration as any)(
@@ -146,7 +147,7 @@ type Ts48CreatePropertyDeclarationFn =
  * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.8.
  * We should remove it once we have dropped support for the older versions.
  */
-export const createPropertyDeclaration: Ts48CreatePropertyDeclarationFn = PARSED_TS_VERSION >= 4.8 ?
+export const createPropertyDeclaration: Ts48CreatePropertyDeclarationFn = IS_AFTER_TS_48 ?
     (ts.factory.createPropertyDeclaration as any) :
     (modifiers, name, questionOrExclamationToken, type, initializer) =>
         (ts.factory.createPropertyDeclaration as any)(
@@ -167,8 +168,7 @@ type Ts48UpdateGetAccessorDeclarationFn =
  * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.8.
  * We should remove it once we have dropped support for the older versions.
  */
-export const updateGetAccessorDeclaration: Ts48UpdateGetAccessorDeclarationFn =
-    PARSED_TS_VERSION >= 4.8 ?
+export const updateGetAccessorDeclaration: Ts48UpdateGetAccessorDeclarationFn = IS_AFTER_TS_48 ?
     (ts.factory.updateGetAccessorDeclaration as any) :
     (node, modifiers, name, parameters, type, body) =>
         (ts.factory.updateGetAccessorDeclaration as any)(
@@ -186,8 +186,7 @@ type Ts48UpdateSetAccessorDeclarationFn =
  * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.8.
  * We should remove it once we have dropped support for the older versions.
  */
-export const updateSetAccessorDeclaration: Ts48UpdateSetAccessorDeclarationFn =
-    PARSED_TS_VERSION >= 4.8 ?
+export const updateSetAccessorDeclaration: Ts48UpdateSetAccessorDeclarationFn = IS_AFTER_TS_48 ?
     (ts.factory.updateSetAccessorDeclaration as any) :
     (node, modifiers, name, parameters, body) => (ts.factory.updateSetAccessorDeclaration as any)(
         node, ...splitModifiers(modifiers), name, parameters, body);
@@ -206,8 +205,7 @@ type Ts48UpdateConstructorDeclarationFn =
  * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.8.
  * We should remove it once we have dropped support for the older versions.
  */
-export const updateConstructorDeclaration: Ts48UpdateConstructorDeclarationFn =
-    PARSED_TS_VERSION >= 4.8 ?
+export const updateConstructorDeclaration: Ts48UpdateConstructorDeclarationFn = IS_AFTER_TS_48 ?
     (ts.factory.updateConstructorDeclaration as any) :
     (node, modifiers, parameters, body) => (ts.factory.updateConstructorDeclaration as any)(
         node, undefined, modifiers, parameters, body);
@@ -219,7 +217,7 @@ export const updateConstructorDeclaration: Ts48UpdateConstructorDeclarationFn =
  * We should remove it once we have dropped support for the older versions.
  */
 export const getDecorators: (node: ts.Node) => readonly ts.Decorator[] | undefined =
-    PARSED_TS_VERSION >= 4.8 ? (ts as any).getDecorators : node => node.decorators;
+    IS_AFTER_TS_48 ? (ts as any).getDecorators : node => node.decorators;
 
 /**
  * Gets the modifiers that have been set on a node.
@@ -228,7 +226,7 @@ export const getDecorators: (node: ts.Node) => readonly ts.Decorator[] | undefin
  * We should remove it once we have dropped support for the older versions.
  */
 export const getModifiers: (node: ts.Node) => readonly ts.Modifier[] | undefined =
-    PARSED_TS_VERSION >= 4.8 ? (ts as any).getModifiers : node => node.modifiers;
+    IS_AFTER_TS_48 ? (ts as any).getModifiers : node => node.modifiers;
 
 /**
  * Combines an optional array of decorators with an optional array of modifiers into a single
@@ -284,4 +282,15 @@ function splitModifiers(allModifiers: readonly ModifierLike[]|
   }
 
   return [decorators.length ? decorators : undefined, modifiers.length ? modifiers : undefined];
+}
+
+/** Checks if the current version of TypeScript is after the specified major/minor versions. */
+function isAfterVersion(targetMajor: number, targetMinor: number): boolean {
+  const [major, minor] = ts.versionMajorMinor.split('.').map(part => parseInt(part));
+
+  if (major < targetMajor) {
+    return false;
+  }
+
+  return major === targetMajor ? minor >= targetMinor : true;
 }

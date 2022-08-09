@@ -111,8 +111,9 @@ export function isExported(node: DeclarationNode): boolean {
   if (ts.isVariableDeclaration(node) && ts.isVariableDeclarationList(node.parent)) {
     topLevel = node.parent.parent;
   }
-  return getModifiers(topLevel)?.some(modifier => modifier.kind === ts.SyntaxKind.ExportKeyword) ||
-      false;
+  const modifiers = getModifiers(topLevel);
+  return modifiers !== undefined &&
+      modifiers.some(modifier => modifier.kind === ts.SyntaxKind.ExportKeyword);
 }
 
 export function getRootDirs(
