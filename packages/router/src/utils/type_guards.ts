@@ -63,5 +63,5 @@ export function isNavigationCancelingError(error: unknown): error is NavigationC
 }
 
 export function isEmptyError(e: Error): e is EmptyError {
-  return e instanceof EmptyError || e.name === 'EmptyError';
+  return e instanceof EmptyError || e?.name === 'EmptyError';
 }
