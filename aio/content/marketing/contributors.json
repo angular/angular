@@ -368,6 +368,14 @@
     "bio": "Fabian Gosebrink is a Google Developer Expert for Angular and Web Technologies, Microsoft MVP and Web Developer for ASP.NET Core and Angular. As a professional software engineer, consultant and trainer, he advises and supports customers in the implementation of frontend, backend, and mobile development of web applications.",
     "groups": ["GDE"]
   },
+  "famzil": {
+    "name": "Fatima AMZIL",
+    "picture": "famzil.jpg",
+    "twitter": "fati_amzil",
+    "website": "https://fatimaamzil.com",
+    "bio": "Frontend software engineer and Google Developer Expert for Angular",
+    "groups": ["GDE"]
+  },
   "filipesilva": {
     "name": "Filipe Silva",
     "picture": "filipe-silva.jpg",
