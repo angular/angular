@@ -300,16 +300,6 @@ The component's `delete()` method immediately removes the *hero-to-delete* from 
 
 There's really nothing for the component to do with the `Observable` returned by `heroService.deleteHero()` **but it must subscribe anyway**.
 
-<div class="alert is-important">
-
-If you neglect to `subscribe()`, the service can't send the delete request to the server.
-As a rule, an `Observable` *does nothing* until something subscribes.
-
-Confirm this for yourself by temporarily removing the `subscribe()`, clicking **Dashboard**, then clicking **Heroes**.
-This shows the full list of heroes again.
-
-</div>
-
 Next, add a `deleteHero()` method to `HeroService` like this.
 
 <code-example header="src/app/hero.service.ts (delete)" path="toh-pt6/src/app/hero.service.ts" region="deleteHero"></code-example>
@@ -322,6 +312,16 @@ Notice the following key points:
 *   You still send the `httpOptions`
 
 Refresh the browser and try the new delete capability.
+
+<div class="alert is-important">
+
+If you neglect to `subscribe()`, the service can't send the delete request to the server.
+As a rule, an `Observable` *does nothing* until something subscribes.
+
+Confirm this for yourself by temporarily removing the `subscribe()`, clicking **Dashboard**, then clicking **Heroes**.
+This shows the full list of heroes again.
+
+</div>
 
 ## Search by name
 
