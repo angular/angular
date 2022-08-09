@@ -19,7 +19,7 @@ ng_module(
         "//src/material/legacy-progress-bar",
         "//src/material/legacy-progress-bar/testing",
         "//src/material/legacy-radio",
-        "//src/material/slider",
+        "//src/material/legacy-slider",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
         "@npm//@angular/platform-browser-dynamic",

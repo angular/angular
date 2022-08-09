@@ -9,11 +9,11 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
-import {MatSlider} from './slider';
+import {MatLegacySlider} from './slider';
 
 @NgModule({
   imports: [CommonModule, MatCommonModule],
-  exports: [MatSlider, MatCommonModule],
-  declarations: [MatSlider],
+  exports: [MatLegacySlider, MatCommonModule],
+  declarations: [MatLegacySlider],
 })
-export class MatSliderModule {}
+export class MatLegacySliderModule {}

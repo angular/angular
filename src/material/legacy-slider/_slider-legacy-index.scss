@@ -1,0 +1,3 @@
+@forward 'slider-theme' hide color, theme, typography;
+@forward 'slider-theme' as mat-legacy-slider-* hide mat-legacy-slider-density,
+  mat-legacy-slider-inner-content-theme;

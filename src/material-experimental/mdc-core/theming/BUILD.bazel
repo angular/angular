@@ -26,7 +26,6 @@ sass_library(
         "//src/material-experimental/mdc-menu:mdc_menu_scss_lib",
         "//src/material-experimental/mdc-paginator:mdc_paginator_scss_lib",
         "//src/material-experimental/mdc-progress-spinner:mdc_progress_spinner_scss_lib",
-        "//src/material-experimental/mdc-slider:mdc_slider_scss_lib",
         "//src/material-experimental/mdc-snack-bar:mdc_snack_bar_scss_lib",
         "//src/material-experimental/mdc-table:mdc_table_scss_lib",
         "//src/material-experimental/mdc-tabs:mdc_tabs_scss_lib",
@@ -39,6 +38,7 @@ sass_library(
         "//src/material/input:input_scss_lib",
         "//src/material/progress-bar:progress_bar_scss_lib",
         "//src/material/slide-toggle:slide_toggle_scss_lib",
+        "//src/material/slider:slider_scss_lib",
         "//src/material/tooltip:tooltip_scss_lib",
     ],
 )

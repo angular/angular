@@ -139,7 +139,9 @@
 @forward './legacy-slide-toggle/slide-toggle-theme' as legacy-slide-toggle-* show
   legacy-slide-toggle-theme, legacy-slide-toggle-color, legacy-slide-toggle-typography;
 @forward './slide-toggle/slide-toggle-theme' as slide-toggle-* show
-slide-toggle-theme, slide-toggle-color, slide-toggle-typography, slide-toggle-density;
+  slide-toggle-theme, slide-toggle-color, slide-toggle-typography, slide-toggle-density;
+@forward './legacy-slider/slider-theme' as legacy-slider-* show legacy-slider-theme,
+  legacy-slider-color, legacy-slider-typography;
 @forward './slider/slider-theme' as slider-* show slider-theme, slider-color, slider-typography;
 @forward './snack-bar/snack-bar-theme' as snack-bar-* show snack-bar-theme, snack-bar-color,
   snack-bar-typography;

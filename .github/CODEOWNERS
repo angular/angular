@@ -29,7 +29,7 @@
 /src/material/select/**                            @crisbeto
 /src/material/sidenav/**                           @mmalerba
 /src/material/legacy-slide-toggle/**                      @devversion
-/src/material/slider/**                            @mmalerba
+/src/material/legacy-slider/**                     @mmalerba
 /src/material/snack-bar/**                         @andrewseguin @crisbeto
 /src/material/sort/**                              @andrewseguin
 /src/material/stepper/**                           @mmalerba
@@ -126,8 +126,8 @@
 /src/material/progress-bar/**         @andrewseguin
 /src/material/radio/**                                 @mmalerba
 /src/material-experimental/mdc-snack-bar/**            @andrewseguin
-/src/material/slide-toggle/**         @crisbeto
-/src/material-experimental/mdc-slider/**               @devversion
+/src/material/slide-toggle/**                          @crisbeto
+/src/material/slider/**                                @devversion
 /src/material-experimental/mdc-tabs/**                 @crisbeto
 /src/material-experimental/mdc-tooltip/**              @crisbeto
 /src/material-experimental/mdc-table/**                @andrewseguin

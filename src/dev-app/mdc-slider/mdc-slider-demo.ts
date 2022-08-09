@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatSliderModule} from '@angular/material-experimental/mdc-slider';
+import {MatSliderModule} from '@angular/material/slider';
 import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';
 
 @Component({

@@ -7,7 +7,7 @@ ng_module(
     srcs = glob(["**/*.ts"]),
     assets = ["slider-demo.html"],
     deps = [
-        "//src/material/slider",
+        "//src/material/legacy-slider",
         "//src/material/tabs",
         "@npm//@angular/forms",
     ],

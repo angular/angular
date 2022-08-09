@@ -6,7 +6,6 @@
 @use '../../mdc-button/icon-button-theme';
 @use '../../mdc-list/list-theme';
 @use '../../mdc-menu/menu-theme';
-@use '../../mdc-slider/slider-theme';
 @use '../../mdc-snack-bar/snack-bar-theme';
 @use '../../mdc-tabs/tabs-theme';
 @use '../../mdc-table/table-theme';
@@ -33,7 +32,7 @@
     @include mat.radio-theme($theme-or-color-config);
     @include mat.select-theme($theme-or-color-config);
     @include mat.slide-toggle-theme($theme-or-color-config);
-    @include slider-theme.theme($theme-or-color-config);
+    @include mat.slider-theme($theme-or-color-config);
     @include snack-bar-theme.theme($theme-or-color-config);
     @include table-theme.theme($theme-or-color-config);
     @include mat.form-field-theme($theme-or-color-config);

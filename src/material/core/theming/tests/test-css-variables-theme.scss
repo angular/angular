@@ -18,7 +18,6 @@
 @use '../../../paginator/paginator-theme';
 @use '../../../progress-spinner/progress-spinner-theme';
 @use '../../../sidenav/sidenav-theme';
-@use '../../../slider/slider-theme';
 @use '../../../stepper/stepper-theme';
 @use '../../../sort/sort-theme';
 @use '../../../tabs/tabs-theme';
@@ -69,7 +68,6 @@
   @include paginator-theme.theme($css-var-theme);
   @include progress-spinner-theme.theme($css-var-theme);
   @include sidenav-theme.theme($css-var-theme);
-  @include slider-theme.theme($css-var-theme);
   @include stepper-theme.theme($css-var-theme);
   @include sort-theme.theme($css-var-theme);
   @include tabs-theme.theme($css-var-theme);

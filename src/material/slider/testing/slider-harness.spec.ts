@@ -1,11 +1,21 @@
-import {HarnessLoader} from '@angular/cdk/testing';
-import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HarnessLoader, parallel} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatSliderModule} from '@angular/material/slider';
-import {MatSliderHarness} from '@angular/material/slider/testing/slider-harness';
+import {MatSliderHarness} from './slider-harness';
+import {MatSliderThumbHarness} from './slider-thumb-harness';
+import {ThumbPosition} from './slider-harness-filters';
 
-describe('Non-MDC-based MatSliderHarness', () => {
+describe('MDC-based MatSliderHarness', () => {
   let fixture: ComponentFixture<SliderHarnessTest>;
   let loader: HarnessLoader;
 
@@ -22,168 +32,172 @@ describe('Non-MDC-based MatSliderHarness', () => {
 
   it('should load all slider harnesses', async () => {
     const sliders = await loader.getAllHarnesses(MatSliderHarness);
-    expect(sliders.length).toBe(3);
+    expect(sliders.length).toBe(2);
   });
 
-  it('should load slider harness by id', async () => {
-    const sliders = await loader.getAllHarnesses(MatSliderHarness.with({selector: '#my-slider'}));
-    expect(sliders.length).toBe(1);
-  });
-
-  it('should get id of slider', async () => {
+  it('should get whether is a range slider', async () => {
     const sliders = await loader.getAllHarnesses(MatSliderHarness);
-    expect(await sliders[0].getId()).toBe(null);
-    expect(await sliders[1].getId()).toBe('my-slider');
-    expect(await sliders[2].getId()).toBe(null);
+    expect(await parallel(() => sliders.map(slider => slider.isRange()))).toEqual([false, true]);
   });
 
-  it('should get value of slider', async () => {
+  it('should get whether a slider is disabled', async () => {
+    const slider = await loader.getHarness(MatSliderHarness);
+    expect(await slider.isDisabled()).toBe(false);
+    fixture.componentInstance.singleSliderDisabled = true;
+    expect(await slider.isDisabled()).toBe(true);
+  });
+
+  it('should get the min/max values of a single-thumb slider', async () => {
+    const slider = await loader.getHarness(MatSliderHarness);
+    const [min, max] = await parallel(() => [slider.getMinValue(), slider.getMaxValue()]);
+    expect(min).toBe(0);
+    expect(max).toBe(100);
+  });
+
+  it('should get the min/max values of a range slider', async () => {
+    const slider = await loader.getHarness(MatSliderHarness.with({isRange: true}));
+    const [min, max] = await parallel(() => [slider.getMinValue(), slider.getMaxValue()]);
+    expect(min).toBe(fixture.componentInstance.rangeSliderMin);
+    expect(max).toBe(fixture.componentInstance.rangeSliderMax);
+  });
+
+  it('should get the thumbs within a slider', async () => {
     const sliders = await loader.getAllHarnesses(MatSliderHarness);
-    expect(await sliders[0].getValue()).toBe(50);
-    expect(await sliders[1].getValue()).toBe(0);
-    expect(await sliders[2].getValue()).toBe(225);
+    expect(await sliders[0].getEndThumb()).toBeTruthy();
+    expect(await sliders[1].getStartThumb()).toBeTruthy();
+    expect(await sliders[1].getEndThumb()).toBeTruthy();
   });
 
-  it('should get percentage of slider', async () => {
+  it('should throw when trying to get the start thumb from a single point slider', async () => {
+    const slider = await loader.getHarness(MatSliderHarness.with({isRange: false}));
+    await expectAsync(slider.getStartThumb()).toBeRejectedWithError(
+      '`getStartThumb` is only applicable for range sliders. ' +
+        'Did you mean to use `getEndThumb`?',
+    );
+  });
+
+  it('should get the step of a slider', async () => {
     const sliders = await loader.getAllHarnesses(MatSliderHarness);
-    expect(await sliders[0].getPercentage()).toBe(0.5);
-    expect(await sliders[1].getPercentage()).toBe(0);
-    expect(await sliders[2].getPercentage()).toBe(0.5);
+    expect(
+      await parallel(() => {
+        return sliders.map(slider => slider.getStep());
+      }),
+    ).toEqual([1, fixture.componentInstance.rangeSliderStep]);
   });
 
-  it('should get max value of slider', async () => {
+  it('should get the position of a slider thumb in a range slider', async () => {
+    const slider = await loader.getHarness(MatSliderHarness.with({selector: '#range'}));
+    const [start, end] = await parallel(() => [slider.getStartThumb(), slider.getEndThumb()]);
+    expect(await start.getPosition()).toBe(ThumbPosition.START);
+    expect(await end.getPosition()).toBe(ThumbPosition.END);
+  });
+
+  it('should get the position of a slider thumb in a non-range slider', async () => {
+    const thumb = await loader.getHarness(MatSliderThumbHarness.with({ancestor: '#single'}));
+    expect(await thumb.getPosition()).toBe(ThumbPosition.END);
+  });
+
+  it('should get and set the value of a slider thumb', async () => {
+    const slider = await loader.getHarness(MatSliderHarness);
+    const thumb = await slider.getEndThumb();
+    expect(await thumb.getValue()).toBe(0);
+    await thumb.setValue(73);
+    expect(await thumb.getValue()).toBe(73);
+  });
+
+  it('should dispatch input and change events when setting the value', async () => {
+    const slider = await loader.getHarness(MatSliderHarness);
+    const thumb = await slider.getEndThumb();
+    const changeSpy = spyOn(fixture.componentInstance, 'changeListener');
+    const inputSpy = spyOn(fixture.componentInstance, 'inputListener');
+    await thumb.setValue(73);
+    expect(changeSpy).toHaveBeenCalledTimes(1);
+    expect(inputSpy).toHaveBeenCalledTimes(1);
+    expect(await thumb.getValue()).toBe(73);
+  });
+
+  it('should get the value of a thumb as a percentage', async () => {
     const sliders = await loader.getAllHarnesses(MatSliderHarness);
-    expect(await sliders[0].getMaxValue()).toBe(100);
-    expect(await sliders[1].getMaxValue()).toBe(100);
-    expect(await sliders[2].getMaxValue()).toBe(250);
+    expect(await (await sliders[0].getEndThumb()).getPercentage()).toBe(0);
+    expect(await (await sliders[1].getStartThumb()).getPercentage()).toBe(0.4);
+    expect(await (await sliders[1].getEndThumb()).getPercentage()).toBe(0.5);
   });
 
-  it('should get min value of slider', async () => {
-    const sliders = await loader.getAllHarnesses(MatSliderHarness);
-    expect(await sliders[0].getMinValue()).toBe(0);
-    expect(await sliders[1].getMinValue()).toBe(0);
-    expect(await sliders[2].getMinValue()).toBe(200);
+  it('should get the display value of a slider thumb', async () => {
+    const slider = await loader.getHarness(MatSliderHarness);
+    const thumb = await slider.getEndThumb();
+    fixture.componentInstance.displayFn = value => `#${value}`;
+    await thumb.setValue(73);
+    expect(await thumb.getDisplayValue()).toBe('#73');
   });
 
-  it('should get display value of slider', async () => {
-    const sliders = await loader.getAllHarnesses(MatSliderHarness);
-    expect(await sliders[0].getDisplayValue()).toBe(null);
-    expect(await sliders[1].getDisplayValue()).toBe('Null');
-    expect(await sliders[2].getDisplayValue()).toBe('#225');
+  it('should get the min/max values of a slider thumb', async () => {
+    const instance = fixture.componentInstance;
+    const slider = await loader.getHarness(MatSliderHarness.with({selector: '#range'}));
+    const [start, end] = await parallel(() => [slider.getStartThumb(), slider.getEndThumb()]);
+
+    expect(await start.getMinValue()).toBe(instance.rangeSliderMin);
+    expect(await start.getMaxValue()).toBe(instance.rangeSliderEndValue);
+    expect(await end.getMinValue()).toBe(instance.rangeSliderStartValue);
+    expect(await end.getMaxValue()).toBe(instance.rangeSliderMax);
   });
 
-  it('should get orientation of slider', async () => {
-    const sliders = await loader.getAllHarnesses(MatSliderHarness);
-    expect(await sliders[0].getOrientation()).toBe('horizontal');
-    expect(await sliders[1].getOrientation()).toBe('horizontal');
-    expect(await sliders[2].getOrientation()).toBe('vertical');
+  it('should get the disabled state of a slider thumb', async () => {
+    const slider = await loader.getHarness(MatSliderHarness);
+    const thumb = await slider.getEndThumb();
+
+    expect(await thumb.isDisabled()).toBe(false);
+    fixture.componentInstance.singleSliderDisabled = true;
+    expect(await thumb.isDisabled()).toBe(true);
   });
 
-  it('should be able to focus slider', async () => {
-    // the first slider is disabled.
-    const slider = (await loader.getAllHarnesses(MatSliderHarness))[1];
-    expect(await slider.isFocused()).toBe(false);
-    await slider.focus();
-    expect(await slider.isFocused()).toBe(true);
+  it('should get the name of a slider thumb', async () => {
+    const slider = await loader.getHarness(MatSliderHarness);
+    expect(await (await slider.getEndThumb()).getName()).toBe('price');
   });
 
-  it('should be able to blur slider', async () => {
-    // the first slider is disabled.
-    const slider = (await loader.getAllHarnesses(MatSliderHarness))[1];
-    expect(await slider.isFocused()).toBe(false);
-    await slider.focus();
-    expect(await slider.isFocused()).toBe(true);
-    await slider.blur();
-    expect(await slider.isFocused()).toBe(false);
+  it('should get the id of a slider thumb', async () => {
+    const slider = await loader.getHarness(MatSliderHarness);
+    expect(await (await slider.getEndThumb()).getId()).toBe('price-input');
   });
 
-  it('should be able to set value of slider', async () => {
-    const sliders = await loader.getAllHarnesses(MatSliderHarness);
-    expect(await sliders[1].getValue()).toBe(0);
-    expect(await sliders[2].getValue()).toBe(225);
+  it('should be able to focus and blur a slider thumb', async () => {
+    const slider = await loader.getHarness(MatSliderHarness);
+    const thumb = await slider.getEndThumb();
 
-    await sliders[1].setValue(33);
-    await sliders[2].setValue(300);
-
-    expect(await sliders[1].getValue()).toBe(33);
-    // value should be clamped to the maximum.
-    expect(await sliders[2].getValue()).toBe(250);
-  });
-
-  it('should be able to set value of slider in rtl', async () => {
-    const sliders = await loader.getAllHarnesses(MatSliderHarness);
-    expect(await sliders[1].getValue()).toBe(0);
-    expect(await sliders[2].getValue()).toBe(225);
-
-    // should not retrieve incorrect values in case slider is inverted
-    // due to RTL page layout.
-    fixture.componentInstance.dir = 'rtl';
-    fixture.detectChanges();
-
-    await sliders[1].setValue(80);
-    expect(await sliders[1].getValue()).toBe(80);
-  });
-
-  it('should get disabled state of slider', async () => {
-    const sliders = await loader.getAllHarnesses(MatSliderHarness);
-    expect(await sliders[0].isDisabled()).toBe(true);
-    expect(await sliders[1].isDisabled()).toBe(false);
-    expect(await sliders[2].isDisabled()).toBe(false);
-  });
-
-  it('should be able to set value of inverted slider', async () => {
-    const sliders = await loader.getAllHarnesses(MatSliderHarness);
-    expect(await sliders[1].getValue()).toBe(0);
-    expect(await sliders[2].getValue()).toBe(225);
-
-    fixture.componentInstance.invertSliders = true;
-    fixture.detectChanges();
-
-    await sliders[1].setValue(75);
-    await sliders[2].setValue(210);
-
-    expect(await sliders[1].getValue()).toBe(75);
-    expect(await sliders[2].getValue()).toBe(210);
-  });
-
-  it('should be able to set value of inverted slider in rtl', async () => {
-    const sliders = await loader.getAllHarnesses(MatSliderHarness);
-    expect(await sliders[1].getValue()).toBe(0);
-    expect(await sliders[2].getValue()).toBe(225);
-
-    fixture.componentInstance.invertSliders = true;
-    fixture.componentInstance.dir = 'rtl';
-    fixture.detectChanges();
-
-    await sliders[1].setValue(75);
-    await sliders[2].setValue(210);
-
-    expect(await sliders[1].getValue()).toBe(75);
-    expect(await sliders[2].getValue()).toBe(210);
+    expect(await thumb.isFocused()).toBe(false);
+    await thumb.focus();
+    expect(await thumb.isFocused()).toBe(true);
+    await thumb.blur();
+    expect(await thumb.isFocused()).toBe(false);
   });
 });
 
 @Component({
   template: `
-    <mat-slider value="50" disabled></mat-slider>
-    <div [dir]="dir">
-      <mat-slider [id]="sliderId" [displayWith]="displayFn"
-                  [invert]="invertSliders" thumbLabel></mat-slider>
-    </div>
-    <mat-slider min="200" max="250" value="225" [displayWith]="displayFn" vertical
-                [invert]="invertSliders" thumbLabel>
+    <mat-slider id="single" [displayWith]="displayFn" [disabled]="singleSliderDisabled">
+      <input
+        name="price"
+        id="price-input"
+        matSliderThumb
+        (input)="inputListener()"
+        (change)="changeListener()">
     </mat-slider>
-    `,
+
+    <mat-slider id="range" [min]="rangeSliderMin" [max]="rangeSliderMax" [step]="rangeSliderStep">
+      <input [value]="rangeSliderStartValue" matSliderStartThumb>
+      <input [value]="rangeSliderEndValue" matSliderEndThumb>
+    </mat-slider>
+  `,
 })
 class SliderHarnessTest {
-  sliderId = 'my-slider';
-  invertSliders = false;
-  dir = 'ltr';
-
-  displayFn(value: number | null) {
-    if (!value) {
-      return 'Null';
-    }
-    return `#${value}`;
-  }
+  singleSliderDisabled = false;
+  rangeSliderMin = 100;
+  rangeSliderMax = 500;
+  rangeSliderStep = 50;
+  rangeSliderStartValue = 200;
+  rangeSliderEndValue = 350;
+  displayFn = (value: number) => value + '';
+  inputListener() {}
+  changeListener() {}
 }

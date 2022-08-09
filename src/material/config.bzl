@@ -78,6 +78,8 @@ entryPoints = [
     "legacy-slide-toggle/testing",
     "slider",
     "slider/testing",
+    "legacy-slider",
+    "legacy-slider/testing",
     "snack-bar",
     "snack-bar/testing",
     "sort",

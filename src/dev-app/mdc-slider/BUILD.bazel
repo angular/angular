@@ -9,8 +9,8 @@ ng_module(
         "mdc-slider-demo.html",
     ],
     deps = [
-        "//src/material-experimental/mdc-slider",
         "//src/material-experimental/mdc-tabs",
+        "//src/material/slider",
         "@npm//@angular/forms",
     ],
 )

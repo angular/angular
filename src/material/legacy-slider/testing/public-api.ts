@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {MatSlider, MatSliderThumb, MatSliderDragEvent} from './slider';
-export {MatSliderModule} from './module';
+export * from './slider-harness';
+export * from './slider-harness-filters';

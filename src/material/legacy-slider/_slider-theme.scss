@@ -1,0 +1,204 @@
+@use 'sass:map';
+@use 'sass:meta';
+@use '../core/theming/theming';
+@use '../core/typography/typography';
+@use '../core/typography/typography-utils';
+
+@mixin _inner-content-theme($palette) {
+  .mat-slider-track-fill,
+  .mat-slider-thumb,
+  .mat-slider-thumb-label {
+    background-color: theming.get-color-from-palette($palette);
+  }
+
+  .mat-slider-thumb-label-text {
+    color: theming.get-color-from-palette($palette, default-contrast);
+  }
+
+  .mat-slider-focus-ring {
+    $opacity: 0.2;
+    $color: theming.get-color-from-palette($palette, default, $opacity);
+    background-color: $color;
+
+    // `mat-color` uses `rgba` for the opacity which won't work with
+    // CSS variables so we need to use `opacity` as a fallback.
+    @if (meta.type-of($color) != color) {
+      opacity: $opacity;
+    }
+  }
+}
+
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
+
+  $mat-slider-off-color: theming.get-color-from-palette($foreground, slider-off);
+  $mat-slider-off-focused-color: theming.get-color-from-palette($foreground, slider-off-active);
+  $mat-slider-disabled-color: theming.get-color-from-palette($foreground, slider-off);
+  $mat-slider-labeled-min-value-thumb-color:
+    theming.get-color-from-palette($foreground, slider-min);
+  $mat-slider-labeled-min-value-thumb-label-color:
+    theming.get-color-from-palette($foreground, slider-off);
+  $mat-slider-tick-opacity: 0.7;
+  $mat-slider-tick-color:
+    theming.get-color-from-palette($foreground, base, $mat-slider-tick-opacity);
+  $mat-slider-tick-size: 2px;
+
+  .mat-slider-track-background {
+    background-color: $mat-slider-off-color;
+  }
+
+  .mat-slider {
+    &.mat-primary {
+      @include _inner-content-theme($primary);
+    }
+
+    &.mat-accent {
+      @include _inner-content-theme($accent);
+    }
+
+    &.mat-warn {
+      @include _inner-content-theme($warn);
+    }
+  }
+
+  .mat-slider:hover,
+  .mat-slider.cdk-focused {
+    .mat-slider-track-background {
+      background-color: $mat-slider-off-focused-color;
+    }
+  }
+
+  .mat-slider.mat-slider-disabled {
+    .mat-slider-track-background,
+    .mat-slider-track-fill,
+    .mat-slider-thumb {
+      background-color: $mat-slider-disabled-color;
+    }
+
+    &:hover {
+      .mat-slider-track-background {
+        background-color: $mat-slider-disabled-color;
+      }
+    }
+  }
+
+  .mat-slider.mat-slider-min-value {
+    .mat-slider-focus-ring {
+      $opacity: 0.12;
+      $color: theming.get-color-from-palette($foreground, base, $opacity);
+      background-color: $color;
+
+      // `mat-color` uses `rgba` for the opacity which won't work with
+      // CSS variables so we need to use `opacity` as a fallback.
+      @if (meta.type-of($color) != color) {
+        opacity: $opacity;
+      }
+    }
+
+    &.mat-slider-thumb-label-showing {
+      .mat-slider-thumb,
+      .mat-slider-thumb-label {
+        background-color: $mat-slider-labeled-min-value-thumb-color;
+      }
+
+      &.cdk-focused {
+        .mat-slider-thumb,
+        .mat-slider-thumb-label {
+          background-color: $mat-slider-labeled-min-value-thumb-label-color;
+        }
+      }
+    }
+
+    &:not(.mat-slider-thumb-label-showing) {
+      .mat-slider-thumb {
+        border-color: $mat-slider-off-color;
+        background-color: transparent;
+      }
+
+      &:hover,
+      &.cdk-focused {
+        .mat-slider-thumb {
+          border-color: $mat-slider-off-focused-color;
+        }
+
+        &.mat-slider-disabled .mat-slider-thumb {
+          border-color: $mat-slider-disabled-color;
+        }
+      }
+    }
+  }
+
+  .mat-slider-has-ticks .mat-slider-wrapper::after {
+    border-color: $mat-slider-tick-color;
+
+    // `mat-color` uses `rgba` for the opacity which won't work with
+    // CSS variables so we need to use `opacity` as a fallback.
+    @if (meta.type-of($mat-slider-tick-color) != color) {
+      opacity: $mat-slider-tick-opacity;
+    }
+  }
+
+  .mat-slider-horizontal .mat-slider-ticks {
+    background-image: repeating-linear-gradient(to right, $mat-slider-tick-color,
+        $mat-slider-tick-color $mat-slider-tick-size, transparent 0, transparent);
+    // Firefox doesn't draw the gradient correctly with 'to right'
+    // (see https://bugzilla.mozilla.org/show_bug.cgi?id=1314319).
+    background-image: -moz-repeating-linear-gradient(0.0001deg, $mat-slider-tick-color,
+        $mat-slider-tick-color $mat-slider-tick-size, transparent 0, transparent);
+
+    // `mat-color` uses `rgba` for the opacity which won't work with
+    // CSS variables so we need to use `opacity` as a fallback.
+    @if (meta.type-of($mat-slider-tick-color) != color) {
+      opacity: $mat-slider-tick-opacity;
+    }
+  }
+
+  .mat-slider-vertical .mat-slider-ticks {
+    background-image: repeating-linear-gradient(to bottom, $mat-slider-tick-color,
+        $mat-slider-tick-color $mat-slider-tick-size, transparent 0, transparent);
+
+    // `mat-color` uses `rgba` for the opacity which won't work with
+    // CSS variables so we need to use `opacity` as a fallback.
+    @if (meta.type-of($mat-slider-tick-color) != color) {
+      opacity: $mat-slider-tick-opacity;
+    }
+  }
+}
+
+@mixin typography($config-or-theme) {
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
+  .mat-slider-thumb-label-text {
+    font: {
+      family: typography-utils.font-family($config);
+      size: typography-utils.font-size($config, caption);
+      weight: typography-utils.font-weight($config, body-2);
+    }
+  }
+}
+
+@mixin _density($config-or-theme) {}
+
+@mixin theme($theme-or-color-config) {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-slider') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
+
+    @if $color != null {
+      @include color($color);
+    }
+    @if $density != null {
+      @include _density($density);
+    }
+    @if $typography != null {
+      @include typography($typography);
+    }
+  }
+}

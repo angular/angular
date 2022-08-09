@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatSliderModule} from '@angular/material-experimental/mdc-slider';
+import {MatSliderModule} from '@angular/material/slider';
 import {MdcSliderE2e} from './mdc-slider-e2e';
 
 @NgModule({

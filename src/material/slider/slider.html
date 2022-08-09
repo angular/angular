@@ -1,16 +1,22 @@
-<div class="mat-slider-wrapper" #sliderWrapper>
-  <div class="mat-slider-track-wrapper">
-    <div class="mat-slider-track-background" [ngStyle]="_getTrackBackgroundStyles()"></div>
-    <div class="mat-slider-track-fill" [ngStyle]="_getTrackFillStyles()"></div>
+<!-- Inputs -->
+<ng-content></ng-content>
+
+<!-- Track -->
+<div class="mdc-slider__track">
+  <div class="mdc-slider__track--inactive"></div>
+  <div class="mdc-slider__track--active">
+    <div class="mdc-slider__track--active_fill" #trackActive></div>
   </div>
-  <div class="mat-slider-ticks-container" [ngStyle]="_getTicksContainerStyles()">
-    <div class="mat-slider-ticks" [ngStyle]="_getTicksStyles()"></div>
-  </div>
-  <div class="mat-slider-thumb-container" [ngStyle]="_getThumbContainerStyles()">
-    <div class="mat-slider-focus-ring"></div>
-    <div class="mat-slider-thumb"></div>
-    <div class="mat-slider-thumb-label">
-      <span class="mat-slider-thumb-label-text">{{displayValue}}</span>
-    </div>
+  <div *ngIf="showTickMarks" class="mdc-slider__tick-marks" #tickMarkContainer>
+    <div *ngFor="let tickMark of _tickMarks" [class]="_getTickMarkClass(tickMark)"></div>
   </div>
 </div>
+
+<!-- Thumbs -->
+<mat-slider-visual-thumb
+  *ngFor="let thumb of _inputs"
+  [discrete]="discrete"
+  [disableRipple]="_isRippleDisabled()"
+  [thumbPosition]="thumb._thumbPosition"
+  [valueIndicatorText]="_getValueIndicatorText(thumb._thumbPosition)">
+</mat-slider-visual-thumb>

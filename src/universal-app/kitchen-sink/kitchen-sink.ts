@@ -25,7 +25,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
 import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatSidenavModule} from '@angular/material/sidenav';
-import {MatSliderModule} from '@angular/material/slider';
+import {MatLegacySliderModule} from '@angular/material/legacy-slider';
 import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
 import {MatTabsModule} from '@angular/material/tabs';
@@ -123,7 +123,7 @@ export class KitchenSink {
     MatRippleModule,
     MatLegacySelectModule,
     MatSidenavModule,
-    MatSliderModule,
+    MatLegacySliderModule,
     MatLegacySlideToggleModule,
     MatSnackBarModule,
     MatTabsModule,

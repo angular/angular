@@ -6,28 +6,59 @@
 
 import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
+import { ComponentHarnessConstructor } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 
 // @public
 export class MatSliderHarness extends ComponentHarness {
-    blur(): Promise<void>;
-    focus(): Promise<void>;
-    getDisplayValue(): Promise<string | null>;
-    getId(): Promise<string | null>;
+    getEndThumb(): Promise<MatSliderThumbHarness>;
     getMaxValue(): Promise<number>;
     getMinValue(): Promise<number>;
-    getOrientation(): Promise<'horizontal' | 'vertical'>;
+    getStartThumb(): Promise<MatSliderThumbHarness>;
+    getStep(): Promise<number>;
+    // (undocumented)
+    static hostSelector: string;
+    isDisabled(): Promise<boolean>;
+    isRange(): Promise<boolean>;
+    static with<T extends MatSliderHarness>(this: ComponentHarnessConstructor<T>, options?: SliderHarnessFilters): HarnessPredicate<T>;
+}
+
+// @public
+export class MatSliderThumbHarness extends ComponentHarness {
+    blur(): Promise<void>;
+    focus(): Promise<void>;
+    getDisplayValue(): Promise<string>;
+    getId(): Promise<string>;
+    getMaxValue(): Promise<number>;
+    getMinValue(): Promise<number>;
+    getName(): Promise<string>;
     getPercentage(): Promise<number>;
+    getPosition(): Promise<ThumbPosition>;
     getValue(): Promise<number>;
+    // (undocumented)
     static hostSelector: string;
     isDisabled(): Promise<boolean>;
     isFocused(): Promise<boolean>;
-    setValue(value: number): Promise<void>;
-    static with(options?: SliderHarnessFilters): HarnessPredicate<MatSliderHarness>;
+    setValue(newValue: number): Promise<void>;
+    static with<T extends MatSliderThumbHarness>(this: ComponentHarnessConstructor<T>, options?: SliderThumbHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
 export interface SliderHarnessFilters extends BaseHarnessFilters {
+    isRange?: boolean;
+}
+
+// @public
+export interface SliderThumbHarnessFilters extends BaseHarnessFilters {
+    position?: ThumbPosition;
+}
+
+// @public
+export const enum ThumbPosition {
+    // (undocumented)
+    END = 1,
+    // (undocumented)
+    START = 0
 }
 
 // (No @packageDocumentation comment for this package)
