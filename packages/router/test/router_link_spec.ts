@@ -9,7 +9,7 @@
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {Router} from '@angular/router';
+import {Router, RouterLink, RouterLinkWithHref} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 
 describe('RouterLink', () => {
@@ -69,6 +69,28 @@ describe('RouterLink', () => {
       link.click();
       expect(router.navigateByUrl).not.toHaveBeenCalled();
     });
+
+    it('should coerce boolean input values', () => {
+      const dir = fixture.debugElement.query(By.directive(RouterLink)).injector.get(RouterLink);
+
+      for (const truthy of [true, '', 'true', 'anything']) {
+        dir.preserveFragment = truthy;
+        dir.skipLocationChange = truthy;
+        dir.replaceUrl = truthy;
+        expect(dir.preserveFragment).toBeTrue();
+        expect(dir.skipLocationChange).toBeTrue();
+        expect(dir.replaceUrl).toBeTrue();
+      }
+
+      for (const falsy of [false, null, undefined, 'false']) {
+        dir.preserveFragment = falsy;
+        dir.skipLocationChange = falsy;
+        dir.replaceUrl = falsy;
+        expect(dir.preserveFragment).toBeFalse();
+        expect(dir.skipLocationChange).toBeFalse();
+        expect(dir.replaceUrl).toBeFalse();
+      }
+    });
   });
 
   describe('RouterLinkWithHref', () => {
@@ -99,6 +121,29 @@ describe('RouterLink', () => {
       fixture.componentInstance.link = undefined;
       fixture.detectChanges();
       expect(link.outerHTML).not.toContain('href');
+    });
+
+    it('should coerce boolean input values', () => {
+      const dir = fixture.debugElement.query(By.directive(RouterLinkWithHref))
+                      .injector.get(RouterLinkWithHref);
+
+      for (const truthy of [true, '', 'true', 'anything']) {
+        dir.preserveFragment = truthy;
+        dir.skipLocationChange = truthy;
+        dir.replaceUrl = truthy;
+        expect(dir.preserveFragment).toBeTrue();
+        expect(dir.skipLocationChange).toBeTrue();
+        expect(dir.replaceUrl).toBeTrue();
+      }
+
+      for (const falsy of [false, null, undefined, 'false']) {
+        dir.preserveFragment = falsy;
+        dir.skipLocationChange = falsy;
+        dir.replaceUrl = falsy;
+        expect(dir.preserveFragment).toBeFalse();
+        expect(dir.skipLocationChange).toBeFalse();
+        expect(dir.replaceUrl).toBeFalse();
+      }
     });
   });
 });

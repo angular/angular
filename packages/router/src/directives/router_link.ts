@@ -120,6 +120,10 @@ import {UrlTree} from '../url_tree';
   standalone: true,
 })
 export class RouterLink implements OnChanges {
+  private _preserveFragment = false;
+  private _skipLocationChange = false;
+  private _replaceUrl = false;
+
   /**
    * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
    * `UrlCreationOptions`.
@@ -141,30 +145,6 @@ export class RouterLink implements OnChanges {
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
   @Input() queryParamsHandling?: QueryParamsHandling|null;
-  /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
-   * `UrlCreationOptions`.
-   * @see {@link UrlCreationOptions#preserveFragment UrlCreationOptions#preserveFragment}
-   * @see {@link Router#createUrlTree Router#createUrlTree}
-   */
-  // TODO(issue/24571): remove '!'.
-  @Input() preserveFragment!: boolean;
-  /**
-   * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
-   * `NavigationBehaviorOptions`.
-   * @see {@link NavigationBehaviorOptions#skipLocationChange NavigationBehaviorOptions#skipLocationChange}
-   * @see {@link Router#navigateByUrl Router#navigateByUrl}
-   */
-  // TODO(issue/24571): remove '!'.
-  @Input() skipLocationChange!: boolean;
-  /**
-   * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
-   * `NavigationBehaviorOptions`.
-   * @see {@link NavigationBehaviorOptions#replaceUrl NavigationBehaviorOptions#replaceUrl}
-   * @see {@link Router#navigateByUrl Router#navigateByUrl}
-   */
-  // TODO(issue/24571): remove '!'.
-  @Input() replaceUrl!: boolean;
   /**
    * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
    * `NavigationBehaviorOptions`.
@@ -193,6 +173,51 @@ export class RouterLink implements OnChanges {
       @Attribute('tabindex') private readonly tabIndexAttribute: string|null|undefined,
       private readonly renderer: Renderer2, private readonly el: ElementRef) {
     this.setTabIndexIfNotOnNativeEl('0');
+  }
+
+  /**
+   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
+   * `UrlCreationOptions`.
+   * @see {@link UrlCreationOptions#preserveFragment UrlCreationOptions#preserveFragment}
+   * @see {@link Router#createUrlTree Router#createUrlTree}
+   */
+  @Input()
+  set preserveFragment(preserveFragment: boolean|string|null|undefined) {
+    this._preserveFragment = coerceToBoolean(preserveFragment);
+  }
+
+  get preserveFragment(): boolean {
+    return this._preserveFragment;
+  }
+
+  /**
+   * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#skipLocationChange NavigationBehaviorOptions#skipLocationChange}
+   * @see {@link Router#navigateByUrl Router#navigateByUrl}
+   */
+  @Input()
+  set skipLocationChange(skipLocationChange: boolean|string|null|undefined) {
+    this._skipLocationChange = coerceToBoolean(skipLocationChange);
+  }
+
+  get skipLocationChange(): boolean {
+    return this._skipLocationChange;
+  }
+
+  /**
+   * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#replaceUrl NavigationBehaviorOptions#replaceUrl}
+   * @see {@link Router#navigateByUrl Router#navigateByUrl}
+   */
+  @Input()
+  set replaceUrl(replaceUrl: boolean|string|null|undefined) {
+    this._replaceUrl = coerceToBoolean(replaceUrl);
+  }
+
+  get replaceUrl(): boolean {
+    return this._replaceUrl;
   }
 
   /**
@@ -245,8 +270,8 @@ export class RouterLink implements OnChanges {
     }
 
     const extras = {
-      skipLocationChange: coerceToBoolean(this.skipLocationChange),
-      replaceUrl: coerceToBoolean(this.replaceUrl),
+      skipLocationChange: this.skipLocationChange,
+      replaceUrl: this.replaceUrl,
       state: this.state,
     };
     this.router.navigateByUrl(this.urlTree, extras);
@@ -264,7 +289,7 @@ export class RouterLink implements OnChanges {
       queryParams: this.queryParams,
       fragment: this.fragment,
       queryParamsHandling: this.queryParamsHandling,
-      preserveFragment: coerceToBoolean(this.preserveFragment),
+      preserveFragment: this.preserveFragment,
     });
   }
 }
@@ -282,6 +307,10 @@ export class RouterLink implements OnChanges {
  */
 @Directive({selector: 'a[routerLink],area[routerLink]', standalone: true})
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
+  private _preserveFragment = false;
+  private _skipLocationChange = false;
+  private _replaceUrl = false;
+
   // TODO(issue/24571): remove '!'.
   @HostBinding('attr.target') @Input() target!: string;
   /**
@@ -305,30 +334,6 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
    * @see {@link Router#createUrlTree Router#createUrlTree}
    */
   @Input() queryParamsHandling?: QueryParamsHandling|null;
-  /**
-   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
-   * `UrlCreationOptions`.
-   * @see {@link UrlCreationOptions#preserveFragment UrlCreationOptions#preserveFragment}
-   * @see {@link Router#createUrlTree Router#createUrlTree}
-   */
-  // TODO(issue/24571): remove '!'.
-  @Input() preserveFragment!: boolean;
-  /**
-   * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
-   * `NavigationBehaviorOptions`.
-   * @see {@link NavigationBehaviorOptions#skipLocationChange NavigationBehaviorOptions#skipLocationChange}
-   * @see {@link Router#navigateByUrl Router#navigateByUrl}
-   */
-  // TODO(issue/24571): remove '!'.
-  @Input() skipLocationChange!: boolean;
-  /**
-   * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
-   * `NavigationBehaviorOptions`.
-   * @see {@link NavigationBehaviorOptions#replaceUrl NavigationBehaviorOptions#replaceUrl}
-   * @see {@link Router#navigateByUrl Router#navigateByUrl}
-   */
-  // TODO(issue/24571): remove '!'.
-  @Input() replaceUrl!: boolean;
   /**
    * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
    * `NavigationBehaviorOptions`.
@@ -366,6 +371,51 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
         this.updateTargetUrlAndHref();
       }
     });
+  }
+
+  /**
+   * Passed to {@link Router#createUrlTree Router#createUrlTree} as part of the
+   * `UrlCreationOptions`.
+   * @see {@link UrlCreationOptions#preserveFragment UrlCreationOptions#preserveFragment}
+   * @see {@link Router#createUrlTree Router#createUrlTree}
+   */
+  @Input()
+  set preserveFragment(preserveFragment: boolean|string|null|undefined) {
+    this._preserveFragment = coerceToBoolean(preserveFragment);
+  }
+
+  get preserveFragment(): boolean {
+    return this._preserveFragment;
+  }
+
+  /**
+   * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#skipLocationChange NavigationBehaviorOptions#skipLocationChange}
+   * @see {@link Router#navigateByUrl Router#navigateByUrl}
+   */
+  @Input()
+  set skipLocationChange(skipLocationChange: boolean|string|null|undefined) {
+    this._skipLocationChange = coerceToBoolean(skipLocationChange);
+  }
+
+  get skipLocationChange(): boolean {
+    return this._skipLocationChange;
+  }
+
+  /**
+   * Passed to {@link Router#navigateByUrl Router#navigateByUrl} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#replaceUrl NavigationBehaviorOptions#replaceUrl}
+   * @see {@link Router#navigateByUrl Router#navigateByUrl}
+   */
+  @Input()
+  set replaceUrl(replaceUrl: boolean|string|null|undefined) {
+    this._replaceUrl = coerceToBoolean(replaceUrl);
+  }
+
+  get replaceUrl(): boolean {
+    return this._replaceUrl;
   }
 
   /**
@@ -409,8 +459,8 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     }
 
     const extras = {
-      skipLocationChange: coerceToBoolean(this.skipLocationChange),
-      replaceUrl: coerceToBoolean(this.replaceUrl),
+      skipLocationChange: this.skipLocationChange,
+      replaceUrl: this.replaceUrl,
       state: this.state
     };
     this.router.navigateByUrl(this.urlTree, extras);
@@ -434,7 +484,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       queryParams: this.queryParams,
       fragment: this.fragment,
       queryParamsHandling: this.queryParamsHandling,
-      preserveFragment: coerceToBoolean(this.preserveFragment),
+      preserveFragment: this.preserveFragment,
     });
   }
 }
