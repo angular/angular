@@ -63,7 +63,7 @@
 
     {
       "matchPackagePrefixes": ["@angular/", "angular/", "@angular-devkit", "@schematics/"],
-      "matchPaths": ["packages/**"],
+      "matchPaths": ["packages/**", "aio/tools/examples/shared/**"],
       "followTag": null
     },
 
