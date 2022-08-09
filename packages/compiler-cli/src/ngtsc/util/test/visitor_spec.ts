@@ -10,6 +10,7 @@ import ts from 'typescript';
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {makeProgram} from '../../testing';
+import {getModifiers} from '../../ts_compatibility';
 import {visit, VisitListEntryResult, Visitor} from '../src/visitor';
 
 class TestAstVisitor extends Visitor {
@@ -17,8 +18,8 @@ class TestAstVisitor extends Visitor {
       VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
     const name = node.name!.text;
     const statics = node.members.filter(
-        member => (member.modifiers as ReadonlyArray<ts.Modifier>||
-                   []).some(mod => mod.kind === ts.SyntaxKind.StaticKeyword));
+        member =>
+            (getModifiers(member) || []).some(mod => mod.kind === ts.SyntaxKind.StaticKeyword));
     const idStatic = statics.find(
                          el => ts.isPropertyDeclaration(el) && ts.isIdentifier(el.name) &&
                              el.name.text === 'id') as ts.PropertyDeclaration |

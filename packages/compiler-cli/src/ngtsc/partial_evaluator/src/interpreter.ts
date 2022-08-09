@@ -12,6 +12,7 @@ import {Reference} from '../../imports';
 import {OwningModule} from '../../imports/src/references';
 import {DependencyTracker} from '../../incremental/api';
 import {Declaration, DeclarationKind, DeclarationNode, EnumMember, FunctionDefinition, isConcreteDeclaration, ReflectionHost, SpecialDeclarationKind} from '../../reflection';
+import {getModifiers} from '../../ts_compatibility';
 import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn, StringConcatBuiltinFn} from './builtin';
@@ -746,8 +747,9 @@ function isVariableDeclarationDeclared(node: ts.VariableDeclaration): boolean {
     return false;
   }
   const varStmt = declList.parent;
-  return varStmt.modifiers !== undefined &&
-      varStmt.modifiers.some(mod => mod.kind === ts.SyntaxKind.DeclareKeyword);
+  const modifiers = getModifiers(varStmt);
+  return modifiers !== undefined &&
+      modifiers.some(mod => mod.kind === ts.SyntaxKind.DeclareKeyword);
 }
 
 const EMPTY = {};
