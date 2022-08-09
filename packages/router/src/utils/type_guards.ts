@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {EmptyError} from 'rxjs';
+
 import {CanActivate, CanActivateChild, CanDeactivate, CanLoad, CanMatch} from '../models';
 import {NAVIGATION_CANCELING_ERROR, NavigationCancelingError, RedirectingNavigationCancelingError} from '../navigation_canceling_error';
 import {isUrlTree} from '../url_tree';
@@ -58,4 +60,8 @@ export function isRedirectingNavigationCancelingError(
 
 export function isNavigationCancelingError(error: unknown): error is NavigationCancelingError {
   return error && (error as any)[NAVIGATION_CANCELING_ERROR];
+}
+
+export function isEmptyError(e: Error): e is EmptyError {
+  return e instanceof EmptyError || e?.name === 'EmptyError';
 }
