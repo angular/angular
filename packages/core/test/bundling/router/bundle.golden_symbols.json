@@ -1437,6 +1437,9 @@
     "name": "isDirectiveHost"
   },
   {
+    "name": "isEmptyError"
+  },
+  {
     "name": "isFunction"
   },
   {

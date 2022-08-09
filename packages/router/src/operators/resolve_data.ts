@@ -7,7 +7,7 @@
  */
 
 import {EnvironmentInjector, ProviderToken} from '@angular/core';
-import {EMPTY, EmptyError, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
+import {EMPTY, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, map, mapTo, mergeMap, takeLast, tap} from 'rxjs/operators';
 
 import {ResolveData, Route} from '../models';
@@ -17,6 +17,7 @@ import {RouteTitleKey} from '../shared';
 import {wrapIntoObservable} from '../utils/collection';
 import {getClosestRouteInjector} from '../utils/config';
 import {getTokenOrFunctionIdentity} from '../utils/preactivation';
+import {isEmptyError} from '../utils/type_guards';
 
 export function resolveData(
     paramsInheritanceStrategy: 'emptyOnly'|'always',
@@ -74,7 +75,7 @@ function resolveNode(
                            }))),
       takeLast(1),
       mapTo(data),
-      catchError((e: unknown) => e instanceof EmptyError ? EMPTY : throwError(e)),
+      catchError((e: unknown) => isEmptyError(e as Error) ? EMPTY : throwError(e)),
   );
 }
 
