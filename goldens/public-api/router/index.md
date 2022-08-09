@@ -677,20 +677,26 @@ export class RouterLink implements OnChanges {
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
     onClick(): boolean;
-    preserveFragment: boolean;
+    set preserveFragment(preserveFragment: boolean | string | null | undefined);
+    // (undocumented)
+    get preserveFragment(): boolean;
     queryParams?: Params | null;
     queryParamsHandling?: QueryParamsHandling | null;
     relativeTo?: ActivatedRoute | null;
-    replaceUrl: boolean;
+    set replaceUrl(replaceUrl: boolean | string | null | undefined);
+    // (undocumented)
+    get replaceUrl(): boolean;
     set routerLink(commands: any[] | string | null | undefined);
-    skipLocationChange: boolean;
+    set skipLocationChange(skipLocationChange: boolean | string | null | undefined);
+    // (undocumented)
+    get skipLocationChange(): boolean;
     state?: {
         [k: string]: any;
     };
     // (undocumented)
     get urlTree(): UrlTree | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLink, ":not(a):not(area)[routerLink]", never, { "queryParams": "queryParams"; "fragment": "fragment"; "queryParamsHandling": "queryParamsHandling"; "preserveFragment": "preserveFragment"; "skipLocationChange": "skipLocationChange"; "replaceUrl": "replaceUrl"; "state": "state"; "relativeTo": "relativeTo"; "routerLink": "routerLink"; }, {}, never, never, true>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLink, ":not(a):not(area)[routerLink]", never, { "queryParams": "queryParams"; "fragment": "fragment"; "queryParamsHandling": "queryParamsHandling"; "state": "state"; "relativeTo": "relativeTo"; "preserveFragment": "preserveFragment"; "skipLocationChange": "skipLocationChange"; "replaceUrl": "replaceUrl"; "routerLink": "routerLink"; }, {}, never, never, true>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterLink, [null, null, { attribute: "tabindex"; }, null, null]>;
 }
@@ -735,13 +741,19 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     ngOnDestroy(): any;
     // (undocumented)
     onClick(button: number, ctrlKey: boolean, shiftKey: boolean, altKey: boolean, metaKey: boolean): boolean;
-    preserveFragment: boolean;
+    set preserveFragment(preserveFragment: boolean | string | null | undefined);
+    // (undocumented)
+    get preserveFragment(): boolean;
     queryParams?: Params | null;
     queryParamsHandling?: QueryParamsHandling | null;
     relativeTo?: ActivatedRoute | null;
-    replaceUrl: boolean;
+    set replaceUrl(replaceUrl: boolean | string | null | undefined);
+    // (undocumented)
+    get replaceUrl(): boolean;
     set routerLink(commands: any[] | string | null | undefined);
-    skipLocationChange: boolean;
+    set skipLocationChange(skipLocationChange: boolean | string | null | undefined);
+    // (undocumented)
+    get skipLocationChange(): boolean;
     state?: {
         [k: string]: any;
     };
@@ -750,7 +762,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     // (undocumented)
     get urlTree(): UrlTree | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkWithHref, "a[routerLink],area[routerLink]", never, { "target": "target"; "queryParams": "queryParams"; "fragment": "fragment"; "queryParamsHandling": "queryParamsHandling"; "preserveFragment": "preserveFragment"; "skipLocationChange": "skipLocationChange"; "replaceUrl": "replaceUrl"; "state": "state"; "relativeTo": "relativeTo"; "routerLink": "routerLink"; }, {}, never, never, true>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkWithHref, "a[routerLink],area[routerLink]", never, { "target": "target"; "queryParams": "queryParams"; "fragment": "fragment"; "queryParamsHandling": "queryParamsHandling"; "state": "state"; "relativeTo": "relativeTo"; "preserveFragment": "preserveFragment"; "skipLocationChange": "skipLocationChange"; "replaceUrl": "replaceUrl"; "routerLink": "routerLink"; }, {}, never, never, true>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterLinkWithHref, never>;
 }
