@@ -148,6 +148,22 @@ describe('Image directive', () => {
       });
     });
 
+    it('should throw if `width` and `height` are not set', () => {
+      setupTestingModule();
+
+      const template = '<img rawSrc="img.png">';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              'NG02954: The NgOptimizedImage directive (activated on an <img> ' +
+              'element with the `rawSrc="img.png"`) has detected that these ' +
+              'required attributes are missing: "width", "height". Including "width" and ' +
+              '"height" attributes will prevent image-related layout shifts. ' +
+              'To fix this, include "width" and "height" attributes on the image tag.');
+    });
+
     it('should throw if `width` is not set', () => {
       setupTestingModule();
 
@@ -159,7 +175,7 @@ describe('Image directive', () => {
           .toThrowError(
               'NG02954: The NgOptimizedImage directive (activated on an <img> ' +
               'element with the `rawSrc="img.png"`) has detected that these ' +
-              'required attributes are missing:`width`. Including "width" and ' +
+              'required attributes are missing: "width". Including "width" and ' +
               '"height" attributes will prevent image-related layout shifts. ' +
               'To fix this, include "width" and "height" attributes on the image tag.');
     });
@@ -205,7 +221,7 @@ describe('Image directive', () => {
           .toThrowError(
               'NG02954: The NgOptimizedImage directive (activated on an <img> ' +
               'element with the `rawSrc="img.png"`) has detected that these required ' +
-              'attributes are missing:`height`. Including "width" and "height" ' +
+              'attributes are missing: "height". Including "width" and "height" ' +
               'attributes will prevent image-related layout shifts. ' +
               'To fix this, include "width" and "height" attributes on the image tag.');
     });

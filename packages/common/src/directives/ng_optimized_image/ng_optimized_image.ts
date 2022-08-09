@@ -587,7 +587,7 @@ function assertNonEmptyWidthAndHeight(dir: NgOptimizedImage) {
     throw new RuntimeError(
         RuntimeErrorCode.REQUIRED_INPUT_MISSING,
         `${imgDirectiveDetails(dir.rawSrc)} these required attributes ` +
-            `are missing:\`${missingAttributes.join(',')}\`. ` +
+            `are missing: ${missingAttributes.map(attr => `"${attr}"`).join(', ')}. ` +
             `Including "width" and "height" attributes will prevent image-related layout shifts. ` +
             `To fix this, include "width" and "height" attributes on the image tag.`);
   }
