@@ -62,9 +62,9 @@
 
 version: 3
 
-#availability:
-#  users_unavailable:
-#    - username
+availability:
+  users_unavailable:
+    - atscott # August 15 - September 20 (at least)
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
