@@ -58,6 +58,9 @@ export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultip
  * Internal token that allows to register extra callbacks that should be invoked during the
  * `PlatformRef.destroy` operation. This token is needed to avoid a direct reference to the
  * `PlatformRef` class (i.e. register the callback via `PlatformRef.onDestroy`), thus making the
+ *
+ *
+ *
  * entire class tree-shakeable.
  */
 const PLATFORM_DESTROY_LISTENERS =
