@@ -12,6 +12,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/ts_compatibility",
         "//packages/compiler-cli/src/ngtsc/util",
         "@npm//typescript",
     ],

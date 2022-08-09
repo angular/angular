@@ -9,8 +9,8 @@ import ts from 'typescript';
 
 import {OwningModule, Reference} from '../../imports';
 import {DeclarationNode, ReflectionHost} from '../../reflection';
+import {updateTypeParameterDeclaration} from '../../ts_compatibility';
 
-import {tsUpdateTypeParameterDeclaration} from './ts_util';
 import {canEmitType, TypeEmitter} from './type_emitter';
 
 
@@ -74,7 +74,8 @@ export class TypeParameterEmitter {
       const defaultType =
           typeParam.default !== undefined ? emitter.emitType(typeParam.default) : undefined;
 
-      return tsUpdateTypeParameterDeclaration(typeParam, typeParam.name, constraint, defaultType);
+      return updateTypeParameterDeclaration(
+          typeParam, typeParam.modifiers, typeParam.name, constraint, defaultType);
     });
   }
 

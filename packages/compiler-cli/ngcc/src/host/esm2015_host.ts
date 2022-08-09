@@ -11,6 +11,7 @@ import ts from 'typescript';
 import {absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationNode, Decorator, EnumMember, Import, isConcreteDeclaration, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference, TypeValueReferenceKind, ValueUnavailableKind} from '../../../src/ngtsc/reflection';
+import {getModifiers} from '../../../src/ngtsc/ts_compatibility';
 import {isSymbolWithValueDeclaration, SymbolWithValueDeclaration} from '../../../src/ngtsc/util/src/typescript';
 import {isWithinPackage} from '../analysis/util';
 import {BundleProgram} from '../packages/bundle_program';
@@ -1534,8 +1535,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     // If we have still not determined if this is a static or instance member then
     // look for the `static` keyword on the declaration
     if (isStatic === undefined) {
-      isStatic = node.modifiers !== undefined &&
-          node.modifiers.some(mod => mod.kind === ts.SyntaxKind.StaticKeyword);
+      const modifiers = getModifiers(node);
+      isStatic = modifiers !== undefined &&
+          modifiers.some(mod => mod.kind === ts.SyntaxKind.StaticKeyword);
     }
 
     const type: ts.TypeNode = (node as any).type || null;

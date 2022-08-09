@@ -625,7 +625,7 @@ describe('downlevel decorator transform', () => {
        export class MyDir {
          constructor(@Inject('$state') param: angular.IState,
                      @Inject('$overlay') other: IOverlay,
-                     @Inject('$default') default: TypeFromDefaultImport,
+                     @Inject('$default') fromDefaultImport: TypeFromDefaultImport,
                      @Inject('$keyCodes') keyCodes: KeyCodes) {}
        }
      `);
@@ -652,6 +652,7 @@ describe('downlevel decorator transform', () => {
           if (ts.isClassDeclaration(node) || ts.isClassElement(node)) {
             const cloned = ts.getMutableClone(node);
             (cloned.decorators as undefined) = undefined;
+            (cloned.modifiers as undefined) = undefined;
             return cloned;
           }
           return ts.visitEachChild(node, visitNode, context);

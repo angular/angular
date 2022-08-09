@@ -8,8 +8,6 @@
 
 import ts from 'typescript';
 
-const PARSED_TS_VERSION = parseFloat(ts.versionMajorMinor);
-
 
 /**
  * A `Set` of `ts.SyntaxKind`s of `ts.Expression` which are safe to wrap in a `ts.AsExpression`
@@ -132,21 +130,6 @@ export function tsCallMethod(
       /* expression */ methodAccess,
       /* typeArguments */ undefined,
       /* argumentsArray */ args);
-}
-
-/**
- * Updates a `ts.TypeParameter` declaration.
- *
- * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.7.
- * We should remove it once we have dropped support for the older versions.
- */
-export function tsUpdateTypeParameterDeclaration(
-    node: ts.TypeParameterDeclaration, name: ts.Identifier, constraint: ts.TypeNode|undefined,
-    defaultType: ts.TypeNode|undefined): ts.TypeParameterDeclaration {
-  return PARSED_TS_VERSION < 4.7 ?
-      ts.factory.updateTypeParameterDeclaration(node, name, constraint, defaultType) :
-      (ts.factory.updateTypeParameterDeclaration as any)(
-          node, /* modifiers */[], name, constraint, defaultType);
 }
 
 export function isAccessExpression(node: ts.Node): node is ts.ElementAccessExpression|

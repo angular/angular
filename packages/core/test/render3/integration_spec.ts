@@ -96,7 +96,8 @@ describe('element discovery', () => {
     fixture.detectChanges();
 
     const host = fixture.nativeElement;
-    const [section, div1, p, div2] = Array.from(host.querySelectorAll('section, div, p'));
+    const [section, div1, p, div2] =
+        Array.from<HTMLElement>(host.querySelectorAll('section, div, p'));
 
     expect(section.nodeName.toLowerCase()).toBe('section');
     expect(readPatchedData(section)).toBeTruthy();

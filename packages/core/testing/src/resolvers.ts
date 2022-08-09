@@ -64,7 +64,7 @@ abstract class OverrideResolver<T> implements Resolver<T> {
   }
 
   resolve(type: Type<any>): T|null {
-    let resolved = this.resolved.get(type) || null;
+    let resolved: T|null = this.resolved.get(type) || null;
 
     if (!resolved) {
       resolved = this.getAnnotation(type);

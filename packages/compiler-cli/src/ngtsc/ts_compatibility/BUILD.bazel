@@ -3,12 +3,9 @@ load("//tools:defaults.bzl", "ts_library")
 package(default_visibility = ["//visibility:public"])
 
 ts_library(
-    name = "reflection",
+    name = "ts_compatibility",
     srcs = ["index.ts"] + glob([
         "src/**/*.ts",
     ]),
-    deps = [
-        "//packages/compiler-cli/src/ngtsc/ts_compatibility",
-        "@npm//typescript",
-    ],
+    deps = ["@npm//typescript"],
 )

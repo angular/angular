@@ -7,6 +7,7 @@ ts_library(
     srcs = glob(["*.ts"]),
     deps = [
         "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/ts_compatibility",
         "@npm//typescript",
     ],
 )

@@ -32,6 +32,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/sourcemaps",
         "//packages/compiler-cli/src/ngtsc/transform",
         "//packages/compiler-cli/src/ngtsc/translator",
+        "//packages/compiler-cli/src/ngtsc/ts_compatibility",
         "//packages/compiler-cli/src/ngtsc/util",
         "@npm//@types/convert-source-map",
         "@npm//@types/node",
