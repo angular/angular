@@ -7,7 +7,7 @@
  */
 
 import {EnvironmentInjector, ɵRuntimeError as RuntimeError} from '@angular/core';
-import {EmptyError, from, Observable, of, throwError} from 'rxjs';
+import {from, Observable, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, last, map, mergeMap, scan, switchMap, tap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from './errors';
@@ -21,6 +21,7 @@ import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlSerializ
 import {forEach} from './utils/collection';
 import {getOrCreateRouteInjectorIfNeeded, getOutlet, sortByMatchingOutlets} from './utils/config';
 import {isImmediateMatch, match, matchWithChecks, noLeftoversInUrl, split} from './utils/config_matching';
+import {isEmptyError} from './utils/type_guards';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
@@ -201,7 +202,7 @@ class ApplyRedirects {
           }));
         }),
         first((s): s is UrlSegmentGroup => !!s), catchError((e: any, _: any) => {
-          if (e instanceof EmptyError || e.name === 'EmptyError') {
+          if (isEmptyError(e)) {
             if (noLeftoversInUrl(segmentGroup, segments, outlet)) {
               return of(new UrlSegmentGroup([], {}));
             }
