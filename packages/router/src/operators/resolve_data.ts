@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '@angular/core';
-import {EMPTY, EmptyError, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
+import {EMPTY, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, map, mapTo, mergeMap, takeLast, tap} from 'rxjs/operators';
 
 import {ResolveData, Route} from '../models';
@@ -15,6 +15,7 @@ import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, inheritedParamsDataResolve, RouterStateSnapshot} from '../router_state';
 import {wrapIntoObservable} from '../utils/collection';
 import {getToken} from '../utils/preactivation';
+import {isEmptyError} from '../utils/type_guards';
 
 /**
  * A private symbol used to store the value of `Route.title` inside the `Route.data` if it is a
@@ -80,7 +81,7 @@ function resolveNode(
                            }))),
       takeLast(1),
       mapTo(data),
-      catchError((e: unknown) => e instanceof EmptyError ? EMPTY : throwError(e)),
+      catchError((e: unknown) => isEmptyError(e as Error) ? EMPTY : throwError(e)),
   );
 }
 

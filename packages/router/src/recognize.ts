@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createEnvironmentInjector, EnvironmentInjector, Type, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {EnvironmentInjector, Type, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {EmptyError, from, Observable, Observer, of} from 'rxjs';
-import {catchError, concatMap, defaultIfEmpty, first, last as rxjsLast, map, scan, startWith, switchMap, takeLast, takeWhile} from 'rxjs/operators';
+import {catchError, concatMap, defaultIfEmpty, first, last as rxjsLast, map, scan, switchMap, takeWhile} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from './errors';
 import {Data, ResolveData, Route, Routes} from './models';
@@ -16,9 +16,10 @@ import {ActivatedRouteSnapshot, inheritedParamsDataResolve, ParamsInheritanceStr
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {last} from './utils/collection';
-import {getOrCreateRouteInjectorIfNeeded, getOutlet, sortByMatchingOutlets} from './utils/config';
+import {getOutlet, sortByMatchingOutlets} from './utils/config';
 import {isImmediateMatch, matchWithChecks, noLeftoversInUrl, split} from './utils/config_matching';
 import {TreeNode} from './utils/tree';
+import {isEmptyError} from './utils/type_guards';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
@@ -156,7 +157,7 @@ export class Recognizer {
               r._injector ?? injector, r, segmentGroup, segments, outlet);
         }),
         first((x): x is TreeNode<ActivatedRouteSnapshot>[] => !!x), catchError(e => {
-          if (e instanceof EmptyError) {
+          if (isEmptyError(e)) {
             if (noLeftoversInUrl(segmentGroup, segments, outlet)) {
               return of([]);
             }
