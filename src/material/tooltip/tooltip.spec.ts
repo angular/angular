@@ -11,6 +11,7 @@ import {
   dispatchFakeEvent,
   dispatchKeyboardEvent,
   dispatchMouseEvent,
+  dispatchTouchEvent,
   patchElementFocus,
 } from '../../cdk/testing/private';
 import {
@@ -232,6 +233,62 @@ describe('MDC-based MatTooltip', () => {
       expect(tooltipDirective.position).toBe('right');
       expect(tooltipDirective._getOverlayPosition().main.overlayX).toBe('start');
       expect(tooltipDirective._getOverlayPosition().fallback.overlayX).toBe('end');
+    }));
+
+    it('should position on the bottom-left by default', fakeAsync(() => {
+      TestBed.resetTestingModule()
+        .configureTestingModule({
+          imports: [MatTooltipModule, OverlayModule],
+          declarations: [WideTooltipDemo]
+        })
+        .compileComponents();
+
+      const wideFixture = TestBed.createComponent(WideTooltipDemo);
+      wideFixture.detectChanges();
+      tooltipDirective = wideFixture.debugElement
+        .query(By.css('button'))!
+        .injector.get<MatTooltip>(MatTooltip);
+      const button: HTMLButtonElement = wideFixture.nativeElement.querySelector('button');
+      const triggerRect = button.getBoundingClientRect();
+
+      dispatchMouseEvent(button, 'mouseenter', triggerRect.right - 100, triggerRect.top + 100);
+      wideFixture.detectChanges();
+      tick();
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+
+      expect(tooltipDirective._overlayRef!.overlayElement.offsetLeft).toBeLessThan(triggerRect.right - 250);
+      expect(tooltipDirective._overlayRef!.overlayElement.offsetTop).toBeGreaterThanOrEqual(triggerRect.bottom);
+    }));
+
+    it('should be able to override the default positionAtOrigin', fakeAsync(() => {
+      TestBed.resetTestingModule()
+        .configureTestingModule({
+          imports: [MatTooltipModule, OverlayModule],
+          declarations: [WideTooltipDemo],
+          providers: [
+            {
+              provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
+              useValue: {positionAtOrigin: true},
+            },
+          ],
+        })
+        .compileComponents();
+
+      const wideFixture = TestBed.createComponent(WideTooltipDemo);
+      wideFixture.detectChanges();
+      tooltipDirective = wideFixture.debugElement
+        .query(By.css('button'))!
+        .injector.get<MatTooltip>(MatTooltip);
+      const button: HTMLButtonElement = wideFixture.nativeElement.querySelector('button');
+      const triggerRect = button.getBoundingClientRect();
+
+      dispatchMouseEvent(button, 'mouseenter', triggerRect.right - 100, triggerRect.top + 100);
+      wideFixture.detectChanges();
+      tick();
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+
+      expect(tooltipDirective._overlayRef!.overlayElement.offsetLeft).toBe(triggerRect.right - 100 - 20);
+      expect(tooltipDirective._overlayRef!.overlayElement.offsetTop).toBe(triggerRect.top + 100);
     }));
 
     it('should be able to disable tooltip interactivity', fakeAsync(() => {
@@ -1201,7 +1258,10 @@ describe('MDC-based MatTooltip', () => {
       fixture.detectChanges();
       const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
 
-      dispatchFakeEvent(button, 'touchstart');
+      const triggerRect = button.getBoundingClientRect();
+      const offsetX = triggerRect.right - 10;
+      const offsetY = triggerRect.top + 10;
+      dispatchTouchEvent(button, 'touchstart', offsetX, offsetY, offsetX, offsetY);
       fixture.detectChanges();
       tick(250); // Halfway through the delay.
 
@@ -1220,7 +1280,10 @@ describe('MDC-based MatTooltip', () => {
       fixture.detectChanges();
       const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
 
-      dispatchFakeEvent(button, 'touchstart');
+      const triggerRect = button.getBoundingClientRect();
+      const offsetX = triggerRect.right - 10;
+      const offsetY = triggerRect.top + 10;
+      dispatchTouchEvent(button, 'touchstart', offsetX, offsetY, offsetX, offsetY);
       fixture.detectChanges();
       tick(500); // Finish the delay.
       fixture.detectChanges();
@@ -1233,7 +1296,10 @@ describe('MDC-based MatTooltip', () => {
       const fixture = TestBed.createComponent(BasicTooltipDemo);
       fixture.detectChanges();
       const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
-      const event = dispatchFakeEvent(button, 'touchstart');
+      const triggerRect = button.getBoundingClientRect();
+      const offsetX = triggerRect.right - 10;
+      const offsetY = triggerRect.top + 10;
+      const event = dispatchTouchEvent(button, 'touchstart', offsetX, offsetY, offsetX, offsetY);
       fixture.detectChanges();
 
       expect(event.defaultPrevented).toBe(false);
@@ -1244,7 +1310,10 @@ describe('MDC-based MatTooltip', () => {
       fixture.detectChanges();
       const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
 
-      dispatchFakeEvent(button, 'touchstart');
+      const triggerRect = button.getBoundingClientRect();
+      const offsetX = triggerRect.right - 10;
+      const offsetY = triggerRect.top + 10;
+      dispatchTouchEvent(button, 'touchstart', offsetX, offsetY, offsetX, offsetY);
       fixture.detectChanges();
       tick(500); // Finish the open delay.
       fixture.detectChanges();
@@ -1268,7 +1337,10 @@ describe('MDC-based MatTooltip', () => {
       fixture.detectChanges();
       const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
 
-      dispatchFakeEvent(button, 'touchstart');
+      const triggerRect = button.getBoundingClientRect();
+      const offsetX = triggerRect.right - 10;
+      const offsetY = triggerRect.top + 10;
+      dispatchTouchEvent(button, 'touchstart', offsetX, offsetY, offsetX, offsetY);
       fixture.detectChanges();
       tick(500); // Finish the open delay.
       fixture.detectChanges();
@@ -1400,8 +1472,9 @@ describe('MDC-based MatTooltip', () => {
       const fixture = TestBed.createComponent(BasicTooltipDemo);
       fixture.detectChanges();
       const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+      const triggerRect = button.getBoundingClientRect();
 
-      dispatchFakeEvent(button, 'mouseenter');
+      dispatchMouseEvent(button, 'mouseenter', triggerRect.right - 10, triggerRect.top + 10);
       fixture.detectChanges();
       tick(500); // Finish the open delay.
       fixture.detectChanges();
@@ -1433,8 +1506,9 @@ describe('MDC-based MatTooltip', () => {
       const fixture = TestBed.createComponent(BasicTooltipDemo);
       fixture.detectChanges();
       const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+      const triggerRect = button.getBoundingClientRect();
 
-      dispatchFakeEvent(button, 'mouseenter');
+      dispatchMouseEvent(button, 'mouseenter', triggerRect.right - 10, triggerRect.top + 10);
       fixture.detectChanges();
       tick(500); // Finish the open delay.
       fixture.detectChanges();
@@ -1442,7 +1516,6 @@ describe('MDC-based MatTooltip', () => {
       assertTooltipInstance(fixture.componentInstance.tooltip, true);
 
       // Simulate the pointer over the trigger.
-      const triggerRect = button.getBoundingClientRect();
       const wheelEvent = createFakeEvent('wheel');
       Object.defineProperties(wheelEvent, {
         clientX: {get: () => triggerRect.left + 1},
@@ -1584,6 +1657,17 @@ class TooltipOnDraggableElement {
 })
 class TooltipDemoWithoutPositionBinding {
   message: any = initialTooltipMessage;
+  @ViewChild(MatTooltip) tooltip: MatTooltip;
+  @ViewChild('button') button: ElementRef<HTMLButtonElement>;
+}
+
+@Component({
+  selector: 'app',
+  styles: [`button { width: 500px; height: 500px; }`],
+  template: `<button #button [matTooltip]="message">Button</button>`,
+})
+class WideTooltipDemo {
+  message = 'Test';
   @ViewChild(MatTooltip) tooltip: MatTooltip;
   @ViewChild('button') button: ElementRef<HTMLButtonElement>;
 }
