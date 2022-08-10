@@ -99,7 +99,7 @@ describe('MatList', () => {
     expect(listItem.nativeElement.className).toContain('mat-3-line');
   });
 
-  it('should add aria roles properly', () => {
+  it('should not apply aria roles to mat-list', () => {
     const fixture = TestBed.createComponent(ListWithMultipleItems);
     fixture.detectChanges();
 
@@ -111,6 +111,26 @@ describe('MatList', () => {
     expect(listItem.nativeElement.getAttribute('role'))
       .withContext('Expect mat-list-item no role')
       .toBeNull();
+  });
+
+  it('should apply role="navigation" to mat-nav-list', () => {
+    const fixture = TestBed.createComponent(NavListWithOneAnchorItem);
+    fixture.detectChanges();
+
+    const list = fixture.debugElement.children[0];
+    expect(list.nativeElement.getAttribute('role'))
+      .withContext('Expect mat-nav-list to have navigation role')
+      .toBe('navigation');
+  });
+
+  it('should apply role="group" to mat-action-list', () => {
+    const fixture = TestBed.createComponent(ActionListWithoutType);
+    fixture.detectChanges();
+
+    const list = fixture.debugElement.children[0];
+    expect(list.nativeElement.getAttribute('role'))
+      .withContext('Expect mat-action-list to have group role')
+      .toBe('group');
   });
 
   it('should not show ripples for non-nav lists', () => {

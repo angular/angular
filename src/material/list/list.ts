@@ -113,6 +113,7 @@ export class MatList
 
     if (this._getListType() === 'action-list') {
       _elementRef.nativeElement.classList.add('mat-action-list');
+      _elementRef.nativeElement.setAttribute('role', 'group');
     }
   }
 
