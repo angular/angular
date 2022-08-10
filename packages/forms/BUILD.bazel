@@ -19,6 +19,7 @@ ng_module(
 
 ng_package(
     name = "npm_package",
+    package_name = "@angular/forms",
     srcs = ["package.json"],
     tags = [
         "release-with-framework",
@@ -26,6 +27,7 @@ ng_package(
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
+        "//aio:__pkg__",
         "//aio/tools/examples/shared:__pkg__",
         "//integration:__subpackages__",
         "//packages/compiler-cli/integrationtest:__pkg__",

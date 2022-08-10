@@ -2,6 +2,8 @@ load("@aio_npm//@angular-devkit/architect-cli:index.bzl", "architect", "architec
 load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
 load("//aio/tools:defaults.bzl", "nodejs_binary")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load(":local_packages_util.bzl", "link_local_packages", "substitute_local_packages")
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 
 # The write_source_files macro is used to write bazel outputs to the source tree and test that they are up to date.
 # See: https://docs.aspect.build/aspect-build/bazel-lib/v0.5.0/docs/docs/write_source_files-docgen.html
@@ -11,6 +13,19 @@ exports_files([
     "firebase.json",
     "ngsw-config.template.json",
 ])
+
+# If set will use first party angular deps for aio targets instead of their npm equivalent
+bool_flag(
+    name = "flag_aio_local_deps",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "aio_local_deps",
+    flag_values = {
+        ":flag_aio_local_deps": "true",
+    },
+)
 
 # Generate ngsw-config
 npm_package_bin(
@@ -153,6 +168,10 @@ E2E_DEPS = APPLICATION_DEPS + [
     "@aio_npm//ts-node",
 ]
 
+# Stamp npm_link targets for all dependencies that correspond to a
+# first-party equivalent pacakge in angular.
+link_local_packages(deps = APPLICATION_DEPS)
+
 architect(
     name = "build",
     args = [
@@ -161,7 +180,10 @@ architect(
     ],
     chdir = package_name(),
     configuration_env_vars = ["NG_BUILD_CACHE"],
-    data = APPLICATION_FILES + APPLICATION_DEPS,
+    data = APPLICATION_FILES + select({
+        ":aio_local_deps": substitute_local_packages(APPLICATION_DEPS),
+        "//conditions:default": APPLICATION_DEPS,
+    }),
     output_dir = True,
 )
 
@@ -173,7 +195,10 @@ architect_test(
     ],
     chdir = package_name(),
     configuration_env_vars = ["NG_BUILD_CACHE"],
-    data = TEST_FILES + TEST_DEPS,
+    data = TEST_FILES + select({
+        ":aio_local_deps": substitute_local_packages(TEST_DEPS),
+        "//conditions:default": TEST_DEPS,
+    }),
     env = {
         "CHROME_BIN": "../$(CHROMIUM)",
     },
@@ -187,10 +212,14 @@ architect_test(
     args = [
         "site:e2e",
         "--no-webdriver-update",
+        "--port=0",
     ],
     chdir = package_name(),
     configuration_env_vars = ["NG_BUILD_CACHE"],
-    data = E2E_FILES + E2E_DEPS,
+    data = E2E_FILES + select({
+        ":aio_local_deps": substitute_local_packages(E2E_DEPS),
+        "//conditions:default": E2E_DEPS,
+    }),
     env = {
         "CHROME_BIN": "../$(CHROMIUM)",
         "CHROMEDRIVER_BIN": "../$(CHROMEDRIVER)",
@@ -207,7 +236,10 @@ architect(
         "site:serve",
     ],
     chdir = package_name(),
-    data = APPLICATION_DEPS + APPLICATION_FILES,
+    data = APPLICATION_FILES + select({
+        ":aio_local_deps": substitute_local_packages(APPLICATION_DEPS),
+        "//conditions:default": APPLICATION_DEPS,
+    }),
     tags = ["ibazel_notify_changes"],
 )
 
@@ -215,12 +247,17 @@ architect(
 # rebuild when docs change. Watching and serving is a part of the node script,
 # so there is no need to run with ibazel, which would be slow as it would redo
 # the full dgeni build on each change.
+
 nodejs_binary(
     name = "fast-serve",
     chdir = package_name(),
-    data = APPLICATION_DEPS + APPLICATION_FILES + [
+    data = APPLICATION_FILES + [
         "//aio/scripts:fast-serve-and-watch",
-    ],
+    ] + select({
+        ":aio_local_deps": substitute_local_packages(APPLICATION_DEPS),
+        "//conditions:default": APPLICATION_DEPS,
+    }),
+    enable_linker = True,
     entry_point = "//aio/scripts:fast-serve-and-watch.js",
     env = {
         # Tell dgeni packages where the project root is since we used chdir

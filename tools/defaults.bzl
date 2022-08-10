@@ -214,21 +214,7 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
     _ng_package(
         name = name,
         deps = deps,
-        # We never set a `package_name` for NPM packages, neither do we enable validation.
-        # This is necessary because the source targets of the NPM packages all have
-        # package names set and setting a similar `package_name` on the NPM package would
-        # result in duplicate linker mappings that will conflict. e.g. consider the following
-        # scenario: We have a `ts_library` for `@angular/core`. We will configure a package
-        # name for the target so that it can be resolved in NodeJS executions from `node_modules`.
-        # If we'd also set a `package_name` for the associated `pkg_npm` target, there would be
-        # two mappings for `@angular/core` and the linker will complain. For a better development
-        # experience, we want the mapping to resolve to the direct outputs of the `ts_library`
-        # instead of requiring tests and other targets to assemble the NPM package first.
-        # TODO(devversion): consider removing this if `rules_nodejs` allows for duplicate
-        # linker mappings where transitive-determined mappings are skipped on conflicts.
-        # https://github.com/bazelbuild/rules_nodejs/issues/2810.
-        package_name = None,
-        validate = False,
+        validate = True,
         readme_md = readme_md,
         license_banner = license_banner,
         substitutions = select({
@@ -252,7 +238,7 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
         visibility = visibility,
     )
 
-def pkg_npm(name, use_prodmode_output = False, **kwargs):
+def pkg_npm(name, validate = True, use_prodmode_output = False, **kwargs):
     """Default values for pkg_npm"""
     visibility = kwargs.pop("visibility", None)
 
@@ -286,21 +272,7 @@ def pkg_npm(name, use_prodmode_output = False, **kwargs):
 
     _pkg_npm(
         name = name,
-        # We never set a `package_name` for NPM packages, neither do we enable validation.
-        # This is necessary because the source targets of the NPM packages all have
-        # package names set and setting a similar `package_name` on the NPM package would
-        # result in duplicate linker mappings that will conflict. e.g. consider the following
-        # scenario: We have a `ts_library` for `@angular/core`. We will configure a package
-        # name for the target so that it can be resolved in NodeJS executions from `node_modules`.
-        # If we'd also set a `package_name` for the associated `pkg_npm` target, there would be
-        # two mappings for `@angular/core` and the linker will complain. For a better development
-        # experience, we want the mapping to resolve to the direct outputs of the `ts_library`
-        # instead of requiring tests and other targets to assemble the NPM package first.
-        # TODO(devversion): consider removing this if `rules_nodejs` allows for duplicate
-        # linker mappings where transitive-determined mappings are skipped on conflicts.
-        # https://github.com/bazelbuild/rules_nodejs/issues/2810.
-        package_name = None,
-        validate = False,
+        validate = validate,
         substitutions = select({
             "//:stamp": stamped_substitutions,
             "//conditions:default": substitutions,
