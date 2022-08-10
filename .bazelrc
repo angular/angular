@@ -56,6 +56,14 @@ build:release --stamp
 build:snapshot-build --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
 build:snapshot-build --stamp
 
+####################################
+# AIO first party dep substitution # 
+# Turn on with                     #
+#  --config=aio_local_deps         #
+####################################
+
+build:aio_local_deps --//aio:flag_aio_local_deps
+
 ###############################
 # Output                      #
 ###############################

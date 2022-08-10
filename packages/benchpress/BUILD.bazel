@@ -20,6 +20,7 @@ ts_library(
 
 ng_package(
     name = "npm_package",
+    package_name = "@angular/benchpress",
     srcs = [
         "README.md",
         "package.json",
@@ -30,7 +31,10 @@ ng_package(
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
-    visibility = ["//integration:__subpackages__"],
+    visibility = [
+        "//aio:__subpackages__",
+        "//integration:__subpackages__",
+    ],
     deps = [
         ":benchpress",
     ],
