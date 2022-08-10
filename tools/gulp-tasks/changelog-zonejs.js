@@ -5,13 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-function test(){
-  alert('bonjour issam !!');
-}
 module.exports = (gulp) => () => {
   const tag = process.env.TAG;
   const ptag = process.env.PREVIOUS_ZONE_TAG;
   const conventionalChangelog = require('gulp-conventional-changelog');
+  // the tag of zone.js will start with `zone.js-`, such as `zone.js-0.10.0`
   // the tag of zone.js will start with `zone.js-`, such as `zone.js-0.10.0`
   // we will remove the first 8 (zone.js-) chars to get the real version.
   const version = tag.replace(/^zone\.js-/, '');
