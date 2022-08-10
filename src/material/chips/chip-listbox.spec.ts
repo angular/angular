@@ -470,6 +470,34 @@ describe('MDC-based MatChipListbox', () => {
           .withContext('Expect no selected chips')
           .toBeUndefined();
       });
+
+      it('should not select when is not selectable', fakeAsync(() => {
+        fixture.destroy();
+        TestBed.resetTestingModule();
+
+        const falsyFixture = createComponent(FalsyBasicChipListbox);
+        falsyFixture.detectChanges();
+        tick();
+        falsyFixture.detectChanges();
+
+        const chipListboxElement = falsyFixture.debugElement.query(By.directive(MatChipListbox))!;
+        const _chips = chipListboxElement.componentInstance._chips;
+        const nativeChips = (
+          chipListboxElement.nativeElement as HTMLElement
+        ).querySelectorAll<HTMLElement>('.mdc-evolution-chip__action--primary');
+
+        expect(_chips.first.selected)
+          .withContext('Expected first option not to be selected')
+          .toBe(false);
+
+        dispatchKeyboardEvent(nativeChips[0], 'keydown', SPACE);
+        falsyFixture.detectChanges();
+        flush();
+
+        expect(_chips.first.selected)
+          .withContext('Expected first option not to be selected.')
+          .toBe(false);
+      }));
     });
 
     describe('chip list with chip input', () => {
@@ -872,5 +900,35 @@ class SelectedChipListbox {
     {value: 1, viewValue: 'Pizza', selected: false},
     {value: 2, viewValue: 'Pasta', selected: true},
   ];
+  @ViewChildren(MatChipOption) chips: QueryList<MatChipOption>;
+}
+
+@Component({
+  template: `
+      <mat-chip-listbox [formControl]="control" [required]="isRequired"
+        [tabIndex]="tabIndexOverride" [selectable]="selectable">
+        <mat-chip-option *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
+          {{ food.viewValue }}
+        </mat-chip-option>
+      </mat-chip-listbox>
+  `,
+})
+class FalsyBasicChipListbox {
+  foods: any[] = [
+    {value: 'steak-0', viewValue: 'Steak'},
+    {value: 'pizza-1', viewValue: 'Pizza'},
+    {value: 'tacos-2', viewValue: 'Tacos', disabled: true},
+    {value: 'sandwich-3', viewValue: 'Sandwich'},
+    {value: 'chips-4', viewValue: 'Chips'},
+    {value: 'eggs-5', viewValue: 'Eggs'},
+    {value: 'pasta-6', viewValue: 'Pasta'},
+    {value: 'sushi-7', viewValue: 'Sushi'},
+  ];
+  control = new FormControl<string | null>(null);
+  isRequired: boolean;
+  tabIndexOverride: number;
+  selectable: boolean = false;
+
+  @ViewChild(MatChipListbox) chipListbox: MatChipListbox;
   @ViewChildren(MatChipOption) chips: QueryList<MatChipOption>;
 }

@@ -748,6 +748,33 @@ describe('MatChipList', () => {
         .withContext('Expect no selected chips')
         .toBeUndefined();
     });
+
+    it('should not select when is not selectable', fakeAsync(() => {
+      fixture.destroy();
+      TestBed.resetTestingModule();
+
+      const falsyFixture = createComponent(FalsyBasicChipList);
+      falsyFixture.detectChanges();
+      tick();
+      falsyFixture.detectChanges();
+
+      const chipListElement = falsyFixture.debugElement.query(By.directive(MatLegacyChipList))!;
+      const currentChips = chipListElement.componentInstance.chips;
+      const currentNativeChips = falsyFixture.debugElement
+        .queryAll(By.css('mat-chip'))
+        .map(chip => chip.nativeElement);
+
+      expect(currentChips.first.selected)
+        .withContext('Expected first option not to be selected')
+        .toBe(false);
+
+      dispatchKeyboardEvent(currentNativeChips[0], 'keydown', SPACE);
+      falsyFixture.detectChanges();
+
+      expect(currentChips.first.selected)
+        .withContext('Expected first option not to be selected.')
+        .toBe(false);
+    }));
   });
 
   describe('forms integration', () => {
@@ -1865,4 +1892,36 @@ class ChipListInsideDynamicFormGroup {
       control: {value: [], disabled: isDisabled},
     });
   }
+}
+
+@Component({
+  selector: 'basic-chip-list',
+  template: `
+    <mat-form-field>
+      <mat-chip-list placeholder="Food" [formControl]="control"
+        [tabIndex]="tabIndexOverride" [selectable]="selectable">
+        <mat-chip *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
+          {{ food.viewValue }}
+        </mat-chip>
+      </mat-chip-list>
+    </mat-form-field>
+  `,
+})
+class FalsyBasicChipList {
+  foods: any[] = [
+    {value: 'steak-0', viewValue: 'Steak'},
+    {value: 'pizza-1', viewValue: 'Pizza'},
+    {value: 'tacos-2', viewValue: 'Tacos', disabled: true},
+    {value: 'sandwich-3', viewValue: 'Sandwich'},
+    {value: 'chips-4', viewValue: 'Chips'},
+    {value: 'eggs-5', viewValue: 'Eggs'},
+    {value: 'pasta-6', viewValue: 'Pasta'},
+    {value: 'sushi-7', viewValue: 'Sushi'},
+  ];
+  control = new FormControl<string | null>(null);
+  tabIndexOverride: number;
+  selectable: boolean = false;
+
+  @ViewChild(MatLegacyChipList) chipList: MatLegacyChipList;
+  @ViewChildren(MatLegacyChip) chips: QueryList<MatLegacyChip>;
 }
