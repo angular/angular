@@ -27,12 +27,6 @@ CSS class that can be used for style (e.g. to add an arrow). The possible classe
 
 <!-- example(tooltip-position) -->
 
-To display the tooltip relative to the mouse or touch that triggered it, use the
-`matTooltipPositionAtOrigin` input.
-With this setting turned on, the tooltip will display relative to the origin of the trigger rather
-than the host element. In cases where the tooltip is not triggered by a touch event or mouse click,
-it will display the same as if this setting was turned off.
-
 ### Showing and hiding
 
 By default, the tooltip will be immediately shown when the user's mouse hovers over the tooltip's

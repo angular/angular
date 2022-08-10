@@ -98,7 +98,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   _preferredPositions: ConnectionPositionPair[] = [];
 
   /** The origin element against which the overlay will be positioned. */
-  _origin: FlexibleConnectedPositionStrategyOrigin;
+  private _origin: FlexibleConnectedPositionStrategyOrigin;
 
   /** The overlay pane element. */
   private _pane: HTMLElement;

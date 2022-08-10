@@ -16,7 +16,6 @@ import {TooltipMessageExample} from './tooltip-message/tooltip-message-example';
 import {TooltipModifiedDefaultsExample} from './tooltip-modified-defaults/tooltip-modified-defaults-example';
 import {TooltipOverviewExample} from './tooltip-overview/tooltip-overview-example';
 import {TooltipPositionExample} from './tooltip-position/tooltip-position-example';
-import {TooltipPositionAtOriginExample} from './tooltip-position-at-origin/tooltip-position-at-origin-example';
 import {TooltipHarnessExample} from './tooltip-harness/tooltip-harness-example';
 
 export {
@@ -30,7 +29,6 @@ export {
   TooltipModifiedDefaultsExample,
   TooltipOverviewExample,
   TooltipPositionExample,
-  TooltipPositionAtOriginExample,
 };
 
 const EXAMPLES = [
@@ -44,7 +42,6 @@ const EXAMPLES = [
   TooltipModifiedDefaultsExample,
   TooltipOverviewExample,
   TooltipPositionExample,
-  TooltipPositionAtOriginExample,
 ];
 
 @NgModule({
