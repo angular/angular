@@ -48,6 +48,7 @@ generate_rollup_bundle(
 
 pkg_npm(
     name = "npm_package",
+    package_name = "zone.js",
     srcs = [
         "CHANGELOG.md",
         "README.md",
