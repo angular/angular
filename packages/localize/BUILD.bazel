@@ -24,6 +24,7 @@ extract_types(
 
 ng_package(
     name = "npm_package",
+    package_name = "@angular/localize",
     srcs = [
         "package.json",
         ":api_type_definitions",
