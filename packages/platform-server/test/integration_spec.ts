@@ -17,7 +17,7 @@ import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, platformDynamicServer, PlatformSt
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 
-import {renderApplication} from '../src/utils';
+import {renderApplication, SERVER_CONTEXT} from '../src/utils';
 
 function createMyServerApp(standalone: boolean) {
   @Component({
@@ -696,7 +696,7 @@ describe('platform-server integration', () => {
     let doc: string;
     let called: boolean;
     let expectedOutput =
-        '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 textcontent="fine">fine</h1></app></body></html>';
+        '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!<h1 textcontent="fine">fine</h1></app></body></html>';
 
     beforeEach(() => {
       // PlatformConfig takes in a parsed document so that it can be cached across requests.
@@ -713,11 +713,17 @@ describe('platform-server integration', () => {
 
          platform.bootstrapModule(AsyncServerModule)
              .then((moduleRef) => {
-               const applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
+               const applicationRef = moduleRef.injector.get(ApplicationRef);
                return applicationRef.isStable.pipe(first((isStable: boolean) => isStable))
                    .toPromise();
              })
              .then((b) => {
+               // Note: the `ng-server-context` is not present in this output, since
+               // `renderModule` or `renderApplication` functions are not used here.
+               const expectedOutput =
+                   '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                   'Works!<h1 textcontent="fine">fine</h1></app></body></html>';
+
                expect(platform.injector.get(PlatformState).renderToString()).toBe(expectedOutput);
                platform.destroy();
                called = true;
@@ -772,7 +778,8 @@ describe('platform-server integration', () => {
                .then(output => {
                  expect(output).toBe(
                      '<html><head><title>fakeTitle</title></head>' +
-                     '<body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 textcontent="fine">fine</h1></app>' +
+                     '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
+                     'Works!<h1 textcontent="fine">fine</h1></app>' +
                      '<!--test marker--></body></html>');
                  called = true;
                })
@@ -789,7 +796,7 @@ describe('platform-server integration', () => {
                renderModule(SVGServerModule, options);
            bootstrap.then(output => {
              expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
                  '<svg><use xlink:href="#clear"></use></svg></app></body></html>');
              called = true;
            });
@@ -830,7 +837,69 @@ describe('platform-server integration', () => {
                renderModule(ExampleStylesModule, options);
            bootstrap.then(output => {
              expect(output).toMatch(
-                 /<html><head><style ng-transition="example-styles">div\[_ngcontent-sc\d+\] {color: blue; } \[_nghost-sc\d+\] { color: red; }<\/style><\/head><body><app _nghost-sc\d+="" ng-version="0.0.0-PLACEHOLDER"><div _ngcontent-sc\d+="">Works!<\/div><\/app><\/body><\/html>/);
+                 /<html><head><style ng-transition="example-styles">div\[_ngcontent-sc\d+\] {color: blue; } \[_nghost-sc\d+\] { color: red; }<\/style><\/head><body><app _nghost-sc\d+="" ng-version="0.0.0-PLACEHOLDER" ng-server-context="other"><div _ngcontent-sc\d+="">Works!<\/div><\/app><\/body><\/html>/);
+             called = true;
+           });
+         }));
+
+      it('adds the `ng-server-context` attribute to host elements', waitForAsync(() => {
+           const options = {
+             document: doc,
+           };
+           const providers = [{
+             provide: SERVER_CONTEXT,
+             useValue: 'ssg',
+           }];
+           const bootstrap = isStandalone ?
+               renderApplication(
+                   MyStylesAppStandalone,
+                   {...options, platformProviders: providers, appId: 'example-styles'}) :
+               renderModule(ExampleStylesModule, {...options, extraProviders: providers});
+           bootstrap.then(output => {
+             expect(output).toMatch(
+                 /<html><head><style ng-transition="example-styles">div\[_ngcontent-sc\d+\] {color: blue; } \[_nghost-sc\d+\] { color: red; }<\/style><\/head><body><app _nghost-sc\d+="" ng-version="0.0.0-PLACEHOLDER" ng-server-context="ssg"><div _ngcontent-sc\d+="">Works!<\/div><\/app><\/body><\/html>/);
+             called = true;
+           });
+         }));
+
+      it('sanitizes the `serverContext` value', waitForAsync(() => {
+           const options = {
+             document: doc,
+           };
+           const providers = [{
+             provide: SERVER_CONTEXT,
+             useValue: '!!!Some extra chars&& --><!--',
+           }];
+           const bootstrap = isStandalone ?
+               renderApplication(
+                   MyStylesAppStandalone,
+                   {...options, platformProviders: providers, appId: 'example-styles'}) :
+               renderModule(ExampleStylesModule, {...options, extraProviders: providers});
+           bootstrap.then(output => {
+             // All symbols other than [a-zA-Z0-9\-] are removed
+             expect(output).toMatch(/ng-server-context="Someextrachars----"/);
+             called = true;
+           });
+         }));
+
+      it('uses `other` as the `serverContext` value when all symbols are removed after sanitization',
+         waitForAsync(() => {
+           const options = {
+             document: doc,
+           };
+           const providers = [{
+             provide: SERVER_CONTEXT,
+             useValue: '!!! &&<>',
+           }];
+           const bootstrap = isStandalone ?
+               renderApplication(
+                   MyStylesAppStandalone,
+                   {...options, platformProviders: providers, appId: 'example-styles'}) :
+               renderModule(ExampleStylesModule, {...options, extraProviders: providers});
+           bootstrap.then(output => {
+             // All symbols other than [a-zA-Z0-9\-] are removed,
+             // the `other` is used as the default.
+             expect(output).toMatch(/ng-server-context="other"/);
              called = true;
            });
          }));
@@ -842,7 +911,7 @@ describe('platform-server integration', () => {
                renderModule(FalseAttributesModule, options);
            bootstrap.then(output => {
              expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
                  '<my-child ng-reflect-attr="false">Works!</my-child></app></body></html>');
              called = true;
            });
@@ -855,7 +924,7 @@ describe('platform-server integration', () => {
                renderModule(NameModule, options);
            bootstrap.then(output => {
              expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
                  '<input name=""></app></body></html>');
              called = true;
            });
@@ -872,7 +941,7 @@ describe('platform-server integration', () => {
                renderModule(HTMLTypesModule, options);
            bootstrap.then(output => {
              expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
                  '<div><b>foo</b> bar</div></app></body></html>');
              called = true;
            });
@@ -885,7 +954,7 @@ describe('platform-server integration', () => {
                renderModule(HiddenModule, options);
            bootstrap.then(output => {
              expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
                  '<input hidden=""><input></app></body></html>');
              called = true;
            });
@@ -902,7 +971,7 @@ describe('platform-server integration', () => {
              // title should be added by the render hook.
              expect(output).toBe(
                  '<html><head><title>RenderHook</title></head><body>' +
-                 '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+                 '<app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>');
              called = true;
            });
          }));
@@ -919,7 +988,7 @@ describe('platform-server integration', () => {
              // title should be added by the render hook.
              expect(output).toBe(
                  '<html><head><title>RenderHook</title><meta name="description"></head>' +
-                 '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+                 '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>');
              expect(consoleSpy).toHaveBeenCalled();
              called = true;
            });
@@ -936,7 +1005,7 @@ describe('platform-server integration', () => {
              // title should be added by the render hook.
              expect(output).toBe(
                  '<html><head><title>AsyncRenderHook</title></head><body>' +
-                 '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+                 '<app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>');
              called = true;
            });
          }));
@@ -954,7 +1023,7 @@ describe('platform-server integration', () => {
              // title should be added by the render hook.
              expect(output).toBe(
                  '<html><head><meta name="description"><title>AsyncRenderHook</title></head>' +
-                 '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+                 '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>');
              expect(consoleSpy).toHaveBeenCalled();
              called = true;
            });
@@ -1245,7 +1314,7 @@ describe('platform-server integration', () => {
   describe('ServerTransferStoreModule', () => {
     let called = false;
     const defaultExpectedOutput =
-        '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!</app><script id="transfer-state" type="application/json">{&q;test&q;:10}</script></body></html>';
+        '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app><script id="transfer-state" type="application/json">{&q;test&q;:10}</script></body></html>';
 
     beforeEach(() => {
       called = false;
@@ -1278,7 +1347,7 @@ describe('platform-server integration', () => {
            document: '<esc-app></esc-app>'
          }).then(output => {
            expect(output).toBe(
-               '<html><head></head><body><esc-app ng-version="0.0.0-PLACEHOLDER">Works!</esc-app>' +
+               '<html><head></head><body><esc-app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</esc-app>' +
                '<script id="transfer-state" type="application/json">' +
                '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
                'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}</script></body></html>');
