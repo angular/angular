@@ -4,6 +4,7 @@ package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "angular-in-memory-web-api",
+    package_name = "angular-in-memory-web-api",
     srcs = glob(
         [
             "*.ts",
