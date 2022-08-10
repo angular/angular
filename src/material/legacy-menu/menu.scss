@@ -1,0 +1,96 @@
+
+@use '@angular/cdk';
+
+@use '../core/style/button-common';
+@use '../core/style/menu-common';
+
+$vertical-padding: 8px !default;
+$border-radius: 4px !default;
+$submenu-indicator-size: 10px !default;
+
+// Prevent rendering mat-menu as it can affect the flex layout.
+mat-menu {
+  display: none;
+}
+
+.mat-menu-panel {
+  @include menu-common.base();
+  max-height: calc(100vh - #{menu-common.$item-height});
+  border-radius: $border-radius;
+  outline: 0;
+
+  // Give the menu a minimum height so that the user can't
+  // collapse it to zero when they scroll away.
+  min-height: menu-common.$item-height + $vertical-padding * 2;
+
+  // Nothing in CSS depends upon this, but we need it so that the `offsetParent` in JS is the
+  // menu rather than the overlay panel. This comes into play when we read the `offsetTop`.
+  position: relative;
+
+  // Prevent users from interacting with the panel while it's animating. Note that
+  // people won't be able to click through it, because the overlay pane will catch the click.
+  // This fixes the following issues:
+  //  * Users accidentally opening sub-menus when the `overlapTrigger` option is enabled.
+  //  * Users accidentally tapping on content inside the sub-menu on touch devices, if the
+  //    sub-menu overlaps the trigger. The issue is due to touch devices emulating the
+  //    `mouseenter` event by dispatching it on tap.
+  &.ng-animating {
+    pointer-events: none;
+  }
+
+  @include cdk.high-contrast(active, off) {
+    outline: solid 1px;
+  }
+}
+
+// `:not(:empty)` allows for the menu to collapse to 0x0 when it doesn't have content.
+.mat-menu-content:not(:empty) {
+  padding-top: $vertical-padding;
+  padding-bottom: $vertical-padding;
+}
+
+.mat-menu-item {
+  @include button-common.reset();
+  @include menu-common.item-base();
+  position: relative;
+
+  // The browser prevents clicks on disabled buttons from propagating which prevents the menu
+  // from closing, but clicks on child nodes still propagate which is inconsistent (see #16694).
+  // In order to keep the behavior consistent and prevent the menu from closing, we add an overlay
+  // on top of the content that will catch all the clicks while disabled.
+  &[disabled]::after {
+    display: block;
+    position: absolute;
+    content: '';
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+  @include cdk.high-contrast(active, off) {
+    $outline-width: 1px;
+
+    // We need to move the item 1px down, because Firefox seems to have
+    // an issue rendering the top part of the outline (see #21524).
+    margin-top: $outline-width;
+  }
+}
+
+.mat-menu-item-submenu-trigger {
+  @include menu-common.item-submenu-trigger(menu-common.$side-padding);
+}
+
+.mat-menu-submenu-icon {
+  @include menu-common.item-submenu-icon(menu-common.$side-padding);
+}
+
+button.mat-menu-item {
+  width: 100%;
+}
+
+// Increase specificity because ripple styles are part of the `mat-core` mixin and can
+// potentially overwrite the absolute position of the container.
+.mat-menu-item .mat-menu-ripple {
+  @include menu-common.item-ripple;
+}

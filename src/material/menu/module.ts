@@ -11,9 +11,10 @@ import {NgModule} from '@angular/core';
 import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {CdkScrollableModule} from '@angular/cdk/scrolling';
-import {MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER, MatMenu} from './menu';
+import {MatMenu} from './menu';
 import {MatMenuItem} from './menu-item';
-import {MatMenuContent, MatMenuTrigger} from './directives';
+import {MatMenuContent} from './menu-content';
+import {MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER, MatMenuTrigger} from './menu-trigger';
 
 @NgModule({
   imports: [CommonModule, MatRippleModule, MatCommonModule, OverlayModule],

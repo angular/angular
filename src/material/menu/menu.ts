@@ -6,17 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusKeyManager, FocusOrigin} from '@angular/cdk/a11y';
-import {Direction} from '@angular/cdk/bidi';
-import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-import {
-  ESCAPE,
-  LEFT_ARROW,
-  RIGHT_ARROW,
-  DOWN_ARROW,
-  UP_ARROW,
-  hasModifierKey,
-} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -39,15 +28,31 @@ import {
   OnInit,
   ChangeDetectorRef,
 } from '@angular/core';
+import {AnimationEvent} from '@angular/animations';
+import {FocusKeyManager, FocusOrigin} from '@angular/cdk/a11y';
+import {Direction} from '@angular/cdk/bidi';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
+import {
+  ESCAPE,
+  LEFT_ARROW,
+  RIGHT_ARROW,
+  DOWN_ARROW,
+  UP_ARROW,
+  hasModifierKey,
+} from '@angular/cdk/keycodes';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {startWith, switchMap, take} from 'rxjs/operators';
-import {matMenuAnimations} from './menu-animations';
-import {MAT_MENU_CONTENT, MatMenuContent} from './menu-content';
+import {MatMenuItem} from './menu-item';
+import {MatMenuPanel, MAT_MENU_PANEL} from './menu-panel';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
 import {throwMatMenuInvalidPositionX, throwMatMenuInvalidPositionY} from './menu-errors';
-import {MatMenuItem} from './menu-item';
-import {MAT_MENU_PANEL, MatMenuPanel} from './menu-panel';
-import {AnimationEvent} from '@angular/animations';
+import {MatMenuContent, MAT_MENU_CONTENT} from './menu-content';
+import {matMenuAnimations} from './menu-animations';
+
+let menuPanelUid = 0;
+
+/** Reason why the menu was closed. */
+export type MenuCloseReason = void | 'click' | 'keydown' | 'tab';
 
 /** Default `mat-menu` options that can be overridden. */
 export interface MatMenuDefaultOptions {
@@ -88,11 +93,6 @@ export function MAT_MENU_DEFAULT_OPTIONS_FACTORY(): MatMenuDefaultOptions {
     backdropClass: 'cdk-overlay-transparent-backdrop',
   };
 }
-
-let menuPanelUid = 0;
-
-/** Reason why the menu was closed. */
-export type MenuCloseReason = void | 'click' | 'keydown' | 'tab';
 
 /** Base class with all of the `MatMenu` functionality. */
 @Directive()
@@ -533,7 +533,6 @@ export class _MatMenuBase
   }
 }
 
-/** @docs-public MatMenu */
 @Component({
   selector: 'mat-menu',
   templateUrl: 'menu.html',
@@ -550,10 +549,10 @@ export class _MatMenuBase
   providers: [{provide: MAT_MENU_PANEL, useExisting: MatMenu}],
 })
 export class MatMenu extends _MatMenuBase {
-  protected override _elevationPrefix = 'mat-elevation-z';
-  protected override _baseElevation = 4;
+  protected override _elevationPrefix = 'mat-mdc-elevation-z';
+  protected override _baseElevation = 8;
 
-  /**
+  /*
    * @deprecated `changeDetectorRef` parameter will become a required parameter.
    * @breaking-change 15.0.0
    */
@@ -564,11 +563,11 @@ export class MatMenu extends _MatMenuBase {
   );
 
   constructor(
-    elementRef: ElementRef<HTMLElement>,
-    ngZone: NgZone,
-    @Inject(MAT_MENU_DEFAULT_OPTIONS) defaultOptions: MatMenuDefaultOptions,
+    _elementRef: ElementRef<HTMLElement>,
+    _ngZone: NgZone,
+    @Inject(MAT_MENU_DEFAULT_OPTIONS) _defaultOptions: MatMenuDefaultOptions,
     changeDetectorRef?: ChangeDetectorRef,
   ) {
-    super(elementRef, ngZone, defaultOptions, changeDetectorRef);
+    super(_elementRef, _ngZone, _defaultOptions, changeDetectorRef);
   }
 }

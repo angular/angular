@@ -11,22 +11,23 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {CdkScrollableModule} from '@angular/cdk/scrolling';
-import {MatMenu} from './menu';
-import {MatMenuContent} from './menu-content';
-import {MatMenuItem} from './menu-item';
-import {MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER, MatMenuTrigger} from './menu-trigger';
+import {MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER} from '@angular/material/menu';
+import {MatLegacyMenu} from './menu';
+import {MatLegacyMenuContent} from './menu-content';
+import {MatLegacyMenuItem} from './menu-item';
+import {MatLegacyMenuTrigger} from './menu-trigger';
 
 @NgModule({
   imports: [CommonModule, MatCommonModule, MatRippleModule, OverlayModule],
   exports: [
     CdkScrollableModule,
     MatCommonModule,
-    MatMenu,
-    MatMenuItem,
-    MatMenuTrigger,
-    MatMenuContent,
+    MatLegacyMenu,
+    MatLegacyMenuItem,
+    MatLegacyMenuTrigger,
+    MatLegacyMenuContent,
   ],
-  declarations: [MatMenu, MatMenuItem, MatMenuTrigger, MatMenuContent],
+  declarations: [MatLegacyMenu, MatLegacyMenuItem, MatLegacyMenuTrigger, MatLegacyMenuContent],
   providers: [MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER],
 })
-export class MatMenuModule {}
+export class MatLegacyMenuModule {}

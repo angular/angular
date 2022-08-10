@@ -63,15 +63,14 @@ export const MAT_MENU_SCROLL_STRATEGY: InjectionToken<() => ScrollStrategy>;
 function MAT_MENU_SCROLL_STRATEGY_FACTORY(overlay: Overlay): () => ScrollStrategy;
 
 // @public
-const MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER: {
+export const MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER: {
     provide: InjectionToken<() => ScrollStrategy>;
     deps: (typeof Overlay)[];
     useFactory: typeof MAT_MENU_SCROLL_STRATEGY_FACTORY;
 };
 
-// @public
+// @public (undocumented)
 export class MatMenu extends _MatMenuBase {
-    // @deprecated
     constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone, defaultOptions: MatMenuDefaultOptions);
     // (undocumented)
     protected _baseElevation: number;
@@ -222,7 +221,7 @@ export class MatMenuItem extends _MatMenuItemBase implements FocusableOption, Ca
     _setHighlighted(isHighlighted: boolean): void;
     _triggersSubmenu: boolean;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatMenuItem, "[mat-menu-item]", ["matMenuItem"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "role": "role"; }, {}, never, ["*"], false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatMenuItem, "[mat-menu-item]", ["matMenuItem"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "role": "role"; }, {}, never, ["mat-icon", "*"], false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatMenuItem, [null, null, null, { optional: true; }, null]>;
 }
@@ -234,7 +233,7 @@ export class MatMenuModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatMenuModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatMenuModule, [typeof i1.MatMenu, typeof i2.MatMenuItem, typeof i3.MatMenuTrigger, typeof i4.MatMenuContent], [typeof i5.CommonModule, typeof i6.MatCommonModule, typeof i6.MatRippleModule, typeof i7.OverlayModule], [typeof i8.CdkScrollableModule, typeof i6.MatCommonModule, typeof i1.MatMenu, typeof i2.MatMenuItem, typeof i3.MatMenuTrigger, typeof i4.MatMenuContent]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatMenuModule, [typeof i1.MatMenu, typeof i2.MatMenuItem, typeof i3.MatMenuContent, typeof i4.MatMenuTrigger], [typeof i5.CommonModule, typeof i6.MatRippleModule, typeof i6.MatCommonModule, typeof i7.OverlayModule], [typeof i8.CdkScrollableModule, typeof i1.MatMenu, typeof i6.MatCommonModule, typeof i2.MatMenuItem, typeof i3.MatMenuContent, typeof i4.MatMenuTrigger]>;
 }
 
 // @public
@@ -329,7 +328,7 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
 }
 
 // @public @deprecated
-const MENU_PANEL_TOP_PADDING = 8;
+export const MENU_PANEL_TOP_PADDING = 8;
 
 // @public
 type MenuCloseReason = void | 'click' | 'keydown' | 'tab';

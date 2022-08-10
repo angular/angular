@@ -16,7 +16,7 @@ export class MatMenuHarness extends _MatMenuHarnessBase<typeof MatMenuItemHarnes
     static hostSelector: string;
     // (undocumented)
     protected _itemClass: typeof MatMenuItemHarness;
-    static with(options?: MenuHarnessFilters): HarnessPredicate<MatMenuHarness>;
+    static with<T extends MatMenuHarness>(this: ComponentHarnessConstructor<T>, options?: MenuHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public (undocumented)
@@ -47,7 +47,7 @@ export class MatMenuItemHarness extends _MatMenuItemHarnessBase<typeof MatMenuHa
     static hostSelector: string;
     // (undocumented)
     protected _menuClass: typeof MatMenuHarness;
-    static with(options?: MenuItemHarnessFilters): HarnessPredicate<MatMenuItemHarness>;
+    static with<T extends MatMenuItemHarness>(this: ComponentHarnessConstructor<T>, options?: MenuItemHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public (undocumented)

@@ -16,44 +16,42 @@ ng_module(
     name = "menu",
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["**/*.spec.ts"],
+        exclude = [
+            "**/*.spec.ts",
+        ],
     ),
-    assets = [":menu.css"] + glob(["**/*.html"]),
+    assets = [":menu_scss"] + glob(["**/*.html"]),
     deps = [
-        "//src:dev_mode_types",
-        "//src/cdk/a11y",
-        "//src/cdk/bidi",
-        "//src/cdk/coercion",
-        "//src/cdk/keycodes",
         "//src/cdk/overlay",
-        "//src/cdk/platform",
-        "//src/cdk/portal",
         "//src/cdk/scrolling",
         "//src/material/core",
         "@npm//@angular/animations",
         "@npm//@angular/common",
         "@npm//@angular/core",
-        "@npm//rxjs",
     ],
 )
 
 sass_library(
     name = "menu_scss_lib",
     srcs = glob(["**/_*.scss"]),
-    deps = ["//src/material/core:core_scss_lib"],
+    deps = [
+        "//:mdc_sass_lib",
+        "//src/material/core:core_scss_lib",
+    ],
 )
 
 sass_binary(
     name = "menu_scss",
     src = "menu.scss",
     deps = [
+        "//:mdc_sass_lib",
         "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )
 
 ng_test_library(
-    name = "unit_test_sources",
+    name = "menu_tests_lib",
     srcs = glob(
         ["**/*.spec.ts"],
         exclude = ["**/*.e2e.spec.ts"],
@@ -74,7 +72,9 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [":unit_test_sources"],
+    deps = [
+        ":menu_tests_lib",
+    ],
 )
 
 ng_e2e_test_library(

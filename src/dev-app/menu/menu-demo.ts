@@ -11,7 +11,7 @@ import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatIconModule} from '@angular/material/icon';
-import {MatMenuModule} from '@angular/material/menu';
+import {MatLegacyMenuModule} from '@angular/material/legacy-menu';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
 @Component({
@@ -24,7 +24,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     MatButtonModule,
     MatDividerModule,
     MatIconModule,
-    MatMenuModule,
+    MatLegacyMenuModule,
     MatToolbarModule,
   ],
 })

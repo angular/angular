@@ -1,6 +1,6 @@
 <ng-template>
   <div
-    class="mat-mdc-menu-panel mdc-menu-surface mdc-menu-surface--open mat-mdc-elevation-specific"
+    class="mat-menu-panel"
     [id]="panelId"
     [ngClass]="_classList"
     (keydown)="_handleKeydown($event)"
@@ -13,7 +13,7 @@
     [attr.aria-label]="ariaLabel || null"
     [attr.aria-labelledby]="ariaLabelledby || null"
     [attr.aria-describedby]="ariaDescribedby || null">
-    <div class="mat-mdc-menu-content mdc-list">
+    <div class="mat-menu-content">
       <ng-content></ng-content>
     </div>
   </div>

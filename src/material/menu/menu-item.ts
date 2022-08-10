@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusableOption, FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -25,9 +24,10 @@ import {
   mixinDisabled,
   mixinDisableRipple,
 } from '@angular/material/core';
+import {FocusableOption, FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {Subject} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
-import {MAT_MENU_PANEL, MatMenuPanel} from './menu-panel';
+import {MatMenuPanel, MAT_MENU_PANEL} from './menu-panel';
 
 // Boilerplate for applying mixins to MatMenuItem.
 /** @docs-private */
@@ -42,13 +42,12 @@ const _MatMenuItemBase = mixinDisableRipple(mixinDisabled(class {}));
   inputs: ['disabled', 'disableRipple'],
   host: {
     '[attr.role]': 'role',
-    '[class.mat-menu-item]': 'true',
-    '[class.mat-menu-item-highlighted]': '_highlighted',
-    '[class.mat-menu-item-submenu-trigger]': '_triggersSubmenu',
+    'class': 'mat-mdc-menu-item mat-mdc-focus-indicator mdc-list-item',
+    '[class.mat-mdc-menu-item-highlighted]': '_highlighted',
+    '[class.mat-mdc-menu-item-submenu-trigger]': '_triggersSubmenu',
     '[attr.tabindex]': '_getTabIndex()',
-    '[attr.aria-disabled]': 'disabled.toString()',
+    '[attr.aria-disabled]': 'disabled',
     '[attr.disabled]': 'disabled || null',
-    'class': 'mat-focus-indicator',
     '(click)': '_checkDisabled($event)',
     '(mouseenter)': '_handleMouseEnter()',
   },

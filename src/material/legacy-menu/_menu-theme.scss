@@ -1,0 +1,78 @@
+@use 'sass:map';
+@use '../core/style/private';
+@use '../core/theming/theming';
+@use '../core/typography/typography';
+@use '../core/typography/typography-utils';
+
+
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
+
+  .mat-menu-panel {
+    @include private.private-theme-overridable-elevation(4, $config);
+    background: theming.get-color-from-palette($background, 'card');
+  }
+
+  .mat-menu-item {
+    background: transparent;
+    color: theming.get-color-from-palette($foreground, 'text');
+
+    &[disabled] {
+      &,
+      .mat-menu-submenu-icon,
+      .mat-icon-no-color {
+        color: theming.get-color-from-palette($foreground, 'disabled');
+      }
+    }
+  }
+
+  .mat-menu-item .mat-icon-no-color,
+  .mat-menu-submenu-icon {
+    color: theming.get-color-from-palette($foreground, 'icon');
+  }
+
+  .mat-menu-item:hover,
+  .mat-menu-item.cdk-program-focused,
+  .mat-menu-item.cdk-keyboard-focused,
+  .mat-menu-item-highlighted {
+    &:not([disabled]) {
+      background: theming.get-color-from-palette($background, 'hover');
+    }
+  }
+}
+
+@mixin typography($config-or-theme) {
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
+  .mat-menu-item {
+    font: {
+      family: typography-utils.font-family($config, body-1);
+      size: typography-utils.font-size($config, body-1);
+      weight: typography-utils.font-weight($config, body-1);
+    }
+  }
+}
+
+@mixin _density($config-or-theme) {}
+
+@mixin theme($theme-or-color-config) {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-menu') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
+
+    @if $color != null {
+      @include color($color);
+    }
+    @if $density != null {
+      @include _density($density);
+    }
+    @if $typography != null {
+      @include typography($typography);
+    }
+  }
+}
+

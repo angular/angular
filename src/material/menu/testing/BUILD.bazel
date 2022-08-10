@@ -48,5 +48,7 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [":unit_tests_lib"],
+    deps = [
+        ":unit_tests_lib",
+    ],
 )

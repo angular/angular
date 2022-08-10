@@ -65,17 +65,15 @@ export const MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER = {
   useFactory: MAT_MENU_SCROLL_STRATEGY_FACTORY,
 };
 
+/** Options for binding a passive event listener. */
+const passiveEventListenerOptions = normalizePassiveListenerOptions({passive: true});
+
 /**
  * Default top padding of the menu panel.
  * @deprecated No longer being used. Will be removed.
  * @breaking-change 15.0.0
  */
 export const MENU_PANEL_TOP_PADDING = 8;
-
-/** Options for binding a passive event listener. */
-const passiveEventListenerOptions = normalizePassiveListenerOptions({passive: true});
-
-// TODO(andrewseguin): Remove the kebab versions in favor of camelCased attribute selectors
 
 @Directive({
   host: {
@@ -679,7 +677,7 @@ export abstract class _MatMenuTriggerBase implements AfterContentInit, OnDestroy
 @Directive({
   selector: `[mat-menu-trigger-for], [matMenuTriggerFor]`,
   host: {
-    'class': 'mat-menu-trigger',
+    'class': 'mat-mdc-menu-trigger',
   },
   exportAs: 'matMenuTrigger',
 })

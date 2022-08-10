@@ -121,6 +121,8 @@
   input-density;
 @forward './list/list-theme' as list-* show list-theme, list-color, list-typography;
 @forward './menu/menu-theme' as menu-* show menu-theme, menu-color, menu-typography;
+@forward './legacy-menu/menu-theme' as legacy-menu-* show legacy-menu-theme, legacy-menu-color,
+  legacy-menu-typography;
 @forward './paginator/paginator-theme' as paginator-* show paginator-theme, paginator-color,
   paginator-typography;
 @forward './legacy-progress-bar/progress-bar-theme' as legacy-progress-bar-* show

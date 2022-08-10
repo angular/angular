@@ -17,7 +17,7 @@
 /src/material/icon/**                              @andrewseguin
 /src/material/legacy-input/**                      @mmalerba
 /src/material/list/**                              @andrewseguin @crisbeto @devversion
-/src/material/menu/**                              @crisbeto
+/src/material/legacy-menu/**                       @crisbeto
 /src/material/paginator/**                         @andrewseguin
 /src/material/prebuilt-themes/**                   @andrewseguin
 /src/material/legacy-prebuilt-themes/**            @andrewseguin
@@ -119,7 +119,7 @@
 /src/material/dialog/**               @devversion
 /src/material/form-field/**                            @devversion @mmalerba
 /src/material-experimental/mdc-list/**                 @mmalerba @devversion
-/src/material-experimental/mdc-menu/**                 @crisbeto
+/src/material/menu/**                                  @crisbeto
 /src/material/select/**                                @crisbeto
 /src/material-experimental/mdc-paginator/**            @crisbeto
 /src/material-experimental/mdc-progress-spinner/**     @andrewseguin

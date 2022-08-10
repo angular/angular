@@ -20,6 +20,7 @@
 @use '../../../slide-toggle/slide-toggle-theme';
 @use '../../../radio/radio-theme';
 @use '../../../slider/slider-theme';
+@use '../../../menu/menu-theme';
 
 @mixin private-all-unmigrated-component-densities($config) {
   @include expansion-theme.density($config);
@@ -61,6 +62,7 @@
   @include slide-toggle-theme.density($config);
   @include radio-theme.density($config);
   @include slider-theme.density($config);
+  @include menu-theme.density($config);
   @include private-all-unmigrated-component-densities($config);
 }
 

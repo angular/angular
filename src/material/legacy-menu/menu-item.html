@@ -1,11 +1,11 @@
-<ng-content select="mat-icon"></ng-content>
-<span class="mdc-list-item__primary-text"><ng-content></ng-content></span>
-<div class="mat-mdc-menu-ripple" matRipple
+<ng-content></ng-content>
+<div class="mat-menu-ripple" matRipple
      [matRippleDisabled]="disableRipple || disabled"
      [matRippleTrigger]="_getHostElement()">
 </div>
+
 <svg
   *ngIf="_triggersSubmenu"
-  class="mat-mdc-menu-submenu-icon"
+  class="mat-menu-submenu-icon"
   viewBox="0 0 5 10"
   focusable="false"><polygon points="0,0 5,5 0,10"/></svg>

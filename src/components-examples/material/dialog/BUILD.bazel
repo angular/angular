@@ -19,7 +19,7 @@ ng_module(
         "//src/material/legacy-dialog",
         "//src/material/legacy-dialog/testing",
         "//src/material/legacy-input",
-        "//src/material/menu",
+        "//src/material/legacy-menu",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
         "@npm//@angular/platform-browser-dynamic",

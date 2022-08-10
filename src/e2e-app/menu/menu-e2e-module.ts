@@ -7,11 +7,11 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatMenuModule} from '@angular/material/menu';
+import {MatLegacyMenuModule} from '@angular/material/legacy-menu';
 import {MenuE2E} from './menu-e2e';
 
 @NgModule({
-  imports: [MatMenuModule],
+  imports: [MatLegacyMenuModule],
   declarations: [MenuE2E],
 })
 export class MenuE2eModule {}

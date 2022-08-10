@@ -1,71 +1,122 @@
-
+@use 'sass:map';
 @use '@angular/cdk';
-
-@use '../core/style/button-common';
+@use '@material/menu-surface' as mdc-menu-surface;
+@use '@material/list/evolution-mixins' as mdc-list-mixins;
+@use '@material/list/evolution-variables' as mdc-list-variables;
+@use '../core/mdc-helpers/mdc-helpers';
 @use '../core/style/menu-common';
+@use '../core/style/button-common';
 
-$vertical-padding: 8px !default;
-$border-radius: 4px !default;
-$submenu-indicator-size: 10px !default;
+
+@include mdc-helpers.disable-mdc-fallback-declarations {
+  @include mdc-menu-surface.core-styles($query: structure);
+}
 
 // Prevent rendering mat-menu as it can affect the flex layout.
 mat-menu {
   display: none;
 }
 
-.mat-menu-panel {
-  @include menu-common.base();
-  max-height: calc(100vh - #{menu-common.$item-height});
-  border-radius: $border-radius;
-  outline: 0;
+.mat-mdc-menu-content {
+  @include mdc-list-mixins.list-base($query: structure);
+}
 
-  // Give the menu a minimum height so that the user can't
-  // collapse it to zero when they scroll away.
-  min-height: menu-common.$item-height + $vertical-padding * 2;
-
-  // Nothing in CSS depends upon this, but we need it so that the `offsetParent` in JS is the
-  // menu rather than the overlay panel. This comes into play when we read the `offsetTop`.
-  position: relative;
-
-  // Prevent users from interacting with the panel while it's animating. Note that
-  // people won't be able to click through it, because the overlay pane will catch the click.
-  // This fixes the following issues:
-  //  * Users accidentally opening sub-menus when the `overlapTrigger` option is enabled.
-  //  * Users accidentally tapping on content inside the sub-menu on touch devices, if the
-  //    sub-menu overlaps the trigger. The issue is due to touch devices emulating the
-  //    `mouseenter` event by dispatching it on tap.
-  &.ng-animating {
-    pointer-events: none;
-  }
-
+.mat-mdc-menu-panel {
   @include cdk.high-contrast(active, off) {
     outline: solid 1px;
   }
 }
 
-// `:not(:empty)` allows for the menu to collapse to 0x0 when it doesn't have content.
-.mat-menu-content:not(:empty) {
-  padding-top: $vertical-padding;
-  padding-bottom: $vertical-padding;
+// We need to increase the specificity for these styles to ensure we are not overridden by MDC's
+// .mdc-menu-surface styles. This can happen if the MDC styles are loaded in after our styles.
+.mat-mdc-menu-panel.mat-mdc-menu-panel {
+  // Include Material's base menu panel styling which contain the `min-width`, `max-width` and some
+  // styling to make scrolling smoother. MDC doesn't include the `min-width` and `max-width`, even
+  // though they're explicitly defined in spec.
+  @include menu-common.base;
+
+  // The CDK positioning uses flexbox to anchor the element, whereas MDC uses `position: absolute`.
+  // Furthermore, the relative position ensures that the `offsetParent` is the menu, rather than
+  // the overlay. This comes into play when we measure the `offsetTop` of a menu item.
+  position: relative;
 }
 
-.mat-menu-item {
-  @include button-common.reset();
-  @include menu-common.item-base();
-  position: relative;
+.mat-mdc-menu-item {
+  @include mdc-helpers.disable-mdc-fallback-declarations {
+    @include mdc-list-mixins.item-base;
+    @include mdc-list-mixins.item-spacing(
+      mdc-list-variables.$side-padding, $query: mdc-helpers.$mdc-base-styles-query);
+  }
 
-  // The browser prevents clicks on disabled buttons from propagating which prevents the menu
-  // from closing, but clicks on child nodes still propagate which is inconsistent (see #16694).
-  // In order to keep the behavior consistent and prevent the menu from closing, we add an overlay
-  // on top of the content that will catch all the clicks while disabled.
-  &[disabled]::after {
-    display: block;
-    position: absolute;
-    content: '';
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+  // MDC's menu items are `<li>` nodes which don't need resets, however ours
+  // can be anything, including buttons, so we need to do the reset ourselves.
+  @include button-common.reset;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  box-sizing: border-box;
+  color: inherit;
+  font-size: inherit;
+  background: none;
+  text-decoration: none;
+  margin: 0; // Resolves an issue where buttons have an extra 2px margin on Safari.
+
+  // Set the `min-height` here ourselves, instead of going through
+  // the `mdc-list-one-line-item-density` mixin, because it sets a `height`
+  // which doesn't work well with multi-line items.
+  $height-config: map.get(mdc-list-variables.$one-line-item-density-config, height);
+  min-height: map.get($height-config, default);
+
+  // If the MDC list is loaded after the menu, this gets overwritten which breaks the text
+  // alignment. Ideally we'd wrap all the MDC mixins above with this selector, but the increased
+  // specificity breaks some internal overrides.
+  &.mdc-list-item {
+    align-items: center;
+  }
+
+  &[disabled] {
+    cursor: default;
+
+    // This is the same as `mdc-list-mixins.list-disabled-opacity` which
+    // we can't use directly, because it comes with some selectors.
+    opacity: mdc-list-variables.$content-disabled-opacity;
+
+    // The browser prevents clicks on disabled buttons from propagating which prevents the menu
+    // from closing, but clicks on child nodes still propagate which is inconsistent (see #16694).
+    // In order to keep the behavior consistent and prevent the menu from closing, we add an overlay
+    // on top of the content that will catch all the clicks while disabled.
+    &::after {
+      display: block;
+      position: absolute;
+      content: '';
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+    }
+  }
+
+  .mat-icon {
+    margin-right: mdc-list-variables.$side-padding;
+  }
+
+  [dir='rtl'] & {
+    text-align: right;
+
+    .mat-icon {
+      margin-right: 0;
+      margin-left: mdc-list-variables.$side-padding;
+    }
+  }
+
+  // Needs to be overwritten explicitly, because the style can
+  // leak in from the list and cause the text to truncate.
+  .mdc-list-item__primary-text {
+    white-space: normal;
+  }
+
+  &.mat-mdc-menu-item-submenu-trigger {
+    @include menu-common.item-submenu-trigger(mdc-list-variables.$side-padding);
   }
 
   @include cdk.high-contrast(active, off) {
@@ -77,20 +128,12 @@ mat-menu {
   }
 }
 
-.mat-menu-item-submenu-trigger {
-  @include menu-common.item-submenu-trigger(menu-common.$side-padding);
-}
-
-.mat-menu-submenu-icon {
-  @include menu-common.item-submenu-icon(menu-common.$side-padding);
-}
-
-button.mat-menu-item {
-  width: 100%;
+.mat-mdc-menu-submenu-icon {
+  @include menu-common.item-submenu-icon(mdc-list-variables.$side-padding);
 }
 
 // Increase specificity because ripple styles are part of the `mat-core` mixin and can
 // potentially overwrite the absolute position of the container.
-.mat-menu-item .mat-menu-ripple {
+.mat-mdc-menu-item .mat-mdc-menu-ripple {
   @include menu-common.item-ripple;
 }

@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {MatMenu} from './menu';
-export {MatMenuItem} from './menu-item';
-export {MatMenuTrigger, MatMenuContent} from './directives';
-export * from './module';
+export * from './menu';
+export * from './menu-item';
+export * from './menu-trigger';
+export * from './menu-module';
+export * from './menu-content';
 
 export {
   fadeInItems,
@@ -18,7 +19,7 @@ export {
   MAT_MENU_SCROLL_STRATEGY,
   matMenuAnimations,
   MatMenuDefaultOptions,
-  MatMenuPanel,
+  MatMenuPanel as MatLegacyMenuPanel,
   MenuPositionX,
   MenuPositionY,
   transformMenu,

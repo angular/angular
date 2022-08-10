@@ -1,62 +1,60 @@
-import {FocusMonitor} from '@angular/cdk/a11y';
-import {Direction, Directionality} from '@angular/cdk/bidi';
+import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
-  DOWN_ARROW,
-  END,
-  ENTER,
-  ESCAPE,
-  HOME,
-  LEFT_ARROW,
-  RIGHT_ARROW,
-  TAB,
-} from '@angular/cdk/keycodes';
-import {Overlay, OverlayContainer} from '@angular/cdk/overlay';
-import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
-import {
-  createKeyboardEvent,
-  createMouseEvent,
-  dispatchEvent,
-  dispatchFakeEvent,
-  dispatchKeyboardEvent,
-  dispatchMouseEvent,
-  MockNgZone,
-  patchElementFocus,
-} from '../../cdk/testing/private';
-import {
-  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
   Input,
-  NgZone,
   Output,
-  Provider,
-  QueryList,
+  NgZone,
   TemplateRef,
-  Type,
   ViewChild,
   ViewChildren,
+  QueryList,
+  Type,
+  Provider,
+  ChangeDetectionStrategy,
 } from '@angular/core';
-import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
-import {MatRipple} from '@angular/material/core';
-import {By} from '@angular/platform-browser';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {Subject} from 'rxjs';
+import {Direction, Directionality} from '@angular/cdk/bidi';
+import {OverlayContainer, Overlay} from '@angular/cdk/overlay';
 import {
-  MAT_MENU_DEFAULT_OPTIONS,
-  MatMenu,
-  MatMenuItem,
-  MatMenuModule,
-  MatMenuPanel,
+  ESCAPE,
+  LEFT_ARROW,
+  RIGHT_ARROW,
+  DOWN_ARROW,
+  TAB,
+  HOME,
+  END,
+  ENTER,
+} from '@angular/cdk/keycodes';
+import {MatMenu, MatMenuModule, MatMenuItem} from './index';
+import {MatRipple} from '@angular/material/core';
+import {
+  dispatchKeyboardEvent,
+  dispatchMouseEvent,
+  dispatchEvent,
+  createKeyboardEvent,
+  createMouseEvent,
+  dispatchFakeEvent,
+  patchElementFocus,
+  MockNgZone,
+} from '../../cdk/testing/private';
+import {Subject} from 'rxjs';
+import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
+import {FocusMonitor} from '@angular/cdk/a11y';
+import {
+  MAT_MENU_SCROLL_STRATEGY,
   MatMenuTrigger,
   MenuPositionX,
   MenuPositionY,
-} from './index';
-import {MAT_MENU_SCROLL_STRATEGY} from './menu-trigger';
+  MatMenuPanel,
+  MAT_MENU_DEFAULT_OPTIONS,
+} from './public-api';
 
 const MENU_PANEL_TOP_PADDING = 8;
 
-describe('MatMenu', () => {
+describe('MDC-based MatMenu', () => {
   let overlayContainerElement: HTMLElement;
   let focusMonitor: FocusMonitor;
   let viewportRuler: ViewportRuler;
@@ -188,7 +186,7 @@ describe('MatMenu', () => {
     triggerEl.click();
     fixture.detectChanges();
 
-    expect(overlayContainerElement.querySelector('.mat-menu-panel')).toBeTruthy();
+    expect(overlayContainerElement.querySelector('.mat-mdc-menu-panel')).toBeTruthy();
 
     fixture.componentInstance.trigger.closeMenu();
     fixture.detectChanges();
@@ -209,7 +207,7 @@ describe('MatMenu', () => {
     triggerEl.click();
     fixture.detectChanges();
 
-    expect(overlayContainerElement.querySelector('.mat-menu-panel')).toBeTruthy();
+    expect(overlayContainerElement.querySelector('.mat-mdc-menu-panel')).toBeTruthy();
 
     fixture.componentInstance.trigger.closeMenu();
     fixture.detectChanges();
@@ -250,7 +248,7 @@ describe('MatMenu', () => {
     fixture.detectChanges();
     tick(500);
 
-    expect(overlayContainerElement.querySelector('.mat-menu-panel')).toBeTruthy();
+    expect(overlayContainerElement.querySelector('.mat-mdc-menu-panel')).toBeTruthy();
 
     fixture.componentInstance.trigger.closeMenu();
     fixture.detectChanges();
@@ -270,7 +268,9 @@ describe('MatMenu', () => {
     fixture.detectChanges();
     tick(500);
 
-    const items = overlayContainerElement.querySelectorAll('.mat-menu-panel .mat-menu-item');
+    const items = overlayContainerElement.querySelectorAll(
+      '.mat-mdc-menu-panel .mat-mdc-menu-item',
+    );
 
     expect(document.activeElement).toBe(items[0]);
 
@@ -339,7 +339,7 @@ describe('MatMenu', () => {
     triggerEl.click();
     fixture.detectChanges();
 
-    expect(overlayContainerElement.querySelector('.mat-menu-panel')).toBeTruthy();
+    expect(overlayContainerElement.querySelector('.mat-mdc-menu-panel')).toBeTruthy();
 
     fixture.componentInstance.trigger.closeMenu();
     fixture.detectChanges();
@@ -357,7 +357,7 @@ describe('MatMenu', () => {
     triggerEl.click();
     fixture.detectChanges();
 
-    expect(overlayContainerElement.querySelector('.mat-menu-panel')).toBeTruthy();
+    expect(overlayContainerElement.querySelector('.mat-mdc-menu-panel')).toBeTruthy();
 
     fixture.componentInstance.trigger.closeMenu();
     fixture.detectChanges();
@@ -373,7 +373,6 @@ describe('MatMenu', () => {
     // Add 50 items to make the menu scrollable
     fixture.componentInstance.extraItems = new Array(50).fill('Hello there');
     fixture.detectChanges();
-    tick(50);
 
     const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
     dispatchFakeEvent(triggerEl, 'mousedown');
@@ -383,7 +382,7 @@ describe('MatMenu', () => {
     // Flush due to the additional tick that is necessary for the FocusMonitor.
     flush();
 
-    expect(overlayContainerElement.querySelector('.mat-menu-panel')!.scrollTop).toBe(0);
+    expect(overlayContainerElement.querySelector('.mat-mdc-menu-panel')!.scrollTop).toBe(0);
   }));
 
   it('should set the proper focus origin when restoring focus after opening by keyboard', fakeAsync(() => {
@@ -472,7 +471,7 @@ describe('MatMenu', () => {
     fixture.detectChanges();
     fixture.componentInstance.trigger.openMenu();
 
-    const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
+    const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
     const event = createKeyboardEvent('keydown', ESCAPE);
     spyOn(event, 'stopPropagation').and.callThrough();
 
@@ -490,7 +489,7 @@ describe('MatMenu', () => {
     fixture.detectChanges();
     fixture.componentInstance.trigger.openMenu();
 
-    const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
+    const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
     const event = createKeyboardEvent('keydown', ESCAPE, undefined, {alt: true});
 
     dispatchEvent(panel, event);
@@ -585,7 +584,7 @@ describe('MatMenu', () => {
     tick(500);
 
     const menuEl = fixture.debugElement.query(By.css('mat-menu'))!.nativeElement;
-    const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
+    const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
 
     expect(menuEl.classList).not.toContain('custom-one');
     expect(menuEl.classList).not.toContain('custom-two');
@@ -603,19 +602,20 @@ describe('MatMenu', () => {
     fixture.detectChanges();
     tick(500);
 
-    const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
+    const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
 
     expect(panel.classList).toContain('custom-one');
-    expect(panel.classList).toContain('mat-elevation-z4');
+    expect(panel.classList).toContain('mat-mdc-elevation-z8');
 
     fixture.componentInstance.panelClass = 'custom-two';
     fixture.detectChanges();
 
     expect(panel.classList).not.toContain('custom-one');
     expect(panel.classList).toContain('custom-two');
+    expect(panel.classList).toContain('mat-mdc-elevation-specific');
     expect(panel.classList)
-      .withContext('Expected mat-elevation-z4 not to be removed')
-      .toContain('mat-elevation-z4');
+      .withContext('Expected mat-mdc-elevation-z8 not to be removed')
+      .toContain('mat-mdc-elevation-z8');
   }));
 
   it('should set the "menu" role on the overlay panel', fakeAsync(() => {
@@ -625,7 +625,7 @@ describe('MatMenu', () => {
     fixture.detectChanges();
     tick(500);
 
-    const menuPanel = overlayContainerElement.querySelector('.mat-menu-panel');
+    const menuPanel = overlayContainerElement.querySelector('.mat-mdc-menu-panel');
 
     expect(menuPanel).withContext('Expected to find a menu panel.').toBeTruthy();
 
@@ -641,7 +641,7 @@ describe('MatMenu', () => {
     fixture.detectChanges();
     tick(500);
 
-    const menuPanel = overlayContainerElement.querySelector('.mat-menu-panel')!;
+    const menuPanel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
     expect(menuPanel.hasAttribute('aria-label')).toBe(false);
     expect(menuPanel.hasAttribute('aria-labelledby')).toBe(false);
     expect(menuPanel.hasAttribute('aria-describedby')).toBe(false);
@@ -673,7 +673,7 @@ describe('MatMenu', () => {
     fixture.detectChanges();
     tick(500);
 
-    const items = Array.from(overlayContainerElement.querySelectorAll('.mat-menu-item'));
+    const items = Array.from(overlayContainerElement.querySelectorAll('.mat-mdc-menu-item'));
 
     expect(items.length).toBeGreaterThan(0);
     expect(items.every(item => item.getAttribute('role') === 'menuitem')).toBe(true);
@@ -686,7 +686,7 @@ describe('MatMenu', () => {
     fixture.detectChanges();
     tick(500);
 
-    const items = Array.from(overlayContainerElement.querySelectorAll('.mat-menu-item'));
+    const items = Array.from(overlayContainerElement.querySelectorAll('.mat-mdc-menu-item'));
 
     expect(items.length).toBeGreaterThan(0);
     expect(items.every(item => item.getAttribute('role') === 'menuitemcheckbox')).toBe(true);
@@ -700,7 +700,7 @@ describe('MatMenu', () => {
     tick(500);
 
     let [firstMenuItemDebugEl, secondMenuItemDebugEl] = fixture.debugElement.queryAll(
-      By.css('.mat-menu-item'),
+      By.css('.mat-mdc-menu-item'),
     )!;
 
     const firstMenuItemInstance = firstMenuItemDebugEl.componentInstance as MatMenuItem;
@@ -806,9 +806,9 @@ describe('MatMenu', () => {
     fixture.componentInstance.triggerEl.nativeElement.click();
     fixture.detectChanges();
 
-    const panel = document.querySelector('.mat-menu-panel')! as HTMLElement;
+    const panel = document.querySelector('.mat-mdc-menu-panel')! as HTMLElement;
     const items: HTMLElement[] = Array.from(
-      panel.querySelectorAll('.mat-menu-panel [mat-menu-item]'),
+      panel.querySelectorAll('.mat-mdc-menu-panel [mat-menu-item]'),
     );
 
     items.forEach(item => patchElementFocus(item));
@@ -840,7 +840,7 @@ describe('MatMenu', () => {
     fixture.detectChanges();
 
     const items = Array.from<HTMLElement>(
-      document.querySelectorAll('.mat-menu-panel [mat-menu-item]'),
+      document.querySelectorAll('.mat-mdc-menu-panel [mat-menu-item]'),
     );
 
     items.forEach(item => patchElementFocus(item));
@@ -922,8 +922,8 @@ describe('MatMenu', () => {
     // Reset the automatic focus when the menu is opened.
     (document.activeElement as HTMLElement)?.blur();
 
-    const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
-    const items = Array.from(panel.querySelectorAll('.mat-menu-item')) as HTMLElement[];
+    const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
+    const items = Array.from(panel.querySelectorAll('.mat-mdc-menu-item')) as HTMLElement[];
     items.forEach(patchElementFocus);
 
     // Focus the last item since focus starts from the first one.
@@ -947,8 +947,8 @@ describe('MatMenu', () => {
     fixture.componentInstance.trigger.openMenu();
     fixture.detectChanges();
 
-    const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
-    const items = Array.from(panel.querySelectorAll('.mat-menu-item')) as HTMLElement[];
+    const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
+    const items = Array.from(panel.querySelectorAll('.mat-mdc-menu-item')) as HTMLElement[];
     items.forEach(patchElementFocus);
 
     // Focus the last item since focus starts from the first one.
@@ -974,8 +974,8 @@ describe('MatMenu', () => {
     fixture.componentInstance.trigger.openMenu();
     fixture.detectChanges();
 
-    const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
-    const items = Array.from(panel.querySelectorAll('.mat-menu-item')) as HTMLElement[];
+    const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
+    const items = Array.from(panel.querySelectorAll('.mat-mdc-menu-item')) as HTMLElement[];
     items.forEach(patchElementFocus);
 
     spyOn(items[items.length - 1], 'focus').and.callThrough();
@@ -995,8 +995,8 @@ describe('MatMenu', () => {
     fixture.componentInstance.trigger.openMenu();
     fixture.detectChanges();
 
-    const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
-    const items = Array.from(panel.querySelectorAll('.mat-menu-item')) as HTMLElement[];
+    const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
+    const items = Array.from(panel.querySelectorAll('.mat-mdc-menu-item')) as HTMLElement[];
     items.forEach(patchElementFocus);
 
     spyOn(items[items.length - 1], 'focus').and.callThrough();
@@ -1022,8 +1022,8 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      let menuPanel = document.querySelector('.mat-menu-panel')!;
-      let items = menuPanel.querySelectorAll('.mat-menu-panel [mat-menu-item]');
+      let menuPanel = document.querySelector('.mat-mdc-menu-panel')!;
+      let items = menuPanel.querySelectorAll('.mat-mdc-menu-panel [mat-menu-item]');
 
       expect(document.activeElement)
         .withContext('Expected first item to be focused on open')
@@ -1033,7 +1033,7 @@ describe('MatMenu', () => {
       fixture.componentInstance.items.splice(1, 0, {label: 'Calzone', disabled: false});
       fixture.detectChanges();
 
-      items = menuPanel.querySelectorAll('.mat-menu-panel [mat-menu-item]');
+      items = menuPanel.querySelectorAll('.mat-mdc-menu-panel [mat-menu-item]');
       dispatchKeyboardEvent(menuPanel, 'keydown', DOWN_ARROW);
       fixture.detectChanges();
       tick();
@@ -1058,8 +1058,8 @@ describe('MatMenu', () => {
     fixture.detectChanges();
     tick(500);
 
-    const menuPanel = document.querySelector('.mat-menu-panel')!;
-    const items = menuPanel.querySelectorAll('.mat-menu-panel [mat-menu-item]');
+    const menuPanel = document.querySelector('.mat-mdc-menu-panel')!;
+    const items = menuPanel.querySelectorAll('.mat-mdc-menu-panel [mat-menu-item]');
 
     expect(document.activeElement)
       .withContext('Expected first item to be focused on open')
@@ -1093,7 +1093,7 @@ describe('MatMenu', () => {
     fixture.detectChanges();
     flush();
 
-    expect(overlayContainerElement.querySelectorAll('.mat-menu-item').length)
+    expect(overlayContainerElement.querySelectorAll('.mat-mdc-menu-item').length)
       .withContext('Expected two open menus')
       .toBe(2);
   }));
@@ -1106,7 +1106,9 @@ describe('MatMenu', () => {
     fixture.detectChanges();
     tick(500);
 
-    expect(document.activeElement).toBe(overlayContainerElement.querySelector('.mat-menu-panel'));
+    expect(document.activeElement).toBe(
+      overlayContainerElement.querySelector('.mat-mdc-menu-panel'),
+    );
   }));
 
   it('should focus the menu panel if all items are disabled inside lazy content', fakeAsync(() => {
@@ -1117,7 +1119,9 @@ describe('MatMenu', () => {
     fixture.detectChanges();
     tick(500);
 
-    expect(document.activeElement).toBe(overlayContainerElement.querySelector('.mat-menu-panel'));
+    expect(document.activeElement).toBe(
+      overlayContainerElement.querySelector('.mat-mdc-menu-panel'),
+    );
   }));
 
   it('should clear the static aria-label from the menu host', fakeAsync(() => {
@@ -1147,13 +1151,13 @@ describe('MatMenu', () => {
     fixture.detectChanges();
 
     fixture.componentInstance.trigger.menuOpened.subscribe(() => {
-      (document.querySelectorAll('.mat-menu-panel [mat-menu-item]')[3] as HTMLElement).focus();
+      (document.querySelectorAll('.mat-mdc-menu-panel [mat-menu-item]')[3] as HTMLElement).focus();
     });
     fixture.componentInstance.trigger.openMenu();
     fixture.detectChanges();
     tick(500);
 
-    const items = document.querySelectorAll('.mat-menu-panel [mat-menu-item]');
+    const items = document.querySelectorAll('.mat-mdc-menu-panel [mat-menu-item]');
     expect(document.activeElement).withContext('Expected fourth item to be focused').toBe(items[3]);
   }));
 
@@ -1163,7 +1167,7 @@ describe('MatMenu', () => {
     fixture.componentInstance.trigger.openMenu();
     fixture.detectChanges();
     tick(500);
-    const panel = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
+    const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel') as HTMLElement;
 
     expect(panel.classList).toContain('mat-menu-below');
     expect(panel.classList).toContain('mat-menu-after');
@@ -1180,7 +1184,7 @@ describe('MatMenu', () => {
     triggerEl.click();
     fixture.detectChanges();
 
-    const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
+    const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
     const viewportHeight = viewportRuler.getViewportSize().height;
     let panelRect = panel.getBoundingClientRect();
     expect(Math.floor(panelRect.bottom)).toBeLessThan(viewportHeight);
@@ -1200,7 +1204,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
+      const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
 
       expect(panel).withContext('Expected panel to be defined').toBeTruthy();
       expect(panel.textContent)
@@ -1274,7 +1278,7 @@ describe('MatMenu', () => {
       // Flush due to the additional tick that is necessary for the FocusMonitor.
       flush();
 
-      const item = document.querySelector('.mat-menu-panel [mat-menu-item]')!;
+      const item = document.querySelector('.mat-mdc-menu-panel [mat-menu-item]')!;
 
       expect(document.activeElement).withContext('Expected first item to be focused').toBe(item);
     }));
@@ -1287,7 +1291,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      let item = overlayContainerElement.querySelector('.mat-menu-panel [mat-menu-item]')!;
+      let item = overlayContainerElement.querySelector('.mat-mdc-menu-panel [mat-menu-item]')!;
 
       expect(item.textContent!.trim()).toBe('one');
 
@@ -1298,7 +1302,7 @@ describe('MatMenu', () => {
       fixture.componentInstance.triggerTwo.openMenu();
       fixture.detectChanges();
       tick(500);
-      item = overlayContainerElement.querySelector('.mat-menu-panel [mat-menu-item]')!;
+      item = overlayContainerElement.querySelector('.mat-mdc-menu-panel [mat-menu-item]')!;
 
       expect(item.textContent!.trim()).toBe('two');
     }));
@@ -1327,7 +1331,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      const panel = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
+      const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel') as HTMLElement;
 
       expect(panel.classList).toContain('mat-menu-before');
       expect(panel.classList).not.toContain('mat-menu-after');
@@ -1344,7 +1348,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      const panel = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
+      const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel') as HTMLElement;
 
       expect(panel.classList).toContain('mat-menu-above');
       expect(panel.classList).not.toContain('mat-menu-below');
@@ -1364,7 +1368,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      const panel = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
+      const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel') as HTMLElement;
 
       expect(panel.classList).toContain('mat-menu-above');
       expect(panel.classList).not.toContain('mat-menu-below');
@@ -1390,7 +1394,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      let panel = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
+      let panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel') as HTMLElement;
 
       expect(Math.floor(panel.getBoundingClientRect().bottom))
         .withContext('Expected menu to open above')
@@ -1406,7 +1410,7 @@ describe('MatMenu', () => {
       fixture.componentInstance.trigger.openMenu();
       fixture.detectChanges();
       tick(500);
-      panel = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
+      panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel') as HTMLElement;
 
       expect(Math.floor(panel.getBoundingClientRect().top))
         .withContext('Expected menu to open below')
@@ -1583,7 +1587,7 @@ describe('MatMenu', () => {
       }
 
       get menuPanel() {
-        return overlayContainerElement.querySelector('.mat-menu-panel');
+        return overlayContainerElement.querySelector('.mat-mdc-menu-panel');
       }
 
       private _getOverlayPane() {
@@ -1658,7 +1662,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      const item = fixture.debugElement.query(By.css('.mat-menu-item'))!;
+      const item = fixture.debugElement.query(By.css('.mat-mdc-menu-item'))!;
       const ripple = item.query(By.css('.mat-ripple'))!.injector.get<MatRipple>(MatRipple);
 
       expect(ripple.disabled).toBe(false);
@@ -1672,7 +1676,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      const items = fixture.debugElement.queryAll(By.css('.mat-menu-item'));
+      const items = fixture.debugElement.queryAll(By.css('.mat-mdc-menu-item'));
       const ripple = items[1].query(By.css('.mat-ripple'))!.injector.get<MatRipple>(MatRipple);
 
       expect(ripple.disabled).toBe(true);
@@ -1687,7 +1691,7 @@ describe('MatMenu', () => {
       tick(500);
 
       // The third menu item in the `SimpleMenu` component has ripples disabled.
-      const items = fixture.debugElement.queryAll(By.css('.mat-menu-item'));
+      const items = fixture.debugElement.queryAll(By.css('.mat-mdc-menu-item'));
       const ripple = items[2].query(By.css('.mat-ripple'))!.injector.get<MatRipple>(MatRipple);
 
       expect(ripple.disabled).toBe(true);
@@ -1730,7 +1734,7 @@ describe('MatMenu', () => {
     }));
 
     it('should emit an event when pressing ESCAPE', fakeAsync(() => {
-      const menu = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
+      const menu = overlayContainerElement.querySelector('.mat-mdc-menu-panel') as HTMLElement;
 
       dispatchKeyboardEvent(menu, 'keydown', ESCAPE);
       fixture.detectChanges();
@@ -1844,11 +1848,11 @@ describe('MatMenu', () => {
       compileTestComponent();
       instance.rootTriggerEl.nativeElement.click();
       fixture.detectChanges();
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected one open menu')
         .toBe(1);
 
-      const items = Array.from(overlay.querySelectorAll('.mat-menu-panel [mat-menu-item]'));
+      const items = Array.from(overlay.querySelectorAll('.mat-mdc-menu-panel [mat-menu-item]'));
       const levelOneTrigger = overlay.querySelector('#level-one-trigger')!;
 
       dispatchMouseEvent(levelOneTrigger, 'mouseenter');
@@ -1858,8 +1862,8 @@ describe('MatMenu', () => {
 
       expect(levelOneTrigger.classList)
         .withContext('Expected the trigger to be highlighted')
-        .toContain('mat-menu-item-highlighted');
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+        .toContain('mat-mdc-menu-item-highlighted');
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected two open menus')
         .toBe(2);
 
@@ -1867,11 +1871,11 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected one open menu')
         .toBe(1);
       expect(levelOneTrigger.classList).not.toContain(
-        'mat-menu-item-highlighted',
+        'mat-mdc-menu-item-highlighted',
         'Expected the trigger to not be highlighted',
       );
     }));
@@ -1881,7 +1885,7 @@ describe('MatMenu', () => {
       instance.rootTriggerEl.nativeElement.click();
       fixture.detectChanges();
 
-      const items = Array.from(overlay.querySelectorAll('.mat-menu-panel [mat-menu-item]'));
+      const items = Array.from(overlay.querySelectorAll('.mat-mdc-menu-panel [mat-menu-item]'));
       const levelOneTrigger = overlay.querySelector('#level-one-trigger')!;
 
       dispatchMouseEvent(levelOneTrigger, 'mouseenter');
@@ -1893,7 +1897,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick();
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected three open menus')
         .toBe(3);
 
@@ -1901,7 +1905,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected one open menu')
         .toBe(1);
     }));
@@ -1918,7 +1922,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected two open menus')
         .toBe(2);
 
@@ -1930,7 +1934,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected one open menu')
         .toBe(1);
     }));
@@ -1941,7 +1945,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected one open menu')
         .toBe(1);
 
@@ -1955,7 +1959,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected to remain at one open menu')
         .toBe(1);
     }));
@@ -1965,7 +1969,7 @@ describe('MatMenu', () => {
       instance.rootTriggerEl.nativeElement.click();
       fixture.detectChanges();
       tick(500);
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected one open menu')
         .toBe(1);
 
@@ -1974,13 +1978,13 @@ describe('MatMenu', () => {
       levelOneTrigger.click();
       fixture.detectChanges();
       tick(500);
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected two open menus')
         .toBe(2);
 
       levelOneTrigger.click();
       fixture.detectChanges();
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected repeat clicks not to close the menu.')
         .toBe(2);
     }));
@@ -1989,7 +1993,7 @@ describe('MatMenu', () => {
       compileTestComponent();
       instance.rootTriggerEl.nativeElement.click();
       fixture.detectChanges();
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected one open menu')
         .toBe(1);
 
@@ -1998,21 +2002,21 @@ describe('MatMenu', () => {
       dispatchKeyboardEvent(levelOneTrigger, 'keydown', RIGHT_ARROW);
       fixture.detectChanges();
 
-      const panels = overlay.querySelectorAll('.mat-menu-panel');
+      const panels = overlay.querySelectorAll('.mat-mdc-menu-panel');
 
       expect(panels.length).withContext('Expected two open menus').toBe(2);
       dispatchKeyboardEvent(panels[1], 'keydown', LEFT_ARROW);
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(1);
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length).toBe(1);
     }));
 
     it('should open and close a nested menu with the arrow keys in rtl', fakeAsync(() => {
       compileTestComponent('rtl');
       instance.rootTriggerEl.nativeElement.click();
       fixture.detectChanges();
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected one open menu')
         .toBe(1);
 
@@ -2021,14 +2025,14 @@ describe('MatMenu', () => {
       dispatchKeyboardEvent(levelOneTrigger, 'keydown', LEFT_ARROW);
       fixture.detectChanges();
 
-      const panels = overlay.querySelectorAll('.mat-menu-panel');
+      const panels = overlay.querySelectorAll('.mat-mdc-menu-panel');
 
       expect(panels.length).withContext('Expected two open menus').toBe(2);
       dispatchKeyboardEvent(panels[1], 'keydown', RIGHT_ARROW);
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(1);
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length).toBe(1);
     }));
 
     it('should not do anything with the arrow keys for a top-level menu', fakeAsync(() => {
@@ -2037,19 +2041,19 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      const menu = overlay.querySelector('.mat-menu-panel')!;
+      const menu = overlay.querySelector('.mat-mdc-menu-panel')!;
 
       dispatchKeyboardEvent(menu, 'keydown', RIGHT_ARROW);
       fixture.detectChanges();
       tick(500);
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected one menu to remain open')
         .toBe(1);
 
       dispatchKeyboardEvent(menu, 'keydown', LEFT_ARROW);
       fixture.detectChanges();
       tick(500);
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected one menu to remain open')
         .toBe(1);
     }));
@@ -2068,13 +2072,13 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected three open menus')
         .toBe(3);
       expect(overlay.querySelectorAll('.cdk-overlay-backdrop').length)
         .withContext('Expected one backdrop element')
         .toBe(1);
-      expect(overlay.querySelectorAll('.mat-menu-panel, .cdk-overlay-backdrop')[0].classList)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel, .cdk-overlay-backdrop')[0].classList)
         .withContext('Expected backdrop to be beneath all of the menus')
         .toContain('cdk-overlay-backdrop');
 
@@ -2082,7 +2086,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected no open menus')
         .toBe(0);
     }));
@@ -2093,7 +2097,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelector('.mat-menu-panel')!.contains(document.activeElement))
+      expect(overlay.querySelector('.mat-mdc-menu-panel')!.contains(document.activeElement))
         .withContext('Expected focus to be inside the root menu')
         .toBe(true);
 
@@ -2101,7 +2105,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel')[1].contains(document.activeElement))
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel')[1].contains(document.activeElement))
         .withContext('Expected focus to be inside the first nested menu')
         .toBe(true);
 
@@ -2109,7 +2113,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel')[2].contains(document.activeElement))
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel')[2].contains(document.activeElement))
         .withContext('Expected focus to be inside the second nested menu')
         .toBe(true);
 
@@ -2117,7 +2121,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel')[1].contains(document.activeElement))
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel')[1].contains(document.activeElement))
         .withContext('Expected focus to be back inside the first nested menu')
         .toBe(true);
 
@@ -2125,7 +2129,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelector('.mat-menu-panel')!.contains(document.activeElement))
+      expect(overlay.querySelector('.mat-mdc-menu-panel')!.contains(document.activeElement))
         .withContext('Expected focus to be back inside the root menu')
         .toBe(true);
     }));
@@ -2140,7 +2144,11 @@ describe('MatMenu', () => {
       fixture.detectChanges();
 
       const spy = spyOn(levelOneTrigger, 'focus').and.callThrough();
-      dispatchKeyboardEvent(overlay.querySelectorAll('.mat-menu-panel')[1], 'keydown', LEFT_ARROW);
+      dispatchKeyboardEvent(
+        overlay.querySelectorAll('.mat-mdc-menu-panel')[1],
+        'keydown',
+        LEFT_ARROW,
+      );
       fixture.detectChanges();
       tick(500);
 
@@ -2161,7 +2169,7 @@ describe('MatMenu', () => {
       tick(500);
 
       const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
-      const panelRect = overlay.querySelectorAll('.mat-menu-panel')[1].getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.mat-mdc-menu-panel')[1].getBoundingClientRect();
 
       expect(Math.round(triggerRect.right)).toBe(Math.round(panelRect.left));
       expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + MENU_PANEL_TOP_PADDING);
@@ -2181,7 +2189,7 @@ describe('MatMenu', () => {
       tick(500);
 
       const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
-      const panelRect = overlay.querySelectorAll('.mat-menu-panel')[1].getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.mat-mdc-menu-panel')[1].getBoundingClientRect();
 
       expect(Math.round(triggerRect.left)).toBe(Math.round(panelRect.right));
       expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + MENU_PANEL_TOP_PADDING);
@@ -2201,7 +2209,7 @@ describe('MatMenu', () => {
       tick(500);
 
       const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
-      const panelRect = overlay.querySelectorAll('.mat-menu-panel')[1].getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.mat-mdc-menu-panel')[1].getBoundingClientRect();
 
       expect(Math.round(triggerRect.left)).toBe(Math.round(panelRect.right));
       expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + MENU_PANEL_TOP_PADDING);
@@ -2221,7 +2229,7 @@ describe('MatMenu', () => {
       tick(500);
 
       const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
-      const panelRect = overlay.querySelectorAll('.mat-menu-panel')[1].getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.mat-mdc-menu-panel')[1].getBoundingClientRect();
 
       expect(Math.round(triggerRect.right)).toBe(Math.round(panelRect.left));
       expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + MENU_PANEL_TOP_PADDING);
@@ -2236,13 +2244,13 @@ describe('MatMenu', () => {
       fixture.detectChanges();
 
       // Change the padding to something different from the default.
-      (overlay.querySelector('.mat-menu-content') as HTMLElement).style.padding = '15px 0';
+      (overlay.querySelector('.mat-mdc-menu-content') as HTMLElement).style.padding = '15px 0';
 
       instance.levelOneTrigger.openMenu();
       fixture.detectChanges();
 
       const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
-      const panelRect = overlay.querySelectorAll('.mat-menu-panel')[1].getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.mat-mdc-menu-panel')[1].getBoundingClientRect();
 
       expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + 15);
     });
@@ -2258,15 +2266,15 @@ describe('MatMenu', () => {
       instance.levelTwoTrigger.openMenu();
       fixture.detectChanges();
 
-      const menus = overlay.querySelectorAll('.mat-menu-panel');
+      const menus = overlay.querySelectorAll('.mat-mdc-menu-panel');
 
       expect(menus.length).withContext('Expected three open menus').toBe(3);
 
-      (menus[2].querySelector('.mat-menu-item')! as HTMLElement).click();
+      (menus[2].querySelector('.mat-mdc-menu-item')! as HTMLElement).click();
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected no open menus')
         .toBe(0);
     }));
@@ -2282,7 +2290,7 @@ describe('MatMenu', () => {
       instance.levelTwoTrigger.openMenu();
       fixture.detectChanges();
 
-      const menus = overlay.querySelectorAll('.mat-menu-panel');
+      const menus = overlay.querySelectorAll('.mat-mdc-menu-panel');
 
       expect(menus.length).withContext('Expected three open menus').toBe(3);
 
@@ -2290,7 +2298,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected no open menus')
         .toBe(0);
     }));
@@ -2303,10 +2311,10 @@ describe('MatMenu', () => {
 
       const menuItems = overlay.querySelectorAll('[mat-menu-item]');
 
-      expect(menuItems[0].classList).toContain('mat-menu-item-submenu-trigger');
-      expect(menuItems[0].querySelector('.mat-menu-submenu-icon')).toBeTruthy();
-      expect(menuItems[1].classList).not.toContain('mat-menu-item-submenu-trigger');
-      expect(menuItems[1].querySelector('.mat-menu-submenu-icon')).toBeFalsy();
+      expect(menuItems[0].classList).toContain('mat-mdc-menu-item-submenu-trigger');
+      expect(menuItems[0].querySelector('.mat-mdc-menu-submenu-icon')).toBeTruthy();
+      expect(menuItems[1].classList).not.toContain('mat-mdc-menu-item-submenu-trigger');
+      expect(menuItems[1].querySelector('.mat-mdc-menu-submenu-icon')).toBeFalsy();
     }));
 
     it('should increase the sub-menu elevation based on its depth', fakeAsync(() => {
@@ -2323,17 +2331,22 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      const menus = overlay.querySelectorAll('.mat-menu-panel');
+      const menus = overlay.querySelectorAll('.mat-mdc-menu-panel');
 
+      expect(menus[0].classList).toContain('mat-mdc-elevation-specific');
       expect(menus[0].classList)
         .withContext('Expected root menu to have base elevation.')
-        .toContain('mat-elevation-z4');
+        .toContain('mat-mdc-elevation-z8');
+
+      expect(menus[1].classList).toContain('mat-mdc-elevation-specific');
       expect(menus[1].classList)
         .withContext('Expected first sub-menu to have base elevation + 1.')
-        .toContain('mat-elevation-z5');
+        .toContain('mat-mdc-elevation-z9');
+
+      expect(menus[2].classList).toContain('mat-mdc-elevation-specific');
       expect(menus[2].classList)
         .withContext('Expected second sub-menu to have base elevation + 2.')
-        .toContain('mat-elevation-z6');
+        .toContain('mat-mdc-elevation-z10');
     }));
 
     it('should update the elevation when the same menu is opened at a different depth', fakeAsync(() => {
@@ -2347,17 +2360,18 @@ describe('MatMenu', () => {
       instance.levelTwoTrigger.openMenu();
       fixture.detectChanges();
 
-      let lastMenu = overlay.querySelectorAll('.mat-menu-panel')[2];
+      let lastMenu = overlay.querySelectorAll('.mat-mdc-menu-panel')[2];
 
+      expect(lastMenu.classList).toContain('mat-mdc-elevation-specific');
       expect(lastMenu.classList)
         .withContext('Expected menu to have the base elevation plus two.')
-        .toContain('mat-elevation-z6');
+        .toContain('mat-mdc-elevation-z10');
 
       (overlay.querySelector('.cdk-overlay-backdrop')! as HTMLElement).click();
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected no open menus')
         .toBe(0);
 
@@ -2365,14 +2379,15 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      lastMenu = overlay.querySelector('.mat-menu-panel') as HTMLElement;
+      lastMenu = overlay.querySelector('.mat-mdc-menu-panel') as HTMLElement;
 
+      expect(lastMenu.classList).toContain('mat-mdc-elevation-specific');
       expect(lastMenu.classList)
         .not.withContext('Expected menu not to maintain old elevation.')
-        .toContain('mat-elevation-z6');
+        .toContain('mat-mdc-elevation-z10');
       expect(lastMenu.classList)
         .withContext('Expected menu to have the proper updated elevation.')
-        .toContain('mat-elevation-z4');
+        .toContain('mat-mdc-elevation-z8');
     }));
 
     it('should not change focus origin if origin not specified for trigger', fakeAsync(() => {
@@ -2406,14 +2421,14 @@ describe('MatMenu', () => {
       elevationFixture.detectChanges();
       tick(500);
 
-      const menuClasses = overlayContainerElement.querySelectorAll('.mat-menu-panel')[1].classList;
+      const menuClasses =
+        overlayContainerElement.querySelectorAll('.mat-mdc-menu-panel')[1].classList;
 
+      expect(menuClasses).toContain('mat-mdc-elevation-specific');
       expect(menuClasses)
         .withContext('Expected user elevation to be maintained')
-        .toContain('mat-elevation-z24');
-      expect(menuClasses)
-        .not.withContext('Expected no stacked elevation.')
-        .toContain('mat-elevation-z3');
+        .toContain('mat-mdc-elevation-z24');
+      expect(menuClasses).not.toContain('mat-mdc-elevation-z8', 'Expected no stacked elevation.');
     }));
 
     it('should close all of the menus when the root is closed programmatically', fakeAsync(() => {
@@ -2427,7 +2442,7 @@ describe('MatMenu', () => {
       instance.levelTwoTrigger.openMenu();
       fixture.detectChanges();
 
-      const menus = overlay.querySelectorAll('.mat-menu-panel');
+      const menus = overlay.querySelectorAll('.mat-mdc-menu-panel');
 
       expect(menus.length).withContext('Expected three open menus').toBe(3);
 
@@ -2435,7 +2450,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected no open menus')
         .toBe(0);
     }));
@@ -2445,7 +2460,7 @@ describe('MatMenu', () => {
       instance.rootTriggerEl.nativeElement.click();
       fixture.detectChanges();
       tick(500);
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected one open menu')
         .toBe(1);
 
@@ -2461,8 +2476,8 @@ describe('MatMenu', () => {
 
       expect(lazyTrigger.classList)
         .withContext('Expected the trigger to be highlighted')
-        .toContain('mat-menu-item-highlighted');
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+        .toContain('mat-mdc-menu-item-highlighted');
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected two open menus')
         .toBe(2);
     }));
@@ -2493,14 +2508,14 @@ describe('MatMenu', () => {
       repeaterFixture.componentInstance.rootTriggerEl.nativeElement.click();
       repeaterFixture.detectChanges();
       tick(500);
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected one open menu')
         .toBe(1);
 
       dispatchMouseEvent(overlay.querySelector('.level-one-trigger')!, 'mouseenter');
       repeaterFixture.detectChanges();
       tick(500);
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected two open menus')
         .toBe(2);
     }));
@@ -2513,7 +2528,7 @@ describe('MatMenu', () => {
       repeaterFixture.componentInstance.rootTriggerEl.nativeElement.click();
       repeaterFixture.detectChanges();
       tick(500);
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected one open menu')
         .toBe(1);
 
@@ -2522,7 +2537,7 @@ describe('MatMenu', () => {
       dispatchMouseEvent(triggers[0], 'mouseenter');
       repeaterFixture.detectChanges();
       tick(500);
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected two open menus')
         .toBe(2);
 
@@ -2530,7 +2545,7 @@ describe('MatMenu', () => {
       repeaterFixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected two open menus')
         .toBe(2);
     }));
@@ -2543,7 +2558,7 @@ describe('MatMenu', () => {
       repeaterFixture.componentInstance.rootTriggerEl.nativeElement.click();
       repeaterFixture.detectChanges();
       tick(500);
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected one open menu')
         .toBe(1);
 
@@ -2556,7 +2571,7 @@ describe('MatMenu', () => {
       repeaterFixture.detectChanges();
       tick(500);
 
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected two open menus')
         .toBe(2);
     }));
@@ -2572,7 +2587,7 @@ describe('MatMenu', () => {
         nestedFixture.componentInstance.rootTriggerEl.nativeElement.click();
         nestedFixture.detectChanges();
         tick(500);
-        expect(overlay.querySelectorAll('.mat-menu-panel').length)
+        expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
           .withContext('Expected one open menu')
           .toBe(1);
 
@@ -2580,7 +2595,7 @@ describe('MatMenu', () => {
         nestedFixture.detectChanges();
         tick(500);
 
-        expect(overlay.querySelectorAll('.mat-menu-panel').length)
+        expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
           .withContext('Expected two open menus')
           .toBe(2);
       }),
@@ -2597,7 +2612,7 @@ describe('MatMenu', () => {
         nestedFixture.componentInstance.rootTriggerEl.nativeElement.click();
         nestedFixture.detectChanges();
         tick(500);
-        expect(overlay.querySelectorAll('.mat-menu-panel').length)
+        expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
           .withContext('Expected one open menu')
           .toBe(1);
 
@@ -2605,7 +2620,7 @@ describe('MatMenu', () => {
         nestedFixture.detectChanges();
         tick(500);
 
-        expect(overlay.querySelectorAll('.mat-menu-panel').length)
+        expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
           .withContext('Expected two open menus')
           .toBe(2);
 
@@ -2613,7 +2628,7 @@ describe('MatMenu', () => {
         nestedFixture.detectChanges();
         tick(500);
 
-        expect(overlay.querySelectorAll('.mat-menu-panel').length)
+        expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
           .withContext('Expected two open menus to remain')
           .toBe(2);
       }),
@@ -2626,13 +2641,13 @@ describe('MatMenu', () => {
       instance.rootTriggerEl.nativeElement.click();
       fixture.detectChanges();
 
-      const items = Array.from(overlay.querySelectorAll('.mat-menu-panel [mat-menu-item]'));
+      const items = Array.from(overlay.querySelectorAll('.mat-mdc-menu-panel [mat-menu-item]'));
       const levelOneTrigger = overlay.querySelector('#level-one-trigger')!;
 
       dispatchMouseEvent(levelOneTrigger, 'mouseenter');
       fixture.detectChanges();
       tick();
-      expect(overlay.querySelectorAll('.mat-menu-panel').length)
+      expect(overlay.querySelectorAll('.mat-mdc-menu-panel').length)
         .withContext('Expected two open menus')
         .toBe(2);
 
@@ -2654,11 +2669,13 @@ describe('MatMenu', () => {
     fixture.detectChanges();
     tick(500);
     const menuItemNativeElements = Array.from(
-      overlayContainerElement.querySelectorAll('.mat-menu-item'),
+      overlayContainerElement.querySelectorAll('.mat-mdc-menu-item'),
     );
 
     expect(
-      menuItemNativeElements.every(element => element.classList.contains('mat-focus-indicator')),
+      menuItemNativeElements.every(element =>
+        element.classList.contains('mat-mdc-focus-indicator'),
+      ),
     ).toBe(true);
   }));
 });
@@ -2876,7 +2893,7 @@ class NestedMenu {
         #levelOneTrigger="matMenuTrigger">One</button>
     </mat-menu>
 
-    <mat-menu #levelOne="matMenu" class="mat-elevation-z24">
+    <mat-menu #levelOne="matMenu" class="mat-mdc-elevation-z24">
       <button mat-menu-item>Two</button>
     </mat-menu>
   `,

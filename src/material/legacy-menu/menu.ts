@@ -6,38 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Overlay, ScrollStrategy} from '@angular/cdk/overlay';
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   Inject,
   NgZone,
-  Provider,
   ViewEncapsulation,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {
-  MAT_MENU_DEFAULT_OPTIONS,
   MAT_MENU_PANEL,
-  MAT_MENU_SCROLL_STRATEGY,
-  _MatMenuBase,
   matMenuAnimations,
+  _MatMenuBase,
+  MAT_MENU_DEFAULT_OPTIONS,
   MatMenuDefaultOptions,
 } from '@angular/material/menu';
 
-/** @docs-private */
-export function MAT_MENU_SCROLL_STRATEGY_FACTORY(overlay: Overlay): () => ScrollStrategy {
-  return () => overlay.scrollStrategies.reposition();
-}
-
-/** @docs-private */
-export const MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER: Provider = {
-  provide: MAT_MENU_SCROLL_STRATEGY,
-  deps: [Overlay],
-  useFactory: MAT_MENU_SCROLL_STRATEGY_FACTORY,
-};
-
+/** @docs-public MatMenu */
 @Component({
   selector: 'mat-menu',
   templateUrl: 'menu.html',
@@ -51,13 +37,13 @@ export const MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER: Provider = {
     '[attr.aria-describedby]': 'null',
   },
   animations: [matMenuAnimations.transformMenu, matMenuAnimations.fadeInItems],
-  providers: [{provide: MAT_MENU_PANEL, useExisting: MatMenu}],
+  providers: [{provide: MAT_MENU_PANEL, useExisting: MatLegacyMenu}],
 })
-export class MatMenu extends _MatMenuBase {
-  protected override _elevationPrefix = 'mat-mdc-elevation-z';
-  protected override _baseElevation = 8;
+export class MatLegacyMenu extends _MatMenuBase {
+  protected override _elevationPrefix = 'mat-elevation-z';
+  protected override _baseElevation = 4;
 
-  /*
+  /**
    * @deprecated `changeDetectorRef` parameter will become a required parameter.
    * @breaking-change 15.0.0
    */
@@ -68,11 +54,11 @@ export class MatMenu extends _MatMenuBase {
   );
 
   constructor(
-    _elementRef: ElementRef<HTMLElement>,
-    _ngZone: NgZone,
-    @Inject(MAT_MENU_DEFAULT_OPTIONS) _defaultOptions: MatMenuDefaultOptions,
+    elementRef: ElementRef<HTMLElement>,
+    ngZone: NgZone,
+    @Inject(MAT_MENU_DEFAULT_OPTIONS) defaultOptions: MatMenuDefaultOptions,
     changeDetectorRef?: ChangeDetectorRef,
   ) {
-    super(_elementRef, _ngZone, _defaultOptions, changeDetectorRef);
+    super(elementRef, ngZone, defaultOptions, changeDetectorRef);
   }
 }

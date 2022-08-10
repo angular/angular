@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/legacy-card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatLegacyMenuModule } from '@angular/material/legacy-menu';
 
 import { <%= classify(name) %>Component } from './<%= dasherize(name) %>.component';
 
@@ -23,7 +23,7 @@ describe('<%= classify(name) %>Component', () => {
         MatCardModule,
         MatGridListModule,
         MatIconModule,
-        MatMenuModule,
+        MatLegacyMenuModule,
       ]
     }).compileComponents();
   }));

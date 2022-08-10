@@ -25,8 +25,6 @@
   mdc-icon-button-typography, mdc-icon-button-density, mdc-icon-button-theme;
 @forward './mdc-list/list-theme' as mdc-list-* show mdc-list-color, mdc-list-typography,
   mdc-list-density, mdc-list-theme;
-@forward './mdc-menu/menu-theme' as mdc-menu-* show mdc-menu-color, mdc-menu-typography,
-  mdc-menu-density, mdc-menu-theme;
 @forward './mdc-paginator/paginator-theme' as mdc-paginator-* show mdc-paginator-color,
   mdc-paginator-typography, mdc-paginator-density, mdc-paginator-theme;
 @forward './mdc-progress-spinner/progress-spinner-theme' as mdc-progress-spinner-* show

@@ -14,6 +14,7 @@
 @use '../../legacy-slide-toggle/slide-toggle-theme';
 @use '../../legacy-radio/radio-theme';
 @use '../../legacy-slider/slider-theme';
+@use '../../legacy-menu/menu-theme';
 
 // Create a theme.
 @mixin all-legacy-component-themes($theme-or-color-config) {
@@ -33,6 +34,7 @@
     @include slide-toggle-theme.theme($theme-or-color-config);
     @include radio-theme.theme($theme-or-color-config);
     @include slider-theme.theme($theme-or-color-config);
+    @include menu-theme.theme($theme-or-color-config);
     @include all-theme.private-all-unmigrated-component-themes($theme-or-color-config);
   }
 }
