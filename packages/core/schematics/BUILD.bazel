@@ -11,6 +11,7 @@ pkg_npm(
         "migrations.json",
         "package.json",
     ],
+    validate = False,
     visibility = ["//packages/core:__pkg__"],
     deps = [
         "//packages/core/schematics/migrations/entry-components",
