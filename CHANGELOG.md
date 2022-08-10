@@ -1,3 +1,31 @@
+<a name="14.2.0-next.1"></a>
+# 14.2.0-next.1 (2022-08-10)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bedf537951](https://github.com/angular/angular/commit/bedf537951e64c55dde9b38936e451daa4a4bde9) | fix | allow null/undefined to be passed to ngStyle input ([#47069](https://github.com/angular/angular/pull/47069)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ea89677c12](https://github.com/angular/angular/commit/ea89677c125c16654e3e521998b575687c2bd20c) | feat | support more recent version of `tsickle` ([#47018](https://github.com/angular/angular/pull/47018)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dbed2cf079](https://github.com/angular/angular/commit/dbed2cf079c52825ce0aa67fc2a46bc3d38f408f) | fix | check if transplanted views are attached to change detector ([#46974](https://github.com/angular/angular/pull/46974)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2b4d7f6733](https://github.com/angular/angular/commit/2b4d7f6733e10e45e3ca8a448307bbc2834fc4a1) | feat | support document reference in render functions ([#47032](https://github.com/angular/angular/pull/47032)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0abb67af59](https://github.com/angular/angular/commit/0abb67af59a92a2b29082a259aa9f4ea3fbaab7d) | feat | allow guards and resolvers to be plain functions ([#46684](https://github.com/angular/angular/pull/46684)) |
+| [2a43beec15](https://github.com/angular/angular/commit/2a43beec159990b8c4bafc7f189e2bd85002dc7a) | fix | Fix route recognition behavior with some versions of rxjs ([#47098](https://github.com/angular/angular/pull/47098)) |
+## Special Thanks
+4javier, Andrew Kushnir, Andrew Scott, AntonioCardenas, Bob Watson, Bruno Barbosa, Eduardo Speroni, Edward, George Kalpakas, Ilia Mirkin, Jan Melcher, Jessica Janiuk, JiaLiPassion, Kristiyan Kostadinov, Mladen Jakovljević, Paul Gschwendtner, Pawel Kozlowski, Roman Matusevich, Victor Porof, Vovch, ashide2729, ileil and onrails
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.0-next.0"></a>
 # 14.2.0-next.0 (2022-08-03)
 ### common
