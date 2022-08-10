@@ -14,6 +14,7 @@ filegroup(
 pkg_npm(
     name = "npm_package",
     srcs = [":package_assets"],
+    validate = False,
     deps = [
         "//packages/localize/schematics/ng-add",
     ],
