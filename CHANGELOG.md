@@ -1,3 +1,18 @@
+<a name="14.1.2"></a>
+# 14.1.2 (2022-08-10)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5ff715c549](https://github.com/angular/angular/commit/5ff715c5497fcbcbb33eb93770470fff5a816cd5) | fix | check if transplanted views are attached to change detector ([#46974](https://github.com/angular/angular/pull/46974)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [439d77e852](https://github.com/angular/angular/commit/439d77e852c2e08d384c420a2c3a962a804c60f1) | fix | Fix route recognition behavior with some versions of rxjs ([#47098](https://github.com/angular/angular/pull/47098)) ([#47112](https://github.com/angular/angular/pull/47112)) |
+## Special Thanks
+4javier, Andrew Kushnir, Andrew Scott, AntonioCardenas, Bob Watson, Bruno Barbosa, Eduardo Speroni, Edward, George Kalpakas, Jan Melcher, Kristiyan Kostadinov, Mladen Jakovljević, Paul Gschwendtner, Pawel Kozlowski, Roman Matusevich, Vovch, ashide2729, ileil and onrails
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.0-next.1"></a>
 # 14.2.0-next.1 (2022-08-10)
 ### common
