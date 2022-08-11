@@ -184,6 +184,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     // (undocumented)
     detach(): void;
     dispose(): void;
+    _origin: FlexibleConnectedPositionStrategyOrigin;
     positionChanges: Observable<ConnectedOverlayPositionChange>;
     get positions(): ConnectionPositionPair[];
     _preferredPositions: ConnectionPositionPair[];

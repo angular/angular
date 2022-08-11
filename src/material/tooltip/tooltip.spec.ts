@@ -234,6 +234,78 @@ describe('MDC-based MatTooltip', () => {
       expect(tooltipDirective._getOverlayPosition().fallback.overlayX).toBe('end');
     }));
 
+    it('should position on the bottom-left by default', fakeAsync(() => {
+      // We don't bind mouse events on mobile devices.
+      if (platform.IOS || platform.ANDROID) {
+        return;
+      }
+
+      TestBed.resetTestingModule()
+        .configureTestingModule({
+          imports: [MatTooltipModule, OverlayModule],
+          declarations: [WideTooltipDemo],
+        })
+        .compileComponents();
+
+      const wideFixture = TestBed.createComponent(WideTooltipDemo);
+      wideFixture.detectChanges();
+      tooltipDirective = wideFixture.debugElement
+        .query(By.css('button'))!
+        .injector.get<MatTooltip>(MatTooltip);
+      const button: HTMLButtonElement = wideFixture.nativeElement.querySelector('button');
+      const triggerRect = button.getBoundingClientRect();
+
+      dispatchMouseEvent(button, 'mouseenter', triggerRect.right - 100, triggerRect.top + 100);
+      wideFixture.detectChanges();
+      tick();
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+
+      expect(tooltipDirective._overlayRef!.overlayElement.offsetLeft).toBeLessThan(
+        triggerRect.right - 250,
+      );
+      expect(tooltipDirective._overlayRef!.overlayElement.offsetTop).toBeGreaterThanOrEqual(
+        triggerRect.bottom,
+      );
+    }));
+
+    it('should be able to override the default positionAtOrigin', fakeAsync(() => {
+      // We don't bind mouse events on mobile devices.
+      if (platform.IOS || platform.ANDROID) {
+        return;
+      }
+
+      TestBed.resetTestingModule()
+        .configureTestingModule({
+          imports: [MatTooltipModule, OverlayModule],
+          declarations: [WideTooltipDemo],
+          providers: [
+            {
+              provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
+              useValue: {positionAtOrigin: true},
+            },
+          ],
+        })
+        .compileComponents();
+
+      const wideFixture = TestBed.createComponent(WideTooltipDemo);
+      wideFixture.detectChanges();
+      tooltipDirective = wideFixture.debugElement
+        .query(By.css('button'))!
+        .injector.get<MatTooltip>(MatTooltip);
+      const button: HTMLButtonElement = wideFixture.nativeElement.querySelector('button');
+      const triggerRect = button.getBoundingClientRect();
+
+      dispatchMouseEvent(button, 'mouseenter', triggerRect.right - 100, triggerRect.top + 100);
+      wideFixture.detectChanges();
+      tick();
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+
+      expect(tooltipDirective._overlayRef!.overlayElement.offsetLeft).toBe(
+        triggerRect.right - 100 - 20,
+      );
+      expect(tooltipDirective._overlayRef!.overlayElement.offsetTop).toBe(triggerRect.top + 100);
+    }));
+
     it('should be able to disable tooltip interactivity', fakeAsync(() => {
       TestBed.resetTestingModule()
         .configureTestingModule({
@@ -1584,6 +1656,17 @@ class TooltipOnDraggableElement {
 })
 class TooltipDemoWithoutPositionBinding {
   message: any = initialTooltipMessage;
+  @ViewChild(MatTooltip) tooltip: MatTooltip;
+  @ViewChild('button') button: ElementRef<HTMLButtonElement>;
+}
+
+@Component({
+  selector: 'app',
+  styles: [`button { width: 500px; height: 500px; }`],
+  template: `<button #button [matTooltip]="message">Button</button>`,
+})
+class WideTooltipDemo {
+  message = 'Test';
   @ViewChild(MatTooltip) tooltip: MatTooltip;
   @ViewChild('button') button: ElementRef<HTMLButtonElement>;
 }

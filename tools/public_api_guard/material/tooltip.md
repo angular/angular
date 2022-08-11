@@ -107,10 +107,19 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase> implement
     _overlayRef: OverlayRef | null;
     get position(): TooltipPosition;
     set position(value: TooltipPosition);
-    show(delay?: number): void;
+    // (undocumented)
+    get positionAtOrigin(): boolean;
+    set positionAtOrigin(value: BooleanInput);
+    show(delay?: number, origin?: {
+        x: number;
+        y: number;
+    }): void;
     get showDelay(): number;
     set showDelay(value: NumberInput);
-    toggle(): void;
+    toggle(origin?: {
+        x: number;
+        y: number;
+    }): void;
     get tooltipClass(): string | string[] | Set<string> | {
         [key: string]: any;
     };
@@ -125,7 +134,7 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase> implement
     // (undocumented)
     protected _viewportMargin: number;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatTooltipBase<any>, never, never, { "position": "matTooltipPosition"; "disabled": "matTooltipDisabled"; "showDelay": "matTooltipShowDelay"; "hideDelay": "matTooltipHideDelay"; "touchGestures": "matTooltipTouchGestures"; "message": "matTooltip"; "tooltipClass": "matTooltipClass"; }, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatTooltipBase<any>, never, never, { "position": "matTooltipPosition"; "positionAtOrigin": "matTooltipPositionAtOrigin"; "disabled": "matTooltipDisabled"; "showDelay": "matTooltipShowDelay"; "hideDelay": "matTooltipHideDelay"; "touchGestures": "matTooltipTouchGestures"; "message": "matTooltip"; "tooltipClass": "matTooltipClass"; }, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<_MatTooltipBase<any>, never>;
 }
@@ -135,6 +144,7 @@ export interface MatTooltipDefaultOptions {
     disableTooltipInteractivity?: boolean;
     hideDelay: number;
     position?: TooltipPosition;
+    positionAtOrigin?: boolean;
     showDelay: number;
     touchendHideDelay: number;
     touchGestures?: TooltipTouchGestures;
