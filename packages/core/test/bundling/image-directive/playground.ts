@@ -34,12 +34,12 @@ import {Component} from '@angular/core';
   `],
   template: `
     <h1> 
-      <img rawSrc="a.png" width="50" height="50" priority>
+      <img rawSrc="a.png" width="50" height="50" priority rawSrcset="1x, 2x">
       <span>Angular image app</span>
     </h1>
     <main>
       <div class="spacer"></div>
-      <img rawSrc="hermes.jpeg" rawSrcset="100w, 200w, 1000w" width="4030" height="3020">
+      <img rawSrc="hermes2.jpeg" rawSrcset="100w, 200w, 1000w, 2000w" width="1791" height="1008">
     </main>
   `,
   standalone: true,
