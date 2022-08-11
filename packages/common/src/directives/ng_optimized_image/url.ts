@@ -9,11 +9,11 @@
 // Converts a string that represents a URL into a URL class instance.
 export function getUrl(src: string, win: Window): URL {
   // Don't use a base URL is the URL is absolute.
-  return isAbsoluteURL(src) ? new URL(src) : new URL(src, win.location.href);
+  return isAbsoluteUrl(src) ? new URL(src) : new URL(src, win.location.href);
 }
 
 // Checks whether a URL is absolute (i.e. starts with `http://` or `https://`).
-export function isAbsoluteURL(src: string): boolean {
+export function isAbsoluteUrl(src: string): boolean {
   return /^https?:\/\//.test(src);
 }
 
@@ -33,11 +33,7 @@ export function deepForEach<T>(input: (T|any[])[], fn: (value: T) => void): void
 // Given a URL, extract the hostname part.
 // If a URL is a relative one - the URL is returned as is.
 export function extractHostname(url: string): string {
-  if (isAbsoluteURL(url)) {
-    const instance = new URL(url);
-    return instance.hostname;
-  }
-  return url;
+  return isAbsoluteUrl(url) ? (new URL(url)).hostname : url;
 }
 
 export function isValidPath(path: unknown): boolean {
@@ -47,6 +43,7 @@ export function isValidPath(path: unknown): boolean {
     return false;
   }
 
+  // Calling new URL() will throw if the path string is malformed
   try {
     const url = new URL(path);
     return true;

@@ -12,7 +12,8 @@ import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
 
 import {assertDevMode} from './asserts';
-import {getUrl, imgDirectiveDetails} from './util';
+import {imgDirectiveDetails} from './error_helper';
+import {getUrl} from './url';
 
 /**
  * Contains the logic to detect whether an image with the `NgOptimizedImage` directive
