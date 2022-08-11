@@ -19,6 +19,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     NG_FOR_MISSING_DIFFER = -2200,
     // (undocumented)
+    OVERSIZED_IMAGE = 2960,
+    // (undocumented)
     PARENT_NG_SWITCH_NOT_FOUND = 2000,
     // (undocumented)
     PRIORITY_IMG_MISSING_PRECONNECT_TAG = 2956,

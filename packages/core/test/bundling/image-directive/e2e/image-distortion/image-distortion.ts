@@ -18,7 +18,7 @@ import {Component} from '@angular/core';
      <!-- This image is here for the sake of making sure the "LCP image is priority" assertion is passed -->
      <img rawSrc="/e2e/logo-500w.jpg" width="500" height="500" priority>
      <br>
-     <!-- width and height attributes exacly match the intrinsic size of image -->
+     <!-- width and height attributes exactly match the intrinsic size of image -->
      <img rawSrc="/e2e/a.png" width="25" height="25">
      <br>
      <!-- supplied aspect ratio exactly matches intrinsic aspect ratio-->
