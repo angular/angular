@@ -44,6 +44,11 @@ function addNavModulesToModule(options: Schema) {
     addModuleImportToModule(host, modulePath, 'MatButtonModule', '@angular/material/button');
     addModuleImportToModule(host, modulePath, 'MatSidenavModule', '@angular/material/sidenav');
     addModuleImportToModule(host, modulePath, 'MatIconModule', '@angular/material/icon');
-    addModuleImportToModule(host, modulePath, 'MatListModule', '@angular/material/list');
+    addModuleImportToModule(
+      host,
+      modulePath,
+      'MatLegacyListModule',
+      '@angular/material/legacy-list',
+    );
   };
 }

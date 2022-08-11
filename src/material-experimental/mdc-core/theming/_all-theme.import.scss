@@ -23,16 +23,12 @@ $mat-mdc-table-mdc-data-table-sort-icon-active-color, $mat-mdc-table-mdc-data-ta
 $mat-mdc-table-mdc-data-table-stroke-color, $mat-mdc-table-mdc-data-table-table-divider-color;
 @forward '../../mdc-paginator/paginator-variables' as mat-mdc-paginator-*;
 @forward '../core-theme.import';
-@forward '../../mdc-list/interactive-list-theme' as mat-mdc-*;
-@forward '../../mdc-list/list-option-theme' as mat-mdc-*;
-@forward '../../mdc-list/list-theme' as mat-mdc-list-*;
 @forward '../../mdc-paginator/paginator-theme' as mat-mdc-paginator-*;
 @forward '../../mdc-progress-spinner/progress-spinner-theme' as mat-mdc-progress-spinner-*;
 @forward 'all-theme' hide all-mdc-component-themes;;
 
 @import '../core-theme';
 @import '../../mdc-button/button-theme';
-@import '../../mdc-list/list-theme';
 @import '../../mdc-snack-bar/snack-bar-theme';
 @import '../../mdc-tabs/tabs-theme';
 @import '../../mdc-table/table-theme';

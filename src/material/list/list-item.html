@@ -1,13 +1,20 @@
-<span class="mat-list-item-content">
-  <span class="mat-list-item-ripple" mat-ripple
-       [matRippleTrigger]="_getHostElement()"
-       [matRippleDisabled]="_isRippleDisabled()">
+<ng-content select="[matListItemAvatar],[matListItemIcon]"></ng-content>
+
+<span class="mdc-list-item__content">
+  <ng-content select="[matListItemTitle]"></ng-content>
+  <ng-content select="[matListItemLine]"></ng-content>
+  <span #unscopedContent class="mat-mdc-list-item-unscoped-content"
+        (cdkObserveContent)="_updateItemLines(true)">
+    <ng-content></ng-content>
   </span>
-
-  <ng-content select="[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]">
-  </ng-content>
-
-  <span class="mat-list-text"><ng-content select="[mat-line], [matLine]"></ng-content></span>
-
-  <ng-content></ng-content>
 </span>
+
+<ng-content select="[matListItemMeta]"></ng-content>
+
+<ng-content select="mat-divider"></ng-content>
+
+<!--
+  Strong focus indicator element. MDC uses the `::before` pseudo element for the default
+  focus/hover/selected state, so we need a separate element.
+-->
+<div class="mat-mdc-focus-indicator"></div>

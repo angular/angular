@@ -8,48 +8,59 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {
-  MatCommonModule,
-  MatLineModule,
-  MatPseudoCheckboxModule,
-  MatRippleModule,
-} from '@angular/material/core';
-import {
-  MatList,
-  MatNavList,
-  MatListAvatarCssMatStyler,
-  MatListIconCssMatStyler,
-  MatListItem,
-  MatListSubheaderCssMatStyler,
-} from './list';
-import {MatListOption, MatSelectionList} from './selection-list';
+import {MatPseudoCheckboxModule, MatRippleModule, MatCommonModule} from '@angular/material/core';
 import {MatDividerModule} from '@angular/material/divider';
+import {MatActionList} from './action-list';
+import {MatList, MatListItem} from './list';
+import {MatListOption} from './list-option';
+import {MatListSubheaderCssMatStyler} from './subheader';
+import {
+  MatListItemLine,
+  MatListItemTitle,
+  MatListItemMeta,
+  MatListItemAvatar,
+  MatListItemIcon,
+} from './list-item-sections';
+import {MatNavList} from './nav-list';
+import {MatSelectionList} from './selection-list';
+import {ObserversModule} from '@angular/cdk/observers';
 
 @NgModule({
-  imports: [MatLineModule, MatRippleModule, MatCommonModule, MatPseudoCheckboxModule, CommonModule],
+  imports: [
+    ObserversModule,
+    CommonModule,
+    MatCommonModule,
+    MatRippleModule,
+    MatPseudoCheckboxModule,
+  ],
   exports: [
     MatList,
+    MatActionList,
     MatNavList,
-    MatListItem,
-    MatListAvatarCssMatStyler,
-    MatLineModule,
-    MatCommonModule,
-    MatListIconCssMatStyler,
-    MatListSubheaderCssMatStyler,
-    MatPseudoCheckboxModule,
     MatSelectionList,
+    MatListItem,
     MatListOption,
+    MatListItemAvatar,
+    MatListItemIcon,
+    MatListSubheaderCssMatStyler,
     MatDividerModule,
+    MatListItemLine,
+    MatListItemTitle,
+    MatListItemMeta,
   ],
   declarations: [
     MatList,
+    MatActionList,
     MatNavList,
-    MatListItem,
-    MatListAvatarCssMatStyler,
-    MatListIconCssMatStyler,
-    MatListSubheaderCssMatStyler,
     MatSelectionList,
+    MatListItem,
     MatListOption,
+    MatListSubheaderCssMatStyler,
+    MatListItemAvatar,
+    MatListItemIcon,
+    MatListItemLine,
+    MatListItemTitle,
+    MatListItemMeta,
   ],
 })
 export class MatListModule {}

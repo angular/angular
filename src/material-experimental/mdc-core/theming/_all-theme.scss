@@ -4,7 +4,6 @@
 @use '../../mdc-button/button-theme';
 @use '../../mdc-button/fab-theme';
 @use '../../mdc-button/icon-button-theme';
-@use '../../mdc-list/list-theme';
 @use '../../mdc-snack-bar/snack-bar-theme';
 @use '../../mdc-tabs/tabs-theme';
 @use '../../mdc-table/table-theme';
@@ -23,7 +22,7 @@
     @include mat.card-theme($theme-or-color-config);
     @include mat.checkbox-theme($theme-or-color-config);
     @include mat.chips-theme($theme-or-color-config);
-    @include list-theme.theme($theme-or-color-config);
+    @include mat.list-theme($theme-or-color-config);
     @include mat.menu-theme($theme-or-color-config);
     @include paginator-theme.theme($theme-or-color-config);
     @include mat.progress-bar-theme($theme-or-color-config);

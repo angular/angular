@@ -17,6 +17,7 @@
 @use '../../legacy-radio/radio-theme';
 @use '../../legacy-slider/slider-theme';
 @use '../../legacy-menu/menu-theme';
+@use '../../legacy-list/list-theme';
 
 // Includes all of the typographic styles.
 @mixin all-legacy-component-typographies($config-or-theme: null) {
@@ -51,6 +52,7 @@
   @include radio-theme.typography($config);
   @include slider-theme.typography($config);
   @include menu-theme.typography($config);
+  @include list-theme.typography($config);
 }
 
 // @deprecated Use `all-legacy-component-typographies`.

@@ -22,7 +22,6 @@ sass_library(
         "//src/material:sass_lib",
         "//src/material-experimental/mdc-button:mdc_button_scss_lib",
         "//src/material-experimental/mdc-core:mdc_core_scss_lib",
-        "//src/material-experimental/mdc-list:mdc_list_scss_lib",
         "//src/material-experimental/mdc-paginator:mdc_paginator_scss_lib",
         "//src/material-experimental/mdc-progress-spinner:mdc_progress_spinner_scss_lib",
         "//src/material-experimental/mdc-snack-bar:mdc_snack_bar_scss_lib",

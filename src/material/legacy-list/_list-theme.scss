@@ -1,0 +1,118 @@
+@use 'sass:map';
+@use '../core/theming/theming';
+@use '../core/typography/typography';
+@use '../core/typography/typography-utils';
+@use '../core/style/list-common';
+
+
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
+
+  .mat-list-base {
+    .mat-list-item {
+      color: theming.get-color-from-palette($foreground, text);
+    }
+
+    .mat-list-option {
+      color: theming.get-color-from-palette($foreground, text);
+    }
+
+    .mat-subheader {
+      color: theming.get-color-from-palette($foreground, secondary-text);
+    }
+
+    .mat-list-item-disabled {
+      background-color: theming.get-color-from-palette($background, disabled-list-option);
+      color: theming.get-color-from-palette($foreground, disabled-text);
+    }
+  }
+
+  .mat-list-option,
+  .mat-nav-list .mat-list-item,
+  .mat-action-list .mat-list-item {
+    &:hover, &:focus {
+      background: theming.get-color-from-palette($background, 'hover');
+    }
+  }
+
+  .mat-list-single-selected-option {
+    &, &:hover, &:focus {
+      background: theming.get-color-from-palette($background, hover, 0.12);
+    }
+  }
+}
+
+@mixin typography($config-or-theme) {
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
+  $font-family: typography-utils.font-family($config);
+
+  .mat-list-item {
+    font-family: $font-family;
+  }
+
+  .mat-list-option {
+    font-family: $font-family;
+  }
+
+  // Default list
+  .mat-list-base {
+    .mat-list-item {
+      font-size: typography-utils.font-size($config, subheading-2);
+      @include list-common.base(typography-utils.font-size($config, body-1));
+    }
+
+    .mat-list-option {
+      font-size: typography-utils.font-size($config, subheading-2);
+      @include list-common.base(typography-utils.font-size($config, body-1));
+    }
+
+    .mat-subheader {
+      font-family: typography-utils.font-family($config, body-2);
+      font-size: typography-utils.font-size($config, body-2);
+      font-weight: typography-utils.font-weight($config, body-2);
+    }
+  }
+
+  // Dense list
+  .mat-list-base[dense] {
+    .mat-list-item {
+      font-size: typography-utils.font-size($config, caption);
+      @include list-common.base(typography-utils.font-size($config, caption));
+    }
+
+    .mat-list-option {
+      font-size: typography-utils.font-size($config, caption);
+      @include list-common.base(typography-utils.font-size($config, caption));
+    }
+
+    .mat-subheader {
+      font-family: $font-family;
+      font-size: typography-utils.font-size($config, caption);
+      font-weight: typography-utils.font-weight($config, body-2);
+    }
+  }
+}
+
+@mixin _density($config-or-theme) {}
+
+@mixin theme($theme-or-color-config) {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-list') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
+
+    @if $color != null {
+      @include color($color);
+    }
+    @if $density != null {
+      @include _density($density);
+    }
+    @if $typography != null {
+      @include typography($typography);
+    }
+  }
+}

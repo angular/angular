@@ -13,7 +13,7 @@ import {DevAppDirectionality} from './dev-app-directionality';
 import {DevAppRippleOptions} from './ripple-options';
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {MatSidenavModule} from '@angular/material/sidenav';
-import {MatListModule} from '@angular/material/list';
+import {MatLegacyListModule} from '@angular/material/legacy-list';
 import {MatButtonModule} from '@angular/material/button';
 import {RouterModule} from '@angular/router';
 import {MatIconModule} from '@angular/material/icon';
@@ -34,7 +34,7 @@ export const ANIMATIONS_STORAGE_KEY = 'ANGULAR_COMPONENTS_ANIMATIONS_DISABLED';
     CommonModule,
     MatButtonModule,
     MatIconModule,
-    MatListModule,
+    MatLegacyListModule,
     MatSidenavModule,
     MatToolbarModule,
     RouterModule,

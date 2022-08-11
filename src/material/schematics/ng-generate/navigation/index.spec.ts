@@ -23,11 +23,13 @@ describe('material-navigation-schematic', () => {
     expect(moduleContent).toMatch(/MatButtonModule,\s+/);
     expect(moduleContent).toMatch(/MatSidenavModule,\s+/);
     expect(moduleContent).toMatch(/MatIconModule,\s+/);
-    expect(moduleContent).toMatch(/MatListModule\s+],/);
+    expect(moduleContent).toMatch(/MatLegacyListModule\s+],/);
     expect(moduleContent).toContain(`import { LayoutModule } from '@angular/cdk/layout';`);
     expect(moduleContent).toContain(`import { MatButtonModule } from '@angular/material/button';`);
     expect(moduleContent).toContain(`import { MatIconModule } from '@angular/material/icon';`);
-    expect(moduleContent).toContain(`import { MatListModule } from '@angular/material/list';`);
+    expect(moduleContent).toContain(
+      `import { MatLegacyListModule } from '@angular/material/legacy-list';`,
+    );
     expect(moduleContent).toContain(
       `import { MatToolbarModule } from '@angular/material/toolbar';`,
     );

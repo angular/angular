@@ -1,8 +1,8 @@
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {MatListHarness} from '@angular/material/list/testing';
-import {MatListModule} from '@angular/material/list';
+import {MatLegacyListHarness} from '@angular/material/legacy-list/testing';
+import {MatLegacyListModule} from '@angular/material/legacy-list';
 import {ListHarnessExample} from './list-harness-example';
 
 describe('ListHarnessExample', () => {
@@ -11,7 +11,7 @@ describe('ListHarnessExample', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatListModule],
+      imports: [MatLegacyListModule],
       declarations: [ListHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(ListHarnessExample);
@@ -20,7 +20,7 @@ describe('ListHarnessExample', () => {
   });
 
   it('should get all items', async () => {
-    const list = await loader.getHarness(MatListHarness);
+    const list = await loader.getHarness(MatLegacyListHarness);
     const items = await list.getItems();
     expect(await parallel(() => items.map(i => i.getText()))).toEqual([
       'Item 1',
@@ -30,13 +30,13 @@ describe('ListHarnessExample', () => {
   });
 
   it('should get all items matching text', async () => {
-    const list = await loader.getHarness(MatListHarness);
+    const list = await loader.getHarness(MatLegacyListHarness);
     const items = await list.getItems({text: /[13]/});
     expect(await parallel(() => items.map(i => i.getText()))).toEqual(['Item 1', 'Item 3']);
   });
 
   it('should get items by subheader', async () => {
-    const list = await loader.getHarness(MatListHarness);
+    const list = await loader.getHarness(MatLegacyListHarness);
     const sections = await list.getItemsGroupedBySubheader();
     expect(sections.length).toBe(3);
     expect(sections[0].heading).toBeUndefined();
@@ -51,7 +51,7 @@ describe('ListHarnessExample', () => {
   });
 
   it('should get list item text and lines', async () => {
-    const list = await loader.getHarness(MatListHarness);
+    const list = await loader.getHarness(MatLegacyListHarness);
     const items = await list.getItems();
     expect(items.length).toBe(3);
     expect(await items[0].getText()).toBe('Item 1');

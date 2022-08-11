@@ -1,0 +1,19 @@
+<div class="mat-list-item-content"
+  [class.mat-list-item-content-reverse]="checkboxPosition == 'after'">
+
+  <div mat-ripple
+    class="mat-list-item-ripple"
+    [matRippleTrigger]="_getHostElement()"
+    [matRippleDisabled]="_isRippleDisabled()"></div>
+
+  <mat-pseudo-checkbox
+    *ngIf="selectionList.multiple"
+    [state]="selected ? 'checked' : 'unchecked'"
+    [disabled]="disabled"></mat-pseudo-checkbox>
+
+  <div class="mat-list-text" #text><ng-content></ng-content></div>
+
+  <ng-content select="[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]">
+  </ng-content>
+
+</div>

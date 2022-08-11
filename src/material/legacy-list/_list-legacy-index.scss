@@ -1,0 +1,2 @@
+@forward 'list-theme' hide color, theme, typography;
+@forward 'list-theme' as mat-legacy-list-* hide mat-legacy-list-density;

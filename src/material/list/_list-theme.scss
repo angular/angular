@@ -1,102 +1,67 @@
 @use 'sass:map';
+@use '@material/list/evolution-mixins' as mdc-list;
+
 @use '../core/theming/theming';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
-@use '../core/style/list-common';
-
+@use '../core/mdc-helpers/mdc-helpers';
+@use './interactive-list-theme';
+@use './list-option-theme';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $background: map.get($config, background);
-  $foreground: map.get($config, foreground);
+  $primary: theming.get-color-from-palette(map.get($config, primary));
+  $accent: theming.get-color-from-palette(map.get($config, accent));
+  $warn: theming.get-color-from-palette(map.get($config, warn));
 
-  .mat-list-base {
-    .mat-list-item {
-      color: theming.get-color-from-palette($foreground, text);
+  @include mdc-helpers.using-mdc-theme($config) {
+    // MDC's state styles are tied in with their ripple. Since we don't use the MDC
+    // ripple, we need to add the hover, focus and selected states manually.
+    @include interactive-list-theme.private-interactive-list-item-state-colors($config);
+    @include mdc-list.without-ripple($query: mdc-helpers.$mdc-theme-styles-query);
+
+    .mat-mdc-list-option {
+      @include list-option-theme.private-list-option-color-override($config, $primary, primary);
     }
-
-    .mat-list-option {
-      color: theming.get-color-from-palette($foreground, text);
+    .mat-mdc-list-option.mat-accent {
+      @include list-option-theme.private-list-option-color-override($config, $accent, secondary);
     }
-
-    .mat-subheader {
-      color: theming.get-color-from-palette($foreground, secondary-text);
-    }
-
-    .mat-list-item-disabled {
-      background-color: theming.get-color-from-palette($background, disabled-list-option);
-      color: theming.get-color-from-palette($foreground, disabled-text);
-    }
-  }
-
-  .mat-list-option,
-  .mat-nav-list .mat-list-item,
-  .mat-action-list .mat-list-item {
-    &:hover, &:focus {
-      background: theming.get-color-from-palette($background, 'hover');
+    .mat-mdc-list-option.mat-warn {
+      @include list-option-theme.private-list-option-color-override($config, $warn, error);
     }
   }
+}
 
-  .mat-list-single-selected-option {
-    &, &:hover, &:focus {
-      background: theming.get-color-from-palette($background, hover, 0.12);
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+
+  @include mdc-helpers.disable-mdc-fallback-declarations {
+    .mat-mdc-list-item {
+      @include mdc-list.one-line-item-density($density-scale);
+      @include mdc-list.two-line-item-density($density-scale);
+      @include mdc-list.three-line-item-density($density-scale);
     }
+
+    @include list-option-theme.private-list-option-density-styles($density-scale);
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
+  $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
-  $font-family: typography-utils.font-family($config);
-
-  .mat-list-item {
-    font-family: $font-family;
+  @include mdc-helpers.using-mdc-typography($config) {
+    @include mdc-list.without-ripple($query: mdc-helpers.$mdc-typography-styles-query);
+    @include list-option-theme.private-list-option-typography-styles();
   }
 
-  .mat-list-option {
-    font-family: $font-family;
-  }
-
-  // Default list
-  .mat-list-base {
-    .mat-list-item {
-      font-size: typography-utils.font-size($config, subheading-2);
-      @include list-common.base(typography-utils.font-size($config, body-1));
-    }
-
-    .mat-list-option {
-      font-size: typography-utils.font-size($config, subheading-2);
-      @include list-common.base(typography-utils.font-size($config, body-1));
-    }
-
-    .mat-subheader {
-      font-family: typography-utils.font-family($config, body-2);
-      font-size: typography-utils.font-size($config, body-2);
-      font-weight: typography-utils.font-weight($config, body-2);
-    }
-  }
-
-  // Dense list
-  .mat-list-base[dense] {
-    .mat-list-item {
-      font-size: typography-utils.font-size($config, caption);
-      @include list-common.base(typography-utils.font-size($config, caption));
-    }
-
-    .mat-list-option {
-      font-size: typography-utils.font-size($config, caption);
-      @include list-common.base(typography-utils.font-size($config, caption));
-    }
-
-    .mat-subheader {
-      font-family: $font-family;
-      font-size: typography-utils.font-size($config, caption);
-      font-weight: typography-utils.font-weight($config, body-2);
-    }
+  // According to the public spec this should be subtitle-1.
+  // However, body-1 and subtitle-1 are nearly identical in the public spec,
+  // and the Google-specific spec states that it should be body-1.
+  // For consistency, we use body-1 for both public and Google internal.
+  .mat-mdc-list-item .mdc-list-item__primary-text {
+    @include typography-utils.typography-level($config, body-1);
   }
 }
-
-@mixin _density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -109,7 +74,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);

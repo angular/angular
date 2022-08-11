@@ -12,7 +12,10 @@ import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatIconModule} from '@angular/material/icon';
-import {MatListModule, MatListOptionCheckboxPosition} from '@angular/material/list';
+import {
+  MatLegacyListModule,
+  MatLegacyListOptionCheckboxPosition,
+} from '@angular/material/legacy-list';
 
 @Component({
   selector: 'list-demo',
@@ -25,7 +28,7 @@ import {MatListModule, MatListOptionCheckboxPosition} from '@angular/material/li
     MatButtonModule,
     MatLegacyCheckboxModule,
     MatIconModule,
-    MatListModule,
+    MatLegacyListModule,
   ],
 })
 export class ListDemo {
@@ -37,7 +40,7 @@ export class ListDemo {
     {name: 'Bobby', headline: 'UX designer'},
   ];
 
-  checkboxPosition: MatListOptionCheckboxPosition = 'before';
+  checkboxPosition: MatLegacyListOptionCheckboxPosition = 'before';
 
   messages: {from: string; subject: string; message: string; image: string}[] = [
     {

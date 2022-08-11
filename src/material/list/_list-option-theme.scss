@@ -1,0 +1,28 @@
+@use '@material/checkbox' as mdc-checkbox;
+@use '../core/mdc-helpers/mdc-helpers';
+@use '../checkbox/checkbox-private';
+@use './list-option-trailing-avatar-compat';
+
+// Mixin that overrides the selected item and checkbox colors for list options. By
+// default, the MDC list uses the `primary` color for list items. The MDC checkbox
+// inside list options by default uses the `primary` color too.
+@mixin private-list-option-color-override($color-config, $color, $mdc-color) {
+  & .mdc-list-item__start, & .mdc-list-item__end {
+    @include checkbox-private.private-checkbox-styles-with-color($color-config, $color, $mdc-color);
+  }
+}
+
+@mixin private-list-option-density-styles($density-scale) {
+  @include list-option-trailing-avatar-compat.density-styles($density-scale);
+}
+
+@mixin private-list-option-typography-styles() {
+  @include list-option-trailing-avatar-compat.core-styles(
+      $query: mdc-helpers.$mdc-typography-styles-query);
+
+  .mat-mdc-list-option {
+    .mdc-list-item__start, .mdc-list-item__end {
+      @include mdc-checkbox.without-ripple($query: mdc-helpers.$mdc-typography-styles-query);
+    }
+  }
+}

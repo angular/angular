@@ -11,8 +11,8 @@ ng_module(
     ],
     deps = [
         "//src/material-experimental/mdc-button",
-        "//src/material-experimental/mdc-list",
         "//src/material/icon",
+        "//src/material/list",
     ],
 )
 

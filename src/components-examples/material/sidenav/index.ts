@@ -4,7 +4,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatIconModule} from '@angular/material/icon';
-import {MatListModule} from '@angular/material/list';
+import {MatLegacyListModule} from '@angular/material/legacy-list';
 import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
 import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatSidenavModule} from '@angular/material/sidenav';
@@ -56,7 +56,7 @@ const EXAMPLES = [
     MatButtonModule,
     MatLegacyCheckboxModule,
     MatIconModule,
-    MatListModule,
+    MatLegacyListModule,
     MatLegacyRadioModule,
     MatSidenavModule,
     MatLegacySelectModule,

@@ -3,8 +3,6 @@ entryPoints = [
     "mdc-button",
     "mdc-button/testing",
     "mdc-core",
-    "mdc-list",
-    "mdc-list/testing",
     "mdc-paginator",
     "mdc-paginator/testing",
     "mdc-progress-spinner",

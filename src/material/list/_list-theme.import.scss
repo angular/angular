@@ -1,10 +1,6 @@
-@forward '../core/theming/theming.import';
-@forward '../core/typography/typography-utils.import';
-@forward '../core/style/list-common.import';
-@forward 'list-theme' hide color, theme, typography;
-@forward 'list-theme' as mat-list-* hide mat-list-density;
+@forward 'interactive-list-theme' as mat-mdc-*;
+@forward 'list-option-theme' as mat-mdc-*;
+@forward 'list-theme' as mat-mdc-list-*;
 
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
-@import '../core/style/list-common';
+@import './interactive-list-theme';
+@import './list-option-theme';

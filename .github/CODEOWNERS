@@ -16,7 +16,7 @@
 /src/material/grid-list/**                         @andrewseguin
 /src/material/icon/**                              @andrewseguin
 /src/material/legacy-input/**                      @mmalerba
-/src/material/list/**                              @andrewseguin @crisbeto @devversion
+/src/material/legacy-list/**                       @andrewseguin @crisbeto @devversion
 /src/material/legacy-menu/**                       @crisbeto
 /src/material/paginator/**                         @andrewseguin
 /src/material/prebuilt-themes/**                   @andrewseguin
@@ -118,7 +118,7 @@
 /src/material-experimental/mdc-core/**                 @crisbeto
 /src/material/dialog/**               @devversion
 /src/material/form-field/**                            @devversion @mmalerba
-/src/material-experimental/mdc-list/**                 @mmalerba @devversion
+/src/material/list/**                                  @mmalerba @devversion
 /src/material/menu/**                                  @crisbeto
 /src/material/select/**                                @crisbeto
 /src/material-experimental/mdc-paginator/**            @crisbeto

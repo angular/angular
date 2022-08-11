@@ -15,7 +15,7 @@ ng_module(
         "//src/material/icon",
         "//src/material/legacy-checkbox",
         "//src/material/legacy-input",
-        "//src/material/list",
+        "//src/material/legacy-list",
         "//src/material/snack-bar",
         "//src/material/table",
         "@npm//@angular/common",

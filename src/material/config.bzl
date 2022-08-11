@@ -52,6 +52,8 @@ entryPoints = [
     "legacy-input/testing",
     "list",
     "list/testing",
+    "legacy-list",
+    "legacy-list/testing",
     "menu",
     "menu/testing",
     "legacy-menu",

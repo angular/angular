@@ -4,32 +4,29 @@
 
 ```ts
 
-import { _AbstractConstructor } from '@angular/material/core';
-import { AfterContentInit } from '@angular/core';
+import { AfterViewInit } from '@angular/core';
 import { BooleanInput } from '@angular/cdk/coercion';
-import { CanDisable } from '@angular/material/core';
-import { CanDisableRipple } from '@angular/material/core';
 import { ChangeDetectorRef } from '@angular/core';
-import { _Constructor } from '@angular/material/core';
 import { ControlValueAccessor } from '@angular/forms';
 import { ElementRef } from '@angular/core';
 import { EventEmitter } from '@angular/core';
-import { FocusableOption } from '@angular/cdk/a11y';
-import { FocusKeyManager } from '@angular/cdk/a11y';
-import { FocusMonitor } from '@angular/cdk/a11y';
 import * as i0 from '@angular/core';
-import * as i3 from '@angular/material/core';
-import * as i4 from '@angular/common';
-import * as i5 from '@angular/material/divider';
+import * as i10 from '@angular/material/core';
+import * as i11 from '@angular/material/divider';
+import * as i8 from '@angular/cdk/observers';
+import * as i9 from '@angular/common';
 import { InjectionToken } from '@angular/core';
-import { MatLine } from '@angular/material/core';
+import { NgZone } from '@angular/core';
 import { OnChanges } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
+import { Platform } from '@angular/cdk/platform';
 import { QueryList } from '@angular/core';
+import { RippleConfig } from '@angular/material/core';
+import { RippleGlobalOptions } from '@angular/material/core';
+import { RippleTarget } from '@angular/material/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { SimpleChanges } from '@angular/core';
-import { Subject } from 'rxjs';
 import { ThemePalette } from '@angular/material/core';
 
 // @public
@@ -38,62 +35,107 @@ export const MAT_LIST: InjectionToken<MatList>;
 // @public
 export const MAT_NAV_LIST: InjectionToken<MatNavList>;
 
-// @public
+// @public (undocumented)
 export const MAT_SELECTION_LIST_VALUE_ACCESSOR: any;
 
 // @public (undocumented)
-export class MatList extends _MatListBase implements CanDisable, CanDisableRipple, OnChanges, OnDestroy {
-    constructor(_elementRef: ElementRef<HTMLElement>);
+export class MatActionList extends MatListBase {
     // (undocumented)
-    _getListType(): 'list' | 'action-list' | null;
+    _isNonInteractive: boolean;
     // (undocumented)
-    ngOnChanges(): void;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatActionList, "mat-action-list", ["matActionList"], {}, {}, never, ["*"], false>;
     // (undocumented)
-    ngOnDestroy(): void;
-    readonly _stateChanges: Subject<void>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatActionList, never>;
+}
+
+// @public (undocumented)
+export class MatList extends MatListBase {
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatList, "mat-list, mat-action-list", ["matList"], { "disableRipple": "disableRipple"; "disabled": "disabled"; }, {}, never, ["*"], false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatList, "mat-list", ["matList"], {}, {}, never, ["*"], false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatList, never>;
 }
 
-// @public
-export class MatListAvatarCssMatStyler {
+// @public (undocumented)
+export class MatListItem extends MatListItemBase {
+    constructor(element: ElementRef, ngZone: NgZone, listBase: MatListBase, platform: Platform, globalRippleOptions?: RippleGlobalOptions, animationMode?: string);
+    get activated(): boolean;
+    set activated(activated: boolean);
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatListAvatarCssMatStyler, "[mat-list-avatar], [matListAvatar]", never, {}, {}, never, never, false>;
+    _activated: boolean;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatListAvatarCssMatStyler, never>;
+    _itemText: ElementRef<HTMLElement>;
+    // (undocumented)
+    _lines: QueryList<MatListItemLine>;
+    // (undocumented)
+    _meta: QueryList<MatListItemMeta>;
+    // (undocumented)
+    _titles: QueryList<MatListItemTitle>;
+    // (undocumented)
+    _unscopedContent: ElementRef<HTMLSpanElement>;
+    // (undocumented)
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatListItem, "mat-list-item, a[mat-list-item], button[mat-list-item]", ["matListItem"], { "activated": "activated"; }, {}, ["_lines", "_titles", "_meta"], ["[matListItemAvatar],[matListItemIcon]", "[matListItemTitle]", "[matListItemLine]", "*", "[matListItemMeta]", "mat-divider"], false>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatListItem, [null, null, null, null, { optional: true; }, { optional: true; }]>;
 }
 
 // @public
-export class MatListIconCssMatStyler {
+export class MatListItemAvatar extends _MatListItemGraphicBase {
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<MatListIconCssMatStyler, "[mat-list-icon], [matListIcon]", never, {}, {}, never, never, false>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatListItemAvatar, "[matListItemAvatar]", never, {}, {}, never, never, false>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatListIconCssMatStyler, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatListItemAvatar, never>;
 }
 
 // @public
-export class MatListItem extends _MatListItemMixinBase implements AfterContentInit, CanDisableRipple, OnDestroy {
-    constructor(_element: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, navList?: MatNavList, list?: MatList);
+export class _MatListItemGraphicBase {
+    constructor(_listOption: ListOption);
     // (undocumented)
-    _avatar: MatListAvatarCssMatStyler;
-    get disabled(): boolean;
-    set disabled(value: BooleanInput);
-    _getHostElement(): HTMLElement;
+    _isAlignedAtStart(): boolean;
     // (undocumented)
-    _icon: MatListIconCssMatStyler;
-    _isRippleDisabled(): boolean;
+    _listOption: ListOption;
     // (undocumented)
-    _lines: QueryList<MatLine>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatListItemGraphicBase, never, never, {}, {}, never, never, false>;
     // (undocumented)
-    ngAfterContentInit(): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_MatListItemGraphicBase, [{ optional: true; }]>;
+}
+
+// @public
+export class MatListItemIcon extends _MatListItemGraphicBase {
     // (undocumented)
-    ngOnDestroy(): void;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatListItemIcon, "[matListItemIcon]", never, {}, {}, never, never, false>;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatListItem, "mat-list-item, a[mat-list-item], button[mat-list-item]", ["matListItem"], { "disableRipple": "disableRipple"; "disabled": "disabled"; }, {}, ["_avatar", "_icon", "_lines"], ["[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]", "[mat-line], [matLine]", "*"], false>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatListItemIcon, never>;
+}
+
+// @public
+export class MatListItemLine {
+    constructor(_elementRef: ElementRef<HTMLElement>);
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatListItem, [null, null, { optional: true; }, { optional: true; }]>;
+    _elementRef: ElementRef<HTMLElement>;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatListItemLine, "[matListItemLine]", never, {}, {}, never, never, false>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatListItemLine, never>;
+}
+
+// @public
+export class MatListItemMeta {
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatListItemMeta, "[matListItemMeta]", never, {}, {}, never, never, false>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatListItemMeta, never>;
+}
+
+// @public
+export class MatListItemTitle {
+    constructor(_elementRef: ElementRef<HTMLElement>);
+    // (undocumented)
+    _elementRef: ElementRef<HTMLElement>;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatListItemTitle, "[matListItemTitle]", never, {}, {}, never, never, false>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatListItemTitle, never>;
 }
 
 // @public (undocumented)
@@ -103,37 +145,26 @@ export class MatListModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatListModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatListModule, [typeof i1.MatList, typeof i1.MatNavList, typeof i1.MatListItem, typeof i1.MatListAvatarCssMatStyler, typeof i1.MatListIconCssMatStyler, typeof i1.MatListSubheaderCssMatStyler, typeof i2.MatSelectionList, typeof i2.MatListOption], [typeof i3.MatLineModule, typeof i3.MatRippleModule, typeof i3.MatCommonModule, typeof i3.MatPseudoCheckboxModule, typeof i4.CommonModule], [typeof i1.MatList, typeof i1.MatNavList, typeof i1.MatListItem, typeof i1.MatListAvatarCssMatStyler, typeof i3.MatLineModule, typeof i3.MatCommonModule, typeof i1.MatListIconCssMatStyler, typeof i1.MatListSubheaderCssMatStyler, typeof i3.MatPseudoCheckboxModule, typeof i2.MatSelectionList, typeof i2.MatListOption, typeof i5.MatDividerModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatListModule, [typeof i1.MatList, typeof i2.MatActionList, typeof i3.MatNavList, typeof i4.MatSelectionList, typeof i1.MatListItem, typeof i5.MatListOption, typeof i6.MatListSubheaderCssMatStyler, typeof i7.MatListItemAvatar, typeof i7.MatListItemIcon, typeof i7.MatListItemLine, typeof i7.MatListItemTitle, typeof i7.MatListItemMeta], [typeof i8.ObserversModule, typeof i9.CommonModule, typeof i10.MatCommonModule, typeof i10.MatRippleModule, typeof i10.MatPseudoCheckboxModule], [typeof i1.MatList, typeof i2.MatActionList, typeof i3.MatNavList, typeof i4.MatSelectionList, typeof i1.MatListItem, typeof i5.MatListOption, typeof i7.MatListItemAvatar, typeof i7.MatListItemIcon, typeof i6.MatListSubheaderCssMatStyler, typeof i11.MatDividerModule, typeof i7.MatListItemLine, typeof i7.MatListItemTitle, typeof i7.MatListItemMeta]>;
 }
 
-// @public
-export class MatListOption extends _MatListOptionBase implements AfterContentInit, OnDestroy, OnInit, FocusableOption, CanDisableRipple {
-    constructor(_element: ElementRef<HTMLElement>, _changeDetector: ChangeDetectorRef,
-    selectionList: MatSelectionList);
-    // (undocumented)
-    _avatar: MatListAvatarCssMatStyler;
+// @public (undocumented)
+export class MatListOption extends MatListItemBase implements ListOption, OnInit, OnDestroy {
+    constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone, _selectionList: SelectionList, platform: Platform, _changeDetectorRef: ChangeDetectorRef, globalRippleOptions?: RippleGlobalOptions, animationMode?: string);
     checkboxPosition: MatListOptionCheckboxPosition;
     get color(): ThemePalette;
     set color(newValue: ThemePalette);
-    get disabled(): boolean;
-    set disabled(value: BooleanInput);
     focus(): void;
-    _getHostElement(): HTMLElement;
-    getLabel(): any;
+    _getCheckboxPosition(): MatListOptionCheckboxPosition;
+    getLabel(): string;
     // (undocumented)
     _handleBlur(): void;
+    _hasCheckboxAt(position: MatListOptionCheckboxPosition): boolean;
+    _hasIconsOrAvatarsAt(position: 'before' | 'after'): boolean;
+    _hasProjected(type: 'icons' | 'avatars', position: 'before' | 'after'): boolean;
     // (undocumented)
-    _handleClick(): void;
-    // (undocumented)
-    _handleFocus(): void;
-    // (undocumented)
-    _icon: MatListIconCssMatStyler;
-    _isRippleDisabled(): boolean;
-    // (undocumented)
-    _lines: QueryList<MatLine>;
+    _lines: QueryList<MatListItemLine>;
     _markForCheck(): void;
-    // (undocumented)
-    ngAfterContentInit(): void;
     // (undocumented)
     ngOnDestroy(): void;
     // (undocumented)
@@ -141,16 +172,20 @@ export class MatListOption extends _MatListOptionBase implements AfterContentIni
     get selected(): boolean;
     set selected(value: BooleanInput);
     readonly selectedChange: EventEmitter<boolean>;
-    selectionList: MatSelectionList;
     _setSelected(selected: boolean): boolean;
-    _text: ElementRef;
+    _setTabindex(value: number): void;
+    // (undocumented)
+    _titles: QueryList<MatListItemTitle>;
     toggle(): void;
+    _toggleOnInteraction(): void;
+    // (undocumented)
+    _unscopedContent: ElementRef<HTMLSpanElement>;
     get value(): any;
     set value(newValue: any);
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatListOption, "mat-list-option", ["matListOption"], { "disableRipple": "disableRipple"; "checkboxPosition": "checkboxPosition"; "color": "color"; "value": "value"; "disabled": "disabled"; "selected": "selected"; }, { "selectedChange": "selectedChange"; }, ["_avatar", "_icon", "_lines"], ["*", "[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]"], false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatListOption, "mat-list-option", ["matListOption"], { "checkboxPosition": "checkboxPosition"; "color": "color"; "value": "value"; "selected": "selected"; }, { "selectedChange": "selectedChange"; }, ["_lines", "_titles"], ["[matListItemAvatar],[matListItemIcon]", "[matListItemTitle]", "[matListItemLine]", "*", "mat-divider"], false>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatListOption, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatListOption, [null, null, null, null, null, { optional: true; }, { optional: true; }]>;
 }
 
 // @public
@@ -165,54 +200,49 @@ export class MatListSubheaderCssMatStyler {
 }
 
 // @public (undocumented)
-export class MatNavList extends _MatListBase implements CanDisable, CanDisableRipple, OnChanges, OnDestroy {
+export class MatNavList extends MatListBase {
     // (undocumented)
-    ngOnChanges(): void;
+    _isNonInteractive: boolean;
     // (undocumented)
-    ngOnDestroy(): void;
-    readonly _stateChanges: Subject<void>;
-    // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatNavList, "mat-nav-list", ["matNavList"], { "disableRipple": "disableRipple"; "disabled": "disabled"; }, {}, never, ["*"], false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatNavList, "mat-nav-list", ["matNavList"], {}, {}, never, ["*"], false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatNavList, never>;
 }
 
-// @public
-export class MatSelectionList extends _MatSelectionListBase implements CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy, OnChanges {
-    constructor(_element: ElementRef<HTMLElement>, _changeDetector: ChangeDetectorRef, _focusMonitor: FocusMonitor);
+// @public (undocumented)
+export class MatSelectionList extends MatListBase implements SelectionList, ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
+    constructor(_element: ElementRef<HTMLElement>, _ngZone: NgZone);
     color: ThemePalette;
     compareWith: (o1: any, o2: any) => boolean;
     deselectAll(): MatListOption[];
-    get disabled(): boolean;
-    set disabled(value: BooleanInput);
+    // (undocumented)
+    _element: ElementRef<HTMLElement>;
     _emitChangeEvent(options: MatListOption[]): void;
     focus(options?: FocusOptions): void;
-    _keydown(event: KeyboardEvent): void;
-    _keyManager: FocusKeyManager<MatListOption>;
+    _handleKeydown(event: KeyboardEvent): void;
+    // (undocumented)
+    _items: QueryList<MatListOption>;
     get multiple(): boolean;
     set multiple(value: BooleanInput);
     // (undocumented)
-    ngAfterContentInit(): void;
+    ngAfterViewInit(): void;
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
     ngOnDestroy(): void;
     _onTouched: () => void;
-    options: QueryList<MatListOption>;
+    get options(): QueryList<MatListOption>;
     registerOnChange(fn: (value: any) => void): void;
     registerOnTouched(fn: () => void): void;
-    _removeOptionFromList(option: MatListOption): MatListOption | null;
     _reportValueChange(): void;
     selectAll(): MatListOption[];
     selectedOptions: SelectionModel<MatListOption>;
     readonly selectionChange: EventEmitter<MatSelectionListChange>;
     setDisabledState(isDisabled: boolean): void;
-    _setFocusedOption(option: MatListOption): void;
-    _tabIndex: number;
     _value: string[] | null;
     writeValue(values: string[]): void;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatSelectionList, "mat-selection-list", ["matSelectionList"], { "disableRipple": "disableRipple"; "color": "color"; "compareWith": "compareWith"; "disabled": "disabled"; "multiple": "multiple"; }, { "selectionChange": "selectionChange"; }, ["options"], ["*"], false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatSelectionList, "mat-selection-list", ["matSelectionList"], { "color": "color"; "compareWith": "compareWith"; "multiple": "multiple"; }, { "selectionChange": "selectionChange"; }, ["_items"], ["*"], false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatSelectionList, never>;
 }
@@ -221,9 +251,35 @@ export class MatSelectionList extends _MatSelectionListBase implements CanDisabl
 export class MatSelectionListChange {
     constructor(
     source: MatSelectionList,
+    option: MatListOption,
     options: MatListOption[]);
+    // @deprecated
+    option: MatListOption;
     options: MatListOption[];
     source: MatSelectionList;
+}
+
+// @public
+export const SELECTION_LIST: InjectionToken<SelectionList>;
+
+// @public
+export interface SelectionList extends MatListBase {
+    // (undocumented)
+    color: ThemePalette;
+    // (undocumented)
+    compareWith: (o1: any, o2: any) => boolean;
+    // (undocumented)
+    _emitChangeEvent(options: MatListOption[]): void;
+    // (undocumented)
+    multiple: boolean;
+    // (undocumented)
+    _onTouched(): void;
+    // (undocumented)
+    _reportValueChange(): void;
+    // (undocumented)
+    selectedOptions: SelectionModel<MatListOption>;
+    // (undocumented)
+    _value: string[] | null;
 }
 
 // (No @packageDocumentation comment for this package)

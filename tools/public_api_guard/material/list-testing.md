@@ -24,7 +24,15 @@ export interface ActionListItemHarnessFilters extends BaseListItemHarnessFilters
 // @public (undocumented)
 export interface BaseListItemHarnessFilters extends BaseHarnessFilters {
     // (undocumented)
+    fullText?: string | RegExp;
+    // (undocumented)
+    secondaryText?: string | RegExp | null;
+    // (undocumented)
+    tertiaryText?: string | RegExp | null;
+    // @deprecated (undocumented)
     text?: string | RegExp;
+    // (undocumented)
+    title?: string | RegExp;
 }
 
 // @public (undocumented)
@@ -46,7 +54,7 @@ export class MatActionListHarness extends MatListHarnessBase<typeof MatActionLis
     static hostSelector: string;
     // (undocumented)
     _itemHarness: typeof MatActionListItemHarness;
-    static with(options?: ActionListHarnessFilters): HarnessPredicate<MatActionListHarness>;
+    static with<T extends MatActionListHarness>(this: ComponentHarnessConstructor<T>, options?: ActionListHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
@@ -56,7 +64,7 @@ export class MatActionListItemHarness extends MatListItemHarnessBase {
     focus(): Promise<void>;
     static hostSelector: string;
     isFocused(): Promise<boolean>;
-    static with(options?: ActionListItemHarnessFilters): HarnessPredicate<MatActionListItemHarness>;
+    static with<T extends MatActionListItemHarness>(this: ComponentHarnessConstructor<T>, options?: ActionListItemHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
@@ -64,19 +72,29 @@ export class MatListHarness extends MatListHarnessBase<typeof MatListItemHarness
     static hostSelector: string;
     // (undocumented)
     _itemHarness: typeof MatListItemHarness;
-    static with(options?: ListHarnessFilters): HarnessPredicate<MatListHarness>;
+    static with<T extends MatListHarness>(this: ComponentHarnessConstructor<T>, options?: ListHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
 export class MatListItemHarness extends MatListItemHarnessBase {
     static hostSelector: string;
-    static with(options?: ListItemHarnessFilters): HarnessPredicate<MatListItemHarness>;
+    static with<T extends MatListItemHarness>(this: ComponentHarnessConstructor<T>, options?: ListItemHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
 export const enum MatListItemSection {
     // (undocumented)
-    CONTENT = ".mat-list-item-content"
+    CONTENT = ".mdc-list-item__content"
+}
+
+// @public
+export const enum MatListItemType {
+    // (undocumented)
+    ONE_LINE_ITEM = 0,
+    // (undocumented)
+    THREE_LINE_ITEM = 2,
+    // (undocumented)
+    TWO_LINE_ITEM = 1
 }
 
 // @public
@@ -90,7 +108,7 @@ export class MatListOptionHarness extends MatListItemHarnessBase {
     isSelected(): Promise<boolean>;
     select(): Promise<void>;
     toggle(): Promise<void>;
-    static with(options?: ListOptionHarnessFilters): HarnessPredicate<MatListOptionHarness>;
+    static with<T extends MatListOptionHarness>(this: ComponentHarnessConstructor<T>, options?: ListOptionHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
@@ -98,7 +116,7 @@ export class MatNavListHarness extends MatListHarnessBase<typeof MatNavListItemH
     static hostSelector: string;
     // (undocumented)
     _itemHarness: typeof MatNavListItemHarness;
-    static with(options?: NavListHarnessFilters): HarnessPredicate<MatNavListHarness>;
+    static with<T extends MatNavListHarness>(this: ComponentHarnessConstructor<T>, options?: NavListHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
@@ -108,8 +126,9 @@ export class MatNavListItemHarness extends MatListItemHarnessBase {
     focus(): Promise<void>;
     getHref(): Promise<string | null>;
     static hostSelector: string;
+    isActivated(): Promise<boolean>;
     isFocused(): Promise<boolean>;
-    static with(options?: NavListItemHarnessFilters): HarnessPredicate<MatNavListItemHarness>;
+    static with<T extends MatNavListItemHarness>(this: ComponentHarnessConstructor<T>, options?: NavListItemHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
@@ -120,7 +139,16 @@ export class MatSelectionListHarness extends MatListHarnessBase<typeof MatListOp
     // (undocumented)
     _itemHarness: typeof MatListOptionHarness;
     selectItems(...filters: ListOptionHarnessFilters[]): Promise<void>;
-    static with(options?: SelectionListHarnessFilters): HarnessPredicate<MatSelectionListHarness>;
+    static with<T extends MatSelectionListHarness>(this: ComponentHarnessConstructor<T>, options?: SelectionListHarnessFilters): HarnessPredicate<T>;
+}
+
+// @public
+export class MatSubheaderHarness extends ComponentHarness {
+    getText(): Promise<string>;
+    // (undocumented)
+    static hostSelector: string;
+    // (undocumented)
+    static with(options?: SubheaderHarnessFilters): HarnessPredicate<MatSubheaderHarness>;
 }
 
 // @public (undocumented)
@@ -129,6 +157,8 @@ export interface NavListHarnessFilters extends BaseHarnessFilters {
 
 // @public (undocumented)
 export interface NavListItemHarnessFilters extends BaseListItemHarnessFilters {
+    // (undocumented)
+    activated?: boolean;
     // (undocumented)
     href?: string | RegExp | null;
 }

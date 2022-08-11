@@ -57,7 +57,6 @@
   @include sort-theme.typography($config);
   @include tabs-theme.typography($config);
   @include toolbar-theme.typography($config);
-  @include list-theme.typography($config);
   @include snack-bar-theme.typography($config);
   @include tree-theme.typography($config);
 }
@@ -94,6 +93,7 @@
   @include radio-theme.typography($config);
   @include slider-theme.typography($config);
   @include menu-theme.typography($config);
+  @include list-theme.typography($config);
 }
 
 // @deprecated Use `all-component-typographies`.

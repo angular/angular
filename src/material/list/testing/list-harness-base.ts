@@ -62,6 +62,7 @@ export abstract class MatListHarnessBase<
       item: filters,
       divider: false,
     });
+
     for (const itemOrSubheader of itemsAndSubheaders) {
       if (itemOrSubheader instanceof MatSubheaderHarness) {
         if (currentSection.heading !== undefined || currentSection.items.length) {

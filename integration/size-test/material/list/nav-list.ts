@@ -1,5 +1,5 @@
 import {Component, NgModule} from '@angular/core';
-import {MatListModule} from '@angular/material/list';
+import {MatLegacyListModule} from '@angular/material/legacy-list';
 
 /**
  * Basic component using `MatNavList` and `MatListItem`. Other parts of the list
@@ -18,7 +18,7 @@ import {MatListModule} from '@angular/material/list';
 export class TestComponent {}
 
 @NgModule({
-  imports: [MatListModule],
+  imports: [MatLegacyListModule],
   declarations: [TestComponent],
   bootstrap: [TestComponent],
 })

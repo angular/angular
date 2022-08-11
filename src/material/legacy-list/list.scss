@@ -1,0 +1,358 @@
+@use '@angular/cdk';
+
+@use '../core/style/list-common';
+@use '../core/style/layout-common';
+@use '../divider/divider-offset';
+
+$side-padding: 16px;
+$icon-padding: 4px;
+$avatar-size: 40px;
+
+// Normal list variables
+$top-padding: 8px;
+// height for single-line lists
+$base-height: 48px;
+// height for single-line lists with avatars
+$avatar-height: 56px;
+// spec requires two- and three-line lists be taller
+$two-line-height: 72px;
+$three-line-height: 88px;
+$multi-line-padding: 16px;
+$icon-size: 24px;
+
+// Dense list variables
+$dense-top-padding: 4px;
+$dense-base-height: 40px;
+$dense-avatar-height: 48px;
+$dense-two-line-height: 60px;
+$dense-three-line-height: 76px;
+$dense-multi-line-padding: 16px;
+$dense-list-icon-size: 20px;
+$dense-avatar-size: 36px;
+
+$item-inset-divider-offset: 72px;
+
+// This mixin provides all list-item styles, changing font size and height
+// based on whether the list is in dense mode.
+@mixin item-base($base-height, $height-with-avatar, $two-line-height,
+  $three-line-height, $multi-line-padding, $icon-size, $avatar-size) {
+
+  // Prevents the wrapper `mat-list-item-content` from collapsing due to it
+  // being `inline` by default.
+  display: block;
+  height: $base-height;
+  -webkit-tap-highlight-color: transparent;
+
+  // Override the user agent styling if the list item is a button.
+  width: 100%;
+  padding: 0;
+
+  .mat-list-item-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0 $side-padding;
+    position: relative;
+    height: inherit;
+  }
+
+  .mat-list-item-content-reverse {
+    display: flex;
+    align-items: center;
+    padding: 0 $side-padding;
+    flex-direction: row-reverse;
+    justify-content: space-around;
+  }
+
+  .mat-list-item-ripple {
+    display: block;
+    @include layout-common.fill;
+
+    // Disable pointer events for the ripple container because the container will overlay the
+    // user content and we don't want to disable mouse events on the user content.
+    // Pointer events can be safely disabled because the ripple trigger element is the host element.
+    pointer-events: none;
+  }
+
+  &.mat-list-item-with-avatar {
+    height: $height-with-avatar;
+  }
+
+  &.mat-2-line {
+    height: $two-line-height;
+  }
+
+
+  &.mat-3-line {
+    height: $three-line-height;
+  }
+
+  // list items with more than 3 lines should expand to match
+  // the height of its contained text
+  &.mat-multi-line {
+    height: auto;
+
+    .mat-list-item-content {
+      padding-top: $multi-line-padding;
+      padding-bottom: $multi-line-padding;
+    }
+  }
+
+  .mat-list-text {
+    @include list-common.wrapper-base();
+
+    // By default, there will be no padding for the list item text because the padding is already
+    // set on the `mat-list-item-content` element. Later, if the list-item detects that there are
+    // secondary items (avatar, checkbox), a padding on the proper side will be added.
+    padding: 0;
+  }
+
+  &.mat-list-item-with-avatar,
+  &.mat-list-option {
+    .mat-list-item-content .mat-list-text {
+      padding-right: 0;
+      padding-left: $side-padding;
+
+      [dir='rtl'] & {
+        padding-right: $side-padding;
+        padding-left: 0;
+      }
+    }
+
+    // Reversed content is mainly used by the MatSelectionList for displaying the checkbox at the
+    // end of the list option. Since there is a secondary item (checkbox) at the end of the
+    // option, there needs to be a padding for the mat-list-text on the end-side.
+    .mat-list-item-content-reverse .mat-list-text {
+      padding-left: 0;
+      padding-right: $side-padding;
+
+      [dir='rtl'] & {
+        padding-right: 0;
+        padding-left: $side-padding;
+      }
+    }
+   }
+
+  &.mat-list-item-with-avatar.mat-list-option {
+    .mat-list-item-content-reverse .mat-list-text,
+    .mat-list-item-content .mat-list-text {
+      padding-right: $side-padding;
+      padding-left: $side-padding;
+    }
+  }
+
+  .mat-list-avatar {
+    flex-shrink: 0;
+    width: $avatar-size;
+    height: $avatar-size;
+    border-radius: 50%;
+
+    // Not supported in IE11, but we're using this as a
+    // progressive enhancement to get better image scaling.
+    object-fit: cover;
+
+    ~ .mat-divider-inset {
+      @include divider-offset.inset-divider-offset($avatar-size, $side-padding);
+    }
+  }
+
+  .mat-list-icon {
+    flex-shrink: 0;
+    width: $icon-size;
+    height: $icon-size;
+    font-size: $icon-size;
+    box-sizing: content-box;
+    border-radius: 50%;
+    padding: $icon-padding;
+
+    ~ .mat-divider-inset {
+      @include divider-offset.inset-divider-offset($icon-size + (2 * $icon-padding),
+              $side-padding);
+    }
+  }
+
+  .mat-divider {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+
+    [dir='rtl'] & {
+      margin-left: auto;
+      margin-right: 0;
+    }
+
+    &.mat-divider-inset {
+      position: absolute; // necessary to override card styles
+    }
+  }
+}
+
+.mat-subheader {
+  display: flex;
+  box-sizing: border-box;
+  padding: $side-padding;
+  align-items: center;
+
+  // This needs slightly more specificity, because it
+  // can be overwritten by the typography styles.
+  .mat-list-base & {
+    margin: 0;
+  }
+}
+
+// We need some extra resets when the list items are buttons.
+button.mat-list-item, button.mat-list-option {
+  padding: 0;
+  width: 100%;
+  background: none;
+  color: inherit;
+  border: none;
+  outline: inherit;
+  -webkit-tap-highlight-color: transparent;
+  text-align: left;
+
+  [dir='rtl'] & {
+    text-align: right;
+  }
+
+  &::-moz-focus-inner {
+    border: 0;
+  }
+}
+
+// This mixin adjusts the heights and padding based on whether the list is in dense mode.
+@mixin subheader-spacing($top-padding, $base-height) {
+  height: $base-height;
+  line-height: $base-height - $side-padding * 2;
+
+  &:first-child {
+    margin-top: -$top-padding;
+  }
+}
+
+.mat-list-base {
+  padding-top: $top-padding;
+  display: block;
+  -webkit-tap-highlight-color: transparent;
+
+  .mat-subheader {
+    @include subheader-spacing($top-padding, $base-height);
+  }
+
+  .mat-list-item, .mat-list-option {
+    @include item-base(
+      $base-height,
+      $avatar-height,
+      $two-line-height,
+      $three-line-height,
+      $multi-line-padding,
+      $icon-size,
+      $avatar-size
+    );
+  }
+}
+
+
+.mat-list-base[dense] {
+  padding-top: $dense-top-padding;
+  display: block;
+
+  .mat-subheader {
+    @include subheader-spacing($dense-top-padding, $dense-base-height);
+  }
+
+  .mat-list-item, .mat-list-option {
+    @include item-base(
+      $dense-base-height,
+      $dense-avatar-height,
+      $dense-two-line-height,
+      $dense-three-line-height,
+      $dense-multi-line-padding,
+      $dense-list-icon-size,
+      $dense-avatar-size
+    );
+  }
+}
+
+.mat-nav-list {
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .mat-list-item {
+    cursor: pointer;
+    outline: none;
+  }
+}
+
+mat-action-list {
+  .mat-list-item {
+    cursor: pointer;
+    outline: inherit;
+  }
+}
+
+.mat-list-option:not(.mat-list-item-disabled) {
+  cursor: pointer;
+  outline: none;
+}
+
+.mat-list-item-disabled {
+  pointer-events: none;
+
+  // Since we can't use a color to indicate that the list
+  // item is disabled, we have to use opacity instead.
+  @include cdk.high-contrast {
+    opacity: 0.5;
+  }
+}
+
+@include cdk.high-contrast(active, off) {
+  .mat-list-option,
+  .mat-nav-list .mat-list-item,
+  mat-action-list .mat-list-item {
+    &:hover {
+      outline: dotted 1px;
+      z-index: 1;
+    }
+  }
+
+  // In single selection mode, the selected option is indicated by changing its
+  // background color, but that doesn't work in high contrast mode. We add an
+  // alternate indication by rendering out a circle.
+  .mat-list-single-selected-option::after {
+    $size: 10px;
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: $side-padding;
+    transform: translateY(-50%);
+    width: $size;
+    height: 0;
+    border-bottom: solid $size;
+    border-radius: $size;
+  }
+
+  [dir='rtl'] .mat-list-single-selected-option::after {
+    right: auto;
+    left: $side-padding;
+  }
+}
+
+
+// Disable the hover styles on non-hover devices. Since this is more of a progressive
+// enhancement and not all desktop browsers support this kind of media query, we can't
+// use something like `@media (hover)`.
+@media (hover: none) {
+  .mat-list-option:not(.mat-list-single-selected-option),
+  .mat-nav-list .mat-list-item,
+  .mat-action-list .mat-list-item {
+    &:not(.mat-list-item-disabled):hover {
+      background: none;
+    }
+  }
+}

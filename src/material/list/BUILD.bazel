@@ -16,51 +16,67 @@ ng_module(
     name = "list",
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["**/*.spec.ts"],
+        exclude = [
+            "**/*.spec.ts",
+        ],
     ),
-    assets = [":list.css"] + glob(["**/*.html"]),
+    assets = [
+        ":list_scss",
+        ":list_option_scss",
+    ] + glob(["**/*.html"]),
     deps = [
         "//src:dev_mode_types",
-        "//src/cdk/a11y",
         "//src/cdk/coercion",
         "//src/cdk/collections",
-        "//src/cdk/keycodes",
+        "//src/cdk/observers",
         "//src/material/core",
         "//src/material/divider",
-        "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/forms",
-        "@npm//rxjs",
     ],
 )
 
 sass_library(
     name = "list_scss_lib",
     srcs = glob(["**/_*.scss"]),
-    deps = ["//src/material/core:core_scss_lib"],
+    deps = [
+        "//:mdc_sass_lib",
+        "//src/material/checkbox:checkbox_scss_lib",
+        "//src/material/core:core_scss_lib",
+    ],
 )
 
 sass_binary(
     name = "list_scss",
     src = "list.scss",
     deps = [
+        "//:mdc_sass_lib",
+        "//src/material/core:core_scss_lib",
+    ],
+)
+
+sass_binary(
+    name = "list_option_scss",
+    src = "list-option.scss",
+    deps = [
+        ":list_scss_lib",
+        "//:mdc_sass_lib",
         "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
-        "//src/material/divider:divider_scss_lib",
     ],
 )
 
 ng_test_library(
-    name = "unit_test_sources",
+    name = "list_tests_lib",
     srcs = glob(
         ["**/*.spec.ts"],
         exclude = ["**/*.e2e.spec.ts"],
     ),
     deps = [
         ":list",
-        "//src/cdk/a11y",
         "//src/cdk/keycodes",
         "//src/cdk/testing/private",
+        "//src/cdk/testing/testbed",
         "//src/material/core",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
@@ -69,7 +85,9 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [":unit_test_sources"],
+    deps = [
+        ":list_tests_lib",
+    ],
 )
 
 ng_e2e_test_library(

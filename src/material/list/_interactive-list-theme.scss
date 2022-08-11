@@ -1,0 +1,40 @@
+@use 'sass:map';
+@use '@material/ripple' as mdc-ripple;
+@use '../core/theming/theming';
+
+// Mixin that provides colors for the various states of an interactive list-item. MDC
+// has integrated styles for these states but relies on their complex ripples for it.
+@mixin private-interactive-list-item-state-colors($config) {
+  $is-dark-theme: map.get($config, is-dark);
+  $active-base-color: if($is-dark-theme, white, black);
+  $selected-color: theming.get-color-from-palette(map.get($config, primary));
+
+  .mat-mdc-list-item-interactive {
+    &::before {
+      background: $active-base-color;
+    }
+
+    &:not(:focus):not(.mdc-list-item--disabled):hover::before {
+      opacity: mdc-ripple.states-opacity($active-base-color, hover);
+    }
+
+    &.mdc-list-item--selected {
+      &::before {
+        background: $selected-color;
+        opacity: mdc-ripple.states-opacity($selected-color, selected);
+      }
+
+      &:not(:focus):not(.mdc-list-item--disabled):hover::before {
+        // The hover and selected opacities need to be combined to match with what the MDC
+        // ripple state would render. More details here:
+        // https://github.com/material-components/material-components-web/blob/348665978ce73694ad4518626dd70cdf5b984113/packages/mdc-ripple/_ripple-theme.scss#L450.
+        opacity: mdc-ripple.states-opacity($selected-color, hover) +
+                 mdc-ripple.states-opacity($selected-color, selected);
+      }
+    }
+
+    &:focus::before {
+      opacity: mdc-ripple.states-opacity($active-base-color, focus);
+    }
+  }
+}

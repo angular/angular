@@ -6,47 +6,35 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusableOption, FocusKeyManager, FocusMonitor} from '@angular/cdk/a11y';
+import {FocusKeyManager} from '@angular/cdk/a11y';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
-import {A, DOWN_ARROW, ENTER, hasModifierKey, SPACE, UP_ARROW} from '@angular/cdk/keycodes';
+import {A, ENTER, hasModifierKey, SPACE} from '@angular/cdk/keycodes';
+import {_getFocusedElementPierceShadowDom} from '@angular/cdk/platform';
 import {
-  AfterContentInit,
+  AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
-  ContentChild,
   ContentChildren,
   ElementRef,
   EventEmitter,
   forwardRef,
-  Inject,
   Input,
+  NgZone,
   OnChanges,
   OnDestroy,
-  OnInit,
   Output,
   QueryList,
   SimpleChanges,
-  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {
-  CanDisableRipple,
-  MatLine,
-  mixinDisableRipple,
-  setLines,
-  ThemePalette,
-} from '@angular/material/core';
+import {ThemePalette} from '@angular/material/core';
 import {Subject} from 'rxjs';
-import {startWith, takeUntil} from 'rxjs/operators';
-import {MatListAvatarCssMatStyler, MatListIconCssMatStyler} from './list';
+import {takeUntil} from 'rxjs/operators';
+import {MatListBase} from './list-base';
+import {MatListOption, SELECTION_LIST, SelectionList} from './list-option';
 
-const _MatSelectionListBase = mixinDisableRipple(class {});
-const _MatListOptionBase = mixinDisableRipple(class {});
-
-/** @docs-private */
 export const MAT_SELECTION_LIST_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MatSelectionList),
@@ -58,304 +46,53 @@ export class MatSelectionListChange {
   constructor(
     /** Reference to the selection list that emitted the event. */
     public source: MatSelectionList,
+    /**
+     * Reference to the option that has been changed.
+     * @deprecated Use `options` instead, because some events may change more than one option.
+     * @breaking-change 12.0.0
+     */
+    public option: MatListOption,
     /** Reference to the options that have been changed. */
     public options: MatListOption[],
   ) {}
 }
 
-/**
- * Type describing possible positions of a checkbox in a list option
- * with respect to the list item's text.
- */
-export type MatListOptionCheckboxPosition = 'before' | 'after';
-
-/**
- * Component for list-options of selection-list. Each list-option can automatically
- * generate a checkbox and can put current item into the selectionModel of selection-list
- * if the current item is selected.
- */
-@Component({
-  selector: 'mat-list-option',
-  exportAs: 'matListOption',
-  inputs: ['disableRipple'],
-  host: {
-    'role': 'option',
-    'class': 'mat-list-item mat-list-option mat-focus-indicator',
-    '(focus)': '_handleFocus()',
-    '(blur)': '_handleBlur()',
-    '(click)': '_handleClick()',
-    '[class.mat-list-item-disabled]': 'disabled',
-    '[class.mat-list-item-with-avatar]': '_avatar || _icon',
-    // Manually set the "primary" or "warn" class if the color has been explicitly
-    // set to "primary" or "warn". The pseudo checkbox picks up these classes for
-    // its theme.
-    '[class.mat-primary]': 'color === "primary"',
-    // Even though accent is the default, we need to set this class anyway, because the  list might
-    // be placed inside a parent that has one of the other colors with a higher specificity.
-    '[class.mat-accent]': 'color !== "primary" && color !== "warn"',
-    '[class.mat-warn]': 'color === "warn"',
-    '[class.mat-list-single-selected-option]': 'selected && !selectionList.multiple',
-    '[attr.aria-selected]': 'selected',
-    '[attr.aria-disabled]': 'disabled',
-    '[attr.tabindex]': '-1',
-  },
-  templateUrl: 'list-option.html',
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class MatListOption
-  extends _MatListOptionBase
-  implements AfterContentInit, OnDestroy, OnInit, FocusableOption, CanDisableRipple
-{
-  private _selected = false;
-  private _disabled = false;
-  private _hasFocus = false;
-
-  @ContentChild(MatListAvatarCssMatStyler) _avatar: MatListAvatarCssMatStyler;
-  @ContentChild(MatListIconCssMatStyler) _icon: MatListIconCssMatStyler;
-  @ContentChildren(MatLine, {descendants: true}) _lines: QueryList<MatLine>;
-
-  /**
-   * Emits when the selected state of the option has changed.
-   * Use to facilitate two-data binding to the `selected` property.
-   * @docs-private
-   */
-  @Output()
-  readonly selectedChange: EventEmitter<boolean> = new EventEmitter<boolean>();
-
-  /** DOM element containing the item's text. */
-  @ViewChild('text') _text: ElementRef;
-
-  /** Whether the label should appear before or after the checkbox. Defaults to 'after' */
-  @Input() checkboxPosition: MatListOptionCheckboxPosition = 'after';
-
-  /** Theme color of the list option. This sets the color of the checkbox. */
-  @Input()
-  get color(): ThemePalette {
-    return this._color || this.selectionList.color;
-  }
-  set color(newValue: ThemePalette) {
-    this._color = newValue;
-  }
-  private _color: ThemePalette;
-
-  /**
-   * This is set to true after the first OnChanges cycle so we don't clear the value of `selected`
-   * in the first cycle.
-   */
-  private _inputsInitialized = false;
-  /** Value of the option */
-  @Input()
-  get value(): any {
-    return this._value;
-  }
-  set value(newValue: any) {
-    if (
-      this.selected &&
-      !this.selectionList.compareWith(newValue, this.value) &&
-      this._inputsInitialized
-    ) {
-      this.selected = false;
-    }
-
-    this._value = newValue;
-  }
-  private _value: any;
-
-  /** Whether the option is disabled. */
-  @Input()
-  get disabled(): boolean {
-    return this._disabled || (this.selectionList && this.selectionList.disabled);
-  }
-  set disabled(value: BooleanInput) {
-    const newValue = coerceBooleanProperty(value);
-
-    if (newValue !== this._disabled) {
-      this._disabled = newValue;
-      this._changeDetector.markForCheck();
-    }
-  }
-
-  /** Whether the option is selected. */
-  @Input()
-  get selected(): boolean {
-    return this.selectionList.selectedOptions.isSelected(this);
-  }
-  set selected(value: BooleanInput) {
-    const isSelected = coerceBooleanProperty(value);
-
-    if (isSelected !== this._selected) {
-      this._setSelected(isSelected);
-
-      if (isSelected || this.selectionList.multiple) {
-        this.selectionList._reportValueChange();
-      }
-    }
-  }
-
-  constructor(
-    private _element: ElementRef<HTMLElement>,
-    private _changeDetector: ChangeDetectorRef,
-    /** @docs-private */
-    @Inject(forwardRef(() => MatSelectionList)) public selectionList: MatSelectionList,
-  ) {
-    super();
-  }
-
-  ngOnInit() {
-    const list = this.selectionList;
-
-    if (list._value && list._value.some(value => list.compareWith(this._value, value))) {
-      this._setSelected(true);
-    }
-
-    const wasSelected = this._selected;
-
-    // List options that are selected at initialization can't be reported properly to the form
-    // control. This is because it takes some time until the selection-list knows about all
-    // available options. Also it can happen that the ControlValueAccessor has an initial value
-    // that should be used instead. Deferring the value change report to the next tick ensures
-    // that the form control value is not being overwritten.
-    Promise.resolve().then(() => {
-      if (this._selected || wasSelected) {
-        this.selected = true;
-        this._changeDetector.markForCheck();
-      }
-    });
-    this._inputsInitialized = true;
-  }
-
-  ngAfterContentInit() {
-    setLines(this._lines, this._element);
-  }
-
-  ngOnDestroy(): void {
-    if (this.selected) {
-      // We have to delay this until the next tick in order
-      // to avoid changed after checked errors.
-      Promise.resolve().then(() => {
-        this.selected = false;
-      });
-    }
-
-    const hadFocus = this._hasFocus;
-    const newActiveItem = this.selectionList._removeOptionFromList(this);
-
-    // Only move focus if this option was focused at the time it was destroyed.
-    if (hadFocus && newActiveItem) {
-      newActiveItem.focus();
-    }
-  }
-
-  /** Toggles the selection state of the option. */
-  toggle(): void {
-    this.selected = !this.selected;
-  }
-
-  /** Allows for programmatic focusing of the option. */
-  focus(): void {
-    this._element.nativeElement.focus();
-  }
-
-  /**
-   * Returns the list item's text label. Implemented as a part of the FocusKeyManager.
-   * @docs-private
-   */
-  getLabel() {
-    return this._text ? this._text.nativeElement.textContent || '' : '';
-  }
-
-  /** Whether this list item should show a ripple effect when clicked. */
-  _isRippleDisabled() {
-    return this.disabled || this.disableRipple || this.selectionList.disableRipple;
-  }
-
-  _handleClick() {
-    if (!this.disabled && (this.selectionList.multiple || !this.selected)) {
-      this.toggle();
-
-      // Emit a change event if the selected state of the option changed through user interaction.
-      this.selectionList._emitChangeEvent([this]);
-    }
-  }
-
-  _handleFocus() {
-    this.selectionList._setFocusedOption(this);
-    this._hasFocus = true;
-  }
-
-  _handleBlur() {
-    this.selectionList._onTouched();
-    this._hasFocus = false;
-  }
-
-  /** Retrieves the DOM element of the component host. */
-  _getHostElement(): HTMLElement {
-    return this._element.nativeElement;
-  }
-
-  /** Sets the selected state of the option. Returns whether the value has changed. */
-  _setSelected(selected: boolean): boolean {
-    if (selected === this._selected) {
-      return false;
-    }
-
-    this._selected = selected;
-
-    if (selected) {
-      this.selectionList.selectedOptions.select(this);
-    } else {
-      this.selectionList.selectedOptions.deselect(this);
-    }
-
-    this.selectedChange.emit(selected);
-    this._changeDetector.markForCheck();
-    return true;
-  }
-
-  /**
-   * Notifies Angular that the option needs to be checked in the next change detection run. Mainly
-   * used to trigger an update of the list option if the disabled state of the selection list
-   * changed.
-   */
-  _markForCheck() {
-    this._changeDetector.markForCheck();
-  }
-}
-
-/**
- * Material Design list component where each item is a selectable option. Behaves as a listbox.
- */
 @Component({
   selector: 'mat-selection-list',
   exportAs: 'matSelectionList',
-  inputs: ['disableRipple'],
   host: {
+    'class': 'mat-mdc-selection-list mat-mdc-list-base mdc-list',
     'role': 'listbox',
-    'class': 'mat-selection-list mat-list-base',
-    '(keydown)': '_keydown($event)',
     '[attr.aria-multiselectable]': 'multiple',
-    '[attr.aria-disabled]': 'disabled.toString()',
-    '[attr.tabindex]': '_tabIndex',
+    '(keydown)': '_handleKeydown($event)',
   },
   template: '<ng-content></ng-content>',
   styleUrls: ['list.css'],
   encapsulation: ViewEncapsulation.None,
-  providers: [MAT_SELECTION_LIST_VALUE_ACCESSOR],
+  providers: [
+    MAT_SELECTION_LIST_VALUE_ACCESSOR,
+    {provide: MatListBase, useExisting: MatSelectionList},
+    {provide: SELECTION_LIST, useExisting: MatSelectionList},
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatSelectionList
-  extends _MatSelectionListBase
-  implements CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy, OnChanges
+  extends MatListBase
+  implements SelectionList, ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy
 {
-  private _multiple = true;
-  private _contentInitialized = false;
+  private _initialized = false;
+  private _keyManager: FocusKeyManager<MatListOption>;
 
-  /** The FocusKeyManager which handles focus. */
-  _keyManager: FocusKeyManager<MatListOption>;
+  /** Emits when the list has been destroyed. */
+  private _destroyed = new Subject<void>();
 
-  /** The option components contained within this selection-list. */
-  @ContentChildren(MatListOption, {descendants: true}) options: QueryList<MatListOption>;
+  /** Whether the list has been destroyed. */
+  private _isDestroyed: boolean;
+
+  /** View to model callback that should be called whenever the selected options change. */
+  private _onChange: (value: any) => void = (_: any) => {};
+
+  @ContentChildren(MatListOption, {descendants: true}) _items: QueryList<MatListOption>;
 
   /** Emits a change event whenever the selected state of an option changes. */
   @Output() readonly selectionChange: EventEmitter<MatSelectionListChange> =
@@ -371,22 +108,6 @@ export class MatSelectionList
    */
   @Input() compareWith: (o1: any, o2: any) => boolean = (a1, a2) => a1 === a2;
 
-  /** Whether the selection list is disabled. */
-  @Input()
-  get disabled(): boolean {
-    return this._disabled;
-  }
-  set disabled(value: BooleanInput) {
-    this._disabled = coerceBooleanProperty(value);
-
-    // The `MatSelectionList` and `MatListOption` are using the `OnPush` change detection
-    // strategy. Therefore the options will not check for any changes if the `MatSelectionList`
-    // changed its state. Since we know that a change to `disabled` property of the list affects
-    // the state of the options, we manually mark each option for check.
-    this._markOptionsForCheck();
-  }
-  private _disabled: boolean = false;
-
   /** Whether selection is limited to one or multiple items (default multiple). */
   @Input()
   get multiple(): boolean {
@@ -396,7 +117,7 @@ export class MatSelectionList
     const newValue = coerceBooleanProperty(value);
 
     if (newValue !== this._multiple) {
-      if (this._contentInitialized && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      if ((typeof ngDevMode === 'undefined' || ngDevMode) && this._initialized) {
         throw new Error(
           'Cannot change `multiple` mode of mat-selection-list after initialization.',
         );
@@ -406,108 +127,57 @@ export class MatSelectionList
       this.selectedOptions = new SelectionModel(this._multiple, this.selectedOptions.selected);
     }
   }
+  private _multiple = true;
 
   /** The currently selected options. */
   selectedOptions = new SelectionModel<MatListOption>(this._multiple);
 
-  /** The tabindex of the selection list. */
-  _tabIndex = -1;
-
-  /** View to model callback that should be called whenever the selected options change. */
-  private _onChange: (value: any) => void = (_: any) => {};
-
   /** Keeps track of the currently-selected value. */
   _value: string[] | null;
-
-  /** Emits when the list has been destroyed. */
-  private readonly _destroyed = new Subject<void>();
 
   /** View to model callback that should be called if the list or its options lost focus. */
   _onTouched: () => void = () => {};
 
-  /** Whether the list has been destroyed. */
-  private _isDestroyed: boolean;
-
-  constructor(
-    private _element: ElementRef<HTMLElement>,
-    private _changeDetector: ChangeDetectorRef,
-    private _focusMonitor: FocusMonitor,
-  ) {
+  constructor(public _element: ElementRef<HTMLElement>, private _ngZone: NgZone) {
     super();
+    this._isNonInteractive = false;
   }
 
-  ngAfterContentInit(): void {
-    this._contentInitialized = true;
+  ngAfterViewInit() {
+    // Mark the selection list as initialized so that the `multiple`
+    // binding can no longer be changed.
+    this._initialized = true;
+    this._setupRovingTabindex();
 
-    this._keyManager = new FocusKeyManager<MatListOption>(this.options)
-      .withWrap()
-      .withTypeAhead()
-      .withHomeAndEnd()
-      // Allow disabled items to be focusable. For accessibility reasons, there must be a way for
-      // screen reader users, that allows reading the different options of the list.
-      .skipPredicate(() => false)
-      .withAllowedModifierKeys(['shiftKey']);
+    // These events are bound outside the zone, because they don't change
+    // any change-detected properties and they can trigger timeouts.
+    this._ngZone.runOutsideAngular(() => {
+      this._element.nativeElement.addEventListener('focusin', this._handleFocusin);
+      this._element.nativeElement.addEventListener('focusout', this._handleFocusout);
+    });
 
     if (this._value) {
       this._setOptionsFromValues(this._value);
     }
 
-    // If the user attempts to tab out of the selection list, allow focus to escape.
-    this._keyManager.tabOut.pipe(takeUntil(this._destroyed)).subscribe(() => {
-      this._allowFocusEscape();
-    });
-
-    // When the number of options change, update the tabindex of the selection list.
-    this.options.changes.pipe(startWith(null), takeUntil(this._destroyed)).subscribe(() => {
-      this._updateTabIndex();
-    });
-
-    // Sync external changes to the model back to the options.
-    this.selectedOptions.changed.pipe(takeUntil(this._destroyed)).subscribe(event => {
-      if (event.added) {
-        for (let item of event.added) {
-          item.selected = true;
-        }
-      }
-
-      if (event.removed) {
-        for (let item of event.removed) {
-          item.selected = false;
-        }
-      }
-    });
-
-    this._focusMonitor
-      .monitor(this._element)
-      .pipe(takeUntil(this._destroyed))
-      .subscribe(origin => {
-        if (origin === 'keyboard' || origin === 'program') {
-          let toFocus = 0;
-          for (let i = 0; i < this.options.length; i++) {
-            if (this.options.get(i)?.selected) {
-              toFocus = i;
-              break;
-            }
-          }
-          this._keyManager.setActiveItem(toFocus);
-        }
-      });
+    this._watchForSelectionChange();
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    const disabledChanges = changes['disabled'];
     const disableRippleChanges = changes['disableRipple'];
-    const colorChanges = changes['color'];
 
     if (
       (disableRippleChanges && !disableRippleChanges.firstChange) ||
-      (colorChanges && !colorChanges.firstChange)
+      (disabledChanges && !disabledChanges.firstChange)
     ) {
       this._markOptionsForCheck();
     }
   }
 
   ngOnDestroy() {
-    this._focusMonitor.stopMonitoring(this._element);
+    this._element.nativeElement.removeEventListener('focusin', this._handleFocusin);
+    this._element.nativeElement.removeEventListener('focusout', this._handleFocusout);
     this._destroyed.next();
     this._destroyed.complete();
     this._isDestroyed = true;
@@ -528,72 +198,6 @@ export class MatSelectionList
     return this._setAllOptionsSelected(false);
   }
 
-  /** Sets the focused option of the selection-list. */
-  _setFocusedOption(option: MatListOption) {
-    this._keyManager.updateActiveItem(option);
-  }
-
-  /**
-   * Removes an option from the selection list and updates the active item.
-   * @returns Currently-active item.
-   */
-  _removeOptionFromList(option: MatListOption): MatListOption | null {
-    const optionIndex = this._getOptionIndex(option);
-
-    if (optionIndex > -1 && this._keyManager.activeItemIndex === optionIndex) {
-      // Check whether the option is the last item
-      if (optionIndex > 0) {
-        this._keyManager.updateActiveItem(optionIndex - 1);
-      } else if (optionIndex === 0 && this.options.length > 1) {
-        this._keyManager.updateActiveItem(Math.min(optionIndex + 1, this.options.length - 1));
-      }
-    }
-
-    return this._keyManager.activeItem;
-  }
-
-  /** Passes relevant key presses to our key manager. */
-  _keydown(event: KeyboardEvent) {
-    const keyCode = event.keyCode;
-    const manager = this._keyManager;
-    const previousFocusIndex = manager.activeItemIndex;
-    const hasModifier = hasModifierKey(event);
-
-    switch (keyCode) {
-      case SPACE:
-      case ENTER:
-        if (!hasModifier && !manager.isTyping()) {
-          this._toggleFocusedOption();
-          // Always prevent space from scrolling the page since the list has focus
-          event.preventDefault();
-        }
-        break;
-      default:
-        // The "A" key gets special treatment, because it's used for the "select all" functionality.
-        if (
-          keyCode === A &&
-          this.multiple &&
-          hasModifierKey(event, 'ctrlKey') &&
-          !manager.isTyping()
-        ) {
-          const shouldSelect = this.options.some(option => !option.disabled && !option.selected);
-          this._setAllOptionsSelected(shouldSelect, true, true);
-          event.preventDefault();
-        } else {
-          manager.onKeydown(event);
-        }
-    }
-
-    if (
-      this.multiple &&
-      (keyCode === UP_ARROW || keyCode === DOWN_ARROW) &&
-      event.shiftKey &&
-      manager.activeItemIndex !== previousFocusIndex
-    ) {
-      this._toggleFocusedOption();
-    }
-  }
-
   /** Reports a value change to the ControlValueAccessor */
   _reportValueChange() {
     // Stop reporting value changes after the list has been destroyed. This avoids
@@ -608,7 +212,7 @@ export class MatSelectionList
 
   /** Emits a change event if the selected state of an option changed. */
   _emitChangeEvent(options: MatListOption[]) {
-    this.selectionChange.emit(new MatSelectionListChange(this, options));
+    this.selectionChange.emit(new MatSelectionListChange(this, options[0], options));
   }
 
   /** Implemented as part of ControlValueAccessor. */
@@ -635,6 +239,24 @@ export class MatSelectionList
     this._onTouched = fn;
   }
 
+  /** Watches for changes in the selected state of the options and updates the list accordingly. */
+  private _watchForSelectionChange() {
+    this.selectedOptions.changed.pipe(takeUntil(this._destroyed)).subscribe(event => {
+      // Sync external changes to the model back to the options.
+      for (let item of event.added) {
+        item.selected = true;
+      }
+
+      for (let item of event.removed) {
+        item.selected = false;
+      }
+
+      if (!this._containsFocus()) {
+        this._resetActiveOption();
+      }
+    });
+  }
+
   /** Sets the selected options based on the specified values. */
   private _setOptionsFromValues(values: string[]) {
     this.options.forEach(option => option._setSelected(false));
@@ -657,20 +279,10 @@ export class MatSelectionList
     return this.options.filter(option => option.selected).map(option => option.value);
   }
 
-  /** Toggles the state of the currently focused option if enabled. */
-  private _toggleFocusedOption(): void {
-    let focusedIndex = this._keyManager.activeItemIndex;
-
-    if (focusedIndex != null && this._isValidIndex(focusedIndex)) {
-      let focusedOption: MatListOption = this.options.toArray()[focusedIndex];
-
-      if (focusedOption && !focusedOption.disabled && (this._multiple || !focusedOption.selected)) {
-        focusedOption.toggle();
-
-        // Emit a change event because the focused option changed its state through user
-        // interaction.
-        this._emitChangeEvent([focusedOption]);
-      }
+  /** Marks all the options to be checked in the next change detection run. */
+  private _markOptionsForCheck() {
+    if (this.options) {
+      this.options.forEach(option => option._markForCheck());
     }
   }
 
@@ -678,11 +290,7 @@ export class MatSelectionList
    * Sets the selected state on all of the options
    * and emits an event if anything changed.
    */
-  private _setAllOptionsSelected(
-    isSelected: boolean,
-    skipDisabled?: boolean,
-    isUserInput?: boolean,
-  ): MatListOption[] {
+  private _setAllOptionsSelected(isSelected: boolean, skipDisabled?: boolean): MatListOption[] {
     // Keep track of whether anything changed, because we only want to
     // emit the changed event when something actually changed.
     const changedOptions: MatListOption[] = [];
@@ -695,52 +303,113 @@ export class MatSelectionList
 
     if (changedOptions.length) {
       this._reportValueChange();
-
-      if (isUserInput) {
-        this._emitChangeEvent(changedOptions);
-      }
     }
 
     return changedOptions;
   }
 
-  /**
-   * Utility to ensure all indexes are valid.
-   * @param index The index to be checked.
-   * @returns True if the index is valid for our list of options.
-   */
-  private _isValidIndex(index: number): boolean {
-    return index >= 0 && index < this.options.length;
+  // Note: This getter exists for backwards compatibility. The `_items` query list
+  // cannot be named `options` as it will be picked up by the interactive list base.
+  /** The option components contained within this selection-list. */
+  get options(): QueryList<MatListOption> {
+    return this._items;
   }
 
-  /** Returns the index of the specified list option. */
-  private _getOptionIndex(option: MatListOption): number {
-    return this.options.toArray().indexOf(option);
-  }
+  /** Handles keydown events within the list. */
+  _handleKeydown(event: KeyboardEvent) {
+    const activeItem = this._keyManager.activeItem;
 
-  /** Marks all the options to be checked in the next change detection run. */
-  private _markOptionsForCheck() {
-    if (this.options) {
-      this.options.forEach(option => option._markForCheck());
+    if (
+      (event.keyCode === ENTER || event.keyCode === SPACE) &&
+      !this._keyManager.isTyping() &&
+      activeItem &&
+      !activeItem.disabled
+    ) {
+      event.preventDefault();
+      activeItem._toggleOnInteraction();
+    } else if (
+      event.keyCode === A &&
+      this.multiple &&
+      !this._keyManager.isTyping() &&
+      hasModifierKey(event, 'ctrlKey')
+    ) {
+      const shouldSelect = this.options.some(option => !option.disabled && !option.selected);
+      event.preventDefault();
+      this._emitChangeEvent(this._setAllOptionsSelected(shouldSelect, true));
+    } else {
+      this._keyManager.onKeydown(event);
     }
   }
 
-  /**
-   * Removes the tabindex from the selection list and resets it back afterwards, allowing the user
-   * to tab out of it. This prevents the list from capturing focus and redirecting it back within
-   * the list, creating a focus trap if it user tries to tab away.
-   */
-  private _allowFocusEscape() {
-    this._tabIndex = -1;
-
+  /** Handles focusout events within the list. */
+  private _handleFocusout = () => {
+    // Focus takes a while to update so we have to wrap our call in a timeout.
     setTimeout(() => {
-      this._tabIndex = 0;
-      this._changeDetector.markForCheck();
+      if (!this._containsFocus()) {
+        this._resetActiveOption();
+      }
+    });
+  };
+
+  /** Handles focusin events within the list. */
+  private _handleFocusin = (event: FocusEvent) => {
+    const activeIndex = this._items
+      .toArray()
+      .findIndex(item => item._elementRef.nativeElement.contains(event.target as HTMLElement));
+
+    if (activeIndex > -1) {
+      this._setActiveOption(activeIndex);
+    } else {
+      this._resetActiveOption();
+    }
+  };
+
+  /** Sets up the logic for maintaining the roving tabindex. */
+  private _setupRovingTabindex() {
+    this._keyManager = new FocusKeyManager(this._items)
+      .withHomeAndEnd()
+      .withTypeAhead()
+      .withWrap()
+      // Allow navigation to disabled items.
+      .skipPredicate(() => false);
+
+    // Set the initial focus.
+    this._resetActiveOption();
+
+    // Move the tabindex to the currently-focused list item.
+    this._keyManager.change
+      .pipe(takeUntil(this._destroyed))
+      .subscribe(activeItemIndex => this._setActiveOption(activeItemIndex));
+
+    // If the active item is removed from the list, reset back to the first one.
+    this._items.changes.pipe(takeUntil(this._destroyed)).subscribe(() => {
+      const activeItem = this._keyManager.activeItem;
+
+      if (!activeItem || !this._items.toArray().indexOf(activeItem)) {
+        this._resetActiveOption();
+      }
     });
   }
 
-  /** Updates the tabindex based upon if the selection list is empty. */
-  private _updateTabIndex(): void {
-    this._tabIndex = this.options.length === 0 ? -1 : 0;
+  /**
+   * Sets an option as active.
+   * @param index Index of the active option. If set to -1, no option will be active.
+   */
+  private _setActiveOption(index: number) {
+    this._items.forEach((item, itemIndex) => item._setTabindex(itemIndex === index ? 0 : -1));
+    this._keyManager.updateActiveItem(index);
+  }
+
+  /** Resets the active option to the first selected option. */
+  private _resetActiveOption() {
+    const activeItem =
+      this._items.find(item => item.selected && !item.disabled) || this._items.first;
+    this._setActiveOption(activeItem ? this._items.toArray().indexOf(activeItem) : -1);
+  }
+
+  /** Returns whether the focus is currently within the list. */
+  private _containsFocus() {
+    const activeElement = _getFocusedElementPierceShadowDom();
+    return activeElement && this._element.nativeElement.contains(activeElement);
   }
 }
