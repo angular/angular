@@ -25,6 +25,7 @@ export const COMPONENTS = [
   'select',
   'slide-toggle',
   'snack-bar',
+  'slider',
   'table',
   'tabs',
   'tooltip',
