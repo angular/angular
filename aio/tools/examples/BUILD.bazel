@@ -65,6 +65,7 @@ js_library(
     deps = [
         "@aio_npm//@bazel/runfiles",
         "@aio_npm//canonical-path",
+        "@aio_npm//cjson",
         "@aio_npm//cross-spawn",
         "@aio_npm//fs-extra",
         "@aio_npm//globby",
