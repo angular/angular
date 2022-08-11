@@ -181,7 +181,8 @@ export function provideForRootGuard(router: Router): any {
   if (NG_DEV_MODE && router) {
     throw new RuntimeError(
         RuntimeErrorCode.FOR_ROOT_CALLED_TWICE,
-        `RouterModule.forRoot() called twice. Lazy loaded modules should use RouterModule.forChild() instead.`);
+        `The Router was provided more than once. This can happen if 'forRoot' is used outside of the root injector.` +
+            ` Lazy loaded modules should use RouterModule.forChild() instead.`);
   }
   return 'guarded';
 }
