@@ -10,10 +10,10 @@ import {Directive, ElementRef, Inject, Injector, Input, NgModule, NgZone, OnChan
 
 import {RuntimeErrorCode} from '../../errors';
 
+import {imgDirectiveDetails} from './error_helper';
 import {IMAGE_LOADER, ImageLoader} from './image_loaders/image_loader';
 import {LCPImageObserver} from './lcp_image_observer';
 import {PreconnectLinkChecker} from './preconnect_link_checker';
-import {imgDirectiveDetails} from './util';
 
 /**
  * When a Base64-encoded image is passed as an input to the `NgOptimizedImage` directive,
@@ -256,7 +256,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertNoImageDistortion(this, this.imgElement, this.renderer);
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
-        checker.check(this.getRewrittenSrc(), this.rawSrc);
+        checker.assertPreconnect(this.getRewrittenSrc(), this.rawSrc);
       } else {
         // Monitor whether an image is an LCP element only in case
         // the `priority` attribute is missing. Otherwise, an image

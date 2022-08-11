@@ -10,7 +10,7 @@ import {InjectionToken, Provider, ɵRuntimeError as RuntimeError} from '@angular
 
 import {RuntimeErrorCode} from '../../../errors';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../preconnect_link_checker';
-import {isAbsoluteURL, isValidPath, normalizePath, normalizeSrc} from '../util';
+import {isAbsoluteUrl, isValidPath, normalizePath, normalizeSrc} from '../url';
 
 /**
  * Config options recognized by the image loader function.
@@ -61,7 +61,7 @@ export function createImageLoader(
     path = normalizePath(path);
 
     const loaderFn = (config: ImageLoaderConfig) => {
-      if (ngDevMode && isAbsoluteURL(config.src)) {
+      if (ngDevMode && isAbsoluteUrl(config.src)) {
         throwUnexpectedAbsoluteUrlError(path, config.src);
       }
 

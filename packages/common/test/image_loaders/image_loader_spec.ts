@@ -11,7 +11,7 @@ import {provideCloudflareLoader} from '@angular/common/src/directives/ng_optimiz
 import {provideCloudinaryLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/cloudinary_loader';
 import {provideImageKitLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imagekit_loader';
 import {provideImgixLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imgix_loader';
-import {isValidPath} from '@angular/common/src/directives/ng_optimized_image/util';
+import {isValidPath} from '@angular/common/src/directives/ng_optimized_image/url';
 import {createEnvironmentInjector, EnvironmentInjector, ValueProvider} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 

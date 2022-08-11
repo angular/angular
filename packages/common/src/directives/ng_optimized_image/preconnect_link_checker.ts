@@ -12,14 +12,15 @@ import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
 
 import {assertDevMode} from './asserts';
-import {deepForEach, extractHostname, getUrl, imgDirectiveDetails} from './util';
+import {imgDirectiveDetails} from './error_helper';
+import {extractHostname, getUrl} from './url';
 
 // Set of origins that are always excluded from the preconnect checks.
 const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
 
 /**
  * Multi-provider injection token to configure which origins should be excluded
- * from the preconnect checks. If can either be a single string or an array of strings
+ * from the preconnect checks. It can either be a single string or an array of strings
  * to represent a group of origins, for example:
  *
  * ```typescript
@@ -68,11 +69,11 @@ export class PreconnectLinkChecker {
       this.window = win;
     }
     if (blocklist) {
-      this.pupulateBlocklist(blocklist);
+      this.populateBlocklist(blocklist);
     }
   }
 
-  private pupulateBlocklist(origins: Array<string|string[]>) {
+  private populateBlocklist(origins: Array<string|string[]>) {
     if (Array.isArray(origins)) {
       deepForEach(origins, origin => {
         this.blocklist.add(extractHostname(origin));
@@ -85,7 +86,14 @@ export class PreconnectLinkChecker {
     }
   }
 
-  check(rewrittenSrc: string, rawSrc: string) {
+  /**
+   * Checks that a preconnect resource hint exists in the head fo rthe
+   * given src.
+   *
+   * @param rewrittenSrc src formatted with loader
+   * @param rawSrc rawSrc value
+   */
+  assertPreconnect(rewrittenSrc: string, rawSrc: string): void {
     if (!this.window) return;
 
     const imgUrl = getUrl(rewrittenSrc, this.window);
@@ -94,7 +102,7 @@ export class PreconnectLinkChecker {
     // Register this origin as seen, so we don't check it again later.
     this.alreadySeen.add(imgUrl.origin);
 
-    if (this.preconnectLinks === null) {
+    if (!this.preconnectLinks) {
       // Note: we query for preconnect links only *once* and cache the results
       // for the entire lifespan of an application, since it's unlikely that the
       // list would change frequently. This allows to make sure there are no
@@ -114,18 +122,27 @@ export class PreconnectLinkChecker {
   }
 
   private queryPreconnectLinks(): Set<string> {
-    const preconnectURLs = new Set<string>();
+    const preconnectUrls = new Set<string>();
     const selector = 'link[rel=preconnect]';
-    const links = (this.doc.head?.querySelectorAll(selector) ?? []) as unknown as HTMLLinkElement[];
-    links.forEach(link => {
+    const links =
+        Array.from(document.querySelectorAll('link[rel=preconnect]')) as HTMLLinkElement[];
+    for (let link of links) {
       const url = getUrl(link.href, this.window!);
-      preconnectURLs.add(url.origin);
-    });
-    return preconnectURLs;
+      preconnectUrls.add(url.origin);
+    }
+    return preconnectUrls;
   }
 
   ngOnDestroy() {
     this.preconnectLinks?.clear();
     this.alreadySeen.clear();
+  }
+}
+
+// Invokes a callback for each element in the array. Also invokes a callback
+// recursively for each nested array.
+function deepForEach<T>(input: (T|any[])[], fn: (value: T) => void): void {
+  for (let value of input) {
+    Array.isArray(value) ? deepForEach(value, fn) : fn(value);
   }
 }
