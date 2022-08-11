@@ -21,7 +21,6 @@ This topic uses the following pictographs.
 
 </div>
 
-The applications you build with Angular can become quite large, and one way to manage this complexity is to split up the application into many small well encapsulated modules, that are by themselves split up into a well-defined tree of components.
 The applications you build with Angular can become quite large, and one way to manage this complexity is to split up the application into many small well-encapsulated modules, that are by themselves split up into a well-defined tree of components.
 
 There can be sections of your page that works in a completely independent way than the rest of the application, with its own local copies of the services and other dependencies that it needs. Some of the services that these sections of the application use might be shared with other parts of the application, or with parent components that are further up in the component tree, while other dependencies are meant to be private.
