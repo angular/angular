@@ -50,7 +50,7 @@ ng_package(
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
         "//aio:__pkg__",
-        "//aio/tools/examples/shared:__pkg__",
+        "//aio/content/examples:__subpackages__",
         "//integration:__subpackages__",
     ],
     deps = [
