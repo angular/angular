@@ -816,6 +816,11 @@
             "title": "Angular University",
             "url": "https://angular-university.io/"
           },
+          "angular-master-dev": {
+            "desc": "Angular Architecture: Strategic Design with Nx - Online Video Course",
+            "title": "Angular Master",
+            "url": "https://angularmaster.dev/"
+          },
           "-acceleb": {
             "desc": "Customized, Instructor-Led Angular Training",
             "title": "Accelebrate",
