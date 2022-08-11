@@ -13,6 +13,7 @@ import {RouterModule} from '@angular/router';
 import {BasicComponent} from './e2e/basic/basic';
 import {ImageDistortionFailingComponent, ImageDistortionPassingComponent} from './e2e/image-distortion/image-distortion';
 import {LcpCheckComponent} from './e2e/lcp-check/lcp-check';
+import {OversizedImageComponentFailing, OversizedImageComponentPassing} from './e2e/oversized-image/oversized-image';
 import {PreconnectCheckComponent} from './e2e/preconnect-check/preconnect-check';
 import {PlaygroundComponent} from './playground';
 
@@ -35,6 +36,8 @@ const ROUTES = [
   {path: 'e2e/preconnect-check', component: PreconnectCheckComponent},
   {path: 'e2e/image-distortion-passing', component: ImageDistortionPassingComponent},
   {path: 'e2e/image-distortion-failing', component: ImageDistortionFailingComponent},
+  {path: 'e2e/oversized-image-passing', component: OversizedImageComponentPassing},
+  {path: 'e2e/oversized-image-failing', component: OversizedImageComponentFailing},
 ];
 
 bootstrapApplication(RootComponent, {

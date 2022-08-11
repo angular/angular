@@ -55,6 +55,13 @@ export const RECOMMENDED_SRCSET_DENSITY_CAP = 2;
 const ASPECT_RATIO_TOLERANCE = .1;
 
 /**
+ * Used to determine whether the image has been requested at an overly
+ * large size compared to the actual rendered image size (after taking
+ * into account a typical device pixel ratio). In pixels.
+ */
+const OVERSIZED_IMAGE_TOLERANCE = 1000;
+
+/**
  * Directive that improves image loading performance by enforcing best practices.
  *
  * `NgOptimizedImage` ensures that the loading of the Largest Contentful Paint (LCP) image is
@@ -587,6 +594,7 @@ function assertNoImageDistortion(
         Math.abs(suppliedAspectRatio - intrinsicAspectRatio) > ASPECT_RATIO_TOLERANCE;
     const stylingDistortion = nonZeroRenderedDimensions &&
         Math.abs(intrinsicAspectRatio - renderedAspectRatio) > ASPECT_RATIO_TOLERANCE;
+
     if (inaccurateDimensions) {
       console.warn(formatRuntimeError(
           RuntimeErrorCode.INVALID_INPUT,
@@ -596,20 +604,36 @@ function assertNoImageDistortion(
               `(aspect-ratio: ${intrinsicAspectRatio}). Supplied width and height attributes: ` +
               `${suppliedWidth}w x ${suppliedHeight}h (aspect-ratio: ${suppliedAspectRatio}). ` +
               `To fix this, update the width and height attributes.`));
-    } else {
-      if (stylingDistortion) {
+    } else if (stylingDistortion) {
+      console.warn(formatRuntimeError(
+          RuntimeErrorCode.INVALID_INPUT,
+          `${imgDirectiveDetails(dir.rawSrc)} the aspect ratio of the rendered image ` +
+              `does not match the image's intrinsic aspect ratio. ` +
+              `Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h ` +
+              `(aspect-ratio: ${intrinsicAspectRatio}). Rendered image size: ` +
+              `${renderedWidth}w x ${renderedHeight}h (aspect-ratio: ` +
+              `${renderedAspectRatio}). This issue can occur if "width" and "height" ` +
+              `attributes are added to an image without updating the corresponding ` +
+              `image styling. To fix this, adjust image styling. In most cases, ` +
+              `adding "height: auto" or "width: auto" to the image styling will fix ` +
+              `this issue.`));
+    } else if (!dir.rawSrcset && nonZeroRenderedDimensions) {
+      // If `rawSrcset` hasn't been set, sanity check the intrinsic size.
+      const recommendedWidth = RECOMMENDED_SRCSET_DENSITY_CAP * renderedWidth;
+      const recommendedHeight = RECOMMENDED_SRCSET_DENSITY_CAP * renderedHeight;
+      const oversizedWidth = (intrinsicWidth - recommendedWidth) >= OVERSIZED_IMAGE_TOLERANCE;
+      const oversizedHeight = (intrinsicHeight - recommendedHeight) >= OVERSIZED_IMAGE_TOLERANCE;
+      if (oversizedWidth || oversizedHeight) {
         console.warn(formatRuntimeError(
-            RuntimeErrorCode.INVALID_INPUT,
-            `${imgDirectiveDetails(dir.rawSrc)} the aspect ratio of the rendered image ` +
-                `does not match the image's intrinsic aspect ratio. ` +
-                `Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h ` +
-                `(aspect-ratio: ${intrinsicAspectRatio}). Rendered image size: ` +
-                `${renderedWidth}w x ${renderedHeight}h (aspect-ratio: ` +
-                `${renderedAspectRatio}). This issue can occur if "width" and "height" ` +
-                `attributes are added to an image without updating the corresponding ` +
-                `image styling. To fix this, adjust image styling. In most cases, ` +
-                `adding "height: auto" or "width: auto" to the image styling will fix ` +
-                `this issue.`));
+            RuntimeErrorCode.OVERSIZED_IMAGE,
+            `${imgDirectiveDetails(dir.rawSrc)} the intrinsic image is significantly ` +
+                `larger than necessary. ` +
+                `Rendered image size: ${renderedWidth}w x ${renderedHeight}h. ` +
+                `Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h. ` +
+                `Recommended intrinsic image size: ${recommendedWidth}w x ${recommendedHeight}h. ` +
+                `Note: Recommended intrinsic image size is calculated assuming a maximum DPR of ` +
+                `${RECOMMENDED_SRCSET_DENSITY_CAP}. To improve loading time, resize the image ` +
+                `or consider using the "rawSrcset" and "sizes" attributes.`));
       }
     }
   });
