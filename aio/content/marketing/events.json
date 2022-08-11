@@ -1,4 +1,30 @@
 [
+   {
+    "name": "NG Poland",
+    "location": "Warsaw, Poland",
+    "linkUrl": "https://ng-poland.pl/",
+    "date": {
+      "start": "2022-10-25",
+      "end": "2022-10-25"
+    },
+    "workshopsDate": {
+      "start": "2022-10-24",
+      "end": "2022-10-24"
+    }
+  },
+  {
+    "name": "JS Poland",
+    "location": "Warsaw, Poland",
+    "linkUrl": "https://js-poland.pl/",
+    "date": {
+      "start": "2022-10-26",
+      "end": "2022-10-26"
+    },
+    "workshopsDate": {
+      "start": "2022-10-24",
+      "end": "2022-10-24"
+    }
+  },
   {
     "name": "NG-DE",
     "location": "Berlin, Germany",
