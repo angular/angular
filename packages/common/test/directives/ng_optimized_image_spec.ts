@@ -68,6 +68,19 @@ describe('Image directive', () => {
     expect(_fetchpriorityAttrId).toBeLessThan(_srcAttrId);  // was set after `src`
   });
 
+  it('should always reflect the width/height attributes if bound', () => {
+    setupTestingModule();
+
+    const template = '<img rawSrc="path/img.png" [width]="width" [height]="height">';
+    const fixture = createTestComponent(template);
+    fixture.detectChanges();
+
+    const nativeElement = fixture.nativeElement as HTMLElement;
+    const img = nativeElement.querySelector('img')!;
+    expect(img.getAttribute('width')).toBe('100');
+    expect(img.getAttribute('height')).toBe('50');
+  });
+
   describe('setup error handling', () => {
     it('should throw if both `src` and `rawSrc` are present', () => {
       setupTestingModule();
