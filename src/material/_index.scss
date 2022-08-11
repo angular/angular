@@ -90,7 +90,7 @@
 @forward './legacy-card/card-theme' as legacy-card-* show legacy-card-theme, legacy-card-color,
   legacy-card-typography;
 @forward './legacy-checkbox/checkbox-theme' as legacy-checkbox-* show
-  checkbox-legacy-theme, checkbox-legacy-color, checkbox-legacy-typography;
+  legacy-checkbox-theme, legacy-checkbox-color, legacy-checkbox-typography;
 @forward './checkbox/checkbox-theme' as checkbox-* show checkbox-theme, checkbox-color,
   checkbox-typography, checkbox-density;
 @forward './legacy-chips/chips-theme' as legacy-chips-* show legacy-chips-theme,
