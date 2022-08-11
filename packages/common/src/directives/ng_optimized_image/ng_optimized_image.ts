@@ -267,6 +267,11 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
                 observer.registerImage(this.getRewrittenSrc(), this.rawSrc));
       }
     }
+    // Must set width/height explicitly in case they are bound (in which case they will
+    // only be reflected and not found by the browser)
+    this.setHostAttribute('width', this.width!.toString());
+    this.setHostAttribute('height', this.height!.toString());
+
     this.setHostAttribute('loading', this.getLoadingBehavior());
     this.setHostAttribute('fetchpriority', this.getFetchPriority());
     // The `src` and `srcset` attributes should be set last since other attributes
