@@ -1,3 +1,20 @@
+<a name="14.2.0-next.2"></a>
+# 14.2.0-next.2 "maple-mantis" (2022-08-11)
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [657774e29b](https://github.com/angular/components/commit/657774e29b90ab3d66f7abdbeadd7fafcae9b407) | feat | **datepicker:** Allow user to jump between start and end dates with arrow keys ([#25359](https://github.com/angular/components/pull/25359)) |
+| [225273825a](https://github.com/angular/components/commit/225273825ac3aefe423432a819aee48b92be52c0) | fix | **chips:** `selectable="false"` doesn't work on initial assignment ([#24906](https://github.com/angular/components/pull/24906)) |
+| [484058b80e](https://github.com/angular/components/commit/484058b80ee335414d9523d16cd669c449ef3762) | fix | **tooltip:** avoid problem when triggers hide animation for not visible tooltip ([#24652](https://github.com/angular/components/pull/24652)) |
+### material-experimental
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7c0f56335a](https://github.com/angular/components/commit/7c0f56335a39d33f2962b78bdc23390c38aba033) | fix | **mdc-list:** set a role on MatNavList and MatActionList ([#25412](https://github.com/angular/components/pull/25412)) |
+## Special Thanks
+Egor Volvachev, Karl Seamon, Miles Malerba, Wagner Maciel and Zach Arend
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.2"></a>
 # 14.1.2 "cedar-cicada" (2022-08-11)
 ### material
