@@ -5806,7 +5806,7 @@ describe('Integration', () => {
          let recordedError: any = null;
          router.navigateByUrl('/lazy/loaded')!.catch(err => recordedError = err);
          advance(fixture);
-         expect(recordedError.message).toContain(`RouterModule.forRoot() called twice.`);
+         expect(recordedError.message).toContain(`NG04007`);
        })));
 
     it('should combine routes from multiple modules into a single configuration',
