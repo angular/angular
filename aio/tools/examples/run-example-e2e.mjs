@@ -1,7 +1,8 @@
 import path from 'canonical-path';
 import {spawn} from 'cross-spawn';
 import fs from 'fs-extra';
-import {sync as globbySync} from 'globby';
+import {globbySync} from 'globby';
+import jsonc from 'cjson';
 import os from 'os';
 import shelljs from 'shelljs';
 import treeKill from 'tree-kill';
@@ -20,27 +21,42 @@ process.env.CHROMEDRIVER_BIN = path.resolve(process.env.CHROMEDRIVER_BIN);
 const {argv} = yargs(hideBin(process.argv));
 
 const EXAMPLE_PATH = path.resolve(argv._[0]);
-const NODE_MODULES_PATH = path.resolve(argv._[1]);
 const NODE = process.execPath;
-const VENDORED_YARN = path.resolve(argv._[2]);
+const VENDORED_YARN = path.resolve(argv._[1]);
+const EXAMPLE_DEPS_WORKSPACE_NAME = argv._[2];
+const LOCAL_PACKAGES = argv._.slice(3).reduce((pkgs, pkgNameAndPath) => {
+  const [pkgName, pkgPath] = pkgNameAndPath.split('#');
+  pkgs[pkgName] = path.resolve(pkgPath);
+  return pkgs;
+}, {});
+
 const SJS_SPEC_FILENAME = 'e2e-spec.ts';
 const CLI_SPEC_FILENAME = 'e2e/src/app.e2e-spec.ts';
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 const MAX_NO_OUTPUT_TIMEOUT = 1000 * 60 * 5;  // 5 minutes
 
 /**
- * Run Protractor End-to-End Tests for Doc Samples
+ * Run Protractor End-to-End Tests for a Docs Example
+ *
+ * Usage: node run-example-e2e.mjs <examplePath> <yarnPath> <exampleDepsWorkspaceName> [localPackage...]
+ *
+ * Args:
+ *  examplePath: path to the example
+ *  yarnPath: path to a vendored version of yarn
+ *  exampleDepsWorkspaceName: name of bazel workspace containing example node_omodules
+ *  localPackages: a vararg of local packages to substitute in place npm deps, in the form @package/name#pathToPackage.
  *
  * Flags
  *  --retry to retry failed tests (useful for overcoming flakes)
  *    e.g. --retry 3  // To try each test up to 3 times.
  */
-async function runE2e(examplePath, nodeModulesPath) {
+
+async function runE2e(examplePath) {
   const exampleName = path.basename(examplePath);
   const maxAttempts = argv.retry || 1;
   try {
     examplePath = createCopyOfExampleForTest(exampleName, examplePath);
-    symlinkNodeModules(examplePath, nodeModulesPath);
+    await constructNodeModules(examplePath);
   
     let testFn;
     if (isSystemJsTest(examplePath)) {
@@ -165,8 +181,74 @@ function runProtractorAoT(exampleName, appDir) {
   return runProtractorSystemJS(exampleName, promise, appDir, aotRunSpawnInfo);
 }
 
-function symlinkNodeModules(examplePath, nodeModulesPath) {
-  fs.ensureSymlinkSync(nodeModulesPath, path.join(examplePath, 'node_modules'), 'dir');
+async function constructNodeModules(examplePath) {
+  const linkedNodeModules = path.resolve(examplePath, 'node_modules');
+  const exampleDepsNodeModules = path.resolve('..', EXAMPLE_DEPS_WORKSPACE_NAME, 'node_modules');
+  fs.ensureDirSync(linkedNodeModules);
+  
+  await Promise.all([
+    linkExampleDeps(exampleDepsNodeModules, linkedNodeModules),
+    linkLocalDeps(exampleDepsNodeModules, linkedNodeModules)
+  ]);
+
+  fs.copySync(path.join(exampleDepsNodeModules, '.bin'), path.join(linkedNodeModules, '.bin'));
+  pointBinSymlinksToLocalPackages(linkedNodeModules);
+}
+
+// The .bin folder is copied over from the original yarn_install repository, so the
+// bin symlinks point there. When we link local packages in place of their npm equivalent,
+// we need to alter those symlinks to point into the local package.
+function pointBinSymlinksToLocalPackages(linkedNodeModules) {
+  if (os.platform() === 'win32') {
+    // Bins on Windows are not symlinks; they are scripts that will invoke the bin
+    // relative to their location. The relative path will already point to the symlinked
+    // local package, so no further action is required.
+    return;
+  }
+  const allNodeModuleBins = globbySync(['**'], {cwd: path.join(linkedNodeModules, '.bin'), onlyFiles: true});
+  allNodeModuleBins.forEach(bin => {
+    const symlinkTarget = fs.readlinkSync(path.join(linkedNodeModules, '.bin', bin));
+    for (const pkgName of Object.keys(LOCAL_PACKAGES)) {
+      const binMightBeInLocalPackage = symlinkTarget.includes(path.join(EXAMPLE_DEPS_WORKSPACE_NAME, 'node_modules', pkgName) + path.sep);
+      if (binMightBeInLocalPackage) {
+        const pathToBinWithinPackage = symlinkTarget.substring(symlinkTarget.indexOf(pkgName) + pkgName.length + path.sep.length);
+        const binExistsInLocalPackage = fs.existsSync(path.join(linkedNodeModules, pkgName, pathToBinWithinPackage));
+        if (binExistsInLocalPackage) {
+          // Replace the copied bin symlink with one that points to the symlinked local package.
+          fs.rmSync(path.join(linkedNodeModules, '.bin', bin));
+          fs.ensureSymlinkSync(path.join('..', pkgName, pathToBinWithinPackage), path.join(linkedNodeModules, '.bin', bin));
+        }
+        break;
+      }
+    }
+  });
+}
+
+function linkExampleDeps(exampleDepsNodeModules, linkedNodeModules) {
+  const exampleDepsPackages = getPackageNamesFromNodeModules(exampleDepsNodeModules);
+
+  return Promise.all(exampleDepsPackages
+    .filter(pkgName => !(pkgName in LOCAL_PACKAGES))
+    .map(pkgName => fs.ensureSymlink(path.join(exampleDepsNodeModules, pkgName), path.join(linkedNodeModules, pkgName), 'dir'))
+  );
+}
+
+async function linkLocalDeps(exampleDepsNodeModules, linkedNodeModules) {
+  const hasNpmDepForPkg = await Promise.all(Object.keys(LOCAL_PACKAGES).map(pkgName => fs.pathExists(path.join(exampleDepsNodeModules, pkgName))));
+  
+  return Promise.all(Object.keys(LOCAL_PACKAGES).filter((pkgName, i) => hasNpmDepForPkg[i])
+    .map(pkgName => fs.ensureSymlinkSync(LOCAL_PACKAGES[pkgName], path.join(linkedNodeModules, pkgName), 'dir')));
+}
+
+function getPackageNamesFromNodeModules(nodeModulesPath) {
+  return globbySync([
+    '@*/*',
+    '!@*$', // Exclude a namespace folder itself
+    '(?!@)*',
+    '!.bin',
+    '!.yarn-integrity',
+    '!_*'
+  ], {cwd: nodeModulesPath, onlyDirectories: true, dot: true});
 }
 
 // Start the example in appDir; then run protractor with the specified
@@ -186,6 +268,16 @@ function runE2eTestsCLI(exampleName, appDir) {
         test.args = [VENDORED_YARN, ...test.args];
       }
     }
+  }
+
+  // When local packages are symlinked in, node has trouble resolving some peer deps. Setting
+  // preserveSymlinks: true in angular.json fixes this. This isn't required without local
+  // packages because in the worst case we would leak into the original Bazel repository
+  // and it would still find a node_modules folder for resolution.
+  if (Object.keys(LOCAL_PACKAGES).length > 0) {
+    const angularJson = jsonc.load(path.join(appDir, 'angular.json'), {encoding: 'utf-8'});
+    angularJson.projects['angular.io-example'].architect.build.options.preserveSymlinks = true;
+    fs.writeFileSync(path.join(appDir, 'angular.json'), JSON.stringify(angularJson));
   }
 
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
@@ -306,4 +398,5 @@ function adjustChromeBinPathForWindows() {
   return process.env.CHROME_BIN;
 }
 
-runE2e(EXAMPLE_PATH, NODE_MODULES_PATH);
+runE2e(EXAMPLE_PATH);
+
