@@ -120,7 +120,7 @@ This is true for *all* `HttpClient` *methods*.
 
 <div class="alert is-helpful">
 
-The [`AsyncPipe`](api/common/AsyncPipe) subscribes and unsubscribes for you automatically.
+You should always unsubscribe from an observable when a component is destroyed.
 
 </div>
 
