@@ -2,6 +2,7 @@ load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load("//aio/tools:defaults.bzl", "nodejs_test")
 load("//:yarn.bzl", "YARN_LABEL")
+load("//:packages.bzl", "ALL_PACKAGES", "to_package_label")
 
 # This map controls which examples are included and whether or not to generate
 # a stackblitz live examples and zip archives. Keys are the example name, and values
@@ -177,36 +178,43 @@ def docs_example(name, test = True, test_tags = []):
         )
 
     if test:
-        # These node_modules deps are symlinked into each example. These tree
-        # artifact folder names must still be "node_modules" despite the symlink
-        # being named node_modules. Otherwise, some deps will fail to resolve.
-        node_modules_deps = {
-            "local": "//aio/tools/examples/shared:local/node_modules",
-            "npm": "//aio/tools/examples/shared:node_modules",
-        }
+        EXAMPLE_DEPS_WORKSPACE_NAME = "aio_example_deps"
 
-        for [node_modules_source, node_modules_label] in node_modules_deps.items():
-            nodejs_test(
-                name = "e2e_%s" % node_modules_source,
-                data = [
-                    ":%s" % name,
-                    YARN_LABEL,
-                    node_modules_label,
-                    "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium",
-                ],
-                args = [
-                    "$(rootpath :%s)" % name,
-                    "$(rootpath %s)" % node_modules_label,
-                    "$(rootpath %s)" % YARN_LABEL,
-                ],
-                configuration_env_vars = ["NG_BUILD_CACHE"],
-                entry_point = "//aio/tools/examples:run-example-e2e",
-                env = {
-                    "CHROME_BIN": "$(CHROMIUM)",
-                    "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
-                },
-                toolchains = [
-                    "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias",
-                ],
-                tags = test_tags,
-            )
+        LOCAL_PACKAGE_DEPS = [to_package_label(dep) for dep in ALL_PACKAGES]
+
+        # Local package deps are passed as args to the test script in the form "@package/name#path/to/package"
+        # for the script's convenience.
+        LOCAL_PACKAGE_ARGS = ["%s#$(rootpath %s)" % (dep, to_package_label(dep)) for dep in ALL_PACKAGES]
+
+        nodejs_test(
+            name = "e2e",
+            data = [
+                ":%s" % name,
+                YARN_LABEL,
+                "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium",
+                "//aio/tools/examples:run-example-e2e",
+                # We install the whole node modules for runtime deps of e2e tests
+                "@{workspace}//:node_modules_with_bins".format(workspace = EXAMPLE_DEPS_WORKSPACE_NAME),
+            ] + select({
+                "//aio:aio_local_deps": LOCAL_PACKAGE_DEPS,
+                "//conditions:default": [],
+            }),
+            args = [
+                "$(rootpath :%s)" % name,
+                "$(rootpath %s)" % YARN_LABEL,
+                EXAMPLE_DEPS_WORKSPACE_NAME,
+            ] + select({
+                "//aio:aio_local_deps": LOCAL_PACKAGE_ARGS,
+                "//conditions:default": [],
+            }),
+            configuration_env_vars = ["NG_BUILD_CACHE"],
+            entry_point = "//aio/tools/examples:run-example-e2e",
+            env = {
+                "CHROME_BIN": "$(CHROMIUM)",
+                "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
+            },
+            toolchains = [
+                "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias",
+            ],
+            tags = test_tags,
+        )
