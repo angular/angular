@@ -4,4 +4,4 @@ level: warning
 ignorecase: true
 alpha: true
 tokens:
-  - '[\w]+'
+  - '[^\s]+'

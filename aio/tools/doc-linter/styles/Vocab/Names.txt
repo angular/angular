@@ -24,3 +24,4 @@ tolisten
 tslib
 tslint
 vercel
+vmware
