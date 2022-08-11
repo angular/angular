@@ -98,7 +98,9 @@ export function internalImportProvidersFrom(
     // Narrow `source` to access the internal type analogue for `ModuleWithProviders`.
     const internalSource = source as Type<unknown>| InjectorTypeWithProviders<unknown>;
     if (walkProviderTree(internalSource, providersOut, [], dedup)) {
-      injectorTypesWithProviders ||= [];
+      if (!injectorTypesWithProviders) {
+        injectorTypesWithProviders = [];
+      }
       injectorTypesWithProviders.push(internalSource);
     }
   });
@@ -211,7 +213,9 @@ export function walkProviderTree(
       try {
         deepForEach(injDef.imports, imported => {
           if (walkProviderTree(imported, providersOut, parents, dedup)) {
-            importTypesWithProviders ||= [];
+            if (!importTypesWithProviders) {
+              importTypesWithProviders = [];
+            }
             // If the processed import is an injector type with providers, we store it in the
             // list of import types with providers, so that we can process those afterwards.
             importTypesWithProviders.push(imported);
