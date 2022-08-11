@@ -58,6 +58,7 @@ swap:
   curated roles: predefined roles
   datasource: data source
   Developers Console: Google API Console|API Console
+  entrypoint: entry point
   ephemeral IP address: ephemeral external IP address
   execute: run|call
   fewer data: less data

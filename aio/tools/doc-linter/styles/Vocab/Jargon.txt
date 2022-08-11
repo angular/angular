@@ -74,12 +74,17 @@ polyfills
 preprocess
 preprocessor
 preprocessors
+rebase
+rebased
+rebasing
 refactorings
 reflows
 reimagined
 renderers
 repo
+repos
 repurpose
+resync
 reusability
 rollup
 runtimes

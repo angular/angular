@@ -26,3 +26,4 @@ tsickle
 tslib
 tslint
 vercel
+vmware
