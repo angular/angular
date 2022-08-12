@@ -536,7 +536,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     set height(value: string | number | undefined);
     // (undocumented)
     get height(): number | undefined;
-    loading?: string;
+    loading?: 'lazy' | 'eager' | 'auto';
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
