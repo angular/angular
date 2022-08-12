@@ -9,14 +9,13 @@
 import {createImageLoader, ImageLoaderConfig} from './image_loader';
 
 /**
- * Function that generates a built-in ImageLoader for ImageKit
- * and turns it into an Angular provider.
+ * Function that generates an ImageLoader for ImageKit and turns it into an Angular provider.
  *
  * @param path Base URL of your ImageKit images
  * This URL should match one of the following formats:
  * https://ik.imagekit.io/myaccount
  * https://subdomain.mysite.com
- * @param options An object that allows to provide extra configuration:
+ * @param options An object with extra configuration:
  * - `ensurePreconnect`: boolean flag indicating whether the NgOptimizedImage directive
  *                       should verify that there is a corresponding `<link rel="preconnect">`
  *                       present in the document's `<head>`.
@@ -26,10 +25,10 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  * @developerPreview
  */
 export const provideImageKitLoader = createImageLoader(
-    createImagekitURL,
+    createImagekitUrl,
     ngDevMode ? ['https://ik.imagekit.io/mysite', 'https://subdomain.mysite.com'] : undefined);
 
-export function createImagekitURL(path: string, config: ImageLoaderConfig) {
+export function createImagekitUrl(path: string, config: ImageLoaderConfig) {
   // Example of an ImageKit image URL:
   // https://ik.imagekit.io/demo/tr:w-300,h-300/medium_cafe_B1iTdD0C.jpg
   let params = `tr:q-auto`;  // applies the "auto quality" transformation

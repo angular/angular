@@ -9,12 +9,11 @@
 import {createImageLoader, ImageLoaderConfig} from './image_loader';
 
 /**
- * Function that generates a built-in ImageLoader for Imgix and turns it
- * into an Angular provider.
+ * Function that generates an ImageLoader for Imgix and turns it into an Angular provider.
  *
  * @param path path to the desired Imgix origin,
  * e.g. https://somepath.imgix.net or https://images.mysite.com
- * @param options An object that allows to provide extra configuration:
+ * @param options An object with extra configuration:
  * - `ensurePreconnect`: boolean flag indicating whether the NgOptimizedImage directive
  *                       should verify that there is a corresponding `<link rel="preconnect">`
  *                       present in the document's `<head>`.
@@ -24,9 +23,9 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  * @developerPreview
  */
 export const provideImgixLoader =
-    createImageLoader(createImgixURL, ngDevMode ? ['https://somepath.imgix.net/'] : undefined);
+    createImageLoader(createImgixUrl, ngDevMode ? ['https://somepath.imgix.net/'] : undefined);
 
-function createImgixURL(path: string, config: ImageLoaderConfig) {
+function createImgixUrl(path: string, config: ImageLoaderConfig) {
   const url = new URL(`${path}/${config.src}`);
   // This setting ensures the smallest allowable format is set.
   url.searchParams.set('auto', 'format');

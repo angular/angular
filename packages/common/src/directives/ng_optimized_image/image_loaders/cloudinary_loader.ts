@@ -9,15 +9,14 @@
 import {createImageLoader, ImageLoaderConfig} from './image_loader';
 
 /**
- * Function that generates a built-in ImageLoader for Cloudinary
- * and turns it into an Angular provider.
+ * Function that generates an ImageLoader for Cloudinary and turns it into an Angular provider.
  *
  * @param path Base URL of your Cloudinary images
  * This URL should match one of the following formats:
  * https://res.cloudinary.com/mysite
  * https://mysite.cloudinary.com
  * https://subdomain.mysite.com
- * @param options An object that allows to provide extra configuration:
+ * @param options An object with extra configuration:
  * - `ensurePreconnect`: boolean flag indicating whether the NgOptimizedImage directive
  *                       should verify that there is a corresponding `<link rel="preconnect">`
  *                       present in the document's `<head>`.
@@ -27,7 +26,7 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  * @developerPreview
  */
 export const provideCloudinaryLoader = createImageLoader(
-    createCloudinaryURL,
+    createCloudinaryUrl,
     ngDevMode ?
         [
           'https://res.cloudinary.com/mysite', 'https://mysite.cloudinary.com',
@@ -35,7 +34,7 @@ export const provideCloudinaryLoader = createImageLoader(
         ] :
         undefined);
 
-function createCloudinaryURL(path: string, config: ImageLoaderConfig) {
+function createCloudinaryUrl(path: string, config: ImageLoaderConfig) {
   // Example of a Cloudinary image URL:
   // https://res.cloudinary.com/mysite/image/upload/c_scale,f_auto,q_auto,w_600/marketing/tile-topics-m.png
   let params = `f_auto,q_auto`;  // sets image format and quality to "auto"

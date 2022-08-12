@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, OnDestroy, ɵformatRuntimeError as formatRuntimeError} from '@angular/core';
+import {inject, Injectable, OnDestroy, ɵformatRuntimeError as formatRuntimeError} from '@angular/core';
 
 import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
@@ -16,11 +16,11 @@ import {imgDirectiveDetails} from './error_helper';
 import {getUrl} from './url';
 
 /**
- * Contains the logic to detect whether an image with the `NgOptimizedImage` directive
- * is treated as an LCP element. If so, verifies that the image is marked as a priority,
- * using the `priority` attribute.
+ * Observer that detects whether an image with `NgOptimizedImage`
+ * is treated as a Largest Contentful Paint (LCP) element. If so,
+ * asserts that the image has the `priority` attribute.
  *
- * Note: this is a dev-mode only class, which should not appear in prod bundles,
+ * Note: this is a dev-mode only class and it does not appear in prod bundles,
  * thus there is no `ngDevMode` use in the code.
  *
  * Based on https://web.dev/lcp/#measure-lcp-in-javascript.
@@ -35,22 +35,24 @@ export class LCPImageObserver implements OnDestroy {
   private window: Window|null = null;
   private observer: PerformanceObserver|null = null;
 
-  constructor(@Inject(DOCUMENT) doc: Document) {
+  constructor() {
     assertDevMode('LCP checker');
-    const win = doc.defaultView;
+    const win = inject(DOCUMENT).defaultView;
     if (typeof win !== 'undefined' && typeof PerformanceObserver !== 'undefined') {
       this.window = win;
       this.observer = this.initPerformanceObserver();
     }
   }
 
-  // Inits PerformanceObserver and subscribes to LCP events.
-  // Based on https://web.dev/lcp/#measure-lcp-in-javascript
+  /**
+   * Inits PerformanceObserver and subscribes to LCP events.
+   * Based on https://web.dev/lcp/#measure-lcp-in-javascript
+   */
   private initPerformanceObserver(): PerformanceObserver {
     const observer = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
       if (entries.length === 0) return;
-      // Note: we use the latest entry produced by the `PerformanceObserver` as the best
+      // We use the latest entry produced by the `PerformanceObserver` as the best
       // signal on which element is actually an LCP one. As an example, the first image to load on
       // a page, by virtue of being the only thing on the page so far, is often a LCP candidate
       // and gets reported by PerformanceObserver, but isn't necessarily the LCP element.
@@ -64,13 +66,7 @@ export class LCPImageObserver implements OnDestroy {
       const imgRawSrc = this.images.get(imgSrc);
       if (imgRawSrc && !this.alreadyWarned.has(imgSrc)) {
         this.alreadyWarned.add(imgSrc);
-        const directiveDetails = imgDirectiveDetails(imgRawSrc);
-        console.warn(formatRuntimeError(
-            RuntimeErrorCode.LCP_IMG_MISSING_PRIORITY,
-            `${directiveDetails} this image is the Largest Contentful Paint (LCP) ` +
-                `element but was not marked "priority". This image should be marked ` +
-                `"priority" in order to prioritize its loading. ` +
-                `To fix this, add the "priority" attribute.`));
+        logMissingPriorityWarning(imgSrc);
       }
     });
     observer.observe({type: 'largest-contentful-paint', buffered: true});
@@ -93,4 +89,14 @@ export class LCPImageObserver implements OnDestroy {
     this.images.clear();
     this.alreadyWarned.clear();
   }
+}
+
+function logMissingPriorityWarning(rawSrc: string) {
+  const directiveDetails = imgDirectiveDetails(rawSrc);
+  console.warn(formatRuntimeError(
+      RuntimeErrorCode.LCP_IMG_MISSING_PRIORITY,
+      `${directiveDetails} this image is the Largest Contentful Paint (LCP) ` +
+          `element but was not marked "priority". This image should be marked ` +
+          `"priority" in order to prioritize its loading. ` +
+          `To fix this, add the "priority" attribute.`));
 }
