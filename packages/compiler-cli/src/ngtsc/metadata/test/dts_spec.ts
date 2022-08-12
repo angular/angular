@@ -189,13 +189,13 @@ runInEachFileSystem(() => {
             }
 
             export declare class AdvancedHostDir {
-              static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[test]", never, {"input": "input"}, {"output": "output"}, never, never, true, never>
+              static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[test]", never, {"input": "inputAlias"}, {"output": "outputAlias"}, never, never, true, never>
             }
 
             export declare class Dir {
               static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[test]", never, {}, {}, never, never, true, [
                 {directive: typeof SimpleHostDir; inputs: {}; outputs: {};},
-                {directive: typeof AdvancedHostDir; inputs: { "input": "input"; }; outputs: { "output": "alias"; };}
+                {directive: typeof AdvancedHostDir; inputs: { "inputAlias": "customInputAlias"; }; outputs: { "outputAlias": "customOutputAlias"; };}
               ]>
             }
           `
@@ -216,13 +216,12 @@ runInEachFileSystem(() => {
     const dtsReader = new DtsMetadataReader(typeChecker, new TypeScriptReflectionHost(typeChecker));
 
     const meta = dtsReader.getDirectiveMetadata(new Reference(clazz))!;
-    const hostDirectives =
-        meta.hostDirectives?.map(hostDir => ({
-                                   name: hostDir.directive.debugName,
-                                   directive: hostDir.directive,
-                                   inputs: hostDir.inputs?.toJointMappedObject(),
-                                   outputs: hostDir.outputs?.toDirectMappedObject()
-                                 }));
+    const hostDirectives = meta.hostDirectives?.map(hostDir => ({
+                                                      name: hostDir.directive.debugName,
+                                                      directive: hostDir.directive,
+                                                      inputs: hostDir.inputs,
+                                                      outputs: hostDir.outputs
+                                                    }));
 
     expect(hostDirectives).toEqual([
       {
@@ -234,8 +233,8 @@ runInEachFileSystem(() => {
       {
         name: 'AdvancedHostDir',
         directive: jasmine.any(Reference),
-        inputs: {input: 'input'},
-        outputs: {output: 'alias'}
+        inputs: {inputAlias: 'customInputAlias'},
+        outputs: {outputAlias: 'customOutputAlias'}
       }
     ]);
   });

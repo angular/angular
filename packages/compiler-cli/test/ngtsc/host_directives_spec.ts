@@ -85,7 +85,7 @@ runInEachFileSystem(() => {
           hostDirectives: [{
             directive: HostDir,
             inputs: ['value', 'color: colorAlias'],
-            outputs: ['opened', 'closedAlias'],
+            outputs: ['opened', 'closed: closedAlias'],
           }],
         })
         export class MyComp {}
@@ -100,14 +100,60 @@ runInEachFileSystem(() => {
       expect(jsContents)
           .toContain(
               'features: [i0.ɵɵHostDirectivesFeature([{ directive: HostDir, ' +
-              'inputs: { value: "value", color: "colorAlias" }, ' +
-              'outputs: { opened: "opened", closedAlias: "closedAlias" } }])]');
+              'inputs: ["value", "value", "color", "colorAlias"], ' +
+              'outputs: ["opened", "opened", "closed", "closedAlias"] }])]');
       expect(dtsContents)
           .toContain(
               'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
               '{}, never, never, false, [{ directive: typeof HostDir; ' +
               'inputs: { "value": "value"; "color": "colorAlias"; }; ' +
-              'outputs: { "opened": "opened"; "closedAlias": "closedAlias"; }; }]>;');
+              'outputs: { "opened": "opened"; "closed": "closedAlias"; }; }]>;');
+    });
+
+    it('should generate a hostDirectives definition that has aliased inputs and outputs', () => {
+      env.write('test.ts', `
+        import {Directive, Component, Input, Output, EventEmitter} from '@angular/core';
+
+        @Directive({
+          selector: '[dir-a]',
+          standalone: true
+        })
+        export class HostDir {
+          @Input('valueAlias') value: number;
+          @Input('colorAlias') color: string;
+          @Output('openedAlias') opened = new EventEmitter();
+          @Output('closedAlias') closed = new EventEmitter();
+        }
+
+        @Component({
+          selector: 'my-comp',
+          template: '',
+          hostDirectives: [{
+            directive: HostDir,
+            inputs: ['valueAlias', 'colorAlias: customColorAlias'],
+            outputs: ['openedAlias', 'closedAlias: customClosedAlias'],
+          }],
+        })
+        export class MyComp {}
+      `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const dtsContents = env.getContents('test.d.ts');
+
+      expect(jsContents).toContain('ɵɵdefineDirective({ type: HostDir');
+      expect(jsContents)
+          .toContain(
+              'features: [i0.ɵɵHostDirectivesFeature([{ directive: HostDir, ' +
+              'inputs: ["valueAlias", "valueAlias", "colorAlias", "customColorAlias"], ' +
+              'outputs: ["openedAlias", "openedAlias", "closedAlias", "customClosedAlias"] }])]');
+      expect(dtsContents)
+          .toContain(
+              'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
+              '{}, never, never, false, [{ directive: typeof HostDir; ' +
+              'inputs: { "valueAlias": "valueAlias"; "colorAlias": "customColorAlias"; }; ' +
+              'outputs: { "openedAlias": "openedAlias"; "closedAlias": "customClosedAlias"; }; }]>;');
     });
 
     it('should generate hostDirectives definitions for a chain of host directives', () => {
@@ -216,7 +262,7 @@ runInEachFileSystem(() => {
               'features: [i0.ɵɵHostDirectivesFeature(function () { return [DirectiveB]; })]');
       expect(jsContents)
           .toContain(
-              'features: [i0.ɵɵHostDirectivesFeature(function () { return [{ directive: DirectiveA, inputs: { value: "value" } }]; })]');
+              'features: [i0.ɵɵHostDirectivesFeature(function () { return [{ directive: DirectiveA, inputs: ["value", "value"] }]; })]');
       expect(jsContents)
           .toContain(
               'ɵɵdefineDirective({ type: DirectiveA, ' +
@@ -294,7 +340,7 @@ runInEachFileSystem(() => {
       expect(jsContents)
           .toContain(
               'features: [i0.ɵɵHostDirectivesFeature(function () { ' +
-              'return [i1.DirectiveA, { directive: i2.DirectiveB, inputs: { input: "inputAlias" } }]; })]');
+              'return [i1.DirectiveA, { directive: i2.DirectiveB, inputs: ["input", "inputAlias"] }]; })]');
 
       expect(dtsContents).toContain('import * as i1 from "./dir-a";');
       expect(dtsContents).toContain('import * as i2 from "./dir-b";');
@@ -322,7 +368,7 @@ runInEachFileSystem(() => {
 
         @Component({
           template: '',
-          hostDirectives: [{directive: ExternalDir, inputs: ['input: inputAlias', 'output: outputAlias']}]
+          hostDirectives: [{directive: ExternalDir, inputs: ['input: inputAlias'], outputs: ['output: outputAlias']}]
         })
         export class MyComp {}
       `);
@@ -335,14 +381,14 @@ runInEachFileSystem(() => {
       expect(jsContents)
           .toContain(
               'features: [i0.ɵɵHostDirectivesFeature([{ directive: i1.ExternalDir, ' +
-              'inputs: { input: "inputAlias", output: "outputAlias" } }])]');
+              'inputs: ["input", "inputAlias"], outputs: ["output", "outputAlias"] }])]');
 
       expect(dtsContents).toContain('import * as i1 from "external";');
       expect(dtsContents)
           .toContain(
               'ɵɵComponentDeclaration<MyComp, "ng-component", never, {}, ' +
               '{}, never, never, false, [{ directive: typeof i1.ExternalDir; ' +
-              'inputs: { "input": "inputAlias"; "output": "outputAlias"; }; outputs: {}; }]>;');
+              'inputs: { "input": "inputAlias"; }; outputs: { "output": "outputAlias"; }; }]>;');
     });
 
     it('should reference host directives by their external name', () => {

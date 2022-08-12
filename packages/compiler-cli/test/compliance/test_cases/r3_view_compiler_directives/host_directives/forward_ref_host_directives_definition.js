@@ -17,9 +17,7 @@ DirectiveB.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
   features: [$r3$.ɵɵHostDirectivesFeature(function () {
     return [{
       directive: DirectiveA,
-      inputs: {
-        value: "value"
-      }
+      inputs: ["value", "value"]
     }];
   })]
 });…

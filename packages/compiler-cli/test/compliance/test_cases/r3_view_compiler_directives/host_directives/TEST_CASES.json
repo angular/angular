@@ -68,6 +68,23 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should handle aliases to aliased `inputs` and `outputs` of a host directive",
+      "inputFiles": [
+        "host_directives_with_host_aliases.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect definition",
+          "files": [
+            {
+              "expected": "host_directives_with_host_aliases_definition.js",
+              "generated": "host_directives_with_host_aliases.js"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

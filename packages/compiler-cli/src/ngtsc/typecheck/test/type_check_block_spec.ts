@@ -1295,5 +1295,31 @@ describe('type check blocks', () => {
          expect(block).not.toContain('_t1["hostOutput"].subscribe');
          expect(block).toContain('_t1.addEventListener("hostOutput"');
        });
+
+    it('should generate bindings to aliased host directive inputs/outputs on a host with its own aliases',
+       () => {
+         const TEMPLATE = `<div dir-a [inputAlias]="1" (outputAlias)="handle($event)"></div>`;
+         const DIRECTIVES: TestDeclaration[] = [{
+           type: 'directive',
+           name: 'DirA',
+           selector: '[dir-a]',
+           hostDirectives: [{
+             directive: {
+               type: 'directive',
+               name: 'HostDir',
+               selector: '',
+               inputs: {hostInput: 'hostInputAlias'},
+               outputs: {hostOutput: 'hostOutputAlias'},
+               isStandalone: true,
+             },
+             inputs: ['hostInputAlias: inputAlias'],
+             outputs: ['hostOutputAlias: outputAlias']
+           }]
+         }];
+         const block = tcb(TEMPLATE, DIRECTIVES);
+         expect(block).toContain('var _t1: i0.HostDir = null!');
+         expect(block).toContain('_t1.hostInput = (1)');
+         expect(block).toContain('_t1["hostOutput"].subscribe');
+       });
   });
 });

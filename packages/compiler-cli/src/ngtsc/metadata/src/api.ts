@@ -206,10 +206,10 @@ export interface HostDirectiveMeta {
   isForwardReference: boolean;
 
   /** Inputs from the host directive that have been exposed. */
-  inputs: ClassPropertyMapping|null;
+  inputs: {[publicName: string]: string}|null;
 
   /** Outputs from the host directive that have been exposed. */
-  outputs: ClassPropertyMapping|null;
+  outputs: {[publicName: string]: string}|null;
 }
 
 /**

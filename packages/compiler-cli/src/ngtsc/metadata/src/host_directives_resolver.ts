@@ -106,13 +106,19 @@ export class HostDirectivesResolver {
    */
   private filterMappings(
       source: ClassPropertyMapping,
-      allowedProperties: ClassPropertyMapping|null): ClassPropertyMapping {
+      allowedProperties: {[publicName: string]: string}|null): ClassPropertyMapping {
     const result: Record<string, BindingPropertyName|[ClassPropertyName, BindingPropertyName]> = {};
 
-    if (allowedProperties) {
-      for (const [propertyName, inputOrOutputName] of allowedProperties) {
-        if (source.hasBindingPropertyName(propertyName)) {
-          result[propertyName] = inputOrOutputName;
+    if (allowedProperties !== null) {
+      for (const publicName in allowedProperties) {
+        if (allowedProperties.hasOwnProperty(publicName)) {
+          const bindings = source.getByBindingPropertyName(publicName);
+
+          if (bindings !== null) {
+            for (const binding of bindings) {
+              result[binding.classPropertyName] = allowedProperties[publicName];
+            }
+          }
         }
       }
     }

@@ -542,6 +542,6 @@ export interface R3DeclareClassMetadata extends R3PartialDeclaration {
  */
 export interface R3DeclareHostDirectiveMetadata {
   directive: o.Expression|(() => o.Expression);
-  inputs?: {[classPropertyName: string]: string|[string, string]};
-  outputs?: {[classPropertyName: string]: string};
+  inputs?: string[];
+  outputs?: string[];
 }

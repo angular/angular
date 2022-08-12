@@ -183,25 +183,44 @@ function toHostDirectivesMetadata<TExpression>(
 
   return hostDirectivesArray.map(hostDirective => {
     let type: o.WrappedNodeExpr<TExpression>;
-    let inputs: R3DeclareHostDirectiveMetadata['inputs']|null;
-    let outputs: R3DeclareHostDirectiveMetadata['outputs']|null;
+    let inputs: R3HostDirectiveMetadata['inputs']|null;
+    let outputs: R3HostDirectiveMetadata['outputs']|null;
 
     if (hostDirective.isObject()) {
       const hostObject =
           (hostDirective as AstValue<R3DeclareHostDirectiveMetadata, TExpression>).getObject();
       type = hostObject.getOpaque('directive');
-      inputs = hostObject.has('inputs') ? hostObject.getObject('inputs').toLiteral(toInputMapping) :
-                                          null;
+      inputs = hostObject.has('inputs') ?
+          getHostDirectiveBindingMapping(hostObject.getArray('inputs')) :
+          null;
       outputs = hostObject.has('outputs') ?
-          hostObject.getObject('outputs').toLiteral(value => value.getString()) :
+          getHostDirectiveBindingMapping(hostObject.getArray('outputs')) :
           null;
     } else {
       type = hostDirective.getOpaque();
       inputs = outputs = null;
     }
 
-    return {directive: wrapReference(type), isForwardReference, inputs, outputs};
+    const meta: R3HostDirectiveMetadata = {
+      directive: wrapReference(type),
+      isForwardReference,
+      inputs,
+      outputs,
+    };
+
+    return meta;
   });
+}
+
+function getHostDirectiveBindingMapping<TExpression>(array: AstValue<string, TExpression>[]) {
+  let result: {[publicName: string]: string}|null = null;
+
+  for (let i = 1; i < array.length; i += 2) {
+    result = result || {};
+    result[array[i - 1].getString()] = array[i].getString();
+  }
+
+  return result;
 }
 
 export function createSourceSpan(range: Range, code: string, sourceUrl: string): ParseSourceSpan {

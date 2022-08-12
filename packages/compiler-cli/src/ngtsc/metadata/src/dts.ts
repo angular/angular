@@ -216,8 +216,8 @@ function readHostDirectivesType(type: ts.TypeNode, checker: ts.TypeChecker): Hos
           directive: new Reference(symbol.valueDeclaration),
           origin: type,
           isForwardReference: false,
-          inputs: ClassPropertyMapping.fromMappedObject(readMapType(def.inputs, readStringType)),
-          outputs: ClassPropertyMapping.fromMappedObject(readMapType(def.outputs, readStringType))
+          inputs: readMapType(def.inputs, readStringType),
+          outputs: readMapType(def.outputs, readStringType)
         });
       }
     }

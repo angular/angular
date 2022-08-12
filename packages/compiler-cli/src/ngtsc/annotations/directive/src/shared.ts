@@ -652,7 +652,7 @@ function extractHostDirectives(
           hostDirectivesExpression, hostReference, 'Host directive reference must be a class');
     }
 
-    return {
+    const meta: HostDirectiveMeta = {
       directive: hostReference as Reference<ClassDeclaration>,
       isForwardReference: hostReference.synthetic,
       origin: hostDirectivesExpression,
@@ -661,6 +661,8 @@ function extractHostDirectives(
       outputs: parseHostDirectivesMapping(
           'outputs', value, hostReference.node, hostDirectivesExpression),
     };
+
+    return meta;
   });
 }
 
@@ -673,13 +675,13 @@ function extractHostDirectives(
  */
 function parseHostDirectivesMapping(
     field: 'inputs'|'outputs', resolvedValue: ResolvedValue, classReference: ClassDeclaration,
-    sourceExpression: ts.Expression): ClassPropertyMapping|null {
+    sourceExpression: ts.Expression): {[publicName: string]: string}|null {
   if (resolvedValue instanceof Map && resolvedValue.has(field)) {
     const nameForErrors = `@Directive.hostDirectives.${classReference.name.text}.${field}`;
     const rawInputs = resolvedValue.get(field);
 
     if (isStringArrayOrDie(rawInputs, nameForErrors, sourceExpression)) {
-      return ClassPropertyMapping.fromMappedObject(parseInputOutputMappingArray(rawInputs));
+      return parseInputOutputMappingArray(rawInputs);
     }
   }
 
@@ -695,7 +697,7 @@ function toHostDirectiveMetadata(
         hostDirective.directive.node, hostDirective.directive, hostDirective.directive, context,
         context, refEmitter),
     isForwardReference: hostDirective.isForwardReference,
-    inputs: hostDirective.inputs?.toJointMappedObject() || null,
-    outputs: hostDirective.outputs?.toDirectMappedObject() || null
+    inputs: hostDirective.inputs || null,
+    outputs: hostDirective.outputs || null
   };
 }

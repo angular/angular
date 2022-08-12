@@ -138,7 +138,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 export class DirectiveB {
 }
 DirectiveB.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DirectiveB, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-DirectiveB.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: DirectiveB, isStandalone: true, hostDirectives: function () { return [{ directive: DirectiveA, inputs: { value: "value" } }]; }, ngImport: i0 });
+DirectiveB.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: DirectiveB, isStandalone: true, hostDirectives: function () { return [{ directive: DirectiveA, inputs: ["value", "value"] }]; }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DirectiveB, decorators: [{
             type: Directive,
             args: [{
@@ -203,7 +203,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 export class MyComponent {
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", hostDirectives: [{ directive: HostDir, inputs: { value: "value", color: "colorAlias" }, outputs: { opened: "opened", closedAlias: "closedAlias" } }], ngImport: i0, template: '', isInline: true });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", hostDirectives: [{ directive: HostDir, inputs: ["value", "value", "color", "colorAlias"], outputs: ["opened", "opened", "closed", "closedAlias"] }], ngImport: i0, template: '', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
@@ -212,7 +212,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     hostDirectives: [{
                             directive: HostDir,
                             inputs: ['value', 'color: colorAlias'],
-                            outputs: ['opened', 'closedAlias'],
+                            outputs: ['opened', 'closed: closedAlias'],
                         }],
                 }]
         }] });
@@ -232,6 +232,70 @@ export declare class HostDir {
 }
 export declare class MyComponent {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false, [{ directive: typeof HostDir; inputs: { "value": "value"; "color": "colorAlias"; }; outputs: { "opened": "opened"; "closedAlias": "closedAlias"; }; }]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false, [{ directive: typeof HostDir; inputs: { "value": "value"; "color": "colorAlias"; }; outputs: { "opened": "opened"; "closed": "closedAlias"; }; }]>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_directives_with_host_aliases.js
+ ****************************************************************************************************/
+import { Component, Directive, EventEmitter, Input, Output } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostDir {
+    constructor() {
+        this.opened = new EventEmitter();
+        this.closed = new EventEmitter();
+    }
+}
+HostDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+HostDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostDir, isStandalone: true, inputs: { value: ["valueAlias", "value"], color: ["colorAlias", "color"] }, outputs: { opened: "openedAlias", closed: "closedAlias" }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostDir, decorators: [{
+            type: Directive,
+            args: [{ standalone: true }]
+        }], propDecorators: { value: [{
+                type: Input,
+                args: ['valueAlias']
+            }], color: [{
+                type: Input,
+                args: ['colorAlias']
+            }], opened: [{
+                type: Output,
+                args: ['openedAlias']
+            }], closed: [{
+                type: Output,
+                args: ['closedAlias']
+            }] } });
+export class MyComponent {
+}
+MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", hostDirectives: [{ directive: HostDir, inputs: ["valueAlias", "valueAlias", "colorAlias", "customColorAlias"], outputs: ["openedAlias", "openedAlias", "closedAlias", "customClosedAlias"] }], ngImport: i0, template: '', isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-component',
+                    template: '',
+                    hostDirectives: [{
+                            directive: HostDir,
+                            inputs: ['valueAlias', 'colorAlias: customColorAlias'],
+                            outputs: ['openedAlias', 'closedAlias: customClosedAlias'],
+                        }],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_directives_with_host_aliases.d.ts
+ ****************************************************************************************************/
+import { EventEmitter } from '@angular/core';
+import * as i0 from "@angular/core";
+export declare class HostDir {
+    value: number;
+    color: string;
+    opened: EventEmitter<unknown>;
+    closed: EventEmitter<unknown>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, never, never, { "value": "valueAlias"; "color": "colorAlias"; }, { "opened": "openedAlias"; "closed": "closedAlias"; }, never, never, true, never>;
+}
+export declare class MyComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false, [{ directive: typeof HostDir; inputs: { "valueAlias": "valueAlias"; "colorAlias": "customColorAlias"; }; outputs: { "openedAlias": "openedAlias"; "closedAlias": "customClosedAlias"; }; }]>;
 }
 

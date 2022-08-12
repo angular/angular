@@ -7,16 +7,15 @@
  */
 import {Type} from '../../interface/type';
 import {EMPTY_OBJ} from '../../util/empty';
-import {InputsDefinition, invertObject, OutputsDefinition} from '../definition';
 import {DirectiveDef} from '../interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode} from '../interfaces/node';
 import {LView, TView} from '../interfaces/view';
 
-/** Values that can be used to define a host directive. */
+/** Values that can be used to define a host directive through the `HostDirectivesFeature`. */
 type HostDirectiveDefiniton = Type<unknown>|{
   directive: Type<unknown>;
-  inputs?: InputsDefinition<unknown>;
-  outputs?: OutputsDefinition<unknown>;
+  inputs?: string[];
+  outputs?: string[];
 };
 
 /**
@@ -46,8 +45,8 @@ export function ɵɵHostDirectivesFeature(rawHostDirectives: HostDirectiveDefini
   const hostDirectives = unwrappedHostDirectives.map(
       dir => typeof dir === 'function' ? {directive: dir, inputs: EMPTY_OBJ, outputs: EMPTY_OBJ} : {
         directive: dir.directive,
-        inputs: invertObject(dir.inputs),
-        outputs: invertObject(dir.outputs)
+        inputs: bindingArrayToMap(dir.inputs),
+        outputs: bindingArrayToMap(dir.outputs)
       });
 
   return (definition: DirectiveDef<unknown>) => {
@@ -56,4 +55,22 @@ export function ɵɵHostDirectivesFeature(rawHostDirectives: HostDirectiveDefini
         (tView: TView, viewData: LView, tNode: TElementNode|TContainerNode|TElementContainerNode,
          matches: any[]) => {};
   };
+}
+
+/**
+ * Converts an array in the form of `['publicName', 'alias', 'otherPublicName', 'otherAlias']` into
+ * a map in the form of `{publicName: 'alias', otherPublicName: 'otherAlias'}`.
+ */
+function bindingArrayToMap(bindings: string[]|undefined) {
+  if (!bindings || bindings.length === 0) {
+    return EMPTY_OBJ;
+  }
+
+  const result: {[publicName: string]: string} = {};
+
+  for (let i = 1; i < bindings.length; i += 2) {
+    result[bindings[i - 1]] = bindings[i];
+  }
+
+  return result;
 }

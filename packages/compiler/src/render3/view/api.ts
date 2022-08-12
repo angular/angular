@@ -406,8 +406,8 @@ export interface R3HostDirectiveMetadata {
   isForwardReference: boolean;
 
   /** Inputs from the host directive that will be exposed on the host. */
-  inputs: {[field: string]: string|[string, string]}|null;
+  inputs: {[publicName: string]: string}|null;
 
   /** Outputs from the host directive that will be exposed on the host. */
-  outputs: {[field: string]: string}|null;
+  outputs: {[publicName: string]: string}|null;
 }

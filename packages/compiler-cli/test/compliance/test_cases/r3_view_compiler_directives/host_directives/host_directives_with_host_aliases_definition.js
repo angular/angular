@@ -5,8 +5,8 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   ],
   features: [$r3$.ɵɵHostDirectivesFeature([{
     directive: HostDir,
-    inputs: ["value", "value", "color", "colorAlias"],
-    outputs: ["opened", "opened", "closed", "closedAlias"]
+    inputs: ["valueAlias", "valueAlias", "colorAlias", "customColorAlias"],
+    outputs: ["openedAlias", "openedAlias", "closedAlias", "customClosedAlias"]
   }])],
   decls: 0,
   vars: 0,

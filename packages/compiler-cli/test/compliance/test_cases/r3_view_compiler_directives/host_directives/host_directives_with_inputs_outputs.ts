@@ -14,7 +14,7 @@ export class HostDir {
   hostDirectives: [{
     directive: HostDir,
     inputs: ['value', 'color: colorAlias'],
-    outputs: ['opened', 'closedAlias'],
+    outputs: ['opened', 'closed: closedAlias'],
   }],
 })
 export class MyComponent {
