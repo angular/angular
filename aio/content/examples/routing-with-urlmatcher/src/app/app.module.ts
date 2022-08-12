@@ -14,9 +14,9 @@ import { ProfileComponent } from './profile/profile.component';
     BrowserModule,
     FormsModule,
     RouterModule.forRoot([
-      {
 // #enddocregion imports-array
 // #docregion matcher
+      {
         matcher: (url) => {
           if (url.length === 1 && url[0].path.match(/^@[\w]+$/gm)) {
             return {
