@@ -56,6 +56,4 @@
   box-sizing: content-box;
 }
 
-// TODO(andrewseguin): Change this to the non-legacy size once
-// the above mixins have landed internally.
-@include pseudo-checkbox-common.size(checkbox-common.$legacy-size);
+@include pseudo-checkbox-common.size(checkbox-common.$size);
