@@ -1,12 +1,5 @@
 @forward '../../../material/core/theming/theming.import';
 @forward '../../../material/core/core.import';
-@forward '../../mdc-button/button-theme' hide color, density, theme, typography;
-@forward '../../mdc-button/button-theme' as mat-mdc-* hide $mat-mdc-mat-button-state-target,
-mat-mdc-color, mat-mdc-density, mat-mdc-theme, mat-mdc-typography;
-@forward '../../mdc-button/button-theme' as mat-mdc-button-* hide
-$mat-mdc-button-mat-button-state-target;
-@forward '../../mdc-button/fab-theme' as mat-mdc-fab-*;
-@forward '../../mdc-button/icon-button-theme' as mat-mdc-icon-button-*;
 @forward '../../mdc-snack-bar/snack-bar-theme' hide color, density, theme, typography;
 @forward '../../mdc-snack-bar/snack-bar-theme' as mat-mdc-snack-bar-* hide
 $mat-mdc-snack-bar-mdc-snackbar-dismiss-ink-color, $mat-mdc-snack-bar-mdc-snackbar-fill-color,

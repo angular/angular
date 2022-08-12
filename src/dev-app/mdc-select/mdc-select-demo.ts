@@ -14,7 +14,7 @@ import {FloatLabelType} from '@angular/material/form-field';
 import {CommonModule} from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
-import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {MatButtonModule} from '@angular/material/button';
 import {MatInputModule} from '@angular/material/input';
 
 /** Error any time control is invalid */

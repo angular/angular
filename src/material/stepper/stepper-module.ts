@@ -10,7 +10,7 @@ import {PortalModule} from '@angular/cdk/portal';
 import {CdkStepperModule} from '@angular/cdk/stepper';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {ErrorStateMatcher, MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatIconModule} from '@angular/material/icon';
 import {MatStepHeader} from './step-header';
@@ -26,7 +26,7 @@ import {MatStepContent} from './step-content';
     MatCommonModule,
     CommonModule,
     PortalModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     CdkStepperModule,
     MatIconModule,
     MatRippleModule,

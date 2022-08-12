@@ -10,7 +10,7 @@ import {Component, Inject, TemplateRef, ViewChild, ViewEncapsulation} from '@ang
 import {DOCUMENT} from '@angular/common';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {FormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {
@@ -33,7 +33,7 @@ const defaultDialogConfig = new MatLegacyDialogConfig();
   standalone: true,
   imports: [
     FormsModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     MatLegacyCardModule,
     MatLegacyCheckboxModule,
     MatLegacyDialogModule,
@@ -205,7 +205,7 @@ export class JazzDialog {
     </mat-dialog-actions>
   `,
   standalone: true,
-  imports: [MatLegacyDialogModule, MatButtonModule],
+  imports: [MatLegacyDialogModule, MatLegacyButtonModule],
 })
 export class ContentElementDialog {
   actionsAlignment: 'start' | 'center' | 'end';
@@ -227,7 +227,7 @@ export class ContentElementDialog {
   `,
   ],
   standalone: true,
-  imports: [MatLegacyDialogModule, MatButtonModule],
+  imports: [MatLegacyDialogModule, MatLegacyButtonModule],
   template: `
     <h2 mat-dialog-title>Neptune</h2>
 

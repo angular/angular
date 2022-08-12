@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {ToolbarBasicExample} from './toolbar-basic/toolbar-basic-example';
@@ -17,7 +17,7 @@ const EXAMPLES = [
 ];
 
 @NgModule({
-  imports: [MatButtonModule, MatIconModule, MatToolbarModule],
+  imports: [MatLegacyButtonModule, MatIconModule, MatToolbarModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
 })

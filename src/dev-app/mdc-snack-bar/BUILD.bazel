@@ -11,8 +11,8 @@ ng_module(
     ],
     deps = [
         "//src/cdk/bidi",
-        "//src/material-experimental/mdc-button",
         "//src/material-experimental/mdc-snack-bar",
+        "//src/material/button",
         "//src/material/checkbox",
         "//src/material/form-field",
         "//src/material/input",

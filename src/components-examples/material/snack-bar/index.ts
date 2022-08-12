@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
@@ -30,7 +30,7 @@ const EXAMPLES = [
 @NgModule({
   imports: [
     FormsModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     MatLegacyInputModule,
     MatLegacySelectModule,
     MatSnackBarModule,

@@ -12,7 +12,7 @@ import {CommonModule} from '@angular/common';
 import {ThemePalette} from '@angular/material/core';
 import {MatChipInputEvent, MatChipEditedEvent, MatChipsModule} from '@angular/material/chips';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatFormFieldModule} from '@angular/material/form-field';

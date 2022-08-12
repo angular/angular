@@ -10,8 +10,8 @@ ng_module(
         ":progress_bar_demo_scss",
     ],
     deps = [
-        "//src/material/button",
         "//src/material/button-toggle",
+        "//src/material/legacy-button",
         "//src/material/legacy-progress-bar",
         "@npm//@angular/forms",
     ],

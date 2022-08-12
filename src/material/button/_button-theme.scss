@@ -1,182 +1,209 @@
 @use 'sass:map';
-@use 'sass:meta';
+@use '@material/button/button' as mdc-button;
+@use '@material/button/button-theme' as mdc-button-theme;
+@use '@material/button/button-text-theme' as mdc-button-text-theme;
+@use '@material/button/button-filled-theme' as mdc-button-filled-theme;
+@use '@material/button/button-protected-theme' as mdc-button-protected-theme;
+@use '@material/button/button-outlined-theme' as mdc-button-outlined-theme;
+@use '@material/theme/theme-color' as mdc-theme-color;
+
+@use './button-theme-private';
+@use '../core/mdc-helpers/mdc-helpers';
 @use '../core/theming/theming';
-@use '../core/style/private';
 @use '../core/typography/typography';
-@use '../core/typography/typography-utils';
 
-$_ripple-opacity: 0.1;
-
-// Applies a focus style to an mat-button element for each of the supported palettes.
-@mixin _focus-overlay-color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
-  $primary: map.get($config, primary);
-  $accent: map.get($config, accent);
-  $warn: map.get($config, warn);
-
-  &.mat-primary .mat-button-focus-overlay {
-    background-color: theming.get-color-from-palette($primary);
-  }
-
-  &.mat-accent .mat-button-focus-overlay {
-    background-color: theming.get-color-from-palette($accent);
-  }
-
-  &.mat-warn .mat-button-focus-overlay {
-    background-color: theming.get-color-from-palette($warn);
-  }
-
-  &.mat-button-disabled .mat-button-focus-overlay {
-    background-color: transparent;
-  }
+@mixin _button-variant($color) {
+  @include mdc-button-text-theme.theme((
+    label-text-color: $color,
+  ));
 }
 
-// Applies the background color for a ripple. If the value provided is not a Sass color,
-// we assume that we've been given a CSS variable. Since we can't perform alpha-blending
-// on a CSS variable, we instead add the opacity directly to the ripple element.
-@mixin _ripple-background($palette, $hue, $opacity) {
-  $background-color: theming.get-color-from-palette($palette, $hue, $opacity);
-  background-color: $background-color;
-  @if (meta.type-of($background-color) != color) {
-    opacity: $opacity;
-  }
+@mixin _unelevated-button-variant($foreground, $background) {
+  @include mdc-button-filled-theme.theme((
+    container-color: $background,
+    label-text-color: $foreground,
+  ));
 }
 
-@mixin _ripple-color($theme, $hue, $opacity: $_ripple-opacity) {
-  $primary: map.get($theme, primary);
-  $accent: map.get($theme, accent);
-  $warn: map.get($theme, warn);
-
-  &.mat-primary .mat-ripple-element {
-    @include _ripple-background($primary, $hue, $opacity);
-  }
-
-  &.mat-accent .mat-ripple-element {
-    @include _ripple-background($accent, $hue, $opacity);
-  }
-
-  &.mat-warn .mat-ripple-element {
-    @include _ripple-background($warn, $hue, $opacity);
-  }
+@mixin _raised-button-variant($foreground, $background) {
+  @include mdc-button-protected-theme.theme((
+    container-color: $background,
+    label-text-color: $foreground,
+  ));
 }
 
-// Applies a property to an mat-button element for each of the supported palettes.
-@mixin _theme-property($theme, $property, $hue) {
-  $primary: map.get($theme, primary);
-  $accent: map.get($theme, accent);
-  $warn: map.get($theme, warn);
-  $background: map.get($theme, background);
-  $foreground: map.get($theme, foreground);
-
-  &.mat-primary {
-    #{$property}: theming.get-color-from-palette($primary, $hue);
-  }
-  &.mat-accent {
-    #{$property}: theming.get-color-from-palette($accent, $hue);
-  }
-  &.mat-warn {
-    #{$property}: theming.get-color-from-palette($warn, $hue);
-  }
-
-  &.mat-primary, &.mat-accent, &.mat-warn, &.mat-button-disabled {
-    &.mat-button-disabled {
-      $palette: if($property == 'color', $foreground, $background);
-      #{$property}: theming.get-color-from-palette($palette, disabled-button);
-    }
-  }
+@mixin _outlined-button-variant($color) {
+  @include mdc-button-outlined-theme.theme((
+    label-text-color: $color,
+  ));
 }
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $primary: map.get($config, primary);
-  $accent: map.get($config, accent);
-  $warn: map.get($config, warn);
-  $background: map.get($config, background);
-  $foreground: map.get($config, foreground);
+  @include mdc-helpers.using-mdc-theme($config) {
+    $is-dark: map.get($config, is-dark);
+    $on-surface: mdc-theme-color.prop-value(on-surface);
+    $surface: mdc-theme-color.prop-value(surface);
+    $disabled-ink-color: rgba($on-surface, if($is-dark, 0.5, 0.38));
+    $disabled-container-color: rgba($on-surface, 0.12);
+    $primary: mdc-theme-color.prop-value(primary);
+    $on-primary: mdc-theme-color.prop-value(on-primary);
+    $secondary: mdc-theme-color.prop-value(secondary);
+    $on-secondary: mdc-theme-color.prop-value(on-secondary);
+    $error: mdc-theme-color.prop-value(error);
+    $on-error: mdc-theme-color.prop-value(on-error);
 
-  .mat-button, .mat-icon-button, .mat-stroked-button {
-    // Buttons without a background color should inherit the font color. This is necessary to
-    // ensure that the button is readable on custom background colors. It's wrong to always assume
-    // that those buttons are always placed inside of containers with the default background
-    // color of the theme (e.g. themed toolbars).
-    color: inherit;
-    background: transparent;
+    .mat-mdc-button {
+      &.mat-unthemed {
+        @include _button-variant($on-surface);
+      }
 
-    @include _theme-property($config, 'color', text);
-    @include _focus-overlay-color($config);
+      &.mat-primary {
+        @include _button-variant($primary);
+      }
 
-    // Setup the ripple color to be based on the text color. This ensures that the ripples
-    // are matching with the current theme palette and are in contrast to the background color
-    // (e.g in themed toolbars).
-    .mat-ripple-element {
-      opacity: $_ripple-opacity;
-      background-color: currentColor;
-    }
-  }
+      &.mat-accent {
+        @include _button-variant($secondary);
+      }
 
-  .mat-button-focus-overlay {
-    background: map.get($foreground, base);
-  }
+      &.mat-warn {
+        @include _button-variant($error);
+      }
 
-  // Note: this needs a bit extra specificity, because we're not guaranteed the inclusion
-  // order of the theme styles and the button reset may end up resetting this as well.
-  .mat-stroked-button:not(.mat-button-disabled) {
-    border-color: theming.get-color-from-palette($foreground, divider);
-  }
-
-  .mat-flat-button, .mat-raised-button, .mat-fab, .mat-mini-fab {
-    // Default font and background color when not using any color palette.
-    color: theming.get-color-from-palette($foreground, text);
-    background-color: theming.get-color-from-palette($background, raised-button);
-
-    @include _theme-property($config, 'color', default-contrast);
-    @include _theme-property($config, 'background-color', default);
-    @include _ripple-color($config, default-contrast);
-  }
-
-  .mat-stroked-button, .mat-flat-button {
-    @include private.private-theme-overridable-elevation(0, $config);
-  }
-
-  .mat-raised-button {
-    @include private.private-theme-overridable-elevation(2, $config);
-
-    &:not(.mat-button-disabled):active {
-      @include private.private-theme-overridable-elevation(8, $config);
+      @include button-theme-private.apply-disabled-style() {
+        @include mdc-button-text-theme.theme((
+          // We need to pass both the disabled and enabled values, because the enabled
+          // ones apply to anchors while the disabled ones are for buttons.
+          disabled-label-text-color: $disabled-ink-color,
+          label-text-color: $disabled-ink-color
+        ));
+      }
     }
 
-    &.mat-button-disabled {
-      @include private.private-theme-overridable-elevation(0, $config);
+    .mat-mdc-unelevated-button {
+      &.mat-unthemed {
+        @include _unelevated-button-variant($on-surface, $surface);
+      }
+
+      &.mat-primary {
+        @include _unelevated-button-variant($on-primary, $primary);
+      }
+
+      &.mat-accent {
+        @include _unelevated-button-variant($on-secondary, $secondary);
+      }
+
+      &.mat-warn {
+        @include _unelevated-button-variant($on-error, $error);
+      }
+
+      @include button-theme-private.apply-disabled-style() {
+        @include mdc-button-filled-theme.theme((
+          // We need to pass both the disabled and enabled values, because the enabled
+          // ones apply to anchors while the disabled ones are for buttons.
+          disabled-container-color: $disabled-container-color,
+          disabled-label-text-color: $disabled-ink-color,
+          container-color: $disabled-container-color,
+          label-text-color: $disabled-ink-color,
+        ));
+      }
     }
-  }
 
-  .mat-fab, .mat-mini-fab {
-    @include private.private-theme-overridable-elevation(6, $config);
+    .mat-mdc-raised-button {
+      &.mat-unthemed {
+        @include _raised-button-variant($on-surface, $surface);
+      }
 
-    &:not(.mat-button-disabled):active {
-      @include private.private-theme-overridable-elevation(12, $config);
+      &.mat-primary {
+        @include _raised-button-variant($on-primary, $primary);
+      }
+
+      &.mat-accent {
+        @include _raised-button-variant($on-secondary, $secondary);
+      }
+
+      &.mat-warn {
+        @include _raised-button-variant($on-error, $error);
+      }
+
+      @include button-theme-private.apply-disabled-style() {
+        @include mdc-button-protected-theme.theme((
+          // We need to pass both the disabled and enabled values, because the enabled
+          // ones apply to anchors while the disabled ones are for buttons.
+          disabled-container-color: $disabled-container-color,
+          disabled-label-text-color: $disabled-ink-color,
+          container-color: $disabled-container-color,
+          label-text-color: $disabled-ink-color,
+          container-elevation: 0,
+        ));
+      }
     }
 
-    &.mat-button-disabled {
-      @include private.private-theme-overridable-elevation(0, $config);
+    .mat-mdc-outlined-button {
+      @include mdc-button-outlined-theme.theme((
+        outline-color: rgba(mdc-theme-color.prop-value(on-surface), 0.12)
+      ));
+
+      &.mat-unthemed {
+        @include _outlined-button-variant($on-surface);
+      }
+
+      &.mat-primary {
+        @include _outlined-button-variant($primary);
+      }
+
+      &.mat-accent {
+        @include _outlined-button-variant($secondary);
+      }
+
+      &.mat-warn {
+        @include _outlined-button-variant($error);
+      }
+
+      @include button-theme-private.apply-disabled-style() {
+        @include mdc-button-outlined-theme.theme((
+          // We need to pass both the disabled and enabled values, because the enabled
+          // ones apply to anchors while the disabled ones are for buttons.
+          label-text-color: $disabled-ink-color,
+          disabled-label-text-color: $disabled-ink-color,
+          outline-color: rgba($on-surface, 0.12),
+          disabled-outline-color: rgba($on-surface, 0.12),
+        ));
+      }
+    }
+
+    // Ripple colors
+    .mat-mdc-button, .mat-mdc-outlined-button {
+      @include button-theme-private.ripple-theme-styles($config, false);
+    }
+
+    .mat-mdc-raised-button, .mat-mdc-unelevated-button {
+      @include button-theme-private.ripple-theme-styles($config, true);
     }
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
-      theming.get-typography-config($config-or-theme));
-  .mat-button, .mat-raised-button, .mat-icon-button, .mat-stroked-button,
-  .mat-flat-button, .mat-fab, .mat-mini-fab {
-    font: {
-      family: typography-utils.font-family($config, button);
-      size: typography-utils.font-size($config, button);
-      weight: typography-utils.font-weight($config, button);
-    }
+  $config: typography.private-typography-to-2018-config(
+    theming.get-typography-config($config-or-theme));
+  @include mdc-helpers.using-mdc-typography($config) {
+    @include mdc-button.without-ripple($query: mdc-helpers.$mdc-typography-styles-query);
   }
 }
 
-@mixin _density($config-or-theme) {}
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+  .mat-mdc-button,
+  .mat-mdc-raised-button,
+  .mat-mdc-unelevated-button,
+  .mat-mdc-outlined-button {
+    // Use `mat-mdc-button-base` to increase the specificity over the button's structural styles.
+    &.mat-mdc-button-base {
+      @include mdc-button-theme.density($density-scale, $query: mdc-helpers.$mdc-base-styles-query);
+      @include button-theme-private.touch-target-density($density-scale);
+    }
+  }
+}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -189,7 +216,7 @@ $_ripple-opacity: 0.1;
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);

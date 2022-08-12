@@ -45,7 +45,12 @@ function addFormModulesToModule(options: Schema) {
       'MatLegacyInputModule',
       '@angular/material/legacy-input',
     );
-    addModuleImportToModule(host, modulePath, 'MatButtonModule', '@angular/material/button');
+    addModuleImportToModule(
+      host,
+      modulePath,
+      'MatLegacyButtonModule',
+      '@angular/material/legacy-button',
+    );
     addModuleImportToModule(
       host,
       modulePath,

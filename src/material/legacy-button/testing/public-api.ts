@@ -6,7 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './button';
-export * from './fab';
-export * from './icon-button';
-export * from './module';
+export * from './button-harness';
+export * from './button-harness-filters';

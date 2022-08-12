@@ -16,7 +16,7 @@ ng_module(
         "//src/cdk/scrolling",
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
-        "//src/material/button",
+        "//src/material/legacy-button",
         "//src/material/legacy-checkbox",
         "//src/material/legacy-input",
         "//src/material/legacy-select",

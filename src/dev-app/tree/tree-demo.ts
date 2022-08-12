@@ -11,7 +11,7 @@ import {CommonModule} from '@angular/common';
 import {CdkTreeExamplesModule} from '@angular/components-examples/cdk/tree';
 import {TreeExamplesModule} from '@angular/components-examples/material/tree';
 import {FormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
@@ -31,7 +31,7 @@ import {MatTreeModule} from '@angular/material/tree';
     CommonModule,
     FormsModule,
     TreeExamplesModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     MatExpansionModule,
     MatLegacyCheckboxModule,
     MatLegacyFormFieldModule,

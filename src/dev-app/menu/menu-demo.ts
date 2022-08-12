@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatIconModule} from '@angular/material/icon';
 import {MatLegacyMenuModule} from '@angular/material/legacy-menu';
@@ -21,7 +21,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
   standalone: true,
   imports: [
     CommonModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     MatDividerModule,
     MatIconModule,
     MatLegacyMenuModule,

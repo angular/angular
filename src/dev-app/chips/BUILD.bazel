@@ -10,8 +10,8 @@ ng_module(
         ":chips_demo_scss",
     ],
     deps = [
-        "//src/material/button",
         "//src/material/icon",
+        "//src/material/legacy-button",
         "//src/material/legacy-card",
         "//src/material/legacy-checkbox",
         "//src/material/legacy-chips",

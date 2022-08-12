@@ -1,5 +1,4 @@
-load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
-load("//tools:defaults.bzl", "ng_e2e_test_library", "ng_test_library", "ng_web_test_suite", "ts_library")
+load("//tools:defaults.bzl", "ng_test_library", "ng_web_test_suite", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -12,6 +11,7 @@ ts_library(
     deps = [
         "//src/cdk/coercion",
         "//src/cdk/testing",
+        "//src/material/legacy-button/testing",
     ],
 )
 
@@ -21,56 +21,18 @@ filegroup(
 )
 
 ng_test_library(
-    name = "harness_tests_lib",
-    srcs = ["shared.spec.ts"],
-    deps = [
-        ":testing",
-        "//src/cdk/platform",
-        "//src/cdk/testing",
-        "//src/cdk/testing/testbed",
-        "//src/material/button",
-        "//src/material/icon",
-        "//src/material/icon/testing",
-        "@npm//@angular/forms",
-        "@npm//@angular/platform-browser",
-    ],
-)
-
-ng_test_library(
     name = "unit_tests_lib",
-    srcs = glob(
-        ["**/*.spec.ts"],
-        exclude = [
-            "**/*.e2e.spec.ts",
-            "shared.spec.ts",
-        ],
-    ),
+    srcs = glob(["**/*.spec.ts"]),
     deps = [
-        ":harness_tests_lib",
         ":testing",
         "//src/material/button",
+        "//src/material/legacy-button/testing:harness_tests_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [":unit_tests_lib"],
-)
-
-ng_e2e_test_library(
-    name = "e2e_test_sources",
-    srcs = glob(["**/*.e2e.spec.ts"]),
     deps = [
-        "//src/cdk/testing/private/e2e",
-        "//src/cdk/testing/protractor",
-        "//src/material/button/testing",
-    ],
-)
-
-e2e_test_suite(
-    name = "e2e_tests",
-    deps = [
-        ":e2e_test_sources",
-        "//src/cdk/testing/private/e2e",
+        ":unit_tests_lib",
     ],
 )

@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {RouterModule} from '@angular/router';
 
 @Component({
@@ -18,6 +18,6 @@ import {RouterModule} from '@angular/router';
   `,
   host: {'class': 'mat-typography'},
   standalone: true,
-  imports: [MatButtonModule, RouterModule],
+  imports: [MatLegacyButtonModule, RouterModule],
 })
 export class DevApp404 {}

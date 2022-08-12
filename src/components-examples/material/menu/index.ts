@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatLegacyMenuModule} from '@angular/material/legacy-menu';
 import {MenuIconsExample} from './menu-icons/menu-icons-example';
@@ -25,7 +25,7 @@ const EXAMPLES = [
 ];
 
 @NgModule({
-  imports: [MatButtonModule, MatIconModule, MatLegacyMenuModule],
+  imports: [MatLegacyButtonModule, MatIconModule, MatLegacyMenuModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
 })

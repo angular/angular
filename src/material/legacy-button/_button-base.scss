@@ -1,0 +1,108 @@
+@use '../core/style/variables';
+@use '../core/style/elevation';
+@use '../core/style/button-common';
+@use '../core/style/private';
+
+
+// Flat and raised button standards
+$padding: 0 16px !default;
+$min-width: 64px !default;
+$margin: 0 !default;
+$line-height: 36px !default;
+$border-radius: 4px !default;
+$focus-transition: opacity 200ms variables.$swift-ease-in-out-timing-function,
+                   background-color 200ms variables.$swift-ease-in-out-timing-function !default;
+
+// Stroked button padding is 1px less horizontally than default/flat/raised
+// button's padding.
+$stroked-button-line-height: $line-height - 2;
+$stroked-button-padding: 0 15px;
+$stroked-button-border-width: 1px;
+
+// Icon Button standards
+$button-size: 40px !default;
+$button-border-radius: 50% !default;
+$button-line-height: 24px !default;
+
+// Fab standards
+$fab-border-radius: 50% !default;
+$fab-size: 56px !default;
+$fab-padding: 16px !default;
+
+$mini-fab-size: 40px !default;
+$mini-fab-padding: 8px !default;
+
+// Applies base styles to all button types.
+@mixin base {
+  box-sizing: border-box;
+  position: relative;
+
+  // Reset browser <button> styles.
+  @include button-common.reset();
+
+  // Make anchors render like buttons.
+  display: inline-block;
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: baseline;
+  text-align: center;
+
+  // Sizing.
+  margin: $margin;
+  min-width: $min-width;
+  line-height: $line-height;
+  padding: $padding;
+  border-radius: $border-radius;
+
+  // Explicitly set the default overflow to `visible`. It is already set
+  // on most browsers except on IE11 where it defaults to `hidden`.
+  overflow: visible;
+
+  &.mat-button-disabled {
+    cursor: default;
+  }
+
+  &.cdk-keyboard-focused, &.cdk-program-focused {
+    .mat-button-focus-overlay {
+      opacity: 0.12;
+    }
+  }
+
+  &::-moz-focus-inner {
+    border: 0;
+  }
+}
+
+// Applies styles to buttons with backgrounds: raised, fab, and mini-fab
+@mixin raised-button {
+  @include base;
+  @include private.private-animation-noop();
+
+  // Force hardware acceleration.
+  transform: translate3d(0, 0, 0);
+
+  // Animation.
+  transition: background variables.$swift-ease-out-duration
+    variables.$swift-ease-out-timing-function, elevation.private-transition-property-value();
+}
+
+// Applies styles to fab and mini-fab button types only
+@mixin fab($size, $padding) {
+  @include raised-button;
+
+  // Reset the min-width from the button base.
+  min-width: 0;
+
+  border-radius: $fab-border-radius;
+  width: $size;
+  height: $size;
+  padding: 0;
+
+  flex-shrink: 0;
+
+  .mat-button-wrapper {
+    padding: $padding 0;
+    display: inline-block;
+    line-height: $button-line-height;
+  }
+}

@@ -17,7 +17,7 @@ ng_module(
     ),
     assets = [":paginator.css"] + glob(["**/*.html"]),
     deps = [
-        "//src/material-experimental/mdc-button",
+        "//src/material/button",
         "//src/material/paginator",
         "//src/material/select",
         "//src/material/tooltip",

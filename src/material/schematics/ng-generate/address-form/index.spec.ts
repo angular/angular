@@ -36,7 +36,7 @@ describe('Material address-form schematic', () => {
     const moduleContent = getFileContent(tree, '/projects/material/src/app/app.module.ts');
 
     expect(moduleContent).toContain('MatLegacyInputModule');
-    expect(moduleContent).toContain('MatButtonModule');
+    expect(moduleContent).toContain('MatLegacyButtonModule');
     expect(moduleContent).toContain('MatLegacySelectModule');
     expect(moduleContent).toContain('MatLegacyRadioModule');
     expect(moduleContent).toContain('ReactiveFormsModule');

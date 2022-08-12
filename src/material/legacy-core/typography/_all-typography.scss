@@ -3,6 +3,7 @@
 @use '../../core/theming/theming';
 @use '../option/option-theme';
 @use '../option/optgroup-theme';
+@use '../../legacy-button/button-theme';
 @use '../../legacy-card/card-theme';
 @use '../../legacy-checkbox/checkbox-theme';
 @use '../../legacy-progress-bar/progress-bar-theme';
@@ -38,6 +39,7 @@
   @include all-typography.private-all-unmigrated-component-typographies($config);
   @include option-theme.typography($config);
   @include optgroup-theme.typography($config);
+  @include button-theme.typography($config);
   @include card-theme.typography($config);
   @include progress-bar-theme.typography($config);
   @include tooltip-theme.typography($config);

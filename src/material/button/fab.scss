@@ -1,19 +1,21 @@
-@use '@angular/material' as mat;
 @use '@material/fab' as mdc-fab;
 @use '@material/elevation/elevation-theme' as mdc-elevation-theme;
 
 @use './button-base';
+@use '../core/mdc-helpers/mdc-helpers';
+@use '../core/style/private' as style-private;
+@use '../core/focus-indicators/private' as focus-indicators-private;
 
-@include mat.private-disable-mdc-fallback-declarations {
-  @include mdc-fab.without-ripple($query: mat.$private-mdc-base-styles-query);
+@include mdc-helpers.disable-mdc-fallback-declarations {
+  @include mdc-fab.without-ripple($query: mdc-helpers.$mdc-base-styles-query);
 }
 
 .mat-mdc-fab, .mat-mdc-mini-fab {
   @include button-base.mat-private-button-interactive();
   @include button-base.mat-private-button-touch-target(true);
-  @include mat.private-animation-noop();
+  @include style-private.private-animation-noop();
 
-  @include mat.private-disable-mdc-fallback-declarations {
+  @include mdc-helpers.disable-mdc-fallback-declarations {
     // Theme configuration is copied over from MDC, because it isn't exported
     @include mdc-fab.theme-styles(button-base.mat-private-button-remove-ripple((
       container-color: transparent,
@@ -66,7 +68,7 @@
   }
 
   .mat-mdc-focus-indicator::before {
-    $default-border-width: mat.$private-strong-focus-indicators-default-border-width;
+    $default-border-width: focus-indicators-private.$default-border-width;
     $border-width: var(--mat-mdc-focus-indicator-border-width, #{$default-border-width});
     $offset: calc(#{$border-width} + 2px);
     margin: calc(#{$offset} * -1);
@@ -74,7 +76,7 @@
 }
 
 .mat-mdc-extended-fab {
-  @include mdc-fab.extended_($query: mat.$private-mdc-base-styles-query);
+  @include mdc-fab.extended_($query: mdc-helpers.$mdc-base-styles-query);
 
   & > .mat-icon,
   & > .material-icons {  // stylelint-disable-line selector-class-pattern

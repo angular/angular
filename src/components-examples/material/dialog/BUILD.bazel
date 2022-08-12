@@ -15,7 +15,7 @@ ng_module(
     deps = [
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
-        "//src/material/button",
+        "//src/material/legacy-button",
         "//src/material/legacy-dialog",
         "//src/material/legacy-dialog/testing",
         "//src/material/legacy-input",

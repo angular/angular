@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './button-harness';
-export {ButtonHarnessFilters} from '@angular/material/button/testing';
+export * from './button-module';
+export * from './button';

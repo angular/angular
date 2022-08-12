@@ -11,7 +11,7 @@ ng_module(
     ],
     deps = [
         "//src/cdk/drag-drop",
-        "//src/material/button",
+        "//src/material/legacy-button",
         "//src/material/legacy-card",
         "//src/material/legacy-checkbox",
         "//src/material/legacy-dialog",

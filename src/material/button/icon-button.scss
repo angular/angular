@@ -1,16 +1,17 @@
 @use 'sass:map';
-@use '@angular/material' as mat;
 @use '@material/icon-button/icon-button' as mdc-icon-button;
 @use '@material/icon-button/icon-button-theme' as mdc-icon-button-theme;
 
 @use './button-base';
+@use '../core/mdc-helpers/mdc-helpers';
+@use '../core/style/private';
 
-@include mat.private-disable-mdc-fallback-declarations {
-  @include mdc-icon-button.without-ripple($query: mat.$private-mdc-base-styles-query);
+@include mdc-helpers.disable-mdc-fallback-declarations {
+  @include mdc-icon-button.without-ripple($query: mdc-helpers.$mdc-base-styles-query);
 }
 
 .mat-mdc-icon-button {
-  @include mat.private-disable-mdc-fallback-declarations {
+  @include mdc-helpers.disable-mdc-fallback-declarations {
     $theme-overrides: button-base.mat-private-button-remove-ripple((
       icon-color: inherit,
       // We don't change the color on focus/hover so exclude
@@ -38,7 +39,7 @@
 
   @include button-base.mat-private-button-interactive();
   @include button-base.mat-private-button-touch-target(true);
-  @include mat.private-animation-noop();
+  @include private.private-animation-noop();
 
   .mat-mdc-button-persistent-ripple {
     border-radius: 50%;

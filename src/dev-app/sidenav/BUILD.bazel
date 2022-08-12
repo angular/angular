@@ -10,7 +10,7 @@ ng_module(
         ":sidenav_demo_scss",
     ],
     deps = [
-        "//src/material/button",
+        "//src/material/legacy-button",
         "//src/material/legacy-checkbox",
         "//src/material/sidenav",
         "//src/material/toolbar",

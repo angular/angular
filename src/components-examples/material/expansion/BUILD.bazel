@@ -15,11 +15,11 @@ ng_module(
     deps = [
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
-        "//src/material/button",
         "//src/material/datepicker",
         "//src/material/expansion",
         "//src/material/expansion/testing",
         "//src/material/icon",
+        "//src/material/legacy-button",
         "//src/material/legacy-input",
         "@npm//@angular/platform-browser",
         "@npm//@angular/platform-browser-dynamic",

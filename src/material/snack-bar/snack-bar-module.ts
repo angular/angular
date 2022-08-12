@@ -11,12 +11,12 @@ import {PortalModule} from '@angular/cdk/portal';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {SimpleSnackBar} from './simple-snack-bar';
 import {MatSnackBarContainer} from './snack-bar-container';
 
 @NgModule({
-  imports: [OverlayModule, PortalModule, CommonModule, MatButtonModule, MatCommonModule],
+  imports: [OverlayModule, PortalModule, CommonModule, MatLegacyButtonModule, MatCommonModule],
   exports: [MatSnackBarContainer, MatCommonModule],
   declarations: [MatSnackBarContainer, SimpleSnackBar],
 })

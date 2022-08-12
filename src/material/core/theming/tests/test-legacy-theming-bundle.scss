@@ -25,4 +25,4 @@ $theme: mat-light-theme((
 @include angular-material-color($theme);
 @include angular-material-density($theme);
 @include mat-core-theme($theme);
-@include mat-button-theme($theme);
+@include mat-legacy-button-theme($theme);

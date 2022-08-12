@@ -1,7 +1,5 @@
 entryPoints = [
     "column-resize",
-    "mdc-button",
-    "mdc-button/testing",
     "mdc-core",
     "mdc-paginator",
     "mdc-paginator/testing",

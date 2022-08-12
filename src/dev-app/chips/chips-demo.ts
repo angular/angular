@@ -10,7 +10,7 @@ import {Component} from '@angular/core';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatLegacyChipInputEvent, MatLegacyChipsModule} from '@angular/material/legacy-chips';
@@ -36,7 +36,7 @@ export interface DemoColor {
   imports: [
     CommonModule,
     FormsModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     MatLegacyCardModule,
     MatLegacyCheckboxModule,
     MatLegacyChipsModule,

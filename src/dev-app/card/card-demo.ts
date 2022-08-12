@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatLegacyProgressBarModule} from '@angular/material/legacy-progress-bar';
@@ -17,7 +17,12 @@ import {MatLegacyProgressBarModule} from '@angular/material/legacy-progress-bar'
   templateUrl: 'card-demo.html',
   styleUrls: ['card-demo.css'],
   standalone: true,
-  imports: [MatButtonModule, MatLegacyCardModule, MatDividerModule, MatLegacyProgressBarModule],
+  imports: [
+    MatLegacyButtonModule,
+    MatLegacyCardModule,
+    MatDividerModule,
+    MatLegacyProgressBarModule,
+  ],
 })
 export class CardDemo {
   longText =

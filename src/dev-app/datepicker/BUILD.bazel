@@ -12,10 +12,10 @@ ng_module(
         ":custom_header_scss",
     ],
     deps = [
-        "//src/material/button",
         "//src/material/core",
         "//src/material/datepicker",
         "//src/material/icon",
+        "//src/material/legacy-button",
         "//src/material/legacy-checkbox",
         "//src/material/legacy-form-field",
         "//src/material/legacy-input",

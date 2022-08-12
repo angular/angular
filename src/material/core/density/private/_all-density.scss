@@ -1,4 +1,5 @@
 @use '../../theming/theming';
+@use '../../../button/button-theme';
 @use '../../../expansion/expansion-theme';
 @use '../../../stepper/stepper-theme';
 @use '../../../toolbar/toolbar-theme';
@@ -24,6 +25,7 @@
 @use '../../../list/list-theme';
 
 @mixin private-all-unmigrated-component-densities($config) {
+  @include button-theme.density($config);
   @include expansion-theme.density($config);
   @include stepper-theme.density($config);
   @include toolbar-theme.density($config);

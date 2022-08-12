@@ -53,7 +53,12 @@ function addNavModulesToModule(options: Schema) {
       '@angular/material/legacy-menu',
     );
     addModuleImportToModule(host, modulePath, 'MatIconModule', '@angular/material/icon');
-    addModuleImportToModule(host, modulePath, 'MatButtonModule', '@angular/material/button');
+    addModuleImportToModule(
+      host,
+      modulePath,
+      'MatLegacyButtonModule',
+      '@angular/material/legacy-button',
+    );
     addModuleImportToModule(host, modulePath, 'LayoutModule', '@angular/cdk/layout');
   };
 }

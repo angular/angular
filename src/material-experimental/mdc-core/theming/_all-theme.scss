@@ -1,9 +1,6 @@
 @use '@angular/material' as mat;
 
 @use '../core-theme';
-@use '../../mdc-button/button-theme';
-@use '../../mdc-button/fab-theme';
-@use '../../mdc-button/icon-button-theme';
 @use '../../mdc-snack-bar/snack-bar-theme';
 @use '../../mdc-tabs/tabs-theme';
 @use '../../mdc-table/table-theme';
@@ -15,10 +12,10 @@
   @include mat.private-check-duplicate-theme-styles($theme-or-color-config, $dedupe-key) {
     @include core-theme.theme($theme-or-color-config);
     @include mat.autocomplete-theme($theme-or-color-config);
-    @include button-theme.theme($theme-or-color-config);
+    @include mat.button-theme($theme-or-color-config);
     @include mat.dialog-theme($theme-or-color-config);
-    @include fab-theme.theme($theme-or-color-config);
-    @include icon-button-theme.theme($theme-or-color-config);
+    @include mat.fab-theme($theme-or-color-config);
+    @include mat.icon-button-theme($theme-or-color-config);
     @include mat.card-theme($theme-or-color-config);
     @include mat.checkbox-theme($theme-or-color-config);
     @include mat.chips-theme($theme-or-color-config);

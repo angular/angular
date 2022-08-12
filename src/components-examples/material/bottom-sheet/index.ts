@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatLegacyListModule} from '@angular/material/legacy-list';
 import {
   BottomSheetOverviewExample,
@@ -17,7 +17,7 @@ const EXAMPLES = [
 ];
 
 @NgModule({
-  imports: [MatBottomSheetModule, MatButtonModule, MatLegacyListModule],
+  imports: [MatBottomSheetModule, MatLegacyButtonModule, MatLegacyListModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
 })

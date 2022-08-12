@@ -1,0 +1,11 @@
+@forward '../core/theming/theming.import';
+@forward '../core/style/private.import';
+@forward '../core/typography/typography-utils.import';
+@forward 'button-theme' hide color, theme, typography;
+@forward 'button-theme' as mat-legacy-button-* hide $mat-button-ripple-opacity, mat-button-density,
+mat-button-focus-overlay-color, mat-button-ripple-background, mat-button-ripple-color,
+mat-button-theme-property;
+
+@import '../core/theming/theming';
+@import '../core/style/private';
+@import '../core/typography/typography-utils';

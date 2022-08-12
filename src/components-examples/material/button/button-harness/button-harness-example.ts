@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 /**
- * @title Testing with MatButtonHarness
+ * @title Testing with MatLegacyButtonHarness
  */
 @Component({
   selector: 'button-harness-example',

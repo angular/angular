@@ -83,7 +83,13 @@
 @forward './badge/badge-theme' as badge-* show badge-theme, badge-color, badge-typography;
 @forward './bottom-sheet/bottom-sheet-theme' as bottom-sheet-* show bottom-sheet-theme,
   bottom-sheet-color, bottom-sheet-typography;
+@forward './legacy-button/button-theme' as legacy-button-* show legacy-button-theme,
+  legacy-button-color, legacy-button-typography;
 @forward './button/button-theme' as button-* show button-theme, button-color, button-typography;
+@forward './button/fab-theme' as fab-* show fab-color, fab-typography,
+  fab-density, fab-theme;
+@forward './button/icon-button-theme' as icon-button-* show icon-button-color,
+  icon-button-typography, icon-button-density, icon-button-theme;
 @forward './button-toggle/button-toggle-theme' as button-toggle-* show button-toggle-theme,
   button-toggle-color, button-toggle-typography;
 @forward './card/card-theme' as card-* show card-theme, card-color, card-typography, card-density;

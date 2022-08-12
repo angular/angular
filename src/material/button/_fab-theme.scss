@@ -1,10 +1,12 @@
 @use 'sass:map';
-@use '@angular/material' as mat;
 @use '@material/fab/fab' as mdc-fab;
 @use '@material/fab/fab-theme' as mdc-fab-theme;
 @use '@material/theme/theme-color' as mdc-theme-color;
 
 @use './button-theme-private';
+@use '../core/mdc-helpers/mdc-helpers';
+@use '../core/theming/theming';
+@use '../core/typography/typography';
 
 @mixin _fab-variant($foreground, $background) {
   @include mdc-fab-theme.theme((
@@ -16,8 +18,8 @@
 }
 
 @mixin color($config-or-theme) {
-  $config: mat.get-color-config($config-or-theme);
-  @include mat.private-using-mdc-theme($config) {
+  $config: theming.get-color-config($config-or-theme);
+  @include mdc-helpers.using-mdc-theme($config) {
     $on-surface: mdc-theme-color.prop-value(on-surface);
     $is-dark: map.get($config, is-dark);
 
@@ -60,21 +62,21 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: mat.private-typography-to-2018-config(
-      mat.get-typography-config($config-or-theme));
-  @include mat.private-using-mdc-typography($config) {
-    @include mdc-fab.without-ripple($query: mat.$private-mdc-typography-styles-query);
+  $config: typography.private-typography-to-2018-config(
+    theming.get-typography-config($config-or-theme));
+  @include mdc-helpers.using-mdc-typography($config) {
+    @include mdc-fab.without-ripple($query: mdc-helpers.$mdc-typography-styles-query);
   }
 }
 
 @mixin density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
-  $theme: mat.private-legacy-get-theme($theme-or-color-config);
-  @include mat.private-check-duplicate-theme-styles($theme, 'mat-mdc-fab') {
-    $color: mat.get-color-config($theme);
-    $density: mat.get-density-config($theme);
-    $typography: mat.get-typography-config($theme);
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-fab') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);

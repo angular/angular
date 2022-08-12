@@ -4,7 +4,7 @@
 /src/material/badge/**                             @jelbourn
 /src/material/bottom-sheet/**                      @jelbourn @crisbeto
 /src/material/button-toggle/**                     @andrewseguin
-/src/material/button/**                            @andrewseguin
+/src/material/legacy-button/**                            @andrewseguin
 /src/material/legacy-card/**                              @andrewseguin
 /src/material/legacy-checkbox/**                          @andrewseguin @devversion
 /src/material/legacy-chips/**                      @andrewseguin
@@ -111,7 +111,7 @@
 /src/material-experimental/*                           @andrewseguin
 /src/material-experimental/column-resize/**            @andrewseguin
 /src/material/autocomplete/**                          @crisbeto
-/src/material-experimental/mdc-button/**               @andrewseguin
+/src/material/button/**               @andrewseguin
 /src/material/card/**                                  @mmalerba
 /src/material/checkbox/**             @mmalerba
 /src/material/chips/**                                 @mmalerba @crisbeto
@@ -319,7 +319,7 @@
 /tools/public_api_guard/material/badge**           @andrewseguin
 /tools/public_api_guard/material/bottom-sheet**    @andrewseguin @crisbeto
 /tools/public_api_guard/material/button-toggle**   @andrewseguin
-/tools/public_api_guard/material/button**          @andrewseguin
+/tools/public_api_guard/material/legacy-button**          @andrewseguin
 /tools/public_api_guard/material/legacy-card**     @andrewseguin
 /tools/public_api_guard/material/legacy-checkbox** @andrewseguin @devversion
 /tools/public_api_guard/material/chips**           @andrewseguin

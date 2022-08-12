@@ -9,7 +9,7 @@
 import {Component} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
 import {FormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatLegacyProgressBarModule} from '@angular/material/legacy-progress-bar';
 
@@ -20,7 +20,7 @@ import {MatLegacyProgressBarModule} from '@angular/material/legacy-progress-bar'
   templateUrl: 'progress-bar-demo.html',
   styleUrls: ['progress-bar-demo.css'],
   standalone: true,
-  imports: [FormsModule, MatButtonModule, MatButtonToggleModule, MatLegacyProgressBarModule],
+  imports: [FormsModule, MatLegacyButtonModule, MatButtonToggleModule, MatLegacyProgressBarModule],
 })
 export class ProgressBarDemo {
   color: ThemePalette = 'primary';

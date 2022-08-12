@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatExpansionModule} from '@angular/material/expansion';
@@ -26,7 +26,7 @@ const EXAMPLES = [
 
 @NgModule({
   imports: [
-    MatButtonModule,
+    MatLegacyButtonModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatExpansionModule,

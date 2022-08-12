@@ -1,14 +1,14 @@
 import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {ApplicationRef, Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MatButtonModule, MatButton, MatFabDefaultOptions, MAT_FAB_DEFAULT_OPTIONS} from './index';
+import {MatLegacyButtonModule, MatLegacyButton} from './index';
 import {MatRipple, ThemePalette} from '@angular/material/core';
 import {createMouseEvent, dispatchEvent} from '@angular/cdk/testing/private';
 
-describe('MDC-based MatButton', () => {
+describe('MatLegacyButton', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [MatButtonModule],
+      imports: [MatLegacyButtonModule],
       declarations: [TestApp],
     });
 
@@ -17,41 +17,41 @@ describe('MDC-based MatButton', () => {
 
   // General button tests
   it('should apply class based on color attribute', () => {
-    let fixture = TestBed.createComponent(TestApp);
+    const fixture = TestBed.createComponent(TestApp);
 
-    let testComponent = fixture.debugElement.componentInstance;
-    let buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
-    let aDebugElement = fixture.debugElement.query(By.css('a'))!;
+    const testComponent = fixture.debugElement.componentInstance;
+    const buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
+    const attributeDebugElement = fixture.debugElement.query(By.css('a'))!;
 
     testComponent.buttonColor = 'primary';
     fixture.detectChanges();
     expect(buttonDebugElement.nativeElement.classList.contains('mat-primary')).toBe(true);
-    expect(aDebugElement.nativeElement.classList.contains('mat-primary')).toBe(true);
+    expect(attributeDebugElement.nativeElement.classList.contains('mat-primary')).toBe(true);
 
     testComponent.buttonColor = 'accent';
     fixture.detectChanges();
     expect(buttonDebugElement.nativeElement.classList.contains('mat-accent')).toBe(true);
-    expect(aDebugElement.nativeElement.classList.contains('mat-accent')).toBe(true);
+    expect(attributeDebugElement.nativeElement.classList.contains('mat-accent')).toBe(true);
 
     testComponent.buttonColor = null;
     fixture.detectChanges();
 
     expect(buttonDebugElement.nativeElement.classList).not.toContain('mat-accent');
-    expect(aDebugElement.nativeElement.classList).not.toContain('mat-accent');
+    expect(attributeDebugElement.nativeElement.classList).not.toContain('mat-accent');
   });
 
   it('should expose the ripple instance', () => {
     const fixture = TestBed.createComponent(TestApp);
     fixture.detectChanges();
 
-    const button = fixture.debugElement.query(By.directive(MatButton))!.componentInstance;
+    const button = fixture.debugElement.query(By.directive(MatLegacyButton))!.componentInstance;
     expect(button.ripple).toBeTruthy();
   });
 
   it('should not clear previous defined classes', () => {
-    let fixture = TestBed.createComponent(TestApp);
-    let testComponent = fixture.debugElement.componentInstance;
-    let buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
+    const fixture = TestBed.createComponent(TestApp);
+    const testComponent = fixture.debugElement.componentInstance;
+    const buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
 
     buttonDebugElement.nativeElement.classList.add('custom-class');
 
@@ -67,6 +67,37 @@ describe('MDC-based MatButton', () => {
     expect(buttonDebugElement.nativeElement.classList.contains('mat-primary')).toBe(false);
     expect(buttonDebugElement.nativeElement.classList.contains('mat-accent')).toBe(true);
     expect(buttonDebugElement.nativeElement.classList.contains('custom-class')).toBe(true);
+  });
+
+  it('should be able to focus button with a specific focus origin', () => {
+    const fixture = TestBed.createComponent(TestApp);
+    fixture.detectChanges();
+    const buttonDebugEl = fixture.debugElement.query(By.css('button'));
+    const buttonInstance = buttonDebugEl.componentInstance as MatLegacyButton;
+
+    expect(buttonDebugEl.nativeElement.classList).not.toContain('cdk-focused');
+
+    buttonInstance.focus('touch');
+
+    expect(buttonDebugEl.nativeElement.classList).toContain('cdk-focused');
+    expect(buttonDebugEl.nativeElement.classList).toContain('cdk-touch-focused');
+  });
+
+  it('should not change focus origin if origin not specified', () => {
+    const fixture = TestBed.createComponent(TestApp);
+    fixture.detectChanges();
+
+    const fabButtonDebugEl = fixture.debugElement.query(By.css('button[mat-fab]'))!;
+    const fabButtonInstance = fabButtonDebugEl.componentInstance as MatLegacyButton;
+    fabButtonInstance.focus('mouse');
+
+    const miniFabButtonDebugEl = fixture.debugElement.query(By.css('button[mat-mini-fab]'))!;
+    const miniFabButtonInstance = miniFabButtonDebugEl.componentInstance as MatLegacyButton;
+
+    miniFabButtonInstance.focus();
+
+    expect(miniFabButtonDebugEl.nativeElement.classList).toContain('cdk-focused');
+    expect(miniFabButtonDebugEl.nativeElement.classList).toContain('cdk-mouse-focused');
   });
 
   describe('button[mat-fab]', () => {
@@ -95,38 +126,21 @@ describe('MDC-based MatButton', () => {
     });
   });
 
-  describe('button[mat-fab] extended', () => {
-    it('should be extended', () => {
-      const fixture = TestBed.createComponent(TestApp);
-      fixture.detectChanges();
-      const extendedFabButtonDebugEl = fixture.debugElement.query(By.css('.extended-fab-test'))!;
-
-      expect(
-        extendedFabButtonDebugEl.nativeElement.classList.contains('mat-mdc-extended-fab'),
-      ).toBeFalse();
-
-      fixture.componentInstance.extended = true;
-
-      fixture.detectChanges();
-      expect(extendedFabButtonDebugEl.nativeElement.classList).toContain('mat-mdc-extended-fab');
-    });
-  });
-
   // Regular button tests
   describe('button[mat-button]', () => {
     it('should handle a click on the button', () => {
-      let fixture = TestBed.createComponent(TestApp);
-      let testComponent = fixture.debugElement.componentInstance;
-      let buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
+      const fixture = TestBed.createComponent(TestApp);
+      const testComponent = fixture.debugElement.componentInstance;
+      const buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
 
       buttonDebugElement.nativeElement.click();
       expect(testComponent.clickCount).toBe(1);
     });
 
     it('should not increment if disabled', () => {
-      let fixture = TestBed.createComponent(TestApp);
-      let testComponent = fixture.debugElement.componentInstance;
-      let buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
+      const fixture = TestBed.createComponent(TestApp);
+      const testComponent = fixture.debugElement.componentInstance;
+      const buttonDebugElement = fixture.debugElement.query(By.css('button'))!;
 
       testComponent.isDisabled = true;
       fixture.detectChanges();
@@ -137,8 +151,8 @@ describe('MDC-based MatButton', () => {
     });
 
     it('should disable the native button element', () => {
-      let fixture = TestBed.createComponent(TestApp);
-      let buttonNativeElement = fixture.nativeElement.querySelector('button');
+      const fixture = TestBed.createComponent(TestApp);
+      const buttonNativeElement = fixture.nativeElement.querySelector('button');
       expect(buttonNativeElement.disabled)
         .withContext('Expected button not to be disabled')
         .toBeFalsy();
@@ -154,9 +168,9 @@ describe('MDC-based MatButton', () => {
   // Anchor button tests
   describe('a[mat-button]', () => {
     it('should not redirect if disabled', () => {
-      let fixture = TestBed.createComponent(TestApp);
-      let testComponent = fixture.debugElement.componentInstance;
-      let buttonDebugElement = fixture.debugElement.query(By.css('a'))!;
+      const fixture = TestBed.createComponent(TestApp);
+      const testComponent = fixture.debugElement.componentInstance;
+      const buttonDebugElement = fixture.debugElement.query(By.css('a'))!;
 
       testComponent.isDisabled = true;
       fixture.detectChanges();
@@ -168,8 +182,6 @@ describe('MDC-based MatButton', () => {
       let fixture = TestBed.createComponent(TestApp);
       let testComponent = fixture.debugElement.componentInstance;
       let buttonDebugElement = fixture.debugElement.query(By.css('a'))!;
-      fixture.detectChanges();
-
       expect(buttonDebugElement.nativeElement.hasAttribute('tabindex')).toBe(false);
 
       testComponent.isDisabled = true;
@@ -178,9 +190,9 @@ describe('MDC-based MatButton', () => {
     });
 
     it('should add aria-disabled attribute if disabled', () => {
-      let fixture = TestBed.createComponent(TestApp);
-      let testComponent = fixture.debugElement.componentInstance;
-      let buttonDebugElement = fixture.debugElement.query(By.css('a'))!;
+      const fixture = TestBed.createComponent(TestApp);
+      const testComponent = fixture.debugElement.componentInstance;
+      const buttonDebugElement = fixture.debugElement.query(By.css('a'))!;
       fixture.detectChanges();
       expect(buttonDebugElement.nativeElement.getAttribute('aria-disabled')).toBe('false');
 
@@ -190,9 +202,9 @@ describe('MDC-based MatButton', () => {
     });
 
     it('should not add aria-disabled attribute if disabled is false', () => {
-      let fixture = TestBed.createComponent(TestApp);
-      let testComponent = fixture.debugElement.componentInstance;
-      let buttonDebugElement = fixture.debugElement.query(By.css('a'))!;
+      const fixture = TestBed.createComponent(TestApp);
+      const testComponent = fixture.debugElement.componentInstance;
+      const buttonDebugElement = fixture.debugElement.query(By.css('a'))!;
       fixture.detectChanges();
       expect(buttonDebugElement.nativeElement.getAttribute('aria-disabled'))
         .withContext('Expect aria-disabled="false"')
@@ -212,9 +224,9 @@ describe('MDC-based MatButton', () => {
     });
 
     it('should be able to set a custom tabindex', () => {
-      let fixture = TestBed.createComponent(TestApp);
-      let testComponent = fixture.debugElement.componentInstance;
-      let buttonElement = fixture.debugElement.query(By.css('a'))!.nativeElement;
+      const fixture = TestBed.createComponent(TestApp);
+      const testComponent = fixture.debugElement.componentInstance;
+      const buttonElement = fixture.debugElement.query(By.css('a'))!.nativeElement;
 
       fixture.componentInstance.tabIndex = 3;
       fixture.detectChanges();
@@ -298,22 +310,22 @@ describe('MDC-based MatButton', () => {
     });
 
     it('should disable the ripple when the button is disabled', () => {
-      expect(buttonRippleInstance.disabled).toBeFalsy(
-        'Expected an enabled button[mat-button] to have an enabled ripple',
-      );
-      expect(anchorRippleInstance.disabled).toBeFalsy(
-        'Expected an enabled a[mat-button] to have an enabled ripple',
-      );
+      expect(buttonRippleInstance.disabled)
+        .withContext('Expected an enabled button[mat-button] to have an enabled ripple')
+        .toBeFalsy();
+      expect(anchorRippleInstance.disabled)
+        .withContext('Expected an enabled a[mat-button] to have an enabled ripple')
+        .toBeFalsy();
 
       testComponent.isDisabled = true;
       fixture.detectChanges();
 
-      expect(buttonRippleInstance.disabled).toBeTruthy(
-        'Expected a disabled button[mat-button] not to have an enabled ripple',
-      );
-      expect(anchorRippleInstance.disabled).toBeTruthy(
-        'Expected a disabled a[mat-button] not to have an enabled ripple',
-      );
+      expect(buttonRippleInstance.disabled)
+        .withContext('Expected a disabled button[mat-button] not to have an enabled ripple')
+        .toBeTruthy();
+      expect(anchorRippleInstance.disabled)
+        .withContext('Expected a disabled a[mat-button] not to have an enabled ripple')
+        .toBeTruthy();
     });
   });
 
@@ -324,40 +336,12 @@ describe('MDC-based MatButton', () => {
     ];
 
     expect(
-      buttonNativeElements.every(element => !!element.querySelector('.mat-mdc-focus-indicator')),
+      buttonNativeElements.every(element => element.classList.contains('mat-focus-indicator')),
     ).toBe(true);
   });
 });
 
-describe('MatFabDefaultOptions', () => {
-  function configure(defaults: MatFabDefaultOptions) {
-    TestBed.configureTestingModule({
-      imports: [MatButtonModule],
-      declarations: [TestApp],
-      providers: [{provide: MAT_FAB_DEFAULT_OPTIONS, useValue: defaults}],
-    });
-
-    TestBed.compileComponents();
-  }
-
-  it('should override default color in component', () => {
-    configure({color: 'primary'});
-    const fixture: ComponentFixture<TestApp> = TestBed.createComponent(TestApp);
-    fixture.detectChanges();
-    const fabButtonDebugEl = fixture.debugElement.query(By.css('button[mat-fab]'))!;
-    expect(fabButtonDebugEl.nativeElement.classList).toContain('mat-primary');
-  });
-
-  it('should default to accent if config does not specify color', () => {
-    configure({});
-    const fixture: ComponentFixture<TestApp> = TestBed.createComponent(TestApp);
-    fixture.detectChanges();
-    const fabButtonDebugEl = fixture.debugElement.query(By.css('button[mat-fab]'))!;
-    expect(fabButtonDebugEl.nativeElement.classList).toContain('mat-accent');
-  });
-});
-
-/** Test component that contains an MatButton. */
+/** Test component that contains an MatLegacyButton. */
 @Component({
   selector: 'test-app',
   template: `
@@ -370,7 +354,6 @@ describe('MatFabDefaultOptions', () => {
       Link
     </a>
     <button mat-fab>Fab Button</button>
-    <button mat-fab [extended]="extended" class="extended-fab-test">Extended</button>
     <button mat-mini-fab>Mini Fab Button</button>
   `,
 })
@@ -380,7 +363,6 @@ class TestApp {
   rippleDisabled: boolean = false;
   buttonColor: ThemePalette;
   tabIndex: number;
-  extended: boolean = false;
 
   increment() {
     this.clickCount++;

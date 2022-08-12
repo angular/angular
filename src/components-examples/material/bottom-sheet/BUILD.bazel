@@ -18,7 +18,7 @@ ng_module(
         "//src/cdk/testing/testbed",
         "//src/material/bottom-sheet",
         "//src/material/bottom-sheet/testing",
-        "//src/material/button",
+        "//src/material/legacy-button",
         "//src/material/legacy-list",
         "@npm//@angular/platform-browser",
         "@npm//@angular/platform-browser-dynamic",

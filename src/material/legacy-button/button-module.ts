@@ -8,11 +8,11 @@
 
 import {NgModule} from '@angular/core';
 import {MatCommonModule, MatRippleModule} from '@angular/material/core';
-import {MatAnchor, MatButton} from './button';
+import {MatLegacyAnchor, MatLegacyButton} from './button';
 
 @NgModule({
   imports: [MatRippleModule, MatCommonModule],
-  exports: [MatButton, MatAnchor, MatCommonModule],
-  declarations: [MatButton, MatAnchor],
+  exports: [MatLegacyButton, MatLegacyAnchor, MatCommonModule],
+  declarations: [MatLegacyButton, MatLegacyAnchor],
 })
-export class MatButtonModule {}
+export class MatLegacyButtonModule {}

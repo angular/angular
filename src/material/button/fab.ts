@@ -55,6 +55,8 @@ export function MAT_FAB_DEFAULT_OPTIONS_FACTORY(): MatFabDefaultOptions {
 // Default FAB configuration.
 const defaults = MAT_FAB_DEFAULT_OPTIONS_FACTORY();
 
+let buttonInputs = [...MAT_ANCHOR_INPUTS, 'extended'];
+
 /**
  * Material Design floating action button (FAB) component. These buttons represent the primary
  * or most common action for users to interact with.
@@ -66,7 +68,7 @@ const defaults = MAT_FAB_DEFAULT_OPTIONS_FACTORY();
   selector: `button[mat-fab]`,
   templateUrl: 'button.html',
   styleUrls: ['fab.css'],
-  inputs: [...MAT_BUTTON_INPUTS, 'extended'],
+  inputs: buttonInputs,
   host: {
     ...MAT_BUTTON_HOST,
     '[class.mdc-fab--extended]': 'extended',
@@ -142,7 +144,7 @@ export class MatMiniFabButton extends MatButtonBase {
   selector: `a[mat-fab]`,
   templateUrl: 'button.html',
   styleUrls: ['fab.css'],
-  inputs: [...MAT_ANCHOR_INPUTS, 'extended'],
+  inputs: buttonInputs,
   host: {
     ...MAT_ANCHOR_HOST,
     '[class.mdc-fab--extended]': 'extended',

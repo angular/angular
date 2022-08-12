@@ -1,108 +1,95 @@
-@use '../core/style/variables';
-@use '../core/style/elevation';
-@use '../core/style/button-common';
-@use '../core/style/private';
+@use 'sass:map';
+@use '@material/touch-target' as mdc-touch-target;
 
+@use '../core/style/layout-common';
+@use '../core/mdc-helpers/mdc-helpers';
 
-// Flat and raised button standards
-$padding: 0 16px !default;
-$min-width: 64px !default;
-$margin: 0 !default;
-$line-height: 36px !default;
-$border-radius: 4px !default;
-$focus-transition: opacity 200ms variables.$swift-ease-in-out-timing-function,
-                   background-color 200ms variables.$swift-ease-in-out-timing-function !default;
+// Adds styles necessary to provide stateful interactions with the button. This includes providing
+// content for the state container's ::before and ::after so that they can be given a background
+// color and opacity for states like hover, active, and focus. Additionally, adds styles to the
+// ripple and state container so that they fill the button, match the border radius, and avoid
+// pointer events.
+@mixin mat-private-button-interactive() {
+  // The ripple container should match the bounds of the entire button.
+  .mat-mdc-button-ripple,
+  .mat-mdc-button-persistent-ripple,
+  .mat-mdc-button-persistent-ripple::before {
+    @include layout-common.fill;
 
-// Stroked button padding is 1px less horizontally than default/flat/raised
-// button's padding.
-$stroked-button-line-height: $line-height - 2;
-$stroked-button-padding: 0 15px;
-$stroked-button-border-width: 1px;
+    // Disable pointer events for the ripple container and state overlay because the container
+    // will overlay the user content and we don't want to disable mouse events on the user content.
+    // Pointer events can be safely disabled because the ripple trigger element is the host element.
+    pointer-events: none;
 
-// Icon Button standards
-$button-size: 40px !default;
-$button-border-radius: 50% !default;
-$button-line-height: 24px !default;
+    // Inherit the border radius from the parent so that state overlay and ripples don't exceed the
+    // parent button boundaries. Note that an inherited border radius does not work properly if
+    // the actual button element does have a border because it causes the inner content to be
+    // smaller. We have special logic for stroked buttons to handle this scenario.
+    border-radius: inherit;
+  }
 
-// Fab standards
-$fab-border-radius: 50% !default;
-$fab-size: 56px !default;
-$fab-padding: 16px !default;
+  // We use ::before so that we can reuse some of MDC's theming.
+  .mat-mdc-button-persistent-ripple::before {
+    content: '';
+    opacity: 0;
+    background-color: var(--mat-mdc-button-persistent-ripple-color);
+  }
 
-$mini-fab-size: 40px !default;
-$mini-fab-padding: 8px !default;
+  .mat-ripple-element {
+    background-color: var(--mat-mdc-button-ripple-color);
+  }
 
-// Applies base styles to all button types.
-@mixin base {
-  box-sizing: border-box;
-  position: relative;
+  // The content should appear over the state and ripple layers, otherwise they may adversely affect
+  // the accessibility of the text content.
+  .mdc-button__label {
+    z-index: 1;
+  }
 
-  // Reset browser <button> styles.
-  @include button-common.reset();
+  // The focus indicator should match the bounds of the entire button.
+  .mat-mdc-focus-indicator {
+    @include layout-common.fill();
+  }
 
-  // Make anchors render like buttons.
-  display: inline-block;
-  white-space: nowrap;
-  text-decoration: none;
-  vertical-align: baseline;
-  text-align: center;
+  &:focus .mat-mdc-focus-indicator::before {
+    content: '';
+  }
+}
 
-  // Sizing.
-  margin: $margin;
-  min-width: $min-width;
-  line-height: $line-height;
-  padding: $padding;
-  border-radius: $border-radius;
-
-  // Explicitly set the default overflow to `visible`. It is already set
-  // on most browsers except on IE11 where it defaults to `hidden`.
-  overflow: visible;
-
-  &.mat-button-disabled {
+// MDC's disabled buttons define a default cursor with pointer-events none. However, they select
+// :disabled for this, which does not affect anchor tags.
+// TODO(andrewseguin): Discuss with the MDC team about a mixin we can call for applying this style,
+// and note that having pointer-events may have unintended side-effects, e.g. allowing the user
+// to click the target underneath the button.
+@mixin mat-private-button-disabled() {
+  &[disabled] {
     cursor: default;
-  }
-
-  &.cdk-keyboard-focused, &.cdk-program-focused {
-    .mat-button-focus-overlay {
-      opacity: 0.12;
-    }
-  }
-
-  &::-moz-focus-inner {
-    border: 0;
+    pointer-events: none;
+    @content;
   }
 }
 
-// Applies styles to buttons with backgrounds: raised, fab, and mini-fab
-@mixin raised-button {
-  @include base;
-  @include private.private-animation-noop();
-
-  // Force hardware acceleration.
-  transform: translate3d(0, 0, 0);
-
-  // Animation.
-  transition: background variables.$swift-ease-out-duration
-    variables.$swift-ease-out-timing-function, elevation.private-transition-property-value();
+@mixin mat-private-button-touch-target($is-square) {
+  // Element used to ensure that the button has a touch target that meets the required minimum.
+  // Note that we use this, instead of MDC's built-in `mdc-button--touch` class, because the MDC
+  // class is implemented as `margin-top: 6px; margin-bottom: 6px` on the host element which
+  // goes against our rule of not having margins on the host node. Furthermore, having the margin on
+  // the button itself would require us to wrap it in another div. See:
+  // https://github.com/material-components/material-components-web/tree/master/packages/mdc-button#making-buttons-accessible
+  .mat-mdc-button-touch-target {
+    @include mdc-touch-target.touch-target(
+      $set-width: $is-square,
+      $query: mdc-helpers.$mdc-base-styles-query);
+  }
 }
 
-// Applies styles to fab and mini-fab button types only
-@mixin fab($size, $padding) {
-  @include raised-button;
-
-  // Reset the min-width from the button base.
-  min-width: 0;
-
-  border-radius: $fab-border-radius;
-  width: $size;
-  height: $size;
-  padding: 0;
-
-  flex-shrink: 0;
-
-  .mat-button-wrapper {
-    padding: $padding 0;
-    display: inline-block;
-    line-height: $button-line-height;
-  }
+// Changes a button theme to exclude the ripple styles.
+@function mat-private-button-remove-ripple($theme) {
+  @return map.merge($theme, (
+    focus-state-layer-color: null,
+    focus-state-layer-opacity: null,
+    hover-state-layer-color: null,
+    hover-state-layer-opacity: null,
+    pressed-state-layer-color: null,
+    pressed-state-layer-opacity: null,
+  ));
 }

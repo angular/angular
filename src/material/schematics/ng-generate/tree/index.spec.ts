@@ -37,7 +37,7 @@ describe('Material tree schematic', () => {
 
     expect(moduleContent).toContain('MatTreeModule');
     expect(moduleContent).toContain('MatIconModule');
-    expect(moduleContent).toContain('MatButtonModule');
+    expect(moduleContent).toContain('MatLegacyButtonModule');
   });
 
   it('should throw if no name has been specified', async () => {

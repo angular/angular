@@ -13,7 +13,7 @@ ng_module(
         "//src/cdk-experimental/scrolling",
         "//src/cdk/scrolling",
         "//src/components-examples/cdk/scrolling",
-        "//src/material/button",
+        "//src/material/legacy-button",
         "//src/material/legacy-form-field",
         "//src/material/legacy-input",
         "//src/material/legacy-select",

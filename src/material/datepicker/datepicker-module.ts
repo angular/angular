@@ -11,7 +11,7 @@ import {OverlayModule} from '@angular/cdk/overlay';
 import {PortalModule} from '@angular/cdk/portal';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {CdkScrollableModule} from '@angular/cdk/scrolling';
 import {MatCommonModule} from '@angular/material/core';
 import {MatCalendar, MatCalendarHeader} from './calendar';
@@ -35,7 +35,7 @@ import {MatDatepickerActions, MatDatepickerApply, MatDatepickerCancel} from './d
 @NgModule({
   imports: [
     CommonModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     OverlayModule,
     A11yModule,
     PortalModule,

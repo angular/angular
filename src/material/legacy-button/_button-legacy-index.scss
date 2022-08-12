@@ -1,0 +1,22 @@
+@forward 'button-theme' hide color, theme, typography;
+@forward 'button-theme' as mat-legacy-button-* hide $mat-legacy-button-ripple-opacity,
+mat-legacy-button-density, mat-legacy-button-focus-overlay-color,
+mat-legacy-button-ripple-background, mat-legacy-button-ripple-color,
+mat-legacy-button-theme-property;
+
+@forward 'button-base' as mat-* hide $mat-border-radius, $mat-button-border-radius,
+$mat-button-line-height, $mat-button-size, $mat-focus-transition, $mat-line-height, $mat-margin,
+$mat-min-width, $mat-padding, mat-base;
+@forward 'button-base' as mat-legacy-button-* hide $mat-legacy-button-button-border-radius,
+$mat-legacy-button-button-line-height, $mat-legacy-button-button-size,
+$mat-legacy-button-fab-border-radius, $mat-legacy-button-fab-padding,
+$mat-legacy-button-fab-size, $mat-legacy-button-mini-fab-padding,
+$mat-legacy-button-mini-fab-size, $mat-legacy-button-stroked-button-border-width,
+$mat-legacy-button-stroked-button-line-height, $mat-legacy-button-stroked-button-padding,
+mat-legacy-button-fab,
+mat-legacy-button-raised-button;
+@forward 'button-base' as mat-icon-* hide $mat-icon-border-radius, $mat-icon-fab-border-radius,
+$mat-icon-fab-padding, $mat-icon-fab-size, $mat-icon-focus-transition, $mat-icon-line-height,
+$mat-icon-margin, $mat-icon-min-width, $mat-icon-mini-fab-padding, $mat-icon-mini-fab-size,
+$mat-icon-padding, $mat-icon-stroked-button-border-width, $mat-icon-stroked-button-line-height,
+$mat-icon-stroked-button-padding, mat-icon-base, mat-icon-fab, mat-icon-raised-button;

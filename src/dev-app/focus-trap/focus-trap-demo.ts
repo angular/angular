@@ -19,7 +19,7 @@ import {A11yModule, CdkTrapFocus} from '@angular/cdk/a11y';
 import {MatLegacyDialog, MatLegacyDialogModule} from '@angular/material/legacy-dialog';
 import {_supportsShadowDom} from '@angular/cdk/platform';
 import {CommonModule} from '@angular/common';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
@@ -40,7 +40,7 @@ export class FocusTrapShadowDomDemo {}
   imports: [
     A11yModule,
     CommonModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     MatLegacyCardModule,
     MatLegacyDialogModule,
     MatToolbarModule,

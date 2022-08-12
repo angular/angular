@@ -1,0 +1,184 @@
+@use '@angular/cdk';
+
+@use './button-base';
+@use '../core/style/layout-common';
+@use '../core/focus-indicators/private';
+
+// TODO(jelbourn): Measure perf benefits for translate3d and will-change.
+// TODO(jelbourn): Figure out if anchor hover underline actually happens in any browser.
+
+.mat-button, .mat-icon-button {
+  .mat-button-focus-overlay {
+    opacity: 0;
+  }
+}
+
+// Only basic and stroked buttons (not raised, FABs or icon buttons) have a hover style.
+// Use the same visual treatment for hover as for focus.
+.mat-button,
+.mat-stroked-button {
+  &:hover:not(.mat-button-disabled) .mat-button-focus-overlay {
+    opacity: 0.04;
+  }
+}
+
+// Disable the hover styles on non-hover devices. Since this is more of a progressive
+// enhancement and not all desktop browsers support this kind of media query, we can't
+// use something like `@media (hover)`.
+@media (hover: none) {
+  .mat-button,
+  .mat-stroked-button {
+    &:hover:not(.mat-button-disabled) .mat-button-focus-overlay {
+      opacity: 0;
+    }
+  }
+}
+
+// Should be placed after the `:hover` styles so the focused
+// styling coming in from `mat-button-base` takes precedence.
+.mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button {
+  @include button-base.base;
+}
+
+.mat-raised-button {
+  @include button-base.raised-button;
+}
+
+.mat-stroked-button {
+  border: button-base.$stroked-button-border-width solid currentColor;
+  padding: button-base.$stroked-button-padding;
+  line-height: button-base.$stroked-button-line-height;
+
+  // Since the stroked button has has an actual border that reduces the available space for
+  // child elements such as the ripple container or focus overlay, an inherited border radius
+  // for the absolute-positioned child elements does not work properly. This is because the
+  // child element cannot expand to the same boundaries as the parent element with a border.
+  // In order to work around this issue by *not* hiding overflow, we adjust the child elements
+  // to fully cover the actual button element. This means that the border-radius would be correct
+  // then. See: https://github.com/angular/components/issues/13738
+  .mat-button-ripple.mat-ripple, .mat-button-focus-overlay {
+    top: -(button-base.$stroked-button-border-width);
+    left: -(button-base.$stroked-button-border-width);
+    right: -(button-base.$stroked-button-border-width);
+    bottom: -(button-base.$stroked-button-border-width);
+  }
+}
+
+.mat-fab {
+  @include button-base.fab(button-base.$fab-size, button-base.$fab-padding);
+}
+
+.mat-mini-fab {
+  @include button-base.fab(button-base.$mini-fab-size, button-base.$mini-fab-padding);
+}
+
+.mat-icon-button {
+  padding: 0;
+
+  // Reset the min-width from the button base.
+  min-width: 0;
+
+  width: button-base.$button-size;
+  height: button-base.$button-size;
+
+  flex-shrink: 0;
+  line-height: button-base.$button-size;
+  border-radius: button-base.$button-border-radius;
+
+  i, .mat-icon {
+    line-height: button-base.$button-line-height;
+  }
+}
+
+// The ripple container and focus overlay should match the bounds of the entire button.
+// Increase specificity for the ripple container because ripple styles are part of
+// the `mat-core` mixin and can potentially overwrite the absolute position of the container.
+.mat-button-ripple.mat-ripple,
+.mat-button-focus-overlay {
+  @include layout-common.fill;
+
+  // Disable pointer events for the ripple container and focus overlay because the container
+  // will overlay the user content and we don't want to disable mouse events on the user content.
+  // Pointer events can be safely disabled because the ripple trigger element is the host element.
+  pointer-events: none;
+
+  // Inherit the border radius from the parent so that focus overlay and ripples don't exceed the
+  // parent button boundaries. Note that an inherited border radius does not work properly if
+  // the actual button element does have a border because it causes the inner content to be
+  // smaller. We have special logic for stroked buttons to handle this scenario.
+  border-radius: inherit;
+}
+
+// Fixes the ripples not clipping to the border radius on Safari. Uses `:not(:empty)`
+// in order to avoid creating extra layers when there aren't any ripples.
+.mat-button-ripple.mat-ripple:not(:empty) {
+  transform: translateZ(0);
+}
+
+// Element that overlays the button to show focus and hover effects.
+.mat-button-focus-overlay {
+  opacity: 0;
+  transition: button-base.$focus-transition;
+
+  ._mat-animation-noopable & {
+    transition: none;
+  }
+}
+
+// For round buttons, the ripple container should clip child ripples to a circle.
+.mat-button-ripple-round {
+  border-radius: 50%;
+  // z-index needed to make clipping to border-radius work correctly.
+  // http://stackoverflow.com/questions/20001515/
+  z-index: 1;
+}
+
+// Elements inside of all type of buttons should be vertical aligned in the middle.
+.mat-button, .mat-flat-button, .mat-stroked-button, .mat-raised-button, .mat-icon-button,
+.mat-fab, .mat-mini-fab {
+  .mat-button-wrapper > * {
+    vertical-align: middle;
+  }
+}
+
+// Align icon-buttons correctly inside of standard, fill, and outline form-field appearances.
+.mat-form-field:not(.mat-form-field-appearance-legacy) {
+  .mat-form-field-prefix,
+  .mat-form-field-suffix {
+    .mat-icon-button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      font-size: inherit;
+      width: 2.5em;
+      height: 2.5em;
+    }
+  }
+}
+
+// For the button element, default inset/offset values are necessary to ensure that
+// the focus indicator is sufficiently contrastive and renders appropriately.
+.mat-flat-button,
+.mat-raised-button,
+.mat-fab,
+.mat-mini-fab {
+  &::before {
+    $border-width: var(--mat-focus-indicator-border-width, #{private.$default-border-width});
+    $offset: calc(#{$border-width} + 2px);
+    margin: calc(#{$offset} * -1);
+  }
+}
+
+.mat-stroked-button::before {
+  $border-width: var(--mat-focus-indicator-border-width, #{private.$default-border-width});
+  $offset: calc(#{$border-width} + 3px);
+  margin: calc(#{$offset} * -1);
+}
+
+// Add an outline to make buttons more visible in high contrast mode. Stroked buttons
+// don't need a special look in high-contrast mode, because those already have an outline.
+@include cdk.high-contrast(active, off) {
+  .mat-button, .mat-flat-button, .mat-raised-button, .mat-icon-button, .mat-fab, .mat-mini-fab {
+    outline: solid 1px;
+  }
+}

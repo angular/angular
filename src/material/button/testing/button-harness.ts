@@ -6,28 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ContentContainerComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {
+  ComponentHarnessConstructor,
+  ContentContainerComponentHarness,
+  HarnessPredicate,
+} from '@angular/cdk/testing';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {ButtonHarnessFilters} from './button-harness-filters';
+import {LegacyButtonHarnessFilters} from '@angular/material/legacy-button/testing';
 
-/** Harness for interacting with a standard mat-button in tests. */
+/** Harness for interacting with a MDC-based mat-button in tests. */
 export class MatButtonHarness extends ContentContainerComponentHarness {
   // TODO(jelbourn) use a single class, like `.mat-button-base`
-  /** The selector for the host element of a `MatButton` instance. */
-  static hostSelector = `[mat-button], [mat-raised-button], [mat-flat-button], [mat-icon-button],
-                         [mat-stroked-button], [mat-fab], [mat-mini-fab]`;
+  static hostSelector = `[mat-button], [mat-raised-button], [mat-flat-button],
+                         [mat-icon-button], [mat-stroked-button], [mat-fab], [mat-mini-fab]`;
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatButtonHarness` that meets
-   * certain criteria.
-   * @param options Options for filtering which button instances are considered a match.
+   * Gets a `HarnessPredicate` that can be used to search for a button with specific attributes.
+   * @param options Options for narrowing the search:
+   *   - `selector` finds a button whose host element matches the given selector.
+   *   - `text` finds a button with specific text content.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: ButtonHarnessFilters = {}): HarnessPredicate<MatButtonHarness> {
-    return new HarnessPredicate(MatButtonHarness, options).addOption(
-      'text',
-      options.text,
-      (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text),
+  static with<T extends MatButtonHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: LegacyButtonHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options).addOption('text', options.text, (harness, text) =>
+      HarnessPredicate.stringMatches(harness.getText(), text),
     );
   }
 
@@ -45,23 +50,23 @@ export class MatButtonHarness extends ContentContainerComponentHarness {
     return (await this.host()).click(...(args as []));
   }
 
-  /** Whether the button is disabled. */
+  /** Gets a boolean promise indicating if the button is disabled. */
   async isDisabled(): Promise<boolean> {
     const disabled = (await this.host()).getAttribute('disabled');
     return coerceBooleanProperty(await disabled);
   }
 
-  /** Gets the button's label text. */
+  /** Gets a promise for the button's label text. */
   async getText(): Promise<string> {
     return (await this.host()).text();
   }
 
-  /** Focuses the button. */
+  /** Focuses the button and returns a void promise that indicates when the action is complete. */
   async focus(): Promise<void> {
     return (await this.host()).focus();
   }
 
-  /** Blurs the button. */
+  /** Blurs the button and returns a void promise that indicates when the action is complete. */
   async blur(): Promise<void> {
     return (await this.host()).blur();
   }

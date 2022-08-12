@@ -32,7 +32,7 @@ export abstract class _MatMenuHarnessBase<
   private _documentRootLocator = this.documentRootLocatorFactory();
   protected abstract _itemClass: ItemType;
 
-  // TODO: potentially extend MatButtonHarness
+  // TODO: potentially extend MatLegacyButtonHarness
 
   /** Whether the menu is disabled. */
   async isDisabled(): Promise<boolean> {

@@ -27,7 +27,7 @@ const ANGULAR_MATERIAL_FILEPATH_REGEX = new RegExp(`${materialModuleSpecifier}/(
 
 /**
  * Migration that updates imports which refer to the primary Angular Material
- * entry-point to use the appropriate secondary entry points (e.g. @angular/material/button).
+ * entry-point to use the appropriate secondary entry points (e.g. @angular/material/legacy-button).
  */
 export class SecondaryEntryPointsMigration extends Migration<null> {
   printer = ts.createPrinter();

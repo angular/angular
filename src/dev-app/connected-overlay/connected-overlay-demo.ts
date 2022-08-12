@@ -26,7 +26,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
 
@@ -40,7 +40,7 @@ import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
     CdkOverlayExamplesModule,
     CommonModule,
     FormsModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     MatLegacyCheckboxModule,
     MatLegacyRadioModule,
     OverlayModule,

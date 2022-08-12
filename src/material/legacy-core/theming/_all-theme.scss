@@ -1,6 +1,7 @@
 @use '../../core/theming/theming';
 @use '../../core/theming/all-theme';
 @use '../core-theme';
+@use '../../legacy-button/button-theme';
 @use '../../legacy-card/card-theme';
 @use '../../legacy-progress-bar/progress-bar-theme';
 @use '../../legacy-tooltip/tooltip-theme';
@@ -21,6 +22,7 @@
 @mixin all-legacy-component-themes($theme-or-color-config) {
   $dedupe-key: 'angular-material-legacy-theme';
   @include theming.private-check-duplicate-theme-styles($theme-or-color-config, $dedupe-key) {
+    @include button-theme.theme($theme-or-color-config);
     @include core-theme.theme($theme-or-color-config);
     @include card-theme.theme($theme-or-color-config);
     @include progress-bar-theme.theme($theme-or-color-config);

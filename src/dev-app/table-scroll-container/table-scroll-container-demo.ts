@@ -9,7 +9,7 @@
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {CdkTableScrollContainerModule} from '@angular/cdk-experimental/table-scroll-container';
-import {MatButtonModule} from '@angular/material-experimental/mdc-button';
+import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleGroup, MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatTableModule} from '@angular/material/table';
 

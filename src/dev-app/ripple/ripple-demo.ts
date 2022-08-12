@@ -9,7 +9,7 @@
 import {Component, ViewChild} from '@angular/core';
 import {CoreExamplesModule} from '@angular/components-examples/material/core';
 import {FormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatRipple} from '@angular/material/core';
 import {MatIconModule} from '@angular/material/icon';
@@ -23,7 +23,7 @@ import {MatLegacyInputModule} from '@angular/material/legacy-input';
   imports: [
     CoreExamplesModule,
     FormsModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     MatLegacyCheckboxModule,
     MatIconModule,
     MatLegacyInputModule,

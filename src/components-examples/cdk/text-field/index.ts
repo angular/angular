@@ -1,7 +1,7 @@
 import {TextFieldModule} from '@angular/cdk/text-field';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {TextFieldAutofillDirectiveExample} from './text-field-autofill-directive/text-field-autofill-directive-example';
@@ -24,7 +24,7 @@ const EXAMPLES = [
   imports: [
     CommonModule,
     TextFieldModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     MatLegacyInputModule,
     MatLegacySelectModule,
   ],

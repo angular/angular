@@ -15,7 +15,7 @@ import {
   MatBottomSheetModule,
   MatBottomSheetRef,
 } from '@angular/material/bottom-sheet';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
@@ -35,7 +35,7 @@ const defaultConfig = new MatBottomSheetConfig();
     CommonModule,
     FormsModule,
     MatBottomSheetModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     MatLegacyCardModule,
     MatLegacyCheckboxModule,
     MatLegacyFormFieldModule,

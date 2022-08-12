@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatLegacyProgressBarModule} from '@angular/material/legacy-progress-bar';
@@ -32,7 +32,12 @@ const EXAMPLES = [
 ];
 
 @NgModule({
-  imports: [MatButtonModule, MatLegacyCardModule, MatDividerModule, MatLegacyProgressBarModule],
+  imports: [
+    MatLegacyButtonModule,
+    MatLegacyCardModule,
+    MatDividerModule,
+    MatLegacyProgressBarModule,
+  ],
   declarations: EXAMPLES,
   exports: EXAMPLES,
 })

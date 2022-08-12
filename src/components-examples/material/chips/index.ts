@@ -14,7 +14,7 @@ import {ChipsStackedExample} from './chips-stacked/chips-stacked-example';
 import {ChipsHarnessExample} from './chips-harness/chips-harness-example';
 import {ChipsFormControlExample} from './chips-form-control/chips-form-control-example';
 import {ChipsAvatarExample} from './chips-avatar/chips-avatar-example';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 
 export {
   ChipsAutocompleteExample,
@@ -43,7 +43,7 @@ const EXAMPLES = [
     CommonModule,
     DragDropModule,
     MatLegacyAutocompleteModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     MatLegacyChipsModule,
     MatIconModule,
     MatLegacyFormFieldModule,

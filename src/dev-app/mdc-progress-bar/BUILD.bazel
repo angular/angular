@@ -10,7 +10,7 @@ ng_module(
         ":mdc_progress_bar_demo_scss",
     ],
     deps = [
-        "//src/material-experimental/mdc-button",
+        "//src/material/button",
         "//src/material/button-toggle",
         "//src/material/progress-bar",
         "@npm//@angular/forms",

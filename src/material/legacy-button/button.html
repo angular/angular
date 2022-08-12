@@ -1,0 +1,7 @@
+<span class="mat-button-wrapper"><ng-content></ng-content></span>
+<span matRipple class="mat-button-ripple"
+      [class.mat-button-ripple-round]="isRoundButton || isIconButton"
+      [matRippleDisabled]="_isRippleDisabled()"
+      [matRippleCentered]="isIconButton"
+      [matRippleTrigger]="_getHostElement()"></span>
+<span class="mat-button-focus-overlay"></span>

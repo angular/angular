@@ -9,7 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatLegacyTooltipModule} from '@angular/material/legacy-tooltip';
 import {MatPaginator} from './paginator';
@@ -18,7 +18,7 @@ import {MAT_PAGINATOR_INTL_PROVIDER} from './paginator-intl';
 @NgModule({
   imports: [
     CommonModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     MatLegacySelectModule,
     MatLegacyTooltipModule,
     MatCommonModule,

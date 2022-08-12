@@ -11,9 +11,9 @@ ng_module(
     ],
     deps = [
         "//src/components-examples/material-experimental/mdc-form-field",
-        "//src/material-experimental/mdc-button",
         "//src/material-experimental/mdc-tabs",
         "//src/material/autocomplete",
+        "//src/material/button",
         "//src/material/button-toggle",
         "//src/material/card",
         "//src/material/checkbox",

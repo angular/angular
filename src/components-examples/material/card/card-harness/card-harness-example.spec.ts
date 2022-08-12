@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {MatButtonHarness} from '@angular/material/button/testing';
+import {MatLegacyButtonHarness} from '@angular/material/legacy-button/testing';
 import {MatLegacyCardHarness} from '@angular/material/legacy-card/testing';
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
@@ -36,7 +36,7 @@ describe('CardHarnessExample', () => {
 
   it('should act as a harness loader for user content', async () => {
     const card = await loader.getHarness(MatLegacyCardHarness.with({title: 'Shiba Inu'}));
-    const footerSubcomponents = (await card.getAllHarnesses(MatButtonHarness)) ?? [];
+    const footerSubcomponents = (await card.getAllHarnesses(MatLegacyButtonHarness)) ?? [];
     expect(footerSubcomponents.length).toBe(2);
   });
 });

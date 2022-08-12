@@ -39,7 +39,7 @@ describe('material-dashboard-schematic', () => {
     expect(moduleContent).toContain('MatLegacyCardModule');
     expect(moduleContent).toContain('MatLegacyMenuModule');
     expect(moduleContent).toContain('MatIconModule');
-    expect(moduleContent).toContain('MatButtonModule');
+    expect(moduleContent).toContain('MatLegacyButtonModule');
 
     expect(moduleContent).toContain(
       `import { MatGridListModule } from '@angular/material/grid-list';`,
@@ -51,7 +51,9 @@ describe('material-dashboard-schematic', () => {
       `import { MatLegacyMenuModule } from '@angular/material/legacy-menu';`,
     );
     expect(moduleContent).toContain(`import { MatIconModule } from '@angular/material/icon';`);
-    expect(moduleContent).toContain(`import { MatButtonModule } from '@angular/material/button';`);
+    expect(moduleContent).toContain(
+      `import { MatLegacyButtonModule } from '@angular/material/legacy-button';`,
+    );
   });
 
   it('should throw if no name has been specified', async () => {

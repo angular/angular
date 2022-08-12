@@ -10,7 +10,7 @@ import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {MatBadgeModule} from '@angular/material/badge';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatIconModule} from '@angular/material/icon';
 
 @Component({
@@ -18,7 +18,7 @@ import {MatIconModule} from '@angular/material/icon';
   templateUrl: 'badge-demo.html',
   styleUrls: ['badge-demo.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, MatBadgeModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, FormsModule, MatBadgeModule, MatLegacyButtonModule, MatIconModule],
 })
 export class BadgeDemo {
   visible = true;

@@ -10,8 +10,8 @@ ng_module(
         ":progress_spinner_demo_scss",
     ],
     deps = [
-        "//src/material/button",
         "//src/material/button-toggle",
+        "//src/material/legacy-button",
         "//src/material/legacy-checkbox",
         "//src/material/progress-spinner",
         "@npm//@angular/forms",

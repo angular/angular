@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle';
 
 @Component({
@@ -16,7 +16,7 @@ import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle'
   templateUrl: 'slide-toggle-demo.html',
   styleUrls: ['slide-toggle-demo.css'],
   standalone: true,
-  imports: [FormsModule, MatButtonModule, MatLegacySlideToggleModule],
+  imports: [FormsModule, MatLegacyButtonModule, MatLegacySlideToggleModule],
 })
 export class SlideToggleDemo {
   firstToggle: boolean;

@@ -5,7 +5,7 @@ import {CdkTableModule, DataSource} from '@angular/cdk/table';
 import {Component, ElementRef, NgModule, ErrorHandler} from '@angular/core';
 import {MatNativeDateModule, MatRippleModule} from '@angular/material/core';
 import {MatLegacyAutocompleteModule} from '@angular/material/legacy-autocomplete';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
@@ -101,7 +101,7 @@ export class KitchenSink {
     MatLegacyAutocompleteModule,
     MatBadgeModule,
     MatBottomSheetModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     MatButtonToggleModule,
     MatLegacyCardModule,
     MatLegacyCheckboxModule,
