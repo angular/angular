@@ -19,9 +19,13 @@ import {isAbsoluteUrl, isValidPath, normalizePath, normalizeSrc} from '../url';
  * @developerPreview
  */
 export interface ImageLoaderConfig {
-  // Name of the image to be added to the image request URL
+  /**
+   * Image file name to be added to the image request URL.
+   */
   src: string;
-  // Width of the requested image (to be used when generating srcset)
+  /**
+   * Width of the requested image (to be used when generating srcset).
+   */
   width?: number;
 }
 
@@ -40,8 +44,8 @@ export type ImageLoader = (config: ImageLoaderConfig) => string;
 const noopImageLoader = (config: ImageLoaderConfig) => config.src;
 
 /**
- * Special token that allows to configure a function that will be used to produce an image URL based
- * on the specified input.
+ * Injection token that configures the function that produces image URLs based on the specified
+ * input.
  *
  * @publicApi
  * @developerPreview
@@ -62,6 +66,11 @@ export function createImageLoader(
 
     const loaderFn = (config: ImageLoaderConfig) => {
       if (ngDevMode && isAbsoluteUrl(config.src)) {
+        // Image loader functions expect an image file name (e.g. `my-image.png`)
+        // or a relative path + a file name (e.g. `/a/b/c/my-image.png`) as an input,
+        // so the final absolute URL can be constructed.
+        // When an absolute URL is provided instead - the loader can not
+        // build a final URL, thus the error is thrown to indicate that.
         throwUnexpectedAbsoluteUrlError(path, config.src);
       }
 

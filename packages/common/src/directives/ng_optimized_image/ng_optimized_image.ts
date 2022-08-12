@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Inject, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, ElementRef, inject, Injector, Input, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
 
 import {imgDirectiveDetails} from './error_helper';
-import {IMAGE_LOADER, ImageLoader} from './image_loaders/image_loader';
+import {IMAGE_LOADER} from './image_loaders/image_loader';
 import {LCPImageObserver} from './lcp_image_observer';
 import {PreconnectLinkChecker} from './preconnect_link_checker';
 
@@ -55,15 +55,16 @@ export const RECOMMENDED_SRCSET_DENSITY_CAP = 2;
 const ASPECT_RATIO_TOLERANCE = .1;
 
 /**
- * The directive that helps to improve image loading performance by following best practices.
+ * Directive that improves image loading performance by enforcing best practices.
  *
- * The `NgOptimizedImage` ensures that the loading of the LCP image is prioritized by:
+ * `NgOptimizedImage` ensures that the loading of the Largest Contentful Paint (LCP) image is
+ * prioritized by:
  * - Automatically setting the `fetchpriority` attribute on the `<img>` tag
  * - Lazy loading non-priority images by default
  * - Asserting that there is a corresponding preconnect link tag in the document head
  *
  * In addition, the directive:
- * - Generates appropriate asset URLs (if a corresponding loader function is provided)
+ * - Generates appropriate asset URLs if a corresponding `ImageLoader` function is provided
  * - Requires that `width` and `height` are set
  * - Warns if `width` or `height` have been set incorrectly
  * - Warns if the image will be visually distorted when rendered
@@ -74,8 +75,10 @@ const ASPECT_RATIO_TOLERANCE = .1;
  *
  * Follow the steps below to enable and use the directive:
  * 1. Import it into the necessary NgModule or a standalone Component.
- * 2. Configure a loader that you want to use.
+ * 2. Optionally provide an `ImageLoader` if you use an image hosting service.
  * 3. Update the necessary `<img>` tags in templates and replace `src` attributes with `rawSrc`.
+ * Using a `rawSrc` allows the directive to control when the `src` gets set, which triggers an image
+ * download.
  *
  * Step 1: import the `NgOptimizedImage` directive.
  *
@@ -140,7 +143,7 @@ const ASPECT_RATIO_TOLERANCE = .1;
  * ],
  * ```
  *
- * Step 3: update `<img>` tags in templates to use `rawSrc` instead of `rawSrc`.
+ * Step 3: update `<img>` tags in templates to use `rawSrc` instead of `src`.
  *
  * ```
  * <img rawSrc="logo.png" width="200" height="100">
@@ -154,20 +157,18 @@ const ASPECT_RATIO_TOLERANCE = .1;
   selector: 'img[rawSrc]',
 })
 export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
-  constructor(
-      @Inject(IMAGE_LOADER) private imageLoader: ImageLoader, private renderer: Renderer2,
-      private imgElement: ElementRef, private injector: Injector) {}
+  private imageLoader = inject(IMAGE_LOADER);
+  private renderer = inject(Renderer2);
+  private imgElement: HTMLImageElement = inject(ElementRef).nativeElement;
+  private injector = inject(Injector);
 
-  // Private fields to keep normalized input values.
-  private _width?: number;
-  private _height?: number;
-  private _priority = false;
-
-  // Calculate the rewritten `src` once and store it.
-  // This is needed to avoid repetitive calculations and make sure the directive cleanup in the
-  // `ngOnDestroy` does not rely on the `IMAGE_LOADER` logic (which in turn can rely on some other
-  // instance that might be already destroyed).
-  private _rewrittenSrc: string|null = null;
+  /**
+   * Calculate the rewritten `src` once and store it.
+   * This is needed to avoid repetitive calculations and make sure the directive cleanup in the
+   * `ngOnDestroy` does not rely on the `IMAGE_LOADER` logic (which in turn can rely on some other
+   * instance that might be already destroyed).
+   */
+  private _renderedSrc: string|null = null;
 
   /**
    * Name of the source image.
@@ -190,34 +191,36 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   @Input() rawSrcset!: string;
 
   /**
-   * The intrinsic width of the image in px.
+   * The intrinsic width of the image in pixels.
    */
   @Input()
   set width(value: string|number|undefined) {
-    ngDevMode && assertGreaterThanZeroNumber(this, value, 'width');
+    ngDevMode && assertGreaterThanZero(this, value, 'width');
     this._width = inputToInteger(value);
   }
   get width(): number|undefined {
     return this._width;
   }
+  private _width?: number;
 
   /**
-   * The intrinsic height of the image in px.
+   * The intrinsic height of the image in pixels.
    */
   @Input()
   set height(value: string|number|undefined) {
-    ngDevMode && assertGreaterThanZeroNumber(this, value, 'height');
+    ngDevMode && assertGreaterThanZero(this, value, 'height');
     this._height = inputToInteger(value);
   }
   get height(): number|undefined {
     return this._height;
   }
+  private _height?: number;
 
   /**
    * The desired loading behavior (lazy, eager, or auto).
-   * The primary use case for this input is opting-out non-priority images
-   * from lazy loading by marking them loading='eager' or loading='auto'.
-   * This input should not be used with priority images.
+   *
+   * Setting images as loading='eager' or loading='auto' marks them
+   * as non-priority images. Avoid changing this input for priority images.
    */
   @Input() loading?: string;
 
@@ -231,16 +234,22 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   get priority(): boolean {
     return this._priority;
   }
+  private _priority = false;
 
   /**
-   * Get a value of the `src` and `srcset` if they're set on a host `<img>` element.
-   * These inputs are needed to verify that there are no conflicting sources provided
-   * at the same time (e.g. `src` and `rawSrc` together or `srcset` and `rawSrcset`,
-   * thus causing an ambiguity on which src to use) and that images
-   * don't start to load until a lazy loading strategy is set.
+   * Value of the `src` attribute if set on the host `<img>` element.
+   * This input is exclusively read to assert that `src` is not set in conflict
+   * with `rawSrc` and that images don't start to load until a lazy loading strategy is set.
    * @internal
    */
   @Input() src?: string;
+
+  /**
+   * Value of the `srcset` attribute if set on the host `<img>` element.
+   * This input is exclusively read to assert that `srcset` is not set in conflict
+   * with `rawSrcset` and that images don't start to load until a lazy loading strategy is set.
+   * @internal
+   */
   @Input() srcset?: string;
 
   ngOnInit() {
@@ -250,7 +259,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       assertNoConflictingSrc(this);
       assertNoConflictingSrcset(this);
       assertNotBase64Image(this);
-      assertNotBlobURL(this);
+      assertNotBlobUrl(this);
       assertNonEmptyWidthAndHeight(this);
       assertValidLoadingInput(this);
       assertNoImageDistortion(this, this.imgElement, this.renderer);
@@ -304,12 +313,12 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     // ImageLoaderConfig supports setting a width property. However, we're not setting width here
     // because if the developer uses rendered width instead of intrinsic width in the HTML width
     // attribute, the image requested may be too small for 2x+ screens.
-    if (!this._rewrittenSrc) {
+    if (!this._renderedSrc) {
       const imgConfig = {src: this.rawSrc};
       // Cache calculated image src to reuse it later in the code.
-      this._rewrittenSrc = this.imageLoader(imgConfig);
+      this._renderedSrc = this.imageLoader(imgConfig);
     }
-    return this._rewrittenSrc;
+    return this._renderedSrc;
   }
 
   private getRewrittenSrcset(): string {
@@ -324,27 +333,31 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy() {
     if (ngDevMode) {
-      if (!this.priority && this._rewrittenSrc !== null) {
+      if (!this.priority && this._renderedSrc !== null) {
         withLCPImageObserver(
             this.injector,
-            (observer: LCPImageObserver) => observer.unregisterImage(this._rewrittenSrc!));
+            (observer: LCPImageObserver) => observer.unregisterImage(this._renderedSrc!));
       }
     }
   }
 
   private setHostAttribute(name: string, value: string): void {
-    this.renderer.setAttribute(this.imgElement.nativeElement, name, value);
+    this.renderer.setAttribute(this.imgElement, name, value);
   }
 }
 
 /***** Helpers *****/
 
-// Convert input value to integer.
+/**
+ * Convert input value to integer.
+ */
 function inputToInteger(value: string|number|undefined): number|undefined {
   return typeof value === 'string' ? parseInt(value, 10) : value;
 }
 
-// Convert input value to boolean.
+/**
+ * Convert input value to boolean.
+ */
 function inputToBoolean(value: unknown): boolean {
   return value != null && `${value}` !== 'false';
 }
@@ -376,31 +389,37 @@ function withLCPImageObserver(
 
 /***** Assert functions *****/
 
-// Verifies that there is no `src` set on a host element.
+/**
+ * Verifies that there is no `src` set on a host element.
+ */
 function assertNoConflictingSrc(dir: NgOptimizedImage) {
   if (dir.src) {
     throw new RuntimeError(
         RuntimeErrorCode.UNEXPECTED_SRC_ATTR,
         `${imgDirectiveDetails(dir.rawSrc)} both \`src\` and \`rawSrc\` have been set. ` +
-            `Supplying both of these attributes is not necessary and will break lazy loading. ` +
-            `The NgOptimizedImage directive will set \`src\` itself based on the value of \`rawSrc\`. ` +
+            `Supplying both of these attributes breaks lazy loading. ` +
+            `The NgOptimizedImage directive sets \`src\` itself based on the value of \`rawSrc\`. ` +
             `To fix this, please remove the \`src\` attribute.`);
   }
 }
 
-// Verifies that there is no `srcset` set on a host element.
+/**
+ * Verifies that there is no `srcset` set on a host element.
+ */
 function assertNoConflictingSrcset(dir: NgOptimizedImage) {
   if (dir.srcset) {
     throw new RuntimeError(
         RuntimeErrorCode.UNEXPECTED_SRCSET_ATTR,
         `${imgDirectiveDetails(dir.rawSrc)} both \`srcset\` and \`rawSrcset\` have been set. ` +
-            `Supplying both of these attributes is not necessary and will break lazy loading. ` +
-            `The NgOptimizedImage directive will set \`srcset\` itself based on the value of ` +
+            `Supplying both of these attributes breaks lazy loading. ` +
+            `The NgOptimizedImage directive sets \`srcset\` itself based on the value of ` +
             `\`rawSrcset\`. To fix this, please remove the \`srcset\` attribute.`);
   }
 }
 
-// Verifies that the `rawSrc` is not a Base64-encoded image.
+/**
+ * Verifies that the `rawSrc` is not a Base64-encoded image.
+ */
 function assertNotBase64Image(dir: NgOptimizedImage) {
   let rawSrc = dir.rawSrc.trim();
   if (rawSrc.startsWith('data:')) {
@@ -416,8 +435,10 @@ function assertNotBase64Image(dir: NgOptimizedImage) {
   }
 }
 
-// Verifies that the `rawSrc` is not a Blob URL.
-function assertNotBlobURL(dir: NgOptimizedImage) {
+/**
+ * Verifies that the `rawSrc` is not a Blob URL.
+ */
+function assertNotBlobUrl(dir: NgOptimizedImage) {
   const rawSrc = dir.rawSrc.trim();
   if (rawSrc.startsWith('blob:')) {
     throw new RuntimeError(
@@ -429,7 +450,9 @@ function assertNotBlobURL(dir: NgOptimizedImage) {
   }
 }
 
-// Verifies that the input is set to a non-empty string.
+/**
+ * Verifies that the input is set to a non-empty string.
+ */
 function assertNonEmptyInput(dir: NgOptimizedImage, name: string, value: unknown) {
   const isString = typeof value === 'string';
   const isEmptyString = isString && value.trim() === '';
@@ -441,7 +464,9 @@ function assertNonEmptyInput(dir: NgOptimizedImage, name: string, value: unknown
   }
 }
 
-// Verifies that the `rawSrcset` is in a valid format, e.g. "100w, 200w" or "1x, 2x"
+/**
+ * Verifies that the `rawSrcset` is in a valid format, e.g. "100w, 200w" or "1x, 2x".
+ */
 export function assertValidRawSrcset(dir: NgOptimizedImage, value: unknown) {
   if (value == null) return;
   assertNonEmptyInput(dir, 'rawSrcset', value);
@@ -481,8 +506,10 @@ function assertUnderDensityCap(dir: NgOptimizedImage, value: string) {
   }
 }
 
-// Creates a `RuntimeError` instance to represent a situation when an input is set after
-// the directive has initialized.
+/**
+ * Creates a `RuntimeError` instance to represent a situation when an input is set after
+ * the directive has initialized.
+ */
 function postInitInputChangeError(dir: NgOptimizedImage, inputName: string): {} {
   return new RuntimeError(
       RuntimeErrorCode.UNEXPECTED_INPUT_CHANGE,
@@ -492,7 +519,9 @@ function postInitInputChangeError(dir: NgOptimizedImage, inputName: string): {} 
           `in an *ngIf that is gated on the necessary value.`);
 }
 
-// Verify that none of the listed inputs has changed.
+/**
+ * Verify that none of the listed inputs has changed.
+ */
 function assertNoPostInitInputChange(
     dir: NgOptimizedImage, changes: SimpleChanges, inputs: string[]) {
   inputs.forEach(input => {
@@ -510,9 +539,10 @@ function assertNoPostInitInputChange(
   });
 }
 
-// Verifies that a specified input is a number greater than 0.
-function assertGreaterThanZeroNumber(
-    dir: NgOptimizedImage, inputValue: unknown, inputName: string) {
+/**
+ * Verifies that a specified input is a number greater than 0.
+ */
+function assertGreaterThanZero(dir: NgOptimizedImage, inputValue: unknown, inputName: string) {
   const validNumber = typeof inputValue === 'number' && inputValue > 0;
   const validString =
       typeof inputValue === 'string' && /^\d+$/.test(inputValue.trim()) && parseInt(inputValue) > 0;
@@ -525,21 +555,25 @@ function assertGreaterThanZeroNumber(
   }
 }
 
-// Verifies that the rendered image is not visually distorted. Effectively this is checking:
-// - Whether the "width" and "height" attributes reflect the actual dimensions of the image.
-// - Whether image styling is "correct" (see below for a longer explanation).
+/**
+ * Verifies that the rendered image is not visually distorted. Effectively this is checking:
+ * - Whether the "width" and "height" attributes reflect the actual dimensions of the image.
+ * - Whether image styling is "correct" (see below for a longer explanation).
+ */
 function assertNoImageDistortion(
-    dir: NgOptimizedImage, element: ElementRef<any>, renderer: Renderer2) {
-  const img = element.nativeElement;
+    dir: NgOptimizedImage, img: HTMLImageElement, renderer: Renderer2) {
   const removeListenerFn = renderer.listen(img, 'load', () => {
     removeListenerFn();
-    const renderedWidth = parseFloat(img.clientWidth);
-    const renderedHeight = parseFloat(img.clientHeight);
+    // TODO: `clientWidth`, `clientHeight`, `naturalWidth` and `naturalHeight`
+    // are typed as number, but we run `parseFloat` (which accepts strings only).
+    // Verify whether `parseFloat` is needed in the cases below.
+    const renderedWidth = parseFloat(img.clientWidth as any);
+    const renderedHeight = parseFloat(img.clientHeight as any);
     const renderedAspectRatio = renderedWidth / renderedHeight;
     const nonZeroRenderedDimensions = renderedWidth !== 0 && renderedHeight !== 0;
 
-    const intrinsicWidth = parseFloat(img.naturalWidth);
-    const intrinsicHeight = parseFloat(img.naturalHeight);
+    const intrinsicWidth = parseFloat(img.naturalWidth as any);
+    const intrinsicHeight = parseFloat(img.naturalHeight as any);
     const intrinsicAspectRatio = intrinsicWidth / intrinsicHeight;
 
     const suppliedWidth = dir.width!;
@@ -583,7 +617,9 @@ function assertNoImageDistortion(
   });
 }
 
-// Verifies that a specified input is set.
+/**
+ * Verifies that a specified input is set.
+ */
 function assertNonEmptyWidthAndHeight(dir: NgOptimizedImage) {
   let missingAttributes = [];
   if (dir.width === undefined) missingAttributes.push('width');
@@ -598,8 +634,10 @@ function assertNonEmptyWidthAndHeight(dir: NgOptimizedImage) {
   }
 }
 
-// Verifies that the `loading` attribute is set to a valid input &
-// is not used on priority images.
+/**
+ * Verifies that the `loading` attribute is set to a valid input &
+ * is not used on priority images.
+ */
 function assertValidLoadingInput(dir: NgOptimizedImage) {
   if (dir.loading && dir.priority) {
     throw new RuntimeError(

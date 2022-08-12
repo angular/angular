@@ -94,9 +94,9 @@ describe('Image directive', () => {
               'NG02950: The NgOptimizedImage directive (activated on an <img> ' +
               'element with the `rawSrc="path/img.png"`) has detected that both ' +
               '`src` and `rawSrc` have been set. Supplying both of these attributes ' +
-              'is not necessary and will break lazy loading. ' +
-              'The NgOptimizedImage directive will set `src` itself based on the ' +
-              'value of `rawSrc`. To fix this, please remove the `src` attribute.');
+              'breaks lazy loading. The NgOptimizedImage directive sets `src` ' +
+              'itself based on the value of `rawSrc`. To fix this, please remove ' +
+              'the `src` attribute.');
     });
 
     it('should throw if both `rawSrc` and `srcset` is present', () => {
@@ -112,8 +112,8 @@ describe('Image directive', () => {
               'NG02951: The NgOptimizedImage directive (activated on an <img> ' +
               'element with the `rawSrc="img-100.png"`) has detected that both ' +
               '`srcset` and `rawSrcset` have been set. Supplying both of these ' +
-              'attributes is not necessary and will break lazy loading. ' +
-              'The NgOptimizedImage directive will set `srcset` itself based ' +
+              'attributes breaks lazy loading. ' +
+              'The NgOptimizedImage directive sets `srcset` itself based ' +
               'on the value of `rawSrcset`. To fix this, please remove the `srcset` ' +
               'attribute.');
     });

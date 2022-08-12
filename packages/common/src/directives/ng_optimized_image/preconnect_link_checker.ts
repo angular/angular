@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, InjectionToken, Optional, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {inject, Injectable, InjectionToken, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {DOCUMENT} from '../../dom_tokens';
 import {RuntimeErrorCode} from '../../errors';
@@ -49,25 +49,28 @@ export const PRECONNECT_CHECK_BLOCKLIST =
  */
 @Injectable({providedIn: 'root'})
 export class PreconnectLinkChecker {
-  // Set of <link rel="preconnect"> tags found on this page.
-  // The `null` value indicates that there was no DOM query operation performed.
+  /**
+   * Set of <link rel="preconnect"> tags found on this page.
+   * The `null` value indicates that there was no DOM query operation performed.
+   */
   private preconnectLinks: Set<string>|null = null;
 
-  // Keep track of all already seen origin URLs to avoid repeating the same check.
+  /*
+   * Keep track of all already seen origin URLs to avoid repeating the same check.
+   */
   private alreadySeen = new Set<string>();
 
   private window: Window|null = null;
 
   private blocklist = new Set<string>(INTERNAL_PRECONNECT_CHECK_BLOCKLIST);
 
-  constructor(
-      @Inject(DOCUMENT) private doc: Document,
-      @Optional() @Inject(PRECONNECT_CHECK_BLOCKLIST) blocklist: Array<string|string[]>|null) {
+  constructor() {
     assertDevMode('preconnect link checker');
-    const win = doc.defaultView;
+    const win = inject(DOCUMENT).defaultView;
     if (typeof win !== 'undefined') {
       this.window = win;
     }
+    const blocklist = inject(PRECONNECT_CHECK_BLOCKLIST, {optional: true});
     if (blocklist) {
       this.populateBlocklist(blocklist);
     }
@@ -124,8 +127,7 @@ export class PreconnectLinkChecker {
   private queryPreconnectLinks(): Set<string> {
     const preconnectUrls = new Set<string>();
     const selector = 'link[rel=preconnect]';
-    const links =
-        Array.from(document.querySelectorAll('link[rel=preconnect]')) as HTMLLinkElement[];
+    const links: HTMLLinkElement[] = Array.from(document.querySelectorAll(selector));
     for (let link of links) {
       const url = getUrl(link.href, this.window!);
       preconnectUrls.add(url.origin);
@@ -139,8 +141,10 @@ export class PreconnectLinkChecker {
   }
 }
 
-// Invokes a callback for each element in the array. Also invokes a callback
-// recursively for each nested array.
+/**
+ * Invokes a callback for each element in the array. Also invokes a callback
+ * recursively for each nested array.
+ */
 function deepForEach<T>(input: (T|any[])[], fn: (value: T) => void): void {
   for (let value of input) {
     Array.isArray(value) ? deepForEach(value, fn) : fn(value);
