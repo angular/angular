@@ -222,7 +222,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * Setting images as loading='eager' or loading='auto' marks them
    * as non-priority images. Avoid changing this input for priority images.
    */
-  @Input() loading?: string;
+  @Input() loading?: 'lazy'|'eager'|'auto';
 
   /**
    * Indicates whether this image should have a high priority.
@@ -276,6 +276,10 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
                 observer.registerImage(this.getRewrittenSrc(), this.rawSrc));
       }
     }
+    this.setHostAttributes();
+  }
+
+  private setHostAttributes() {
     // Must set width/height explicitly in case they are bound (in which case they will
     // only be reflected and not found by the browser)
     this.setHostAttribute('width', this.width!.toString());
@@ -299,7 +303,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   }
 
   private getLoadingBehavior(): string {
-    if (!this.priority && this.loading !== undefined && isNonEmptyString(this.loading)) {
+    if (!this.priority && this.loading !== undefined) {
       return this.loading;
     }
     return this.priority ? 'eager' : 'lazy';
@@ -360,12 +364,6 @@ function inputToInteger(value: string|number|undefined): number|undefined {
  */
 function inputToBoolean(value: unknown): boolean {
   return value != null && `${value}` !== 'false';
-}
-
-function isNonEmptyString(value: unknown): boolean {
-  const isString = typeof value === 'string';
-  const isEmptyString = isString && value.trim() === '';
-  return isString && !isEmptyString;
 }
 
 /**
@@ -429,9 +427,9 @@ function assertNotBase64Image(dir: NgOptimizedImage) {
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INPUT,
         `${imgDirectiveDetails(dir.rawSrc, false)} \`rawSrc\` is a Base64-encoded string ` +
-            `(${rawSrc}). Base64-encoded strings are not supported by the NgOptimizedImage directive. ` +
+            `(${rawSrc}). NgOptimizedImage does not support Base64-encoded strings. ` +
             `To fix this, disable the NgOptimizedImage directive for this element ` +
-            `by removing \`rawSrc\` and using a regular \`src\` attribute instead.`);
+            `by removing \`rawSrc\` and using a standard \`src\` attribute instead.`);
   }
 }
 
