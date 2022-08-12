@@ -27,8 +27,6 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     NG_VALUE_ACCESSOR_NOT_PROVIDED = 1200,
     // (undocumented)
-    NGMODEL_DUPLICATE_NAME = 1354,
-    // (undocumented)
     NGMODEL_IN_FORM_GROUP = 1350,
     // (undocumented)
     NGMODEL_IN_FORM_GROUP_NAME = 1351,
