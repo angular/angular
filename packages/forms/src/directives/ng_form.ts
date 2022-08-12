@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Self, SimpleChanges} from '@angular/core';
+import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Self} from '@angular/core';
 
 import {AbstractControl, FormHooks} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SimpleChange} from '@angular/core';
+import {NgZone, SimpleChange} from '@angular/core';
 import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {AbstractControl, CheckboxControlValueAccessor, ControlValueAccessor, DefaultValueAccessor, FormArray, FormArrayName, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormGroupName, NgControl, NgForm, NgModel, NgModelGroup, SelectControlValueAccessor, SelectMultipleControlValueAccessor, ValidationErrors, Validator, Validators} from '@angular/forms';
 import {selectValueAccessor} from '@angular/forms/src/directives/shared';
@@ -320,7 +320,8 @@ class CustomValidatorDirective implements Validator {
         personControlGroupDir = new NgModelGroup(form, [], []);
         personControlGroupDir.name = 'person';
 
-        loginControlDir = new NgModel(personControlGroupDir, null!, null!, [defaultAccessor]);
+        loginControlDir =
+            new NgModel(new NgZone({}), personControlGroupDir, null!, null!, [defaultAccessor]);
         loginControlDir.name = 'login';
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
@@ -545,7 +546,8 @@ class CustomValidatorDirective implements Validator {
 
       beforeEach(() => {
         ngModel = new NgModel(
-            null!, [Validators.required], [asyncValidator('expected')], [defaultAccessor]);
+            new NgZone({}), null!, [Validators.required], [asyncValidator('expected')],
+            [defaultAccessor]);
         ngModel.valueAccessor = new DummyControlValueAccessor();
         control = ngModel.control;
       });
@@ -578,7 +580,7 @@ class CustomValidatorDirective implements Validator {
       });
 
       it('should throw when no value accessor with named control', () => {
-        const namedDir = new NgModel(null!, null!, null!, null!);
+        const namedDir = new NgModel(new NgZone({}), null!, null!, null!, null!);
         namedDir.name = 'one';
 
         expect(() => namedDir.ngOnChanges({}))
@@ -586,7 +588,7 @@ class CustomValidatorDirective implements Validator {
       });
 
       it('should throw when no value accessor with unnamed control', () => {
-        const unnamedDir = new NgModel(null!, null!, null!, null!);
+        const unnamedDir = new NgModel(new NgZone({}), null!, null!, null!, null!);
 
         expect(() => unnamedDir.ngOnChanges({}))
             .toThrowError(

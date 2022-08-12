@@ -2641,8 +2641,12 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
          }));
     });
 
-    describe('duplicate name error', () => {
-      it('should throw when adding a duplicate name that is not a radio button', fakeAsync(() => {
+    describe('duplicate name warn', () => {
+      beforeEach(function() {
+        spyOn(console, 'warn');
+      });
+
+      it('should warn when adding a duplicate name that is not a radio button', fakeAsync(() => {
            @Component({
              template: `
               <form>
@@ -2657,10 +2661,11 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
            const fixture = initTest(App);
            fixture.detectChanges();
-           expect(() => tick()).toThrowError();
+           tick();
+           expect(console.warn).toHaveBeenCalled();
          }));
 
-      it('should not throw when adding a case insensitve duplicate name that is not a radio button',
+      it('should not warn when adding a case insensitve duplicate name that is not a radio button',
          fakeAsync(() => {
            @Component({
              template: `
@@ -2676,10 +2681,11 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
            const fixture = initTest(App);
            fixture.detectChanges();
-           expect(() => tick()).not.toThrowError();
+           tick();
+           expect(console.warn).not.toHaveBeenCalled();
          }));
 
-      it('should throw if duplicate is standalone', fakeAsync(() => {
+      it('should warn if duplicate is standalone', fakeAsync(() => {
            @Component({
              template: `
               <form>
@@ -2694,10 +2700,30 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
            const fixture = initTest(App);
            fixture.detectChanges();
-           expect(() => tick()).toThrowError();
+           tick();
+           expect(console.warn).toHaveBeenCalled();
          }));
 
-      it('should not throw when adding a duplicate name that is a radio button', fakeAsync(() => {
+      it('should warn if one of the duplicates is radio but the other is now', fakeAsync(() => {
+           @Component({
+             template: `
+              <form>
+                <input ngModel name="first" type="radio" />
+                <input ngModel name="first" type="text" />
+              </form>
+            `
+           })
+           class App {
+             first: string = '';
+           }
+
+           const fixture = initTest(App);
+           fixture.detectChanges();
+           tick();
+           expect(console.warn).toHaveBeenCalled();
+         }));
+
+      it('should not warn when adding a duplicate name that is a radio button', fakeAsync(() => {
            @Component({
              template: `
               <form>
@@ -2712,10 +2738,11 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
            const fixture = initTest(App);
            fixture.detectChanges();
-           expect(() => tick()).not.toThrowError();
+           tick();
+           expect(console.warn).not.toHaveBeenCalled();
          }));
 
-      it('should not throw when rebinding a list in an ngFor', fakeAsync(() => {
+      it('should not warn when rebinding a list in an ngFor', fakeAsync(() => {
            @Component({
              template: `
               <form>
@@ -2753,11 +2780,12 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
            fixture.componentInstance.remove(1);
            fixture.detectChanges();
-           expect(() => tick()).not.toThrowError();
+           tick();
+           expect(console.warn).not.toHaveBeenCalled();
            expect(getValues()).toEqual(['0', '2']);
          }));
 
-      it('should throw when adding new control', fakeAsync(() => {
+      it('should warn when adding new control', fakeAsync(() => {
            @Component({
              template: `
               <form>
@@ -2787,7 +2815,8 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
            fixture.componentInstance.add();
            fixture.detectChanges();
-           expect(() => tick()).toThrowError();
+           tick();
+           expect(console.warn).toHaveBeenCalled();
          }));
     });
   });

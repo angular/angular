@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SimpleChanges} from '@angular/core';
-
 import {FormControl} from '../model/form_control';
 import {FormGroup} from '../model/form_group';
 
