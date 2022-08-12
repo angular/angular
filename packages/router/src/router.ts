@@ -24,6 +24,7 @@ import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
 import {switchTap} from './operators/switch_tap';
 import {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
+import {assignRelativeLinkResolution} from './patchable_relative_link_resolution';
 import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader, ROUTES} from './router_config_loader';
@@ -348,6 +349,8 @@ export function setupRouter() {
   router.titleStrategy = titleStrategy ?? defaultTitleStrategy;
 
   assignExtraOptionsToRouter(opts, router);
+
+  assignRelativeLinkResolution(router);
 
   return router;
 }
