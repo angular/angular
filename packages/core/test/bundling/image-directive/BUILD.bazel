@@ -68,7 +68,7 @@ ts_devserver(
 ts_library(
     name = "img_dir_e2e_tests_lib",
     testonly = True,
-    srcs = ["e2e/util.ts"] + glob([
+    srcs = ["e2e/browser-logs-util.ts"] + glob([
         "e2e/**/*.e2e-spec.ts",
     ]),
     tsconfig = ":e2e/tsconfig-e2e.json",

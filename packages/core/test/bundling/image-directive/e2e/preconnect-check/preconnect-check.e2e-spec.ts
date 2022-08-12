@@ -10,7 +10,7 @@
 import {browser, by, element, ElementHelper} from 'protractor';
 import {logging} from 'selenium-webdriver';
 
-import {collectBrowserLogs} from '../util';
+import {collectBrowserLogs} from '../browser-logs-util';
 
 // Verifies that both images used in a component were rendered.
 async function verifyImagesPresent(element: ElementHelper) {

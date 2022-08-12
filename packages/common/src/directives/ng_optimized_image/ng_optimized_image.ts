@@ -277,7 +277,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         // Monitor whether an image is an LCP element only in case
         // the `priority` attribute is missing. Otherwise, an image
         // has the necessary settings and no extra checks are required.
-        withLCPImageObserver(
+        invokeLCPImageObserverCallback(
             this.injector,
             (observer: LCPImageObserver) =>
                 observer.registerImage(this.getRewrittenSrc(), this.rawSrc));
@@ -345,7 +345,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy() {
     if (ngDevMode) {
       if (!this.priority && this._renderedSrc !== null) {
-        withLCPImageObserver(
+        invokeLCPImageObserverCallback(
             this.injector,
             (observer: LCPImageObserver) => observer.unregisterImage(this._renderedSrc!));
       }
@@ -383,7 +383,7 @@ function inputToBoolean(value: unknown): boolean {
  *   NgZone to make sure none of the calls inside the `LCPImageObserver` class trigger unnecessary
  *   change detection
  */
-function withLCPImageObserver(
+function invokeLCPImageObserverCallback(
     injector: Injector, operation: (observer: LCPImageObserver) => void): void {
   const ngZone = injector.get(NgZone);
   return ngZone.runOutsideAngular(() => {

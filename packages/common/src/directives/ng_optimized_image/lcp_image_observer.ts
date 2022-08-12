@@ -57,7 +57,9 @@ export class LCPImageObserver implements OnDestroy {
       // a page, by virtue of being the only thing on the page so far, is often a LCP candidate
       // and gets reported by PerformanceObserver, but isn't necessarily the LCP element.
       const lcpElement = entries[entries.length - 1];
-      // Cast to `any` due to missing `element` on observed type of entry.
+
+      // Cast to `any` due to missing `element` on the `LargestContentfulPaint` type of entry.
+      // See https://developer.mozilla.org/en-US/docs/Web/API/LargestContentfulPaint
       const imgSrc = (lcpElement as any).element?.src ?? '';
 
       // Exclude `data:` and `blob:` URLs, since they are not supported by the directive.

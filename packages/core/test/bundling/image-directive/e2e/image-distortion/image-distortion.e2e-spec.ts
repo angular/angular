@@ -10,7 +10,7 @@
 import {browser, by, element, ExpectedConditions} from 'protractor';
 import {logging} from 'selenium-webdriver';
 
-import {collectBrowserLogs} from '../util';
+import {collectBrowserLogs} from '../browser-logs-util';
 
 describe('NgOptimizedImage directive', () => {
   it('should not warn if there is no image distortion', async () => {
