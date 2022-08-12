@@ -129,9 +129,9 @@ describe('Image directive', () => {
           .toThrowError(
               'NG02952: The NgOptimizedImage directive has detected that `rawSrc` ' +
               'is a Base64-encoded string (data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDov...). ' +
-              'Base64-encoded strings are not supported by the NgOptimizedImage directive. ' +
-              'To fix this, disable the NgOptimizedImage directive for this element by ' +
-              'removing `rawSrc` and using a regular `src` attribute instead.');
+              'NgOptimizedImage does not support Base64-encoded strings. ' +
+              'To fix this, disable the NgOptimizedImage directive for this element ' +
+              'by removing `rawSrc` and using a standard `src` attribute instead.');
     });
 
     it('should throw if `rawSrc` contains a `blob:` URL', (done) => {

@@ -15,6 +15,8 @@ import {isAbsoluteUrl, isValidPath, normalizePath, normalizeSrc} from '../url';
 /**
  * Config options recognized by the image loader function.
  *
+ * @see `ImageLoader`
+ * @see `NgOptimizedImage`
  * @publicApi
  * @developerPreview
  */
@@ -30,7 +32,8 @@ export interface ImageLoaderConfig {
 }
 
 /**
- * Represents an image loader function.
+ * Represents an image loader function. Image loader functions are used by the
+ * NgOptimizedImage directive to produce full image URL based on the image name and its width.
  *
  * @publicApi
  * @developerPreview
@@ -40,13 +43,17 @@ export type ImageLoader = (config: ImageLoaderConfig) => string;
 /**
  * Noop image loader that does no transformation to the original src and just returns it as is.
  * This loader is used as a default one if more specific logic is not provided in an app config.
+ *
+ * @see `ImageLoader`
+ * @see `NgOptimizedImage`
  */
 const noopImageLoader = (config: ImageLoaderConfig) => config.src;
 
 /**
- * Injection token that configures the function that produces image URLs based on the specified
- * input.
+ * Injection token that configures the image loader function.
  *
+ * @see `ImageLoader`
+ * @see `NgOptimizedImage`
  * @publicApi
  * @developerPreview
  */
@@ -55,6 +62,15 @@ export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
   factory: () => noopImageLoader,
 });
 
+/**
+ * Internal helper function that makes it easier to introduce custom image loaders for the
+ * `NgOptimizedImage` directive. It is enough to specify a URL builder function to obtain full DI
+ * configuration for a given loader: a DI token corresponding to the actual loader function, plus DI
+ * tokens managing preconnect check functionality.
+ * @param buildUrlFn a function returning a full URL based on loader's configuration
+ * @param exampleUrls example of full URLs for a given loader (used in error messages)
+ * @returns a set of DI providers corresponding to the configured image loader
+ */
 export function createImageLoader(
     buildUrlFn: (path: string, config: ImageLoaderConfig) => string, exampleUrls?: string[]) {
   return function provideImageLoader(
@@ -62,6 +78,9 @@ export function createImageLoader(
     if (ngDevMode && !isValidPath(path)) {
       throwInvalidPathError(path, exampleUrls || []);
     }
+
+    // The trailing / is stripped (if provided) to make URL construction (concatenation) easier in
+    // the individual loader functions.
     path = normalizePath(path);
 
     const loaderFn = (config: ImageLoaderConfig) => {

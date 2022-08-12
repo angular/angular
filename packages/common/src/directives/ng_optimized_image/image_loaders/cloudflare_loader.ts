@@ -9,10 +9,10 @@
 import {createImageLoader, ImageLoaderConfig} from './image_loader';
 
 /**
- * Function that generates an ImageLoader for Cloudflare Image Resizing
- * and turns it into an Angular provider. Note: Cloudflare has multiple image
- * products - this provider is specifically for Cloudflare Image Resizing;
- * it will not work with Cloudflare Images or Cloudflare Polish.
+ * Function that generates an ImageLoader for [Cloudflare Image
+ * Resizing](https://developers.cloudflare.com/images/image-resizing/) and turns it into an Angular
+ * provider. Note: Cloudflare has multiple image products - this provider is specifically for
+ * Cloudflare Image Resizing; it will not work with Cloudflare Images or Cloudflare Polish.
  *
  * @param path Your domain name, e.g. https://mysite.com
  * @param options An object with extra configuration:
@@ -33,5 +33,7 @@ function createCloudflareUrl(path: string, config: ImageLoaderConfig) {
   if (config.width) {
     params += `,width=${config.width}`;
   }
+  // Cloudflare image URLs format:
+  // https://developers.cloudflare.com/images/image-resizing/url-format/
   return `${path}/cdn-cgi/image/${params}/${config.src}`;
 }
