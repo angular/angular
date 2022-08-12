@@ -35,7 +35,7 @@ import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 const DEFAULT_ROUND_BUTTON_COLOR = 'accent';
 
 /**
- * List of classes to add to MatLegacyButton instances based on host attributes to
+ * List of classes to add to button instances based on host attributes to
  * style as different variants.
  */
 const BUTTON_HOST_ATTRIBUTES = [
@@ -48,7 +48,7 @@ const BUTTON_HOST_ATTRIBUTES = [
   'mat-fab',
 ];
 
-// Boilerplate for applying mixins to MatLegacyButton.
+// Boilerplate for applying mixins to button.
 const _MatButtonBase = mixinColor(
   mixinDisabled(
     mixinDisableRipple(
