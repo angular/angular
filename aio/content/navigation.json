@@ -17,6 +17,10 @@
       "title": "Events"
     },
     {
+      "url": "https://www.angular-communities.com/",
+      "title": "Communities"
+    },
+    {
       "url": "https://blog.angular.io/",
       "title": "Blog"
     }
@@ -36,6 +40,10 @@
         {
           "url": "events",
           "title": "Events"
+        },
+        {
+          "url": "https://www.angular-communities.com/",
+          "title": "Communities"
         },
         {
           "url": "https://blog.angular.io/",
