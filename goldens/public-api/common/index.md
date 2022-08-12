@@ -266,9 +266,7 @@ export type ImageLoader = (config: ImageLoaderConfig) => string;
 
 // @public
 export interface ImageLoaderConfig {
-    // (undocumented)
     src: string;
-    // (undocumented)
     width?: number;
 }
 
@@ -535,7 +533,6 @@ export abstract class NgLocalization {
 
 // @public
 export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
-    constructor(imageLoader: ImageLoader, renderer: Renderer2, imgElement: ElementRef, injector: Injector);
     set height(value: string | number | undefined);
     // (undocumented)
     get height(): number | undefined;
@@ -551,8 +548,6 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     get priority(): boolean;
     rawSrc: string;
     rawSrcset: string;
-    // (undocumented)
-    srcset?: string;
     set width(value: string | number | undefined);
     // (undocumented)
     get width(): number | undefined;
