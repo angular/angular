@@ -17,16 +17,7 @@
 .activebutton {
     box-shadow: inset 0 1px 0 0 #dcecfb;
     background: #bddbfa linear-gradient(to bottom, #bddbfa 5%, #80b5ea 100%);
-    border-radius: 6px;
     border: 1px solid #84bbf3;
-    display: inline-block;
-    cursor: pointer;
     color: #ffffff;
-    font-family: Arial, sans-serif;
-    font-size: 15px;
-    font-weight: bold;
-    padding: 6px 24px;
-    text-decoration: none;
     text-shadow: 0 1px 0 #528ecc;
-    outline: 0;
 }
