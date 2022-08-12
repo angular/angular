@@ -10,7 +10,7 @@
 import {browser, by, element} from 'protractor';
 import {logging} from 'selenium-webdriver';
 
-import {collectBrowserLogs} from '../util';
+import {collectBrowserLogs} from '../browser-logs-util';
 
 describe('NgOptimizedImage directive', () => {
   it('should log a warning when a `priority` is missing on an LCP image', async () => {
