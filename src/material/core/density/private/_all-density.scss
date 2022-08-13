@@ -30,7 +30,6 @@
   @include stepper-theme.density($config);
   @include toolbar-theme.density($config);
   @include tree-theme.density($config);
-  @include paginator-theme.density($config);
   @include button-toggle-theme.density($config);
 }
 
@@ -67,6 +66,7 @@
   @include slider-theme.density($config);
   @include menu-theme.density($config);
   @include list-theme.density($config);
+  @include paginator-theme.density($config);
   @include private-all-unmigrated-component-densities($config);
 }
 

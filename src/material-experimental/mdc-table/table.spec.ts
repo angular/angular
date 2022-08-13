@@ -11,7 +11,7 @@ import {MatTable, MatTableDataSource, MatTableModule} from './index';
 import {DataSource} from '@angular/cdk/table';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {MatSort, MatSortHeader, MatSortModule} from '@angular/material/sort';
-import {MatPaginator, MatPaginatorModule} from '@angular/material-experimental/mdc-paginator';
+import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('MDC-based MatTable', () => {

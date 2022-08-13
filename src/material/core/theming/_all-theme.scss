@@ -48,7 +48,6 @@
   @include expansion-theme.theme($theme-or-color-config);
   @include grid-list-theme.theme($theme-or-color-config);
   @include icon-theme.theme($theme-or-color-config);
-  @include paginator-theme.theme($theme-or-color-config);
   @include progress-spinner-theme.theme($theme-or-color-config);
   @include sidenav-theme.theme($theme-or-color-config);
   @include stepper-theme.theme($theme-or-color-config);
@@ -78,6 +77,7 @@
     @include slider-theme.theme($theme-or-color-config);
     @include menu-theme.theme($theme-or-color-config);
     @include list-theme.theme($theme-or-color-config);
+    @include paginator-theme.theme($theme-or-color-config);
     @include private-all-unmigrated-component-themes($theme-or-color-config);
   }
 }

@@ -10,10 +10,10 @@ ng_module(
         ":mdc_paginator_demo_scss",
     ],
     deps = [
-        "//src/material-experimental/mdc-paginator",
         "//src/material/card",
         "//src/material/form-field",
         "//src/material/input",
+        "//src/material/paginator",
         "//src/material/slide-toggle",
         "@npm//@angular/forms",
     ],

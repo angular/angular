@@ -4,25 +4,35 @@ $padding: 0 8px;
 $page-size-margin-right: 8px;
 
 $items-per-page-label-margin: 0 4px;
-$selector-margin: 6px 4px 0 4px;
-$selector-trigger-width: 56px;
-$selector-trigger-outline-width: 64px;
-$selector-trigger-fill-width: 64px;
+$selector-margin: 0 4px;
+$selector-trigger-width: 84px;
 
 $range-label-margin: 0 32px 0 24px;
 $button-icon-size: 28px;
 
-.mat-paginator {
+.mat-mdc-paginator {
   display: block;
+
+  // This element reserves space for hints and error messages.
+  // Hide it since we know that we won't need it.
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  .mat-mdc-select {
+    // The smaller font size inherited from the paginator throws off the centering of the select
+    // inside the form field. This `line-height` helps to center it relative to the other text.
+    line-height: 1.5;
+  }
 }
 
 // Note: this wrapper element is only used to get the flexbox vertical centering to work
 // with the `min-height` on IE11. It can be removed if we drop support for IE.
-.mat-paginator-outer-container {
+.mat-mdc-paginator-outer-container {
   display: flex;
 }
 
-.mat-paginator-container {
+.mat-mdc-paginator-container {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -31,7 +41,7 @@ $button-icon-size: 28px;
   width: 100%;
 }
 
-.mat-paginator-page-size {
+.mat-mdc-paginator-page-size {
   display: flex;
   align-items: baseline;
   margin-right: $page-size-margin-right;
@@ -42,44 +52,45 @@ $button-icon-size: 28px;
   }
 }
 
-.mat-paginator-page-size-label {
+.mat-mdc-paginator-page-size-label {
   margin: $items-per-page-label-margin;
 }
 
-.mat-paginator-page-size-select {
+.mat-mdc-paginator-page-size-select {
   margin: $selector-margin;
   width: $selector-trigger-width;
-
-  &.mat-form-field-appearance-outline {
-    width: $selector-trigger-outline-width;
-  }
-
-  &.mat-form-field-appearance-fill {
-    width: $selector-trigger-fill-width;
-  }
 }
 
-.mat-paginator-range-label {
+.mat-mdc-paginator-range-label {
   margin: $range-label-margin;
 }
 
-.mat-paginator-range-actions {
+.mat-mdc-paginator-range-actions {
   display: flex;
   align-items: center;
 }
 
-.mat-paginator-icon {
+.mat-mdc-paginator-icon {
   display: inline-block;
   width: $button-icon-size;
-  fill: currentColor;
 
   [dir='rtl'] & {
     transform: rotate(180deg);
   }
+}
 
-  @include cdk.high-contrast(active, off) {
+@include cdk.high-contrast(active, off) {
+  // The disabled button icon has to be set explicitly since the selector is too specific.
+  .mat-mdc-icon-button[disabled] .mat-mdc-paginator-icon,
+  .mat-mdc-paginator-icon {
+    fill: currentColor;
+
     // On Chromium browsers the `currentColor` blends in with the
     // background for SVGs so we have to fall back to `CanvasText`.
     fill: CanvasText;
+  }
+
+  .mat-mdc-paginator-range-actions .mat-mdc-icon-button {
+    outline: solid 1px;
   }
 }

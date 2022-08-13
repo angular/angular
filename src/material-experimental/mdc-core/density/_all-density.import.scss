@@ -14,9 +14,7 @@ $mat-mdc-table-mdc-data-table-row-hover-fill-color, $mat-mdc-table-mdc-data-tabl
 $mat-mdc-table-mdc-data-table-selected-row-fill-color,
 $mat-mdc-table-mdc-data-table-sort-icon-active-color, $mat-mdc-table-mdc-data-table-sort-icon-color,
 $mat-mdc-table-mdc-data-table-stroke-color, $mat-mdc-table-mdc-data-table-table-divider-color;
-@forward '../../mdc-paginator/paginator-variables' as mat-mdc-paginator-*;
 @forward '../core-theme.import';
-@forward '../../mdc-paginator/paginator-theme' as mat-mdc-paginator-*;
 @forward '../../mdc-progress-spinner/progress-spinner-theme' as mat-mdc-progress-spinner-*;
 @forward '../theming/all-theme';
 @forward 'all-density' show all-mdc-component-densities;

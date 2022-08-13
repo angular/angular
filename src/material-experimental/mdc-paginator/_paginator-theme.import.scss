@@ -1,6 +1,0 @@
-@forward 'paginator-variables' as mat-mdc-paginator-*;
-@forward 'paginator-theme' as mat-mdc-paginator-*;
-
-@import '../../material/core/theming/theming';
-@import '../../material/core/density/private/compatibility';
-@import './paginator-variables';

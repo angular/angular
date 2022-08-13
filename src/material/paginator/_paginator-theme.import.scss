@@ -1,11 +1,6 @@
-@forward '../core/theming/theming.import';
-@forward '../core/density/private/compatibility.import';
-@forward 'paginator-variables' as mat-paginator-*;
-@forward '../core/typography/typography-utils.import';
-@forward 'paginator-theme' as mat-paginator-*;
+@forward 'paginator-variables' as mat-mdc-paginator-*;
+@forward 'paginator-theme' as mat-mdc-paginator-*;
 
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
-@import '../core/density/private/compatibility';
+@import '../../material/core/theming/theming';
+@import '../../material/core/density/private/compatibility';
 @import './paginator-variables';

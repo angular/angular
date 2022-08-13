@@ -1,22 +1,18 @@
-import {ComponentFixture, TestBed, tick, fakeAsync} from '@angular/core/testing';
-import {Component, ViewChild, Type, Provider} from '@angular/core';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {Component, Provider, Type, ViewChild} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {dispatchMouseEvent} from '@angular/cdk/testing/private';
 import {ThemePalette} from '@angular/material/core';
-import {MatSelect} from '@angular/material/select';
+import {MatSelect} from '@angular/material/legacy-select';
 import {By} from '@angular/platform-browser';
-import {
-  MatPaginatorModule,
-  MatPaginator,
-  MatPaginatorIntl,
-  MatPaginatorSelectConfig,
-} from './index';
+import {MatLegacyPaginator, MatPaginatorIntl, MatLegacyPaginatorModule} from './index';
 import {MAT_PAGINATOR_DEFAULT_OPTIONS, MatPaginatorDefaultOptions} from './paginator';
+import {MatPaginatorSelectConfig} from '@angular/material/paginator';
 
-describe('MDC-based MatPaginator', () => {
+describe('MatPaginator', () => {
   function createComponent<T>(type: Type<T>, providers: Provider[] = []): ComponentFixture<T> {
     TestBed.configureTestingModule({
-      imports: [MatPaginatorModule, NoopAnimationsModule],
+      imports: [MatLegacyPaginatorModule, NoopAnimationsModule],
       declarations: [type],
       providers: [MatPaginatorIntl, ...providers],
     }).compileComponents();
@@ -31,7 +27,7 @@ describe('MDC-based MatPaginator', () => {
       it('should show second page of list of 100, each page contains 10 items', () => {
         const fixture = createComponent(MatPaginatorApp);
         const component = fixture.componentInstance;
-        const rangeElement = fixture.nativeElement.querySelector('.mat-mdc-paginator-range-label');
+        const rangeElement = fixture.nativeElement.querySelector('.mat-paginator-range-label');
         component.length = 100;
         component.pageSize = 10;
         component.pageIndex = 1;
@@ -42,7 +38,7 @@ describe('MDC-based MatPaginator', () => {
       it('should show third page of list of 200, each page contains 20 items', () => {
         const fixture = createComponent(MatPaginatorApp);
         const component = fixture.componentInstance;
-        const rangeElement = fixture.nativeElement.querySelector('.mat-mdc-paginator-range-label');
+        const rangeElement = fixture.nativeElement.querySelector('.mat-paginator-range-label');
         component.length = 200;
         component.pageSize = 20;
         component.pageIndex = 2;
@@ -53,7 +49,7 @@ describe('MDC-based MatPaginator', () => {
       it('should show first page of list of 0, each page contains 5 items', () => {
         const fixture = createComponent(MatPaginatorApp);
         const component = fixture.componentInstance;
-        const rangeElement = fixture.nativeElement.querySelector('.mat-mdc-paginator-range-label');
+        const rangeElement = fixture.nativeElement.querySelector('.mat-paginator-range-label');
         component.length = 0;
         component.pageSize = 5;
         component.pageIndex = 2;
@@ -64,7 +60,7 @@ describe('MDC-based MatPaginator', () => {
       it('should show third page of list of 12, each page contains 5 items', () => {
         const fixture = createComponent(MatPaginatorApp);
         const component = fixture.componentInstance;
-        const rangeElement = fixture.nativeElement.querySelector('.mat-mdc-paginator-range-label');
+        const rangeElement = fixture.nativeElement.querySelector('.mat-paginator-range-label');
         component.length = 12;
         component.pageSize = 5;
         component.pageIndex = 2;
@@ -75,7 +71,7 @@ describe('MDC-based MatPaginator', () => {
       it('should show third page of list of 10, each page contains 5 items', () => {
         const fixture = createComponent(MatPaginatorApp);
         const component = fixture.componentInstance;
-        const rangeElement = fixture.nativeElement.querySelector('.mat-mdc-paginator-range-label');
+        const rangeElement = fixture.nativeElement.querySelector('.mat-paginator-range-label');
         component.length = 10;
         component.pageSize = 5;
         component.pageIndex = 2;
@@ -86,7 +82,7 @@ describe('MDC-based MatPaginator', () => {
       it('should show third page of list of -5, each page contains 5 items', () => {
         const fixture = createComponent(MatPaginatorApp);
         const component = fixture.componentInstance;
-        const rangeElement = fixture.nativeElement.querySelector('.mat-mdc-paginator-range-label');
+        const rangeElement = fixture.nativeElement.querySelector('.mat-paginator-range-label');
         component.length = -5;
         component.pageSize = 5;
         component.pageIndex = 2;
@@ -97,21 +93,16 @@ describe('MDC-based MatPaginator', () => {
 
     it('should show right aria-labels for select and buttons', () => {
       const fixture = createComponent(MatPaginatorApp);
+      const select = fixture.nativeElement.querySelector('.mat-select');
+      expect(select.getAttribute('aria-label')).toBe('Items per page:');
 
       expect(getPreviousButton(fixture).getAttribute('aria-label')).toBe('Previous page');
       expect(getNextButton(fixture).getAttribute('aria-label')).toBe('Next page');
-
-      const select = fixture.nativeElement.querySelector('.mat-mdc-select');
-      const selectLabelIds = select.getAttribute('aria-labelledby')?.split(/\s/g) as string[];
-      const selectLabelTexts = selectLabelIds?.map(labelId => {
-        return fixture.nativeElement.querySelector(`#${labelId}`)?.textContent?.trim();
-      });
-      expect(selectLabelTexts).toContain('Items per page:');
     });
 
     it('should re-render when the i18n labels change', () => {
       const fixture = createComponent(MatPaginatorApp);
-      const label = fixture.nativeElement.querySelector('.mat-mdc-paginator-page-size-label');
+      const label = fixture.nativeElement.querySelector('.mat-paginator-page-size-label');
       const intl = TestBed.inject(MatPaginatorIntl);
 
       intl.itemsPerPageLabel = '1337 items per page';
@@ -206,7 +197,7 @@ describe('MDC-based MatPaginator', () => {
   it('should be able to set the color of the form field', () => {
     const fixture = createComponent(MatPaginatorApp);
     const component = fixture.componentInstance;
-    const formField: HTMLElement = fixture.nativeElement.querySelector('.mat-mdc-form-field');
+    const formField: HTMLElement = fixture.nativeElement.querySelector('.mat-form-field');
 
     component.color = 'accent';
     fixture.detectChanges();
@@ -241,7 +232,7 @@ describe('MDC-based MatPaginator', () => {
   describe('when showing the first and last button', () => {
     let fixture: ComponentFixture<MatPaginatorApp>;
     let component: MatPaginatorApp;
-    let paginator: MatPaginator;
+    let paginator: MatLegacyPaginator;
 
     beforeEach(() => {
       fixture = createComponent(MatPaginatorApp);
@@ -315,7 +306,7 @@ describe('MDC-based MatPaginator', () => {
     const fixture = createComponent(MatPaginatorApp);
     const component = fixture.componentInstance;
     const paginator = component.paginator;
-    const rangeElement = fixture.nativeElement.querySelector('.mat-mdc-paginator-range-label');
+    const rangeElement = fixture.nativeElement.querySelector('.mat-paginator-range-label');
 
     expect(rangeElement.innerText.trim()).toBe('1 – 10 of 100');
 
@@ -332,11 +323,11 @@ describe('MDC-based MatPaginator', () => {
     expect(rangeElement.innerText.trim()).toBe('7 – 12 of 99');
 
     // Having one option and the same page size should remove the select menu
-    expect(fixture.nativeElement.querySelector('.mat-mdc-select')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.mat-select')).not.toBeNull();
     paginator.pageSize = 10;
     paginator.pageSizeOptions = [10];
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.mat-mdc-select')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.mat-select')).toBeNull();
   });
 
   it('should default the page size options to the page size if no options provided', () => {
@@ -447,13 +438,13 @@ describe('MDC-based MatPaginator', () => {
     const paginator = component.paginator;
 
     expect(paginator._displayedPageSizeOptions).toEqual([5, 10, 25, 100]);
-    expect(fixture.nativeElement.querySelector('.mat-mdc-select')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.mat-select')).not.toBeNull();
 
     // Remove options so that the paginator only uses the current page size (10) as an option.
     // Should no longer show the select component since there is only one option.
     component.pageSizeOptions = [];
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.mat-mdc-select')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.mat-select')).toBeNull();
   });
 
   it('should handle the number inputs being passed in as strings', () => {
@@ -471,14 +462,14 @@ describe('MDC-based MatPaginator', () => {
     const fixture = createComponent(MatPaginatorApp);
     const element = fixture.nativeElement;
 
-    expect(element.querySelector('.mat-mdc-paginator-page-size'))
+    expect(element.querySelector('.mat-paginator-page-size'))
       .withContext('Expected select to be rendered.')
       .toBeTruthy();
 
     fixture.componentInstance.hidePageSize = true;
     fixture.detectChanges();
 
-    expect(element.querySelector('.mat-mdc-paginator-page-size'))
+    expect(element.querySelector('.mat-paginator-page-size'))
       .withContext('Expected select to be removed.')
       .toBeNull();
   });
@@ -544,19 +535,19 @@ describe('MDC-based MatPaginator', () => {
 });
 
 function getPreviousButton(fixture: ComponentFixture<any>) {
-  return fixture.nativeElement.querySelector('.mat-mdc-paginator-navigation-previous');
+  return fixture.nativeElement.querySelector('.mat-paginator-navigation-previous');
 }
 
 function getNextButton(fixture: ComponentFixture<any>) {
-  return fixture.nativeElement.querySelector('.mat-mdc-paginator-navigation-next');
+  return fixture.nativeElement.querySelector('.mat-paginator-navigation-next');
 }
 
 function getFirstButton(fixture: ComponentFixture<any>) {
-  return fixture.nativeElement.querySelector('.mat-mdc-paginator-navigation-first');
+  return fixture.nativeElement.querySelector('.mat-paginator-navigation-first');
 }
 
 function getLastButton(fixture: ComponentFixture<any>) {
-  return fixture.nativeElement.querySelector('.mat-mdc-paginator-navigation-last');
+  return fixture.nativeElement.querySelector('.mat-paginator-navigation-last');
 }
 
 @Component({
@@ -586,7 +577,7 @@ class MatPaginatorApp {
   color: ThemePalette;
   selectConfig: MatPaginatorSelectConfig = {};
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatLegacyPaginator) paginator: MatLegacyPaginator;
 
   goToLastPage() {
     this.pageIndex = Math.ceil(this.length / this.pageSize) - 1;
@@ -599,7 +590,7 @@ class MatPaginatorApp {
   `,
 })
 class MatPaginatorWithoutInputsApp {
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatLegacyPaginator) paginator: MatLegacyPaginator;
 }
 
 @Component({
@@ -608,7 +599,7 @@ class MatPaginatorWithoutInputsApp {
   `,
 })
 class MatPaginatorWithoutPageSizeApp {
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatLegacyPaginator) paginator: MatLegacyPaginator;
 }
 
 @Component({
@@ -617,20 +608,20 @@ class MatPaginatorWithoutPageSizeApp {
   `,
 })
 class MatPaginatorWithoutOptionsApp {
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatLegacyPaginator) paginator: MatLegacyPaginator;
 }
 
 @Component({
   template: `
     <mat-paginator pageIndex="0"
                    pageSize="10"
-                   [pageSizeOptions]="['5', '10', '25', '100']"
+                   [pageSizeOptions]="[5, 10, 25, 100]"
                    length="100">
     </mat-paginator>
   `,
 })
 class MatPaginatorWithStringValues {
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatLegacyPaginator) paginator: MatLegacyPaginator;
 }
 
 @Component({
@@ -640,6 +631,6 @@ class MatPaginatorWithStringValues {
   `,
 })
 class MatPaginatorWithReadonlyOptions {
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatLegacyPaginator) paginator: MatLegacyPaginator;
   pageSizeOptions: readonly number[] = [5, 10, 25, 100];
 }

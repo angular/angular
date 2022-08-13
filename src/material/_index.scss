@@ -133,6 +133,8 @@
   legacy-menu-typography;
 @forward './paginator/paginator-theme' as paginator-* show paginator-theme, paginator-color,
   paginator-typography;
+@forward './legacy-paginator/paginator-theme' as legacy-paginator-* show legacy-paginator-theme,
+  legacy-paginator-color, legacy-paginator-typography;
 @forward './legacy-progress-bar/progress-bar-theme' as legacy-progress-bar-* show
   legacy-progress-bar-theme, legacy-progress-bar-color, legacy-progress-bar-typography;
 @forward './progress-bar/progress-bar-theme' as progress-bar-* show

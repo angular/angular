@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ViewChild<% if(!!viewEncapsulation) { %>, ViewEncapsulation<% }%><% if(changeDetection !== 'Default') { %>, ChangeDetectionStrategy<% }%> } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator } from '@angular/material/legacy-paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
 import { <%= classify(name) %>DataSource, <%= classify(name) %>Item } from './<%= dasherize(name) %>-datasource';

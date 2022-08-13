@@ -9,25 +9,31 @@ ts_library(
         exclude = ["**/*.spec.ts"],
     ),
     deps = [
+        "//src/cdk/coercion",
         "//src/cdk/testing",
+        "//src/material/legacy-select/testing",
         "//src/material/paginator/testing",
-        "//src/material/select/testing",
     ],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )
 
 ng_test_library(
     name = "unit_tests_lib",
-    srcs = glob(["**/*.spec.ts"]),
+    srcs = glob(
+        ["**/*.spec.ts"],
+    ),
     deps = [
         ":testing",
-        "//src/material-experimental/mdc-paginator",
+        "//src/material/legacy-paginator",
         "//src/material/paginator/testing:harness_tests_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [
-        ":unit_tests_lib",
-    ],
+    deps = [":unit_tests_lib"],
 )

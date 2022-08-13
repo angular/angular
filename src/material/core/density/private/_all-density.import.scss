@@ -3,7 +3,6 @@
 @forward '../../../stepper/stepper-theme.import';
 @forward '../../../toolbar/toolbar-theme.import';
 @forward '../../../tree/tree-theme.import';
-@forward '../../../paginator/paginator-theme.import';
 @forward '../../../form-field/form-field-theme.import';
 @forward 'all-density' hide all-component-densities;
 
@@ -12,6 +11,5 @@
 @import '../../../stepper/stepper-theme';
 @import '../../../toolbar/toolbar-theme';
 @import '../../../tree/tree-theme';
-@import '../../../paginator/paginator-theme';
 @import '../../../form-field/form-field-theme';
 @import '../../../button-toggle/button-toggle-theme';

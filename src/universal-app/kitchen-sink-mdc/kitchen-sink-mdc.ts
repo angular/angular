@@ -19,7 +19,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material-experimental/mdc-snack-bar';
 import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
 import {MatSelectModule} from '@angular/material/select';
-import {MatPaginatorModule} from '@angular/material-experimental/mdc-paginator';
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 @Component({
   template: `<button>Do the thing</button>`,

@@ -2,7 +2,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatLegacyPaginatorModule} from '@angular/material/legacy-paginator';
 import {PaginatorConfigurableExample} from './paginator-configurable/paginator-configurable-example';
 import {PaginatorOverviewExample} from './paginator-overview/paginator-overview-example';
 import {PaginatorHarnessExample} from './paginator-harness/paginator-harness-example';
@@ -29,7 +29,7 @@ const EXAMPLES = [
   imports: [
     CommonModule,
     MatLegacyInputModule,
-    MatPaginatorModule,
+    MatLegacyPaginatorModule,
     PaginatorIntlExampleModule,
     FormsModule,
   ],

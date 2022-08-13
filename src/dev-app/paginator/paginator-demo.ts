@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {MatPaginatorModule, PageEvent} from '@angular/material/paginator';
+import {MatLegacyPaginatorModule, PageEvent} from '@angular/material/legacy-paginator';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
@@ -26,7 +26,7 @@ import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle'
     MatLegacyCardModule,
     MatLegacyFormFieldModule,
     MatLegacyInputModule,
-    MatPaginatorModule,
+    MatLegacyPaginatorModule,
     MatLegacySlideToggleModule,
   ],
 })

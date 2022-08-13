@@ -17,8 +17,6 @@
 // MDC-related themes
 @forward './mdc-core/core-theme' as mdc-core-* show mdc-core-theme, mdc-core-color,
   mdc-core-density, mdc-core-typography;
-@forward './mdc-paginator/paginator-theme' as mdc-paginator-* show mdc-paginator-color,
-  mdc-paginator-typography, mdc-paginator-density, mdc-paginator-theme;
 @forward './mdc-progress-spinner/progress-spinner-theme' as mdc-progress-spinner-* show
   mdc-progress-spinner-color, mdc-progress-spinner-typography, mdc-progress-spinner-density,
   mdc-progress-spinner-theme;

@@ -1,0 +1,84 @@
+@use 'sass:map';
+@use '../core/theming/theming';
+@use '../core/typography/typography';
+@use '../core/typography/typography-utils';
+@use '../core/density/private/compatibility';
+@use './paginator-variables';
+
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $foreground: map.get($config, foreground);
+  $background: map.get($config, background);
+
+  .mat-paginator {
+    background: theming.get-color-from-palette($background, 'card');
+  }
+
+  .mat-paginator,
+  .mat-paginator-page-size .mat-select-trigger {
+    color: theming.get-color-from-palette($foreground, secondary-text);
+  }
+
+  .mat-paginator-decrement,
+  .mat-paginator-increment {
+    border-top: 2px solid theming.get-color-from-palette($foreground, 'icon');
+    border-right: 2px solid theming.get-color-from-palette($foreground, 'icon');
+  }
+
+  .mat-paginator-first,
+  .mat-paginator-last {
+    border-top: 2px solid theming.get-color-from-palette($foreground, 'icon');
+  }
+
+  .mat-icon-button[disabled] {
+    .mat-paginator-decrement,
+    .mat-paginator-increment,
+    .mat-paginator-first,
+    .mat-paginator-last {
+      border-color: theming.get-color-from-palette($foreground, 'disabled');
+    }
+  }
+}
+
+@mixin typography($config-or-theme) {
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
+  .mat-paginator,
+  .mat-paginator-page-size .mat-select-trigger {
+    font: {
+      family: typography-utils.font-family($config, caption);
+      size: typography-utils.font-size($config, caption);
+    }
+  }
+}
+
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+  $height: compatibility.private-density-prop-value(paginator-variables.$density-config,
+    $density-scale, height);
+
+  @include compatibility.private-density-legacy-compatibility() {
+    .mat-paginator-container {
+      min-height: $height;
+    }
+  }
+}
+
+@mixin theme($theme-or-color-config) {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-paginator') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
+
+    @if $color != null {
+      @include color($color);
+    }
+    @if $density != null {
+      @include density($density);
+    }
+    @if $typography != null {
+      @include typography($typography);
+    }
+  }
+}

@@ -10,7 +10,7 @@ import {
 } from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {MatPaginator, MatPaginatorModule} from '../paginator/index';
+import {MatLegacyPaginator, MatLegacyPaginatorModule} from '../legacy-paginator/index';
 import {MatSort, MatSortHeader, MatSortModule} from '../sort/index';
 import {MatTableModule} from './index';
 import {MatTable} from './table';
@@ -19,7 +19,7 @@ import {MatTableDataSource} from './table-data-source';
 describe('MatTable', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [MatTableModule, MatPaginatorModule, MatSortModule, NoopAnimationsModule],
+      imports: [MatTableModule, MatLegacyPaginatorModule, MatSortModule, NoopAnimationsModule],
       declarations: [
         MatTableApp,
         MatTableWithWhenRowApp,
@@ -863,7 +863,7 @@ class ArrayDataSourceMatTableApp implements AfterViewInit {
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
   @ViewChild(MatTable) table: MatTable<TestData>;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatLegacyPaginator) paginator: MatLegacyPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatSortHeader) sortHeader: MatSortHeader;
 
@@ -966,7 +966,7 @@ class MatTableWithPaginatorApp implements OnInit {
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
   @ViewChild(MatTable) table: MatTable<TestData>;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatLegacyPaginator) paginator: MatLegacyPaginator;
 
   constructor() {
     this.underlyingDataSource.data = [];

@@ -58,7 +58,7 @@ describe('material-table-schematic', () => {
     expect(moduleContent).toContain(`import { MatTableModule } from '@angular/material/table';`);
     expect(moduleContent).toContain(`import { MatSortModule } from '@angular/material/sort';`);
     expect(moduleContent).toContain(
-      `import { MatPaginatorModule } from '@angular/material/paginator';`,
+      `import { MatPaginatorModule } from '@angular/material/legacy-paginator';`,
     );
   });
 

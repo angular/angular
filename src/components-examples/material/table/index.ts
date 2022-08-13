@@ -6,7 +6,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatIconModule} from '@angular/material/icon';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatLegacyPaginatorModule} from '@angular/material/legacy-paginator';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
@@ -120,7 +120,7 @@ const EXAMPLES = [
     MatLegacyCheckboxModule,
     MatIconModule,
     MatLegacyInputModule,
-    MatPaginatorModule,
+    MatLegacyPaginatorModule,
     MatProgressSpinnerModule,
     MatRippleModule,
     MatSortModule,

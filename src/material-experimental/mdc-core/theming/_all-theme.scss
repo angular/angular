@@ -4,7 +4,6 @@
 @use '../../mdc-snack-bar/snack-bar-theme';
 @use '../../mdc-tabs/tabs-theme';
 @use '../../mdc-table/table-theme';
-@use '../../mdc-paginator/paginator-theme';
 @use '../../mdc-progress-spinner/progress-spinner-theme';
 
 @mixin all-mdc-component-themes($theme-or-color-config) {
@@ -21,7 +20,7 @@
     @include mat.chips-theme($theme-or-color-config);
     @include mat.list-theme($theme-or-color-config);
     @include mat.menu-theme($theme-or-color-config);
-    @include paginator-theme.theme($theme-or-color-config);
+    @include mat.paginator-theme($theme-or-color-config);
     @include mat.progress-bar-theme($theme-or-color-config);
     @include progress-spinner-theme.theme($theme-or-color-config);
     @include mat.radio-theme($theme-or-color-config);

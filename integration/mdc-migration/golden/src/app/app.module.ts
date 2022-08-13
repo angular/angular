@@ -14,7 +14,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material-experimental/mdc-input';
 import {MatListModule} from '@angular/material-experimental/mdc-list';
 import {MatMenuModule} from '@angular/material-experimental/mdc-menu';
-import {MatPaginatorModule} from '@angular/material-experimental/mdc-paginator';
+import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatProgressBarModule} from '@angular/material-experimental/mdc-progress-bar';
 import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
 import {MatRadioModule} from '@angular/material-experimental/mdc-radio';

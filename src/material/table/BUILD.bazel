@@ -23,7 +23,7 @@ ng_module(
         "//src/cdk/coercion",
         "//src/cdk/table",
         "//src/material/core",
-        "//src/material/paginator",
+        "//src/material/legacy-paginator",
         "//src/material/sort",
     ] + glob(["**/*.html"]),
 )
@@ -61,7 +61,7 @@ ng_test_library(
     deps = [
         ":table",
         "//src/cdk/collections",
-        "//src/material/paginator",
+        "//src/material/legacy-paginator",
         "//src/material/sort",
         "@npm//@angular/platform-browser",
         "@npm//rxjs",

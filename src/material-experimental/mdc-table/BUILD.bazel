@@ -20,8 +20,8 @@ ng_module(
     assets = [":table_scss"] + glob(["**/*.html"]),
     deps = [
         "//src/cdk/table",
-        "//src/material-experimental/mdc-paginator",
         "//src/material/core",
+        "//src/material/paginator",
         "//src/material/sort",
         "//src/material/table",
         "@npm//@angular/core",
@@ -61,7 +61,7 @@ ng_test_library(
     deps = [
         ":mdc-table",
         "//src/cdk/table",
-        "//src/material-experimental/mdc-paginator",
+        "//src/material/paginator",
         "//src/material/sort",
         "@npm//@angular/platform-browser",
         "@npm//rxjs",

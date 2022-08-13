@@ -40,7 +40,12 @@ function addTableModulesToModule(options: Schema) {
   return async (host: Tree) => {
     const modulePath = (await findModuleFromOptions(host, options))!;
     addModuleImportToModule(host, modulePath, 'MatTableModule', '@angular/material/table');
-    addModuleImportToModule(host, modulePath, 'MatPaginatorModule', '@angular/material/paginator');
+    addModuleImportToModule(
+      host,
+      modulePath,
+      'MatPaginatorModule',
+      '@angular/material/legacy-paginator',
+    );
     addModuleImportToModule(host, modulePath, 'MatSortModule', '@angular/material/sort');
   };
 }

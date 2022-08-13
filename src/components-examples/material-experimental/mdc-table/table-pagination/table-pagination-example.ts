@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
-import {MatPaginator} from '@angular/material/paginator';
+import {MatLegacyPaginator} from '@angular/material/legacy-paginator';
 import {MatTableDataSource} from '@angular/material/table';
 
 /**
@@ -14,7 +14,7 @@ export class TablePaginationExample implements AfterViewInit {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatLegacyPaginator) paginator: MatLegacyPaginator;
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;

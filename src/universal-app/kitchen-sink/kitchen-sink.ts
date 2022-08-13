@@ -19,7 +19,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatLegacyListModule} from '@angular/material/legacy-list';
 import {MatLegacyMenuModule} from '@angular/material/legacy-menu';
-import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatLegacyPaginatorModule} from '@angular/material/legacy-paginator';
 import {MatLegacyProgressBarModule} from '@angular/material/legacy-progress-bar';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
@@ -116,7 +116,7 @@ export class KitchenSink {
     MatLegacyListModule,
     MatLegacyMenuModule,
     MatNativeDateModule,
-    MatPaginatorModule,
+    MatLegacyPaginatorModule,
     MatLegacyProgressBarModule,
     MatProgressSpinnerModule,
     MatLegacyRadioModule,

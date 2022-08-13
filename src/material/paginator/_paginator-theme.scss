@@ -1,66 +1,90 @@
 @use 'sass:map';
-@use '../core/theming/theming';
+@use 'sass:meta';
+@use '@material/density' as mdc-density;
+@use '@material/typography' as mdc-typography;
+
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
-@use '../core/density/private/compatibility';
+@use '../core/mdc-helpers/mdc-helpers';
+@use '../core/theming/theming';
+@use '../form-field/form-field-density';
 @use './paginator-variables';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $foreground: map.get($config, foreground);
   $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
+  $icon-color: rgba(theming.get-color-from-palette($foreground, base), 0.54);
+  $disabled-color: rgba(theming.get-color-from-palette($foreground, base), 0.12);
 
-  .mat-paginator {
-    background: theming.get-color-from-palette($background, 'card');
+  .mat-mdc-paginator {
+    background: theming.get-color-from-palette($background, card);
+    color: rgba(theming.get-color-from-palette($foreground, base), 0.87);
   }
 
-  .mat-paginator,
-  .mat-paginator-page-size .mat-select-trigger {
-    color: theming.get-color-from-palette($foreground, secondary-text);
+  .mat-mdc-paginator-icon {
+    fill: $icon-color;
   }
 
-  .mat-paginator-decrement,
-  .mat-paginator-increment {
-    border-top: 2px solid theming.get-color-from-palette($foreground, 'icon');
-    border-right: 2px solid theming.get-color-from-palette($foreground, 'icon');
+  .mat-mdc-paginator-decrement,
+  .mat-mdc-paginator-increment {
+    border-top: 2px solid $icon-color;
+    border-right: 2px solid $icon-color;
   }
 
-  .mat-paginator-first,
-  .mat-paginator-last {
-    border-top: 2px solid theming.get-color-from-palette($foreground, 'icon');
+  .mat-mdc-paginator-first,
+  .mat-mdc-paginator-last {
+    border-top: 2px solid $icon-color;
   }
 
-  .mat-icon-button[disabled] {
-    .mat-paginator-decrement,
-    .mat-paginator-increment,
-    .mat-paginator-first,
-    .mat-paginator-last {
-      border-color: theming.get-color-from-palette($foreground, 'disabled');
+  .mat-mdc-icon-button[disabled] {
+    .mat-mdc-paginator-decrement,
+    .mat-mdc-paginator-increment,
+    .mat-mdc-paginator-first,
+    .mat-mdc-paginator-last {
+      border-color: $disabled-color;
+    }
+
+    .mat-mdc-paginator-icon {
+      fill: $disabled-color;
     }
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
+  $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
-  .mat-paginator,
-  .mat-paginator-page-size .mat-select-trigger {
-    font: {
-      family: typography-utils.font-family($config, caption);
-      size: typography-utils.font-size($config, caption);
+
+  @include mdc-helpers.using-mdc-typography($config) {
+    .mat-mdc-paginator {
+      @include mdc-typography.typography(caption, $query: mdc-helpers.$mdc-typography-styles-query);
+    }
+
+    .mat-mdc-paginator .mat-mdc-select-value {
+      font-size: typography-utils.font-size($config, caption);
     }
   }
 }
 
 @mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
-  $height: compatibility.private-density-prop-value(paginator-variables.$density-config,
-    $density-scale, height);
+  $height: mdc-density.prop-value(
+      paginator-variables.$density-config, $density-scale, height);
 
-  @include compatibility.private-density-legacy-compatibility() {
-    .mat-paginator-container {
-      min-height: $height;
+  .mat-mdc-paginator {
+    // We need the form field to be narrower in order to fit into the paginator,
+    // so we set its density to be -4 or denser.
+    @if ((meta.type-of($density-scale) == 'number' and $density-scale >= -4) or
+         $density-scale == maximum) {
+      @include form-field-density.private-form-field-density(-4);
     }
+    @else {
+      @include form-field-density.private-form-field-density($density-scale);
+    }
+  }
+
+  .mat-mdc-paginator-container {
+    min-height: $height;
   }
 }
 

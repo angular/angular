@@ -25,7 +25,7 @@ import { DataSource } from '@angular/cdk/table';
 import * as i0 from '@angular/core';
 import * as i5 from '@angular/cdk/table';
 import * as i6 from '@angular/material/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatLegacyPaginator } from '@angular/material/legacy-paginator';
 import { MatSort } from '@angular/material/sort';
 import { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
@@ -167,7 +167,7 @@ export class MatTable<T> extends CdkTable<T> {
 }
 
 // @public
-export class MatTableDataSource<T> extends _MatTableDataSource<T, MatPaginator> {
+export class MatTableDataSource<T> extends _MatTableDataSource<T, MatLegacyPaginator> {
 }
 
 // @public
