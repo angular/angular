@@ -321,6 +321,15 @@ describe('parser', () => {
           expect(ast.errors.length).toBe(1);
           expect(ast.errors[0].message).toContain('Unexpected token \'=\'');
         });
+
+        it('should recover on parenthesized empty rvalues', () => {
+          const ast = parseAction('(a[1] = b) = c = d');
+          expect(unparse(ast)).toEqual('a[1] = b');
+          validate(ast);
+
+          expect(ast.errors.length).toBe(1);
+          expect(ast.errors[0].message).toContain('Unexpected token \'=\'');
+        });
       });
     });
 
