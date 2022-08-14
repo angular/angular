@@ -586,10 +586,18 @@ export class _ParseAST {
         while (this.consumeOptionalCharacter(chars.$SEMICOLON)) {
         }  // read all semicolons
       } else if (this.index < this.tokens.length) {
+        const errorIndex = this.index;
         this.error(`Unexpected token '${this.next}'`);
+        // The `error` call above will skip ahead to the next recovery point in an attempt to
+        // recover part of the expression, but that might be the token we started from which will
+        // lead to an infinite loop. If that's the case, break the loop assuming that we can't
+        // parse further.
+        if (this.index === errorIndex) {
+          break;
+        }
       }
     }
-    if (exprs.length == 0) {
+    if (exprs.length === 0) {
       // We have no expressions so create an empty expression that spans the entire input length
       const artificialStart = this.offset;
       const artificialEnd = this.offset + this.input.length;
