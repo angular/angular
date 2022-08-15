@@ -1,85 +1,91 @@
-@use '@angular/cdk';
-
-@use '../core/style/variables';
-@use '../core/style/private';
+@use '../core/mdc-helpers/mdc-helpers';
 @use '../core/style/vendor-prefixes';
+@use '@material/ripple' as mdc-ripple;
+@use '@material/tab' as mdc-tab;
+@use '@material/tab-indicator' as mdc-tab-indicator;
+@use 'sass:map';
 
-$tab-bar-height: 48px !default;
-$tab-animation-duration: 500ms !default;
 
-// Mixin styles for labels that are contained within the tab header.
-@mixin tab-label {
-  height: $tab-bar-height;
-  padding: 0 24px;
-  cursor: pointer;
-  box-sizing: border-box;
-  opacity: 0.6;
-  min-width: 160px;
-  text-align: center;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  white-space: nowrap;
+$mat-tab-animation-duration: 500ms !default;
 
-  &:focus {
-    outline: none;
-
-    &:not(.mat-tab-disabled) {
-      opacity: 1;
-    }
+// Combines the various structural styles we need for the tab group and tab nav bar.
+@mixin structural-styles {
+  @include mdc-helpers.disable-mdc-fallback-declarations {
+    @include mdc-tab.static-styles($query: mdc-helpers.$mdc-base-styles-query);
+    @include mdc-tab-indicator.core-styles($query: mdc-helpers.$mdc-base-styles-query);
   }
 
-  &.mat-tab-disabled {
-    cursor: default;
-
-    @include cdk.high-contrast(active, off) {
-      opacity: 0.5;
-    }
-  }
-
-  .mat-tab-label-content {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    white-space: nowrap;
-  }
-
-  @include cdk.high-contrast(active, off) {
-    opacity: 1;
+  .mat-mdc-tab-ripple {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
   }
 }
 
-// The ink bar that displays under the active tab label
-@mixin ink-bar {
-  $height: 2px;
+@mixin tab {
+  &.mdc-tab {
+    // This is usually included by MDC's tab bar, however we don't
+    // use it because we implement our own pagination.
+    @include mdc-tab.height(mdc-tab.$height, mdc-helpers.$mdc-base-styles-query);
 
-  @include private.private-animation-noop();
-  position: absolute;
-  bottom: 0;
-  height: $height;
-  transition: $tab-animation-duration variables.$ease-in-out-curve-function;
-
-  .mat-tab-group-inverted-header & {
-    bottom: auto;
-    top: 0;
+    // MDC's tabs stretch to fit the header by default, whereas stretching on our current ones
+    // is an opt-in behavior. Also technically we don't need to combine the two classes, but
+    // we need the extra specificity to avoid issues with CSS insertion order.
+    flex-grow: 0;
   }
 
-  @include cdk.high-contrast(active, off) {
-    outline: solid $height;
-    height: 0;
+  // Used to render out the background tint when hovered/focused. Usually this is done by
+  // MDC's ripple styles, however we're using our own ripples due to size concerns.
+  .mdc-tab__ripple::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  // Required for `fitInkBarToContent` to work. This used to be included with MDC's `without-ripple`
+  // mixin, but that no longer appears to be the case with `static-styles`. Since the latter is
+  // ~10kb smaller, we include this one extra style ourselves.
+  .mdc-tab__content {
+    @include mdc-tab-indicator.surface;
+  }
+
+  // We need to handle the hover and focus indication ourselves, because we don't use MDC's ripple.
+  &:hover .mdc-tab__ripple::before {
+    opacity: map.get(mdc-ripple.$dark-ink-opacities, hover);
+  }
+
+  &.cdk-program-focused,
+  &.cdk-keyboard-focused {
+    .mdc-tab__ripple::before {
+      opacity: map.get(mdc-ripple.$dark-ink-opacities, focus);
+    }
+  }
+
+  .mat-ripple-element {
+    opacity: map.get(mdc-ripple.$dark-ink-opacities, press);
   }
 }
 
 // Structural styles for a tab header. Used by both `mat-tab-header` and `mat-tab-nav-bar`.
+// We need this styles on top of MDC's, because MDC doesn't support pagination like ours.
 @mixin paginated-tab-header {
-  .mat-tab-header {
+  .mat-mdc-tab-header {
     display: flex;
     overflow: hidden;
     position: relative;
     flex-shrink: 0;
   }
 
-  .mat-tab-header-pagination {
+  .mat-mdc-tab-header-pagination {
     @include vendor-prefixes.user-select(none);
     position: relative;
     display: none;
@@ -100,52 +106,78 @@ $tab-animation-duration: 500ms !default;
       border: 0;
     }
 
-    .mat-tab-header-pagination-controls-enabled & {
+    .mat-ripple-element {
+      opacity: map.get(mdc-ripple.$dark-ink-opacities, press);
+    }
+
+    .mat-mdc-tab-header-pagination-controls-enabled & {
       display: flex;
     }
   }
 
   // The pagination control that is displayed on the left side of the tab header.
-  .mat-tab-header-pagination-before, .mat-tab-header-rtl .mat-tab-header-pagination-after {
+  .mat-mdc-tab-header-pagination-before,
+  .mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-after {
     padding-left: 4px;
-    .mat-tab-header-pagination-chevron {
+    .mat-mdc-tab-header-pagination-chevron {
       transform: rotate(-135deg);
     }
   }
 
   // The pagination control that is displayed on the right side of the tab header.
-  .mat-tab-header-rtl .mat-tab-header-pagination-before, .mat-tab-header-pagination-after {
+  .mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-before,
+  .mat-mdc-tab-header-pagination-after {
     padding-right: 4px;
-    .mat-tab-header-pagination-chevron {
+    .mat-mdc-tab-header-pagination-chevron {
       transform: rotate(45deg);
     }
   }
 
-  .mat-tab-header-pagination-chevron {
+  .mat-mdc-tab-header-pagination-chevron {
     border-style: solid;
     border-width: 2px 2px 0 0;
     height: 8px;
     width: 8px;
   }
 
-  .mat-tab-header-pagination-disabled {
+  .mat-mdc-tab-header-pagination-disabled {
     box-shadow: none;
     cursor: default;
+    pointer-events: none;
+
+    .mat-mdc-tab-header-pagination-chevron {
+      opacity: 0.4;
+    }
   }
 
-  .mat-tab-list {
+  .mat-mdc-tab-list {
     flex-grow: 1;
     position: relative;
     transition: transform 500ms cubic-bezier(0.35, 0, 0.25, 1);
+
+    ._mat-animation-noopable & {
+      transition: none;
+    }
+  }
+
+  // The `span` is in the selector in order to increase the specificity, ensuring
+  // that it's always higher than the selector that declares the transition.
+  ._mat-animation-noopable {
+    span.mdc-tab-indicator__content,
+    span.mdc-tab__text-label {
+      transition: none;
+    }
   }
 }
 
 // Structural styles for the element that wraps the paginated header items.
 @mixin paginated-tab-header-item-wrapper($parent) {
   display: flex;
+  flex: 1 0 auto;
 
   // We need to set the parent here explicitly, in order to prevent the alignment
   // from any parent tab groups from propagating down to the children when nesting.
+  // Note that these are used as inputs so they shouldn't be changed to `mat-mdc-`.
   [mat-align-tabs='center'] > #{$parent} & {
     justify-content: center;
   }
@@ -155,6 +187,7 @@ $tab-animation-duration: 500ms !default;
   }
 }
 
+// Structural styles for the element that wraps the paginated container's content.
 @mixin paginated-tab-header-container {
   display: flex;
   flex-grow: 1;

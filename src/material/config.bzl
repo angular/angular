@@ -98,6 +98,8 @@ entryPoints = [
     "table/testing",
     "tabs",
     "tabs/testing",
+    "legacy-tabs",
+    "legacy-tabs/testing",
     "toolbar",
     "toolbar/testing",
     "legacy-tooltip",

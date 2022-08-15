@@ -9,13 +9,13 @@
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatLegacySliderModule} from '@angular/material/legacy-slider';
-import {MatTabsModule} from '@angular/material/tabs';
+import {MatLegacyTabsModule} from '@angular/material/legacy-tabs';
 
 @Component({
   selector: 'slider-demo',
   templateUrl: 'slider-demo.html',
   standalone: true,
-  imports: [FormsModule, MatLegacySliderModule, MatTabsModule],
+  imports: [FormsModule, MatLegacySliderModule, MatLegacyTabsModule],
 })
 export class SliderDemo {
   demo: number;

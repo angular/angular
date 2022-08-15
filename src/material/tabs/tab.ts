@@ -6,32 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TemplatePortal} from '@angular/cdk/portal';
 import {
   ChangeDetectionStrategy,
   Component,
   ContentChild,
+  Directive,
+  Inject,
+  InjectionToken,
   Input,
   OnChanges,
   OnDestroy,
   OnInit,
+  Optional,
   SimpleChanges,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
-  InjectionToken,
-  Inject,
-  Optional,
 } from '@angular/core';
+import {MatTabContent} from './tab-content';
+import {MAT_TAB, MatTabLabel} from './tab-label';
 import {CanDisable, mixinDisabled} from '@angular/material/core';
+import {TemplatePortal} from '@angular/cdk/portal';
 import {Subject} from 'rxjs';
-import {MAT_TAB_CONTENT} from './tab-content';
-import {MAT_TAB_LABEL, MatTabLabel, MAT_TAB} from './tab-label';
 
 // Boilerplate for applying mixins to MatTab.
 /** @docs-private */
-const _MatTabBase = mixinDisabled(class {});
+const _MatTabMixinBase = mixinDisabled(class {});
 
 /**
  * Used to provide a tab group to a tab without causing a circular dependency.
@@ -39,31 +40,18 @@ const _MatTabBase = mixinDisabled(class {});
  */
 export const MAT_TAB_GROUP = new InjectionToken<any>('MAT_TAB_GROUP');
 
-@Component({
-  selector: 'mat-tab',
-  templateUrl: 'tab.html',
-  inputs: ['disabled'],
-  // tslint:disable-next-line:validate-decorators
-  changeDetection: ChangeDetectionStrategy.Default,
-  encapsulation: ViewEncapsulation.None,
-  exportAs: 'matTab',
-  providers: [{provide: MAT_TAB, useExisting: MatTab}],
-})
-export class MatTab extends _MatTabBase implements OnInit, CanDisable, OnChanges, OnDestroy {
+/** @docs-private */
+@Directive()
+export class _MatTabBase
+  extends _MatTabMixinBase
+  implements CanDisable, OnInit, OnChanges, OnDestroy
+{
   /** Content for the tab label given by `<ng-template mat-tab-label>`. */
-  @ContentChild(MAT_TAB_LABEL)
-  get templateLabel(): MatTabLabel {
-    return this._templateLabel;
-  }
-  set templateLabel(value: MatTabLabel) {
-    this._setTemplateLabelInput(value);
-  }
   protected _templateLabel: MatTabLabel;
 
   /**
    * Template provided in the tab content that will be used if present, used to enable lazy-loading
    */
-  @ContentChild(MAT_TAB_CONTENT, {read: TemplateRef, static: true})
   _explicitContent: TemplateRef<any>;
 
   /** Template inside the MatTab view that contains an `<ng-content>`. */
@@ -159,5 +147,36 @@ export class MatTab extends _MatTabBase implements OnInit, CanDisable, OnChanges
     if (value && value._closestTab === this) {
       this._templateLabel = value;
     }
+  }
+}
+
+@Component({
+  selector: 'mat-tab',
+
+  // Note that usually we'd go through a bit more trouble and set up another class so that
+  // the inlined template of `MatTab` isn't duplicated, however the template is small enough
+  // that creating the extra class will generate more code than just duplicating the template.
+  templateUrl: 'tab.html',
+  inputs: ['disabled'],
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default,
+  encapsulation: ViewEncapsulation.None,
+  exportAs: 'matTab',
+  providers: [{provide: MAT_TAB, useExisting: MatTab}],
+})
+export class MatTab extends _MatTabBase {
+  /**
+   * Template provided in the tab content that will be used if present, used to enable lazy-loading
+   */
+  @ContentChild(MatTabContent, {read: TemplateRef, static: true})
+  override _explicitContent: TemplateRef<any>;
+
+  /** Content for the tab label given by `<ng-template mat-tab-label>`. */
+  @ContentChild(MatTabLabel)
+  get templateLabel(): MatTabLabel {
+    return this._templateLabel;
+  }
+  set templateLabel(value: MatTabLabel) {
+    this._setTemplateLabelInput(value);
   }
 }

@@ -52,7 +52,6 @@
   @include sidenav-theme.theme($theme-or-color-config);
   @include stepper-theme.theme($theme-or-color-config);
   @include sort-theme.theme($theme-or-color-config);
-  @include tabs-theme.theme($theme-or-color-config);
   @include toolbar-theme.theme($theme-or-color-config);
   @include tree-theme.theme($theme-or-color-config);
   @include snack-bar-theme.theme($theme-or-color-config);
@@ -78,6 +77,7 @@
     @include menu-theme.theme($theme-or-color-config);
     @include list-theme.theme($theme-or-color-config);
     @include paginator-theme.theme($theme-or-color-config);
+    @include tabs-theme.theme($theme-or-color-config);
     @include private-all-unmigrated-component-themes($theme-or-color-config);
   }
 }

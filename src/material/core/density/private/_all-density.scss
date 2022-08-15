@@ -23,6 +23,7 @@
 @use '../../../slider/slider-theme';
 @use '../../../menu/menu-theme';
 @use '../../../list/list-theme';
+@use '../../../tabs/tabs-theme';
 
 @mixin private-all-unmigrated-component-densities($config) {
   @include button-theme.density($config);
@@ -67,6 +68,7 @@
   @include menu-theme.density($config);
   @include list-theme.density($config);
   @include paginator-theme.density($config);
+  @include tabs-theme.density($config);
   @include private-all-unmigrated-component-densities($config);
 }
 

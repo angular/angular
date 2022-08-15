@@ -17,7 +17,6 @@
 @use '../../../sidenav/sidenav-theme';
 @use '../../../stepper/stepper-theme';
 @use '../../../sort/sort-theme';
-@use '../../../tabs/tabs-theme';
 @use '../../../toolbar/toolbar-theme';
 @use '../../../tree/tree-theme';
 @use '../../../snack-bar/snack-bar-theme';
@@ -64,7 +63,6 @@
   @include sidenav-theme.theme($css-var-theme);
   @include stepper-theme.theme($css-var-theme);
   @include sort-theme.theme($css-var-theme);
-  @include tabs-theme.theme($css-var-theme);
   @include toolbar-theme.theme($css-var-theme);
   @include tree-theme.theme($css-var-theme);
   @include snack-bar-theme.theme($css-var-theme);

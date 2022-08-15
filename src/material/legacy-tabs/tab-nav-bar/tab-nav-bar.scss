@@ -1,0 +1,51 @@
+@use '../tabs-common';
+@use '../../core/style/variables';
+
+@include tabs-common.paginated-tab-header;
+
+.mat-tab-links {
+  @include tabs-common.paginated-tab-header-item-wrapper('.mat-tab-link-container');
+}
+
+.mat-ink-bar {
+  @include tabs-common.ink-bar;
+}
+
+.mat-tab-link-container {
+  @include tabs-common.paginated-tab-header-container;
+}
+
+// Wraps each link in the header
+.mat-tab-link {
+  @include tabs-common.tab-label;
+  vertical-align: top;
+  text-decoration: none;  // Removes anchor underline styling
+  position: relative;
+  overflow: hidden;  // Keeps the ripple from extending outside the element bounds
+  -webkit-tap-highlight-color: transparent;
+
+  [mat-stretch-tabs] & {
+    flex-basis: 0;
+    flex-grow: 1;
+  }
+
+  &.mat-tab-disabled {
+    // We use `pointer-events` to make the element unclickable when it's disabled, rather than
+    // preventing the default action through JS, because we can't prevent the action reliably
+    // due to other directives potentially registering their events earlier. This shouldn't cause
+    // the user to click through, because we always have a `.mat-tab-links` behind the link.
+    pointer-events: none;
+  }
+
+  // For the tab element, default inset/offset values are necessary to ensure that
+  // the focus indicator is sufficiently contrastive and renders appropriately.
+  &::before {
+    margin: 5px;
+  }
+}
+
+@media (variables.$xsmall) {
+  .mat-tab-link {
+    min-width: 72px;
+  }
+}

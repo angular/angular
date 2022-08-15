@@ -6,28 +6,40 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {MatTabsModule} from './tabs-module';
-export * from './tab-group';
-export {MatInkBar, _MatInkBarPositioner, _MAT_INK_BAR_POSITIONER} from './ink-bar';
+export * from './module';
+export {ScrollDirection, MatPaginatedTabHeader} from './paginated-tab-header';
 export {
-  MatTabBody,
-  _MatTabBodyBase,
-  MatTabBodyOriginState,
-  MatTabBodyPositionState,
   MatTabBodyPortal,
+  MatTabBody,
+  MatTabBodyPositionState,
+  MatTabBodyOriginState,
+  _MatTabBodyBase,
 } from './tab-body';
-export {MatTabHeader, _MatTabHeaderBase} from './tab-header';
+export {MatTabsConfig, MAT_TABS_CONFIG} from './tab-config';
+export {MatTabContent, MAT_TAB_CONTENT} from './tab-content';
+export {MatTabLabel, MAT_TAB, MAT_TAB_LABEL} from './tab-label';
 export {MatTabLabelWrapper} from './tab-label-wrapper';
-export {MatTab, MAT_TAB_GROUP} from './tab';
-export {MatTabLabel, MAT_TAB} from './tab-label';
+export {MatTab, MAT_TAB_GROUP, _MatTabBase} from './tab';
+export {
+  MatInkBar,
+  _MatInkBarPositioner,
+  _MAT_INK_BAR_POSITIONER_FACTORY,
+  _MAT_INK_BAR_POSITIONER,
+} from './ink-bar';
+export {MatTabHeader, _MatTabHeaderBase} from './tab-header';
+export {
+  MatTabGroup,
+  MatTabChangeEvent,
+  MatTabGroupBaseHeader,
+  MatTabHeaderPosition,
+  _MatTabGroupBase,
+} from './tab-group';
 export {
   MatTabNav,
-  MatTabLink,
   MatTabNavPanel,
+  MatTabLink,
   _MatTabNavBase,
   _MatTabLinkBase,
-} from './tab-nav-bar/index';
-export {MatTabContent} from './tab-content';
-export {ScrollDirection} from './paginated-tab-header';
-export * from './tabs-animations';
-export {MAT_TABS_CONFIG, MatTabsConfig} from './tab-config';
+} from './tab-nav-bar/tab-nav-bar';
+export {matTabsAnimations} from './tabs-animations';
+export {_MatTabLabelWrapperBase} from './tab-label-wrapper';

@@ -1,0 +1,163 @@
+@use '@angular/cdk';
+
+@use '../core/style/variables';
+@use '../core/style/private';
+@use '../core/style/vendor-prefixes';
+
+$tab-bar-height: 48px !default;
+$tab-animation-duration: 500ms !default;
+
+// Mixin styles for labels that are contained within the tab header.
+@mixin tab-label {
+  height: $tab-bar-height;
+  padding: 0 24px;
+  cursor: pointer;
+  box-sizing: border-box;
+  opacity: 0.6;
+  min-width: 160px;
+  text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+
+  &:focus {
+    outline: none;
+
+    &:not(.mat-tab-disabled) {
+      opacity: 1;
+    }
+  }
+
+  &.mat-tab-disabled {
+    cursor: default;
+
+    @include cdk.high-contrast(active, off) {
+      opacity: 0.5;
+    }
+  }
+
+  .mat-tab-label-content {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  @include cdk.high-contrast(active, off) {
+    opacity: 1;
+  }
+}
+
+// The ink bar that displays under the active tab label
+@mixin ink-bar {
+  $height: 2px;
+
+  @include private.private-animation-noop();
+  position: absolute;
+  bottom: 0;
+  height: $height;
+  transition: $tab-animation-duration variables.$ease-in-out-curve-function;
+
+  .mat-tab-group-inverted-header & {
+    bottom: auto;
+    top: 0;
+  }
+
+  @include cdk.high-contrast(active, off) {
+    outline: solid $height;
+    height: 0;
+  }
+}
+
+// Structural styles for a tab header. Used by both `mat-tab-header` and `mat-tab-nav-bar`.
+@mixin paginated-tab-header {
+  .mat-tab-header {
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .mat-tab-header-pagination {
+    @include vendor-prefixes.user-select(none);
+    position: relative;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    min-width: 32px;
+    cursor: pointer;
+    z-index: 2;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+    box-sizing: content-box;
+    background: none;
+    border: none;
+    outline: 0;
+    padding: 0;
+
+    &::-moz-focus-inner {
+      border: 0;
+    }
+
+    .mat-tab-header-pagination-controls-enabled & {
+      display: flex;
+    }
+  }
+
+  // The pagination control that is displayed on the left side of the tab header.
+  .mat-tab-header-pagination-before, .mat-tab-header-rtl .mat-tab-header-pagination-after {
+    padding-left: 4px;
+    .mat-tab-header-pagination-chevron {
+      transform: rotate(-135deg);
+    }
+  }
+
+  // The pagination control that is displayed on the right side of the tab header.
+  .mat-tab-header-rtl .mat-tab-header-pagination-before, .mat-tab-header-pagination-after {
+    padding-right: 4px;
+    .mat-tab-header-pagination-chevron {
+      transform: rotate(45deg);
+    }
+  }
+
+  .mat-tab-header-pagination-chevron {
+    border-style: solid;
+    border-width: 2px 2px 0 0;
+    height: 8px;
+    width: 8px;
+  }
+
+  .mat-tab-header-pagination-disabled {
+    box-shadow: none;
+    cursor: default;
+  }
+
+  .mat-tab-list {
+    flex-grow: 1;
+    position: relative;
+    transition: transform 500ms cubic-bezier(0.35, 0, 0.25, 1);
+  }
+}
+
+// Structural styles for the element that wraps the paginated header items.
+@mixin paginated-tab-header-item-wrapper($parent) {
+  display: flex;
+
+  // We need to set the parent here explicitly, in order to prevent the alignment
+  // from any parent tab groups from propagating down to the children when nesting.
+  [mat-align-tabs='center'] > #{$parent} & {
+    justify-content: center;
+  }
+
+  [mat-align-tabs='end'] > #{$parent} & {
+    justify-content: flex-end;
+  }
+}
+
+@mixin paginated-tab-header-container {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+  z-index: 1;
+}

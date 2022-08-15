@@ -23,13 +23,13 @@ describe('tabs styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.tabs-theme($theme);
+        @include mat.legacy-tabs-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-tabs-theme($theme);
-        @include mat.mdc-tabs-typography($theme);
+        @include mat.tabs-theme($theme);
+        @include mat.tabs-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('tabs styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.tabs-theme($theme);
+        @include arbitrary.legacy-tabs-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-tabs-theme($theme);
-        @include arbitrary.mdc-tabs-typography($theme);
+        @include arbitrary.tabs-theme($theme);
+        @include arbitrary.tabs-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('tabs styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.tabs-theme($light-theme);
-        @include mat.tabs-theme($dark-theme);
+        @include mat.legacy-tabs-theme($light-theme);
+        @include mat.legacy-tabs-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-tabs-theme($light-theme);
-        @include mat.mdc-tabs-typography($light-theme);
-        @include mat.mdc-tabs-theme($dark-theme);
-        @include mat.mdc-tabs-typography($dark-theme);
+        @include mat.tabs-theme($light-theme);
+        @include mat.tabs-typography($light-theme);
+        @include mat.tabs-theme($dark-theme);
+        @include mat.tabs-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('tabs styles', () => {
         $theme: ();
 
 
-        @include mat.tabs-theme($theme);
+        @include mat.legacy-tabs-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('tabs styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-tabs-theme($theme);
-        @include mat.mdc-tabs-typography($theme);
+        @include mat.tabs-theme($theme);
+        @include mat.tabs-typography($theme);
 
 
       `,

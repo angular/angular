@@ -1,14 +1,14 @@
 import {browser, by, element, ElementArrayFinder, Key, ExpectedConditions} from 'protractor';
 import {pressKeys} from '../../cdk/testing/private/e2e';
 
-describe('tabs', () => {
+describe('MDC-based tabs', () => {
   describe('basic behavior', () => {
     let tabLabels: ElementArrayFinder;
     let tabBodies: ElementArrayFinder;
 
     beforeEach(async () => {
-      await browser.get('/tabs');
-      tabLabels = element.all(by.css('.mat-tab-label'));
+      await browser.get('/mdc-tabs');
+      tabLabels = element.all(by.css('.mat-mdc-tab'));
       tabBodies = element.all(by.css('mat-tab-body'));
     });
 
@@ -70,12 +70,12 @@ async function getFocusStates(elements: ElementArrayFinder) {
 
 /** Returns an array of true/false that represents the active states for the provided elements. */
 function getLabelActiveStates(elements: ElementArrayFinder) {
-  return getClassStates(elements, 'mat-tab-label-active');
+  return getClassStates(elements, 'mdc-tab--active');
 }
 
 /** Returns an array of true/false that represents the active states for the provided elements */
 function getBodyActiveStates(elements: ElementArrayFinder) {
-  return getClassStates(elements, 'mat-tab-body-active');
+  return getClassStates(elements, 'mat-mdc-tab-body-active');
 }
 
 /**

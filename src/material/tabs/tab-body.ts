@@ -7,56 +7,31 @@
  */
 
 import {
-  Component,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
-  Input,
-  Inject,
-  Output,
+  Component,
+  ComponentFactoryResolver,
+  Directive,
+  ElementRef,
   EventEmitter,
+  forwardRef,
+  Inject,
+  Input,
   OnDestroy,
   OnInit,
-  ElementRef,
-  Directive,
   Optional,
-  ViewEncapsulation,
-  ChangeDetectionStrategy,
-  ComponentFactoryResolver,
-  ViewContainerRef,
-  forwardRef,
+  Output,
   ViewChild,
+  ViewContainerRef,
+  ViewEncapsulation,
 } from '@angular/core';
-import {AnimationEvent} from '@angular/animations';
-import {TemplatePortal, CdkPortalOutlet} from '@angular/cdk/portal';
-import {Directionality, Direction} from '@angular/cdk/bidi';
+import {CdkPortalOutlet, TemplatePortal} from '@angular/cdk/portal';
+import {Direction, Directionality} from '@angular/cdk/bidi';
 import {DOCUMENT} from '@angular/common';
-import {Subscription, Subject} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
+import {distinctUntilChanged, startWith} from 'rxjs/operators';
+import {AnimationEvent} from '@angular/animations';
 import {matTabsAnimations} from './tabs-animations';
-import {startWith, distinctUntilChanged} from 'rxjs/operators';
-
-/**
- * These position states are used internally as animation states for the tab body. Setting the
- * position state to left, right, or center will transition the tab body from its current
- * position to its respective state. If there is not current position (void, in the case of a new
- * tab body), then there will be no transition animation to its state.
- *
- * In the case of a new tab body that should immediately be centered with an animating transition,
- * then left-origin-center or right-origin-center can be used, which will use left or right as its
- * pseudo-prior state.
- */
-export type MatTabBodyPositionState =
-  | 'left'
-  | 'center'
-  | 'right'
-  | 'left-origin-center'
-  | 'right-origin-center';
-
-/**
- * The origin state is an internally used state that is set on a new tab body indicating if it
- * began to the left or right of the prior selected index. For example, if the selected index was
- * set to 1, and a new tab is created and selected at index 2, then the tab body would have an
- * origin of right because its index was greater than the prior selected index.
- */
-export type MatTabBodyOriginState = 'left' | 'right';
 
 /**
  * The portal host directive for the contents of the tab.
@@ -106,6 +81,23 @@ export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestr
     this._leavingSub.unsubscribe();
   }
 }
+
+/**
+ * These position states are used internally as animation states for the tab body. Setting the
+ * position state to left, right, or center will transition the tab body from its current
+ * position to its respective state. If there is not current position (void, in the case of a new
+ * tab body), then there will be no transition animation to its state.
+ *
+ * In the case of a new tab body that should immediately be centered with an animating transition,
+ * then left-origin-center or right-origin-center can be used, which will use left or right as its
+ * pseudo-prior state.
+ */
+export type MatTabBodyPositionState =
+  | 'left'
+  | 'center'
+  | 'right'
+  | 'left-origin-center'
+  | 'right-origin-center';
 
 /**
  * Base class with all of the `MatTabBody` functionality.
@@ -267,7 +259,7 @@ export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
   changeDetection: ChangeDetectionStrategy.Default,
   animations: [matTabsAnimations.translateTab],
   host: {
-    'class': 'mat-tab-body',
+    'class': 'mat-mdc-tab-body',
   },
 })
 export class MatTabBody extends _MatTabBodyBase {
@@ -281,3 +273,11 @@ export class MatTabBody extends _MatTabBodyBase {
     super(elementRef, dir, changeDetectorRef);
   }
 }
+
+/**
+ * The origin state is an internally used state that is set on a new tab body indicating if it
+ * began to the left or right of the prior selected index. For example, if the selected index was
+ * set to 1, and a new tab is created and selected at index 2, then the tab body would have an
+ * origin of right because its index was greater than the prior selected index.
+ */
+export type MatTabBodyOriginState = 'left' | 'right';

@@ -5,12 +5,12 @@ import {AfterContentInit, Component, TemplateRef, ViewChild, ViewContainerRef} f
 import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatRippleModule} from '@angular/material/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {By} from '@angular/platform-browser';
-import {ScrollingModule, CdkScrollable} from '@angular/cdk/scrolling';
+import {CdkScrollable, ScrollingModule} from '@angular/cdk/scrolling';
 import {MatTabBody, MatTabBodyPortal} from './tab-body';
+import {By} from '@angular/platform-browser';
 import {Subject} from 'rxjs';
 
-describe('MatTabBody', () => {
+describe('MDC-based MatTabBody', () => {
   let dir: Direction = 'ltr';
   let dirChange: Subject<Direction> = new Subject<Direction>();
 
@@ -188,7 +188,7 @@ describe('MatTabBody', () => {
       .compileComponents();
 
     const fixture = TestBed.createComponent(SimpleTabBodyApp);
-    const tabBodyContent = fixture.nativeElement.querySelector('.mat-tab-body-content');
+    const tabBodyContent = fixture.nativeElement.querySelector('.mat-mdc-tab-body-content');
     const scrollable = fixture.debugElement.query(By.directive(CdkScrollable));
 
     expect(scrollable).toBeTruthy();

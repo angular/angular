@@ -1,5 +1,0 @@
-@forward 'tabs-theme' hide color, density, theme, typography;
-@forward 'tabs-theme' as mat-mdc-tabs-* hide $mat-mdc-tabs-mdc-tab-icon-color-active,
-$mat-mdc-tabs-mdc-tab-text-label-color-active, $mat-mdc-tabs-mdc-tab-text-label-color-default,
-mat-mdc-tabs-background, mat-mdc-tabs-palette-styles;
-

@@ -9,6 +9,6 @@ ng_module(
     deps = [
         "//src/components-examples/material/tabs",
         "//src/dev-app/example",
-        "//src/material/tabs",
+        "//src/material/legacy-tabs",
     ],
 )

@@ -7,8 +7,6 @@ entryPoints = [
     "mdc-snack-bar/testing",
     "mdc-table",
     "mdc-table/testing",
-    "mdc-tabs",
-    "mdc-tabs/testing",
     "menubar",
     "popover-edit",
     "selection",

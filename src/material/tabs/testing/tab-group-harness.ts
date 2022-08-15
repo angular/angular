@@ -6,23 +6,30 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing';
+import {
+  ComponentHarness,
+  ComponentHarnessConstructor,
+  HarnessPredicate,
+  parallel,
+} from '@angular/cdk/testing';
 import {TabGroupHarnessFilters, TabHarnessFilters} from './tab-harness-filters';
 import {MatTabHarness} from './tab-harness';
 
-/** Harness for interacting with a standard mat-tab-group in tests. */
+/** Harness for interacting with an MDC-based mat-tab-group in tests. */
 export class MatTabGroupHarness extends ComponentHarness {
   /** The selector for the host element of a `MatTabGroup` instance. */
-  static hostSelector = '.mat-tab-group';
+  static hostSelector = '.mat-mdc-tab-group';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatTabGroupHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a tab group with specific attributes.
    * @param options Options for filtering which tab group instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: TabGroupHarnessFilters = {}): HarnessPredicate<MatTabGroupHarness> {
-    return new HarnessPredicate(MatTabGroupHarness, options).addOption(
+  static with<T extends MatTabGroupHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: TabGroupHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options).addOption(
       'selectedTabLabel',
       options.selectedTabLabel,
       async (harness, label) => {

@@ -6,33 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directionality} from '@angular/cdk/bidi';
-import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
   AfterContentChecked,
   AfterContentInit,
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ContentChildren,
+  Directive,
   ElementRef,
+  Inject,
+  Input,
   NgZone,
   OnDestroy,
   Optional,
   QueryList,
   ViewChild,
   ViewEncapsulation,
-  AfterViewInit,
-  Input,
-  Inject,
-  Directive,
 } from '@angular/core';
-import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-import {MatInkBar} from './ink-bar';
-import {MatTabLabelWrapper} from './tab-label-wrapper';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {Platform} from '@angular/cdk/platform';
+import {Directionality} from '@angular/cdk/bidi';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+import {MatTabLabelWrapper} from './tab-label-wrapper';
+import {MatInkBar} from './ink-bar';
 import {MatPaginatedTabHeader} from './paginated-tab-header';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 
 /**
  * Base class with all of the `MatTabHeader` functionality.
@@ -48,9 +48,11 @@ export abstract class _MatTabHeaderBase
   get disableRipple(): boolean {
     return this._disableRipple;
   }
+
   set disableRipple(value: BooleanInput) {
     this._disableRipple = coerceBooleanProperty(value);
   }
+
   private _disableRipple: boolean = false;
 
   constructor(
@@ -87,19 +89,19 @@ export abstract class _MatTabHeaderBase
   // tslint:disable-next-line:validate-decorators
   changeDetection: ChangeDetectionStrategy.Default,
   host: {
-    'class': 'mat-tab-header',
-    '[class.mat-tab-header-pagination-controls-enabled]': '_showPaginationControls',
-    '[class.mat-tab-header-rtl]': "_getLayoutDirection() == 'rtl'",
+    'class': 'mat-mdc-tab-header',
+    '[class.mat-mdc-tab-header-pagination-controls-enabled]': '_showPaginationControls',
+    '[class.mat-mdc-tab-header-rtl]': "_getLayoutDirection() == 'rtl'",
   },
 })
-export class MatTabHeader extends _MatTabHeaderBase {
+export class MatTabHeader extends _MatTabHeaderBase implements AfterContentInit {
   @ContentChildren(MatTabLabelWrapper, {descendants: false}) _items: QueryList<MatTabLabelWrapper>;
-  @ViewChild(MatInkBar, {static: true}) _inkBar: MatInkBar;
   @ViewChild('tabListContainer', {static: true}) _tabListContainer: ElementRef;
   @ViewChild('tabList', {static: true}) _tabList: ElementRef;
   @ViewChild('tabListInner', {static: true}) _tabListInner: ElementRef;
   @ViewChild('nextPaginator') _nextPaginator: ElementRef<HTMLElement>;
   @ViewChild('previousPaginator') _previousPaginator: ElementRef<HTMLElement>;
+  _inkBar: MatInkBar;
 
   constructor(
     elementRef: ElementRef,
@@ -111,5 +113,10 @@ export class MatTabHeader extends _MatTabHeaderBase {
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
   ) {
     super(elementRef, changeDetectorRef, viewportRuler, dir, ngZone, platform, animationMode);
+  }
+
+  override ngAfterContentInit() {
+    this._inkBar = new MatInkBar(this._items);
+    super.ngAfterContentInit();
   }
 }

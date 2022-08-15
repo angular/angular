@@ -2,27 +2,27 @@ import {LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '../../cdk/testing/private';
 import {Component, DebugElement, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {
-  waitForAsync,
   ComponentFixture,
   fakeAsync,
+  flush,
   TestBed,
   tick,
-  flush,
+  waitForAsync,
 } from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {CommonModule} from '@angular/common';
 import {Observable} from 'rxjs';
 import {
+  MAT_TABS_CONFIG,
   MatTab,
   MatTabGroup,
   MatTabHeader,
   MatTabHeaderPosition,
   MatTabsModule,
-  MAT_TABS_CONFIG,
 } from './index';
 
-describe('MatTabGroup', () => {
+describe('MDC-based MatTabGroup', () => {
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatTabsModule, CommonModule, NoopAnimationsModule],
@@ -62,32 +62,33 @@ describe('MatTabGroup', () => {
 
     it('will properly load content on first change detection pass', () => {
       fixture.detectChanges();
-      expect(element.querySelectorAll('.mat-tab-body')[1].querySelectorAll('span').length).toBe(3);
+      const tabBodies = element.querySelectorAll('.mat-mdc-tab-body');
+      expect(tabBodies[1].querySelectorAll('span').length).toBe(3);
     });
 
     it('should change selected index on click', () => {
-      const component = fixture.debugElement.componentInstance;
+      let component = fixture.debugElement.componentInstance;
       component.selectedIndex = 0;
       checkSelectedIndex(0, fixture);
 
       // select the second tab
-      let tabLabel = fixture.debugElement.queryAll(By.css('.mat-tab-label'))[1];
+      let tabLabel = fixture.debugElement.queryAll(By.css('.mat-mdc-tab'))[1];
       tabLabel.nativeElement.click();
       checkSelectedIndex(1, fixture);
 
       // select the third tab
-      tabLabel = fixture.debugElement.queryAll(By.css('.mat-tab-label'))[2];
+      tabLabel = fixture.debugElement.queryAll(By.css('.mat-mdc-tab'))[2];
       tabLabel.nativeElement.click();
       checkSelectedIndex(2, fixture);
     });
 
     it('should support two-way binding for selectedIndex', fakeAsync(() => {
-      const component = fixture.componentInstance;
+      let component = fixture.componentInstance;
       component.selectedIndex = 0;
 
       fixture.detectChanges();
 
-      const tabLabel = fixture.debugElement.queryAll(By.css('.mat-tab-label'))[1];
+      let tabLabel = fixture.debugElement.queryAll(By.css('.mat-mdc-tab'))[1];
       tabLabel.nativeElement.click();
       fixture.detectChanges();
       tick();
@@ -97,7 +98,7 @@ describe('MatTabGroup', () => {
 
     // Note: needs to be `async` in order to fail when we expect it to.
     it('should set to correct tab on fast change', waitForAsync(() => {
-      const component = fixture.componentInstance;
+      let component = fixture.componentInstance;
       component.selectedIndex = 0;
       fixture.detectChanges();
 
@@ -116,8 +117,8 @@ describe('MatTabGroup', () => {
     }));
 
     it('should change tabs based on selectedIndex', fakeAsync(() => {
-      const component = fixture.componentInstance;
-      const tabComponent = fixture.debugElement.query(By.css('mat-tab-group'))!.componentInstance;
+      let component = fixture.componentInstance;
+      let tabComponent = fixture.debugElement.query(By.css('mat-tab-group')).componentInstance;
 
       spyOn(component, 'handleSelection').and.callThrough();
 
@@ -136,7 +137,7 @@ describe('MatTabGroup', () => {
       fixture.detectChanges();
       const component: MatTabGroup = fixture.debugElement.query(
         By.css('mat-tab-group'),
-      )!.componentInstance;
+      ).componentInstance;
       const tabs: MatTab[] = component._tabs.toArray();
 
       expect(tabs[0].position).toBeLessThan(0);
@@ -162,7 +163,7 @@ describe('MatTabGroup', () => {
       fixture.detectChanges();
       const component: MatTabGroup = fixture.debugElement.query(
         By.css('mat-tab-group'),
-      )!.componentInstance;
+      ).componentInstance;
 
       // Set the index to be negative, expect first tab selected
       fixture.componentInstance.selectedIndex = -1;
@@ -176,7 +177,7 @@ describe('MatTabGroup', () => {
     });
 
     it('should not crash when setting the selected index to NaN', () => {
-      const component = fixture.debugElement.componentInstance;
+      let component = fixture.debugElement.componentInstance;
 
       expect(() => {
         component.selectedIndex = NaN;
@@ -188,7 +189,7 @@ describe('MatTabGroup', () => {
       fixture.detectChanges();
 
       const testElement = fixture.nativeElement;
-      const tabLabel = fixture.debugElement.queryAll(By.css('.mat-tab-label'))[1];
+      const tabLabel = fixture.debugElement.queryAll(By.css('.mat-mdc-tab'))[1];
 
       expect(testElement.querySelectorAll('.mat-ripple-element').length)
         .withContext('Expected no ripples to show up initially.')
@@ -206,13 +207,14 @@ describe('MatTabGroup', () => {
       fixture.detectChanges();
 
       const testElement = fixture.nativeElement;
-      const tabLabel = fixture.debugElement.queryAll(By.css('.mat-tab-label'))[1];
+      const tabLabel = fixture.debugElement.queryAll(By.css('.mat-mdc-tab'))[1];
 
       expect(testElement.querySelectorAll('.mat-ripple-element').length)
         .withContext('Expected no ripples to show up initially.')
         .toBe(0);
 
       dispatchFakeEvent(tabLabel.nativeElement, 'mousedown');
+      dispatchFakeEvent(tabLabel.nativeElement, 'mouseup');
 
       expect(testElement.querySelectorAll('.mat-ripple-element').length)
         .withContext('Expected no ripple to show up on label mousedown.')
@@ -242,7 +244,7 @@ describe('MatTabGroup', () => {
       fixture.detectChanges();
 
       spyOn(fixture.componentInstance, 'animationDone');
-      const tabLabel = fixture.debugElement.queryAll(By.css('.mat-tab-label'))[1];
+      let tabLabel = fixture.debugElement.queryAll(By.css('.mat-mdc-tab'))[1];
       tabLabel.nativeElement.click();
       fixture.detectChanges();
       tick();
@@ -253,7 +255,7 @@ describe('MatTabGroup', () => {
     it('should add the proper `aria-setsize` and `aria-posinset`', () => {
       fixture.detectChanges();
 
-      const labels = Array.from(element.querySelectorAll('.mat-tab-label'));
+      const labels = Array.from(element.querySelectorAll('.mat-mdc-tab'));
 
       expect(labels.map(label => label.getAttribute('aria-posinset'))).toEqual(['1', '2', '3']);
       expect(labels.every(label => label.getAttribute('aria-setsize') === '3')).toBe(true);
@@ -263,7 +265,7 @@ describe('MatTabGroup', () => {
       spyOn(fixture.componentInstance, 'handleFocus');
       fixture.detectChanges();
 
-      const tabLabels = fixture.debugElement.queryAll(By.css('.mat-tab-label'));
+      const tabLabels = fixture.debugElement.queryAll(By.css('.mat-mdc-tab'));
 
       expect(fixture.componentInstance.handleFocus).toHaveBeenCalledTimes(0);
 
@@ -280,8 +282,8 @@ describe('MatTabGroup', () => {
       spyOn(fixture.componentInstance, 'handleFocus');
       fixture.detectChanges();
 
-      const tabLabels = fixture.debugElement.queryAll(By.css('.mat-tab-label'));
-      const tabLabelContainer = fixture.debugElement.query(By.css('.mat-tab-label-container'))!
+      const tabLabels = fixture.debugElement.queryAll(By.css('.mat-mdc-tab'));
+      const tabLabelContainer = fixture.debugElement.query(By.css('.mat-mdc-tab-label-container'))
         .nativeElement as HTMLElement;
 
       expect(fixture.componentInstance.handleFocus).toHaveBeenCalledTimes(0);
@@ -316,19 +318,19 @@ describe('MatTabGroup', () => {
 
     it('should have a focus indicator', () => {
       const tabLabelNativeElements = [
-        ...fixture.debugElement.nativeElement.querySelectorAll('.mat-tab-label'),
+        ...fixture.debugElement.nativeElement.querySelectorAll('.mat-mdc-tab'),
       ];
 
-      expect(tabLabelNativeElements.every(el => el.classList.contains('mat-focus-indicator'))).toBe(
-        true,
-      );
+      expect(
+        tabLabelNativeElements.every(el => el.classList.contains('mat-mdc-focus-indicator')),
+      ).toBe(true);
     });
 
     it('should emit focusChange when a tab receives focus', fakeAsync(() => {
       spyOn(fixture.componentInstance, 'handleFocus');
       fixture.detectChanges();
 
-      const tabLabels = fixture.debugElement.queryAll(By.css('.mat-tab-label'));
+      const tabLabels = fixture.debugElement.queryAll(By.css('.mat-mdc-tab'));
 
       expect(fixture.componentInstance.handleFocus).toHaveBeenCalledTimes(0);
 
@@ -381,9 +383,9 @@ describe('MatTabGroup', () => {
       fixture.detectChanges();
 
       const tabLabels = fixture.debugElement
-        .queryAll(By.css('.mat-tab-label'))
+        .queryAll(By.css('.mat-mdc-tab'))
         .map(label => label.nativeElement);
-      const tabLabelContainer = fixture.debugElement.query(By.css('.mat-tab-label-container'))
+      const tabLabelContainer = fixture.debugElement.query(By.css('.mat-mdc-tab-label-container'))
         .nativeElement as HTMLElement;
 
       expect(tabLabels.map(label => label.getAttribute('tabindex'))).toEqual(['-1', '0', '-1']);
@@ -403,7 +405,7 @@ describe('MatTabGroup', () => {
       fixture = TestBed.createComponent(TabGroupWithAriaInputs);
       fixture.detectChanges();
       tick();
-      tab = fixture.nativeElement.querySelector('.mat-tab-label');
+      tab = fixture.nativeElement.querySelector('.mat-mdc-tab');
     }));
 
     it('should not set aria-label or aria-labelledby attributes if they are not passed in', () => {
@@ -448,7 +450,7 @@ describe('MatTabGroup', () => {
 
     it('should have one disabled tab', () => {
       fixture.detectChanges();
-      const labels = fixture.debugElement.queryAll(By.css('.mat-tab-disabled'));
+      const labels = fixture.debugElement.queryAll(By.css('.mat-mdc-tab-disabled'));
       expect(labels.length).toBe(1);
       expect(labels[0].nativeElement.getAttribute('aria-disabled')).toBe('true');
     });
@@ -457,7 +459,7 @@ describe('MatTabGroup', () => {
       fixture.detectChanges();
 
       const tabs = fixture.componentInstance.tabs.toArray();
-      let labels = fixture.debugElement.queryAll(By.css('.mat-tab-disabled'));
+      let labels = fixture.debugElement.queryAll(By.css('.mat-mdc-tab-disabled'));
       expect(tabs[2].disabled).toBe(false);
       expect(labels.length).toBe(1);
       expect(labels[0].nativeElement.getAttribute('aria-disabled')).toBe('true');
@@ -466,7 +468,7 @@ describe('MatTabGroup', () => {
       fixture.detectChanges();
 
       expect(tabs[2].disabled).toBe(true);
-      labels = fixture.debugElement.queryAll(By.css('.mat-tab-disabled'));
+      labels = fixture.debugElement.queryAll(By.css('.mat-mdc-tab-disabled'));
       expect(labels.length).toBe(2);
       expect(
         labels.every(label => label.nativeElement.getAttribute('aria-disabled') === 'true'),
@@ -487,7 +489,7 @@ describe('MatTabGroup', () => {
     it('should be able to add a new tab, select it, and have correct origin position', fakeAsync(() => {
       const component: MatTabGroup = fixture.debugElement.query(
         By.css('mat-tab-group'),
-      )!.componentInstance;
+      ).componentInstance;
 
       let tabs: MatTab[] = component._tabs.toArray();
       expect(tabs[0].origin).toBe(null);
@@ -519,7 +521,7 @@ describe('MatTabGroup', () => {
     it('should update selected index if the last tab removed while selected', fakeAsync(() => {
       const component: MatTabGroup = fixture.debugElement.query(
         By.css('mat-tab-group'),
-      )!.componentInstance;
+      ).componentInstance;
 
       const numberOfTabs = component._tabs.length;
       fixture.componentInstance.selectedIndex = numberOfTabs - 1;
@@ -538,7 +540,7 @@ describe('MatTabGroup', () => {
       fixture.detectChanges();
       const component: MatTabGroup = fixture.debugElement.query(
         By.css('mat-tab-group'),
-      )!.componentInstance;
+      ).componentInstance;
 
       fixture.componentInstance.selectedIndex = 1;
       fixture.detectChanges();
@@ -558,7 +560,7 @@ describe('MatTabGroup', () => {
 
       const component: MatTabGroup = fixture.debugElement.query(
         By.css('mat-tab-group'),
-      )!.componentInstance;
+      ).componentInstance;
 
       // Remove the first tab that is right before the selected one.
       fixture.componentInstance.tabs.splice(0, 1);
@@ -574,7 +576,7 @@ describe('MatTabGroup', () => {
       fixture.detectChanges();
       const component: MatTabGroup = fixture.debugElement.query(
         By.css('mat-tab-group'),
-      )!.componentInstance;
+      ).componentInstance;
 
       fixture.componentInstance.tabs.push({label: 'Last tab', content: 'at the end'});
       fixture.componentInstance.selectedIndex = 3;
@@ -628,14 +630,14 @@ describe('MatTabGroup', () => {
     it('should show tabs when they are available', fakeAsync(() => {
       fixture = TestBed.createComponent(AsyncTabsTestApp);
 
-      expect(fixture.debugElement.queryAll(By.css('.mat-tab-label')).length).toBe(0);
+      expect(fixture.debugElement.queryAll(By.css('.mat-mdc-tab')).length).toBe(0);
 
       fixture.detectChanges();
       tick();
       fixture.detectChanges();
       tick();
 
-      expect(fixture.debugElement.queryAll(By.css('.mat-tab-label')).length).toBe(2);
+      expect(fixture.debugElement.queryAll(By.css('.mat-mdc-tab')).length).toBe(2);
     }));
   });
 
@@ -648,7 +650,7 @@ describe('MatTabGroup', () => {
       fixture.detectChanges();
       tick();
 
-      tabGroup = fixture.debugElement.query(By.directive(MatTabGroup))!
+      tabGroup = fixture.debugElement.query(By.directive(MatTabGroup))
         .componentInstance as MatTabGroup;
     }));
 
@@ -688,14 +690,14 @@ describe('MatTabGroup', () => {
     }));
 
     it('should support setting the header position', () => {
-      const tabGroupNode = fixture.debugElement.query(By.css('mat-tab-group'))!.nativeElement;
+      let tabGroupNode = fixture.debugElement.query(By.css('mat-tab-group')).nativeElement;
 
-      expect(tabGroupNode.classList).not.toContain('mat-tab-group-inverted-header');
+      expect(tabGroupNode.classList).not.toContain('mat-mdc-tab-group-inverted-header');
 
       tabGroup.headerPosition = 'below';
       fixture.detectChanges();
 
-      expect(tabGroupNode.classList).toContain('mat-tab-group-inverted-header');
+      expect(tabGroupNode.classList).toContain('mat-mdc-tab-group-inverted-header');
     });
 
     it('should be able to opt into keeping the inactive tab content in the DOM', fakeAsync(() => {
@@ -715,7 +717,7 @@ describe('MatTabGroup', () => {
 
     it('should visibly hide the content of inactive tabs', fakeAsync(() => {
       const contentElements: HTMLElement[] = Array.from(
-        fixture.nativeElement.querySelectorAll('.mat-tab-body-content'),
+        fixture.nativeElement.querySelectorAll('.mat-mdc-tab-body-content'),
       );
 
       expect(contentElements.map(element => element.style.visibility)).toEqual([
@@ -755,13 +757,13 @@ describe('MatTabGroup', () => {
       fixture.detectChanges();
       tick();
 
-      const secondLabel = fixture.debugElement.queryAll(By.css('.mat-tab-label'))[1];
+      const secondLabel = fixture.debugElement.queryAll(By.css('.mat-mdc-tab'))[1];
       secondLabel.nativeElement.click();
       fixture.detectChanges();
       tick();
       fixture.detectChanges();
 
-      const child = fixture.debugElement.query(By.css('.child'))!;
+      const child = fixture.debugElement.query(By.css('.child'));
       expect(child.nativeElement).toBeDefined();
     }));
   });
@@ -785,7 +787,7 @@ describe('MatTabGroup', () => {
       tick();
       fixture.detectChanges();
 
-      const labels = fixture.nativeElement.querySelectorAll('.mat-tab-label-content');
+      const labels = fixture.nativeElement.querySelectorAll('.mdc-tab__text-label');
       const contents = Array.from<HTMLElement>(labels).map(label => label.textContent?.trim());
 
       expect(contents).toEqual([
@@ -842,7 +844,7 @@ describe('MatTabGroup', () => {
       expect(window.scrollY).toBe(250);
 
       // select the second tab
-      const tabLabel = fixture.debugElement.queryAll(By.css('.mat-tab-label'))[1];
+      let tabLabel = fixture.debugElement.queryAll(By.css('.mat-mdc-tab'))[1];
       tabLabel.nativeElement.click();
       checkSelectedIndex(1, fixture);
 
@@ -875,7 +877,7 @@ describe('MatTabGroup', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(TabsWithClassesTestApp);
       fixture.detectChanges();
-      labelElements = fixture.debugElement.queryAll(By.css('.mat-tab-label'));
+      labelElements = fixture.debugElement.queryAll(By.css('.mdc-tab'));
       bodyElements = fixture.debugElement.queryAll(By.css('mat-tab-body'));
     });
 
@@ -930,52 +932,29 @@ describe('MatTabGroup', () => {
   function checkSelectedIndex(expectedIndex: number, fixture: ComponentFixture<any>) {
     fixture.detectChanges();
 
-    const tabComponent: MatTabGroup = fixture.debugElement.query(
+    let tabComponent: MatTabGroup = fixture.debugElement.query(
       By.css('mat-tab-group'),
-    )!.componentInstance;
+    ).componentInstance;
     expect(tabComponent.selectedIndex).toBe(expectedIndex);
 
-    const tabLabelElement = fixture.debugElement.query(
-      By.css(`.mat-tab-label:nth-of-type(${expectedIndex + 1})`),
-    )!.nativeElement;
-    expect(tabLabelElement.classList.contains('mat-tab-label-active')).toBe(true);
+    let tabLabelElement = fixture.debugElement.query(
+      By.css(`.mat-mdc-tab:nth-of-type(${expectedIndex + 1})`),
+    ).nativeElement;
+    expect(tabLabelElement.classList.contains('mdc-tab--active')).toBe(true);
 
-    const tabContentElement = fixture.debugElement.query(
+    let tabContentElement = fixture.debugElement.query(
       By.css(`mat-tab-body:nth-of-type(${expectedIndex + 1})`),
-    )!.nativeElement;
-    expect(tabContentElement.classList.contains('mat-tab-body-active')).toBe(true);
+    ).nativeElement;
+    expect(tabContentElement.classList.contains('mat-mdc-tab-body-active')).toBe(true);
   }
 
   function getSelectedLabel(fixture: ComponentFixture<any>): HTMLElement {
-    return fixture.nativeElement.querySelector('.mat-tab-label-active');
+    return fixture.nativeElement.querySelector('.mdc-tab--active');
   }
 
   function getSelectedContent(fixture: ComponentFixture<any>): HTMLElement {
-    return fixture.nativeElement.querySelector('.mat-tab-body-active');
+    return fixture.nativeElement.querySelector('.mat-mdc-tab-body-active');
   }
-});
-
-describe('MatTabNavBar with a default config', () => {
-  let fixture: ComponentFixture<SimpleTabsTestApp>;
-
-  beforeEach(fakeAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [MatTabsModule, BrowserAnimationsModule],
-      declarations: [SimpleTabsTestApp],
-      providers: [{provide: MAT_TABS_CONFIG, useValue: {dynamicHeight: true}}],
-    });
-
-    TestBed.compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SimpleTabsTestApp);
-    fixture.detectChanges();
-  });
-
-  it('should set whether the height of the tab group is dynamic', () => {
-    expect(fixture.componentInstance.tabGroup.dynamicHeight).toBe(true);
-  });
 });
 
 describe('nested MatTabGroup with enabled animations', () => {
@@ -990,7 +969,7 @@ describe('nested MatTabGroup with enabled animations', () => {
 
   it('should not throw when creating a component with nested tab groups', fakeAsync(() => {
     expect(() => {
-      const fixture = TestBed.createComponent(NestedTabs);
+      let fixture = TestBed.createComponent(NestedTabs);
       fixture.detectChanges();
       tick();
     }).not.toThrow();
@@ -998,11 +977,90 @@ describe('nested MatTabGroup with enabled animations', () => {
 
   it('should not throw when setting an animationDuration without units', fakeAsync(() => {
     expect(() => {
-      const fixture = TestBed.createComponent(TabsWithCustomAnimationDuration);
+      let fixture = TestBed.createComponent(TabsWithCustomAnimationDuration);
       fixture.detectChanges();
       tick();
     }).not.toThrow();
   }));
+});
+
+describe('MatTabGroup with ink bar fit to content', () => {
+  let fixture: ComponentFixture<TabGroupWithInkBarFitToContent>;
+
+  beforeEach(fakeAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatTabsModule, BrowserAnimationsModule],
+      declarations: [TabGroupWithInkBarFitToContent],
+    });
+
+    TestBed.compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(TabGroupWithInkBarFitToContent);
+    fixture.detectChanges();
+  });
+
+  it('should properly nest the ink bar when fit to content', () => {
+    const tabElement = fixture.nativeElement.querySelector('.mdc-tab');
+    const contentElement = tabElement.querySelector('.mdc-tab__content');
+    const indicatorElement = tabElement.querySelector('.mdc-tab-indicator');
+    expect(indicatorElement.parentElement).toBeTruthy();
+    expect(indicatorElement.parentElement).toBe(contentElement);
+  });
+
+  it('should be able to move the ink bar between content and full', () => {
+    fixture.componentInstance.fitInkBarToContent = false;
+    fixture.detectChanges();
+
+    const tabElement = fixture.nativeElement.querySelector('.mdc-tab');
+    const indicatorElement = tabElement.querySelector('.mdc-tab-indicator');
+    expect(indicatorElement.parentElement).toBeTruthy();
+    expect(indicatorElement.parentElement).toBe(tabElement);
+
+    fixture.componentInstance.fitInkBarToContent = true;
+    fixture.detectChanges();
+
+    const contentElement = tabElement.querySelector('.mdc-tab__content');
+    expect(indicatorElement.parentElement).toBeTruthy();
+    expect(indicatorElement.parentElement).toBe(contentElement);
+  });
+});
+
+describe('MatTabNavBar with a default config', () => {
+  let fixture: ComponentFixture<SimpleTabsTestApp>;
+
+  beforeEach(fakeAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [MatTabsModule, BrowserAnimationsModule],
+      declarations: [SimpleTabsTestApp],
+      providers: [
+        {
+          provide: MAT_TABS_CONFIG,
+          useValue: {fitInkBarToContent: true, dynamicHeight: true},
+        },
+      ],
+    });
+
+    TestBed.compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(SimpleTabsTestApp);
+    fixture.detectChanges();
+  });
+
+  it('should set whether the ink bar fits to content', () => {
+    const tabElement = fixture.nativeElement.querySelector('.mdc-tab');
+    const contentElement = tabElement.querySelector('.mdc-tab__content');
+    const indicatorElement = tabElement.querySelector('.mdc-tab-indicator');
+    expect(indicatorElement.parentElement).toBeTruthy();
+    expect(indicatorElement.parentElement).toBe(contentElement);
+  });
+
+  it('should set whether the height of the tab group is dynamic', () => {
+    expect(fixture.componentInstance.tabGroup.dynamicHeight).toBe(true);
+  });
 });
 
 @Component({
@@ -1249,6 +1307,18 @@ class TabsWithCustomAnimationDuration {}
 })
 class TabGroupWithIndirectDescendantTabs {
   @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
+}
+
+@Component({
+  template: `
+    <mat-tab-group [fitInkBarToContent]="fitInkBarToContent">
+      <mat-tab label="One">Tab one content</mat-tab>
+      <mat-tab label="Two">Tab two content</mat-tab>
+    </mat-tab-group>
+  `,
+})
+class TabGroupWithInkBarFitToContent {
+  fitInkBarToContent = true;
 }
 
 @Component({

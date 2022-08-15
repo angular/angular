@@ -6,25 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
+import {
+  ComponentHarness,
+  ComponentHarnessConstructor,
+  HarnessPredicate,
+} from '@angular/cdk/testing';
 import {TabLinkHarnessFilters} from './tab-harness-filters';
 
-/** Harness for interacting with a standard Angular Material tab link in tests. */
+/** Harness for interacting with an MDC-based Angular Material tab link in tests. */
 export class MatTabLinkHarness extends ComponentHarness {
   /** The selector for the host element of a `MatTabLink` instance. */
-  static hostSelector = '.mat-tab-link';
+  static hostSelector = '.mat-mdc-tab-link';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatTabLinkHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a tab link with specific attributes.
    * @param options Options for filtering which tab link instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: TabLinkHarnessFilters = {}): HarnessPredicate<MatTabLinkHarness> {
-    return new HarnessPredicate(MatTabLinkHarness, options).addOption(
-      'label',
-      options.label,
-      (harness, label) => HarnessPredicate.stringMatches(harness.getLabel(), label),
+  static with<T extends MatTabLinkHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: TabLinkHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options).addOption('label', options.label, (harness, label) =>
+      HarnessPredicate.stringMatches(harness.getLabel(), label),
     );
   }
 
@@ -36,13 +40,13 @@ export class MatTabLinkHarness extends ComponentHarness {
   /** Whether the link is active. */
   async isActive(): Promise<boolean> {
     const host = await this.host();
-    return host.hasClass('mat-tab-label-active');
+    return host.hasClass('mdc-tab--active');
   }
 
   /** Whether the link is disabled. */
   async isDisabled(): Promise<boolean> {
     const host = await this.host();
-    return host.hasClass('mat-tab-disabled');
+    return host.hasClass('mat-mdc-tab-disabled');
   }
 
   /** Clicks on the link. */

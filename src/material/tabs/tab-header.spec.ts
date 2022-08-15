@@ -21,19 +21,18 @@ import {
 } from '@angular/core/testing';
 import {MatRippleModule} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
-import {MatInkBar} from './ink-bar';
 import {MatTabHeader} from './tab-header';
 import {MatTabLabelWrapper} from './tab-label-wrapper';
 import {ObserversModule, MutationObserverFactory} from '@angular/cdk/observers';
 
-describe('MatTabHeader', () => {
+describe('MDC-based MatTabHeader', () => {
   let fixture: ComponentFixture<SimpleTabHeaderApp>;
   let appComponent: SimpleTabHeaderApp;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [CommonModule, PortalModule, MatRippleModule, ScrollingModule, ObserversModule],
-      declarations: [MatTabHeader, MatInkBar, MatTabLabelWrapper, SimpleTabHeaderApp],
+      declarations: [MatTabHeader, MatTabLabelWrapper, SimpleTabHeaderApp],
       providers: [ViewportRuler],
     });
 
@@ -271,7 +270,9 @@ describe('MatTabHeader', () => {
 
         expect(appComponent.tabHeader._showPaginationControls).toBe(true);
 
-        const buttonAfter = fixture.debugElement.query(By.css('.mat-tab-header-pagination-after'))!;
+        const buttonAfter = fixture.debugElement.query(
+          By.css('.mat-mdc-tab-header-pagination-after'),
+        );
 
         expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
           .withContext('Expected no ripple to show up initially.')
@@ -292,7 +293,9 @@ describe('MatTabHeader', () => {
 
         expect(appComponent.tabHeader._showPaginationControls).toBe(true);
 
-        const buttonAfter = fixture.debugElement.query(By.css('.mat-tab-header-pagination-after'))!;
+        const buttonAfter = fixture.debugElement.query(
+          By.css('.mat-mdc-tab-header-pagination-after'),
+        );
 
         expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
           .withContext('Expected no ripple to show up initially.')
@@ -370,10 +373,10 @@ describe('MatTabHeader', () => {
         fixture.componentInstance.addTabsForScrolling(50);
         fixture.detectChanges();
 
-        nextButton = fixture.nativeElement.querySelector('.mat-tab-header-pagination-after');
-        prevButton = fixture.nativeElement.querySelector('.mat-tab-header-pagination-before');
+        nextButton = fixture.nativeElement.querySelector('.mat-mdc-tab-header-pagination-after');
+        prevButton = fixture.nativeElement.querySelector('.mat-mdc-tab-header-pagination-before');
         header = fixture.componentInstance.tabHeader;
-        headerElement = fixture.nativeElement.querySelector('.mat-tab-header');
+        headerElement = fixture.nativeElement.querySelector('.mat-mdc-tab-header');
       });
 
       it('should scroll towards the end while holding down the next button using a mouse', fakeAsync(() => {
@@ -478,7 +481,7 @@ describe('MatTabHeader', () => {
           .withContext('Expected to scroll after some time.')
           .toBeGreaterThan(0);
 
-        const previousDistance = header.scrollDistance;
+        let previousDistance = header.scrollDistance;
 
         dispatchFakeEvent(headerElement, 'mouseleave');
         fixture.detectChanges();
@@ -524,7 +527,7 @@ describe('MatTabHeader', () => {
           .withContext('Expected to scroll after some time.')
           .toBeGreaterThan(0);
 
-        const previousDistance = header.scrollDistance;
+        let previousDistance = header.scrollDistance;
 
         tick(100);
 
@@ -610,6 +613,7 @@ describe('MatTabHeader', () => {
 
     it('should re-align the ink bar when the direction changes', fakeAsync(() => {
       fixture = TestBed.createComponent(SimpleTabHeaderApp);
+      fixture.detectChanges();
 
       const inkBar = fixture.componentInstance.tabHeader._inkBar;
       spyOn(inkBar, 'alignToElement');
@@ -669,12 +673,13 @@ describe('MatTabHeader', () => {
       fixture = TestBed.createComponent(SimpleTabHeaderApp);
       fixture.detectChanges();
 
-      const tabHeaderElement: HTMLElement = fixture.nativeElement.querySelector('.mat-tab-header');
+      const tabHeaderElement: HTMLElement =
+        fixture.nativeElement.querySelector('.mat-mdc-tab-header');
       const labels = Array.from<HTMLElement>(
         fixture.nativeElement.querySelectorAll('.label-content'),
       );
       const extraText = new Array(100).fill('w').join();
-      const enabledClass = 'mat-tab-header-pagination-controls-enabled';
+      const enabledClass = 'mat-mdc-tab-header-pagination-controls-enabled';
 
       expect(tabHeaderElement.classList).not.toContain(enabledClass);
 
@@ -724,10 +729,10 @@ class SimpleTabHeaderApp {
   disableRipple: boolean = false;
   selectedIndex: number = 0;
   focusedIndex: number;
-  disablePagination: boolean;
   disabledTabIndex = 1;
   tabs: Tab[] = [{label: 'tab one'}, {label: 'tab one'}, {label: 'tab one'}, {label: 'tab one'}];
   dir: Direction = 'ltr';
+  disablePagination: boolean;
 
   @ViewChild(MatTabHeader, {static: true}) tabHeader: MatTabHeader;
 

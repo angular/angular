@@ -1,6 +1,0 @@
-@forward 'tabs-theme' hide color, theme, typography;
-@forward 'tabs-theme' as mat-tabs-* hide mat-tabs-background, mat-tabs-density, mat-tabs-ink-bar,
-mat-tabs-tab-label-focus;
-@forward 'tabs-common' hide $tab-animation-duration, $tab-bar-height;
-@forward 'tabs-common' as mat-* hide mat-ink-bar, mat-paginated-tab-header,
-mat-paginated-tab-header-container, mat-paginated-tab-header-item-wrapper, mat-tab-label;

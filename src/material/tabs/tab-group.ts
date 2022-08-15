@@ -7,12 +7,6 @@
  */
 
 import {
-  BooleanInput,
-  coerceBooleanProperty,
-  coerceNumberProperty,
-  NumberInput,
-} from '@angular/cdk/coercion';
-import {
   AfterContentChecked,
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -31,7 +25,15 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {FocusOrigin} from '@angular/cdk/a11y';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+import {MAT_TAB_GROUP, MatTab} from './tab';
+import {MatTabHeader} from './tab-header';
+import {
+  BooleanInput,
+  coerceBooleanProperty,
+  coerceNumberProperty,
+  NumberInput,
+} from '@angular/cdk/coercion';
 import {
   CanColor,
   CanDisableRipple,
@@ -39,25 +41,13 @@ import {
   mixinDisableRipple,
   ThemePalette,
 } from '@angular/material/core';
-import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {merge, Subscription} from 'rxjs';
-import {startWith} from 'rxjs/operators';
-import {MAT_TAB_GROUP, MatTab} from './tab';
 import {MAT_TABS_CONFIG, MatTabsConfig} from './tab-config';
+import {startWith} from 'rxjs/operators';
+import {FocusOrigin} from '@angular/cdk/a11y';
 
 /** Used to generate unique ID's for each tab component */
 let nextId = 0;
-
-/** A simple change event emitted on focus or selection changes. */
-export class MatTabChangeEvent {
-  /** Index of the currently-selected tab. */
-  index: number;
-  /** Reference to the currently-selected tab. */
-  tab: MatTab;
-}
-
-/** Possible positions for the tab header. */
-export type MatTabHeaderPosition = 'above' | 'below';
 
 // Boilerplate for applying mixins to MatTabGroup.
 /** @docs-private */
@@ -70,11 +60,15 @@ const _MatTabGroupMixinBase = mixinColor(
   'primary',
 );
 
-interface MatTabGroupBaseHeader {
+/** @docs-private */
+export interface MatTabGroupBaseHeader {
   _alignInkBarToSelectedTab(): void;
   updatePagination(): void;
   focusIndex: number;
 }
+
+/** Possible positions for the tab header. */
+export type MatTabHeaderPosition = 'above' | 'below';
 
 /**
  * Base class with all of the `MatTabGroupBase` functionality.
@@ -116,9 +110,11 @@ export abstract class _MatTabGroupBase
   get dynamicHeight(): boolean {
     return this._dynamicHeight;
   }
+
   set dynamicHeight(value: BooleanInput) {
     this._dynamicHeight = coerceBooleanProperty(value);
   }
+
   private _dynamicHeight: boolean = false;
 
   /** The index of the active tab. */
@@ -126,9 +122,11 @@ export abstract class _MatTabGroupBase
   get selectedIndex(): number | null {
     return this._selectedIndex;
   }
+
   set selectedIndex(value: NumberInput) {
     this._indexToSelect = coerceNumberProperty(value, null);
   }
+
   private _selectedIndex: number | null = null;
 
   /** Position of the tab header. */
@@ -139,9 +137,11 @@ export abstract class _MatTabGroupBase
   get animationDuration(): string {
     return this._animationDuration;
   }
+
   set animationDuration(value: NumberInput) {
     this._animationDuration = /^\d+$/.test(value + '') ? value + 'ms' : (value as string);
   }
+
   private _animationDuration: string;
 
   /**
@@ -154,9 +154,11 @@ export abstract class _MatTabGroupBase
   get contentTabIndex(): number | null {
     return this._contentTabIndex;
   }
+
   set contentTabIndex(value: NumberInput) {
     this._contentTabIndex = coerceNumberProperty(value, null);
   }
+
   private _contentTabIndex: number | null;
 
   /**
@@ -167,9 +169,11 @@ export abstract class _MatTabGroupBase
   get disablePagination(): boolean {
     return this._disablePagination;
   }
+
   set disablePagination(value: BooleanInput) {
     this._disablePagination = coerceBooleanProperty(value);
   }
+
   private _disablePagination: boolean = false;
 
   /**
@@ -181,9 +185,11 @@ export abstract class _MatTabGroupBase
   get preserveContent(): boolean {
     return this._preserveContent;
   }
+
   set preserveContent(value: BooleanInput) {
     this._preserveContent = coerceBooleanProperty(value);
   }
+
   private _preserveContent: boolean = false;
 
   /** Background color of the tab group. */
@@ -191,6 +197,7 @@ export abstract class _MatTabGroupBase
   get backgroundColor(): ThemePalette {
     return this._backgroundColor;
   }
+
   set backgroundColor(value: ThemePalette) {
     const nativeElement: HTMLElement = this._elementRef.nativeElement;
 
@@ -202,6 +209,7 @@ export abstract class _MatTabGroupBase
 
     this._backgroundColor = value;
   }
+
   private _backgroundColor: ThemePalette;
 
   /** Output to enable support for two-way binding on `[(selectedIndex)]` */
@@ -516,15 +524,37 @@ export abstract class _MatTabGroupBase
     },
   ],
   host: {
-    'class': 'mat-tab-group',
-    '[class.mat-tab-group-dynamic-height]': 'dynamicHeight',
-    '[class.mat-tab-group-inverted-header]': 'headerPosition === "below"',
+    'class': 'mat-mdc-tab-group',
+    '[class.mat-mdc-tab-group-dynamic-height]': 'dynamicHeight',
+    '[class.mat-mdc-tab-group-inverted-header]': 'headerPosition === "below"',
+    '[class.mat-mdc-tab-group-stretch-tabs]': 'stretchTabs',
   },
 })
 export class MatTabGroup extends _MatTabGroupBase {
   @ContentChildren(MatTab, {descendants: true}) _allTabs: QueryList<MatTab>;
   @ViewChild('tabBodyWrapper') _tabBodyWrapper: ElementRef;
-  @ViewChild('tabHeader') _tabHeader: MatTabGroupBaseHeader;
+  @ViewChild('tabHeader') _tabHeader: MatTabHeader;
+
+  /** Whether the ink bar should fit its width to the size of the tab label content. */
+  @Input()
+  get fitInkBarToContent(): boolean {
+    return this._fitInkBarToContent;
+  }
+  set fitInkBarToContent(v: BooleanInput) {
+    this._fitInkBarToContent = coerceBooleanProperty(v);
+    this._changeDetectorRef.markForCheck();
+  }
+  private _fitInkBarToContent = false;
+
+  /** Whether tabs should be stretched to fill the header. */
+  @Input('mat-stretch-tabs')
+  get stretchTabs(): boolean {
+    return this._stretchTabs;
+  }
+  set stretchTabs(v: BooleanInput) {
+    this._stretchTabs = coerceBooleanProperty(v);
+  }
+  private _stretchTabs = true;
 
   constructor(
     elementRef: ElementRef,
@@ -533,5 +563,17 @@ export class MatTabGroup extends _MatTabGroupBase {
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
   ) {
     super(elementRef, changeDetectorRef, defaultConfig, animationMode);
+    this.fitInkBarToContent =
+      defaultConfig && defaultConfig.fitInkBarToContent != null
+        ? defaultConfig.fitInkBarToContent
+        : false;
   }
+}
+
+/** A simple change event emitted on focus or selection changes. */
+export class MatTabChangeEvent {
+  /** Index of the currently-selected tab. */
+  index: number;
+  /** Reference to the currently-selected tab. */
+  tab: MatTab;
 }

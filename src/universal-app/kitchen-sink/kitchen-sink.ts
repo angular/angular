@@ -28,7 +28,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatLegacySliderModule} from '@angular/material/legacy-slider';
 import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
-import {MatTabsModule} from '@angular/material/tabs';
+import {MatLegacyTabsModule} from '@angular/material/legacy-tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatLegacyTooltipModule} from '@angular/material/legacy-tooltip';
 import {MatBottomSheetModule, MatBottomSheet} from '@angular/material/bottom-sheet';
@@ -126,7 +126,7 @@ export class KitchenSink {
     MatLegacySliderModule,
     MatLegacySlideToggleModule,
     MatSnackBarModule,
-    MatTabsModule,
+    MatLegacyTabsModule,
     MatToolbarModule,
     MatLegacyTooltipModule,
     MatExpansionModule,

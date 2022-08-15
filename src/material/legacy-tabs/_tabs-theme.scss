@@ -1,0 +1,180 @@
+@use 'sass:map';
+@use '../core/theming/theming';
+@use '../core/typography/typography';
+@use '../core/typography/typography-utils';
+
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
+  $header-border: 1px solid theming.get-color-from-palette($foreground, divider);
+
+  .mat-tab-nav-bar,
+  .mat-tab-header {
+    border-bottom: $header-border;
+  }
+
+  .mat-tab-group-inverted-header {
+    .mat-tab-nav-bar,
+    .mat-tab-header {
+      border-top: $header-border;
+      border-bottom: none;
+    }
+  }
+
+  .mat-tab-label, .mat-tab-link {
+    color: theming.get-color-from-palette($foreground, text);
+
+    &.mat-tab-disabled {
+      color: theming.get-color-from-palette($foreground, disabled-text);
+    }
+  }
+
+  .mat-tab-header-pagination-chevron {
+    border-color: theming.get-color-from-palette($foreground, text);
+  }
+
+  .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron {
+    border-color: theming.get-color-from-palette($foreground, disabled-text);
+  }
+
+  // Remove header border when there is a background color
+  .mat-tab-group[class*='mat-background-'] > .mat-tab-header,
+  .mat-tab-nav-bar[class*='mat-background-'] {
+    border-bottom: none;
+    border-top: none;
+  }
+
+  .mat-tab-group, .mat-tab-nav-bar {
+    $theme-colors: (
+      primary: $primary,
+      accent: $accent,
+      warn: $warn
+    );
+
+    @each $name, $color in $theme-colors {
+      // Set the foreground color of the tabs
+      &.mat-#{$name} {
+        @include _label-focus-color($color);
+        @include _ink-bar-color($color);
+
+        // Override ink bar when background color is the same
+        &.mat-background-#{$name} {
+          > .mat-tab-header, > .mat-tab-link-container {
+            @include _ink-bar-color($color, default-contrast);
+          }
+        }
+      }
+    }
+
+    @each $name, $color in $theme-colors {
+      // Set background color of the tabs and override focus color
+      &.mat-background-#{$name} {
+        @include _label-focus-color($color);
+        @include _tabs-background($color);
+      }
+    }
+  }
+}
+
+@mixin _ink-bar-color($color, $hue: default) {
+  .mat-ink-bar {
+    background-color: theming.get-color-from-palette($color, $hue);
+  }
+}
+
+@mixin _label-focus-color($tab-focus-color) {
+  .mat-tab-label,
+  .mat-tab-link {
+    &.cdk-keyboard-focused,
+    &.cdk-program-focused {
+      &:not(.mat-tab-disabled) {
+        background-color: theming.get-color-from-palette($tab-focus-color, lighter, 0.3);
+      }
+    }
+  }
+}
+
+@mixin _tabs-background($background-color) {
+  // Note that these selectors target direct descendants so
+  // that the styles don't apply to any nested tab groups.
+
+  // Set background color for the tab group
+  > .mat-tab-header, > .mat-tab-link-container, > .mat-tab-header-pagination {
+    background-color: theming.get-color-from-palette($background-color);
+  }
+
+  // Set labels to contrast against background
+  > .mat-tab-header .mat-tab-label, > .mat-tab-link-container .mat-tab-link {
+    color: theming.get-color-from-palette($background-color, default-contrast);
+
+    &.mat-tab-disabled {
+      color: theming.get-color-from-palette($background-color, default-contrast, 0.4);
+    }
+  }
+
+  // Set pagination chevrons to contrast background
+  > .mat-tab-header .mat-tab-header-pagination-chevron,
+  > .mat-tab-header-pagination .mat-tab-header-pagination-chevron,
+  > .mat-tab-link-container .mat-focus-indicator::before,
+  > .mat-tab-header .mat-focus-indicator::before {
+    border-color: theming.get-color-from-palette($background-color, default-contrast);
+  }
+
+  > .mat-tab-header .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron,
+  > .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron {
+    // Set the color opacity via `opacity`, rather than `rgba`, because it may be a CSS variable.
+    border-color: theming.get-color-from-palette($background-color, default-contrast, 1);
+    opacity: 0.4;
+  }
+
+  // Set ripples color to be the contrast color of the new background. Otherwise the ripple
+  // color will be based on the app background color.
+  > .mat-tab-header .mat-ripple-element,
+  > .mat-tab-link-container .mat-ripple-element,
+  > .mat-tab-header-pagination .mat-ripple-element {
+    // Set the color opacity via `opacity`, rather than `rgba`, because it may be a CSS variable.
+    background-color: theming.get-color-from-palette($background-color, default-contrast, 1);
+    opacity: 0.12;
+  }
+}
+
+@mixin typography($config-or-theme) {
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
+  .mat-tab-group {
+    font-family: typography-utils.font-family($config);
+  }
+
+  .mat-tab-label, .mat-tab-link {
+    font: {
+      family: typography-utils.font-family($config, button);
+      size: typography-utils.font-size($config, button);
+      weight: typography-utils.font-weight($config, button);
+    }
+  }
+}
+
+@mixin _density($config-or-theme) {}
+
+@mixin theme($theme-or-color-config) {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-tabs') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
+
+    @if $color != null {
+      @include color($color);
+    }
+    @if $density != null {
+      @include _density($density);
+    }
+    @if $typography != null {
+      @include typography($typography);
+    }
+  }
+}

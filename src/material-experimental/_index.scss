@@ -24,7 +24,5 @@
   mdc-snack-bar-typography, mdc-snack-bar-density, mdc-snack-bar-theme;
 @forward './mdc-table/table-theme' as mdc-table-* show mdc-table-color, mdc-table-typography,
   mdc-table-density, mdc-table-theme;
-@forward './mdc-tabs/tabs-theme' as mdc-tabs-* show mdc-tabs-color, mdc-tabs-typography,
-  mdc-tabs-density, mdc-tabs-theme;
 
 // Additional public APIs for individual components

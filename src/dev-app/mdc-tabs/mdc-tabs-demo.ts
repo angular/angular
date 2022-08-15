@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';
+import {MatTabsModule} from '@angular/material/tabs';
 import {CommonModule} from '@angular/common';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 

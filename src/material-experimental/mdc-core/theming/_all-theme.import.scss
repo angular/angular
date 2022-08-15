@@ -4,9 +4,6 @@
 @forward '../../mdc-snack-bar/snack-bar-theme' as mat-mdc-snack-bar-* hide
 $mat-mdc-snack-bar-mdc-snackbar-dismiss-ink-color, $mat-mdc-snack-bar-mdc-snackbar-fill-color,
 $mat-mdc-snack-bar-mdc-snackbar-label-ink-color;
-@forward '../../mdc-tabs/tabs-theme' hide color, density, theme, typography;
-@forward '../../mdc-tabs/tabs-theme' as mat-mdc-tabs-* hide $mat-mdc-tabs-mdc-tab-icon-color-active,
-$mat-mdc-tabs-mdc-tab-text-label-color-active, $mat-mdc-tabs-mdc-tab-text-label-color-default;
 @forward '../../mdc-table/table-theme' hide color, density, theme, typography;
 @forward '../../mdc-table/table-theme' as mat-mdc-table-* hide
 $mat-mdc-table-mdc-data-table-divider-color, $mat-mdc-table-mdc-data-table-header-row-text-color,
@@ -20,7 +17,6 @@ $mat-mdc-table-mdc-data-table-stroke-color, $mat-mdc-table-mdc-data-table-table-
 
 @import '../core-theme';
 @import '../../mdc-snack-bar/snack-bar-theme';
-@import '../../mdc-tabs/tabs-theme';
 @import '../../mdc-table/table-theme';
 @import '../../mdc-progress-spinner/progress-spinner-theme';
 @import '../../../material/core/core';

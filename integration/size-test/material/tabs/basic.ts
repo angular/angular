@@ -1,5 +1,5 @@
 import {Component, NgModule} from '@angular/core';
-import {MatTabsModule} from '@angular/material/tabs';
+import {MatLegacyTabsModule} from '@angular/material/legacy-tabs';
 
 /**
  * Basic component using `MatTabGroup` and `MatTab`. Other parts of the tabs
@@ -16,7 +16,7 @@ import {MatTabsModule} from '@angular/material/tabs';
 export class TestComponent {}
 
 @NgModule({
-  imports: [MatTabsModule],
+  imports: [MatLegacyTabsModule],
   declarations: [TestComponent],
   bootstrap: [TestComponent],
 })

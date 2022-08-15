@@ -1,0 +1,35 @@
+@use '../../core/style/variables';
+@use '../tabs-common';
+
+// Wraps each link in the header
+.mat-mdc-tab-link {
+  @include tabs-common.tab;
+
+  &.mat-mdc-tab-disabled {
+    // We use `pointer-events` to make the element unclickable when it's disabled, rather than
+    // preventing the default action through JS, because we can't prevent the action reliably
+    // due to other directives potentially registering their events earlier. This shouldn't cause
+    // the user to click through, because we always have a `.mat-tab-links` behind the link.
+    pointer-events: none;
+
+    // MDC doesn't support disabled tabs so we need to improvise.
+    opacity: 0.4;
+  }
+
+  // Note that we only want to target direct descendant tabs.
+  .mat-mdc-tab-header.mat-mdc-tab-nav-bar-stretch-tabs & {
+    flex-grow: 1;
+  }
+
+  // For the tab-link element, default inset/offset values are necessary to ensure that
+  // the focus indicator is sufficiently contrastive and renders appropriately.
+  &::before {
+    margin: 5px;
+  }
+}
+
+@media (variables.$xsmall) {
+  .mat-mdc-tab-link {
+    min-width: 72px;
+  }
+}

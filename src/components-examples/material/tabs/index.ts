@@ -6,7 +6,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatIconModule} from '@angular/material/icon';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatTabsModule} from '@angular/material/tabs';
+import {MatLegacyTabsModule} from '@angular/material/legacy-tabs';
 import {TabGroupAlignExample} from './tab-group-align/tab-group-align-example';
 import {TabGroupAnimationsExample} from './tab-group-animations/tab-group-animations-example';
 import {TabGroupAsyncExample} from './tab-group-async/tab-group-async-example';
@@ -64,7 +64,7 @@ const EXAMPLES = [
     MatLegacyCheckboxModule,
     MatIconModule,
     MatLegacyInputModule,
-    MatTabsModule,
+    MatLegacyTabsModule,
     ReactiveFormsModule,
   ],
   declarations: EXAMPLES,

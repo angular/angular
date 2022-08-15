@@ -7,28 +7,29 @@
  */
 
 import {
+  ComponentHarnessConstructor,
   ContentContainerComponentHarness,
   HarnessLoader,
   HarnessPredicate,
 } from '@angular/cdk/testing';
 import {TabHarnessFilters} from './tab-harness-filters';
 
-/** Harness for interacting with a standard Angular Material tab-label in tests. */
+/** Harness for interacting with an MDC_based Angular Material tab in tests. */
 export class MatTabHarness extends ContentContainerComponentHarness<string> {
   /** The selector for the host element of a `MatTab` instance. */
-  static hostSelector = '.mat-tab-label';
+  static hostSelector = '.mat-mdc-tab';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatTabHarness` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a tab with specific attributes.
    * @param options Options for filtering which tab instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: TabHarnessFilters = {}): HarnessPredicate<MatTabHarness> {
-    return new HarnessPredicate(MatTabHarness, options).addOption(
-      'label',
-      options.label,
-      (harness, label) => HarnessPredicate.stringMatches(harness.getLabel(), label),
+  static with<T extends MatTabHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: TabHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options).addOption('label', options.label, (harness, label) =>
+      HarnessPredicate.stringMatches(harness.getLabel(), label),
     );
   }
 
@@ -61,7 +62,7 @@ export class MatTabHarness extends ContentContainerComponentHarness<string> {
 
   /** Selects the given tab by clicking on the label. Tab cannot be selected if disabled. */
   async select(): Promise<void> {
-    await (await this.host()).click();
+    await (await this.host()).click('center');
   }
 
   /** Gets the text content of the tab. */

@@ -1,0 +1,9 @@
+@forward '../core/theming/theming.import';
+@forward '../core/typography/typography-utils.import';
+@forward 'tabs-theme' hide color, theme, typography;
+@forward 'tabs-theme' as mat-legacy-tabs-* hide mat-legacy-tabs-background, mat-legacy-tabs-density,
+  mat-legacy-tabs-ink-bar, mat-legacy-tabs-tab-label-focus;
+
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/typography/typography-utils';

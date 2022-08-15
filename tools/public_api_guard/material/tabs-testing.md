@@ -6,6 +6,7 @@
 
 import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
+import { ComponentHarnessConstructor } from '@angular/cdk/testing';
 import { ContentContainerComponentHarness } from '@angular/cdk/testing';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
@@ -16,7 +17,7 @@ export class MatTabGroupHarness extends ComponentHarness {
     getTabs(filter?: TabHarnessFilters): Promise<MatTabHarness[]>;
     static hostSelector: string;
     selectTab(filter?: TabHarnessFilters): Promise<void>;
-    static with(options?: TabGroupHarnessFilters): HarnessPredicate<MatTabGroupHarness>;
+    static with<T extends MatTabGroupHarness>(this: ComponentHarnessConstructor<T>, options?: TabGroupHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
@@ -31,7 +32,7 @@ export class MatTabHarness extends ContentContainerComponentHarness<string> {
     isDisabled(): Promise<boolean>;
     isSelected(): Promise<boolean>;
     select(): Promise<void>;
-    static with(options?: TabHarnessFilters): HarnessPredicate<MatTabHarness>;
+    static with<T extends MatTabHarness>(this: ComponentHarnessConstructor<T>, options?: TabHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
@@ -41,7 +42,7 @@ export class MatTabLinkHarness extends ComponentHarness {
     static hostSelector: string;
     isActive(): Promise<boolean>;
     isDisabled(): Promise<boolean>;
-    static with(options?: TabLinkHarnessFilters): HarnessPredicate<MatTabLinkHarness>;
+    static with<T extends MatTabLinkHarness>(this: ComponentHarnessConstructor<T>, options?: TabLinkHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
@@ -51,7 +52,7 @@ export class MatTabNavBarHarness extends ComponentHarness {
     getLinks(filter?: TabLinkHarnessFilters): Promise<MatTabLinkHarness[]>;
     getPanel(): Promise<MatTabNavPanelHarness>;
     static hostSelector: string;
-    static with(options?: TabNavBarHarnessFilters): HarnessPredicate<MatTabNavBarHarness>;
+    static with<T extends MatTabNavBarHarness>(this: ComponentHarnessConstructor<T>, options?: TabNavBarHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public

@@ -12,7 +12,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatSliderModule} from '@angular/material/slider';
-import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';
+import {MatTabsModule} from '@angular/material/tabs';
 import {MatTableModule} from '@angular/material-experimental/mdc-table';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {MatIconModule} from '@angular/material/icon';

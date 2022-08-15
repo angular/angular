@@ -88,8 +88,8 @@ export const IMPORT_REPLACEMENTS: {[component: string]: {old: string; new: strin
     new: '@angular/material-experimental/mdc-table',
   },
   'tabs': {
-    old: '@angular/material/tabs',
-    new: '@angular/material-experimental/mdc-tabs',
+    old: '@angular/material/legacy-tabs',
+    new: '@angular/material/tabs',
   },
   'paginator': {
     old: '@angular/material/legacy-paginator',

@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing';
+import {
+  ComponentHarness,
+  ComponentHarnessConstructor,
+  HarnessPredicate,
+  parallel,
+} from '@angular/cdk/testing';
 import {
   TabNavBarHarnessFilters,
   TabNavPanelHarnessFilters,
@@ -15,19 +20,22 @@ import {
 import {MatTabLinkHarness} from './tab-link-harness';
 import {MatTabNavPanelHarness} from './tab-nav-panel-harness';
 
-/** Harness for interacting with a standard mat-tab-nav-bar in tests. */
+/** Harness for interacting with an MDC-based mat-tab-nav-bar in tests. */
 export class MatTabNavBarHarness extends ComponentHarness {
   /** The selector for the host element of a `MatTabNavBar` instance. */
-  static hostSelector = '.mat-tab-nav-bar';
+  static hostSelector = '.mat-mdc-tab-nav-bar';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a `MatTabNavBar` that meets
-   * certain criteria.
+   * Gets a `HarnessPredicate` that can be used to search for a tab nav bar with specific
+   * attributes.
    * @param options Options for filtering which tab nav bar instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: TabNavBarHarnessFilters = {}): HarnessPredicate<MatTabNavBarHarness> {
-    return new HarnessPredicate(MatTabNavBarHarness, options);
+  static with<T extends MatTabNavBarHarness>(
+    this: ComponentHarnessConstructor<T>,
+    options: TabNavBarHarnessFilters = {},
+  ): HarnessPredicate<T> {
+    return new HarnessPredicate(this, options);
   }
 
   /**

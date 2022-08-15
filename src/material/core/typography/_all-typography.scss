@@ -54,7 +54,6 @@
   @include sidenav-theme.typography($config);
   @include stepper-theme.typography($config);
   @include sort-theme.typography($config);
-  @include tabs-theme.typography($config);
   @include toolbar-theme.typography($config);
   @include snack-bar-theme.typography($config);
   @include tree-theme.typography($config);
@@ -94,6 +93,7 @@
   @include menu-theme.typography($config);
   @include list-theme.typography($config);
   @include paginator-theme.typography($config);
+  @include tabs-theme.typography($config);
 }
 
 // @deprecated Use `all-component-typographies`.

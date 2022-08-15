@@ -1,0 +1,19 @@
+.mat-tab-body-content {
+  height: 100%;
+  overflow: auto;
+
+  .mat-tab-group-dynamic-height & {
+    overflow: hidden;
+  }
+
+  // Usually the `visibility: hidden` added by the animation is enough to prevent focus from
+  // entering the collapsed content, but children with their own `visibility` can override it.
+  // This is a fallback that completely hides the content when the element becomes hidden.
+  // Note that we can't do this in the animation definition, because the style gets recomputed too
+  // late, breaking the animation because Angular didn't have time to figure out the target height.
+  // This can also be achieved with JS, but it has issues when starting an animation before
+  // the previous one has finished.
+  &[style*='visibility: hidden'] {
+    display: none;
+  }
+}

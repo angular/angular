@@ -141,7 +141,8 @@
   progress-bar-theme, progress-bar-color, progress-bar-typography, progress-bar-density;
 @forward './progress-spinner/progress-spinner-theme' as progress-spinner-* show
   progress-spinner-theme, progress-spinner-color, progress-spinner-typography;
-@forward './radio/radio-theme' as radio-* show radio-theme, radio-color, radio-typography;
+@forward './radio/radio-theme' as radio-* show radio-theme, radio-color, radio-typography,
+  radio-density;
 @forward './legacy-radio/radio-theme' as legacy-radio-* show legacy-radio-theme, legacy-radio-color,
   legacy-radio-typography;
 @forward './select/select-theme' as select-* show select-theme, select-color, select-typography,
@@ -163,7 +164,9 @@
 @forward './stepper/stepper-theme' as stepper-* show stepper-theme, stepper-color,
   stepper-typography;
 @forward './table/table-theme' as table-* show table-theme, table-color, table-typography;
-@forward './tabs/tabs-theme' as tabs-* show tabs-theme, tabs-color, tabs-typography;
+@forward './tabs/tabs-theme' as tabs-* show tabs-theme, tabs-color, tabs-typography, tabs-density;
+@forward './legacy-tabs/tabs-theme' as legacy-tabs-* show legacy-tabs-theme, legacy-tabs-color,
+legacy-tabs-typography;
 @forward './toolbar/toolbar-theme' as toolbar-* show toolbar-theme, toolbar-color,
   toolbar-typography;
 @forward './legacy-tooltip/tooltip-theme' as legacy-tooltip-* show legacy-tooltip-theme,

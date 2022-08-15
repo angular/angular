@@ -2,7 +2,6 @@
 
 @use '../core-theme';
 @use '../../mdc-snack-bar/snack-bar-theme';
-@use '../../mdc-tabs/tabs-theme';
 @use '../../mdc-table/table-theme';
 @use '../../mdc-progress-spinner/progress-spinner-theme';
 
@@ -31,7 +30,7 @@
     @include table-theme.theme($theme-or-color-config);
     @include mat.form-field-theme($theme-or-color-config);
     @include mat.input-theme($theme-or-color-config);
-    @include tabs-theme.theme($theme-or-color-config);
+    @include mat.tabs-theme($theme-or-color-config);
     @include mat.tooltip-theme($theme-or-color-config);
   }
 }

@@ -1,0 +1,11 @@
+@forward '../core/style/private.import';
+@forward '../core/style/vendor-prefixes.import';
+@forward '../../cdk/a11y/index.import';
+@forward 'tabs-common' hide $tab-animation-duration, $tab-bar-height;
+@forward 'tabs-common' as mat-* hide mat-ink-bar, mat-paginated-tab-header,
+mat-paginated-tab-header-container, mat-paginated-tab-header-item-wrapper, mat-tab-label;
+
+@import '../core/style/variables';
+@import '../core/style/private';
+@import '../core/style/vendor-prefixes';
+@import '../../cdk/a11y';

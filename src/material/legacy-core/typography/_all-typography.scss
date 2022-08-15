@@ -20,6 +20,7 @@
 @use '../../legacy-menu/menu-theme';
 @use '../../legacy-list/list-theme';
 @use '../../legacy-paginator/paginator-theme';
+@use '../../legacy-tabs/tabs-theme';
 
 // Includes all of the typographic styles.
 @mixin all-legacy-component-typographies($config-or-theme: null) {
@@ -52,6 +53,7 @@
   @include dialog-theme.typography($config);
   @include chips-theme.typography($config);
   @include slide-toggle-theme.typography($config);
+  @include tabs-theme.typography($config);
   @include radio-theme.typography($config);
   @include slider-theme.typography($config);
   @include menu-theme.typography($config);

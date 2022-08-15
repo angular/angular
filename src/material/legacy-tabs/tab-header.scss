@@ -1,0 +1,39 @@
+@use '../core/style/private';
+@use './tabs-common';
+@use '../core/style/variables';
+
+@include tabs-common.paginated-tab-header;
+
+.mat-ink-bar {
+  @include tabs-common.ink-bar;
+}
+
+.mat-tab-labels {
+  @include tabs-common.paginated-tab-header-item-wrapper('.mat-tab-header');
+}
+
+.mat-tab-label-container {
+  @include tabs-common.paginated-tab-header-container;
+}
+
+.mat-tab-list {
+  @include private.private-animation-noop();
+}
+
+// Wraps each tab label
+.mat-tab-label {
+  @include tabs-common.tab-label;
+  position: relative;
+
+  // For the tab element, default inset/offset values are necessary to ensure that
+  // the focus indicator is sufficiently contrastive and renders appropriately.
+  &::before {
+    margin: 5px;
+  }
+}
+
+@media (variables.$xsmall) {
+  .mat-tab-label {
+    min-width: 72px;
+  }
+}

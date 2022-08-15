@@ -10,8 +10,8 @@ ng_module(
         ":mdc_tabs_demo_scss",
     ],
     deps = [
-        "//src/material-experimental/mdc-tabs",
         "//src/material/button-toggle",
+        "//src/material/tabs",
     ],
 )
 

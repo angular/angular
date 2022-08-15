@@ -9,7 +9,7 @@
 import {NgModule} from '@angular/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
-import {MatTabsModule} from '@angular/material-experimental/mdc-tabs';
+import {MatTabsModule} from '@angular/material/tabs';
 import {MdcTabsE2e} from './mdc-tabs-e2e';
 
 @NgModule({

@@ -8,7 +8,7 @@ ng_module(
     assets = ["slider-demo.html"],
     deps = [
         "//src/material/legacy-slider",
-        "//src/material/tabs",
+        "//src/material/legacy-tabs",
         "@npm//@angular/forms",
     ],
 )
