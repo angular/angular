@@ -1,5 +1,9 @@
-@use '../core/mdc-helpers/mdc-helpers';
 @use '@material/card' as mdc-card;
+@use '@material/card/variables' as mdc-card-variables;
+@use '@material/card/elevated-card-theme' as mdc-elevated-card-theme;
+@use '@material/card/outlined-card-theme' as mdc-outlined-card-theme;
+@use '../core/mdc-helpers/mdc-helpers';
+@use '../core/style/elevation';
 
 // TODO(jelbourn): move header and title-group styles to their own files.
 
@@ -11,7 +15,33 @@ $mat-card-default-padding: 16px !default;
 
 @include mdc-helpers.disable-mdc-fallback-declarations {
   // Include all MDC card styles except for color and typography.
-  @include mdc-card.without-ripple($query: mdc-helpers.$mdc-base-styles-query);
+  @include mdc-card.static-styles($query: mdc-helpers.$mdc-base-styles-query);
+}
+
+.mat-mdc-card {
+  position: relative;
+
+  @include mdc-helpers.disable-mdc-fallback-declarations {
+    // MDC's theme has `container-elevation` and `container-shadow-color` tokens, but we can't
+    // use them because they output under a `.mdc-card` selector whereas the rest of the theme
+    // isn't under any selector. Even if the mixin is pulled out of the selector, it throws a
+    // different error.
+    @include elevation.elevation(1);
+    @include mdc-elevated-card-theme.theme-styles((
+      container-color: transparent,
+      container-shape: mdc-card-variables.$shape-radius,
+    ));
+  }
+}
+
+.mat-mdc-card-outlined {
+  @include mdc-helpers.disable-mdc-fallback-declarations {
+    @include elevation.elevation(0);
+    @include mdc-outlined-card-theme.theme-styles((
+      outline-color: transparent,
+      outline-width: 1px,
+    ));
+  }
 }
 
 // Title text and subtitles text within a card. MDC doesn't have pre-made title sections for cards.

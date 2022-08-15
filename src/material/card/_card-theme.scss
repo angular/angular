@@ -1,7 +1,8 @@
 @use '../core/theming/theming';
 @use '../core/mdc-helpers/mdc-helpers';
 @use '../core/typography/typography';
-@use '@material/card' as mdc-card;
+@use '@material/card/elevated-card-theme' as mdc-elevated-card-theme;
+@use '@material/card/outlined-card-theme' as mdc-outlined-card-theme;
 @use '@material/typography' as mdc-typography;
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use 'sass:color';
@@ -10,18 +11,18 @@
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   $foreground: map.get($config, foreground);
-  $is-dark-theme: map.get($config, is-dark);
-
-  $orig-mdc-card-action-icon-color: mdc-card.$action-icon-color;
-  $orig-mdc-card-outline-color: mdc-card.$outline-color;
 
   @include mdc-helpers.using-mdc-theme($config) {
-    mdc-card.$action-icon-color: rgba(mdc-theme-color.prop-value(on-surface),
-      mdc-theme-color.text-emphasis(medium));
-    mdc-card.$outline-color: color.mix(mdc-theme-color.prop-value(on-surface),
-      mdc-theme-color.prop-value(surface), 12%);
+    .mat-mdc-card {
+      @include mdc-elevated-card-theme.theme((
+        container-color: mdc-theme-color.prop-value(surface),
+      ));
 
-    @include mdc-card.without-ripple($query: mdc-helpers.$mdc-theme-styles-query);
+      @include mdc-outlined-card-theme.theme((
+        outline-color: color.mix(mdc-theme-color.prop-value(on-surface),
+          mdc-theme-color.prop-value(surface), 12%)
+      ));
+    }
 
     // Card subtitles are an Angular Material construct (not MDC), so we explicitly set their
     // color to secondary text here.
@@ -29,17 +30,12 @@
       color: theming.get-color-from-palette($foreground, secondary-text);
     }
   }
-
-  mdc-card.$action-icon-color: $orig-mdc-card-action-icon-color;
-  mdc-card.$outline-color: $orig-mdc-card-outline-color;
 }
 
 @mixin typography($config-or-theme) {
   $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
   @include mdc-helpers.using-mdc-typography($config) {
-    @include mdc-card.without-ripple($query: mdc-helpers.$mdc-typography-styles-query);
-
     // Card subtitles and titles are an Angular Material construct (not MDC), so we explicitly
     // set their typographic styles here.
     .mat-mdc-card-title {
