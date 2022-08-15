@@ -46,12 +46,33 @@
   flex: 1;
   flex-direction: row;
   overflow: hidden;
+
+  // width of .mat-expansion-indicator::after element
+  &.mat-content-hide-toggle {
+    margin-right: 8px;
+
+    [dir='rtl'] & {
+      margin-right: 0;
+      margin-left: 8px;
+    }
+
+    .mat-expansion-toggle-indicator-before & {
+      margin-left: 24px;
+      margin-right: 0;
+
+      [dir='rtl'] & {
+        margin-right: 24px;
+        margin-left: 0;
+      }
+    }
+  }
 }
 
 .mat-expansion-panel-header-title,
 .mat-expansion-panel-header-description {
   display: flex;
   flex-grow: 1;
+  flex-basis: 0;
   margin-right: 16px;
   align-items: center;
 

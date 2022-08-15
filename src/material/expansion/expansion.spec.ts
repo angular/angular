@@ -61,9 +61,8 @@ describe('MatExpansionPanel', () => {
 
   it('should be able to render panel content lazily', fakeAsync(() => {
     const fixture = TestBed.createComponent(LazyPanelWithContent);
-    const content = fixture.debugElement.query(
-      By.css('.mat-expansion-panel-content'),
-    )!.nativeElement;
+    const content = fixture.debugElement.query(By.css('.mat-expansion-panel-content'))!
+      .nativeElement;
     fixture.detectChanges();
 
     expect(content.textContent.trim())
@@ -80,9 +79,8 @@ describe('MatExpansionPanel', () => {
 
   it('should render the content for a lazy-loaded panel that is opened on init', fakeAsync(() => {
     const fixture = TestBed.createComponent(LazyPanelOpenOnLoad);
-    const content = fixture.debugElement.query(
-      By.css('.mat-expansion-panel-content'),
-    )!.nativeElement;
+    const content = fixture.debugElement.query(By.css('.mat-expansion-panel-content'))!
+      .nativeElement;
     fixture.detectChanges();
 
     expect(content.textContent.trim())
@@ -312,12 +310,14 @@ describe('MatExpansionPanel', () => {
   it('should be able to hide the toggle', () => {
     const fixture = TestBed.createComponent(PanelWithContent);
     const header = fixture.debugElement.query(By.css('.mat-expansion-panel-header'))!.nativeElement;
+    const content = fixture.debugElement.query(By.css('.mat-content'))!.nativeElement;
 
     fixture.detectChanges();
 
     expect(header.querySelector('.mat-expansion-indicator'))
       .withContext('Expected indicator to be shown.')
       .toBeTruthy();
+    expect(content.classList).not.toContain('mat-content-hide-toggle');
 
     fixture.componentInstance.hideToggle = true;
     fixture.detectChanges();
@@ -325,6 +325,7 @@ describe('MatExpansionPanel', () => {
     expect(header.querySelector('.mat-expansion-indicator'))
       .withContext('Expected indicator to be hidden.')
       .toBeFalsy();
+    expect(content.classList).toContain('mat-content-hide-toggle');
   });
 
   it('should update the indicator rotation when the expanded state is toggled programmatically', fakeAsync(() => {

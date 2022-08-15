@@ -1,4 +1,4 @@
-<span class="mat-content">
+<span class="mat-content" [class.mat-content-hide-toggle]="!_showToggle()">
   <ng-content select="mat-panel-title"></ng-content>
   <ng-content select="mat-panel-description"></ng-content>
   <ng-content></ng-content>
