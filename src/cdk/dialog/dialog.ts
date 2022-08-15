@@ -221,7 +221,7 @@ export class Dialog implements OnDestroy {
     dialogRef: DialogRef<R, C>,
     config: DialogConfig<D, DialogRef<R, C>>,
   ): BasePortalOutlet {
-    const userInjector = config.injector ?? config.viewContainerRef?.injector;
+    const userInjector = config.injector || config.viewContainerRef?.injector;
     const providers: StaticProvider[] = [
       {provide: DialogConfig, useValue: config},
       {provide: DialogRef, useValue: dialogRef},
@@ -265,9 +265,8 @@ export class Dialog implements OnDestroy {
     dialogContainer: BasePortalOutlet,
     config: DialogConfig<D, DialogRef<R, C>>,
   ) {
-    const injector = this._createInjector(config, dialogRef, dialogContainer);
-
     if (componentOrTemplateRef instanceof TemplateRef) {
+      const injector = this._createInjector(config, dialogRef, dialogContainer, undefined);
       let context: any = {$implicit: config.data, dialogRef};
 
       if (config.templateContext) {
@@ -283,6 +282,7 @@ export class Dialog implements OnDestroy {
         new TemplatePortal<C>(componentOrTemplateRef, null!, context, injector),
       );
     } else {
+      const injector = this._createInjector(config, dialogRef, dialogContainer, this._injector);
       const contentRef = dialogContainer.attachComponentPortal<C>(
         new ComponentPortal(
           componentOrTemplateRef,
@@ -301,14 +301,17 @@ export class Dialog implements OnDestroy {
    * @param config Config object that is used to construct the dialog.
    * @param dialogRef Reference to the dialog being opened.
    * @param dialogContainer Component that is going to wrap the dialog content.
+   * @param fallbackInjector Injector to use as a fallback when a lookup fails in the custom
+   * dialog injector, if the user didn't provide a custom one.
    * @returns The custom injector that can be used inside the dialog.
    */
   private _createInjector<R, D, C>(
     config: DialogConfig<D, DialogRef<R, C>>,
     dialogRef: DialogRef<R, C>,
     dialogContainer: BasePortalOutlet,
+    fallbackInjector: Injector | undefined,
   ): Injector {
-    const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
+    const userInjector = config.injector || config.viewContainerRef?.injector;
     const providers: StaticProvider[] = [
       {provide: DIALOG_DATA, useValue: config.data},
       {provide: DialogRef, useValue: dialogRef},
@@ -333,7 +336,7 @@ export class Dialog implements OnDestroy {
       });
     }
 
-    return Injector.create({parent: config.injector || userInjector || this._injector, providers});
+    return Injector.create({parent: userInjector || fallbackInjector, providers});
   }
 
   /**
