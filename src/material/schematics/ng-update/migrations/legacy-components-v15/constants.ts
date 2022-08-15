@@ -37,3 +37,13 @@ export const MIXINS = COMPONENTS.flatMap(component => [
   `${component}-density`,
   `${component}-typography`,
 ]);
+
+export const MAT_IMPORT_CHANGE = {
+  old: '@angular/material/',
+  new: '@angular/material/legacy-',
+};
+
+export const MAT_MDC_IMPORT_CHANGE = {
+  old: '@angular/material-experimental/mdc-',
+  new: '@angular/material/',
+};

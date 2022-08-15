@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import * as postcss from 'postcss';
 import * as scss from 'postcss-scss';
 
-import {MIXINS} from './constants';
+import {MAT_IMPORT_CHANGE, MAT_MDC_IMPORT_CHANGE, MIXINS} from './constants';
 
 import {Migration, ResolvedResource, TargetVersion, WorkspacePath} from '@angular/cdk/schematics';
 
@@ -73,7 +73,7 @@ export class LegacyComponentsMigration extends Migration<null> {
       this._handleImportDeclaration(node);
       return;
     }
-    if (this._isDestructuredAsyncImport(node)) {
+    if (this._isDestructuredAsyncLegacyImport(node)) {
       this._handleDestructuredAsyncImport(node);
       return;
     }
@@ -101,23 +101,39 @@ export class LegacyComponentsMigration extends Migration<null> {
     }
   }
 
-  /** Handles updating the module specifier of @angular/material imports. */
+  /**
+   * Handles updating the module specifier of
+   * @angular/material and @angular/material-experimental imports.
+   *
+   * Also updates the named import bindings of @angular/material imports.
+   */
   private _handleImportDeclaration(node: ts.ImportDeclaration): void {
     const moduleSpecifier = node.moduleSpecifier as ts.StringLiteral;
-    if (moduleSpecifier.text.startsWith('@angular/material/')) {
-      this._tsReplaceAt(node, {old: '@angular/material/', new: '@angular/material/legacy-'});
+    if (moduleSpecifier.text.startsWith(MAT_IMPORT_CHANGE.old)) {
+      this._tsReplaceAt(node, MAT_IMPORT_CHANGE);
 
       if (node.importClause?.namedBindings && ts.isNamedImports(node.importClause.namedBindings)) {
         this._handleNamedImportBindings(node.importClause.namedBindings);
       }
     }
+
+    if (moduleSpecifier.text.startsWith(MAT_MDC_IMPORT_CHANGE.old)) {
+      this._tsReplaceAt(node, MAT_MDC_IMPORT_CHANGE);
+    }
   }
 
-  /** Handles updating the module specifier of @angular/material import expressions. */
+  /**
+   * Handles updating the module specifier of
+   * @angular/material and @angular/material-experimental import expressions.
+   */
   private _handleImportExpression(node: ts.CallExpression): void {
     const moduleSpecifier = node.arguments[0] as ts.StringLiteral;
-    if (moduleSpecifier.text.startsWith('@angular/material/')) {
-      this._tsReplaceAt(node, {old: '@angular/material/', new: '@angular/material/legacy-'});
+    if (moduleSpecifier.text.startsWith(MAT_IMPORT_CHANGE.old)) {
+      this._tsReplaceAt(node, MAT_IMPORT_CHANGE);
+    }
+
+    if (moduleSpecifier.text.startsWith(MAT_MDC_IMPORT_CHANGE.old)) {
+      this._tsReplaceAt(node, MAT_MDC_IMPORT_CHANGE);
     }
   }
 
@@ -136,18 +152,22 @@ export class LegacyComponentsMigration extends Migration<null> {
   }
 
   /**
-   * Returns true if the given node is a variable declaration assigns
-   * the awaited result of an import expression using an object binding.
+   * Returns true if the given node is a variable declaration
+   * assigns the awaited result of an @angular/material import
+   * expression using an object binding.
    */
-  private _isDestructuredAsyncImport(
-    node: ts.Node,
-  ): node is ts.VariableDeclaration & {name: ts.ObjectBindingPattern} {
+  private _isDestructuredAsyncLegacyImport(node: ts.Node): node is ts.VariableDeclaration & {
+    name: ts.ObjectBindingPattern;
+    initializer: ts.AwaitExpression & {expression: ts.CallExpression} & {
+      arguments: [ts.StringLiteralLike];
+    };
+  } {
     return (
       ts.isVariableDeclaration(node) &&
       !!node.initializer &&
       ts.isAwaitExpression(node.initializer) &&
-      ts.isCallExpression(node.initializer.expression) &&
-      ts.SyntaxKind.ImportKeyword === node.initializer.expression.expression.kind &&
+      this._isImportCallExpression(node.initializer.expression) &&
+      node.initializer.expression.arguments[0].text.startsWith(MAT_IMPORT_CHANGE.old) &&
       ts.isObjectBindingPattern(node.name)
     );
   }

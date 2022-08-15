@@ -43,41 +43,83 @@ describe('v15 legacy components migration', () => {
       expect(readLine(TS_FILE_PATH)).withContext(ctx).toEqual(opts.new);
     }
 
-    it('updates import declarations', async () => {
-      await runTypeScriptMigrationTest('named binding', {
-        old: `import {MatButton} from '@angular/material/button';`,
-        new: `import {MatLegacyButton as MatButton} from '@angular/material/legacy-button';`,
+    describe('material --> legacy', () => {
+      it('updates import declarations', async () => {
+        await runTypeScriptMigrationTest('named binding', {
+          old: `import {MatButton} from '@angular/material/button';`,
+          new: `import {MatLegacyButton as MatButton} from '@angular/material/legacy-button';`,
+        });
+        await runTypeScriptMigrationTest('named binding w/ alias', {
+          old: `import {MatButton as Button} from '@angular/material/button';`,
+          new: `import {MatLegacyButton as Button} from '@angular/material/legacy-button';`,
+        });
+        await runTypeScriptMigrationTest('multiple named bindings', {
+          old: `import {MatButton, MatButtonModule} from '@angular/material/button';`,
+          new: `import {MatLegacyButton as MatButton, MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';`,
+        });
+        await runTypeScriptMigrationTest('multiple named bindings w/ alias', {
+          old: `import {MatButton, MatButtonModule as ButtonModule} from '@angular/material/button';`,
+          new: `import {MatLegacyButton as MatButton, MatLegacyButtonModule as ButtonModule} from '@angular/material/legacy-button';`,
+        });
       });
-      await runTypeScriptMigrationTest('named binding w/ alias', {
-        old: `import {MatButton as Button} from '@angular/material/button';`,
-        new: `import {MatLegacyButton as Button} from '@angular/material/legacy-button';`,
-      });
-      await runTypeScriptMigrationTest('multiple named bindings', {
-        old: `import {MatButton, MatButtonModule} from '@angular/material/button';`,
-        new: `import {MatLegacyButton as MatButton, MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';`,
-      });
-      await runTypeScriptMigrationTest('multiple named bindings w/ alias', {
-        old: `import {MatButton, MatButtonModule as ButtonModule} from '@angular/material/button';`,
-        new: `import {MatLegacyButton as MatButton, MatLegacyButtonModule as ButtonModule} from '@angular/material/legacy-button';`,
+
+      it('updates import expressions', async () => {
+        await runTypeScriptMigrationTest('destructured & awaited', {
+          old: `const {MatButton} = await import('@angular/material/button');`,
+          new: `const {MatLegacyButton: MatButton} = await import('@angular/material/legacy-button');`,
+        });
+        await runTypeScriptMigrationTest('destructured & awaited w/ alias', {
+          old: `const {MatButton: Button} = await import('@angular/material/button');`,
+          new: `const {MatLegacyButton: Button} = await import('@angular/material/legacy-button');`,
+        });
+        await runTypeScriptMigrationTest('promise', {
+          old: `const promise = import('@angular/material/button');`,
+          new: `const promise = import('@angular/material/legacy-button');`,
+        });
+        await runTypeScriptMigrationTest('.then', {
+          old: `import('@angular/material/button').then(() => {});`,
+          new: `import('@angular/material/legacy-button').then(() => {});`,
+        });
       });
     });
 
-    it('updates import expressions', async () => {
-      await runTypeScriptMigrationTest('destructured & awaited', {
-        old: `const {MatButton} = await import('@angular/material/button');`,
-        new: `const {MatLegacyButton: MatButton} = await import('@angular/material/legacy-button');`,
+    describe('material-experimental --> material', () => {
+      it('updates import declarations', async () => {
+        await runTypeScriptMigrationTest('named binding', {
+          old: `import {MatButton} from '@angular/material-experimental/mdc-button';`,
+          new: `import {MatButton} from '@angular/material/button';`,
+        });
+        await runTypeScriptMigrationTest('named binding w/ alias', {
+          old: `import {MatButton as Button} from '@angular/material-experimental/mdc-button';`,
+          new: `import {MatButton as Button} from '@angular/material/button';`,
+        });
+        await runTypeScriptMigrationTest('multiple named bindings', {
+          old: `import {MatButton, MatButtonModule} from '@angular/material-experimental/mdc-button';`,
+          new: `import {MatButton, MatButtonModule} from '@angular/material/button';`,
+        });
+        await runTypeScriptMigrationTest('multiple named bindings w/ alias', {
+          old: `import {MatButton, MatButtonModule as ButtonModule} from '@angular/material-experimental/mdc-button';`,
+          new: `import {MatButton, MatButtonModule as ButtonModule} from '@angular/material/button';`,
+        });
       });
-      await runTypeScriptMigrationTest('destructured & awaited w/ alias', {
-        old: `const {MatButton: Button} = await import('@angular/material/button');`,
-        new: `const {MatLegacyButton: Button} = await import('@angular/material/legacy-button');`,
-      });
-      await runTypeScriptMigrationTest('promise', {
-        old: `const promise = import('@angular/material/button');`,
-        new: `const promise = import('@angular/material/legacy-button');`,
-      });
-      await runTypeScriptMigrationTest('.then', {
-        old: `import('@angular/material/button').then(() => {});`,
-        new: `import('@angular/material/legacy-button').then(() => {});`,
+
+      it('updates import expressions', async () => {
+        await runTypeScriptMigrationTest('destructured & awaited', {
+          old: `const {MatButton} = await import('@angular/material-experimental/mdc-button');`,
+          new: `const {MatButton} = await import('@angular/material/button');`,
+        });
+        await runTypeScriptMigrationTest('destructured & awaited w/ alias', {
+          old: `const {MatButton: Button} = await import('@angular/material-experimental/mdc-button');`,
+          new: `const {MatButton: Button} = await import('@angular/material/button');`,
+        });
+        await runTypeScriptMigrationTest('promise', {
+          old: `const promise = import('@angular/material-experimental/mdc-button');`,
+          new: `const promise = import('@angular/material/button');`,
+        });
+        await runTypeScriptMigrationTest('.then', {
+          old: `import('@angular/material-experimental/mdc-button').then(() => {});`,
+          new: `import('@angular/material/button').then(() => {});`,
+        });
       });
     });
   });
