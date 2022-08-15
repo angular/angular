@@ -113,13 +113,15 @@ describe('MatButtonToggle with forms', () => {
 
     it('should set individual radio names based on the group name', () => {
       expect(groupInstance.name).toBeTruthy();
-      for (let buttonToggle of buttonToggleInstances) {
-        expect(buttonToggle.name).toBe(groupInstance.name);
+      for (let buttonToggle of innerButtons) {
+        expect(buttonToggle.getAttribute('name')).toBe(groupInstance.name);
       }
 
       groupInstance.name = 'new name';
-      for (let buttonToggle of buttonToggleInstances) {
-        expect(buttonToggle.name).toBe(groupInstance.name);
+      fixture.detectChanges();
+
+      for (let buttonToggle of innerButtons) {
+        expect(buttonToggle.getAttribute('name')).toBe(groupInstance.name);
       }
     });
 
@@ -135,6 +137,15 @@ describe('MatButtonToggle with forms', () => {
       expect(innerButtons.every(button => button.getAttribute('name') === groupInstance.name))
         .withContext('Expected all buttons to have the new name.')
         .toBe(true);
+    });
+
+    it('should set the name of the buttons to the group name if the name of the button changes after init', () => {
+      const firstButton = innerButtons[0];
+      expect(firstButton.getAttribute('name')).toBe(fixture.componentInstance.groupName);
+
+      fixture.componentInstance.options[0].name = 'changed-name';
+      fixture.detectChanges();
+      expect(firstButton.getAttribute('name')).toBe(fixture.componentInstance.groupName);
     });
 
     it('should check the corresponding button toggle on a group value change', () => {
@@ -313,8 +324,8 @@ describe('MatButtonToggle without forms', () => {
 
     it('should set individual button toggle names based on the group name', () => {
       expect(groupInstance.name).toBeTruthy();
-      for (let buttonToggle of buttonToggleInstances) {
-        expect(buttonToggle.name).toBe(groupInstance.name);
+      for (let buttonToggle of buttonToggleLabelElements) {
+        expect(buttonToggle.getAttribute('name')).toBe(groupInstance.name);
       }
     });
 
@@ -930,8 +941,10 @@ class ButtonTogglesInsideButtonToggleGroup {
     [name]="groupName"
     [(ngModel)]="modelValue"
     (change)="lastEvent = $event">
-    <mat-button-toggle *ngFor="let option of options" [value]="option.value"
-                       [disableRipple]="disableRipple">
+    <mat-button-toggle *ngFor="let option of options"
+      [value]="option.value"
+      [disableRipple]="disableRipple"
+      [name]="option.name">
       {{option.label}}
     </mat-button-toggle>
   </mat-button-toggle-group>
@@ -941,9 +954,9 @@ class ButtonToggleGroupWithNgModel {
   groupName = 'group-name';
   modelValue: string;
   options = [
-    {label: 'Red', value: 'red'},
-    {label: 'Green', value: 'green'},
-    {label: 'Blue', value: 'blue'},
+    {label: 'Red', value: 'red', name: ''},
+    {label: 'Green', value: 'green', name: ''},
+    {label: 'Blue', value: 'blue', name: ''},
   ];
   lastEvent: MatButtonToggleChange;
   disableRipple = false;

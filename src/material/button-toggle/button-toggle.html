@@ -4,7 +4,7 @@
         [attr.tabindex]="disabled ? -1 : tabIndex"
         [attr.aria-pressed]="checked"
         [disabled]="disabled || null"
-        [attr.name]="name || null"
+        [attr.name]="_getButtonName()"
         [attr.aria-label]="ariaLabel"
         [attr.aria-labelledby]="ariaLabelledby"
         (click)="_onButtonClick()">

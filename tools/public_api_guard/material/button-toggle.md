@@ -47,6 +47,7 @@ export class MatButtonToggle extends _MatButtonToggleBase implements OnInit, Aft
     get disabled(): boolean;
     set disabled(value: BooleanInput);
     focus(options?: FocusOptions): void;
+    _getButtonName(): string | null;
     id: string;
     _markForCheck(): void;
     name: string;
