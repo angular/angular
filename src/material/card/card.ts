@@ -40,8 +40,7 @@ export const MAT_CARD_CONFIG = new InjectionToken<MatCardConfig>('MAT_CARD_CONFI
   styleUrls: ['card.css'],
   host: {
     'class': 'mat-mdc-card mdc-card',
-    '[class.mat-mdc-card-outlined]': 'appearance === "outlined"',
-    '[class.mdc-card--outlined]': 'appearance === "outlined"',
+    '[class.mdc-card--outlined]': 'appearance == "outlined"',
   },
   exportAs: 'matCard',
   encapsulation: ViewEncapsulation.None,
