@@ -10,13 +10,50 @@ import {Inject, InjectionToken, LOCALE_ID, Optional, Pipe, PipeTransform} from '
 
 import {formatDate} from '../i18n/format_date';
 
+import {DatePipeConfig, DEFAULT_DATE_FORMAT} from './date_pipe_config';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
  * Optionally-provided default timezone to use for all instances of `DatePipe` (such as `'+0430'`).
  * If the value isn't provided, the `DatePipe` will use the end-user's local system timezone.
+ *
+ * @deprecated use DATE_PIPE_DEFAULT_OPTIONS token to configure DatePipe
  */
 export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>('DATE_PIPE_DEFAULT_TIMEZONE');
+
+/**
+ * DI token that allows to provide default configuration for the `DatePipe` instances in an
+ * application. The value is an object which can include the following fields:
+ * - `dateFormat`: configures the default date format. If not provided, the `DatePipe`
+ * will use the 'mediumDate' as a value.
+ * - `timezone`: configures the default timezone. If not provided, the `DatePipe` will
+ * use the end-user's local system timezone.
+ *
+ * @see `DatePipeConfig`
+ *
+ * @usageNotes
+ *
+ * Various date pipe default values can be overwritten by providing this token with
+ * the value that has this interface.
+ *
+ * For example:
+ *
+ * Override the default date format by providing a value using the token:
+ * ```typescript
+ * providers: [
+ *   {provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {dateFormat: 'shortDate'}}
+ * ]
+ * ```
+ *
+ * Override the default timezone by providing a value using the token:
+ * ```typescript
+ * providers: [
+ *   {provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {timezone: '-1200'}}
+ * ]
+ * ```
+ */
+export const DATE_PIPE_DEFAULT_OPTIONS =
+    new InjectionToken<DatePipeConfig>('DATE_PIPE_DEFAULT_OPTIONS');
 
 // clang-format off
 /**
@@ -185,19 +222,27 @@ export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>('DATE_PIPE_
 export class DatePipe implements PipeTransform {
   constructor(
       @Inject(LOCALE_ID) private locale: string,
-      @Inject(DATE_PIPE_DEFAULT_TIMEZONE) @Optional() private defaultTimezone?: string|null) {}
+      @Inject(DATE_PIPE_DEFAULT_TIMEZONE) @Optional() private defaultTimezone?: string|null,
+      @Inject(DATE_PIPE_DEFAULT_OPTIONS) @Optional() private defaultOptions?: DatePipeConfig|null,
+  ) {}
 
   /**
    * @param value The date expression: a `Date` object,  a number
    * (milliseconds since UTC epoch), or an ISO string (https://www.w3.org/TR/NOTE-datetime).
    * @param format The date/time components to include, using predefined options or a
-   * custom format string.
+   * custom format string.  When not provided, the `DatePipe` looks for the value using the
+   * `DATE_PIPE_DEFAULT_OPTIONS` injection token (and reads the `dateFormat` property).
+   * If the token is not configured, the `mediumDate` is used as a value.
    * @param timezone A timezone offset (such as `'+0430'`), or a standard UTC/GMT, or continental US
-   * timezone abbreviation. When not supplied, either the value of the `DATE_PIPE_DEFAULT_TIMEZONE`
-   * injection token is used or the end-user's local system timezone.
+   * timezone abbreviation. When not provided, the `DatePipe` looks for the value using the
+   * `DATE_PIPE_DEFAULT_OPTIONS` injection token (and reads the `timezone` property). If the token
+   * is not configured, the end-user's local system timezone is used as a value.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n-common-locale-id).
+   *
+   * @see `DATE_PIPE_DEFAULT_OPTIONS`
+   *
    * @returns A date string in the desired format.
    */
   transform(value: Date|string|number, format?: string, timezone?: string, locale?: string): string
@@ -207,13 +252,15 @@ export class DatePipe implements PipeTransform {
       value: Date|string|number|null|undefined, format?: string, timezone?: string,
       locale?: string): string|null;
   transform(
-      value: Date|string|number|null|undefined, format = 'mediumDate', timezone?: string,
+      value: Date|string|number|null|undefined, format?: string, timezone?: string,
       locale?: string): string|null {
     if (value == null || value === '' || value !== value) return null;
 
     try {
-      return formatDate(
-          value, format, locale || this.locale, timezone ?? this.defaultTimezone ?? undefined);
+      const _format = format ?? this.defaultOptions?.dateFormat ?? DEFAULT_DATE_FORMAT;
+      const _timezone =
+          timezone ?? this.defaultOptions?.timezone ?? this.defaultTimezone ?? undefined;
+      return formatDate(value, _format, locale || this.locale, _timezone);
     } catch (error) {
       throw invalidPipeArgumentError(DatePipe, (error as Error).message);
     }
