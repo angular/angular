@@ -17,6 +17,10 @@ export class ThemingStylesMigration extends Migration<ComponentMigrator[], Schem
   namespace: string;
 
   override visitStylesheet(stylesheet: ResolvedResource) {
+    this.fileSystem.overwrite(stylesheet.filePath, this.migrateStyles(stylesheet.content));
+  }
+
+  migrateStyles(styles: string): string {
     const processor = new postcss.Processor([
       {
         postcssPlugin: 'theming-styles-migration-plugin',
@@ -28,8 +32,7 @@ export class ThemingStylesMigration extends Migration<ComponentMigrator[], Schem
       },
     ]);
 
-    const result = processor.process(stylesheet.content, {syntax: scss});
-    this.fileSystem.overwrite(stylesheet.filePath, result.toString());
+    return processor.process(styles, {syntax: scss}).toString();
   }
 
   atUseHandler(atRule: postcss.AtRule) {

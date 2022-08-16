@@ -107,6 +107,58 @@ describe('button runtime code', () => {
       `,
       );
     });
+
+    it('should migrate styles for a component', async () => {
+      await runMigrationTest(
+        `
+        @Component({
+          selector: 'button-example',
+          template: '<button mat-button>Learn More</button>',
+          styles: ['.mat-button { background: lavender; }'],
+        })
+        class ButtonExample {}
+      `,
+        `
+        @Component({
+          selector: 'button-example',
+          template: '<button mat-button>Learn More</button>',
+          styles: ['.mat-mdc-button { background: lavender; }'],
+        })
+        class ButtonExample {}
+      `,
+      );
+    });
+
+    it('should migrate multiline styles for a component', async () => {
+      // Note: The spaces in the last style are to perserve indentation on the
+      // new line between the comment and rule
+      await runMigrationTest(
+        `
+        @Component({
+          selector: "button-example",
+          template: "<button mat-button>Learn More</button>",
+          styles: [
+            ".mat-button { padding: 12px; }",
+            "::ng-deep .mat-button-wrapper{ color: darkblue; }"
+          ],
+        })
+        class ButtonExample {}
+      `,
+        `
+        @Component({
+          selector: "button-example",
+          template: "<button mat-button>Learn More</button>",
+          styles: [
+            ".mat-mdc-button { padding: 12px; }",
+            \`
+            /* TODO: The following rule targets internal classes of button that may no longer apply for the MDC version. */
+            \n            ::ng-deep .mat-button-wrapper{ color: darkblue; }\`
+          ],
+        })
+        class ButtonExample {}
+      `,
+      );
+    });
   });
 
   describe('import expressions', () => {
