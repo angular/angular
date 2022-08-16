@@ -5,20 +5,19 @@ const {readFileSync, writeFileSync} = require('fs');
 const {join, resolve} = require('path');
 
 // Constants
-const SRC_DIR = resolve(__dirname, '../src');
-const DIST_DIR = resolve(__dirname, '../dist');
+const SOURCE_404_BODY_PATH = resolve(process.argv[2]);
+const BUILD_OUTPUT_DIR = resolve(process.argv[3]);
+const DEST_404_PAGE_PATH = resolve(process.argv[4]);
 
 // Run
 _main();
 
 // Functions - Definitions
 function _main() {
-  const srcIndexPath = join(DIST_DIR, 'index.html');
-  const src404BodyPath = join(SRC_DIR, '404-body.html');
-  const dst404PagePath = join(DIST_DIR, '404.html');
+  const srcIndexPath = join(BUILD_OUTPUT_DIR, 'index.html');
 
   const srcIndexContent = readFileSync(srcIndexPath, 'utf8');
-  const src404BodyContent = readFileSync(src404BodyPath, 'utf8').trim();
+  const src404BodyContent = readFileSync(SOURCE_404_BODY_PATH, 'utf8').trim();
   const dst404PageContent = srcIndexContent
       .replace(/(<body>)[\s\S]+(<\/body>)/, `$1\n  ${src404BodyContent}\n$2`);
 
@@ -28,5 +27,5 @@ function _main() {
         'The content of \'index.html\' does not match the expected pattern.');
   }
 
-  writeFileSync(dst404PagePath, dst404PageContent);
+  writeFileSync(DEST_404_PAGE_PATH, dst404PageContent);
 }
