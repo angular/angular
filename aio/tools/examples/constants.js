@@ -9,4 +9,4 @@ exports.SHARED_PATH = path.resolve(this.PROJECT_ROOT, 'aio', 'tools', 'examples'
 
 exports.EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 exports.STACKBLITZ_CONFIG_FILENAME = 'stackblitz.json';
-exports.BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH = process.env.BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH || 'bazel-test-dist';
+exports.BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH = process.env.BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH || process.env.TEST_TMPDIR;
