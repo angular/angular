@@ -24,3 +24,8 @@ js_library(
         "@aio_npm//@angular-devkit/architect-cli",
     ],
 )
+
+nodejs_binary(
+    name = "build-404-page",
+    entry_point = "build-404-page.js",
+)
