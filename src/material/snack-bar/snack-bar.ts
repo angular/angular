@@ -8,8 +8,7 @@
 
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
-import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
-import {ComponentPortal, ComponentType, TemplatePortal} from '@angular/cdk/portal';
+import {ComponentType, Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
 import {
   ComponentRef,
   EmbeddedViewRef,
@@ -17,18 +16,24 @@ import {
   Injectable,
   InjectionToken,
   Injector,
+  OnDestroy,
   Optional,
   SkipSelf,
   TemplateRef,
-  OnDestroy,
   Type,
 } from '@angular/core';
-import {takeUntil} from 'rxjs/operators';
-import {TextOnlySnackBar, SimpleSnackBar} from './simple-snack-bar';
+import {MatSnackBarModule} from './module';
+import {SimpleSnackBar, TextOnlySnackBar} from './simple-snack-bar';
+import {_MatSnackBarContainerBase, MatSnackBarContainer} from './snack-bar-container';
 import {MAT_SNACK_BAR_DATA, MatSnackBarConfig} from './snack-bar-config';
-import {MatSnackBarContainer, _MatSnackBarContainerBase} from './snack-bar-container';
-import {MatSnackBarModule} from './snack-bar-module';
 import {MatSnackBarRef} from './snack-bar-ref';
+import {ComponentPortal, TemplatePortal} from '@angular/cdk/portal';
+import {takeUntil} from 'rxjs/operators';
+
+/** @docs-private */
+export function MAT_SNACK_BAR_DEFAULT_OPTIONS_FACTORY(): MatSnackBarConfig {
+  return new MatSnackBarConfig();
+}
 
 /** Injection token that can be used to specify default snack bar. */
 export const MAT_SNACK_BAR_DEFAULT_OPTIONS = new InjectionToken<MatSnackBarConfig>(
@@ -38,11 +43,6 @@ export const MAT_SNACK_BAR_DEFAULT_OPTIONS = new InjectionToken<MatSnackBarConfi
     factory: MAT_SNACK_BAR_DEFAULT_OPTIONS_FACTORY,
   },
 );
-
-/** @docs-private */
-export function MAT_SNACK_BAR_DEFAULT_OPTIONS_FACTORY(): MatSnackBarConfig {
-  return new MatSnackBarConfig();
-}
 
 @Injectable()
 export abstract class _MatSnackBarBase implements OnDestroy {
@@ -318,9 +318,9 @@ export abstract class _MatSnackBarBase implements OnDestroy {
  */
 @Injectable({providedIn: MatSnackBarModule})
 export class MatSnackBar extends _MatSnackBarBase {
-  protected simpleSnackBarComponent = SimpleSnackBar;
-  protected snackBarContainerComponent = MatSnackBarContainer;
-  protected handsetCssClass = 'mat-snack-bar-handset';
+  protected override simpleSnackBarComponent = SimpleSnackBar;
+  protected override snackBarContainerComponent = MatSnackBarContainer;
+  protected override handsetCssClass = 'mat-mdc-snack-bar-handset';
 
   constructor(
     overlay: Overlay,

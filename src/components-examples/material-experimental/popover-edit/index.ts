@@ -7,7 +7,7 @@ import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatIconModule} from '@angular/material/icon';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatLegacyListModule} from '@angular/material/legacy-list';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatLegacySnackBarModule} from '@angular/material/legacy-snack-bar';
 import {MatTableModule} from '@angular/material/table';
 import {PopoverEditCellSpanMatTableExample} from './popover-edit-cell-span-mat-table/popover-edit-cell-span-mat-table-example';
 import {PopoverEditMatTableFlexExample} from './popover-edit-mat-table-flex/popover-edit-mat-table-flex-example';
@@ -37,7 +37,7 @@ const EXAMPLES = [
     MatLegacyInputModule,
     MatLegacyListModule,
     MatPopoverEditModule,
-    MatSnackBarModule,
+    MatLegacySnackBarModule,
     MatTableModule,
     FormsModule,
   ],

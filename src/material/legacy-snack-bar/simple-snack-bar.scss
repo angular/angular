@@ -1,0 +1,37 @@
+@use 'sass:math';
+
+$button-horizontal-margin: 8px !default;
+$button-height: 36px !default;
+$line-height: 20px !default;
+// Button vertical margin is used to ensure that a button height of 36px, when the containing
+// space falls below 36px.
+$button-vertical-margin: -(math.div($button-height - $line-height, 2));
+
+.mat-simple-snackbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  line-height: $line-height;
+  opacity: 1;
+}
+
+.mat-simple-snackbar-action {
+  flex-shrink: 0;
+  margin: $button-vertical-margin $button-horizontal-margin * -1
+          $button-vertical-margin $button-horizontal-margin;
+
+  button {
+    max-height: $button-height;
+    min-width: 0;
+  }
+
+  [dir='rtl'] & {
+    margin-left: -$button-horizontal-margin;
+    margin-right: $button-horizontal-margin;
+  }
+}
+
+.mat-simple-snack-bar-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

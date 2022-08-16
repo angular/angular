@@ -10,30 +10,30 @@ import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {Overlay} from '@angular/cdk/overlay';
 import {Inject, Injectable, Injector, Optional, SkipSelf} from '@angular/core';
+import {LegacySimpleSnackBar} from './simple-snack-bar';
 import {
-  MatSnackBarConfig,
-  MAT_SNACK_BAR_DEFAULT_OPTIONS,
   _MatSnackBarBase,
+  MAT_SNACK_BAR_DEFAULT_OPTIONS,
+  MatSnackBarConfig,
 } from '@angular/material/snack-bar';
-import {MatSnackBarModule} from './module';
-import {SimpleSnackBar} from './simple-snack-bar';
-import {MatSnackBarContainer} from './snack-bar-container';
+import {MatLegacySnackBarContainer} from './snack-bar-container';
+import {MatLegacySnackBarModule} from './snack-bar-module';
 
 /**
  * Service to dispatch Material Design snack bar messages.
  */
-@Injectable({providedIn: MatSnackBarModule})
-export class MatSnackBar extends _MatSnackBarBase {
-  protected override simpleSnackBarComponent = SimpleSnackBar;
-  protected override snackBarContainerComponent = MatSnackBarContainer;
-  protected override handsetCssClass = 'mat-mdc-snack-bar-handset';
+@Injectable({providedIn: MatLegacySnackBarModule})
+export class MatLegacySnackBar extends _MatSnackBarBase {
+  protected simpleSnackBarComponent = LegacySimpleSnackBar;
+  protected snackBarContainerComponent = MatLegacySnackBarContainer;
+  protected handsetCssClass = 'mat-snack-bar-handset';
 
   constructor(
     overlay: Overlay,
     live: LiveAnnouncer,
     injector: Injector,
     breakpointObserver: BreakpointObserver,
-    @Optional() @SkipSelf() parentSnackBar: MatSnackBar,
+    @Optional() @SkipSelf() parentSnackBar: MatLegacySnackBar,
     @Inject(MAT_SNACK_BAR_DEFAULT_OPTIONS) defaultConfig: MatSnackBarConfig,
   ) {
     super(overlay, live, injector, breakpointObserver, parentSnackBar, defaultConfig);

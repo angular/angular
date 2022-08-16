@@ -159,7 +159,9 @@
   legacy-slider-color, legacy-slider-typography;
 @forward './slider/slider-theme' as slider-* show slider-theme, slider-color, slider-typography;
 @forward './snack-bar/snack-bar-theme' as snack-bar-* show snack-bar-theme, snack-bar-color,
-  snack-bar-typography;
+  snack-bar-typography, snack-bar-density;
+@forward './legacy-snack-bar/snack-bar-theme' as legacy-snack-bar-* show legacy-snack-bar-theme,
+  legacy-snack-bar-color, legacy-snack-bar-typography;
 @forward './sort/sort-theme' as sort-* show sort-theme, sort-color, sort-typography;
 @forward './stepper/stepper-theme' as stepper-* show stepper-theme, stepper-color,
   stepper-typography;

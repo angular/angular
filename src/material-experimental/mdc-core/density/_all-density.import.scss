@@ -1,9 +1,5 @@
 @forward '../../../material/core/theming/theming.import';
 @forward '../../../material/core/core.import';
-@forward '../../mdc-snack-bar/snack-bar-theme' hide color, density, theme, typography;
-@forward '../../mdc-snack-bar/snack-bar-theme' as mat-mdc-snack-bar-* hide
-$mat-mdc-snack-bar-mdc-snackbar-dismiss-ink-color, $mat-mdc-snack-bar-mdc-snackbar-fill-color,
-$mat-mdc-snack-bar-mdc-snackbar-label-ink-color;
 @forward '../../mdc-table/table-theme' hide color, density, theme, typography;
 @forward '../../mdc-table/table-theme' as mat-mdc-table-* hide
 $mat-mdc-table-mdc-data-table-divider-color, $mat-mdc-table-mdc-data-table-header-row-text-color,

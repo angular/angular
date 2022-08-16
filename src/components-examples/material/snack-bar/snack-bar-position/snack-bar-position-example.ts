@@ -1,9 +1,9 @@
 import {Component} from '@angular/core';
 import {
-  MatSnackBar,
-  MatSnackBarHorizontalPosition,
-  MatSnackBarVerticalPosition,
-} from '@angular/material/snack-bar';
+  MatLegacySnackBar,
+  MatLegacySnackBarHorizontalPosition,
+  MatLegacySnackBarVerticalPosition,
+} from '@angular/material/legacy-snack-bar';
 
 /**
  * @title Snack-bar with configurable position
@@ -14,10 +14,10 @@ import {
   styleUrls: ['snack-bar-position-example.css'],
 })
 export class SnackBarPositionExample {
-  horizontalPosition: MatSnackBarHorizontalPosition = 'start';
-  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+  horizontalPosition: MatLegacySnackBarHorizontalPosition = 'start';
+  verticalPosition: MatLegacySnackBarVerticalPosition = 'bottom';
 
-  constructor(private _snackBar: MatSnackBar) {}
+  constructor(private _snackBar: MatLegacySnackBar) {}
 
   openSnackBar() {
     this._snackBar.open('Cannonball!!', 'Splash', {

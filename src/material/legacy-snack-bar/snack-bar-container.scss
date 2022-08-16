@@ -1,0 +1,38 @@
+@use '@angular/cdk';
+
+$padding: 14px 16px !default;
+$min-height: 48px !default;
+$min-width: 344px !default;
+$max-width: 33vw !default;
+$spacing-margin: 24px !default;
+$spacing-margin-handset: 8px !default;
+
+
+.mat-snack-bar-container {
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: block;
+  margin: $spacing-margin;
+  max-width: $max-width;
+  min-width: $min-width;
+  padding: $padding;
+  min-height: $min-height;
+  transform-origin: center;
+
+  @include cdk.high-contrast(active, off) {
+    border: solid 1px;
+  }
+}
+
+// The mat-snack-bar-handset class will be applied to the overlay
+// element causing styling to both it and the snack bar container.
+.mat-snack-bar-handset {
+  width: 100%;
+
+  .mat-snack-bar-container {
+    margin: $spacing-margin-handset;
+    max-width: 100%;
+    min-width: 0;
+    width: 100%;
+  }
+}

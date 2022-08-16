@@ -17,13 +17,8 @@ export class SnackBarMigrator extends StyleMigrator {
 
   mixinChanges = [
     {
-      old: 'snack-bar-theme',
-      new: [
-        'mdc-snack-bar-theme',
-        'mdc-snack-bar-typography',
-        'mdc-button-theme',
-        'mdc-button-typography',
-      ],
+      old: 'legacy-snack-bar-theme',
+      new: ['snack-bar-theme', 'snack-bar-typography', 'button-theme', 'button-typography'],
       checkForDuplicates: true,
     },
   ];

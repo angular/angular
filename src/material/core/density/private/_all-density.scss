@@ -1,5 +1,7 @@
 @use '../../theming/theming';
 @use '../../../button/button-theme';
+@use '../../../button/icon-button-theme';
+@use '../../../button/fab-theme';
 @use '../../../expansion/expansion-theme';
 @use '../../../stepper/stepper-theme';
 @use '../../../toolbar/toolbar-theme';
@@ -24,9 +26,9 @@
 @use '../../../menu/menu-theme';
 @use '../../../list/list-theme';
 @use '../../../tabs/tabs-theme';
+@use '../../../snack-bar/snack-bar-theme';
 
 @mixin private-all-unmigrated-component-densities($config) {
-  @include button-theme.density($config);
   @include expansion-theme.density($config);
   @include stepper-theme.density($config);
   @include toolbar-theme.density($config);
@@ -69,6 +71,10 @@
   @include list-theme.density($config);
   @include paginator-theme.density($config);
   @include tabs-theme.density($config);
+  @include snack-bar-theme.density($config);
+  @include button-theme.density($config);
+  @include icon-button-theme.density($config);
+  @include fab-theme.density($config);
   @include private-all-unmigrated-component-densities($config);
 }
 

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatLegacySnackBar} from '@angular/material/legacy-snack-bar';
 
 /**
  * @title Basic snack-bar
@@ -10,7 +10,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
   styleUrls: ['snack-bar-overview-example.css'],
 })
 export class SnackBarOverviewExample {
-  constructor(private _snackBar: MatSnackBar) {}
+  constructor(private _snackBar: MatLegacySnackBar) {}
 
   openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action);

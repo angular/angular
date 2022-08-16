@@ -7,24 +7,32 @@
  */
 
 import {ChangeDetectionStrategy, Component, Inject, ViewEncapsulation} from '@angular/core';
-import {MAT_SNACK_BAR_DATA, TextOnlySnackBar, MatSnackBarRef} from '@angular/material/snack-bar';
+import {TextOnlySnackBar, MatSnackBarRef, MAT_SNACK_BAR_DATA} from '@angular/material/snack-bar';
 
+/**
+ * A component used to open as the default snack bar, matching material spec.
+ * This should only be used internally by the snack bar service.
+ */
 @Component({
   selector: 'simple-snack-bar',
   templateUrl: 'simple-snack-bar.html',
   styleUrls: ['simple-snack-bar.css'],
-  exportAs: 'matSnackBar',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    'class': 'mat-mdc-simple-snack-bar',
+    'class': 'mat-simple-snackbar',
   },
 })
-export class SimpleSnackBar implements TextOnlySnackBar {
+export class LegacySimpleSnackBar implements TextOnlySnackBar {
+  /** Data that was injected into the snack bar. */
+  data: {message: string; action: string};
+
   constructor(
-    public snackBarRef: MatSnackBarRef<SimpleSnackBar>,
-    @Inject(MAT_SNACK_BAR_DATA) public data: {message: string; action: string},
-  ) {}
+    public snackBarRef: MatSnackBarRef<LegacySimpleSnackBar>,
+    @Inject(MAT_SNACK_BAR_DATA) data: any,
+  ) {
+    this.data = data;
+  }
 
   /** Performs the action on the snack bar. */
   action(): void {

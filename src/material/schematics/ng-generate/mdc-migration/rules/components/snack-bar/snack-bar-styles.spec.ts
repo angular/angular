@@ -17,21 +17,22 @@ describe('snack-bar styles', () => {
     cliAppTree = patchDevkitTreeToExposeTypeScript(await createTestApp(runner));
   });
 
+  // TODO(wagnermaciel): why don't this emit:
+  //   @include mat.snack-bar-theme($theme);
   describe('mixin migrations', () => {
     it('should replace the old theme with the new ones', async () => {
       await runMigrationTest(
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.snack-bar-theme($theme);
+        @include mat.legacy-snack-bar-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-snack-bar-theme($theme);
-        @include mat.mdc-snack-bar-typography($theme);
-        @include mat.mdc-button-theme($theme);
-        @include mat.mdc-button-typography($theme);
+        @include mat.snack-bar-typography($theme);
+        @include mat.button-theme($theme);
+        @include mat.button-typography($theme);
       `,
       );
     });
@@ -41,17 +42,15 @@ describe('snack-bar styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.button-theme($theme);
-        @include mat.snack-bar-theme($theme);
+        @include mat.legacy-button-theme($theme);
+        @include mat.legacy-snack-bar-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.button-theme($theme);
-        @include mat.mdc-snack-bar-theme($theme);
-        @include mat.mdc-snack-bar-typography($theme);
-        @include mat.mdc-button-theme($theme);
-        @include mat.mdc-button-typography($theme);
+        @include mat.legacy-button-theme($theme);
+        @include mat.snack-bar-typography($theme);
+        @include mat.button-typography($theme);
       `,
       );
     });
@@ -61,17 +60,16 @@ describe('snack-bar styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.snack-bar-theme($theme);
-        @include mat.mdc-button-theme($theme);
-        @include mat.mdc-button-typography($theme);
+        @include mat.legacy-snack-bar-theme($theme);
+        @include mat.button-theme($theme);
+        @include mat.button-typography($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-snack-bar-theme($theme);
-        @include mat.mdc-snack-bar-typography($theme);
-        @include mat.mdc-button-theme($theme);
-        @include mat.mdc-button-typography($theme);
+        @include mat.snack-bar-typography($theme);
+        @include mat.button-theme($theme);
+        @include mat.button-typography($theme);
       `,
       );
     });
@@ -81,15 +79,14 @@ describe('snack-bar styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.snack-bar-theme($theme);
+        @include arbitrary.legacy-snack-bar-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-snack-bar-theme($theme);
-        @include arbitrary.mdc-snack-bar-typography($theme);
-        @include arbitrary.mdc-button-theme($theme);
-        @include arbitrary.mdc-button-typography($theme);
+        @include arbitrary.snack-bar-typography($theme);
+        @include arbitrary.button-theme($theme);
+        @include arbitrary.button-typography($theme);
       `,
       );
     });
@@ -100,21 +97,19 @@ describe('snack-bar styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.snack-bar-theme($light-theme);
-        @include mat.snack-bar-theme($dark-theme);
+        @include mat.legacy-snack-bar-theme($light-theme);
+        @include mat.legacy-snack-bar-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-snack-bar-theme($light-theme);
-        @include mat.mdc-snack-bar-typography($light-theme);
-        @include mat.mdc-button-theme($light-theme);
-        @include mat.mdc-button-typography($light-theme);
-        @include mat.mdc-snack-bar-theme($dark-theme);
-        @include mat.mdc-snack-bar-typography($dark-theme);
-        @include mat.mdc-button-theme($dark-theme);
-        @include mat.mdc-button-typography($dark-theme);
+        @include mat.snack-bar-typography($light-theme);
+        @include mat.button-theme($light-theme);
+        @include mat.button-typography($light-theme);
+        @include mat.snack-bar-typography($dark-theme);
+        @include mat.button-theme($dark-theme);
+        @include mat.button-typography($dark-theme);
       `,
       );
     });
@@ -126,7 +121,7 @@ describe('snack-bar styles', () => {
         $theme: ();
 
 
-        @include mat.snack-bar-theme($theme);
+        @include mat.legacy-snack-bar-theme($theme);
 
 
       `,
@@ -135,10 +130,9 @@ describe('snack-bar styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-snack-bar-theme($theme);
-        @include mat.mdc-snack-bar-typography($theme);
-        @include mat.mdc-button-theme($theme);
-        @include mat.mdc-button-typography($theme);
+        @include mat.snack-bar-typography($theme);
+        @include mat.button-theme($theme);
+        @include mat.button-typography($theme);
 
 
       `,

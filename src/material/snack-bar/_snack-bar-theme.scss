@@ -1,50 +1,57 @@
-@use 'sass:map';
+@use '../core/theming/theming';
+@use '../core/mdc-helpers/mdc-helpers';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
-@use '../core/theming/theming';
-@use '../core/theming/palette';
-@use '../core/style/private';
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/snackbar/snackbar-theme' as mdc-snackbar-theme;
+@use 'sass:color';
+@use 'sass:map';
+
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   $is-dark-theme: map.get($config, is-dark);
   $accent: map.get($config, accent);
 
-  .mat-snack-bar-container {
-    // Use the primary text on the dark theme, even though the lighter one uses
-    // a secondary, because the contrast on the light primary text is poor.
-    color: if($is-dark-theme, palette.$dark-primary-text, palette.$light-secondary-text);
-    background: if($is-dark-theme, map.get(palette.$grey-palette, 50), #323232);
+  @include mdc-helpers.using-mdc-theme($config) {
+    .mat-mdc-snack-bar-container {
+      $button-color:
+          if($is-dark-theme, currentColor, theming.get-color-from-palette($accent, text));
+      --mat-mdc-snack-bar-button-color: #{$button-color};
 
-    @include private.private-theme-elevation(6, $config);
-  }
-
-  .mat-simple-snackbar-action {
-    color: if($is-dark-theme, inherit, theming.get-color-from-palette($accent, text));
+      @include mdc-snackbar-theme.theme((
+        container-color: color.mix(
+          mdc-theme-color.prop-value(on-surface),
+          mdc-theme-color.prop-value(surface),
+          80%
+        ),
+        supporting-text-color: rgba(
+          mdc-theme-color.prop-value(surface),
+          mdc-theme-color.text-emphasis(high)
+        )
+      ));
+    }
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
+  $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
-  .mat-simple-snackbar {
-    font: {
-      family: typography-utils.font-family($config, body-1);
-      size: typography-utils.font-size($config, body-1);
-    }
-  }
-
-  .mat-simple-snackbar-action {
-    line-height: 1;
-    font: {
-      family: inherit;
-      size: inherit;
-      weight: typography-utils.font-weight($config, button);
+  @include mdc-helpers.using-mdc-typography($config) {
+    @if ($config) {
+      .mat-mdc-snack-bar-container {
+        @include mdc-snackbar-theme.theme((
+          supporting-text-font: typography-utils.font-family($config, body-2),
+          supporting-text-line-height: typography-utils.line-height($config, body-2),
+          supporting-text-size: typography-utils.font-size($config, body-2),
+          supporting-text-weight: typography-utils.font-weight($config, body-2),
+        ));
+      }
     }
   }
 }
 
-@mixin _density($config-or-theme) {}
+@mixin density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -57,10 +64,11 @@
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);
     }
   }
 }
+

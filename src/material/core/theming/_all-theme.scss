@@ -1,9 +1,13 @@
 // Import all the theming functionality.
 @use '../core-theme';
+@use '../option/optgroup-theme';
+@use '../option/option-theme';
 @use '../../autocomplete/autocomplete-theme';
 @use '../../badge/badge-theme';
 @use '../../bottom-sheet/bottom-sheet-theme';
 @use '../../button/button-theme';
+@use '../../button/icon-button-theme';
+@use '../../button/fab-theme';
 @use '../../button-toggle/button-toggle-theme';
 @use '../../card/card-theme';
 @use '../../checkbox/checkbox-theme';
@@ -39,9 +43,7 @@
 @mixin private-all-unmigrated-component-themes($theme-or-color-config) {
   @include badge-theme.theme($theme-or-color-config);
   @include bottom-sheet-theme.theme($theme-or-color-config);
-  @include button-theme.theme($theme-or-color-config);
   @include button-toggle-theme.theme($theme-or-color-config);
-  @include checkbox-theme.theme($theme-or-color-config);
   @include table-theme.theme($theme-or-color-config);
   @include datepicker-theme.theme($theme-or-color-config);
   @include divider-theme.theme($theme-or-color-config);
@@ -54,7 +56,6 @@
   @include sort-theme.theme($theme-or-color-config);
   @include toolbar-theme.theme($theme-or-color-config);
   @include tree-theme.theme($theme-or-color-config);
-  @include snack-bar-theme.theme($theme-or-color-config);
 }
 
 // Create a theme.
@@ -78,6 +79,13 @@
     @include list-theme.theme($theme-or-color-config);
     @include paginator-theme.theme($theme-or-color-config);
     @include tabs-theme.theme($theme-or-color-config);
+    @include optgroup-theme.theme($theme-or-color-config);
+    @include option-theme.theme($theme-or-color-config);
+    @include checkbox-theme.theme($theme-or-color-config);
+    @include button-theme.theme($theme-or-color-config);
+    @include icon-button-theme.theme($theme-or-color-config);
+    @include fab-theme.theme($theme-or-color-config);
+    @include snack-bar-theme.theme($theme-or-color-config);
     @include private-all-unmigrated-component-themes($theme-or-color-config);
   }
 }

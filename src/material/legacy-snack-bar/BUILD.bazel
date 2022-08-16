@@ -1,5 +1,6 @@
 load(
     "//tools:defaults.bzl",
+    "markdown_to_html",
     "ng_module",
     "ng_test_library",
     "ng_web_test_suite",
@@ -10,31 +11,43 @@ load(
 package(default_visibility = ["//visibility:public"])
 
 ng_module(
-    name = "mdc-snack-bar",
+    name = "legacy-snack-bar",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
     assets = [
-        ":simple_snack_bar_scss",
-        ":snack_bar_container_scss",
+        ":snack-bar-container.css",
+        ":simple-snack-bar.css",
     ] + glob(["**/*.html"]),
     deps = [
         "//src:dev_mode_types",
-        "//src/material/button",
+        "//src/cdk/a11y",
+        "//src/cdk/bidi",
+        "//src/cdk/layout",
+        "//src/cdk/overlay",
+        "//src/cdk/portal",
         "//src/material/core",
+        "//src/material/legacy-button",
         "//src/material/snack-bar",
+        "@npm//@angular/animations",
+        "@npm//@angular/common",
         "@npm//@angular/core",
+        "@npm//rxjs",
     ],
 )
 
 sass_library(
-    name = "mdc_snack_bar_scss_lib",
+    name = "legacy_snack_bar_scss_lib",
     srcs = glob(["**/_*.scss"]),
+    deps = ["//src/material/core:core_scss_lib"],
+)
+
+sass_binary(
+    name = "snack_bar_container_scss",
+    src = "snack-bar-container.scss",
     deps = [
-        "//:mdc_sass_lib",
-        "//src/material:sass_lib",
-        "//src/material/core:core_scss_lib",
+        "//src/cdk:sass_lib",
     ],
 )
 
@@ -43,21 +56,6 @@ sass_binary(
     src = "simple-snack-bar.scss",
 )
 
-sass_binary(
-    name = "snack_bar_container_scss",
-    src = "snack-bar-container.scss",
-    deps = [
-        "//:mdc_sass_lib",
-        "//src/cdk:sass_lib",
-        "//src/material:sass_lib",
-        "//src/material/core:core_scss_lib",
-    ],
-)
-
-###########
-# Testing
-###########
-
 ng_test_library(
     name = "unit_test_sources",
     srcs = glob(
@@ -65,7 +63,7 @@ ng_test_library(
         exclude = ["**/*.e2e.spec.ts"],
     ),
     deps = [
-        ":mdc-snack-bar",
+        ":legacy-snack-bar",
         "//src/cdk/a11y",
         "//src/cdk/overlay",
         "//src/cdk/platform",
@@ -76,7 +74,15 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [
-        ":unit_test_sources",
-    ],
+    deps = [":unit_test_sources"],
+)
+
+markdown_to_html(
+    name = "overview",
+    srcs = [":snack-bar.md"],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
 )

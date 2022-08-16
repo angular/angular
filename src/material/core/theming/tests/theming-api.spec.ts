@@ -232,6 +232,7 @@ describe('theming api', () => {
     if (missingDensitySelectors.size === knownDensitySelectors.size) {
       return 'none';
     }
+    console.error('MISSING!!! ', [...missingDensitySelectors].join(','));
     return 'partial';
   }
 

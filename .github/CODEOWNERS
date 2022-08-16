@@ -30,7 +30,7 @@
 /src/material/sidenav/**                           @mmalerba
 /src/material/legacy-slide-toggle/**                      @devversion
 /src/material/legacy-slider/**                     @mmalerba
-/src/material/snack-bar/**                         @andrewseguin @crisbeto
+/src/material/legacy-snack-bar/**                         @andrewseguin @crisbeto
 /src/material/sort/**                              @andrewseguin
 /src/material/stepper/**                           @mmalerba
 /src/material/table/**                             @andrewseguin
@@ -126,7 +126,7 @@
 /src/material-experimental/mdc-progress-spinner/**     @andrewseguin
 /src/material/progress-bar/**         @andrewseguin
 /src/material/radio/**                                 @mmalerba
-/src/material-experimental/mdc-snack-bar/**            @andrewseguin
+/src/material/snack-bar/**            @andrewseguin
 /src/material/slide-toggle/**                          @crisbeto
 /src/material/slider/**                                @devversion
 /src/material/tabs/**                 @crisbeto
@@ -344,7 +344,7 @@
 /tools/public_api_guard/material/sidenav**         @mmalerba
 /tools/public_api_guard/material/legacy-slide-toggle**    @devversion
 /tools/public_api_guard/material/slider**          @mmalerba
-/tools/public_api_guard/material/snack-bar**       @andrewseguin @crisbeto
+/tools/public_api_guard/material/legacy-snack-bar**       @andrewseguin @crisbeto
 /tools/public_api_guard/material/sort**            @andrewseguin
 /tools/public_api_guard/material/stepper**         @mmalerba
 /tools/public_api_guard/material/table**           @andrewseguin

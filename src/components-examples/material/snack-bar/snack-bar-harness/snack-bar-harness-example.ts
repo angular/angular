@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
+import {MatLegacySnackBar, MatLegacySnackBarConfig} from '@angular/material/legacy-snack-bar';
 
 /**
  * @title Testing with MatSnackBarHarness
@@ -9,9 +9,9 @@ import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
   templateUrl: 'snack-bar-harness-example.html',
 })
 export class SnackBarHarnessExample {
-  constructor(readonly snackBar: MatSnackBar) {}
+  constructor(readonly snackBar: MatLegacySnackBar) {}
 
-  open(message: string, action = '', config?: MatSnackBarConfig) {
+  open(message: string, action = '', config?: MatLegacySnackBarConfig) {
     return this.snackBar.open(message, action, config);
   }
 }

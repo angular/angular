@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatLegacySnackBar} from '@angular/material/legacy-snack-bar';
 
 /**
  * @title Snack-bar with a custom component
@@ -12,7 +12,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 export class SnackBarComponentExample {
   durationInSeconds = 5;
 
-  constructor(private _snackBar: MatSnackBar) {}
+  constructor(private _snackBar: MatLegacySnackBar) {}
 
   openSnackBar() {
     this._snackBar.openFromComponent(PizzaPartyComponent, {

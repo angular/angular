@@ -27,7 +27,7 @@ import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatLegacySliderModule} from '@angular/material/legacy-slider';
 import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle';
-import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
+import {MatLegacySnackBarModule, MatLegacySnackBar} from '@angular/material/legacy-snack-bar';
 import {MatLegacyTabsModule} from '@angular/material/legacy-tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatLegacyTooltipModule} from '@angular/material/legacy-tooltip';
@@ -77,7 +77,7 @@ export class KitchenSink {
   virtualScrollData = Array(10000).fill(50);
 
   constructor(
-    snackBar: MatSnackBar,
+    snackBar: MatLegacySnackBar,
     dialog: MatLegacyDialog,
     viewportRuler: ViewportRuler,
     focusMonitor: FocusMonitor,
@@ -125,7 +125,7 @@ export class KitchenSink {
     MatSidenavModule,
     MatLegacySliderModule,
     MatLegacySlideToggleModule,
-    MatSnackBarModule,
+    MatLegacySnackBarModule,
     MatLegacyTabsModule,
     MatToolbarModule,
     MatLegacyTooltipModule,

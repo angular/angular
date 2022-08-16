@@ -1,7 +1,6 @@
 @use '@angular/material' as mat;
 
 @use '../core-theme';
-@use '../../mdc-snack-bar/snack-bar-theme';
 @use '../../mdc-table/table-theme';
 @use '../../mdc-progress-spinner/progress-spinner-theme';
 
@@ -26,7 +25,7 @@
     @include mat.select-theme($theme-or-color-config);
     @include mat.slide-toggle-theme($theme-or-color-config);
     @include mat.slider-theme($theme-or-color-config);
-    @include snack-bar-theme.theme($theme-or-color-config);
+    @include mat.snack-bar-theme($theme-or-color-config);
     @include table-theme.theme($theme-or-color-config);
     @include mat.form-field-theme($theme-or-color-config);
     @include mat.input-theme($theme-or-color-config);

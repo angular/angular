@@ -1,7 +1,15 @@
-<!-- Initially holds the snack bar content, will be empty after announcing to screen readers. -->
-<div aria-hidden="true">
-  <ng-template cdkPortalOutlet></ng-template>
-</div>
+<div class="mdc-snackbar__surface">
+  <!--
+    This outer label wrapper will have the class `mdc-snackbar__label` applied if
+    the attached template/component does not contain it.
+  -->
+  <div class="mat-mdc-snack-bar-label" #label>
+    <!-- Initialy holds the snack bar content, will be empty after announcing to screen readers. -->
+    <div aria-hidden="true">
+      <ng-template cdkPortalOutlet></ng-template>
+    </div>
 
-<!-- Will receive the snack bar content from the non-live div, move will happen a short delay after opening -->
-<div [attr.aria-live]="_live" [attr.role]="_role"></div>
+    <!-- Will receive the snack bar content from the non-live div, move will happen a short delay after opening -->
+    <div [attr.aria-live]="_live" [attr.role]="_role"></div>
+  </div>
+</div>

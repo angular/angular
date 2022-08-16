@@ -3,6 +3,8 @@
 @use '../../badge/badge-theme';
 @use '../../bottom-sheet/bottom-sheet-theme';
 @use '../../button/button-theme';
+@use '../../button/icon-button-theme';
+@use '../../button/fab-theme';
 @use '../../button-toggle/button-toggle-theme';
 @use '../../card/card-theme';
 @use '../../checkbox/checkbox-theme';
@@ -41,9 +43,7 @@
   @include badge-theme.typography($config);
   @include typography.typography-hierarchy($config);
   @include bottom-sheet-theme.typography($config);
-  @include button-theme.typography($config);
   @include button-toggle-theme.typography($config);
-  @include checkbox-theme.typography($config);
   @include divider-theme.typography($config);
   @include table-theme.typography($config);
   @include datepicker-theme.typography($config);
@@ -55,7 +55,6 @@
   @include stepper-theme.typography($config);
   @include sort-theme.typography($config);
   @include toolbar-theme.typography($config);
-  @include snack-bar-theme.typography($config);
   @include tree-theme.typography($config);
 }
 
@@ -94,6 +93,11 @@
   @include list-theme.typography($config);
   @include paginator-theme.typography($config);
   @include tabs-theme.typography($config);
+  @include checkbox-theme.typography($config);
+  @include button-theme.typography($config);
+  @include icon-button-theme.typography($config);
+  @include fab-theme.typography($config);
+  @include snack-bar-theme.typography($config);
 }
 
 // @deprecated Use `all-component-typographies`.

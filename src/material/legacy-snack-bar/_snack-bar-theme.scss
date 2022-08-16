@@ -1,0 +1,66 @@
+@use 'sass:map';
+@use '../core/typography/typography';
+@use '../core/typography/typography-utils';
+@use '../core/theming/theming';
+@use '../core/theming/palette';
+@use '../core/style/private';
+
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $is-dark-theme: map.get($config, is-dark);
+  $accent: map.get($config, accent);
+
+  .mat-snack-bar-container {
+    // Use the primary text on the dark theme, even though the lighter one uses
+    // a secondary, because the contrast on the light primary text is poor.
+    color: if($is-dark-theme, palette.$dark-primary-text, palette.$light-secondary-text);
+    background: if($is-dark-theme, map.get(palette.$grey-palette, 50), #323232);
+
+    @include private.private-theme-elevation(6, $config);
+  }
+
+  .mat-simple-snackbar-action {
+    color: if($is-dark-theme, inherit, theming.get-color-from-palette($accent, text));
+  }
+}
+
+@mixin typography($config-or-theme) {
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
+  .mat-simple-snackbar {
+    font: {
+      family: typography-utils.font-family($config, body-1);
+      size: typography-utils.font-size($config, body-1);
+    }
+  }
+
+  .mat-simple-snackbar-action {
+    line-height: 1;
+    font: {
+      family: inherit;
+      size: inherit;
+      weight: typography-utils.font-weight($config, button);
+    }
+  }
+}
+
+@mixin _density($config-or-theme) {}
+
+@mixin theme($theme-or-color-config) {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-legacy-snack-bar') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
+
+    @if $color != null {
+      @include color($color);
+    }
+    @if $density != null {
+      @include _density($density);
+    }
+    @if $typography != null {
+      @include typography($typography);
+    }
+  }
+}

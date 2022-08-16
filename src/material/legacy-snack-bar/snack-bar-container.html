@@ -1,0 +1,7 @@
+<!-- Initially holds the snack bar content, will be empty after announcing to screen readers. -->
+<div aria-hidden="true">
+  <ng-template cdkPortalOutlet></ng-template>
+</div>
+
+<!-- Will receive the snack bar content from the non-live div, move will happen a short delay after opening -->
+<div [attr.aria-live]="_live" [attr.role]="_role"></div>

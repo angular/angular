@@ -16,7 +16,7 @@ ng_module(
         "//src/material/legacy-form-field",
         "//src/material/legacy-input",
         "//src/material/legacy-select",
-        "//src/material/snack-bar",
+        "//src/material/legacy-snack-bar",
         "@npm//@angular/forms",
     ],
 )

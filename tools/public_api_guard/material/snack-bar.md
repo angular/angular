@@ -13,17 +13,17 @@ import { CdkPortalOutlet } from '@angular/cdk/portal';
 import { ChangeDetectorRef } from '@angular/core';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ComponentRef } from '@angular/core';
-import { ComponentType } from '@angular/cdk/portal';
+import { ComponentType } from '@angular/cdk/overlay';
 import { Direction } from '@angular/cdk/bidi';
 import { DomPortal } from '@angular/cdk/portal';
 import { ElementRef } from '@angular/core';
 import { EmbeddedViewRef } from '@angular/core';
 import * as i0 from '@angular/core';
-import * as i3 from '@angular/cdk/overlay';
-import * as i4 from '@angular/cdk/portal';
-import * as i5 from '@angular/common';
-import * as i6 from '@angular/material/legacy-button';
-import * as i7 from '@angular/material/core';
+import * as i4 from '@angular/cdk/overlay';
+import * as i5 from '@angular/cdk/portal';
+import * as i6 from '@angular/common';
+import * as i7 from '@angular/material/button';
+import * as i8 from '@angular/material/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
@@ -61,6 +61,22 @@ export class MatSnackBar extends _MatSnackBarBase {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBar, [null, null, null, null, { optional: true; skipSelf: true; }, null]>;
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<MatSnackBar>;
+}
+
+// @public
+export class MatSnackBarAction {
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatSnackBarAction, "[matSnackBarAction]", never, {}, {}, never, never, false>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBarAction, never>;
+}
+
+// @public
+export class MatSnackBarActions {
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatSnackBarActions, "[matSnackBarActions]", never, {}, {}, never, never, false>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBarActions, never>;
 }
 
 // @public
@@ -103,10 +119,10 @@ export class MatSnackBarConfig<D = any> {
 
 // @public
 export class MatSnackBarContainer extends _MatSnackBarContainerBase {
-    // (undocumented)
     protected _afterPortalAttached(): void;
+    _label: ElementRef;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatSnackBarContainer, "snack-bar-container", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatSnackBarContainer, "mat-snack-bar-container", never, {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBarContainer, never>;
 }
@@ -148,6 +164,14 @@ export interface MatSnackBarDismiss {
 // @public
 export type MatSnackBarHorizontalPosition = 'start' | 'center' | 'end' | 'left' | 'right';
 
+// @public
+export class MatSnackBarLabel {
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatSnackBarLabel, "[matSnackBarLabel]", never, {}, {}, never, never, false>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBarLabel, never>;
+}
+
 // @public (undocumented)
 export class MatSnackBarModule {
     // (undocumented)
@@ -155,7 +179,7 @@ export class MatSnackBarModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatSnackBarModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatSnackBarModule, [typeof i1.MatSnackBarContainer, typeof i2.SimpleSnackBar], [typeof i3.OverlayModule, typeof i4.PortalModule, typeof i5.CommonModule, typeof i6.MatLegacyButtonModule, typeof i7.MatCommonModule], [typeof i1.MatSnackBarContainer, typeof i7.MatCommonModule]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatSnackBarModule, [typeof i1.SimpleSnackBar, typeof i2.MatSnackBarContainer, typeof i3.MatSnackBarLabel, typeof i3.MatSnackBarActions, typeof i3.MatSnackBarAction], [typeof i4.OverlayModule, typeof i5.PortalModule, typeof i6.CommonModule, typeof i7.MatButtonModule, typeof i8.MatCommonModule], [typeof i8.MatCommonModule, typeof i2.MatSnackBarContainer, typeof i3.MatSnackBarLabel, typeof i3.MatSnackBarActions, typeof i3.MatSnackBarAction]>;
 }
 
 // @public
@@ -177,10 +201,14 @@ export class MatSnackBarRef<T> {
 // @public
 export type MatSnackBarVerticalPosition = 'top' | 'bottom';
 
-// @public
+// @public (undocumented)
 export class SimpleSnackBar implements TextOnlySnackBar {
-    constructor(snackBarRef: MatSnackBarRef<SimpleSnackBar>, data: any);
+    constructor(snackBarRef: MatSnackBarRef<SimpleSnackBar>, data: {
+        message: string;
+        action: string;
+    });
     action(): void;
+    // (undocumented)
     data: {
         message: string;
         action: string;
@@ -189,7 +217,7 @@ export class SimpleSnackBar implements TextOnlySnackBar {
     // (undocumented)
     snackBarRef: MatSnackBarRef<SimpleSnackBar>;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<SimpleSnackBar, "simple-snack-bar", never, {}, {}, never, never, false>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SimpleSnackBar, "simple-snack-bar", ["matSnackBar"], {}, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<SimpleSnackBar, never>;
 }

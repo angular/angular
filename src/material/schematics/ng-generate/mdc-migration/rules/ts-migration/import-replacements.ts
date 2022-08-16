@@ -80,8 +80,8 @@ export const IMPORT_REPLACEMENTS: {[component: string]: {old: string; new: strin
     new: '@angular/material-experimental/mdc-slider',
   },
   'snack-bar': {
-    old: '@angular/material/snack-bar',
-    new: '@angular/material-experimental/mdc-snack-bar',
+    old: '@angular/material/legacy-snack-bar',
+    new: '@angular/material/snack-bar',
   },
   'table': {
     old: '@angular/material/table',

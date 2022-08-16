@@ -6,16 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationEvent} from '@angular/animations';
-import {AriaLivePoliteness} from '@angular/cdk/a11y';
-import {Platform} from '@angular/cdk/platform';
-import {
-  BasePortalOutlet,
-  CdkPortalOutlet,
-  ComponentPortal,
-  TemplatePortal,
-  DomPortal,
-} from '@angular/cdk/portal';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -29,9 +19,19 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {Observable, Subject} from 'rxjs';
-import {take} from 'rxjs/operators';
 import {matSnackBarAnimations} from './snack-bar-animations';
+import {
+  BasePortalOutlet,
+  CdkPortalOutlet,
+  ComponentPortal,
+  DomPortal,
+  TemplatePortal,
+} from '@angular/cdk/portal';
+import {Observable, Subject} from 'rxjs';
+import {AriaLivePoliteness} from '@angular/cdk/a11y';
+import {Platform} from '@angular/cdk/platform';
+import {AnimationEvent} from '@angular/animations';
+import {take} from 'rxjs/operators';
 import {MatSnackBarConfig} from './snack-bar-config';
 
 /**
@@ -270,7 +270,7 @@ export abstract class _MatSnackBarContainerBase extends BasePortalOutlet impleme
  * @docs-private
  */
 @Component({
-  selector: 'snack-bar-container',
+  selector: 'mat-snack-bar-container',
   templateUrl: 'snack-bar-container.html',
   styleUrls: ['snack-bar-container.css'],
   // In Ivy embedded views will be change detected from their declaration place, rather than
@@ -281,21 +281,28 @@ export abstract class _MatSnackBarContainerBase extends BasePortalOutlet impleme
   encapsulation: ViewEncapsulation.None,
   animations: [matSnackBarAnimations.snackBarState],
   host: {
-    'class': 'mat-snack-bar-container',
+    'class': 'mdc-snackbar mat-mdc-snack-bar-container mdc-snackbar--open',
     '[@state]': '_animationState',
     '(@state.done)': 'onAnimationEnd($event)',
   },
 })
 export class MatSnackBarContainer extends _MatSnackBarContainerBase {
+  /**
+   * Element that will have the `mdc-snackbar__label` class applied if the attached component
+   * or template does not have it. This ensures that the appropriate structure, typography, and
+   * color is applied to the attached view.
+   */
+  @ViewChild('label', {static: true}) _label: ElementRef;
+
+  /** Applies the correct CSS class to the label based on its content. */
   protected override _afterPortalAttached() {
     super._afterPortalAttached();
 
-    if (this.snackBarConfig.horizontalPosition === 'center') {
-      this._elementRef.nativeElement.classList.add('mat-snack-bar-center');
-    }
-
-    if (this.snackBarConfig.verticalPosition === 'top') {
-      this._elementRef.nativeElement.classList.add('mat-snack-bar-top');
-    }
+    // Check to see if the attached component or template uses the MDC template structure,
+    // specifically the MDC label. If not, the container should apply the MDC label class to this
+    // component's label container, which will apply MDC's label styles to the attached view.
+    const label = this._label.nativeElement;
+    const labelClass = 'mdc-snackbar__label';
+    label.classList.toggle(labelClass, !label.querySelector(`.${labelClass}`));
   }
 }

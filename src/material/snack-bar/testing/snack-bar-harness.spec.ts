@@ -1,17 +1,17 @@
 import {MatSnackBar, MatSnackBarConfig, MatSnackBarModule} from '@angular/material/snack-bar';
-import {runHarnessTests} from '@angular/material/snack-bar/testing/shared.spec';
-import {MatSnackBarHarness} from './snack-bar-harness';
+import {runHarnessTests} from './shared.spec';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component, TemplateRef, ViewChild} from '@angular/core';
+import {MatSnackBarHarness} from './snack-bar-harness';
 
-describe('Non-MDC-based MatSnackBarHarness', () => {
+describe('MDC-based MatSnackBarHarness', () => {
   runHarnessTests(MatSnackBarModule, MatSnackBar, MatSnackBarHarness);
 });
 
-describe('Non-MDC-based MatSnackBarHarness (non-MDC only behavior)', () => {
+describe('MDC-based MatSnackBarHarness (MDC only behavior)', () => {
   let fixture: ComponentFixture<SnackbarHarnessTest>;
   let loader: HarnessLoader;
 
@@ -26,34 +26,59 @@ describe('Non-MDC-based MatSnackBarHarness (non-MDC only behavior)', () => {
     loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
   });
 
-  it('should fail to get message of a snack-bar with custom content', async () => {
+  it('should be able to get message of a snack-bar with custom content', async () => {
     fixture.componentInstance.openCustom();
-    const snackBar = await loader.getHarness(MatSnackBarHarness);
-    await expectAsync(snackBar.getMessage()).toBeRejectedWithError(/custom content/);
+    let snackBar = await loader.getHarness(MatSnackBarHarness);
+    expect(await snackBar.getMessage()).toBe('My custom snack-bar.');
+
+    fixture.componentInstance.openCustomWithAction();
+    snackBar = await loader.getHarness(MatSnackBarHarness);
+    expect(await snackBar.getMessage()).toBe('My custom snack-bar with action.');
   });
 
-  it('should fail to get action description of a snack-bar with custom content', async () => {
+  it('should fail to get action description of a snack-bar with no action', async () => {
     fixture.componentInstance.openCustom();
     const snackBar = await loader.getHarness(MatSnackBarHarness);
-    await expectAsync(snackBar.getActionDescription()).toBeRejectedWithError(/custom content/);
+    await expectAsync(snackBar.getActionDescription()).toBeRejectedWithError(/without an action/);
   });
 
-  it('should fail to check whether a snack-bar with custom content has an action', async () => {
-    fixture.componentInstance.openCustom();
+  it('should be able to get action description of a snack-bar with an action', async () => {
+    fixture.componentInstance.openCustomWithAction();
     const snackBar = await loader.getHarness(MatSnackBarHarness);
-    await expectAsync(snackBar.hasAction()).toBeRejectedWithError(/custom content/);
+    expect(await snackBar.getActionDescription()).toBe('Ok');
+  });
+
+  it('should be able to check whether a snack-bar with custom content has an action', async () => {
+    fixture.componentInstance.openCustom();
+    let snackBar = await loader.getHarness(MatSnackBarHarness);
+    expect(await snackBar.hasAction()).toBe(false);
+
+    fixture.componentInstance.openCustomWithAction();
+    snackBar = await loader.getHarness(MatSnackBarHarness);
+    expect(await snackBar.hasAction()).toBe(true);
   });
 });
 
 @Component({
-  template: `<ng-template>My custom snack-bar.</ng-template>`,
+  template: `
+    <ng-template #custom>My custom snack-bar.</ng-template>
+    <ng-template #customWithAction>
+      <span matSnackBarLabel>My custom snack-bar with action.</span>
+      <div matSnackBarActions><button matSnackBarAction>Ok</button></div>
+    </ng-template>
+  `,
 })
 class SnackbarHarnessTest {
-  @ViewChild(TemplateRef) customTmpl: TemplateRef<any>;
+  @ViewChild('custom') customTmpl: TemplateRef<any>;
+  @ViewChild('customWithAction') customWithActionTmpl: TemplateRef<any>;
 
   constructor(public snackBar: MatSnackBar) {}
 
   openCustom(config?: MatSnackBarConfig) {
     return this.snackBar.openFromTemplate(this.customTmpl, config);
+  }
+
+  openCustomWithAction(config?: MatSnackBarConfig) {
+    return this.snackBar.openFromTemplate(this.customWithActionTmpl, config);
   }
 }

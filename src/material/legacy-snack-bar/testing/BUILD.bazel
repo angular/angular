@@ -9,6 +9,7 @@ ts_library(
         exclude = ["**/*.spec.ts"],
     ),
     deps = [
+        "//src/cdk/a11y",
         "//src/cdk/testing",
         "//src/material/snack-bar/testing",
     ],
@@ -26,7 +27,7 @@ ng_test_library(
         ":testing",
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
-        "//src/material-experimental/mdc-snack-bar",
+        "//src/material/legacy-snack-bar",
         "//src/material/snack-bar/testing:harness_tests_lib",
         "@npm//@angular/platform-browser",
     ],
@@ -34,7 +35,5 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [
-        ":unit_tests_lib",
-    ],
+    deps = [":unit_tests_lib"],
 )

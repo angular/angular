@@ -90,6 +90,8 @@ entryPoints = [
     "legacy-slider/testing",
     "snack-bar",
     "snack-bar/testing",
+    "legacy-snack-bar",
+    "legacy-snack-bar/testing",
     "sort",
     "sort/testing",
     "stepper",

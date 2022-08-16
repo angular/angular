@@ -1,0 +1,11 @@
+@forward '../core/theming/palette.import';
+@forward '../core/theming/theming.import';
+@forward '../core/style/private.import';
+@forward '../core/typography/typography-utils.import';
+@forward 'snack-bar-theme' hide color, theme, typography;
+@forward 'snack-bar-theme' as mat-slegacy-nack-bar-* hide mat-legacy-snack-bar-density;
+
+@import '../core/typography/typography-utils';
+@import '../core/theming/theming';
+@import '../core/theming/palette';
+@import '../core/style/private';

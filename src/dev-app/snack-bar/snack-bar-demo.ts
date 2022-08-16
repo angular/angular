@@ -16,12 +16,12 @@ import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {
-  MatSnackBar,
-  MatSnackBarConfig,
-  MatSnackBarHorizontalPosition,
-  MatSnackBarModule,
-  MatSnackBarVerticalPosition,
-} from '@angular/material/snack-bar';
+  MatLegacySnackBar,
+  MatLegacySnackBarConfig,
+  MatLegacySnackBarHorizontalPosition,
+  MatLegacySnackBarModule,
+  MatLegacySnackBarVerticalPosition,
+} from '@angular/material/legacy-snack-bar';
 
 @Component({
   selector: 'snack-bar-demo',
@@ -37,7 +37,7 @@ import {
     MatLegacyFormFieldModule,
     MatLegacyInputModule,
     MatLegacySelectModule,
-    MatSnackBarModule,
+    MatLegacySnackBarModule,
   ],
 })
 export class SnackBarDemo {
@@ -48,10 +48,10 @@ export class SnackBarDemo {
   setAutoHide = true;
   autoHide = 10000;
   addExtraClass = false;
-  horizontalPosition: MatSnackBarHorizontalPosition = 'center';
-  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+  horizontalPosition: MatLegacySnackBarHorizontalPosition = 'center';
+  verticalPosition: MatLegacySnackBarVerticalPosition = 'bottom';
 
-  constructor(public snackBar: MatSnackBar, private _dir: Directionality) {}
+  constructor(public snackBar: MatLegacySnackBar, private _dir: Directionality) {}
 
   open() {
     const config = this._createConfig();
@@ -64,7 +64,7 @@ export class SnackBarDemo {
   }
 
   private _createConfig() {
-    const config = new MatSnackBarConfig();
+    const config = new MatLegacySnackBarConfig();
     config.verticalPosition = this.verticalPosition;
     config.horizontalPosition = this.horizontalPosition;
     config.duration = this.setAutoHide ? this.autoHide : 0;

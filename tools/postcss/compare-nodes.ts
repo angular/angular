@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Node, Declaration, Rule} from 'postcss';
+import {Node, Declaration, Rule, Comment} from 'postcss';
 
 /**
  * Compares two Postcss AST nodes and returns whether a boolean indicating
@@ -17,6 +17,10 @@ import {Node, Declaration, Rule} from 'postcss';
 export function compareNodes(a: Node, b: Node): boolean {
   if (a.type !== b.type) {
     return false;
+  }
+
+  if (isComment(a) && isComment(b)) {
+    return a.text === b.text;
   }
 
   // Types of A and B are always equal, but for type inferring we
@@ -53,4 +57,9 @@ function isDeclaration(node: Node): node is Declaration {
 /** Asserts that a node is a `Rule`. */
 function isRule(node: Node): node is Rule {
   return node.type === 'rule';
+}
+
+/** Asserts that a node is a `Comment`. */
+function isComment(node: Node): node is Comment {
+  return node.type === 'comment';
 }

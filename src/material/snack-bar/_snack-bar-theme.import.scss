@@ -1,11 +1,5 @@
-@forward '../core/theming/palette.import';
-@forward '../core/theming/theming.import';
-@forward '../core/style/private.import';
-@forward '../core/typography/typography-utils.import';
-@forward 'snack-bar-theme' hide color, theme, typography;
-@forward 'snack-bar-theme' as mat-snack-bar-* hide mat-snack-bar-density;
+@forward 'snack-bar-theme' hide color, density, theme, typography;
+@forward 'snack-bar-theme' as mat-mdc-snack-bar-* hide
+$mat-mdc-snack-bar-mdc-snackbar-dismiss-ink-color, $mat-mdc-snack-bar-mdc-snackbar-fill-color,
+$mat-mdc-snack-bar-mdc-snackbar-label-ink-color;
 
-@import '../core/typography/typography-utils';
-@import '../core/theming/theming';
-@import '../core/theming/palette';
-@import '../core/style/private';

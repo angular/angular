@@ -49,7 +49,7 @@ describe('multiple component styles', () => {
         @use '@angular/material' as mat;
         $theme: ();
         @include mat.button-theme($theme);
-        @include mat.snack-bar-theme($theme);
+        @include mat.legacy-snack-bar-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
@@ -60,8 +60,7 @@ describe('multiple component styles', () => {
         @include mat.mdc-fab-typography($theme);
         @include mat.mdc-icon-button-theme($theme);
         @include mat.mdc-icon-button-typography($theme);
-        @include mat.mdc-snack-bar-theme($theme);
-        @include mat.mdc-snack-bar-typography($theme);
+        @include mat.snack-bar-typography($theme);
       `,
       );
     });
