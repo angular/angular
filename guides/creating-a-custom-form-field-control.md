@@ -388,7 +388,7 @@ click. In our case we'll just focus the first `<input>` if the user isn't about 
 ```ts
 onContainerClick(event: MouseEvent) {
   if ((event.target as Element).tagName.toLowerCase() != 'input') {
-    this.elRef.nativeElement.querySelector('input').focus();
+    this._elementRef.nativeElement.querySelector('input').focus();
   }
 }
 ```
