@@ -987,6 +987,29 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     this._onDisabledChange.forEach((changeFn) => changeFn(false));
   }
 
+  /**
+   * Toggles the control. This means the control is included in validation checks and
+   * the aggregate value of its parent. Its status recalculates based on its value and
+   * its validators.
+   *
+   * By default, if the control has children, all children are toggled.
+   *
+   * @see {@link AbstractControl.status}
+   *
+   * @param enable A boolean indicating if the control should be enabled.
+   * @param opts Configure options that control how the control propagates changes and
+   * emits events when marked as untouched
+   * * `onlySelf`: When true, mark only this control. When false or not supplied,
+   * marks all direct ancestors. Default is false.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is toggled.
+   * When false, no events are emitted.
+   */
+  toggle(enable: boolean, opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+    return enable ? this.enable(opts) : this.disable(opts);
+  }
+
   private _updateAncestors(
       opts: {onlySelf?: boolean, emitEvent?: boolean, skipPristineCheck?: boolean}): void {
     if (this._parent && !opts.onlySelf) {

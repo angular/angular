@@ -1362,6 +1362,49 @@ describe('FormArray', () => {
     });
   });
 
+  describe('toggle()', () => {
+    let c: FormControl;
+    let a: FormArray;
+    let enableSpy: jasmine.Spy;
+    let disableSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      c = new FormControl('value');
+      a = new FormArray([c]);
+      enableSpy = spyOn(a, 'enable');
+      disableSpy = spyOn(a, 'disable');           
+    });
+
+    it('Should call enable if enabled with the opts', () => {
+      const opts = { emitEvent: false, onlySelf: true };
+
+      a.toggle(true, opts);
+
+      expect(enableSpy).toHaveBeenCalledWith(opts);
+      expect(disableSpy).not.toHaveBeenCalled();
+    });
+    it('Should call disable if not enabled with the opts', () => {
+      const opts = { emitEvent: false, onlySelf: true };
+
+      a.toggle(false, opts);
+
+      expect(enableSpy).not.toHaveBeenCalled();
+      expect(disableSpy).toHaveBeenCalledWith(opts);
+    });
+    it('Should call enable if enabled with no opts', () => {     
+      a.toggle(true);
+
+      expect(enableSpy).toHaveBeenCalledWith({});
+      expect(disableSpy).not.toHaveBeenCalled();
+    });
+    it('Should call disable if not enabled with no opts', () => {      
+      a.toggle(false);
+
+      expect(enableSpy).not.toHaveBeenCalled();
+      expect(disableSpy).toHaveBeenCalledWith({});
+    });
+  });
+
   describe('out of bounds positive indices', () => {
     let c1: FormControl = new FormControl(1);
     let c2: FormControl = new FormControl(2);

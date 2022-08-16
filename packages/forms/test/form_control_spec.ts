@@ -1494,6 +1494,48 @@ describe('FormControl', () => {
       });
     });
   });
+
+  describe('toggle()', () => {
+    let c: FormControl;
+    let enableSpy: jasmine.Spy;
+    let disableSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      c = new FormControl('value');      
+      enableSpy = spyOn(c, 'enable');
+      disableSpy = spyOn(c, 'disable');      
+    });
+
+    it('Should call enable if enabled with the opts', () => {           
+      const opts = { emitEvent: false, onlySelf: true };
+
+      c.toggle(true, opts);
+
+      expect(enableSpy).toHaveBeenCalledWith(opts);
+      expect(disableSpy).not.toHaveBeenCalled();
+    });
+    it('Should call disable if not enabled with the opts', () => {     
+      const opts = { emitEvent: false, onlySelf: true };
+
+      c.toggle(false, opts);
+
+      expect(enableSpy).not.toHaveBeenCalled();
+      expect(disableSpy).toHaveBeenCalledWith(opts);
+    });
+    it('Should call enable if enabled with no opts', () => {                 
+      c.toggle(true);
+
+      expect(enableSpy).toHaveBeenCalledWith({});
+      expect(disableSpy).not.toHaveBeenCalled();
+    });
+    it('Should call disable if not enabled with no opts', () => {                 
+      c.toggle(false);
+
+      expect(enableSpy).not.toHaveBeenCalled();
+      expect(disableSpy).toHaveBeenCalledWith({});
+    });
+  });
+
   describe('pending', () => {
     let c: FormControl;
 
