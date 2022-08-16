@@ -1866,32 +1866,32 @@ describe('FormGroup', () => {
       c = new FormControl('value');
       fg = new FormGroup({'one': c});
       enableSpy = spyOn(fg, 'enable');
-      disableSpy = spyOn(fg, 'disable');           
+      disableSpy = spyOn(fg, 'disable');
     });
 
-    it('Should call enable if enabled with the opts', () => {     
-      const opts = { emitEvent: false, onlySelf: true };
+    it('Should call enable if enabled with the opts', () => {
+      const opts = {emitEvent: false, onlySelf: true};
 
       fg.toggle(true, opts);
 
       expect(enableSpy).toHaveBeenCalledWith(opts);
       expect(disableSpy).not.toHaveBeenCalled();
     });
-    it('Should call disable if not enabled with the opts', () => {      
-      const opts = { emitEvent: false, onlySelf: true };
+    it('Should call disable if not enabled with the opts', () => {
+      const opts = {emitEvent: false, onlySelf: true};
 
       fg.toggle(false, opts);
 
       expect(enableSpy).not.toHaveBeenCalled();
       expect(disableSpy).toHaveBeenCalledWith(opts);
     });
-    it('Should call enable if enabled with no opts', () => {     
+    it('Should call enable if enabled with no opts', () => {
       fg.toggle(true);
 
       expect(enableSpy).toHaveBeenCalledWith({});
       expect(disableSpy).not.toHaveBeenCalled();
     });
-    it('Should call disable if not enabled with no opts', () => {      
+    it('Should call disable if not enabled with no opts', () => {
       fg.toggle(false);
 
       expect(enableSpy).not.toHaveBeenCalled();

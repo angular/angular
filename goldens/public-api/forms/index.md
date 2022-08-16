@@ -83,6 +83,10 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     abstract setValue(value: TRawValue, options?: Object): void;
     readonly status: FormControlStatus;
     readonly statusChanges: Observable<FormControlStatus>;
+    toggle(enable: boolean, opts?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
     readonly touched: boolean;
     get untouched(): boolean;
     get updateOn(): FormHooks;
