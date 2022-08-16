@@ -1,4 +1,4 @@
-const {runfiles} = require("@bazel/runfiles");
+const {runfiles} = require('@bazel/runfiles');
 const {resolve} = require('canonical-path');
 const { existsSync } = require('fs');
 const semver = require('semver');
@@ -15,7 +15,7 @@ const CLI_SOURCE_HELP_PATH = resolve(CLI_SOURCE_PATH, 'help');
 // target or a test target.
 function resolveCliSourcePath() {
   // Case: build, find in execroot
-  const path = resolve('external', 'angular_cli_src')
+  const path = resolve('external', 'angular_cli_src');
   if (existsSync(path)) {
     return path;
   }
