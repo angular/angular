@@ -6,8 +6,8 @@ nodejs_binary(
     name = "generate-stackblitz",
     data = [
         "builder.mjs",
-        "//aio/tools/transforms/examples-package",
-        "//aio/tools/transforms/helpers",
+        "//aio/tools/transforms/examples-package:files",
+        "//aio/tools/transforms/helpers:files",
         "@aio_npm//canonical-path",
         "@aio_npm//fs-extra",
         "@aio_npm//globby",
