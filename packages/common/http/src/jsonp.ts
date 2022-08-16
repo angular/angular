@@ -62,6 +62,10 @@ export function jsonpCallbackContext(): Object {
  *
  *
  */
+@Injectable({
+  providedIn: 'root',
+  useFactory: jsonpCallbackContext,
+})
 export abstract class JsonpCallbackContext {
   [key: string]: (data: any) => void;
 }
@@ -74,7 +78,7 @@ export abstract class JsonpCallbackContext {
  *
  * @publicApi
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class JsonpClientBackend implements HttpBackend {
   /**
    * A resolved promise that can be used to schedule microtasks in the event handlers.

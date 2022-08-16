@@ -9,6 +9,7 @@
 import {HttpClient} from '@angular/common/http/src/client';
 import {HttpErrorResponse, HttpEventType, HttpResponse, HttpStatusCode} from '@angular/common/http/src/response';
 import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
+import {TestBed} from '@angular/core/testing';
 import {toArray} from 'rxjs/operators';
 
 {
@@ -22,6 +23,13 @@ import {toArray} from 'rxjs/operators';
     afterEach(() => {
       backend.verify();
     });
+
+    it('should be injectable in the root scope', () => {
+      // Note: no providers are configured for `HttpClient`, so this is testing `providedIn: 'root'`
+      // injection.
+      expect(TestBed.inject(HttpClient)).not.toBeNull();
+    });
+
     describe('makes a basic request', () => {
       it('for JSON data', done => {
         client.get('/test').subscribe(res => {

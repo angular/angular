@@ -11,7 +11,6 @@ import {Injectable} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpHeaders} from './headers';
-import {HttpBackend} from './http';
 import {HttpRequest} from './request';
 import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpJsonParseError, HttpResponse, HttpStatusCode, HttpUploadProgressEvent} from './response';
 
@@ -39,8 +38,8 @@ function getResponseUrl(xhr: any): string|null {
  *
  * @publicApi
  */
-@Injectable()
-export class HttpXhrBackend implements HttpBackend {
+@Injectable({providedIn: 'root'})
+export class HttpXhrBackend /* implements HttpBackend */ {
   constructor(private xhrFactory: XhrFactory) {}
 
   /**

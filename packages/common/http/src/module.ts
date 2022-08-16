@@ -82,8 +82,9 @@ export class HttpClientXsrfModule {
    */
   providers: [
     HttpClient,
-    {provide: HttpHandler, useClass: HttpInterceptingHandler},
+    HttpInterceptingHandler,
     HttpXhrBackend,
+    {provide: HttpHandler, useExisting: HttpInterceptingHandler},
     {provide: HttpBackend, useExisting: HttpXhrBackend},
   ],
 })

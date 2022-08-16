@@ -12,6 +12,7 @@ import {Observable} from 'rxjs';
 import {HttpHandlerFn, HttpInterceptorFn} from './interceptor_fn';
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
+import {HttpXhrBackend} from './xhr';
 import {xsrfInterceptor} from './xsrf';
 
 /**
@@ -72,7 +73,7 @@ export const HTTP_INTERCEPTORS = new InjectionToken<HttpInterceptor[]>('HTTP_INT
  *
  * @see `HttpInterceptor`
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class HttpInterceptingHandler implements HttpHandler {
   private chain: HttpHandler|null = null;
 
@@ -118,6 +119,10 @@ export class HttpInterceptorHandler implements HttpHandler {
  *
  * @publicApi
  */
+@Injectable({
+  providedIn: 'root',
+  useExisting: HttpInterceptingHandler,
+})
 export abstract class HttpHandler {
   abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
@@ -132,6 +137,7 @@ export abstract class HttpHandler {
  *
  * @publicApi
  */
+@Injectable({providedIn: 'root', useExisting: HttpXhrBackend})
 export abstract class HttpBackend implements HttpHandler {
   abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
