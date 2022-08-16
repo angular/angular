@@ -216,5 +216,7 @@ def docs_example(name, test = True, test_tags = []):
             toolchains = [
                 "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias",
             ],
-            tags = test_tags,
+            # RBE complains about superseeding the max inputs limit (70,000) due to the
+            # size of the input tree.
+            tags = test_tags + ["no-remote-exec"],
         )
