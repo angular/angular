@@ -3,16 +3,22 @@ load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
 
 js_library(
     name = "helpers",
-    srcs = [
-        "test-package.js",
-        "utils.js",
-    ],
+    srcs = [":files"],
     visibility = ["//aio/tools:__subpackages__"],
     deps = [
         "//:package_json",
         "@aio_npm//canonical-path",
         "@aio_npm//dgeni",
     ],
+)
+
+filegroup(
+    name = "files",
+    srcs = [
+        "test-package.js",
+        "utils.js",
+    ],
+    visibility = ["//visibility:public"],
 )
 
 jasmine_node_test(
