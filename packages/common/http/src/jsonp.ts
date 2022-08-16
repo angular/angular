@@ -7,10 +7,11 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable} from '@angular/core';
+import {inject, Inject, Injectable} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend, HttpHandler} from './http';
+import {HttpHandlerFn} from './interceptor_fn';
 import {HttpRequest} from './request';
 import {HttpErrorResponse, HttpEvent, HttpEventType, HttpResponse, HttpStatusCode} from './response';
 
@@ -248,6 +249,16 @@ export class JsonpClientBackend implements HttpBackend {
   }
 }
 
+export function jsonpInterceptor(
+    req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+  if (req.method !== 'JSONP') {
+    // Fall through for normal HTTP requests.
+    return next(req);
+  }
+
+  return inject(JsonpClientBackend).handle(req as HttpRequest<never>);
+}
+
 /**
  * Identifies requests with the method JSONP and
  * shifts them to the `JsonpClientBackend`.
@@ -255,11 +266,10 @@ export class JsonpClientBackend implements HttpBackend {
  * @see `HttpInterceptor`
  *
  * @publicApi
+ * @deprecated JSONP interception is now implemented using a functional interceptor
  */
 @Injectable()
 export class JsonpInterceptor {
-  constructor(private jsonp: JsonpClientBackend) {}
-
   /**
    * Identifies and handles a given JSONP request.
    * @param req The outgoing request object to handle.
@@ -268,10 +278,6 @@ export class JsonpInterceptor {
    * @returns An observable of the event stream.
    */
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (req.method === 'JSONP') {
-      return this.jsonp.handle(req as HttpRequest<never>);
-    }
-    // Fall through for normal HTTP requests.
-    return next.handle(req);
+    return jsonpInterceptor(req, next.handle.bind(next));
   }
 }
