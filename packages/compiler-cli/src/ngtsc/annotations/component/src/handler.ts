@@ -26,7 +26,7 @@ import {TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/a
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {getSourceFile} from '../../../util/src/typescript';
 import {Xi18nContext} from '../../../xi18n';
-import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getDirectiveDiagnostics, getProviderDiagnostics, isExpressionForwardReference, readBaseClass, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, wrapFunctionExpressionsInParens,} from '../../common';
+import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getDirectiveDiagnostics, getHostDirectiveDiagnostics, getProviderDiagnostics, isExpressionForwardReference, readBaseClass, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, wrapFunctionExpressionsInParens,} from '../../common';
 import {extractDirectiveMetadata, parseFieldArrayValue} from '../../directive';
 import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
 
@@ -619,8 +619,7 @@ export class ComponentDecoratorHandler implements
 
       for (const dep of dependencies) {
         if (dep.kind === MetaKind.Directive && dep.selector !== null) {
-          matcher.addSelectables(
-              CssSelector.parse(dep.selector), [...this.hostDirectivesResolver.resolve(dep), dep]);
+          matcher.addSelectables(CssSelector.parse(dep.selector), [dep]);
         } else if (dep.kind === MetaKind.Pipe) {
           pipes.set(dep.name, dep);
         }
@@ -853,7 +852,7 @@ export class ComponentDecoratorHandler implements
     }
 
     const hostDirectivesDiagnotics = analysis.hostDirectives ?
-        this.hostDirectivesResolver.validate(analysis.hostDirectives) :
+        getHostDirectiveDiagnostics(analysis.hostDirectives, this.metaReader) :
         null;
     if (hostDirectivesDiagnotics !== null) {
       diagnostics.push(...hostDirectivesDiagnotics);

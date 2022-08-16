@@ -127,7 +127,7 @@ export class DecorationAnalyzer {
         // in ngtsc, but we want to ensure compatibility in ngcc for outdated libraries that
         // have not migrated to explicit decorators. See: https://hackmd.io/@alx/ryfYYuvzH.
         /* compileUndecoratedClassesWithAngularFeatures */ true,
-        NOOP_PERF_RECORDER, this.hostDirectivesResolver
+        NOOP_PERF_RECORDER,
     ) as DecoratorHandler<unknown, unknown, SemanticSymbol|null,unknown>,
     // clang-format on
     // Pipe handler must be before injectable handler in list so pipe factories are printed

@@ -11,13 +11,13 @@ import ts from 'typescript';
 
 import {Reference, ReferenceEmitter} from '../../../imports';
 import {extractSemanticTypeParameters, SemanticDepGraphUpdater} from '../../../incremental/semantic_graph';
-import {ClassPropertyMapping, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, HostDirectiveMeta, HostDirectivesResolver, InjectableClassRegistry, MatchSource, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
+import {ClassPropertyMapping, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, HostDirectiveMeta, InjectableClassRegistry, MatchSource, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost} from '../../../reflection';
 import {LocalModuleScopeRegistry} from '../../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../../transform';
-import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata} from '../../common';
+import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getHostDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata} from '../../common';
 
 import {extractDirectiveMetadata} from './shared';
 import {DirectiveSymbol} from './symbol';
@@ -54,8 +54,7 @@ export class DirectiveDecoratorHandler implements
       private refEmitter: ReferenceEmitter, private isCore: boolean,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean,
-      private compileUndecoratedClassesWithAngularFeatures: boolean, private perf: PerfRecorder,
-      private hostDirectivesResolver: HostDirectivesResolver) {}
+      private compileUndecoratedClassesWithAngularFeatures: boolean, private perf: PerfRecorder) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = DirectiveDecoratorHandler.name;
@@ -185,7 +184,7 @@ export class DirectiveDecoratorHandler implements
     }
 
     const hostDirectivesDiagnotics = analysis.hostDirectives ?
-        this.hostDirectivesResolver.validate(analysis.hostDirectives) :
+        getHostDirectiveDiagnostics(analysis.hostDirectives, this.metaReader) :
         null;
     if (hostDirectivesDiagnotics !== null) {
       diagnostics.push(...hostDirectivesDiagnotics);

@@ -10,7 +10,7 @@ import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {Reference} from '../../../imports';
-import {InjectableClassRegistry, MetadataReader} from '../../../metadata';
+import {HostDirectiveMeta, InjectableClassRegistry, MetadataReader} from '../../../metadata';
 import {describeResolvedType, DynamicValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
 import {ClassDeclaration, ReflectionHost} from '../../../reflection';
 import {DeclarationData, LocalModuleScopeRegistry} from '../../../scope';
@@ -148,6 +148,39 @@ export function getDirectiveDiagnostics(
   }
 
   addDiagnostics(checkInheritanceOfDirective(node, reader, reflector, evaluator));
+  return diagnostics;
+}
+
+export function getHostDirectiveDiagnostics(
+    hostDirectives: HostDirectiveMeta[], metaReader: MetadataReader) {
+  const diagnostics: ts.DiagnosticWithLocation[] = [];
+
+  for (const current of hostDirectives) {
+    const hostMeta = metaReader.getDirectiveMetadata(current.directive);
+
+    if (hostMeta === null) {
+      diagnostics.push(makeDiagnostic(
+          ErrorCode.UNRESOLVED_HOST_DIRECTIVE,
+          current.directive.getOriginForDiagnostics(current.origin),
+          `Could not resolve host directive metadata of ${current.directive.debugName}`));
+      continue;
+    }
+
+    if (!hostMeta.isStandalone) {
+      diagnostics.push(makeDiagnostic(
+          ErrorCode.HOST_DIRECTIVE_NOT_STANDALONE,
+          current.directive.getOriginForDiagnostics(current.origin),
+          `Host directive ${hostMeta.name} must be standalone`));
+    }
+
+    if (hostMeta.isComponent) {
+      diagnostics.push(makeDiagnostic(
+          ErrorCode.HOST_DIRECTIVE_COMPONENT,
+          current.directive.getOriginForDiagnostics(current.origin),
+          `Host directive ${hostMeta.name} cannot be a component`));
+    }
+  }
+
   return diagnostics;
 }
 
