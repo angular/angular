@@ -191,6 +191,32 @@ architect(
     tags = ["no-remote-exec"],
 )
 
+npm_package_bin(
+    name = "404-page",
+    outs = ["404.html"],
+    args = [
+        "$(execpath src/404-body.html)",
+        "$(execpath :build)",
+        "$@",
+    ],
+    data = [
+        "src/404-body.html",
+        ":build",
+    ],
+    tool = "//aio/scripts:build-404-page",
+)
+
+copy_to_directory(
+    name = "build-with-404",
+    srcs = [
+        ":404-page",
+        ":build",
+    ],
+    replace_prefixes = {
+        "build": "",
+    },
+)
+
 architect_test(
     name = "test",
     args = [
