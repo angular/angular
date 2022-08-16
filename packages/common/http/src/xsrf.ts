@@ -7,29 +7,28 @@
  */
 
 import {DOCUMENT, ɵparseCookieValue as parseCookieValue} from '@angular/common';
-import {Inject, Injectable, InjectionToken, PLATFORM_ID} from '@angular/core';
+import {inject, Inject, Injectable, InjectionToken, PLATFORM_ID} from '@angular/core';
 import {Observable} from 'rxjs';
 
-import {HttpHandler, HttpInterceptor} from './http';
+import {HttpHandlerFn} from './interceptor_fn';
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 
-export const XSRF_COOKIE_NAME = new InjectionToken<string>('XSRF_COOKIE_NAME');
-export const XSRF_HEADER_NAME = new InjectionToken<string>('XSRF_HEADER_NAME');
+export const XSRF_COOKIE_NAME = new InjectionToken<string>('XSRF_COOKIE_NAME', {
+  providedIn: 'root',
+  factory: () => 'XSRF-TOKEN',
+});
 
-/**
- * Retrieves the current XSRF token to use with the next outgoing request.
- *
- * @publicApi
- */
-export abstract class HttpXsrfTokenExtractor {
-  /**
-   * Get the XSRF token to use with an outgoing request.
-   *
-   * Will be called for every request, so the token may change between requests.
-   */
-  abstract getToken(): string|null;
-}
+export const XSRF_HEADER_NAME = new InjectionToken<string>('XSRF_HEADER_NAME', {
+  providedIn: 'root',
+  factory: () => 'X-XSRF-TOKEN',
+});
+
+export const XSRF_ENABLED = new InjectionToken<boolean>('XSRF_ENABLED', {
+  providedIn: 'root',
+  factory: () => true,
+});
+
 
 /**
  * `HttpXsrfTokenExtractor` which retrieves the token from a cookie.
@@ -63,30 +62,51 @@ export class HttpXsrfCookieExtractor implements HttpXsrfTokenExtractor {
 }
 
 /**
- * `HttpInterceptor` which adds an XSRF token to eligible outgoing requests.
+ * Retrieves the current XSRF token to use with the next outgoing request.
+ *
+ * @publicApi
  */
-@Injectable()
-export class HttpXsrfInterceptor implements HttpInterceptor {
-  constructor(
-      private tokenService: HttpXsrfTokenExtractor,
-      @Inject(XSRF_HEADER_NAME) private headerName: string) {}
+@Injectable({
+  providedIn: 'root',
+  useClass: HttpXsrfCookieExtractor,
+})
+export abstract class HttpXsrfTokenExtractor {
+  /**
+   * Get the XSRF token to use with an outgoing request.
+   *
+   * Will be called for every request, so the token may change between requests.
+   */
+  abstract getToken(): string|null;
+}
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const lcUrl = req.url.toLowerCase();
-    // Skip both non-mutating requests and absolute URLs.
-    // Non-mutating requests don't require a token, and absolute URLs require special handling
-    // anyway as the cookie set
-    // on our origin is not the same as the token expected by another origin.
-    if (req.method === 'GET' || req.method === 'HEAD' || lcUrl.startsWith('http://') ||
-        lcUrl.startsWith('https://')) {
-      return next.handle(req);
-    }
-    const token = this.tokenService.getToken();
-
-    // Be careful not to overwrite an existing header of the same name.
-    if (token !== null && !req.headers.has(this.headerName)) {
-      req = req.clone({headers: req.headers.set(this.headerName, token)});
-    }
-    return next.handle(req);
+export function shouldXsrfProtectRequest(req: HttpRequest<unknown>): boolean {
+  if (!inject(XSRF_ENABLED)) {
+    return false;
   }
+
+  const lcUrl = req.url.toLowerCase();
+  // Skip both non-mutating requests and absolute URLs.
+  // Non-mutating requests don't require a token, and absolute URLs require special handling
+  // anyway as the cookie set
+  // on our origin is not the same as the token expected by another origin.
+  if (req.method === 'GET' || req.method === 'HEAD' || lcUrl.startsWith('http://') ||
+      lcUrl.startsWith('https://')) {
+    return false;
+  }
+  return true;
+}
+
+export function xsrfInterceptor(
+    req: HttpRequest<unknown>, handle: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+  if (!shouldXsrfProtectRequest(req)) {
+    return handle(req);
+  }
+  const token = inject(HttpXsrfTokenExtractor).getToken();
+  const headerName = inject(XSRF_HEADER_NAME);
+
+  // Be careful not to overwrite an existing header of the same name.
+  if (token !== null && !req.headers.has(headerName)) {
+    req = req.clone({headers: req.headers.set(headerName, token)});
+  }
+  return handle(req);
 }

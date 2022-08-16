@@ -12,7 +12,7 @@ import {HttpClient} from './client';
 import {HTTP_INTERCEPTORS, HttpBackend, HttpHandler, HttpInterceptingHandler, NoopInterceptor} from './http';
 import {jsonpCallbackContext, JsonpCallbackContext, JsonpClientBackend, JsonpInterceptor} from './jsonp';
 import {HttpXhrBackend} from './xhr';
-import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_HEADER_NAME} from './xsrf';
+import {XSRF_COOKIE_NAME, XSRF_ENABLED, XSRF_HEADER_NAME} from './xsrf';
 
 
 /**
@@ -29,11 +29,7 @@ import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XS
  */
 @NgModule({
   providers: [
-    HttpXsrfInterceptor,
-    {provide: HTTP_INTERCEPTORS, useExisting: HttpXsrfInterceptor, multi: true},
-    {provide: HttpXsrfTokenExtractor, useClass: HttpXsrfCookieExtractor},
-    {provide: XSRF_COOKIE_NAME, useValue: 'XSRF-TOKEN'},
-    {provide: XSRF_HEADER_NAME, useValue: 'X-XSRF-TOKEN'},
+    {provide: XSRF_ENABLED, useValue: true},
   ],
 })
 export class HttpClientXsrfModule {
@@ -43,9 +39,7 @@ export class HttpClientXsrfModule {
   static disable(): ModuleWithProviders<HttpClientXsrfModule> {
     return {
       ngModule: HttpClientXsrfModule,
-      providers: [
-        {provide: HttpXsrfInterceptor, useClass: NoopInterceptor},
-      ],
+      providers: [{provide: XSRF_ENABLED, useValue: false}],
     };
   }
 
@@ -66,6 +60,7 @@ export class HttpClientXsrfModule {
       providers: [
         options.cookieName ? {provide: XSRF_COOKIE_NAME, useValue: options.cookieName} : [],
         options.headerName ? {provide: XSRF_HEADER_NAME, useValue: options.headerName} : [],
+        {provide: XSRF_ENABLED, useValue: true},
       ],
     };
   }
@@ -81,15 +76,6 @@ export class HttpClientXsrfModule {
  * @publicApi
  */
 @NgModule({
-  /**
-   * Optional configuration for XSRF protection.
-   */
-  imports: [
-    HttpClientXsrfModule.withOptions({
-      cookieName: 'XSRF-TOKEN',
-      headerName: 'X-XSRF-TOKEN',
-    }),
-  ],
   /**
    * Configures the [dependency injector](guide/glossary#injector) where it is imported
    * with supporting services for HTTP communications.

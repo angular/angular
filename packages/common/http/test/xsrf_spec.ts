@@ -8,9 +8,14 @@
 
 import {HttpHeaders} from '@angular/common/http/src/headers';
 import {HttpRequest} from '@angular/common/http/src/request';
-import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor} from '@angular/common/http/src/xsrf';
-
+import {HttpXsrfCookieExtractor, HttpXsrfTokenExtractor, xsrfInterceptor} from '@angular/common/http/src/xsrf';
 import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
+import {createEnvironmentInjector, EnvironmentInjector} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {Observable} from 'rxjs';
+
+import {HttpEvent} from '../public_api';
+import {HttpHandlerFn} from '../src/interceptor_fn';
 
 class SampleTokenExtractor extends HttpXsrfTokenExtractor {
   constructor(private token: string|null) {
@@ -25,42 +30,50 @@ class SampleTokenExtractor extends HttpXsrfTokenExtractor {
 {
   describe('HttpXsrfInterceptor', () => {
     let backend: HttpClientTestingBackend;
-    const interceptor = new HttpXsrfInterceptor(new SampleTokenExtractor('test'), 'X-XSRF-TOKEN');
+
+    function testInterceptor(req: HttpRequest<unknown>): Observable<HttpEvent<unknown>> {
+      return TestBed.inject(EnvironmentInjector)
+          .runInContext(() => xsrfInterceptor(req, backend.handle.bind(backend)));
+    }
+
     beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [{provide: HttpXsrfTokenExtractor, useValue: new SampleTokenExtractor('test')}]
+      });
       backend = new HttpClientTestingBackend();
     });
+
     it('applies XSRF protection to outgoing requests', () => {
-      interceptor.intercept(new HttpRequest('POST', '/test', {}), backend).subscribe();
+      testInterceptor(new HttpRequest('POST', '/test', {})).subscribe();
       const req = backend.expectOne('/test');
       expect(req.request.headers.get('X-XSRF-TOKEN')).toEqual('test');
       req.flush({});
     });
     it('does not apply XSRF protection when request is a GET', () => {
-      interceptor.intercept(new HttpRequest('GET', '/test'), backend).subscribe();
+      testInterceptor(new HttpRequest('GET', '/test')).subscribe();
       const req = backend.expectOne('/test');
       expect(req.request.headers.has('X-XSRF-TOKEN')).toEqual(false);
       req.flush({});
     });
     it('does not apply XSRF protection when request is a HEAD', () => {
-      interceptor.intercept(new HttpRequest('HEAD', '/test'), backend).subscribe();
+      testInterceptor(new HttpRequest('HEAD', '/test')).subscribe();
       const req = backend.expectOne('/test');
       expect(req.request.headers.has('X-XSRF-TOKEN')).toEqual(false);
       req.flush({});
     });
     it('does not overwrite existing header', () => {
-      interceptor
-          .intercept(
-              new HttpRequest(
-                  'POST', '/test', {}, {headers: new HttpHeaders().set('X-XSRF-TOKEN', 'blah')}),
-              backend)
-          .subscribe();
+      testInterceptor(new HttpRequest('POST', '/test', {}, {
+        headers: new HttpHeaders().set('X-XSRF-TOKEN', 'blah')
+      })).subscribe();
       const req = backend.expectOne('/test');
       expect(req.request.headers.get('X-XSRF-TOKEN')).toEqual('blah');
       req.flush({});
     });
     it('does not set the header for a null token', () => {
-      const interceptor = new HttpXsrfInterceptor(new SampleTokenExtractor(null), 'X-XSRF-TOKEN');
-      interceptor.intercept(new HttpRequest('POST', '/test', {}), backend).subscribe();
+      TestBed.configureTestingModule({
+        providers: [{provide: HttpXsrfTokenExtractor, useValue: new SampleTokenExtractor(null)}],
+      });
+      testInterceptor(new HttpRequest('POST', '/test', {})).subscribe();
       const req = backend.expectOne('/test');
       expect(req.request.headers.has('X-XSRF-TOKEN')).toEqual(false);
       req.flush({});

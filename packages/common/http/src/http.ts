@@ -12,6 +12,7 @@ import {Observable} from 'rxjs';
 import {HttpHandlerFn, HttpInterceptorFn} from './interceptor_fn';
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
+import {xsrfInterceptor} from './xsrf';
 
 /**
  * Intercepts and handles an `HttpRequest` or `HttpResponse`.
@@ -80,9 +81,9 @@ export class HttpInterceptingHandler implements HttpHandler {
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
     if (this.chain === null) {
       const interceptors = this.injector.get(HTTP_INTERCEPTORS, []);
-      this.chain = interceptors.reduceRight(
-          (next, interceptor) =>
-              new HttpInterceptorHandler(next, wrapInterceptorToFn(interceptor), this.injector),
+      // Add the default XSRF interceptor at the beginning of the chain.
+      this.chain = [xsrfInterceptor, ...interceptors.map(wrapInterceptorToFn)].reduceRight(
+          (next, interceptor) => new HttpInterceptorHandler(next, interceptor, this.injector),
           this.backend);
     }
     return this.chain.handle(req);
