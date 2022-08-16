@@ -10,7 +10,7 @@ import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
-import {HttpBackend, HttpHandler} from './backend';
+import {HttpBackend, HttpHandler} from './http';
 import {HttpRequest} from './request';
 import {HttpErrorResponse, HttpEvent, HttpEventType, HttpResponse, HttpStatusCode} from './response';
 
@@ -39,6 +39,21 @@ export const JSONP_ERR_WRONG_RESPONSE_TYPE = 'JSONP requests must use Json respo
 // Error text given when a request is passed to the JsonpClientBackend that has
 // headers set
 export const JSONP_ERR_HEADERS_NOT_SUPPORTED = 'JSONP requests do not support headers.';
+
+/**
+ * Factory function that determines where to store JSONP callbacks.
+ *
+ * Ordinarily JSONP callbacks are stored on the `window` object, but this may not exist
+ * in test environments. In that case, callbacks are stored on an anonymous object instead.
+ *
+ *
+ */
+export function jsonpCallbackContext(): Object {
+  if (typeof window === 'object') {
+    return window;
+  }
+  return {};
+}
 
 /**
  * DI token/abstract type representing a map of JSONP callbacks.

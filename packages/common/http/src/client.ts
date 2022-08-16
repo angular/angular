@@ -10,9 +10,9 @@ import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {concatMap, filter, map} from 'rxjs/operators';
 
-import {HttpHandler} from './backend';
 import {HttpContext} from './context';
 import {HttpHeaders} from './headers';
+import {HttpHandler} from './http';
 import {HttpParams, HttpParamsOptions} from './params';
 import {HttpRequest} from './request';
 import {HttpEvent, HttpResponse} from './response';

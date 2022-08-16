@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpHandler} from '@angular/common/http/src/backend';
 import {HttpClient} from '@angular/common/http/src/client';
 import {HttpContext, HttpContextToken} from '@angular/common/http/src/context';
-import {HTTP_INTERCEPTORS, HttpInterceptor} from '@angular/common/http/src/interceptor';
+import {HTTP_INTERCEPTORS, HttpHandler, HttpInterceptor} from '@angular/common/http/src/http';
 import {HttpRequest} from '@angular/common/http/src/request';
 import {HttpEvent, HttpResponse} from '@angular/common/http/src/response';
 import {HttpTestingController} from '@angular/common/http/testing/src/api';

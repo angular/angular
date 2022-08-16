@@ -27,13 +27,13 @@ export type XhrFactory = XhrFactory_fromAngularCommon;
  */
 export const XhrFactory = XhrFactory_fromAngularCommon;
 
-export {HttpBackend, HttpHandler} from './src/backend';
+export {HttpBackend, HttpHandler} from './src/http';
 export {HttpClient} from './src/client';
 export {HttpContext, HttpContextToken} from './src/context';
 export {HttpHeaders} from './src/headers';
-export {HTTP_INTERCEPTORS, HttpInterceptor} from './src/interceptor';
+export {HTTP_INTERCEPTORS, HttpInterceptor, HttpInterceptingHandler as ɵHttpInterceptingHandler} from './src/http';
 export {JsonpClientBackend, JsonpInterceptor} from './src/jsonp';
-export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule, HttpInterceptingHandler as ɵHttpInterceptingHandler} from './src/module';
+export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule} from './src/module';
 export {HttpParameterCodec, HttpParams, HttpParamsOptions, HttpUrlEncodingCodec} from './src/params';
 export {HttpRequest} from './src/request';
 export {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpProgressEvent, HttpResponse, HttpResponseBase, HttpSentEvent, HttpStatusCode, HttpUploadProgressEvent, HttpUserEvent} from './src/response';

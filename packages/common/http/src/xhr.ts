@@ -10,8 +10,8 @@ import {XhrFactory} from '@angular/common';
 import {Injectable} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
-import {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
+import {HttpBackend} from './http';
 import {HttpRequest} from './request';
 import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpJsonParseError, HttpResponse, HttpStatusCode, HttpUploadProgressEvent} from './response';
 
