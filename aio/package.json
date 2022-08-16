@@ -45,7 +45,7 @@
     "docs-test": "bazel test //aio/tools/transforms/...",
     "redirects-test": "node tests/deployment/unit/test",
     "firebase-utils-test": "node tools/firebase-test-utils/test",
-    "tools-lint": "eslint --ext=.mjs scripts/deploy-to-firebase && eslint tools/firebase-test-utils && eslint tools/ng-packages-installer",
+    "tools-lint": "eslint --ext=.mjs scripts/deploy-to-firebase && eslint tools/firebase-test-utils",
     "tools-test": "bazel test //aio/tools/... && jasmine scripts/deploy-to-firebase/**/*.spec.mjs && yarn firebase-utils-test",
     "serve": "bazel run //aio:serve",
     "serve-local": "yarn serve --config=aio_local_deps",
