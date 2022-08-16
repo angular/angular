@@ -252,6 +252,7 @@ jobs:
       - init_environment
 
       - run: yarn -s tslint
+      - run: yarn -s --cwd aio lint
       - run: yarn -s ng-dev format changed $CI_GIT_BASE_REVISION --check
       - run: yarn -s ts-circular-deps:check
       - run: yarn -s ng-dev pullapprove verify
@@ -325,14 +326,14 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-        # Build aio
-      - run: yarn --cwd aio build --progress=false
-        # Lint the code
-      - run: yarn --cwd aio lint
-        # Run unit tests
-      - run: yarn --cwd aio test --progress=false --watch=false
-        # Run e2e tests
-      - run: yarn --cwd aio e2e --configuration=ci
+
+        # Run all aio tests
+      - run:
+          command: yarn --cwd aio test:ci
+          no_output_timeout: 20m
+
+        # TODO: run the following tests under bazel
+
         # Run PWA-score tests
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Run accessibility tests
@@ -356,43 +357,17 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-        # Build aio (with local Angular packages)
-      - run: yarn --cwd aio build-local-ci
-        # Run unit tests
-      - run: yarn --cwd aio test --progress=false --watch=false
-        # Run e2e tests
-      - run: yarn --cwd aio e2e --configuration=ci
+        # Run all aio tests (with local Angular packages)
+      - run:
+          command: yarn --cwd aio test-local:ci
+          no_output_timeout: 20m
+
+        # TODO: run the following tests under bazel
+
         # Run PWA-score tests
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Check the bundle sizes.
       - run: yarn --cwd aio payload-size aio-local
-
-  test_aio_tools:
-    executor: default-executor
-    steps:
-      - custom_attach_workspace
-      - init_environment
-        # Install
-      - run: yarn --cwd aio install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
-      - run: yarn --cwd aio extract-cli-command-docs
-        # Run tools tests
-      - run: yarn --cwd aio tools-test
-      - run: ./aio/aio-builds-setup/scripts/test.sh
-
-  test_docs_examples:
-    executor:
-      name: test-browser-executor
-      resource_class: xlarge
-    parallelism: 5
-    steps:
-      - custom_attach_workspace
-      - init_environment
-        # Install aio
-      - run: yarn --cwd aio install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
-        # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
-        # Since the parallelism is set to "5", there will be five parallel CircleCI containers.
-        # with either "0", "1", etc as node index. This can be passed to the "--shard" argument.
-      - run: yarn --cwd aio example-e2e --setup --local --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
@@ -770,13 +745,7 @@ workflows:
             - test_aio
       - test_aio_local:
           requires:
-            - build-npm-packages
-      - test_aio_tools:
-          requires:
-            - build-npm-packages
-      - test_docs_examples:
-          requires:
-            - build-npm-packages
+            - setup
       - aio_preview:
           # Only run on PR builds. (There can be no previews for non-PR builds.)
           <<: *only_on_pull_requests
@@ -795,7 +764,6 @@ workflows:
             - test
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
             - test_aio_local
-            - test_docs_examples
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
