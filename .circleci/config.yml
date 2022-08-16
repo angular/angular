@@ -322,7 +322,9 @@ jobs:
           webhook_url_env_var: SLACK_DEV_INFRA_CI_FAILURES_WEBHOOK_URL
 
   test_aio:
-    executor: test-browser-executor
+    executor:
+      name: test-browser-executor
+      resource_class: 2xlarge+
     steps:
       - custom_attach_workspace
       - init_environment
@@ -353,7 +355,9 @@ jobs:
       - run: yarn --cwd aio deploy-production
 
   test_aio_local:
-    executor: test-browser-executor
+    executor:
+      name: test-browser-executor
+      resource_class: 2xlarge+
     steps:
       - custom_attach_workspace
       - init_environment
