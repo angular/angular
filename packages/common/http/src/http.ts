@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, InjectionToken, Injector} from '@angular/core';
+import {EnvironmentInjector, Injectable, InjectionToken, Injector} from '@angular/core';
 import {Observable} from 'rxjs';
 
+import {HttpHandlerFn, HttpInterceptorFn} from './interceptor_fn';
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 
@@ -74,28 +75,33 @@ export const HTTP_INTERCEPTORS = new InjectionToken<HttpInterceptor[]>('HTTP_INT
 export class HttpInterceptingHandler implements HttpHandler {
   private chain: HttpHandler|null = null;
 
-  constructor(private backend: HttpBackend, private injector: Injector) {}
+  constructor(private backend: HttpBackend, private injector: EnvironmentInjector) {}
 
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
     if (this.chain === null) {
       const interceptors = this.injector.get(HTTP_INTERCEPTORS, []);
       this.chain = interceptors.reduceRight(
-          (next, interceptor) => new HttpInterceptorHandler(next, interceptor), this.backend);
+          (next, interceptor) =>
+              new HttpInterceptorHandler(next, wrapInterceptorToFn(interceptor), this.injector),
+          this.backend);
     }
     return this.chain.handle(req);
   }
 }
 
-
-
 /**
  * `HttpHandler` which applies an `HttpInterceptor` to an `HttpRequest`.
  */
 export class HttpInterceptorHandler implements HttpHandler {
-  constructor(private next: HttpHandler, private interceptor: HttpInterceptor) {}
+  private next: HttpHandlerFn;
+  constructor(
+      nextHandler: HttpHandler, private interceptor: HttpInterceptorFn,
+      private injector: EnvironmentInjector) {
+    this.next = nextHandler.handle.bind(nextHandler);
+  }
 
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-    return this.interceptor.intercept(req, this.next);
+    return this.injector.runInContext(() => this.interceptor(req, this.next));
   }
 }
 
@@ -134,4 +140,10 @@ export class NoopInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req);
   }
+}
+
+function wrapInterceptorToFn(interceptor: HttpInterceptor): HttpInterceptorFn {
+  return (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
+    return interceptor.intercept(req, {handle: next});
+  };
 }
