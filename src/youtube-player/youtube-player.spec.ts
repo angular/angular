@@ -380,6 +380,28 @@ describe('YoutubePlayer', () => {
 
       expect(playerSpy.seekTo).toHaveBeenCalledWith(1337, true);
     });
+
+    it('should be able to disable cookies', () => {
+      const containerElement = fixture.nativeElement.querySelector('div');
+
+      expect(playerCtorSpy).toHaveBeenCalledWith(
+        containerElement,
+        jasmine.objectContaining({
+          host: undefined,
+        }),
+      );
+
+      playerCtorSpy.calls.reset();
+      fixture.componentInstance.disableCookies = true;
+      fixture.detectChanges();
+
+      expect(playerCtorSpy).toHaveBeenCalledWith(
+        containerElement,
+        jasmine.objectContaining({
+          host: 'https://www.youtube-nocookie.com',
+        }),
+      );
+    });
   });
 
   describe('API loaded asynchronously', () => {
@@ -498,6 +520,7 @@ describe('YoutubePlayer', () => {
     <youtube-player #player [videoId]="videoId" *ngIf="visible" [width]="width" [height]="height"
       [startSeconds]="startSeconds" [endSeconds]="endSeconds" [suggestedQuality]="suggestedQuality"
       [playerVars]="playerVars"
+      [disableCookies]="disableCookies"
       (ready)="onReady($event)"
       (stateChange)="onStateChange($event)"
       (playbackQualityChange)="onPlaybackQualityChange($event)"
@@ -509,6 +532,7 @@ describe('YoutubePlayer', () => {
 })
 class TestApp {
   videoId: string | undefined = VIDEO_ID;
+  disableCookies = false;
   visible = true;
   width: number | undefined;
   height: number | undefined;

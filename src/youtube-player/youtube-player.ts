@@ -73,11 +73,15 @@ export const DEFAULT_PLAYER_HEIGHT = 390;
 interface Player extends YT.Player {
   videoId?: string;
   playerVars?: YT.PlayerVars;
+  host?: string;
 }
 
 // The player isn't fully initialized when it's constructed.
 // The only field available is destroy and addEventListener.
-type UninitializedPlayer = Pick<Player, 'videoId' | 'playerVars' | 'destroy' | 'addEventListener'>;
+type UninitializedPlayer = Pick<
+  Player,
+  'videoId' | 'playerVars' | 'destroy' | 'addEventListener' | 'host'
+>;
 
 /**
  * Object used to store the state of the player if the
@@ -179,6 +183,16 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   }
   private _playerVars = new BehaviorSubject<YT.PlayerVars | undefined>(undefined);
 
+  /** Whether cookies inside the player have been disabled. */
+  @Input()
+  get disableCookies(): boolean {
+    return this._disableCookies.value;
+  }
+  set disableCookies(value: unknown) {
+    this._disableCookies.next(!!value);
+  }
+  private readonly _disableCookies = new BehaviorSubject<boolean>(false);
+
   /**
    * Whether the iframe will attempt to load regardless of the status of the api on the
    * page. Set this to true if you don't want the `onYouTubeIframeAPIReady` field to be
@@ -241,10 +255,15 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
       iframeApiAvailableObs = iframeApiAvailableSubject.pipe(take(1), startWith(false));
     }
 
+    const hostObservable = this._disableCookies.pipe(
+      map(cookiesDisabled => (cookiesDisabled ? 'https://www.youtube-nocookie.com' : undefined)),
+    );
+
     // An observable of the currently loaded player.
     const playerObs = createPlayerObservable(
       this._youtubeContainer,
       this._videoId,
+      hostObservable,
       iframeApiAvailableObs,
       this._width,
       this._height,
@@ -648,18 +667,19 @@ function waitUntilReady(
 function createPlayerObservable(
   youtubeContainer: Observable<HTMLElement>,
   videoIdObs: Observable<string | undefined>,
+  hostObs: Observable<string | undefined>,
   iframeApiAvailableObs: Observable<boolean>,
   widthObs: Observable<number>,
   heightObs: Observable<number>,
   playerVarsObs: Observable<YT.PlayerVars | undefined>,
   ngZone: NgZone,
 ): Observable<UninitializedPlayer | undefined> {
-  const playerOptions = combineLatest([videoIdObs, playerVarsObs]).pipe(
+  const playerOptions = combineLatest([videoIdObs, hostObs, playerVarsObs]).pipe(
     withLatestFrom(combineLatest([widthObs, heightObs])),
     map(([constructorOptions, sizeOptions]) => {
-      const [videoId, playerVars] = constructorOptions;
+      const [videoId, host, playerVars] = constructorOptions;
       const [width, height] = sizeOptions;
-      return videoId ? {videoId, playerVars, width, height} : undefined;
+      return videoId ? {videoId, playerVars, width, height, host} : undefined;
     }),
   );
 
@@ -684,7 +704,11 @@ function syncPlayerState(
   player: UninitializedPlayer | undefined,
   [container, videoOptions, ngZone]: [HTMLElement, YT.PlayerOptions | undefined, NgZone],
 ): UninitializedPlayer | undefined {
-  if (player && videoOptions && player.playerVars !== videoOptions.playerVars) {
+  if (
+    player &&
+    videoOptions &&
+    (player.playerVars !== videoOptions.playerVars || player.host !== videoOptions.host)
+  ) {
     // The player needs to be recreated if the playerVars are different.
     player.destroy();
   } else if (!videoOptions) {
@@ -704,6 +728,7 @@ function syncPlayerState(
   );
   newPlayer.videoId = videoOptions.videoId;
   newPlayer.playerVars = videoOptions.playerVars;
+  newPlayer.host = videoOptions.host;
   return newPlayer;
 }
 

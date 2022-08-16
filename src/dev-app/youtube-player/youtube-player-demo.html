@@ -10,7 +10,11 @@
         <mat-radio-button [value]="undefined">Unset</mat-radio-button>
       </mat-radio-group>
     </div>
+    <div class="demo-video-selection">
+      <mat-checkbox [(ngModel)]="disableCookies">Disable cookies</mat-checkbox>
+    </div>
     <youtube-player [videoId]="selectedVideo && selectedVideo.id"
-                    [width]="videoWidth" [height]="videoHeight"></youtube-player>
+                    [width]="videoWidth" [height]="videoHeight"
+                    [disableCookies]="disableCookies"></youtube-player>
   </section>
 </div>
