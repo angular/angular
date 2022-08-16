@@ -185,6 +185,10 @@ architect(
         "//conditions:default": APPLICATION_DEPS,
     }),
     output_dir = True,
+    # AIO build makes a network call to download fonts, which is prohibited on remote executors.
+    # Further, when building with local packages (--config=aio_local_deps), RBE complains about
+    # the input tree being too large (> 70,000 files).
+    tags = ["no-remote-exec"],
 )
 
 architect_test(
@@ -209,6 +213,7 @@ architect_test(
 
 architect_test(
     name = "e2e",
+    size = "large",
     args = [
         "site:e2e",
         "--no-webdriver-update",
