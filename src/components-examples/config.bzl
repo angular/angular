@@ -54,6 +54,7 @@ ALL_EXAMPLES = [
     "//src/components-examples/cdk/clipboard",
     "//src/components-examples/cdk/a11y",
     "//src/components-examples/cdk/layout",
+    "//src/components-examples/cdk/listbox",
     "//src/components-examples/cdk/menu",
     "//src/components-examples/cdk/overlay",
     "//src/components-examples/cdk/dialog",
