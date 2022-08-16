@@ -11,7 +11,6 @@ export const commitMessage: CommitMessageConfig = {
     'multiple', // For when a commit applies to multiple components.
     'cdk-experimental/column-resize',
     'cdk-experimental/combobox',
-    'cdk-experimental/listbox',
     'cdk-experimental/popover-edit',
     'cdk-experimental/scrolling',
     'cdk-experimental/selection',
@@ -26,6 +25,7 @@ export const commitMessage: CommitMessageConfig = {
     'cdk/drag-drop',
     'cdk/keycodes',
     'cdk/layout',
+    'cdk/listbox',
     'cdk/menu',
     'cdk/observers',
     'cdk/overlay',

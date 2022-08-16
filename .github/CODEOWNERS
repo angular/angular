@@ -89,6 +89,7 @@
 /src/cdk/drag-drop/**                                  @crisbeto
 /src/cdk/keycodes/**                                   @andrewseguin
 /src/cdk/layout/**                                     @andrewseguin
+/src/cdk/listbox/**                                    @jelbourn
 /src/cdk/menu/**                                       @mmalerba @crisbeto
 /src/cdk/observers/**                                  @andrewseguin @crisbeto
 /src/cdk/overlay/**                                    @jelbourn @crisbeto
@@ -142,7 +143,6 @@
 /src/cdk-experimental/popover-edit/**                  @andrewseguin
 /src/cdk-experimental/scrolling/**                     @mmalerba
 /src/cdk-experimental/table-scroll-container/**        @andrewseguin
-/src/cdk-experimental/listbox/**                       @jelbourn
 /src/cdk-experimental/selection/**                     @andrewseguin
 
 # Docs examples & guides
@@ -160,8 +160,8 @@
 /src/dev-app/button/**                                 @andrewseguin
 /src/dev-app/card/**                                   @andrewseguin
 /src/dev-app/cdk-dialog/**                             @crisbeto
+/src/dev-app/cdk-listbox/**                            @jelbourn
 /src/dev-app/cdk-experimental-combobox/**              @jelbourn
-/src/dev-app/cdk-experimental-listbox/**               @jelbourn
 /src/dev-app/checkbox/**                               @jelbourn @devversion
 /src/dev-app/chips/**                                  @andrewseguin
 /src/dev-app/clipboard/**                              @andrewseguin

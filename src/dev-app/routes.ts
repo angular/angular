@@ -50,9 +50,8 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./cdk-dialog/dialog-demo').then(m => m.DialogDemo),
   },
   {
-    path: 'cdk-experimental-listbox',
-    loadComponent: () =>
-      import('./cdk-experimental-listbox/cdk-listbox-demo').then(m => m.CdkListboxDemo),
+    path: 'cdk-listbox',
+    loadComponent: () => import('./cdk-listbox/cdk-listbox-demo').then(m => m.CdkListboxDemo),
   },
   {
     path: 'cdk-menu',

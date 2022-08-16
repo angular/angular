@@ -10,7 +10,7 @@ ng_module(
         "**/*.css",
     ]),
     deps = [
-        "//src/cdk-experimental/listbox",
+        "//src/cdk/listbox",
         "@npm//@angular/common",
         "@npm//@angular/forms",
     ],

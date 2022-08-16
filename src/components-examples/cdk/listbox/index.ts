@@ -13,7 +13,7 @@ import {CdkListboxOverviewExample} from './cdk-listbox-overview/cdk-listbox-over
 import {CdkListboxReactiveFormsExample} from './cdk-listbox-reactive-forms/cdk-listbox-reactive-forms-example';
 import {CdkListboxTemplateFormsExample} from './cdk-listbox-template-forms/cdk-listbox-template-forms-example';
 import {CdkListboxValueBindingExample} from './cdk-listbox-value-binding/cdk-listbox-value-binding-example';
-import {CdkListboxModule} from '@angular/cdk-experimental/listbox';
+import {CdkListboxModule} from '@angular/cdk/listbox';
 
 export {
   CdkListboxActivedescendantExample,

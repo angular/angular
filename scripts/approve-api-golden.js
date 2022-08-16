@@ -32,4 +32,5 @@ const apiGoldenTargetName = `//tools/public_api_guard:${packageName}/${suffix}.m
 // ShellJS should exit if any command fails.
 shelljs.set('-e');
 shelljs.cd(projectDir);
+shelljs.touch(path.join(projectDir, `tools/public_api_guard/${packageName}/${suffix}.md`));
 shelljs.exec(`yarn bazel run ${apiGoldenTargetName}`);

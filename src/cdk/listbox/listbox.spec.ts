@@ -2,7 +2,7 @@ import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Component, Type} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {CdkListbox, CdkListboxModule, CdkOption, ListboxValueChangeEvent} from './index';
-import {dispatchKeyboardEvent, dispatchMouseEvent} from '../../cdk/testing/private';
+import {dispatchKeyboardEvent, dispatchMouseEvent} from '../testing/private';
 import {
   A,
   B,

@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {CdkListboxExamplesModule} from '@angular/components-examples/cdk-experimental/listbox';
+import {CdkListboxExamplesModule} from '@angular/components-examples/cdk/listbox';
 
 @Component({
   templateUrl: 'cdk-listbox-demo.html',
