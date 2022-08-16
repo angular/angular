@@ -32,6 +32,7 @@ export {HttpClient} from './src/client';
 export {HttpContext, HttpContextToken} from './src/context';
 export {HttpHeaders} from './src/headers';
 export {HTTP_INTERCEPTORS, HttpInterceptor, HttpInterceptingHandler as ɵHttpInterceptingHandler} from './src/http';
+export {HttpHandlerFn, HttpInterceptorFn} from './src/interceptor_fn';
 export {JsonpClientBackend, JsonpInterceptor} from './src/jsonp';
 export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule} from './src/module';
 export {HttpParameterCodec, HttpParams, HttpParamsOptions, HttpUrlEncodingCodec} from './src/params';

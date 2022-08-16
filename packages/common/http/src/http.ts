@@ -77,17 +77,45 @@ export const HTTP_INTERCEPTORS = new InjectionToken<HttpInterceptor[]>('HTTP_INT
 export class HttpInterceptingHandler implements HttpHandler {
   private chain: HttpHandler|null = null;
 
-  constructor(private backend: HttpBackend, private injector: EnvironmentInjector) {}
+  private interceptors = new Map<HttpInterceptorFn, EnvironmentInjector>();
+  private haveAddedInterceptorsFromDi = false;
+
+  constructor(private backend: HttpBackend, private injector: EnvironmentInjector) {
+    // Add the default XSRF interceptor at the beginning of the chain.
+    this.interceptors.set(xsrfInterceptor, injector);
+  }
 
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
     if (this.chain === null) {
-      const interceptors = this.injector.get(HTTP_INTERCEPTORS, []);
-      // Add the default XSRF interceptor at the beginning of the chain.
-      this.chain = [xsrfInterceptor, ...interceptors.map(wrapInterceptorToFn)].reduceRight(
-          (next, interceptor) => new HttpInterceptorHandler(next, interceptor, this.injector),
+      if (!this.haveAddedInterceptorsFromDi) {
+        for (const interceptor of this.injector.get(HTTP_INTERCEPTORS, [])) {
+          this.interceptors.set(wrapInterceptorToFn(interceptor), this.injector);
+        }
+        this.haveAddedInterceptorsFromDi = true;
+      }
+
+      // clang-format off
+      this.chain = Array.from(this.interceptors).reduceRight(
+          (next, [interceptor, injector]) =>
+              new HttpInterceptorHandler(next, interceptor, injector),
           this.backend);
+      // clang-format on
     }
     return this.chain.handle(req);
+  }
+
+  maybeAddInterceptorsWithInjector(
+      interceptors: HttpInterceptorFn[], injector: EnvironmentInjector) {
+    for (const interceptor of interceptors) {
+      if (this.interceptors.has(interceptor)) {
+        // Don't add interceptors that have already been registered, even under different
+        // injectors.
+        continue;
+      }
+
+      this.interceptors.set(interceptor, injector);
+      this.chain = null;
+    }
   }
 }
 
