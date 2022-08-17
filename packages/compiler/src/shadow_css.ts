@@ -304,7 +304,7 @@ export class ShadowCss {
       // `:host-context(.one):host-context(.two)`.
       // Execute `_cssColonHostContextRe` over and over until we have extracted all the
       // `:host-context` selectors from this selector.
-      let match: RegExpMatchArray|null;
+      let match: RegExpExecArray|null;
       while (match = _cssColonHostContextRe.exec(selectorText)) {
         // `match` = [':host-context(<selectors>)<rest>', <selectors>, <rest>]
 
