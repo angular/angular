@@ -1,135 +1,107 @@
-# Documentation contributor guide
+# Documentation contributors guide
 
 The topics in this section describe how you can contribute to this documentation.
-For information about contributing only code to the Angular framework, see [Contributing to Angular][GithubAngularAngularBlobMainContributingMd].
+For information about contributing code to the Angular framework, see [Contributing to Angular][GithubAngularAngularBlobMainContributingMd].
 
-Angular, an open source project, depends on its community, especially when it comes to the documentation.
-The more the community contributes to the documentation, the better the documentation becomes.
-Input from you helps both new and experienced Angular developers.
+Angular is an open source project that appreciates its community support, especially when it comes to the documentation.
+
+You can update the Angular documentation in these ways:
+
+* [Make a minor change][LocalMakeAMinorChange]
+* [Make a major change][LocalMakeAMajorChange]
 
 <div class="alert is-important">
 
-You must have a GitHub account to propose a minor change or review and edit the documentation.
+To submit changes to the Angular documentation, you must have:
+
+* A [GitHub][GithubHome] account
+* A signed [Contributor License Agreement][GithubAngularAngularContributeCla]
 
 </div>
 
-## Propose a minor change
+## Make a minor change
 
-You can propose minor changes to a documentation topic without downloading any software. Choose the pencil icon&nbsp;<img alt="drawing of a pencil used as the topic edit icon" src="generated/images/guide/contributors-guide/edit-icon.png" > at the top of the page, to the right of the topic title to enter your suggestion.
+You can make minor changes to a documentation topic without downloading any software.
+Many common documentation maintenance tasks require only minor changes to a few words or characters in a topic.
+Examples of minor changes include:
 
-## Review and edit documentation topics
+* [Correcting a typo or two][LocalMakeAMinorChangeProc]
+* [Reviewing a topic and updating its review date][UpdateLastReviewedDate]
+* [Adding or updating search keywords][UpdateSearchKeywords]
 
-This section describes how to make larger contributions to the documentation.
+For more about keeping the documentation up to date, see [Common documentation maintenance tasks][CommonDocTasks].
 
-### Before you start
+To make larger changes to the documentation, you must install an Angular development environment on your local computer. You need this environment to edit and test your changes before you submit them. For information about configuring your local computer to make larger documentation updates, see [Preparing to edit the documentation][PrepreToEditDocs].
 
-The following steps set up your local computer to contribute documentation content.
+### To make a minor change to a documentation topic
 
-1.  Sign in to your account on GitHub.
-    If you don't have an account on GitHub, [create a new account][GithubJoin] before you continue.
-2.  In your browser, navigate to [https://github.com/angular/angular][GithubAngular].
-3.  In your browser, fork the `angular/angular` repo into your GitHub account.
-    1.  From [https://github.com/angular/angular][GithubAngular] in the browser, choose the **Fork** button near the top-right corner of the page.
-    2.  If asked, choose to create a fork to contribute to the original project.
-4.  On the computer that you want to edit, clone your fork of the `angular` repo.
-5.  In the `angular/aio` directory of your cloned repo, locally build and view the documentation.
-    1.  Run the following commands.
-        To learn more, see [Angular documentation project][GithubAngularAngularBlobMainAioReadmeMd].
+Perform these steps in a browser.
 
-        <code-example format="shell" language="shell">
+1. Confirm you have [a signed Contributor License Agreement (CLA)][GoogleClaList] on file. If you don't, [sign a CLA][GithubAngularAngularContributeCla].
+2. Log in to [github.com][GithubHome], or if you don't have a GitHub account, [create a new GitHub account][GithubJoin].
+3. Navigate to the page in [angular.io][ExtAngularIo] that you want to update.
+4. On the page that you want to update,  locate the pencil icon at the top of the page, after the topic's title
+5. <img alt="drawing of a pencil used as the topic edit icon" src="generated/images/guide/contributors-guide/edit-icon.png"> Click this icon to open the suggestion page.
+6. In the suggestion page, in **Edit file**, update the content to fix the problem. If the fix requires more than correcting a few characters, it might be better to treat this as a [major change][LocalMakeAMajorChange].
+7. Click the **Preview** tab to see how your markdown changes look when rendered. Note that this view shows how the markdown renders. It doesn't render the changes with all the styles used in the documentation.
+8. After you finish making your changes:
+    1. In **Propose changes**, enter a brief description of your changes. The description must start with `docs:` and be 100 characters or less in length. If necessary, you can add more information about the change in the larger edit window below the brief description.
+    2. Select **Create a new branch for this commit and start a pull request** and accept the default branch name.
+    3. Click **Propose changes** to open a pull request with your updated text.
 
-        yarn
+After you open a pull request, the Angular team reviews your change and merges it into the documentation.
+You can follow the progress of your pull request in the pull request's page. You might receive a notification from GitHub if the Angular team has any questions about your change.
 
-        </code-example>
+## Make a major change
 
-        <code-example format="shell" language="shell">
+Making major changes or adding new topics to the documentation follows a different workflow. Major changes to a topic require that you build and test your changes before you send them to the Angular team.
 
-        yarn setup
+These resources provide information about how to set up your local computer to edit, build, and test Angular documentation to make major changes to it.
 
-        </code-example>
+* [Overview of Angular documentation][DocUpdateOverview]<br />Describes how to configure your local computer to build, edit, and test Angular documentation
+* [Documentation style guide][DocStyleGuide]<br />Describes the standards used in the Angular documentation
 
-        <code-example format="shell" language="shell">
+## Localize Angular documentation in a new language
 
-        yarn build
-
-        </code-example>
-
-        <code-example format="shell" language="shell">
-
-        yarn start
-
-        </code-example>
-
-        <div class="callout is-helpful">
-
-        **NOTE**: <br/>
-        If you have any errors or issues with your yarn install, just re-run the `yarn` command.
-
-        </div>
-
-    2.  In your browser, navigate to [http://localhost:4200][AngularLocalhost]
-    3.  Review your local build of the Angular framework documentation.
-
-After you can see your local build of the Angular framework documentation on your own system, you are ready to review and edit it. The following sections help you with the next steps.
-
-### Before you edit the documentation
-
-The following steps prepare you to edit the Angular documentation successfully:
-
-1.  Review [Contributing to Angular][GithubAngularAngularBlobMainContributingMd].
-2.  Install [the documentation linter][GithubAngularAngularTreeMainAioToolsDocLinterInstallValeOnYourDevelopmentSystemReadmeMd].
-
-### Ways to contribute to Angular documentation
-
-<div class="card-container">
-  <a href="guide/reviewing-content" class="docs-card" title="Reviewing content">
-    <section>Review content</section>
-    <p>Keep Angular content up-to-date by reviewing topics for accuracy.</p>
-    <p class="card-footer">Help keep content up to date</p>
-  </a>
-  <a href="guide/updating-search-keywords" class="docs-card" title="Updating search keywords">
-    <section>Update search keywords</section>
-    <p>Help Angular developers by improving the search keywords for existing topics.</p>
-    <p class="card-footer">Improve documentation search</p>
-  </a>
-  <a href="guide/updating-content-github-ui" class="docs-card" title="Updating content through GitHub">
-    <section>Update content through GitHub</section>
-    <p>Learn how to make documentation changes through the GitHub UI.</p>
-    <p class="card-footer">Contribute to Angular in your browser</p>
-  </a>
-</div>
-
-### More resources for contributing to documentation
-
-<div class="card-container">
-  <a href="guide/docs-style-guide" class="docs-card" title="Documentation Style Guide">
-    <section>Documentation style guide</section>
-    <p>Review the syntax and styles used within the Angular documentation set.</p>
-    <p class="card-footer">Get to know the writing style</p>
-  </a>
-  <a href="guide/localizing-angular" class="docs-card" title="Angular localization guidelines">
-    <section>Angular localization guidelines</section>
-    <p>Learn about the guidelines for localizing Angular documentation.</p>
-    <p class="card-footer">Localize documentation</p>
-  </a>
-</div>
+Localizing Angular documentation is another way to contribute to Angular documentation.
+For information about localizing the Angular documentation in a new language, see [Angular localization guidelines][LocAngularDocs].
 
 <!-- links -->
 
+[CommonDocTasks]: guide/doc-tasks "Common documentation maintenance tasks"
+
+[DocStyleGuide]: guide/docs-style-guide "Angular documentation style guide"
+
+[DocUpdateOverview]: guide/doc-update-overview "Overview of Angular documentation editing"
+
+[LocalMakeAMajorChange]: #make-a-major-change "Make a major change"
+
+[LocalMakeAMinorChange]: #make-a-minor-change "Make a minor change"
+
+[LocalMakeAMinorChangeProc]: #to-make-a-minor-change-to-a-documentation-topic "To make a minor change to a documentation topic"
+
+[LocAngularDocs]: guide/localizing-angular "Angular documentation style guide"
+
+[PrepreToEditDocs]: guide/doc-prepare-to-edit "Preparing to edit documentation"
+
+[UpdateLastReviewedDate]: guide/reviewing-content#update-the-last-reviewed-date "Update the last reviewed date"
+
+[UpdateSearchKeywords]: guide/updating-search-keywords "Update search keywords"
+
 <!-- external links -->
 
-[GithubJoin]: https://github.com/join "Join GitHub | GitHub"
+[ExtAngularIo]: https://angular.io "Angular"
 
-[GithubAngular]: https://github.com/angular/angular "angular/angular | GitHub"
-
-[GithubAngularAngularBlobMainAioReadmeMd]: https://github.com/angular/angular/blob/main/aio/README.md "Angular documentation project (https://angular.io) | angular/angular | Github"
+[GithubAngularAngularContributeCla]: https://github.com/angular/angular/blob/main/CONTRIBUTING.md#-signing-the-cla "Signing the Contributor License Agreement"
 
 [GithubAngularAngularBlobMainContributingMd]: https://github.com/angular/angular/blob/main/CONTRIBUTING.md "Contributing to Angular | angular/angular | Github"
 
-[GithubAngularAngularTreeMainAioToolsDocLinterInstallValeOnYourDevelopmentSystemReadmeMd]: https://github.com/angular/angular/tree/main/aio/tools/doc-linter/README.md#install-vale-on-your-development-system "Install Vale on your development system - Angular documentation lint tool | angular/angular | Github"
+[GithubHome]: https://github.com "GitHub | GitHub"
 
-[AngularLocalhost]: http://localhost:4200 "Angular.io on localhost"
+[GithubJoin]: https://github.com/join "Join GitHub | GitHub"
+
+[GoogleClaList]: https://cla.developers.google.com/clas "Contributor License Agreements"
 
 <!--end links -->
 
-@reviewed 2022-08-08
+@reviewed 2022-09-30

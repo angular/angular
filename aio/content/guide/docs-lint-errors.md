@@ -195,15 +195,15 @@ When necessary, you can apply these exceptions to your content.
     To apply a general exception, surround the text that you do not want the linter to test with the HTML
     `comment` elements shown in this example.
 
-    ```html
+    <code-example language="html">
 
-    <!-- vale off -->
+    &lt;!-- vale off --&gt;
 
     Text the linter does not check for any style problem.
 
-    <!-- vale on -->
+    &lt;!-- vale on --&gt;
 
-    ```
+    </code-example>
 
     Be sure to leave a blank line before and after each comment.
 
@@ -215,33 +215,37 @@ When necessary, you can apply these exceptions to your content.
     `comment` elements. Between these comments, the linter ignores the style test in the comment, but
     still tests for all other styles that are in use.
 
-    ```html
-    <!-- vale Style.Rule = NO -->
-    <!-- vale Style.Rule = YES --> 
-    ```
+    <code-example language="html">
+
+    &lt;!-- vale Style.Rule = NO --&gt;
+    &lt;!-- vale Style.Rule = YES --&gt;
+
+    </code-example>
 
     Replace `Style.Rule` in the comments with the style rule reference from the problem message displayed in the IDE.
     For example, imagine that you got this problem message and you want to use the word it identified as a problem.
 
-    ```html
+    <code-example language="html">
+
     Did you really mean 'inlines'?  It was not found in our dictionary. Vale(Angular.Angular_Spelling) [Ln 24, Col 59]
     Angular_Spelling.yml[Ln 1, Col 1]: View rule
-    ```
+
+    </code-example>
 
     The `Style.Rule` for this message is the text inside the parentheses: `Angular.Angular_Spelling` in this case.
     To turn off that style test, use the comments shown in this example.
 
-    ```html
+    <code-example language="html">
 
-    <!-- vale Angular.Angular_Spelling = NO -->
+    &lt;!-- vale Angular.Angular_Spelling = NO --&gt;
 
     'inlines' does not display a problem because this text is not spell-checked.
     Remember that the linter does not check any spelling in this block of text.
     The linter continues to test all other style rules.
 
-    <!-- vale Angular.Angular_Spelling = YES -->
+    &lt;!-- vale Angular.Angular_Spelling = YES --&gt;
 
-    ```
+    </code-example>
 
 <!-- links -->
 
@@ -253,4 +257,4 @@ When necessary, you can apply these exceptions to your content.
 
 <!-- end links -->
 
-<!-- @reviewed 2022-07-15 -->
+@reviewed 2022-09-30
