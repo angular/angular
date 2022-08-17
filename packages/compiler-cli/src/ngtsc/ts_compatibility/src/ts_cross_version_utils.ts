@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 /** Whether the current TypeScript version is after 4.8. */
-export const IS_AFTER_TS_48 = isAfterVersion(4, 8);
+const IS_AFTER_TS_48 = isAfterVersion(4, 8);
 
 /** Whether the current TypeScript version is after 4.7. */
 const IS_AFTER_TS_47 = isAfterVersion(4, 7);
@@ -91,6 +91,24 @@ export const updateClassDeclaration: Ts48UpdateClassDeclarationFn = IS_AFTER_TS_
         ts.factory.updateClassDeclaration as any)(
         node, ...splitModifiers(combinedModifiers), name, typeParameters, heritageClauses, members);
 
+/** Type of `ts.factory.createClassDeclaration` in TS 4.8+. */
+type Ts48CreateClassDeclarationFn =
+    (modifiers: readonly ModifierLike[]|undefined, name: ts.Identifier|undefined,
+     typeParameters: readonly ts.TypeParameterDeclaration[]|undefined,
+     heritageClauses: readonly ts.HeritageClause[]|undefined,
+     members: readonly ts.ClassElement[]) => ts.ClassDeclaration;
+
+/**
+ * Creates a `ts.ClassDeclaration` declaration.
+ *
+ * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.8.
+ * We should remove it once we have dropped support for the older versions.
+ */
+export const createClassDeclaration: Ts48CreateClassDeclarationFn = IS_AFTER_TS_48 ?
+    (ts.factory.createClassDeclaration as any) :
+    (combinedModifiers, name, typeParameters, heritageClauses, members) =>
+        (ts.factory.createClassDeclaration as any)(
+            ...splitModifiers(combinedModifiers), name, typeParameters, heritageClauses, members);
 
 /** Type of `ts.factory.updateMethodDeclaration` in TS 4.8+. */
 type Ts48UpdateMethodDeclarationFn =
@@ -114,6 +132,26 @@ export const updateMethodDeclaration: Ts48UpdateMethodDeclarationFn = IS_AFTER_T
             node, ...splitModifiers(modifiers), asteriskToken, name, questionToken, typeParameters,
             parameters, type, body);
 
+/** Type of `ts.factory.createMethodDeclaration` in TS 4.8+. */
+type Ts48CreateMethodDeclarationFn =
+    (modifiers: readonly ModifierLike[]|undefined, asteriskToken: ts.AsteriskToken|undefined,
+     name: ts.PropertyName, questionToken: ts.QuestionToken|undefined,
+     typeParameters: readonly ts.TypeParameterDeclaration[]|undefined,
+     parameters: readonly ts.ParameterDeclaration[], type: ts.TypeNode|undefined,
+     body: ts.Block|undefined) => ts.MethodDeclaration;
+
+/**
+ * Creates a `ts.MethodDeclaration` declaration.
+ *
+ * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.8.
+ * We should remove it once we have dropped support for the older versions.
+ */
+export const createMethodDeclaration: Ts48CreateMethodDeclarationFn = IS_AFTER_TS_48 ?
+    (ts.factory.createMethodDeclaration as any) :
+    (modifiers, asteriskToken, name, questionToken, typeParameters, parameters, type, body) =>
+        (ts.factory.createMethodDeclaration as any)(
+            ...splitModifiers(modifiers), asteriskToken, name, questionToken, typeParameters,
+            parameters, type, body);
 
 /** Type of `ts.factory.updatePropertyDeclaration` in TS 4.8+. */
 type Ts48UpdatePropertyDeclarationFn =
@@ -153,14 +191,11 @@ export const createPropertyDeclaration: Ts48CreatePropertyDeclarationFn = IS_AFT
         (ts.factory.createPropertyDeclaration as any)(
             ...splitModifiers(modifiers), name, questionOrExclamationToken, type, initializer);
 
-
-
 /** Type of `ts.factory.updateGetAccessorDeclaration` in TS 4.8+. */
 type Ts48UpdateGetAccessorDeclarationFn =
     (node: ts.GetAccessorDeclaration, modifiers: readonly ModifierLike[]|undefined,
      name: ts.PropertyName, parameters: readonly ts.ParameterDeclaration[],
      type: ts.TypeNode|undefined, body: ts.Block|undefined) => ts.GetAccessorDeclaration;
-
 
 /**
  * Updates a `ts.GetAccessorDeclaration` declaration.
@@ -173,6 +208,23 @@ export const updateGetAccessorDeclaration: Ts48UpdateGetAccessorDeclarationFn = 
     (node, modifiers, name, parameters, type, body) =>
         (ts.factory.updateGetAccessorDeclaration as any)(
             node, ...splitModifiers(modifiers), name, parameters, type, body);
+
+/** Type of `ts.factory.createGetAccessorDeclaration` in TS 4.8+. */
+type Ts48CreateGetAccessorDeclarationFn =
+    (modifiers: readonly ModifierLike[]|undefined, name: ts.PropertyName,
+     parameters: readonly ts.ParameterDeclaration[], type: ts.TypeNode|undefined,
+     body: ts.Block|undefined) => ts.GetAccessorDeclaration;
+
+/**
+ * Creates a `ts.GetAccessorDeclaration` declaration.
+ *
+ * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.8.
+ * We should remove it once we have dropped support for the older versions.
+ */
+export const createGetAccessorDeclaration: Ts48CreateGetAccessorDeclarationFn = IS_AFTER_TS_48 ?
+    (ts.factory.createGetAccessorDeclaration as any) :
+    (modifiers, name, parameters, type, body) => (ts.factory.createGetAccessorDeclaration as any)(
+        ...splitModifiers(modifiers), name, parameters, type, body);
 
 /** Type of `ts.factory.updateSetAccessorDeclaration` in TS 4.8+. */
 type Ts48UpdateSetAccessorDeclarationFn =
@@ -191,7 +243,22 @@ export const updateSetAccessorDeclaration: Ts48UpdateSetAccessorDeclarationFn = 
     (node, modifiers, name, parameters, body) => (ts.factory.updateSetAccessorDeclaration as any)(
         node, ...splitModifiers(modifiers), name, parameters, body);
 
+/** Type of `ts.factory.createSetAccessorDeclaration` in TS 4.8+. */
+type Ts48CreateSetAccessorDeclarationFn =
+    (modifiers: readonly ModifierLike[]|undefined, name: ts.PropertyName,
+     parameters: readonly ts.ParameterDeclaration[], body: ts.Block|undefined) =>
+        ts.SetAccessorDeclaration;
 
+/**
+ * Creates a `ts.GetAccessorDeclaration` declaration.
+ *
+ * TODO(crisbeto): this is a backwards-compatibility layer for versions of TypeScript less than 4.8.
+ * We should remove it once we have dropped support for the older versions.
+ */
+export const createSetAccessorDeclaration: Ts48CreateSetAccessorDeclarationFn = IS_AFTER_TS_48 ?
+    (ts.factory.createSetAccessorDeclaration as any) :
+    (modifiers, name, parameters, body) => (ts.factory.createSetAccessorDeclaration as any)(
+        ...splitModifiers(modifiers), name, parameters, body);
 
 /** Type of `ts.factory.updateConstructorDeclaration` in TS 4.8+. */
 type Ts48UpdateConstructorDeclarationFn =
