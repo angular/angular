@@ -41,6 +41,7 @@ export interface DirectiveHandlerData {
   outputs: ClassPropertyMapping;
   isPoisoned: boolean;
   isStructural: boolean;
+  decorator: ts.Decorator|null;
 }
 
 export class DirectiveDecoratorHandler implements
@@ -115,6 +116,7 @@ export class DirectiveDecoratorHandler implements
         providersRequiringFactory,
         isPoisoned: false,
         isStructural: directiveResult.isStructural,
+        decorator: decorator?.node as ts.Decorator | null ?? null,
       }
     };
   }
@@ -149,6 +151,7 @@ export class DirectiveDecoratorHandler implements
       isStandalone: analysis.meta.isStandalone,
       imports: null,
       schemas: null,
+      decorator: analysis.decorator,
     });
 
     this.injectableRegistry.registerInjectable(node);

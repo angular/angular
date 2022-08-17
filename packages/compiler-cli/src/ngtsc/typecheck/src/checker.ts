@@ -13,7 +13,7 @@ import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
-import {MetaKind} from '../../metadata';
+import {MetadataReader, MetaKind} from '../../metadata';
 import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from '../../perf';
 import {ProgramDriver, UpdateMode} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
@@ -85,6 +85,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
       private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
       private priorBuild: IncrementalBuild<unknown, FileTypeCheckingData>,
+      private readonly metaReader: MetadataReader,
       private readonly componentScopeReader: ComponentScopeReader,
       private readonly typeCheckScopeRegistry: TypeCheckScopeRegistry,
       private readonly perf: PerfRecorder) {}
@@ -611,6 +612,34 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   getPotentialDomEvents(tagName: string): string[] {
     return REGISTRY.allKnownEventsOfElement(tagName);
+  }
+
+  getPrimaryAngularDecorator(target: ts.ClassDeclaration): ts.Decorator|null {
+    // TODO(dylhunn): It seems like we need to call this to make sure that
+    // `typeCheckAdapter.typeCheck()` is called, which in `ngtsc/typecheck/testing/index.ts:setup`
+    // actually populates the `metadataRegistry`, which is needed for the `metadataReader` to work.
+    this.ensureAllShimsForOneFile(target.getSourceFile());
+
+    if (!isNamedClassDeclaration(target)) {
+      return null;
+    }
+    const ref = new Reference(target);
+    const dirMeta = this.metaReader.getDirectiveMetadata(ref);
+    if (dirMeta !== null) {
+      return dirMeta.decorator;
+    }
+
+    const pipeMeta = this.metaReader.getPipeMetadata(ref);
+    if (pipeMeta !== null) {
+      return pipeMeta.decorator;
+    }
+
+    const ngModuleMeta = this.metaReader.getNgModuleMetadata(ref);
+    if (ngModuleMeta !== null) {
+      return ngModuleMeta.decorator;
+    }
+
+    return null;
   }
 
   private getScopeData(component: ts.ClassDeclaration): ScopeData|null {

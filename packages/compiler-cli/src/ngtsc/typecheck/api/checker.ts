@@ -146,6 +146,12 @@ export interface TemplateTypeChecker {
   getPotentialElementTags(component: ts.ClassDeclaration): Map<string, DirectiveInScope|null>;
 
   /**
+   * Get the primary decorator for an Angular class (such as @Component). This does not work for
+   * `@Injectable`.
+   */
+  getPrimaryAngularDecorator(target: ts.ClassDeclaration): ts.Decorator|null;
+
+  /**
    * Retrieve any potential DOM bindings for the given element.
    *
    * This returns an array of objects which list both the attribute and property names of each
