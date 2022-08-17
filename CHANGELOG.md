@@ -1,3 +1,32 @@
+<a name="14.2.0-rc.0"></a>
+# 14.2.0-rc.0 (2022-08-17)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d5f7da2120](https://github.com/angular/angular/commit/d5f7da21207f7808dffb3932fa61d22614e6bd57) | feat | introduce the NgOptimizedImage directive ([#47082](https://github.com/angular/angular/pull/47082)) |
+
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dc52cef26b](https://github.com/angular/angular/commit/dc52cef26b5b1be3acd8ee219ca7a6d33b10228a) | fix | infinite loop in parser assignment expression with invalid left-hand expression ([#47151](https://github.com/angular/angular/pull/47151)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [31429eaccc](https://github.com/angular/angular/commit/31429eaccc973672efb4ed98a628cf9842e24b02) | feat | support TypeScript 4.8 ([#47038](https://github.com/angular/angular/pull/47038)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b302797de4](https://github.com/angular/angular/commit/b302797de47409b988ad77e87f766a5f18374ded) | fix | Correctly infer `FormBuilder` types involving `[value, validators]` shorthand in more cases. ([#47034](https://github.com/angular/angular/pull/47034)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [75df404467](https://github.com/angular/angular/commit/75df4044675c61d2b646437cfe64fe828a39b3a0) | feat | Create APIs for using Router without RouterModule ([#47010](https://github.com/angular/angular/pull/47010)) |
+| [422323cee0](https://github.com/angular/angular/commit/422323cee00192239d1ab279e6a7c3a808098169) | feat | improve typings for RouterLink boolean inputs ([#47101](https://github.com/angular/angular/pull/47101)) |
+## Special Thanks
+AlirezaEbrahimkhani, Alma Eyre, Andrew Kushnir, Andrew Scott, Bob Watson, Dylan Hunn, Emmanuel Roux, George Kalpakas, Kalbarczyk, Kara Erickson, Katie Hempenius, Kristiyan Kostadinov, Leosvel Pérez Espinosa, Paul Gschwendtner, Pawel Kozlowski, Roman Matusevich and Sonu Kapoor
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.3"></a>
 # 14.1.3 (2022-08-17)
 ### compiler
