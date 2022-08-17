@@ -137,13 +137,12 @@ function decoratorToMetadata(
   }
   // Decorators have a type.
   const properties: ts.ObjectLiteralElementLike[] = [
-    ts.factory.createPropertyAssignment('type', ts.getMutableClone(decorator.identifier)),
+    ts.factory.createPropertyAssignment('type', decorator.identifier),
   ];
   // Sometimes they have arguments.
   if (decorator.args !== null && decorator.args.length > 0) {
     const args = decorator.args.map(arg => {
-      const expr = ts.getMutableClone(arg);
-      return wrapFunctionsInParens ? wrapFunctionExpressionsInParens(expr) : expr;
+      return wrapFunctionsInParens ? wrapFunctionExpressionsInParens(arg) : arg;
     });
     properties.push(
         ts.factory.createPropertyAssignment('args', ts.factory.createArrayLiteralExpression(args)));

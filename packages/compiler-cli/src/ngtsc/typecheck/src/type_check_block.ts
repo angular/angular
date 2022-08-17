@@ -550,7 +550,7 @@ class TcbReferenceOp extends TcbOp {
 
   override execute(): ts.Identifier {
     const id = this.tcb.allocateId();
-    let initializer =
+    let initializer: ts.Expression =
         this.target instanceof TmplAstTemplate || this.target instanceof TmplAstElement ?
         this.scope.resolve(this.target) :
         this.scope.resolve(this.host, this.target);
@@ -1305,7 +1305,7 @@ class Scope {
    */
   resolve(
       node: TmplAstElement|TmplAstTemplate|TmplAstVariable|TmplAstReference,
-      directive?: TypeCheckableDirectiveMeta): ts.Expression {
+      directive?: TypeCheckableDirectiveMeta): ts.Identifier|ts.NonNullExpression {
     // Attempt to resolve the operation locally.
     const res = this.resolveLocal(node, directive);
     if (res !== null) {
@@ -1317,10 +1317,19 @@ class Scope {
       //
       // In addition, returning a clone prevents the consumer of `Scope#resolve` from
       // attaching comments at the declaration site.
+      let clone: ts.Identifier|ts.NonNullExpression;
 
-      const clone = ts.getMutableClone(res);
-      ts.setSyntheticTrailingComments(clone, []);
-      return clone;
+      if (ts.isIdentifier(res)) {
+        clone = ts.factory.createIdentifier(res.text);
+      } else if (ts.isNonNullExpression(res)) {
+        clone = ts.factory.createNonNullExpression(res.expression);
+      } else {
+        throw new Error(`Could not resolve ${node} to an Identifier or a NonNullExpression`);
+      }
+
+      ts.setOriginalNode(clone, res);
+      (clone as any).parent = clone.parent;
+      return ts.setSyntheticTrailingComments(clone, []);
     } else if (this.parent !== null) {
       // Check with the parent.
       return this.parent.resolve(node, directive);
