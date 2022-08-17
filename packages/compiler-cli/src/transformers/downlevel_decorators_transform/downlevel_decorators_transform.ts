@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 import {Decorator, ReflectionHost} from '../../ngtsc/reflection';
-import {combineModifiers, createPropertyDeclaration, getDecorators, getModifiers, IS_AFTER_TS_48, updateClassDeclaration, updateConstructorDeclaration, updateParameterDeclaration} from '../../ngtsc/ts_compatibility';
+import {combineModifiers, createClassDeclaration, createGetAccessorDeclaration, createMethodDeclaration, createPropertyDeclaration, createSetAccessorDeclaration, getDecorators, getModifiers, ModifierLike, updateConstructorDeclaration, updateParameterDeclaration} from '../../ngtsc/ts_compatibility';
 
 import {isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from './patch_alias_reference_resolution';
 
@@ -375,13 +375,13 @@ export function getDownlevelDecoratorsTransform(
         // We can help TypeScript and avoid this non-reliable resolution by using an identifier
         // that is not type-only and is directly linked to the import alias declaration.
         if (decl.name !== undefined) {
-          return ts.getMutableClone(decl.name);
+          return ts.setOriginalNode(ts.factory.createIdentifier(decl.name.text), decl.name);
         }
       }
       // Clone the original entity name identifier so that it can be used to reference
       // its value at runtime. This is used when the identifier is resolving to a file
       // local declaration (otherwise it would resolve to an alias import declaration).
-      return ts.getMutableClone(name);
+      return ts.setOriginalNode(ts.factory.createIdentifier(name.text), name);
     }
 
     /**
@@ -421,23 +421,13 @@ export function getDownlevelDecoratorsTransform(
         return [undefined, element, []];
       }
 
-      const name = (element.name as ts.Identifier).text;
-      const mutable = ts.getMutableClone(element);
+      const modifiers = decoratorsToKeep.length ?
+          ts.setTextRange(
+              ts.factory.createNodeArray(combineModifiers(decoratorsToKeep, getModifiers(element))),
+              element.modifiers) :
+          getModifiers(element);
 
-      if (IS_AFTER_TS_48) {
-        // As of TS 4.8, the decorators are part of the `modifiers` array.
-        (mutable as any).modifiers = decoratorsToKeep.length ?
-            ts.setTextRange(
-                ts.factory.createNodeArray(
-                    combineModifiers(decoratorsToKeep, getModifiers(mutable))),
-                mutable.modifiers) :
-            undefined;
-      } else {
-        (mutable as any).decorators = decoratorsToKeep.length ?
-            ts.setTextRange(ts.factory.createNodeArray(decoratorsToKeep), mutable.decorators) :
-            undefined;
-      }
-      return [name, mutable, toLower];
+      return [element.name.text, cloneClassElementWithModifiers(element, modifiers), toLower];
     }
 
     /**
@@ -496,8 +486,6 @@ export function getDownlevelDecoratorsTransform(
      * - creates a propDecorators property
      */
     function transformClassDeclaration(classDecl: ts.ClassDeclaration): ts.ClassDeclaration {
-      classDecl = ts.getMutableClone(classDecl);
-
       const newMembers: ts.ClassElement[] = [];
       const decoratedProperties = new Map<string, ts.Decorator[]>();
       let classParameters: ParameterDecorationInfo[]|null = null;
@@ -574,8 +562,7 @@ export function getDownlevelDecoratorsTransform(
           ts.factory.createNodeArray(newMembers, classDecl.members.hasTrailingComma),
           classDecl.members);
 
-      return updateClassDeclaration(
-          classDecl,
+      return createClassDeclaration(
           combineModifiers(
               decoratorsToKeep.size ? Array.from(decoratorsToKeep) : undefined,
               getModifiers(classDecl)),
@@ -601,4 +588,27 @@ export function getDownlevelDecoratorsTransform(
       return ts.visitEachChild(sf, decoratorDownlevelVisitor, context);
     };
   };
+}
+
+function cloneClassElementWithModifiers(
+    node: ts.ClassElement, modifiers: readonly ModifierLike[]|undefined): ts.ClassElement {
+  let clone: ts.ClassElement;
+
+  if (ts.isMethodDeclaration(node)) {
+    clone = createMethodDeclaration(
+        modifiers, node.asteriskToken, node.name, node.questionToken, node.typeParameters,
+        node.parameters, node.type, node.body);
+  } else if (ts.isPropertyDeclaration(node)) {
+    clone = createPropertyDeclaration(
+        modifiers, node.name, node.questionToken, node.type, node.initializer);
+  } else if (ts.isGetAccessor(node)) {
+    clone =
+        createGetAccessorDeclaration(modifiers, node.name, node.parameters, node.type, node.body);
+  } else if (ts.isSetAccessor(node)) {
+    clone = createSetAccessorDeclaration(modifiers, node.name, node.parameters, node.body);
+  } else {
+    throw new Error(`Unsupported decorated member with kind ${ts.SyntaxKind[node.kind]}`);
+  }
+
+  return ts.setOriginalNode(clone, node);
 }
