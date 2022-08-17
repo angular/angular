@@ -78,7 +78,8 @@
     "ban": [
       true,
       {"name": "fdescribe", "message": "Don't keep jasmine focus methods."},
-      {"name": "fit", "message": "Don't keep jasmine focus methods."}
+      {"name": "fit", "message": "Don't keep jasmine focus methods."},
+      {"name": ["*", "getMutableClone"], "message": "Use a ts.factory.update* or ts.factory.create* method instead."}
     ]
   },
   "jsRules": {
