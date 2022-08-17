@@ -64,7 +64,7 @@ export class MatCellHarness extends _MatCellHarnessBase {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: CellHarnessFilters = {}): HarnessPredicate<MatCellHarness> {
-    return _MatCellHarnessBase._getCellPredicate(MatCellHarness, options);
+    return _MatCellHarnessBase._getCellPredicate(this, options);
   }
 }
 
@@ -80,7 +80,7 @@ export class MatHeaderCellHarness extends _MatCellHarnessBase {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: CellHarnessFilters = {}): HarnessPredicate<MatHeaderCellHarness> {
-    return _MatCellHarnessBase._getCellPredicate(MatHeaderCellHarness, options);
+    return _MatCellHarnessBase._getCellPredicate(this, options);
   }
 }
 
@@ -96,6 +96,6 @@ export class MatFooterCellHarness extends _MatCellHarnessBase {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: CellHarnessFilters = {}): HarnessPredicate<MatFooterCellHarness> {
-    return _MatCellHarnessBase._getCellPredicate(MatFooterCellHarness, options);
+    return _MatCellHarnessBase._getCellPredicate(this, options);
   }
 }
