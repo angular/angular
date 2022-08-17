@@ -9,12 +9,13 @@
 const path = require('path');
 
 module.exports = {
-  baseDir: '../',
-  goldenFile: '../goldens/circular-deps/packages.json',
-  glob: `./**/*.ts`,
+  baseDir : '../',
+  goldenFile : '../goldens/circular-deps/packages.json',
+  glob : `./**/*.ts`,
   // Command that will be displayed if the golden needs to be updated.
-  approveCommand: 'yarn ts-circular-deps:approve',
-  resolveModule: resolveModule
+  approveCommand : 'yarn ts-circular-deps:approve',
+  resolveModule : resolveModule,
+  ignoreTypeOnlyChecks : true,
 };
 
 /**
