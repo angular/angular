@@ -26,6 +26,11 @@ export interface TestOnlyOptions {
   _useHostForImportGeneration?: boolean;
 
   /**
+   * Enable the Language Service APIs for template type-checking for tests.
+   */
+  _enableTemplateTypeChecker?: boolean;
+
+  /**
    * An option to enable ngtsc's internal performance tracing.
    *
    * This should be a path to a JSON file where trace information will be written. This is sensitive

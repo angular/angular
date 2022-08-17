@@ -554,7 +554,8 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
 
   const templateTypeChecker = new TemplateTypeCheckerImpl(
       program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost, host,
-      NOOP_INCREMENTAL_BUILD, fakeScopeReader, typeCheckScopeRegistry, NOOP_PERF_RECORDER);
+      NOOP_INCREMENTAL_BUILD, fakeMetadataReader, fakeScopeReader, typeCheckScopeRegistry,
+      NOOP_PERF_RECORDER);
   return {
     templateTypeChecker,
     program,
@@ -665,6 +666,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isStandalone: false,
         imports: null,
         schemas: null,
+        decorator: null,
       });
     } else if (decl.type === 'pipe') {
       scope.dependencies.push({
@@ -673,6 +675,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         name: decl.pipeName,
         nameExpr: null,
         isStandalone: false,
+        decorator: null,
       });
     }
   }

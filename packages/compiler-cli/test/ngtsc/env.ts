@@ -20,6 +20,7 @@ import {IndexedComponent} from '../../src/ngtsc/indexer';
 import {NgtscProgram} from '../../src/ngtsc/program';
 import {DeclarationNode} from '../../src/ngtsc/reflection';
 import {NgtscTestCompilerHost} from '../../src/ngtsc/testing';
+import {TemplateTypeChecker} from '../../src/ngtsc/typecheck/api';
 import {setWrapHostForTest} from '../../src/transformers/compiler_host';
 
 type TsConfigOptionsValue =
@@ -269,6 +270,17 @@ export class NgtscTestEnvironment {
 
     // ngtsc only produces ts.Diagnostic messages.
     return defaultGatherDiagnostics(program as api.Program) as ts.Diagnostic[];
+  }
+
+  driveTemplateTypeChecker(): {program: ts.Program, checker: TemplateTypeChecker} {
+    const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
+    const host = createCompilerHost({options});
+    const program = createProgram({rootNames, host, options});
+    const checker = (program as NgtscProgram).compiler.getTemplateTypeChecker();
+    return {
+      program: program.getTsProgram(),
+      checker,
+    };
   }
 
   driveIndexer(): Map<DeclarationNode, IndexedComponent> {
