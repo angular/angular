@@ -11,7 +11,7 @@ import {CommonModule} from '@angular/common';
 import {CdkTableScrollContainerModule} from '@angular/cdk-experimental/table-scroll-container';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleGroup, MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatTableModule} from '@angular/material/table';
+import {MatLegacyTableModule} from '@angular/material/legacy-table';
 
 /**
  * @title Tables with toggle-able sticky headers, footers, and columns
@@ -26,7 +26,7 @@ import {MatTableModule} from '@angular/material/table';
     CommonModule,
     MatButtonModule,
     MatButtonToggleModule,
-    MatTableModule,
+    MatLegacyTableModule,
   ],
 })
 export class TableScrollContainerDemo {

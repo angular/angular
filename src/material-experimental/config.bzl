@@ -3,8 +3,6 @@ entryPoints = [
     "mdc-core",
     "mdc-progress-spinner",
     "mdc-progress-spinner/testing",
-    "mdc-table",
-    "mdc-table/testing",
     "menubar",
     "popover-edit",
     "selection",

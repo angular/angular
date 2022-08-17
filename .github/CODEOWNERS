@@ -33,7 +33,7 @@
 /src/material/legacy-snack-bar/**                         @andrewseguin @crisbeto
 /src/material/sort/**                              @andrewseguin
 /src/material/stepper/**                           @mmalerba
-/src/material/table/**                             @andrewseguin
+/src/material/legacy-table/**                             @andrewseguin
 /src/material/legacy-tabs/**                              @andrewseguin
 /src/material/testing/**                           @andrewseguin
 /src/material/toolbar/**                           @devversion
@@ -131,7 +131,7 @@
 /src/material/slider/**                                @devversion
 /src/material/tabs/**                 @crisbeto
 /src/material-experimental/mdc-tooltip/**              @crisbeto
-/src/material-experimental/mdc-table/**                @andrewseguin
+/src/material/table/**                @andrewseguin
 /src/material-experimental/menubar/**                  @jelbourn
 /src/material-experimental/popover-edit/**             @andrewseguin
 /src/material-experimental/selection/**                @andrewseguin
@@ -347,7 +347,7 @@
 /tools/public_api_guard/material/legacy-snack-bar**       @andrewseguin @crisbeto
 /tools/public_api_guard/material/sort**            @andrewseguin
 /tools/public_api_guard/material/stepper**         @mmalerba
-/tools/public_api_guard/material/table**           @andrewseguin
+/tools/public_api_guard/material/legacy-table**           @andrewseguin
 /tools/public_api_guard/material/legacy-tabs**            @andrewseguin
 /tools/public_api_guard/material/toolbar**         @devversion
 /tools/public_api_guard/material/legacy-tooltip**  @andrewseguin

@@ -17,17 +17,21 @@ export interface CellHarnessFilters extends BaseHarnessFilters {
 }
 
 // @public
-export class MatCellHarness extends ContentContainerComponentHarness {
-    // (undocumented)
-    protected static _getCellPredicate<T extends MatCellHarness>(type: ComponentHarnessConstructor<T>, options: CellHarnessFilters): HarnessPredicate<T>;
-    getColumnName(): Promise<string>;
-    getText(): Promise<string>;
+export class MatCellHarness extends _MatCellHarnessBase {
     static hostSelector: string;
     static with(options?: CellHarnessFilters): HarnessPredicate<MatCellHarness>;
 }
 
+// @public (undocumented)
+export abstract class _MatCellHarnessBase extends ContentContainerComponentHarness {
+    // (undocumented)
+    protected static _getCellPredicate<T extends MatCellHarness>(type: ComponentHarnessConstructor<T>, options: CellHarnessFilters): HarnessPredicate<T>;
+    getColumnName(): Promise<string>;
+    getText(): Promise<string>;
+}
+
 // @public
-export class MatFooterCellHarness extends MatCellHarness {
+export class MatFooterCellHarness extends _MatCellHarnessBase {
     static hostSelector: string;
     static with(options?: CellHarnessFilters): HarnessPredicate<MatFooterCellHarness>;
 }
@@ -37,11 +41,11 @@ export class MatFooterRowHarness extends _MatRowHarnessBase<typeof MatFooterCell
     // (undocumented)
     protected _cellHarness: typeof MatFooterCellHarness;
     static hostSelector: string;
-    static with(options?: RowHarnessFilters): HarnessPredicate<MatFooterRowHarness>;
+    static with<T extends MatFooterRowHarness>(this: ComponentHarnessConstructor<T>, options?: RowHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
-export class MatHeaderCellHarness extends MatCellHarness {
+export class MatHeaderCellHarness extends _MatCellHarnessBase {
     static hostSelector: string;
     static with(options?: CellHarnessFilters): HarnessPredicate<MatHeaderCellHarness>;
 }
@@ -51,7 +55,7 @@ export class MatHeaderRowHarness extends _MatRowHarnessBase<typeof MatHeaderCell
     // (undocumented)
     protected _cellHarness: typeof MatHeaderCellHarness;
     static hostSelector: string;
-    static with(options?: RowHarnessFilters): HarnessPredicate<MatHeaderRowHarness>;
+    static with<T extends MatHeaderRowHarness>(this: ComponentHarnessConstructor<T>, options?: RowHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public
@@ -59,16 +63,13 @@ export class MatRowHarness extends _MatRowHarnessBase<typeof MatCellHarness, Mat
     // (undocumented)
     protected _cellHarness: typeof MatCellHarness;
     static hostSelector: string;
-    static with(options?: RowHarnessFilters): HarnessPredicate<MatRowHarness>;
+    static with<T extends MatRowHarness>(this: ComponentHarnessConstructor<T>, options?: RowHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public (undocumented)
 export abstract class _MatRowHarnessBase<CellType extends ComponentHarnessConstructor<Cell> & {
     with: (options?: CellHarnessFilters) => HarnessPredicate<Cell>;
-}, Cell extends ComponentHarness & {
-    getText(): Promise<string>;
-    getColumnName(): Promise<string>;
-}> extends ComponentHarness {
+}, Cell extends _MatCellHarnessBase> extends ComponentHarness {
     // (undocumented)
     protected abstract _cellHarness: CellType;
     getCells(filter?: CellHarnessFilters): Promise<Cell[]>;
@@ -91,7 +92,7 @@ export class MatTableHarness extends _MatTableHarnessBase<typeof MatHeaderRowHar
     static hostSelector: string;
     // (undocumented)
     protected _rowHarness: typeof MatRowHarness;
-    static with(options?: TableHarnessFilters): HarnessPredicate<MatTableHarness>;
+    static with<T extends MatTableHarness>(this: ComponentHarnessConstructor<T>, options?: TableHarnessFilters): HarnessPredicate<T>;
 }
 
 // @public (undocumented)

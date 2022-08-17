@@ -39,7 +39,7 @@ export default function (options: Schema): Rule {
 function addTableModulesToModule(options: Schema) {
   return async (host: Tree) => {
     const modulePath = (await findModuleFromOptions(host, options))!;
-    addModuleImportToModule(host, modulePath, 'MatTableModule', '@angular/material/table');
+    addModuleImportToModule(host, modulePath, 'MatTableModule', '@angular/material/legacy-table');
     addModuleImportToModule(
       host,
       modulePath,

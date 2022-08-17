@@ -27,6 +27,7 @@
 @use '../../../list/list-theme';
 @use '../../../tabs/tabs-theme';
 @use '../../../snack-bar/snack-bar-theme';
+@use '../../../table/table-theme';
 
 @mixin private-all-unmigrated-component-densities($config) {
   @include expansion-theme.density($config);
@@ -75,6 +76,7 @@
   @include button-theme.density($config);
   @include icon-button-theme.density($config);
   @include fab-theme.density($config);
+  @include table-theme.density($config);
   @include private-all-unmigrated-component-densities($config);
 }
 

@@ -1,5 +1,4 @@
-import {DataSource} from '@angular/cdk/collections';
-import {Component, OnInit, ViewChild, AfterViewInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {
   waitForAsync,
   ComponentFixture,
@@ -8,18 +7,17 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {MatTable, MatTableDataSource, MatTableModule} from './index';
+import {DataSource} from '@angular/cdk/table';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {MatLegacyPaginator, MatLegacyPaginatorModule} from '../legacy-paginator/index';
-import {MatSort, MatSortHeader, MatSortModule} from '../sort/index';
-import {MatTableModule} from './index';
-import {MatTable} from './table';
-import {MatTableDataSource} from './table-data-source';
+import {MatSort, MatSortHeader, MatSortModule} from '@angular/material/sort';
+import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
-describe('MatTable', () => {
+describe('MDC-based MatTable', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [MatTableModule, MatLegacyPaginatorModule, MatSortModule, NoopAnimationsModule],
+      imports: [MatTableModule, MatPaginatorModule, MatSortModule, NoopAnimationsModule],
       declarations: [
         MatTableApp,
         MatTableWithWhenRowApp,
@@ -29,17 +27,18 @@ describe('MatTable', () => {
         MatTableWithPaginatorApp,
         StickyTableApp,
         TableWithNgContainerRow,
-        NestedHtmlTableApp,
+        NestedTableApp,
+        MatFlexTableApp,
       ],
     }).compileComponents();
   }));
 
   describe('with basic data source', () => {
     it('should be able to create a table with the right content and without when row', () => {
-      const fixture = TestBed.createComponent(MatTableApp);
+      let fixture = TestBed.createComponent(MatTableApp);
       fixture.detectChanges();
 
-      const tableElement = fixture.nativeElement.querySelector('.mat-table')!;
+      const tableElement = fixture.nativeElement.querySelector('table')!;
       const data = fixture.componentInstance.dataSource!.data;
       expectTableToMatchContent(tableElement, [
         ['Column A', 'Column B', 'Column C'],
@@ -52,10 +51,10 @@ describe('MatTable', () => {
     });
 
     it('should create a table with special when row', () => {
-      const fixture = TestBed.createComponent(MatTableWithWhenRowApp);
+      let fixture = TestBed.createComponent(MatTableWithWhenRowApp);
       fixture.detectChanges();
 
-      const tableElement = fixture.nativeElement.querySelector('.mat-table');
+      const tableElement = fixture.nativeElement.querySelector('table');
       expectTableToMatchContent(tableElement, [
         ['Column A'],
         ['a_1'],
@@ -67,11 +66,11 @@ describe('MatTable', () => {
     });
 
     it('should create a table with multiTemplateDataRows true', () => {
-      const fixture = TestBed.createComponent(MatTableWithWhenRowApp);
+      let fixture = TestBed.createComponent(MatTableWithWhenRowApp);
       fixture.componentInstance.multiTemplateDataRows = true;
       fixture.detectChanges();
 
-      const tableElement = fixture.nativeElement.querySelector('.mat-table');
+      const tableElement = fixture.nativeElement.querySelector('table');
       expectTableToMatchContent(tableElement, [
         ['Column A'],
         ['a_1'],
@@ -83,26 +82,81 @@ describe('MatTable', () => {
       ]);
     });
 
+    it('should be able to render a table correctly with native elements', () => {
+      let fixture = TestBed.createComponent(NativeHtmlTableApp);
+      fixture.detectChanges();
+
+      const tableElement = fixture.nativeElement.querySelector('table');
+      const data = fixture.componentInstance.dataSource!.data;
+      expectTableToMatchContent(tableElement, [
+        ['Column A', 'Column B', 'Column C'],
+        [data[0].a, data[0].b, data[0].c],
+        [data[1].a, data[1].b, data[1].c],
+        [data[2].a, data[2].b, data[2].c],
+        [data[3].a, data[3].b, data[3].c],
+      ]);
+    });
+
+    it('should be able to nest tables', () => {
+      const fixture = TestBed.createComponent(NestedTableApp);
+      fixture.detectChanges();
+      const outerTable = fixture.nativeElement.querySelector('table');
+      const innerTable = outerTable.querySelector('table');
+      const outerRows = Array.from<HTMLTableRowElement>(outerTable.querySelector('tbody').rows);
+      const innerRows = Array.from<HTMLTableRowElement>(innerTable.querySelector('tbody').rows);
+
+      expect(outerTable).toBeTruthy();
+      expect(outerRows.map(row => row.cells.length)).toEqual([3, 3, 3, 3]);
+
+      expect(innerTable).toBeTruthy();
+      expect(innerRows.map(row => row.cells.length)).toEqual([3, 3, 3, 3]);
+    });
+
+    it('should be able to show a message when no data is being displayed in a native table', () => {
+      const fixture = TestBed.createComponent(NativeHtmlTableApp);
+      fixture.detectChanges();
+
+      // Assert that the data is inside the tbody specifically.
+      const tbody = fixture.nativeElement.querySelector('tbody')!;
+      const dataSource = fixture.componentInstance.dataSource!;
+      const initialData = dataSource.data;
+
+      expect(tbody.querySelector('.mat-mdc-no-data-row')).toBeFalsy();
+
+      dataSource.data = [];
+      fixture.detectChanges();
+
+      const noDataRow: HTMLElement = tbody.querySelector('.mat-mdc-no-data-row');
+      expect(noDataRow).toBeTruthy();
+      expect(noDataRow.getAttribute('role')).toBe('row');
+
+      dataSource.data = initialData;
+      fixture.detectChanges();
+
+      expect(tbody.querySelector('.mat-mdc-no-data-row')).toBeFalsy();
+    });
+
     it('should be able to show a message when no data is being displayed', () => {
       const fixture = TestBed.createComponent(MatTableApp);
       fixture.detectChanges();
 
-      const table = fixture.nativeElement.querySelector('.mat-table')!;
+      // Assert that the data is inside the tbody specifically.
+      const tbody = fixture.nativeElement.querySelector('tbody')!;
       const initialData = fixture.componentInstance.dataSource!.data;
 
-      expect(table.querySelector('.mat-no-data-row')).toBeFalsy();
+      expect(tbody.querySelector('.mat-mdc-no-data-row')).toBeFalsy();
 
       fixture.componentInstance.dataSource!.data = [];
       fixture.detectChanges();
 
-      const noDataRow: HTMLElement = table.querySelector('.mat-no-data-row');
+      const noDataRow: HTMLElement = tbody.querySelector('.mat-mdc-no-data-row');
       expect(noDataRow).toBeTruthy();
       expect(noDataRow.getAttribute('role')).toBe('row');
 
       fixture.componentInstance.dataSource!.data = initialData;
       fixture.detectChanges();
 
-      expect(table.querySelector('.mat-no-data-row')).toBeFalsy();
+      expect(tbody.querySelector('.mat-mdc-no-data-row')).toBeFalsy();
     });
 
     it('should show the no data row if there is no data on init', () => {
@@ -110,70 +164,24 @@ describe('MatTable', () => {
       fixture.componentInstance.dataSource!.data = [];
       fixture.detectChanges();
 
-      const table = fixture.nativeElement.querySelector('.mat-table')!;
-      expect(table.querySelector('.mat-no-data-row')).toBeTruthy();
+      const tbody = fixture.nativeElement.querySelector('tbody')!;
+      expect(tbody.querySelector('.mat-mdc-no-data-row')).toBeTruthy();
+    });
+
+    it('should set the content styling class on the tbody', () => {
+      let fixture = TestBed.createComponent(NativeHtmlTableApp);
+      fixture.detectChanges();
+
+      const tbodyElement = fixture.nativeElement.querySelector('tbody');
+      expect(tbodyElement.classList).toContain('mdc-data-table__content');
     });
   });
 
-  it('should be able to render a table correctly with native elements', () => {
-    const fixture = TestBed.createComponent(NativeHtmlTableApp);
-    fixture.detectChanges();
-
-    const tableElement = fixture.nativeElement.querySelector('table');
-    const data = fixture.componentInstance.dataSource!.data;
-    expectTableToMatchContent(tableElement, [
-      ['Column A', 'Column B', 'Column C'],
-      [data[0].a, data[0].b, data[0].c],
-      [data[1].a, data[1].b, data[1].c],
-      [data[2].a, data[2].b, data[2].c],
-      [data[3].a, data[3].b, data[3].c],
-    ]);
-  });
-
-  it('should be able to nest tables', () => {
-    const fixture = TestBed.createComponent(NestedHtmlTableApp);
-    fixture.detectChanges();
-    const outerTable = fixture.nativeElement.querySelector('table');
-    const innerTable = outerTable.querySelector('table');
-    const outerRows = Array.from<HTMLTableRowElement>(outerTable.querySelector('tbody').rows);
-    const innerRows = Array.from<HTMLTableRowElement>(innerTable.querySelector('tbody').rows);
-
-    expect(outerTable).toBeTruthy();
-    expect(outerRows.map(row => row.cells.length)).toEqual([3, 3, 3, 3]);
-
-    expect(innerTable).toBeTruthy();
-    expect(innerRows.map(row => row.cells.length)).toEqual([3, 3, 3, 3]);
-  });
-
-  it('should be able to show a message when no data is being displayed in a native table', () => {
-    const fixture = TestBed.createComponent(NativeHtmlTableApp);
-    fixture.detectChanges();
-
-    // Assert that the data is inside the tbody specifically.
-    const tbody = fixture.nativeElement.querySelector('tbody')!;
-    const dataSource = fixture.componentInstance.dataSource!;
-    const initialData = dataSource.data;
-
-    expect(tbody.querySelector('.mat-no-data-row')).toBeFalsy();
-
-    dataSource.data = [];
-    fixture.detectChanges();
-
-    const noDataRow: HTMLElement = tbody.querySelector('.mat-no-data-row');
-    expect(noDataRow).toBeTruthy();
-    expect(noDataRow.getAttribute('role')).toBe('row');
-
-    dataSource.data = initialData;
-    fixture.detectChanges();
-
-    expect(tbody.querySelector('.mat-no-data-row')).toBeFalsy();
-  });
-
   it('should render with MatTableDataSource and sort', () => {
-    const fixture = TestBed.createComponent(MatTableWithSortApp);
+    let fixture = TestBed.createComponent(MatTableWithSortApp);
     fixture.detectChanges();
 
-    const tableElement = fixture.nativeElement.querySelector('.mat-table')!;
+    const tableElement = fixture.nativeElement.querySelector('table')!;
     const data = fixture.componentInstance.dataSource!.data;
     expectTableToMatchContent(tableElement, [
       ['Column A', 'Column B', 'Column C'],
@@ -184,10 +192,10 @@ describe('MatTable', () => {
   });
 
   it('should render with MatTableDataSource and pagination', () => {
-    const fixture = TestBed.createComponent(MatTableWithPaginatorApp);
+    let fixture = TestBed.createComponent(MatTableWithPaginatorApp);
     fixture.detectChanges();
 
-    const tableElement = fixture.nativeElement.querySelector('.mat-table')!;
+    const tableElement = fixture.nativeElement.querySelector('table')!;
     const data = fixture.componentInstance.dataSource!.data;
     expectTableToMatchContent(tableElement, [
       ['Column A', 'Column B', 'Column C'],
@@ -198,12 +206,12 @@ describe('MatTable', () => {
   });
 
   it('should apply custom sticky CSS class to sticky cells', fakeAsync(() => {
-    const fixture = TestBed.createComponent(StickyTableApp);
+    let fixture = TestBed.createComponent(StickyTableApp);
     fixture.detectChanges();
     flushMicrotasks();
 
-    const stuckCellElement = fixture.nativeElement.querySelector('.mat-table th')!;
-    expect(stuckCellElement.classList).toContain('mat-table-sticky');
+    const stuckCellElement = fixture.nativeElement.querySelector('table th')!;
+    expect(stuckCellElement.classList).toContain('mat-mdc-table-sticky');
   }));
 
   // Note: needs to be fakeAsync so it catches the error.
@@ -216,6 +224,13 @@ describe('MatTable', () => {
     }).not.toThrow();
   }));
 
+  it('should be able to render a flexbox-based table', () => {
+    expect(() => {
+      const fixture = TestBed.createComponent(MatFlexTableApp);
+      fixture.detectChanges();
+    }).not.toThrow();
+  });
+
   describe('with MatTableDataSource and sort/pagination/filter', () => {
     let tableElement: HTMLElement;
     let fixture: ComponentFixture<ArrayDataSourceMatTableApp>;
@@ -226,7 +241,7 @@ describe('MatTable', () => {
       fixture = TestBed.createComponent(ArrayDataSourceMatTableApp);
       fixture.detectChanges();
 
-      tableElement = fixture.nativeElement.querySelector('.mat-table');
+      tableElement = fixture.nativeElement.querySelector('table');
       component = fixture.componentInstance;
       dataSource = fixture.componentInstance.dataSource;
     }));
@@ -660,35 +675,37 @@ class FakeDataSource extends DataSource<TestData> {
 
 @Component({
   template: `
-    <mat-table [dataSource]="dataSource">
+    <table mat-table [dataSource]="dataSource">
       <ng-container matColumnDef="column_a">
-        <mat-header-cell *matHeaderCellDef> Column A</mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.a}}</mat-cell>
-        <mat-footer-cell *matFooterCellDef> Footer A</mat-footer-cell>
+        <th mat-header-cell *matHeaderCellDef> Column A</th>
+        <td mat-cell *matCellDef="let row"> {{row.a}}</td>
+        <td mat-footer-cell *matFooterCellDef> Footer A</td>
       </ng-container>
 
       <ng-container matColumnDef="column_b">
-        <mat-header-cell *matHeaderCellDef> Column B</mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.b}}</mat-cell>
-        <mat-footer-cell *matFooterCellDef> Footer B</mat-footer-cell>
+        <th mat-header-cell *matHeaderCellDef> Column B</th>
+        <td mat-cell *matCellDef="let row"> {{row.b}}</td>
+        <td mat-footer-cell *matFooterCellDef> Footer B</td>
       </ng-container>
 
       <ng-container matColumnDef="column_c">
-        <mat-header-cell *matHeaderCellDef> Column C</mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.c}}</mat-cell>
-        <mat-footer-cell *matFooterCellDef> Footer C</mat-footer-cell>
+        <th mat-header-cell *matHeaderCellDef> Column C</th>
+        <td mat-cell *matCellDef="let row"> {{row.c}}</td>
+        <td mat-footer-cell *matFooterCellDef> Footer C</td>
       </ng-container>
 
       <ng-container matColumnDef="special_column">
-        <mat-cell *matCellDef="let row"> fourth_row </mat-cell>
+        <td mat-cell *matCellDef="let row"> fourth_row </td>
       </ng-container>
 
-      <mat-header-row *matHeaderRowDef="columnsToRender"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: columnsToRender"></mat-row>
-      <mat-row *matRowDef="let row; columns: ['special_column']; when: isFourthRow"></mat-row>
-      <div *matNoDataRow>No data</div>
-      <mat-footer-row *matFooterRowDef="columnsToRender"></mat-footer-row>
-    </mat-table>
+      <tr mat-header-row *matHeaderRowDef="columnsToRender"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnsToRender"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['special_column']; when: isFourthRow"></tr>
+      <tr *matNoDataRow>
+        <td>No data</td>
+      </tr>
+      <tr mat-footer-row *matFooterRowDef="columnsToRender"></tr>
+    </table>
   `,
 })
 class MatTableApp {
@@ -736,27 +753,30 @@ class NativeHtmlTableApp {
   template: `
     <table mat-table [dataSource]="dataSource">
       <ng-container matColumnDef="column_a">
-        <th mat-header-cell *matHeaderCellDef> Column A</th>
+        <th mat-header-cell *matHeaderCellDef>Column A</th>
         <td mat-cell *matCellDef="let row">{{row.a}}</td>
       </ng-container>
 
       <ng-container matColumnDef="column_b">
-        <th mat-header-cell *matHeaderCellDef> Column B</th>
+        <th mat-header-cell *matHeaderCellDef>Column B</th>
         <td mat-cell *matCellDef="let row">
           <table mat-table [dataSource]="dataSource">
             <ng-container matColumnDef="column_a">
               <th mat-header-cell *matHeaderCellDef> Column A</th>
               <td mat-cell *matCellDef="let row"> {{row.a}}</td>
+              <td mat-footer-cell *matFooterCellDef> Footer A</td>
             </ng-container>
 
             <ng-container matColumnDef="column_b">
               <th mat-header-cell *matHeaderCellDef> Column B</th>
               <td mat-cell *matCellDef="let row"> {{row.b}}</td>
+              <td mat-footer-cell *matFooterCellDef> Footer B</td>
             </ng-container>
 
             <ng-container matColumnDef="column_c">
               <th mat-header-cell *matHeaderCellDef> Column C</th>
               <td mat-cell *matCellDef="let row"> {{row.c}}</td>
+              <td mat-footer-cell *matFooterCellDef> Footer C</td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="columnsToRender"></tr>
@@ -766,7 +786,7 @@ class NativeHtmlTableApp {
       </ng-container>
 
       <ng-container matColumnDef="column_c">
-        <th mat-header-cell *matHeaderCellDef> Column C</th>
+        <th mat-header-cell *matHeaderCellDef>Column C</th>
         <td mat-cell *matCellDef="let row">{{row.c}}</td>
       </ng-container>
 
@@ -775,7 +795,7 @@ class NativeHtmlTableApp {
     </table>
   `,
 })
-class NestedHtmlTableApp {
+class NestedTableApp {
   dataSource: FakeDataSource | null = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 }
@@ -802,22 +822,22 @@ class StickyTableApp {
 
 @Component({
   template: `
-    <mat-table [dataSource]="dataSource" [multiTemplateDataRows]="multiTemplateDataRows">
+    <table mat-table [dataSource]="dataSource" [multiTemplateDataRows]="multiTemplateDataRows">
       <ng-container matColumnDef="column_a">
-        <mat-header-cell *matHeaderCellDef> Column A</mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.a}}</mat-cell>
-        <mat-footer-cell *matFooterCellDef> Footer A</mat-footer-cell>
+        <th mat-header-cell *matHeaderCellDef> Column A</th>
+        <td mat-cell *matCellDef="let row"> {{row.a}}</td>
+        <td mat-footer-cell *matFooterCellDef> Footer A</td>
       </ng-container>
 
       <ng-container matColumnDef="special_column">
-        <mat-cell *matCellDef="let row"> fourth_row </mat-cell>
+        <td mat-cell *matCellDef="let row"> fourth_row </td>
       </ng-container>
 
-      <mat-header-row *matHeaderRowDef="['column_a']"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: ['column_a']"></mat-row>
-      <mat-row *matRowDef="let row; columns: ['special_column']; when: isFourthRow"></mat-row>
-      <mat-footer-row *matFooterRowDef="['column_a']"></mat-footer-row>
-    </mat-table>
+      <tr mat-header-row *matHeaderRowDef="['column_a']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['column_a']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['special_column']; when: isFourthRow"></tr>
+      <tr mat-footer-row *matFooterRowDef="['column_a']"></tr>
+    </table>
   `,
 })
 class MatTableWithWhenRowApp {
@@ -830,29 +850,29 @@ class MatTableWithWhenRowApp {
 
 @Component({
   template: `
-    <mat-table [dataSource]="dataSource" matSort>
+    <table mat-table [dataSource]="dataSource" matSort>
       <ng-container matColumnDef="column_a">
-        <mat-header-cell *matHeaderCellDef mat-sort-header="a"> Column A</mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.a}}</mat-cell>
-        <mat-footer-cell *matFooterCellDef> Footer A</mat-footer-cell>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="a"> Column A</th>
+        <td mat-cell *matCellDef="let row"> {{row.a}}</td>
+        <td mat-footer-cell *matFooterCellDef> Footer A</td>
       </ng-container>
 
       <ng-container matColumnDef="column_b">
-        <mat-header-cell *matHeaderCellDef> Column B</mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.b}}</mat-cell>
-        <mat-footer-cell *matFooterCellDef> Footer B</mat-footer-cell>
+        <th mat-header-cell *matHeaderCellDef> Column B</th>
+        <td mat-cell *matCellDef="let row"> {{row.b}}</td>
+        <td mat-footer-cell *matFooterCellDef> Footer B</td>
       </ng-container>
 
       <ng-container matColumnDef="column_c">
-        <mat-header-cell *matHeaderCellDef> Column C</mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.c}}</mat-cell>
-        <mat-footer-cell *matFooterCellDef> Footer C</mat-footer-cell>
+        <th mat-header-cell *matHeaderCellDef> Column C</th>
+        <td mat-cell *matCellDef="let row"> {{row.c}}</td>
+        <td mat-footer-cell *matFooterCellDef> Footer C</td>
       </ng-container>
 
-      <mat-header-row *matHeaderRowDef="columnsToRender"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: columnsToRender"></mat-row>
-      <mat-footer-row *matFooterRowDef="columnsToRender"></mat-footer-row>
-    </mat-table>
+      <tr mat-header-row *matHeaderRowDef="columnsToRender"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnsToRender"></tr>
+      <tr mat-footer-row *matFooterRowDef="columnsToRender"></tr>
+    </table>
 
     <mat-paginator [pageSize]="5"></mat-paginator>
   `,
@@ -863,7 +883,7 @@ class ArrayDataSourceMatTableApp implements AfterViewInit {
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
   @ViewChild(MatTable) table: MatTable<TestData>;
-  @ViewChild(MatLegacyPaginator) paginator: MatLegacyPaginator;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatSortHeader) sortHeader: MatSortHeader;
 
@@ -888,25 +908,25 @@ class ArrayDataSourceMatTableApp implements AfterViewInit {
 
 @Component({
   template: `
-    <mat-table [dataSource]="dataSource" matSort>
+    <table mat-table [dataSource]="dataSource" matSort>
       <ng-container matColumnDef="column_a">
-        <mat-header-cell *matHeaderCellDef mat-sort-header="a"> Column A</mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.a}}</mat-cell>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="a"> Column A</th>
+        <td mat-cell *matCellDef="let row"> {{row.a}}</td>
       </ng-container>
 
       <ng-container matColumnDef="column_b">
-        <mat-header-cell *matHeaderCellDef> Column B</mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.b}}</mat-cell>
+        <th mat-header-cell *matHeaderCellDef> Column B</th>
+        <td mat-cell *matCellDef="let row"> {{row.b}}</td>
       </ng-container>
 
       <ng-container matColumnDef="column_c">
-        <mat-header-cell *matHeaderCellDef> Column C</mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.c}}</mat-cell>
+        <th mat-header-cell *matHeaderCellDef> Column C</th>
+        <td mat-cell *matCellDef="let row"> {{row.c}}</td>
       </ng-container>
 
-      <mat-header-row *matHeaderRowDef="columnsToRender"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: columnsToRender"></mat-row>
-    </mat-table>
+      <tr mat-header-row *matHeaderRowDef="columnsToRender"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnsToRender"></tr>
+    </table>
   `,
 })
 class MatTableWithSortApp implements OnInit {
@@ -937,25 +957,25 @@ class MatTableWithSortApp implements OnInit {
 
 @Component({
   template: `
-    <mat-table [dataSource]="dataSource">
+    <table mat-table [dataSource]="dataSource">
       <ng-container matColumnDef="column_a">
-        <mat-header-cell *matHeaderCellDef> Column A</mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.a}}</mat-cell>
+        <th mat-header-cell *matHeaderCellDef> Column A</th>
+        <td mat-cell *matCellDef="let row"> {{row.a}}</td>
       </ng-container>
 
       <ng-container matColumnDef="column_b">
-        <mat-header-cell *matHeaderCellDef> Column B</mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.b}}</mat-cell>
+        <th mat-header-cell *matHeaderCellDef> Column B</th>
+        <td mat-cell *matCellDef="let row"> {{row.b}}</td>
       </ng-container>
 
       <ng-container matColumnDef="column_c">
-        <mat-header-cell *matHeaderCellDef> Column C</mat-header-cell>
-        <mat-cell *matCellDef="let row"> {{row.c}}</mat-cell>
+        <th mat-header-cell *matHeaderCellDef> Column C</th>
+        <td mat-cell *matCellDef="let row"> {{row.c}}</td>
       </ng-container>
 
-      <mat-header-row *matHeaderRowDef="columnsToRender"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: columnsToRender"></mat-row>
-    </mat-table>
+      <tr mat-header-row *matHeaderRowDef="columnsToRender"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnsToRender"></tr>
+    </table>
 
     <mat-paginator [pageSize]="5"></mat-paginator>
   `,
@@ -966,7 +986,7 @@ class MatTableWithPaginatorApp implements OnInit {
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
   @ViewChild(MatTable) table: MatTable<TestData>;
-  @ViewChild(MatLegacyPaginator) paginator: MatLegacyPaginator;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor() {
     this.underlyingDataSource.data = [];
@@ -988,17 +1008,17 @@ class MatTableWithPaginatorApp implements OnInit {
 
 @Component({
   template: `
-    <mat-table [dataSource]="dataSource">
+    <table mat-table [dataSource]="dataSource">
       <ng-container matColumnDef="column_a">
-        <mat-header-cell *matHeaderCellDef>Column A</mat-header-cell>
-        <mat-cell *matCellDef="let row">{{row.a}}</mat-cell>
+        <th mat-header-cell *matHeaderCellDef>Column A</th>
+        <td mat-cell *matCellDef="let row">{{row.a}}</td>
       </ng-container>
 
-      <mat-header-row *matHeaderRowDef="columnsToRender"></mat-header-row>
+      <tr mat-header-row *matHeaderRowDef="columnsToRender"></tr>
       <ng-container *matRowDef="let row; columns: columnsToRender">
-        <mat-row></mat-row>
+        <tr mat-row></tr>
       </ng-container>
-    </mat-table>
+    </table>
   `,
 })
 class TableWithNgContainerRow {
@@ -1006,20 +1026,58 @@ class TableWithNgContainerRow {
   columnsToRender = ['column_a'];
 }
 
+@Component({
+  template: `
+    <mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="column_a">
+        <mat-header-cell *matHeaderCellDef> Column A</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.a}}</mat-cell>
+        <mat-footer-cell *matFooterCellDef> Footer A</mat-footer-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="column_b">
+        <mat-header-cell *matHeaderCellDef> Column B</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.b}}</mat-cell>
+        <mat-footer-cell *matFooterCellDef> Footer B</mat-footer-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="column_c">
+        <mat-header-cell *matHeaderCellDef> Column C</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.c}}</mat-cell>
+        <mat-footer-cell *matFooterCellDef> Footer C</mat-footer-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="special_column">
+        <mat-cell *matCellDef="let row"> fourth_row </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="columnsToRender"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columnsToRender"></mat-row>
+      <div *matNoDataRow>No data</div>
+      <mat-footer-row *matFooterRowDef="columnsToRender"></mat-footer-row>
+    </mat-table>
+  `,
+})
+class MatFlexTableApp {
+  dataSource: FakeDataSource | null = new FakeDataSource();
+  columnsToRender = ['column_a', 'column_b', 'column_c'];
+  @ViewChild(MatTable) table: MatTable<TestData>;
+}
+
 function getElements(element: Element, query: string): Element[] {
   return [].slice.call(element.querySelectorAll(query));
 }
 
 function getHeaderRows(tableElement: Element): Element[] {
-  return [].slice.call(tableElement.querySelectorAll('.mat-header-row'))!;
+  return [].slice.call(tableElement.querySelectorAll('.mat-mdc-header-row'))!;
 }
 
 function getFooterRows(tableElement: Element): Element[] {
-  return [].slice.call(tableElement.querySelectorAll('.mat-footer-row'))!;
+  return [].slice.call(tableElement.querySelectorAll('.mat-mdc-footer-row'))!;
 }
 
 function getRows(tableElement: Element): Element[] {
-  return getElements(tableElement, '.mat-row');
+  return getElements(tableElement, '.mat-mdc-row');
 }
 
 function getCells(row: Element): Element[] {
@@ -1027,30 +1085,15 @@ function getCells(row: Element): Element[] {
     return [];
   }
 
-  let cells = getElements(row, 'mat-cell');
-  if (!cells.length) {
-    cells = getElements(row, 'td');
-  }
-
-  return cells;
+  return getElements(row, 'td');
 }
 
 function getHeaderCells(headerRow: Element): Element[] {
-  let cells = getElements(headerRow, 'mat-header-cell');
-  if (!cells.length) {
-    cells = getElements(headerRow, 'th');
-  }
-
-  return cells;
+  return getElements(headerRow, 'th');
 }
 
 function getFooterCells(footerRow: Element): Element[] {
-  let cells = getElements(footerRow, 'mat-footer-cell');
-  if (!cells.length) {
-    cells = getElements(footerRow, 'td');
-  }
-
-  return cells;
+  return getElements(footerRow, 'td');
 }
 
 function getActualTableContent(tableElement: Element): string[][] {

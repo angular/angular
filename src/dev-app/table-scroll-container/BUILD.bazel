@@ -11,9 +11,9 @@ ng_module(
     ],
     deps = [
         "//src/cdk-experimental/table-scroll-container",
-        "//src/material-experimental/mdc-table",
         "//src/material/button",
         "//src/material/button-toggle",
+        "//src/material/legacy-table",
         "//src/material/table",
         "@npm//@angular/common",
         "@npm//@angular/core",

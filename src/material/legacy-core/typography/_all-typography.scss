@@ -22,6 +22,7 @@
 @use '../../legacy-paginator/paginator-theme';
 @use '../../legacy-tabs/tabs-theme';
 @use '../../legacy-snack-bar/snack-bar-theme';
+@use '../../legacy-table/table-theme';
 
 // Includes all of the typographic styles.
 @mixin all-legacy-component-typographies($config-or-theme: null) {
@@ -61,6 +62,7 @@
   @include list-theme.typography($config);
   @include paginator-theme.typography($config);
   @include snack-bar-theme.typography($config);
+  @include table-theme.typography($config);
 }
 
 // @deprecated Use `all-legacy-component-typographies`.

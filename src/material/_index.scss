@@ -165,7 +165,10 @@
 @forward './sort/sort-theme' as sort-* show sort-theme, sort-color, sort-typography;
 @forward './stepper/stepper-theme' as stepper-* show stepper-theme, stepper-color,
   stepper-typography;
-@forward './table/table-theme' as table-* show table-theme, table-color, table-typography;
+@forward './table/table-theme' as table-* show table-theme, table-color, table-typography,
+  table-density;
+@forward './legacy-table/table-theme' as legacy-table-* show legacy-table-theme, legacy-table-color,
+  legacy-table-typography;
 @forward './tabs/tabs-theme' as tabs-* show tabs-theme, tabs-color, tabs-typography, tabs-density;
 @forward './legacy-tabs/tabs-theme' as legacy-tabs-* show legacy-tabs-theme, legacy-tabs-color,
 legacy-tabs-typography;

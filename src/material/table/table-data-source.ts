@@ -6,10 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {_isNumberValue} from '@angular/cdk/coercion';
-import {DataSource} from '@angular/cdk/table';
-import {MatLegacyPaginator} from '@angular/material/legacy-paginator';
-import {MatSort, Sort} from '@angular/material/sort';
 import {
   BehaviorSubject,
   combineLatest,
@@ -19,13 +15,10 @@ import {
   Subject,
   Subscription,
 } from 'rxjs';
+import {DataSource} from '@angular/cdk/collections';
+import {MatSort, Sort} from '@angular/material/sort';
+import {_isNumberValue} from '@angular/cdk/coercion';
 import {map} from 'rxjs/operators';
-
-/**
- * Corresponds to `Number.MAX_SAFE_INTEGER`. Moved out into a variable here due to
- * flaky browser support and the value not being defined in Closure's typings.
- */
-const MAX_SAFE_INTEGER = 9007199254740991;
 
 /**
  * Interface that matches the required API parts for the MatPaginator's PageEvent.
@@ -48,6 +41,12 @@ export interface MatTableDataSourcePaginator {
   pageSize: number;
   length: number;
 }
+
+/**
+ * Corresponds to `Number.MAX_SAFE_INTEGER`. Moved out into a variable here due to
+ * flaky browser support and the value not being defined in Closure's typings.
+ */
+const MAX_SAFE_INTEGER = 9007199254740991;
 
 /** Shared base class with MDC-based implementation. */
 export class _MatTableDataSource<
@@ -84,6 +83,7 @@ export class _MatTableDataSource<
   get data() {
     return this._data.value;
   }
+
   set data(data: T[]) {
     data = Array.isArray(data) ? data : [];
     this._data.next(data);
@@ -101,6 +101,7 @@ export class _MatTableDataSource<
   get filter(): string {
     return this._filter.value;
   }
+
   set filter(filter: string) {
     this._filter.next(filter);
     // Normally the `filteredData` is updated by the re-render
@@ -117,10 +118,12 @@ export class _MatTableDataSource<
   get sort(): MatSort | null {
     return this._sort;
   }
+
   set sort(sort: MatSort | null) {
     this._sort = sort;
     this._updateChangeSubscription();
   }
+
   private _sort: MatSort | null;
 
   /**
@@ -136,10 +139,12 @@ export class _MatTableDataSource<
   get paginator(): P | null {
     return this._paginator;
   }
+
   set paginator(paginator: P | null) {
     this._paginator = paginator;
     this._updateChangeSubscription();
   }
+
   private _paginator: P | null;
 
   /**
@@ -404,7 +409,7 @@ export class _MatTableDataSource<
 
 /**
  * Data source that accepts a client-side data array and includes native support of filtering,
- * sorting (using MatSort), and pagination (using paginator).
+ * sorting (using MatSort), and pagination (using MatPaginator).
  *
  * Allows for sort customization by overriding sortingDataAccessor, which defines how data
  * properties are accessed. Also allows for filter customization by overriding filterTermAccessor,
@@ -415,4 +420,7 @@ export class _MatTableDataSource<
  * interactions. If your app needs to support more advanced use cases, consider implementing your
  * own `DataSource`.
  */
-export class MatTableDataSource<T> extends _MatTableDataSource<T, MatLegacyPaginator> {}
+export class MatTableDataSource<
+  T,
+  P extends MatTableDataSourcePaginator = MatTableDataSourcePaginator,
+> extends _MatTableDataSource<T, P> {}

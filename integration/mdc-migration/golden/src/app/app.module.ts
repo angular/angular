@@ -22,7 +22,7 @@ import {MatSelectModule} from '@angular/material-experimental/mdc-select';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatSliderModule} from '@angular/material-experimental/mdc-slider';
 import {MatSnackBarModule} from '@angular/material/legacy-snack-bar';
-import {MatTableModule} from '@angular/material-experimental/mdc-table';
+import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatTooltipModule} from '@angular/material-experimental/mdc-tooltip';
 import {AutocompleteComponent} from './components/autocomplete/autocomplete.component';

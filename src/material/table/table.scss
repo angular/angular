@@ -1,61 +1,68 @@
+@use '@material/data-table/data-table' as mdc-data-table;
+@use '../core/mdc-helpers/mdc-helpers';
 @use './table-flex-styles';
 
-@include table-flex-styles.private-table-flex-styles();
-
-// Native HTML table structure
-table.mat-table {
-  border-spacing: 0;
+@include mdc-helpers.disable-mdc-fallback-declarations {
+  @include mdc-data-table.table-styles(
+    $query: mdc-helpers.$mdc-base-styles-without-animation-query);
+  @include table-flex-styles.private-table-flex-styles();
 }
 
-tr.mat-header-row {
-  height: table-flex-styles.$header-row-height;
-}
-
-tr.mat-row, tr.mat-footer-row {
-  height: table-flex-styles.$row-height;
-}
-
-th.mat-header-cell {
-  text-align: left;
-
-  [dir='rtl'] & {
-    text-align: right;
-  }
-}
-
-th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
-  padding: 0;
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-
-  // Note: we use `first-of-type`/`last-of-type` here in order to prevent extra
-  // elements like ripples or badges from throwing off the layout (see #11165).
-  &:first-of-type {
-    padding-left: table-flex-styles.$row-horizontal-padding;
-
-    [dir='rtl'] &:not(:only-of-type) {
-      padding-left: 0;
-      padding-right: table-flex-styles.$row-horizontal-padding;
-    }
-  }
-
-  &:last-of-type {
-    padding-right: table-flex-styles.$row-horizontal-padding;
-
-    [dir='rtl'] &:not(:only-of-type) {
-      padding-right: 0;
-      padding-left: table-flex-styles.$row-horizontal-padding;
-    }
-  }
-}
-
-.mat-table-sticky {
+.mat-mdc-table-sticky {
   // Note that the table can either set this class or an inline style to make something sticky.
   // We set the style as `!important` so that we get an identical specificity in both cases
   // and to avoid cases where user styles have a higher specificity.
   position: sticky !important;
 }
 
-.mat-table-fixed-layout {
-  table-layout: fixed;
+.mat-mdc-table {
+  // MDC Table applies `table-layout: fixed`, but this is a backwards incompatible
+  // change since the table did not previously apply it.
+  // TODO: Add a mixin to MDC to set the layout instead of including this override,
+  // see this issue: https://github.com/material-components/material-components-web/issues/6412
+  table-layout: auto;
+
+  // The MDC table does not allow text to wrap within the cell. This allows for text to
+  // wrap when the cell reaches its maximum width.
+  white-space: normal;
+}
+
+// MDC table rows are styled with a top border, whereas our legacy flex table styles rows with
+// a bottom border. Remove the bottom border style from the rows and let MDC display its top
+// border.
+mat-row.mat-mdc-row, mat-header-row.mat-mdc-header-row, mat-footer-row.mat-mdc-footer-row {
+  border-bottom: none;
+}
+
+// Cells need to inherit their background in order to overlap each other when sticky.
+// The background needs to be inherited from the table, tbody/tfoot, row, and cell.
+.mat-mdc-table tbody, .mat-mdc-table tfoot, .mat-mdc-table thead,
+.mat-mdc-cell, .mat-mdc-footer-cell,
+.mat-mdc-header-row, .mat-mdc-row, .mat-mdc-footer-row,
+.mat-mdc-table .mat-mdc-header-cell {
+  background: inherit;
+}
+
+// Disable hover styling while MDC uses an opacity for its color.
+// When the hover style is used with sticky cells, the opacity shows the cells overlapping.
+.mat-mdc-table .mat-mdc-row:hover,
+.mat-mdc-table .mat-mdc-footer-row:hover {
+  background-color: inherit;
+}
+
+// Flex rows should not set a definite height, but instead stretch to the height of their
+// children. Otherwise, the cells grow larger than the row and the layout breaks.
+.mat-mdc-table mat-header-row.mat-mdc-header-row,
+.mat-mdc-table mat-row.mat-mdc-row,
+.mat-mdc-table mat-footer-row.mat-mdc-footer-cell {
+  height: unset;
+}
+
+// Flex cells should stretch to the height of their parent. This was okay for the legacy
+// table since the cells were centered and the borders displayed on the rows, but the MDC
+// version displays borders on the cells and do not correctly line up with the row bottom.
+mat-header-cell.mat-mdc-header-cell,
+mat-cell.mat-mdc-cell,
+mat-footer-cell.mat-mdc-footer-cell {
+  align-self: stretch;
 }

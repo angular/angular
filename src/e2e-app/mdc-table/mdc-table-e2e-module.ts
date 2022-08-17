@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatTableModule} from '@angular/material-experimental/mdc-table';
+import {MatTableModule} from '@angular/material/table';
 import {MdcTableE2e} from './mdc-table-e2e';
 
 @NgModule({

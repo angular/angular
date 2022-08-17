@@ -2,13 +2,13 @@ import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatTableModule} from '@angular/material/table';
-import {MatTableHarness} from './table-harness';
+import {MatLegacyTableModule} from '@angular/material/legacy-table';
+import {MatLegacyTableHarness} from './table-harness';
 
 /** Shared tests to run on both the original and MDC-based table. */
 export function runHarnessTests(
-  tableModule: typeof MatTableModule,
-  tableHarness: typeof MatTableHarness,
+  tableModule: typeof MatLegacyTableModule,
+  tableHarness: typeof MatLegacyTableHarness,
 ) {
   let fixture: ComponentFixture<TableHarnessTest>;
   let loader: HarnessLoader;

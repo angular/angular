@@ -24,10 +24,10 @@ import {ChangeDetectionStrategy, Component, Directive, ViewEncapsulation} from '
  */
 @Directive({
   selector: '[matHeaderRowDef]',
-  providers: [{provide: CdkHeaderRowDef, useExisting: MatHeaderRowDef}],
+  providers: [{provide: CdkHeaderRowDef, useExisting: MatLegacyHeaderRowDef}],
   inputs: ['columns: matHeaderRowDef', 'sticky: matHeaderRowDefSticky'],
 })
-export class MatHeaderRowDef extends CdkHeaderRowDef {}
+export class MatLegacyHeaderRowDef extends CdkHeaderRowDef {}
 
 /**
  * Footer row definition for the mat-table.
@@ -35,10 +35,10 @@ export class MatHeaderRowDef extends CdkHeaderRowDef {}
  */
 @Directive({
   selector: '[matFooterRowDef]',
-  providers: [{provide: CdkFooterRowDef, useExisting: MatFooterRowDef}],
+  providers: [{provide: CdkFooterRowDef, useExisting: MatLegacyFooterRowDef}],
   inputs: ['columns: matFooterRowDef', 'sticky: matFooterRowDefSticky'],
 })
-export class MatFooterRowDef extends CdkFooterRowDef {}
+export class MatLegacyFooterRowDef extends CdkFooterRowDef {}
 
 /**
  * Data row definition for the mat-table.
@@ -47,17 +47,17 @@ export class MatFooterRowDef extends CdkFooterRowDef {}
  */
 @Directive({
   selector: '[matRowDef]',
-  providers: [{provide: CdkRowDef, useExisting: MatRowDef}],
+  providers: [{provide: CdkRowDef, useExisting: MatLegacyRowDef}],
   inputs: ['columns: matRowDefColumns', 'when: matRowDefWhen'],
 })
-export class MatRowDef<T> extends CdkRowDef<T> {}
+export class MatLegacyRowDef<T> extends CdkRowDef<T> {}
 
-/** Footer template container that contains the cell outlet. Adds the right class and role. */
+/** Header template container that contains the cell outlet. Adds the right class and role. */
 @Component({
   selector: 'mat-header-row, tr[mat-header-row]',
   template: CDK_ROW_TEMPLATE,
   host: {
-    'class': 'mat-mdc-header-row mdc-data-table__header-row',
+    'class': 'mat-header-row',
     'role': 'row',
   },
   // See note on CdkTable for explanation on why this uses the default change detection strategy.
@@ -65,16 +65,16 @@ export class MatRowDef<T> extends CdkRowDef<T> {}
   changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matHeaderRow',
-  providers: [{provide: CdkHeaderRow, useExisting: MatHeaderRow}],
+  providers: [{provide: CdkHeaderRow, useExisting: MatLegacyHeaderRow}],
 })
-export class MatHeaderRow extends CdkHeaderRow {}
+export class MatLegacyHeaderRow extends CdkHeaderRow {}
 
 /** Footer template container that contains the cell outlet. Adds the right class and role. */
 @Component({
   selector: 'mat-footer-row, tr[mat-footer-row]',
   template: CDK_ROW_TEMPLATE,
   host: {
-    'class': 'mat-mdc-footer-row mdc-data-table__row',
+    'class': 'mat-footer-row',
     'role': 'row',
   },
   // See note on CdkTable for explanation on why this uses the default change detection strategy.
@@ -82,16 +82,16 @@ export class MatHeaderRow extends CdkHeaderRow {}
   changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matFooterRow',
-  providers: [{provide: CdkFooterRow, useExisting: MatFooterRow}],
+  providers: [{provide: CdkFooterRow, useExisting: MatLegacyFooterRow}],
 })
-export class MatFooterRow extends CdkFooterRow {}
+export class MatLegacyFooterRow extends CdkFooterRow {}
 
 /** Data row template container that contains the cell outlet. Adds the right class and role. */
 @Component({
   selector: 'mat-row, tr[mat-row]',
   template: CDK_ROW_TEMPLATE,
   host: {
-    'class': 'mat-mdc-row mdc-data-table__row',
+    'class': 'mat-row',
     'role': 'row',
   },
   // See note on CdkTable for explanation on why this uses the default change detection strategy.
@@ -99,15 +99,15 @@ export class MatFooterRow extends CdkFooterRow {}
   changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matRow',
-  providers: [{provide: CdkRow, useExisting: MatRow}],
+  providers: [{provide: CdkRow, useExisting: MatLegacyRow}],
 })
-export class MatRow extends CdkRow {}
+export class MatLegacyRow extends CdkRow {}
 
 /** Row that can be used to display a message when no data is shown in the table. */
 @Directive({
   selector: 'ng-template[matNoDataRow]',
-  providers: [{provide: CdkNoDataRow, useExisting: MatNoDataRow}],
+  providers: [{provide: CdkNoDataRow, useExisting: MatLegacyNoDataRow}],
 })
-export class MatNoDataRow extends CdkNoDataRow {
-  override _contentClassName = 'mat-mdc-no-data-row';
+export class MatLegacyNoDataRow extends CdkNoDataRow {
+  override _contentClassName = 'mat-no-data-row';
 }

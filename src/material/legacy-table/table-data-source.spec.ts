@@ -1,4 +1,4 @@
-import {MatTableDataSource} from './table-data-source';
+import {MatLegacyTableDataSource} from './table-data-source';
 import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -13,14 +13,14 @@ describe('MatTableDataSource', () => {
   }));
 
   describe('sort', () => {
-    let dataSource: MatTableDataSource<any>;
+    let dataSource: MatLegacyTableDataSource<any>;
     let fixture: ComponentFixture<MatSortApp>;
     let sort: MatSort;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(MatSortApp);
       fixture.detectChanges();
-      dataSource = new MatTableDataSource();
+      dataSource = new MatLegacyTableDataSource();
       sort = fixture.componentInstance.sort;
       dataSource.sort = sort;
     });

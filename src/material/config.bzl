@@ -96,6 +96,8 @@ entryPoints = [
     "sort/testing",
     "stepper",
     "stepper/testing",
+    "legacy-table",
+    "legacy-table/testing",
     "table",
     "table/testing",
     "tabs",

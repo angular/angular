@@ -1,0 +1,8 @@
+@forward '../core/theming/theming.import';
+@forward '../core/typography/typography-utils.import';
+@forward 'table-theme' hide color, theme, typography;
+@forward 'table-theme' as mat-legacy-table-* hide mat-legacy-table-density;
+
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/typography/typography-utils';

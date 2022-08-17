@@ -20,6 +20,7 @@
 @use '../../legacy-paginator/paginator-theme';
 @use '../../legacy-tabs/tabs-theme';
 @use '../../legacy-snack-bar/snack-bar-theme';
+@use '../../legacy-table/table-theme';
 
 // Create a theme.
 @mixin all-legacy-component-themes($theme-or-color-config) {
@@ -45,6 +46,7 @@
     @include paginator-theme.theme($theme-or-color-config);
     @include tabs-theme.theme($theme-or-color-config);
     @include snack-bar-theme.theme($theme-or-color-config);
+    @include table-theme.theme($theme-or-color-config);
     @include all-theme.private-all-unmigrated-component-themes($theme-or-color-config);
   }
 }

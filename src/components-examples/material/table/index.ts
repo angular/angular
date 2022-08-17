@@ -9,7 +9,7 @@ import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatLegacyPaginatorModule} from '@angular/material/legacy-paginator';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatSortModule} from '@angular/material/sort';
-import {MatTableModule} from '@angular/material/table';
+import {MatLegacyTableModule} from '@angular/material/legacy-table';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {CdkTableModule} from '@angular/cdk/table';
 
@@ -124,7 +124,7 @@ const EXAMPLES = [
     MatProgressSpinnerModule,
     MatRippleModule,
     MatSortModule,
-    MatTableModule,
+    MatLegacyTableModule,
     CdkTableModule,
     DragDropModule,
   ],

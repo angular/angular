@@ -23,9 +23,9 @@ import {
  */
 @Directive({
   selector: '[matCellDef]',
-  providers: [{provide: CdkCellDef, useExisting: MatCellDef}],
+  providers: [{provide: CdkCellDef, useExisting: MatLegacyCellDef}],
 })
-export class MatCellDef extends CdkCellDef {}
+export class MatLegacyCellDef extends CdkCellDef {}
 
 /**
  * Header cell definition for the mat-table.
@@ -33,9 +33,9 @@ export class MatCellDef extends CdkCellDef {}
  */
 @Directive({
   selector: '[matHeaderCellDef]',
-  providers: [{provide: CdkHeaderCellDef, useExisting: MatHeaderCellDef}],
+  providers: [{provide: CdkHeaderCellDef, useExisting: MatLegacyHeaderCellDef}],
 })
-export class MatHeaderCellDef extends CdkHeaderCellDef {}
+export class MatLegacyHeaderCellDef extends CdkHeaderCellDef {}
 
 /**
  * Footer cell definition for the mat-table.
@@ -43,9 +43,9 @@ export class MatHeaderCellDef extends CdkHeaderCellDef {}
  */
 @Directive({
   selector: '[matFooterCellDef]',
-  providers: [{provide: CdkFooterCellDef, useExisting: MatFooterCellDef}],
+  providers: [{provide: CdkFooterCellDef, useExisting: MatLegacyFooterCellDef}],
 })
-export class MatFooterCellDef extends CdkFooterCellDef {}
+export class MatLegacyFooterCellDef extends CdkFooterCellDef {}
 
 /**
  * Column definition for the mat-table.
@@ -55,11 +55,11 @@ export class MatFooterCellDef extends CdkFooterCellDef {}
   selector: '[matColumnDef]',
   inputs: ['sticky'],
   providers: [
-    {provide: CdkColumnDef, useExisting: MatColumnDef},
-    {provide: 'MAT_SORT_HEADER_COLUMN_DEF', useExisting: MatColumnDef},
+    {provide: CdkColumnDef, useExisting: MatLegacyColumnDef},
+    {provide: 'MAT_SORT_HEADER_COLUMN_DEF', useExisting: MatLegacyColumnDef},
   ],
 })
-export class MatColumnDef extends CdkColumnDef {
+export class MatLegacyColumnDef extends CdkColumnDef {
   /** Unique name for this column. */
   @Input('matColumnDef')
   override get name(): string {
@@ -85,26 +85,28 @@ export class MatColumnDef extends CdkColumnDef {
 @Directive({
   selector: 'mat-header-cell, th[mat-header-cell]',
   host: {
-    'class': 'mat-mdc-header-cell mdc-data-table__header-cell',
+    'class': 'mat-header-cell',
     'role': 'columnheader',
   },
 })
-export class MatHeaderCell extends CdkHeaderCell {}
+export class MatLegacyHeaderCell extends CdkHeaderCell {}
 
 /** Footer cell template container that adds the right classes and role. */
 @Directive({
   selector: 'mat-footer-cell, td[mat-footer-cell]',
   host: {
-    'class': 'mat-mdc-footer-cell mdc-data-table__cell',
+    'class': 'mat-footer-cell',
+    'role': 'gridcell',
   },
 })
-export class MatFooterCell extends CdkFooterCell {}
+export class MatLegacyFooterCell extends CdkFooterCell {}
 
 /** Cell template container that adds the right classes and role. */
 @Directive({
   selector: 'mat-cell, td[mat-cell]',
   host: {
-    'class': 'mat-mdc-cell mdc-data-table__cell',
+    'class': 'mat-cell',
+    'role': 'gridcell',
   },
 })
-export class MatCell extends CdkCell {}
+export class MatLegacyCell extends CdkCell {}

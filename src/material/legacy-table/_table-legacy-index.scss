@@ -1,0 +1,3 @@
+@forward 'table-theme' hide color, theme, typography;
+@forward 'table-theme' as mat-legacy-table-* hide mat-legacy-table-density;
+@forward '../table/table-flex-styles' as mat-*;

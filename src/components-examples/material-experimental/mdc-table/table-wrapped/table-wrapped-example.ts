@@ -17,7 +17,7 @@ import {
   MatRowDef,
   MatTable,
   MatTableDataSource,
-} from '@angular/material-experimental/mdc-table';
+} from '@angular/material/table';
 
 export interface PeriodicElement {
   name: string;

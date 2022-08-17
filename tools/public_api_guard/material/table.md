@@ -21,13 +21,13 @@ import { CdkRow } from '@angular/cdk/table';
 import { CdkRowDef } from '@angular/cdk/table';
 import { CdkTable } from '@angular/cdk/table';
 import { CdkTextColumn } from '@angular/cdk/table';
-import { DataSource } from '@angular/cdk/table';
+import { DataSource } from '@angular/cdk/collections';
 import * as i0 from '@angular/core';
-import * as i5 from '@angular/cdk/table';
-import * as i6 from '@angular/material/core';
-import { MatLegacyPaginator } from '@angular/material/legacy-paginator';
+import * as i5 from '@angular/material/core';
+import * as i6 from '@angular/cdk/table';
 import { MatSort } from '@angular/material/sort';
 import { Observable } from 'rxjs';
+import { OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
 
@@ -156,9 +156,11 @@ export class MatRowDef<T> extends CdkRowDef<T> {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatRowDef<any>, never>;
 }
 
-// @public
-export class MatTable<T> extends CdkTable<T> {
+// @public (undocumented)
+export class MatTable<T> extends CdkTable<T> implements OnInit {
     protected needsPositionStickyOnElement: boolean;
+    // (undocumented)
+    ngOnInit(): void;
     protected stickyCssClass: string;
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatTable<any>, "mat-table, table[mat-table]", ["matTable"], {}, {}, never, ["caption", "colgroup, col"], false>;
@@ -167,7 +169,7 @@ export class MatTable<T> extends CdkTable<T> {
 }
 
 // @public
-export class MatTableDataSource<T> extends _MatTableDataSource<T, MatLegacyPaginator> {
+export class MatTableDataSource<T, P extends MatTableDataSourcePaginator = MatTableDataSourcePaginator> extends _MatTableDataSource<T, P> {
 }
 
 // @public
@@ -226,7 +228,7 @@ export class MatTableModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<MatTableModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<MatTableModule, [typeof i1.MatTable, typeof i1.MatRecycleRows, typeof i2.MatHeaderCellDef, typeof i3.MatHeaderRowDef, typeof i2.MatColumnDef, typeof i2.MatCellDef, typeof i3.MatRowDef, typeof i2.MatFooterCellDef, typeof i3.MatFooterRowDef, typeof i2.MatHeaderCell, typeof i2.MatCell, typeof i2.MatFooterCell, typeof i3.MatHeaderRow, typeof i3.MatRow, typeof i3.MatFooterRow, typeof i3.MatNoDataRow, typeof i4.MatTextColumn], [typeof i5.CdkTableModule, typeof i6.MatCommonModule], [typeof i6.MatCommonModule, typeof i1.MatTable, typeof i1.MatRecycleRows, typeof i2.MatHeaderCellDef, typeof i3.MatHeaderRowDef, typeof i2.MatColumnDef, typeof i2.MatCellDef, typeof i3.MatRowDef, typeof i2.MatFooterCellDef, typeof i3.MatFooterRowDef, typeof i2.MatHeaderCell, typeof i2.MatCell, typeof i2.MatFooterCell, typeof i3.MatHeaderRow, typeof i3.MatRow, typeof i3.MatFooterRow, typeof i3.MatNoDataRow, typeof i4.MatTextColumn]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatTableModule, [typeof i1.MatTable, typeof i1.MatRecycleRows, typeof i2.MatHeaderCellDef, typeof i3.MatHeaderRowDef, typeof i2.MatColumnDef, typeof i2.MatCellDef, typeof i3.MatRowDef, typeof i2.MatFooterCellDef, typeof i3.MatFooterRowDef, typeof i2.MatHeaderCell, typeof i2.MatCell, typeof i2.MatFooterCell, typeof i3.MatHeaderRow, typeof i3.MatRow, typeof i3.MatFooterRow, typeof i3.MatNoDataRow, typeof i4.MatTextColumn], [typeof i5.MatCommonModule, typeof i6.CdkTableModule], [typeof i5.MatCommonModule, typeof i1.MatTable, typeof i1.MatRecycleRows, typeof i2.MatHeaderCellDef, typeof i3.MatHeaderRowDef, typeof i2.MatColumnDef, typeof i2.MatCellDef, typeof i3.MatRowDef, typeof i2.MatFooterCellDef, typeof i3.MatFooterRowDef, typeof i2.MatHeaderCell, typeof i2.MatCell, typeof i2.MatFooterCell, typeof i3.MatHeaderRow, typeof i3.MatRow, typeof i3.MatFooterRow, typeof i3.MatNoDataRow, typeof i4.MatTextColumn]>;
 }
 
 // @public

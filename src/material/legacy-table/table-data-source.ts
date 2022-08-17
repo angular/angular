@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {_MatTableDataSource, MatTableDataSourcePaginator} from '@angular/material/table';
+import {MatLegacyPaginator} from '@angular/material/legacy-paginator';
+import {_MatTableDataSource} from '@angular/material/table';
 
 /**
  * Data source that accepts a client-side data array and includes native support of filtering,
- * sorting (using MatSort), and pagination (using MatPaginator).
+ * sorting (using MatSort), and pagination (using paginator).
  *
  * Allows for sort customization by overriding sortingDataAccessor, which defines how data
  * properties are accessed. Also allows for filter customization by overriding filterTermAccessor,
@@ -21,7 +22,4 @@ import {_MatTableDataSource, MatTableDataSourcePaginator} from '@angular/materia
  * interactions. If your app needs to support more advanced use cases, consider implementing your
  * own `DataSource`.
  */
-export class MatTableDataSource<
-  T,
-  P extends MatTableDataSourcePaginator = MatTableDataSourcePaginator,
-> extends _MatTableDataSource<T, P> {}
+export class MatLegacyTableDataSource<T> extends _MatTableDataSource<T, MatLegacyPaginator> {}

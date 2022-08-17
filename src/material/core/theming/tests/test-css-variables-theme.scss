@@ -6,7 +6,6 @@
 @use '../../../badge/badge-theme';
 @use '../../../bottom-sheet/bottom-sheet-theme';
 @use '../../../button-toggle/button-toggle-theme';
-@use '../../../table/table-theme';
 @use '../../../datepicker/datepicker-theme';
 @use '../../../divider/divider-theme';
 @use '../../../expansion/expansion-theme';
@@ -50,7 +49,6 @@
   @include badge-theme.theme($css-var-theme);
   @include bottom-sheet-theme.theme($css-var-theme);
   @include button-toggle-theme.theme($css-var-theme);
-  @include table-theme.theme($css-var-theme);
   @include datepicker-theme.theme($css-var-theme);
   @include divider-theme.theme($css-var-theme);
   @include expansion-theme.theme($css-var-theme);

@@ -1,13 +1,13 @@
-This is a prototype of an alternate version of `MatTable` built on top of
-[MDC Web](https://github.com/material-components/material-components-web). This component is experimental and should not be used in production.
+This is a table component built on top of
+[MDC Web](https://github.com/material-components/material-components-web).
 
 ## How to use
 Assuming your application is already up and running using Angular Material, you can add this component by following these steps:
 
-1. Install `@angular/material-experimental` and MDC Web:
+1. Install `@angular/material` and MDC Web:
 
    ```bash
-   npm i material-components-web @angular/material-experimental
+   npm i material-components-web @angular/material
    ```
 
 2. In your `angular.json`, make sure `node_modules/` is listed as a Sass include path. This is
@@ -26,10 +26,10 @@ Assuming your application is already up and running using Angular Material, you 
    ...
    ```
 
-3. Import the experimental `MatTableModule` and add it to the module that declares your component:
+3. Import the `MatTableModule` and add it to the module that declares your component:
 
    ```ts
-   import {MatTableModule} from '@angular/material-experimental/mdc-table';
+   import {MatTableModule} from '@angular/material/table';
 
    @NgModule({
      declarations: [MyComponent],
@@ -64,7 +64,6 @@ Assuming your application is already up and running using Angular Material, you 
 
    ```scss
    @use '@angular/material' as mat;
-   @use '@angular/material-experimental' as mat-experimental;
 
    $candy-app-primary: mat.define-palette(mat.$indigo-palette);
    $candy-app-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
@@ -76,10 +75,10 @@ Assuming your application is already up and running using Angular Material, you 
    ));
 
 
-   @include mat-experimental.mdc-table-theme($candy-app-theme);
+   @include mat.table-theme($candy-app-theme);
    ```
 
 ## API differences
 
-The API of the table matches the one from `@angular/material/table`. Simply replace imports to
-`@angular/material/table` with imports to `@angular/material-experimental/mdc-table`.
+The API of the table matches the one from `@angular/material/legacy-table`. Simply replace imports to
+`@angular/material/legacy-table` with imports to `@angular/material/table`.

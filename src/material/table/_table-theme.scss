@@ -1,56 +1,62 @@
 @use 'sass:map';
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/data-table/data-table' as mdc-data-table;
+@use '@material/data-table' as mdc-data-table-theme;
 @use '../core/theming/theming';
+@use '../core/mdc-helpers/mdc-helpers';
 @use '../core/typography/typography';
-@use '../core/typography/typography-utils';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $background: map.get($config, background);
-  $foreground: map.get($config, foreground);
+  // Save original values of MDC global variables. We need to save these so we can restore the
+  // variables to their original values and prevent unintended side effects from using this mixin.
+  $orig-selected-row-fill-color: mdc-data-table-theme.$selected-row-fill-color;
+  $orig-divider-color: mdc-data-table-theme.$divider-color;
+  $orig-row-hover-fill-color: mdc-data-table-theme.$row-hover-fill-color;
+  $orig-header-row-text-color: mdc-data-table-theme.$header-row-text-color;
+  $orig-row-text-color: mdc-data-table-theme.$row-text-color;
+  $orig-stroke-color: mdc-data-table-theme.$stroke-color;
 
-  .mat-table {
+  @include mdc-helpers.using-mdc-theme($config) {
+    mdc-data-table-theme.$selected-row-fill-color: rgba(mdc-theme-color.prop-value(primary), 0.04);
+    mdc-data-table-theme.$divider-color: rgba(mdc-theme-color.prop-value(on-surface), 0.12);
+    mdc-data-table-theme.$row-hover-fill-color: rgba(mdc-theme-color.prop-value(on-surface), 0.04);
+    mdc-data-table-theme.$header-row-text-color: rgba(mdc-theme-color.prop-value(on-surface), 0.87);
+    mdc-data-table-theme.$row-text-color: rgba(mdc-theme-color.prop-value(on-surface), 0.87);
+    mdc-data-table-theme.$stroke-color: rgba(mdc-theme-color.prop-value(on-surface), 0.12);
+
+    @include mdc-data-table.table-styles($query: mdc-helpers.$mdc-theme-styles-query);
+  }
+
+  // Restore original values of MDC global variables.
+  mdc-data-table-theme.$selected-row-fill-color: $orig-selected-row-fill-color;
+  mdc-data-table-theme.$divider-color: $orig-divider-color;
+  mdc-data-table-theme.$row-hover-fill-color: $orig-row-hover-fill-color;
+  mdc-data-table-theme.$header-row-text-color: $orig-header-row-text-color;
+  mdc-data-table-theme.$row-text-color: $orig-row-text-color;
+  mdc-data-table-theme.$stroke-color: $orig-stroke-color;
+
+  .mat-mdc-table {
+    $background: map.get($config, background);
     background: theming.get-color-from-palette($background, 'card');
-  }
-
-  .mat-table thead, .mat-table tbody, .mat-table tfoot,
-  mat-header-row, mat-row, mat-footer-row,
-  [mat-header-row], [mat-row], [mat-footer-row],
-  .mat-table-sticky {
-    background: inherit;
-  }
-
-  mat-row, mat-header-row, mat-footer-row,
-  th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
-    border-bottom-color: theming.get-color-from-palette($foreground, divider);
-  }
-
-  .mat-header-cell {
-    color: theming.get-color-from-palette($foreground, secondary-text);
-  }
-
-  .mat-cell, .mat-footer-cell {
-    color: theming.get-color-from-palette($foreground, text);
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.private-typography-to-2014-config(
+  $config: typography.private-typography-to-2018-config(
       theming.get-typography-config($config-or-theme));
-  .mat-table {
-    font-family: typography-utils.font-family($config);
-  }
-
-  .mat-header-cell {
-    font-size: typography-utils.font-size($config, caption);
-    font-weight: typography-utils.font-weight($config, body-2);
-  }
-
-  .mat-cell, .mat-footer-cell {
-    font-size: typography-utils.font-size($config, body-1);
+  @include mdc-helpers.using-mdc-typography($config) {
+    @include mdc-data-table.table-styles($query: mdc-helpers.$mdc-typography-styles-query);
   }
 }
 
-@mixin _density($config-or-theme) {}
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+  .mat-mdc-table {
+    @include mdc-data-table-theme.density($density-scale,
+      $query: mdc-helpers.$mdc-base-styles-query);
+  }
+}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -63,7 +69,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);

@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {MatLegacyPaginator} from '@angular/material/legacy-paginator';
 import {MatSort} from '@angular/material/sort';
-import {MatTableDataSource} from '@angular/material/table';
+import {MatLegacyTableDataSource} from '@angular/material/legacy-table';
 
 export interface UserData {
   id: string;
@@ -53,7 +53,7 @@ const NAMES: string[] = [
 })
 export class TableOverviewExample implements AfterViewInit {
   displayedColumns: string[] = ['id', 'name', 'progress', 'fruit'];
-  dataSource: MatTableDataSource<UserData>;
+  dataSource: MatLegacyTableDataSource<UserData>;
 
   @ViewChild(MatLegacyPaginator) paginator: MatLegacyPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -63,7 +63,7 @@ export class TableOverviewExample implements AfterViewInit {
     const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
 
     // Assign the data to the data source for the table to render
-    this.dataSource = new MatTableDataSource(users);
+    this.dataSource = new MatLegacyTableDataSource(users);
   }
 
   ngAfterViewInit() {

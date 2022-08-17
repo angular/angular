@@ -23,13 +23,13 @@ describe('table styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.table-theme($theme);
+        @include mat.legacy-table-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-table-theme($theme);
-        @include mat.mdc-table-typography($theme);
+        @include mat.table-theme($theme);
+        @include mat.table-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('table styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.table-theme($theme);
+        @include arbitrary.legacy-table-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-table-theme($theme);
-        @include arbitrary.mdc-table-typography($theme);
+        @include arbitrary.table-theme($theme);
+        @include arbitrary.table-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('table styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.table-theme($light-theme);
-        @include mat.table-theme($dark-theme);
+        @include mat.legacy-table-theme($light-theme);
+        @include mat.legacy-table-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-table-theme($light-theme);
-        @include mat.mdc-table-typography($light-theme);
-        @include mat.mdc-table-theme($dark-theme);
-        @include mat.mdc-table-typography($dark-theme);
+        @include mat.table-theme($light-theme);
+        @include mat.table-typography($light-theme);
+        @include mat.table-theme($dark-theme);
+        @include mat.table-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('table styles', () => {
         $theme: ();
 
 
-        @include mat.table-theme($theme);
+        @include mat.legacy-table-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('table styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-table-theme($theme);
-        @include mat.mdc-table-typography($theme);
+        @include mat.table-theme($theme);
+        @include mat.table-typography($theme);
 
 
       `,

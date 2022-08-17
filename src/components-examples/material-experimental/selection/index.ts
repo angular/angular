@@ -1,5 +1,5 @@
 import {MatSelectionModule} from '@angular/material-experimental/selection';
-import {MatTableModule} from '@angular/material/table';
+import {MatLegacyTableModule} from '@angular/material/legacy-table';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -15,7 +15,7 @@ const EXAMPLES = [MatSelectionListExample, MatSelectionColumnExample];
 @NgModule({
   imports: [
     MatSelectionModule,
-    MatTableModule,
+    MatLegacyTableModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

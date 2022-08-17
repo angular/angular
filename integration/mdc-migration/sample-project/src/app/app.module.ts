@@ -22,7 +22,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatSlideToggleModule} from '@angular/material/legacy-slide-toggle';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatSnackBarModule} from '@angular/material/legacy-snack-bar';
-import {MatTableModule} from '@angular/material/table';
+import {MatTableModule} from '@angular/material/legacy-table';
 import {MatTabsModule} from '@angular/material/legacy-tabs';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {AutocompleteComponent} from './components/autocomplete/autocomplete.component';

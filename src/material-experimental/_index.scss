@@ -20,7 +20,5 @@
 @forward './mdc-progress-spinner/progress-spinner-theme' as mdc-progress-spinner-* show
   mdc-progress-spinner-color, mdc-progress-spinner-typography, mdc-progress-spinner-density,
   mdc-progress-spinner-theme;
-@forward './mdc-table/table-theme' as mdc-table-* show mdc-table-color, mdc-table-typography,
-  mdc-table-density, mdc-table-theme;
 
 // Additional public APIs for individual components

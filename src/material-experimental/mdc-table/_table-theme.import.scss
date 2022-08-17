@@ -1,8 +1,0 @@
-@forward 'table-theme' hide color, density, theme, typography;
-@forward 'table-theme' as mat-mdc-table-* hide $mat-mdc-table-mdc-data-table-divider-color,
-$mat-mdc-table-mdc-data-table-header-row-text-color,
-$mat-mdc-table-mdc-data-table-row-hover-fill-color, $mat-mdc-table-mdc-data-table-row-text-color,
-$mat-mdc-table-mdc-data-table-selected-row-fill-color,
-$mat-mdc-table-mdc-data-table-sort-icon-active-color, $mat-mdc-table-mdc-data-table-sort-icon-color,
-$mat-mdc-table-mdc-data-table-stroke-color, $mat-mdc-table-mdc-data-table-table-divider-color;
-

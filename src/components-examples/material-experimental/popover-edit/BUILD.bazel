@@ -17,7 +17,7 @@ ng_module(
         "//src/material/legacy-input",
         "//src/material/legacy-list",
         "//src/material/legacy-snack-bar",
-        "//src/material/table",
+        "//src/material/legacy-table",
         "@npm//@angular/common",
         "@npm//@angular/forms",
     ],

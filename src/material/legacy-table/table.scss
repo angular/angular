@@ -1,0 +1,61 @@
+@use '../table/table-flex-styles';
+
+@include table-flex-styles.private-table-flex-styles();
+
+// Native HTML table structure
+table.mat-table {
+  border-spacing: 0;
+}
+
+tr.mat-header-row {
+  height: table-flex-styles.$header-row-height;
+}
+
+tr.mat-row, tr.mat-footer-row {
+  height: table-flex-styles.$row-height;
+}
+
+th.mat-header-cell {
+  text-align: left;
+
+  [dir='rtl'] & {
+    text-align: right;
+  }
+}
+
+th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
+  padding: 0;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+
+  // Note: we use `first-of-type`/`last-of-type` here in order to prevent extra
+  // elements like ripples or badges from throwing off the layout (see #11165).
+  &:first-of-type {
+    padding-left: table-flex-styles.$row-horizontal-padding;
+
+    [dir='rtl'] &:not(:only-of-type) {
+      padding-left: 0;
+      padding-right: table-flex-styles.$row-horizontal-padding;
+    }
+  }
+
+  &:last-of-type {
+    padding-right: table-flex-styles.$row-horizontal-padding;
+
+    [dir='rtl'] &:not(:only-of-type) {
+      padding-right: 0;
+      padding-left: table-flex-styles.$row-horizontal-padding;
+    }
+  }
+}
+
+.mat-table-sticky {
+  // Note that the table can either set this class or an inline style to make something sticky.
+  // We set the style as `!important` so that we get an identical specificity in both cases
+  // and to avoid cases where user styles have a higher specificity.
+  position: sticky !important;
+}
+
+.mat-table-fixed-layout {
+  table-layout: fixed;
+}

@@ -11,7 +11,7 @@ ng_module(
     ]),
     deps = [
         "//src/material-experimental/column-resize",
-        "//src/material/table",
+        "//src/material/legacy-table",
     ],
 )
 

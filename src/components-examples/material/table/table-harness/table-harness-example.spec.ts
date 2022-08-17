@@ -1,8 +1,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {MatTableHarness} from '@angular/material/table/testing';
+import {MatLegacyTableHarness} from '@angular/material/legacy-table/testing';
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
-import {MatTableModule} from '@angular/material/table';
+import {MatLegacyTableModule} from '@angular/material/legacy-table';
 import {TableHarnessExample} from './table-harness-example';
 
 describe('TableHarnessExample', () => {
@@ -11,7 +11,7 @@ describe('TableHarnessExample', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatTableModule],
+      imports: [MatLegacyTableModule],
       declarations: [TableHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(TableHarnessExample);
@@ -20,12 +20,12 @@ describe('TableHarnessExample', () => {
   });
 
   it('should load harness for a table', async () => {
-    const tables = await loader.getAllHarnesses(MatTableHarness);
+    const tables = await loader.getAllHarnesses(MatLegacyTableHarness);
     expect(tables.length).toBe(1);
   });
 
   it('should get the different kinds of rows in the table', async () => {
-    const table = await loader.getHarness(MatTableHarness);
+    const table = await loader.getHarness(MatLegacyTableHarness);
     const headerRows = await table.getHeaderRows();
     const footerRows = await table.getFooterRows();
     const rows = await table.getRows();
@@ -35,7 +35,7 @@ describe('TableHarnessExample', () => {
   });
 
   it('should get cells inside a row', async () => {
-    const table = await loader.getHarness(MatTableHarness);
+    const table = await loader.getHarness(MatLegacyTableHarness);
     const headerRows = await table.getHeaderRows();
     const footerRows = await table.getFooterRows();
     const rows = await table.getRows();
@@ -53,7 +53,7 @@ describe('TableHarnessExample', () => {
   });
 
   it('should be able to get the text of a cell', async () => {
-    const table = await loader.getHarness(MatTableHarness);
+    const table = await loader.getHarness(MatLegacyTableHarness);
     const secondRow = (await table.getRows())[1];
     const cells = await secondRow.getCells();
     const cellTexts = await parallel(() => cells.map(cell => cell.getText()));
@@ -61,7 +61,7 @@ describe('TableHarnessExample', () => {
   });
 
   it('should be able to get the column name of a cell', async () => {
-    const table = await loader.getHarness(MatTableHarness);
+    const table = await loader.getHarness(MatLegacyTableHarness);
     const fifthRow = (await table.getRows())[1];
     const cells = await fifthRow.getCells();
     const cellColumnNames = await parallel(() => cells.map(cell => cell.getColumnName()));
@@ -69,7 +69,7 @@ describe('TableHarnessExample', () => {
   });
 
   it('should be able to filter cells by text', async () => {
-    const table = await loader.getHarness(MatTableHarness);
+    const table = await loader.getHarness(MatLegacyTableHarness);
     const firstRow = (await table.getRows())[0];
     const cells = await firstRow.getCells({text: '1.0079'});
     const cellTexts = await parallel(() => cells.map(cell => cell.getText()));
@@ -77,7 +77,7 @@ describe('TableHarnessExample', () => {
   });
 
   it('should be able to filter cells by column name', async () => {
-    const table = await loader.getHarness(MatTableHarness);
+    const table = await loader.getHarness(MatLegacyTableHarness);
     const firstRow = (await table.getRows())[0];
     const cells = await firstRow.getCells({columnName: 'symbol'});
     const cellTexts = await parallel(() => cells.map(cell => cell.getText()));

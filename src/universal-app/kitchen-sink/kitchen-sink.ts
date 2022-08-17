@@ -10,7 +10,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatLegacyChipsModule} from '@angular/material/legacy-chips';
-import {MatTableModule} from '@angular/material/table';
+import {MatLegacyTableModule} from '@angular/material/legacy-table';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatLegacyDialogModule, MatLegacyDialog} from '@angular/material/legacy-dialog';
 import {MatExpansionModule} from '@angular/material/expansion';
@@ -131,7 +131,7 @@ export class KitchenSink {
     MatLegacyTooltipModule,
     MatExpansionModule,
     MatSortModule,
-    MatTableModule,
+    MatLegacyTableModule,
     MatStepperModule,
     ScrollingModule,
 

@@ -11,13 +11,13 @@ import {
 } from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {
-  MatColumnDef,
-  MatHeaderRowDef,
-  MatNoDataRow,
-  MatRowDef,
-  MatTable,
-  MatTableDataSource,
-} from '@angular/material/table';
+  MatLegacyColumnDef,
+  MatLegacyHeaderRowDef,
+  MatLegacyNoDataRow,
+  MatLegacyRowDef,
+  MatLegacyTable,
+  MatLegacyTableDataSource,
+} from '@angular/material/legacy-table';
 
 export interface PeriodicElement {
   name: string;
@@ -49,7 +49,7 @@ const ELEMENT_DATA: PeriodicElement[] = [
 })
 export class TableWrappedExample implements AfterViewInit {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
+  dataSource = new MatLegacyTableDataSource<PeriodicElement>(ELEMENT_DATA);
 
   @ViewChild('sort') sort: MatSort;
 
@@ -82,12 +82,12 @@ export class TableWrappedExample implements AfterViewInit {
   ],
 })
 export class WrapperTable<T> implements AfterContentInit {
-  @ContentChildren(MatHeaderRowDef) headerRowDefs: QueryList<MatHeaderRowDef>;
-  @ContentChildren(MatRowDef) rowDefs: QueryList<MatRowDef<T>>;
-  @ContentChildren(MatColumnDef) columnDefs: QueryList<MatColumnDef>;
-  @ContentChild(MatNoDataRow) noDataRow: MatNoDataRow;
+  @ContentChildren(MatLegacyHeaderRowDef) headerRowDefs: QueryList<MatLegacyHeaderRowDef>;
+  @ContentChildren(MatLegacyRowDef) rowDefs: QueryList<MatLegacyRowDef<T>>;
+  @ContentChildren(MatLegacyColumnDef) columnDefs: QueryList<MatLegacyColumnDef>;
+  @ContentChild(MatLegacyNoDataRow) noDataRow: MatLegacyNoDataRow;
 
-  @ViewChild(MatTable, {static: true}) table: MatTable<T>;
+  @ViewChild(MatLegacyTable, {static: true}) table: MatLegacyTable<T>;
 
   @Input() columns: string[];
 

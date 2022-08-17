@@ -4,7 +4,7 @@ import {BidiModule} from '@angular/cdk/bidi';
 import {DataSource} from '@angular/cdk/collections';
 import {dispatchKeyboardEvent} from '../../cdk/testing/private';
 import {ESCAPE} from '@angular/cdk/keycodes';
-import {MatTableModule} from '@angular/material/table';
+import {MatLegacyTableModule} from '@angular/material/legacy-table';
 import {BehaviorSubject} from 'rxjs';
 
 import {ColumnSize} from '@angular/cdk-experimental/column-resize';
@@ -372,7 +372,7 @@ describe('Material Popover Edit', () => {
         jasmine.addMatchers(approximateMatcher);
 
         TestBed.configureTestingModule({
-          imports: [BidiModule, MatTableModule, resizeModule],
+          imports: [BidiModule, MatLegacyTableModule, resizeModule],
           declarations: [componentClass],
         }).compileComponents();
         fixture = TestBed.createComponent(componentClass);

@@ -1,6 +1,8 @@
+load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
 load(
     "//tools:defaults.bzl",
     "markdown_to_html",
+    "ng_e2e_test_library",
     "ng_module",
     "ng_test_library",
     "ng_web_test_suite",
@@ -16,22 +18,33 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    assets = [":table.css"],
+    assets = [":table_scss"] + glob(["**/*.html"]),
     deps = [
-        "@npm//@angular/core",
-        "@npm//rxjs",
-        "//src/cdk/coercion",
         "//src/cdk/table",
         "//src/material/core",
-        "//src/material/legacy-paginator",
+        "//src/material/paginator",
         "//src/material/sort",
-    ] + glob(["**/*.html"]),
+        "@npm//@angular/core",
+    ],
 )
 
 sass_library(
     name = "table_scss_lib",
     srcs = glob(["**/_*.scss"]),
-    deps = ["//src/material/core:core_scss_lib"],
+    deps = [
+        "//:mdc_sass_lib",
+        "//src/material/core:core_scss_lib",
+    ],
+)
+
+sass_binary(
+    name = "table_scss",
+    src = "table.scss",
+    deps = [
+        ":table_flex_scss_lib",
+        "//:mdc_sass_lib",
+        "//src/material/core:core_scss_lib",
+    ],
 )
 
 sass_library(
@@ -43,25 +56,20 @@ sass_library(
     deps = ["//src/material/core:core_scss_lib"],
 )
 
-sass_binary(
-    name = "table_scss",
-    src = "table.scss",
-    deps = [
-        ":table_flex_scss_lib",
-        "//src/material/core:core_scss_lib",
-    ],
-)
+###########
+# Testing
+###########
 
 ng_test_library(
-    name = "unit_test_sources",
+    name = "table_tests_lib",
     srcs = glob(
         ["**/*.spec.ts"],
         exclude = ["**/*.e2e.spec.ts"],
     ),
     deps = [
         ":table",
-        "//src/cdk/collections",
-        "//src/material/legacy-paginator",
+        "//src/cdk/table",
+        "//src/material/paginator",
         "//src/material/sort",
         "@npm//@angular/platform-browser",
         "@npm//rxjs",
@@ -70,7 +78,25 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [":unit_test_sources"],
+    deps = [
+        ":table_tests_lib",
+    ],
+)
+
+ng_e2e_test_library(
+    name = "e2e_test_sources",
+    srcs = glob(["**/*.e2e.spec.ts"]),
+    deps = [
+        "//src/cdk/testing/private/e2e",
+    ],
+)
+
+e2e_test_suite(
+    name = "e2e_tests",
+    deps = [
+        ":e2e_test_sources",
+        "//src/cdk/testing/private/e2e",
+    ],
 )
 
 markdown_to_html(

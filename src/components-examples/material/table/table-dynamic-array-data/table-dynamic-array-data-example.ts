@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {MatTable} from '@angular/material/table';
+import {MatLegacyTable} from '@angular/material/legacy-table';
 
 export interface PeriodicElement {
   name: string;
@@ -33,7 +33,7 @@ export class TableDynamicArrayDataExample {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = [...ELEMENT_DATA];
 
-  @ViewChild(MatTable) table: MatTable<PeriodicElement>;
+  @ViewChild(MatLegacyTable) table: MatLegacyTable<PeriodicElement>;
 
   addData() {
     const randomElementIndex = Math.floor(Math.random() * ELEMENT_DATA.length);

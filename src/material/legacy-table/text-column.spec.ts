@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatTableModule} from './table-module';
+import {MatLegacyTableModule} from './table-module';
 import {expectTableToMatchContent} from './table.spec';
 
 describe('MatTextColumn', () => {
@@ -9,7 +9,7 @@ describe('MatTextColumn', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [MatTableModule],
+      imports: [MatLegacyTableModule],
       declarations: [BasicTextColumnApp],
     }).compileComponents();
   }));

@@ -7,13 +7,13 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatTableModule} from '@angular/material/table';
+import {MatLegacyTableModule} from '@angular/material/legacy-table';
 import {MatColumnResizeModule} from '@angular/material-experimental/column-resize';
 
 import {OptInColumnResizeExample} from './opt-in-column-resize-example';
 
 @NgModule({
-  imports: [MatColumnResizeModule, MatTableModule],
+  imports: [MatColumnResizeModule, MatLegacyTableModule],
   declarations: [OptInColumnResizeExample],
   exports: [OptInColumnResizeExample],
 })

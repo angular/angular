@@ -378,7 +378,7 @@ describe('v12 theming API migration', () => {
       `));`,
 
       `@include mat-button-theme($candy-app-theme);`,
-      `@include mat-table-theme($candy-app-theme);`,
+      `@include mat.table-theme($candy-app-theme);`,
       `@include mat-expansion-panel-theme($candy-app-theme);`,
       `@include mat-datepicker-theme($candy-app-theme);`,
       `@include mat-option-theme($candy-app-theme);`,
@@ -431,7 +431,7 @@ describe('v12 theming API migration', () => {
       `));`,
 
       `@include mat-button-theme($candy-app-theme);`,
-      `@include mat-table-theme($candy-app-theme);`,
+      `@include mat.table-theme($candy-app-theme);`,
       `@include mat-datepicker-theme($candy-app-theme);`,
       `@include mat-option-theme($candy-app-theme);`,
     ]);
@@ -942,7 +942,7 @@ describe('v12 theming API migration', () => {
       `));`,
 
       `@include mat-button-theme($candy-app-theme);`,
-      `@include mat-table-theme($candy-app-theme);`,
+      `@include mat.table-theme($candy-app-theme);`,
       `@include mat-datepicker-theme($candy-app-theme);`,
       `@include mat-option-theme($candy-app-theme);`,
     ]);
