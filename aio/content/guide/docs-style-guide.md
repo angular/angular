@@ -1391,7 +1391,7 @@ A subsection with **Markdown** formatted text.
 
 For specific language and grammar usage, a word list, style, tone, and formatting recommendations, see the [Google Developer Documentation Style Guide](https://developers.google.com/style).
 
-If you have any questions that this style guide doesn't answer or you would like to discuss documentation styles visit the [Angular repo](https://github.com/angular/angular) and [file a documentation issue](https://github.com/angular/angular/issues/new/choose).
+If you have any questions that this style guide doesn't answer or you would like to discuss documentation styles, see the [Angular repo](https://github.com/angular/angular) and [file a documentation issue](https://github.com/angular/angular/issues/new/choose).
 
 <!-- links -->
 
