@@ -1,3 +1,14 @@
+<a name="14.1.3"></a>
+# 14.1.3 (2022-08-17)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0583227708](https://github.com/angular/angular/commit/05832277089f9df9cde424d62033661620826592) | fix | infinite loop in parser assignment expression with invalid left-hand expression ([#47151](https://github.com/angular/angular/pull/47151)) |
+## Special Thanks
+AlirezaEbrahimkhani, Alma Eyre, Andrew Scott, Bob Watson, George Kalpakas, Kalbarczyk, Kristiyan Kostadinov, Leosvel Pérez Espinosa, Roman Matusevich and Sonu Kapoor
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.2"></a>
 # 14.1.2 (2022-08-10)
 ### core
