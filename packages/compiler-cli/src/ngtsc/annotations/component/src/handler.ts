@@ -444,6 +444,7 @@ export class ComponentDecoratorHandler implements
         rawImports,
         resolvedImports,
         schemas,
+        decorator: decorator?.node as ts.Decorator | null ?? null,
       },
       diagnostics,
     };
@@ -483,6 +484,7 @@ export class ComponentDecoratorHandler implements
       imports: analysis.resolvedImports,
       animationTriggerNames: analysis.animationTriggerNames,
       schemas: analysis.schemas,
+      decorator: analysis.decorator,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);
