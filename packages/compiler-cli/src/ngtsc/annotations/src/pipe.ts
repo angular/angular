@@ -24,6 +24,7 @@ export interface PipeHandlerData {
   meta: R3PipeMetadata;
   classMetadata: R3ClassMetadata|null;
   pipeNameExpr: ts.Expression;
+  decorator: ts.Decorator|null;
 }
 
 /**
@@ -143,6 +144,7 @@ export class PipeDecoratorHandler implements
         },
         classMetadata: extractClassMetadata(clazz, this.reflector, this.isCore),
         pipeNameExpr,
+        decorator: decorator?.node as ts.Decorator | null ?? null,
       },
     };
   }
@@ -159,6 +161,7 @@ export class PipeDecoratorHandler implements
       name: analysis.meta.pipeName,
       nameExpr: analysis.pipeNameExpr,
       isStandalone: analysis.meta.isStandalone,
+      decorator: analysis.decorator,
     });
 
     this.injectableRegistry.registerInjectable(node);

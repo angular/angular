@@ -70,6 +70,7 @@ export interface ComponentAnalysisData {
   resolvedImports: Reference<ClassDeclaration>[]|null;
 
   schemas: SchemaMetadata[]|null;
+  decorator: ts.Decorator|null;
 }
 
 export type ComponentResolutionData =

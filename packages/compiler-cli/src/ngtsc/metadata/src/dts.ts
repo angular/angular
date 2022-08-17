@@ -58,6 +58,7 @@ export class DtsMetadataReader implements MetadataReader {
       rawDeclarations: null,
       rawImports: null,
       rawExports: null,
+      decorator: null,
     };
   }
 
@@ -119,6 +120,7 @@ export class DtsMetadataReader implements MetadataReader {
       imports: null,
       // The same goes for schemas.
       schemas: null,
+      decorator: null,
     };
   }
 
@@ -153,6 +155,7 @@ export class DtsMetadataReader implements MetadataReader {
       name,
       nameExpr: null,
       isStandalone,
+      decorator: null,
     };
   }
 }
