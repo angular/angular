@@ -628,10 +628,11 @@ function assertNoImageDistortion(
             RuntimeErrorCode.OVERSIZED_IMAGE,
             `${imgDirectiveDetails(dir.rawSrc)} the intrinsic image is significantly ` +
                 `larger than necessary. ` +
-                `Rendered image size: ${renderedWidth}w x ${renderedHeight}h. ` +
-                `Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h. ` +
-                `Recommended intrinsic image size: ${recommendedWidth}w x ${recommendedHeight}h. ` +
-                `Note: Recommended intrinsic image size is calculated assuming a maximum DPR of ` +
+                `\nRendered image size: ${renderedWidth}w x ${renderedHeight}h. ` +
+                `\nIntrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h. ` +
+                `\nRecommended intrinsic image size: ${recommendedWidth}w x ${
+                    recommendedHeight}h. ` +
+                `\nNote: Recommended intrinsic image size is calculated assuming a maximum DPR of ` +
                 `${RECOMMENDED_SRCSET_DENSITY_CAP}. To improve loading time, resize the image ` +
                 `or consider using the "rawSrcset" and "sizes" attributes.`));
       }
