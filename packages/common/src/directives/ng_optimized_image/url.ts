@@ -17,12 +17,6 @@ export function isAbsoluteUrl(src: string): boolean {
   return /^https?:\/\//.test(src);
 }
 
-// Invokes a callback for each element in the array. Also invokes a callback
-// recursively for each nested array.
-export function deepForEach<T>(input: (T|any[])[], fn: (value: T) => void): void {
-  input.forEach(value => Array.isArray(value) ? deepForEach(value, fn) : fn(value));
-}
-
 // Given a URL, extract the hostname part.
 // If a URL is a relative one - the URL is returned as is.
 export function extractHostname(url: string): string {
