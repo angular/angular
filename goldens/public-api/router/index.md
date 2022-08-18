@@ -1033,6 +1033,10 @@ export abstract class UrlSerializer {
 
 // @public
 export class UrlTree {
+    constructor(
+    root?: UrlSegmentGroup,
+    queryParams?: Params,
+    fragment?: string | null);
     fragment: string | null;
     // (undocumented)
     get queryParamMap(): ParamMap;

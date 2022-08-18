@@ -14,10 +14,6 @@ import {equalArraysOrString, forEach, shallowEqual} from './utils/collection';
 
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
-export function createEmptyUrlTree() {
-  return new UrlTree(new UrlSegmentGroup([], {}), {}, null);
-}
-
 /**
  * A set of options which specify how to determine if a `UrlTree` is active, given the `UrlTree`
  * for the current router state.
@@ -196,14 +192,22 @@ export class UrlTree {
   // TODO(issue/24571): remove '!'.
   _queryParamMap!: ParamMap;
 
-  /** @internal */
   constructor(
       /** The root segment group of the URL tree */
-      public root: UrlSegmentGroup,
+      public root: UrlSegmentGroup = new UrlSegmentGroup([], {}),
       /** The query params of the URL */
-      public queryParams: Params,
+      public queryParams: Params = {},
       /** The fragment of the URL */
-      public fragment: string|null) {}
+      public fragment: string|null = null) {
+    if (NG_DEV_MODE) {
+      if (root.segments.length > 0) {
+        throw new RuntimeError(
+            RuntimeErrorCode.INVALID_ROOT_URL_SEGMENT,
+            'The root `UrlSegmentGroup` should not contain `segments`. ' +
+                'Instead, these segments belong in the `children` so they can be associated with a named outlet.');
+      }
+    }
+  }
 
   get queryParamMap(): ParamMap {
     if (!this._queryParamMap) {
