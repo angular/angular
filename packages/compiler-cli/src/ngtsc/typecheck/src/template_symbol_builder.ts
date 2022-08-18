@@ -10,6 +10,7 @@ import {AST, ASTWithSource, BindingPipe, Call, ParseSourceSpan, PropertyRead, Pr
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
+import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 import {ComponentScopeKind, ComponentScopeReader} from '../../scope';
 import {isAssignment, isSymbolWithValueDeclaration} from '../../util/src/typescript';

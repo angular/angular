@@ -615,9 +615,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getPrimaryAngularDecorator(target: ts.ClassDeclaration): ts.Decorator|null {
-    // TODO(dylhunn): It seems like we need to call this to make sure that
-    // `typeCheckAdapter.typeCheck()` is called, which in `ngtsc/typecheck/testing/index.ts:setup`
-    // actually populates the `metadataRegistry`, which is needed for the `metadataReader` to work.
     this.ensureAllShimsForOneFile(target.getSourceFile());
 
     if (!isNamedClassDeclaration(target)) {
@@ -640,6 +637,25 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
 
     return null;
+  }
+
+  getOwningNgModule(component: ts.ClassDeclaration): ts.ClassDeclaration|null {
+    if (!isNamedClassDeclaration(component)) {
+      return null;
+    }
+
+    const dirMeta = this.metaReader.getDirectiveMetadata(new Reference(component));
+    if (dirMeta !== null && dirMeta.isStandalone) {
+      return null;
+    }
+
+    const scope = this.componentScopeReader.getScopeForComponent(component);
+    if (scope === null || scope.kind !== ComponentScopeKind.NgModule ||
+        !isNamedClassDeclaration(scope.ngModule)) {
+      return null;
+    }
+
+    return scope.ngModule;
   }
 
   private getScopeData(component: ts.ClassDeclaration): ScopeData|null {
