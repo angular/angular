@@ -152,6 +152,12 @@ export interface TemplateTypeChecker {
   getPrimaryAngularDecorator(target: ts.ClassDeclaration): ts.Decorator|null;
 
   /**
+   * Get the class of the NgModule that owns this Angular trait. If the result is `null`, that
+   * probably means the provided component is standalone.
+   */
+  getOwningNgModule(component: ts.ClassDeclaration): ts.ClassDeclaration|null;
+
+  /**
    * Retrieve any potential DOM bindings for the given element.
    *
    * This returns an array of objects which list both the attribute and property names of each
@@ -194,8 +200,8 @@ export interface TemplateTypeChecker {
  */
 export enum OptimizeFor {
   /**
-   * Indicates that a consumer of a `TemplateTypeChecker` is only interested in results for a given
-   * file, and wants them as fast as possible.
+   * Indicates that a consumer of a `TemplateTypeChecker` is only interested in results for a
+   * given file, and wants them as fast as possible.
    *
    * Calling `TemplateTypeChecker` methods successively for multiple files while specifying
    * `OptimizeFor.SingleFile` can result in significant unnecessary overhead overall.
@@ -203,8 +209,8 @@ export enum OptimizeFor {
   SingleFile,
 
   /**
-   * Indicates that a consumer of a `TemplateTypeChecker` intends to query for results pertaining to
-   * the entire user program, and so the type-checker should internally optimize for this case.
+   * Indicates that a consumer of a `TemplateTypeChecker` intends to query for results pertaining
+   * to the entire user program, and so the type-checker should internally optimize for this case.
    *
    * Initial calls to retrieve type-checking information may take longer, but repeated calls to
    * gather information for the whole user program will be significantly faster with this mode of
