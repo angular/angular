@@ -62,7 +62,7 @@ function CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay
 export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     constructor(_overlay: Overlay, templateRef: TemplateRef<any>, viewContainerRef: ViewContainerRef, scrollStrategyFactory: any, _dir: Directionality);
     readonly attach: EventEmitter<void>;
-    backdropClass: string;
+    backdropClass: string | string[];
     readonly backdropClick: EventEmitter<MouseEvent>;
     readonly detach: EventEmitter<void>;
     get dir(): Direction;

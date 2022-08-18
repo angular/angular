@@ -163,7 +163,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   @Input('cdkConnectedOverlayMinHeight') minHeight: number | string;
 
   /** The custom class to be set on the backdrop element. */
-  @Input('cdkConnectedOverlayBackdropClass') backdropClass: string;
+  @Input('cdkConnectedOverlayBackdropClass') backdropClass: string | string[];
 
   /** The custom class to add to the overlay pane element. */
   @Input('cdkConnectedOverlayPanelClass') panelClass: string | string[];
