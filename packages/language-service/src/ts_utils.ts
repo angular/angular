@@ -94,3 +94,38 @@ export function collectMemberMethods(
   }
   return members;
 }
+
+/**
+ * Given an existing array literal expression, update it by pushing a new expression.
+ */
+export function addElementToArrayLiteral(
+    arr: ts.ArrayLiteralExpression, elem: ts.Expression): ts.ArrayLiteralExpression {
+  return ts.factory.updateArrayLiteralExpression(arr, [...arr.elements, elem]);
+}
+
+/**
+ * Given an ObjectLiteralExpression node, extract and return the PropertyAssignment corresponding to
+ * the given key. `null` if no such key exists.
+ */
+export function objectPropertyAssignmentForKey(
+    obj: ts.ObjectLiteralExpression, key: string): ts.PropertyAssignment|null {
+  const matchingProperty = obj.properties.filter(
+      a => a.name !== undefined && ts.isIdentifier(a.name) && a.name.escapedText === key)[0];
+  return matchingProperty && ts.isPropertyAssignment(matchingProperty) ? matchingProperty : null;
+}
+
+/**
+ * Given an ObjectLiteralExpression node, create or update the specified key, using the provided
+ * callback to generate the new value (possibly based on an old value).
+ */
+export function updateObjectValueForKey(
+    obj: ts.ObjectLiteralExpression, key: string,
+    newValueFn: (oldValue?: ts.Expression) => ts.Expression): ts.ObjectLiteralExpression {
+  const existingProp = objectPropertyAssignmentForKey(obj, key);
+  const newProp = ts.factory.createPropertyAssignment(
+      ts.factory.createIdentifier(key), newValueFn(existingProp?.initializer));
+  return ts.factory.updateObjectLiteralExpression(obj, [
+    ...obj.properties.filter(p => p !== existingProp),
+    newProp,
+  ]);
+}
