@@ -1,9 +1,6 @@
 @use 'sass:map';
 @use '@angular/material' as mat;
 
-@use './elevation';
-
-
 @mixin color($config-or-theme) {
   $config: mat.get-color-config($config-or-theme);
 
@@ -15,11 +12,11 @@
     // `mat-mdc-elevation-z$zValue` where `$zValue` corresponds to the z-space to which the
     // element is elevated.
     @for $zValue from 0 through 24 {
-      $selector: elevation.$prefix + $zValue;
+      $selector: 'mat-mdc-elevation-z' + $zValue;
       // We need the `mat-mdc-elevation-specific`, because some MDC mixins
       // come with elevation baked in and we don't have a way of removing it.
       .#{$selector}, .mat-mdc-elevation-specific.#{$selector} {
-        @include elevation.private-theme-elevation($zValue, $config);
+        @include mat.private-theme-elevation($zValue, $config);
       }
     }
 
@@ -38,7 +35,7 @@
 
 @mixin typography($config-or-theme) {
   $config: mat.private-typography-to-2018-config(
-    mat.get-typography-config($config-or-theme));
+          mat.get-typography-config($config-or-theme));
 
   @include mat.option-typography($config-or-theme);
   @include mat.optgroup-typography($config-or-theme);

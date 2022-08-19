@@ -549,7 +549,7 @@ export class _MatMenuBase
   providers: [{provide: MAT_MENU_PANEL, useExisting: MatMenu}],
 })
 export class MatMenu extends _MatMenuBase {
-  protected override _elevationPrefix = 'mat-mdc-elevation-z';
+  protected override _elevationPrefix = 'mat-elevation-z';
   protected override _baseElevation = 8;
 
   /*

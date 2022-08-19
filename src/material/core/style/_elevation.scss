@@ -1,8 +1,7 @@
 @use 'sass:map';
-@use 'sass:math';
 @use 'sass:meta';
 @use 'variables';
-
+@use '@material/elevation/elevation-theme' as mdc-elevation;
 
 // A collection of mixins and CSS classes that can be used to apply elevation to a material
 // element.
@@ -23,113 +22,6 @@
 // For an explanation of the design behind how elevation is implemented, see the design doc at
 // https://goo.gl/Kq0k9Z.
 
-// Colors for umbra, penumbra, and ambient shadows. As described in the design doc, each elevation
-// level is created using a set of 3 shadow values, one for umbra (the shadow representing the
-// space completely obscured by an object relative to its light source), one for penumbra (the
-// space partially obscured by an object), and one for ambient (the space which contains the object
-// itself). For a further explanation of these terms and their meanings, see
-// https://en.wikipedia.org/wiki/Umbra,_penumbra_and_antumbra.
-
-// Maps for the different shadow sets and their values within each z-space. These values were
-// created by taking a few reference shadow sets created by Google's Designers and interpolating
-// all of the values between them.
-
-@function _get-umbra-map($color, $opacity) {
-  $shadow-color: if(meta.type-of($color) == color, rgba($color, $opacity * 0.2), $color);
-
-  @return (
-    0: '0px 0px 0px 0px #{$shadow-color}',
-    1: '0px 2px 1px -1px #{$shadow-color}',
-    2: '0px 3px 1px -2px #{$shadow-color}',
-    3: '0px 3px 3px -2px #{$shadow-color}',
-    4: '0px 2px 4px -1px #{$shadow-color}',
-    5: '0px 3px 5px -1px #{$shadow-color}',
-    6: '0px 3px 5px -1px #{$shadow-color}',
-    7: '0px 4px 5px -2px #{$shadow-color}',
-    8: '0px 5px 5px -3px #{$shadow-color}',
-    9: '0px 5px 6px -3px #{$shadow-color}',
-    10: '0px 6px 6px -3px #{$shadow-color}',
-    11: '0px 6px 7px -4px #{$shadow-color}',
-    12: '0px 7px 8px -4px #{$shadow-color}',
-    13: '0px 7px 8px -4px #{$shadow-color}',
-    14: '0px 7px 9px -4px #{$shadow-color}',
-    15: '0px 8px 9px -5px #{$shadow-color}',
-    16: '0px 8px 10px -5px #{$shadow-color}',
-    17: '0px 8px 11px -5px #{$shadow-color}',
-    18: '0px 9px 11px -5px #{$shadow-color}',
-    19: '0px 9px 12px -6px #{$shadow-color}',
-    20: '0px 10px 13px -6px #{$shadow-color}',
-    21: '0px 10px 13px -6px #{$shadow-color}',
-    22: '0px 10px 14px -6px #{$shadow-color}',
-    23: '0px 11px 14px -7px #{$shadow-color}',
-    24: '0px 11px 15px -7px #{$shadow-color}'
-  );
-}
-
-@function _get-penumbra-map($color, $opacity) {
-  $shadow-color: if(meta.type-of($color) == color, rgba($color, $opacity * 0.14), $color);
-
-  @return (
-    0: '0px 0px 0px 0px #{$shadow-color}',
-    1: '0px 1px 1px 0px #{$shadow-color}',
-    2: '0px 2px 2px 0px #{$shadow-color}',
-    3: '0px 3px 4px 0px #{$shadow-color}',
-    4: '0px 4px 5px 0px #{$shadow-color}',
-    5: '0px 5px 8px 0px #{$shadow-color}',
-    6: '0px 6px 10px 0px #{$shadow-color}',
-    7: '0px 7px 10px 1px #{$shadow-color}',
-    8: '0px 8px 10px 1px #{$shadow-color}',
-    9: '0px 9px 12px 1px #{$shadow-color}',
-    10: '0px 10px 14px 1px #{$shadow-color}',
-    11: '0px 11px 15px 1px #{$shadow-color}',
-    12: '0px 12px 17px 2px #{$shadow-color}',
-    13: '0px 13px 19px 2px #{$shadow-color}',
-    14: '0px 14px 21px 2px #{$shadow-color}',
-    15: '0px 15px 22px 2px #{$shadow-color}',
-    16: '0px 16px 24px 2px #{$shadow-color}',
-    17: '0px 17px 26px 2px #{$shadow-color}',
-    18: '0px 18px 28px 2px #{$shadow-color}',
-    19: '0px 19px 29px 2px #{$shadow-color}',
-    20: '0px 20px 31px 3px #{$shadow-color}',
-    21: '0px 21px 33px 3px #{$shadow-color}',
-    22: '0px 22px 35px 3px #{$shadow-color}',
-    23: '0px 23px 36px 3px #{$shadow-color}',
-    24: '0px 24px 38px 3px #{$shadow-color}'
-  );
-}
-
-@function _get-ambient-map($color, $opacity) {
-  $shadow-color: if(meta.type-of($color) == color, rgba($color, $opacity * 0.12), $color);
-
-  @return (
-    0: '0px 0px 0px 0px #{$shadow-color}',
-    1: '0px 1px 3px 0px #{$shadow-color}',
-    2: '0px 1px 5px 0px #{$shadow-color}',
-    3: '0px 1px 8px 0px #{$shadow-color}',
-    4: '0px 1px 10px 0px #{$shadow-color}',
-    5: '0px 1px 14px 0px #{$shadow-color}',
-    6: '0px 1px 18px 0px #{$shadow-color}',
-    7: '0px 2px 16px 1px #{$shadow-color}',
-    8: '0px 3px 14px 2px #{$shadow-color}',
-    9: '0px 3px 16px 2px #{$shadow-color}',
-    10: '0px 4px 18px 3px #{$shadow-color}',
-    11: '0px 4px 20px 3px #{$shadow-color}',
-    12: '0px 5px 22px 4px #{$shadow-color}',
-    13: '0px 5px 24px 4px #{$shadow-color}',
-    14: '0px 5px 26px 4px #{$shadow-color}',
-    15: '0px 6px 28px 5px #{$shadow-color}',
-    16: '0px 6px 30px 5px #{$shadow-color}',
-    17: '0px 6px 32px 5px #{$shadow-color}',
-    18: '0px 7px 34px 6px #{$shadow-color}',
-    19: '0px 7px 36px 6px #{$shadow-color}',
-    20: '0px 8px 38px 7px #{$shadow-color}',
-    21: '0px 8px 40px 7px #{$shadow-color}',
-    22: '0px 8px 42px 7px #{$shadow-color}',
-    23: '0px 9px 44px 8px #{$shadow-color}',
-    24: '0px 9px 46px 8px #{$shadow-color}'
-  );
-}
-
 // The default duration value for elevation transitions.
 $transition-duration: 280ms !default;
 
@@ -139,35 +31,35 @@ $transition-timing-function: variables.$fast-out-slow-in-timing-function;
 // The default color for elevation shadows.
 $color: black !default;
 
-// The default opacity scaling value for elevation shadows.
-$opacity: 1 !default;
-
 // Prefix for elevation-related selectors.
 $prefix: 'mat-elevation-z';
 
 // Applies the correct css rules to an element to give it the elevation specified by $zValue.
 // The $zValue must be between 0 and 24.
-@mixin elevation($zValue, $color: $color, $opacity: $opacity) {
-  @if meta.type-of($zValue) != number or not math.is-unitless($zValue) {
-    @error '$zValue must be a unitless number';
+@mixin elevation($zValue, $color: $color) {
+  @if meta.type-of($color) == color {
+    @include mdc-elevation.elevation($zValue, $color);
   }
-  @if $zValue < 0 or $zValue > 24 {
-    @error '$zValue must be between 0 and 24';
+  @else {
+    // Copied from @material/elevation/_elevation-theme.scss#_box-shadow
+    // TODO(mmalerba): Add support for graceful handling of CSS var color to MDC.
+    $umbra-z-value: map.get(mdc-elevation.$umbra-map, $zValue);
+    $penumbra-z-value: map.get(mdc-elevation.$penumbra-map, $zValue);
+    $ambient-z-value: map.get(mdc-elevation.$ambient-map, $zValue);
+    $box-shadow: (
+      #{'#{$umbra-z-value} #{$color}'},
+      #{'#{$penumbra-z-value} #{$color}'},
+      #{$ambient-z-value} $color
+    );
+    @include mdc-elevation.shadow($box-shadow);
   }
-
-  box-shadow: #{map.get(_get-umbra-map($color, $opacity), $zValue)},
-              #{map.get(_get-penumbra-map($color, $opacity), $zValue)},
-              #{map.get(_get-ambient-map($color, $opacity), $zValue)};
 }
 
 // Applies the elevation to an element in a manner that allows
 // consumers to override it via the Material elevation classes.
-@mixin overridable-elevation(
-    $zValue,
-    $color: $color,
-    $opacity: $opacity) {
+@mixin overridable-elevation($zValue, $color: $color) {
   &:not([class*='#{$prefix}']) {
-    @include elevation($zValue, $color, $opacity);
+    @include elevation($zValue, $color);
   }
 }
 

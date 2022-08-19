@@ -5,7 +5,6 @@
 @use './option/option-theme';
 @use './option/optgroup-theme';
 
-
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   @include core-theme.color($config-or-theme);

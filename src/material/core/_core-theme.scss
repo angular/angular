@@ -7,9 +7,9 @@
 @use './selection/pseudo-checkbox/pseudo-checkbox-theme';
 @use './style/elevation';
 
-
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
+
   // Wrapper element that provides the theme background when the user's content isn't
   // inside of a `mat-sidenav-container`. Note that we need to exclude the ampersand
   // selector in case the mixin is included at the top level.
@@ -25,7 +25,10 @@
   // `mat-elevation-z$zValue` where `$zValue` corresponds to the z-space to which the element is
   // elevated.
   @for $zValue from 0 through 24 {
-    .#{elevation.$prefix}#{$zValue} {
+    $selector: elevation.$prefix + $zValue;
+    // We need the `mat-mdc-elevation-specific`, because some MDC mixins
+    // come with elevation baked in and we don't have a way of removing it.
+    .#{$selector}, .mat-mdc-elevation-specific.#{$selector} {
       @include private.private-theme-elevation($zValue, $config);
     }
   }
@@ -51,6 +54,7 @@
     @include pseudo-checkbox-theme.theme($theme);
 
     $color: theming.get-color-config($theme);
+
     @if $color != null {
       @include color($color);
     }

@@ -605,7 +605,7 @@ describe('MDC-based MatMenu', () => {
     const panel = overlayContainerElement.querySelector('.mat-mdc-menu-panel')!;
 
     expect(panel.classList).toContain('custom-one');
-    expect(panel.classList).toContain('mat-mdc-elevation-z8');
+    expect(panel.classList).toContain('mat-elevation-z8');
 
     fixture.componentInstance.panelClass = 'custom-two';
     fixture.detectChanges();
@@ -614,8 +614,8 @@ describe('MDC-based MatMenu', () => {
     expect(panel.classList).toContain('custom-two');
     expect(panel.classList).toContain('mat-mdc-elevation-specific');
     expect(panel.classList)
-      .withContext('Expected mat-mdc-elevation-z8 not to be removed')
-      .toContain('mat-mdc-elevation-z8');
+      .withContext('Expected mat-elevation-z8 not to be removed')
+      .toContain('mat-elevation-z8');
   }));
 
   it('should set the "menu" role on the overlay panel', fakeAsync(() => {
@@ -2336,17 +2336,17 @@ describe('MDC-based MatMenu', () => {
       expect(menus[0].classList).toContain('mat-mdc-elevation-specific');
       expect(menus[0].classList)
         .withContext('Expected root menu to have base elevation.')
-        .toContain('mat-mdc-elevation-z8');
+        .toContain('mat-elevation-z8');
 
       expect(menus[1].classList).toContain('mat-mdc-elevation-specific');
       expect(menus[1].classList)
         .withContext('Expected first sub-menu to have base elevation + 1.')
-        .toContain('mat-mdc-elevation-z9');
+        .toContain('mat-elevation-z9');
 
       expect(menus[2].classList).toContain('mat-mdc-elevation-specific');
       expect(menus[2].classList)
         .withContext('Expected second sub-menu to have base elevation + 2.')
-        .toContain('mat-mdc-elevation-z10');
+        .toContain('mat-elevation-z10');
     }));
 
     it('should update the elevation when the same menu is opened at a different depth', fakeAsync(() => {
@@ -2365,7 +2365,7 @@ describe('MDC-based MatMenu', () => {
       expect(lastMenu.classList).toContain('mat-mdc-elevation-specific');
       expect(lastMenu.classList)
         .withContext('Expected menu to have the base elevation plus two.')
-        .toContain('mat-mdc-elevation-z10');
+        .toContain('mat-elevation-z10');
 
       (overlay.querySelector('.cdk-overlay-backdrop')! as HTMLElement).click();
       fixture.detectChanges();
@@ -2384,10 +2384,10 @@ describe('MDC-based MatMenu', () => {
       expect(lastMenu.classList).toContain('mat-mdc-elevation-specific');
       expect(lastMenu.classList)
         .not.withContext('Expected menu not to maintain old elevation.')
-        .toContain('mat-mdc-elevation-z10');
+        .toContain('mat-elevation-z10');
       expect(lastMenu.classList)
         .withContext('Expected menu to have the proper updated elevation.')
-        .toContain('mat-mdc-elevation-z8');
+        .toContain('mat-elevation-z8');
     }));
 
     it('should not change focus origin if origin not specified for trigger', fakeAsync(() => {
@@ -2427,8 +2427,8 @@ describe('MDC-based MatMenu', () => {
       expect(menuClasses).toContain('mat-mdc-elevation-specific');
       expect(menuClasses)
         .withContext('Expected user elevation to be maintained')
-        .toContain('mat-mdc-elevation-z24');
-      expect(menuClasses).not.toContain('mat-mdc-elevation-z8', 'Expected no stacked elevation.');
+        .toContain('mat-elevation-z24');
+      expect(menuClasses).not.toContain('mat-elevation-z8', 'Expected no stacked elevation.');
     }));
 
     it('should close all of the menus when the root is closed programmatically', fakeAsync(() => {
@@ -2893,7 +2893,7 @@ class NestedMenu {
         #levelOneTrigger="matMenuTrigger">One</button>
     </mat-menu>
 
-    <mat-menu #levelOne="matMenu" class="mat-mdc-elevation-z24">
+    <mat-menu #levelOne="matMenu" class="mat-elevation-z24">
       <button mat-menu-item>Two</button>
     </mat-menu>
   `,

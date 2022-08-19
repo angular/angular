@@ -1,6 +1,3 @@
-// Structural
-@forward './mdc-core/elevation' as mdc-* show mdc-elevation, mdc-overridable-elevation;
-
 // Theme bundles
 @forward './mdc-core/theming/all-theme' show all-mdc-component-themes;
 @forward './mdc-core/color/all-color' show all-mdc-component-colors;
