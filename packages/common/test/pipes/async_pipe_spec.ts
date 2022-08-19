@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncPipe, ɵgetDOM as getDOM} from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 import {ChangeDetectorRef, Component, EventEmitter} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {of, Subscribable, Unsubscribable} from 'rxjs';
@@ -257,7 +257,7 @@ import {of, Subscribable, Unsubscribable} from 'rxjs';
 
     describe('other types', () => {
       it('should throw when given an invalid object', () => {
-        const pipe = new AsyncPipe(null as any);
+        const pipe = new AsyncPipe(getChangeDetectorRefSpy());
         expect(() => pipe.transform('some bogus object' as any)).toThrowError();
       });
     });
