@@ -764,36 +764,65 @@ describe('bluebird promise', () => {
   });
 
   it('should trigger onHandleError when unhandledRejection', (done: DoneFn) => {
+    const hookSpy = jasmine.createSpy();
     const zone = Zone.current.fork({
       name: 'testErrorHandling',
       onHandleError: function() {
-        setTimeout(done, 100);
+        hookSpy();
         return true;
       }
     });
 
-    zone.runGuarded(() => {
-      return Promise.reject(new Error('reject'));
-    });
+    let p: any = null;
+    (jasmine as any)
+        .spyOnGlobalErrorsAsync(async function() {
+          zone.runGuarded(() => {
+            p = Promise.reject(new Error('reject'));
+          });
+          return new Promise(res => {
+            setTimeout(() => {
+              p.catch(() => {});
+              res(null);
+            }, 50);
+          });
+        })
+        .then(() => {
+          expect(hookSpy.calls.count()).toBe(1);
+          done();
+        });
   });
 
   it('should trigger onHandleError when unhandledRejection in chained Promise', (done: DoneFn) => {
+    const hookSpy = jasmine.createSpy();
     const zone = Zone.current.fork({
       name: 'testErrorHandling',
       onHandleError: function() {
-        setTimeout(done, 100);
+        hookSpy();
         return true;
       }
     });
 
-    zone.runGuarded(() => {
-      return Promise.resolve().then(() => {
-        throw new Error('test');
-      });
-    });
+    let p: any = null;
+    (jasmine as any)
+        .spyOnGlobalErrorsAsync(async function() {
+          zone.runGuarded(() => {
+            p = Promise.resolve().then(() => {
+              throw new Error('test');
+            });
+          });
+          return new Promise(res => setTimeout(() => {
+                               p.catch(() => {});
+                               res(null);
+                             }, 50))
+        })
+        .then(() => {
+          expect(hookSpy.calls.count()).toBe(1);
+          done();
+        });
   });
 
   it('should not trigger unhandledrejection if zone.onHandleError return false', (done: DoneFn) => {
+    const hookSpy = jasmine.createSpy();
     const listener = function() {
       fail('should not be here');
     };
@@ -807,26 +836,39 @@ describe('bluebird promise', () => {
     const zone = Zone.current.fork({
       name: 'testErrorHandling',
       onHandleError: function() {
-        setTimeout(() => {
-          if (typeof window !== 'undefined') {
-            window.removeEventListener('unhandledrejection', listener);
-          } else if (typeof process !== 'undefined') {
-            process.removeListener('unhandledRejection', listener);
-          }
-          done();
-        }, 500);
+        if (typeof window !== 'undefined') {
+          window.removeEventListener('unhandledrejection', listener);
+        } else if (typeof process !== 'undefined') {
+          process.removeListener('unhandledRejection', listener);
+        }
+        hookSpy();
         return false;
       }
     });
 
-    zone.runGuarded(() => {
-      return Promise.resolve().then(() => {
-        throw new Error('test');
-      });
-    });
+    (jasmine as any)
+        .spyOnGlobalErrorsAsync(async function() {
+          let p: any = null;
+          zone.runGuarded(() => {
+            p = Promise.resolve().then(() => {
+              throw new Error('test');
+            });
+          });
+          return new Promise(res => {
+            setTimeout(() => {
+              p.catch(() => {});
+              res(null);
+            }, 50);
+          });
+        })
+        .then(() => {
+          expect(hookSpy.calls.count()).toBe(1);
+          done();
+        });
   });
 
   it('should trigger unhandledrejection if zone.onHandleError return true', (done: DoneFn) => {
+    const hookSpy = jasmine.createSpy();
     const listener = function(event: any) {
       if (typeof window !== 'undefined') {
         expect(event.detail.reason.message).toEqual('test');
@@ -838,7 +880,7 @@ describe('bluebird promise', () => {
       } else if (typeof process !== 'undefined') {
         process.removeListener('unhandledRejection', listener);
       }
-      done();
+      hookSpy();
     };
     if (typeof window !== 'undefined') {
       window.addEventListener('unhandledrejection', listener);
@@ -853,10 +895,21 @@ describe('bluebird promise', () => {
       }
     });
 
-    zone.runGuarded(() => {
-      return Promise.resolve().then(() => {
-        throw new Error('test');
-      });
-    });
+    let p: any = null;
+    (jasmine as any)
+        .spyOnGlobalErrorsAsync(async function() {
+          zone.runGuarded(() => {
+            p = Promise.resolve().then(() => {
+              throw new Error('test');
+            });
+          });
+          return new Promise(res => {
+            setTimeout(() => {
+              p.catch(() => {});
+              res(null);
+            }, 50);
+          });
+        })
+        .then(() => done());
   });
 });
