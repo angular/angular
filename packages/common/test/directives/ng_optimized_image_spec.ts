@@ -966,7 +966,7 @@ describe('Image directive', () => {
         setupTestingModule({imageLoader});
 
         const template = `
-           <img rawSrc="img.png" rawSrcset="1x, 2.5x, 3x" width="100" height="50">
+           <img rawSrc="img.png" rawSrcset="1.75x, 2.5x, 3x" width="100" height="50">
          `;
         const fixture = createTestComponent(template);
         fixture.detectChanges();
@@ -976,7 +976,7 @@ describe('Image directive', () => {
         expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
         expect(img.srcset)
             .toBe(
-                `${IMG_BASE_URL}/img.png?w=100 1x, ` +
+                `${IMG_BASE_URL}/img.png?w=175 1.75x, ` +
                 `${IMG_BASE_URL}/img.png?w=250 2.5x, ` +
                 `${IMG_BASE_URL}/img.png?w=300 3x`);
       });
