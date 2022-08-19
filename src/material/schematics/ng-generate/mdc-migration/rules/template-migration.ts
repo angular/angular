@@ -16,13 +16,15 @@ export class TemplateMigration extends Migration<ComponentMigrator[], SchematicC
   enabled = true;
 
   override visitTemplate(template: ResolvedResource) {
-    const ast = parseTemplate(template.content, template.filePath);
-    const migrators = this.upgradeData.filter(m => m.template).map(m => m.template!);
+    this.fileSystem.overwrite(template.filePath, this.migrate(template.content, template.filePath));
+  }
 
+  migrate(template: string, templateUrl?: string): string {
+    const ast = parseTemplate(template, templateUrl);
+    const migrators = this.upgradeData.filter(m => m.template).map(m => m.template!);
     const updates: Update[] = [];
     migrators.forEach(m => updates.push(...m.getUpdates(ast)));
 
-    const content = writeUpdates(template.content, updates);
-    this.fileSystem.overwrite(template.filePath, content);
+    return writeUpdates(template, updates);
   }
 }

@@ -17,10 +17,10 @@ export class ThemingStylesMigration extends Migration<ComponentMigrator[], Schem
   namespace: string;
 
   override visitStylesheet(stylesheet: ResolvedResource) {
-    this.fileSystem.overwrite(stylesheet.filePath, this.migrateStyles(stylesheet.content));
+    this.fileSystem.overwrite(stylesheet.filePath, this.migrate(stylesheet.content));
   }
 
-  migrateStyles(styles: string): string {
+  migrate(styles: string): string {
     const processor = new postcss.Processor([
       {
         postcssPlugin: 'theming-styles-migration-plugin',
