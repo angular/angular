@@ -2,7 +2,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatLegacyProgressSpinnerModule} from '@angular/material/legacy-progress-spinner';
 import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
 import {MatLegacySliderModule} from '@angular/material/legacy-slider';
 import {ProgressSpinnerConfigurableExample} from './progress-spinner-configurable/progress-spinner-configurable-example';
@@ -25,7 +25,7 @@ const EXAMPLES = [
   imports: [
     CommonModule,
     MatLegacyCardModule,
-    MatProgressSpinnerModule,
+    MatLegacyProgressSpinnerModule,
     MatLegacyRadioModule,
     MatLegacySliderModule,
     FormsModule,

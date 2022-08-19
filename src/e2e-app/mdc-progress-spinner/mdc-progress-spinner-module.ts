@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MdcProgressSpinnerE2e} from './mdc-progress-spinner-e2e';
 
 @NgModule({

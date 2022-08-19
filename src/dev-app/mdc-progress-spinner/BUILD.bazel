@@ -10,10 +10,10 @@ ng_module(
         ":mdc_progress_spinner_demo_scss",
     ],
     deps = [
-        "//src/material-experimental/mdc-progress-spinner",
         "//src/material/button",
         "//src/material/button-toggle",
         "//src/material/checkbox",
+        "//src/material/progress-spinner",
         "@npm//@angular/forms",
     ],
 )

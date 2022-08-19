@@ -4,6 +4,7 @@
 @use '../../legacy-button/button-theme';
 @use '../../legacy-card/card-theme';
 @use '../../legacy-progress-bar/progress-bar-theme';
+@use '../../legacy-progress-spinner/progress-spinner-theme';
 @use '../../legacy-tooltip/tooltip-theme';
 @use '../../legacy-input/input-theme';
 @use '../../legacy-form-field/form-field-theme';
@@ -30,6 +31,7 @@
     @include core-theme.theme($theme-or-color-config);
     @include card-theme.theme($theme-or-color-config);
     @include progress-bar-theme.theme($theme-or-color-config);
+    @include progress-spinner-theme.theme($theme-or-color-config);
     @include tooltip-theme.theme($theme-or-color-config);
     @include input-theme.theme($theme-or-color-config);
     @include form-field-theme.theme($theme-or-color-config);

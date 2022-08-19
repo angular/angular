@@ -17,7 +17,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {MatIconModule} from '@angular/material/icon';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
-import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatSelectModule} from '@angular/material/select';
 import {MatPaginatorModule} from '@angular/material/paginator';
 

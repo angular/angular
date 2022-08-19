@@ -1,8 +1,6 @@
 entryPoints = [
     "column-resize",
     "mdc-core",
-    "mdc-progress-spinner",
-    "mdc-progress-spinner/testing",
     "menubar",
     "popover-edit",
     "selection",

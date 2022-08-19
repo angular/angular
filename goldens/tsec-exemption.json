@@ -5,7 +5,7 @@
     "../src/cdk/a11y/aria-describer/aria-reference.ts",
     "../src/material/checkbox/checkbox.ts",
     "../src/material/list/interactive-list-base.ts",
-    "../src/material-experimental/mdc-progress-spinner/progress-spinner.ts",
+    "../src/material/progress-spinner/progress-spinner.ts",
     "../src/material/slide-toggle/slide-toggle.ts",
     "../src/material/icon/icon-registry.ts",
     "../src/material/icon/icon.ts"

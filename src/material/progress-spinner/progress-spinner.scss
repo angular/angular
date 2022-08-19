@@ -1,103 +1,75 @@
+@use 'sass:map';
+@use '../core/mdc-helpers/mdc-helpers';
 @use '@angular/cdk';
+@use '@material/circular-progress/circular-progress' as mdc-circular-progress;
+@use '@material/circular-progress/circular-progress-theme' as mdc-circular-progress-theme;
 
-@use '../core/style/variables';
 
-$_default-radius: 45px;
-$_default-circumference: variables.$pi * $_default-radius * 2;
+@include mdc-helpers.disable-mdc-fallback-declarations {
+  @include mdc-circular-progress.static-styles($query: mdc-helpers.$mdc-base-styles-query);
+}
 
-.mat-progress-spinner {
+.mat-mdc-progress-spinner {
+  @include mdc-helpers.disable-mdc-fallback-declarations {
+    @include mdc-circular-progress-theme.theme-styles(map.merge(
+      mdc-circular-progress-theme.$light-theme,
+      (
+        active-indicator-color: transparent,
+
+        // We don't support the multi color variant so we exclude these variables.
+        four-color-active-indicator-four-color: null,
+        four-color-active-indicator-one-color: null,
+        four-color-active-indicator-three-color: null,
+        four-color-active-indicator-two-color: null,
+
+        // We currently size the element ourselves so we can exclude these styles as well.
+        // TODO(crisbeto): look into reusing MDC's styles by binding to a CSS variable
+        // in our own template.
+        active-indicator-width: null,
+        size: null,
+      )
+    ));
+  }
+
+  // Explicitly set to `block` since the browser defaults custom elements to `inline`.
   display: block;
-  position: relative;
 
-  // Prevents the animating circle from going outside the bounds of the host
-  // and potentially changing the surrounding layout. See #16894.
+  // Prevents the spinning of the inner element from affecting layout outside of the spinner.
   overflow: hidden;
 
-  svg {
-    position: absolute;
-    transform: rotate(-90deg);
-    top: 0;
-    left: 0;
-    transform-origin: center;
-    overflow: visible;
-  }
-
-  circle {
-    fill: transparent;
-    transition: stroke-dashoffset 225ms linear;
-
-    @include cdk.high-contrast(active, off) {
-      // SVG colors aren't inverted automatically in high contrast mode. Set the
-      // stroke to `CanvasText` in order to respect the user's color settings.
-      // Note that we use `CanvasText` instead of `currentColor`, because
-      // the latter blends in with the background on Chromium browsers.
-      stroke: CanvasText;
-    }
-  }
-
-  &[mode='indeterminate'] {
-    svg {
-      animation: mat-progress-spinner-linear-rotate variables.$swift-ease-in-out-duration * 4
-          linear infinite;
-    }
-
-    circle {
-      transition-property: stroke;
-      // Note: we multiply the duration by 8, because the animation is spread out in 8 stages.
-      animation-duration: variables.$swift-ease-in-out-duration * 8;
-      animation-timing-function: variables.$ease-in-out-curve-function;
-      animation-iteration-count: infinite;
-    }
-  }
+  // Spinners with a diameter less than half the existing line-height will become distorted.
+  // Explicitly set the line-height to 0px to avoid this issue.
+  // https://github.com/material-components/material-components-web/issues/7118
+  line-height: 0;
 
   &._mat-animation-noopable {
-    svg, circle {
-      animation: none;
+    &, .mdc-circular-progress__determinate-circle {
+      // The spinner itself has a transition on `opacity`.
       transition: none;
     }
+
+    .mdc-circular-progress__indeterminate-circle-graphic,
+    .mdc-circular-progress__spinner-layer,
+    .mdc-circular-progress__indeterminate-container {
+      // Disables the rotation animations.
+      animation: none;
+    }
+
+    .mdc-circular-progress__indeterminate-container circle {
+      // Render the indeterminate spinner as a complete circle when animations are off
+      stroke-dasharray: 0 !important;
+    }
   }
-}
 
-
-// Animations for indeterminate mode
-@keyframes mat-progress-spinner-linear-rotate {
-  0%       { transform: rotate(0deg); }
-  100%     { transform: rotate(360deg); }
-}
-
-@at-root {
-  $start: (1 - 0.05) * $_default-circumference; // start the animation at 5%
-  $end: (1 - 0.8) * $_default-circumference; // end the animation at 80%
-
-  @keyframes mat-progress-spinner-stroke-rotate-100 {
-    // stylelint-disable declaration-block-single-line-max-declarations
-    // stylelint-disable declaration-block-semicolon-space-after
-
-    // .0001 percentage difference is necessary in order to avoid unwanted animation frames
-    // for example because the animation duration is 4 seconds, .1% accounts to 4ms
-    // which are enough to see the flicker described in
-    // https://github.com/angular/components/issues/8984
-    //
-    // NOTE: this is replaced by js for any diameter other that 100
-    0%        { stroke-dashoffset: $start;  transform: rotate(0); }
-    12.5%     { stroke-dashoffset: $end;    transform: rotate(0); }
-    12.5001%  { stroke-dashoffset: $end;    transform: rotateX(180deg) rotate(72.5deg); }
-    25%       { stroke-dashoffset: $start;  transform: rotateX(180deg) rotate(72.5deg); }
-
-    25.0001%   { stroke-dashoffset: $start;  transform: rotate(270deg); }
-    37.5%      { stroke-dashoffset: $end;    transform: rotate(270deg); }
-    37.5001%   { stroke-dashoffset: $end;    transform: rotateX(180deg) rotate(161.5deg); }
-    50%        { stroke-dashoffset: $start;  transform: rotateX(180deg) rotate(161.5deg); }
-
-    50.0001%  { stroke-dashoffset: $start;  transform: rotate(180deg); }
-    62.5%     { stroke-dashoffset: $end;    transform: rotate(180deg); }
-    62.5001%  { stroke-dashoffset: $end;    transform: rotateX(180deg) rotate(251.5deg); }
-    75%       { stroke-dashoffset: $start;  transform: rotateX(180deg) rotate(251.5deg); }
-
-    75.0001%  { stroke-dashoffset: $start;  transform: rotate(90deg); }
-    87.5%     { stroke-dashoffset: $end;    transform: rotate(90deg); }
-    87.5001%  { stroke-dashoffset: $end;    transform: rotateX(180deg) rotate(341.5deg); }
-    100%      { stroke-dashoffset: $start;  transform: rotateX(180deg) rotate(341.5deg); }
-    // stylelint-enable
+  @include cdk.high-contrast(active, off) {
+    .mdc-circular-progress__indeterminate-circle-graphic,
+    .mdc-circular-progress__determinate-circle {
+      // SVG colors aren't inverted automatically in high contrast mode. Set the
+      // stroke to currentColor in order to respect the user's color settings.
+      stroke: currentColor;
+      // currentColor blends in with the background in Chromium-based browsers
+      // so we have to fall back to `CanvasText` which isn't supported on IE.
+      stroke: CanvasText;
+    }
   }
 }

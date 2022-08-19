@@ -7,4 +7,4 @@
  */
 
 export * from './progress-spinner-harness';
-export * from './progress-spinner-harness-filters';
+export {LegacyProgressSpinnerHarnessFilters as ProgressSpinnerHarnessFilters} from '@angular/material/legacy-progress-spinner/testing';

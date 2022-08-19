@@ -21,7 +21,6 @@ sass_library(
     deps = [
         "//src/material:sass_lib",
         "//src/material-experimental/mdc-core:mdc_core_scss_lib",
-        "//src/material-experimental/mdc-progress-spinner:mdc_progress_spinner_scss_lib",
         "//src/material/autocomplete:autocomplete_scss_lib",
         "//src/material/button:button_scss_lib",
         "//src/material/card:card_scss_lib",
@@ -31,6 +30,7 @@ sass_library(
         "//src/material/form-field:form_field_scss_lib",
         "//src/material/input:input_scss_lib",
         "//src/material/progress-bar:progress_bar_scss_lib",
+        "//src/material/progress-spinner:progress_spinner_scss_lib",
         "//src/material/slide-toggle:slide_toggle_scss_lib",
         "//src/material/slider:slider_scss_lib",
         "//src/material/snack-bar:snack_bar_scss_lib",

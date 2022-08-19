@@ -16,7 +16,7 @@ import {MatListModule} from '@angular/material-experimental/mdc-list';
 import {MatMenuModule} from '@angular/material-experimental/mdc-menu';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatProgressBarModule} from '@angular/material-experimental/mdc-progress-bar';
-import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatRadioModule} from '@angular/material-experimental/mdc-radio';
 import {MatSelectModule} from '@angular/material-experimental/mdc-select';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';

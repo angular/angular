@@ -1,7 +1,7 @@
 import {browser, by, element} from 'protractor';
 
-describe('MDC-based progress-spinner', () => {
-  beforeEach(async () => await browser.get('/mdc-progress-spinner'));
+describe('progress-spinner', () => {
+  beforeEach(async () => await browser.get('/progress-spinner'));
 
   it('should render a determinate progress spinner', async () => {
     expect(await element(by.css('mat-progress-spinner')).isPresent()).toBe(true);

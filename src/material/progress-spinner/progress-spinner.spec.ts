@@ -1,22 +1,17 @@
-import {TestBed, waitForAsync} from '@angular/core/testing';
-import {Component, ViewEncapsulation, ViewChild, ElementRef} from '@angular/core';
-import {By} from '@angular/platform-browser';
-import {_getShadowRoot, _supportsShadowDom} from '@angular/cdk/platform';
+import {waitForAsync, TestBed} from '@angular/core/testing';
+import {MatProgressSpinner, MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {CommonModule} from '@angular/common';
-import {
-  MatProgressSpinnerModule,
-  MatProgressSpinner,
-  MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS,
-} from './index';
+import {By} from '@angular/platform-browser';
+import {MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS} from '@angular/material/legacy-progress-spinner';
+import {Component, ElementRef, ViewChild, ViewEncapsulation} from '@angular/core';
 
-describe('MatProgressSpinner', () => {
+describe('MDC-based MatProgressSpinner', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatProgressSpinnerModule, CommonModule],
       declarations: [
         BasicProgressSpinner,
         IndeterminateProgressSpinner,
-        IndeterminateSpinnerCustomDiameter,
         ProgressSpinnerWithValueAndBoundMode,
         ProgressSpinnerWithColor,
         ProgressSpinnerCustomStrokeWidth,
@@ -31,32 +26,32 @@ describe('MatProgressSpinner', () => {
   }));
 
   it('should apply a mode of "determinate" if no mode is provided.', () => {
-    const fixture = TestBed.createComponent(BasicProgressSpinner);
+    let fixture = TestBed.createComponent(BasicProgressSpinner);
     fixture.detectChanges();
 
-    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
+    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     expect(progressElement.componentInstance.mode).toBe('determinate');
   });
 
   it('should not modify the mode if a valid mode is provided.', () => {
-    const fixture = TestBed.createComponent(IndeterminateProgressSpinner);
+    let fixture = TestBed.createComponent(IndeterminateProgressSpinner);
     fixture.detectChanges();
 
-    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
+    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     expect(progressElement.componentInstance.mode).toBe('indeterminate');
   });
 
   it('should define a default value of zero for the value attribute', () => {
-    const fixture = TestBed.createComponent(BasicProgressSpinner);
+    let fixture = TestBed.createComponent(BasicProgressSpinner);
     fixture.detectChanges();
 
-    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
+    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     expect(progressElement.componentInstance.value).toBe(0);
   });
 
   it('should set the value to 0 when the mode is set to indeterminate', () => {
-    const fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
-    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
+    let fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
+    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
     fixture.componentInstance.mode = 'determinate';
     fixture.detectChanges();
 
@@ -67,8 +62,8 @@ describe('MatProgressSpinner', () => {
   });
 
   it('should retain the value if it updates while indeterminate', () => {
-    const fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
-    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
+    let fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
+    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
 
     fixture.componentInstance.mode = 'determinate';
     fixture.detectChanges();
@@ -87,30 +82,12 @@ describe('MatProgressSpinner', () => {
     expect(progressElement.componentInstance.value).toBe(75);
   });
 
-  it('should use different `circle` elements depending on the mode', () => {
-    const fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
-
-    fixture.componentInstance.mode = 'determinate';
-    fixture.detectChanges();
-
-    const determinateCircle = fixture.nativeElement.querySelector('circle');
-
-    fixture.componentInstance.mode = 'indeterminate';
-    fixture.detectChanges();
-
-    const indeterminateCircle = fixture.nativeElement.querySelector('circle');
-
-    expect(determinateCircle).toBeTruthy();
-    expect(indeterminateCircle).toBeTruthy();
-    expect(determinateCircle).not.toBe(indeterminateCircle);
-  });
-
   it('should clamp the value of the progress between 0 and 100', () => {
-    const fixture = TestBed.createComponent(BasicProgressSpinner);
+    let fixture = TestBed.createComponent(BasicProgressSpinner);
     fixture.detectChanges();
 
-    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
-    const progressComponent = progressElement.componentInstance;
+    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
+    let progressComponent = progressElement.componentInstance;
 
     progressComponent.value = 50;
     expect(progressComponent.value).toBe(50);
@@ -152,89 +129,15 @@ describe('MatProgressSpinner', () => {
     expect(parseInt(spinner.style.height))
       .withContext('Expected the custom diameter to be applied to the host element height.')
       .toBe(32);
-    expect(parseInt(svgElement.style.width))
+    expect(parseInt(svgElement.clientWidth))
       .withContext('Expected the custom diameter to be applied to the svg element width.')
       .toBe(32);
-    expect(parseInt(svgElement.style.height))
+    expect(parseInt(svgElement.clientHeight))
       .withContext('Expected the custom diameter to be applied to the svg element height.')
       .toBe(32);
     expect(svgElement.getAttribute('viewBox'))
       .withContext('Expected the custom diameter to be applied to the svg viewBox.')
       .toBe('0 0 25.2 25.2');
-  });
-
-  it(
-    'should add a style tag with the indeterminate animation to the document head when using a ' +
-      'non-default diameter',
-    () => {
-      const fixture = TestBed.createComponent(ProgressSpinnerCustomDiameter);
-      fixture.componentInstance.diameter = 32;
-      fixture.detectChanges();
-
-      expect(document.head.querySelectorAll('style[mat-spinner-animation="32"]').length).toBe(1);
-
-      // Change to something different so we get another tag.
-      fixture.componentInstance.diameter = 64;
-      fixture.detectChanges();
-
-      expect(document.head.querySelectorAll('style[mat-spinner-animation="32"]').length).toBe(1);
-      expect(document.head.querySelectorAll('style[mat-spinner-animation="64"]').length).toBe(1);
-
-      // Change back to the initial one.
-      fixture.componentInstance.diameter = 32;
-      fixture.detectChanges();
-
-      expect(document.head.querySelectorAll('style[mat-spinner-animation="32"]').length).toBe(1);
-      expect(document.head.querySelectorAll('style[mat-spinner-animation="64"]').length).toBe(1);
-    },
-  );
-
-  it('should allow floating point values for custom diameter', () => {
-    const fixture = TestBed.createComponent(ProgressSpinnerCustomDiameter);
-
-    fixture.componentInstance.diameter = 32.5;
-    fixture.detectChanges();
-
-    const spinner = fixture.debugElement.query(By.css('mat-progress-spinner'))!.nativeElement;
-    const svgElement = fixture.nativeElement.querySelector('svg');
-
-    expect(parseFloat(spinner.style.width))
-      .withContext('Expected the custom diameter to be applied to the host element width.')
-      .toBe(32.5);
-    expect(parseFloat(spinner.style.height))
-      .withContext('Expected the custom diameter to be applied to the host element height.')
-      .toBe(32.5);
-    expect(parseFloat(svgElement.style.width))
-      .withContext('Expected the custom diameter to be applied to the svg element width.')
-      .toBe(32.5);
-    expect(parseFloat(svgElement.style.height))
-      .withContext('Expected the custom diameter to be applied to the svg element height.')
-      .toBe(32.5);
-    expect(svgElement.getAttribute('viewBox'))
-      .withContext('Expected the custom diameter to be applied to the svg viewBox.')
-      .toBe('0 0 25.75 25.75');
-  });
-
-  it('should handle creating animation style tags based on a floating point diameter', () => {
-    const fixture = TestBed.createComponent(IndeterminateSpinnerCustomDiameter);
-
-    fixture.componentInstance.diameter = 32.5;
-    fixture.detectChanges();
-
-    const circleElement = fixture.nativeElement.querySelector('circle');
-
-    expect(circleElement.style.animationName)
-      .withContext(
-        'Expected the spinner circle element to have an animation name based on ' +
-          'the custom diameter',
-      )
-      .toBe('mat-progress-spinner-stroke-rotate-32_5');
-    expect(document.head.querySelectorAll('style[mat-spinner-animation="32_5"]').length)
-      .withContext(
-        'Expected a style tag with the indeterminate animation to be ' +
-          'attached to the document head',
-      )
-      .toBe(1);
   });
 
   it('should allow a custom stroke width', () => {
@@ -255,6 +158,32 @@ describe('MatProgressSpinner', () => {
     expect(svgElement.getAttribute('viewBox'))
       .withContext('Expected the viewBox to be adjusted based on the stroke width.')
       .toBe('0 0 130 130');
+  });
+
+  it('should allow floating point values for custom diameter', () => {
+    const fixture = TestBed.createComponent(ProgressSpinnerCustomDiameter);
+
+    fixture.componentInstance.diameter = 32.5;
+    fixture.detectChanges();
+
+    const spinner = fixture.debugElement.query(By.css('mat-progress-spinner'))!.nativeElement;
+    const svgElement: HTMLElement = fixture.nativeElement.querySelector('svg');
+
+    expect(parseFloat(spinner.style.width))
+      .withContext('Expected the custom diameter to be applied to the host element width.')
+      .toBe(32.5);
+    expect(parseFloat(spinner.style.height))
+      .withContext('Expected the custom diameter to be applied to the host element height.')
+      .toBe(32.5);
+    expect(Math.ceil(svgElement.clientWidth))
+      .withContext('Expected the custom diameter to be applied to the svg element width.')
+      .toBe(33);
+    expect(Math.ceil(svgElement.clientHeight))
+      .withContext('Expected the custom diameter to be applied to the svg element height.')
+      .toBe(33);
+    expect(svgElement.getAttribute('viewBox'))
+      .withContext('Expected the custom diameter to be applied to the svg viewBox.')
+      .toBe('0 0 25.75 25.75');
   });
 
   it('should allow floating point values for custom stroke width', () => {
@@ -279,7 +208,7 @@ describe('MatProgressSpinner', () => {
 
   it('should expand the host element if the stroke width is greater than the default', () => {
     const fixture = TestBed.createComponent(ProgressSpinnerCustomStrokeWidth);
-    const element = fixture.debugElement.nativeElement.querySelector('.mat-progress-spinner');
+    const element = fixture.debugElement.nativeElement.querySelector('.mat-mdc-progress-spinner');
 
     fixture.componentInstance.strokeWidth = 40;
     fixture.detectChanges();
@@ -290,7 +219,7 @@ describe('MatProgressSpinner', () => {
 
   it('should not collapse the host element if the stroke width is less than the default', () => {
     const fixture = TestBed.createComponent(ProgressSpinnerCustomStrokeWidth);
-    const element = fixture.debugElement.nativeElement.querySelector('.mat-progress-spinner');
+    const element = fixture.debugElement.nativeElement.querySelector('.mat-mdc-progress-spinner');
 
     fixture.componentInstance.strokeWidth = 5;
     fixture.detectChanges();
@@ -300,10 +229,10 @@ describe('MatProgressSpinner', () => {
   });
 
   it('should set the color class on the mat-spinner', () => {
-    const fixture = TestBed.createComponent(SpinnerWithColor);
+    let fixture = TestBed.createComponent(SpinnerWithColor);
     fixture.detectChanges();
 
-    const progressElement = fixture.debugElement.query(By.css('mat-spinner'))!;
+    let progressElement = fixture.debugElement.query(By.css('mat-spinner'))!;
 
     expect(progressElement.nativeElement.classList).toContain('mat-primary');
 
@@ -315,10 +244,10 @@ describe('MatProgressSpinner', () => {
   });
 
   it('should set the color class on the mat-progress-spinner', () => {
-    const fixture = TestBed.createComponent(ProgressSpinnerWithColor);
+    let fixture = TestBed.createComponent(ProgressSpinnerWithColor);
     fixture.detectChanges();
 
-    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
+    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'))!;
 
     expect(progressElement.nativeElement.classList).toContain('mat-primary');
 
@@ -350,14 +279,15 @@ describe('MatProgressSpinner', () => {
 
     expect(spinner.nativeElement.style.width).toBe('37px');
     expect(spinner.nativeElement.style.height).toBe('37px');
-    expect(svgElement.style.width).toBe('37px');
-    expect(svgElement.style.height).toBe('37px');
+
+    expect(svgElement.clientWidth).toBe(37);
+    expect(svgElement.clientHeight).toBe(37);
     expect(svgElement.getAttribute('viewBox')).toBe('0 0 38 38');
   });
 
   it('should update the element size when changed dynamically', () => {
-    const fixture = TestBed.createComponent(BasicProgressSpinner);
-    const spinner = fixture.debugElement.query(By.directive(MatProgressSpinner))!;
+    let fixture = TestBed.createComponent(BasicProgressSpinner);
+    let spinner = fixture.debugElement.query(By.directive(MatProgressSpinner))!;
     spinner.componentInstance.diameter = 32;
     fixture.detectChanges();
     expect(spinner.nativeElement.style.width).toBe('32px');
@@ -371,7 +301,7 @@ describe('MatProgressSpinner', () => {
         declarations: [BasicProgressSpinner],
         providers: [
           {
-            provide: MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS,
+            provide: MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS,
             useValue: {diameter: 23},
           },
         ],
@@ -392,7 +322,7 @@ describe('MatProgressSpinner', () => {
         declarations: [BasicProgressSpinner],
         providers: [
           {
-            provide: MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS,
+            provide: MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS,
             useValue: {strokeWidth: 7},
           },
         ],
@@ -413,7 +343,7 @@ describe('MatProgressSpinner', () => {
         declarations: [BasicProgressSpinner],
         providers: [
           {
-            provide: MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS,
+            provide: MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS,
             useValue: {color: 'warn'},
           },
         ],
@@ -453,82 +383,6 @@ describe('MatProgressSpinner', () => {
     expect(progressElement.nativeElement.hasAttribute('aria-valuenow')).toBe(false);
   });
 
-  it('should add the indeterminate animation style tag to the Shadow root', () => {
-    // The test is only relevant in browsers that support Shadow DOM.
-    if (!_supportsShadowDom()) {
-      return;
-    }
-
-    const fixture = TestBed.createComponent(IndeterminateSpinnerInShadowDom);
-    fixture.componentInstance.diameter = 27;
-    fixture.detectChanges();
-
-    const spinner = fixture.debugElement.query(By.css('mat-progress-spinner'))!.nativeElement;
-    const shadowRoot = _getShadowRoot(spinner)!;
-
-    expect(shadowRoot.querySelector('style[mat-spinner-animation="27"]')).toBeTruthy();
-
-    fixture.componentInstance.diameter = 15;
-    fixture.detectChanges();
-
-    expect(shadowRoot.querySelector('style[mat-spinner-animation="27"]')).toBeTruthy();
-  });
-
-  it('should not duplicate style tags inside the Shadow root', () => {
-    // The test is only relevant in browsers that support Shadow DOM.
-    if (!_supportsShadowDom()) {
-      return;
-    }
-
-    const fixture = TestBed.createComponent(IndeterminateSpinnerInShadowDom);
-    fixture.componentInstance.diameter = 39;
-    fixture.detectChanges();
-
-    const spinner = fixture.debugElement.query(By.css('mat-progress-spinner'))!.nativeElement;
-    const shadowRoot = _getShadowRoot(spinner)!;
-
-    expect(shadowRoot.querySelectorAll('style[mat-spinner-animation="39"]').length).toBe(1);
-
-    // Change to something different so we get another tag.
-    fixture.componentInstance.diameter = 61;
-    fixture.detectChanges();
-
-    expect(shadowRoot.querySelectorAll('style[mat-spinner-animation="39"]').length).toBe(1);
-    expect(shadowRoot.querySelectorAll('style[mat-spinner-animation="61"]').length).toBe(1);
-
-    // Change back to the initial one.
-    fixture.componentInstance.diameter = 39;
-    fixture.detectChanges();
-
-    expect(shadowRoot.querySelectorAll('style[mat-spinner-animation="39"]').length).toBe(1);
-    expect(shadowRoot.querySelectorAll('style[mat-spinner-animation="61"]').length).toBe(1);
-  });
-
-  it(
-    'should add the indeterminate animation style tag to the Shadow root if the element is ' +
-      'inside an ngIf',
-    () => {
-      // The test is only relevant in browsers that support Shadow DOM.
-      if (!_supportsShadowDom()) {
-        return;
-      }
-
-      const fixture = TestBed.createComponent(IndeterminateSpinnerInShadowDomWithNgIf);
-      fixture.componentInstance.diameter = 27;
-      fixture.detectChanges();
-
-      const spinner = fixture.componentInstance.spinner.nativeElement;
-      const shadowRoot = _getShadowRoot(spinner)!;
-
-      expect(shadowRoot.querySelector('style[mat-spinner-animation="27"]')).toBeTruthy();
-
-      fixture.componentInstance.diameter = 15;
-      fixture.detectChanges();
-
-      expect(shadowRoot.querySelector('style[mat-spinner-animation="27"]')).toBeTruthy();
-    },
-  );
-
   it('should apply aria-hidden to child nodes', () => {
     const fixture = TestBed.createComponent(BasicProgressSpinner);
     fixture.detectChanges();
@@ -566,15 +420,6 @@ class ProgressSpinnerCustomDiameter {
 class IndeterminateProgressSpinner {}
 
 @Component({
-  template: `
-    <mat-progress-spinner mode="indeterminate" [diameter]="diameter"></mat-progress-spinner>
-  `,
-})
-class IndeterminateSpinnerCustomDiameter {
-  diameter: number;
-}
-
-@Component({
   template: '<mat-progress-spinner [value]="value" [mode]="mode"></mat-progress-spinner>',
 })
 class ProgressSpinnerWithValueAndBoundMode {
@@ -582,12 +427,18 @@ class ProgressSpinnerWithValueAndBoundMode {
   value = 50;
 }
 
-@Component({template: `<mat-spinner [color]="color"></mat-spinner>`})
+@Component({
+  template: `
+    <mat-spinner [color]="color"></mat-spinner>`,
+})
 class SpinnerWithColor {
   color: string = 'primary';
 }
 
-@Component({template: `<mat-progress-spinner value="50" [color]="color"></mat-progress-spinner>`})
+@Component({
+  template: `
+    <mat-progress-spinner value="50" [color]="color"></mat-progress-spinner>`,
+})
 class ProgressSpinnerWithColor {
   color: string = 'primary';
 }

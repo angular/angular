@@ -1,30 +1,34 @@
 @use 'sass:map';
+@use '../core/mdc-helpers/mdc-helpers';
 @use '../core/theming/theming';
+@use '@material/circular-progress/circular-progress-theme' as mdc-circular-progress-theme;
+
+
+@mixin _palette-styles($config, $palette) {
+  $color: theming.get-color-from-palette(map.get($config, $palette));
+  @include mdc-circular-progress-theme.theme((active-indicator-color: $color));
+}
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $primary: map.get($config, primary);
-  $accent: map.get($config, accent);
-  $warn: map.get($config, warn);
+  @include mdc-helpers.using-mdc-theme($config) {
+    .mat-mdc-progress-spinner {
+      @include _palette-styles($config, primary);
 
-  .mat-progress-spinner, .mat-spinner {
-    circle {
-      stroke: theming.get-color-from-palette($primary);
-    }
+      &.mat-accent {
+        @include _palette-styles($config, accent);
+      }
 
-    &.mat-accent circle {
-      stroke: theming.get-color-from-palette($accent);
-    }
-
-    &.mat-warn circle {
-      stroke: theming.get-color-from-palette($warn);
+      &.mat-warn {
+        @include _palette-styles($config, warn);
+      }
     }
   }
 }
 
 @mixin typography($config-or-theme) {}
 
-@mixin _density($config-or-theme) {}
+@mixin density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -37,7 +41,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _density($density);
+      @include density($density);
     }
     @if $typography != null {
       @include typography($typography);

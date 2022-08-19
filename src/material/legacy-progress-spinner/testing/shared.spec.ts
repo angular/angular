@@ -2,13 +2,13 @@ import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatProgressSpinnerHarness} from './progress-spinner-harness';
+import {MatLegacyProgressSpinnerModule} from '@angular/material/legacy-progress-spinner';
+import {MatLegacyProgressSpinnerHarness} from './progress-spinner-harness';
 
 /** Runs the shared unit tests for the progress spinner test harness. */
 export function runHarnessTests(
-  progressSpinnerModule: typeof MatProgressSpinnerModule,
-  progressSpinnerHarness: typeof MatProgressSpinnerHarness,
+  progressSpinnerModule: typeof MatLegacyProgressSpinnerModule,
+  progressSpinnerHarness: typeof MatLegacyProgressSpinnerHarness,
 ) {
   let fixture: ComponentFixture<ProgressSpinnerHarnessTest>;
   let loader: HarnessLoader;

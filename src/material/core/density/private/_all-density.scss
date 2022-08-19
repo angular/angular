@@ -11,6 +11,7 @@
 @use '../../../button-toggle/button-toggle-theme';
 @use '../../../card/card-theme';
 @use '../../../progress-bar/progress-bar-theme';
+@use '../../../progress-spinner/progress-spinner-theme';
 @use '../../../tooltip/tooltip-theme';
 @use '../../../input/input-theme';
 @use '../../../autocomplete/autocomplete-theme';
@@ -56,6 +57,7 @@
   @include form-field-theme.density($config);
   @include card-theme.density($config);
   @include progress-bar-theme.density($config);
+  @include progress-spinner-theme.density($config);
   @include tooltip-theme.density($config);
   @include input-theme.density($config);
   @include option-theme.density($config);

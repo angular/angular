@@ -1,7 +1,6 @@
 @use '@angular/material' as mat;
 
 @use '../core-theme';
-@use '../../mdc-progress-spinner/progress-spinner-theme';
 
 @mixin all-mdc-component-themes($theme-or-color-config) {
   $dedupe-key: 'angular-material-mdc-theme';
@@ -19,7 +18,7 @@
     @include mat.menu-theme($theme-or-color-config);
     @include mat.paginator-theme($theme-or-color-config);
     @include mat.progress-bar-theme($theme-or-color-config);
-    @include progress-spinner-theme.theme($theme-or-color-config);
+    @include mat.progress-spinner-theme($theme-or-color-config);
     @include mat.radio-theme($theme-or-color-config);
     @include mat.select-theme($theme-or-color-config);
     @include mat.slide-toggle-theme($theme-or-color-config);

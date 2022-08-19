@@ -16,38 +16,41 @@ ng_module(
     name = "progress-spinner",
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["**/*.spec.ts"],
+        exclude = [
+            "**/*.spec.ts",
+        ],
     ),
-    assets = [":progress-spinner.css"] + glob(["**/*.html"]),
+    assets = [":progress_spinner_scss"] + glob(["**/*.html"]),
     deps = [
-        "//src/cdk/coercion",
         "//src/cdk/platform",
-        "//src/cdk/scrolling",
         "//src/material/core",
-        "@npm//@angular/animations",
+        "//src/material/legacy-progress-spinner",
         "@npm//@angular/common",
         "@npm//@angular/core",
-        "@npm//@angular/platform-browser",
     ],
 )
 
 sass_library(
     name = "progress_spinner_scss_lib",
     srcs = glob(["**/_*.scss"]),
-    deps = ["//src/material/core:core_scss_lib"],
+    deps = [
+        "//:mdc_sass_lib",
+        "//src/material/core:core_scss_lib",
+    ],
 )
 
 sass_binary(
     name = "progress_spinner_scss",
     src = "progress-spinner.scss",
     deps = [
-        "//src/cdk:sass_lib",
+        "//:mdc_sass_lib",
+        "//src/material:sass_lib",
         "//src/material/core:core_scss_lib",
     ],
 )
 
 ng_test_library(
-    name = "unit_test_sources",
+    name = "progress_spinner_tests_lib",
     srcs = glob(
         ["**/*.spec.ts"],
         exclude = ["**/*.e2e.spec.ts"],
@@ -55,6 +58,7 @@ ng_test_library(
     deps = [
         ":progress-spinner",
         "//src/cdk/platform",
+        "//src/material/legacy-progress-spinner",
         "@npm//@angular/common",
         "@npm//@angular/platform-browser",
     ],
@@ -62,7 +66,9 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    deps = [":unit_test_sources"],
+    deps = [
+        ":progress_spinner_tests_lib",
+    ],
 )
 
 ng_e2e_test_library(

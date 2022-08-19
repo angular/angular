@@ -7,30 +7,25 @@
  */
 
 import {coerceNumberProperty} from '@angular/cdk/coercion';
-import {
-  ComponentHarness,
-  ComponentHarnessConstructor,
-  HarnessPredicate,
-} from '@angular/cdk/testing';
+import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
 import {LegacyProgressSpinnerMode} from '@angular/material/legacy-progress-spinner';
-import {LegacyProgressSpinnerHarnessFilters} from '@angular/material/legacy-progress-spinner/testing';
+import {LegacyProgressSpinnerHarnessFilters} from './progress-spinner-harness-filters';
 
-/** Harness for interacting with a MDC based mat-progress-spinner in tests. */
-export class MatProgressSpinnerHarness extends ComponentHarness {
-  /** The selector for the host element of a `MatProgressSpinner` instance. */
-  static hostSelector = '.mat-mdc-progress-spinner';
+/** Harness for interacting with a standard mat-progress-spinner in tests. */
+export class MatLegacyProgressSpinnerHarness extends ComponentHarness {
+  /** The selector for the host element of a Progress Spinner instance. */
+  static hostSelector = '.mat-progress-spinner';
 
   /**
-   * Gets a `HarnessPredicate` that can be used to search for a progress spinnner with specific
-   * attributes.
+   * Gets a `HarnessPredicate` that can be used to search for a `MatProgressSpinnerHarness` that
+   * meets certain criteria.
    * @param options Options for filtering which progress spinner instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with<T extends MatProgressSpinnerHarness>(
-    this: ComponentHarnessConstructor<T>,
+  static with(
     options: LegacyProgressSpinnerHarnessFilters = {},
-  ): HarnessPredicate<T> {
-    return new HarnessPredicate(this, options);
+  ): HarnessPredicate<MatLegacyProgressSpinnerHarness> {
+    return new HarnessPredicate(MatLegacyProgressSpinnerHarness, options);
   }
 
   /** Gets the progress spinner's value. */

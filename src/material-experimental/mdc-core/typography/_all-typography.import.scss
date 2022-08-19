@@ -1,7 +1,6 @@
 @forward '../../../material/core/theming/theming.import';
 @forward '../../../material/core/core.import';
 @forward '../core-theme.import';
-@forward '../../mdc-progress-spinner/progress-spinner-theme' as mat-mdc-progress-spinner-*;
 @forward '../theming/all-theme';
 @forward 'all-typography' hide define-mdc-typography-config, all-mdc-component-typographies;
 @forward 'all-typography' as mat-mdc-typography-* hide

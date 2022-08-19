@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
-import {MatProgressSpinnerModule} from '@angular/material-experimental/mdc-progress-spinner';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';

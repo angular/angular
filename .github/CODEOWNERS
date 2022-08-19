@@ -22,7 +22,7 @@
 /src/material/prebuilt-themes/**                   @andrewseguin
 /src/material/legacy-prebuilt-themes/**            @andrewseguin
 /src/material/legacy-progress-bar/**                      @andrewseguin @crisbeto
-/src/material/progress-spinner/**                  @andrewseguin @crisbeto
+/src/material/legacy-progress-spinner/**                  @andrewseguin @crisbeto
 /src/material/legacy-radio/**                      @andrewseguin @devversion
 /src/material/schematics/**                        @devversion @andrewseguin
 /src/material/legacy-select/**                     @crisbeto
@@ -123,7 +123,7 @@
 /src/material/menu/**                                  @crisbeto
 /src/material/select/**                                @crisbeto
 /src/material/paginator/**                             @crisbeto
-/src/material-experimental/mdc-progress-spinner/**     @andrewseguin
+/src/material/progress-spinner/**     @andrewseguin
 /src/material/progress-bar/**         @andrewseguin
 /src/material/radio/**                                 @mmalerba
 /src/material/snack-bar/**            @andrewseguin
@@ -337,7 +337,7 @@
 /tools/public_api_guard/material/menu**            @crisbeto
 /tools/public_api_guard/material/legacy-paginator**       @andrewseguin
 /tools/public_api_guard/material/legacy-progress-bar**    @andrewseguin @crisbeto
-/tools/public_api_guard/material/progress-spinner**@andrewseguin @crisbeto
+/tools/public_api_guard/material/legacy-progress-spinner**@andrewseguin @crisbeto
 /tools/public_api_guard/material/radio**           @andrewseguin @devversion
 /tools/public_api_guard/material/legacy-radio**    @andrewseguin @devversion
 /tools/public_api_guard/material/legacy-select**   @crisbeto
