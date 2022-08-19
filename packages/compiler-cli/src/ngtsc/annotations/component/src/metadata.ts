@@ -75,6 +75,9 @@ export interface ComponentAnalysisData {
 
   /** Additional directives applied to the component host. */
   hostDirectives: HostDirectiveMeta[]|null;
+
+  /** Raw expression that defined the host directives array. Used for diagnostics. */
+  rawHostDirectives: ts.Expression|null;
 }
 
 export type ComponentResolutionData =

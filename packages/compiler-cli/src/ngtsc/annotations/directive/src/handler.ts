@@ -17,7 +17,7 @@ import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost} from '../../../reflection';
 import {LocalModuleScopeRegistry} from '../../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../../transform';
-import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getHostDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata} from '../../common';
+import {compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata, validateHostDirectives} from '../../common';
 
 import {extractDirectiveMetadata} from './shared';
 import {DirectiveSymbol} from './symbol';
@@ -43,6 +43,7 @@ export interface DirectiveHandlerData {
   isStructural: boolean;
   decorator: ts.Decorator|null;
   hostDirectives: HostDirectiveMeta[]|null;
+  rawHostDirectives: ts.Expression|null;
 }
 
 export class DirectiveDecoratorHandler implements
@@ -112,6 +113,7 @@ export class DirectiveDecoratorHandler implements
         outputs: directiveResult.outputs,
         meta: analysis,
         hostDirectives: directiveResult.hostDirectives,
+        rawHostDirectives: directiveResult.rawHostDirectives,
         classMetadata: extractClassMetadata(
             node, this.reflector, this.isCore, this.annotateForClosureCompiler),
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
@@ -183,8 +185,9 @@ export class DirectiveDecoratorHandler implements
       diagnostics.push(...directiveDiagnostics);
     }
 
-    const hostDirectivesDiagnotics = analysis.hostDirectives ?
-        getHostDirectiveDiagnostics(analysis.hostDirectives, this.metaReader) :
+    const hostDirectivesDiagnotics = analysis.hostDirectives && analysis.rawHostDirectives ?
+        validateHostDirectives(
+            analysis.rawHostDirectives, analysis.hostDirectives, this.metaReader) :
         null;
     if (hostDirectivesDiagnotics !== null) {
       diagnostics.push(...hostDirectivesDiagnotics);

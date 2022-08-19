@@ -820,7 +820,7 @@ function compileStyles(styles: string[], selector: string, hostSelector: string)
   });
 }
 
-function createHostDirectivesType(meta: R3DirectiveMetadata) {
+function createHostDirectivesType(meta: R3DirectiveMetadata): o.Type {
   if (!meta.hostDirectives?.length) {
     return o.NONE_TYPE;
   }

@@ -199,9 +199,6 @@ export interface HostDirectiveMeta {
   /** Reference to the host directive class. */
   directive: Reference<ClassDeclaration>;
 
-  /** Node in which the host directive was declared. Used for diagnostics. */
-  origin: ts.Node;
-
   /** Whether the reference to the host directive is a forward reference. */
   isForwardReference: boolean;
 

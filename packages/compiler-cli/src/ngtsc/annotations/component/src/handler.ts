@@ -26,7 +26,7 @@ import {TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/a
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
 import {getSourceFile} from '../../../util/src/typescript';
 import {Xi18nContext} from '../../../xi18n';
-import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getDirectiveDiagnostics, getHostDirectiveDiagnostics, getProviderDiagnostics, isExpressionForwardReference, readBaseClass, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, wrapFunctionExpressionsInParens,} from '../../common';
+import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, compileResults, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getDirectiveDiagnostics, getProviderDiagnostics, isExpressionForwardReference, readBaseClass, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, validateHostDirectives, wrapFunctionExpressionsInParens,} from '../../common';
 import {extractDirectiveMetadata, parseFieldArrayValue} from '../../directive';
 import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
 
@@ -200,7 +200,8 @@ export class ComponentDecoratorHandler implements
     }
 
     // Next, read the `@Component`-specific fields.
-    const {decorator: component, metadata, inputs, outputs, hostDirectives} = directiveResult;
+    const {decorator: component, metadata, inputs, outputs, hostDirectives, rawHostDirectives} =
+        directiveResult;
     const encapsulation: number =
         resolveEnumValue(this.evaluator, component, 'encapsulation', 'ViewEncapsulation') ??
         ViewEncapsulation.Emulated;
@@ -411,6 +412,7 @@ export class ComponentDecoratorHandler implements
         inputs,
         outputs,
         hostDirectives,
+        rawHostDirectives,
         meta: {
           ...metadata,
           template: {
@@ -851,8 +853,9 @@ export class ComponentDecoratorHandler implements
       diagnostics.push(...directiveDiagnostics);
     }
 
-    const hostDirectivesDiagnotics = analysis.hostDirectives ?
-        getHostDirectiveDiagnostics(analysis.hostDirectives, this.metaReader) :
+    const hostDirectivesDiagnotics = analysis.hostDirectives && analysis.rawHostDirectives ?
+        validateHostDirectives(
+            analysis.rawHostDirectives, analysis.hostDirectives, this.metaReader) :
         null;
     if (hostDirectivesDiagnotics !== null) {
       diagnostics.push(...hostDirectivesDiagnotics);

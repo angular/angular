@@ -123,7 +123,7 @@ export class Reference<T extends ts.Node = ts.Node> {
    * extracted from some larger expression, as it can be used to pinpoint the `ts.Identifier` within
    * the expression from which the `Reference` originated.
    */
-  getIdentityInNode(expr: ts.Node): ts.Identifier|null {
+  getIdentityInExpression(expr: ts.Expression): ts.Identifier|null {
     const sf = expr.getSourceFile();
     return this.identifiers.find(id => {
       if (id.getSourceFile() !== sf) {
@@ -153,8 +153,9 @@ export class Reference<T extends ts.Node = ts.Node> {
    * If no specific node can be found, then the `fallback` expression is used, which defaults to the
    * entire containing expression.
    */
-  getOriginForDiagnostics(container: ts.Node, fallback: ts.Node = container): ts.Node {
-    const id = this.getIdentityInNode(container);
+  getOriginForDiagnostics(container: ts.Expression, fallback: ts.Expression = container):
+      ts.Expression {
+    const id = this.getIdentityInExpression(container);
     return id !== null ? id : fallback;
   }
 

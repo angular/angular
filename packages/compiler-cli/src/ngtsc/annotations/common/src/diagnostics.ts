@@ -151,8 +151,8 @@ export function getDirectiveDiagnostics(
   return diagnostics;
 }
 
-export function getHostDirectiveDiagnostics(
-    hostDirectives: HostDirectiveMeta[], metaReader: MetadataReader) {
+export function validateHostDirectives(
+    origin: ts.Expression, hostDirectives: HostDirectiveMeta[], metaReader: MetadataReader) {
   const diagnostics: ts.DiagnosticWithLocation[] = [];
 
   for (const current of hostDirectives) {
@@ -160,23 +160,23 @@ export function getHostDirectiveDiagnostics(
 
     if (hostMeta === null) {
       diagnostics.push(makeDiagnostic(
-          ErrorCode.UNRESOLVED_HOST_DIRECTIVE,
-          current.directive.getOriginForDiagnostics(current.origin),
-          `Could not resolve host directive metadata of ${current.directive.debugName}`));
+          ErrorCode.HOST_DIRECTIVE_INVALID, current.directive.getOriginForDiagnostics(origin),
+          `${
+              current.directive
+                  .debugName} must be a standalone directive to be used as a host directive`));
       continue;
     }
 
     if (!hostMeta.isStandalone) {
       diagnostics.push(makeDiagnostic(
           ErrorCode.HOST_DIRECTIVE_NOT_STANDALONE,
-          current.directive.getOriginForDiagnostics(current.origin),
+          current.directive.getOriginForDiagnostics(origin),
           `Host directive ${hostMeta.name} must be standalone`));
     }
 
     if (hostMeta.isComponent) {
       diagnostics.push(makeDiagnostic(
-          ErrorCode.HOST_DIRECTIVE_COMPONENT,
-          current.directive.getOriginForDiagnostics(current.origin),
+          ErrorCode.HOST_DIRECTIVE_COMPONENT, current.directive.getOriginForDiagnostics(origin),
           `Host directive ${hostMeta.name} cannot be a component`));
     }
   }

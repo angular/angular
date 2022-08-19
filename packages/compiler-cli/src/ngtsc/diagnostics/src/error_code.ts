@@ -74,7 +74,7 @@ export enum ErrorCode {
   /**
    * Raised when the compiler wasn't able to resolve the metadata of a host directive.
    */
-  UNRESOLVED_HOST_DIRECTIVE = 2013,
+  HOST_DIRECTIVE_INVALID = 2013,
 
   /**
    * Raised when a host directive isn't standalone.

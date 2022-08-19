@@ -27,22 +27,28 @@ export function extractReferencesFromType(
     if (!ts.isTypeQueryNode(element)) {
       throw new Error(`Expected TypeQueryNode: ${nodeDebugInfo(element)}`);
     }
-    const type = element.exprName;
-    const {node, from} = reflectTypeEntityToDeclaration(type, checker);
-    if (!isNamedClassDeclaration(node)) {
-      throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
-    }
-    if (from !== null && !from.startsWith('.')) {
-      // The symbol was imported using an absolute module specifier so return a reference that
-      // uses that absolute module specifier as its best guess owning module.
-      return new Reference(
-          node, {specifier: from, resolutionContext: def.getSourceFile().fileName});
-    } else {
-      // For local symbols or symbols that were imported using a relative module import it is
-      // assumed that the symbol is exported from the provided best guess owning module.
-      return new Reference(node, bestGuessOwningModule);
-    }
+
+    return extraReferenceFromTypeQuery(checker, element, def, bestGuessOwningModule);
   });
+}
+
+export function extraReferenceFromTypeQuery(
+    checker: ts.TypeChecker, typeNode: ts.TypeQueryNode, origin: ts.TypeNode,
+    bestGuessOwningModule: OwningModule|null) {
+  const type = typeNode.exprName;
+  const {node, from} = reflectTypeEntityToDeclaration(type, checker);
+  if (!isNamedClassDeclaration(node)) {
+    throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
+  }
+  if (from !== null && !from.startsWith('.')) {
+    // The symbol was imported using an absolute module specifier so return a reference that
+    // uses that absolute module specifier as its best guess owning module.
+    return new Reference(
+        node, {specifier: from, resolutionContext: origin.getSourceFile().fileName});
+  }
+  // For local symbols or symbols that were imported using a relative module import it is
+  // assumed that the symbol is exported from the provided best guess owning module.
+  return new Reference(node, bestGuessOwningModule);
 }
 
 export function readBooleanType(type: ts.TypeNode): boolean|null {

@@ -12,7 +12,7 @@ import {BindingPropertyName, ClassPropertyMapping, ClassPropertyName} from '../s
 
 import {flattenInheritedDirectiveMetadata} from './inheritance';
 
-const EMPTY_ARRAY: any[] = [];
+const EMPTY_ARRAY: ReadonlyArray<any> = [];
 
 /** Resolves the host directives of a directive to a flat array of matches. */
 export class HostDirectivesResolver {
@@ -43,9 +43,9 @@ export class HostDirectivesResolver {
     for (const current of directives) {
       const hostMeta = flattenInheritedDirectiveMetadata(this.metaReader, current.directive);
 
-      // This case is already have been validated for, but we keep the assertion here so that the
-      // user gets a better error message than "Cannot read property foo of null" in case something
-      // slipped through.
+      // This case has been checked for already, but we keep the assertion here so that the
+      // user gets a better error message than "Cannot read property foo of null" in case
+      // something slipped through.
       if (hostMeta === null) {
         throw new Error(
             `Could not resolve host directive metadata of ${current.directive.debugName}`);

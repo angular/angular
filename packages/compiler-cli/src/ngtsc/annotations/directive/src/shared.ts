@@ -40,7 +40,7 @@ export function extractDirectiveMetadata(
   inputs: ClassPropertyMapping,
   outputs: ClassPropertyMapping,
   isStructural: boolean;
-  hostDirectives: HostDirectiveMeta[] | null
+  hostDirectives: HostDirectiveMeta[] | null, rawHostDirectives: ts.Expression | null,
 }|undefined {
   let directive: Map<string, ts.Expression>;
   if (decorator === null || decorator.args === null || decorator.args.length === 0) {
@@ -187,9 +187,9 @@ export function extractDirectiveMetadata(
   const internalType = new WrappedNodeExpr(reflector.getInternalNameOfClass(clazz));
   const inputs = ClassPropertyMapping.fromMappedObject({...inputsFromMeta, ...inputsFromFields});
   const outputs = ClassPropertyMapping.fromMappedObject({...outputsFromMeta, ...outputsFromFields});
-  const hostDirectives = directive.has('hostDirectives') ?
-      extractHostDirectives(directive.get('hostDirectives')!, evaluator) :
-      null;
+  const rawHostDirectives = directive.get('hostDirectives') || null;
+  const hostDirectives =
+      rawHostDirectives === null ? null : extractHostDirectives(rawHostDirectives, evaluator);
 
   const metadata: R3DirectiveMetadata = {
     name: clazz.name.text,
@@ -223,6 +223,7 @@ export function extractDirectiveMetadata(
     outputs,
     isStructural,
     hostDirectives,
+    rawHostDirectives,
   };
 }
 
@@ -629,14 +630,14 @@ function evaluateHostExpressionBindings(
 
 /**
  * Extracts and prepares the host directives metadata from an array literal expression.
- * @param hostDirectivesExpression Expression that defined the `hostDirectives`.
+ * @param rawHostDirectives Expression that defined the `hostDirectives`.
  */
 function extractHostDirectives(
-    hostDirectivesExpression: ts.Expression, evaluator: PartialEvaluator): HostDirectiveMeta[] {
-  const resolved = evaluator.evaluate(hostDirectivesExpression, forwardRefResolver);
+    rawHostDirectives: ts.Expression, evaluator: PartialEvaluator): HostDirectiveMeta[] {
+  const resolved = evaluator.evaluate(rawHostDirectives, forwardRefResolver);
   if (!Array.isArray(resolved)) {
     throw createValueHasWrongTypeError(
-        hostDirectivesExpression, resolved, 'hostDirectives must be an array');
+        rawHostDirectives, resolved, 'hostDirectives must be an array');
   }
 
   return resolved.map(value => {
@@ -644,22 +645,19 @@ function extractHostDirectives(
 
     if (!(hostReference instanceof Reference)) {
       throw createValueHasWrongTypeError(
-          hostDirectivesExpression, hostReference, 'Host directive must be a reference');
+          rawHostDirectives, hostReference, 'Host directive must be a reference');
     }
 
     if (!isNamedClassDeclaration(hostReference.node)) {
       throw createValueHasWrongTypeError(
-          hostDirectivesExpression, hostReference, 'Host directive reference must be a class');
+          rawHostDirectives, hostReference, 'Host directive reference must be a class');
     }
 
     const meta: HostDirectiveMeta = {
       directive: hostReference as Reference<ClassDeclaration>,
       isForwardReference: hostReference.synthetic,
-      origin: hostDirectivesExpression,
-      inputs:
-          parseHostDirectivesMapping('inputs', value, hostReference.node, hostDirectivesExpression),
-      outputs: parseHostDirectivesMapping(
-          'outputs', value, hostReference.node, hostDirectivesExpression),
+      inputs: parseHostDirectivesMapping('inputs', value, hostReference.node, rawHostDirectives),
+      outputs: parseHostDirectivesMapping('outputs', value, hostReference.node, rawHostDirectives),
     };
 
     return meta;

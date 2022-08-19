@@ -8,12 +8,13 @@
 
 import ts from 'typescript';
 
-import {Reference} from '../../imports';
+import {OwningModule, Reference} from '../../imports';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
+import {nodeDebugInfo} from '../../util/src/typescript';
 
 import {DirectiveMeta, HostDirectiveMeta, MatchSource, MetadataReader, MetaKind, NgModuleMeta, PipeMeta} from './api';
 import {ClassPropertyMapping} from './property_mapping';
-import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readBooleanType, readMapType, readStringArrayType, readStringType} from './util';
+import {extractDirectiveTypeCheckMeta, extractReferencesFromType, extraReferenceFromTypeQuery, readBooleanType, readMapType, readStringArrayType, readStringType} from './util';
 
 /**
  * A `MetadataReader` that can read metadata from `.d.ts` files, which have static Ivy properties
@@ -100,7 +101,7 @@ export class DtsMetadataReader implements MetadataReader {
     const outputs = ClassPropertyMapping.fromMappedObject(
         readMapType(def.type.typeArguments[4], readStringType));
     const hostDirectives = def.type.typeArguments.length > 8 ?
-        readHostDirectivesType(def.type.typeArguments[8], this.checker) :
+        readHostDirectivesType(this.checker, def.type.typeArguments[8], ref.bestGuessOwningModule) :
         null;
 
     return {
@@ -197,31 +198,31 @@ function readBaseClass(clazz: ClassDeclaration, checker: ts.TypeChecker, reflect
 }
 
 
-function readHostDirectivesType(type: ts.TypeNode, checker: ts.TypeChecker): HostDirectiveMeta[]|
-    null {
+function readHostDirectivesType(
+    checker: ts.TypeChecker, type: ts.TypeNode,
+    bestGuessOwningModule: OwningModule|null): HostDirectiveMeta[]|null {
   if (!ts.isTupleTypeNode(type) || type.elements.length === 0) {
     return null;
   }
 
   const result: HostDirectiveMeta[] = [];
 
-  for (const hostDirType of type.elements) {
-    const def = readMapType(hostDirType, type => type);
+  for (const hostDirectiveType of type.elements) {
+    const {directive, inputs, outputs} = readMapType(hostDirectiveType, type => type);
 
-    if (def.directive && ts.isTypeQueryNode(def.directive)) {
-      const symbol = checker.getSymbolAtLocation(def.directive.exprName);
-
-      if (symbol && symbol.valueDeclaration && isNamedClassDeclaration(symbol.valueDeclaration)) {
-        result.push({
-          directive: new Reference(symbol.valueDeclaration),
-          origin: type,
-          isForwardReference: false,
-          inputs: readMapType(def.inputs, readStringType),
-          outputs: readMapType(def.outputs, readStringType)
-        });
+    if (directive) {
+      if (!ts.isTypeQueryNode(directive)) {
+        throw new Error(`Expected TypeQueryNode: ${nodeDebugInfo(directive)}`);
       }
+
+      result.push({
+        directive: extraReferenceFromTypeQuery(checker, directive, type, bestGuessOwningModule),
+        isForwardReference: false,
+        inputs: readMapType(inputs, readStringType),
+        outputs: readMapType(outputs, readStringType)
+      });
     }
   }
 
-  return result.length ? result : null;
+  return result.length > 0 ? result : null;
 }
