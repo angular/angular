@@ -7,28 +7,30 @@
  */
 
 import {Component} from '@angular/core';
+import {MatLegacyPaginatorModule, PageEvent} from '@angular/material/legacy-paginator';
 import {CommonModule} from '@angular/common';
-import {MatPaginatorModule, PageEvent} from '@angular/material/paginator';
 import {FormsModule} from '@angular/forms';
-import {MatCardModule} from '@angular/material/card';
-import {MatInputModule} from '@angular/material/input';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatLegacyCardModule} from '@angular/material/legacy-card';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
+import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle';
 
 @Component({
-  selector: 'mdc-paginator-demo',
-  templateUrl: 'mdc-paginator-demo.html',
-  styleUrls: ['mdc-paginator-demo.css'],
+  selector: 'paginator-demo',
+  templateUrl: 'paginator-demo.html',
+  styleUrls: ['paginator-demo.css'],
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-    MatCardModule,
-    MatInputModule,
-    MatPaginatorModule,
-    MatSlideToggleModule,
+    MatLegacyCardModule,
+    MatLegacyFormFieldModule,
+    MatLegacyInputModule,
+    MatLegacyPaginatorModule,
+    MatLegacySlideToggleModule,
   ],
 })
-export class MdcPaginatorDemo {
+export class LegacyPaginatorDemo {
   length = 50;
   pageSize = 10;
   pageIndex = 0;

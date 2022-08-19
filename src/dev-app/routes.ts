@@ -184,8 +184,9 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./mdc-menu/mdc-menu-demo').then(m => m.MdcMenuDemo),
   },
   {
-    path: 'mdc-paginator',
-    loadComponent: () => import('./mdc-paginator/mdc-paginator-demo').then(m => m.MdcPaginatorDemo),
+    path: 'legacy-paginator',
+    loadComponent: () =>
+      import('./legacy-paginator/paginator-demo').then(m => m.LegacyPaginatorDemo),
   },
   {
     path: 'mdc-progress-spinner',

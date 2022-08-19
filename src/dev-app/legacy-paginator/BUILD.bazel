@@ -3,19 +3,18 @@ load("//tools:defaults.bzl", "ng_module", "sass_binary")
 package(default_visibility = ["//visibility:public"])
 
 ng_module(
-    name = "paginator",
+    name = "legacy-paginator",
     srcs = glob(["**/*.ts"]),
     assets = [
         "paginator-demo.html",
         ":paginator_demo_scss",
     ],
     deps = [
-        "//src/components-examples/material/paginator",
-        "//src/material/card",
-        "//src/material/form-field",
-        "//src/material/input",
-        "//src/material/paginator",
-        "//src/material/slide-toggle",
+        "//src/material/legacy-card",
+        "//src/material/legacy-form-field",
+        "//src/material/legacy-input",
+        "//src/material/legacy-paginator",
+        "//src/material/legacy-slide-toggle",
         "@npm//@angular/forms",
     ],
 )

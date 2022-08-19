@@ -196,7 +196,7 @@
 /src/dev-app/mdc-input/**                              @devversion @mmalerba
 /src/dev-app/mdc-list/**                               @mmalerba
 /src/dev-app/mdc-menu/**                               @crisbeto
-/src/dev-app/mdc-paginator/**                          @crisbeto
+/src/dev-app/legacy-paginator/**                       @crisbeto
 /src/dev-app/mdc-progress-bar/**                       @crisbeto
 /src/dev-app/mdc-progress-spinner/**                   @mmalerba
 /src/dev-app/mdc-radio/**                              @mmalerba

@@ -3,7 +3,7 @@ load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite"
 package(default_visibility = ["//visibility:public"])
 
 ng_module(
-    name = "paginator",
+    name = "legacy-paginator",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
@@ -16,12 +16,9 @@ ng_module(
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
         "//src/components-examples/private:localize_types",
-        "//src/material/card",
-        "//src/material/form-field",
-        "//src/material/input",
-        "//src/material/paginator",
-        "//src/material/paginator/testing",
-        "//src/material/slide-toggle",
+        "//src/material/legacy-input",
+        "//src/material/legacy-paginator",
+        "//src/material/legacy-paginator/testing",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
         "@npm//@angular/platform-browser-dynamic",
@@ -42,11 +39,11 @@ ng_test_library(
     name = "unit_tests_lib",
     srcs = glob(["**/*.spec.ts"]),
     deps = [
-        ":paginator",
+        ":legacy-paginator",
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
-        "//src/material/paginator",
-        "//src/material/paginator/testing",
+        "//src/material/legacy-paginator",
+        "//src/material/legacy-paginator/testing",
         "@npm//@angular/platform-browser",
         "@npm//@angular/platform-browser-dynamic",
     ],

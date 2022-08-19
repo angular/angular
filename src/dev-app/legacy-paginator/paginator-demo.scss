@@ -1,7 +1,6 @@
 .demo-section {
-  max-width: 600px;
+  max-width: 500px;
   margin-bottom: 24px;
-  padding: 16px;
   background: #efefef !important;
 
   & > * {
@@ -13,8 +12,4 @@
   display: flex;
   flex-direction: column;
   max-width: 300px;
-
-  .mat-mdc-slide-toggle {
-    margin-bottom: 8px;
-  }
 }

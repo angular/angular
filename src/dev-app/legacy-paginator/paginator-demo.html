@@ -6,18 +6,15 @@
 <mat-card class="demo-section">
   <div class="demo-options">
     <mat-form-field>
-      <mat-label>Length</mat-label>
-      <input matInput type="number" [(ngModel)]="length">
+      <input matInput placeholder="Length" type="number" [(ngModel)]="length">
     </mat-form-field>
 
     <mat-form-field>
-      <mat-label>Page Size</mat-label>
-      <input matInput type="number" [(ngModel)]="pageSize">
+      <input matInput placeholder="Page Size" type="number" [(ngModel)]="pageSize">
     </mat-form-field>
 
     <mat-form-field>
-      <mat-label>Page Index</mat-label>
-      <input matInput type="number" [(ngModel)]="pageIndex">
+      <input matInput placeholder="Page Index" type="number" [(ngModel)]="pageIndex">
     </mat-form-field>
 
     <mat-slide-toggle [(ngModel)]="hidePageSize">Hide page size</mat-slide-toggle>
