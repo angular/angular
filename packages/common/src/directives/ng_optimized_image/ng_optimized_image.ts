@@ -32,9 +32,9 @@ const VALID_WIDTH_DESCRIPTOR_SRCSET = /^((\s*\d+w\s*(,|$)){1,})$/;
 
 /**
  * RegExpr to determine whether a src in a srcset is using density descriptors.
- * Should match something like: "1x, 2x".
+ * Should match something like: "1x, 2x". Also supports decimals like "1.5x".
  */
-const VALID_DENSITY_DESCRIPTOR_SRCSET = /^((\s*\d(\.\d)?x\s*(,|$)){1,})$/;
+const VALID_DENSITY_DESCRIPTOR_SRCSET = /^((\s*\d(\.\d+)?x\s*(,|$)){1,})$/;
 
 /**
  * Srcset values with a density descriptor higher than this value will actively
