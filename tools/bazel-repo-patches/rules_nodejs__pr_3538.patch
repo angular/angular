@@ -1,0 +1,44 @@
+diff --git internal/npm_install/index.js internal/npm_install/index.js
+index 4bd9fda7e..706e95713 100644
+--- internal/npm_install/index.js
++++ internal/npm_install/index.js
+@@ -23,6 +23,7 @@ let config = {
+     strict_visibility: true,
+     workspace_rerooted_path: '',
+     workspace: '',
++    all_node_modules_target_name: 'node_modules',
+ };
+ function generateBuildFileHeader(visibility = PUBLIC_VISIBILITY) {
+     return `# Generated file from ${config.rule_type} rule.
+@@ -208,7 +209,7 @@ ${exportsStarlark}])
+ # there are many files in target.
+ # See https://github.com/bazelbuild/bazel/issues/5153.
+ js_library(
+-    name = "node_modules",
++    name = "${config.all_node_modules_target_name}",
+     package_name = "${LEGACY_NODE_MODULES_PACKAGE_NAME}",
+     package_path = "${config.package_path}",${pkgFilesStarlark}${depsStarlark}
+ )
+diff --git internal/npm_install/npm_install.bzl internal/npm_install/npm_install.bzl
+index 5f268165c..5a1060e0a 100644
+--- internal/npm_install/npm_install.bzl
++++ internal/npm_install/npm_install.bzl
+@@ -359,6 +359,10 @@ Using managed_directories will mean that
+         default = 3600,
+         doc = """Maximum duration of the package manager execution in seconds.""",
+     ),
++    "all_node_modules_target_name": attr.string(
++        default = "node_modules",
++        doc = """The target name of the node_modules directory in one catch-all js_library target.""",
++    ),
+     "generate_build_files_concurrency_limit": attr.int(
+         default = 64,
+         doc = """Limit the maximum concurrency of npm package processing when generating
+@@ -486,6 +490,7 @@ def _create_build_files(repository_ctx, rule_type, node, lock_file, generate_loc
+             workspace = repository_ctx.attr.name,
+             workspace_rerooted_package_json_dir = paths.normalize(paths.join(_WORKSPACE_REROOTED_PATH, package_json_dir)),
+             workspace_rerooted_path = _WORKSPACE_REROOTED_PATH,
++            all_node_modules_target_name = repository_ctx.attr.all_node_modules_target_name,
+         ),
+     )
+     repository_ctx.file("generate_config.json", generate_config_json)
