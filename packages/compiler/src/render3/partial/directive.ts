@@ -7,9 +7,9 @@
  */
 import * as o from '../../output/output_ast';
 import {Identifiers as R3} from '../r3_identifiers';
-import {convertFromMaybeForwardRefExpression, R3CompiledExpression} from '../util';
+import {convertFromMaybeForwardRefExpression, generateForwardRef, R3CompiledExpression} from '../util';
 import {R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from '../view/api';
-import {createDirectiveType, createHostDirectivesArg} from '../view/compiler';
+import {createDirectiveType, createHostDirectivesMappingArray} from '../view/compiler';
 import {asLiteral, conditionallyCreateMapObjectLiteral, DefinitionMap} from '../view/util';
 
 import {R3DeclareDirectiveMetadata, R3DeclareQueryMetadata} from './api';
@@ -88,7 +88,7 @@ export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata):
   }
 
   if (meta.hostDirectives?.length) {
-    definitionMap.set('hostDirectives', createHostDirectivesArg(meta.hostDirectives));
+    definitionMap.set('hostDirectives', createHostDirectives(meta.hostDirectives));
   }
 
   definitionMap.set('ngImport', o.importExpr(R3.core));
@@ -149,4 +149,33 @@ function compileHostMetadata(meta: R3HostMetadata): o.LiteralMapExpr|null {
   } else {
     return null;
   }
+}
+
+function createHostDirectives(hostDirectives: NonNullable<R3DirectiveMetadata['hostDirectives']>):
+    o.LiteralArrayExpr {
+  const expressions = hostDirectives.map(current => {
+    const keys = [{
+      key: 'directive',
+      value: current.isForwardReference ? generateForwardRef(current.directive.type) :
+                                          current.directive.type,
+      quoted: false
+    }];
+    const inputsLiteral = current.inputs ? createHostDirectivesMappingArray(current.inputs) : null;
+    const outputsLiteral =
+        current.outputs ? createHostDirectivesMappingArray(current.outputs) : null;
+
+    if (inputsLiteral) {
+      keys.push({key: 'inputs', value: inputsLiteral, quoted: false});
+    }
+
+    if (outputsLiteral) {
+      keys.push({key: 'outputs', value: outputsLiteral, quoted: false});
+    }
+
+    return o.literalMap(keys);
+  });
+
+  // If there's a forward reference, we generate a `function() { return [{directive: HostDir}] }`,
+  // otherwise we can save some bytes by using a plain array, e.g. `[{directive: HostDir}]`.
+  return o.literalArr(expressions);
 }

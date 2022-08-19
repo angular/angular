@@ -117,7 +117,7 @@ function addFeatures(
     features.push(o.importExpr(R3.StandaloneFeature));
   }
   if (meta.hostDirectives?.length) {
-    features.push(o.importExpr(R3.HostDirectivesFeature).callFn([createHostDirectivesArg(
+    features.push(o.importExpr(R3.HostDirectivesFeature).callFn([createHostDirectivesFeatureArg(
         meta.hostDirectives)]));
   }
   if (features.length) {
@@ -832,7 +832,7 @@ function createHostDirectivesType(meta: R3DirectiveMetadata): o.Type {
   ]))));
 }
 
-export function createHostDirectivesArg(
+function createHostDirectivesFeatureArg(
     hostDirectives: NonNullable<R3DirectiveMetadata['hostDirectives']>) {
   const expressions: o.Expression[] = [];
   let hasForwardRef = false;
@@ -882,8 +882,8 @@ export function createHostDirectivesArg(
  * This conversion is necessary, because hosts bind to the public name of the host directive and
  * keeping the mapping in an object literal will break for apps using property renaming.
  */
-function createHostDirectivesMappingArray(mapping: Record<string, string>): o.LiteralArrayExpr|
-    null {
+export function createHostDirectivesMappingArray(mapping: Record<string, string>):
+    o.LiteralArrayExpr|null {
   const elements: o.LiteralExpr[] = [];
 
   for (const publicName in mapping) {
