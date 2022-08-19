@@ -111,6 +111,11 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   transform<T>(obj: null|undefined): null;
   transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined): T|null;
   transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined): T|null {
+    if (this._ref === null) {
+      // The pipe instance has been destroyed. Do not process more transformations.
+      return this._latestValue;
+    }
+
     if (!this._obj) {
       if (obj) {
         this._subscribe(obj);
