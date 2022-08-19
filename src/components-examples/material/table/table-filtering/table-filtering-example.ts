@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MatLegacyTableDataSource} from '@angular/material/legacy-table';
+import {MatTableDataSource} from '@angular/material/table';
 
 export interface PeriodicElement {
   name: string;
@@ -31,7 +31,7 @@ const ELEMENT_DATA: PeriodicElement[] = [
 })
 export class TableFilteringExample {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  dataSource = new MatLegacyTableDataSource(ELEMENT_DATA);
+  dataSource = new MatTableDataSource(ELEMENT_DATA);
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;

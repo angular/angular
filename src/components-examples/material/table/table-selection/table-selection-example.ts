@@ -1,6 +1,6 @@
 import {SelectionModel} from '@angular/cdk/collections';
 import {Component} from '@angular/core';
-import {MatLegacyTableDataSource} from '@angular/material/legacy-table';
+import {MatTableDataSource} from '@angular/material/table';
 
 export interface PeriodicElement {
   name: string;
@@ -32,7 +32,7 @@ const ELEMENT_DATA: PeriodicElement[] = [
 })
 export class TableSelectionExample {
   displayedColumns: string[] = ['select', 'position', 'name', 'weight', 'symbol'];
-  dataSource = new MatLegacyTableDataSource<PeriodicElement>(ELEMENT_DATA);
+  dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
   selection = new SelectionModel<PeriodicElement>(true, []);
 
   /** Whether the number of selected elements matches the total number of rows. */

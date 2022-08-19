@@ -7,10 +7,10 @@ table {
   width: 100%;
 }
 
-tr.mat-footer-row {
+tr.mat-mdc-footer-row {
   font-weight: bold;
 }
 
-.mat-table-sticky {
+.mat-mdc-table-sticky {
   border-top: 1px solid #e0e0e0;
 }

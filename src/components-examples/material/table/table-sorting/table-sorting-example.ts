@@ -1,7 +1,7 @@
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {MatSort, Sort} from '@angular/material/sort';
-import {MatLegacyTableDataSource} from '@angular/material/legacy-table';
+import {MatTableDataSource} from '@angular/material/table';
 
 export interface PeriodicElement {
   name: string;
@@ -9,7 +9,6 @@ export interface PeriodicElement {
   weight: number;
   symbol: string;
 }
-
 const ELEMENT_DATA: PeriodicElement[] = [
   {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
   {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
@@ -22,7 +21,6 @@ const ELEMENT_DATA: PeriodicElement[] = [
   {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
   {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
 ];
-
 /**
  * @title Table with sorting
  */
@@ -33,7 +31,7 @@ const ELEMENT_DATA: PeriodicElement[] = [
 })
 export class TableSortingExample implements AfterViewInit {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  dataSource = new MatLegacyTableDataSource(ELEMENT_DATA);
+  dataSource = new MatTableDataSource(ELEMENT_DATA);
 
   constructor(private _liveAnnouncer: LiveAnnouncer) {}
 

@@ -2,13 +2,13 @@
   width: 100%;
 }
 
-.mat-mdc-row .mat-mdc-cell {
+.mat-row .mat-cell {
   border-bottom: 1px solid transparent;
   border-top: 1px solid transparent;
   cursor: pointer;
 }
 
-.mat-mdc-row:hover .mat-mdc-cell {
+.mat-row:hover .mat-cell {
   border-color: currentColor;
 }
 

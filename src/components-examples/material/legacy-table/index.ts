@@ -9,7 +9,7 @@ import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatLegacyPaginatorModule} from '@angular/material/legacy-paginator';
 import {MatLegacyProgressSpinnerModule} from '@angular/material/legacy-progress-spinner';
 import {MatSortModule} from '@angular/material/sort';
-import {MatTableModule} from '@angular/material/table';
+import {MatLegacyTableModule} from '@angular/material/legacy-table';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {CdkTableModule} from '@angular/cdk/table';
 
@@ -43,7 +43,6 @@ import {TableRowBindingExample} from './table-row-binding/table-row-binding-exam
 import {TableDynamicArrayDataExample} from './table-dynamic-array-data/table-dynamic-array-data-example';
 import {TableDynamicObservableDataExample} from './table-dynamic-observable-data/table-dynamic-observable-data-example';
 import {TableGeneratedColumnsExample} from './table-generated-columns/table-generated-columns-example';
-import {TableFlexLargeRowExample} from './table-flex-large-row/table-flex-large-row-example';
 
 export {
   TableBasicExample,
@@ -54,7 +53,6 @@ export {
   TableExpandableRowsExample,
   TableFilteringExample,
   TableFlexBasicExample,
-  TableFlexLargeRowExample,
   TableFooterRowExample,
   TableGeneratedColumnsExample,
   TableHarnessExample,
@@ -89,7 +87,6 @@ const EXAMPLES = [
   TableExpandableRowsExample,
   TableFilteringExample,
   TableFlexBasicExample,
-  TableFlexLargeRowExample,
   TableFooterRowExample,
   TableGeneratedColumnsExample,
   TableHarnessExample,
@@ -127,7 +124,7 @@ const EXAMPLES = [
     MatLegacyProgressSpinnerModule,
     MatRippleModule,
     MatSortModule,
-    MatTableModule,
+    MatLegacyTableModule,
     CdkTableModule,
     DragDropModule,
   ],

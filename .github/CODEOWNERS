@@ -205,7 +205,7 @@
 /src/dev-app/mdc-snack-bar/**                          @andrewseguin
 /src/dev-app/mdc-slide-toggle/**                       @crisbeto
 /src/dev-app/mdc-slider/**                             @devversion
-/src/dev-app/mdc-table/**                              @andrewseguin
+/src/dev-app/legacy-table/**                           @andrewseguin
 /src/dev-app/mdc-tabs/**                               @crisbeto
 /src/dev-app/mdc-tooltip/**                            @crisbeto
 /src/dev-app/menu/**                                   @crisbeto

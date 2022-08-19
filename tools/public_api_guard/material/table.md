@@ -210,7 +210,11 @@ export interface MatTableDataSourcePageEvent {
 // @public
 export interface MatTableDataSourcePaginator {
     // (undocumented)
+    firstPage: () => void;
+    // (undocumented)
     initialized: Observable<void>;
+    // (undocumented)
+    lastPage: () => void;
     // (undocumented)
     length: number;
     // (undocumented)

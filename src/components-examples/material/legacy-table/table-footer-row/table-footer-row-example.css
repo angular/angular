@@ -2,6 +2,6 @@ table {
   width: 100%;
 }
 
-tr.mat-mdc-footer-row td {
+tr.mat-footer-row {
   font-weight: bold;
 }

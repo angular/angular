@@ -216,8 +216,8 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./mdc-slider/mdc-slider-demo').then(m => m.MdcSliderDemo),
   },
   {
-    path: 'mdc-table',
-    loadComponent: () => import('./mdc-table/mdc-table-demo').then(m => m.MdcTableDemo),
+    path: 'legacy-table',
+    loadComponent: () => import('./legacy-table/table-demo').then(m => m.TableDemo),
   },
   {
     path: 'mdc-tabs',

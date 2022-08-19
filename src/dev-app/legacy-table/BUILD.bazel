@@ -1,0 +1,14 @@
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "legacy-table",
+    srcs = glob(["**/*.ts"]),
+    assets = ["table-demo.html"],
+    deps = [
+        "//src/components-examples/cdk/table",
+        "//src/components-examples/material/legacy-table",
+        "//src/dev-app/example",
+    ],
+)
