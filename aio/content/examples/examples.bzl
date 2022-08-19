@@ -194,7 +194,7 @@ def docs_example(name, test = True, test_tags = []):
                 "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium",
                 "//aio/tools/examples:run-example-e2e",
                 # We install the whole node modules for runtime deps of e2e tests
-                "@{workspace}//:node_modules_with_bins".format(workspace = EXAMPLE_DEPS_WORKSPACE_NAME),
+                "@{workspace}//:node_modules_files".format(workspace = EXAMPLE_DEPS_WORKSPACE_NAME),
             ] + select({
                 "//aio:aio_local_deps": LOCAL_PACKAGE_DEPS,
                 "//conditions:default": [],
