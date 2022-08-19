@@ -28,7 +28,7 @@ describe('node console', () => {
       console.info('test');
       console.trace('test');
       try {
-        console.assert(false, 'test');
+        console.assert(true, 'test');
       } catch (error) {
       }
       console.dir('.');
