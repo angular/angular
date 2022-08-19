@@ -1,3 +1,24 @@
+<a name="14.1.3"></a>
+# 14.1.3 "rubber-chicken" (2022-08-19)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f661a9300e](https://github.com/angular/components/commit/f661a9300ec78a4914dbe29dbc4b9275ef2e3758) | fix | **dialog:** fall back to node injector token doesn't exist in template injector ([#25406](https://github.com/angular/components/pull/25406)) |
+| [b9f09aa741](https://github.com/angular/components/commit/b9f09aa741cbddb9cb81ecd9960860de082813b5) | fix | **overlay:** backdropClass type mismatch ([#25487](https://github.com/angular/components/pull/25487)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d1ef7e23c6](https://github.com/angular/components/commit/d1ef7e23c633886ce5e8082e85dc7f7424c9b997) | fix | **button-toggle:** toggle name falling out of sync if name changes ([#24713](https://github.com/angular/components/pull/24713)) |
+| [19df7cf940](https://github.com/angular/components/commit/19df7cf940aa21ffd6c083bbdd8721329ced392d) | fix | **expansion:** fix lint issue ([#25469](https://github.com/angular/components/pull/25469)) |
+### expansion
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b1450b1cb5](https://github.com/angular/components/commit/b1450b1cb52c041f0e01d4b00139e54380a8d102) | fix | fix expansion `.mat-expansion-panel-header` styles ([#20019](https://github.com/angular/components/pull/20019)) |
+## Special Thanks
+Andrew Seguin, Dmitrii Kuzmin, Kristiyan Kostadinov, ko-tori and swseverance
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.0-next.2"></a>
 # 14.2.0-next.2 "maple-mantis" (2022-08-11)
 ### material
