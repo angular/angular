@@ -1,3 +1,25 @@
+<a name="14.2.0-rc.0"></a>
+# 14.2.0-rc.0 "plastic-duck" (2022-08-19)
+### cdk
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0fb2e9a5f7](https://github.com/angular/components/commit/0fb2e9a5f7e5cc19540977ec665c686f51c8ad9b) | feat | **listbox:** add listbox to cdk ([#25380](https://github.com/angular/components/pull/25380)) ([#25474](https://github.com/angular/components/pull/25474)) |
+| [200556ea96](https://github.com/angular/components/commit/200556ea9604cc7cd25ef807dd5f20181c700302) | fix | **dialog:** fall back to node injector token doesn't exist in template injector ([#25406](https://github.com/angular/components/pull/25406)) |
+| [0ba8c759fe](https://github.com/angular/components/commit/0ba8c759fe15e2f2ce876ae1eb28b032692262dd) | fix | **overlay:** backdropClass type mismatch ([#25487](https://github.com/angular/components/pull/25487)) |
+### material
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b20876d86b](https://github.com/angular/components/commit/b20876d86b5d0650cc8079411a73fe7e5d8312b0) | fix | **button-toggle:** toggle name falling out of sync if name changes ([#24713](https://github.com/angular/components/pull/24713)) |
+| [ab8f6fead4](https://github.com/angular/components/commit/ab8f6fead478dbbea2a59ccb66b0fcecf302271d) | fix | **expansion:** fix lint issue ([#25469](https://github.com/angular/components/pull/25469)) |
+### expansion
+| Commit | Type | Description |
+| -- | -- | -- |
+| [27bf7e93a1](https://github.com/angular/components/commit/27bf7e93a1ab319a3d4dfbc903e7705e1787e4e3) | fix | fix expansion `.mat-expansion-panel-header` styles ([#20019](https://github.com/angular/components/pull/20019)) |
+## Special Thanks
+Andrew Seguin, Dmitrii Kuzmin, Kristiyan Kostadinov, Miles Malerba, ko-tori and swseverance
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.1.3"></a>
 # 14.1.3 "rubber-chicken" (2022-08-19)
 ### cdk
