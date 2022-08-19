@@ -17,13 +17,6 @@ export function isAbsoluteUrl(src: string): boolean {
   return /^https?:\/\//.test(src);
 }
 
-// Assembles directive details string, useful for error messages.
-export function imgDirectiveDetails(rawSrc: string, includeRawSrc = true) {
-  const rawSrcInfo =
-      includeRawSrc ? `(activated on an <img> element with the \`rawSrc="${rawSrc}"\`) ` : '';
-  return `The NgOptimizedImage directive ${rawSrcInfo}has detected that`;
-}
-
 // Invokes a callback for each element in the array. Also invokes a callback
 // recursively for each nested array.
 export function deepForEach<T>(input: (T|any[])[], fn: (value: T) => void): void {

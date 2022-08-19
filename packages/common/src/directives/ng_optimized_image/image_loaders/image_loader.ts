@@ -75,7 +75,7 @@ export function createImageLoader(
     buildUrlFn: (path: string, config: ImageLoaderConfig) => string, exampleUrls?: string[]) {
   return function provideImageLoader(
       path: string, options: {ensurePreconnect?: boolean} = {ensurePreconnect: true}) {
-    if (ngDevMode && !isValidPath(path)) {
+    if (!isValidPath(path)) {
       throwInvalidPathError(path, exampleUrls || []);
     }
 
@@ -84,7 +84,7 @@ export function createImageLoader(
     path = normalizePath(path);
 
     const loaderFn = (config: ImageLoaderConfig) => {
-      if (ngDevMode && isAbsoluteUrl(config.src)) {
+      if (isAbsoluteUrl(config.src)) {
         // Image loader functions expect an image file name (e.g. `my-image.png`)
         // or a relative path + a file name (e.g. `/a/b/c/my-image.png`) as an input,
         // so the final absolute URL can be constructed.
@@ -106,19 +106,22 @@ export function createImageLoader(
 }
 
 function throwInvalidPathError(path: unknown, exampleUrls: string[]): never {
-  const exampleUrlsMsg = exampleUrls.join(' or ');
   throw new RuntimeError(
       RuntimeErrorCode.INVALID_LOADER_ARGUMENTS,
-      `Image loader has detected an invalid path (\`${path}\`). ` +
-          `To fix this, supply a path using one of the following formats: ${exampleUrlsMsg}`);
+      ngDevMode &&
+          `Image loader has detected an invalid path (\`${path}\`). ` +
+              `To fix this, supply a path using one of the following formats: ${
+                  exampleUrls.join(' or ')}`);
 }
 
 function throwUnexpectedAbsoluteUrlError(path: string, url: string): never {
   throw new RuntimeError(
       RuntimeErrorCode.INVALID_LOADER_ARGUMENTS,
-      `Image loader has detected a \`<img>\` tag with an invalid \`rawSrc\` attribute: ${url}. ` +
-          `This image loader expects \`rawSrc\` to be a relative URL - ` +
-          `however the provided value is an absolute URL. ` +
-          `To fix this, provide \`rawSrc\` as a path relative to the base URL ` +
-          `configured for this loader (\`${path}\`).`);
+      ngDevMode &&
+          `Image loader has detected a \`<img>\` tag with an invalid \`rawSrc\` attribute: ${
+              url}. ` +
+              `This image loader expects \`rawSrc\` to be a relative URL - ` +
+              `however the provided value is an absolute URL. ` +
+              `To fix this, provide \`rawSrc\` as a path relative to the base URL ` +
+              `configured for this loader (\`${path}\`).`);
 }

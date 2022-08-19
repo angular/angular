@@ -110,7 +110,7 @@ const OVERSIZED_IMAGE_TOLERANCE = 1000;
  *
  * To use the **default loader**: no additional code changes are necessary. The URL returned by the
  * generic loader will always match the value of "src". In other words, this loader applies no
- * transformations to thr resource URL and the value of the `rawSrc` attribute will be used as is.
+ * transformations to the resource URL and the value of the `rawSrc` attribute will be used as is.
  *
  * To use an existing loader for a **third-party image service**: add the provider factory for your
  * chosen service to the `providers` array. In the example below, the Imgix loader is used:
