@@ -3,7 +3,7 @@ load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite"
 package(default_visibility = ["//visibility:public"])
 
 ng_module(
-    name = "tooltip",
+    name = "legacy-tooltip",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
@@ -16,12 +16,12 @@ ng_module(
         "//src/cdk/scrolling",
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
-        "//src/material/button",
-        "//src/material/checkbox",
-        "//src/material/input",
-        "//src/material/select",
-        "//src/material/tooltip",
-        "//src/material/tooltip/testing",
+        "//src/material/legacy-button",
+        "//src/material/legacy-checkbox",
+        "//src/material/legacy-input",
+        "//src/material/legacy-select",
+        "//src/material/legacy-tooltip",
+        "//src/material/legacy-tooltip/testing",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
         "@npm//@angular/platform-browser-dynamic",
@@ -42,11 +42,11 @@ ng_test_library(
     name = "unit_tests_lib",
     srcs = glob(["**/*.spec.ts"]),
     deps = [
-        ":tooltip",
+        ":legacy-tooltip",
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
-        "//src/material/tooltip",
-        "//src/material/tooltip/testing",
+        "//src/material/legacy-tooltip",
+        "//src/material/legacy-tooltip/testing",
         "@npm//@angular/platform-browser",
         "@npm//@angular/platform-browser-dynamic",
     ],

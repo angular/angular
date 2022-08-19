@@ -224,8 +224,8 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./mdc-tabs/mdc-tabs-demo').then(m => m.MdcTabsDemo),
   },
   {
-    path: 'mdc-tooltip',
-    loadComponent: () => import('./mdc-tooltip/mdc-tooltip-demo').then(m => m.MdcTooltipDemo),
+    path: 'legacy-tooltip',
+    loadComponent: () => import('./legacy-tooltip/tooltip-demo').then(m => m.TooltipDemo),
   },
   {
     path: 'menu',

@@ -117,11 +117,11 @@ export class DevAppLayout {
     {name: 'MDC Progress Bar', route: '/mdc-progress-bar'},
     {name: 'MDC Progress Spinner', route: '/mdc-progress-spinner'},
     {name: 'MDC Tabs', route: '/mdc-tabs'},
-    {name: 'MDC Tooltip', route: '/mdc-tooltip'},
     {name: 'MDC Select', route: '/mdc-select'},
     {name: 'MDC Slide Toggle', route: '/mdc-slide-toggle'},
     {name: 'MDC Slider', route: '/mdc-slider'},
     {name: 'MDC Snack Bar', route: '/mdc-snack-bar'},
+    {name: 'Legacy Tooltip', route: '/legacy-tooltip'},
     {name: 'Legacy Table', route: '/legacy-table'},
   ];
 

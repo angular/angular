@@ -1,0 +1,28 @@
+<div>
+  <span> Click the following buttons to... </span>
+  <button mat-button
+          (click)="tooltip.show()"
+          aria-label="Show tooltip on the button at the end of this section"
+          class="example-action-button">
+    show
+  </button>
+  <button mat-button
+          (click)="tooltip.hide()"
+          aria-label="Hide tooltip on the button at the end of this section"
+          class="example-action-button">
+    hide
+  </button>
+  <button mat-button
+          (click)="tooltip.toggle()"
+          aria-label="Show/Hide tooltip on the button at the end of this section"
+          class="example-action-button">
+    toggle show/hide
+  </button>
+</div>
+
+<button mat-raised-button #tooltip="matTooltip"
+        matTooltip="Info about the action"
+        matTooltipPosition="right"
+        aria-tooltip="Button that displays and hides a tooltip triggered by other buttons">
+  Action
+</button>

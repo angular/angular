@@ -1,0 +1,10 @@
+.example-button {
+  display: block;
+  margin: 80px auto 400px;
+}
+
+.example-container {
+  height: 200px;
+  overflow: auto;
+  border: 1px solid #ccc;
+}

@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {TooltipPosition} from '@angular/material/tooltip';
+import {TooltipPosition} from '@angular/material/legacy-tooltip';
 
 /**
  * @title Tooltip with a custom position

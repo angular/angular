@@ -2,11 +2,11 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {ScrollingModule} from '@angular/cdk/scrolling';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material/select';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
+import {MatLegacyTooltipModule} from '@angular/material/legacy-tooltip';
 import {TooltipAutoHideExample} from './tooltip-auto-hide/tooltip-auto-hide-example';
 import {TooltipCustomClassExample} from './tooltip-custom-class/tooltip-custom-class-example';
 import {TooltipDelayExample} from './tooltip-delay/tooltip-delay-example';
@@ -50,11 +50,11 @@ const EXAMPLES = [
 @NgModule({
   imports: [
     CommonModule,
-    MatButtonModule,
-    MatCheckboxModule,
-    MatInputModule,
-    MatSelectModule,
-    MatTooltipModule,
+    MatLegacyButtonModule,
+    MatLegacyCheckboxModule,
+    MatLegacyInputModule,
+    MatLegacySelectModule,
+    MatLegacyTooltipModule,
     ReactiveFormsModule,
     ScrollingModule, // Required for the auto-scrolling example
   ],
