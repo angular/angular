@@ -255,7 +255,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
            * will be deleted.
            */
           if (changes['name']?.isFirstChange()) {
-            this.formDirective._directives.forEach((directive: NgModel) => {
+            this.formDirective._directives?.forEach((directive: NgModel) => {
               /*
                * Radio inputs need to be excluded from the dupelicate name check, since
                * radio buttons require identical names in order to properly function. However,
