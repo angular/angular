@@ -134,7 +134,7 @@ export class TypeEmitter {
           } else if (ts.isRegularExpressionLiteral(node)) {
             clone = ts.factory.createRegularExpressionLiteral(node.text);
           } else {
-            throw new Error(`Unsupported literal kind ${node.kind}`);
+            throw new Error(`Unsupported literal kind ${ts.SyntaxKind[node.kind]}`);
           }
 
           ts.setTextRange(clone, {pos: -1, end: -1});

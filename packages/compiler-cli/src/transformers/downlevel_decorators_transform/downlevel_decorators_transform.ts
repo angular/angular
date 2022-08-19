@@ -607,7 +607,7 @@ function cloneClassElementWithModifiers(
   } else if (ts.isSetAccessor(node)) {
     clone = createSetAccessorDeclaration(modifiers, node.name, node.parameters, node.body);
   } else {
-    throw new Error(`Unsupported decorated member with kind ${node.kind}`);
+    throw new Error(`Unsupported decorated member with kind ${ts.SyntaxKind[node.kind]}`);
   }
 
   return ts.setOriginalNode(clone, node);
