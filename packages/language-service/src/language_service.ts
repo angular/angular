@@ -307,7 +307,8 @@ export class LanguageService {
             return [];
           }
           return this.codeFixes.getCodeFixesAtPosition(
-              templateInfo, compiler, start, end, errorCodes, diags, formatOptions, preferences);
+              fileName, templateInfo, compiler, start, end, errorCodes, diags, formatOptions,
+              preferences);
         });
   }
 

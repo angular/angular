@@ -8,6 +8,7 @@
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
+import {FixIdForCodeFixesAll} from '../src/codefixes/utils';
 import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../testing';
 
 describe('code fixes', () => {
@@ -157,6 +158,74 @@ describe('code fixes', () => {
       fileName: 'app.ts'
     });
   });
+
+  it('should fix invalid banana-in-box error', () => {
+    const files = {
+      'app.ts': `
+      import {Component, NgModule} from '@angular/core';
+
+      @Component({
+        templateUrl: './app.html'
+      })
+      export class AppComponent {
+        title = '';
+      }
+    `,
+      'app.html': `<input ([ngModel])="title">`,
+    };
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const diags = project.getDiagnosticsForFile('app.html');
+    const appFile = project.openFile('app.html');
+    appFile.moveCursorToText('¦([ngModel');
+
+    const codeActions =
+        project.getCodeFixesAtPosition('app.html', appFile.cursor, appFile.cursor, [diags[0].code]);
+    expectIncludeReplacementText({
+      codeActions,
+      content: appFile.contents,
+      text: `([ngModel])="title"`,
+      newText: `[(ngModel)]="title"`,
+      fileName: 'app.html',
+      description: `fix invalid banana-in-box for '([ngModel])="title"'`
+    });
+  });
+
+  it('should fix all invalid banana-in-box errors', () => {
+    const files = {
+      'app.ts': `
+      import {Component, NgModule} from '@angular/core';
+
+      @Component({
+        template: '<input ([ngModel])="title"><input ([value])="title">',
+      })
+      export class AppComponent {
+        title = '';
+        banner = '';
+      }
+    `,
+    };
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const appFile = project.openFile('app.ts');
+
+    const fixesAllActions =
+        project.getCombinedCodeFix('app.ts', FixIdForCodeFixesAll.FIX_INVALID_BANANA_IN_BOX);
+    expectIncludeReplacementTextForFileTextChange({
+      fileTextChanges: fixesAllActions.changes,
+      content: appFile.contents,
+      text: `([ngModel])="title"`,
+      newText: `[(ngModel)]="title"`,
+      fileName: 'app.ts'
+    });
+    expectIncludeReplacementTextForFileTextChange({
+      fileTextChanges: fixesAllActions.changes,
+      content: appFile.contents,
+      text: `([value])="title"`,
+      newText: `[(value)]="title"`,
+      fileName: 'app.ts'
+    });
+  });
 });
 
 function expectNotIncludeFixAllInfo(codeActions: readonly ts.CodeFixAction[]) {
@@ -166,14 +235,22 @@ function expectNotIncludeFixAllInfo(codeActions: readonly ts.CodeFixAction[]) {
   }
 }
 
-function expectIncludeReplacementText({codeActions, content, text, newText, fileName}: {
-  codeActions: readonly ts.CodeAction[]; content: string; text: string; newText: string;
-  fileName: string;
-}) {
+/**
+ * The `description` is optional because if the description comes from the ts server, no need to
+ * check it.
+ */
+function expectIncludeReplacementText(
+    {codeActions, content, text, newText, fileName, description}: {
+      codeActions: readonly ts.CodeAction[]; content: string; text: string; newText: string;
+      fileName: string;
+      description?: string;
+    }) {
   let includeReplacementText = false;
   for (const codeAction of codeActions) {
-    includeReplacementText = includeReplacementTextInChanges(
-        {fileTextChanges: codeAction.changes, content, text, newText, fileName});
+    includeReplacementText =
+        includeReplacementTextInChanges(
+            {fileTextChanges: codeAction.changes, content, text, newText, fileName}) &&
+        (description === undefined ? true : (description === codeAction.description));
     if (includeReplacementText) {
       return;
     }

@@ -43,8 +43,8 @@ export class CodeFixes {
    * and collect all the responses from the `codeActionMetas` which could handle the `errorCodes`.
    */
   getCodeFixesAtPosition(
-      templateInfo: TemplateInfo, compiler: NgCompiler, start: number, end: number,
-      errorCodes: readonly number[], diagnostics: tss.Diagnostic[],
+      fileName: string, templateInfo: TemplateInfo, compiler: NgCompiler, start: number,
+      end: number, errorCodes: readonly number[], diagnostics: tss.Diagnostic[],
       formatOptions: tss.FormatCodeSettings,
       preferences: tss.UserPreferences): readonly tss.CodeFixAction[] {
     const codeActions: tss.CodeFixAction[] = [];
@@ -55,6 +55,7 @@ export class CodeFixes {
       }
       for (const meta of metas) {
         const codeActionsForMeta = meta.getCodeActions({
+          fileName,
           templateInfo,
           compiler,
           start,
@@ -98,7 +99,8 @@ export class CodeFixes {
       preferences,
       tsLs: this.tsLS,
       scope,
-      diagnostics,
+      // only pass the diagnostics the `meta` cares about.
+      diagnostics: diagnostics.filter(diag => meta.errorCodes.includes(diag.code)),
     });
   }
 }
