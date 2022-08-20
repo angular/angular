@@ -14,5 +14,5 @@ import { VersionInfo } from 'app/navigation/navigation.service';
 })
 export class ModeBannerComponent {
   @Input() mode: string;
-  @Input() version: VersionInfo;
+  @Input() version: VersionInfo | undefined;
 }

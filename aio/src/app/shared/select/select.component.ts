@@ -12,7 +12,7 @@ export interface Option {
 export class SelectComponent implements OnInit {
   static instancesCounter = 0;
 
-  @Input() selected: Option;
+  @Input() selected: Option | undefined;
 
   @Input() options: Option[];
 
@@ -23,7 +23,7 @@ export class SelectComponent implements OnInit {
 
   @Input() showSymbol = false;
 
-  @Input() label!: string;
+  @Input() label = '';
 
   @Input() disabled: boolean;
 
@@ -81,7 +81,7 @@ export class SelectComponent implements OnInit {
     const runOrOpenOptions = (fn: () => void): void => {
       if(!this.showOptions) {
         this.showOptions = true;
-        const indexOfSelected =  (this.options ?? []).indexOf(this.selected);
+        const indexOfSelected = (!this.options || !this.selected) ? -1 : this.options.indexOf(this.selected);
         this.currentOptionIdx = indexOfSelected > 0 ? indexOfSelected : 0;
       } else {
         fn();
