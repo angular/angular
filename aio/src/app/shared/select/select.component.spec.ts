@@ -230,9 +230,9 @@ class HostComponent {
   onChange = jasmine.createSpy('onChange');
   options: Option[];
   selected: Option;
-  label: string;
-  showSymbol: boolean;
-  disabled: boolean;
+  label = '';
+  showSymbol = false;
+  disabled = false;
 }
 
 function getButton(): HTMLButtonElement {

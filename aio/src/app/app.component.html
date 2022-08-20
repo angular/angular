@@ -32,7 +32,7 @@
         <img *ngSwitchCase="true" src="assets/images/logos/angular/logo-nav@2x.png" width="150" height="40" title="Home" alt="Home">
         <img *ngSwitchDefault src="assets/images/logos/angular/shield-large.svg" width="37" height="40" title="Home" alt="Home">
       </a>
-      <aio-top-menu *ngIf="showTopMenu" [nodes]="topMenuNodes" [currentNode]="currentNodes?.TopBar"></aio-top-menu>
+      <aio-top-menu *ngIf="showTopMenu" [nodes]="topMenuNodes" [currentNode]="currentNodes.TopBar"></aio-top-menu>
       <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event, true)"></aio-search-box>
       <aio-theme-toggle #themeToggle></aio-theme-toggle>
       <div #externalIcons class="toolbar-external-icons-container">
@@ -60,8 +60,8 @@
 <mat-sidenav-container class="sidenav-container" [class.no-animations]="disableAnimations" [class.has-floating-toc]="hasFloatingToc">
 
   <mat-sidenav [ngClass]="{'collapsed': !dockSideNav}" #sidenav class="sidenav" [mode]="mode" [opened]="isOpened" (openedChange)="updateHostClasses()">
-    <aio-nav-menu *ngIf="!showTopMenu" [nodes]="topMenuNarrowNodes" [currentNode]="currentNodes?.TopBarNarrow" [isWide]="dockSideNav" navLabel="primary"></aio-nav-menu>
-    <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNodes?.SideNav" [isWide]="dockSideNav" navLabel="guides and docs"></aio-nav-menu>
+    <aio-nav-menu *ngIf="!showTopMenu" [nodes]="topMenuNarrowNodes" [currentNode]="currentNodes.TopBarNarrow" [isWide]="dockSideNav" navLabel="primary"></aio-nav-menu>
+    <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNodes.SideNav" [isWide]="dockSideNav" navLabel="guides and docs"></aio-nav-menu>
 
     <div class="doc-version">
       <aio-nav-menu [nodes]="docVersions" [isWide]="true" [currentNode]="currentDocsVersionNode" navLabel="docs versions"></aio-nav-menu>
