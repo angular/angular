@@ -61,8 +61,10 @@
           doc.constructorDoc = ctorDoc.members[0];
 
           // Mark the constructor doc internal.
-          if (!ctorDoc.internal) {
-            log.warn(`Constructor doc ${ctorDoc.id} was not marked '@internal'; adding this annotation.`);
+          if (!ctorDoc.internal && !ctorDoc.privateExport) {
+            log.warn(
+                `Constructor doc ${ctorDoc.id} was not marked as internal (either via an ` +
+                '\'@internal\' annotation or a \'ɵ\' prefix). Marking it as internal.');
             ctorDoc.internal = true;
           }
 
