@@ -742,6 +742,169 @@ describe('animation query tests', function() {
       expect(p5.delay).toEqual(6000);
     });
 
+    it(`should handle params in the stagger's timing argument`, () => {
+      const animationDuration = 500;
+      const staggerDelay = 1000;
+
+      @Component({
+          selector: 'ani-cmp',
+          template: `
+          <div [@myAnimation]="exp">
+            <div *ngFor="let item of items" class="item">
+              {{ item }}
+            </div>
+          </div>
+        `,
+          animations: [
+            trigger('myAnimation', [
+              transition('* => go', [
+                query('.item', [
+                  stagger('{{staggerDelay}}ms',[
+                    style({ transform: 'scale(0)' }),
+                    animate(animationDuration, style({transform: 'scale(1)'}))
+                  ])
+                ])
+              ], {params: { staggerDelay }})
+            ])
+          ]
+        })
+        class Cmp {
+        public exp: any;
+        public items: any[] = [0, 1, 2, 3, 4];
+      }
+
+      TestBed.configureTestingModule({declarations: [Cmp]});
+
+      const engine = TestBed.inject(ɵAnimationEngine);
+      const fixture = TestBed.createComponent(Cmp);
+      const cmp = fixture.componentInstance;
+
+      cmp.exp = 'go';
+      fixture.detectChanges();
+      engine.flush();
+
+      const players = getLog();
+      expect(players.length).toEqual(5);
+
+      players.forEach((player, i) => {
+        expect(player.delay).toEqual(i * staggerDelay);
+        expect(player.duration).toEqual(animationDuration);
+        expect(player.keyframes).toEqual([
+          new Map<string, string|number>([['transform', 'scale(0)'], ['offset', 0]]),
+          new Map<string, string|number>([['transform', 'scale(1)'], ['offset', 1]])
+        ]);
+      });
+    });
+
+    it(`should handle params in the stagger's timing argument with a negative value`, () => {
+      const animationDuration = 700;
+      const absoluteStaggerDelay = 500;
+
+      @Component({
+          selector: 'ani-cmp',
+          template: `
+          <div [@myAnimation]="exp">
+            <div *ngFor="let item of items" class="item">
+              {{ item }}
+            </div>
+          </div>
+        `,
+          animations: [
+            trigger('myAnimation', [
+              transition('* => go', [
+                query('.item', [
+                  stagger('{{staggerDelay}}ms',[
+                    style({opacity: 0}),
+                    animate(animationDuration, style({opacity: 1}))
+                  ])
+                ])
+              ], {params: { staggerDelay: -absoluteStaggerDelay }})
+            ])
+          ]
+        })
+        class Cmp {
+        public exp: any;
+        public items: any[] = [0, 1, 2, 3, 4];
+      }
+
+      TestBed.configureTestingModule({declarations: [Cmp]});
+
+      const engine = TestBed.inject(ɵAnimationEngine);
+      const fixture = TestBed.createComponent(Cmp);
+      const cmp = fixture.componentInstance;
+
+      cmp.exp = 'go';
+      fixture.detectChanges();
+      engine.flush();
+
+      const players = getLog();
+      expect(players.length).toEqual(5);
+
+      players.reverse().forEach((player, i) => {
+        expect(player.delay).toEqual(i * absoluteStaggerDelay);
+        expect(player.duration).toEqual(animationDuration);
+        expect(player.keyframes).toEqual([
+          new Map<string, string|number>([['opacity', '0'], ['offset', 0]]),
+          new Map<string, string|number>([['opacity', '1'], ['offset', 1]])
+        ]);
+      });
+    });
+
+    it(`should handle a negative non-parametrized value provided for the stagger's timing argument`,
+       () => {
+         const animationDuration = 700;
+         const absoluteStaggerDelay = 500;
+
+         @Component({
+          selector: 'ani-cmp',
+          template: `
+          <div [@myAnimation]="exp">
+            <div *ngFor="let item of items" class="item">
+              {{ item }}
+            </div>
+          </div>
+        `,
+          animations: [
+            trigger('myAnimation', [
+              transition('* => go', [
+                query('.item', [
+                  stagger(-absoluteStaggerDelay,[
+                    style({backgroundColor: 'red'}),
+                    animate(animationDuration, style({backgroundColor: 'blue'}))
+                  ])
+                ])
+              ])
+            ])
+          ]
+        })
+        class Cmp {
+           public exp: any;
+           public items: any[] = [0, 1, 2, 3, 4];
+         }
+
+         TestBed.configureTestingModule({declarations: [Cmp]});
+
+         const engine = TestBed.inject(ɵAnimationEngine);
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
+
+         cmp.exp = 'go';
+         fixture.detectChanges();
+         engine.flush();
+
+         const players = getLog();
+         expect(players.length).toEqual(5);
+
+         players.reverse().forEach((player, i) => {
+           expect(player.delay).toEqual(i * absoluteStaggerDelay);
+           expect(player.duration).toEqual(animationDuration);
+           expect(player.keyframes).toEqual([
+             new Map<string, string|number>([['backgroundColor', 'red'], ['offset', 0]]),
+             new Map<string, string|number>([['backgroundColor', 'blue'], ['offset', 1]])
+           ]);
+         });
+       });
+
     it('should persist inner sub trigger styles once their animation is complete', () => {
       @Component({
         selector: 'ani-cmp',

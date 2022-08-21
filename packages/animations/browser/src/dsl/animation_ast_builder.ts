@@ -473,7 +473,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     }
     const timings = metadata.timings === 'full' ?
         {duration: 0, delay: 0, easing: 'full'} :
-        resolveTiming(metadata.timings, context.errors, true);
+        constructTimingAst(metadata.timings, context.errors, true);
 
     return {
       type: AnimationMetadataType.Stagger,
@@ -545,13 +545,14 @@ function consumeOffset(styles: OffsetStyles|Array<OffsetStyles>): number|null {
   return offset;
 }
 
-function constructTimingAst(value: string|number|AnimateTimings, errors: Error[]) {
+function constructTimingAst(
+    value: string|number|AnimateTimings, errors: Error[], allowNegativeValue = false) {
   if (value.hasOwnProperty('duration')) {
     return value as AnimateTimings;
   }
 
   if (typeof value == 'number') {
-    const duration = resolveTiming(value, errors).duration;
+    const duration = resolveTiming(value, errors, allowNegativeValue).duration;
     return makeTimingAst(duration, 0, '');
   }
 
