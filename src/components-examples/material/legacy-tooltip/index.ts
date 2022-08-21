@@ -7,44 +7,44 @@ import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatLegacySelectModule} from '@angular/material/legacy-select';
 import {MatLegacyTooltipModule} from '@angular/material/legacy-tooltip';
-import {TooltipAutoHideExample} from './tooltip-auto-hide/tooltip-auto-hide-example';
-import {TooltipCustomClassExample} from './tooltip-custom-class/tooltip-custom-class-example';
-import {TooltipDelayExample} from './tooltip-delay/tooltip-delay-example';
-import {TooltipDisabledExample} from './tooltip-disabled/tooltip-disabled-example';
-import {TooltipManualExample} from './tooltip-manual/tooltip-manual-example';
-import {TooltipMessageExample} from './tooltip-message/tooltip-message-example';
-import {TooltipModifiedDefaultsExample} from './tooltip-modified-defaults/tooltip-modified-defaults-example';
-import {TooltipOverviewExample} from './tooltip-overview/tooltip-overview-example';
-import {TooltipPositionExample} from './tooltip-position/tooltip-position-example';
-import {TooltipPositionAtOriginExample} from './tooltip-position-at-origin/tooltip-position-at-origin-example';
-import {TooltipHarnessExample} from './tooltip-harness/tooltip-harness-example';
+import {LegacyTooltipAutoHideExample} from './legacy-tooltip-auto-hide/legacy-tooltip-auto-hide-example';
+import {LegacyTooltipCustomClassExample} from './legacy-tooltip-custom-class/legacy-tooltip-custom-class-example';
+import {LegacyTooltipDelayExample} from './legacy-tooltip-delay/legacy-tooltip-delay-example';
+import {LegacyTooltipDisabledExample} from './legacy-tooltip-disabled/legacy-tooltip-disabled-example';
+import {LegacyTooltipManualExample} from './legacy-tooltip-manual/legacy-tooltip-manual-example';
+import {LegacyTooltipMessageExample} from './legacy-tooltip-message/legacy-tooltip-message-example';
+import {LegacyTooltipModifiedDefaultsExample} from './legacy-tooltip-modified-defaults/legacy-tooltip-modified-defaults-example';
+import {LegacyTooltipOverviewExample} from './legacy-tooltip-overview/legacy-tooltip-overview-example';
+import {LegacyTooltipPositionExample} from './legacy-tooltip-position/legacy-tooltip-position-example';
+import {LegacyTooltipPositionAtOriginExample} from './legacy-tooltip-position-at-origin/legacy-tooltip-position-at-origin-example';
+import {LegacyTooltipHarnessExample} from './legacy-tooltip-harness/legacy-tooltip-harness-example';
 
 export {
-  TooltipAutoHideExample,
-  TooltipCustomClassExample,
-  TooltipDelayExample,
-  TooltipDisabledExample,
-  TooltipHarnessExample,
-  TooltipManualExample,
-  TooltipMessageExample,
-  TooltipModifiedDefaultsExample,
-  TooltipOverviewExample,
-  TooltipPositionExample,
-  TooltipPositionAtOriginExample,
+  LegacyTooltipAutoHideExample,
+  LegacyTooltipCustomClassExample,
+  LegacyTooltipDelayExample,
+  LegacyTooltipDisabledExample,
+  LegacyTooltipHarnessExample,
+  LegacyTooltipManualExample,
+  LegacyTooltipMessageExample,
+  LegacyTooltipModifiedDefaultsExample,
+  LegacyTooltipOverviewExample,
+  LegacyTooltipPositionExample,
+  LegacyTooltipPositionAtOriginExample,
 };
 
 const EXAMPLES = [
-  TooltipAutoHideExample,
-  TooltipCustomClassExample,
-  TooltipDelayExample,
-  TooltipDisabledExample,
-  TooltipHarnessExample,
-  TooltipManualExample,
-  TooltipMessageExample,
-  TooltipModifiedDefaultsExample,
-  TooltipOverviewExample,
-  TooltipPositionExample,
-  TooltipPositionAtOriginExample,
+  LegacyTooltipAutoHideExample,
+  LegacyTooltipCustomClassExample,
+  LegacyTooltipDelayExample,
+  LegacyTooltipDisabledExample,
+  LegacyTooltipHarnessExample,
+  LegacyTooltipManualExample,
+  LegacyTooltipMessageExample,
+  LegacyTooltipModifiedDefaultsExample,
+  LegacyTooltipOverviewExample,
+  LegacyTooltipPositionExample,
+  LegacyTooltipPositionAtOriginExample,
 ];
 
 @NgModule({
@@ -61,4 +61,4 @@ const EXAMPLES = [
   declarations: EXAMPLES,
   exports: EXAMPLES,
 })
-export class TooltipExamplesModule {}
+export class LegacyTooltipExamplesModule {}

@@ -9,7 +9,7 @@ the table is implemented, see the
 
 ### Getting Started
 
-<!-- example(table-basic) -->
+<!-- example(legacy-table-basic) -->
 
 #### 1. Write your mat-table and provide data
 
@@ -130,14 +130,14 @@ Each table cell has an automatically generated class based on which column it ap
 generated class is `mat-column-NAME`. For example, cells in a column named "symbol" can be targeted with the
 selector `.mat-column-symbol`.
 
-<!-- example(table-column-styling) -->
+<!-- example(legacy-table-column-styling) -->
 
 ### Row Templates
 
 Event handlers and property binding on the row templates will be applied to each row rendered by the table. For example,
 adding a `(click)` handler to the row template will cause each individual row to call the handler when clicked.
 
-<!-- example(table-row-binding) -->
+<!-- example(legacy-table-row-binding) -->
 
 ### Features
 
@@ -173,7 +173,7 @@ The `MatPaginator` is one provided solution to paginating your table's data, but
 option. In fact, the table can work with any custom pagination UI or strategy since the `MatTable`
 and its interface is not tied to any one specific implementation.
 
-<!-- example(table-pagination) -->
+<!-- example(legacy-table-pagination) -->
 
 #### Sorting
 
@@ -205,7 +205,7 @@ data, listen to the sort's `(matSortChange)` event and re-order your data accord
 If you are providing a data array directly to the table, don't forget to call `renderRows()` on the
 table, since it will not automatically check the array for changes.
 
-<!-- example(table-sorting) -->
+<!-- example(legacy-table-sorting) -->
 
 For more information on using and configuring the sorting behavior, check out the
 [matSort docs](https://material.angular.io/components/sort/overview).
@@ -237,7 +237,7 @@ takes a data object and filter string and returns true if the data object is con
 If you want to show a message when not data matches the filter, you can use the `*matNoDataRow`
 directive.
 
-<!--- example(table-filtering) -->
+<!--- example(legacy-table-filtering) -->
 
 #### Selection
 
@@ -311,7 +311,7 @@ the ripple effect to extend beyond the cell.
 }
 ```
 
-<!--- example(table-selection) -->
+<!--- example(legacy-table-selection) -->
 
 #### Footer row
 
@@ -333,7 +333,7 @@ data rows.
 <tr mat-footer-row *matFooterRowDef="columnsToDisplay"></tr>
 ```
 
-<!--- example(table-footer-row) -->
+<!--- example(legacy-table-footer-row) -->
 
 #### Sticky Rows and Columns
 
@@ -344,18 +344,18 @@ correct CSS styling so that the rows and columns become sticky.
 In order to fix the header row to the top of the scrolling viewport containing the table, you can
 add a `sticky` input to the `matHeaderRowDef`.
 
-<!--- example(table-sticky-header) -->
+<!--- example(legacy-table-sticky-header) -->
 
 Similarly, this can also be applied to the table's footer row. Note that if you are using the native
 `<table>` and using Safari, then the footer will only stick if `sticky` is applied to all the
 rendered footer rows.
 
-<!--- example(table-sticky-footer) -->
+<!--- example(legacy-table-sticky-footer) -->
 
 It is also possible to fix cell columns to the start or end of the horizontally scrolling viewport.
 To do this, add the `sticky` or `stickyEnd` directive to the `ng-container` column definition.
 
-<!--- example(table-sticky-columns) -->
+<!--- example(legacy-table-sticky-columns) -->
 
 Note that on Safari mobile when using the flex-based table, a cell stuck in more than one direction
 will struggle to stay in the correct position as you scroll. For example, if a header row is stuck
@@ -428,7 +428,7 @@ added to table rows by using the `MatRipple` directive from `@angular/material/c
 limitations in browsers, ripples cannot be applied native `th` or `tr` elements. The recommended
 approach for setting up ripples is using the non-native `display: flex` variant of `MatTable`.
 
-<!--- example(table-with-ripples) -->
+<!--- example(legacy-table-with-ripples) -->
 
 More details about ripples on native table rows and their limitations can be found [in this issue](https://github.com/angular/components/issues/11883#issuecomment-634942981).
 

@@ -8,11 +8,11 @@
 
 import {Component} from '@angular/core';
 import {CdkTableExamplesModule} from '@angular/components-examples/cdk/table';
-import {TableExamplesModule} from '@angular/components-examples/material/legacy-table';
+import {LegacyTableExamplesModule} from '@angular/components-examples/material/legacy-table';
 
 @Component({
   templateUrl: './table-demo.html',
   standalone: true,
-  imports: [CdkTableExamplesModule, TableExamplesModule],
+  imports: [CdkTableExamplesModule, LegacyTableExamplesModule],
 })
 export class TableDemo {}

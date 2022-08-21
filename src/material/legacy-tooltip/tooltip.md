@@ -1,7 +1,7 @@
 The Angular Material tooltip provides a text label that is displayed when the user hovers
 over or longpresses an element.
 
-<!-- example(tooltip-overview) -->
+<!-- example(legacy-tooltip-overview) -->
 
 ### Positioning
 
@@ -25,7 +25,7 @@ CSS class that can be used for style (e.g. to add an arrow). The possible classe
 `mat-tooltip-panel-above`, `mat-tooltip-panel-below`, `mat-tooltip-panel-left`,
 `mat-tooltip-panel-right`.
 
-<!-- example(tooltip-position) -->
+<!-- example(legacy-tooltip-position) -->
 
 ### Showing and hiding
 
@@ -43,21 +43,21 @@ and `matTooltipHideDelay` to provide a delay time in milliseconds.
 The following example has a tooltip that waits one second to display after the user
 hovers over the button, and waits two seconds to hide after the user moves the mouse away.
 
-<!-- example(tooltip-delay) -->
+<!-- example(legacy-tooltip-delay) -->
 
 #### Changing the default delay behavior
 
 You can configure your app's tooltip default show/hide delays by configuring and providing
 your options using the `MAT_TOOLTIP_DEFAULT_OPTIONS` injection token.
 
-<!-- example(tooltip-modified-defaults) -->
+<!-- example(legacy-tooltip-modified-defaults) -->
 
 #### Manually calling show() and hide()
 
 To manually cause the tooltip to show or hide, you can call the `show` and `hide` directive methods,
 which both accept a number in milliseconds to delay before applying the display change.
 
-<!-- example(tooltip-manual) -->
+<!-- example(legacy-tooltip-manual) -->
 
 #### Disabling the tooltip from showing
 

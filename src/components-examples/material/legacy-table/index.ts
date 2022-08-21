@@ -13,102 +13,105 @@ import {MatLegacyTableModule} from '@angular/material/legacy-table';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {CdkTableModule} from '@angular/cdk/table';
 
-import {TableFlexBasicExample} from './table-flex-basic/table-flex-basic-example';
-import {TableBasicExample} from './table-basic/table-basic-example';
-import {TableDynamicColumnsExample} from './table-dynamic-columns/table-dynamic-columns-example';
-import {TableExpandableRowsExample} from './table-expandable-rows/table-expandable-rows-example';
-import {TableFilteringExample} from './table-filtering/table-filtering-example';
-import {TableFooterRowExample} from './table-footer-row/table-footer-row-example';
-import {TableHttpExample} from './table-http/table-http-example';
-import {TableMultipleHeaderFooterExample} from './table-multiple-header-footer/table-multiple-header-footer-example';
-import {TableOverviewExample} from './table-overview/table-overview-example';
-import {TablePaginationExample} from './table-pagination/table-pagination-example';
-import {TableRowContextExample} from './table-row-context/table-row-context-example';
-import {TableSelectionExample} from './table-selection/table-selection-example';
-import {TableSortingExample} from './table-sorting/table-sorting-example';
-import {TableStickyColumnsExample} from './table-sticky-columns/table-sticky-columns-example';
-import {TableStickyComplexFlexExample} from './table-sticky-complex-flex/table-sticky-complex-flex-example';
-import {TableStickyComplexExample} from './table-sticky-complex/table-sticky-complex-example';
-import {TableStickyFooterExample} from './table-sticky-footer/table-sticky-footer-example';
-import {TableStickyHeaderExample} from './table-sticky-header/table-sticky-header-example';
-import {TableTextColumnAdvancedExample} from './table-text-column-advanced/table-text-column-advanced-example';
-import {TableTextColumnExample} from './table-text-column/table-text-column-example';
-import {TableWrappedExample, WrapperTable} from './table-wrapped/table-wrapped-example';
-import {TableReorderableExample} from './table-reorderable/table-reorderable-example';
-import {TableRecycleRowsExample} from './table-recycle-rows/table-recycle-rows-example';
-import {TableHarnessExample} from './table-harness/table-harness-example';
-import {TableWithRipplesExample} from './table-with-ripples/table-with-ripples-example';
-import {TableColumnStylingExample} from './table-column-styling/table-column-styling-example';
-import {TableRowBindingExample} from './table-row-binding/table-row-binding-example';
-import {TableDynamicArrayDataExample} from './table-dynamic-array-data/table-dynamic-array-data-example';
-import {TableDynamicObservableDataExample} from './table-dynamic-observable-data/table-dynamic-observable-data-example';
-import {TableGeneratedColumnsExample} from './table-generated-columns/table-generated-columns-example';
+import {LegacyTableFlexBasicExample} from './legacy-table-flex-basic/legacy-table-flex-basic-example';
+import {LegacyTableBasicExample} from './legacy-table-basic/legacy-table-basic-example';
+import {LegacyTableDynamicColumnsExample} from './legacy-table-dynamic-columns/legacy-table-dynamic-columns-example';
+import {LegacyTableExpandableRowsExample} from './legacy-table-expandable-rows/legacy-table-expandable-rows-example';
+import {LegacyTableFilteringExample} from './legacy-table-filtering/legacy-table-filtering-example';
+import {LegacyTableFooterRowExample} from './legacy-table-footer-row/legacy-table-footer-row-example';
+import {LegacyTableHttpExample} from './legacy-table-http/legacy-table-http-example';
+import {LegacyTableMultipleHeaderFooterExample} from './legacy-table-multiple-header-footer/legacy-table-multiple-header-footer-example';
+import {LegacyTableOverviewExample} from './legacy-table-overview/legacy-table-overview-example';
+import {LegacyTablePaginationExample} from './legacy-table-pagination/legacy-table-pagination-example';
+import {LegacyTableRowContextExample} from './legacy-table-row-context/legacy-table-row-context-example';
+import {LegacyTableSelectionExample} from './legacy-table-selection/legacy-table-selection-example';
+import {LegacyTableSortingExample} from './legacy-table-sorting/legacy-table-sorting-example';
+import {LegacyTableStickyColumnsExample} from './legacy-table-sticky-columns/legacy-table-sticky-columns-example';
+import {LegacyTableStickyComplexFlexExample} from './legacy-table-sticky-complex-flex/legacy-table-sticky-complex-flex-example';
+import {LegacyTableStickyComplexExample} from './legacy-table-sticky-complex/legacy-table-sticky-complex-example';
+import {LegacyTableStickyFooterExample} from './legacy-table-sticky-footer/legacy-table-sticky-footer-example';
+import {LegacyTableStickyHeaderExample} from './legacy-table-sticky-header/legacy-table-sticky-header-example';
+import {LegacyTableTextColumnAdvancedExample} from './legacy-table-text-column-advanced/legacy-table-text-column-advanced-example';
+import {LegacyTableTextColumnExample} from './legacy-table-text-column/legacy-table-text-column-example';
+import {
+  LegacyTableWrappedExample,
+  WrapperTable,
+} from './legacy-table-wrapped/legacy-table-wrapped-example';
+import {LegacyTableReorderableExample} from './legacy-table-reorderable/legacy-table-reorderable-example';
+import {LegacyTableRecycleRowsExample} from './legacy-table-recycle-rows/legacy-table-recycle-rows-example';
+import {LegacyTableHarnessExample} from './legacy-table-harness/legacy-table-harness-example';
+import {LegacyTableWithRipplesExample} from './legacy-table-with-ripples/legacy-table-with-ripples-example';
+import {LegacyTableColumnStylingExample} from './legacy-table-column-styling/legacy-table-column-styling-example';
+import {LegacyTableRowBindingExample} from './legacy-table-row-binding/legacy-table-row-binding-example';
+import {LegacyTableDynamicArrayDataExample} from './legacy-table-dynamic-array-data/legacy-table-dynamic-array-data-example';
+import {LegacyTableDynamicObservableDataExample} from './legacy-table-dynamic-observable-data/legacy-table-dynamic-observable-data-example';
+import {LegacyTableGeneratedColumnsExample} from './legacy-table-generated-columns/legacy-table-generated-columns-example';
 
 export {
-  TableBasicExample,
-  TableColumnStylingExample,
-  TableDynamicArrayDataExample,
-  TableDynamicColumnsExample,
-  TableDynamicObservableDataExample,
-  TableExpandableRowsExample,
-  TableFilteringExample,
-  TableFlexBasicExample,
-  TableFooterRowExample,
-  TableGeneratedColumnsExample,
-  TableHarnessExample,
-  TableHttpExample,
-  TableMultipleHeaderFooterExample,
-  TableOverviewExample,
-  TablePaginationExample,
-  TableRecycleRowsExample,
-  TableReorderableExample,
-  TableRowBindingExample,
-  TableRowContextExample,
-  TableSelectionExample,
-  TableSortingExample,
-  TableStickyColumnsExample,
-  TableStickyComplexExample,
-  TableStickyComplexFlexExample,
-  TableStickyFooterExample,
-  TableStickyHeaderExample,
-  TableTextColumnAdvancedExample,
-  TableTextColumnExample,
-  TableWithRipplesExample,
-  TableWrappedExample,
+  LegacyTableBasicExample,
+  LegacyTableColumnStylingExample,
+  LegacyTableDynamicArrayDataExample,
+  LegacyTableDynamicColumnsExample,
+  LegacyTableDynamicObservableDataExample,
+  LegacyTableExpandableRowsExample,
+  LegacyTableFilteringExample,
+  LegacyTableFlexBasicExample,
+  LegacyTableFooterRowExample,
+  LegacyTableGeneratedColumnsExample,
+  LegacyTableHarnessExample,
+  LegacyTableHttpExample,
+  LegacyTableMultipleHeaderFooterExample,
+  LegacyTableOverviewExample,
+  LegacyTablePaginationExample,
+  LegacyTableRecycleRowsExample,
+  LegacyTableReorderableExample,
+  LegacyTableRowBindingExample,
+  LegacyTableRowContextExample,
+  LegacyTableSelectionExample,
+  LegacyTableSortingExample,
+  LegacyTableStickyColumnsExample,
+  LegacyTableStickyComplexExample,
+  LegacyTableStickyComplexFlexExample,
+  LegacyTableStickyFooterExample,
+  LegacyTableStickyHeaderExample,
+  LegacyTableTextColumnAdvancedExample,
+  LegacyTableTextColumnExample,
+  LegacyTableWithRipplesExample,
+  LegacyTableWrappedExample,
   WrapperTable,
 };
 
 const EXAMPLES = [
-  TableBasicExample,
-  TableColumnStylingExample,
-  TableDynamicArrayDataExample,
-  TableDynamicColumnsExample,
-  TableDynamicObservableDataExample,
-  TableExpandableRowsExample,
-  TableFilteringExample,
-  TableFlexBasicExample,
-  TableFooterRowExample,
-  TableGeneratedColumnsExample,
-  TableHarnessExample,
-  TableHttpExample,
-  TableMultipleHeaderFooterExample,
-  TableOverviewExample,
-  TablePaginationExample,
-  TableRecycleRowsExample,
-  TableReorderableExample,
-  TableRowBindingExample,
-  TableRowContextExample,
-  TableSelectionExample,
-  TableSortingExample,
-  TableStickyColumnsExample,
-  TableStickyComplexExample,
-  TableStickyComplexFlexExample,
-  TableStickyFooterExample,
-  TableStickyHeaderExample,
-  TableTextColumnAdvancedExample,
-  TableTextColumnExample,
-  TableWithRipplesExample,
-  TableWrappedExample,
+  LegacyTableBasicExample,
+  LegacyTableColumnStylingExample,
+  LegacyTableDynamicArrayDataExample,
+  LegacyTableDynamicColumnsExample,
+  LegacyTableDynamicObservableDataExample,
+  LegacyTableExpandableRowsExample,
+  LegacyTableFilteringExample,
+  LegacyTableFlexBasicExample,
+  LegacyTableFooterRowExample,
+  LegacyTableGeneratedColumnsExample,
+  LegacyTableHarnessExample,
+  LegacyTableHttpExample,
+  LegacyTableMultipleHeaderFooterExample,
+  LegacyTableOverviewExample,
+  LegacyTablePaginationExample,
+  LegacyTableRecycleRowsExample,
+  LegacyTableReorderableExample,
+  LegacyTableRowBindingExample,
+  LegacyTableRowContextExample,
+  LegacyTableSelectionExample,
+  LegacyTableSortingExample,
+  LegacyTableStickyColumnsExample,
+  LegacyTableStickyComplexExample,
+  LegacyTableStickyComplexFlexExample,
+  LegacyTableStickyFooterExample,
+  LegacyTableStickyHeaderExample,
+  LegacyTableTextColumnAdvancedExample,
+  LegacyTableTextColumnExample,
+  LegacyTableWithRipplesExample,
+  LegacyTableWrappedExample,
   WrapperTable,
 ];
 
@@ -131,4 +134,4 @@ const EXAMPLES = [
   declarations: EXAMPLES,
   exports: EXAMPLES,
 })
-export class TableExamplesModule {}
+export class LegacyTableExamplesModule {}

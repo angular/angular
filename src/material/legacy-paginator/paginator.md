@@ -1,6 +1,6 @@
 `<mat-paginator>` provides navigation for paged information, typically used with a table.
 
-<!-- example(paginator-overview) -->
+<!-- example(legacy-paginator-overview) -->
 
 ### Basic use
 Each paginator instance requires:
