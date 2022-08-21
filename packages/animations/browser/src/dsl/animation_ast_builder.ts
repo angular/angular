@@ -473,7 +473,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     }
     const timings = metadata.timings === 'full' ?
         {duration: 0, delay: 0, easing: 'full'} :
-        resolveTiming(metadata.timings, context.errors, true);
+        constructTimingAst(metadata.timings, context.errors);
 
     return {
       type: AnimationMetadataType.Stagger,
