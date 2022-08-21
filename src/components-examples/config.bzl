@@ -8,7 +8,6 @@ ALL_EXAMPLES = [
     "//src/components-examples/material/toolbar",
     "//src/components-examples/material/tabs",
     "//src/components-examples/material/table",
-    "//src/components-examples/material/legacy-table",
     "//src/components-examples/material/stepper",
     "//src/components-examples/material/sort",
     "//src/components-examples/material/snack-bar",

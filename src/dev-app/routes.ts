@@ -218,7 +218,7 @@ export const DEV_APP_ROUTES: Routes = [
   },
   {
     path: 'legacy-table',
-    loadComponent: () => import('./legacy-table/table-demo').then(m => m.TableDemo),
+    loadComponent: () => import('./legacy-table/legacy-table-demo').then(m => m.LegacyTableDemo),
   },
   {
     path: 'mdc-tabs',

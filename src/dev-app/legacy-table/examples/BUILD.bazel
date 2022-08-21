@@ -1,0 +1,38 @@
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "examples",
+    srcs = glob(["**/*.ts"]),
+    assets = glob([
+        "**/*.html",
+        "**/*.css",
+    ]),
+    deps = [
+        "//src/cdk/drag-drop",
+        "//src/cdk/table",
+        "//src/material/button-toggle",
+        "//src/material/core",
+        "//src/material/icon",
+        "//src/material/legacy-button",
+        "//src/material/legacy-checkbox",
+        "//src/material/legacy-input",
+        "//src/material/legacy-paginator",
+        "//src/material/legacy-progress-spinner",
+        "//src/material/legacy-table",
+        "//src/material/sort",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types/jasmine",
+    ],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob([
+        "**/*.html",
+        "**/*.css",
+        "**/*.ts",
+    ]),
+)
