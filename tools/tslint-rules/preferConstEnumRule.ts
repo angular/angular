@@ -1,6 +1,5 @@
 import ts from 'typescript';
 import * as Lint from 'tslint';
-import * as tsutils from 'tsutils';
 
 /**
  * Rule that enforces that we use `const enum` rather than a plain `enum`.
@@ -13,7 +12,7 @@ export class Rule extends Lint.Rules.AbstractRule {
 
 class Walker extends Lint.RuleWalker {
   override visitEnumDeclaration(node: ts.EnumDeclaration) {
-    if (!tsutils.hasModifier(node.modifiers, ts.SyntaxKind.ConstKeyword)) {
+    if (!node.modifiers?.some(({kind}) => kind === ts.SyntaxKind.ConstKeyword)) {
       this.addFailureAtNode(node.name, 'Enums should be declared as `const enum`.');
     }
 

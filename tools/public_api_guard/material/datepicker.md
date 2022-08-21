@@ -322,7 +322,7 @@ export class MatDatepicker<D> extends MatDatepickerBase<MatDatepickerControl<D>,
 
 // @public
 export class MatDatepickerActions implements AfterViewInit, OnDestroy {
-    constructor(_datepicker: MatDatepickerBase<MatDatepickerControl<unknown>, unknown>, _viewContainerRef: ViewContainerRef);
+    constructor(_datepicker: MatDatepickerBase<MatDatepickerControl<any>, unknown>, _viewContainerRef: ViewContainerRef);
     // (undocumented)
     ngAfterViewInit(): void;
     // (undocumented)
@@ -343,7 +343,7 @@ export const matDatepickerAnimations: {
 
 // @public
 export class MatDatepickerApply {
-    constructor(_datepicker: MatDatepickerBase<MatDatepickerControl<unknown>, unknown>);
+    constructor(_datepicker: MatDatepickerBase<MatDatepickerControl<any>, unknown>);
     // (undocumented)
     _applySelection(): void;
     // (undocumented)
@@ -411,9 +411,9 @@ abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S, D = Extra
 
 // @public
 export class MatDatepickerCancel {
-    constructor(_datepicker: MatDatepickerBase<MatDatepickerControl<unknown>, unknown>);
+    constructor(_datepicker: MatDatepickerBase<MatDatepickerControl<any>, unknown>);
     // (undocumented)
-    _datepicker: MatDatepickerBase<MatDatepickerControl<unknown>, unknown>;
+    _datepicker: MatDatepickerBase<MatDatepickerControl<any>, unknown>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatDatepickerCancel, "[matDatepickerCancel], [matDateRangePickerCancel]", never, {}, {}, never, never, false>;
     // (undocumented)

@@ -1,6 +1,5 @@
 import ts from 'typescript';
 import * as Lint from 'tslint';
-import * as tsutils from 'tsutils';
 
 /**
  * Rule that doesn't allow private getters.
@@ -26,23 +25,21 @@ class Walker extends Lint.RuleWalker {
   override visitGetAccessor(getter: ts.GetAccessorDeclaration) {
     const getterName = getter.name.getText();
     const matchesPattern = !this._pattern || this._pattern.test(getterName);
-    const isPrivate =
-      getter.modifiers &&
-      getter.modifiers.some(modifier => {
-        return modifier.kind === ts.SyntaxKind.PrivateKeyword;
-      });
+    const isPrivate = getter.modifiers?.some(modifier => {
+      return modifier.kind === ts.SyntaxKind.PrivateKeyword;
+    });
 
     // Verify that the getter either matches the configured or is private and it's part of a class.
     if (
       (!matchesPattern && !isPrivate) ||
       !getter.parent ||
-      !tsutils.isClassDeclaration(getter.parent)
+      !ts.isClassDeclaration(getter.parent)
     ) {
       return super.visitGetAccessor(getter);
     }
 
     const setter = getter.parent.members.find(member => {
-      return tsutils.isSetAccessorDeclaration(member) && member.name.getText() === getterName;
+      return ts.isSetAccessorDeclaration(member) && member.name.getText() === getterName;
     }) as ts.SetAccessorDeclaration | undefined;
 
     // Only log a failure if it doesn't have a corresponding setter.

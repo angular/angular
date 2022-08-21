@@ -10,7 +10,8 @@ CLI_PROJECT_PACKAGES = [pkg.module_name for pkg in ANGULAR_PACKAGES] + [
     "@angular/cli",
     "@angular/compiler-cli",
     "@angular-devkit/build-angular",
-    "typescript",
+    # TODO(crisbeto): temporarily disabled until TS 4.8 support lands in the CLI.
+    # "typescript",
     "rxjs",
 ]
 

@@ -1,5 +1,4 @@
 import ts from 'typescript';
-import * as tsutils from 'tsutils';
 import * as Lint from 'tslint';
 
 /**
@@ -38,11 +37,11 @@ class Walker extends Lint.RuleWalker {
   override visitClassDeclaration(node: ts.ClassDeclaration) {
     node.members.forEach(member => {
       // Members without a modifier are considered public.
-      if (!member.modifiers || tsutils.hasModifier(member.modifiers, ts.SyntaxKind.PublicKeyword)) {
+      if (!member.modifiers || this._hasModifier(member, ts.SyntaxKind.PublicKeyword)) {
         this._validateMember(member, 'public');
-      } else if (tsutils.hasModifier(member.modifiers, ts.SyntaxKind.PrivateKeyword)) {
+      } else if (this._hasModifier(member, ts.SyntaxKind.PrivateKeyword)) {
         this._validateMember(member, 'private');
-      } else if (tsutils.hasModifier(member.modifiers, ts.SyntaxKind.ProtectedKeyword)) {
+      } else if (this._hasModifier(member, ts.SyntaxKind.ProtectedKeyword)) {
         this._validateMember(member, 'protected');
       }
     });
@@ -52,18 +51,16 @@ class Walker extends Lint.RuleWalker {
 
   override visitConstructorDeclaration(node: ts.ConstructorDeclaration) {
     node.parameters.forEach(param => {
-      const modifiers = param.modifiers;
-
       // Check class members that were declared via the constructor
       // (e.g. `constructor(private _something: number)`. These nodes don't
       // show up under `ClassDeclaration.members`.
-      if (tsutils.hasModifier(modifiers, ts.SyntaxKind.PrivateKeyword)) {
+      if (this._hasModifier(param, ts.SyntaxKind.PrivateKeyword)) {
         this._validateNode(param, 'private');
-      } else if (tsutils.hasModifier(modifiers, ts.SyntaxKind.ProtectedKeyword)) {
+      } else if (this._hasModifier(param, ts.SyntaxKind.ProtectedKeyword)) {
         this._validateNode(param, 'protected');
       } else if (
-        tsutils.hasModifier(modifiers, ts.SyntaxKind.ReadonlyKeyword) ||
-        tsutils.hasModifier(modifiers, ts.SyntaxKind.PublicKeyword)
+        this._hasModifier(param, ts.SyntaxKind.ReadonlyKeyword) ||
+        this._hasModifier(param, ts.SyntaxKind.PublicKeyword)
       ) {
         this._validateNode(param, 'public');
       }
@@ -101,5 +98,13 @@ class Walker extends Lint.RuleWalker {
         this.addFailureAtNode(node.name, failureMessage);
       }
     }
+  }
+
+  /** Checks if a node has a specific modifier. */
+  private _hasModifier(
+    node: ts.ClassElement | ts.ParameterDeclaration,
+    targetKind: ts.SyntaxKind,
+  ): boolean {
+    return !!node.modifiers?.some(({kind}) => kind === targetKind);
   }
 }

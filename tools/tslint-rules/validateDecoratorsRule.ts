@@ -82,13 +82,16 @@ class Walker extends Lint.RuleWalker {
 
   override visitClassDeclaration(node: ts.ClassDeclaration) {
     if (this._enabled) {
-      if (node.decorators) {
-        node.decorators.forEach(decorator => this._validateDecorator(decorator));
-      }
+      ts.getDecorators(node)?.forEach(decorator => this._validateDecorator(decorator));
 
       node.members.forEach(member => {
-        if (member.decorators) {
-          member.decorators.forEach(decorator => this._validateDecorator(decorator));
+        if (
+          ts.isPropertyDeclaration(member) ||
+          ts.isMethodDeclaration(member) ||
+          ts.isGetAccessorDeclaration(member) ||
+          ts.isSetAccessorDeclaration(member)
+        ) {
+          ts.getDecorators(member)?.forEach(decorator => this._validateDecorator(decorator));
         }
       });
     }

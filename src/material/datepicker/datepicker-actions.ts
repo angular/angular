@@ -26,7 +26,7 @@ import {MatDatepickerBase, MatDatepickerControl} from './datepicker-base';
   host: {'(click)': '_applySelection()'},
 })
 export class MatDatepickerApply {
-  constructor(private _datepicker: MatDatepickerBase<MatDatepickerControl<unknown>, unknown>) {}
+  constructor(private _datepicker: MatDatepickerBase<MatDatepickerControl<any>, unknown>) {}
 
   _applySelection() {
     this._datepicker._applyPendingSelection();
@@ -40,7 +40,7 @@ export class MatDatepickerApply {
   host: {'(click)': '_datepicker.close()'},
 })
 export class MatDatepickerCancel {
-  constructor(public _datepicker: MatDatepickerBase<MatDatepickerControl<unknown>, unknown>) {}
+  constructor(public _datepicker: MatDatepickerBase<MatDatepickerControl<any>, unknown>) {}
 }
 
 /**
@@ -65,7 +65,7 @@ export class MatDatepickerActions implements AfterViewInit, OnDestroy {
   private _portal: TemplatePortal;
 
   constructor(
-    private _datepicker: MatDatepickerBase<MatDatepickerControl<unknown>, unknown>,
+    private _datepicker: MatDatepickerBase<MatDatepickerControl<any>, unknown>,
     private _viewContainerRef: ViewContainerRef,
   ) {}
 

@@ -55,17 +55,14 @@ class Walker extends Lint.RuleWalker {
 
   /** Checks if the specified node has a "@Directive" or "@Component" decorator. */
   hasDirectiveDecorator(node: ts.ClassDeclaration): boolean {
-    return (
-      !!node.decorators &&
-      node.decorators.some(d => {
-        if (!ts.isCallExpression(d.expression)) {
-          return false;
-        }
+    return !!ts.getDecorators(node)?.some(d => {
+      if (!ts.isCallExpression(d.expression)) {
+        return false;
+      }
 
-        const decoratorText = d.expression.expression.getText();
-        return decoratorText === 'Directive' || decoratorText === 'Component';
-      })
-    );
+      const decoratorText = d.expression.expression.getText();
+      return decoratorText === 'Directive' || decoratorText === 'Component';
+    });
   }
 
   /**

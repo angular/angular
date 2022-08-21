@@ -56,6 +56,12 @@ interface PackageJson {
   dependencies: Record<string, string>;
 }
 
+/**
+ * Used to temporarily cast types to `any` to unblock the upgrade to TypeScript 4.8.
+ * TODO(crisbeto): Remove this once https://github.com/angular/angular-cli/pull/23764 is released.
+ */
+type Ts48MigrationAny = any;
+
 export class HammerGesturesMigration extends DevkitMigration<null> {
   // The migration is enabled when v9 or v10 are targeted, but actual targets are only
   // migrated if they are not test targets. We cannot migrate test targets since they have
@@ -730,7 +736,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
 
     const sourceFile = rootModuleSymbol.valueDeclaration.getSourceFile();
     const metadata = getDecoratorMetadata(
-      sourceFile,
+      sourceFile as Ts48MigrationAny,
       'NgModule',
       '@angular/core',
     ) as ts.ObjectLiteralExpression[];
@@ -742,7 +748,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
 
     const filePath = this.fileSystem.resolve(sourceFile.fileName);
     const recorder = this.fileSystem.edit(filePath);
-    const providersField = getMetadataField(metadata[0], 'providers')[0];
+    const providersField = getMetadataField(metadata[0] as Ts48MigrationAny, 'providers')[0];
     const providerIdentifiers = providersField
       ? findMatchingChildNodes(providersField, ts.isIdentifier)
       : null;
@@ -775,7 +781,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     ) {
       const symbolName = this._printNode(newProviderNode, sourceFile);
       addSymbolToNgModuleMetadata(
-        sourceFile,
+        sourceFile as Ts48MigrationAny,
         sourceFile.fileName,
         'providers',
         symbolName,
@@ -828,7 +834,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
 
     const sourceFile = rootModuleSymbol.valueDeclaration.getSourceFile();
     const metadata = getDecoratorMetadata(
-      sourceFile,
+      sourceFile as Ts48MigrationAny,
       'NgModule',
       '@angular/core',
     ) as ts.ObjectLiteralExpression[];
@@ -836,7 +842,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
       return;
     }
 
-    const importsField = getMetadataField(metadata[0], 'imports')[0];
+    const importsField = getMetadataField(metadata[0] as Ts48MigrationAny, 'imports')[0];
     const importIdentifiers = importsField
       ? findMatchingChildNodes(importsField, ts.isIdentifier)
       : null;
@@ -855,7 +861,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     ) {
       const symbolName = this._printNode(hammerModuleExpr, sourceFile);
       addSymbolToNgModuleMetadata(
-        sourceFile,
+        sourceFile as Ts48MigrationAny,
         sourceFile.fileName,
         'imports',
         symbolName,

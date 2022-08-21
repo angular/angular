@@ -43,7 +43,16 @@ class Walker extends Lint.RuleWalker {
       return;
     }
 
-    for (let member of node.members) {
+    for (const member of node.members) {
+      if (
+        !ts.isPropertyDeclaration(member) &&
+        !ts.isMethodDeclaration(member) &&
+        !ts.isGetAccessorDeclaration(member) &&
+        !ts.isSetAccessorDeclaration(member)
+      ) {
+        continue;
+      }
+
       const hasLifecycleHook =
         member.name !== undefined &&
         ts.isIdentifier(member.name) &&
@@ -59,18 +68,15 @@ class Walker extends Lint.RuleWalker {
   }
 
   /** Checks if the specified node has an Angular decorator. */
-  private _hasAngularDecorator(node: ts.Node): boolean {
-    return (
-      !!node.decorators &&
-      node.decorators.some(d => {
-        if (!ts.isCallExpression(d.expression) || !ts.isIdentifier(d.expression.expression)) {
-          return false;
-        }
+  private _hasAngularDecorator(node: ts.HasDecorators): boolean {
+    return !!ts.getDecorators(node)?.some(d => {
+      if (!ts.isCallExpression(d.expression) || !ts.isIdentifier(d.expression.expression)) {
+        return false;
+      }
 
-        const moduleImport = this._getModuleImportOfIdentifier(d.expression.expression);
-        return moduleImport ? moduleImport.startsWith('@angular/core') : false;
-      })
-    );
+      const moduleImport = this._getModuleImportOfIdentifier(d.expression.expression);
+      return moduleImport ? moduleImport.startsWith('@angular/core') : false;
+    });
   }
 
   /** Gets the module import of the given identifier if imported. */

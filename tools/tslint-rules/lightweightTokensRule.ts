@@ -72,7 +72,7 @@ function checkClassDeclarationForLightweightToken(
   // If a class has any decorator, it is assumed to be an Angular decorator.
   // There are no other decorators available and we do not want to complicate
   // this lint rule.
-  if (!node.decorators || node.decorators.length === 0) {
+  if (!ts.getDecorators(node)?.length) {
     return;
   }
 
@@ -174,12 +174,15 @@ function analyzeDecorators(param: ts.ParameterDeclaration): {
   hasInject: boolean;
   isOptional: boolean;
 } {
-  if (!param.decorators) {
+  const decorators = ts.getDecorators(param);
+
+  if (!decorators) {
     return {hasInject: false, isOptional: false};
   }
+
   let hasInject = false;
   let isOptional = false;
-  for (const decorator of param.decorators) {
+  for (const decorator of decorators) {
     const expr = decorator.expression;
     if (!ts.isCallExpression(expr) || !ts.isIdentifier(expr.expression)) {
       continue;
