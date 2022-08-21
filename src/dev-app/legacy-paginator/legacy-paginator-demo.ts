@@ -16,9 +16,9 @@ import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatLegacySlideToggleModule} from '@angular/material/legacy-slide-toggle';
 
 @Component({
-  selector: 'paginator-demo',
-  templateUrl: 'paginator-demo.html',
-  styleUrls: ['paginator-demo.css'],
+  selector: 'legacy-paginator-demo',
+  templateUrl: 'legacy-paginator-demo.html',
+  styleUrls: ['legacy-paginator-demo.css'],
   standalone: true,
   imports: [
     CommonModule,

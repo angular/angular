@@ -6,8 +6,8 @@ ng_module(
     name = "legacy-paginator",
     srcs = glob(["**/*.ts"]),
     assets = [
-        "paginator-demo.html",
-        ":paginator_demo_scss",
+        "legacy-paginator-demo.html",
+        ":legacy_paginator_demo_scss",
     ],
     deps = [
         "//src/material/legacy-card",
@@ -20,6 +20,6 @@ ng_module(
 )
 
 sass_binary(
-    name = "paginator_demo_scss",
-    src = "paginator-demo.scss",
+    name = "legacy_paginator_demo_scss",
+    src = "legacy-paginator-demo.scss",
 )

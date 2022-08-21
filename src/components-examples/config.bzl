@@ -20,7 +20,6 @@ ALL_EXAMPLES = [
     "//src/components-examples/material/progress-spinner",
     "//src/components-examples/material/progress-bar",
     "//src/components-examples/material/paginator",
-    "//src/components-examples/material/legacy-paginator",
     "//src/components-examples/material/menu",
     "//src/components-examples/material/list",
     "//src/components-examples/material/input",
