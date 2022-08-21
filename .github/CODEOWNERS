@@ -181,7 +181,7 @@
 /src/dev-app/google-map/**                             @crisbeto
 /src/dev-app/grid-list/**                              @andrewseguin
 /src/dev-app/icon/**                                   @andrewseguin
-/src/dev-app/input/**                                  @mmalerba
+/src/dev-app/legacy-input/**                           @mmalerba
 /src/dev-app/layout/**                                 @andrewseguin
 /src/dev-app/cdk-menu/**                               @mmalerba @crisbeto
 /src/dev-app/input-modality/**                         @jelbourn
@@ -193,7 +193,7 @@
 /src/dev-app/mdc-checkbox/**                           @mmalerba
 /src/dev-app/mdc-chips/**                              @mmalerba
 /src/dev-app/mdc-dialog/**                             @devversion
-/src/dev-app/mdc-input/**                              @devversion @mmalerba
+/src/dev-app/input/**                                  @devversion @mmalerba
 /src/dev-app/mdc-list/**                               @mmalerba
 /src/dev-app/mdc-menu/**                               @crisbeto
 /src/dev-app/legacy-paginator/**                       @crisbeto

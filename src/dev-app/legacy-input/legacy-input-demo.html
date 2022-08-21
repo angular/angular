@@ -9,8 +9,9 @@
 
       <table style="width: 100%" cellspacing="0"><tr>
         <td>
-          <mat-form-field style="width: 100%">
-            <input matInput placeholder="First name">
+          <mat-form-field style="width: 100%" floatLabel="never">
+            <mat-label>First name</mat-label>
+            <input matInput>
           </mat-form-field>
         </td>
         <td>
@@ -108,9 +109,9 @@
     <mat-form-field>
       <mat-label>Example</mat-label>
       <input matInput
-             [(ngModel)]="errorMessageExample4"
-             [errorStateMatcher]="customErrorStateMatcher"
-             required>
+        [(ngModel)]="errorMessageExample4"
+        [errorStateMatcher]="customErrorStateMatcher"
+        required>
       <mat-error>This field is required</mat-error>
     </mat-form-field>
 
@@ -121,65 +122,28 @@
   <mat-toolbar color="primary">Prefix + Suffix</mat-toolbar>
   <mat-card-content>
     <h4>Text</h4>
-    <mat-form-field [appearance]="prefixSuffixAppearance" class="demo-text-align-end">
+    <mat-form-field class="demo-text-align-end">
       <mat-label>Amount</mat-label>
       <input matInput>
-      <span matTextPrefix *ngIf="showPrefix">$</span>
-      <span matTextSuffix>.00</span>
-    </mat-form-field>
-
-    <h4>Text (always outline)</h4>
-    <mat-form-field appearance="outline" class="demo-text-align-end">
-      <mat-label>Amount</mat-label>
-      <input matInput>
-      <span matTextPrefix>$</span>
-      <span matTextSuffix>.00</span>
+      <span matPrefix>$&nbsp;</span>
+      <span matSuffix>.00</span>
     </mat-form-field>
 
     <h4>Icons</h4>
-    <mat-form-field [appearance]="prefixSuffixAppearance">
+    <mat-form-field>
       <mat-label>Amount</mat-label>
       <input matInput>
-      <mat-icon matIconPrefix *ngIf="showPrefix">calendar_today</mat-icon>
-      <mat-icon matIconSuffix>mode_edit</mat-icon>
+      <mat-icon matPrefix>attach_money</mat-icon>
+      <mat-icon matSuffix>mode_edit</mat-icon>
     </mat-form-field>
 
     <h4>Icon buttons</h4>
-    <mat-form-field [appearance]="prefixSuffixAppearance">
+    <mat-form-field>
       <mat-label>Amount</mat-label>
       <input matInput>
-      <button mat-icon-button matIconPrefix *ngIf="showPrefix">
-        <mat-icon>calendar_today</mat-icon>
-      </button>
-      <button mat-icon-button matIconSuffix>
-        <mat-icon>mode_edit</mat-icon>
-      </button>
+      <button mat-icon-button matPrefix><mat-icon>attach_money</mat-icon></button>
+      <button mat-icon-button matSuffix><mat-icon>mode_edit</mat-icon></button>
     </mat-form-field>
-
-    <h4>Text & Icons</h4>
-    <mat-form-field [appearance]="prefixSuffixAppearance">
-      <mat-label>Amount</mat-label>
-      <input matInput>
-      <span matTextPrefix>$</span>
-      <span matTextSuffix>.00</span>
-      <button mat-icon-button matIconPrefix *ngIf="showPrefix">
-        <mat-icon>calendar_today</mat-icon>
-      </button>
-      <button mat-icon-button matIconSuffix>
-        <mat-icon>mode_edit</mat-icon>
-      </button>
-    </mat-form-field>
-
-    <p>
-      <mat-button-toggle-group [(ngModel)]="prefixSuffixAppearance">
-        <mat-button-toggle value="fill">Fill</mat-button-toggle>
-        <mat-button-toggle value="outline">Outline</mat-button-toggle>
-      </mat-button-toggle-group>
-    </p>
-
-    <p>
-      <button (click)="showPrefix = !showPrefix">Toggle prefix</button>
-    </p>
   </mat-card-content>
 </mat-card>
 
@@ -283,10 +247,6 @@
         <input matInput disabled value="Value">
       </mat-form-field>
       <mat-form-field>
-        <mat-label>Label</mat-label>
-        <input matInput disabled required>
-      </mat-form-field>
-      <mat-form-field>
         <mat-label>Required field</mat-label>
         <input matInput required>
       </mat-form-field>
@@ -333,8 +293,8 @@
       <mat-form-field style="margin-bottom: 4em">
         <mat-label>Enter text to count</mat-label>
         <textarea matInput #longHint></textarea>
-        <mat-hint>Enter
-          some text to count how many characters are in it. The character count is shown on
+        <mat-hint>
+          Enter some text to count how many characters are in it. The character count is shown on
           the right.
         </mat-hint>
         <mat-hint align="end" style="white-space: nowrap" aria-live="polite">
@@ -351,23 +311,25 @@
     <p>
       <mat-checkbox [(ngModel)]="requiredField"> Check to make required:</mat-checkbox>
       <mat-form-field>
-        <mat-label>{{requiredField ? 'Required field' : 'Not required field'}}</mat-label>
-        <input matInput [required]="requiredField">
+        <input matInput
+               [required]="requiredField"
+               [placeholder]="requiredField ? 'Required field' : 'Not required field'">
       </mat-form-field>
     </p>
     <p>
       <mat-checkbox [(ngModel)]="hideRequiredMarker">Check to hide the required marker:</mat-checkbox>
       <mat-form-field [hideRequiredMarker]="hideRequiredMarker" style="width: 300px">
-        <mat-label>
-          {{hideRequiredMarker ? 'Required Without Marker' : 'Required With Marker'}}
-        </mat-label>
-        <input matInput required>
+        <input matInput
+               required
+               [placeholder]="hideRequiredMarker ?
+                   'Required Without Marker' : 'Required With Marker'">
       </mat-form-field>
     </p>
     <p>
       <mat-button-toggle-group [(ngModel)]="floatingLabel">
         <mat-button-toggle value="auto">Auto Float</mat-button-toggle>
         <mat-button-toggle value="always">Always Float</mat-button-toggle>
+        <mat-button-toggle value="never">Never Float</mat-button-toggle>
       </mat-button-toggle-group>
     </p>
 
@@ -389,91 +351,26 @@
       <mat-form-field>
         <mat-label>Prefixed</mat-label>
         <input matInput value="example">
-        <span matTextPrefix>Example:&nbsp;</span>
+        <div matPrefix>Example:&nbsp;</div>
       </mat-form-field>
       <mat-form-field class="demo-text-align-end">
         <mat-label>Suffixed</mat-label>
         <input matInput value="123">
-        <span matTextSuffix>.00 €</span>
+        <span matSuffix>.00 €</span>
       </mat-form-field>
       <br/>
       Both:
       <mat-form-field class="demo-text-align-end">
         <mat-label>Email address</mat-label>
         <input matInput #email="matInput" value="angular-core">
-        <span matIconPrefix>
-          <mat-icon [class.primary]="email.focused">email</mat-icon>&nbsp;
-        </span>
-        <span matTextSuffix [class.primary]="email.focused">&nbsp;@gmail.com</span>
+        <span matPrefix><mat-icon [class.primary]="email.focused">email</mat-icon>&nbsp;</span>
+        <span matSuffix [class.primary]="email.focused">&nbsp;@gmail.com</span>
       </mat-form-field>
     </p>
 
     <p>
       Empty: <mat-form-field><input matInput></mat-form-field>
       <label>Label: <mat-form-field><input matInput></mat-form-field></label>
-    </p>
-  </mat-card-content>
-</mat-card>
-
-<mat-card class="demo-card demo-basic">
-  <mat-toolbar color="primary">Dynamic Subscript Sizing</mat-toolbar>
-  <mat-card-content>
-    <p>
-      One validation
-      <mat-form-field appearance="fill" [color]="color" subscriptSizing="dynamic">
-        <mat-label>Fill appearance</mat-label>
-        <input matInput [(ngModel)]="fillAppearance" required>
-        <mat-error>This field is required</mat-error>
-      </mat-form-field>
-    </p>
-
-    <p>
-      One very long validation that wraps
-      <mat-form-field appearance="fill" [color]="color" subscriptSizing="dynamic"
-          style="width: 212px">
-        <mat-label>Fill appearance</mat-label>
-        <input matInput [(ngModel)]="fillAppearance" required>
-        <mat-error>This field is extremely, very much, absolutely positively required so do not forget it!</mat-error>
-      </mat-form-field>
-    </p>
-
-    <p>
-      One hint and one validation
-      <mat-form-field appearance="fill" [color]="color" subscriptSizing="dynamic">
-        <mat-label>Fill appearance</mat-label>
-        <input matInput [(ngModel)]="fillAppearance" required>
-        <mat-error>This field is required</mat-error>
-        <mat-hint>Please type something here</mat-hint>
-      </mat-form-field>
-    </p>
-
-    <p>
-      Multiple errors
-      <mat-form-field appearance="fill" [color]="color" subscriptSizing="dynamic">
-        <mat-label>Fill appearance</mat-label>
-        <input matInput [(ngModel)]="fillAppearance" required>
-        <mat-error>AAA</mat-error>
-        <mat-error>BBB</mat-error>
-        <mat-error>CCC</mat-error>
-      </mat-form-field>
-    </p>
-
-    <p>
-      Multiple hints
-      <mat-form-field appearance="fill" [color]="color" subscriptSizing="dynamic">
-        <mat-label>Fill appearance</mat-label>
-        <input matInput>
-        <mat-hint>aaa</mat-hint>
-        <mat-hint align="end">bbb</mat-hint>
-      </mat-form-field>
-    </p>
-
-    <p>
-      No hints or errors
-      <mat-form-field appearance="fill" [color]="color" subscriptSizing="dynamic">
-        <mat-label>Fill appearance</mat-label>
-        <input matInput>
-      </mat-form-field>
     </p>
   </mat-card-content>
 </mat-card>
@@ -566,9 +463,65 @@
         <input matInput [formControl]="placeholderTestControl" placeholder="This is the placeholder">
       </mat-form-field>
 
+      <mat-form-field floatLabel="never">
+        <mat-label>Never float</mat-label>
+        <input matInput [formControl]="placeholderTestControl" placeholder="This is the placeholder">
+      </mat-form-field>
+
       <mat-form-field>
-        <mat-label>Label w/ placeholder</mat-label>
-        <input matInput [formControl]="placeholderTestControl" placeholder="Placeholder">
+        <mat-label>Label and placeholder element</mat-label>
+        <mat-placeholder>The placeholder element</mat-placeholder>
+        <input matInput [formControl]="placeholderTestControl">
+      </mat-form-field>
+    </div>
+
+    <div>
+      <mat-form-field>
+        <mat-select [formControl]="placeholderTestControl">
+          <mat-option value="Value">Value</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-select [formControl]="placeholderTestControl" placeholder="Only placeholder">
+          <mat-option value="Value">Value</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Only label</mat-label>
+        <mat-select [formControl]="placeholderTestControl">
+          <mat-option value="Value">Value</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Label and placeholder</mat-label>
+        <mat-select [formControl]="placeholderTestControl" placeholder="This is the placeholder">
+          <mat-option value="Value">Value</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always">
+        <mat-label>Always float</mat-label>
+        <mat-select [formControl]="placeholderTestControl" placeholder="This is the placeholder">
+          <mat-option value="Value">Value</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field floatLabel="never">
+        <mat-label>Never float</mat-label>
+        <mat-select [formControl]="placeholderTestControl" placeholder="This is the placeholder">
+          <mat-option value="Value">Value</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Label and placeholder element</mat-label>
+        <mat-placeholder>The placeholder element</mat-placeholder>
+        <mat-select [formControl]="placeholderTestControl">
+          <mat-option value="Value">Value</mat-option>
+        </mat-select>
       </mat-form-field>
     </div>
 
@@ -596,9 +549,9 @@
       <label>maxRows<input type="number" #maxRows class="demo-rows" (input)="1+1"></label>
     </div>
     <textarea class="demo-textarea"
-              cdkTextareaAutosize
-              [cdkAutosizeMinRows]="parseNumber(minRows.value)"
-              [cdkAutosizeMaxRows]="parseNumber(maxRows.value)"></textarea>
+        cdkTextareaAutosize
+        [cdkAutosizeMinRows]="parseNumber(minRows.value)"
+        [cdkAutosizeMaxRows]="parseNumber(maxRows.value)"></textarea>
     <button type="button" (click)="minRows.value = (parseNumber(minRows.value) - 1) + ''">Decrement minRows</button>
 
     <h3>&lt;textarea&gt; with mat-form-field</h3>
@@ -629,14 +582,28 @@
 <mat-card class="demo-card demo-basic">
   <mat-toolbar color="primary">Appearance</mat-toolbar>
   <mat-card-content>
-    <mat-form-field appearance="fill" [color]="color">
+    <mat-form-field appearance="legacy">
+      <mat-label>Legacy appearance</mat-label>
+      <input matInput [(ngModel)]="legacyAppearance" required>
+      <mat-error>This field is required</mat-error>
+      <mat-hint>Please type something here</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="standard">
+      <mat-label>Standard appearance</mat-label>
+      <input matInput [(ngModel)]="standardAppearance" required>
+      <mat-error>This field is required</mat-error>
+      <mat-hint>Please type something here</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
       <mat-label>Fill appearance</mat-label>
       <input matInput [(ngModel)]="fillAppearance" required>
       <mat-error>This field is required</mat-error>
       <mat-hint>Please type something here</mat-hint>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" [color]="color">
+    <mat-form-field appearance="outline">
       <mat-label>Outline appearance</mat-label>
       <input matInput [(ngModel)]="outlineAppearance" required>
       <mat-error>This field is required</mat-error>
@@ -645,7 +612,23 @@
 
     <table style="width: 100%" cellspacing="0"><tr>
       <td>
-        <mat-form-field appearance="fill" [color]="color" style="width: 100%">
+        <mat-form-field appearance="legacy" style="width: 100%">
+          <mat-label>Legacy appearance</mat-label>
+          <input matInput [(ngModel)]="legacyAppearance" required>
+          <mat-error>This field is required</mat-error>
+          <mat-hint>Please type something here</mat-hint>
+        </mat-form-field>
+      </td>
+      <td>
+        <mat-form-field appearance="standard" style="width: 100%">
+          <mat-label>Standard appearance</mat-label>
+          <input matInput [(ngModel)]="standardAppearance" required>
+          <mat-error>This field is required</mat-error>
+          <mat-hint>Please type something here</mat-hint>
+        </mat-form-field>
+      </td>
+      <td>
+        <mat-form-field appearance="fill" style="width: 100%">
           <mat-label>Fill appearance</mat-label>
           <input matInput [(ngModel)]="fillAppearance" required>
           <mat-error>This field is required</mat-error>
@@ -653,7 +636,7 @@
         </mat-form-field>
       </td>
       <td>
-        <mat-form-field appearance="outline" [color]="color" style="width: 100%">
+        <mat-form-field appearance="outline" style="width: 100%">
           <mat-label>Outline appearance</mat-label>
           <input matInput [(ngModel)]="outlineAppearance" required>
           <mat-error>This field is required</mat-error>
@@ -661,12 +644,6 @@
         </mat-form-field>
       </td>
     </tr></table>
-
-    <mat-button-toggle-group [(ngModel)]="color">
-      <mat-button-toggle value="primary">Primary</mat-button-toggle>
-      <mat-button-toggle value="accent">Accent</mat-button-toggle>
-      <mat-button-toggle value="warn">Warn</mat-button-toggle>
-    </mat-button-toggle-group>
   </mat-card-content>
 </mat-card>
 
@@ -689,67 +666,6 @@
 </mat-card>
 
 <mat-card class="demo-card demo-basic">
-  <mat-toolbar color="primary">Textarea form-fields</mat-toolbar>
-  <mat-card-content>
-    <mat-form-field appearance="fill" class="demo-horizontal-spacing">
-      <mat-label>Label</mat-label>
-      <textarea matInput [disabled]="disableTextarea"></textarea>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="demo-horizontal-spacing">
-      <mat-label>Label</mat-label>
-      <textarea matInput [disabled]="disableTextarea"></textarea>
-    </mat-form-field>
-    <p>
-      <mat-checkbox [(ngModel)]="disableTextarea">Disable textarea form-fields</mat-checkbox>
-    </p>
-  </mat-card-content>
-</mat-card>
-
-<mat-card class="demo-card demo-basic">
-  <mat-toolbar color="primary">Appearance toggle</mat-toolbar>
-  <mat-card-content>
-    <mat-form-field [appearance]="appearance" class="demo-horizontal-spacing">
-      <mat-label>Label</mat-label>
-      <input matInput value="Initial">
-    </mat-form-field>
-    <p>
-      <mat-button-toggle-group [(ngModel)]="appearance">
-        <mat-button-toggle value="fill">Fill</mat-button-toggle>
-        <mat-button-toggle value="outline">Outline</mat-button-toggle>
-      </mat-button-toggle-group>
-    </p>
-  </mat-card-content>
-</mat-card>
-
-<mat-card class="demo-card demo-basic">
-  <mat-toolbar color="primary">Autocomplete</mat-toolbar>
-  <mat-card-content>
-    <p>
-      <mat-form-field>
-        <mat-label>Pick Number</mat-label>
-        <input type="text" aria-label="Number" matInput
-               [matAutocomplete]="autoComplete1">
-        <mat-autocomplete #autoComplete1="matAutocomplete">
-          <mat-option *ngFor="let option of options" [value]="option">{{option}}</mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-    </p>
-
-    <p>
-      <mat-form-field appearance="outline">
-        <mat-label>Pick Number</mat-label>
-        <input type="text" aria-label="Number" matInput
-               [matAutocomplete]="autoComplete2">
-        <mat-autocomplete #autoComplete2="matAutocomplete">
-          <mat-option *ngFor="let option of options" [value]="option">{{option}}</mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-    </p>
-  </mat-card-content>
-</mat-card>
-
-
-<mat-card class="demo-card demo-basic">
   <mat-toolbar color="primary">Outline form field in a tab</mat-toolbar>
   <mat-card-content>
     <mat-tab-group>
@@ -758,95 +674,13 @@
           <mat-label>Tab 1 input</mat-label>
           <input matInput value="test">
         </mat-form-field>
-
-        <mat-form-field appearance="outline" class="demo-text-align-end">
-          <mat-label>Amount</mat-label>
-          <input matInput>
-          <span matTextPrefix>$&nbsp;</span>
-          <span matTextSuffix>.00</span>
-        </mat-form-field>
       </mat-tab>
       <mat-tab label="Tab 2">
         <mat-form-field appearance="outline">
           <mat-label>Tab 2 input</mat-label>
           <input matInput value="test">
         </mat-form-field>
-
-        <mat-form-field appearance="outline" class="demo-text-align-end">
-          <mat-label>Amount</mat-label>
-          <input matInput>
-          <span matTextPrefix>$&nbsp;</span>
-          <span matTextPrefix *ngIf="showSecondPrefix">!&nbsp;</span>
-          <span matTextSuffix>.00</span>
-        </mat-form-field>
       </mat-tab>
     </mat-tab-group>
-
-    <button (click)="showSecondPrefix = !showSecondPrefix">Toggle second prefix.</button>
-  </mat-card-content>
-</mat-card>
-
-<mat-card class="demo-card demo-basic">
-  <mat-toolbar color="primary">Baseline</mat-toolbar>
-  <mat-card-content>
-    <span style="display: inline-block; margin-top: 20px">Shifted text</span>
-    <mat-form-field>
-      <mat-label>Label</mat-label>
-      <input matInput>
-    </mat-form-field>
-
-    <p>
-      Textarea alignment
-    </p>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Textarea</mat-label>
-      <textarea matInput rows="1"></textarea>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Input</mat-label>
-      <input matInput>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Input</mat-label>
-      <input matInput>
-    </mat-form-field>
-  </mat-card-content>
-</mat-card>
-
-
-<mat-card class="demo-card demo-basic">
-  <mat-toolbar color="primary">Examples</mat-toolbar>
-  <mat-card-content>
-    <h4>Custom control</h4>
-    <mdc-form-field-custom-control-example></mdc-form-field-custom-control-example>
-    <p>
-      <mat-form-field appearance="outline">
-        <mat-label>Phone number</mat-label>
-        <example-tel-input required></example-tel-input>
-        <mat-icon matIconSuffix>phone</mat-icon>
-        <mat-hint>Include area code</mat-hint>
-      </mat-form-field>
-    </p>
-    <p>
-      <mat-form-field>
-        <mat-label>Label</mat-label>
-        <select matNativeControl>
-          <option>First</option>
-          <option>Second</option>
-        </select>
-      </mat-form-field>
-    </p>
-    <p>
-      <mat-form-field appearance="outline">
-        <mat-label>Label</mat-label>
-        <select matNativeControl>
-          <option>First</option>
-          <option>Second</option>
-        </select>
-      </mat-form-field>
-    </p>
   </mat-card-content>
 </mat-card>

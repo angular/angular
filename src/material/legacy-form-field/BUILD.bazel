@@ -1,6 +1,5 @@
 load(
     "//tools:defaults.bzl",
-    "markdown_to_html",
     "ng_module",
     "sass_binary",
     "sass_library",
@@ -97,11 +96,6 @@ sass_binary(
         "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
     ],
-)
-
-markdown_to_html(
-    name = "overview",
-    srcs = [":form-field.md"],
 )
 
 filegroup(

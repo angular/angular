@@ -16,7 +16,7 @@ ts_library(
 
 filegroup(
     name = "overviews",
-    srcs = ["//src/material/%s:overview" % name for name in MATERIAL_ENTRYPOINTS],
+    srcs = ["//src/material/%s:overview" % name for name in MATERIAL_ENTRYPOINTS if not "legacy-" in name],
 )
 
 sass_library(

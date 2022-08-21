@@ -7,23 +7,18 @@
  */
 
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {FormControl, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {
-  FloatLabelType,
-  MatFormFieldAppearance,
-  MatFormFieldModule,
-} from '@angular/material/form-field';
-import {ErrorStateMatcher, ThemePalette} from '@angular/material/core';
 import {CommonModule} from '@angular/common';
-import {MdcFormFieldExamplesModule} from '@angular/components-examples/material-experimental/mdc-form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {MatButtonModule} from '@angular/material/button';
+import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatCardModule} from '@angular/material/card';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatLegacyCardModule} from '@angular/material/legacy-card';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {ErrorStateMatcher} from '@angular/material/core';
+import {FloatLabelType, MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
-import {MatTabsModule} from '@angular/material/tabs';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
+import {MatLegacyTabsModule} from '@angular/material/legacy-tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
 let max = 5;
@@ -31,43 +26,36 @@ let max = 5;
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
 @Component({
-  selector: 'mdc-input-demo',
-  templateUrl: 'mdc-input-demo.html',
-  styleUrls: ['mdc-input-demo.css'],
+  selector: 'legacy-input-demo',
+  templateUrl: 'legacy-input-demo.html',
+  styleUrls: ['legacy-input-demo.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-    MatAutocompleteModule,
-    MatButtonModule,
+    MatLegacyButtonModule,
     MatButtonToggleModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatFormFieldModule,
+    MatLegacyCardModule,
+    MatLegacyCheckboxModule,
+    MatLegacyFormFieldModule,
     MatIconModule,
-    MatInputModule,
-    MatTabsModule,
+    MatLegacyInputModule,
+    MatLegacySelectModule,
+    MatLegacyTabsModule,
     MatToolbarModule,
-    MdcFormFieldExamplesModule,
     ReactiveFormsModule,
   ],
 })
-export class MdcInputDemo {
-  color: ThemePalette = 'primary';
+export class LegacyInputDemo {
   floatingLabel: FloatLabelType = 'auto';
+  color: boolean;
   requiredField: boolean;
-  disableTextarea: boolean;
   hideRequiredMarker: boolean;
   ctrlDisabled = false;
   textareaNgModelValue: string;
   textareaAutosizeEnabled = false;
-  appearance: MatFormFieldAppearance = 'fill';
-  prefixSuffixAppearance: MatFormFieldAppearance = 'fill';
   placeholderTestControl = new FormControl('', Validators.required);
-  options: string[] = ['One', 'Two', 'Three'];
-  showSecondPrefix = false;
-  showPrefix = true;
 
   name: string;
   errorMessageExample1: string;

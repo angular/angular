@@ -7,18 +7,23 @@
  */
 
 import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {FormControl, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {
+  FloatLabelType,
+  MatFormFieldAppearance,
+  MatFormFieldModule,
+} from '@angular/material/form-field';
+import {ErrorStateMatcher, ThemePalette} from '@angular/material/core';
 import {CommonModule} from '@angular/common';
-import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+import {FormFieldExamplesModule} from '@angular/components-examples/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
-import {ErrorStateMatcher} from '@angular/material/core';
-import {FloatLabelType, MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatIconModule} from '@angular/material/icon';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacySelectModule} from '@angular/material/legacy-select';
-import {MatLegacyTabsModule} from '@angular/material/legacy-tabs';
+import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
 let max = 5;
@@ -34,28 +39,35 @@ const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA
   imports: [
     CommonModule,
     FormsModule,
-    MatLegacyButtonModule,
+    MatAutocompleteModule,
+    MatButtonModule,
     MatButtonToggleModule,
-    MatLegacyCardModule,
-    MatLegacyCheckboxModule,
-    MatLegacyFormFieldModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
     MatIconModule,
-    MatLegacyInputModule,
-    MatLegacySelectModule,
-    MatLegacyTabsModule,
+    MatInputModule,
+    MatTabsModule,
     MatToolbarModule,
+    FormFieldExamplesModule,
     ReactiveFormsModule,
   ],
 })
 export class InputDemo {
+  color: ThemePalette = 'primary';
   floatingLabel: FloatLabelType = 'auto';
-  color: boolean;
   requiredField: boolean;
+  disableTextarea: boolean;
   hideRequiredMarker: boolean;
   ctrlDisabled = false;
   textareaNgModelValue: string;
   textareaAutosizeEnabled = false;
+  appearance: MatFormFieldAppearance = 'fill';
+  prefixSuffixAppearance: MatFormFieldAppearance = 'fill';
   placeholderTestControl = new FormControl('', Validators.required);
+  options: string[] = ['One', 'Two', 'Three'];
+  showSecondPrefix = false;
+  showPrefix = true;
 
   name: string;
   errorMessageExample1: string;

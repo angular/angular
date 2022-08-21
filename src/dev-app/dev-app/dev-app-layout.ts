@@ -109,11 +109,9 @@ export class DevAppLayout {
     {name: 'MDC Checkbox', route: '/mdc-checkbox'},
     {name: 'MDC Chips', route: '/mdc-chips'},
     {name: 'MDC Dialog', route: '/mdc-dialog'},
-    {name: 'MDC Input', route: '/mdc-input'},
     {name: 'MDC List', route: '/mdc-list'},
     {name: 'MDC Menu', route: '/mdc-menu'},
     {name: 'MDC Radio', route: '/mdc-radio'},
-    {name: 'Legacy Paginator', route: '/legacy-paginator'},
     {name: 'MDC Progress Bar', route: '/mdc-progress-bar'},
     {name: 'MDC Progress Spinner', route: '/mdc-progress-spinner'},
     {name: 'MDC Tabs', route: '/mdc-tabs'},
@@ -123,6 +121,8 @@ export class DevAppLayout {
     {name: 'MDC Snack Bar', route: '/mdc-snack-bar'},
     {name: 'Legacy Tooltip', route: '/legacy-tooltip'},
     {name: 'Legacy Table', route: '/legacy-table'},
+    {name: 'Legacy Paginator', route: '/legacy-paginator'},
+    {name: 'Legacy Input', route: '/legacy-input'},
   ];
 
   /** Currently selected density scale based on the index. */

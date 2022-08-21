@@ -114,8 +114,8 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./icon/icon-demo').then(m => m.IconDemo),
   },
   {
-    path: 'input',
-    loadComponent: () => import('./input/input-demo').then(m => m.InputDemo),
+    path: 'legacy-input',
+    loadComponent: () => import('./legacy-input/legacy-input-demo').then(m => m.LegacyInputDemo),
   },
   {
     path: 'layout',
@@ -172,8 +172,8 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./mdc-dialog/mdc-dialog-demo').then(m => m.DialogDemo),
   },
   {
-    path: 'mdc-input',
-    loadComponent: () => import('./mdc-input/mdc-input-demo').then(m => m.MdcInputDemo),
+    path: 'input',
+    loadComponent: () => import('./input/input-demo').then(m => m.InputDemo),
   },
   {
     path: 'mdc-list',

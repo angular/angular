@@ -1,0 +1,31 @@
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "legacy-input",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "legacy-input-demo.html",
+        ":legacy_input_demo_scss",
+    ],
+    deps = [
+        "//src/material/button-toggle",
+        "//src/material/icon",
+        "//src/material/legacy-button",
+        "//src/material/legacy-card",
+        "//src/material/legacy-checkbox",
+        "//src/material/legacy-form-field",
+        "//src/material/legacy-input",
+        "//src/material/legacy-select",
+        "//src/material/legacy-tabs",
+        "//src/material/toolbar",
+        "@npm//@angular/forms",
+    ],
+)
+
+sass_binary(
+    name = "legacy_input_demo_scss",
+    src = "legacy-input-demo.scss",
+    deps = ["//src/cdk:sass_lib"],
+)
