@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
@@ -17,14 +25,12 @@ import {LegacyTooltipModifiedDefaultsExample} from './legacy-tooltip-modified-de
 import {LegacyTooltipOverviewExample} from './legacy-tooltip-overview/legacy-tooltip-overview-example';
 import {LegacyTooltipPositionExample} from './legacy-tooltip-position/legacy-tooltip-position-example';
 import {LegacyTooltipPositionAtOriginExample} from './legacy-tooltip-position-at-origin/legacy-tooltip-position-at-origin-example';
-import {LegacyTooltipHarnessExample} from './legacy-tooltip-harness/legacy-tooltip-harness-example';
 
 export {
   LegacyTooltipAutoHideExample,
   LegacyTooltipCustomClassExample,
   LegacyTooltipDelayExample,
   LegacyTooltipDisabledExample,
-  LegacyTooltipHarnessExample,
   LegacyTooltipManualExample,
   LegacyTooltipMessageExample,
   LegacyTooltipModifiedDefaultsExample,
@@ -38,7 +44,6 @@ const EXAMPLES = [
   LegacyTooltipCustomClassExample,
   LegacyTooltipDelayExample,
   LegacyTooltipDisabledExample,
-  LegacyTooltipHarnessExample,
   LegacyTooltipManualExample,
   LegacyTooltipMessageExample,
   LegacyTooltipModifiedDefaultsExample,

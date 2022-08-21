@@ -5,9 +5,9 @@ package(default_visibility = ["//visibility:public"])
 ng_module(
     name = "legacy-tooltip",
     srcs = glob(["**/*.ts"]),
-    assets = ["tooltip-demo.html"],
+    assets = ["legacy-tooltip-demo.html"],
     deps = [
-        "//src/components-examples/material/legacy-tooltip",
         "//src/dev-app/example",
+        "//src/dev-app/legacy-tooltip/examples",
     ],
 )

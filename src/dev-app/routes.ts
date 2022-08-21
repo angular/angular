@@ -226,7 +226,8 @@ export const DEV_APP_ROUTES: Routes = [
   },
   {
     path: 'legacy-tooltip',
-    loadComponent: () => import('./legacy-tooltip/tooltip-demo').then(m => m.TooltipDemo),
+    loadComponent: () =>
+      import('./legacy-tooltip/legacy-tooltip-demo').then(m => m.LegacyTooltipDemo),
   },
   {
     path: 'menu',

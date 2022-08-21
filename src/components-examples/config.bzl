@@ -4,7 +4,6 @@ ALL_EXAMPLES = [
     # with "bazel query 'kind("ng_module", //src/components-examples/...:*)' --output="label"
     "//src/components-examples/material/tree",
     "//src/components-examples/material/tooltip",
-    "//src/components-examples/material/legacy-tooltip",
     "//src/components-examples/material/toolbar",
     "//src/components-examples/material/tabs",
     "//src/components-examples/material/table",
