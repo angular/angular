@@ -648,6 +648,9 @@
     "name": "connectableObservableDescriptor"
   },
   {
+    "name": "constructTimingAst"
+  },
+  {
     "name": "containsElement"
   },
   {
