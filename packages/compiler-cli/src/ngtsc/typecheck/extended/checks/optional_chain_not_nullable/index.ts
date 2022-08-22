@@ -27,9 +27,12 @@ class OptionalChainNotNullableCheck extends
   override visitNode(
       ctx: TemplateContext<ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE>, component: ts.ClassDeclaration,
       node: TmplAstNode|AST): NgTemplateDiagnostic<ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE>[] {
-    if (!(node instanceof SafeCall) && !(node instanceof SafePropertyRead) &&
-        !(node instanceof SafeKeyedRead))
+    if (!(node instanceof SafeCall) && !(node instanceof SafePropertyRead)) {
+      // Note: `SafeKeyedRead` is also ignored here because TypeScript does not include `undefined`
+      // in the type of an indexed access, leading to potentially false positives for out-of-bounds
+      // accesses of arrays.
       return [];
+    }
 
     const symbolLeft = ctx.templateTypeChecker.getSymbolOfNode(node.receiver, component);
     if (symbolLeft === null || symbolLeft.kind !== SymbolKind.Expression) {

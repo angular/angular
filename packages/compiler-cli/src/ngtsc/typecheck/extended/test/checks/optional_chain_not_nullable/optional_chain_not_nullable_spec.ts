@@ -68,7 +68,10 @@ runInEachFileSystem(() => {
       expect(getSourceCodeForDiagnostic(diags[0])).toBe(`bar`);
     });
 
-    it('should produce optional chain warning for indexed access', () => {
+    // Using indexed access syntax is not reported as a warning as TypeScript's type system
+    // does not include `undefined` in the type of an indexed access, whereas array index
+    // accesses may be expected to be out-of-bounds.
+    it('should not produce optional chain warning for indexed access', () => {
       const fileName = absoluteFrom('/main.ts');
       const {program, templateTypeChecker} = setup([{
         fileName,
@@ -83,11 +86,7 @@ runInEachFileSystem(() => {
           templateTypeChecker, program.getTypeChecker(), [optionalChainNotNullableFactory],
           {strictNullChecks: true} /* options */);
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
-      expect(diags.length).toBe(1);
-      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
-      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE));
-      expect(diags[0].messageText).toContain(`the '?.' operator can be safely removed`);
-      expect(getSourceCodeForDiagnostic(diags[0])).toBe(`var1?.['bar']`);
+      expect(diags.length).toBe(0);
     });
 
     it('should produce optional chain warning for method call', () => {
