@@ -278,14 +278,12 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
     context.previousNode = ast;
   }
 
-  private _visitTiming(
-      ast: TimingAst, context: AnimationTimelineContext,
-      allowNegativeValues = false): AnimateTimings {
+  private _visitTiming(ast: TimingAst, context: AnimationTimelineContext): AnimateTimings {
     if ((ast as DynamicTimingAst).dynamic) {
       const strValue = (ast as DynamicTimingAst).strValue;
       const timingValue =
           context.params ? interpolateParams(strValue, context.params, context.errors) : strValue;
-      return resolveTiming(timingValue, context.errors, allowNegativeValues);
+      return resolveTiming(timingValue, context.errors);
     } else {
       return {duration: ast.duration, delay: ast.delay, easing: ast.easing};
     }
@@ -415,8 +413,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
   visitStagger(ast: StaggerAst, context: AnimationTimelineContext) {
     const parentContext = context.parentContext!;
     const tl = context.currentTimeline;
-    const timings = this._visitTiming(ast.timings, context, true);
-
+    const timings = ast.timings;
     const duration = Math.abs(timings.duration);
     const maxTime = duration * (context.currentQueryTotal - 1);
     let delay = duration * context.currentQueryIndex;
