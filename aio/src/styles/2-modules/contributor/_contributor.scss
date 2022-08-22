@@ -48,6 +48,7 @@ aio-contributor {
       width: calc(100% - 4px);
       height: calc(100% - 4px);
       clip-path: $angular-shape-polygon;
+      object-fit: cover;
     }
 
     .contributor-social-links {
