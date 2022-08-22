@@ -169,6 +169,15 @@
     "bio": "Brian is a software engineer and GDE in Angular with a passion for learning, writing, speaking, teaching and mentoring. Brian has been building web applications for over 20 years and has long been a fanboy of JavaScript. When not in front of his Macbook Pro Brian is in the Rocky Mountains skiing or hiking.",
     "groups": ["GDE"]
   },
+  "bobwatson": {
+    "name": "Bob Watson",
+    "lead": "mgechev",
+    "picture": "bob-watson.jpg",
+    "twitter": "bobwatsonphd",
+    "website": "https://docsbydesign.com",
+    "bio": "Bob is the documentation lead for angular.io. When he's not obsessing over the i-dotting and t-crossing of documentation, he enjoys seeing the world from up in the air and below the sea.",
+    "groups": ["Angular"]
+  },
   "brocco": {
     "name": "Mike Brocchi",
     "picture": "mike-brocchi.jpg",
@@ -915,12 +924,6 @@
     "website": "https://thekiba.io",
     "bio": "Andrew is a software engineer using Angular and .NET. He spends most of his spare time staying up-to-date, helping other people, and experimenting with web tech.",
     "groups": ["GDE"]
-  },
-  "tmdavisgoogle": {
-    "name": "Tiffany Davis",
-    "bio": "Tiffany is an editor working on Angular documentation.",
-    "groups": ["Angular"],
-    "lead": "mgechev"
   },
   "toddmotto": {
     "name": "Todd Motto",
