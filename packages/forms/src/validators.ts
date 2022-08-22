@@ -14,7 +14,7 @@ import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, Validator
 import {RuntimeErrorCode} from './errors';
 import {AbstractControl} from './model/abstract_model';
 
-const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || ngDevMode;
 
 function isEmptyInputValue(value: any): boolean {
   /**
@@ -483,7 +483,7 @@ export function requiredValidator(control: AbstractControl): ValidationErrors|nu
  * See `Validators.requiredTrue` for additional information.
  */
 export function requiredTrueValidator(control: AbstractControl): ValidationErrors|null {
-  return control.value === true ? null : {'required': true};
+  return (control.value) ? null : {'required': true};
 }
 
 /**
@@ -593,7 +593,7 @@ function mergeErrors(arrayOfErrors: (ValidationErrors|null)[]): ValidationErrors
     res = errors != null ? {...res!, ...errors} : res!;
   });
 
-  return Object.keys(res).length === 0 ? null : res;
+  return hasValidLength(Object.keys(res)) ? res : null;
 }
 
 type GenericValidatorFn = (control: AbstractControl) => any;
@@ -630,7 +630,7 @@ export function normalizeValidators<V>(validators: (V|Validator|AsyncValidator)[
 function compose(validators: (ValidatorFn|null|undefined)[]|null): ValidatorFn|null {
   if (!validators) return null;
   const presentValidators: ValidatorFn[] = validators.filter(isPresent) as any;
-  if (presentValidators.length == 0) return null;
+  if (!hasValidLength(presentValidators)) return null;
 
   return function(control: AbstractControl) {
     return mergeErrors(executeValidators<ValidatorFn>(control, presentValidators));
@@ -643,7 +643,7 @@ function compose(validators: (ValidatorFn|null|undefined)[]|null): ValidatorFn|n
  * validator function.
  */
 export function composeValidators(validators: Array<Validator|ValidatorFn>): ValidatorFn|null {
-  return validators != null ? compose(normalizeValidators<ValidatorFn>(validators)) : null;
+  return (validators) ? compose(normalizeValidators<ValidatorFn>(validators)) : null;
 }
 
 /**
@@ -653,7 +653,7 @@ export function composeValidators(validators: Array<Validator|ValidatorFn>): Val
 function composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
   if (!validators) return null;
   const presentValidators: AsyncValidatorFn[] = validators.filter(isPresent) as any;
-  if (presentValidators.length == 0) return null;
+  if (!hasValidLength(presentValidators)) return null;
 
   return function(control: AbstractControl) {
     const observables =
@@ -669,8 +669,7 @@ function composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|n
  */
 export function composeAsyncValidators(validators: Array<AsyncValidator|AsyncValidatorFn>):
     AsyncValidatorFn|null {
-  return validators != null ? composeAsync(normalizeValidators<AsyncValidatorFn>(validators)) :
-                              null;
+  return (validators) ? composeAsync(normalizeValidators<AsyncValidatorFn>(validators)) : null;
 }
 
 /**
