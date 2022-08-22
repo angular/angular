@@ -5,17 +5,17 @@
 
 ### `<input>` and `<textarea>` attributes
 
-All of the attributes that can be used with normal `<input>` and `<textarea>` elements can be used
+All of the attributes that can be used with `<input>` and `<textarea>` elements can be used
 on elements inside `<mat-form-field>` as well. This includes Angular directives such as `ngModel`
 and `formControl`.
 
 The only limitation is that the `type` attribute can only be one of the values supported by
-`matInput`.
+`matNativeControl`.
 
 ### Supported `<input>` types
 
 The following [input types](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input) can
-be used with `matInput`:
+be used with `matNativeControl`:
 * color
 * date
 * datetime-local
@@ -32,8 +32,8 @@ be used with `matInput`:
 
 ### Form field features
 
-There are a number of `<mat-form-field>` features that can be used with any `<input matInput>` or
-`<textarea matInput>`. These include error messages, hint text, prefix & suffix, and theming. For
+There are a number of `<mat-form-field>` features that can be used with any `<input matNativeControl>` or
+`<textarea matNativeControl>`. These include error messages, hint text, prefix & suffix, and theming. For
 additional information about these features, see the
 [form field documentation](https://material.angular.io/components/form-field/overview).
 
@@ -49,12 +49,12 @@ element. In some cases that `<mat-form-field>` may use the placeholder as the la
 
 The `<mat-form-field>` allows you to
 [associate error messages](https://material.angular.io/components/form-field/overview#error-messages)
-with your `matInput`. By default, these error messages are shown when the control is invalid and
+with your `matNativeControl`. By default, these error messages are shown when the control is invalid and
 either the user has interacted with (touched) the element or the parent form has been submitted. If
 you wish to override this behavior (e.g. to show the error as soon as the invalid control is dirty
 or when a parent form group is invalid), you can use the `errorStateMatcher` property of the
-`matInput`. The property takes an instance of an `ErrorStateMatcher` object. An `ErrorStateMatcher`
-must implement a single method `isErrorState` which takes the `FormControl` for this `matInput` as
+`matNativeControl`. The property takes an instance of an `ErrorStateMatcher` object. An `ErrorStateMatcher`
+must implement a single method `isErrorState` which takes the `FormControl` for this `matNativeControl` as
 well as the parent form and returns a boolean indicating whether errors should be shown. (`true`
 indicating that they should be shown, and `false` indicating that they should not.)
 
@@ -86,7 +86,7 @@ for detecting when an input becomes autofilled and changing the appearance of th
 
 ### Accessibility
 
-The `matInput` directive works with native `<input>` to provide an accessible experience.
+The `matNativeControl` directive works with native `<input>` to provide an accessible experience.
 
 #### Aria attributes
 

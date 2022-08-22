@@ -1,12 +1,12 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
-import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
+import {MatRadioModule} from '@angular/material/radio';
 import {MatSelectModule} from '@angular/material/select';
 import {FormFieldAppearanceExample} from './form-field-appearance/form-field-appearance-example';
 import {
@@ -49,12 +49,12 @@ const EXAMPLES = [
 @NgModule({
   imports: [
     CommonModule,
-    MatLegacyButtonModule,
-    MatLegacyCheckboxModule,
+    MatButtonModule,
+    MatCheckboxModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatLegacyRadioModule,
+    MatRadioModule,
     MatSelectModule,
     ReactiveFormsModule,
   ],

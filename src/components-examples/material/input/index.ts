@@ -1,9 +1,9 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
+import {MatInputModule} from '@angular/material/input';
 import {InputClearableExample} from './input-clearable/input-clearable-example';
 import {InputErrorStateMatcherExample} from './input-error-state-matcher/input-error-state-matcher-example';
 import {InputErrorsExample} from './input-errors/input-errors-example';
@@ -38,9 +38,9 @@ const EXAMPLES = [
 @NgModule({
   imports: [
     CommonModule,
-    MatLegacyButtonModule,
+    MatButtonModule,
     MatIconModule,
-    MatLegacyInputModule,
+    MatInputModule,
     FormsModule,
     ReactiveFormsModule,
   ],
