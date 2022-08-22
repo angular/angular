@@ -85,7 +85,7 @@
     "@angular/router": "^14.2.0-rc.0",
     "@axe-core/webdriverjs": "^4.3.2",
     "@babel/core": "^7.16.12",
-    "@bazel/bazelisk": "1.12.0",
+    "@bazel/bazelisk": "1.12.1",
     "@bazel/buildifier": "5.1.0",
     "@bazel/concatjs": "5.5.3",
     "@bazel/esbuild": "5.5.3",
