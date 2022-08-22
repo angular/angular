@@ -864,7 +864,7 @@ class TcbDomSchemaCheckerOp extends TcbOp {
       if (binding.type === BindingType.Property) {
         if (binding.name !== 'style' && binding.name !== 'class') {
           // A direct binding to a property.
-          const propertyName = ATTR_TO_PROP[binding.name] || binding.name;
+          const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
           this.tcb.domSchemaChecker.checkProperty(
               this.tcb.id, this.element, propertyName, binding.sourceSpan, this.tcb.schemas,
               this.tcb.hostIsStandalone);
@@ -880,14 +880,14 @@ class TcbDomSchemaCheckerOp extends TcbOp {
  * Mapping between attributes names that don't correspond to their element property names.
  * Note: this mapping has to be kept in sync with the equally named mapping in the runtime.
  */
-const ATTR_TO_PROP: {[name: string]: string} = {
+const ATTR_TO_PROP = new Map(Object.entries({
   'class': 'className',
   'for': 'htmlFor',
   'formaction': 'formAction',
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
   'tabindex': 'tabIndex',
-};
+}));
 
 /**
  * A `TcbOp` which generates code to check "unclaimed inputs" - bindings on an element which were
@@ -930,7 +930,7 @@ class TcbUnclaimedInputsOp extends TcbOp {
             elId = this.scope.resolve(this.element);
           }
           // A direct binding to a property.
-          const propertyName = ATTR_TO_PROP[binding.name] || binding.name;
+          const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
           const prop = ts.factory.createElementAccessExpression(
               elId, ts.factory.createStringLiteral(propertyName));
           const stmt = ts.factory.createBinaryExpression(

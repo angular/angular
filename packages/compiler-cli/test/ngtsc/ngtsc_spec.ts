@@ -3669,6 +3669,24 @@ function allTests(os: string) {
       expect(trim(jsContents)).toContain(trim(hostBindingsFn));
     });
 
+    // https://github.com/angular/angular/issues/46936
+    it('should support bindings with Object builtin names', () => {
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          template: '<div [valueOf]="123"></div>',
+        })
+        export class TestCmp {}
+    `);
+
+      const errors = env.driveDiagnostics();
+      expect(errors.length).toBe(1);
+      expect(errors[0].messageText)
+          .toContain(`Can't bind to 'valueOf' since it isn't a known property of 'div'.`);
+    });
+
     it('should handle $any used inside a listener', () => {
       env.write('test.ts', `
         import {Component} from '@angular/core';
