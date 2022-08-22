@@ -7,7 +7,6 @@
  */
 
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContext} from '../core';
-
 import {isNgContainer, isNgContent} from '../ml_parser/tags';
 import {dashCaseToCamelCase} from '../util';
 
@@ -232,46 +231,46 @@ const SCHEMA: string[] = [
   ':svg:cursor^:svg:|',
 ];
 
-const _ATTR_TO_PROP: {[name: string]: string} = {
+const _ATTR_TO_PROP = new Map(Object.entries({
   'class': 'className',
   'for': 'htmlFor',
   'formaction': 'formAction',
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
   'tabindex': 'tabIndex',
-};
+}));
 
 // Invert _ATTR_TO_PROP.
-const _PROP_TO_ATTR: {[name: string]: string} =
-    Object.keys(_ATTR_TO_PROP).reduce((inverted, attr) => {
-      inverted[_ATTR_TO_PROP[attr]] = attr;
+const _PROP_TO_ATTR =
+    Array.from(_ATTR_TO_PROP).reduce((inverted, [propertyName, attributeName]) => {
+      inverted.set(propertyName, attributeName);
       return inverted;
-    }, {} as {[prop: string]: string});
+    }, new Map<string, string>());
 
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {
-  private _schema: {[element: string]: {[property: string]: string}} = {};
+  private _schema = new Map<string, Map<string, string>>();
   // We don't allow binding to events for security reasons. Allowing event bindings would almost
   // certainly introduce bad XSS vulnerabilities. Instead, we store events in a separate schema.
-  private _eventSchema: {[element: string]: Set<string>} = {};
+  private _eventSchema = new Map<string, Set<string>>;
 
   constructor() {
     super();
     SCHEMA.forEach(encodedType => {
-      const type: {[property: string]: string} = {};
+      const type = new Map<string, string>();
       const events: Set<string> = new Set();
       const [strType, strProperties] = encodedType.split('|');
       const properties = strProperties.split(',');
       const [typeNames, superName] = strType.split('^');
       typeNames.split(',').forEach(tag => {
-        this._schema[tag.toLowerCase()] = type;
-        this._eventSchema[tag.toLowerCase()] = events;
+        this._schema.set(tag.toLowerCase(), type);
+        this._eventSchema.set(tag.toLowerCase(), events);
       });
-      const superType = superName && this._schema[superName.toLowerCase()];
+      const superType = superName && this._schema.get(superName.toLowerCase());
       if (superType) {
-        Object.keys(superType).forEach((prop: string) => {
-          type[prop] = superType[prop];
-        });
-        for (const superEvent of this._eventSchema[superName.toLowerCase()]) {
+        for (const [prop, value] of superType) {
+          type.set(prop, value);
+        }
+        for (const superEvent of this._eventSchema.get(superName.toLowerCase())!) {
           events.add(superEvent);
         }
       }
@@ -282,16 +281,16 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
               events.add(property.substring(1));
               break;
             case '!':
-              type[property.substring(1)] = BOOLEAN;
+              type.set(property.substring(1), BOOLEAN);
               break;
             case '#':
-              type[property.substring(1)] = NUMBER;
+              type.set(property.substring(1), NUMBER);
               break;
             case '%':
-              type[property.substring(1)] = OBJECT;
+              type.set(property.substring(1), OBJECT);
               break;
             default:
-              type[property] = STRING;
+              type.set(property, STRING);
           }
         }
       });
@@ -315,8 +314,9 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
       }
     }
 
-    const elementProperties = this._schema[tagName.toLowerCase()] || this._schema['unknown'];
-    return !!elementProperties[propName];
+    const elementProperties =
+        this._schema.get(tagName.toLowerCase()) || this._schema.get('unknown')!;
+    return elementProperties.has(propName);
   }
 
   override hasElement(tagName: string, schemaMetas: SchemaMetadata[]): boolean {
@@ -335,7 +335,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
       }
     }
 
-    return !!this._schema[tagName.toLowerCase()];
+    return this._schema.has(tagName.toLowerCase());
   }
 
   /**
@@ -368,7 +368,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   }
 
   override getMappedPropName(propName: string): string {
-    return _ATTR_TO_PROP[propName] || propName;
+    return _ATTR_TO_PROP.get(propName) ?? propName;
   }
 
   override getDefaultComponentElementName(): string {
@@ -398,17 +398,18 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   }
 
   override allKnownElementNames(): string[] {
-    return Object.keys(this._schema);
+    return Array.from(this._schema.keys());
   }
 
   allKnownAttributesOfElement(tagName: string): string[] {
-    const elementProperties = this._schema[tagName.toLowerCase()] || this._schema['unknown'];
+    const elementProperties =
+        this._schema.get(tagName.toLowerCase()) || this._schema.get('unknown')!;
     // Convert properties to attributes.
-    return Object.keys(elementProperties).map(prop => _PROP_TO_ATTR[prop] ?? prop);
+    return Array.from(elementProperties.keys()).map(prop => _PROP_TO_ATTR.get(prop) ?? prop);
   }
 
   allKnownEventsOfElement(tagName: string): string[] {
-    return Array.from(this._eventSchema[tagName.toLowerCase()] ?? []);
+    return Array.from(this._eventSchema.get(tagName.toLowerCase()) ?? []);
   }
 
   override normalizeAnimationStyleProperty(propName: string): string {
