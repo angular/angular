@@ -1,9 +1,0 @@
-@forward '../../../material/core/theming/theming.import';
-@forward '../../../material/core/core.import';
-@forward '../core-theme.import';
-@forward 'all-theme' hide all-mdc-component-themes;;
-
-@import '../core-theme';
-@import '../../../material/core/core';
-@import '../../../material/core/core-theme';
-@import '../../../material/core/theming/theming';

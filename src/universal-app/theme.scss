@@ -1,5 +1,4 @@
 @use '@angular/material' as mat;
-@use '@angular/material-experimental' as experimental;
 
 // Plus imports for other components in your app.
 
@@ -7,14 +6,16 @@
 // have to load a single css file for Angular Material in your app.
 // **Be sure that you only ever include this mixin once!**
 @include mat.core();
-@include experimental.all-mdc-component-typographies();
 
 // Define the default theme (same as the example above).
 $candy-app-primary: mat.define-palette(mat.$indigo-palette);
 $candy-app-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
-$candy-app-theme: mat.define-light-theme($candy-app-primary, $candy-app-accent);
+$candy-app-theme: mat.define-light-theme((
+    color: (primary: $candy-app-primary, accent: $candy-app-accent),
+    typography: mat.define-typography-config(),
+    density: 0
+));
 
 // Include the default theme styles.
 @include mat.all-component-themes($candy-app-theme);
 @include mat.all-legacy-component-themes($candy-app-theme);
-@include experimental.all-mdc-component-themes($candy-app-theme);

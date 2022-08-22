@@ -6,9 +6,15 @@
 @use './option/optgroup-theme';
 @use './selection/pseudo-checkbox/pseudo-checkbox-theme';
 @use './style/elevation';
+@use './typography/typography';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
+
+  @include ripple-theme.color($config);
+  @include option-theme.color($config);
+  @include optgroup-theme.color($config);
+  @include pseudo-checkbox-theme.color($config);
 
   // Wrapper element that provides the theme background when the user's content isn't
   // inside of a `mat-sidenav-container`. Note that we need to exclude the ampersand
@@ -41,6 +47,27 @@
   }
 }
 
+@mixin typography($config-or-theme) {
+  $config: typography.private-typography-to-2018-config(
+          theming.get-typography-config($config-or-theme));
+
+  @include option-theme.typography($config);
+  @include optgroup-theme.typography($config);
+  @include pseudo-checkbox-theme.typography($config);
+  // TODO(mmalerba): add typography mixin for this.
+  // @include ripple-theme.typography($config);
+}
+
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+
+  @include option-theme.density($density-scale);
+  @include optgroup-theme.density($density-scale);
+  // TODO(mmalerba): add density mixins for these.
+  // @include ripple-theme.density($density-scale);
+  // @include pseudo-checkbox-theme.density($density-scale);
+}
+
 // Mixin that renders all of the core styles that depend on the theme.
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -48,15 +75,18 @@
   // there won't be multiple warnings. e.g. if `mat-core-theme` reports a warning, then
   // the imported themes (such as `mat-ripple-theme`) should not report again.
   @include theming.private-check-duplicate-theme-styles($theme, 'mat-core') {
-    @include ripple-theme.theme($theme);
-    @include option-theme.theme($theme);
-    @include optgroup-theme.theme($theme);
-    @include pseudo-checkbox-theme.theme($theme);
-
     $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
       @include color($color);
+    }
+    @if $density != null {
+      @include density($density);
+    }
+    @if $typography != null {
+      @include typography($typography);
     }
   }
 }

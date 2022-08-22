@@ -1,14 +1,17 @@
 @use '@angular/material' as mat;
-@use '@angular/material-experimental' as experimental;
 
 $primary: mat.define-palette(mat.$blue-palette);
 $accent: mat.define-palette(mat.$grey-palette);
-$theme: mat.define-light-theme($primary, $accent);
+$theme: mat.define-light-theme((
+  color: (primary: $primary, accent: $accent),
+  typography: mat.define-typography-config(),
+  density: 0
+));
 
 @include mat.core($theme);
 
+@include mat.all-legacy-component-themes($theme);
 @include mat.all-component-themes($theme);
-@include experimental.all-mdc-component-themes($theme);
 
 html,
 body {

@@ -1,8 +1,0 @@
-@forward '../../material/core/theming/theming.import';
-@forward 'option/option-theme' as mat-mdc-*;
-@forward 'option/optgroup-theme' as mat-mdc-optgroup-*;
-@forward 'core-theme' as mat-mdc-core-*;
-
-@import '../../material/core/theming/theming';
-@import './option/option-theme';
-@import './option/optgroup-theme';

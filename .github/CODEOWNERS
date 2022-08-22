@@ -116,7 +116,6 @@
 /src/material/card/**                                  @mmalerba
 /src/material/checkbox/**             @mmalerba
 /src/material/chips/**                                 @mmalerba @crisbeto
-/src/material-experimental/mdc-core/**                 @crisbeto
 /src/material/dialog/**               @devversion
 /src/material/form-field/**                            @devversion @mmalerba
 /src/material/list/**                                  @mmalerba @devversion

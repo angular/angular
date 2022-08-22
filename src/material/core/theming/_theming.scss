@@ -304,7 +304,7 @@ $_emitted-density: () !default;
 //
 // The mixin keeps track of all configurations in a list that is scoped to the specified
 // id. This is necessary because a given theme can be passed to multiple disjoint theme mixins
-// (e.g. `all-component-themes` and `all-mdc-component-themes`) without causing any
+// (e.g. `all-component-themes` and `all-legacy-component-themes`) without causing any
 // style duplication.
 @mixin private-check-duplicate-theme-styles($theme-or-color-config, $id) {
   $theme: private-legacy-get-theme($theme-or-color-config);

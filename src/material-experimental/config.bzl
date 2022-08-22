@@ -1,6 +1,5 @@
 entryPoints = [
     "column-resize",
-    "mdc-core",
     "menubar",
     "popover-edit",
     "selection",

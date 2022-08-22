@@ -38,9 +38,6 @@
 @forward './core/style/button-common' as private-button-common-*;
 // The form field density mixin needs to be exposed, because the paginator depends on it.
 @forward './form-field/form-field-theme' as private-form-field-* show private-form-field-density;
-// These mixins are exposed privately, because `mdc-core` uses them.
-@forward './core/option/option-theme' as private-option-* show private-option-density;
-@forward './core/option/optgroup-theme' as private-optgroup-* show private-optgroup-density;
 
 // Structural
 @forward './core/core' show core;
@@ -53,13 +50,14 @@
 // Theme bundles
 @forward './core/theming/all-theme' show all-component-themes;
 @forward './core/color/all-color' show all-component-colors;
-@forward './core/typography/all-typography' show all-component-typographies;
+@forward './core/typography/all-typography' show all-component-typographies,
+  define-mdc-typography-config;
 @forward './legacy-core/theming/all-theme' show all-legacy-component-themes;
 @forward './legacy-core/color/all-color' show all-legacy-component-colors;
 @forward './legacy-core/typography/all-typography' show all-legacy-component-typographies;
 
 // Component themes
-@forward './core/core-theme' as core-* show core-color, core-theme;
+@forward './core/core-theme' as core-* show core-color, core-theme, core-typography, core-density;
 @forward './legacy-core/core-theme' as legacy-core-* show legacy-core-color, legacy-core-theme;
 @forward './core/ripple/ripple-theme' as ripple-* show ripple-color, ripple-theme;
 @forward './legacy-core/option/option-theme' as legacy-option-* show legacy-option-color,

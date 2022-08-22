@@ -1,7 +1,5 @@
 // Import all the theming functionality.
 @use '../core-theme';
-@use '../option/optgroup-theme';
-@use '../option/option-theme';
 @use '../../autocomplete/autocomplete-theme';
 @use '../../badge/badge-theme';
 @use '../../bottom-sheet/bottom-sheet-theme';
@@ -78,8 +76,6 @@
     @include list-theme.theme($theme-or-color-config);
     @include paginator-theme.theme($theme-or-color-config);
     @include tabs-theme.theme($theme-or-color-config);
-    @include optgroup-theme.theme($theme-or-color-config);
-    @include option-theme.theme($theme-or-color-config);
     @include checkbox-theme.theme($theme-or-color-config);
     @include button-theme.theme($theme-or-color-config);
     @include icon-button-theme.theme($theme-or-color-config);

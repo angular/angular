@@ -28,7 +28,6 @@ $candy-app-theme: mat.define-light-theme((
 // Include the default theme styles.
 @include mat.all-component-themes($candy-app-theme);
 @include mat.all-legacy-component-themes($candy-app-theme);
-@include experimental.all-mdc-component-themes($candy-app-theme);
 @include experimental.column-resize-theme($candy-app-theme);
 @include experimental.popover-edit-theme($candy-app-theme);
 
@@ -53,7 +52,6 @@ $candy-app-theme: mat.define-light-theme((
   // Include the dark theme color styles.
   @include mat.all-component-colors($dark-colors);
   @include mat.all-legacy-component-colors($dark-colors);
-  @include experimental.all-mdc-component-colors($dark-colors);
   @include experimental.column-resize-color($dark-colors);
   @include experimental.popover-edit-color($dark-colors);
 
@@ -71,6 +69,5 @@ $density-scales: (-1, -2, minimum, maximum);
   .demo-density-#{$density} {
     @include mat.private-all-component-densities($density);
     @include mat.private-all-legacy-component-densities($density);
-    @include experimental.all-mdc-component-densities($density);
   }
 }

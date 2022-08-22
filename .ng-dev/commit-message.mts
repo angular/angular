@@ -43,7 +43,6 @@ export const commitMessage: CommitMessageConfig = {
     'material/button',
     'material/card',
     'material/checkbox',
-    'material-experimental/mdc-core',
     'material/dialog',
     'material/form-field',
     'material/input',

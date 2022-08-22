@@ -19,13 +19,7 @@ ts_library(
 
 sass_library(
     name = "theming_scss_lib",
-    srcs = MATERIAL_EXPERIMENTAL_SCSS_LIBS + [
-        "//src/material-experimental/mdc-core/color",
-        "//src/material-experimental/mdc-core/density",
-        "//src/material/core:core_scss_lib",
-        "//src/material-experimental/mdc-core/theming",
-        "//src/material-experimental/mdc-core/typography",
-    ],
+    srcs = MATERIAL_EXPERIMENTAL_SCSS_LIBS,
 )
 
 sass_library(

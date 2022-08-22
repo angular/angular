@@ -14,21 +14,6 @@
   "exports": {
     ".": {
       "sass": "./_index.scss"
-    },
-    "./mdc-core/theming/prebuilt/indigo-pink.css": {
-      "style": "./mdc-core/theming/prebuilt/indigo-pink.css"
-    },
-    "./mdc-core/theming/prebuilt/deeppurple-amber.css": {
-      "style": "./mdc-core/theming/prebuilt/deeppurple-amber.css"
-    },
-    "./mdc-core/theming/prebuilt/pink-bluegrey.css": {
-      "style": "./mdc-core/theming/prebuilt/pink-bluegrey.css"
-    },
-    "./mdc-core/theming/prebuilt/purple-green.css": {
-      "style": "./mdc-core/theming/prebuilt/purple-green.css"
-    },
-    "./mdc-core/theming/prebuilt/*": {
-      "style": "./mdc-core/theming/prebuilt/*.css"
     }
   },
   "peerDependencies": {
