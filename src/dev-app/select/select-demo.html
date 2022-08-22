@@ -6,52 +6,54 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
   <mat-card>
     <mat-card-subtitle>ngModel</mat-card-subtitle>
 
-    <mat-form-field [floatLabel]="floatLabel" [color]="drinksTheme"
-                    [class.demo-drinks-width-large]="drinksWidth === '400px'">
-      <mat-label>Drink</mat-label>
-      <mat-select [(ngModel)]="currentDrink" [required]="drinksRequired"
-        [disabled]="drinksDisabled" #drinkControl="ngModel">
-        <mat-option>None</mat-option>
-        <mat-option *ngFor="let drink of drinks" [value]="drink.value" [disabled]="drink.disabled">
-          {{ drink.viewValue }}
-        </mat-option>
-      </mat-select>
-      <mat-icon matPrefix class="demo-drink-icon">local_drink</mat-icon>
-      <mat-hint>Pick a drink!</mat-hint>
-      <mat-error>You must make a selection</mat-error>
-    </mat-form-field>
-    <p> Value: {{ currentDrink }} </p>
-    <p> Touched: {{ drinkControl.touched }} </p>
-    <p> Dirty: {{ drinkControl.dirty }} </p>
-    <p> Status: {{ drinkControl.control?.status }} </p>
-    <p>
-      <label for="floating-placeholder">Floating placeholder:</label>
-      <select [(ngModel)]="floatLabel" id="floating-placeholder">
-        <option value="auto">Auto</option>
-        <option value="always">Always</option>
-        <option value="never">Never</option>
-      </select>
-    </p>
-    <p>
-      <label for="drinks-width">Width:</label>
-      <select [(ngModel)]="drinksWidth" id="drinks-width">
-        <option value="default">Default</option>
-        <option value="400px">400px</option>
-      </select>
-    </p>
-    <p>
-      <label for="drinks-theme">Theme:</label>
-      <select [(ngModel)]="drinksTheme" id="drinks-theme">
-        <option *ngFor="let theme of availableThemes" [value]="theme.value">
-          {{theme.name}}
-        </option>
-      </select>
-    </p>
+    <mat-card-content>
+      <mat-form-field [floatLabel]="floatLabel" [color]="drinksTheme"
+                      [class.demo-drinks-width-large]="drinksWidth === '400px'">
+        <mat-label>Drink</mat-label>
+        <mat-select [(ngModel)]="currentDrink" [required]="drinksRequired"
+          [disabled]="drinksDisabled" #drinkControl="ngModel">
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let drink of drinks" [value]="drink.value" [disabled]="drink.disabled">
+            {{ drink.viewValue }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix class="demo-drink-icon">local_drink</mat-icon>
+        <mat-hint>Pick a drink!</mat-hint>
+        <mat-error>You must make a selection</mat-error>
+      </mat-form-field>
+      <p> Value: {{ currentDrink }} </p>
+      <p> Touched: {{ drinkControl.touched }} </p>
+      <p> Dirty: {{ drinkControl.dirty }} </p>
+      <p> Status: {{ drinkControl.control?.status }} </p>
+      <p>
+        <label for="floating-label">Floating label:</label>
+        <select [(ngModel)]="floatLabel" id="floating-label">
+          <option value="auto">Auto</option>
+          <option value="always">Always</option>
+          <option value="never">Never</option>
+        </select>
+      </p>
+      <p>
+        <label for="drinks-width">Width:</label>
+        <select [(ngModel)]="drinksWidth" id="drinks-width">
+          <option value="default">Default</option>
+          <option value="400px">400px</option>
+        </select>
+      </p>
+      <p>
+        <label for="drinks-theme">Theme:</label>
+        <select [(ngModel)]="drinksTheme" id="drinks-theme">
+          <option *ngFor="let theme of availableThemes" [value]="theme.value">
+            {{theme.name}}
+          </option>
+        </select>
+      </p>
 
-    <button mat-button (click)="currentDrink='water-2'">SET VALUE</button>
-    <button mat-button (click)="drinksRequired=!drinksRequired">TOGGLE REQUIRED</button>
-    <button mat-button (click)="drinksDisabled=!drinksDisabled">TOGGLE DISABLED</button>
-    <button mat-button (click)="drinkControl.reset()">RESET</button>
+      <button mat-button (click)="currentDrink='water-2'">SET VALUE</button>
+      <button mat-button (click)="drinksRequired=!drinksRequired">TOGGLE REQUIRED</button>
+      <button mat-button (click)="drinksDisabled=!drinksDisabled">TOGGLE DISABLED</button>
+      <button mat-button (click)="drinkControl.reset()">RESET</button>
+    </mat-card-content>
   </mat-card>
 
   <mat-card>
@@ -87,20 +89,22 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
   <mat-card>
     <mat-card-subtitle>Without Angular forms</mat-card-subtitle>
 
-    <mat-form-field>
-      <mat-label>Digimon</mat-label>
-      <mat-select [(value)]="currentDigimon">
-        <mat-option>None</mat-option>
-        <mat-option *ngFor="let creature of digimon" [value]="creature.value">
-          {{ creature.viewValue }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+    <mat-card-content>
+      <mat-form-field>
+        <mat-label>Digimon</mat-label>
+        <mat-select [(value)]="currentDigimon">
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let creature of digimon" [value]="creature.value">
+            {{ creature.viewValue }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-    <p>Value: {{ currentDigimon }}</p>
+      <p>Value: {{ currentDigimon }}</p>
 
-    <button mat-button (click)="currentDigimon='pajiramon-3'">SET VALUE</button>
-    <button mat-button (click)="currentDigimon=''">RESET</button>
+      <button mat-button (click)="currentDigimon='pajiramon-3'">SET VALUE</button>
+      <button mat-button (click)="currentDigimon=''">RESET</button>
+    </mat-card-content>
   </mat-card>
 
   <mat-card>
@@ -155,30 +159,6 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
   <mat-card>
     <mat-card-subtitle>Appearance comparison</mat-card-subtitle>
     <mat-card-content>
-      <p>
-        <mat-form-field>
-          <mat-label>Legacy</mat-label>
-          <mat-select [(value)]="currentAppearanceValue">
-            <mat-option>None</mat-option>
-            <mat-option *ngFor="let creature of digimon" [value]="creature.value">
-              {{ creature.viewValue }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </p>
-
-      <p>
-        <mat-form-field appearance="standard">
-          <mat-label>Standard</mat-label>
-          <mat-select [(value)]="currentAppearanceValue">
-            <mat-option>None</mat-option>
-            <mat-option *ngFor="let creature of digimon" [value]="creature.value">
-              {{ creature.viewValue }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </p>
-
       <p>
         <mat-form-field appearance="fill">
           <mat-label>Fill</mat-label>
@@ -246,33 +226,6 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     </mat-card>
   </div>
 
-  <mat-card>
-    <mat-card-subtitle>MatSelect inside a dialog</mat-card-subtitle>
-    <mat-card-content>
-
-      <button (click)="openDialogWithSelectInside(dialogTemplate)">Open dialog</button>
-
-      <ng-template #dialogTemplate>
-        <mat-form-field>
-          <mat-label>Your name</mat-label>
-          <input matInput>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-label>Select a topping</mat-label>
-          <mat-select>
-            <mat-option value="cheese">Cheese</mat-option>
-            <mat-option value="onion">Onion</mat-option>
-            <mat-option value="pepper">Pepper</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <button>Done</button>
-      </ng-template>
-
-    </mat-card-content>
-  </mat-card>
-
 </div>
 
 <mat-card class="demo-card demo-basic">
@@ -337,24 +290,6 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
         </select>
       </mat-form-field>
       <h4>Looks</h4>
-      <mat-form-field appearance="legacy">
-        <mat-label>Legacy</mat-label>
-        <select matNativeControl required>
-          <option value="volvo">Volvo</option>
-          <option value="saab">Saab</option>
-          <option value="mercedes">Mercedes</option>
-          <option value="audi">Audi</option>
-        </select>
-      </mat-form-field>
-      <mat-form-field appearance="standard">
-        <mat-label>Standard</mat-label>
-        <select matNativeControl required>
-          <option value="volvo">Volvo</option>
-          <option value="saab">Saab</option>
-          <option value="mercedes">Mercedes</option>
-          <option value="audi">Audi</option>
-        </select>
-      </mat-form-field>
       <mat-form-field appearance="fill">
         <mat-label>Fill</mat-label>
         <select matNativeControl required>
@@ -386,16 +321,6 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
             <option value="mercedes">Mercedes</option>
             <option value="audi">Audi</option>
           </optgroup>
-        </select>
-      </mat-form-field>
-      <h4>Place holder</h4>
-      <mat-form-field class="demo-full-width">
-        <select matNativeControl placeholder="place holder">
-          <option value="" disabled selected></option>
-          <option value="volvo">Volvo</option>
-          <option value="saab" disabled>Saab</option>
-          <option value="mercedes">Mercedes</option>
-          <option value="audi">Audi</option>
         </select>
       </mat-form-field>
       <h4>Error message, hint, form sumbit</h4>

@@ -6,17 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, TemplateRef} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCardModule} from '@angular/material/legacy-card';
+import {Component} from '@angular/core';
+import {FormControl, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ErrorStateMatcher, ThemePalette} from '@angular/material/core';
-import {MatLegacyDialog, MatLegacyDialogModule} from '@angular/material/legacy-dialog';
-import {FloatLabelType, MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatSelectChange, MatSelectModule} from '@angular/material/select';
+import {FloatLabelType} from '@angular/material/form-field';
+import {CommonModule} from '@angular/common';
+import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatSelectChange, MatLegacySelectModule} from '@angular/material/legacy-select';
+import {MatButtonModule} from '@angular/material/button';
+import {MatInputModule} from '@angular/material/input';
 
 /** Error any time control is invalid */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -36,13 +35,11 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   imports: [
     CommonModule,
     FormsModule,
-    MatLegacyButtonModule,
-    MatLegacyCardModule,
-    MatLegacyDialogModule,
-    MatLegacyFormFieldModule,
+    MatButtonModule,
+    MatCardModule,
     MatIconModule,
-    MatLegacyInputModule,
-    MatLegacySelectModule,
+    MatInputModule,
+    MatSelectModule,
     ReactiveFormsModule,
   ],
 })
@@ -152,8 +149,6 @@ export class SelectDemo {
     {value: 'indramon-5', viewValue: 'Indramon'},
   ];
 
-  constructor(private _dialog: MatLegacyDialog) {}
-
   toggleDisabled() {
     this.foodControl.enabled ? this.foodControl.disable() : this.foodControl.enable();
   }
@@ -178,9 +173,5 @@ export class SelectDemo {
 
   toggleSelected() {
     this.currentAppearanceValue = this.currentAppearanceValue ? null : this.digimon[0].value;
-  }
-
-  openDialogWithSelectInside(dialogTemplate: TemplateRef<unknown>) {
-    this._dialog.open(dialogTemplate);
   }
 }

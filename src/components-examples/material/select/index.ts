@@ -1,8 +1,9 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {SelectCustomTriggerExample} from './select-custom-trigger/select-custom-trigger-example';
 import {SelectDisabledExample} from './select-disabled/select-disabled-example';
@@ -19,7 +20,6 @@ import {SelectValueBindingExample} from './select-value-binding/select-value-bin
 import {SelectReactiveFormExample} from './select-reactive-form/select-reactive-form-example';
 import {SelectInitialValueExample} from './select-initial-value/select-initial-value-example';
 import {SelectHarnessExample} from './select-harness/select-harness-example';
-import {MatFormFieldModule} from '@angular/material/form-field';
 
 export {
   SelectCustomTriggerExample,
@@ -61,7 +61,7 @@ const EXAMPLES = [
   imports: [
     CommonModule,
     FormsModule,
-    MatLegacyCheckboxModule,
+    MatCheckboxModule,
     MatInputModule,
     MatSelectModule,
     ReactiveFormsModule,

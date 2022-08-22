@@ -200,8 +200,8 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./mdc-radio/mdc-radio-demo').then(m => m.MdcRadioDemo),
   },
   {
-    path: 'mdc-select',
-    loadComponent: () => import('./mdc-select/mdc-select-demo').then(m => m.MdcSelectDemo),
+    path: 'select',
+    loadComponent: () => import('./select/select-demo').then(m => m.SelectDemo),
   },
   {
     path: 'mdc-snack-bar',
@@ -267,8 +267,8 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./ripple/ripple-demo').then(m => m.RippleDemo),
   },
   {
-    path: 'select',
-    loadComponent: () => import('./select/select-demo').then(m => m.SelectDemo),
+    path: 'legacy-select',
+    loadComponent: () => import('./legacy-select/legacy-select-demo').then(m => m.LegacySelectDemo),
   },
   {
     path: 'sidenav',
