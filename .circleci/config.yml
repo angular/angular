@@ -13,12 +13,12 @@ var_2: &docker-browser-image cimg/node:16.14.0-browsers
 # **Note**: When updating the beginning of the cache key, also update the cache key to match
 # the new cache key prefix. This allows us to take advantage of CircleCI's fallback caching.
 # Read more here: https://circleci.com/docs/2.0/caching/#restoring-cache.
-var_3: &cache_key v10-ng-mat-{{ checksum ".bazelversion" }}-{{ checksum "tools/postinstall/apply-patches.js" }}-{{ checksum "WORKSPACE" }}-{{ checksum "yarn.lock" }}
+var_3: &cache_key v11-ng-mat-{{ checksum ".bazelversion" }}-{{ checksum "tools/postinstall/apply-patches.js" }}-{{ checksum "WORKSPACE" }}-{{ checksum "yarn.lock" }}
 # We want to invalidate the cache if the postinstall patches change. In order to apply new
 # patches, a clean version of the node modules is needed. Additionally, we invalidate the cache
 # if the Bazel version changes. We do this because otherwise the `bazelisk` cache folder will
 # contain all previously used versions and ultimately cause the cache restoring to be slower.
-var_4: &cache_fallback_key v10-ng-mat-{{ checksum ".bazelversion" }}-{{ checksum "tools/postinstall/apply-patches.js" }}-
+var_4: &cache_fallback_key v11-ng-mat-{{ checksum ".bazelversion" }}-{{ checksum "tools/postinstall/apply-patches.js" }}-
 
 # Settings common to each job
 var_5: &job_defaults
