@@ -1096,7 +1096,7 @@ groups:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files, [
+        contains_any_globs(files.exclude('.pullapprove.yml'), [
           '{*,.*}',
           '.circleci/**/{*,.*}',
           '.devcontainer/**/{*,.*}',
