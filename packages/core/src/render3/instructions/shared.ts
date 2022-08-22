@@ -1312,9 +1312,7 @@ function findDirectiveDefMatches(
           matches.push(def);
         }
 
-        if (def.applyHostDirectives) {
-          def.applyHostDirectives(tView, viewData, tNode, matches);
-        }
+        def.applyHostDirectives?.(tView, viewData, tNode, matches);
       }
     }
   }

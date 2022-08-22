@@ -833,7 +833,7 @@ function createHostDirectivesType(meta: R3DirectiveMetadata): o.Type {
 }
 
 function createHostDirectivesFeatureArg(
-    hostDirectives: NonNullable<R3DirectiveMetadata['hostDirectives']>) {
+    hostDirectives: NonNullable<R3DirectiveMetadata['hostDirectives']>): o.Expression {
   const expressions: o.Expression[] = [];
   let hasForwardRef = false;
 
