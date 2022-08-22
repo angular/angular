@@ -1,7 +1,6 @@
 load("//src/material:config.bzl", "MATERIAL_SCSS_LIBS")
 load(
     "//tools:defaults.bzl",
-    "markdown_to_html",
     "ng_module",
     "ng_test_library",
     "ng_web_test_suite",
@@ -94,13 +93,6 @@ sass_binary(
     name = "purple-green_prebuilt",
     src = "theming/prebuilt/purple-green.scss",
     deps = [":theming_scss_lib"],
-)
-
-markdown_to_html(
-    name = "overview",
-    srcs = [
-        "legacy-core.md",
-    ],
 )
 
 filegroup(

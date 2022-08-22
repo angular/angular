@@ -1,7 +1,6 @@
 load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
 load(
     "//tools:defaults.bzl",
-    "markdown_to_html",
     "ng_e2e_test_library",
     "ng_module",
     "ng_test_library",
@@ -79,11 +78,6 @@ e2e_test_suite(
         ":e2e_test_sources",
         "//src/cdk/testing/private/e2e",
     ],
-)
-
-markdown_to_html(
-    name = "overview",
-    srcs = [":progress-spinner.md"],
 )
 
 filegroup(
