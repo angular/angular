@@ -742,7 +742,10 @@ describe('animation query tests', function() {
       expect(p5.delay).toEqual(6000);
     });
 
-    it(`should handle params used in the stagger's timing argument`, () => {
+    it(`should handle params in the stagger's timing argument`, () => {
+      const animationDuration = 500;
+      const staggerDelay = 1000;
+
       @Component({
           selector: 'ani-cmp',
           template: `
@@ -757,11 +760,11 @@ describe('animation query tests', function() {
               transition('* => go', [
                 query('.item', [
                   stagger('{{staggerDelay}}ms',[
-                    style({opacity: 0}), animate(1000, style({opacity: .5})),
-                    animate(500, style({opacity: 1}))
+                    style({ transform: 'scale(0)' }),
+                    animate(animationDuration, style({transform: 'scale(1)'}))
                   ])
                 ])
-              ], {params: { staggerDelay: '1111' }})
+              ], {params: { staggerDelay }})
             ])
           ]
         })
@@ -783,17 +786,21 @@ describe('animation query tests', function() {
       const players = getLog();
       expect(players.length).toEqual(5);
 
-      const [p1, p2, p3, p4, p5] = players;
-      expect(p1.delay).toEqual(0);
-      expect(p2.delay).toEqual(1111);
-      expect(p3.delay).toEqual(2222);
-      expect(p4.delay).toEqual(3333);
-      expect(p5.delay).toEqual(4444);
+      players.forEach((player, i) => {
+        expect(player.delay).toEqual(i * staggerDelay);
+        expect(player.duration).toEqual(animationDuration);
+        expect(player.keyframes).toEqual([
+          new Map<string, string|number>([['transform', 'scale(0)'], ['offset', 0]]),
+          new Map<string, string|number>([['transform', 'scale(1)'], ['offset', 1]])
+        ]);
+      });
     });
 
-    it(`should handle params used in the stagger's timing argument producing a negative value`,
-       () => {
-         @Component({
+    it(`should handle params in the stagger's timing argument with a negative value`, () => {
+      const animationDuration = 700;
+      const absoluteStaggerDelay = 500;
+
+      @Component({
           selector: 'ani-cmp',
           template: `
           <div [@myAnimation]="exp">
@@ -807,39 +814,41 @@ describe('animation query tests', function() {
               transition('* => go', [
                 query('.item', [
                   stagger('{{staggerDelay}}ms',[
-                    style({opacity: 0}), animate(1000, style({opacity: .5})),
-                    animate(500, style({opacity: 1}))
+                    style({opacity: 0}),
+                    animate(animationDuration, style({opacity: 1}))
                   ])
                 ])
-              ], {params: { staggerDelay: -1111 }})
+              ], {params: { staggerDelay: -absoluteStaggerDelay }})
             ])
           ]
         })
         class Cmp {
-           public exp: any;
-           public items: any[] = [0, 1, 2, 3, 4];
-         }
+        public exp: any;
+        public items: any[] = [0, 1, 2, 3, 4];
+      }
 
-         TestBed.configureTestingModule({declarations: [Cmp]});
+      TestBed.configureTestingModule({declarations: [Cmp]});
 
-         const engine = TestBed.inject(ɵAnimationEngine);
-         const fixture = TestBed.createComponent(Cmp);
-         const cmp = fixture.componentInstance;
+      const engine = TestBed.inject(ɵAnimationEngine);
+      const fixture = TestBed.createComponent(Cmp);
+      const cmp = fixture.componentInstance;
 
-         cmp.exp = 'go';
-         fixture.detectChanges();
-         engine.flush();
+      cmp.exp = 'go';
+      fixture.detectChanges();
+      engine.flush();
 
-         const players = getLog();
-         expect(players.length).toEqual(5);
+      const players = getLog();
+      expect(players.length).toEqual(5);
 
-         const [p1, p2, p3, p4, p5] = players;
-         expect(p5.delay).toEqual(0);
-         expect(p4.delay).toEqual(1111);
-         expect(p3.delay).toEqual(2222);
-         expect(p2.delay).toEqual(3333);
-         expect(p1.delay).toEqual(4444);
-       });
+      players.reverse().forEach((player, i) => {
+        expect(player.delay).toEqual(i * absoluteStaggerDelay);
+        expect(player.duration).toEqual(animationDuration);
+        expect(player.keyframes).toEqual([
+          new Map<string, string|number>([['opacity', '0'], ['offset', 0]]),
+          new Map<string, string|number>([['opacity', '1'], ['offset', 1]])
+        ]);
+      });
+    });
 
     it('should persist inner sub trigger styles once their animation is complete', () => {
       @Component({
