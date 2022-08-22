@@ -7,7 +7,7 @@
     (keydown)="handleKeydown($event)"
     [attr.aria-expanded]="showOptions"
     [attr.aria-activedescendant]="currentOptionIdx > -1 && showOptions ? listBoxId + '-option-' + currentOptionIdx : null"
-    [attr.aria-label]="label +  (selected?.title ?? '')"
+    [attr.aria-label]="label + (selected?.title ?? '')"
     [class.disabled]="disabled"
     tabindex="0"
   >

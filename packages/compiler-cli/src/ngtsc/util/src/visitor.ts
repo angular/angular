@@ -90,27 +90,23 @@ export abstract class Visitor {
 
     // If the visited node has a `statements` array then process them, maybe replacing the visited
     // node and adding additional statements.
-    if (hasStatements(visitedNode)) {
+    if (ts.isBlock(visitedNode) || ts.isSourceFile(visitedNode)) {
       visitedNode = this._maybeProcessStatements(visitedNode);
     }
 
     return visitedNode;
   }
 
-  private _maybeProcessStatements<T extends ts.Node&{statements: ts.NodeArray<ts.Statement>}>(
-      node: T): T {
+  private _maybeProcessStatements<T extends ts.Block|ts.SourceFile>(node: T): T {
     // Shortcut - if every statement doesn't require nodes to be prepended or appended,
     // this is a no-op.
     if (node.statements.every(stmt => !this._before.has(stmt) && !this._after.has(stmt))) {
       return node;
     }
 
-    // There are statements to prepend, so clone the original node.
-    const clone = ts.getMutableClone(node);
-
     // Build a new list of statements and patch it onto the clone.
     const newStatements: ts.Statement[] = [];
-    clone.statements.forEach(stmt => {
+    node.statements.forEach(stmt => {
       if (this._before.has(stmt)) {
         newStatements.push(...(this._before.get(stmt)! as ts.Statement[]));
         this._before.delete(stmt);
@@ -121,12 +117,17 @@ export abstract class Visitor {
         this._after.delete(stmt);
       }
     });
-    clone.statements = ts.factory.createNodeArray(newStatements, node.statements.hasTrailingComma);
-    return clone;
-  }
-}
 
-function hasStatements(node: ts.Node): node is ts.Node&{statements: ts.NodeArray<ts.Statement>} {
-  const block = node as {statements?: any};
-  return block.statements !== undefined && Array.isArray(block.statements);
+    const statementsArray =
+        ts.factory.createNodeArray(newStatements, node.statements.hasTrailingComma);
+
+    if (ts.isBlock(node)) {
+      return ts.factory.updateBlock(node, statementsArray) as T;
+    } else {
+      return ts.factory.updateSourceFile(
+                 node, statementsArray, node.isDeclarationFile, node.referencedFiles,
+                 node.typeReferenceDirectives, node.hasNoDefaultLib, node.libReferenceDirectives) as
+          T;
+    }
+  }
 }

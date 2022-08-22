@@ -32,9 +32,9 @@ const VALID_WIDTH_DESCRIPTOR_SRCSET = /^((\s*\d+w\s*(,|$)){1,})$/;
 
 /**
  * RegExpr to determine whether a src in a srcset is using density descriptors.
- * Should match something like: "1x, 2x".
+ * Should match something like: "1x, 2x". Also supports decimals like "1.5x".
  */
-const VALID_DENSITY_DESCRIPTOR_SRCSET = /^((\s*\d(\.\d)?x\s*(,|$)){1,})$/;
+const VALID_DENSITY_DESCRIPTOR_SRCSET = /^((\s*\d(\.\d+)?x\s*(,|$)){1,})$/;
 
 /**
  * Srcset values with a density descriptor higher than this value will actively
@@ -110,7 +110,7 @@ const OVERSIZED_IMAGE_TOLERANCE = 1000;
  *
  * To use the **default loader**: no additional code changes are necessary. The URL returned by the
  * generic loader will always match the value of "src". In other words, this loader applies no
- * transformations to thr resource URL and the value of the `rawSrc` attribute will be used as is.
+ * transformations to the resource URL and the value of the `rawSrc` attribute will be used as is.
  *
  * To use an existing loader for a **third-party image service**: add the provider factory for your
  * chosen service to the `providers` array. In the example below, the Imgix loader is used:
@@ -628,10 +628,11 @@ function assertNoImageDistortion(
             RuntimeErrorCode.OVERSIZED_IMAGE,
             `${imgDirectiveDetails(dir.rawSrc)} the intrinsic image is significantly ` +
                 `larger than necessary. ` +
-                `Rendered image size: ${renderedWidth}w x ${renderedHeight}h. ` +
-                `Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h. ` +
-                `Recommended intrinsic image size: ${recommendedWidth}w x ${recommendedHeight}h. ` +
-                `Note: Recommended intrinsic image size is calculated assuming a maximum DPR of ` +
+                `\nRendered image size: ${renderedWidth}w x ${renderedHeight}h. ` +
+                `\nIntrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h. ` +
+                `\nRecommended intrinsic image size: ${recommendedWidth}w x ${
+                    recommendedHeight}h. ` +
+                `\nNote: Recommended intrinsic image size is calculated assuming a maximum DPR of ` +
                 `${RECOMMENDED_SRCSET_DENSITY_CAP}. To improve loading time, resize the image ` +
                 `or consider using the "rawSrcset" and "sizes" attributes.`));
       }

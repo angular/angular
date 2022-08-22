@@ -256,6 +256,7 @@ export class NgCompiler {
   private cycleAnalyzer: CycleAnalyzer;
   readonly ignoreForDiagnostics: Set<ts.SourceFile>;
   readonly ignoreForEmit: Set<ts.SourceFile>;
+  readonly enableTemplateTypeChecker: boolean;
 
   /**
    * `NgCompiler` can be reused for multiple compilations (for resource-only changes), and each
@@ -314,10 +315,12 @@ export class NgCompiler {
       readonly programDriver: ProgramDriver,
       readonly incrementalStrategy: IncrementalBuildStrategy,
       readonly incrementalCompilation: IncrementalCompilation,
-      readonly enableTemplateTypeChecker: boolean,
+      enableTemplateTypeChecker: boolean,
       readonly usePoisonedData: boolean,
       private livePerfRecorder: ActivePerfRecorder,
   ) {
+    this.enableTemplateTypeChecker =
+        enableTemplateTypeChecker || (options._enableTemplateTypeChecker ?? false);
     this.constructionDiagnostics.push(
         ...this.adapter.constructionDiagnostics, ...verifyCompatibleTypeCheckOptions(this.options));
 
@@ -1064,8 +1067,8 @@ export class NgCompiler {
 
     const templateTypeChecker = new TemplateTypeCheckerImpl(
         this.inputProgram, notifyingDriver, traitCompiler, this.getTypeCheckingConfig(), refEmitter,
-        reflector, this.adapter, this.incrementalCompilation, scopeReader, typeCheckScopeRegistry,
-        this.delegatingPerfRecorder);
+        reflector, this.adapter, this.incrementalCompilation, metaReader, scopeReader,
+        typeCheckScopeRegistry, this.delegatingPerfRecorder);
 
     // Only construct the extended template checker if the configuration is valid and usable.
     const extendedTemplateChecker = this.constructionDiagnostics.length === 0 ?

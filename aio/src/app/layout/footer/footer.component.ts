@@ -8,5 +8,5 @@ import { NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 })
 export class FooterComponent {
   @Input() nodes: NavigationNode[];
-  @Input() versionInfo: VersionInfo;
+  @Input() versionInfo: VersionInfo | undefined;
 }

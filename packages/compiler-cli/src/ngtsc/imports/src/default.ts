@@ -138,6 +138,7 @@ export class DefaultImportTracker {
         //
         // TODO(alxhub): discuss with the TypeScript team and determine if there's a better way to
         // deal with this issue.
+        // tslint:disable-next-line: ban
         stmt = ts.getMutableClone(stmt);
       }
       return stmt;

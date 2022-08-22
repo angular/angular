@@ -32,7 +32,7 @@ import {ChildrenOutletContexts} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
 import {Params} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
-import {containsTree, createEmptyUrlTree, IsActiveMatchOptions, isUrlTree, UrlSerializer, UrlTree} from './url_tree';
+import {containsTree, IsActiveMatchOptions, isUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {flatten} from './utils/collection';
 import {standardizeConfig, validateConfig} from './utils/config';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
@@ -582,7 +582,7 @@ export class Router {
     this.isNgZoneEnabled = ngZone instanceof NgZone && NgZone.isInAngularZone();
 
     this.resetConfig(config);
-    this.currentUrlTree = createEmptyUrlTree();
+    this.currentUrlTree = new UrlTree();
     this.rawUrlTree = this.currentUrlTree;
     this.browserUrlTree = this.currentUrlTree;
 

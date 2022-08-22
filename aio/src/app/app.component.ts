@@ -90,7 +90,7 @@ export class AppComponent implements OnInit {
 
   currentDocsVersionNode?: NavigationNode;
 
-  versionInfo: VersionInfo;
+  versionInfo: VersionInfo | undefined;
 
   get isOpened() { return this.dockSideNav && this.isSideNavDoc; }
   get mode() { return this.isOpened ? 'side' : 'over'; }
