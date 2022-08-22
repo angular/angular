@@ -23,6 +23,7 @@ body:
         - router
         - service-worker
         - upgrade
+        - zone.js
         - Don't known / other
       multiple: true
     validations:
