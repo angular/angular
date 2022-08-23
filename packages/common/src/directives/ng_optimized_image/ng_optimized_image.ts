@@ -32,9 +32,9 @@ const VALID_WIDTH_DESCRIPTOR_SRCSET = /^((\s*\d+w\s*(,|$)){1,})$/;
 
 /**
  * RegExpr to determine whether a src in a srcset is using density descriptors.
- * Should match something like: "1x, 2x". Also supports decimals like "1.5x".
+ * Should match something like: "1x, 2x, 50x". Also supports decimals like "1.5x, 1.50x".
  */
-const VALID_DENSITY_DESCRIPTOR_SRCSET = /^((\s*\d(\.\d+)?x\s*(,|$)){1,})$/;
+const VALID_DENSITY_DESCRIPTOR_SRCSET = /^((\s*\d+(\.\d+)?x\s*(,|$)){1,})$/;
 
 /**
  * Srcset values with a density descriptor higher than this value will actively
@@ -506,7 +506,7 @@ function assertUnderDensityCap(dir: NgOptimizedImage, value: string) {
             `${RECOMMENDED_SRCSET_DENSITY_CAP}x but supports image densities up to ` +
             `${ABSOLUTE_SRCSET_DENSITY_CAP}x. The human eye cannot distinguish between image densities ` +
             `greater than ${RECOMMENDED_SRCSET_DENSITY_CAP}x - which makes them unnecessary for ` +
-            `most use cases. Images that will be pinch-zoomed are typically the primary use case for` +
+            `most use cases. Images that will be pinch-zoomed are typically the primary use case for ` +
             `${ABSOLUTE_SRCSET_DENSITY_CAP}x images. Please remove the high density descriptor and try again.`);
   }
 }
