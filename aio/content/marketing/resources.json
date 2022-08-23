@@ -84,6 +84,18 @@
             "title": "Angular Rocks",
             "url": "https://angularrocks.com"
           },
+          "angular-master-podcast": {
+            "desc": "Listen / Code / Repeat. Everything you need to fall in love with Angular for a long time.",
+            "logo": "https://ng-poland.pl/images/podcast/angular-master-podcast-logo.png",
+            "title": "Angular Master Podcast",
+            "url": "https://anchor.fm/angular-master/"
+          },
+          "javascript-master-podcast": {
+            "desc": "Listen / Code / Repeat. Everything you need to know to become an informed JavaScript developer.",
+            "logo": "https://ng-poland.pl/images/podcast/javascript-master-podcast-logo.png",
+            "title": "JavaScript Master Podcast",
+            "url": "https://anchor.fm/javascript-master/"
+          },
           "happy-angular": {
             "desc": "A weekly German podcast for Angular on the go",
             "logo": "",
