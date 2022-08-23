@@ -14,7 +14,7 @@ import {scheduleMicroTask} from '../src/util';
       scheduleMicroTask(() => count++);
 
       expect(count).toEqual(0);
-      Promise.resolve(null).then(() => {
+      Promise.resolve().then(() => {
         expect(count).toEqual(1);
         done();
       });
