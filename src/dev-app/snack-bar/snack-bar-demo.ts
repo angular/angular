@@ -6,38 +6,36 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
+import {Component, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+  MatSnackBar,
+  MatSnackBarConfig,
+  MatSnackBarHorizontalPosition,
+  MatSnackBarVerticalPosition,
+  MatSnackBarModule,
+} from '@angular/material/snack-bar';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
-import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacySelectModule} from '@angular/material/legacy-select';
-import {
-  MatLegacySnackBar,
-  MatLegacySnackBarConfig,
-  MatLegacySnackBarHorizontalPosition,
-  MatLegacySnackBarModule,
-  MatLegacySnackBarVerticalPosition,
-} from '@angular/material/legacy-snack-bar';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
 
 @Component({
   selector: 'snack-bar-demo',
-  styleUrls: ['snack-bar-demo.css'],
   templateUrl: 'snack-bar-demo.html',
+  styleUrls: ['snack-bar-demo.css'],
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: [
+    MatSnackBarModule,
     CommonModule,
     FormsModule,
-    MatLegacyButtonModule,
-    MatLegacyCheckboxModule,
-    MatLegacyFormFieldModule,
-    MatLegacyInputModule,
-    MatLegacySelectModule,
-    MatLegacySnackBarModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatInputModule,
+    MatSelectModule,
   ],
 })
 export class SnackBarDemo {
@@ -48,10 +46,10 @@ export class SnackBarDemo {
   setAutoHide = true;
   autoHide = 10000;
   addExtraClass = false;
-  horizontalPosition: MatLegacySnackBarHorizontalPosition = 'center';
-  verticalPosition: MatLegacySnackBarVerticalPosition = 'bottom';
+  horizontalPosition: MatSnackBarHorizontalPosition = 'center';
+  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
 
-  constructor(public snackBar: MatLegacySnackBar, private _dir: Directionality) {}
+  constructor(public snackBar: MatSnackBar, private _dir: Directionality) {}
 
   open() {
     const config = this._createConfig();
@@ -64,7 +62,7 @@ export class SnackBarDemo {
   }
 
   private _createConfig() {
-    const config = new MatLegacySnackBarConfig();
+    const config = new MatSnackBarConfig();
     config.verticalPosition = this.verticalPosition;
     config.horizontalPosition = this.horizontalPosition;
     config.duration = this.setAutoHide ? this.autoHide : 0;

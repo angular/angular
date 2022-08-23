@@ -1,0 +1,27 @@
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "legacy-snack-bar",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "legacy-snack-bar-demo.html",
+        ":legacy_snack_bar_demo_scss",
+    ],
+    deps = [
+        "//src/cdk/bidi",
+        "//src/material/legacy-button",
+        "//src/material/legacy-checkbox",
+        "//src/material/legacy-form-field",
+        "//src/material/legacy-input",
+        "//src/material/legacy-select",
+        "//src/material/legacy-snack-bar",
+        "@npm//@angular/forms",
+    ],
+)
+
+sass_binary(
+    name = "legacy_snack_bar_demo_scss",
+    src = "legacy-snack-bar-demo.scss",
+)

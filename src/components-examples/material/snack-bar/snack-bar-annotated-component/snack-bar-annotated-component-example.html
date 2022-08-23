@@ -1,0 +1,8 @@
+<mat-form-field appearance="fill">
+  <mat-label>Snack bar duration (seconds)</mat-label>
+  <input type="number" [(ngModel)]="durationInSeconds" matInput>
+</mat-form-field>
+
+<button mat-stroked-button (click)="openSnackBar()" aria-label="Show an example snack-bar">
+  Pizza party
+</button>

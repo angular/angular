@@ -1,10 +1,10 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {MatLegacySnackBarModule} from '@angular/material/legacy-snack-bar';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {SnackBarHarnessExample} from './snack-bar-harness-example';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MatLegacySnackBarHarness} from '@angular/material/legacy-snack-bar/testing';
+import {MatSnackBarHarness} from '@angular/material/snack-bar/testing';
 
 describe('SnackBarHarnessExample', () => {
   let fixture: ComponentFixture<SnackBarHarnessExample>;
@@ -12,7 +12,7 @@ describe('SnackBarHarnessExample', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatLegacySnackBarModule, NoopAnimationsModule],
+      imports: [MatSnackBarModule, NoopAnimationsModule],
       declarations: [SnackBarHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(SnackBarHarnessExample);
@@ -22,34 +22,34 @@ describe('SnackBarHarnessExample', () => {
 
   it('should load harness for simple snack-bar', async () => {
     const snackBarRef = fixture.componentInstance.open('Hi!', '');
-    let snackBars = await loader.getAllHarnesses(MatLegacySnackBarHarness);
+    let snackBars = await loader.getAllHarnesses(MatSnackBarHarness);
 
     expect(snackBars.length).toBe(1);
 
     snackBarRef.dismiss();
-    snackBars = await loader.getAllHarnesses(MatLegacySnackBarHarness);
+    snackBars = await loader.getAllHarnesses(MatSnackBarHarness);
     expect(snackBars.length).toBe(0);
   });
 
   it('should be able to get message of simple snack-bar', async () => {
     fixture.componentInstance.open('Subscribed to newsletter.');
-    let snackBar = await loader.getHarness(MatLegacySnackBarHarness);
+    let snackBar = await loader.getHarness(MatSnackBarHarness);
     expect(await snackBar.getMessage()).toBe('Subscribed to newsletter.');
   });
 
   it('should be able to get action description of simple snack-bar', async () => {
     fixture.componentInstance.open('Hello', 'Unsubscribe');
-    let snackBar = await loader.getHarness(MatLegacySnackBarHarness);
+    let snackBar = await loader.getHarness(MatSnackBarHarness);
     expect(await snackBar.getActionDescription()).toBe('Unsubscribe');
   });
 
   it('should be able to check whether simple snack-bar has action', async () => {
     fixture.componentInstance.open('With action', 'Unsubscribe');
-    let snackBar = await loader.getHarness(MatLegacySnackBarHarness);
+    let snackBar = await loader.getHarness(MatSnackBarHarness);
     expect(await snackBar.hasAction()).toBe(true);
 
     fixture.componentInstance.open('No action');
-    snackBar = await loader.getHarness(MatLegacySnackBarHarness);
+    snackBar = await loader.getHarness(MatSnackBarHarness);
     expect(await snackBar.hasAction()).toBe(false);
   });
 });

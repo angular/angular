@@ -204,8 +204,8 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./select/select-demo').then(m => m.SelectDemo),
   },
   {
-    path: 'mdc-snack-bar',
-    loadComponent: () => import('./mdc-snack-bar/mdc-snack-bar-demo').then(m => m.MdcSnackBarDemo),
+    path: 'snack-bar',
+    loadComponent: () => import('./snack-bar/snack-bar-demo').then(m => m.SnackBarDemo),
   },
   {
     path: 'mdc-slide-toggle',
@@ -283,8 +283,9 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./slider/slider-demo').then(m => m.SliderDemo),
   },
   {
-    path: 'snack-bar',
-    loadComponent: () => import('./snack-bar/snack-bar-demo').then(m => m.SnackBarDemo),
+    path: 'legacy-snack-bar',
+    loadComponent: () =>
+      import('./legacy-snack-bar/legacy-snack-bar-demo').then(m => m.LegacySnackBarDemo),
   },
   {
     path: 'stepper',

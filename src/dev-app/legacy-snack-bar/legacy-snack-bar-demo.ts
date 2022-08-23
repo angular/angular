@@ -6,39 +6,41 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directionality} from '@angular/cdk/bidi';
 import {Component, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
-import {
-  MatSnackBar,
-  MatSnackBarConfig,
-  MatSnackBarHorizontalPosition,
-  MatSnackBarVerticalPosition,
-  MatSnackBarModule,
-} from '@angular/material/snack-bar';
+import {Directionality} from '@angular/cdk/bidi';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material/select';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
+import {
+  MatLegacySnackBar,
+  MatLegacySnackBarConfig,
+  MatLegacySnackBarHorizontalPosition,
+  MatLegacySnackBarModule,
+  MatLegacySnackBarVerticalPosition,
+} from '@angular/material/legacy-snack-bar';
 
 @Component({
-  selector: 'mdc-snack-bar-demo',
-  templateUrl: 'mdc-snack-bar-demo.html',
-  styleUrls: ['mdc-snack-bar-demo.css'],
+  selector: 'legacy-snack-bar-demo',
+  styleUrls: ['legacy-snack-bar-demo.css'],
+  templateUrl: 'legacy-snack-bar-demo.html',
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: [
-    MatSnackBarModule,
     CommonModule,
     FormsModule,
-    MatButtonModule,
-    MatCheckboxModule,
-    MatInputModule,
-    MatSelectModule,
+    MatLegacyButtonModule,
+    MatLegacyCheckboxModule,
+    MatLegacyFormFieldModule,
+    MatLegacyInputModule,
+    MatLegacySelectModule,
+    MatLegacySnackBarModule,
   ],
 })
-export class MdcSnackBarDemo {
+export class LegacySnackBarDemo {
   @ViewChild('template') template: TemplateRef<any>;
   message = 'Snack Bar opened.';
   actionButtonLabel = 'Retry';
@@ -46,10 +48,10 @@ export class MdcSnackBarDemo {
   setAutoHide = true;
   autoHide = 10000;
   addExtraClass = false;
-  horizontalPosition: MatSnackBarHorizontalPosition = 'center';
-  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+  horizontalPosition: MatLegacySnackBarHorizontalPosition = 'center';
+  verticalPosition: MatLegacySnackBarVerticalPosition = 'bottom';
 
-  constructor(public snackBar: MatSnackBar, private _dir: Directionality) {}
+  constructor(public snackBar: MatLegacySnackBar, private _dir: Directionality) {}
 
   open() {
     const config = this._createConfig();
@@ -62,7 +64,7 @@ export class MdcSnackBarDemo {
   }
 
   private _createConfig() {
-    const config = new MatSnackBarConfig();
+    const config = new MatLegacySnackBarConfig();
     config.verticalPosition = this.verticalPosition;
     config.horizontalPosition = this.horizontalPosition;
     config.duration = this.setAutoHide ? this.autoHide : 0;
