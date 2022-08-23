@@ -637,6 +637,11 @@
           "url": "guide/prerendering",
           "title": "Prerendering",
           "tooltip": "Prerender HTML server-side with Angular Universal."
+        },
+        {
+          "url": "guide/image-directive",
+          "title": "Image Directive",
+          "tooltip": "Performant images with the Angular image directive."
         }
       ]
     },
@@ -816,7 +821,12 @@
           "tooltip": "Create a template-driven form using directives and Angular template syntax."
         },
         {
-          "title": "Angular libraries",
+          "url": "guide/image-directive-setup",
+          "title": "Setting up NgOptimzedImage",
+          "tooltip": "Setup the Angular image directive"
+        },
+        {
+          "title": "Angular Libraries",
           "tooltip": "Extending Angular with shared libraries.",
           "children": [
             {
