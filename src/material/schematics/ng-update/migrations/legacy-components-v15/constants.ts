@@ -9,15 +9,15 @@
 export const COMPONENTS = [
   'autocomplete',
   'button',
+  'core',
   'card',
   'checkbox',
   'chips',
   'dialog',
   'form-field',
   'input',
+  'list',
   'menu',
-  'option',
-  'optgroup',
   'paginator',
   'progress-bar',
   'progress-spinner',
@@ -31,19 +31,19 @@ export const COMPONENTS = [
   'tooltip',
 ];
 
-export const MIXINS = COMPONENTS.flatMap(component => [
+export const MAT_IMPORT_CHANGES = COMPONENTS.map(component => ({
+  old: `@angular/material/${component}`,
+  new: `@angular/material/legacy-${component}`,
+}));
+
+export const MDC_IMPORT_CHANGES = COMPONENTS.map(component => ({
+  old: `@angular/material-experimental/mdc-${component}`,
+  new: `@angular/material/${component}`,
+}));
+
+export const MIXINS = COMPONENTS.concat(['option', 'optgroup']).flatMap(component => [
   `${component}-theme`,
   `${component}-color`,
   `${component}-density`,
   `${component}-typography`,
 ]);
-
-export const MAT_IMPORT_CHANGE = {
-  old: '@angular/material/',
-  new: '@angular/material/legacy-',
-};
-
-export const MAT_MDC_IMPORT_CHANGE = {
-  old: '@angular/material-experimental/mdc-',
-  new: '@angular/material/',
-};

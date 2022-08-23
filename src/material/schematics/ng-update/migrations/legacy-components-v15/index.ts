@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import * as postcss from 'postcss';
 import * as scss from 'postcss-scss';
 
-import {MAT_IMPORT_CHANGE, MAT_MDC_IMPORT_CHANGE, MIXINS} from './constants';
+import {MAT_IMPORT_CHANGES, MDC_IMPORT_CHANGES, MIXINS} from './constants';
 
 import {Migration, ResolvedResource, TargetVersion, WorkspacePath} from '@angular/cdk/schematics';
 
@@ -109,16 +109,19 @@ export class LegacyComponentsMigration extends Migration<null> {
    */
   private _handleImportDeclaration(node: ts.ImportDeclaration): void {
     const moduleSpecifier = node.moduleSpecifier as ts.StringLiteral;
-    if (moduleSpecifier.text.startsWith(MAT_IMPORT_CHANGE.old)) {
-      this._tsReplaceAt(node, MAT_IMPORT_CHANGE);
+
+    const matImportChange = this._findMatImportChange(moduleSpecifier);
+    if (matImportChange) {
+      this._tsReplaceAt(node, matImportChange);
 
       if (node.importClause?.namedBindings && ts.isNamedImports(node.importClause.namedBindings)) {
         this._handleNamedImportBindings(node.importClause.namedBindings);
       }
     }
 
-    if (moduleSpecifier.text.startsWith(MAT_MDC_IMPORT_CHANGE.old)) {
-      this._tsReplaceAt(node, MAT_MDC_IMPORT_CHANGE);
+    const mdcImportChange = this._findMdcImportChange(moduleSpecifier);
+    if (mdcImportChange) {
+      this._tsReplaceAt(node, mdcImportChange);
     }
   }
 
@@ -128,12 +131,16 @@ export class LegacyComponentsMigration extends Migration<null> {
    */
   private _handleImportExpression(node: ts.CallExpression): void {
     const moduleSpecifier = node.arguments[0] as ts.StringLiteral;
-    if (moduleSpecifier.text.startsWith(MAT_IMPORT_CHANGE.old)) {
-      this._tsReplaceAt(node, MAT_IMPORT_CHANGE);
+
+    const matImportChange = this._findMatImportChange(moduleSpecifier);
+    if (matImportChange) {
+      this._tsReplaceAt(node, matImportChange);
+      return;
     }
 
-    if (moduleSpecifier.text.startsWith(MAT_MDC_IMPORT_CHANGE.old)) {
-      this._tsReplaceAt(node, MAT_MDC_IMPORT_CHANGE);
+    const mdcImportChange = this._findMdcImportChange(moduleSpecifier);
+    if (mdcImportChange) {
+      this._tsReplaceAt(node, mdcImportChange);
     }
   }
 
@@ -167,7 +174,8 @@ export class LegacyComponentsMigration extends Migration<null> {
       !!node.initializer &&
       ts.isAwaitExpression(node.initializer) &&
       this._isImportCallExpression(node.initializer.expression) &&
-      node.initializer.expression.arguments[0].text.startsWith(MAT_IMPORT_CHANGE.old) &&
+      ts.isStringLiteral(node.initializer.expression.arguments[0]) &&
+      !!this._findMatImportChange(node.initializer.expression.arguments[0]) &&
       ts.isObjectBindingPattern(node.name)
     );
   }
@@ -182,6 +190,18 @@ export class LegacyComponentsMigration extends Migration<null> {
       node.arguments.length === 1 &&
       ts.isStringLiteralLike(node.arguments[0])
     );
+  }
+
+  private _findMatImportChange(
+    moduleSpecifier: ts.StringLiteral,
+  ): {old: string; new: string} | undefined {
+    return MAT_IMPORT_CHANGES.find(change => change.old === moduleSpecifier.text);
+  }
+
+  private _findMdcImportChange(
+    moduleSpecifier: ts.StringLiteral,
+  ): {old: string; new: string} | undefined {
+    return MDC_IMPORT_CHANGES.find(change => change.old === moduleSpecifier.text);
   }
 
   /** Updates the source file of the given ts node with the given replacements. */
