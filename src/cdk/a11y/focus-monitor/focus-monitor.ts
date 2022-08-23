@@ -614,18 +614,28 @@ export class FocusMonitor implements OnDestroy {
  */
 @Directive({
   selector: '[cdkMonitorElementFocus], [cdkMonitorSubtreeFocus]',
+  exportAs: 'cdkMonitorFocus',
 })
 export class CdkMonitorFocus implements AfterViewInit, OnDestroy {
   private _monitorSubscription: Subscription;
+  private _focusOrigin: FocusOrigin = null;
+
   @Output() readonly cdkFocusChange = new EventEmitter<FocusOrigin>();
 
   constructor(private _elementRef: ElementRef<HTMLElement>, private _focusMonitor: FocusMonitor) {}
+
+  get focusOrigin(): FocusOrigin {
+    return this._focusOrigin;
+  }
 
   ngAfterViewInit() {
     const element = this._elementRef.nativeElement;
     this._monitorSubscription = this._focusMonitor
       .monitor(element, element.nodeType === 1 && element.hasAttribute('cdkMonitorSubtreeFocus'))
-      .subscribe(origin => this.cdkFocusChange.emit(origin));
+      .subscribe(origin => {
+        this._focusOrigin = origin;
+        this.cdkFocusChange.emit(origin);
+      });
   }
 
   ngOnDestroy() {

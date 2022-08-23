@@ -8,10 +8,10 @@ import {
   dispatchEvent,
 } from '../../testing/private';
 import {DOCUMENT} from '@angular/common';
-import {Component, NgZone} from '@angular/core';
+import {Component, NgZone, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {A11yModule} from '../index';
+import {A11yModule, CdkMonitorFocus} from '../index';
 import {TOUCH_BUFFER_MS} from '../input-modality/input-modality-detector';
 import {
   FocusMonitor,
@@ -515,6 +515,7 @@ describe('cdkMonitorFocus', () => {
         ComplexComponentWithMonitorSubtreeFocus,
         ComplexComponentWithMonitorSubtreeFocusAndMonitorElementFocus,
         FocusMonitorOnCommentNode,
+        ExportedFocusMonitor,
       ],
     }).compileComponents();
   });
@@ -737,6 +738,77 @@ describe('cdkMonitorFocus', () => {
     }));
   });
 
+  describe('button with exported cdkMonitorElementFocus', () => {
+    let fixture: ComponentFixture<ExportedFocusMonitor>;
+    let buttonElement: HTMLElement;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(ExportedFocusMonitor);
+      fixture.detectChanges();
+
+      buttonElement = fixture.debugElement.query(By.css('button'))!.nativeElement;
+      patchElementFocus(buttonElement);
+    });
+
+    it('should initially not be focused', () => {
+      expect(fixture.componentInstance.exportedDirRef.focusOrigin)
+        .withContext('initial focus origin should be null')
+        .toBeNull();
+    });
+
+    it('should detect focus via keyboard', fakeAsync(() => {
+      // Simulate focus via keyboard.
+      dispatchKeyboardEvent(document, 'keydown', TAB);
+      buttonElement.focus();
+      fixture.detectChanges();
+      flush();
+
+      expect(fixture.componentInstance.exportedDirRef.focusOrigin).toEqual('keyboard');
+    }));
+
+    it('should detect focus via mouse', fakeAsync(() => {
+      // Simulate focus via mouse.
+      dispatchMouseEvent(buttonElement, 'mousedown');
+      buttonElement.focus();
+      fixture.detectChanges();
+      flush();
+
+      expect(fixture.componentInstance.exportedDirRef.focusOrigin).toEqual('mouse');
+    }));
+
+    it('should detect focus via touch', fakeAsync(() => {
+      // Simulate focus via touch.
+      dispatchFakeEvent(buttonElement, 'touchstart');
+      buttonElement.focus();
+      fixture.detectChanges();
+      tick(TOUCH_BUFFER_MS);
+
+      expect(fixture.componentInstance.exportedDirRef.focusOrigin).toEqual('touch');
+    }));
+
+    it('should detect programmatic focus', fakeAsync(() => {
+      // Programmatically focus.
+      buttonElement.focus();
+      fixture.detectChanges();
+      tick();
+
+      expect(fixture.componentInstance.exportedDirRef.focusOrigin).toEqual('program');
+    }));
+
+    it('should remove focus classes on blur', fakeAsync(() => {
+      buttonElement.focus();
+      fixture.detectChanges();
+      tick();
+
+      expect(fixture.componentInstance.exportedDirRef.focusOrigin).toEqual('program');
+
+      buttonElement.blur();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.exportedDirRef.focusOrigin).toEqual(null);
+    }));
+  });
+
   it('should not throw when trying to monitor focus on a non-element node', () => {
     expect(() => {
       const fixture = TestBed.createComponent(FocusMonitorOnCommentNode);
@@ -862,3 +934,10 @@ class FocusMonitorOnCommentNode {}
   `,
 })
 class CheckboxWithLabel {}
+
+@Component({
+  template: `<button cdkMonitorElementFocus #exportedDir="cdkMonitorFocus"></button>`,
+})
+class ExportedFocusMonitor {
+  @ViewChild('exportedDir') exportedDirRef: CdkMonitorFocus;
+}
