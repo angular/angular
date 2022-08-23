@@ -290,7 +290,7 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
       deps: [Injector],
       useFactory: (injector: Injector) => {
         const locationInitialized: Promise<any> =
-            injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
+            injector.get(LOCATION_INITIALIZED, Promise.resolve());
         let initNavigation = false;
 
         /**
