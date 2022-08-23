@@ -13,6 +13,7 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  inject,
   Inject,
   Input,
   NgZone,
@@ -23,6 +24,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import {Platform} from '@angular/cdk/platform';
 import {
   animationFrameScheduler,
   asapScheduler,
@@ -77,6 +79,8 @@ const SCROLL_SCHEDULER =
   ],
 })
 export class CdkVirtualScrollViewport extends CdkVirtualScrollable implements OnInit, OnDestroy {
+  private _platform = inject(Platform);
+
   /** Emits when the viewport is detached from a CdkVirtualForOf. */
   private readonly _detachedSubject = new Subject<void>();
 
@@ -205,6 +209,11 @@ export class CdkVirtualScrollViewport extends CdkVirtualScrollable implements On
   }
 
   override ngOnInit() {
+    // Scrolling depends on the element dimensions which we can't get during SSR.
+    if (!this._platform.isBrowser) {
+      return;
+    }
+
     if (this.scrollable === this) {
       super.ngOnInit();
     }
