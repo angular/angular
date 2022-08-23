@@ -26,7 +26,7 @@ export const formDirectiveProvider: any = {
   useExisting: forwardRef(() => NgForm)
 };
 
-const resolvedPromise = (() => Promise.resolve(null))();
+const resolvedPromise = (() => Promise.resolve())();
 
 /**
  * @description
