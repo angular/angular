@@ -240,5 +240,5 @@ export class MockPlatformLocation implements PlatformLocation {
 }
 
 export function scheduleMicroTask(cb: () => any) {
-  Promise.resolve(null).then(cb);
+  Promise.resolve().then(cb);
 }
