@@ -266,6 +266,8 @@ groups:
           'aio/content/images/guide/frequent-ngmodules/**/{*,.*}',
           'aio/content/guide/hierarchical-dependency-injection.md',
           'aio/content/examples/hierarchical-dependency-injection/**/{*,.*}',
+          'aio/content/guide/image-directive.md',
+          'aio/content/guide/image-directive-setup.md',
           'aio/content/examples/providers-viewproviders/**/{*,.*}',
           'aio/content/examples/resolution-modifiers/**/{*,.*}',
           'aio/content/guide/lazy-loading-ngmodules.md',
