@@ -83,9 +83,13 @@ describe('v15 legacy components migration', () => {
       });
 
       it('does not update non-legacy imports', async () => {
-        await runTypeScriptMigrationTest('named binding', {
+        await runTypeScriptMigrationTest('non-legacy component', {
           old: `import {MatButtonToggleModule} from '@angular/material/button-toggle';`,
           new: `import {MatButtonToggleModule} from '@angular/material/button-toggle';`,
+        });
+        await runTypeScriptMigrationTest('non-legacy symbol', {
+          old: `import {VERSION} from '@angular/material/core`,
+          new: `import {VERSION} from '@angular/material/legacy-core`,
         });
       });
     });

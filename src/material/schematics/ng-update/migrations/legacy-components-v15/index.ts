@@ -83,24 +83,6 @@ export class LegacyComponentsMigration extends Migration<null> {
     }
   }
 
-  /** Handles updating the named bindings of awaited @angular/material import expressions. */
-  private _handleDestructuredAsyncImport(
-    node: ts.VariableDeclaration & {name: ts.ObjectBindingPattern},
-  ): void {
-    for (let i = 0; i < node.name.elements.length; i++) {
-      const n = node.name.elements[i];
-      const name = n.propertyName ? n.propertyName : n.name;
-      if (ts.isIdentifier(name)) {
-        const oldExport = name.escapedText.toString();
-        const suffix = oldExport.slice('Mat'.length);
-        const newExport = n.propertyName
-          ? `MatLegacy${suffix}`
-          : `MatLegacy${suffix}: Mat${suffix}`;
-        this._tsReplaceAt(name, {old: oldExport, new: newExport});
-      }
-    }
-  }
-
   /**
    * Handles updating the module specifier of
    * @angular/material and @angular/material-experimental imports.
@@ -144,18 +126,59 @@ export class LegacyComponentsMigration extends Migration<null> {
     }
   }
 
+  /** Handles updating the named bindings of awaited @angular/material import expressions. */
+  private _handleDestructuredAsyncImport(
+    node: ts.VariableDeclaration & {name: ts.ObjectBindingPattern},
+  ): void {
+    for (let i = 0; i < node.name.elements.length; i++) {
+      this._handleNamedBindings(node.name.elements[i]);
+    }
+  }
+
   /** Handles updating the named bindings of @angular/material imports. */
   private _handleNamedImportBindings(node: ts.NamedImports): void {
     for (let i = 0; i < node.elements.length; i++) {
-      const n = node.elements[i];
-      const name = n.propertyName ? n.propertyName : n.name;
-      const oldExport = name.escapedText.toString();
-      const suffix = oldExport.slice('Mat'.length);
-      const newExport = n.propertyName
-        ? `MatLegacy${suffix}`
-        : `MatLegacy${suffix} as Mat${suffix}`;
-      this._tsReplaceAt(name, {old: oldExport, new: newExport});
+      this._handleNamedBindings(node.elements[i]);
     }
+  }
+
+  /** Handles updating the named bindings of @angular/material imports and import expressions. */
+  private _handleNamedBindings(node: ts.ImportSpecifier | ts.BindingElement): void {
+    const name = node.propertyName ? node.propertyName : node.name;
+    if (!ts.isIdentifier(name)) {
+      return;
+    }
+
+    const separator = ts.isImportSpecifier(node) ? ' as ' : ': ';
+    const oldExport = name.escapedText.toString();
+
+    // Handle TS Symbols that have standard renamings.
+    const newExport = this._parseMatSymbol(oldExport);
+    if (newExport) {
+      const replacement = node.propertyName ? newExport : `${newExport}${separator}${oldExport}`;
+      this._tsReplaceAt(name, {old: oldExport, new: replacement});
+      return;
+    }
+  }
+
+  /** Returns the new symbol to be used for a given standard mat symbol.   */
+  private _parseMatSymbol(symbol: string): string | undefined {
+    if (symbol.startsWith('Mat')) {
+      return `MatLegacy${symbol.slice('Mat'.length)}`;
+    }
+    if (symbol.startsWith('mat')) {
+      return `matLegacy${symbol.slice('mat'.length)}`;
+    }
+    if (symbol.startsWith('_Mat')) {
+      return `_MatLegacy${symbol.slice('_Mat'.length)}`;
+    }
+    if (symbol.startsWith('MAT_')) {
+      return `MAT_LEGACY_${symbol.slice('MAT_'.length)}`;
+    }
+    if (symbol.startsWith('_MAT_')) {
+      return `_MAT_LEGACY_${symbol.slice('_MAT_'.length)}`;
+    }
+    return;
   }
 
   /**
