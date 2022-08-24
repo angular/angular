@@ -610,6 +610,16 @@
     "groups": ["Angular"],
     "mentor": "jelbourn"
   },
+  "MainaWycliffe": {
+    "name": "Maina Wycliffe",
+    "picture": "MainaWycliffe.jpg",
+    "twitter": "mwycliffe_dev",
+    "website": "https://mainawycliffe.dev/",
+    "bio": "Wycliffe is a Software Engineer from Kenya passionate about Teaching, Speaking, Writing, Open Source, and Mentorship. On top of that, he is passionate about Typescript and loves teaching developers how to get the most out of it.",
+    "groups": [
+      "GDE"
+    ]
+  },
   "manekinekko": {
     "name": "Wassim Chegham",
     "picture": "wassim.jpg",
