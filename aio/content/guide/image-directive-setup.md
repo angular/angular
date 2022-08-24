@@ -27,7 +27,7 @@ Based on the image services commonly used with Angular applications, `NgOptimize
 | ImageKit | `provideImageKitLoader` | [Documentation](https://docs.imagekit.io/) |
 | Imgix | `provideImgixLoader` | [Documentation](https://docs.imgix.com/) |
 
-You must configure an image loader to use `NgOptimizedImage`.
+You must configure an image loader to use `NgOptimizedImage`. [For more details, see the full guide to image loaders](/guide/image-loaders.md).
 
 These instructions explain how to setup an image loader for use with the `NgOptimizedImage`. 
 
