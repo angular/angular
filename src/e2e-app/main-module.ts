@@ -18,7 +18,6 @@ import {IconE2eModule} from './icon/icon-e2e-module';
 import {InputE2eModule} from './input/input-e2e-module';
 import {ListE2eModule} from './list/list-e2e-module';
 import {MdcButtonE2eModule} from './mdc-button/mdc-button-e2e-module';
-import {MdcCardE2eModule} from './mdc-card/mdc-card-e2e-module';
 import {MdcCheckboxE2eModule} from './mdc-checkbox/mdc-checkbox-e2e-module';
 import {MdcChipsE2eModule} from './mdc-chips/mdc-chips-e2e-module';
 import {MdcDialogE2eModule} from './mdc-dialog/mdc-dialog-e2e-module';
@@ -65,7 +64,6 @@ const enableAnimations = window.location.search.includes('animations=true');
     InputE2eModule,
     ListE2eModule,
     MdcButtonE2eModule,
-    MdcCardE2eModule,
     MdcCheckboxE2eModule,
     MdcChipsE2eModule,
     MdcDialogE2eModule,

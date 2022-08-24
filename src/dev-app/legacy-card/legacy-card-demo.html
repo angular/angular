@@ -1,0 +1,117 @@
+<div class="demo-card-container">
+  <mat-card>
+    Hello
+  </mat-card>
+
+  <mat-card>
+    <mat-card-subtitle>Subtitle</mat-card-subtitle>
+    <mat-card-title>Card with title and footer</mat-card-title>
+    <mat-card-content>
+      <p>This is supporting text.</p>
+      <p>{{longText}}</p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button>LIKE</button>
+      <button mat-button>SHARE</button>
+    </mat-card-actions>
+    <mat-card-footer>
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </mat-card-footer>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-subtitle>Subtitle</mat-card-subtitle>
+    <mat-card-title>Card with title, footer, and inset-divider</mat-card-title>
+    <mat-card-content>
+      <p>This is supporting text.</p>
+      <p>{{longText}}</p>
+    </mat-card-content>
+    <mat-divider [inset]="true"></mat-divider>
+    <mat-card-actions>
+      <button mat-button>LIKE</button>
+      <button mat-button>SHARE</button>
+    </mat-card-actions>
+    <mat-card-footer>
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </mat-card-footer>
+  </mat-card>
+
+  <mat-card>
+    <img mat-card-image src="https://material.angularjs.org/latest/img/washedout.png">
+    <mat-card-title>Content Title</mat-card-title>
+    <mat-card-content>
+      <p>Here is some content</p>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-button>LIKE</button>
+      <button mat-button>SHARE</button>
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <img mat-card-avatar>
+      <mat-card-title>Header title</mat-card-title>
+      <mat-card-subtitle>Header subtitle</mat-card-subtitle>
+    </mat-card-header>
+    <img mat-card-image src="https://material.angularjs.org/latest/img/washedout.png">
+    <mat-card-content>
+      <p>Here is some content</p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="demo-card-blue mat-card-flat">
+    <mat-card-title>Easily customizable</mat-card-title>
+    <mat-card-actions>
+      <button mat-button>First</button>
+      <button mat-button>Second</button>
+    </mat-card-actions>
+  </mat-card>
+
+  <hr>
+  <h2>Cards with media area</h2>
+
+  <mat-card>
+    <mat-card-title-group>
+      <mat-card-title>Card</mat-card-title>
+      <mat-card-subtitle>Small</mat-card-subtitle>
+      <img mat-card-sm-image>
+    </mat-card-title-group>
+    <mat-card-content>
+      {{longText}}
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-title-group>
+      <mat-card-title>Card</mat-card-title>
+      <mat-card-subtitle>Medium</mat-card-subtitle>
+      <img mat-card-md-image>
+    </mat-card-title-group>
+    <mat-card-content>
+      {{longText}}
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-title-group>
+      <mat-card-title>Card</mat-card-title>
+      <mat-card-subtitle>Large</mat-card-subtitle>
+      <img mat-card-lg-image>
+    </mat-card-title-group>
+    <mat-card-content>
+      {{longText}}
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-title-group>
+      <mat-card-title>Card</mat-card-title>
+      <mat-card-subtitle>Extra large</mat-card-subtitle>
+      <img mat-card-xl-image>
+    </mat-card-title-group>
+    <mat-card-content>
+      {{longText}}
+    </mat-card-content>
+  </mat-card>
+</div>

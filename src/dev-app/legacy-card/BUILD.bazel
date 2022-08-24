@@ -1,0 +1,23 @@
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "legacy-card",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "legacy-card-demo.html",
+        ":legacy_card_demo_scss",
+    ],
+    deps = [
+        "//src/material/divider",
+        "//src/material/legacy-button",
+        "//src/material/legacy-card",
+        "//src/material/legacy-progress-bar",
+    ],
+)
+
+sass_binary(
+    name = "legacy_card_demo_scss",
+    src = "legacy-card-demo.scss",
+)

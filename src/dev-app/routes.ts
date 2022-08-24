@@ -151,8 +151,8 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./mdc-button/mdc-button-demo').then(m => m.MdcButtonDemo),
   },
   {
-    path: 'mdc-card',
-    loadComponent: () => import('./mdc-card/mdc-card-demo').then(m => m.MdcCardDemo),
+    path: 'legacy-card',
+    loadComponent: () => import('./legacy-card/legacy-card-demo').then(m => m.LegacyCardDemo),
   },
   {
     path: 'mdc-checkbox',

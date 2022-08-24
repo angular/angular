@@ -39,7 +39,6 @@ ALL_EXAMPLES = [
     "//src/components-examples/material/autocomplete",
     "//src/components-examples/material-experimental/column-resize",
     "//src/components-examples/material-experimental/popover-edit",
-    "//src/components-examples/material-experimental/mdc-card",
     "//src/components-examples/material-experimental/selection",
     "//src/components-examples/cdk/tree",
     "//src/components-examples/cdk/text-field",

@@ -1,7 +1,5 @@
-load("//src/e2e-app:test_suite.bzl", "e2e_test_suite")
 load(
     "//tools:defaults.bzl",
-    "ng_e2e_test_library",
     "ng_module",
     "sass_binary",
     "sass_library",
@@ -34,22 +32,6 @@ sass_binary(
     deps = [
         "//src/cdk:sass_lib",
         "//src/material/core:core_scss_lib",
-    ],
-)
-
-ng_e2e_test_library(
-    name = "e2e_test_sources",
-    srcs = glob(["**/*.e2e.spec.ts"]),
-    deps = [
-        "//src/cdk/testing/private/e2e",
-    ],
-)
-
-e2e_test_suite(
-    name = "e2e_tests",
-    deps = [
-        ":e2e_test_sources",
-        "//src/cdk/testing/private/e2e",
     ],
 )
 

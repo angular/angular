@@ -6,30 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatDividerModule} from '@angular/material/divider';
-import {MatLegacyProgressBarModule} from '@angular/material/legacy-progress-bar';
+import {Component, ViewEncapsulation} from '@angular/core';
+import {MatCardAppearance, MatCardModule} from '@angular/material/card';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @Component({
   selector: 'card-demo',
   templateUrl: 'card-demo.html',
   styleUrls: ['card-demo.css'],
+  encapsulation: ViewEncapsulation.None,
   standalone: true,
-  imports: [
-    MatLegacyButtonModule,
-    MatLegacyCardModule,
-    MatDividerModule,
-    MatLegacyProgressBarModule,
-  ],
+  imports: [MatCardModule, MatButtonModule, MatCheckboxModule, FormsModule],
 })
 export class CardDemo {
-  longText =
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor ' +
-    'incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud ' +
-    'exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor' +
-    ' in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur' +
-    ' sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id ' +
-    'est laborum.';
+  appearance: MatCardAppearance = 'raised';
+  longText = `Once upon a midnight dreary, while I pondered, weak and weary,
+              Over many a quaint and curious volume of forgotten lore—
+              While I nodded, nearly napping, suddenly there came a tapping,
+              As of some one gently rapping, rapping at my chamber door.
+              “’Tis some visitor,” I muttered, “tapping at my chamber door—
+              Only this and nothing more.”`;
+  toggleAppearance() {
+    this.appearance = this.appearance == 'raised' ? 'outlined' : 'raised';
+  }
 }

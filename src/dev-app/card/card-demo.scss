@@ -2,21 +2,17 @@
   display: flex;
   flex-flow: column nowrap;
 
-  .mat-card {
+  .mat-mdc-card {
     margin: 0 16px 16px 0;
     width: 350px;
   }
 
+  // Use a gray background instead of real images for that "mock" feel.
   img {
     background-color: gray;
   }
-}
 
-.demo-card-blue {
-  background-color: #b0becc;
-
-  .mat-card-actions {
-    display: flex;
-    flex-direction: column;
+  .mdc-button {
+    text-transform: uppercase;
   }
 }
