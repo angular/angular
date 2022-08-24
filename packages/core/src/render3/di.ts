@@ -334,7 +334,7 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
 
 function notFoundValueOrThrow<T>(
     notFoundValue: T|null, token: ProviderToken<T>, flags: InjectFlags): T|null {
-  if (flags & InjectFlags.Optional) {
+  if ((flags & InjectFlags.Optional) || notFoundValue !== undefined) {
     return notFoundValue;
   } else {
     throwProviderNotFoundError(token, 'NodeInjector');
@@ -352,7 +352,7 @@ function notFoundValueOrThrow<T>(
  */
 function lookupTokenUsingModuleInjector<T>(
     lView: LView, token: ProviderToken<T>, flags: InjectFlags, notFoundValue?: any): T|null {
-  if (flags & InjectFlags.Optional && notFoundValue === undefined) {
+  if ((flags & InjectFlags.Optional) && notFoundValue === undefined) {
     // This must be set or the NullInjector will throw for optional deps
     notFoundValue = null;
   }
