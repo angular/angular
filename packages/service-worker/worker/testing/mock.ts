@@ -104,9 +104,8 @@ export class MockServerStateBuilder {
     return this;
   }
 
-  withRedirect(from: string, to: string, toContents: string): MockServerStateBuilder {
-    this.resources.set(from, new MockResponse(toContents, {redirected: true, url: to}));
-    this.resources.set(to, new MockResponse(toContents));
+  withRedirect(from: string, to: string): MockServerStateBuilder {
+    this.resources.set(from, new MockResponse('', {redirected: true, url: to}));
     return this;
   }
 
