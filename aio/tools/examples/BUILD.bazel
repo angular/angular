@@ -68,6 +68,7 @@ js_library(
         "@aio_npm//cjson",
         "@aio_npm//cross-spawn",
         "@aio_npm//fs-extra",
+        "@aio_npm//get-port",
         "@aio_npm//globby",
         "@aio_npm//shelljs",
         "@aio_npm//tree-kill",
