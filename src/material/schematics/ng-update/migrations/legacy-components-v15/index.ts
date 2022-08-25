@@ -10,7 +10,12 @@ import * as ts from 'typescript';
 import * as postcss from 'postcss';
 import * as scss from 'postcss-scss';
 
-import {MAT_IMPORT_CHANGES, MDC_IMPORT_CHANGES, MIXINS} from './constants';
+import {
+  CUSTOM_TS_SYMBOL_RENAMINGS,
+  MAT_IMPORT_CHANGES,
+  MDC_IMPORT_CHANGES,
+  MIXINS,
+} from './constants';
 
 import {Migration, ResolvedResource, TargetVersion, WorkspacePath} from '@angular/cdk/schematics';
 
@@ -151,6 +156,16 @@ export class LegacyComponentsMigration extends Migration<null> {
 
     const separator = ts.isImportSpecifier(node) ? ' as ' : ': ';
     const oldExport = name.escapedText.toString();
+
+    // Handle TS Symbols that have non-standard renamings.
+    const customMapping = CUSTOM_TS_SYMBOL_RENAMINGS.find(v => v.old === oldExport);
+    if (customMapping) {
+      const replacement = node.propertyName
+        ? customMapping.new
+        : `${customMapping.new}${separator}${customMapping.old}`;
+      this._tsReplaceAt(name, {old: oldExport, new: replacement});
+      return;
+    }
 
     // Handle TS Symbols that have standard renamings.
     const newExport = this._parseMatSymbol(oldExport);

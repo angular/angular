@@ -41,6 +41,19 @@ export const MDC_IMPORT_CHANGES = COMPONENTS.map(component => ({
   new: `@angular/material/${component}`,
 }));
 
+export const CUSTOM_TS_SYMBOL_RENAMINGS = [
+  {old: 'ProgressAnimationEnd', new: 'LegacyProgressAnimationEnd'},
+  {old: 'ProgressBarMode', new: 'LegacyProgressBarMode'},
+  {old: 'ProgressSpinnerMode', new: 'LegacyProgressSpinnerMode'},
+  {old: 'AutoFocusTarget', new: 'LegacyAutoFocusTarget'},
+  {old: 'DialogRole', new: 'LegacyDialogRole'},
+  {old: 'DialogPosition', new: 'LegacyDialogPosition'},
+  {old: '_closeDialogVia', new: '_closeLegacyDialogVia'},
+  {old: 'MatTestDialogOpener', new: 'MatTestLegacyDialogOpener'},
+  {old: 'SimpleSnackBar', new: 'LegacySimpleSnackBar'},
+  {old: 'TextOnlySnackBar', new: 'LegacyTextOnlySnackBar'},
+];
+
 export const MIXINS = COMPONENTS.concat(['option', 'optgroup']).flatMap(component => [
   `${component}-theme`,
   `${component}-color`,
