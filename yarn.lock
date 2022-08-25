@@ -159,7 +159,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#2c68d0f9752df9bdbb185b89630ea085a2e62484":
   version "0.0.0-5ffe2357f61a57d16f44a3209cd880c211c575b5"
-  uid "2c68d0f9752df9bdbb185b89630ea085a2e62484"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#2c68d0f9752df9bdbb185b89630ea085a2e62484"
   dependencies:
     "@angular-devkit/build-angular" "14.2.0-rc.0"
@@ -265,10 +264,9 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#1a7be8a4a108ae0eee5c496072ce865043146d4d":
-  version "0.0.0-5ffe2357f61a57d16f44a3209cd880c211c575b5"
-  uid "1a7be8a4a108ae0eee5c496072ce865043146d4d"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#1a7be8a4a108ae0eee5c496072ce865043146d4d"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#da938be2693c1c05ad7ab74b5f6c0dedc2ffa5ca":
+  version "0.0.0-806c568a439877f69b975aedbf5e4eb26fd7eaaf"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#da938be2693c1c05ad7ab74b5f6c0dedc2ffa5ca"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.7.3"
