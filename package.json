@@ -79,7 +79,7 @@
     "@angular/cli": "^14.2.0-rc.0",
     "@angular/compiler-cli": "^14.2.0-rc.0",
     "@angular/localize": "^14.2.0-rc.0",
-    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#90af772108020635b393b7f4789b07c87850a8c5",
+    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#da938be2693c1c05ad7ab74b5f6c0dedc2ffa5ca",
     "@angular/platform-browser-dynamic": "^14.2.0-rc.0",
     "@angular/platform-server": "^14.2.0-rc.0",
     "@angular/router": "^14.2.0-rc.0",
