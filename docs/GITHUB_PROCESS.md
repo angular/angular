@@ -53,7 +53,7 @@ decision.
 
 ## What if I want to implement the feature to help the Angular team?
 
-Often implementing the feature as an separate package is a better option. Building an external
+Often implementing the feature as a separate package is a better option. Building an external
 package rather than including the functionality in Angular helps with:
 
 - Keeping the framework's runtime smaller and simpler

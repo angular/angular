@@ -10,7 +10,7 @@ Bazel.
 ## Installation
 
 In order to ensure that everyone builds Angular in a _consistent_ way, Bazel
-will be installed through NPM and therefore it's not necessary to install Bazel
+will be installed through NPM. It's not necessary to install Bazel
 manually.
 
 The binaries for Bazel will be provided by the [`@bazel/bazelisk`](https://github.com/bazelbuild/bazelisk)
@@ -157,7 +157,7 @@ Of course, non-hermeticity in an action can cause problems.
 At worst, you can fetch a broken artifact from the cache, making your build non-reproducible.
 For this reason, we are careful to implement our Bazel rules to depend only on their inputs.
 
-Currently we only use remote caching on CircleCI and we let Angular core developers enable remote caching to speed up their builds.
+Currently, we only use remote caching on CircleCI. We let Angular core developers enable remote caching to speed up their builds.
 
 ### Remote cache in development
 
@@ -239,7 +239,7 @@ yarn bazel analyze-profile filename_name.profile --html --html_details --html_hi
 
 This will generate a `filename_name.profile.html` file that you can open in your browser.
 
-On the upper right corner that is a small table of contents with links to three areas: Tasks, Legend and Statistics.
+In the upper right corner that is a small table of contents with links to three areas: Tasks, Legend and Statistics.
 
 In the Tasks section you will find a graph of where time is spent. Legend shows what the colors in the Tasks graph mean.
 Hovering over the background will show what phase that is, while hovering over bars will show more details about that specific action.
