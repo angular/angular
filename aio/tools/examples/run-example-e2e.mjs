@@ -8,6 +8,7 @@ import shelljs from 'shelljs';
 import treeKill from 'tree-kill';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers'
+import getPort from 'get-port';
 
 shelljs.set('-e');
 
@@ -114,11 +115,13 @@ function isCliTest(examplePath) {
   return fs.existsSync(path.join(examplePath, CLI_SPEC_FILENAME));
 }
 
-function runE2eTestsSystemJS(exampleName, appDir) {
+async function runE2eTestsSystemJS(exampleName, appDir) {
   const config = loadExampleConfig(appDir);
 
+  const runArgs = await overrideSystemJsExampleToUseRandomPort(config, appDir);
+
   const appBuildSpawnInfo = spawnExt(NODE, [VENDORED_YARN, config.build], {cwd: appDir});
-  const appRunSpawnInfo = spawnExt(NODE, [VENDORED_YARN, config.run, '-s'], {cwd: appDir}, true);
+  const appRunSpawnInfo = spawnExt(NODE, [VENDORED_YARN, ...runArgs, '-s'], {cwd: appDir}, true);
 
   let run = runProtractorSystemJS(exampleName, appBuildSpawnInfo.promise, appDir, appRunSpawnInfo);
 
@@ -127,6 +130,40 @@ function runE2eTestsSystemJS(exampleName, appDir) {
   }
 
   return run;
+}
+
+// The SystemJS examples spawn an http server and protractor using a hardcoded
+// port. In order to run these tests concurrently under bazel without contention,
+// we need to dynamically acquire a port and overwrite configuration to use that port.
+// This is further complicated by the SystemJS tests using two different http servers
+// (http-server, lite-server) depending on the example (and sometimes both),
+// and the two servers need to be configured differently.
+async function overrideSystemJsExampleToUseRandomPort(exampleConfig, exampleDir) {
+  const freePort = await getPort();
+  let runArgs = [exampleConfig.run];
+
+  const isUsingHttpServerLibrary = exampleConfig.run === 'serve:upgrade';
+  if (isUsingHttpServerLibrary) {
+    // Override the port in http-server by passing as an argument
+    runArgs = [...runArgs, "-p", freePort];
+  }
+
+  // Override the port in any lite-server config files
+  const liteServerConfigs = globbySync(['bs-config*.json'], {cwd: exampleDir});
+  liteServerConfigs.forEach(configFile => {
+    const config = JSON.parse(fs.readFileSync(path.join(exampleDir, configFile), 'utf8'));
+    if (config.port) {
+      config.port = freePort;
+      fs.writeFileSync(path.join(exampleDir, configFile), JSON.stringify(config));
+    }
+  });
+
+  // Override hardcoded port in protractor.config.js
+  let protractorConfig = fs.readFileSync(path.join(exampleDir, 'protractor.config.js'), 'utf8');
+  protractorConfig = protractorConfig.replaceAll('http://localhost:8080', `http://localhost:${freePort}`);
+  fs.writeFileSync(path.join(exampleDir, 'protractor.config.js'), protractorConfig);
+
+  return runArgs;
 }
 
 function runProtractorSystemJS(exampleName, prepPromise, appDir, appRunSpawnInfo) {
