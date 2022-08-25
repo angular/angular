@@ -32,6 +32,7 @@ const dist =
         .addFile('/qux.txt', 'this is qux')
         .addFile('/quux.txt', 'this is quux')
         .addFile('/quuux.txt', 'this is quuux')
+        .addFile('/redirect-target.txt', 'this was a redirect')
         .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
         .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
         .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
@@ -48,6 +49,7 @@ const distUpdate =
         .addFile('/qux.txt', 'this is qux v2')
         .addFile('/quux.txt', 'this is quux v2')
         .addFile('/quuux.txt', 'this is quuux v2')
+        .addFile('/redirect-target.txt', 'this was a redirect')
         .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
         .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
         .addUnhashedFile('/unhashed/a.txt', 'this is unhashed v2', {'Cache-Control': 'max-age=10'})
@@ -265,23 +267,21 @@ const manifestUpdate: Manifest = {
   hashTable: tmpHashTableForFs(distUpdate),
 };
 
-const serverBuilderBase =
-    new MockServerStateBuilder()
-        .withStaticFiles(dist)
-        .withRedirect('/redirected.txt', '/redirect-target.txt', 'this was a redirect')
-        .withError('/error.txt');
+const serverBuilderBase = new MockServerStateBuilder()
+                              .withStaticFiles(dist)
+                              .withRedirect('/redirected.txt', '/redirect-target.txt')
+                              .withError('/error.txt');
 
 const server = serverBuilderBase.withManifest(manifest).build();
 
 const serverRollback =
     serverBuilderBase.withManifest({...manifest, timestamp: manifest.timestamp + 1}).build();
 
-const serverUpdate =
-    new MockServerStateBuilder()
-        .withStaticFiles(distUpdate)
-        .withManifest(manifestUpdate)
-        .withRedirect('/redirected.txt', '/redirect-target.txt', 'this was a redirect')
-        .build();
+const serverUpdate = new MockServerStateBuilder()
+                         .withStaticFiles(distUpdate)
+                         .withManifest(manifestUpdate)
+                         .withRedirect('/redirected.txt', '/redirect-target.txt')
+                         .build();
 
 const brokenServer =
     new MockServerStateBuilder().withStaticFiles(brokenFs).withManifest(brokenManifest).build();
