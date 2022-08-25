@@ -203,10 +203,10 @@ export class AppVersion implements UpdateSource {
 
   /**
    * Determine whether the request is a navigation request.
-   * Takes into account: Request mode, `Accept` header, `navigationUrls` patterns.
+   * Takes into account: Request method and mode, `Accept` header, `navigationUrls` patterns.
    */
   isNavigationRequest(req: Request): boolean {
-    if (req.mode !== 'navigate') {
+    if (req.method !== 'GET' || req.mode !== 'navigate') {
       return false;
     }
 

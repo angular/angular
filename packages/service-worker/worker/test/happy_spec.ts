@@ -1704,6 +1704,14 @@ describe('Driver', () => {
       server.assertNoOtherRequests();
     });
 
+    it('does not redirect to index on a non-GET request', async () => {
+      expect(await navRequest('/baz', {method: 'POST'})).toBeNull();
+      server.assertSawRequestFor('/baz');
+
+      expect(await navRequest('/qux', {method: 'PUT'})).toBeNull();
+      server.assertSawRequestFor('/qux');
+    });
+
     it('does not redirect to index on a non-navigation request', async () => {
       expect(await navRequest('/baz', {mode: undefined})).toBeNull();
       server.assertSawRequestFor('/baz');

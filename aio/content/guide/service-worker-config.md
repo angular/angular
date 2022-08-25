@@ -376,6 +376,7 @@ This optional section enables you to specify a custom list of URLs that will be 
 The ServiceWorker redirects navigation requests that don't match any `asset` or `data` group to the specified [index file](#index-file).
 A request is considered to be a navigation request if:
 
+*   Its [method](https://developer.mozilla.org/docs/Web/API/Request/method) is `GET`
 *   Its [mode](https://developer.mozilla.org/docs/Web/API/Request/mode) is `navigation`
 *   It accepts a `text/html` response as determined by the value of the `Accept` header
 *   Its URL matches the following criteria:
