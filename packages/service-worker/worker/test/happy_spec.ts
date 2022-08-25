@@ -35,6 +35,7 @@ const dist =
         .addFile('/redirect-target.txt', 'this was a redirect')
         .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
         .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
+        .addFile('/lazy/redirect-target.txt', 'this was a redirect too')
         .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
         .addUnhashedFile('/unhashed/b.txt', 'this is unhashed b', {'Cache-Control': 'no-cache'})
         .addUnhashedFile('/api/foo', 'this is api foo', {'Cache-Control': 'no-cache'})
@@ -161,6 +162,7 @@ const manifest: Manifest = {
       urls: [
         '/baz.txt',
         '/qux.txt',
+        '/lazy/redirected.txt',
       ],
       patterns: [],
       cacheQueryOptions: {ignoreVary: true},
@@ -270,6 +272,7 @@ const manifestUpdate: Manifest = {
 const serverBuilderBase = new MockServerStateBuilder()
                               .withStaticFiles(dist)
                               .withRedirect('/redirected.txt', '/redirect-target.txt')
+                              .withRedirect('/lazy/redirected.txt', '/lazy/redirect-target.txt')
                               .withError('/error.txt');
 
 const server = serverBuilderBase.withManifest(manifest).build();
@@ -1575,6 +1578,71 @@ describe('Driver', () => {
 
       expect(await makeRequest(fooScope2, '/foo/baz.txt', '_foo_')).toBe('this is baz');
       expect(await makeRequest(fooScope2, '/foo/baz.txt', '_bar_')).toBe('this is baz');
+    });
+  });
+
+  describe('request metadata', () => {
+    it('passes headers through to the server', async () => {
+      // Request a lazy-cached asset (so that it is fetched from the network) and provide headers.
+      const reqInit = {
+        headers: {SomeHeader: 'SomeValue'},
+      };
+      expect(await makeRequest(scope, '/baz.txt', undefined, reqInit)).toBe('this is baz');
+
+      // Verify that the headers were passed through to the network.
+      const [bazReq] = server.getRequestsFor('/baz.txt');
+      expect(bazReq.headers.get('SomeHeader')).toBe('SomeValue');
+    });
+
+    it('does not pass non-allowed metadata through to the server', async () => {
+      // Request a lazy-cached asset (so that it is fetched from the network) and provide some
+      // metadata.
+      const reqInit = {
+        credentials: 'include',
+        mode: 'same-origin',
+        unknownOption: 'UNKNOWN',
+      };
+      expect(await makeRequest(scope, '/baz.txt', undefined, reqInit)).toBe('this is baz');
+
+      // Verify that the metadata were not passed through to the network.
+      const [bazReq] = server.getRequestsFor('/baz.txt');
+      expect(bazReq.credentials).toBe('same-origin');  // The default value.
+      expect(bazReq.mode).toBe('cors');                // The default value.
+      expect((bazReq as any).unknownOption).toBeUndefined();
+    });
+
+    describe('for redirect requests', () => {
+      it('passes headers through to the server', async () => {
+        // Request a redirected, lazy-cached asset (so that it is fetched from the network) and
+        // provide headers.
+        const reqInit = {
+          headers: {SomeHeader: 'SomeValue'},
+        };
+        expect(await makeRequest(scope, '/lazy/redirected.txt', undefined, reqInit))
+            .toBe('this was a redirect too');
+
+        // Verify that the headers were passed through to the network.
+        const [redirectReq] = server.getRequestsFor('/lazy/redirect-target.txt');
+        expect(redirectReq.headers.get('SomeHeader')).toBe('SomeValue');
+      });
+
+      it('does not pass non-allowed metadata through to the server', async () => {
+        // Request a redirected, lazy-cached asset (so that it is fetched from the network) and
+        // provide some metadata.
+        const reqInit = {
+          credentials: 'include',
+          mode: 'same-origin',
+          unknownOption: 'UNKNOWN',
+        };
+        expect(await makeRequest(scope, '/lazy/redirected.txt', undefined, reqInit))
+            .toBe('this was a redirect too');
+
+        // Verify that the metadata were not passed through to the network.
+        const [redirectReq] = server.getRequestsFor('/lazy/redirect-target.txt');
+        expect(redirectReq.credentials).toBe('same-origin');  // The default value.
+        expect(redirectReq.mode).toBe('cors');                // The default value.
+        expect((redirectReq as any).unknownOption).toBeUndefined();
+      });
     });
   });
 
