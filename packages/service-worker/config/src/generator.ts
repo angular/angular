@@ -144,14 +144,13 @@ function globListToMatcher(globs: string[]): (file: string) => boolean {
 }
 
 function matches(file: string, patterns: {positive: boolean, regex: RegExp}[]): boolean {
-  const res = patterns.reduce((isMatch, pattern) => {
+  return patterns.reduce((isMatch, pattern) => {
     if (pattern.positive) {
       return isMatch || pattern.regex.test(file);
     } else {
       return isMatch && !pattern.regex.test(file);
     }
   }, false);
-  return res;
 }
 
 function urlToRegex(url: string, baseHref: string, literalQuestionMark?: boolean): string {
