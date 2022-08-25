@@ -55,7 +55,12 @@ export class LegacyComponentsMigration extends Migration<null> {
     if (!namespace || !node.source?.start) {
       return;
     }
-    if (this._isLegacyMixin(node, namespace)) {
+    if (node.params.startsWith(`${namespace}.all-component-`)) {
+      this._replaceAt(filePath, node.source.start.offset, {
+        old: `${namespace}.all-`,
+        new: `${namespace}.all-legacy-`,
+      });
+    } else if (this._isLegacyMixin(node, namespace)) {
       this._replaceAt(filePath, node.source.start.offset, {
         old: `${namespace}.`,
         new: `${namespace}.legacy-`,
@@ -65,6 +70,9 @@ export class LegacyComponentsMigration extends Migration<null> {
 
   /** Returns true if the given at-include rule is a use of a legacy component mixin. */
   private _isLegacyMixin(node: postcss.AtRule, namespace: string): boolean {
+    if (!node.params.startsWith(`${namespace}.`)) {
+      return false;
+    }
     for (let i = 0; i < MIXINS.length; i++) {
       if (node.params.startsWith(`${namespace}.${MIXINS[i]}`)) {
         return true;
