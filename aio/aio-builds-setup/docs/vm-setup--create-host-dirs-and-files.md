@@ -32,6 +32,10 @@ specify the domain name see [here](vm-setup--create-docker-image.md).
 If no directory is attached, nginx will use an internal self-signed certificate. This is convenient
 during development, but is not suitable for production.
 
+Certificates from any certificate authority can be used. As an example, see
+[here](misc--use-lets-encrypt-certs) for instructions on using certificates from
+[Let's Encrypt](https://letsencrypt.org/).
+
 **Note:**
 Since nginx needs to be able to serve requests for both the main domain as well as any subdomain
 (e.g. `ngbuilds.io/` and `foo-bar.ngbuilds.io/`), the provided certificate needs to be a
