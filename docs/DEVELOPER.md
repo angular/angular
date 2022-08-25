@@ -31,7 +31,7 @@ following products on your development machine:
 
 * [Yarn](https://yarnpkg.com) (version specified in the engines field of [`package.json`](../package.json)) which is used to install dependencies.
 
-* Optional: [Java](https://openjdk.java.net/) version 7 or higher as required by [Closure Compiler](https://developers.google.com/closure/compiler). Most developers will not need this. Java is required for running some of the integration tests.
+* Optional: [Java](https://openjdk.java.net/) version 7 or higher than required by [Closure Compiler](https://developers.google.com/closure/compiler). Most developers will not need this. Java is required for running some integration tests.
 
 ## Getting the Sources
 
@@ -146,7 +146,7 @@ $ yarn lint
 ## Publishing Snapshot Builds
 
 When a build of any branch on the upstream fork angular/angular is green on CircleCI, it
-automatically publishes build artifacts to repositories in the Angular org, eg. the `@angular/core`
+automatically publishes build artifacts to repositories in the Angular org, for example, the `@angular/core`
 package is published to https://github.com/angular/core-builds.
 
 You may find that your un-merged change needs some validation from external participants.
