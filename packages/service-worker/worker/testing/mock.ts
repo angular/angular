@@ -179,6 +179,10 @@ export class MockServerState {
     this.resolve = null;
   }
 
+  getRequestsFor(url: string): Request[] {
+    return this.requests.filter(req => req.url.split('?')[0] === url);
+  }
+
   assertSawRequestFor(url: string): void {
     if (!this.sawRequestFor(url)) {
       throw new Error(`Expected request for ${url}, got none.`);
@@ -192,7 +196,7 @@ export class MockServerState {
   }
 
   sawRequestFor(url: string): boolean {
-    const matching = this.requests.filter(req => req.url.split('?')[0] === url);
+    const matching = this.getRequestsFor(url);
     if (matching.length > 0) {
       this.requests = this.requests.filter(req => req !== matching[0]);
       return true;

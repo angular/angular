@@ -150,10 +150,8 @@ export abstract class AssetGroup {
         }
       }
 
-      // No already-cached response exists, so attempt a fetch/cache operation. The original request
-      // may specify things like credential inclusion, but for assets these are not honored in order
-      // to avoid issues with opaque responses. The SW requests the data itself.
-      const res = await this.fetchAndCacheOnce(this.adapter.newRequest(req.url));
+      // No already-cached response exists, so attempt a fetch/cache operation.
+      const res = await this.fetchAndCacheOnce(this.newRequestWithMetadata(req.url, req));
 
       // If this is successful, the response needs to be cloned as it might be used to respond to
       // multiple fetch operations at the same time.
@@ -360,7 +358,7 @@ export abstract class AssetGroup {
       }
 
       // Unwrap the redirect directly.
-      return this.fetchFromNetwork(this.adapter.newRequest(res.url), redirectLimit - 1);
+      return this.fetchFromNetwork(this.newRequestWithMetadata(res.url, req), redirectLimit - 1);
     }
 
     return res;
@@ -413,7 +411,7 @@ export abstract class AssetGroup {
         // data, or because the version on the server really doesn't match. A cache-busting
         // request will differentiate these two situations.
         // TODO: handle case where the URL has parameters already (unlikely for assets).
-        const cacheBustReq = this.adapter.newRequest(this.cacheBust(req.url));
+        const cacheBustReq = this.newRequestWithMetadata(this.cacheBust(req.url), req);
         response = await this.safeFetch(cacheBustReq);
 
         // If the response was successful, check the contents against the canonical hash.
@@ -474,6 +472,24 @@ export abstract class AssetGroup {
 
     // No up-to-date version of this resource could be found.
     return false;
+  }
+
+  /**
+   * Create a new `Request` based on the specified URL and `RequestInit` options, preserving only
+   * metadata that are known to be safe.
+   *
+   * Currently, only headers are preserved.
+   *
+   * NOTE:
+   *   Things like credential inclusion are intentionally omitted to avoid issues with opaque
+   *   responses.
+   *
+   * TODO(gkalpak):
+   *   Investigate preserving more metadata. See, also, discussion on preserving `mode`:
+   *   https://github.com/angular/angular/issues/41931#issuecomment-1227601347
+   */
+  private newRequestWithMetadata(url: string, options: RequestInit): Request {
+    return this.adapter.newRequest(url, {headers: options.headers});
   }
 
   /**
