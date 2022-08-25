@@ -80,7 +80,7 @@ export const SCRIPT = new InjectionToken<string>('NGSW_REGISTER_SCRIPT');
 export function ngswAppInitializer(
     injector: Injector, script: string, options: SwRegistrationOptions,
     platformId: string): Function {
-  const initializer = () => {
+  return () => {
     if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
           options.enabled !== false)) {
       return;
@@ -132,7 +132,6 @@ export function ngswAppInitializer(
                 navigator.serviceWorker.register(script, {scope: options.scope})
                     .catch(err => console.error('Service worker registration failed with:', err))));
   };
-  return initializer;
 }
 
 function delayWithTimeout(timeout: number): Observable<unknown> {
