@@ -100,7 +100,7 @@ export class MockRequest extends MockBody implements Request {
   readonly isHistoryNavigation: boolean = false;
   readonly isReloadNavigation: boolean = false;
   readonly cache: RequestCache = 'default';
-  readonly credentials: RequestCredentials = 'omit';
+  readonly credentials: RequestCredentials = 'same-origin';
   readonly destination: RequestDestination = 'document';
   readonly headers: Headers = new MockHeaders();
   readonly integrity: string = '';
