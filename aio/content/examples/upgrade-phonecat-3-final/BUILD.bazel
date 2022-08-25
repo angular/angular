@@ -4,5 +4,4 @@ package(default_visibility = ["//visibility:public"])
 
 docs_example(
     name = "upgrade-phonecat-3-final",
-    test_tags = ["exclusive"],  # Cannot run concurrently as it uses a hardcoded port for lite-server
 )
