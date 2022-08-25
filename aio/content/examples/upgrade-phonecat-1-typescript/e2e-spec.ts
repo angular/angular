@@ -6,7 +6,8 @@ import { browser, element, by, ElementArrayFinder, ElementFinder } from 'protrac
 describe('PhoneCat Application', () => {
 
   beforeAll(() => {
-    browser.baseUrl = 'http://localhost:8080/app/';
+    browser.baseUrl = `${browser.baseUrl}/app/`;
+
     // protractor.config.js is set to ng2 mode by default, so we must manually change it
     browser.rootEl = 'body';
   });

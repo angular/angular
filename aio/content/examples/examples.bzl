@@ -99,13 +99,12 @@ EXAMPLES = {
     "what-is-angular": {"stackblitz": True, "zip": True},
 }
 
-def docs_example(name, test = True, test_tags = []):
+def docs_example(name, test = True):
     """Stamp targets for adding boilerplate to examples, creating live examples, and creating zips.
 
     Args:
         name: name of the example
         test: whether to run e2e tests
-        test_tags: tags to add to e2e tests
     """
     if name not in EXAMPLES:
         # buildifier: disable=print
@@ -218,5 +217,5 @@ def docs_example(name, test = True, test_tags = []):
             ],
             # RBE complains about superseeding the max inputs limit (70,000) due to the
             # size of the input tree.
-            tags = test_tags + ["no-remote-exec"],
+            tags = ["no-remote-exec"],
         )
