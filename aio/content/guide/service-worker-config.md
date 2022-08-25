@@ -90,6 +90,12 @@ Usually this is `/index.html`.
 They can include resources loaded from the page's origin as well as third-party resources loaded from CDNs and other external URLs.
 As not all such external URLs might be known at build time, URL patterns can be matched.
 
+<div class="alert is-important">
+
+  For the service worker to handle resources that are loaded from different origins, make sure that [CORS][MozillaDeveloperDocsWebHttpCors] is correctly configured on each origin's server.
+
+</div>
+
 This field contains an array of asset groups, each of which defines a set of asset resources and the policy by which they are cached.
 
 <code-example format="json" language="json">
@@ -439,6 +445,8 @@ It is recommended that you use the default performance strategy whenever possibl
 [GoogleDeveloperWebUpdates201503IntroductionToFetchResponseTypes]: https://developers.google.com/web/updates/2015/03/introduction-to-fetch#response_types
 
 [WhatwgFetchSpecConceptFilteredResponseOpaque]: https://fetch.spec.whatwg.org#concept-filtered-response-opaque
+
+[MozillaDeveloperDocsWebHttpCors]: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 
 <!-- end links -->
 
