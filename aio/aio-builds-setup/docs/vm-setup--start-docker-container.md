@@ -48,14 +48,22 @@ sudo docker run \
 
   # The directory the contains the secrets (e.g. GitHub token, JWT secret, etc).
   # (See [here](vm-setup--set-up-secrets.md) for more info.)
+  #
+  # NOTE:
+  #   Omitting this is OK during development/debugging, when you don't care to interact with real
+  #   external services.
   --volume <host-secrets-dir>:/aio-secrets:ro \
 
   # The build artifacts and hosted previews will stored to and served from this directory.
   # (If you are using a persistent disk - as described [here](vm-setup--attach-persistent-disk.md) -
   #  this will be a directory inside the disk.)
+  #
+  # NOTE:
+  #   Omitting this is OK during development/debugging, when you don't care to interact with real
+  #   external services.
   --volume <host-builds-dir>:/var/www/aio-builds \
 
-  # The directory the contains the SSL certificates.
+  # The directory the contains the TLS certificates.
   # (See [here](vm-setup--create-host-dirs-and-files.md) for more info.)
   # If not provided, the container will use self-signed certificates.
  [--volume <host-cert-dir>:/etc/ssl/localcerts:ro] \
@@ -77,10 +85,13 @@ sudo docker run \
 
 
 ## Example
-The following command would start a docker container based on the previously created `foobar-builds`
-docker image, alias it as 'foobar-builds-1' and map predefined directories on the host VM to be used
-by the container for accessing secrets and SSL certificates and keeping the build artifacts and logs;
-and will map the source scripts from the host to the container.
+The following command would do the following:
+1. Start a docker container based on the previously created `foobar-builds` docker image.
+2. Alias the docker container as `foobar-builds-1` (so it can be references in subsequent docker
+   commands).
+3. Map predefined directories on the host VM to be used by the container for accessing secrets and
+   TLS certificates and keeping the build artifacts and logs.
+4. Map the source scripts from the host to the container (for debugging purposes).
 
 ```
 sudo docker run \

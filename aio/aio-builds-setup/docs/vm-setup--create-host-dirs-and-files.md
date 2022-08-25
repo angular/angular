@@ -19,8 +19,8 @@ persistent disk can be used (as described [here](vm-setup--attach-persistent-dis
 **Note:** The directories created inside that directory will be owned by user `www-data`.
 
 
-## Create SSL certificates (Optional for dev)
-The host VM can attach a directory containing the SSL certificate and key to be used by the nginx
+## Create TLS certificates (Optional for dev)
+The host VM can attach a directory containing the TLS certificate and key to be used by the nginx
 server for serving the hosted previews. More info on how to attach the directory when
 starting the container can be found [here](vm-setup--start-docker-container.md).
 
@@ -34,8 +34,9 @@ during development, but is not suitable for production.
 
 **Note:**
 Since nginx needs to be able to serve requests for both the main domain as well as any subdomain
-(e.g. `ngbuilds.io/` and `foo-bar.ngbuilds.io/`), the provided certificate needs to be a wildcard
-certificate covering both the domain and subdomains.
+(e.g. `ngbuilds.io/` and `foo-bar.ngbuilds.io/`), the provided certificate needs to be a
+[wildcard certificate](https://en.wikipedia.org/wiki/Wildcard_certificate) covering both the domain
+and all subdomains.
 
 
 ## Create directory for logs (Optional)
