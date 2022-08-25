@@ -194,7 +194,7 @@ export class AppVersion implements UpdateSource {
       }
 
       // This was a navigation request. Re-enter `handleFetch` with a request for
-      // the URL.
+      // the index URL.
       return this.handleFetch(this.adapter.newRequest(this.indexUrl), event);
     }
 
