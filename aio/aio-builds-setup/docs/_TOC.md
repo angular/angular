@@ -30,4 +30,5 @@
 
 ## Miscellaneous
 - [Debug docker container](misc--debug-docker-container.md)
+- [Use Let's Encrypt certificates](misc--use-lets-encrypt-certs.md)
 - [Integrate with CI](misc--integrate-with-ci.md)
