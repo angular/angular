@@ -1,6 +1,6 @@
 # Debugging the `components-repo-unit-tests` job
 
-Currently all changes to Ivy are validated against the test suite of the
+Currently, all changes to Ivy are validated against the test suite of the
 `angular/components` repository. In order to debug the `components-repo-unit-tests` CI
 job, the following steps can be used:
 
