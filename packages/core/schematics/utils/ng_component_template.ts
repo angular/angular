@@ -7,7 +7,6 @@
  */
 
 import {Tree} from '@angular-devkit/schematics';
-import {existsSync, readFileSync} from 'fs';
 import {dirname, relative, resolve} from 'path';
 import ts from 'typescript';
 
@@ -55,11 +54,15 @@ export class NgComponentTemplateVisitor {
   }
 
   private visitClassDeclaration(node: ts.ClassDeclaration) {
-    if (!node.decorators || !node.decorators.length) {
+    // TODO(crisbeto): in TS 4.8 the `decorators` are combined with the `modifiers` array.
+    // Once we drop support for older versions, we can rely exclusively on `getDecorators`.
+    const decorators = (ts as any).getDecorators?.(node) || node.decorators;
+
+    if (!decorators || !decorators.length) {
       return;
     }
 
-    const ngDecorators = getAngularDecorators(this.typeChecker, node.decorators);
+    const ngDecorators = getAngularDecorators(this.typeChecker, decorators);
     const componentDecorator = ngDecorators.find(dec => dec.name === 'Component');
 
     // In case no "@Component" decorator could be found on the current class, skip.
