@@ -31,10 +31,7 @@ async function main() {
   if (branchName === active.next.branchName) {
     const major = active.next.version.major;
 
-    const targets = [
-      // TODO(EXCEPTIONAL_MINOR): Restore the original logic for `next.material.angular.io`.
-      // {projectId, description, site: sites.next}
-    ];
+    const targets = [{projectId, description, site: sites.next}];
 
     // If the next release train is for a new major that is not published as part of the
     // other active release trains, we also publish to e.g. `v14.material.angular.io`.
@@ -72,11 +69,7 @@ async function main() {
 
   if (branchName === active.releaseCandidate?.branchName) {
     const major = active.releaseCandidate.version.major;
-    const targets = [
-      // TODO(EXCEPTIONAL_MINOR): Restore the original logic for `next.material.angular.io`.
-      {projectId, description, site: sites.next},
-      {projectId, description, site: sites.rc},
-    ];
+    const targets = [{projectId, description, site: sites.rc}];
 
     // If the RC is for a new major that `latest` does not publish yet, we will deploy
     // the dedicated major site like `v13.material.angular.io` using the `rc` branch.
