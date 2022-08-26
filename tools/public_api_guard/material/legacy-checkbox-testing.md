@@ -5,12 +5,12 @@
 ```ts
 
 import { AsyncFactoryFn } from '@angular/cdk/testing';
-import { CheckboxHarnessFilters } from '@angular/material/checkbox/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
+import { CheckboxHarnessFilters as LegacyCheckboxHarnessFilters } from '@angular/material/checkbox/testing';
 import { _MatCheckboxHarnessBase } from '@angular/material/checkbox/testing';
 import { TestElement } from '@angular/cdk/testing';
 
-export { CheckboxHarnessFilters }
+export { LegacyCheckboxHarnessFilters }
 
 // @public
 export class MatLegacyCheckboxHarness extends _MatCheckboxHarnessBase {
@@ -21,7 +21,7 @@ export class MatLegacyCheckboxHarness extends _MatCheckboxHarnessBase {
     protected _label: AsyncFactoryFn<TestElement>;
     // (undocumented)
     toggle(): Promise<void>;
-    static with(options?: CheckboxHarnessFilters): HarnessPredicate<MatLegacyCheckboxHarness>;
+    static with(options?: LegacyCheckboxHarnessFilters): HarnessPredicate<MatLegacyCheckboxHarness>;
 }
 
 // (No @packageDocumentation comment for this package)

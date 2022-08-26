@@ -7,7 +7,10 @@
  */
 
 import {Component, Directive} from '@angular/core';
-import {MAT_CHECKBOX_DEFAULT_OPTIONS, MatCheckboxModule} from '@angular/material/checkbox';
+import {
+  MatLegacyCheckboxModule,
+  MAT_LEGACY_CHECKBOX_DEFAULT_OPTIONS,
+} from '@angular/material/legacy-checkbox';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatPseudoCheckboxModule, ThemePalette} from '@angular/material/core';
@@ -23,14 +26,14 @@ export interface Task {
 
 @Directive({
   selector: '[clickActionNoop]',
-  providers: [{provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'noop'}}],
+  providers: [{provide: MAT_LEGACY_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'noop'}}],
   standalone: true,
 })
 export class ClickActionNoop {}
 
 @Directive({
   selector: '[clickActionCheck]',
-  providers: [{provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'check'}}],
+  providers: [{provide: MAT_LEGACY_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'check'}}],
   standalone: true,
 })
 export class ClickActionCheck {}
@@ -53,7 +56,7 @@ export class AnimationsNoop {}
   ],
   templateUrl: 'nested-checklist.html',
   standalone: true,
-  imports: [CommonModule, MatCheckboxModule, FormsModule],
+  imports: [CommonModule, MatLegacyCheckboxModule, FormsModule],
 })
 export class MatCheckboxDemoNestedChecklist {
   tasks: Task[] = [
@@ -107,7 +110,7 @@ export class MatCheckboxDemoNestedChecklist {
   imports: [
     CommonModule,
     FormsModule,
-    MatCheckboxModule,
+    MatLegacyCheckboxModule,
     MatInputModule,
     MatSelectModule,
     MatPseudoCheckboxModule,

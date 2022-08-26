@@ -41,7 +41,7 @@ export class MatLegacyCheckboxChange {
  * This allows it to support [(ngModel)].
  * @docs-private
  */
-export const MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR: any = {
+export const MAT_LEGACY_CHECKBOX_CONTROL_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MatLegacyCheckbox),
   multi: true,
@@ -72,7 +72,7 @@ export const MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR: any = {
     '[class.mat-checkbox-label-before]': 'labelPosition == "before"',
     '[class._mat-animation-noopable]': `_animationMode === 'NoopAnimations'`,
   },
-  providers: [MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR],
+  providers: [MAT_LEGACY_CHECKBOX_CONTROL_VALUE_ACCESSOR],
   inputs: ['disableRipple', 'color', 'tabIndex'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,

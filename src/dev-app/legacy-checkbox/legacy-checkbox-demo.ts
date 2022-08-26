@@ -9,7 +9,7 @@
 import {Component, Directive} from '@angular/core';
 import {
   MatLegacyCheckboxModule,
-  MAT_CHECKBOX_DEFAULT_OPTIONS,
+  MAT_LEGACY_CHECKBOX_DEFAULT_OPTIONS,
 } from '@angular/material/legacy-checkbox';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MatPseudoCheckboxModule, ThemePalette} from '@angular/material/core';
@@ -27,14 +27,14 @@ export interface Task {
 
 @Directive({
   selector: '[clickActionNoop]',
-  providers: [{provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'noop'}}],
+  providers: [{provide: MAT_LEGACY_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'noop'}}],
   standalone: true,
 })
 export class ClickActionNoop {}
 
 @Directive({
   selector: '[clickActionCheck]',
-  providers: [{provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'check'}}],
+  providers: [{provide: MAT_LEGACY_CHECKBOX_DEFAULT_OPTIONS, useValue: {clickAction: 'check'}}],
   standalone: true,
 })
 export class ClickActionCheck {}
