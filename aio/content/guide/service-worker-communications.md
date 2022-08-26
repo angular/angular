@@ -73,9 +73,9 @@ To avoid disrupting the user's progress, it is generally a good idea to prompt t
 
 <div class="alert is-important">
 
-Calling {@link SwUpdate#activateUpdate SwUpdate#activateUpdate()} updates a tab to the latest version without reloading the page.
+Calling {@link SwUpdate#activateUpdate SwUpdate#activateUpdate()} updates a tab to the latest version without reloading the page, but this could break the application.
 
-However, this can easily result in a broken application due to a version mismatch between the [application shell](guide/glossary#app-shell) and other page resources, such as [lazy-loaded chunks](guide/glossary#lazy-loading), whose filenames may change between versions.
+Updating without reloading can create a version mismatch between the [application shell](guide/glossary#app-shell) and other page resources, such as [lazy-loaded chunks](guide/glossary#lazy-loading), whose filenames may change between versions.
 
 You should only use `activateUpdate()`, if you are certain it is safe for your specific use case.
 
