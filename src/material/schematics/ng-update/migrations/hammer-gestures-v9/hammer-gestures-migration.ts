@@ -750,7 +750,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
     const recorder = this.fileSystem.edit(filePath);
     const providersField = getMetadataField(metadata[0] as Ts48MigrationAny, 'providers')[0];
     const providerIdentifiers = providersField
-      ? findMatchingChildNodes(providersField, ts.isIdentifier)
+      ? findMatchingChildNodes(providersField as Ts48MigrationAny, ts.isIdentifier)
       : null;
     const gestureConfigExpr = this._importManager.addImportToSourceFile(
       sourceFile,
@@ -844,7 +844,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
 
     const importsField = getMetadataField(metadata[0] as Ts48MigrationAny, 'imports')[0];
     const importIdentifiers = importsField
-      ? findMatchingChildNodes(importsField, ts.isIdentifier)
+      ? findMatchingChildNodes(importsField as Ts48MigrationAny, ts.isIdentifier)
       : null;
     const recorder = this.fileSystem.edit(this.fileSystem.resolve(sourceFile.fileName));
     const hammerModuleExpr = this._importManager.addImportToSourceFile(

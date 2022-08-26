@@ -10890,23 +10890,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:~4.7.2":
-  version: 4.7.4
-  resolution: "typescript@npm:4.7.4"
+"typescript@file:../../node_modules/typescript::locator=yarn-pnp-compat%40workspace%3A.":
+  version: 4.8.2
+  resolution: "typescript@file:../../node_modules/typescript#../../node_modules/typescript::hash=028f88&locator=yarn-pnp-compat%40workspace%3A."
   bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 5750181b1cd7e6482c4195825547e70f944114fb47e58e4aa7553e62f11b3f3173766aef9c281783edfd881f7b8299cf35e3ca8caebe73d8464528c907a164df
+    tsc: ./bin/tsc
+    tsserver: ./bin/tsserver
+  checksum: 6f49363af8af2fe480da1d5fa68712644438785208b06690a3cbe5e7365fd652c3a0f1e587bc8684d78fb69de3dde4de185c0bad7bb4f3664ddfc813ce8caad6
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@~4.7.2#~builtin<compat/typescript>":
-  version: 4.7.4
-  resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=7ad353"
+"typescript@patch:typescript@file%3A../../node_modules/typescript#~builtin<compat/typescript>":
+  version: 4.8.2
+  resolution: "typescript@patch:typescript@file%3A../../node_modules/typescript%23../../node_modules/typescript%3A%3Ahash=028f88&locator=yarn-pnp-compat%2540workspace%253A.#~builtin<compat/typescript>::version=4.8.2&hash=7ad353"
   bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 9096d8f6c16cb80ef3bf96fcbbd055bf1c4a43bd14f3b7be45a9fbe7ada46ec977f604d5feed3263b4f2aa7d4c7477ce5f9cd87de0d6feedec69a983f3a4f93e
+    tsc: ./bin/tsc
+    tsserver: ./bin/tsserver
+  checksum: 6f49363af8af2fe480da1d5fa68712644438785208b06690a3cbe5e7365fd652c3a0f1e587bc8684d78fb69de3dde4de185c0bad7bb4f3664ddfc813ce8caad6
   languageName: node
   linkType: hard
 
@@ -11453,7 +11453,7 @@ __metadata:
     karma-jasmine-html-reporter: ~1.7.0
     rxjs: ~7.5.0
     tslib: ^2.3.0
-    typescript: ~4.7.2
+    typescript: "file:../../node_modules/typescript"
     zone.js: ~0.11.4
   languageName: unknown
   linkType: soft
