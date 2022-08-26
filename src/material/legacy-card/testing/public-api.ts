@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './card-harness';
-export * from './card-harness-filters';
+export {MatLegacyCardSection, MatLegacyCardHarness} from './card-harness';
+export {LegacyCardHarnessFilters} from './card-harness-filters';

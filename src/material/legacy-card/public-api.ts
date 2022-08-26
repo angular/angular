@@ -6,5 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './card';
-export * from './card-module';
+export {
+  MatLegacyCardContent,
+  MatLegacyCardTitle,
+  MatLegacyCardSubtitle,
+  MatLegacyCardActions,
+  MatLegacyCardFooter,
+  MatLegacyCardImage,
+  MatLegacyCardSmImage,
+  MatLegacyCardMdImage,
+  MatLegacyCardLgImage,
+  MatLegacyCardXlImage,
+  MatLegacyCardAvatar,
+  MatLegacyCard,
+  MatLegacyCardHeader,
+  MatLegacyCardTitleGroup,
+} from './card';
+export {MatLegacyCardModule} from './card-module';
