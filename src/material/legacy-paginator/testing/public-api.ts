@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './paginator-harness';
+export {MatLegacyPaginatorHarness} from './paginator-harness';
 export {
-  _MatPaginatorHarnessBase,
-  PaginatorHarnessFilters,
+  _MatPaginatorHarnessBase as _MatLegacyPaginatorHarnessBase,
+  PaginatorHarnessFilters as LegacyPaginatorHarnessFilters,
 } from '@angular/material/paginator/testing';

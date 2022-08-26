@@ -12,30 +12,45 @@ import * as i4 from '@angular/material/legacy-select';
 import * as i5 from '@angular/material/legacy-tooltip';
 import * as i6 from '@angular/material/core';
 import { InjectionToken } from '@angular/core';
-import { MAT_PAGINATOR_INTL_PROVIDER } from '@angular/material/paginator';
-import { MAT_PAGINATOR_INTL_PROVIDER_FACTORY } from '@angular/material/paginator';
+import { PageEvent as LegacyPageEvent } from '@angular/material/paginator';
+import { MAT_PAGINATOR_INTL_PROVIDER as MAT_LEGACY_PAGINATOR_INTL_PROVIDER } from '@angular/material/paginator';
+import { MAT_PAGINATOR_INTL_PROVIDER_FACTORY as MAT_LEGACY_PAGINATOR_INTL_PROVIDER_FACTORY } from '@angular/material/paginator';
 import { MatLegacyFormFieldAppearance } from '@angular/material/legacy-form-field';
-import { _MatPaginatorBase } from '@angular/material/paginator';
-import { MatPaginatorIntl } from '@angular/material/paginator';
-import { MatPaginatorSelectConfig } from '@angular/material/paginator';
-import { PageEvent } from '@angular/material/paginator';
+import { _MatPaginatorBase as _MatLegacyPaginatorBase } from '@angular/material/paginator';
+import { MatPaginatorIntl as MatLegacyPaginatorIntl } from '@angular/material/paginator';
+import { MatPaginatorSelectConfig as MatLegacyPaginatorSelectConfig } from '@angular/material/paginator';
+
+export { LegacyPageEvent }
 
 // @public
-export const MAT_PAGINATOR_DEFAULT_OPTIONS: InjectionToken<MatPaginatorDefaultOptions>;
+export const MAT_LEGACY_PAGINATOR_DEFAULT_OPTIONS: InjectionToken<MatLegacyPaginatorDefaultOptions>;
 
-export { MAT_PAGINATOR_INTL_PROVIDER }
+export { MAT_LEGACY_PAGINATOR_INTL_PROVIDER }
 
-export { MAT_PAGINATOR_INTL_PROVIDER_FACTORY }
+export { MAT_LEGACY_PAGINATOR_INTL_PROVIDER_FACTORY }
 
 // @public
-export class MatLegacyPaginator extends _MatPaginatorBase<MatPaginatorDefaultOptions> {
-    constructor(intl: MatPaginatorIntl, changeDetectorRef: ChangeDetectorRef, defaults?: MatPaginatorDefaultOptions);
+export class MatLegacyPaginator extends _MatLegacyPaginatorBase<MatLegacyPaginatorDefaultOptions> {
+    constructor(intl: MatLegacyPaginatorIntl, changeDetectorRef: ChangeDetectorRef, defaults?: MatLegacyPaginatorDefaultOptions);
     _formFieldAppearance?: MatLegacyFormFieldAppearance;
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyPaginator, "mat-paginator", ["matPaginator"], { "disabled": "disabled"; }, {}, never, never, false>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyPaginator, [null, null, { optional: true; }]>;
 }
+
+export { _MatLegacyPaginatorBase }
+
+// @public
+export interface MatLegacyPaginatorDefaultOptions {
+    formFieldAppearance?: MatLegacyFormFieldAppearance;
+    hidePageSize?: boolean;
+    pageSize?: number;
+    pageSizeOptions?: number[];
+    showFirstLastButtons?: boolean;
+}
+
+export { MatLegacyPaginatorIntl }
 
 // @public (undocumented)
 export class MatLegacyPaginatorModule {
@@ -47,22 +62,7 @@ export class MatLegacyPaginatorModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<MatLegacyPaginatorModule, [typeof i1.MatLegacyPaginator], [typeof i2.CommonModule, typeof i3.MatLegacyButtonModule, typeof i4.MatLegacySelectModule, typeof i5.MatLegacyTooltipModule, typeof i6.MatCommonModule], [typeof i1.MatLegacyPaginator]>;
 }
 
-export { _MatPaginatorBase }
-
-// @public
-export interface MatPaginatorDefaultOptions {
-    formFieldAppearance?: MatLegacyFormFieldAppearance;
-    hidePageSize?: boolean;
-    pageSize?: number;
-    pageSizeOptions?: number[];
-    showFirstLastButtons?: boolean;
-}
-
-export { MatPaginatorIntl }
-
-export { MatPaginatorSelectConfig }
-
-export { PageEvent }
+export { MatLegacyPaginatorSelectConfig }
 
 // (No @packageDocumentation comment for this package)
 

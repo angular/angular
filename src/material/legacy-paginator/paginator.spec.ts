@@ -5,8 +5,8 @@ import {dispatchMouseEvent} from '@angular/cdk/testing/private';
 import {ThemePalette} from '@angular/material/core';
 import {MatSelect} from '@angular/material/legacy-select';
 import {By} from '@angular/platform-browser';
-import {MatLegacyPaginator, MatPaginatorIntl, MatLegacyPaginatorModule} from './index';
-import {MAT_PAGINATOR_DEFAULT_OPTIONS, MatPaginatorDefaultOptions} from './paginator';
+import {MatLegacyPaginator, MatLegacyPaginatorIntl, MatLegacyPaginatorModule} from './index';
+import {MAT_LEGACY_PAGINATOR_DEFAULT_OPTIONS, MatLegacyPaginatorDefaultOptions} from './paginator';
 import {MatPaginatorSelectConfig} from '@angular/material/paginator';
 
 describe('MatPaginator', () => {
@@ -14,7 +14,7 @@ describe('MatPaginator', () => {
     TestBed.configureTestingModule({
       imports: [MatLegacyPaginatorModule, NoopAnimationsModule],
       declarations: [type],
-      providers: [MatPaginatorIntl, ...providers],
+      providers: [MatLegacyPaginatorIntl, ...providers],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(type);
@@ -103,7 +103,7 @@ describe('MatPaginator', () => {
     it('should re-render when the i18n labels change', () => {
       const fixture = createComponent(MatPaginatorApp);
       const label = fixture.nativeElement.querySelector('.mat-paginator-page-size-label');
-      const intl = TestBed.inject(MatPaginatorIntl);
+      const intl = TestBed.inject(MatLegacyPaginatorIntl);
 
       intl.itemsPerPageLabel = '1337 items per page';
       intl.changes.next();
@@ -503,13 +503,13 @@ describe('MatPaginator', () => {
   it('should be able to configure the default options via a provider', () => {
     const fixture = createComponent(MatPaginatorWithoutInputsApp, [
       {
-        provide: MAT_PAGINATOR_DEFAULT_OPTIONS,
+        provide: MAT_LEGACY_PAGINATOR_DEFAULT_OPTIONS,
         useValue: {
           pageSize: 7,
           pageSizeOptions: [7, 14, 21],
           hidePageSize: true,
           showFirstLastButtons: true,
-        } as MatPaginatorDefaultOptions,
+        } as MatLegacyPaginatorDefaultOptions,
       },
     ]);
     const paginator = fixture.componentInstance.paginator;

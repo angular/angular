@@ -6,13 +6,15 @@
 
 import { AsyncFactoryFn } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
+import { PaginatorHarnessFilters as LegacyPaginatorHarnessFilters } from '@angular/material/paginator/testing';
+import { _MatPaginatorHarnessBase as _MatLegacyPaginatorHarnessBase } from '@angular/material/paginator/testing';
 import { MatLegacySelectHarness } from '@angular/material/legacy-select/testing';
-import { _MatPaginatorHarnessBase } from '@angular/material/paginator/testing';
-import { PaginatorHarnessFilters } from '@angular/material/paginator/testing';
 import { TestElement } from '@angular/cdk/testing';
 
+export { LegacyPaginatorHarnessFilters }
+
 // @public
-export class MatLegacyPaginatorHarness extends _MatPaginatorHarnessBase {
+export class MatLegacyPaginatorHarness extends _MatLegacyPaginatorHarnessBase {
     // (undocumented)
     protected _firstPageButton: AsyncFactoryFn<TestElement | null>;
     static hostSelector: string;
@@ -28,12 +30,10 @@ export class MatLegacyPaginatorHarness extends _MatPaginatorHarnessBase {
     protected _rangeLabel: AsyncFactoryFn<TestElement>;
     // (undocumented)
     protected _select: AsyncFactoryFn<MatLegacySelectHarness | null>;
-    static with(options?: PaginatorHarnessFilters): HarnessPredicate<MatLegacyPaginatorHarness>;
+    static with(options?: LegacyPaginatorHarnessFilters): HarnessPredicate<MatLegacyPaginatorHarness>;
 }
 
-export { _MatPaginatorHarnessBase }
-
-export { PaginatorHarnessFilters }
+export { _MatLegacyPaginatorHarnessBase }
 
 // (No @packageDocumentation comment for this package)
 

@@ -19,7 +19,7 @@ import {MatLegacyFormFieldAppearance} from '@angular/material/legacy-form-field'
 import {_MatPaginatorBase, MatPaginatorIntl} from '@angular/material/paginator';
 
 /** Object that can be used to configure the default options for the paginator module. */
-export interface MatPaginatorDefaultOptions {
+export interface MatLegacyPaginatorDefaultOptions {
   /** Number of items to display on a page. By default set to 50. */
   pageSize?: number;
 
@@ -37,9 +37,8 @@ export interface MatPaginatorDefaultOptions {
 }
 
 /** Injection token that can be used to provide the default options for the paginator module. */
-export const MAT_PAGINATOR_DEFAULT_OPTIONS = new InjectionToken<MatPaginatorDefaultOptions>(
-  'MAT_PAGINATOR_DEFAULT_OPTIONS',
-);
+export const MAT_LEGACY_PAGINATOR_DEFAULT_OPTIONS =
+  new InjectionToken<MatLegacyPaginatorDefaultOptions>('MAT_LEGACY_PAGINATOR_DEFAULT_OPTIONS');
 
 /**
  * Component to provide navigation between paged information. Displays the size of the current
@@ -59,14 +58,16 @@ export const MAT_PAGINATOR_DEFAULT_OPTIONS = new InjectionToken<MatPaginatorDefa
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatLegacyPaginator extends _MatPaginatorBase<MatPaginatorDefaultOptions> {
+export class MatLegacyPaginator extends _MatPaginatorBase<MatLegacyPaginatorDefaultOptions> {
   /** If set, styles the "page size" form field with the designated style. */
   _formFieldAppearance?: MatLegacyFormFieldAppearance;
 
   constructor(
     intl: MatPaginatorIntl,
     changeDetectorRef: ChangeDetectorRef,
-    @Optional() @Inject(MAT_PAGINATOR_DEFAULT_OPTIONS) defaults?: MatPaginatorDefaultOptions,
+    @Optional()
+    @Inject(MAT_LEGACY_PAGINATOR_DEFAULT_OPTIONS)
+    defaults?: MatLegacyPaginatorDefaultOptions,
   ) {
     super(intl, changeDetectorRef, defaults);
 

@@ -7,7 +7,7 @@
  */
 
 import {Component} from '@angular/core';
-import {MatLegacyPaginatorModule, PageEvent} from '@angular/material/legacy-paginator';
+import {MatLegacyPaginatorModule, LegacyPageEvent} from '@angular/material/legacy-paginator';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
@@ -41,9 +41,9 @@ export class LegacyPaginatorDemo {
   showFirstLastButtons = true;
   disabled = false;
 
-  pageEvent: PageEvent;
+  pageEvent: LegacyPageEvent;
 
-  handlePageEvent(e: PageEvent) {
+  handlePageEvent(e: LegacyPageEvent) {
     this.pageEvent = e;
     this.length = e.length;
     this.pageSize = e.pageSize;
