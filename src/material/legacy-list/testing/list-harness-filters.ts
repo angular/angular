@@ -8,30 +8,30 @@
 
 import {BaseHarnessFilters} from '@angular/cdk/testing';
 
-export interface ListHarnessFilters extends BaseHarnessFilters {}
+export interface LegacyListHarnessFilters extends BaseHarnessFilters {}
 
-export interface ActionListHarnessFilters extends BaseHarnessFilters {}
+export interface LegacyActionListHarnessFilters extends BaseHarnessFilters {}
 
-export interface NavListHarnessFilters extends BaseHarnessFilters {}
+export interface LegacyNavListHarnessFilters extends BaseHarnessFilters {}
 
-export interface SelectionListHarnessFilters extends BaseHarnessFilters {}
+export interface LegacySelectionListHarnessFilters extends BaseHarnessFilters {}
 
-export interface BaseListItemHarnessFilters extends BaseHarnessFilters {
+export interface LegacyBaseListItemHarnessFilters extends BaseHarnessFilters {
   text?: string | RegExp;
 }
 
-export interface ListItemHarnessFilters extends BaseListItemHarnessFilters {}
+export interface LegacyListItemHarnessFilters extends LegacyBaseListItemHarnessFilters {}
 
-export interface ActionListItemHarnessFilters extends BaseListItemHarnessFilters {}
+export interface LegacyActionListItemHarnessFilters extends LegacyBaseListItemHarnessFilters {}
 
-export interface NavListItemHarnessFilters extends BaseListItemHarnessFilters {
+export interface LegacyNavListItemHarnessFilters extends LegacyBaseListItemHarnessFilters {
   href?: string | RegExp | null;
 }
 
-export interface ListOptionHarnessFilters extends BaseListItemHarnessFilters {
+export interface LegacyListOptionHarnessFilters extends LegacyBaseListItemHarnessFilters {
   selected?: boolean;
 }
 
-export interface SubheaderHarnessFilters extends BaseHarnessFilters {
+export interface LegacySubheaderHarnessFilters extends BaseHarnessFilters {
   text?: string | RegExp;
 }

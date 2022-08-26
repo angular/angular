@@ -13,7 +13,10 @@ import {
   ContentContainerComponentHarness,
   parallel,
 } from '@angular/cdk/testing';
-import {BaseListItemHarnessFilters, SubheaderHarnessFilters} from './list-harness-filters';
+import {
+  LegacyBaseListItemHarnessFilters,
+  LegacySubheaderHarnessFilters,
+} from './list-harness-filters';
 
 const iconSelector = '.mat-list-icon';
 const avatarSelector = '.mat-list-avatar';
@@ -28,7 +31,7 @@ const avatarSelector = '.mat-list-avatar';
  */
 export function getListItemPredicate<H extends MatLegacyListItemHarnessBase>(
   harnessType: ComponentHarnessConstructor<H>,
-  options: BaseListItemHarnessFilters,
+  options: LegacyBaseListItemHarnessFilters,
 ): HarnessPredicate<H> {
   return new HarnessPredicate(harnessType, options).addOption(
     'text',
@@ -41,7 +44,9 @@ export function getListItemPredicate<H extends MatLegacyListItemHarnessBase>(
 export class MatLegacySubheaderHarness extends ComponentHarness {
   static hostSelector = '.mat-subheader';
 
-  static with(options: SubheaderHarnessFilters = {}): HarnessPredicate<MatLegacySubheaderHarness> {
+  static with(
+    options: LegacySubheaderHarnessFilters = {},
+  ): HarnessPredicate<MatLegacySubheaderHarness> {
     return new HarnessPredicate(MatLegacySubheaderHarness, options).addOption(
       'text',
       options.text,

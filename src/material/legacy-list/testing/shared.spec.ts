@@ -13,7 +13,7 @@ import {MatLegacyListModule} from '@angular/material/legacy-list';
 import {MatLegacyActionListHarness, MatLegacyActionListItemHarness} from './action-list-harness';
 import {MatLegacyListHarness, MatLegacyListItemHarness} from './list-harness';
 import {MatLegacyListHarnessBase} from './list-harness-base';
-import {BaseListItemHarnessFilters} from './list-harness-filters';
+import {LegacyBaseListItemHarnessFilters} from './list-harness-filters';
 import {
   MatLegacyListItemHarnessBase,
   MatLegacyListItemSection,
@@ -27,7 +27,7 @@ function runBaseListFunctionalityTests<
   L extends MatLegacyListHarnessBase<
     ComponentHarnessConstructor<I> & {with: (x?: any) => HarnessPredicate<I>},
     I,
-    BaseListItemHarnessFilters
+    LegacyBaseListItemHarnessFilters
   >,
   I extends MatLegacyListItemHarnessBase,
   F extends {disableThirdItem: boolean},

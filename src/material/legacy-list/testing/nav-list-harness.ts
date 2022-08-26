@@ -8,14 +8,14 @@
 
 import {HarnessPredicate} from '@angular/cdk/testing';
 import {MatLegacyListHarnessBase} from './list-harness-base';
-import {NavListHarnessFilters, NavListItemHarnessFilters} from './list-harness-filters';
+import {LegacyNavListHarnessFilters, LegacyNavListItemHarnessFilters} from './list-harness-filters';
 import {getListItemPredicate, MatLegacyListItemHarnessBase} from './list-item-harness-base';
 
 /** Harness for interacting with a standard mat-nav-list in tests. */
 export class MatLegacyNavListHarness extends MatLegacyListHarnessBase<
   typeof MatLegacyNavListItemHarness,
   MatLegacyNavListItemHarness,
-  NavListItemHarnessFilters
+  LegacyNavListItemHarnessFilters
 > {
   /** The selector for the host element of a `MatNavList` instance. */
   static hostSelector = '.mat-nav-list';
@@ -26,7 +26,9 @@ export class MatLegacyNavListHarness extends MatLegacyListHarnessBase<
    * @param options Options for filtering which nav list instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: NavListHarnessFilters = {}): HarnessPredicate<MatLegacyNavListHarness> {
+  static with(
+    options: LegacyNavListHarnessFilters = {},
+  ): HarnessPredicate<MatLegacyNavListHarness> {
     return new HarnessPredicate(MatLegacyNavListHarness, options);
   }
 
@@ -45,7 +47,7 @@ export class MatLegacyNavListItemHarness extends MatLegacyListItemHarnessBase {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(
-    options: NavListItemHarnessFilters = {},
+    options: LegacyNavListItemHarnessFilters = {},
   ): HarnessPredicate<MatLegacyNavListItemHarness> {
     return getListItemPredicate(MatLegacyNavListItemHarness, options).addOption(
       'href',

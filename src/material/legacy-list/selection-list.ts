@@ -47,7 +47,7 @@ const _MatSelectionListBase = mixinDisableRipple(class {});
 const _MatListOptionBase = mixinDisableRipple(class {});
 
 /** @docs-private */
-export const MAT_SELECTION_LIST_VALUE_ACCESSOR: any = {
+export const MAT_LEGACY_SELECTION_LIST_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MatLegacySelectionList),
   multi: true,
@@ -341,7 +341,7 @@ export class MatLegacyListOption
   template: '<ng-content></ng-content>',
   styleUrls: ['list.css'],
   encapsulation: ViewEncapsulation.None,
-  providers: [MAT_SELECTION_LIST_VALUE_ACCESSOR],
+  providers: [MAT_LEGACY_SELECTION_LIST_VALUE_ACCESSOR],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatLegacySelectionList

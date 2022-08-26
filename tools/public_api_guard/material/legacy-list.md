@@ -21,8 +21,8 @@ import * as i0 from '@angular/core';
 import * as i3 from '@angular/material/core';
 import * as i4 from '@angular/common';
 import * as i5 from '@angular/material/divider';
-import { MAT_LIST } from '@angular/material/list';
-import { MAT_NAV_LIST } from '@angular/material/list';
+import { MAT_LIST as MAT_LEGACY_LIST } from '@angular/material/list';
+import { MAT_NAV_LIST as MAT_LEGACY_NAV_LIST } from '@angular/material/list';
 import { MatLine } from '@angular/material/core';
 import { OnChanges } from '@angular/core';
 import { OnDestroy } from '@angular/core';
@@ -33,12 +33,12 @@ import { SimpleChanges } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ThemePalette } from '@angular/material/core';
 
-export { MAT_LIST }
+export { MAT_LEGACY_LIST }
 
-export { MAT_NAV_LIST }
+export { MAT_LEGACY_NAV_LIST }
 
 // @public
-export const MAT_SELECTION_LIST_VALUE_ACCESSOR: any;
+export const MAT_LEGACY_SELECTION_LIST_VALUE_ACCESSOR: any;
 
 // @public (undocumented)
 export class MatLegacyList extends _MatListBase implements CanDisable, CanDisableRipple, OnChanges, OnDestroy {

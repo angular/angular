@@ -10,9 +10,9 @@ import {HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {MatLegacyListOptionCheckboxPosition} from '@angular/material/legacy-list';
 import {MatLegacyListHarnessBase} from './list-harness-base';
 import {
-  ListItemHarnessFilters,
-  ListOptionHarnessFilters,
-  SelectionListHarnessFilters,
+  LegacyListItemHarnessFilters,
+  LegacyListOptionHarnessFilters,
+  LegacySelectionListHarnessFilters,
 } from './list-harness-filters';
 import {getListItemPredicate, MatLegacyListItemHarnessBase} from './list-item-harness-base';
 
@@ -20,7 +20,7 @@ import {getListItemPredicate, MatLegacyListItemHarnessBase} from './list-item-ha
 export class MatLegacySelectionListHarness extends MatLegacyListHarnessBase<
   typeof MatLegacyListOptionHarness,
   MatLegacyListOptionHarness,
-  ListOptionHarnessFilters
+  LegacyListOptionHarnessFilters
 > {
   /** The selector for the host element of a `MatSelectionList` instance. */
   static hostSelector = '.mat-selection-list';
@@ -32,7 +32,7 @@ export class MatLegacySelectionListHarness extends MatLegacyListHarnessBase<
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(
-    options: SelectionListHarnessFilters = {},
+    options: LegacySelectionListHarnessFilters = {},
   ): HarnessPredicate<MatLegacySelectionListHarness> {
     return new HarnessPredicate(MatLegacySelectionListHarness, options);
   }
@@ -48,7 +48,7 @@ export class MatLegacySelectionListHarness extends MatLegacyListHarnessBase<
    * Selects all items matching any of the given filters.
    * @param filters Filters that specify which items should be selected.
    */
-  async selectItems(...filters: ListOptionHarnessFilters[]): Promise<void> {
+  async selectItems(...filters: LegacyListOptionHarnessFilters[]): Promise<void> {
     const items = await this._getItems(filters);
     await parallel(() => items.map(item => item.select()));
   }
@@ -57,14 +57,14 @@ export class MatLegacySelectionListHarness extends MatLegacyListHarnessBase<
    * Deselects all items matching any of the given filters.
    * @param filters Filters that specify which items should be deselected.
    */
-  async deselectItems(...filters: ListItemHarnessFilters[]): Promise<void> {
+  async deselectItems(...filters: LegacyListItemHarnessFilters[]): Promise<void> {
     const items = await this._getItems(filters);
     await parallel(() => items.map(item => item.deselect()));
   }
 
   /** Gets all items matching the given list of filters. */
   private async _getItems(
-    filters: ListOptionHarnessFilters[],
+    filters: LegacyListOptionHarnessFilters[],
   ): Promise<MatLegacyListOptionHarness[]> {
     if (!filters.length) {
       return this.getItems();
@@ -88,7 +88,7 @@ export class MatLegacyListOptionHarness extends MatLegacyListItemHarnessBase {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(
-    options: ListOptionHarnessFilters = {},
+    options: LegacyListOptionHarnessFilters = {},
   ): HarnessPredicate<MatLegacyListOptionHarness> {
     return getListItemPredicate(MatLegacyListOptionHarness, options).addOption(
       'is selected',
