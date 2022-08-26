@@ -40,18 +40,11 @@ export class SwUpdate {
    *
    * @deprecated Use {@link versionUpdates} instead.
    *
-   * The of behavior `available` can be rebuild by filtering for the `VersionReadyEvent`:
-   * ```
-   * import {filter, map} from 'rxjs/operators';
-   * // ...
-   * const updatesAvailable = swUpdate.versionUpdates.pipe(
-   *   filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
-   *   map(evt => ({
-   *     type: 'UPDATE_AVAILABLE',
-   *     current: evt.currentVersion,
-   *     available: evt.latestVersion,
-   *   })));
-   * ```
+   * The behavior of `available` can be replicated using `versionUpdates` by filtering for the
+   * `VersionReadyEvent`:
+   *
+   * {@example service-worker-getting-started/src/app/prompt-update.service.ts
+   * region='sw-replicate-available'}
    */
   readonly available: Observable<UpdateAvailableEvent>;
 
@@ -123,6 +116,20 @@ export class SwUpdate {
   /**
    * Updates the current client (i.e. browser tab) to the latest version that is ready for
    * activation.
+   *
+   * This method can be useful if you want to update a client without reloading the page. However,
+   * this is less safe than just reloading the page, so make sure you understand the implications
+   * before using this method.
+   *
+   * <div class="alert is-important">
+   *
+   * Updating a client without reloading can easily lead to version skew. For example, it could
+   * break lazy-loading in a currently running app, if the lazy-loaded chunks use filenames with
+   * hashes, which change every version.
+   *
+   * Only use this method, if you are certain it is safe for your specific use case.
+   *
+   * </div>
    *
    * @returns a promise that
    *  - resolves to `true` if an update was activated successfully
