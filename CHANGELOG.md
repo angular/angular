@@ -1,3 +1,13 @@
+<a name="15.0.0-next.0"></a>
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5163e3d876](https://github.com/angular/angular/commit/5163e3d876cdfd6d309d7e35aefa6f07ef62715e) | feat | Add UrlTree constructor to public API ([#47186](https://github.com/angular/angular/pull/47186)) |
+## Special Thanks
+Alan Agius, Alex Rickabaugh, Andrew Scott, Joey Perrott, Kara Erickson, Kristiyan Kostadinov and Pawel Kozlowski
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="14.2.0"></a>
 # 14.2.0 (2022-08-25)
 ### animations
