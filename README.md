@@ -67,6 +67,8 @@ Get started with Angular, learn the fundamentals and explore advanced topics on 
 
 - Install [Node.js] which includes [Node Package Manager][npm]
 
+[Click here](https://www.scaler.com/topics/javascript/install-node-js/) to know more.
+
 ### Setting Up a Project
 
 Install the Angular CLI globally:
