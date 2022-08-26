@@ -5,42 +5,46 @@
 ```ts
 
 import { ElementRef } from '@angular/core';
-import { fadeInItems } from '@angular/material/menu';
+import { fadeInItems as fadeInLegacyItems } from '@angular/material/menu';
 import * as i0 from '@angular/core';
 import * as i5 from '@angular/common';
 import * as i6 from '@angular/material/core';
 import * as i7 from '@angular/cdk/overlay';
 import * as i8 from '@angular/cdk/scrolling';
-import { MAT_MENU_CONTENT } from '@angular/material/menu';
-import { MAT_MENU_DEFAULT_OPTIONS } from '@angular/material/menu';
-import { MAT_MENU_PANEL } from '@angular/material/menu';
-import { MAT_MENU_SCROLL_STRATEGY } from '@angular/material/menu';
+import { MenuPositionX as LegacyMenuPositionX } from '@angular/material/menu';
+import { MenuPositionY as LegacyMenuPositionY } from '@angular/material/menu';
+import { MAT_MENU_CONTENT as MAT_LEGACY_MENU_CONTENT } from '@angular/material/menu';
+import { MAT_MENU_DEFAULT_OPTIONS as MAT_LEGACY_MENU_DEFAULT_OPTIONS } from '@angular/material/menu';
+import { MAT_MENU_PANEL as MAT_LEGACY_MENU_PANEL } from '@angular/material/menu';
+import { MAT_MENU_SCROLL_STRATEGY as MAT_LEGACY_MENU_SCROLL_STRATEGY } from '@angular/material/menu';
+import { matMenuAnimations as matLegacyMenuAnimations } from '@angular/material/menu';
+import { MatMenuDefaultOptions as MatLegacyMenuDefaultOptions } from '@angular/material/menu';
 import { MatMenuPanel as MatLegacyMenuPanel } from '@angular/material/menu';
-import { matMenuAnimations } from '@angular/material/menu';
 import { _MatMenuBase } from '@angular/material/menu';
 import { _MatMenuContentBase } from '@angular/material/menu';
-import { MatMenuDefaultOptions } from '@angular/material/menu';
 import { MatMenuItem } from '@angular/material/menu';
 import { _MatMenuTriggerBase } from '@angular/material/menu';
-import { MenuPositionX } from '@angular/material/menu';
-import { MenuPositionY } from '@angular/material/menu';
 import { NgZone } from '@angular/core';
-import { transformMenu } from '@angular/material/menu';
+import { transformMenu as transformLegacyMenu } from '@angular/material/menu';
 
-export { fadeInItems }
+export { fadeInLegacyItems }
 
-export { MAT_MENU_CONTENT }
+export { LegacyMenuPositionX }
 
-export { MAT_MENU_DEFAULT_OPTIONS }
+export { LegacyMenuPositionY }
 
-export { MAT_MENU_PANEL }
+export { MAT_LEGACY_MENU_CONTENT }
 
-export { MAT_MENU_SCROLL_STRATEGY }
+export { MAT_LEGACY_MENU_DEFAULT_OPTIONS }
+
+export { MAT_LEGACY_MENU_PANEL }
+
+export { MAT_LEGACY_MENU_SCROLL_STRATEGY }
 
 // @public
 export class MatLegacyMenu extends _MatMenuBase {
     // @deprecated
-    constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone, defaultOptions: MatMenuDefaultOptions);
+    constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone, defaultOptions: MatLegacyMenuDefaultOptions);
     // (undocumented)
     protected _baseElevation: number;
     // (undocumented)
@@ -51,6 +55,8 @@ export class MatLegacyMenu extends _MatMenuBase {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyMenu, never>;
 }
 
+export { matLegacyMenuAnimations }
+
 // @public
 export class MatLegacyMenuContent extends _MatMenuContentBase {
     // (undocumented)
@@ -58,6 +64,8 @@ export class MatLegacyMenuContent extends _MatMenuContentBase {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyMenuContent, never>;
 }
+
+export { MatLegacyMenuDefaultOptions }
 
 // @public
 export class MatLegacyMenuItem extends MatMenuItem {
@@ -87,15 +95,7 @@ export class MatLegacyMenuTrigger extends _MatMenuTriggerBase {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyMenuTrigger, never>;
 }
 
-export { matMenuAnimations }
-
-export { MatMenuDefaultOptions }
-
-export { MenuPositionX }
-
-export { MenuPositionY }
-
-export { transformMenu }
+export { transformLegacyMenu }
 
 // (No @packageDocumentation comment for this package)
 

@@ -6,22 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './menu';
-export * from './menu-item';
-export * from './menu-trigger';
-export * from './menu-module';
-export * from './menu-content';
+export {MatLegacyMenu} from './menu';
+export {MatLegacyMenuItem} from './menu-item';
+export {MatLegacyMenuTrigger} from './menu-trigger';
+export {MatLegacyMenuModule} from './menu-module';
+export {MatLegacyMenuContent} from './menu-content';
 
 export {
-  fadeInItems,
-  MAT_MENU_DEFAULT_OPTIONS,
-  MAT_MENU_PANEL,
-  MAT_MENU_SCROLL_STRATEGY,
-  matMenuAnimations,
-  MatMenuDefaultOptions,
+  fadeInItems as fadeInLegacyItems,
+  MAT_MENU_DEFAULT_OPTIONS as MAT_LEGACY_MENU_DEFAULT_OPTIONS,
+  MAT_MENU_PANEL as MAT_LEGACY_MENU_PANEL,
+  MAT_MENU_SCROLL_STRATEGY as MAT_LEGACY_MENU_SCROLL_STRATEGY,
+  matMenuAnimations as matLegacyMenuAnimations,
+  MatMenuDefaultOptions as MatLegacyMenuDefaultOptions,
   MatMenuPanel as MatLegacyMenuPanel,
-  MenuPositionX,
-  MenuPositionY,
-  transformMenu,
-  MAT_MENU_CONTENT,
+  MenuPositionX as LegacyMenuPositionX,
+  MenuPositionY as LegacyMenuPositionY,
+  transformMenu as transformLegacyMenu,
+  MAT_MENU_CONTENT as MAT_LEGACY_MENU_CONTENT,
 } from '@angular/material/menu';

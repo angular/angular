@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './menu-harness';
+export {MatLegacyMenuHarness, MatLegacyMenuItemHarness} from './menu-harness';
 export {MenuHarnessFilters, MenuItemHarnessFilters} from '@angular/material/menu/testing';
