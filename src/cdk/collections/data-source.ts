@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Observable} from 'rxjs';
+import {ConnectableObservable, Observable} from 'rxjs';
 import {CollectionViewer} from './collection-viewer';
 
 export abstract class DataSource<T> {
@@ -34,6 +34,7 @@ export abstract class DataSource<T> {
 export function isDataSource(value: any): value is DataSource<any> {
   // Check if the value is a DataSource by observing if it has a connect function. Cannot
   // be checked as an `instanceof DataSource` since people could create their own sources
-  // that match the interface, but don't extend DataSource.
-  return value && typeof value.connect === 'function';
+  // that match the interface, but don't extend DataSource. We also can't use `isObservable`
+  // here, because of some internal apps.
+  return value && typeof value.connect === 'function' && !(value instanceof ConnectableObservable);
 }
