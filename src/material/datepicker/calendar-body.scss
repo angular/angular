@@ -33,6 +33,11 @@ $calendar-range-end-body-cell-size:
   padding-right: $calendar-body-label-side-padding;
 }
 
+// Label that is not rendered and removed from the accessibility tree.
+.mat-calendar-body-hidden-label {
+  display: none;
+}
+
 .mat-calendar-body-cell-container {
   position: relative;
   height: 0;

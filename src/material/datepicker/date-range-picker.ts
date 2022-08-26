@@ -16,6 +16,8 @@ import {MAT_CALENDAR_RANGE_STRATEGY_PROVIDER} from './date-range-selection-strat
  * @docs-private
  */
 export interface MatDateRangePickerInput<D> extends MatDatepickerControl<D> {
+  _getEndDateAccessibleName(): string | null;
+  _getStartDateAccessibleName(): string | null;
   comparisonStart: D | null;
   comparisonEnd: D | null;
 }
@@ -49,6 +51,8 @@ export class MatDateRangePicker<D> extends MatDatepickerBase<
     if (input) {
       instance.comparisonStart = input.comparisonStart;
       instance.comparisonEnd = input.comparisonEnd;
+      instance.startDateAccessibleName = input._getStartDateAccessibleName();
+      instance.endDateAccessibleName = input._getEndDateAccessibleName();
     }
   }
 }

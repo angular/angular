@@ -53,6 +53,8 @@ export interface MatCalendarUserEvent<D> {
   event: Event;
 }
 
+let calendarBodyId = 1;
+
 /**
  * An internal component used to display calendar data in a table.
  * @docs-private
@@ -131,6 +133,12 @@ export class MatCalendarBody implements OnChanges, OnDestroy, AfterViewChecked {
 
   /** End of the preview range. */
   @Input() previewEnd: number | null = null;
+
+  /** ARIA Accessible name of the `<input matStartDate/>` */
+  @Input() startDateAccessibleName: string | null;
+
+  /** ARIA Accessible name of the `<input matEndDate/>` */
+  @Input() endDateAccessibleName: string | null;
 
   /** Emits when a new value is selected. */
   @Output() readonly selectedValueChange = new EventEmitter<MatCalendarUserEvent<number>>();
@@ -356,6 +364,22 @@ export class MatCalendarBody implements OnChanges, OnDestroy, AfterViewChecked {
     return isInRange(value, this.previewStart, this.previewEnd, this.isRange);
   }
 
+  /** Gets ids of aria descriptions for the start and end of a date range. */
+  _getDescribedby(value: number): string | null {
+    if (!this.isRange) {
+      return null;
+    }
+
+    if (this.startValue === value && this.endValue === value) {
+      return `${this._startDateLabelId} ${this._endDateLabelId}`;
+    } else if (this.startValue === value) {
+      return this._startDateLabelId;
+    } else if (this.endValue === value) {
+      return this._endDateLabelId;
+    }
+    return null;
+  }
+
   /**
    * Event handler for when the user enters an element
    * inside the calendar body (e.g. by hovering in or focus).
@@ -413,6 +437,12 @@ export class MatCalendarBody implements OnChanges, OnDestroy, AfterViewChecked {
 
     return null;
   }
+
+  private _id = `mat-calendar-body-${calendarBodyId++}`;
+
+  _startDateLabelId = `${this._id}-start-date`;
+
+  _endDateLabelId = `${this._id}-end-date`;
 }
 
 /** Checks whether a node is a table cell element. */

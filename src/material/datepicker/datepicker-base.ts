@@ -144,6 +144,12 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
   /** End of the comparison range. */
   comparisonEnd: D | null;
 
+  /** ARIA Accessible name of the `<input matStartDate/>` */
+  startDateAccessibleName: string | null;
+
+  /** ARIA Accessible name of the `<input matEndDate/>` */
+  endDateAccessibleName: string | null;
+
   /** Whether the datepicker is above or below the input. */
   _isAbove: boolean;
 

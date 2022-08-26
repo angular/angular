@@ -53,7 +53,7 @@ describe('MatDateRangeInput', () => {
     const mirror = fixture.nativeElement.querySelector('.mat-date-range-input-mirror');
     const startInput = fixture.componentInstance.start.nativeElement;
 
-    expect(mirror.textContent).toBe('Start date');
+    expect(mirror.textContent).toBe('Start Date');
 
     startInput.value = 'hello';
     dispatchFakeEvent(startInput, 'input');
@@ -69,7 +69,7 @@ describe('MatDateRangeInput', () => {
     dispatchFakeEvent(startInput, 'input');
     fixture.detectChanges();
 
-    expect(mirror.textContent).toBe('Start date');
+    expect(mirror.textContent).toBe('Start Date');
   });
 
   it('should hide the mirror value from assistive technology', () => {
@@ -160,20 +160,20 @@ describe('MatDateRangeInput', () => {
     expect(rangeInput.classList).toContain(hideClass);
   });
 
-  it('should point the label aria-owns to the id of the start input', () => {
+  it('should point the label aria-owns to the <mat-date-range-input/>', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();
-    const label = fixture.nativeElement.querySelector('label');
-    const start = fixture.componentInstance.start.nativeElement;
+    const label = fixture.nativeElement.querySelector('label.mat-form-field-label');
+    const rangeInput = fixture.componentInstance.rangeInput;
 
-    expect(start.id).toBeTruthy();
-    expect(label.getAttribute('aria-owns')).toBe(start.id);
+    expect(rangeInput.id).toBeTruthy();
+    expect(label.getAttribute('aria-owns')).toBe(rangeInput.id);
   });
 
   it('should point the range input aria-labelledby to the form field label', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();
-    const labelId = fixture.nativeElement.querySelector('label').id;
+    const labelId = fixture.nativeElement.querySelector('label.mat-form-field-label').id;
     const rangeInput = fixture.nativeElement.querySelector('.mat-date-range-input');
 
     expect(labelId).toBeTruthy();
@@ -544,6 +544,65 @@ describe('MatDateRangeInput', () => {
     expect(rangeTexts).toEqual(['2', '3', '4', '5']);
   }));
 
+  it("should have aria-desciredby on start and end date cells that point to the <input/>'s accessible name", fakeAsync(() => {
+    const fixture = createComponent(StandardRangePicker);
+    const {start, end} = fixture.componentInstance.range.controls;
+    let overlayContainerElement: HTMLElement;
+    start.setValue(new Date(2020, 1, 2));
+    end.setValue(new Date(2020, 1, 5));
+    inject([OverlayContainer], (overlayContainer: OverlayContainer) => {
+      overlayContainerElement = overlayContainer.getContainerElement();
+    })();
+    fixture.detectChanges();
+    tick();
+
+    fixture.componentInstance.rangePicker.open();
+    fixture.detectChanges();
+    tick();
+
+    const rangeStart = overlayContainerElement!.querySelector('.mat-calendar-body-range-start');
+    const rangeEnd = overlayContainerElement!.querySelector('.mat-calendar-body-range-end');
+
+    // query for targets of `aria-describedby`. Query from document instead of fixture.nativeElement as calendar UI is rendered in an overlay.
+    const rangeStartDescriptions = Array.from(
+      document.querySelectorAll(
+        rangeStart!
+          .getAttribute('aria-describedby')!
+          .split(/\s+/g)
+          .map(x => `#${x}`)
+          .join(' '),
+      ),
+    );
+    const rangeEndDescriptions = Array.from(
+      document.querySelectorAll(
+        rangeEnd!
+          .getAttribute('aria-describedby')!
+          .split(/\s+/g)
+          .map(x => `#${x}`)
+          .join(' '),
+      ),
+    );
+
+    expect(rangeStartDescriptions)
+      .withContext('target of aria-descriedby should exist')
+      .not.toBeNull();
+    expect(rangeEndDescriptions)
+      .withContext('target of aria-descriedby should exist')
+      .not.toBeNull();
+    expect(
+      rangeStartDescriptions
+        .map(x => x.textContent)
+        .join(' ')
+        .trim(),
+    ).toEqual('Start date');
+    expect(
+      rangeEndDescriptions
+        .map(x => x.textContent)
+        .join(' ')
+        .trim(),
+    ).toEqual('End date');
+  }));
+
   it('should pass the comparison range through to the calendar', fakeAsync(() => {
     const fixture = createComponent(StandardRangePicker);
     let overlayContainerElement: HTMLElement;
@@ -819,7 +878,7 @@ describe('MatDateRangeInput', () => {
   it('should be able to get the input placeholder', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();
-    expect(fixture.componentInstance.rangeInput.placeholder).toBe('Start date – End date');
+    expect(fixture.componentInstance.rangeInput.placeholder).toBe('Start Date – End Date');
   });
 
   it('should emit to the stateChanges stream when typing a value into an input', () => {
@@ -1068,9 +1127,13 @@ describe('MatDateRangeInput', () => {
         [dateFilter]="dateFilter"
         [comparisonStart]="comparisonStart"
         [comparisonEnd]="comparisonEnd">
-        <input #start formControlName="start" matStartDate placeholder="Start date"/>
-        <input #end formControlName="end" matEndDate placeholder="End date"/>
+        <input #start formControlName="start" matStartDate aria-label="Start date"
+          placeholder="Start Date"/>
+        <input #end formControlName="end" matEndDate aria-labelledby="end-date-label-1 end-date-label-2"
+          placeholder="End Date"/>
       </mat-date-range-input>
+      <label id='end-date-label-1' class="cdk-visually-hidden">End</label>
+      <label id='end-date-label-2' class="cdk-visually-hidden">date</label>
 
       <mat-date-range-picker
         [startAt]="startAt"

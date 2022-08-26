@@ -55,7 +55,7 @@ let nextUniqueId = 0;
     'class': 'mat-date-range-input',
     '[class.mat-date-range-input-hide-placeholders]': '_shouldHidePlaceholders()',
     '[class.mat-date-range-input-required]': 'required',
-    '[attr.id]': 'null',
+    '[attr.id]': 'id',
     'role': 'group',
     '[attr.aria-labelledby]': '_getAriaLabelledby()',
     '[attr.aria-describedby]': '_ariaDescribedBy',
@@ -87,7 +87,7 @@ export class MatDateRangeInput<D>
     return this._model ? this._model.selection : null;
   }
 
-  /** Unique ID for the input. */
+  /** Unique ID for the group. */
   id = `mat-date-range-input-${nextUniqueId++}`;
 
   /** Whether the control is focused. */
@@ -388,6 +388,14 @@ export class MatDateRangeInput<D>
   _getAriaLabelledby() {
     const formField = this._formField;
     return formField && formField._hasFloatingLabel() ? formField._labelId : null;
+  }
+
+  _getStartDateAccessibleName(): string {
+    return this._startInput._getAccessibleName();
+  }
+
+  _getEndDateAccessibleName(): string {
+    return this._endInput._getAccessibleName();
   }
 
   /** Updates the focused state of the range input. */

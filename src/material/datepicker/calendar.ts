@@ -282,6 +282,12 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
   /** End of the comparison range. */
   @Input() comparisonEnd: D | null;
 
+  /** ARIA Accessible name of the `<input matStartDate/>` */
+  @Input() startDateAccessibleName: string | null;
+
+  /** ARIA Accessible name of the `<input matEndDate/>` */
+  @Input() endDateAccessibleName: string | null;
+
   /** Emits when the currently selected date changes. */
   @Output() readonly selectedChange: EventEmitter<D | null> = new EventEmitter<D | null>();
 

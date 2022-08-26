@@ -63,6 +63,7 @@
         [attr.aria-disabled]="!item.enabled || null"
         [attr.aria-pressed]="_isSelected(item.compareValue)"
         [attr.aria-current]="todayValue === item.compareValue ? 'date' : null"
+        [attr.aria-describedby]="_getDescribedby(item.compareValue)"
         (click)="_cellClicked(item, $event)"
         (focus)="_emitActiveDateChange(item, $event)">
         <div class="mat-calendar-body-cell-content mat-focus-indicator"
@@ -75,3 +76,10 @@
     </button>
   </td>
 </tr>
+
+<label [id]="_startDateLabelId" class="mat-calendar-body-hidden-label">
+  {{startDateAccessibleName}}
+</label>
+<label [id]="_endDateLabelId" class="mat-calendar-body-hidden-label">
+  {{endDateAccessibleName}}
+</label>

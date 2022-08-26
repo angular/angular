@@ -21,6 +21,8 @@
          [isRange]="_isRange"
          [labelMinRequiredCells]="3"
          [activeCell]="_dateAdapter.getDate(activeDate) - 1"
+         [startDateAccessibleName]="startDateAccessibleName"
+         [endDateAccessibleName]="endDateAccessibleName"
          (selectedValueChange)="_dateSelected($event)"
          (activeDateChange)="_updateActiveDate($event)"
          (previewChange)="_previewChanged($event)"

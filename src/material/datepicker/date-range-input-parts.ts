@@ -41,6 +41,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {BACKSPACE, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
 import {MatDatepickerInputBase, DateFilterFn} from './datepicker-input-base';
 import {DateRange, DateSelectionModelChange} from './date-selection-model';
+import {_computeAriaAccessibleName} from './aria-accessible-name';
 
 /** Parent component that should be wrapped around `MatStartDate` and `MatEndDate`. */
 export interface MatDateRangeInputParent<D> {
@@ -185,6 +186,11 @@ abstract class MatDateRangeInputPartBase<D>
     ) as MatDateRangeInputPartBase<D> | undefined;
     opposite?._validatorOnChange();
   }
+
+  /** return the ARIA accessible name of the input element */
+  _getAccessibleName(): string {
+    return _computeAriaAccessibleName(this._elementRef.nativeElement);
+  }
 }
 
 const _MatDateRangeInputBase = mixinErrorState(MatDateRangeInputPartBase);
@@ -198,7 +204,6 @@ const _MatDateRangeInputBase = mixinErrorState(MatDateRangeInputPartBase);
     '(input)': '_onInput($event.target.value)',
     '(change)': '_onChange()',
     '(keydown)': '_onKeydown($event)',
-    '[attr.id]': '_rangeInput.id',
     '[attr.aria-haspopup]': '_rangeInput.rangePicker ? "dialog" : null',
     '[attr.aria-owns]': '(_rangeInput.rangePicker?.opened && _rangeInput.rangePicker.id) || null',
     '[attr.min]': '_getMinDate() ? _dateAdapter.toIso8601(_getMinDate()) : null',
