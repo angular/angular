@@ -45,7 +45,7 @@ import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {Directionality, Direction} from '@angular/cdk/bidi';
 import {Subject} from 'rxjs';
-import {MatLegacyInputModule, MatLegacyInput, MAT_INPUT_VALUE_ACCESSOR} from './index';
+import {MatLegacyInputModule, MatLegacyInput, MAT_LEGACY_INPUT_VALUE_ACCESSOR} from './index';
 
 describe('MatInput without forms', () => {
   it('should default to floating labels', fakeAsync(() => {
@@ -2390,7 +2390,7 @@ class MatInputSelectWithoutOptions {}
   selector: 'input[customInputAccessor]',
   providers: [
     {
-      provide: MAT_INPUT_VALUE_ACCESSOR,
+      provide: MAT_LEGACY_INPUT_VALUE_ACCESSOR,
       useExisting: CustomMatInputAccessor,
     },
   ],

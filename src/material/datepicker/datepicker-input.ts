@@ -10,7 +10,7 @@ import {Directive, ElementRef, forwardRef, Inject, Input, OnDestroy, Optional} f
 import {NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidatorFn, Validators} from '@angular/forms';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats, ThemePalette} from '@angular/material/core';
 import {MatLegacyFormField, MAT_LEGACY_FORM_FIELD} from '@angular/material/legacy-form-field';
-import {MAT_INPUT_VALUE_ACCESSOR} from '@angular/material/legacy-input';
+import {MAT_LEGACY_INPUT_VALUE_ACCESSOR} from '@angular/material/legacy-input';
 import {Subscription} from 'rxjs';
 import {MatDatepickerInputBase, DateFilterFn} from './datepicker-input-base';
 import {MatDatepickerControl, MatDatepickerPanel} from './datepicker-base';
@@ -36,7 +36,7 @@ export const MAT_DATEPICKER_VALIDATORS: any = {
   providers: [
     MAT_DATEPICKER_VALUE_ACCESSOR,
     MAT_DATEPICKER_VALIDATORS,
-    {provide: MAT_INPUT_VALUE_ACCESSOR, useExisting: MatDatepickerInput},
+    {provide: MAT_LEGACY_INPUT_VALUE_ACCESSOR, useExisting: MatDatepickerInput},
   ],
   host: {
     'class': 'mat-datepicker-input',
