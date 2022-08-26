@@ -27,8 +27,8 @@ You will need to import the directive into your application. In addition, you wi
 
 To activate the `NgOptimizedImage` directive, replace your image's `src` attribute with `rawSrc`.
 
-<code-example format="typescript" language="typescript">
-<img rawSrc=”cat.jpg" width="400" height="200">
+<code-example format="html" language="html">
+  &lt;img rawSrc=”cat.jpg" width="400" height="200"&gt;
 </code-example>
 
 The built-in third-party loaders prepend a shared base URL to `src`. If you're using one of these loaders (or any other loader that does this), make sure to omit the shared base URL path from `src` to prevent unnecessary duplication.
@@ -39,8 +39,8 @@ You must also set the `width` and `height` attributes. This is done to prevent [
 
 Always mark the [LCP image](https://web.dev/lcp/#what-elements-are-considered) on your page as `priority` to prioritize its loading.
 
-<code-example format="typescript" language="typescript">
-<img rawSrc="cat.jpg" width="400" height="200" priority>
+<code-example format="html" language="html">
+  &lt;img rawSrc="cat.jpg" width="400" height="200" priority&gt;
 </code-example>
 
 Marking an image as `priority` applies the following optimizations:
@@ -55,7 +55,7 @@ Angular displays a warning during development if the LCP element is an image tha
 You can add a [`preconnect` resource hint](https://web.dev/preconnect-and-dns-prefetch/) for your image origin to ensure that the LCP image loads as quickly as possible. Always put resource hints in the `<head>` of the document.
 
 <code-example format="html" language="html">
-<link rel="preconnect" href="https://my.cdn.origin" />
+  &lt;link rel="preconnect" href="https://my.cdn.origin" &gt;
 </code-example>
 
 By default, if you use a loader for a third-party image service, the `NgOptimizedImage` directive will warn during development if it detects that there is no `preconnect` resource hint for the origin that serves the LCP image.
@@ -79,7 +79,7 @@ You can typically fix this by adding `height: auto` or `width: auto` to your ima
 If your `<img>` tag defines a `srcset` attribute, replace it with `rawSrcset`.
 
 <code-example format="html" language="html">
-<img rawSrc="hero.jpg" rawSrcset="100w, 200w, 300w">
+  &lt;img rawSrc="hero.jpg" rawSrcset="100w, 200w, 300w"&gt;
 </code-example>
 
 If the `rawSrcset` attribute is present, `NgOptimizedImage` generates and sets the [`srcset` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/srcset) using the configured image loader. Do not include image file names in `rawSrcset` - the directive infers this information from `rawSrc`. The directive supports both width descriptors (e.g. `100w`) and density descriptors (e.g. `1x`) are supported.
@@ -87,7 +87,7 @@ If the `rawSrcset` attribute is present, `NgOptimizedImage` generates and sets t
 You can also use `rawSrcset` with the standard image [`sizes` attribute](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes).
 
 <code-example format="html" language="html">
-<img rawSrc="hero.jpg" rawSrcset="100w, 200w, 300w" sizes=”50vw”>
+  &lt;img rawSrc="hero.jpg" rawSrcset="100w, 200w, 300w" sizes=”50vw”&gt;
 </code-example>
 
 ### Disabling image lazy loading
@@ -95,5 +95,5 @@ You can also use `rawSrcset` with the standard image [`sizes` attribute](https:/
 By default, `NgOptimizedImage` sets `loading=lazy` for all images that are not marked `priority`. You can disable this behavior for non-priority images by setting the `loading` attribute. This attribute accepts values: `eager`, `auto`, and `lazy`. [See the documentation for the standard image `loading` attribute for details](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/loading#value).
 
 <code-example format="html" language="html">
-<img rawSrc="cat.jpg" width="400" height="200" loading="eager">
+  &lt;img rawSrc="cat.jpg" width="400" height="200" loading="eager"&gt;
 </code-example>
