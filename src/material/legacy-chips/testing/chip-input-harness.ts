@@ -7,7 +7,7 @@
  */
 
 import {HarnessPredicate, ComponentHarness, TestKey} from '@angular/cdk/testing';
-import {ChipInputHarnessFilters} from './chip-harness-filters';
+import {LegacyChipInputHarnessFilters} from './chip-harness-filters';
 
 /** Harness for interacting with a standard Material chip inputs in tests. */
 export class MatLegacyChipInputHarness extends ComponentHarness {
@@ -19,7 +19,9 @@ export class MatLegacyChipInputHarness extends ComponentHarness {
    * @param options Options for filtering which input instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: ChipInputHarnessFilters = {}): HarnessPredicate<MatLegacyChipInputHarness> {
+  static with(
+    options: LegacyChipInputHarnessFilters = {},
+  ): HarnessPredicate<MatLegacyChipInputHarness> {
     return new HarnessPredicate(MatLegacyChipInputHarness, options)
       .addOption('value', options.value, async (harness, value) => {
         return (await harness.getValue()) === value;

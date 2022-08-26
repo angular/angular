@@ -7,7 +7,7 @@
  */
 
 import {HarnessPredicate, ComponentHarness} from '@angular/cdk/testing';
-import {ChipRemoveHarnessFilters} from './chip-harness-filters';
+import {LegacyChipRemoveHarnessFilters} from './chip-harness-filters';
 
 /** Harness for interacting with a standard Material chip remove button in tests. */
 export class MatLegacyChipRemoveHarness extends ComponentHarness {
@@ -20,7 +20,7 @@ export class MatLegacyChipRemoveHarness extends ComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(
-    options: ChipRemoveHarnessFilters = {},
+    options: LegacyChipRemoveHarnessFilters = {},
   ): HarnessPredicate<MatLegacyChipRemoveHarness> {
     return new HarnessPredicate(MatLegacyChipRemoveHarness, options);
   }

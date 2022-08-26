@@ -43,16 +43,16 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { Subject } from 'rxjs';
 
 // @public
-export const MAT_CHIP_AVATAR: InjectionToken<MatLegacyChipAvatar>;
+export const MAT_LEGACY_CHIP_AVATAR: InjectionToken<MatLegacyChipAvatar>;
 
 // @public
-export const MAT_CHIP_REMOVE: InjectionToken<MatLegacyChipRemove>;
+export const MAT_LEGACY_CHIP_REMOVE: InjectionToken<MatLegacyChipRemove>;
 
 // @public
-export const MAT_CHIP_TRAILING_ICON: InjectionToken<MatLegacyChipTrailingIcon>;
+export const MAT_LEGACY_CHIP_TRAILING_ICON: InjectionToken<MatLegacyChipTrailingIcon>;
 
 // @public
-export const MAT_CHIPS_DEFAULT_OPTIONS: InjectionToken<MatLegacyChipsDefaultOptions>;
+export const MAT_LEGACY_CHIPS_DEFAULT_OPTIONS: InjectionToken<MatLegacyChipsDefaultOptions>;
 
 // @public
 export class MatLegacyChip extends _MatChipMixinBase implements FocusableOption, OnDestroy, CanColor, CanDisableRipple, RippleTarget, HasTabIndex, CanDisable {

@@ -7,7 +7,7 @@
  */
 
 import {HarnessPredicate, ComponentHarness} from '@angular/cdk/testing';
-import {ChipAvatarHarnessFilters} from './chip-harness-filters';
+import {LegacyChipAvatarHarnessFilters} from './chip-harness-filters';
 
 /** Harness for interacting with a standard Material chip avatar in tests. */
 export class MatLegacyChipAvatarHarness extends ComponentHarness {
@@ -20,7 +20,7 @@ export class MatLegacyChipAvatarHarness extends ComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(
-    options: ChipAvatarHarnessFilters = {},
+    options: LegacyChipAvatarHarnessFilters = {},
   ): HarnessPredicate<MatLegacyChipAvatarHarness> {
     return new HarnessPredicate(MatLegacyChipAvatarHarness, options);
   }

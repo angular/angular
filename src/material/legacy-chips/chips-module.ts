@@ -15,7 +15,10 @@ import {
   MatLegacyChipRemove,
   MatLegacyChipTrailingIcon,
 } from './chip';
-import {MAT_CHIPS_DEFAULT_OPTIONS, MatLegacyChipsDefaultOptions} from './chip-default-options';
+import {
+  MAT_LEGACY_CHIPS_DEFAULT_OPTIONS,
+  MatLegacyChipsDefaultOptions,
+} from './chip-default-options';
 import {MatLegacyChipInput} from './chip-input';
 import {MatLegacyChipList} from './chip-list';
 
@@ -35,7 +38,7 @@ const CHIP_DECLARATIONS = [
   providers: [
     ErrorStateMatcher,
     {
-      provide: MAT_CHIPS_DEFAULT_OPTIONS,
+      provide: MAT_LEGACY_CHIPS_DEFAULT_OPTIONS,
       useValue: {
         separatorKeyCodes: [ENTER],
       } as MatLegacyChipsDefaultOptions,

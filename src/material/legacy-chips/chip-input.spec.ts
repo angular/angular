@@ -8,7 +8,10 @@ import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Subject} from 'rxjs';
-import {MAT_CHIPS_DEFAULT_OPTIONS, MatLegacyChipsDefaultOptions} from './chip-default-options';
+import {
+  MAT_LEGACY_CHIPS_DEFAULT_OPTIONS,
+  MatLegacyChipsDefaultOptions,
+} from './chip-default-options';
 import {MatLegacyChipInput, MatLegacyChipInputEvent} from './chip-input';
 import {MatLegacyChipList} from './chip-list';
 import {MatLegacyChipsModule} from './index';
@@ -225,7 +228,7 @@ describe('MatChipInput', () => {
           declarations: [TestChipInput],
           providers: [
             {
-              provide: MAT_CHIPS_DEFAULT_OPTIONS,
+              provide: MAT_LEGACY_CHIPS_DEFAULT_OPTIONS,
               useValue: {separatorKeyCodes: [COMMA]} as MatLegacyChipsDefaultOptions,
             },
           ],

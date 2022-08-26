@@ -67,21 +67,21 @@ export class MatLegacyChipSelectionChange {
  * alternative token to the actual `MatChipRemove` class which could cause unnecessary
  * retention of the class and its directive metadata.
  */
-export const MAT_CHIP_REMOVE = new InjectionToken<MatLegacyChipRemove>('MatChipRemove');
+export const MAT_LEGACY_CHIP_REMOVE = new InjectionToken<MatLegacyChipRemove>('MatChipRemove');
 
 /**
  * Injection token that can be used to reference instances of `MatChipAvatar`. It serves as
  * alternative token to the actual `MatChipAvatar` class which could cause unnecessary
  * retention of the class and its directive metadata.
  */
-export const MAT_CHIP_AVATAR = new InjectionToken<MatLegacyChipAvatar>('MatChipAvatar');
+export const MAT_LEGACY_CHIP_AVATAR = new InjectionToken<MatLegacyChipAvatar>('MatChipAvatar');
 
 /**
  * Injection token that can be used to reference instances of `MatChipTrailingIcon`. It serves as
  * alternative token to the actual `MatChipTrailingIcon` class which could cause unnecessary
  * retention of the class and its directive metadata.
  */
-export const MAT_CHIP_TRAILING_ICON = new InjectionToken<MatLegacyChipTrailingIcon>(
+export const MAT_LEGACY_CHIP_TRAILING_ICON = new InjectionToken<MatLegacyChipTrailingIcon>(
   'MatChipTrailingIcon',
 );
 
@@ -101,7 +101,7 @@ const _MatChipMixinBase = mixinTabIndex(mixinColor(mixinDisableRipple(MatChipBas
 @Directive({
   selector: 'mat-chip-avatar, [matChipAvatar]',
   host: {'class': 'mat-chip-avatar'},
-  providers: [{provide: MAT_CHIP_AVATAR, useExisting: MatLegacyChipAvatar}],
+  providers: [{provide: MAT_LEGACY_CHIP_AVATAR, useExisting: MatLegacyChipAvatar}],
 })
 export class MatLegacyChipAvatar {}
 
@@ -112,7 +112,7 @@ export class MatLegacyChipAvatar {}
 @Directive({
   selector: 'mat-chip-trailing-icon, [matChipTrailingIcon]',
   host: {'class': 'mat-chip-trailing-icon'},
-  providers: [{provide: MAT_CHIP_TRAILING_ICON, useExisting: MatLegacyChipTrailingIcon}],
+  providers: [{provide: MAT_LEGACY_CHIP_TRAILING_ICON, useExisting: MatLegacyChipTrailingIcon}],
 })
 export class MatLegacyChipTrailingIcon {}
 
@@ -197,13 +197,13 @@ export class MatLegacyChip
   _chipListDisabled: boolean = false;
 
   /** The chip avatar */
-  @ContentChild(MAT_CHIP_AVATAR) avatar: MatLegacyChipAvatar;
+  @ContentChild(MAT_LEGACY_CHIP_AVATAR) avatar: MatLegacyChipAvatar;
 
   /** The chip's trailing icon. */
-  @ContentChild(MAT_CHIP_TRAILING_ICON) trailingIcon: MatLegacyChipTrailingIcon;
+  @ContentChild(MAT_LEGACY_CHIP_TRAILING_ICON) trailingIcon: MatLegacyChipTrailingIcon;
 
   /** The chip's remove toggler. */
-  @ContentChild(MAT_CHIP_REMOVE) removeIcon: MatLegacyChipRemove;
+  @ContentChild(MAT_LEGACY_CHIP_REMOVE) removeIcon: MatLegacyChipRemove;
 
   /** ARIA role that should be applied to the chip. */
   @Input() role: string = 'option';
@@ -477,7 +477,7 @@ export class MatLegacyChip
     'class': 'mat-chip-remove mat-chip-trailing-icon',
     '(click)': '_handleClick($event)',
   },
-  providers: [{provide: MAT_CHIP_REMOVE, useExisting: MatLegacyChipRemove}],
+  providers: [{provide: MAT_LEGACY_CHIP_REMOVE, useExisting: MatLegacyChipRemove}],
 })
 export class MatLegacyChipRemove {
   constructor(protected _parentChip: MatLegacyChip, elementRef: ElementRef<HTMLElement>) {

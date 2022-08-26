@@ -8,7 +8,7 @@
 
 import {HarnessPredicate} from '@angular/cdk/testing';
 import {MatLegacyChipHarness} from './chip-harness';
-import {ChipOptionHarnessFilters} from './chip-harness-filters';
+import {LegacyChipOptionHarnessFilters} from './chip-harness-filters';
 
 export class MatLegacyChipOptionHarness extends MatLegacyChipHarness {
   /** The selector for the host element of a selectable chip instance. */
@@ -21,7 +21,7 @@ export class MatLegacyChipOptionHarness extends MatLegacyChipHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static override with(
-    options: ChipOptionHarnessFilters = {},
+    options: LegacyChipOptionHarnessFilters = {},
   ): HarnessPredicate<MatLegacyChipOptionHarness> {
     return new HarnessPredicate(MatLegacyChipOptionHarness, options)
       .addOption('text', options.text, (harness, label) =>

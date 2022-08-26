@@ -10,9 +10,9 @@ import {ComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing
 import {MatLegacyChipHarness} from './chip-harness';
 import {MatLegacyChipInputHarness} from './chip-input-harness';
 import {
-  ChipListHarnessFilters,
-  ChipHarnessFilters,
-  ChipInputHarnessFilters,
+  LegacyChipListHarnessFilters,
+  LegacyChipHarnessFilters,
+  LegacyChipInputHarnessFilters,
 } from './chip-harness-filters';
 
 /** Base class for chip list harnesses. */
@@ -55,7 +55,9 @@ export class MatLegacyChipListHarness extends _MatChipListHarnessBase {
    * @param options Options for filtering which chip list instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: ChipListHarnessFilters = {}): HarnessPredicate<MatLegacyChipListHarness> {
+  static with(
+    options: LegacyChipListHarnessFilters = {},
+  ): HarnessPredicate<MatLegacyChipListHarness> {
     return new HarnessPredicate(MatLegacyChipListHarness, options);
   }
 
@@ -63,7 +65,7 @@ export class MatLegacyChipListHarness extends _MatChipListHarnessBase {
    * Gets the list of chips inside the chip list.
    * @param filter Optionally filters which chips are included.
    */
-  async getChips(filter: ChipHarnessFilters = {}): Promise<MatLegacyChipHarness[]> {
+  async getChips(filter: LegacyChipHarnessFilters = {}): Promise<MatLegacyChipHarness[]> {
     return this.locatorForAll(MatLegacyChipHarness.with(filter))();
   }
 
@@ -74,7 +76,7 @@ export class MatLegacyChipListHarness extends _MatChipListHarnessBase {
    * @deprecated Use `MatChipListboxHarness.selectChips` instead.
    * @breaking-change 12.0.0
    */
-  async selectChips(filter: ChipHarnessFilters = {}): Promise<void> {
+  async selectChips(filter: LegacyChipHarnessFilters = {}): Promise<void> {
     const chips = await this.getChips(filter);
     if (!chips.length) {
       throw Error(`Cannot find chip matching filter ${JSON.stringify(filter)}`);
@@ -86,7 +88,7 @@ export class MatLegacyChipListHarness extends _MatChipListHarnessBase {
    * Gets the `MatChipInput` inside the chip list.
    * @param filter Optionally filters which chip input is included.
    */
-  async getInput(filter: ChipInputHarnessFilters = {}): Promise<MatLegacyChipInputHarness> {
+  async getInput(filter: LegacyChipInputHarnessFilters = {}): Promise<MatLegacyChipInputHarness> {
     // The input isn't required to be a descendant of the chip list so we have to look it up by id.
     const inputId = await (await this.host()).getAttribute('data-mat-chip-input');
 

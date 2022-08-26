@@ -19,7 +19,10 @@ import {
   OnDestroy,
   Output,
 } from '@angular/core';
-import {MatLegacyChipsDefaultOptions, MAT_CHIPS_DEFAULT_OPTIONS} from './chip-default-options';
+import {
+  MatLegacyChipsDefaultOptions,
+  MAT_LEGACY_CHIPS_DEFAULT_OPTIONS,
+} from './chip-default-options';
 import {MatLegacyChipList} from './chip-list';
 import {MatLegacyChipTextControl} from './chip-text-control';
 
@@ -132,7 +135,7 @@ export class MatLegacyChipInput
 
   constructor(
     protected _elementRef: ElementRef<HTMLInputElement>,
-    @Inject(MAT_CHIPS_DEFAULT_OPTIONS) private _defaultOptions: MatLegacyChipsDefaultOptions,
+    @Inject(MAT_LEGACY_CHIPS_DEFAULT_OPTIONS) private _defaultOptions: MatLegacyChipsDefaultOptions,
   ) {
     this.inputElement = this._elementRef.nativeElement as HTMLInputElement;
   }
