@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './button-module';
-export * from './button';
+export {MatLegacyButtonModule} from './button-module';
+export {MatLegacyButton, MatLegacyAnchor} from './button';
