@@ -29,8 +29,7 @@ jobs:
       - name: Generate `events.json`
         run: node aio/scripts/generate-events/index.mjs --ignore-invalid-dates
       - name: Create a PR (if necessary)
-        # TODO(gkalpak): Update SHA to reference the commit merged to `angular/dev-infra > main`.
-        uses: gkalpak/dev-infra/github-actions/create-pr-for-changes@feat-gh-actions-pr-for-changes
+        uses: gkalpak/dev-infra/github-actions/create-pr-for-changes@88c198ae1a3462223cb5c1e83338e4b94b435283
         with:
           branch-prefix: docs-update-events
           pr-title: 'docs: update events'

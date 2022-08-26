@@ -12,8 +12,7 @@ This data is stored in `events.json`.
 The `events.json` file is periodically generated from data stored in a Firebase database.
 See [here](https://github.com/angular/angular/blob/main/aio/scripts/generate-events/README.md) for more details.
 
-If you want to get an event listed, please get in touch with the Angular DevRel team.
-<!-- TODO(gkalpak): List specific ways to get in touch (e.g. Twitter, e-mail). -->
+If you want to get an event listed, please get in touch with the Angular DevRel team at [devrel@angular.io](mailto:devrel@angular.io).
 
 > WARNING:
 > The `events.json` file is only intended to be updated via a [script](https://github.com/angular/angular/blob/main/aio/scripts/generate-events/index.mjs).
