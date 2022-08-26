@@ -1,20 +1,40 @@
+// #docplaster
 import { Injectable } from '@angular/core';
-import { SwUpdate, UpdateAvailableEvent } from '@angular/service-worker';
+// #docregion sw-replicate-available
+    import { filter, map } from 'rxjs/operators';
+// #enddocregion sw-replicate-available
+import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 
-function promptUser(event: UpdateAvailableEvent): boolean {
+function promptUser(event: VersionReadyEvent): boolean {
   return true;
 }
 
-// #docregion sw-activate
+// #docregion sw-version-ready
 @Injectable()
 export class PromptUpdateService {
 
-  constructor(updates: SwUpdate) {
-    updates.available.subscribe(event => {
-      if (promptUser(event)) {
-        updates.activateUpdate().then(() => document.location.reload());
-      }
-    });
+  constructor(swUpdate: SwUpdate) {
+    swUpdate.versionUpdates
+        .pipe(filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'))
+        .subscribe(evt => {
+          if (promptUser(evt)) {
+            // Reload the page to update to the latest version.
+            document.location.reload();
+          }
+        });
+    // #enddocregion sw-version-ready
+    // #docregion sw-replicate-available
+    // ...
+    const updatesAvailable = swUpdate.versionUpdates.pipe(
+        filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
+        map(evt => ({
+          type: 'UPDATE_AVAILABLE',
+          current: evt.currentVersion,
+          available: evt.latestVersion,
+        })));
+    // #enddocregion sw-replicate-available
+    // #docregion sw-version-ready
   }
+
 }
-// #enddocregion sw-activate
+// #enddocregion sw-version-ready
