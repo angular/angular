@@ -117,8 +117,8 @@ export class SwUpdate {
    * Updates the current client (i.e. browser tab) to the latest version that is ready for
    * activation.
    *
-   * In most cases, you do not need to use this method and can update a client by reloading the
-   * page.
+   * In most cases, you should not use this method and instead should update a client by reloading
+   * the page.
    *
    * <div class="alert is-important">
    *
