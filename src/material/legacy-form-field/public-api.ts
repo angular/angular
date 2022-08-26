@@ -6,23 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './form-field-module';
-export * from './error';
-export * from './form-field';
-export * from './hint';
-export * from './placeholder';
-export * from './prefix';
-export * from './suffix';
-export * from './label';
+export {MatLegacyFormFieldModule} from './form-field-module';
+export {MatLegacyError} from './error';
+export {
+  MatLegacyFormFieldAppearance,
+  LegacyFloatLabelType,
+  MatLegacyFormFieldDefaultOptions,
+  MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS,
+  MatLegacyFormField,
+} from './form-field';
+export {_MAT_LEGACY_HINT, MatLegacyHint} from './hint';
+export {MatLegacyPlaceholder} from './placeholder';
+export {MatLegacyPrefix} from './prefix';
+export {MatLegacySuffix} from './suffix';
+export {MatLegacyLabel} from './label';
 
 export {
-  MAT_FORM_FIELD,
+  MAT_FORM_FIELD as MAT_LEGACY_FORM_FIELD,
   MatFormFieldControl as MatLegacyFormFieldControl,
-  getMatFormFieldDuplicatedHintError,
-  getMatFormFieldMissingControlError,
-  getMatFormFieldPlaceholderConflictError,
-  matFormFieldAnimations,
-  MAT_SUFFIX,
-  MAT_ERROR,
-  MAT_PREFIX,
+  getMatFormFieldDuplicatedHintError as getMatLegacyFormFieldDuplicatedHintError,
+  getMatFormFieldMissingControlError as getMatLegacyFormFieldMissingControlError,
+  getMatFormFieldPlaceholderConflictError as getMatLegacyFormFieldPlaceholderConflictError,
+  matFormFieldAnimations as matLegacyFormFieldAnimations,
+  MAT_SUFFIX as MAT_LEGACY_SUFFIX,
+  MAT_ERROR as MAT_LEGACY_ERROR,
+  MAT_PREFIX as MAT_LEGACY_PREFIX,
 } from '@angular/material/form-field';

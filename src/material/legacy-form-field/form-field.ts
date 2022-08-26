@@ -32,7 +32,7 @@ import {CanColor, mixinColor, ThemePalette} from '@angular/material/core';
 import {fromEvent, merge, Subject} from 'rxjs';
 import {startWith, take, takeUntil} from 'rxjs/operators';
 import {MatLegacyError} from './error';
-import {_MAT_HINT, MatLegacyHint} from './hint';
+import {_MAT_LEGACY_HINT, MatLegacyHint} from './hint';
 import {MatLegacyLabel} from './label';
 import {MatLegacyPlaceholder} from './placeholder';
 import {MatLegacyPrefix} from './prefix';
@@ -71,7 +71,7 @@ const _MatFormFieldBase = mixinColor(
 export type MatLegacyFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
 
 /** Possible values for the "floatLabel" form field input. */
-export type FloatLabelType = 'always' | 'never' | 'auto';
+export type LegacyFloatLabelType = 'always' | 'never' | 'auto';
 
 /**
  * Represents the default options for the form field that can be configured
@@ -88,16 +88,15 @@ export interface MatLegacyFormFieldDefaultOptions {
    * Whether the label for form fields should by default float `always`,
    * `never`, or `auto` (only when necessary).
    */
-  floatLabel?: FloatLabelType;
+  floatLabel?: LegacyFloatLabelType;
 }
 
 /**
  * Injection token that can be used to configure the
  * default options for all form field within an app.
  */
-export const MAT_FORM_FIELD_DEFAULT_OPTIONS = new InjectionToken<MatLegacyFormFieldDefaultOptions>(
-  'MAT_FORM_FIELD_DEFAULT_OPTIONS',
-);
+export const MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS =
+  new InjectionToken<MatLegacyFormFieldDefaultOptions>('MAT_FORM_FIELD_DEFAULT_OPTIONS');
 
 /** Container for form controls that applies Material Design styling and behavior. */
 @Component({
@@ -227,16 +226,16 @@ export class MatLegacyFormField
    * appearances the `never` option has been disabled in favor of just using the placeholder.
    */
   @Input()
-  get floatLabel(): FloatLabelType {
+  get floatLabel(): LegacyFloatLabelType {
     return this.appearance !== 'legacy' && this._floatLabel === 'never' ? 'auto' : this._floatLabel;
   }
-  set floatLabel(value: FloatLabelType) {
+  set floatLabel(value: LegacyFloatLabelType) {
     if (value !== this._floatLabel) {
       this._floatLabel = value || this._getDefaultFloatLabelState();
       this._changeDetectorRef.markForCheck();
     }
   }
-  private _floatLabel: FloatLabelType;
+  private _floatLabel: LegacyFloatLabelType;
 
   /** Whether the Angular animations are enabled. */
   _animationsEnabled: boolean;
@@ -262,7 +261,7 @@ export class MatLegacyFormField
   @ContentChild(MatLegacyPlaceholder) _placeholderChild: MatLegacyPlaceholder;
 
   @ContentChildren(MAT_ERROR, {descendants: true}) _errorChildren: QueryList<MatLegacyError>;
-  @ContentChildren(_MAT_HINT, {descendants: true}) _hintChildren: QueryList<MatLegacyHint>;
+  @ContentChildren(_MAT_LEGACY_HINT, {descendants: true}) _hintChildren: QueryList<MatLegacyHint>;
   @ContentChildren(MAT_PREFIX, {descendants: true})
   _prefixChildren: QueryList<MatLegacyPrefix>;
   @ContentChildren(MAT_SUFFIX, {descendants: true})
@@ -273,7 +272,7 @@ export class MatLegacyFormField
     private _changeDetectorRef: ChangeDetectorRef,
     @Optional() private _dir: Directionality,
     @Optional()
-    @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS)
+    @Inject(MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS)
     private _defaults: MatLegacyFormFieldDefaultOptions,
     private _platform: Platform,
     private _ngZone: NgZone,
@@ -501,7 +500,7 @@ export class MatLegacyFormField
   }
 
   /** Gets the default float label state. */
-  private _getDefaultFloatLabelState(): FloatLabelType {
+  private _getDefaultFloatLabelState(): LegacyFloatLabelType {
     return (this._defaults && this._defaults.floatLabel) || 'auto';
   }
 

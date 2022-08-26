@@ -11,7 +11,7 @@ import {MatInput as BaseMatInput} from '@angular/material/input';
 import {
   MatLegacyFormFieldControl,
   MatLegacyFormField,
-  MAT_FORM_FIELD,
+  MAT_LEGACY_FORM_FIELD,
 } from '@angular/material/legacy-form-field';
 
 /** Directive that allows a native input to work inside a `MatFormField`. */
@@ -40,7 +40,10 @@ import {
   providers: [{provide: MatLegacyFormFieldControl, useExisting: MatLegacyInput}],
 })
 export class MatLegacyInput extends BaseMatInput {
-  private _legacyFormField = inject<MatLegacyFormField>(MAT_FORM_FIELD, InjectFlags.Optional);
+  private _legacyFormField = inject<MatLegacyFormField>(
+    MAT_LEGACY_FORM_FIELD,
+    InjectFlags.Optional,
+  );
 
   protected override _getPlaceholder() {
     // If we're hiding the native placeholder, it should also be cleared from the DOM, otherwise

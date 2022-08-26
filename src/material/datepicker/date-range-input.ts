@@ -25,7 +25,7 @@ import {
 import {
   MatLegacyFormFieldControl,
   MatLegacyFormField,
-  MAT_FORM_FIELD,
+  MAT_LEGACY_FORM_FIELD,
 } from '@angular/material/legacy-form-field';
 import {ThemePalette, DateAdapter} from '@angular/material/core';
 import {NgControl, ControlContainer} from '@angular/forms';
@@ -259,7 +259,7 @@ export class MatDateRangeInput<D>
     private _elementRef: ElementRef<HTMLElement>,
     @Optional() @Self() control: ControlContainer,
     @Optional() private _dateAdapter: DateAdapter<D>,
-    @Optional() @Inject(MAT_FORM_FIELD) private _formField?: MatLegacyFormField,
+    @Optional() @Inject(MAT_LEGACY_FORM_FIELD) private _formField?: MatLegacyFormField,
   ) {
     if (!_dateAdapter && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw createMissingDateImplError('DateAdapter');

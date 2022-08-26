@@ -14,7 +14,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatLegacyCardModule} from '@angular/material/legacy-card';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
 import {ErrorStateMatcher} from '@angular/material/core';
-import {FloatLabelType, MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {LegacyFloatLabelType, MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
 import {MatLegacySelectModule} from '@angular/material/legacy-select';
@@ -48,7 +48,7 @@ const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA
   ],
 })
 export class LegacyInputDemo {
-  floatingLabel: FloatLabelType = 'auto';
+  floatingLabel: LegacyFloatLabelType = 'auto';
   color: boolean;
   requiredField: boolean;
   hideRequiredMarker: boolean;

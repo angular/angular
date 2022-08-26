@@ -20,14 +20,14 @@ import {MatLegacySelectHarness} from '@angular/material/legacy-select/testing';
 
 // TODO(devversion): support support chip list harness
 /** Possible harnesses of controls which can be bound to a form-field. */
-export type FormFieldControlHarness =
+export type LegacyFormFieldControlHarness =
   | MatLegacyInputHarness
   | MatLegacySelectHarness
   | MatDatepickerInputHarness
   | MatDateRangeInputHarness;
 
 /** Harness for interacting with a standard Material form-field's in tests. */
-export class MatLegacyFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldControlHarness> {
+export class MatLegacyFormFieldHarness extends _MatFormFieldHarnessBase<LegacyFormFieldControlHarness> {
   static hostSelector = '.mat-form-field';
 
   /**

@@ -32,14 +32,14 @@ import {
   ThemePalette,
 } from '@angular/material/core';
 import {
-  getMatFormFieldDuplicatedHintError,
-  getMatFormFieldMissingControlError,
-  getMatFormFieldPlaceholderConflictError,
-  MAT_FORM_FIELD_DEFAULT_OPTIONS,
+  getMatLegacyFormFieldDuplicatedHintError,
+  getMatLegacyFormFieldMissingControlError,
+  getMatLegacyFormFieldPlaceholderConflictError,
+  MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS,
   MatLegacyFormField,
   MatLegacyFormFieldAppearance,
   MatLegacyFormFieldModule,
-  FloatLabelType,
+  LegacyFloatLabelType,
 } from '@angular/material/legacy-form-field';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -62,7 +62,7 @@ describe('MatInput without forms', () => {
   it('should default to floating label type provided by global default options', fakeAsync(() => {
     const fixture = createComponent(MatInputWithId, [
       {
-        provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+        provide: MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS,
         useValue: {floatLabel: 'always'},
       },
     ]);
@@ -253,7 +253,7 @@ describe('MatInput without forms', () => {
       } catch {
         flush();
       }
-    }).toThrowError(wrappedErrorMessage(getMatFormFieldDuplicatedHintError('start')));
+    }).toThrowError(wrappedErrorMessage(getMatLegacyFormFieldDuplicatedHintError('start')));
   }));
 
   it("validates there's only one hint label per side (attribute)", fakeAsync(() => {
@@ -266,7 +266,7 @@ describe('MatInput without forms', () => {
       } catch {
         flush();
       }
-    }).toThrowError(wrappedErrorMessage(getMatFormFieldDuplicatedHintError('start')));
+    }).toThrowError(wrappedErrorMessage(getMatLegacyFormFieldDuplicatedHintError('start')));
   }));
 
   it("validates there's only one placeholder", fakeAsync(() => {
@@ -279,14 +279,14 @@ describe('MatInput without forms', () => {
       } catch {
         flush();
       }
-    }).toThrowError(wrappedErrorMessage(getMatFormFieldPlaceholderConflictError()));
+    }).toThrowError(wrappedErrorMessage(getMatLegacyFormFieldPlaceholderConflictError()));
   }));
 
   it('validates that matInput child is present', fakeAsync(() => {
     const fixture = createComponent(MatInputMissingMatInputTestController);
 
     expect(() => fixture.detectChanges()).toThrowError(
-      wrappedErrorMessage(getMatFormFieldMissingControlError()),
+      wrappedErrorMessage(getMatLegacyFormFieldMissingControlError()),
     );
   }));
 
@@ -294,13 +294,13 @@ describe('MatInput without forms', () => {
     const fixture = createComponent(MatInputWithNgIf);
 
     expect(() => fixture.detectChanges()).not.toThrowError(
-      wrappedErrorMessage(getMatFormFieldMissingControlError()),
+      wrappedErrorMessage(getMatLegacyFormFieldMissingControlError()),
     );
 
     fixture.componentInstance.renderInput = false;
 
     expect(() => fixture.detectChanges()).toThrowError(
-      wrappedErrorMessage(getMatFormFieldMissingControlError()),
+      wrappedErrorMessage(getMatLegacyFormFieldMissingControlError()),
     );
   }));
 
@@ -1593,7 +1593,7 @@ describe('MatInput with appearance', () => {
     let zone: MockNgZone;
     const labelFixture = createComponent(MatInputWithLabel, [
       {
-        provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+        provide: MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS,
         useValue: {appearance: 'outline'},
       },
       {
@@ -1808,7 +1808,7 @@ describe('MatFormField default options', () => {
   it('should be legacy appearance if empty default options provided', () => {
     const fixture = createComponent(MatInputWithAppearance, [
       {
-        provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+        provide: MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS,
         useValue: {},
       },
     ]);
@@ -1820,7 +1820,7 @@ describe('MatFormField default options', () => {
   it('should be able to change the default appearance', () => {
     const fixture = createComponent(MatInputWithAppearance, [
       {
-        provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+        provide: MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS,
         useValue: {appearance: 'fill'},
       },
     ]);
@@ -1831,7 +1831,7 @@ describe('MatFormField default options', () => {
   it('should default hideRequiredMarker to false', () => {
     const fixture = createComponent(MatInputWithAppearance, [
       {
-        provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+        provide: MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS,
         useValue: {},
       },
     ]);
@@ -1843,7 +1843,7 @@ describe('MatFormField default options', () => {
   it('should be able to change the default value of hideRequiredMarker and appearance', () => {
     const fixture = createComponent(MatInputWithAppearance, [
       {
-        provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+        provide: MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS,
         useValue: {
           hideRequiredMarker: true,
           appearance: 'outline',
@@ -1859,7 +1859,7 @@ describe('MatFormField default options', () => {
   it('should be able to change the default color', () => {
     const fixture = createComponent(MatInputWithColor, [
       {
-        provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+        provide: MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS,
         useValue: {color: 'accent'},
       },
     ]);
@@ -2249,7 +2249,7 @@ class MatInputWithLabel {}
   `,
 })
 class MatInputWithLabelAndPlaceholder {
-  floatLabel: FloatLabelType;
+  floatLabel: LegacyFloatLabelType;
   appearance: MatLegacyFormFieldAppearance = 'legacy';
 }
 

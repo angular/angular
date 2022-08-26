@@ -5,25 +5,25 @@
 ```ts
 
 import { AsyncFactoryFn } from '@angular/cdk/testing';
-import { FormFieldHarnessFilters } from '@angular/material/form-field/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
+import { FormFieldHarnessFilters as LegacyFormFieldHarnessFilters } from '@angular/material/form-field/testing';
 import { MatDatepickerInputHarness } from '@angular/material/datepicker/testing';
 import { MatDateRangeInputHarness } from '@angular/material/datepicker/testing';
-import { MatFormFieldControlHarness } from '@angular/material/form-field/testing/control';
 import { _MatFormFieldHarnessBase } from '@angular/material/form-field/testing';
+import { MatFormFieldControlHarness as MatLegacyFormFieldControlHarness } from '@angular/material/form-field/testing/control';
 import { MatLegacyInputHarness } from '@angular/material/legacy-input/testing';
 import { MatLegacySelectHarness } from '@angular/material/legacy-select/testing';
 import { TestElement } from '@angular/cdk/testing';
 
 // @public
-export type FormFieldControlHarness = MatLegacyInputHarness | MatLegacySelectHarness | MatDatepickerInputHarness | MatDateRangeInputHarness;
+export type LegacyFormFieldControlHarness = MatLegacyInputHarness | MatLegacySelectHarness | MatDatepickerInputHarness | MatDateRangeInputHarness;
 
-export { FormFieldHarnessFilters }
+export { LegacyFormFieldHarnessFilters }
 
-export { MatFormFieldControlHarness }
+export { MatLegacyFormFieldControlHarness }
 
 // @public
-export class MatLegacyFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldControlHarness> {
+export class MatLegacyFormFieldHarness extends _MatFormFieldHarnessBase<LegacyFormFieldControlHarness> {
     // (undocumented)
     protected _datepickerInputControl: AsyncFactoryFn<MatDatepickerInputHarness | null>;
     // (undocumented)
@@ -47,7 +47,7 @@ export class MatLegacyFormFieldHarness extends _MatFormFieldHarnessBase<FormFiel
     protected _selectControl: AsyncFactoryFn<MatLegacySelectHarness | null>;
     // (undocumented)
     protected _suffixContainer: AsyncFactoryFn<TestElement | null>;
-    static with(options?: FormFieldHarnessFilters): HarnessPredicate<MatLegacyFormFieldHarness>;
+    static with(options?: LegacyFormFieldHarnessFilters): HarnessPredicate<MatLegacyFormFieldHarness>;
 }
 
 // (No @packageDocumentation comment for this package)

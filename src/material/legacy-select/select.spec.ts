@@ -54,9 +54,9 @@ import {
 import {ErrorStateMatcher} from '@angular/material/core';
 import {MatLegacyOption, MatOptionSelectionChange} from '@angular/material/legacy-core';
 import {
-  FloatLabelType,
+  LegacyFloatLabelType,
   MatLegacyFormFieldModule,
-  MAT_FORM_FIELD_DEFAULT_OPTIONS,
+  MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS,
 } from '@angular/material/legacy-form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -2693,7 +2693,7 @@ describe('MatSelect', () => {
         declarations: [FloatLabelSelect],
         providers: [
           {
-            provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+            provide: MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS,
             useValue: {floatLabel: 'always'},
           },
         ],
@@ -5462,7 +5462,7 @@ class BasicSelectOnPushPreselected {
     `,
 })
 class FloatLabelSelect {
-  floatLabel: FloatLabelType | null = 'auto';
+  floatLabel: LegacyFloatLabelType | null = 'auto';
   placeholder = 'Food I want to eat right now';
   control = new FormControl('');
   foods: any[] = [

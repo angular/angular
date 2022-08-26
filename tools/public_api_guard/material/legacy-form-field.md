@@ -15,19 +15,19 @@ import { ChangeDetectorRef } from '@angular/core';
 import { _Constructor } from '@angular/material/core';
 import { Directionality } from '@angular/cdk/bidi';
 import { ElementRef } from '@angular/core';
-import { getMatFormFieldDuplicatedHintError } from '@angular/material/form-field';
-import { getMatFormFieldMissingControlError } from '@angular/material/form-field';
-import { getMatFormFieldPlaceholderConflictError } from '@angular/material/form-field';
+import { getMatFormFieldDuplicatedHintError as getMatLegacyFormFieldDuplicatedHintError } from '@angular/material/form-field';
+import { getMatFormFieldMissingControlError as getMatLegacyFormFieldMissingControlError } from '@angular/material/form-field';
+import { getMatFormFieldPlaceholderConflictError as getMatLegacyFormFieldPlaceholderConflictError } from '@angular/material/form-field';
 import * as i0 from '@angular/core';
 import * as i10 from '@angular/cdk/observers';
 import * as i8 from '@angular/common';
 import * as i9 from '@angular/material/core';
 import { InjectionToken } from '@angular/core';
-import { MAT_ERROR } from '@angular/material/form-field';
-import { MAT_FORM_FIELD } from '@angular/material/form-field';
-import { MAT_PREFIX } from '@angular/material/form-field';
-import { MAT_SUFFIX } from '@angular/material/form-field';
-import { matFormFieldAnimations } from '@angular/material/form-field';
+import { MAT_ERROR as MAT_LEGACY_ERROR } from '@angular/material/form-field';
+import { MAT_FORM_FIELD as MAT_LEGACY_FORM_FIELD } from '@angular/material/form-field';
+import { MAT_PREFIX as MAT_LEGACY_PREFIX } from '@angular/material/form-field';
+import { MAT_SUFFIX as MAT_LEGACY_SUFFIX } from '@angular/material/form-field';
+import { matFormFieldAnimations as matLegacyFormFieldAnimations } from '@angular/material/form-field';
 import { MatFormFieldControl as MatLegacyFormFieldControl } from '@angular/material/form-field';
 import { NgZone } from '@angular/core';
 import { OnDestroy } from '@angular/core';
@@ -35,30 +35,28 @@ import { Platform } from '@angular/cdk/platform';
 import { QueryList } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
 
-// @public
-export type FloatLabelType = 'always' | 'never' | 'auto';
+export { getMatLegacyFormFieldDuplicatedHintError }
 
-export { getMatFormFieldDuplicatedHintError }
+export { getMatLegacyFormFieldMissingControlError }
 
-export { getMatFormFieldMissingControlError }
-
-export { getMatFormFieldPlaceholderConflictError }
-
-export { MAT_ERROR }
-
-export { MAT_FORM_FIELD }
+export { getMatLegacyFormFieldPlaceholderConflictError }
 
 // @public
-export const MAT_FORM_FIELD_DEFAULT_OPTIONS: InjectionToken<MatLegacyFormFieldDefaultOptions>;
+export type LegacyFloatLabelType = 'always' | 'never' | 'auto';
+
+export { MAT_LEGACY_ERROR }
+
+export { MAT_LEGACY_FORM_FIELD }
 
 // @public
-export const _MAT_HINT: InjectionToken<MatLegacyHint>;
+export const MAT_LEGACY_FORM_FIELD_DEFAULT_OPTIONS: InjectionToken<MatLegacyFormFieldDefaultOptions>;
 
-export { MAT_PREFIX }
+// @public
+export const _MAT_LEGACY_HINT: InjectionToken<MatLegacyHint>;
 
-export { MAT_SUFFIX }
+export { MAT_LEGACY_PREFIX }
 
-export { matFormFieldAnimations }
+export { MAT_LEGACY_SUFFIX }
 
 // @public
 export class MatLegacyError {
@@ -92,8 +90,8 @@ export class MatLegacyFormField extends _MatFormFieldBase implements AfterConten
     _controlStatic: MatLegacyFormFieldControl<any>;
     // (undocumented)
     _errorChildren: QueryList<MatLegacyError>;
-    get floatLabel(): FloatLabelType;
-    set floatLabel(value: FloatLabelType);
+    get floatLabel(): LegacyFloatLabelType;
+    set floatLabel(value: LegacyFloatLabelType);
     getConnectedOverlayOrigin(): ElementRef;
     _getDisplayedMessages(): 'error' | 'hint';
     getLabelId(): string | null;
@@ -148,6 +146,8 @@ export class MatLegacyFormField extends _MatFormFieldBase implements AfterConten
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyFormField, [null, null, { optional: true; }, { optional: true; }, null, null, { optional: true; }]>;
 }
 
+export { matLegacyFormFieldAnimations }
+
 // @public
 export type MatLegacyFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
 
@@ -157,7 +157,7 @@ export { MatLegacyFormFieldControl }
 export interface MatLegacyFormFieldDefaultOptions {
     appearance?: MatLegacyFormFieldAppearance;
     color?: ThemePalette;
-    floatLabel?: FloatLabelType;
+    floatLabel?: LegacyFloatLabelType;
     hideRequiredMarker?: boolean;
 }
 
