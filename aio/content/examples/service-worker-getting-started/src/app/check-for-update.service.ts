@@ -13,6 +13,13 @@ export class CheckForUpdateService {
     const everySixHours$ = interval(6 * 60 * 60 * 1000);
     const everySixHoursOnceAppIsStable$ = concat(appIsStable$, everySixHours$);
 
-    everySixHoursOnceAppIsStable$.subscribe(() => updates.checkForUpdate());
+    everySixHoursOnceAppIsStable$.subscribe(async () => {
+      try {
+        const updateFound = await updates.checkForUpdate();
+        console.log(updateFound ? 'A new version is available.' : 'Already on the latest version.');
+      } catch (err) {
+        console.error('Failed to check for updates:', err);
+      }
+    });
   }
 }
