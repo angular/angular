@@ -40,7 +40,7 @@ export class SwUpdate {
    *
    * @deprecated Use {@link versionUpdates} instead.
    *
-   * The behavior of `available` can be replicated using `versionUpdates` by filtering for the
+   * The behavior of `available` can be replicated by using `versionUpdates` by filtering for the
    * `VersionReadyEvent`:
    *
    * {@example service-worker-getting-started/src/app/prompt-update.service.ts
@@ -117,15 +117,15 @@ export class SwUpdate {
    * Updates the current client (i.e. browser tab) to the latest version that is ready for
    * activation.
    *
-   * This method can be useful if you want to update a client without reloading the page. However,
-   * this is less safe than just reloading the page, so make sure you understand the implications
-   * before using this method.
+   * In most cases, you do not need to use this method and can update a client by reloading the
+   * page.
    *
    * <div class="alert is-important">
    *
-   * Updating a client without reloading can easily lead to version skew. For example, it could
-   * break lazy-loading in a currently running app, if the lazy-loaded chunks use filenames with
-   * hashes, which change every version.
+   * Updating a client without reloading can easily result in a broken application due to a version
+   * mismatch between the [application shell](guide/glossary#app-shell) and other page resources,
+   * such as [lazy-loaded chunks](guide/glossary#lazy-loading), whose filenames may change between
+   * versions.
    *
    * Only use this method, if you are certain it is safe for your specific use case.
    *

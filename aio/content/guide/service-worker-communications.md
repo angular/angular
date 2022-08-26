@@ -67,16 +67,15 @@ Alternatively, you might want to define a different [registration strategy](api/
 ### Updating to the latest version
 
 You can update an existing tab to the latest version by reloading the page as soon as a new version is ready.
-To avoid disrupting the user's progress, it is generally a good idea to prompt the user and let them confirm it is OK to reload the page and update to the latest version:
+To avoid disrupting the user's progress, it is generally a good idea to prompt the user and let them confirm that it is OK to reload the page and update to the latest version:
 
 <code-example header="prompt-update.service.ts" path="service-worker-getting-started/src/app/prompt-update.service.ts" region="sw-version-ready"></code-example>
 
 <div class="alert is-important">
 
-It is possible to update a tab to the latest version without reloading the page, by calling {@link SwUpdate#activateUpdate SwUpdate#activateUpdate()}.
+Calling {@link SwUpdate#activateUpdate SwUpdate#activateUpdate()} updates a tab to the latest version without reloading the page.
 
-However, this can easily lead to version skew.
-For example, it could break lazy-loading in a currently running app, if the lazy-loaded chunks use filenames with hashes, which change every version.
+However, this can easily result in a broken application due to a version mismatch between the [application shell](guide/glossary#app-shell) and other page resources, such as [lazy-loaded chunks](guide/glossary#lazy-loading), whose filenames may change between versions.
 
 You should only use `activateUpdate()`, if you are certain it is safe for your specific use case.
 
