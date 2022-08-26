@@ -6,12 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './dialog-module';
-export * from './dialog';
-export * from './dialog-container';
-export * from './dialog-content-directives';
-export * from './dialog-ref';
-export * from './dialog-config';
+export {MatLegacyDialogModule} from './dialog-module';
+export {
+  MAT_LEGACY_DIALOG_DATA,
+  MAT_LEGACY_DIALOG_DEFAULT_OPTIONS,
+  MAT_LEGACY_DIALOG_SCROLL_STRATEGY,
+  MAT_LEGACY_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY,
+  MAT_LEGACY_DIALOG_SCROLL_STRATEGY_PROVIDER,
+  MatLegacyDialog,
+} from './dialog';
+export {MatLegacyDialogContainer} from './dialog-container';
+export {
+  MatLegacyDialogClose,
+  MatLegacyDialogTitle,
+  MatLegacyDialogContent,
+  MatLegacyDialogActions,
+} from './dialog-content-directives';
+export {MatLegacyDialogRef} from './dialog-ref';
+export {MatLegacyDialogConfig} from './dialog-config';
 export {
   _MatDialogBase as _MatLegacyDialogBase,
   _MatDialogContainerBase as _MatLegacyDialogContainerBase,
