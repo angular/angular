@@ -46,13 +46,13 @@ import {map, startWith} from 'rxjs/operators';
 import {MatLegacyInputModule} from '../legacy-input/index';
 
 import {
-  getMatAutocompleteMissingPanelError,
-  MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
-  MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+  getMatLegacyAutocompleteMissingPanelError,
+  MAT_LEGACY_AUTOCOMPLETE_DEFAULT_OPTIONS,
+  MAT_LEGACY_AUTOCOMPLETE_SCROLL_STRATEGY,
   MatLegacyAutocomplete,
   MatLegacyAutocompleteModule,
   MatLegacyAutocompleteOrigin,
-  MatAutocompleteSelectedEvent,
+  MatLegacyAutocompleteSelectedEvent,
   MatLegacyAutocompleteTrigger,
 } from './index';
 
@@ -2314,7 +2314,7 @@ describe('MatAutocomplete', () => {
       fixture.destroy();
       TestBed.resetTestingModule();
       fixture = createComponent(SimpleAutocomplete, [
-        {provide: MAT_AUTOCOMPLETE_DEFAULT_OPTIONS, useValue: {autoActiveFirstOption: true}},
+        {provide: MAT_LEGACY_AUTOCOMPLETE_DEFAULT_OPTIONS, useValue: {autoActiveFirstOption: true}},
       ]);
 
       fixture.detectChanges();
@@ -2513,7 +2513,10 @@ describe('MatAutocomplete', () => {
   describe('with panel classes in the default options', () => {
     it('should apply them if provided as string', fakeAsync(() => {
       const fixture = createComponent(SimpleAutocomplete, [
-        {provide: MAT_AUTOCOMPLETE_DEFAULT_OPTIONS, useValue: {overlayPanelClass: 'default1'}},
+        {
+          provide: MAT_LEGACY_AUTOCOMPLETE_DEFAULT_OPTIONS,
+          useValue: {overlayPanelClass: 'default1'},
+        },
       ]);
 
       fixture.detectChanges();
@@ -2527,7 +2530,7 @@ describe('MatAutocomplete', () => {
     it('should apply them if provided as array', fakeAsync(() => {
       const fixture = createComponent(SimpleAutocomplete, [
         {
-          provide: MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
+          provide: MAT_LEGACY_AUTOCOMPLETE_DEFAULT_OPTIONS,
           useValue: {overlayPanelClass: ['default1', 'default2']},
         },
       ]);
@@ -2618,7 +2621,7 @@ describe('MatAutocomplete', () => {
 
       expect(() => {
         fixture.componentInstance.trigger.openPanel();
-      }).toThrow(getMatAutocompleteMissingPanelError());
+      }).toThrow(getMatLegacyAutocompleteMissingPanelError());
     });
 
     it('should not throw on init, even if the panel is not defined', fakeAsync(() => {
@@ -2698,7 +2701,7 @@ describe('MatAutocomplete', () => {
           useValue: {scrolled: () => scrolledSubject},
         },
         {
-          provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+          provide: MAT_LEGACY_AUTOCOMPLETE_SCROLL_STRATEGY,
           useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close(),
           deps: [Overlay],
         },
@@ -3167,7 +3170,7 @@ describe('MatAutocomplete', () => {
 
     expect(spy).toHaveBeenCalledTimes(1);
 
-    const event = spy.calls.mostRecent().args[0] as MatAutocompleteSelectedEvent;
+    const event = spy.calls.mostRecent().args[0] as MatLegacyAutocompleteSelectedEvent;
 
     expect(event.source).toBe(fixture.componentInstance.autocomplete);
     expect(event.option.value).toBe('Washington');
@@ -3220,7 +3223,7 @@ describe('MatAutocomplete', () => {
 
     expect(spy).toHaveBeenCalledTimes(1);
 
-    const event = spy.calls.mostRecent().args[0] as MatAutocompleteSelectedEvent;
+    const event = spy.calls.mostRecent().args[0] as MatLegacyAutocompleteSelectedEvent;
 
     expect(event.source).toBe(fixture.componentInstance.autocomplete);
     expect(event.option.value).toBe('Puerto Rico');

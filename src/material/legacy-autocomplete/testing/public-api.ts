@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './autocomplete-harness';
-export * from './autocomplete-harness-filters';
+export {MatLegacyAutocompleteHarness} from './autocomplete-harness';
+export {LegacyAutocompleteHarnessFilters} from './autocomplete-harness-filters';

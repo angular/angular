@@ -4,48 +4,42 @@
 
 ```ts
 
-import { getMatAutocompleteMissingPanelError } from '@angular/material/autocomplete';
+import { getMatAutocompleteMissingPanelError as getMatLegacyAutocompleteMissingPanelError } from '@angular/material/autocomplete';
 import * as i0 from '@angular/core';
 import * as i4 from '@angular/cdk/overlay';
 import * as i5 from '@angular/material/legacy-core';
 import * as i6 from '@angular/material/core';
 import * as i7 from '@angular/common';
 import * as i8 from '@angular/cdk/scrolling';
-import { MAT_AUTOCOMPLETE_DEFAULT_OPTIONS } from '@angular/material/autocomplete';
-import { MAT_AUTOCOMPLETE_DEFAULT_OPTIONS_FACTORY } from '@angular/material/autocomplete';
-import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
-import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY } from '@angular/material/autocomplete';
-import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY_PROVIDER } from '@angular/material/autocomplete';
-import { MatAutocompleteActivatedEvent } from '@angular/material/autocomplete';
+import { MAT_AUTOCOMPLETE_DEFAULT_OPTIONS as MAT_LEGACY_AUTOCOMPLETE_DEFAULT_OPTIONS } from '@angular/material/autocomplete';
+import { MAT_AUTOCOMPLETE_DEFAULT_OPTIONS_FACTORY as MAT_LEGACY_AUTOCOMPLETE_DEFAULT_OPTIONS_FACTORY } from '@angular/material/autocomplete';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY as MAT_LEGACY_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY as MAT_LEGACY_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY } from '@angular/material/autocomplete';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY_PROVIDER as MAT_LEGACY_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY_PROVIDER } from '@angular/material/autocomplete';
 import { _MatAutocompleteBase } from '@angular/material/autocomplete';
-import { MatAutocompleteDefaultOptions } from '@angular/material/autocomplete';
 import { _MatAutocompleteOriginBase } from '@angular/material/autocomplete';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { _MatAutocompleteTriggerBase } from '@angular/material/autocomplete';
+import { MatAutocompleteActivatedEvent as MatLegacyAutocompleteActivatedEvent } from '@angular/material/autocomplete';
+import { MatAutocompleteDefaultOptions as MatLegacyAutocompleteDefaultOptions } from '@angular/material/autocomplete';
+import { MatAutocompleteSelectedEvent as MatLegacyAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatLegacyOptgroup } from '@angular/material/legacy-core';
 import { MatLegacyOption } from '@angular/material/legacy-core';
 import { QueryList } from '@angular/core';
 
-export { getMatAutocompleteMissingPanelError }
+export { getMatLegacyAutocompleteMissingPanelError }
 
-export { MAT_AUTOCOMPLETE_DEFAULT_OPTIONS }
+export { MAT_LEGACY_AUTOCOMPLETE_DEFAULT_OPTIONS }
 
-export { MAT_AUTOCOMPLETE_DEFAULT_OPTIONS_FACTORY }
+export { MAT_LEGACY_AUTOCOMPLETE_DEFAULT_OPTIONS_FACTORY }
 
-export { MAT_AUTOCOMPLETE_SCROLL_STRATEGY }
+export { MAT_LEGACY_AUTOCOMPLETE_SCROLL_STRATEGY }
 
-export { MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY }
+export { MAT_LEGACY_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY }
 
-export { MAT_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY_PROVIDER }
+export { MAT_LEGACY_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY_PROVIDER }
 
 // @public
-export const MAT_AUTOCOMPLETE_VALUE_ACCESSOR: any;
-
-export { MatAutocompleteActivatedEvent }
-
-export { MatAutocompleteDefaultOptions }
-
-export { MatAutocompleteSelectedEvent }
+export const MAT_LEGACY_AUTOCOMPLETE_VALUE_ACCESSOR: any;
 
 // @public (undocumented)
 export class MatLegacyAutocomplete extends _MatAutocompleteBase {
@@ -60,6 +54,10 @@ export class MatLegacyAutocomplete extends _MatAutocompleteBase {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyAutocomplete, never>;
 }
+
+export { MatLegacyAutocompleteActivatedEvent }
+
+export { MatLegacyAutocompleteDefaultOptions }
 
 // @public (undocumented)
 export class MatLegacyAutocompleteModule {
@@ -78,6 +76,8 @@ export class MatLegacyAutocompleteOrigin extends _MatAutocompleteOriginBase {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyAutocompleteOrigin, never>;
 }
+
+export { MatLegacyAutocompleteSelectedEvent }
 
 // @public (undocumented)
 export class MatLegacyAutocompleteTrigger extends _MatAutocompleteTriggerBase {

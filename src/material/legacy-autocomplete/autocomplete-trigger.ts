@@ -17,7 +17,7 @@ import {
  * Provider that allows the autocomplete to register as a ControlValueAccessor.
  * @docs-private
  */
-export const MAT_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
+export const MAT_LEGACY_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MatLegacyAutocompleteTrigger),
   multi: true,
@@ -43,7 +43,7 @@ export const MAT_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
     '(click)': '_handleClick()',
   },
   exportAs: 'matAutocompleteTrigger',
-  providers: [MAT_AUTOCOMPLETE_VALUE_ACCESSOR],
+  providers: [MAT_LEGACY_AUTOCOMPLETE_VALUE_ACCESSOR],
 })
 export class MatLegacyAutocompleteTrigger extends _MatAutocompleteTriggerBase {
   protected _aboveClass = 'mat-autocomplete-panel-above';

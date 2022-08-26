@@ -1,7 +1,7 @@
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {MatAutocompleteSelectedEvent} from '@angular/material/legacy-autocomplete';
+import {MatLegacyAutocompleteSelectedEvent} from '@angular/material/legacy-autocomplete';
 import {MatLegacyChipInputEvent} from '@angular/material/legacy-chips';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
@@ -52,7 +52,7 @@ export class ChipsAutocompleteExample {
     }
   }
 
-  selected(event: MatAutocompleteSelectedEvent): void {
+  selected(event: MatLegacyAutocompleteSelectedEvent): void {
     this.fruits.push(event.option.viewValue);
     this.fruitInput.nativeElement.value = '';
     this.fruitCtrl.setValue(null);

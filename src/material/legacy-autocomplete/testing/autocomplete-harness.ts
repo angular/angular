@@ -14,7 +14,7 @@ import {
   OptionHarnessFilters,
 } from '@angular/material/legacy-core/testing';
 import {_MatAutocompleteHarnessBase} from '@angular/material/autocomplete/testing';
-import {AutocompleteHarnessFilters} from './autocomplete-harness-filters';
+import {LegacyAutocompleteHarnessFilters} from './autocomplete-harness-filters';
 
 /** Harness for interacting with a standard mat-autocomplete in tests. */
 export class MatLegacyAutocompleteHarness extends _MatAutocompleteHarnessBase<
@@ -39,7 +39,7 @@ export class MatLegacyAutocompleteHarness extends _MatAutocompleteHarnessBase<
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(
-    options: AutocompleteHarnessFilters = {},
+    options: LegacyAutocompleteHarnessFilters = {},
   ): HarnessPredicate<MatLegacyAutocompleteHarness> {
     return new HarnessPredicate(MatLegacyAutocompleteHarness, options).addOption(
       'value',

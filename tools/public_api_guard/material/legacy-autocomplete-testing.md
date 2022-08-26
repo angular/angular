@@ -13,7 +13,7 @@ import { OptgroupHarnessFilters } from '@angular/material/legacy-core/testing';
 import { OptionHarnessFilters } from '@angular/material/legacy-core/testing';
 
 // @public
-export interface AutocompleteHarnessFilters extends BaseHarnessFilters {
+export interface LegacyAutocompleteHarnessFilters extends BaseHarnessFilters {
     value?: string | RegExp;
 }
 
@@ -26,7 +26,7 @@ export class MatLegacyAutocompleteHarness extends _MatAutocompleteHarnessBase<ty
     protected _optionGroupClass: typeof MatLegacyOptgroupHarness;
     // (undocumented)
     protected _prefix: string;
-    static with(options?: AutocompleteHarnessFilters): HarnessPredicate<MatLegacyAutocompleteHarness>;
+    static with(options?: LegacyAutocompleteHarnessFilters): HarnessPredicate<MatLegacyAutocompleteHarness>;
 }
 
 // (No @packageDocumentation comment for this package)
