@@ -13,3 +13,4 @@ export {CompoundMetadataRegistry, LocalMetadataRegistry, InjectableClassRegistry
 export {ResourceRegistry, Resource, ComponentResources, isExternalResource, ExternalResource} from './src/resource_registry';
 export {extractDirectiveTypeCheckMeta, CompoundMetadataReader} from './src/util';
 export {BindingPropertyName, ClassPropertyMapping, ClassPropertyName, InputOrOutput} from './src/property_mapping';
+export {HostDirectivesResolver} from './src/host_directives_resolver';

@@ -1128,4 +1128,198 @@ describe('type check blocks', () => {
        expect(renderedTcb).toContain(`_t1.inputA = (((this).foo));`);
        expect(renderedTcb).toContain(`_t1.inputB = (((this).bar));`);
      });
+
+  describe('host directives', () => {
+    it('should generate bindings to host directive inputs/outputs', () => {
+      const TEMPLATE = `<div dir-a [hostInput]="1" (hostOutput)="handle($event)"></div>`;
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'DirA',
+        selector: '[dir-a]',
+        hostDirectives: [{
+          directive: {
+            type: 'directive',
+            name: 'HostDir',
+            selector: '',
+            inputs: {hostInput: 'hostInput'},
+            outputs: {hostOutput: 'hostOutput'},
+            isStandalone: true,
+          },
+          inputs: ['hostInput'],
+          outputs: ['hostOutput']
+        }]
+      }];
+      const block = tcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t1: i0.HostDir = null!');
+      expect(block).toContain('_t1.hostInput = (1)');
+      expect(block).toContain('_t1["hostOutput"].subscribe');
+    });
+
+    it('should generate bindings to aliased host directive inputs/outputs', () => {
+      const TEMPLATE = `<div dir-a [inputAlias]="1" (outputAlias)="handle($event)"></div>`;
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'DirA',
+        selector: '[dir-a]',
+        hostDirectives: [{
+          directive: {
+            type: 'directive',
+            name: 'HostDir',
+            selector: '',
+            inputs: {hostInput: 'hostInput'},
+            outputs: {hostOutput: 'hostOutput'},
+            isStandalone: true,
+          },
+          inputs: ['hostInput: inputAlias'],
+          outputs: ['hostOutput: outputAlias']
+        }]
+      }];
+      const block = tcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t1: i0.HostDir = null!');
+      expect(block).toContain('_t1.hostInput = (1)');
+      expect(block).toContain('_t1["hostOutput"].subscribe');
+    });
+
+    it('should generate bindings to an input from a multi-level host directive', () => {
+      const TEMPLATE = `<div dir-a [multiLevelHostInput]="1"></div>`;
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'DirA',
+        selector: '[dir-a]',
+        hostDirectives: [{
+          directive: {
+            type: 'directive',
+            name: 'HostDir',
+            selector: '',
+            isStandalone: true,
+            hostDirectives: [{
+              directive: {
+                type: 'directive',
+                name: 'MultiLevelHostDir',
+                selector: '',
+                isStandalone: true,
+                inputs: {'multiLevelHostInput': 'multiLevelHostInput'}
+              },
+              inputs: ['multiLevelHostInput']
+            }]
+          },
+        }]
+      }];
+      const block = tcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t1: i0.MultiLevelHostDir = null!;');
+      expect(block).toContain('_t1.multiLevelHostInput = (1)');
+    });
+
+    it('should generate references to host directives', () => {
+      const TEMPLATE = `<div dir-a #a="hostA" #b="hostB">{{a.propA}} {{b.propB}}</div>`;
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'DirA',
+        selector: '[dir-a]',
+        hostDirectives: [
+          {
+            directive: {
+              type: 'directive',
+              name: 'HostA',
+              selector: '',
+              isStandalone: true,
+              exportAs: ['hostA'],
+            },
+          },
+          {
+            directive: {
+              type: 'directive',
+              name: 'HostB',
+              selector: '',
+              isStandalone: true,
+              exportAs: ['hostB'],
+            },
+          }
+        ]
+      }];
+      const block = tcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t2: i0.HostA = null!;');
+      expect(block).toContain('var _t4: i0.HostB = null!;');
+      expect(block).toContain('(((_t1).propA)) + (((_t3).propB))');
+    });
+
+    it('should generate bindings to the same input both from the host and host input', () => {
+      const TEMPLATE = `<div dir-a [input]="1"></div>`;
+      const DIRECTIVES: TestDeclaration[] = [{
+        type: 'directive',
+        name: 'DirA',
+        selector: '[dir-a]',
+        inputs: {input: 'input'},
+        hostDirectives: [{
+          directive: {
+            type: 'directive',
+            name: 'HostDir',
+            selector: '',
+            inputs: {input: 'input'},
+            isStandalone: true,
+          },
+          inputs: ['input']
+        }]
+      }];
+      const block = tcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t1: i0.HostDir = null!');
+      expect(block).toContain('var _t2: i0.DirA = null!;');
+      expect(block).toContain('_t1.input = (1)');
+      expect(block).toContain('_t2.input = (1)');
+    });
+
+    it('should not generate bindings to host directive inputs/outputs that have not been exposed',
+       () => {
+         const TEMPLATE = `<div dir-a [hostInput]="1" (hostOutput)="handle($event)"></div>`;
+         const DIRECTIVES: TestDeclaration[] = [{
+           type: 'directive',
+           name: 'DirA',
+           selector: '[dir-a]',
+           hostDirectives: [{
+             directive: {
+               type: 'directive',
+               name: 'HostDir',
+               selector: '',
+               inputs: {hostInput: 'hostInput'},
+               outputs: {hostOutput: 'hostOutput'},
+               isStandalone: true,
+             },
+             // Intentionally left blank.
+             inputs: [],
+             outputs: []
+           }]
+         }];
+         const block = tcb(TEMPLATE, DIRECTIVES);
+         expect(block).not.toContain('var _t1: i0.HostDir = null!');
+         expect(block).not.toContain('_t1.hostInput = (1)');
+         expect(block).not.toContain('_t1["hostOutput"].subscribe');
+         expect(block).toContain('_t1.addEventListener("hostOutput"');
+       });
+
+    it('should generate bindings to aliased host directive inputs/outputs on a host with its own aliases',
+       () => {
+         const TEMPLATE = `<div dir-a [inputAlias]="1" (outputAlias)="handle($event)"></div>`;
+         const DIRECTIVES: TestDeclaration[] = [{
+           type: 'directive',
+           name: 'DirA',
+           selector: '[dir-a]',
+           hostDirectives: [{
+             directive: {
+               type: 'directive',
+               name: 'HostDir',
+               selector: '',
+               inputs: {hostInput: 'hostInputAlias'},
+               outputs: {hostOutput: 'hostOutputAlias'},
+               isStandalone: true,
+             },
+             inputs: ['hostInputAlias: inputAlias'],
+             outputs: ['hostOutputAlias: outputAlias']
+           }]
+         }];
+         const block = tcb(TEMPLATE, DIRECTIVES);
+         expect(block).toContain('var _t1: i0.HostDir = null!');
+         expect(block).toContain('_t1.hostInput = (1)');
+         expect(block).toContain('_t1["hostOutput"].subscribe');
+       });
+  });
 });

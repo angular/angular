@@ -21,7 +21,7 @@ import {R3JitReflector} from './render3/r3_jit';
 import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata, R3SelectorScopeMode} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 import {createMayBeForwardRefExpression, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, wrapReference} from './render3/util';
-import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
+import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
@@ -357,6 +357,7 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
     providers: facade.providers != null ? new WrappedNodeExpr(facade.providers) : null,
     viewQueries: facade.viewQueries.map(convertToR3QueryMetadata),
     fullInheritance: false,
+    hostDirectives: convertHostDirectivesToMetadata(facade),
   };
 }
 
@@ -382,6 +383,7 @@ function convertDeclareDirectiveFacadeToMetadata(
     typeArgumentCount: 0,
     fullInheritance: false,
     isStandalone: declaration.isStandalone ?? false,
+    hostDirectives: convertHostDirectivesToMetadata(declaration),
   };
 }
 
@@ -396,6 +398,29 @@ function convertHostDeclarationToMetadata(host: R3DeclareDirectiveFacade['host']
       styleAttr: host.styleAttribute,
     },
   };
+}
+
+function convertHostDirectivesToMetadata(
+    metadata: R3DeclareDirectiveFacade|R3DirectiveMetadataFacade): R3HostDirectiveMetadata[]|null {
+  if (metadata.hostDirectives?.length) {
+    return metadata.hostDirectives.map(hostDirective => {
+      return typeof hostDirective === 'function' ?
+          {
+            directive: wrapReference(hostDirective),
+            inputs: null,
+            outputs: null,
+            isForwardReference: false
+          } :
+          {
+            directive: wrapReference(hostDirective.directive),
+            isForwardReference: false,
+            inputs: hostDirective.inputs ? parseInputOutputs(hostDirective.inputs) : null,
+            outputs: hostDirective.outputs ? parseInputOutputs(hostDirective.outputs) : null,
+          };
+    });
+  }
+
+  return null;
 }
 
 function convertOpaqueValuesToExpressions(obj: {[key: string]: OpaqueValue}):

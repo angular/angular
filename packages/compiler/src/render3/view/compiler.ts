@@ -116,6 +116,10 @@ function addFeatures(
   if (meta.hasOwnProperty('template') && meta.isStandalone) {
     features.push(o.importExpr(R3.StandaloneFeature));
   }
+  if (meta.hostDirectives?.length) {
+    features.push(o.importExpr(R3.HostDirectivesFeature).callFn([createHostDirectivesFeatureArg(
+        meta.hostDirectives)]));
+  }
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
   }
@@ -267,6 +271,7 @@ export function createComponentType(meta: R3ComponentMetadata<R3TemplateDependen
   const typeParams = createBaseDirectiveTypeParams(meta);
   typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
   typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
+  typeParams.push(createHostDirectivesType(meta));
   return o.expressionType(o.importExpr(R3.ComponentDeclaration, typeParams));
 }
 
@@ -390,7 +395,7 @@ function stringAsType(str: string): o.Type {
   return o.expressionType(o.literal(str));
 }
 
-function stringMapAsType(map: {[key: string]: string|string[]}): o.Type {
+function stringMapAsLiteralExpression(map: {[key: string]: string|string[]}): o.LiteralMapExpr {
   const mapValues = Object.keys(map).map(key => {
     const value = Array.isArray(map[key]) ? map[key][0] : map[key];
     return {
@@ -399,7 +404,8 @@ function stringMapAsType(map: {[key: string]: string|string[]}): o.Type {
       quoted: true,
     };
   });
-  return o.expressionType(o.literalMap(mapValues));
+
+  return o.literalMap(mapValues);
 }
 
 function stringArrayAsType(arr: ReadonlyArray<string|null>): o.Type {
@@ -416,8 +422,8 @@ export function createBaseDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type
     typeWithParameters(meta.type.type, meta.typeArgumentCount),
     selectorForType !== null ? stringAsType(selectorForType) : o.NONE_TYPE,
     meta.exportAs !== null ? stringArrayAsType(meta.exportAs) : o.NONE_TYPE,
-    stringMapAsType(meta.inputs),
-    stringMapAsType(meta.outputs),
+    o.expressionType(stringMapAsLiteralExpression(meta.inputs)),
+    o.expressionType(stringMapAsLiteralExpression(meta.outputs)),
     stringArrayAsType(meta.queries.map(q => q.propertyName)),
   ];
 }
@@ -432,6 +438,7 @@ export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
   // so that future fields align.
   typeParams.push(o.NONE_TYPE);
   typeParams.push(o.expressionType(o.literal(meta.isStandalone)));
+  typeParams.push(createHostDirectivesType(meta));
   return o.expressionType(o.importExpr(R3.DirectiveDeclaration, typeParams));
 }
 
@@ -811,4 +818,79 @@ function compileStyles(styles: string[], selector: string, hostSelector: string)
   return styles.map(style => {
     return shadowCss!.shimCssText(style, selector, hostSelector);
   });
+}
+
+function createHostDirectivesType(meta: R3DirectiveMetadata): o.Type {
+  if (!meta.hostDirectives?.length) {
+    return o.NONE_TYPE;
+  }
+
+  return o.expressionType(o.literalArr(meta.hostDirectives.map(hostMeta => o.literalMap([
+    {key: 'directive', value: o.typeofExpr(hostMeta.directive.type), quoted: false},
+    {key: 'inputs', value: stringMapAsLiteralExpression(hostMeta.inputs || {}), quoted: false},
+    {key: 'outputs', value: stringMapAsLiteralExpression(hostMeta.outputs || {}), quoted: false},
+  ]))));
+}
+
+function createHostDirectivesFeatureArg(
+    hostDirectives: NonNullable<R3DirectiveMetadata['hostDirectives']>): o.Expression {
+  const expressions: o.Expression[] = [];
+  let hasForwardRef = false;
+
+  for (const current of hostDirectives) {
+    // Use a shorthand if there are no inputs or outputs.
+    if (!current.inputs && !current.outputs) {
+      expressions.push(current.directive.type);
+    } else {
+      const keys = [{key: 'directive', value: current.directive.type, quoted: false}];
+
+      if (current.inputs) {
+        const inputsLiteral = createHostDirectivesMappingArray(current.inputs);
+        if (inputsLiteral) {
+          keys.push({key: 'inputs', value: inputsLiteral, quoted: false});
+        }
+      }
+
+      if (current.outputs) {
+        const outputsLiteral = createHostDirectivesMappingArray(current.outputs);
+        if (outputsLiteral) {
+          keys.push({key: 'outputs', value: outputsLiteral, quoted: false});
+        }
+      }
+
+      expressions.push(o.literalMap(keys));
+    }
+
+    if (current.isForwardReference) {
+      hasForwardRef = true;
+    }
+  }
+
+  // If there's a forward reference, we generate a `function() { return [HostDir] }`,
+  // otherwise we can save some bytes by using a plain array, e.g. `[HostDir]`.
+  return hasForwardRef ?
+      new o.FunctionExpr([], [new o.ReturnStatement(o.literalArr(expressions))]) :
+      o.literalArr(expressions);
+}
+
+/**
+ * Converts an input/output mapping object literal into an array where the even keys are the
+ * public name of the binding and the odd ones are the name it was aliased to. E.g.
+ * `{inputOne: 'aliasOne', inputTwo: 'aliasTwo'}` will become
+ * `['inputOne', 'aliasOne', 'inputTwo', 'aliasTwo']`.
+ *
+ * This conversion is necessary, because hosts bind to the public name of the host directive and
+ * keeping the mapping in an object literal will break for apps using property renaming.
+ */
+export function createHostDirectivesMappingArray(mapping: Record<string, string>):
+    o.LiteralArrayExpr|null {
+  const elements: o.LiteralExpr[] = [];
+
+  for (const publicName in mapping) {
+    if (mapping.hasOwnProperty(publicName)) {
+      elements.push(o.literal(publicName), o.literal(mapping[publicName]));
+    }
+  }
+
+  return elements.length > 0 ? o.literalArr(elements) : null;
 }

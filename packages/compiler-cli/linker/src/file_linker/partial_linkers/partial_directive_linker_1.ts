@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileDirectiveFromMetadata, ConstantPool, makeBindingParser, outputAst as o, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostMetadata, R3PartialDeclaration, R3QueryMetadata} from '@angular/compiler';
+import {compileDirectiveFromMetadata, ConstantPool, ForwardRefHandling, makeBindingParser, outputAst as o, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareHostDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3PartialDeclaration, R3QueryMetadata} from '@angular/compiler';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {Range} from '../../ast/ast_host';
@@ -71,6 +71,9 @@ export function toR3DirectiveMeta<TExpression>(
     name: typeName,
     usesInheritance: metaObj.has('usesInheritance') ? metaObj.getBoolean('usesInheritance') : false,
     isStandalone: metaObj.has('isStandalone') ? metaObj.getBoolean('isStandalone') : false,
+    hostDirectives: metaObj.has('hostDirectives') ?
+        toHostDirectivesMetadata(metaObj.getValue('hostDirectives')) :
+        null,
   };
 }
 
@@ -152,6 +155,41 @@ function toQueryMetadata<TExpression>(obj: AstObject<R3DeclareQueryMetadata, TEx
     read: obj.has('read') ? obj.getOpaque('read') : null,
     static: obj.has('static') ? obj.getBoolean('static') : false,
   };
+}
+
+/**
+ * Derives the host directives structure from the AST object.
+ */
+function toHostDirectivesMetadata<TExpression>(
+    hostDirectives: AstValue<R3DeclareHostDirectiveMetadata[]|undefined, TExpression>):
+    R3HostDirectiveMetadata[] {
+  return hostDirectives.getArray().map(hostDirective => {
+    const hostObject = hostDirective.getObject();
+    const type = extractForwardRef(hostObject.getValue('directive'));
+    const meta: R3HostDirectiveMetadata = {
+      directive: wrapReference(type.expression),
+      isForwardReference: type.forwardRef !== ForwardRefHandling.None,
+      inputs: hostObject.has('inputs') ?
+          getHostDirectiveBindingMapping(hostObject.getArray('inputs')) :
+          null,
+      outputs: hostObject.has('outputs') ?
+          getHostDirectiveBindingMapping(hostObject.getArray('outputs')) :
+          null,
+    };
+
+    return meta;
+  });
+}
+
+function getHostDirectiveBindingMapping<TExpression>(array: AstValue<string, TExpression>[]) {
+  let result: {[publicName: string]: string}|null = null;
+
+  for (let i = 1; i < array.length; i += 2) {
+    result = result || {};
+    result[array[i - 1].getString()] = array[i].getString();
+  }
+
+  return result;
 }
 
 export function createSourceSpan(range: Range, code: string, sourceUrl: string): ParseSourceSpan {

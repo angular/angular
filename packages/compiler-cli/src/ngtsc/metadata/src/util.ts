@@ -27,22 +27,28 @@ export function extractReferencesFromType(
     if (!ts.isTypeQueryNode(element)) {
       throw new Error(`Expected TypeQueryNode: ${nodeDebugInfo(element)}`);
     }
-    const type = element.exprName;
-    const {node, from} = reflectTypeEntityToDeclaration(type, checker);
-    if (!isNamedClassDeclaration(node)) {
-      throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
-    }
-    if (from !== null && !from.startsWith('.')) {
-      // The symbol was imported using an absolute module specifier so return a reference that
-      // uses that absolute module specifier as its best guess owning module.
-      return new Reference(
-          node, {specifier: from, resolutionContext: def.getSourceFile().fileName});
-    } else {
-      // For local symbols or symbols that were imported using a relative module import it is
-      // assumed that the symbol is exported from the provided best guess owning module.
-      return new Reference(node, bestGuessOwningModule);
-    }
+
+    return extraReferenceFromTypeQuery(checker, element, def, bestGuessOwningModule);
   });
+}
+
+export function extraReferenceFromTypeQuery(
+    checker: ts.TypeChecker, typeNode: ts.TypeQueryNode, origin: ts.TypeNode,
+    bestGuessOwningModule: OwningModule|null) {
+  const type = typeNode.exprName;
+  const {node, from} = reflectTypeEntityToDeclaration(type, checker);
+  if (!isNamedClassDeclaration(node)) {
+    throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
+  }
+  if (from !== null && !from.startsWith('.')) {
+    // The symbol was imported using an absolute module specifier so return a reference that
+    // uses that absolute module specifier as its best guess owning module.
+    return new Reference(
+        node, {specifier: from, resolutionContext: origin.getSourceFile().fileName});
+  }
+  // For local symbols or symbols that were imported using a relative module import it is
+  // assumed that the symbol is exported from the provided best guess owning module.
+  return new Reference(node, bestGuessOwningModule);
 }
 
 export function readBooleanType(type: ts.TypeNode): boolean|null {
@@ -67,17 +73,18 @@ export function readStringType(type: ts.TypeNode): string|null {
   return type.literal.text;
 }
 
-export function readStringMapType(type: ts.TypeNode): {[key: string]: string} {
+export function readMapType<T>(
+    type: ts.TypeNode, valueTransform: (type: ts.TypeNode) => T | null): {[key: string]: T} {
   if (!ts.isTypeLiteralNode(type)) {
     return {};
   }
-  const obj: {[key: string]: string} = {};
+  const obj: {[key: string]: T} = {};
   type.members.forEach(member => {
     if (!ts.isPropertySignature(member) || member.type === undefined || member.name === undefined ||
-        !ts.isStringLiteral(member.name)) {
+        (!ts.isStringLiteral(member.name) && !ts.isIdentifier(member.name))) {
       return;
     }
-    const value = readStringType(member.type);
+    const value = valueTransform(member.type);
     if (value === null) {
       return null;
     }

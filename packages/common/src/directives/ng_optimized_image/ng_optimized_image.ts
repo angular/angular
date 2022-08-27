@@ -32,9 +32,9 @@ const VALID_WIDTH_DESCRIPTOR_SRCSET = /^((\s*\d+w\s*(,|$)){1,})$/;
 
 /**
  * RegExpr to determine whether a src in a srcset is using density descriptors.
- * Should match something like: "1x, 2x". Also supports decimals like "1.5x".
+ * Should match something like: "1x, 2x, 50x". Also supports decimals like "1.5x, 1.50x".
  */
-const VALID_DENSITY_DESCRIPTOR_SRCSET = /^((\s*\d(\.\d+)?x\s*(,|$)){1,})$/;
+const VALID_DENSITY_DESCRIPTOR_SRCSET = /^((\s*\d+(\.\d+)?x\s*(,|$)){1,})$/;
 
 /**
  * Srcset values with a density descriptor higher than this value will actively
@@ -169,6 +169,9 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private imgElement: HTMLImageElement = inject(ElementRef).nativeElement;
   private injector = inject(Injector);
 
+  // a LCP image observer - should be injected only in the dev mode
+  private lcpObserver = ngDevMode ? this.injector.get(LCPImageObserver) : null;
+
   /**
    * Calculate the rewritten `src` once and store it.
    * This is needed to avoid repetitive calculations and make sure the directive cleanup in the
@@ -277,10 +280,12 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         // Monitor whether an image is an LCP element only in case
         // the `priority` attribute is missing. Otherwise, an image
         // has the necessary settings and no extra checks are required.
-        invokeLCPImageObserverCallback(
-            this.injector,
-            (observer: LCPImageObserver) =>
-                observer.registerImage(this.getRewrittenSrc(), this.rawSrc));
+        if (this.lcpObserver !== null) {
+          const ngZone = this.injector.get(NgZone);
+          ngZone.runOutsideAngular(() => {
+            this.lcpObserver!.registerImage(this.getRewrittenSrc(), this.rawSrc);
+          });
+        }
       }
     }
     this.setHostAttributes();
@@ -344,10 +349,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy() {
     if (ngDevMode) {
-      if (!this.priority && this._renderedSrc !== null) {
-        invokeLCPImageObserverCallback(
-            this.injector,
-            (observer: LCPImageObserver) => observer.unregisterImage(this._renderedSrc!));
+      if (!this.priority && this._renderedSrc !== null && this.lcpObserver !== null) {
+        this.lcpObserver.unregisterImage(this._renderedSrc);
       }
     }
   }
@@ -373,24 +376,6 @@ function inputToBoolean(value: unknown): boolean {
   return value != null && `${value}` !== 'false';
 }
 
-/**
- * Invokes a function, passing an instance of the `LCPImageObserver` as an argument.
- *
- * Notes:
- * - the `LCPImageObserver` is a tree-shakable provider, provided in 'root',
- *   thus it's a singleton within this application
- * - the process of `LCPImageObserver` creation and an actual operation are invoked outside of the
- *   NgZone to make sure none of the calls inside the `LCPImageObserver` class trigger unnecessary
- *   change detection
- */
-function invokeLCPImageObserverCallback(
-    injector: Injector, operation: (observer: LCPImageObserver) => void): void {
-  const ngZone = injector.get(NgZone);
-  return ngZone.runOutsideAngular(() => {
-    const observer = injector.get(LCPImageObserver);
-    operation(observer);
-  });
-}
 
 /***** Assert functions *****/
 
@@ -506,7 +491,7 @@ function assertUnderDensityCap(dir: NgOptimizedImage, value: string) {
             `${RECOMMENDED_SRCSET_DENSITY_CAP}x but supports image densities up to ` +
             `${ABSOLUTE_SRCSET_DENSITY_CAP}x. The human eye cannot distinguish between image densities ` +
             `greater than ${RECOMMENDED_SRCSET_DENSITY_CAP}x - which makes them unnecessary for ` +
-            `most use cases. Images that will be pinch-zoomed are typically the primary use case for` +
+            `most use cases. Images that will be pinch-zoomed are typically the primary use case for ` +
             `${ABSOLUTE_SRCSET_DENSITY_CAP}x images. Please remove the high density descriptor and try again.`);
   }
 }

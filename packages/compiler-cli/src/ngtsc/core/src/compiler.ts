@@ -17,7 +17,7 @@ import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracke
 import {IncrementalBuildStrategy, IncrementalCompilation, IncrementalState} from '../../incremental';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
-import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader, PipeMeta, ResourceRegistry} from '../../metadata';
+import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, HostDirectivesResolver, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader, PipeMeta, ResourceRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ActivePerfRecorder, DelegatingPerfRecorder, PerfCheckpoint, PerfEvent, PerfPhase} from '../../perf';
 import {FileUpdate, ProgramDriver, UpdateMode} from '../../program_driver';
@@ -978,8 +978,10 @@ export class NgCompiler {
     const semanticDepGraphUpdater = this.incrementalCompilation.semanticDepGraphUpdater;
     const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, ngModuleScopeRegistry]);
     const injectableRegistry = new InjectableClassRegistry(reflector);
+    const hostDirectivesResolver = new HostDirectivesResolver(metaReader);
 
-    const typeCheckScopeRegistry = new TypeCheckScopeRegistry(scopeReader, metaReader);
+    const typeCheckScopeRegistry =
+        new TypeCheckScopeRegistry(scopeReader, metaReader, hostDirectivesResolver);
 
 
     // If a flat module entrypoint was specified, then track references via a `ReferenceGraph` in
@@ -1025,14 +1027,14 @@ export class NgCompiler {
           this.options.i18nNormalizeLineEndingsInICUs === true, this.moduleResolver,
           this.cycleAnalyzer, cycleHandlingStrategy, refEmitter,
           this.incrementalCompilation.depGraph, injectableRegistry, semanticDepGraphUpdater,
-          this.closureCompilerEnabled, this.delegatingPerfRecorder),
+          this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
       // clang-format off
         new DirectiveDecoratorHandler(
             reflector, evaluator, metaRegistry, ngModuleScopeRegistry, metaReader,
-            injectableRegistry, isCore, semanticDepGraphUpdater,
+            injectableRegistry, refEmitter, isCore, semanticDepGraphUpdater,
           this.closureCompilerEnabled, /** compileUndecoratedClassesWithAngularFeatures */ false,
           this.delegatingPerfRecorder,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,

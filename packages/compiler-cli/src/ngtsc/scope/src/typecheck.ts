@@ -10,7 +10,7 @@ import {CssSelector, SchemaMetadata, SelectorMatcher} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {DirectiveMeta, flattenInheritedDirectiveMetadata, MetadataReader, MetaKind} from '../../metadata';
+import {DirectiveMeta, flattenInheritedDirectiveMetadata, HostDirectivesResolver, MetadataReader, MetaKind} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
 import {ComponentScopeKind, ComponentScopeReader} from './api';
@@ -23,7 +23,7 @@ export interface TypeCheckScope {
    * A `SelectorMatcher` instance that contains the flattened directive metadata of all directives
    * that are in the compilation scope of the declaring NgModule.
    */
-  matcher: SelectorMatcher<DirectiveMeta>;
+  matcher: SelectorMatcher<DirectiveMeta[]>;
 
   /**
    * All of the directives available in the compilation scope of the declaring NgModule.
@@ -62,7 +62,9 @@ export class TypeCheckScopeRegistry {
    */
   private scopeCache = new Map<ClassDeclaration, TypeCheckScope>();
 
-  constructor(private scopeReader: ComponentScopeReader, private metaReader: MetadataReader) {}
+  constructor(
+      private scopeReader: ComponentScopeReader, private metaReader: MetadataReader,
+      private hostDirectivesResolver: HostDirectivesResolver) {}
 
   /**
    * Computes the type-check scope information for the component declaration. If the NgModule
@@ -70,7 +72,7 @@ export class TypeCheckScopeRegistry {
    * an empty type-check scope is returned.
    */
   getTypeCheckScope(node: ClassDeclaration): TypeCheckScope {
-    const matcher = new SelectorMatcher<DirectiveMeta>();
+    const matcher = new SelectorMatcher<DirectiveMeta[]>();
     const directives: DirectiveMeta[] = [];
     const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
 
@@ -97,7 +99,9 @@ export class TypeCheckScopeRegistry {
     for (const meta of dependencies) {
       if (meta.kind === MetaKind.Directive && meta.selector !== null) {
         const extMeta = this.getTypeCheckDirectiveMetadata(meta.ref);
-        matcher.addSelectables(CssSelector.parse(meta.selector), extMeta);
+        matcher.addSelectables(
+            CssSelector.parse(meta.selector),
+            [...this.hostDirectivesResolver.resolve(extMeta), extMeta]);
         directives.push(extMeta);
       } else if (meta.kind === MetaKind.Pipe) {
         if (!ts.isClassDeclaration(meta.ref.node)) {

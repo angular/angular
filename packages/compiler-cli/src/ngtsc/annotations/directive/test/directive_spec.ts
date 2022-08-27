@@ -98,7 +98,7 @@ runInEachFileSystem(() => {
       ]);
 
       const analysis = analyzeDirective(program, 'TestDir');
-      const matcher = new SelectorMatcher<T2DirectiveMeta>();
+      const matcher = new SelectorMatcher<T2DirectiveMeta[]>();
       const dirMeta: T2DirectiveMeta = {
         exportAs: null,
         inputs: analysis.inputs,
@@ -109,7 +109,7 @@ runInEachFileSystem(() => {
         isStructural: false,
         animationTriggerNames: null,
       };
-      matcher.addSelectables(CssSelector.parse('[dir]'), dirMeta);
+      matcher.addSelectables(CssSelector.parse('[dir]'), [dirMeta]);
 
       const {nodes} = parseTemplate('<div dir [propName]="expr"></div>', 'unimportant.html');
       const binder = new R3TargetBinder(matcher).bind({template: nodes});
@@ -164,12 +164,14 @@ runInEachFileSystem(() => {
     const evaluator = new PartialEvaluator(reflectionHost, checker, /*dependencyTracker*/ null);
     const metaReader = new LocalMetadataRegistry();
     const dtsReader = new DtsMetadataReader(checker, reflectionHost);
+    const refEmitter = new ReferenceEmitter([]);
     const scopeRegistry = new LocalModuleScopeRegistry(
         metaReader, new CompoundMetadataReader([metaReader, dtsReader]),
-        new MetadataDtsModuleScopeResolver(dtsReader, null), new ReferenceEmitter([]), null);
+        new MetadataDtsModuleScopeResolver(dtsReader, null), refEmitter, null);
     const injectableRegistry = new InjectableClassRegistry(reflectionHost);
     const handler = new DirectiveDecoratorHandler(
         reflectionHost, evaluator, scopeRegistry, scopeRegistry, metaReader, injectableRegistry,
+        refEmitter,
         /*isCore*/ false,
         /*semanticDepGraphUpdater*/ null,
         /*annotateForClosureCompiler*/ false,

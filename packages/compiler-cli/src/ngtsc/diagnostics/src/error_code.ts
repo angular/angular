@@ -71,6 +71,21 @@ export enum ErrorCode {
    */
   COMPONENT_UNKNOWN_IMPORT = 2012,
 
+  /**
+   * Raised when the compiler wasn't able to resolve the metadata of a host directive.
+   */
+  HOST_DIRECTIVE_INVALID = 2013,
+
+  /**
+   * Raised when a host directive isn't standalone.
+   */
+  HOST_DIRECTIVE_NOT_STANDALONE = 2014,
+
+  /**
+   * Raised when a host directive is a component.
+   */
+  HOST_DIRECTIVE_COMPONENT = 2015,
+
   SYMBOL_NOT_EXPORTED = 3001,
   /**
    * Raised when a relationship between directives and/or pipes would cause a cyclic import to be

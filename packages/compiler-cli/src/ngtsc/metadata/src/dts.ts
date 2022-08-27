@@ -8,12 +8,13 @@
 
 import ts from 'typescript';
 
-import {Reference} from '../../imports';
+import {OwningModule, Reference} from '../../imports';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
+import {nodeDebugInfo} from '../../util/src/typescript';
 
-import {DirectiveMeta, MetadataReader, MetaKind, NgModuleMeta, PipeMeta} from './api';
+import {DirectiveMeta, HostDirectiveMeta, MatchSource, MetadataReader, MetaKind, NgModuleMeta, PipeMeta} from './api';
 import {ClassPropertyMapping} from './property_mapping';
-import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readBooleanType, readStringArrayType, readStringMapType, readStringType} from './util';
+import {extractDirectiveTypeCheckMeta, extractReferencesFromType, extraReferenceFromTypeQuery, readBooleanType, readMapType, readStringArrayType, readStringType} from './util';
 
 /**
  * A `MetadataReader` that can read metadata from `.d.ts` files, which have static Ivy properties
@@ -95,12 +96,17 @@ export class DtsMetadataReader implements MetadataReader {
     const isStandalone =
         def.type.typeArguments.length > 7 && (readBooleanType(def.type.typeArguments[7]) ?? false);
 
-    const inputs =
-        ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[3]));
-    const outputs =
-        ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[4]));
+    const inputs = ClassPropertyMapping.fromMappedObject(
+        readMapType(def.type.typeArguments[3], readStringType));
+    const outputs = ClassPropertyMapping.fromMappedObject(
+        readMapType(def.type.typeArguments[4], readStringType));
+    const hostDirectives = def.type.typeArguments.length > 8 ?
+        readHostDirectivesType(this.checker, def.type.typeArguments[8], ref.bestGuessOwningModule) :
+        null;
+
     return {
       kind: MetaKind.Directive,
+      matchSource: MatchSource.Selector,
       ref,
       name: clazz.name.text,
       isComponent,
@@ -108,6 +114,7 @@ export class DtsMetadataReader implements MetadataReader {
       exportAs: readStringArrayType(def.type.typeArguments[2]),
       inputs,
       outputs,
+      hostDirectives,
       queries: readStringArrayType(def.type.typeArguments[5]),
       ...extractDirectiveTypeCheckMeta(clazz, inputs, this.reflector),
       baseClass: readBaseClass(clazz, this.checker, this.reflector),
@@ -188,4 +195,34 @@ function readBaseClass(clazz: ClassDeclaration, checker: ts.TypeChecker, reflect
     }
   }
   return null;
+}
+
+
+function readHostDirectivesType(
+    checker: ts.TypeChecker, type: ts.TypeNode,
+    bestGuessOwningModule: OwningModule|null): HostDirectiveMeta[]|null {
+  if (!ts.isTupleTypeNode(type) || type.elements.length === 0) {
+    return null;
+  }
+
+  const result: HostDirectiveMeta[] = [];
+
+  for (const hostDirectiveType of type.elements) {
+    const {directive, inputs, outputs} = readMapType(hostDirectiveType, type => type);
+
+    if (directive) {
+      if (!ts.isTypeQueryNode(directive)) {
+        throw new Error(`Expected TypeQueryNode: ${nodeDebugInfo(directive)}`);
+      }
+
+      result.push({
+        directive: extraReferenceFromTypeQuery(checker, directive, type, bestGuessOwningModule),
+        isForwardReference: false,
+        inputs: readMapType(inputs, readStringType),
+        outputs: readMapType(outputs, readStringType)
+      });
+    }
+  }
+
+  return result.length > 0 ? result : null;
 }

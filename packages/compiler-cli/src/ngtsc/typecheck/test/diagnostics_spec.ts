@@ -700,6 +700,158 @@ class TestComponent {
     expect(messages).toEqual(
         [`TestComponent.html(1, 3): Property 'invalid' does not exist on type 'TestComponent'.`]);
   });
+
+  describe('host directives', () => {
+    it('should produce a diagnostic for host directive input bindings', () => {
+      const messages = diagnose(
+          `<div dir [input]="person.name" [alias]="person.age"></div>`, `
+            class Dir {
+            }
+            class HostDir {
+              input: number;
+              otherInput: string;
+            }
+            class TestComponent {
+              person: {
+                name: string;
+                age: number;
+              };
+            }`,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            hostDirectives: [{
+              directive: {
+                type: 'directive',
+                name: 'HostDir',
+                selector: '',
+                inputs: {input: 'input', otherInput: 'otherInput'},
+                isStandalone: true,
+              },
+              inputs: ['input', 'otherInput: alias']
+            }]
+          }]);
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 11): Type 'string' is not assignable to type 'number'.`,
+        `TestComponent.html(1, 33): Type 'number' is not assignable to type 'string'.`
+      ]);
+    });
+
+    it('should produce a diagnostic for directive outputs', () => {
+      const messages = diagnose(
+          `<div
+            dir
+            (numberAlias)="handleStringEvent($event)"
+            (stringEvent)="handleNumberEvent($event)"></div>`,
+          `
+            import {EventEmitter} from '@angular/core';
+            class HostDir {
+              stringEvent = new EventEmitter<string>();
+              numberEvent = new EventEmitter<number>();
+            }
+            class Dir {
+            }
+            class TestComponent {
+              handleStringEvent(event: string): void {}
+              handleNumberEvent(event: number): void {}
+            }`,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            hostDirectives: [{
+              directive: {
+                type: 'directive',
+                name: 'HostDir',
+                selector: '',
+                isStandalone: true,
+                outputs: {stringEvent: 'stringEvent', numberEvent: 'numberEvent'},
+              },
+              outputs: ['stringEvent', 'numberEvent: numberAlias']
+            }]
+          }]);
+
+      expect(messages).toEqual([
+        `TestComponent.html(3, 46): Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        `TestComponent.html(4, 46): Argument of type 'string' is not assignable to parameter of type 'number'.`
+      ]);
+    });
+
+    it('should produce a diagnostic for host directive inputs and outputs that have not been exposed',
+       () => {
+         const messages = diagnose(
+             `<div dir [input]="person.name" (output)="handleStringEvent($event)"></div>`, `
+            class Dir {
+            }
+            class HostDir {
+              input: number;
+              output = new EventEmitter<number>();
+            }
+            class TestComponent {
+              person: {
+                name: string;
+              };
+              handleStringEvent(event: string): void {}
+            }`,
+             [{
+               type: 'directive',
+               name: 'Dir',
+               selector: '[dir]',
+               hostDirectives: [{
+                 directive: {
+                   type: 'directive',
+                   name: 'HostDir',
+                   selector: '',
+                   inputs: {input: 'input'},
+                   outputs: {output: 'output'},
+                   isStandalone: true,
+                 },
+                 // Intentionally left blank.
+                 inputs: [],
+                 outputs: []
+               }]
+             }]);
+
+         expect(messages).toEqual([
+           // These messages are expected to refer to the native
+           // typings since the inputs/outputs haven't been exposed.
+           `TestComponent.html(1, 60): Argument of type 'Event' is not assignable to parameter of type 'string'.`,
+           `TestComponent.html(1, 10): Can't bind to 'input' since it isn't a known property of 'div'.`
+         ]);
+       });
+
+    it('should infer the type of host directive references', () => {
+      const messages = diagnose(
+          `<div dir #hostDir="hostDir">{{ render(hostDir) }}</div>`, `
+            class Dir {}
+            class HostDir {
+              value: number;
+            }
+            class TestComponent {
+              render(input: string): string { return input; }
+            }`,
+          [{
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            hostDirectives: [{
+              directive: {
+                type: 'directive',
+                selector: '',
+                isStandalone: true,
+                name: 'HostDir',
+                exportAs: ['hostDir']
+              }
+            }]
+          }]);
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 39): Argument of type 'HostDir' is not assignable to parameter of type 'string'.`,
+      ]);
+    });
+  });
 });
 
 function diagnose(

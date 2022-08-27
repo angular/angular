@@ -26,7 +26,8 @@ export type ɵɵDirectiveDeclaration<
   NgContentSelectors extends never = never,
   // Optional as this was added in Angular v14. All pre-existing directives
   // are not standalone.
-  IsStandalone extends boolean = false> = unknown;
+  IsStandalone extends boolean = false,
+  HostDirectives = never> = unknown;
 
 /**
  * @publicApi
@@ -41,7 +42,8 @@ export type ɵɵComponentDeclaration<
   NgContentSelectors extends string[],
   // Optional as this was added in Angular v14. All pre-existing components
   // are not standalone.
-  IsStandalone extends boolean = false> = unknown;
+  IsStandalone extends boolean = false,
+  HostDirectives = never> = unknown;
 
 /**
  * @publicApi

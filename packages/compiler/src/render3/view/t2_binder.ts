@@ -21,7 +21,7 @@ import {getAttrsForDirectiveMatching} from './util';
  * target.
  */
 export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetBinder<DirectiveT> {
-  constructor(private directiveMatcher: SelectorMatcher<DirectiveT>) {}
+  constructor(private directiveMatcher: SelectorMatcher<DirectiveT[]>) {}
 
   /**
    * Perform a binding operation on the given `Target` and return a `BoundTarget` which contains
@@ -192,7 +192,7 @@ class Scope implements Visitor {
  */
 class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   constructor(
-      private matcher: SelectorMatcher<DirectiveT>,
+      private matcher: SelectorMatcher<DirectiveT[]>,
       private directives: Map<Element|Template, DirectiveT[]>,
       private bindings: Map<BoundAttribute|BoundEvent|TextAttribute, DirectiveT|Element|Template>,
       private references:
@@ -211,7 +211,7 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
    * template node.
    */
   static apply<DirectiveT extends DirectiveMeta>(
-      template: Node[], selectorMatcher: SelectorMatcher<DirectiveT>): {
+      template: Node[], selectorMatcher: SelectorMatcher<DirectiveT[]>): {
     directives: Map<Element|Template, DirectiveT[]>,
     bindings: Map<BoundAttribute|BoundEvent|TextAttribute, DirectiveT|Element|Template>,
     references: Map<Reference, {directive: DirectiveT, node: Element|Template}|Element|Template>,
@@ -245,7 +245,7 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
 
     // Next, use the `SelectorMatcher` to get the list of directives on the node.
     const directives: DirectiveT[] = [];
-    this.matcher.match(cssSelector, (_, directive) => directives.push(directive));
+    this.matcher.match(cssSelector, (_selector, results) => directives.push(...results));
     if (directives.length > 0) {
       this.directives.set(node, directives);
     }

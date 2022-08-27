@@ -51,9 +51,9 @@ runInEachFileSystem(() => {
 
         const dtsCode = env.getContents('test.d.ts');
         expect(dtsCode).toContain(
-            'i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, {}, {}, never, never, true>;');
+            'i0.ɵɵDirectiveDeclaration<TestDir, "[dir]", never, {}, {}, never, never, true, never>;');
         expect(dtsCode).toContain(
-            'i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, true>;');
+            'i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, true, never>;');
       });
 
       it('should compile a recursive standalone component', () => {
