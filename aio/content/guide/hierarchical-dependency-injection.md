@@ -636,13 +636,18 @@ The `AnimalService` in the logical tree would look like this:
             &commat;Inject(AnimalService=&gt;"&#x1F436;")&gt;
         &lt;!-- ^^using viewProviders means AnimalService is available in &lt;#VIEW&gt;--&gt;
         &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F436;)&lt;/p&gt;
-        &lt;app-inspector&gt;
-          &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F436;)&lt;/p&gt;
-        &lt;/app-inspector&gt;
+  
+        &lt;div class="container"&gt;
+          &lt;h3&gt;Content projection&lt;/h3&gt;
+          &lt;app-inspector &commat;Inject(AnimalService) animal=&gt;"&#x1F433;"&gt;
+            &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F433;)&lt;/p&gt;
+          &lt;/app-inspector&gt;
+        &lt;/div&gt;
+  
       &lt;/#VIEW&gt;
       &lt;app-inspector&gt;
         &lt;#VIEW&gt;
-          &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F433;)&lt;/p&gt;
+          &lt;p&gt;Emoji from AnimalService: {{animal.emoji}} (&#x1F436;)&lt;/p&gt;
         &lt;/#VIEW&gt;
       &lt;/app-inspector&gt;
     &lt;/app-child&gt;
