@@ -324,6 +324,9 @@
     "name": "LocationStrategy"
   },
   {
+    "name": "MATRIX_PARAM_SEGMENT_RE"
+  },
+  {
     "name": "MODIFIER_KEYS"
   },
   {
@@ -1678,6 +1681,9 @@
   },
   {
     "name": "match"
+  },
+  {
+    "name": "matchMatrixParamSegments"
   },
   {
     "name": "matchSegments"
