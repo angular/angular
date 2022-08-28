@@ -47,7 +47,7 @@ One of `static fields` \(the default\) or `decorators`.
     <div class="alert is-helpful">
 
     **NOTE**: <br />
-    That the resulting code will not properly tree-shake.
+    That the resulting code cannot tree-shake properly.
 
     </div>
 
@@ -97,11 +97,11 @@ This allows `$localize` messages in application code to use the same ID as ident
 
 ### `enableResourceInlining`
 
-When `true`, replaces the `templateUrl` and `styleUrls` property in all `@Component` decorators with inlined contents in `template` and `styles` properties.
+When `true`, replaces the `templateUrl` and `styleUrls` properties in all `@Component` decorators with inline content in the `template` and `styles` properties.
 
 When enabled, the `.js` output of `ngc` does not include any lazy-loaded template or style URLs.
 
-For library projects generated with the CLI, the development configuration default is `true`.
+For library projects generated with the Angular CLI, the development configuration default is `true`.
 
 <a id="enablelegacytemplate"></a>
 
@@ -119,12 +119,12 @@ Ignored if `flatModuleOutFile` is `false`.
 
 ### `flatModuleOutFile`
 
-When `true`, generates a flat module index of the given file name and the corresponding flat module metadata.
+When `true`, generates a flat module index of the given filename and the corresponding flat module metadata.
 Use to create flat modules that are packaged similarly to `@angular/core` and `@angular/common`.
 When this option is used, the `package.json` for the library should refer to the generated flat module index instead of the library index file.
 
 Produces only one `.metadata.json` file, which contains all the metadata necessary for symbols exported from the library index.
-In the generated `.ngfactory.js` files, the flat module index is used to import symbols that include both the public API from the library index as well as shrowded internal symbols.
+In the generated `.ngfactory.js` files, the flat module index is used to import symbols that include both the public API from the library index as well as shrouded internal symbols.
 
 By default the `.ts` file supplied in the `files` field is assumed to be the library index.
 If more than one `.ts` file is specified, `libraryIndex` is used to select the file to use.
@@ -141,7 +141,7 @@ The `module` field of the library's `package.json` would be `"index.js"` and the
 When `true` \(recommended\), enables the [binding expression validation](guide/aot-compiler#binding-expression-validation) phase of the template compiler, which uses TypeScript to validate binding expressions.
 For more information, see [Template type checking](guide/template-typecheck).
 
-Default is `false`, but when you use the CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
+Default is `false`, but when you use the Angular CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
 
 <div class="alert is-important">
 
@@ -172,7 +172,7 @@ This information includes, for example, the content of annotations \(such as a c
 You can set to `true` when using factory summaries, because the factory summaries include a copy of the information that is in the `.metadata.json` file.
 
 Set to `true` if you are using TypeScript's `--outFile` option, because the metadata files are not valid for this style of TypeScript output.
-However, we do not recommend using `--outFile` with Angular.
+However, the Angular community does not recommend using `--outFile` with Angular.
 Use a bundler, such as [webpack](https://webpack.js.org), instead.
 
 ### `skipTemplateCodegen`
@@ -182,7 +182,7 @@ This turns off most of the template compiler and disables the reporting of templ
 
 Can be used to instruct the template compiler to produce `.metadata.json` files for distribution with an `npm` package while avoiding the production of `.ngfactory.js` and `.ngstyle.js` files that cannot be distributed to `npm`.
 
-For library projects generated with the CLI, the development configuration default is `true`.
+For library projects generated with the Angular CLI, the development configuration default is `true`.
 
 ### `strictMetadataEmit`
 
@@ -202,14 +202,14 @@ The template compiler can then use the error nodes to report an error if these s
 If the client of a library intends to use a symbol in an annotation, the template compiler does not normally report this until the client uses the symbol.
 This option allows detection of these errors during the build phase of the library and is used, for example, in producing Angular libraries themselves.
 
-For library projects generated with the CLI, the development configuration default is `true`.
+For library projects generated with the Angular CLI, the development configuration default is `true`.
 
 ### `strictInjectionParameters`
 
 When `true` \(recommended\), reports an error for a supplied parameter whose injection type cannot be determined.
 When `false` \(currently the default\), constructor parameters of classes marked with `@Injectable` whose type cannot be resolved produce a warning.
 
-When you use the CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
+When you use the Angular CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
 
 ### `strictTemplates`
 
@@ -218,7 +218,7 @@ When `true`, enables [strict template type checking](guide/template-typecheck#st
 Additional strictness flags allow you to enable and disable specific types of strict template type checking.
 See [troubleshooting template errors](guide/template-typecheck#troubleshooting-template-errors).
 
-When you use the CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
+When you use the Angular CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
 
 ### `trace`
 
@@ -227,7 +227,7 @@ Default is `false`.
 
 <a id="cli-options"></a>
 
-## Command Line Options
+## Command line options
 
 While most of the time you interact with the Angular Compiler indirectly using Angular CLI, when debugging certain issues, you might find it useful to invoke the Angular Compiler directly.
 You can use the `ngc` command provided by the `@angular/compiler-cli` npm package to call the compiler from the command line.
