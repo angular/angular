@@ -92,7 +92,7 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
     _controlValueAccessorChangeFn: (value: any) => void;
     get disabled(): boolean;
     set disabled(value: BooleanInput);
-    _emitChangeEvent(): void;
+    _emitChangeEvent(toggle: MatButtonToggle): void;
     _isPrechecked(toggle: MatButtonToggle): boolean;
     _isSelected(toggle: MatButtonToggle): boolean;
     get multiple(): boolean;

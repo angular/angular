@@ -264,10 +264,8 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
   }
 
   /** Dispatch change event with current selection and group value. */
-  _emitChangeEvent(): void {
-    const selected = this.selected;
-    const source = Array.isArray(selected) ? selected[selected.length - 1] : selected;
-    const event = new MatButtonToggleChange(source!, this.value);
+  _emitChangeEvent(toggle: MatButtonToggle): void {
+    const event = new MatButtonToggleChange(toggle, this.value);
     this._controlValueAccessorChangeFn(event.value);
     this.change.emit(event);
   }
@@ -305,9 +303,9 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
     // the side-effect is that we may end up updating the model value out of sequence in others
     // The `deferEvents` flag allows us to decide whether to do it on a case-by-case basis.
     if (deferEvents) {
-      Promise.resolve().then(() => this._updateModelValue(isUserInput));
+      Promise.resolve().then(() => this._updateModelValue(toggle, isUserInput));
     } else {
-      this._updateModelValue(isUserInput);
+      this._updateModelValue(toggle, isUserInput);
     }
   }
 
@@ -369,10 +367,10 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
   }
 
   /** Syncs up the group's value with the model and emits the change event. */
-  private _updateModelValue(isUserInput: boolean) {
+  private _updateModelValue(toggle: MatButtonToggle, isUserInput: boolean) {
     // Only emit the change event for user input.
     if (isUserInput) {
-      this._emitChangeEvent();
+      this._emitChangeEvent(toggle);
     }
 
     // Note: we emit this one no matter whether it was a user interaction, because
