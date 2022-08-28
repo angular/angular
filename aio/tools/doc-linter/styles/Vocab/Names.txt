@@ -21,6 +21,7 @@ savkin's
 sinatra
 stackblitz
 tolisten
+tsickle
 tslib
 tslint
 vercel
