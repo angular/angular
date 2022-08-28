@@ -1,0 +1,11 @@
+licenses(["notice"])
+
+# Downloaded from: https://fonts.google.com/share?selection.family=Roboto%20Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500
+# Timestamp: 09/09/2022
+exports_files(["LICENSE"])
+
+filegroup(
+    name = "roboto-mono",
+    srcs = ["roboto-mono.css"] + glob(["RobotoMono-*.ttf"]),
+    visibility = ["//aio:__subpackages__"],
+)

@@ -1,3 +1,5 @@
+load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+
 package(default_visibility = ["//visibility:public"])
 
 filegroup(
@@ -6,4 +8,17 @@ filegroup(
         "images/**",
         "opensearch.xml",
     ]),
+)
+
+copy_to_directory(
+    name = "fonts",
+    srcs = [
+        "//third_party/fonts.google.com/roboto",
+        "//third_party/fonts.google.com/roboto-mono",
+        "//third_party/github.com/google/material-design-icons",
+    ],
+    root_paths = [
+        "third_party/fonts.google.com",
+        "third_party/github.com/google",
+    ],
 )

@@ -1,0 +1,11 @@
+licenses(["notice"])
+
+# Downloaded from: https://fonts.google.com/share?selection.family=Roboto:wght@300;400;500
+# Timestamp: 08/28/2022
+exports_files(["LICENSE"])
+
+filegroup(
+    name = "roboto",
+    srcs = ["roboto.css"] + glob(["Roboto-*.ttf"]),
+    visibility = ["//aio:__subpackages__"],
+)

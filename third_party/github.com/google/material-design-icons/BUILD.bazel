@@ -13,6 +13,7 @@ filegroup(
         "MaterialIcons-Regular.ttf",
     ],
     visibility = [
+        "//aio:__subpackages__",
         "//devtools/projects/shell-browser:__subpackages__",
         "//modules/playground:__subpackages__",
     ],
