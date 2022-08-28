@@ -121,7 +121,7 @@ router.events.pipe(filter(e =&gt; e instanceof NavigationEnd)).subscribe(() =&gt
 
 </code-example>
 
-In a real application, the element that receives focus will depend on your specific application structure and layout.
+In a real application, the element that receives focus depends on your specific application structure and layout.
 The focused element should put users in a position to immediately move into the main content that has just been routed into view.
 You should avoid situations where focus returns to the `body` element after a route change.
 
@@ -167,8 +167,12 @@ The following example shows how to apply the `active-page` class to active links
 
 Books
 
+<!-- vale Angular.Google_Quotes = NO -->
+
 *   "A Web for Everyone: Designing Accessible User Experiences", Sarah Horton and Whitney Quesenbery
 *   "Inclusive Design Patterns", Heydon Pickering
+
+<!-- vale Angular.Google_Quotes = YES -->
 
 <!-- links -->
 
