@@ -28,6 +28,7 @@ import {SubComponentHarness, SubComponentSpecialHarness} from './harnesses/sub-c
  * @param getHarnessLoaderFromEnvironment env specific closure to get HarnessLoader
  * @param getMainComponentHarnessFromEnvironment env specific closure to get MainComponentHarness
  * @param getActiveElementId env specific closure to get active element
+ * @param skipAsyncTests skip tests that rely on Angular framework stabilization
  *
  * @docs-private
  */
@@ -37,6 +38,7 @@ export function crossEnvironmentSpecs(
   // Maybe we should introduce HarnessLoader.getActiveElement(): TestElement
   // then this 3rd parameter could get removed.
   getActiveElementId: () => Promise<string | null>,
+  skipAsyncTests: boolean = false,
 ) {
   describe('HarnessLoader', () => {
     let loader: HarnessLoader;
@@ -201,13 +203,6 @@ export function crossEnvironmentSpecs(
       expect(items4.length).toBe(0);
     });
 
-    it('should wait for async operation to complete', async () => {
-      const asyncCounter = await harness.asyncCounter();
-      expect(await asyncCounter.text()).toBe('5');
-      await harness.increaseCounter(3);
-      expect(await asyncCounter.text()).toBe('8');
-    });
-
     it('should send enter key', async () => {
       const specialKey = await harness.specaialKey();
       await harness.sendEnter();
@@ -287,6 +282,15 @@ export function crossEnvironmentSpecs(
       expect(element).toBeTruthy();
       expect(await element.getText()).toBe('Has comma inside attribute');
     });
+
+    if (!skipAsyncTests) {
+      it('should wait for async operation to complete', async () => {
+        const asyncCounter = await harness.asyncCounter();
+        expect(await asyncCounter.text()).toBe('5');
+        await harness.increaseCounter(3);
+        expect(await asyncCounter.text()).toBe('8');
+      });
+    }
   });
 
   describe('HarnessPredicate', () => {
