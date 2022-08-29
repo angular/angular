@@ -1,9 +1,11 @@
 
 <h1>mat-list demo</h1>
 
-<button mat-raised-button (click)="thirdLine=!thirdLine">Show third line</button>
+<button mat-raised-button (click)="thirdLine = !thirdLine">Show third line</button>
+<button mat-raised-button (click)="showBoxes = !showBoxes">Show item boxes</button>
 
-<div class="demo-list">
+<div class="demo-list" [class.demo-show-boxes]="showBoxes">
+
   <div>
     <h2>Normal lists</h2>
 
@@ -16,35 +18,35 @@
 
     <mat-list>
       <mat-list-item *ngFor="let contact of contacts">
-        <div mat-line>{{contact.name}}</div>
-        <div mat-line *ngIf="thirdLine">extra line</div>
-        <div mat-line class="demo-secondary-text">{{contact.headline}}</div>
+        <div matListItemTitle>{{contact.name}}</div>
+        <div matListItemLine *ngIf="thirdLine">extra line</div>
+        <div matListItemLine>{{contact.headline}}</div>
       </mat-list-item>
     </mat-list>
 
     <mat-list>
       <div mat-subheader>Today</div>
       <mat-list-item *ngFor="let message of messages; last as last">
-        <img mat-list-avatar [src]="message.image" alt="Image of {{message.from}}">
-        <div mat-line>{{message.from}}</div>
-        <div mat-line>
+        <img matListItemAvatar [src]="message.image" alt="Image of {{message.from}}">
+        <div matListItemTitle>{{message.from}}</div>
+        <div matListItemLine>
           <span>{{message.subject}} -- </span>
-          <span class="demo-secondary-text">{{message.message}}</span>
+          <span>{{message.message}}</span>
         </div>
         <mat-divider inset *ngIf="!last"></mat-divider>
       </mat-list-item>
       <mat-divider></mat-divider>
       <mat-list-item *ngFor="let message of messages">
-        <div mat-line>{{message.from}}</div>
-        <div mat-line> {{message.subject}} </div>
-        <div mat-line class="demo-secondary-text">{{message.message}} </div>
+        <div matListItemTitle>{{message.from}}</div>
+        <div matListItemLine>{{message.subject}}</div>
+        <div matListItemLine>{{message.message}}</div>
       </mat-list-item>
     </mat-list>
 
     <mat-list>
       <mat-list-item *ngFor="let link of links">
-        <span mat-line>{{ link.name }}</span>
-        <button mat-icon-button (click)="infoClicked=!infoClicked">
+        <span matListItemTitle>{{ link.name }}</span>
+        <button matListItemMeta mat-icon-button (click)="infoClicked=!infoClicked">
           <mat-icon>info</mat-icon>
         </button>
       </mat-list-item>
@@ -62,25 +64,25 @@
 
     <mat-list dense>
       <mat-list-item *ngFor="let contact of contacts">
-        <div mat-line>{{contact.name}}</div>
-        <div mat-line class="demo-secondary-text">{{contact.headline}}</div>
+        <div matListItemTitle>{{contact.name}}</div>
+        <div matListItemLine>{{contact.headline}}</div>
       </mat-list-item>
     </mat-list>
 
     <mat-list dense>
       <div mat-subheader>Today</div>
       <mat-list-item *ngFor="let message of messages">
-        <img mat-list-avatar [src]="message.image" alt="Image of {{message.from}}">
-        <div mat-line>{{message.from}}</div>
-        <div mat-line> {{message.subject}} </div>
-        <div mat-line class="demo-secondary-text">{{message.message}} </div>
+        <img matListItemAvatar [src]="message.image" alt="Image of {{message.from}}">
+        <div matListItemTitle>{{message.from}}</div>
+        <div matListItemLine>{{message.subject}}</div>
+        <div matListItemLine>{{message.message}}</div>
       </mat-list-item>
     </mat-list>
 
     <mat-list dense>
       <mat-list-item *ngFor="let link of links">
-        <span mat-line>{{ link.name }}</span>
-        <button mat-icon-button (click)="infoClicked=!infoClicked">
+        <span matListItemTitle>{{ link.name }}</span>
+        <button matListItemMeta mat-icon-button (click)="infoClicked=!infoClicked">
           <mat-icon class="material-icons">info</mat-icon>
         </button>
       </mat-list-item>
@@ -89,7 +91,7 @@
   <div>
     <h2>Nav lists</h2>
     <mat-nav-list>
-      <a mat-list-item *ngFor="let link of links" href="http://www.google.com">
+      <a mat-list-item *ngFor="let link of links" [href]="link.href" [activated]="isActivated(link.href)">
         {{ link.name }}
       </a>
     </mat-nav-list>
@@ -97,9 +99,9 @@
       More info!
     </div>
     <mat-nav-list>
-      <a mat-list-item *ngFor="let link of links; last as last" href="http://www.google.com">
-        <mat-icon mat-list-icon>folder</mat-icon>
-        <span mat-line>{{ link.name }}</span>
+      <a mat-list-item *ngFor="let link of links; last as last" [href]="link.href" [activated]="isActivated(link.href)">
+        <mat-icon matListItemIcon>folder</mat-icon>
+        <span matListItemTitle>{{ link.name }}</span>
       </a>
     </mat-nav-list>
   </div>
@@ -134,13 +136,13 @@
       <div mat-subheader>Dogs</div>
 
       <mat-list-option checkboxPosition="before">
-        <img matListAvatar src="https://material.angular.io/assets/img/examples/shiba1.jpg">
-        <span matLine>Shiba Inu</span>
+        <img matListItemAvatar src="https://material.angular.io/assets/img/examples/shiba1.jpg">
+        <span matListItemTitle>Shiba Inu</span>
       </mat-list-option>
 
       <mat-list-option checkboxPosition="after">
-        <img matListAvatar src="https://material.angular.io/assets/img/examples/shiba2.jpg">
-        <span matLine>Other Shiba Inu</span>
+        <img matListItemAvatar src="https://material.angular.io/assets/img/examples/shiba2.jpg">
+        <span matListItemTitle>Other Shiba Inu</span>
       </mat-list-option>
     </mat-selection-list>
 
@@ -148,14 +150,16 @@
     <p>Change Event Count {{changeEventCount}}</p>
     <p>Model Change Event Count {{modelChangeEventCount}}</p>
     <p>
-      <mat-checkbox [(ngModel)]="selectionListDisabled">
-        Disable Selection List
-      </mat-checkbox>
+      <label>
+        Disable selection list
+        <input type="checkbox" [(ngModel)]="selectionListDisabled">
+      </label>
     </p>
     <p>
-      <mat-checkbox [(ngModel)]="selectionListRippleDisabled">
+      <label>
         Disable Selection List ripples
-      </mat-checkbox>
+        <input type="checkbox" [(ngModel)]="selectionListRippleDisabled">
+      </label>
     </p>
     <p>
       <button mat-raised-button (click)="groceries.selectAll()">Select all</button>
@@ -182,20 +186,51 @@
   </div>
 
   <div>
+    <h2>Line scenarios</h2>
+
+    <mat-list>
+      <mat-list-item>Title</mat-list-item>
+      <mat-list-item lines="2">
+        <span matListItemTitle>Title</span>
+        <span>This is unscoped text content that is supposed to not wrap. The list has only
+        acquired two lines and therefore there is no space for wrapping.</span>
+      </mat-list-item>
+      <mat-list-item lines="3">
+        <span matListItemTitle>Title</span>
+        <span>This is unscoped text content that is supposed to wrap to the third line.
+          The list item acquire spaces for three lines and text should have an ellipsis in the
+          third line upon text overflow.</span>
+      </mat-list-item>
+      <mat-list-item>
+        <span matListItemTitle>Title</span>
+        <span>This is unscoped text content that is supposed to not wrap. The list has only
+        acquired two lines (automatically) and therefore there is no space for wrapping.</span>
+      </mat-list-item>
+      <mat-list-item>
+        <span matListItemTitle>Title</span>
+        <span matListItemLine>Secondary line</span>
+        <span matListItemLine>Tertiary line</span>
+      </mat-list-item>
+    </mat-list>
+
+    <button mat-raised-button (click)="showBoxes = !showBoxes">Show item boxes</button>
+  </div>
+
+  <div>
     <h2>Line alignment</h2>
 
     <mat-list>
       <mat-list-item *ngFor="let link of links">
-        <span mat-line>{{ link.name }}</span>
-        <span>Not in an <i>matLine</i></span>
+        <span matListItemTitle>{{ link.name }}</span>
+        <span>Unscoped content</span>
       </mat-list-item>
     </mat-list>
 
     <mat-selection-list>
       <mat-list-option value="first">First</mat-list-option>
       <mat-list-option value="second">
-        <span matLine>Second</span>
-        <span>Not in an <i>matLine</i></span>
+        <span matListItemTitle>Second</span>
+        <span>Unscoped content</span>
       </mat-list-option>
     </mat-selection-list>
   </div>
@@ -205,19 +240,19 @@
 
     <mat-selection-list>
       <mat-list-option value="bananas" [checkboxPosition]="checkboxPosition">
-        <mat-icon matListIcon>info</mat-icon>
+        <mat-icon matListItemIcon>info</mat-icon>
         Bananas
       </mat-list-option>
       <mat-list-option value="oranges" [checkboxPosition]="checkboxPosition">
-        <mat-icon matListIcon>info</mat-icon>
+        <mat-icon matListItemIcon #ok>info</mat-icon>
         Oranges
       </mat-list-option>
       <mat-list-option value="cake" [checkboxPosition]="checkboxPosition">
-        <mat-icon matListIcon>info</mat-icon>
+        <mat-icon matListItemIcon>info</mat-icon>
         Cake
       </mat-list-option>
       <mat-list-option value="fries" [checkboxPosition]="checkboxPosition">
-        <mat-icon matListIcon>info</mat-icon>
+        <mat-icon matListItemIcon>info</mat-icon>
         Fries
       </mat-list-option>
     </mat-selection-list>

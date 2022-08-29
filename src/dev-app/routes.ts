@@ -129,8 +129,8 @@ export const DEV_APP_ROUTES: Routes = [
       ),
   },
   {
-    path: 'list',
-    loadComponent: () => import('./list/list-demo').then(m => m.ListDemo),
+    path: 'legacy-list',
+    loadComponent: () => import('./legacy-list/legacy-list-demo').then(m => m.LegacyListDemo),
   },
   {
     path: 'live-announcer',
@@ -177,8 +177,8 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./input/input-demo').then(m => m.InputDemo),
   },
   {
-    path: 'mdc-list',
-    loadComponent: () => import('./mdc-list/mdc-list-demo').then(m => m.MdcListDemo),
+    path: 'list',
+    loadComponent: () => import('./list/list-demo').then(m => m.ListDemo),
   },
   {
     path: 'mdc-menu',

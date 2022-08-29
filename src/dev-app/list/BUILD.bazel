@@ -10,10 +10,9 @@ ng_module(
         ":list_demo_scss",
     ],
     deps = [
+        "//src/material/button",
         "//src/material/icon",
-        "//src/material/legacy-button",
-        "//src/material/legacy-checkbox",
-        "//src/material/legacy-list",
+        "//src/material/list",
     ],
 )
 

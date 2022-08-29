@@ -7,23 +7,32 @@
  */
 
 import {Component} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
-import {MatListModule, MatListOptionCheckboxPosition} from '@angular/material/list';
-import {MatIconModule} from '@angular/material/icon';
 import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatIconModule} from '@angular/material/icon';
+import {
+  MatLegacyListModule,
+  MatLegacyListOptionCheckboxPosition,
+} from '@angular/material/legacy-list';
 
 @Component({
-  selector: 'mdc-list-demo',
-  templateUrl: 'mdc-list-demo.html',
-  styleUrls: ['mdc-list-demo.css'],
+  selector: 'legacy-list-demo',
+  templateUrl: 'legacy-list-demo.html',
+  styleUrls: ['legacy-list-demo.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatListModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatLegacyButtonModule,
+    MatLegacyCheckboxModule,
+    MatIconModule,
+    MatLegacyListModule,
+  ],
 })
-export class MdcListDemo {
+export class LegacyListDemo {
   items: string[] = ['Pepper', 'Salt', 'Paprika'];
-
-  checkboxPosition: MatListOptionCheckboxPosition = 'before';
 
   contacts: {name: string; headline: string}[] = [
     {name: 'Nancy', headline: 'Software engineer'},
@@ -31,12 +40,14 @@ export class MdcListDemo {
     {name: 'Bobby', headline: 'UX designer'},
   ];
 
+  checkboxPosition: MatLegacyListOptionCheckboxPosition = 'before';
+
   messages: {from: string; subject: string; message: string; image: string}[] = [
     {
-      from: 'John',
+      from: 'Nancy',
       subject: 'Brunch?',
       message: 'Did you want to go on Sunday? I was thinking that might work.',
-      image: 'https://angular.io/generated/images/bios/devversion.jpg',
+      image: 'https://angular.io/generated/images/bios/cindygreenekaplan.jpg',
     },
     {
       from: 'Mary',
@@ -52,15 +63,9 @@ export class MdcListDemo {
     },
   ];
 
-  links: {name: string; href: string}[] = [
-    {name: 'Inbox', href: '/mdc-list#inbox'},
-    {name: 'Outbox', href: '/mdc-list#outbox'},
-    {name: 'Spam', href: '/mdc-list#spam'},
-    {name: 'Trash', href: '/mdc-list#trash'},
-  ];
+  links: {name: string}[] = [{name: 'Inbox'}, {name: 'Outbox'}, {name: 'Spam'}, {name: 'Trash'}];
 
   thirdLine = false;
-  showBoxes = false;
   infoClicked = false;
   selectionListDisabled = false;
   selectionListRippleDisabled = false;
@@ -82,9 +87,5 @@ export class MdcListDemo {
 
   alertItem(msg: string) {
     alert(msg);
-  }
-
-  isActivated(href: string) {
-    return window.location.href === new URL(href, window.location.href).toString();
   }
 }

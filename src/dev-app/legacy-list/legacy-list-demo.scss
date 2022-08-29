@@ -2,22 +2,21 @@
   display: flex;
   flex-flow: row wrap;
 
-  .mat-mdc-list-base {
+  .mat-list, .mat-nav-list, .mat-selection-list {
     border: 1px solid rgba(0, 0, 0, 0.12);
     width: 350px;
     margin: 20px 20px 0 0;
   }
-
   h2 {
     margin-top: 20px;
   }
 
-  .mat-mdc-icon-button {
+  .mat-icon-button {
     color: rgba(0, 0, 0, 0.12);
   }
 
-  &.demo-show-boxes .mat-mdc-list-item {
-    border: 1px solid grey;
+  .mat-list-icon {
+    color: rgba(0, 0, 0, 0.38);
   }
 }
 

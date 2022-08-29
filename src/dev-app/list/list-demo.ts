@@ -7,32 +7,23 @@
  */
 
 import {Component} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {MatButtonModule} from '@angular/material/button';
+import {MatListModule, MatListOptionCheckboxPosition} from '@angular/material/list';
 import {MatIconModule} from '@angular/material/icon';
-import {
-  MatLegacyListModule,
-  MatLegacyListOptionCheckboxPosition,
-} from '@angular/material/legacy-list';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'list-demo',
   templateUrl: 'list-demo.html',
   styleUrls: ['list-demo.css'],
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatLegacyButtonModule,
-    MatLegacyCheckboxModule,
-    MatIconModule,
-    MatLegacyListModule,
-  ],
+  imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatListModule],
 })
 export class ListDemo {
   items: string[] = ['Pepper', 'Salt', 'Paprika'];
+
+  checkboxPosition: MatListOptionCheckboxPosition = 'before';
 
   contacts: {name: string; headline: string}[] = [
     {name: 'Nancy', headline: 'Software engineer'},
@@ -40,14 +31,12 @@ export class ListDemo {
     {name: 'Bobby', headline: 'UX designer'},
   ];
 
-  checkboxPosition: MatLegacyListOptionCheckboxPosition = 'before';
-
   messages: {from: string; subject: string; message: string; image: string}[] = [
     {
-      from: 'Nancy',
+      from: 'John',
       subject: 'Brunch?',
       message: 'Did you want to go on Sunday? I was thinking that might work.',
-      image: 'https://angular.io/generated/images/bios/cindygreenekaplan.jpg',
+      image: 'https://angular.io/generated/images/bios/devversion.jpg',
     },
     {
       from: 'Mary',
@@ -63,9 +52,15 @@ export class ListDemo {
     },
   ];
 
-  links: {name: string}[] = [{name: 'Inbox'}, {name: 'Outbox'}, {name: 'Spam'}, {name: 'Trash'}];
+  links: {name: string; href: string}[] = [
+    {name: 'Inbox', href: '/mdc-list#inbox'},
+    {name: 'Outbox', href: '/mdc-list#outbox'},
+    {name: 'Spam', href: '/mdc-list#spam'},
+    {name: 'Trash', href: '/mdc-list#trash'},
+  ];
 
   thirdLine = false;
+  showBoxes = false;
   infoClicked = false;
   selectionListDisabled = false;
   selectionListRippleDisabled = false;
@@ -87,5 +82,9 @@ export class ListDemo {
 
   alertItem(msg: string) {
     alert(msg);
+  }
+
+  isActivated(href: string) {
+    return window.location.href === new URL(href, window.location.href).toString();
   }
 }

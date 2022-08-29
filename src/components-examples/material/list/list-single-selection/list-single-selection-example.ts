@@ -5,7 +5,6 @@ import {Component} from '@angular/core';
  */
 @Component({
   selector: 'list-single-selection-example',
-  styleUrls: ['list-single-selection-example.css'],
   templateUrl: 'list-single-selection-example.html',
 })
 export class ListSingleSelectionExample {
