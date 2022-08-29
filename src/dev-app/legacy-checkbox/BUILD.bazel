@@ -1,0 +1,25 @@
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "legacy-checkbox",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "legacy-checkbox-demo.html",
+        "legacy-nested-checklist.html",
+        ":legacy_checkbox_demo_scss",
+    ],
+    deps = [
+        "//src/material/core",
+        "//src/material/legacy-checkbox",
+        "//src/material/legacy-form-field",
+        "//src/material/legacy-input",
+        "//src/material/legacy-select",
+    ],
+)
+
+sass_binary(
+    name = "legacy_checkbox_demo_scss",
+    src = "legacy-checkbox-demo.scss",
+)

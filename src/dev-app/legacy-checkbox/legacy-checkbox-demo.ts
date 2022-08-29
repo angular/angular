@@ -7,13 +7,17 @@
  */
 
 import {Component, Directive} from '@angular/core';
-import {MAT_CHECKBOX_DEFAULT_OPTIONS, MatCheckboxModule} from '@angular/material/checkbox';
+import {
+  MatLegacyCheckboxModule,
+  MAT_CHECKBOX_DEFAULT_OPTIONS,
+} from '@angular/material/legacy-checkbox';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatPseudoCheckboxModule, ThemePalette} from '@angular/material/core';
-import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material/select';
 import {CommonModule} from '@angular/common';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
+import {MatLegacyInputModule} from '@angular/material/legacy-input';
+import {MatLegacySelectModule} from '@angular/material/legacy-select';
 
 export interface Task {
   name: string;
@@ -43,7 +47,7 @@ export class ClickActionCheck {}
 export class AnimationsNoop {}
 
 @Component({
-  selector: 'mat-checkbox-demo-nested-checklist',
+  selector: 'mat-legacy-checkbox-demo-nested-checklist',
   styles: [
     `
     li {
@@ -51,11 +55,11 @@ export class AnimationsNoop {}
     }
   `,
   ],
-  templateUrl: 'nested-checklist.html',
+  templateUrl: './legacy-nested-checklist.html',
   standalone: true,
-  imports: [CommonModule, MatCheckboxModule, FormsModule],
+  imports: [CommonModule, MatLegacyCheckboxModule, FormsModule],
 })
-export class MatCheckboxDemoNestedChecklist {
+export class MatLegacyCheckboxDemoNestedChecklist {
   tasks: Task[] = [
     {
       name: 'Reminders',
@@ -100,29 +104,30 @@ export class MatCheckboxDemoNestedChecklist {
 }
 
 @Component({
-  selector: 'mdc-checkbox-demo',
-  templateUrl: 'mdc-checkbox-demo.html',
-  styleUrls: ['mdc-checkbox-demo.css'],
+  selector: 'legacy-checkbox-demo',
+  templateUrl: 'legacy-checkbox-demo.html',
+  styleUrls: ['legacy-checkbox-demo.css'],
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-    MatCheckboxModule,
-    MatInputModule,
-    MatSelectModule,
+    MatLegacyCheckboxModule,
+    MatLegacyFormFieldModule,
+    MatLegacyInputModule,
+    MatLegacySelectModule,
     MatPseudoCheckboxModule,
     ReactiveFormsModule,
-    MatCheckboxDemoNestedChecklist,
+    MatLegacyCheckboxDemoNestedChecklist,
     ClickActionNoop,
     ClickActionCheck,
     AnimationsNoop,
   ],
 })
-export class MdcCheckboxDemo {
+export class LegacyCheckboxDemo {
   isIndeterminate: boolean = false;
   isChecked: boolean = false;
   isDisabled: boolean = false;
-  labelPosition: 'before' | 'after' = 'after';
+  labelPosition: 'after' | 'before' = 'after';
   useAlternativeColor: boolean = false;
 
   demoRequired = false;

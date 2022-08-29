@@ -155,8 +155,9 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./legacy-card/legacy-card-demo').then(m => m.LegacyCardDemo),
   },
   {
-    path: 'mdc-checkbox',
-    loadComponent: () => import('./mdc-checkbox/mdc-checkbox-demo').then(m => m.MdcCheckboxDemo),
+    path: 'legacy-checkbox',
+    loadComponent: () =>
+      import('./legacy-checkbox/legacy-checkbox-demo').then(m => m.LegacyCheckboxDemo),
   },
   {
     path: 'mdc-progress-bar',

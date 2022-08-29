@@ -7,18 +7,13 @@
  */
 
 import {Component, Directive} from '@angular/core';
-import {
-  MatLegacyCheckboxModule,
-  MAT_CHECKBOX_DEFAULT_OPTIONS,
-} from '@angular/material/legacy-checkbox';
+import {MAT_CHECKBOX_DEFAULT_OPTIONS, MatCheckboxModule} from '@angular/material/checkbox';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {MatPseudoCheckboxModule, ThemePalette} from '@angular/material/core';
-import {CommonModule} from '@angular/common';
-import {CheckboxExamplesModule} from '@angular/components-examples/material/checkbox';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacySelectModule} from '@angular/material/legacy-select';
+import {MatPseudoCheckboxModule, ThemePalette} from '@angular/material/core';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {CommonModule} from '@angular/common';
 
 export interface Task {
   name: string;
@@ -56,9 +51,9 @@ export class AnimationsNoop {}
     }
   `,
   ],
-  templateUrl: './nested-checklist.html',
+  templateUrl: 'nested-checklist.html',
   standalone: true,
-  imports: [CommonModule, MatLegacyCheckboxModule, FormsModule],
+  imports: [CommonModule, MatCheckboxModule, FormsModule],
 })
 export class MatCheckboxDemoNestedChecklist {
   tasks: Task[] = [
@@ -105,18 +100,16 @@ export class MatCheckboxDemoNestedChecklist {
 }
 
 @Component({
-  selector: 'mat-checkbox-demo',
+  selector: 'checkbox-demo',
   templateUrl: 'checkbox-demo.html',
   styleUrls: ['checkbox-demo.css'],
   standalone: true,
   imports: [
-    CheckboxExamplesModule,
     CommonModule,
     FormsModule,
-    MatLegacyCheckboxModule,
-    MatLegacyFormFieldModule,
-    MatLegacyInputModule,
-    MatLegacySelectModule,
+    MatCheckboxModule,
+    MatInputModule,
+    MatSelectModule,
     MatPseudoCheckboxModule,
     ReactiveFormsModule,
     MatCheckboxDemoNestedChecklist,
@@ -129,7 +122,7 @@ export class CheckboxDemo {
   isIndeterminate: boolean = false;
   isChecked: boolean = false;
   isDisabled: boolean = false;
-  labelPosition: 'after' | 'before' = 'after';
+  labelPosition: 'before' | 'after' = 'after';
   useAlternativeColor: boolean = false;
 
   demoRequired = false;

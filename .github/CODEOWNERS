@@ -194,7 +194,7 @@
 /src/dev-app/live-announcer/**                              @jelbourn
 /src/dev-app/mdc-autocomplete/**                            @crisbeto
 /src/dev-app/mdc-button/**                                  @andrewseguin
-/src/dev-app/mdc-checkbox/**                                @mmalerba
+/src/dev-app/legacy-checkbox/**                             @mmalerba
 /src/dev-app/mdc-chips/**                                   @mmalerba
 /src/dev-app/mdc-dialog/**                                  @devversion
 /src/dev-app/mdc-list/**                                    @mmalerba
