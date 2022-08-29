@@ -1,8 +1,8 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'menu-e2e',
-  templateUrl: 'menu-e2e.html',
+  selector: 'legacy-menu-e2e',
+  templateUrl: 'legacy-menu-e2e.html',
   styles: [
     `
     #before-t, #above-t, #combined-t {
@@ -16,6 +16,6 @@ import {Component} from '@angular/core';
   `,
   ],
 })
-export class MenuE2E {
+export class LegacyMenuE2e {
   selected: string = '';
 }

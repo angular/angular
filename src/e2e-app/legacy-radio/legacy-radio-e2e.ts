@@ -1,10 +1,10 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'radio-e2e',
-  templateUrl: 'radio-e2e.html',
+  selector: 'legacy-radio-e2e',
+  templateUrl: 'legacy-radio-e2e.html',
 })
-export class SimpleRadioButtons {
+export class LegacyRadioE2e {
   isGroupDisabled: boolean = false;
   groupValue: string;
 }

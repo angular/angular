@@ -2,7 +2,7 @@ import {browser, by, element, Key} from 'protractor';
 
 describe('checkbox', () => {
   describe('check behavior', () => {
-    beforeEach(async () => await browser.get('/checkbox'));
+    beforeEach(async () => await browser.get('/legacy-checkbox'));
 
     it('should be checked when clicked, and unchecked when clicked again', async () => {
       const checkboxEl = element(by.id('test-checkbox'));

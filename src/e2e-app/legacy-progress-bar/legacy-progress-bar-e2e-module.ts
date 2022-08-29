@@ -8,10 +8,10 @@
 
 import {NgModule} from '@angular/core';
 import {MatLegacyProgressBarModule} from '@angular/material/legacy-progress-bar';
-import {ProgressBarE2E} from './progress-bar-e2e';
+import {LegacyProgressBarE2e} from './legacy-progress-bar-e2e';
 
 @NgModule({
   imports: [MatLegacyProgressBarModule],
-  declarations: [ProgressBarE2E],
+  declarations: [LegacyProgressBarE2e],
 })
-export class ProgressBarE2eModule {}
+export class LegacyProgressBarE2eModule {}

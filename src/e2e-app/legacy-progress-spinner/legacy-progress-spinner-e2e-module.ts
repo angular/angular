@@ -8,10 +8,10 @@
 
 import {NgModule} from '@angular/core';
 import {MatLegacyProgressSpinnerModule} from '@angular/material/legacy-progress-spinner';
-import {ProgressSpinnerE2E} from './progress-spinner-e2e';
+import {LegacyProgressSpinnerE2e} from './legacy-progress-spinner-e2e';
 
 @NgModule({
   imports: [MatLegacyProgressSpinnerModule],
-  declarations: [ProgressSpinnerE2E],
+  declarations: [LegacyProgressSpinnerE2e],
 })
-export class ProgressSpinnerE2eModule {}
+export class LegacyProgressSpinnerE2eModule {}

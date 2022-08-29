@@ -5,7 +5,7 @@ describe('slide-toggle', () => {
   const getInput = () => element(by.css('#normal-slide-toggle input'));
   const getNormalToggle = () => element(by.css('#normal-slide-toggle'));
 
-  beforeEach(async () => await browser.get('slide-toggle'));
+  beforeEach(async () => await browser.get('legacy-slide-toggle'));
 
   it('should render a slide-toggle', async () => {
     await expectToExist('mat-slide-toggle');

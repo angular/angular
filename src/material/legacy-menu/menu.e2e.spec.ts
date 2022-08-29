@@ -29,7 +29,7 @@ describe('menu', () => {
     getResultText: () => page.textArea().getText(),
   };
 
-  beforeEach(async () => await browser.get('/menu'));
+  beforeEach(async () => await browser.get('/legacy-menu'));
 
   it('should open menu when the trigger is clicked', async () => {
     await expectToExist(menuSelector, false);

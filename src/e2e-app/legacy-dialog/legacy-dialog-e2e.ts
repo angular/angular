@@ -6,10 +6,10 @@ import {
 } from '@angular/material/legacy-dialog';
 
 @Component({
-  selector: 'dialog-e2e',
-  templateUrl: 'dialog-e2e.html',
+  selector: 'legacy-dialog-e2e',
+  templateUrl: 'legacy-dialog-e2e.html',
 })
-export class DialogE2E {
+export class LegacyDialogE2e {
   dialogRef: MatLegacyDialogRef<TestDialog> | null;
 
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;

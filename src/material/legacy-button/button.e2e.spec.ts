@@ -2,7 +2,7 @@ import {browser, by, element, ExpectedConditions} from 'protractor';
 
 describe('button', () => {
   describe('disabling behavior', () => {
-    beforeEach(async () => await browser.get('/button'));
+    beforeEach(async () => await browser.get('/legacy-button'));
 
     it('should prevent click handlers from executing when disabled', async () => {
       await element(by.id('test-button')).click();

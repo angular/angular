@@ -239,17 +239,23 @@
 /src/e2e-app/*                                              @andrewseguin
 /src/e2e-app/block-scroll-strategy/**                       @andrewseguin @crisbeto
 /src/e2e-app/button-toggle/**                               @andrewseguin
-/src/e2e-app/button/**                                      @andrewseguin
 /src/e2e-app/card/**                                        @andrewseguin
-/src/e2e-app/checkbox/**                                    @andrewseguin @devversion
 /src/e2e-app/component-harness/**                           @mmalerba
-/src/e2e-app/dialog/**                                      @andrewseguin @crisbeto
 /src/e2e-app/e2e-app/**                                     @andrewseguin
 /src/e2e-app/example-viewer/**                              @andrewseguin
 /src/e2e-app/expansion/**                                   @andrewseguin
 /src/e2e-app/grid-list/**                                   @andrewseguin
 /src/e2e-app/icon/**                                        @andrewseguin
-/src/e2e-app/input/**                                       @mmalerba
+/src/e2e-app/legacy-button/**                               @andrewseguin
+/src/e2e-app/legacy-checkbox/**                             @andrewseguin @devversion
+/src/e2e-app/legacy-dialog/**                               @andrewseguin @crisbeto
+/src/e2e-app/legacy-input/**                                @mmalerba
+/src/e2e-app/legacy-menu/**                                 @crisbeto
+/src/e2e-app/legacy-progress-bar/**                         @andrewseguin @crisbeto
+/src/e2e-app/legacy-progress-spinner/**                     @andrewseguin @crisbeto
+/src/e2e-app/legacy-radio/**                                @andrewseguin @devversion
+/src/e2e-app/legacy-slide-toggle/**                         @devversion
+/src/e2e-app/legacy-tabs/**                                 @andrewseguin
 /src/e2e-app/list/**                                        @andrewseguin
 /src/e2e-app/mdc-button/**                                  @andrewseguin
 /src/e2e-app/mdc-card/**                                    @mmalerba
@@ -265,15 +271,9 @@
 /src/e2e-app/mdc-slider/**                                  @andrewseguin
 /src/e2e-app/mdc-table/**                                   @andrewseguin
 /src/e2e-app/mdc-tabs/**                                    @crisbeto
-/src/e2e-app/menu/**                                        @crisbeto
-/src/e2e-app/progress-bar/**                                @andrewseguin @crisbeto
-/src/e2e-app/progress-spinner/**                            @andrewseguin @crisbeto
-/src/e2e-app/radio/**                                       @andrewseguin @devversion
 /src/e2e-app/select/**                                      @crisbeto
 /src/e2e-app/sidenav/**                                     @mmalerba
-/src/e2e-app/slide-toggle/**                                @devversion
 /src/e2e-app/stepper/**                                     @mmalerba
-/src/e2e-app/tabs/**                                        @andrewseguin
 /src/e2e-app/test-util/**                                   @andrewseguin
 /src/e2e-app/toolbar/**                                     @devversion
 /src/e2e-app/virtual-scroll/**                              @mmalerba

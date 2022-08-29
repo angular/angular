@@ -8,10 +8,10 @@
 
 import {NgModule} from '@angular/core';
 import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
-import {SimpleCheckboxes} from './checkbox-e2e';
+import {LegacyCheckboxE2e} from './legacy-checkbox-e2e';
 
 @NgModule({
   imports: [MatLegacyCheckboxModule],
-  declarations: [SimpleCheckboxes],
+  declarations: [LegacyCheckboxE2e],
 })
-export class CheckboxE2eModule {}
+export class LegacyCheckboxE2eModule {}

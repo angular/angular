@@ -7,7 +7,7 @@ describe('tabs', () => {
     let tabBodies: ElementArrayFinder;
 
     beforeEach(async () => {
-      await browser.get('/tabs');
+      await browser.get('/legacy-tabs');
       tabLabels = element.all(by.css('.mat-tab-label'));
       tabBodies = element.all(by.css('mat-tab-body'));
     });

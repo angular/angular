@@ -2,7 +2,7 @@ import {browser, by, element, ExpectedConditions} from 'protractor';
 
 describe('radio', () => {
   describe('disabling behavior', () => {
-    beforeEach(async () => await browser.get('/radio'));
+    beforeEach(async () => await browser.get('/legacy-radio'));
 
     it('should be checked when clicked', async () => {
       await element(by.id('water')).click();

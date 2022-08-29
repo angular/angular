@@ -8,7 +8,7 @@ import {
 } from '../../cdk/testing/private/e2e';
 
 describe('dialog', () => {
-  beforeEach(async () => await browser.get('/dialog'));
+  beforeEach(async () => await browser.get('/legacy-dialog'));
 
   it('should open a dialog', async () => {
     await element(by.id('default')).click();

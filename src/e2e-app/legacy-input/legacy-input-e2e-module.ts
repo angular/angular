@@ -9,11 +9,10 @@
 import {NgModule} from '@angular/core';
 import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
 import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacyTabsModule} from '@angular/material/legacy-tabs';
-import {BasicTabs} from './tabs-e2e';
+import {LegacyInputE2e} from './legacy-input-e2e';
 
 @NgModule({
-  imports: [MatLegacyTabsModule, MatLegacyFormFieldModule, MatLegacyInputModule],
-  declarations: [BasicTabs],
+  imports: [MatLegacyFormFieldModule, MatLegacyInputModule],
+  declarations: [LegacyInputE2e],
 })
-export class TabsE2eModule {}
+export class LegacyInputE2eModule {}

@@ -3,7 +3,7 @@ import {MatLegacyButtonHarness} from '@angular/material/legacy-button/testing';
 import {browser} from 'protractor';
 
 describe('button harness', () => {
-  beforeEach(async () => await browser.get('/button'));
+  beforeEach(async () => await browser.get('/legacy-button'));
 
   it('can click button', async () => {
     const loader = ProtractorHarnessEnvironment.loader();
