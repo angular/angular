@@ -131,7 +131,7 @@ export class MatLegacySelect extends _MatSelectBase<MatLegacySelectChange> imple
   private _scrollTop = 0;
 
   /** The last measured value for the trigger's client bounding rect. */
-  _triggerRect: ClientRect;
+  private _triggerRect: ClientRect;
 
   /** The cached font-size of the trigger element. */
   _triggerFontSize = 0;
@@ -262,6 +262,10 @@ export class MatLegacySelect extends _MatSelectBase<MatLegacySelectChange> imple
 
   protected _getChangeEvent(value: any) {
     return new MatLegacySelectChange(this, value);
+  }
+
+  protected _getOverlayMinWidth(): number {
+    return this._triggerRect?.width;
   }
 
   /**

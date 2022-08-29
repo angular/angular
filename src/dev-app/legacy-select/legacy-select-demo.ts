@@ -59,7 +59,7 @@ export class LegacySelectDemo {
   currentPokemonFromGroup: string;
   currentDigimon: string;
   currentAppearanceValue: string | null;
-  latestChangeEvent: MatSelectChange;
+  latestChangeEvent: MatSelectChange | undefined;
   floatLabel: FloatLabelType = 'auto';
   drinksWidth = 'default';
   foodControl = new FormControl('pizza-1');

@@ -5,5 +5,5 @@
 </mat-selection-list>
 
 <p>
-  Option selected: {{shoes.selectedOptions.selected[0]?.value}}
+  Option selected: {{shoes.selectedOptions.hasValue() ? shoes.selectedOptions.selected[0].value : 'None'}}
 </p>

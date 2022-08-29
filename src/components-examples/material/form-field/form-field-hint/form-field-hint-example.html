@@ -2,7 +2,7 @@
   <mat-form-field hintLabel="Max 10 characters" appearance="fill">
     <mat-label>Enter some input</mat-label>
     <input matInput #input maxlength="10" placeholder="Ex. Nougat">
-    <mat-hint align="end">{{input.value?.length || 0}}/10</mat-hint>
+    <mat-hint align="end">{{input.value.length}}/10</mat-hint>
   </mat-form-field>
 
   <mat-form-field appearance="fill">

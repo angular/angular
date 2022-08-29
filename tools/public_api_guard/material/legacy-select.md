@@ -53,6 +53,8 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
     // (undocumented)
     protected _getChangeEvent(value: any): MatSelectChange;
     // (undocumented)
+    protected _getOverlayMinWidth(): number;
+    // (undocumented)
     ngOnInit(): void;
     _offsetY: number;
     // (undocumented)
@@ -70,7 +72,6 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
     protected _scrollOptionIntoView(index: number): void;
     _transformOrigin: string;
     _triggerFontSize: number;
-    _triggerRect: ClientRect;
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatSelect, "mat-select", ["matSelect"], { "disabled": "disabled"; "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; }, {}, ["customTrigger", "options", "optionGroups"], ["mat-select-trigger", "*"], false>;
     // (undocumented)

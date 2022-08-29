@@ -23,7 +23,7 @@ import {Example} from './example';
       <mat-expansion-panel *ngFor="let id of ids" [expanded]="expandAll">
         <mat-expansion-panel-header>
           <div class="header">
-            <div class="title"> {{exampleComponents[id]?.title}} </div>
+            <div class="title">{{_getTitle(id)}}</div>
             <div class="id"> <{{id}}> </div>
           </div>
         </mat-expansion-panel-header>
@@ -76,4 +76,8 @@ export class ExampleList {
   _expandAll: boolean;
 
   exampleComponents = EXAMPLE_COMPONENTS;
+
+  protected _getTitle(id: string) {
+    return this.exampleComponents[id]?.title;
+  }
 }

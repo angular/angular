@@ -23,7 +23,7 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     <p> Value: {{ currentDrink }} </p>
     <p> Touched: {{ drinkControl.touched }} </p>
     <p> Dirty: {{ drinkControl.dirty }} </p>
-    <p> Status: {{ drinkControl.control?.status }} </p>
+    <p> Status: {{ drinkControl.status }} </p>
     <p>
       <label for="floating-placeholder">Floating placeholder:</label>
       <select [(ngModel)]="floatLabel" id="floating-placeholder">
@@ -70,7 +70,7 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
       <p> Value: {{ currentPokemon }} </p>
       <p> Touched: {{ pokemonControl.touched }} </p>
       <p> Dirty: {{ pokemonControl.dirty }} </p>
-      <p> Status: {{ pokemonControl.control?.status }} </p>
+      <p> Status: {{ pokemonControl.status }} </p>
       <p>
         <label for="pokemon-theme">Theme:</label>
         <select [(ngModel)]="pokemonTheme" id="pokemon-theme">
@@ -139,7 +139,7 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
       <p> Value: {{ currentDrinkObject | json }} </p>
       <p> Touched: {{ drinkObjectControl.touched }} </p>
       <p> Dirty: {{ drinkObjectControl.dirty }} </p>
-      <p> Status: {{ drinkObjectControl.control?.status }} </p>
+      <p> Status: {{ drinkObjectControl.status }} </p>
       <p> Comparison Mode: {{ compareByValue ? 'VALUE' : 'REFERENCE' }} </p>
 
       <button mat-button (click)="reassignDrinkByCopy()"

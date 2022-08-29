@@ -32,6 +32,11 @@
     "skipLibCheck": true,
     "types": ["tslib"]
   },
+  "angularCompilerOptions": {
+    "extendedDiagnostics": {
+      "defaultCategory": "error"
+    }
+  },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true
   }

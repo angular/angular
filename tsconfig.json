@@ -39,7 +39,10 @@
     }
   },
   "angularCompilerOptions": {
-    "strictTemplates": true
+    "strictTemplates": true,
+    "extendedDiagnostics": {
+      "defaultCategory": "error"
+    }
   },
   "include": [
     "src/**/*.ts",

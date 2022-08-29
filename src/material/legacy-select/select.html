@@ -34,7 +34,7 @@
   [cdkConnectedOverlayOrigin]="origin"
   [cdkConnectedOverlayOpen]="panelOpen"
   [cdkConnectedOverlayPositions]="_positions"
-  [cdkConnectedOverlayMinWidth]="_triggerRect?.width!"
+  [cdkConnectedOverlayMinWidth]="_getOverlayMinWidth()"
   [cdkConnectedOverlayOffsetY]="_offsetY"
   (backdropClick)="close()"
   (attach)="_onAttached()"

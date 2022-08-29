@@ -1,6 +1,6 @@
 <div role="group" class="example-tel-input-container"
      [formGroup]="parts"
-     [attr.aria-labelledby]="_formField?.getLabelId()"
+     [attr.aria-labelledby]="_formField.getLabelId()"
      (focusin)="onFocusIn($event)"
      (focusout)="onFocusOut($event)">
   <input class="example-tel-input-element"
