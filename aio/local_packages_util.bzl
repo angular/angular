@@ -8,15 +8,16 @@ def link_local_packages(deps):
         deps: list of npm dependency labels
     """
     for dep in deps:
-        label = Label(dep)
-        if label.package in ALL_PACKAGES:
-            npm_link(
-                name = _npm_link_name(dep),
-                target = to_package_label(label.package),
-                package_name = label.package,
-                package_path = native.package_name(),
-                tags = ["manual"],
-            )
+        if dep.startswith("@aio_npm//"):
+            label = Label(dep)
+            if label.package in ALL_PACKAGES:
+                npm_link(
+                    name = _npm_link_name(dep),
+                    target = to_package_label(label.package),
+                    package_name = label.package,
+                    package_path = native.package_name(),
+                    tags = ["manual"],
+                )
 
 def substitute_local_packages(deps):
     """Substitute npm dependencies for their local npm_link equivalent.
@@ -32,11 +33,12 @@ def substitute_local_packages(deps):
     """
     substituted = []
     for dep in deps:
-        label = Label(dep)
-        if label.package in ALL_PACKAGES:
-            substituted.append(_npm_link_name(dep))
-        else:
-            substituted.append(dep)
+        if dep.startswith("@aio_npm//"):
+            label = Label(dep)
+            if label.package in ALL_PACKAGES:
+                substituted.append(_npm_link_name(dep))
+            else:
+                substituted.append(dep)
     return substituted
 
 def _npm_link_name(dep):
