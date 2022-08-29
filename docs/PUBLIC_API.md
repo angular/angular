@@ -15,7 +15,7 @@ Our semver, timed-release cycle and deprecation policy currently applies to thes
 - `@angular/service-worker`
 
 
-One intentional omission from this list is `@angular/compiler`, which is currently considered a low level api and is subject to internal changes. These changes will not affect any applications or libraries using the higher-level apis (the command line interface or JIT compilation via `@angular/platform-browser-dynamic`). Only very specific use-cases require direct access to the compiler API (mostly tooling integration for IDEs, linters, etc). If you are working on this kind of integration, please reach out to us first.
+One intentional omission from this list is `@angular/compiler`, which is currently considered a low level API and is subject to internal changes. These changes will not affect any applications or libraries using the higher-level APIs (the command line interface or JIT compilation via `@angular/platform-browser-dynamic`). Only very specific use-cases, such as tooling integration for IDEs and linters, require direct access to the compiler API. If you are working on this kind of integration, please reach out to us first.
 
 Package `@angular/bazel` is currently an Angular Labs project and not covered by the public API guarantees.
 

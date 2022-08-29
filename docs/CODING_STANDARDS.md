@@ -82,7 +82,7 @@ Avoid `any` where possible. If you find yourself using `any`, consider whether a
 
 #### Getters and Setters
 
-Getters and setters introduce openings for side-effects, add more complexity for code readers,
+Getters and setters introduce openings for side effects, add more complexity for code readers,
 and generate additional code when targeting older browsers.
 
 * Only use getters and setters for `@Input` properties or when otherwise required for API

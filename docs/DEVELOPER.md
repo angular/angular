@@ -146,8 +146,8 @@ $ yarn lint
 ## Publishing Snapshot Builds
 
 When a build of any branch on the upstream fork angular/angular is green on CircleCI, it
-automatically publishes build artifacts to repositories in the Angular org, for example, the `@angular/core`
-package is published to https://github.com/angular/core-builds.
+automatically publishes build artifacts to repositories in the Angular org. For example,
+the `@angular/core` package is published to https://github.com/angular/core-builds.
 
 You may find that your un-merged change needs some validation from external participants.
 Rather than requiring them to pull your Pull Request and build Angular locally, they can depend on

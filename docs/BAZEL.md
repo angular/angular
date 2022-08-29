@@ -239,7 +239,7 @@ yarn bazel analyze-profile filename_name.profile --html --html_details --html_hi
 
 This will generate a `filename_name.profile.html` file that you can open in your browser.
 
-In the upper right corner that is a small table of contents with links to three areas: Tasks, Legend and Statistics.
+In the upper right corner that is a small table of contents with links to three areas: Tasks, Legend, and Statistics.
 
 In the Tasks section you will find a graph of where time is spent. Legend shows what the colors in the Tasks graph mean.
 Hovering over the background will show what phase that is, while hovering over bars will show more details about that specific action.
