@@ -21,11 +21,8 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {defaultParams} from './dialog-animations';
-import {
-  _MatDialogContainerBase,
-  MatDialogConfig,
-  matDialogAnimations,
-} from '@angular/material/dialog';
+import {MatLegacyDialogConfig} from './dialog-config';
+import {_MatDialogContainerBase, matDialogAnimations} from '@angular/material/dialog';
 
 /**
  * Internal component that wraps user-provided dialog content.
@@ -90,7 +87,7 @@ export class MatLegacyDialogContainer extends _MatDialogContainerBase {
     elementRef: ElementRef,
     focusTrapFactory: FocusTrapFactory,
     @Optional() @Inject(DOCUMENT) document: any,
-    dialogConfig: MatDialogConfig,
+    dialogConfig: MatLegacyDialogConfig,
     checker: InteractivityChecker,
     ngZone: NgZone,
     overlayRef: OverlayRef,

@@ -46,6 +46,14 @@ export type AutoFocusTarget = 'dialog' | 'first-tabbable' | 'first-heading';
 export function _closeDialogVia<R>(ref: MatDialogRef<R>, interactionType: FocusOrigin, result?: R): void;
 
 // @public
+export const _defaultParams: {
+    params: {
+        enterAnimationDuration: string;
+        exitAnimationDuration: string;
+    };
+};
+
+// @public
 export interface DialogPosition {
     bottom?: string;
     left?: string;
@@ -112,6 +120,8 @@ export abstract class _MatDialogBase<C extends _MatDialogContainerBase> implemen
     readonly afterAllClosed: Observable<void>;
     get afterOpened(): Subject<MatDialogRef<any>>;
     closeAll(): void;
+    // (undocumented)
+    protected dialogConfigClass: typeof MatDialogConfig;
     getDialogById(id: string): MatDialogRef<any> | undefined;
     // (undocumented)
     protected _idPrefix: string;
@@ -163,8 +173,8 @@ export class MatDialogConfig<D = any> {
     delayFocusTrap?: boolean;
     direction?: Direction;
     disableClose?: boolean;
-    enterAnimationDuration?: string;
-    exitAnimationDuration?: string;
+    enterAnimationDuration?: string | number;
+    exitAnimationDuration?: string | number;
     hasBackdrop?: boolean;
     height?: string;
     id?: string;

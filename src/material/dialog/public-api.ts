@@ -12,4 +12,4 @@ export * from './dialog-ref';
 export * from './dialog-content-directives';
 export * from './dialog-container';
 export * from './module';
-export {matDialogAnimations} from './dialog-animations';
+export {matDialogAnimations, _defaultParams} from './dialog-animations';

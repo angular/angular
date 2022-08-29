@@ -11,14 +11,15 @@ import {Location} from '@angular/common';
 import {Inject, Injectable, InjectionToken, Injector, Optional, SkipSelf} from '@angular/core';
 import {MatLegacyDialogContainer} from './dialog-container';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {_MatDialogBase, MatDialogConfig} from '@angular/material/dialog';
+import {_MatDialogBase} from '@angular/material/dialog';
 import {MatLegacyDialogRef} from './dialog-ref';
+import {MatLegacyDialogConfig} from './dialog-config';
 
 /** Injection token that can be used to access the data that was passed in to a dialog. */
 export const MAT_LEGACY_DIALOG_DATA = new InjectionToken<any>('MatDialogData');
 
 /** Injection token that can be used to specify default dialog options. */
-export const MAT_LEGACY_DIALOG_DEFAULT_OPTIONS = new InjectionToken<MatDialogConfig>(
+export const MAT_LEGACY_DIALOG_DEFAULT_OPTIONS = new InjectionToken<MatLegacyDialogConfig>(
   'mat-dialog-default-options',
 );
 
@@ -46,6 +47,8 @@ export const MAT_LEGACY_DIALOG_SCROLL_STRATEGY_PROVIDER = {
  */
 @Injectable()
 export class MatLegacyDialog extends _MatDialogBase<MatLegacyDialogContainer> {
+  protected override dialogConfigClass = MatLegacyDialogConfig;
+
   constructor(
     overlay: Overlay,
     injector: Injector,
@@ -54,7 +57,7 @@ export class MatLegacyDialog extends _MatDialogBase<MatLegacyDialogContainer> {
      * @breaking-change 10.0.0
      */
     @Optional() _location: Location,
-    @Optional() @Inject(MAT_LEGACY_DIALOG_DEFAULT_OPTIONS) defaultOptions: MatDialogConfig,
+    @Optional() @Inject(MAT_LEGACY_DIALOG_DEFAULT_OPTIONS) defaultOptions: MatLegacyDialogConfig,
     @Inject(MAT_LEGACY_DIALOG_SCROLL_STRATEGY) scrollStrategy: any,
     @Optional() @SkipSelf() parentDialog: MatLegacyDialog,
     /**

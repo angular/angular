@@ -56,6 +56,10 @@ $mat-dialog-button-horizontal-margin: 8px !default;
   // The dialog container is focusable. We remove the default outline shown in browsers.
   outline: 0;
 
+  .mdc-dialog__container {
+    transition-duration: var(--mat-dialog-transition-duration, 0ms);
+  }
+
   // Angular Material supports disabling all animations when NoopAnimationsModule is imported.
   // TODO(devversion): Look into using MDC's Sass queries to separate the animation styles and
   // conditionally add them. Consider the size cost and churn when deciding whether to switch.

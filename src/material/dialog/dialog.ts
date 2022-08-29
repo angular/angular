@@ -74,6 +74,7 @@ export abstract class _MatDialogBase<C extends _MatDialogContainerBase> implemen
   private _scrollStrategy: () => ScrollStrategy;
   protected _idPrefix = 'mat-dialog-';
   private _dialog: Dialog;
+  protected dialogConfigClass = MatDialogConfig;
 
   /** Keeps track of the currently-open dialogs. */
   get openDialogs(): MatDialogRef<any>[] {
@@ -175,7 +176,7 @@ export abstract class _MatDialogBase<C extends _MatDialogContainerBase> implemen
           // Provide our config as the CDK config as well since it has the same interface as the
           // CDK one, but it contains the actual values passed in by the user for things like
           // `disableClose` which we disable for the CDK dialog since we handle it ourselves.
-          {provide: MatDialogConfig, useValue: config},
+          {provide: this.dialogConfigClass, useValue: config},
           {provide: DialogConfig, useValue: config},
         ],
       },

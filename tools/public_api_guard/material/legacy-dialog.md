@@ -23,10 +23,10 @@ import { DialogPosition as LegacyDialogPosition } from '@angular/material/dialog
 import { DialogRole as LegacyDialogRole } from '@angular/material/dialog';
 import { Location as Location_2 } from '@angular/common';
 import { MAT_DIALOG_SCROLL_STRATEGY_FACTORY as MAT_LEGACY_DIALOG_SCROLL_STRATEGY_FACTORY } from '@angular/material/dialog';
+import { MatDialogConfig } from '@angular/material/dialog';
 import { MatDialogRef } from '@angular/material/dialog';
 import { matDialogAnimations as matLegacyDialogAnimations } from '@angular/material/dialog';
 import { _MatDialogBase as _MatLegacyDialogBase } from '@angular/material/dialog';
-import { MatDialogConfig as MatLegacyDialogConfig } from '@angular/material/dialog';
 import { _MatDialogContainerBase as _MatLegacyDialogContainerBase } from '@angular/material/dialog';
 import { MatDialogState as MatLegacyDialogState } from '@angular/material/dialog';
 import { NgZone } from '@angular/core';
@@ -74,6 +74,8 @@ export class MatLegacyDialog extends _MatLegacyDialogBase<MatLegacyDialogContain
     overlayContainer: OverlayContainer,
     animationMode?: 'NoopAnimations' | 'BrowserAnimations');
     // (undocumented)
+    protected dialogConfigClass: typeof MatLegacyDialogConfig;
+    // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyDialog, [null, null, { optional: true; }, { optional: true; }, null, { optional: true; skipSelf: true; }, null, { optional: true; }]>;
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<MatLegacyDialog>;
@@ -115,7 +117,11 @@ export class MatLegacyDialogClose implements OnInit, OnChanges {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyDialogClose, [{ optional: true; }, null, null]>;
 }
 
-export { MatLegacyDialogConfig }
+// @public (undocumented)
+export class MatLegacyDialogConfig<D = any> extends MatDialogConfig<D> {
+    enterAnimationDuration?: string;
+    exitAnimationDuration?: string;
+}
 
 // @public
 export class MatLegacyDialogContainer extends _MatLegacyDialogContainerBase {
@@ -124,8 +130,8 @@ export class MatLegacyDialogContainer extends _MatLegacyDialogContainerBase {
     _getAnimationState(): {
         value: "void" | "enter" | "exit";
         params: {
-            enterAnimationDuration: string;
-            exitAnimationDuration: string;
+            enterAnimationDuration: string | number;
+            exitAnimationDuration: string | number;
         };
     };
     _onAnimationDone({ toState, totalTime }: AnimationEvent_2): void;

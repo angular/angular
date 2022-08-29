@@ -9,7 +9,7 @@
 import {ViewContainerRef, ComponentFactoryResolver, Injector} from '@angular/core';
 import {Direction} from '@angular/cdk/bidi';
 import {ScrollStrategy} from '@angular/cdk/overlay';
-import {defaultParams} from './dialog-animations';
+import {_defaultParams} from './dialog-animations';
 
 /** Options for where to set focus to automatically on dialog open */
 export type AutoFocusTarget = 'dialog' | 'first-tabbable' | 'first-heading';
@@ -133,11 +133,19 @@ export class MatDialogConfig<D = any> {
   /** Alternate `ComponentFactoryResolver` to use when resolving the associated component. */
   componentFactoryResolver?: ComponentFactoryResolver;
 
-  /** Duration of the enter animation. Has to be a valid CSS value (e.g. 100ms). */
-  enterAnimationDuration?: string = defaultParams.params.enterAnimationDuration;
+  /**
+   * Duration of the enter animation in ms.
+   * Should be a number, string type is deprecated.
+   * @breaking-change 17.0.0 Remove string signature.
+   */
+  enterAnimationDuration?: string | number;
 
-  /** Duration of the exit animation. Has to be a valid CSS value (e.g. 50ms). */
-  exitAnimationDuration?: string = defaultParams.params.exitAnimationDuration;
+  /**
+   * Duration of the exit animation in ms.
+   * Should be a number, string type is deprecated.
+   * @breaking-change 17.0.0 Remove string signature.
+   */
+  exitAnimationDuration?: string | number;
 
   // TODO(jelbourn): add configuration for lifecycle hooks, ARIA labelling.
 }

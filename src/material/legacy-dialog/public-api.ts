@@ -11,13 +11,13 @@ export * from './dialog';
 export * from './dialog-container';
 export * from './dialog-content-directives';
 export * from './dialog-ref';
+export * from './dialog-config';
 export {
   _MatDialogBase as _MatLegacyDialogBase,
   _MatDialogContainerBase as _MatLegacyDialogContainerBase,
   AutoFocusTarget as LegacyAutoFocusTarget,
   DialogRole as LegacyDialogRole,
   DialogPosition as LegacyDialogPosition,
-  MatDialogConfig as MatLegacyDialogConfig,
   _closeDialogVia as _closeLegacyDialogVia,
   MatDialogState as MatLegacyDialogState,
   matDialogAnimations as matLegacyDialogAnimations,
