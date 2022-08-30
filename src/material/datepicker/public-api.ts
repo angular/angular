@@ -23,6 +23,8 @@ export {
   MatDatepickerContent,
   DatepickerDropdownPositionX,
   DatepickerDropdownPositionY,
+  MatDatepickerControl,
+  MatDatepickerPanel,
 } from './datepicker-base';
 export {MatDatepickerInputEvent, DateFilterFn} from './datepicker-input-base';
 export {

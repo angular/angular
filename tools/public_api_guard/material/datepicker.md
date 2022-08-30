@@ -466,7 +466,7 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>> extend
 }
 
 // @public
-interface MatDatepickerControl<D> {
+export interface MatDatepickerControl<D> {
     // (undocumented)
     dateFilter: DateFilterFn<D>;
     // (undocumented)
@@ -567,7 +567,7 @@ export class MatDatepickerModule {
 }
 
 // @public
-interface MatDatepickerPanel<C extends MatDatepickerControl<D>, S, D = ExtractDateTypeFromSelection<S>> {
+export interface MatDatepickerPanel<C extends MatDatepickerControl<D>, S, D = ExtractDateTypeFromSelection<S>> {
     closedStream: EventEmitter<void>;
     color: ThemePalette;
     datepickerInput: C;
