@@ -585,19 +585,19 @@ function assertNoImageDistortion(
           RuntimeErrorCode.INVALID_INPUT,
           `${imgDirectiveDetails(dir.rawSrc)} the aspect ratio of the image does not match ` +
               `the aspect ratio indicated by the width and height attributes. ` +
-              `Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h ` +
-              `(aspect-ratio: ${intrinsicAspectRatio}). Supplied width and height attributes: ` +
+              `\nIntrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h ` +
+              `(aspect-ratio: ${intrinsicAspectRatio}). \nSupplied width and height attributes: ` +
               `${suppliedWidth}w x ${suppliedHeight}h (aspect-ratio: ${suppliedAspectRatio}). ` +
-              `To fix this, update the width and height attributes.`));
+              `\nTo fix this, update the width and height attributes.`));
     } else if (stylingDistortion) {
       console.warn(formatRuntimeError(
           RuntimeErrorCode.INVALID_INPUT,
           `${imgDirectiveDetails(dir.rawSrc)} the aspect ratio of the rendered image ` +
               `does not match the image's intrinsic aspect ratio. ` +
-              `Intrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h ` +
-              `(aspect-ratio: ${intrinsicAspectRatio}). Rendered image size: ` +
+              `\nIntrinsic image size: ${intrinsicWidth}w x ${intrinsicHeight}h ` +
+              `(aspect-ratio: ${intrinsicAspectRatio}). \nRendered image size: ` +
               `${renderedWidth}w x ${renderedHeight}h (aspect-ratio: ` +
-              `${renderedAspectRatio}). This issue can occur if "width" and "height" ` +
+              `${renderedAspectRatio}). \nThis issue can occur if "width" and "height" ` +
               `attributes are added to an image without updating the corresponding ` +
               `image styling. To fix this, adjust image styling. In most cases, ` +
               `adding "height: auto" or "width: auto" to the image styling will fix ` +
