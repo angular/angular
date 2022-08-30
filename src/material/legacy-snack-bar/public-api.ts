@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './snack-bar-module';
-export * from './snack-bar';
-export * from './snack-bar-container';
-export * from './simple-snack-bar';
+export {MatLegacySnackBarModule} from './snack-bar-module';
+export {MatLegacySnackBar} from './snack-bar';
+export {MatLegacySnackBarContainer} from './snack-bar-container';
+export {LegacySimpleSnackBar} from './simple-snack-bar';
 export {
   MAT_SNACK_BAR_DATA as MAT_LEGACY_SNACK_BAR_DATA,
   MatSnackBarHorizontalPosition as MatLegacySnackBarHorizontalPosition,

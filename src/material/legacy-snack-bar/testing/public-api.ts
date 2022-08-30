@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './snack-bar-harness';
+export {MatLegacySnackBarHarness} from './snack-bar-harness';
 export {SnackBarHarnessFilters as LegacySnackBarHarnessFilters} from '@angular/material/snack-bar/testing';
