@@ -23,25 +23,13 @@ import {addErrorsToBundle, addParseDiagnostic, addParseError, canParseXml, getAt
  * @publicApi used by CLI
  */
 export class Xliff2TranslationParser implements TranslationParser<XmlTranslationParserHint> {
-  /**
-   * @deprecated
-   */
-  canParse(filePath: string, contents: string): XmlTranslationParserHint|false {
-    const result = this.analyze(filePath, contents);
-    return result.canParse && result.hint;
-  }
-
   analyze(filePath: string, contents: string): ParseAnalysis<XmlTranslationParserHint> {
     return canParseXml(filePath, contents, 'xliff', {version: '2.0'});
   }
 
-  parse(filePath: string, contents: string, hint?: XmlTranslationParserHint):
+  parse(filePath: string, contents: string, hint: XmlTranslationParserHint):
       ParsedTranslationBundle {
-    if (hint) {
-      return this.extractBundle(hint);
-    } else {
-      return this.extractBundleDeprecated(filePath, contents);
-    }
+    return this.extractBundle(hint);
   }
 
   private extractBundle({element, errors}: XmlTranslationParserHint): ParsedTranslationBundle {
@@ -64,20 +52,6 @@ export class Xliff2TranslationParser implements TranslationParser<XmlTranslation
     const translationVisitor = new Xliff2TranslationVisitor();
     for (const file of files) {
       visitAll(translationVisitor, file.children, {bundle});
-    }
-    return bundle;
-  }
-
-  private extractBundleDeprecated(filePath: string, contents: string) {
-    const hint = this.canParse(filePath, contents);
-    if (!hint) {
-      throw new Error(`Unable to parse "${filePath}" as XLIFF 2.0 format.`);
-    }
-    const bundle = this.extractBundle(hint);
-    if (bundle.diagnostics.hasErrors) {
-      const message =
-          bundle.diagnostics.formatDiagnostics(`Failed to parse "${filePath}" as XLIFF 2.0 format`);
-      throw new Error(message);
     }
     return bundle;
   }

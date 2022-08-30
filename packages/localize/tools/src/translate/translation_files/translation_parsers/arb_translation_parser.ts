@@ -53,14 +53,6 @@ export interface ArbLocation {
  * ```
  */
 export class ArbTranslationParser implements TranslationParser<ArbJsonObject> {
-  /**
-   * @deprecated
-   */
-  canParse(filePath: string, contents: string): ArbJsonObject|false {
-    const result = this.analyze(filePath, contents);
-    return result.canParse && result.hint;
-  }
-
   analyze(_filePath: string, contents: string): ParseAnalysis<ArbJsonObject> {
     const diagnostics = new Diagnostics();
     if (!contents.includes('"@@locale"')) {

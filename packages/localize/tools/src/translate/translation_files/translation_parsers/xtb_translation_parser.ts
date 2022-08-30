@@ -25,14 +25,6 @@ import {addErrorsToBundle, addParseDiagnostic, addParseError, canParseXml, getAt
  * @publicApi used by CLI
  */
 export class XtbTranslationParser implements TranslationParser<XmlTranslationParserHint> {
-  /**
-   * @deprecated
-   */
-  canParse(filePath: string, contents: string): XmlTranslationParserHint|false {
-    const result = this.analyze(filePath, contents);
-    return result.canParse && result.hint;
-  }
-
   analyze(filePath: string, contents: string): ParseAnalysis<XmlTranslationParserHint> {
     const extension = extname(filePath);
     if (extension !== '.xtb' && extension !== '.xmb') {
@@ -43,13 +35,9 @@ export class XtbTranslationParser implements TranslationParser<XmlTranslationPar
     return canParseXml(filePath, contents, 'translationbundle', {});
   }
 
-  parse(filePath: string, contents: string, hint?: XmlTranslationParserHint):
+  parse(filePath: string, contents: string, hint: XmlTranslationParserHint):
       ParsedTranslationBundle {
-    if (hint) {
-      return this.extractBundle(hint);
-    } else {
-      return this.extractBundleDeprecated(filePath, contents);
-    }
+    return this.extractBundle(hint);
   }
 
   private extractBundle({element, errors}: XmlTranslationParserHint): ParsedTranslationBundle {
@@ -63,20 +51,6 @@ export class XtbTranslationParser implements TranslationParser<XmlTranslationPar
 
     const bundleVisitor = new XtbVisitor();
     visitAll(bundleVisitor, element.children, bundle);
-    return bundle;
-  }
-
-  private extractBundleDeprecated(filePath: string, contents: string) {
-    const hint = this.canParse(filePath, contents);
-    if (!hint) {
-      throw new Error(`Unable to parse "${filePath}" as XMB/XTB format.`);
-    }
-    const bundle = this.extractBundle(hint);
-    if (bundle.diagnostics.hasErrors) {
-      const message =
-          bundle.diagnostics.formatDiagnostics(`Failed to parse "${filePath}" as XMB/XTB format`);
-      throw new Error(message);
-    }
     return bundle;
   }
 }
