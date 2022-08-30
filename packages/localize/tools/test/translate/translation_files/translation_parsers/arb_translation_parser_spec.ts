@@ -6,18 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵmakeTemplateObject} from '@angular/localize';
+
 import {ArbTranslationParser} from '../../../../src/translate/translation_files/translation_parsers/arb_translation_parser';
 
 describe('SimpleArbTranslationParser', () => {
-  describe('canParse()', () => {
+  describe('analyze()', () => {
     it('should return true if the file extension  is `.json` and contains `@@locale` property',
        () => {
          const parser = new ArbTranslationParser();
-         expect(parser.canParse('/some/file.xlf', '')).toBe(false);
-         expect(parser.canParse('/some/file.json', 'xxx')).toBe(false);
-         expect(parser.canParse('/some/file.json', '{ "someKey": "someValue" }')).toBe(false);
-         expect(parser.canParse('/some/file.json', '{ "@@locale": "en", "someKey": "someValue" }'))
-             .toBeTruthy();
+         expect(parser.analyze('/some/file.xlf', '').canParse).toBeFalse();
+         expect(parser.analyze('/some/file.json', 'xxx').canParse).toBeFalse();
+         expect(parser.analyze('/some/file.json', '{ "someKey": "someValue" }').canParse)
+             .toBeFalse();
+         expect(parser.analyze('/some/file.json', '{ "@@locale": "en", "someKey": "someValue" }')
+                    .canParse)
+             .toBeTrue();
        });
   });
 

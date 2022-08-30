@@ -34,14 +34,6 @@ interface SimpleJsonFile {
  * @publicApi used by CLI
  */
 export class SimpleJsonTranslationParser implements TranslationParser<SimpleJsonFile> {
-  /**
-   * @deprecated
-   */
-  canParse(filePath: string, contents: string): SimpleJsonFile|false {
-    const result = this.analyze(filePath, contents);
-    return result.canParse && result.hint;
-  }
-
   analyze(filePath: string, contents: string): ParseAnalysis<SimpleJsonFile> {
     const diagnostics = new Diagnostics();
     // For this to be parsable, the extension must be `.json` and the contents must include "locale"

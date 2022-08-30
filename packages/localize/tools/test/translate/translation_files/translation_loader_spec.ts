@@ -41,7 +41,7 @@ runInEachFileSystem(() => {
         jsonParser = new SimpleJsonTranslationParser();
       });
 
-      it('should call `canParse()` and `parse()` for each file', () => {
+      it('should call `analyze()` and `parse()` for each file', () => {
         const diagnostics = new Diagnostics();
         const parser = new MockTranslationParser(alwaysCanParse, 'fr');
         const loader = new TranslationLoader(fs, [parser], 'error', diagnostics);
@@ -218,11 +218,6 @@ runInEachFileSystem(() => {
     constructor(
         private _canParse: (filePath: string) => boolean, private _locale?: string,
         private _translations: Record<string, ɵParsedTranslation> = {}) {}
-
-    canParse(filePath: string, fileContents: string) {
-      const result = this.analyze(filePath, fileContents);
-      return result.canParse && result.hint;
-    }
 
     analyze(filePath: string, fileContents: string): ParseAnalysis<true> {
       const diagnostics = new Diagnostics();
