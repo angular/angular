@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './slide-toggle-harness';
+export {MatLegacySlideToggleHarness} from './slide-toggle-harness';
 export {
   _MatSlideToggleHarnessBase as _MatLegacySlideToggleHarnessBase,
   SlideToggleHarnessFilters as LegacySlideToggleHarnessFilters,

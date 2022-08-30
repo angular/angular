@@ -6,9 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './slide-toggle-module';
-export * from './slide-toggle';
-export * from './slide-toggle-config';
+export {MatLegacySlideToggleModule} from './slide-toggle-module';
+export {
+  MAT_LEGACY_SLIDE_TOGGLE_VALUE_ACCESSOR,
+  MatLegacySlideToggleChange,
+  MatLegacySlideToggle,
+} from './slide-toggle';
+export {
+  MatLegacySlideToggleDefaultOptions,
+  MAT_LEGACY_SLIDE_TOGGLE_DEFAULT_OPTIONS,
+} from './slide-toggle-config';
 export {
   _MatSlideToggleBase as _MatLegacySlideToggleBase,
   _MatSlideToggleRequiredValidatorModule as _MatLegacySlideToggleRequiredValidatorModule,
