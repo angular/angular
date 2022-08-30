@@ -29,7 +29,7 @@ import {
 import {MAT_SELECT_TRIGGER, _MatSelectBase} from '@angular/material/select';
 import {MatLegacyFormFieldControl} from '@angular/material/legacy-form-field';
 import {take, takeUntil} from 'rxjs/operators';
-import {matSelectAnimations} from './select-animations';
+import {matLegacySelectAnimations} from './select-animations';
 
 /**
  * The following style constants are necessary to save here in order
@@ -120,7 +120,10 @@ export class MatLegacySelectTrigger {}
     '(focus)': '_onFocus()',
     '(blur)': '_onBlur()',
   },
-  animations: [matSelectAnimations.transformPanelWrap, matSelectAnimations.transformPanel],
+  animations: [
+    matLegacySelectAnimations.transformPanelWrap,
+    matLegacySelectAnimations.transformPanel,
+  ],
   providers: [
     {provide: MatLegacyFormFieldControl, useExisting: MatLegacySelect},
     {provide: MAT_OPTION_PARENT_COMPONENT, useExisting: MatLegacySelect},

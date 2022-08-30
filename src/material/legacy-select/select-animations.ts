@@ -24,7 +24,7 @@ import {
  * The values below match the implementation of the AngularJS Material mat-select animation.
  * @docs-private
  */
-export const matSelectAnimations: {
+export const matLegacySelectAnimations: {
   readonly transformPanelWrap: AnimationTriggerMetadata;
   readonly transformPanel: AnimationTriggerMetadata;
 } = {

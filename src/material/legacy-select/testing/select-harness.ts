@@ -14,7 +14,7 @@ import {
   OptionHarnessFilters,
   OptgroupHarnessFilters,
 } from '@angular/material/legacy-core/testing';
-import {SelectHarnessFilters} from './select-harness-filters';
+import {LegacySelectHarnessFilters} from './select-harness-filters';
 
 /** Harness for interacting with a standard mat-select in tests. */
 export class MatLegacySelectHarness extends _MatSelectHarnessBase<
@@ -36,7 +36,7 @@ export class MatLegacySelectHarness extends _MatSelectHarnessBase<
    * @param options Options for filtering which select instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: SelectHarnessFilters = {}): HarnessPredicate<MatLegacySelectHarness> {
+  static with(options: LegacySelectHarnessFilters = {}): HarnessPredicate<MatLegacySelectHarness> {
     return new HarnessPredicate(MatLegacySelectHarness, options);
   }
 }

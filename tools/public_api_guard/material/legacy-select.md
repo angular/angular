@@ -13,27 +13,35 @@ import * as i4 from '@angular/material/legacy-core';
 import * as i5 from '@angular/material/core';
 import * as i6 from '@angular/cdk/scrolling';
 import * as i7 from '@angular/material/legacy-form-field';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
-import { MAT_SELECT_SCROLL_STRATEGY } from '@angular/material/select';
-import { MAT_SELECT_SCROLL_STRATEGY_PROVIDER } from '@angular/material/select';
-import { MAT_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY } from '@angular/material/select';
-import { MAT_SELECT_TRIGGER } from '@angular/material/select';
+import { MAT_SELECT_CONFIG as MAT_LEGACY_SELECT_CONFIG } from '@angular/material/select';
+import { MAT_SELECT_SCROLL_STRATEGY as MAT_LEGACY_SELECT_SCROLL_STRATEGY } from '@angular/material/select';
+import { MAT_SELECT_SCROLL_STRATEGY_PROVIDER as MAT_LEGACY_SELECT_SCROLL_STRATEGY_PROVIDER } from '@angular/material/select';
+import { MAT_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY as MAT_LEGACY_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY } from '@angular/material/select';
+import { MAT_SELECT_TRIGGER as MAT_LEGACY_SELECT_TRIGGER } from '@angular/material/select';
 import { MatLegacyOptgroup } from '@angular/material/legacy-core';
 import { MatLegacyOption } from '@angular/material/legacy-core';
+import { MatSelectConfig as MatLegacySelectConfig } from '@angular/material/select';
 import { _MatSelectBase } from '@angular/material/select';
-import { MatSelectConfig } from '@angular/material/select';
 import { OnInit } from '@angular/core';
 import { QueryList } from '@angular/core';
 
-export { MAT_SELECT_CONFIG }
+export { MAT_LEGACY_SELECT_CONFIG }
 
-export { MAT_SELECT_SCROLL_STRATEGY }
+export { MAT_LEGACY_SELECT_SCROLL_STRATEGY }
 
-export { MAT_SELECT_SCROLL_STRATEGY_PROVIDER }
+export { MAT_LEGACY_SELECT_SCROLL_STRATEGY_PROVIDER }
 
-export { MAT_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY }
+export { MAT_LEGACY_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY }
 
-export { MAT_SELECT_TRIGGER }
+export { MAT_LEGACY_SELECT_TRIGGER }
+
+// @public
+export const matLegacySelectAnimations: {
+    readonly transformPanelWrap: AnimationTriggerMetadata;
+    readonly transformPanel: AnimationTriggerMetadata;
+};
+
+export { MatLegacySelectConfig }
 
 // @public (undocumented)
 export class MatLegacySelectModule {
@@ -79,12 +87,6 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
 }
 
 // @public
-export const matSelectAnimations: {
-    readonly transformPanelWrap: AnimationTriggerMetadata;
-    readonly transformPanel: AnimationTriggerMetadata;
-};
-
-// @public
 export class MatSelectChange {
     constructor(
     source: MatSelect,
@@ -92,8 +94,6 @@ export class MatSelectChange {
     source: MatSelect;
     value: any;
 }
-
-export { MatSelectConfig }
 
 // @public
 export class MatSelectTrigger {

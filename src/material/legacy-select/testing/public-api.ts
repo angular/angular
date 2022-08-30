@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './select-harness';
-export * from './select-harness-filters';
+export {MatLegacySelectHarness} from './select-harness';
+export {LegacySelectHarnessFilters} from './select-harness-filters';
