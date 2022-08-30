@@ -302,7 +302,7 @@ Components are used in your templates, as in the following example:
 Usually, you declare the components and their templates in separate files.
 For the purposes of understanding how the injection system works, it is useful to look at them from the point of view of a combined logical tree.
 The term _logical_ distinguishes it from the render tree, which is your application's DOM tree.
-To mark the locations of where the component templates are located, this guide uses the `<#VIEW>` pseudo element, which doesn't actually exist in the render tree and is present for mental model purposes only.
+To mark the locations of where the component templates are located, this guide uses the `<#VIEW>` pseudo-element, which doesn't actually exist in the render tree and is present for mental model purposes only.
 
 </div>
 
@@ -895,7 +895,7 @@ Instead, you can provide the `VillainsService` in the `providers` metadata of th
 
 <code-example header="src/app/villains-list.component.ts (metadata)" path="hierarchical-dependency-injection/src/app/villains-list.component.ts" region="metadata"></code-example>
 
-By providing `VillainsService` in the `VillainsListComponent` metadata and nowhere else, the service becomes available only in the `VillainsListComponent` and its sub-component tree.
+By providing `VillainsService` in the `VillainsListComponent` metadata and nowhere else, the service becomes available only in the `VillainsListComponent` and its subcomponent tree.
 
 `VillainService` is a singleton with respect to `VillainsListComponent` because that is where it is declared.
 As long as `VillainsListComponent` does not get destroyed it will be the same instance of `VillainService` but if there are multiple instances of `VillainsListComponent`, then each instance of `VillainsListComponent` will have its own instance of `VillainService`.
@@ -971,7 +971,7 @@ The root injector, marked as \(A\), uses *generic* providers for details about `
 
 2. Child component \(B\). Component \(B\) defines its own, *specialized* providers for `CarService` and `EngineService` that have special capabilities suitable for what's going on in component \(B\).
 
-3. Child component \(C\) as a childe of Component \(B\). Component \(C\) defines its own, even *more specialized* provider for `CarService`.
+3. Child component \(C\) as a child of Component \(B\). Component \(C\) defines its own, even *more specialized* provider for `CarService`.
 
 <div class="lightbox">
 

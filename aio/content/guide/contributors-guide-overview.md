@@ -25,7 +25,7 @@ This section describes how to make larger contributions to the documentation.
 
 The following steps set up your local computer to contribute documentation content.
 
-1.  Sign into your account on GitHub.
+1.  Sign in to your account on GitHub.
     If you don't have an account on GitHub, [create a new account][GithubJoin] before you continue.
 2.  In your browser, navigate to [https://github.com/angular/angular][GithubAngular].
 3.  In your browser, fork the `angular/angular` repo into your GitHub account.

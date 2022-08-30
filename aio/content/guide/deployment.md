@@ -139,7 +139,7 @@ To deploy your Angular application to [GitHub Pages](https://help.github.com/art
 
     </code-example>
 
-1.  Build your project using the Github project name, with the Angular CLI command [`ng build`](cli/build) and the following options, where `your_project_name` is the name of the project that you gave the GitHub repository in step 1.
+1.  Build your project using the GitHub project name, with the Angular CLI command [`ng build`](cli/build) and the following options, where `your_project_name` is the name of the project that you gave the GitHub repository in step 1.
 
     Be sure to include the slashes on either side of your project name as in `/your_project_name/`.
 
@@ -158,7 +158,7 @@ To deploy your Angular application to [GitHub Pages](https://help.github.com/art
 
 <div class="alert is-helpful">
 
-Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpages), a full featured package that does all this for you and has extra functionality.
+Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpages), a full-featured package that does all this for you and has extra functionality.
 
 </div>
 
@@ -170,7 +170,7 @@ This section covers changes you may have to make to the server or to files deplo
 
 <a id="fallback"></a>
 
-### Routed apps must fallback to `index.html`
+### Routed apps must fall back to `index.html`
 
 Angular applications are perfect candidates for serving with a simple static HTML server.
 You don't need a server-side engine to dynamically compose application pages because

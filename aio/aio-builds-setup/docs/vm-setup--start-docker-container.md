@@ -2,7 +2,7 @@
 
 
 ## The `docker run` command
-Once everything has been setup and configured, a docker container can be started with the following
+Once everything has been set up and configured, a docker container can be started with the following
 command:
 
 ```

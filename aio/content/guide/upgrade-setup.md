@@ -19,7 +19,7 @@ In particular, the QuickStart live-coding example shows just the AppComponent fi
 -->
 
 This guide describes how to develop locally on your own machine.
-Setting up a new project on your machine is quick and easy with the [QuickStart seed on github](https://github.com/angular/quickstart "Install the github QuickStart repo").
+Setting up a new project on your machine is quick and easy with the [QuickStart seed on GitHub](https://github.com/angular/quickstart "Install the github QuickStart repo").
 
 ## Prerequisites
 

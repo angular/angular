@@ -14,7 +14,7 @@ Styles are implemented using [Sass](https://sass-lang.com/) and stored in `.scss
 
 ## File organization
 
-The `.scss` files are organized in the following sub-directories:
+The `.scss` files are organized in the following subdirectories:
 - [0-base/](./0-base): General styles affecting the whole application.
 - [1-layouts/](./1-layouts): Styles for areas/components related to the layout of the application, such as `top-menu`, `footer`, marketing pages, etc.
 - [2-modules/](./2-modules): Styles for specialized components (such as buttons, code, labels, etc.) and specific pages (such as API list page, "Features" page, etc.).
@@ -30,9 +30,9 @@ There are also some top-level files in `[src/styles/](.):
 
 ### Styles for a specific area/component
 
-For each area/component, there is a sub-directory in either `1-layouts/` or `2-modules/`.
+For each area/component, there is a subdirectory in either `1-layouts/` or `2-modules/`.
 
-Each such sub-directory contains a `<name>.scss` file with styles for the corresponding area/component and may also contain a `<name>-theme.scss` file with styles related to theming.
+Each such subdirectory contains a `<name>.scss` file with styles for the corresponding area/component and may also contain a `<name>-theme.scss` file with styles related to theming.
 See the next section for more details.
 
 When appropriate, the styles in these files should be scoped to the targeted component (for example, by using the component's selector).

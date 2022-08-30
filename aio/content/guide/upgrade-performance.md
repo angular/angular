@@ -128,7 +128,7 @@ You define that recipe by providing a factory function that can create an instan
 *   `NgModuleFactory`
 *   `(extraProviders: StaticProvider[]) => Promise<NgModuleRef>`
 
-When you pass an `NgModuleFactory`, `downgradeModule()` uses it to instantiate the module using [platformBrowser](api/platform-browser/platformBrowser]'s [bootstrapModuleFactory()](api/core/PlatformRef#bootstrapModuleFactory), which is compatible with ahead-of-time \(AOT\) compilation.
+When you pass an `NgModuleFactory`, `downgradeModule()` uses it to instantiate the module using [platformBrowser](api/platform-browser/platformBrowser)'s [bootstrapModuleFactory()](api/core/PlatformRef#bootstrapModuleFactory), which is compatible with ahead-of-time \(AOT\) compilation.
 AOT compilation helps make your applications load faster
 For more about AOT and how to create an `NgModuleFactory`, see the [Ahead-of-Time Compilation](guide/aot-compiler) guide.
 
@@ -177,7 +177,7 @@ As you might have guessed, you don't need to change anything in the way you boot
 Unlike `UpgradeModule`&mdash;which requires some extra steps&mdash; `downgradeModule()` is able to take care of bootstrapping the Angular module, as long as you provide the recipe.
 
 In order to start using any `upgrade/static` APIs, you still need to load the Angular framework as you would in a normal Angular application.
-You can see how this can be done with SystemJS by following the instructions in the [Upgrade Setup](guide/upgrade-setup "Setup for Upgrading from AngularJS") guide, selectively copying code from the [QuickStart github repository](https://github.com/angular/quickstart).
+You can see how this can be done with SystemJS by following the instructions in the [Upgrade Setup](guide/upgrade-setup "Setup for Upgrading from AngularJS") guide, selectively copying code from the [QuickStart GitHub repository](https://github.com/angular/quickstart).
 
 You also need to install the `@angular/upgrade` package using `npm install @angular/upgrade --save` and add a mapping for the `@angular/upgrade/static` package:
 

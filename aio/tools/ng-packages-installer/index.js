@@ -137,7 +137,7 @@ class NgPackagesInstaller {
   }
 
   /**
-   * Reinstall the original package.json depdendencies
+   * Reinstall the original package.json dependencies
    * Yarn will also delete the local marker file for us.
    */
   restoreNpmDependencies() {

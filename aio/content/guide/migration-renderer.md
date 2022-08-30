@@ -9,7 +9,7 @@ This section provides guidance on migrating from this deprecated API to the newe
 
 The deprecated `Renderer` class has been removed in version 9 of Angular, so it's necessary to migrate to a supported API.
 Using `Renderer2` is the recommended strategy because it supports a similar set of functionality to `Renderer`.
-The API surface is quite large \(with 19 methods\, but the schematic should simplify this process for your applications.
+With 19 methods, the API surface is quite large, but the schematic should simplify this process for your applications.
 
 ## Is there action required on my end?
 

@@ -49,7 +49,7 @@ While Angular's emulated style encapsulation prevents styles from escaping a com
 While component consumers should avoid directly overwriting the CSS internals of a component, you can offer a supported customization API via a CSS preprocessor like Sass.
 
 For example, a component may offer one or more supported mixins to customize various aspects of the component's appearance.
-While this approach uses global styles in it's implementation, it allows the component author to keep the mixins up to date with changes to the component's private DOM structure and CSS classes.
+While this approach uses global styles in its implementation, it allows the component author to keep the mixins up to date with changes to the component's private DOM structure and CSS classes.
 
 #### 3. Customize with CSS `::part`
 

@@ -131,7 +131,7 @@ The following example uses a template reference variable to implement a keystrok
 The template reference variable named `box`, declared on the `<input>` element, refers to the `<input>` element itself.
 The code uses the `box` variable to get the input element's `value` and display it with interpolation between `<p>` tags.
 
-The template is completely self contained.
+The template is completely self-contained.
 It doesn't bind to the component, and the component does nothing.
 
 Type something in the input box, and watch the display update with each keystroke.

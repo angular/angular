@@ -110,7 +110,7 @@ Click the browser back button or the "Heroes" link to activate a dialog.
 You can say "OK" and lose your changes or click "Cancel" and continue editing.
 
 Behind this behavior is the router's `CanDeactivate` guard.
-The guard gives you a chance to clean-up or ask the user's permission before navigating away from the current view.
+The guard gives you a chance to clean up or ask the user's permission before navigating away from the current view.
 
 The `Admin` and `Login` buttons illustrate other router capabilities covered later in the guide.
 
@@ -1882,7 +1882,7 @@ The admin feature is now protected by the guard, but the guard requires more cus
 
 Make the `AuthGuard` mimic authentication.
 
-The `AuthGuard` should call an application service that can login a user and retain information about the current user.
+The `AuthGuard` should call an application service that can log in a user and retain information about the current user.
 Generate a new `AuthService` in the `auth` folder:
 
 <code-example format="shell" language="shell">
@@ -2430,7 +2430,7 @@ If the route does not preload, it returns an `Observable` of `null`.
 
 In this sample, the  `preload()` method loads the route if the route's `data.preload` flag is truthy.
 
-As a side-effect, `SelectivePreloadingStrategyService` logs the `path` of a selected route in its public `preloadedModules` array.
+As a side effect, `SelectivePreloadingStrategyService` logs the `path` of a selected route in its public `preloadedModules` array.
 
 Shortly, you'll extend the `AdminDashboardComponent` to inject this service and display its `preloadedModules` array.
 
@@ -2457,7 +2457,7 @@ It also logs to the browser's console.
 
 ### Migrating URLs with redirects
 
-You've setup the routes for navigating around your application and used navigation imperatively and declaratively.
+You've set up the routes for navigating around your application and used navigation imperatively and declaratively.
 But like any application, requirements change over time.
 You've setup links and navigation to `/heroes` and `/hero/:id` from the `HeroListComponent` and `HeroDetailComponent` components.
 If there were a requirement that links to `heroes` become `superheroes`, you would still want the previous URLs to navigate correctly.

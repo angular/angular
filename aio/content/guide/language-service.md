@@ -148,7 +148,7 @@ When you type into the editor, the editor sends information to the language-serv
 
 When you trigger a completion list within a template, the editor first parses the template into an HTML [abstract syntax tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
 The Angular compiler interprets that tree to determine the context: which module the template is part of, the current scope, the component selector, and where your cursor is in the template AST.
-It can then determine the symbols that could potentially be at that position..
+It can then determine the symbols that could potentially be at that position.
 
 It's a little more involved if you are in an interpolation.
 If you have an interpolation of `{{data.---}}` inside a `div` and need the completion list after `data.---`, the compiler can't use the HTML AST to find the answer.

@@ -281,7 +281,7 @@ Use keyframes to create a pulse effect in your animations by defining styles at 
 Here's an example of using keyframes to create a pulse effect:
 
 *   The original `open` and `closed` states, with the original changes in height, color, and opacity, occurring over a timeframe of 1 second
-*   A keyframes sequence inserted in the middle that causes the button to appear to pulsate irregularly over the course of that same 1 second timeframe
+*   A keyframes sequence inserted in the middle that causes the button to appear to pulsate irregularly over the course of that same 1-second timeframe
 
 <div class="lightbox">
 

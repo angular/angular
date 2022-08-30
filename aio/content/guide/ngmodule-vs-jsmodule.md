@@ -34,7 +34,7 @@ import { AppComponent } from './app.component';
 Each module has its own top-level scope.
 In other words, top-level variables and functions in a module are not seen in other scripts or modules.
 Each module provides a namespace for identifiers to prevent them from clashing with identifiers in other modules.
-With multiple modules, you can prevent accidental global variables by creating a single global namespace and adding sub-modules to it.
+With multiple modules, you can prevent accidental global variables by creating a single global namespace and adding submodules to it.
 
 The Angular framework itself is loaded as a set of JavaScript modules.
 

@@ -155,7 +155,7 @@ To help ensure that you have sufficient time and a clear path to update, this is
 
 ## Public API surface
 
-Angular is a collection of many packages, sub-projects, and tools.
+Angular is a collection of many packages, subprojects, and tools.
 To prevent accidental use of private APIs and so that you can clearly understand what is covered by the practices described here &mdash; we document what is and is not considered our public API surface.
 For details, see [Supported Public API Surface of Angular](https://github.com/angular/angular/blob/main/docs/PUBLIC_API.md "Supported Public API Surface of Angular").
 

@@ -179,7 +179,7 @@ To add or remove an element, bind `*ngIf` to a condition expression such as `isA
 <code-example header="src/app/app.component.html" path="built-in-directives/src/app/app.component.html" region="NgIf-1"></code-example>
 
 When the `isActive` expression returns a truthy value, `NgIf` adds the `ItemDetailComponent` to the DOM.
-When the expression is falsy, `NgIf` removes the `ItemDetailComponent` from the DOM and disposes of the component and all of its sub-components.
+When the expression is falsy, `NgIf` removes the `ItemDetailComponent` from the DOM and disposes of the component and all of its subcomponents.
 
 For more information on `NgIf` and `NgIfElse`, see the [NgIf API documentation](api/common/NgIf).
 
@@ -204,7 +204,7 @@ In this example, Angular does not display the `nullCustomer` because it is `null
 Use the `NgFor` directive to present a list of items.
 
 1.  Define a block of HTML that determines how Angular renders a single item.
-1.  To list your items, assign the short hand `let item of items` to `*ngFor`.
+1.  To list your items, assign the shorthand `let item of items` to `*ngFor`.
 
 <code-example header="src/app/app.component.html" path="built-in-directives/src/app/app.component.html" region="NgFor-1"></code-example>
 
@@ -239,7 +239,7 @@ For more information about template input variables, see [Structural directive s
 
 Get the `index` of `*ngFor` in a template input variable and use it in the template.
 
-In the `*ngFor`, add a semicolon and `let i=index` to the short hand.
+In the `*ngFor`, add a semicolon and `let i=index` to the shorthand.
 The following example gets the `index` in a variable named `i` and displays it with the item name.
 
 <code-example header="src/app/app.component.html" path="built-in-directives/src/app/app.component.html" region="NgFor-3"></code-example>
@@ -271,7 +271,7 @@ With the `*ngFor` `trackBy` property, Angular can change and re-render only thos
 
     <code-example header="src/app/app.component.ts" path="built-in-directives/src/app/app.component.ts" region="trackByItems"></code-example>
 
-1.  In the short hand expression, set `trackBy` to the `trackByItems()` method.
+1.  In the shorthand expression, set `trackBy` to the `trackByItems()` method.
 
     <code-example header="src/app/app.component.html" path="built-in-directives/src/app/app.component.html" region="trackBy"></code-example>
 

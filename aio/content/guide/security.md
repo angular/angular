@@ -162,7 +162,7 @@ Content Security Policy \(CSP\) is a defense-in-depth technique to prevent XSS.
 To enable CSP, configure your web server to return an appropriate `Content-Security-Policy` HTTP header.
 Read more about content security policy at the [Web Fundamentals guide](https://developers.google.com/web/fundamentals/security/csp) on the Google Developers website.
 
-The minimal policy required for brand new Angular is:
+The minimal policy required for brand-new Angular is:
 
 <code-example format="none" language="none">
 

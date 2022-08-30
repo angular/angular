@@ -1,6 +1,6 @@
 # Special Elements
 
-Each sub-directory below this contains documentation that describes "special elements".
+Each subdirectory below this contains documentation that describes "special elements".
 These are elements that can appear in templates that have special meaning and behaviour in the Angular framework.
 
 Each element should have a markdown file with the same file name as the element's tag name \(for example, `ng-container.md`\).

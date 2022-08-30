@@ -54,7 +54,7 @@ Style guides and the style tests can change.
 
 Generally, shorter sentences are easier to read than longer ones.
 Long sentences can occur when you try to say too much at once.
-Long sentences, as well as the use of parentheses, semi-colons, or words identified as *too-wordy*, generally require rethinking and rewriting.
+Long sentences, as well as the use of parentheses, semicolons, or words identified as *too-wordy*, generally require rethinking and rewriting.
 
 Consider restructuring a long sentence to break its individual ideas into distinct sentences or bullet points.
 
@@ -70,7 +70,7 @@ Shorter, more common words are generally easier to read than longer ones.
 This does not mean you need to write down to the audience. Technical docs should still be precise.
 Angular docs are read by many people around the world and should use language that the most people can understand.
 
-If you think a specific term is required even though it is been flagged as uncommon, try to include a short explanation of the term.
+If you think a specific term is required even though it has been flagged as uncommon, try to include a short explanation of the term.
 Also, try adding some context around its first mention.
 
 Linking a term to another section or topic is also an option, but consider the disruption that causes to the reader before you use it.
@@ -175,7 +175,7 @@ Sentences that start with the words identified by this message can usually be ma
 
 Cliches should be replaced by more literal text.
 
-Cliches make it difficult for people who don't understand English to understand the documentation. When cliches are translated by online tools such as Google translate, they can produce confusing results.
+Cliches make it difficult for people who don't understand English to understand the documentation. When cliches are translated by online tools such as Google Translate, they can produce confusing results.
 
 ## If all else fails
 
