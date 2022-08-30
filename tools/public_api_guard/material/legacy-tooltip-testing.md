@@ -6,9 +6,11 @@
 
 import { AsyncFactoryFn } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
+import { TooltipHarnessFilters as LegacyTooltipHarnessFilters } from '@angular/material/tooltip/testing';
 import { _MatTooltipHarnessBase } from '@angular/material/tooltip/testing';
 import { TestElement } from '@angular/cdk/testing';
-import { TooltipHarnessFilters } from '@angular/material/tooltip/testing';
+
+export { LegacyTooltipHarnessFilters }
 
 // @public
 export class MatLegacyTooltipHarness extends _MatTooltipHarnessBase {
@@ -22,10 +24,8 @@ export class MatLegacyTooltipHarness extends _MatTooltipHarnessBase {
     protected _optionalPanel: AsyncFactoryFn<TestElement | null>;
     // (undocumented)
     protected _showAnimationName: string;
-    static with(options?: TooltipHarnessFilters): HarnessPredicate<MatLegacyTooltipHarness>;
+    static with(options?: LegacyTooltipHarnessFilters): HarnessPredicate<MatLegacyTooltipHarness>;
 }
-
-export { TooltipHarnessFilters }
 
 // (No @packageDocumentation comment for this package)
 

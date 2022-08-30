@@ -8,12 +8,12 @@
 
 import {Component} from '@angular/core';
 import {
-  MAT_TOOLTIP_DEFAULT_OPTIONS,
-  MatTooltipDefaultOptions,
+  MAT_LEGACY_TOOLTIP_DEFAULT_OPTIONS,
+  MatLegacyTooltipDefaultOptions,
 } from '@angular/material/legacy-tooltip';
 
 /** Custom options the configure the tooltip's default show/hide delays. */
-export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
+export const myCustomTooltipDefaults: MatLegacyTooltipDefaultOptions = {
   showDelay: 1000,
   hideDelay: 1000,
   touchendHideDelay: 1000,
@@ -25,6 +25,6 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
 @Component({
   selector: 'legacy-tooltip-modified-defaults-example',
   templateUrl: 'legacy-tooltip-modified-defaults-example.html',
-  providers: [{provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults}],
+  providers: [{provide: MAT_LEGACY_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults}],
 })
 export class LegacyTooltipModifiedDefaultsExample {}

@@ -19,7 +19,7 @@ import {
  * Animations used by MatTooltip.
  * @docs-private
  */
-export const matTooltipAnimations: {
+export const matLegacyTooltipAnimations: {
   readonly tooltipState: AnimationTriggerMetadata;
 } = {
   /** Animation that transitions a tooltip in and out. */

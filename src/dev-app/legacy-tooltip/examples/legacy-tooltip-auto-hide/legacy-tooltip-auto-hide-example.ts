@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {TooltipPosition} from '@angular/material/legacy-tooltip';
+import {LegacyTooltipPosition} from '@angular/material/legacy-tooltip';
 
 /**
  * @title Tooltip that demonstrates auto-hiding when it clips out of its scrolling container.
@@ -19,6 +19,6 @@ import {TooltipPosition} from '@angular/material/legacy-tooltip';
   styleUrls: ['legacy-tooltip-auto-hide-example.css'],
 })
 export class LegacyTooltipAutoHideExample {
-  positionOptions: TooltipPosition[] = ['below', 'above', 'left', 'right'];
+  positionOptions: LegacyTooltipPosition[] = ['below', 'above', 'left', 'right'];
   position = new FormControl(this.positionOptions[0]);
 }

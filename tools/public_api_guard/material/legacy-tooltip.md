@@ -12,33 +12,35 @@ import { ChangeDetectorRef } from '@angular/core';
 import { Directionality } from '@angular/cdk/bidi';
 import { ElementRef } from '@angular/core';
 import { FocusMonitor } from '@angular/cdk/a11y';
-import { getMatTooltipInvalidPositionError } from '@angular/material/tooltip';
+import { getMatTooltipInvalidPositionError as getMatLegacyTooltipInvalidPositionError } from '@angular/material/tooltip';
 import * as i0 from '@angular/core';
 import * as i2 from '@angular/cdk/a11y';
 import * as i3 from '@angular/common';
 import * as i4 from '@angular/cdk/overlay';
 import * as i5 from '@angular/material/core';
 import * as i6 from '@angular/cdk/scrolling';
-import { MAT_TOOLTIP_DEFAULT_OPTIONS } from '@angular/material/tooltip';
-import { MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY } from '@angular/material/tooltip';
-import { MAT_TOOLTIP_SCROLL_STRATEGY } from '@angular/material/tooltip';
-import { MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY } from '@angular/material/tooltip';
-import { MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER } from '@angular/material/tooltip';
+import { SCROLL_THROTTLE_MS as LEGACY_SCROLL_THROTTLE_MS } from '@angular/material/tooltip';
+import { TooltipPosition as LegacyTooltipPosition } from '@angular/material/tooltip';
+import { TooltipTouchGestures as LegacyTooltipTouchGestures } from '@angular/material/tooltip';
+import { TooltipVisibility as LegacyTooltipVisibility } from '@angular/material/tooltip';
+import { MAT_TOOLTIP_DEFAULT_OPTIONS as MAT_LEGACY_TOOLTIP_DEFAULT_OPTIONS } from '@angular/material/tooltip';
+import { MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY as MAT_LEGACY_TOOLTIP_DEFAULT_OPTIONS_FACTORY } from '@angular/material/tooltip';
+import { MAT_TOOLTIP_SCROLL_STRATEGY as MAT_LEGACY_TOOLTIP_SCROLL_STRATEGY } from '@angular/material/tooltip';
+import { MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY as MAT_LEGACY_TOOLTIP_SCROLL_STRATEGY_FACTORY } from '@angular/material/tooltip';
+import { MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER as MAT_LEGACY_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER } from '@angular/material/tooltip';
+import { MatTooltipDefaultOptions as MatLegacyTooltipDefaultOptions } from '@angular/material/tooltip';
 import { _MatTooltipBase } from '@angular/material/tooltip';
-import { MatTooltipDefaultOptions } from '@angular/material/tooltip';
 import { NgZone } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Overlay } from '@angular/cdk/overlay';
 import { Platform } from '@angular/cdk/platform';
-import { SCROLL_THROTTLE_MS } from '@angular/material/tooltip';
 import { ScrollDispatcher } from '@angular/cdk/scrolling';
 import { _TooltipComponentBase } from '@angular/material/tooltip';
-import { TooltipPosition } from '@angular/material/tooltip';
-import { TooltipTouchGestures } from '@angular/material/tooltip';
-import { TooltipVisibility } from '@angular/material/tooltip';
 import { ViewContainerRef } from '@angular/core';
 
-export { getMatTooltipInvalidPositionError }
+export { getMatLegacyTooltipInvalidPositionError }
+
+export { LEGACY_SCROLL_THROTTLE_MS }
 
 // @public
 export class LegacyTooltipComponent extends _TooltipComponentBase {
@@ -56,19 +58,25 @@ export class LegacyTooltipComponent extends _TooltipComponentBase {
     static ɵfac: i0.ɵɵFactoryDeclaration<LegacyTooltipComponent, [null, null, { optional: true; }]>;
 }
 
-export { MAT_TOOLTIP_DEFAULT_OPTIONS }
+export { LegacyTooltipPosition }
 
-export { MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY }
+export { LegacyTooltipTouchGestures }
 
-export { MAT_TOOLTIP_SCROLL_STRATEGY }
+export { LegacyTooltipVisibility }
 
-export { MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY }
+export { MAT_LEGACY_TOOLTIP_DEFAULT_OPTIONS }
 
-export { MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER }
+export { MAT_LEGACY_TOOLTIP_DEFAULT_OPTIONS_FACTORY }
+
+export { MAT_LEGACY_TOOLTIP_SCROLL_STRATEGY }
+
+export { MAT_LEGACY_TOOLTIP_SCROLL_STRATEGY_FACTORY }
+
+export { MAT_LEGACY_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER }
 
 // @public
 export class MatLegacyTooltip extends _MatTooltipBase<LegacyTooltipComponent> {
-    constructor(overlay: Overlay, elementRef: ElementRef<HTMLElement>, scrollDispatcher: ScrollDispatcher, viewContainerRef: ViewContainerRef, ngZone: NgZone, platform: Platform, ariaDescriber: AriaDescriber, focusMonitor: FocusMonitor, scrollStrategy: any, dir: Directionality, defaultOptions: MatTooltipDefaultOptions, _document: any);
+    constructor(overlay: Overlay, elementRef: ElementRef<HTMLElement>, scrollDispatcher: ScrollDispatcher, viewContainerRef: ViewContainerRef, ngZone: NgZone, platform: Platform, ariaDescriber: AriaDescriber, focusMonitor: FocusMonitor, scrollStrategy: any, dir: Directionality, defaultOptions: MatLegacyTooltipDefaultOptions, _document: any);
     // (undocumented)
     protected readonly _tooltipComponent: typeof LegacyTooltipComponent;
     // (undocumented)
@@ -76,6 +84,13 @@ export class MatLegacyTooltip extends _MatTooltipBase<LegacyTooltipComponent> {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyTooltip, [null, null, null, null, null, null, null, null, null, { optional: true; }, { optional: true; }, null]>;
 }
+
+// @public
+export const matLegacyTooltipAnimations: {
+    readonly tooltipState: AnimationTriggerMetadata;
+};
+
+export { MatLegacyTooltipDefaultOptions }
 
 // @public (undocumented)
 export class MatLegacyTooltipModule {
@@ -86,21 +101,6 @@ export class MatLegacyTooltipModule {
     // (undocumented)
     static ɵmod: i0.ɵɵNgModuleDeclaration<MatLegacyTooltipModule, [typeof i1.MatLegacyTooltip, typeof i1.LegacyTooltipComponent], [typeof i2.A11yModule, typeof i3.CommonModule, typeof i4.OverlayModule, typeof i5.MatCommonModule], [typeof i1.MatLegacyTooltip, typeof i1.LegacyTooltipComponent, typeof i5.MatCommonModule, typeof i6.CdkScrollableModule]>;
 }
-
-// @public
-export const matTooltipAnimations: {
-    readonly tooltipState: AnimationTriggerMetadata;
-};
-
-export { MatTooltipDefaultOptions }
-
-export { SCROLL_THROTTLE_MS }
-
-export { TooltipPosition }
-
-export { TooltipTouchGestures }
-
-export { TooltipVisibility }
 
 // (No @packageDocumentation comment for this package)
 

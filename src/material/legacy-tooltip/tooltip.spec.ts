@@ -33,12 +33,12 @@ import {
 import {By} from '@angular/platform-browser';
 import {Subject} from 'rxjs';
 import {
-  MAT_TOOLTIP_DEFAULT_OPTIONS,
+  MAT_LEGACY_TOOLTIP_DEFAULT_OPTIONS,
   MatLegacyTooltip,
   MatLegacyTooltipModule,
-  SCROLL_THROTTLE_MS,
-  TooltipPosition,
-  TooltipTouchGestures,
+  LEGACY_SCROLL_THROTTLE_MS,
+  LegacyTooltipPosition,
+  LegacyTooltipTouchGestures,
 } from './index';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
@@ -173,7 +173,7 @@ describe('MatTooltip', () => {
           declarations: [BasicTooltipDemo],
           providers: [
             {
-              provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
+              provide: MAT_LEGACY_TOOLTIP_DEFAULT_OPTIONS,
               useValue: {showDelay: 1337, hideDelay: 7331},
             },
           ],
@@ -210,7 +210,7 @@ describe('MatTooltip', () => {
           declarations: [TooltipDemoWithoutPositionBinding],
           providers: [
             {
-              provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
+              provide: MAT_LEGACY_TOOLTIP_DEFAULT_OPTIONS,
               useValue: {position: 'right'},
             },
           ],
@@ -279,7 +279,7 @@ describe('MatTooltip', () => {
           declarations: [WideTooltipDemo],
           providers: [
             {
-              provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
+              provide: MAT_LEGACY_TOOLTIP_DEFAULT_OPTIONS,
               useValue: {positionAtOrigin: true},
             },
           ],
@@ -310,7 +310,7 @@ describe('MatTooltip', () => {
           declarations: [TooltipDemoWithoutPositionBinding],
           providers: [
             {
-              provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
+              provide: MAT_LEGACY_TOOLTIP_DEFAULT_OPTIONS,
               useValue: {disableTooltipInteractivity: true},
             },
           ],
@@ -901,7 +901,7 @@ describe('MatTooltip', () => {
       expect(classList).not.toContain('mat-tooltip-panel-left');
       expect(classList).toContain('mat-tooltip-panel-right');
 
-      function setPositionAndShow(position: TooltipPosition) {
+      function setPositionAndShow(position: LegacyTooltipPosition) {
         tooltipDirective.hide(0);
         fixture.detectChanges();
         tick(0);
@@ -1135,7 +1135,7 @@ describe('MatTooltip', () => {
 
       // Scroll the page but tick just before the default throttle should update.
       fixture.componentInstance.scrollDown();
-      tick(SCROLL_THROTTLE_MS - 1);
+      tick(LEGACY_SCROLL_THROTTLE_MS - 1);
       expect(tooltipDirective._isTooltipVisible())
         .withContext('Expected tooltip to be visible when scrolling, before throttle limit')
         .toBe(true);
@@ -1516,7 +1516,7 @@ class BasicTooltipDemo {
   message: any = initialTooltipMessage;
   showButton: boolean = true;
   showTooltipClass = false;
-  touchGestures: TooltipTouchGestures = 'auto';
+  touchGestures: LegacyTooltipTouchGestures = 'auto';
   @ViewChild(MatLegacyTooltip) tooltip: MatLegacyTooltip;
   @ViewChild('button') button: ElementRef<HTMLButtonElement>;
 }
@@ -1600,7 +1600,7 @@ class DataBoundAriaLabelTooltip {
 class TooltipOnTextFields {
   @ViewChild('input') input: ElementRef<HTMLInputElement>;
   @ViewChild('textarea') textarea: ElementRef<HTMLTextAreaElement>;
-  touchGestures: TooltipTouchGestures = 'auto';
+  touchGestures: LegacyTooltipTouchGestures = 'auto';
 }
 
 @Component({
@@ -1614,7 +1614,7 @@ class TooltipOnTextFields {
 })
 class TooltipOnDraggableElement {
   @ViewChild('button') button: ElementRef;
-  touchGestures: TooltipTouchGestures = 'auto';
+  touchGestures: LegacyTooltipTouchGestures = 'auto';
 }
 
 @Component({

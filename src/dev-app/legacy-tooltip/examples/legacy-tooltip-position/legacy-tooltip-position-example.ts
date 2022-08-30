@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {TooltipPosition} from '@angular/material/legacy-tooltip';
+import {LegacyTooltipPosition} from '@angular/material/legacy-tooltip';
 
 /**
  * @title Tooltip with a custom position
@@ -19,6 +19,6 @@ import {TooltipPosition} from '@angular/material/legacy-tooltip';
   styleUrls: ['legacy-tooltip-position-example.css'],
 })
 export class LegacyTooltipPositionExample {
-  positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
+  positionOptions: LegacyTooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
   position = new FormControl(this.positionOptions[0]);
 }
