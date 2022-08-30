@@ -19,7 +19,7 @@ In addition to optimizing the loading of the LCP image, `NgOptimizedImage` enfor
 
 ## Prerequisites
 
-You will need to import the directive into your application. In addition, you will need to setup an image loader. These steps are explained in the [Setting up `NgOptimizedImage`](/guide/image-directive-setup) tutorial.
+You will need to import the directive into your application. In addition, you will need to set up an image loader. These steps are explained in the [Setting up `NgOptimizedImage`](/guide/image-directive-setup) tutorial.
 
 ## Usage in a template
 

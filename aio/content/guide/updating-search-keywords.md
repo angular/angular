@@ -1,6 +1,6 @@
 # Updating search keywords
 
-In documentation, being able to find the content you need is equally as important as the content itself.
+In documentation, being able to find the content you need is as important as the content itself.
 In [angular.io](https://angular.io), users can discover content in several ways, including:
 
 *   Organic search results, such as through [google.com](https://google.com)

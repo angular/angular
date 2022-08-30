@@ -150,7 +150,7 @@ To correct the problem, call `compileComponents()` as explained in the following
 
 Components often have service dependencies.
 
-The `WelcomeComponent` displays a welcome message to the logged in user.
+The `WelcomeComponent` displays a welcome message to the logged-in user.
 It knows who the user is based on a property of the injected `UserService`:
 
 <code-example header="app/welcome/welcome.component.ts" path="testing/src/app/welcome/welcome.component.ts"></code-example>
@@ -618,7 +618,7 @@ Learn about it on the web, starting with the [official documentation](https://rx
 ## Component with inputs and outputs
 
 A component with inputs and outputs typically appears inside the view template of a host component.
-The host uses a property binding to set the input property and an event binding tolisten to events raised by the output property.
+The host uses a property binding to set the input property and an event binding to listen to events raised by the output property.
 
 The testing goal is to verify that such bindings work as expected.
 The tests should set input values and listen for output events.
@@ -790,7 +790,7 @@ This testing module configuration shows three important differences:
 
 The `createComponent` returns a `fixture` that holds an instance of `TestHostComponent` instead of an instance of `DashboardHeroComponent`.
 
-Creating the `TestHostComponent` has the side-effect of creating a `DashboardHeroComponent` because the latter appears within the template of the former.
+Creating the `TestHostComponent` has the side effect of creating a `DashboardHeroComponent` because the latter appears within the template of the former.
 The query for the hero element \(`heroEl`\) still finds it in the test DOM, albeit at greater depth in the element tree than before.
 
 The tests themselves are almost identical to the stand-alone version:
@@ -1070,7 +1070,7 @@ This is a skill you might need to test a more sophisticated component, one that 
 
 #### What good are these tests?
 
-Stubbed `RouterLink` tests can confirm that a component with links and an outlet is setup properly, that the component has the links it should have, and that they are all pointing in the expected direction.
+Stubbed `RouterLink` tests can confirm that a component with links and an outlet is set up properly, that the component has the links it should have, and that they are all pointing in the expected direction.
 These tests do not concern whether the application will succeed in navigating to the target component when the user clicks a link.
 
 Stubbing the RouterLink and RouterOutlet is the best option for such limited testing goals.
@@ -1167,7 +1167,7 @@ So when you call `createComponent()`, the `TestBed` compiles implicitly.
 That's not a problem when the source code is in memory.
 But the `BannerComponent` requires external files that the compiler must read from the file system, an inherently *asynchronous* operation.
 
-If the `TestBed` were allowed to continue, the tests would run and fail mysteriously before the compiler could finished.
+If the `TestBed` were allowed to continue, the tests would run and fail mysteriously before the compiler could finish.
 
 The preemptive error message tells you to compile explicitly with `compileComponents()`.
 

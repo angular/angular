@@ -134,7 +134,7 @@ These examples use a shorthand form of the prompt syntax, supplying only the tex
 In most cases, this is all that is required.
 Notice however, that the two prompts expect different types of input.
 When using the shorthand form, the most appropriate type is automatically selected based on the property's schema.
-In the example, the `name` prompt uses the `input` type because it it is a string property.
+In the example, the `name` prompt uses the `input` type because it is a string property.
 The `useColor` prompt uses a `confirmation` type because it is a Boolean property.
 In this case, "yes" corresponds to `true` and "no" corresponds to `false`.
 

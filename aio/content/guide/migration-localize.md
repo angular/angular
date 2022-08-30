@@ -27,7 +27,7 @@ It also lists `@angular/localize` as a dependency in your app's `package.json` t
 
 `@angular/localize` is a new package that supports i18n of messages in Ivy applications.
 This package requires a global `$localize` symbol to exist.
-The symbol is loaded by importing the `@angular/localize/init` module, which has the side-effect of attaching it to the global scope.
+The symbol is loaded by importing the `@angular/localize/init` module, which has the side effect of attaching it to the global scope.
 
 ## Why is this migration necessary?
 
@@ -41,7 +41,7 @@ Because the application does not need to be built again for each locale, this ma
 The post-compilation inlining step is optional &mdash;for example during development or if the translations will be inlined at runtime.
 Therefore this global `$localize` must be available on the global scope at runtime.
 To make `$localize` available on the global scope, each application must now import the `@angular/localize/init` module.
-This has the side-effect of attaching a minimal implementation of `&dollar;localize` to the global scope.
+This has the side effect of attaching a minimal implementation of `&dollar;localize` to the global scope.
 
 If this import is missing, you will see an error message like this:
 

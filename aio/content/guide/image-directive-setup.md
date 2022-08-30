@@ -1,6 +1,6 @@
 # Setting up `NgOptimizedImage`
 
-This tutorial explains how to setup the `NgOptimizedImage`. For information on using `NgOptimizedImage`, see [Getting Started with NgOptimizedImage](/guide/image-directive).
+This tutorial explains how to set up the `NgOptimizedImage`. For information on using `NgOptimizedImage`, see [Getting Started with NgOptimizedImage](/guide/image-directive).
 
 ## Import `NgOptimizedImage`
 
@@ -29,7 +29,7 @@ Based on the image services commonly used with Angular applications, `NgOptimize
 
 You must configure an image loader to use `NgOptimizedImage`.
 
-These instructions explain how to setup an image loader for use with the `NgOptimizedImage`. 
+These instructions explain how to set up an image loader for use with the `NgOptimizedImage`. 
 
 1. Import the `NgOptimizedImage` directive into the application by adding it to the `imports` section of an NgModule or a standalone Component.
 

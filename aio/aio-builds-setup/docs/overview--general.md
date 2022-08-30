@@ -3,9 +3,9 @@
 
 ## Objective
 Whenever a PR job is run on the CI infrastructure (e.g. CircleCI), we want to build `angular.io`
-and host the build artifacts on a publicly accessible server so that collaborators (developers,
-designers, authors, etc) can preview the changes without having to checkout and build the app
-locally.
+and host the build artifacts on a publicly accessible server so that collaborators, such as the
+developers, designers, or authors, can preview the changes without having to check out and build
+the app locally.
 
 
 ## Source code
@@ -57,7 +57,7 @@ More info on how to set things up on CI can be found [here](misc--integrate-with
   If the PR transitions from "non-public" to "public", the preview-server posts a comment on the
   corresponding PR on GitHub mentioning the SHAs and the links where the previews can be found.
 - The preview-server verifies that it is not trying to overwrite an existing build.
-- The preview-server deploys the artifacts to a sub-directory named after the PR number and the
+- The preview-server deploys the artifacts to a subdirectory named after the PR number and the
   first few characters of the SHA: `<PR>/<SHA>/`
   (Non-publicly accessible PRs will be stored in a different location, but again derived from the PR
   number and SHA.)
@@ -89,7 +89,7 @@ More info on the possible HTTP status codes and their meaning can be found
 ### Serving build artifacts
 - nginx receives a request for a hosted preview resource on a subdomain corresponding to the PR and SHA.
   E.g.: `pr<PR>-<SHA>.ngbuilds.io/path/to/resource`
-- nginx maps the subdomain to the correct sub-directory and serves the resource.
+- nginx maps the subdomain to the correct subdirectory and serves the resource.
   E.g.: `/<PR>/<SHA>/path/to/resource`
 
 More info on the possible HTTP status codes and their meaning can be found

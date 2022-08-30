@@ -127,7 +127,7 @@ The primary `package.json` contains important package metadata, including the fo
 *   It contains [keys](#legacy-resolution-keys) which define the available source code formats of the primary `@angular/core` entrypoint, for tools which do not understand `"exports"`.
     These keys are considered deprecated, and could be removed as the support for `"exports"` rolls out across the ecosystem.
 
-*   It declares whether the package contains [side-effects](#side-effects)
+*   It declares whether the package contains [side effects](#side-effects)
 
 ### ESM declaration
 
@@ -230,7 +230,7 @@ As with `"node"`, ES2015 code is selected due to the constraints of ZoneJS.
 
 ### Side effects
 
-The last function of `package.json` is to declare whether the package has [side-effects](#sideeffects-flag).
+The last function of `package.json` is to declare whether the package has [side effects](#sideeffects-flag).
 
 <code-example language="javascript">
 
@@ -273,7 +273,7 @@ Secondary entrypoints can be resolved via the `"exports"` field of the `package.
 
 ## README.md
 
-The README file in the markdown format that is used to display description of a package on npm and github.
+The README file in the Markdown format that is used to display description of a package on npm and GitHub.
 
 Example README content of &commat;angular/core package:
 
@@ -368,7 +368,7 @@ The end result of these optimizations should be smaller bundle size and better c
 This optimization can break your code if it contains non-local side-effects - this is however not common in Angular applications and it's usually a sign of bad design.
 The recommendation is for all packages to claim the side-effect free status by setting the `sideEffects` property to `false`, and that developers follow the [Angular Style Guide](https://angular.io/guide/styleguide) which naturally results in code without non-local side-effects.
 
-More info: [webpack docs on side-effects](https://github.com/webpack/webpack/tree/master/examples/side-effects)
+More info: [webpack docs on side effects](https://github.com/webpack/webpack/tree/master/examples/side-effects)
 
 ### ES2020 language level
 

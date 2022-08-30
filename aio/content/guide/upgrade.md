@@ -21,8 +21,8 @@ The `upgrade` module in Angular has been designed to make incremental upgrading 
 ## Preparation
 
 There are many ways to structure AngularJS applications.
-When you begin to upgrade these applications to Angular, some will turn out to be much more easy to work with than others.
-There are a few key techniques and patterns that you can apply to future proof applications even before you begin the migration.
+When you begin to upgrade these applications to Angular, some will turn out to be much easier to work with than others.
+There are a few key techniques and patterns that you can apply to future-proof applications even before you begin the migration.
 
 ### Follow the AngularJS Style Guide
 
@@ -309,7 +309,7 @@ You can remove the `ng-app` and `ng-strict-di` directives from the HTML and inst
 <code-example header="app.module.ts" path="upgrade-module/src/app/ajs-bootstrap/app.module.ts" region="bootstrap"></code-example>
 
 To begin converting your AngularJS application to a hybrid, you need to load the Angular framework.
-You can see how this can be done with SystemJS by following the instructions in [Setup for Upgrading to AngularJS][AioGuideUpgradeSetup] for selectively copying code from the [QuickStart github repository][GithubAngularQuickstart].
+You can see how this can be done with SystemJS by following the instructions in [Setup for Upgrading to AngularJS][AioGuideUpgradeSetup] for selectively copying code from the [QuickStart GitHub repository][GithubAngularQuickstart].
 
 You also need to install the `@angular/upgrade` package using `npm install @angular/upgrade --save` and add a mapping for the `@angular/upgrade/static` package:
 
@@ -556,7 +556,7 @@ For example, you might have a service called `HeroesService` in AngularJS:
 
 <code-example header="heroes.service.ts" path="upgrade-module/src/app/ajs-to-a-providers/heroes.service.ts"></code-example>
 
-You can upgrade the service using a Angular [factory provider][AioGuideDependencyInjectionProvidersFactoryProviders] that requests the service from the AngularJS `$injector`.
+You can upgrade the service using an Angular [factory provider][AioGuideDependencyInjectionProvidersFactoryProviders] that requests the service from the AngularJS `$injector`.
 
 Many developers prefer to declare the factory provider in a separate `ajs-upgraded-providers.ts` file so that they are all together, making it easier to reference them, create new ones and delete them once the upgrade is over.
 
@@ -634,7 +634,7 @@ This strategy reduces your initial bundle size, defers any potential impact from
 
 The steps below show you how to do the following:
 
-*   Setup a callback function for your AngularJS bundle.
+*   Set up a callback function for your AngularJS bundle.
 *   Create a service that lazy loads and bootstraps your AngularJS app.
 *   Create a routable component for AngularJS content
 *   Create a custom `matcher` function for AngularJS-specific URLs and configure the Angular `Router` with the custom matcher for AngularJS routes.

@@ -201,7 +201,7 @@ Angular version 7 apps will continue to work with libraries that have this flag.
 However, if you update your library to Angular version 8 and want to take advantage of the new version 8 APIs, or you want more recent dependencies \(such as Typescript or RxJS\) your library will become incompatible with Angular version 7 apps.
 If your goal is to make your library compatible with Angular versions 7 and 8, you should not update your lib at all &mdash;except for `peerDependencies` in `package.json`.
 
-In general, the most efficient plan is for libraries to adopt a 6 month major version schedule and bump the major version after each Angular update.
+In general, the most efficient plan is for libraries to adopt a 6-month major version schedule and bump the major version after each Angular update.
 That way, libraries stay in the same release cadence as Angular.
 
 <!-- links -->

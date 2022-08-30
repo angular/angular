@@ -275,7 +275,7 @@ By default, the `src/assets/` folder and `src/favicon.ico` are copied over.
 To exclude an asset, you can remove it from the assets configuration.
 
 You can further configure assets to be copied by specifying assets as objects, rather than as simple paths relative to the workspace root.
-A asset specification object can have the following fields.
+An asset specification object can have the following fields.
 
 | Fields           | Details |
 |:---              |:---     |
@@ -344,7 +344,7 @@ An array entry for the `styles` and `scripts` options can be a simple path strin
 The associated builder will load that file and its dependencies as a separate bundle during the build.
 With a configuration object, you have the option of naming the bundle for the entry point, using a `bundleName` field.
 
-The bundle is injected by default, but you can set `inject` to false to exclude the bundle from injection.
+The bundle is injected by default, but you can set `inject` to `false` to exclude the bundle from injection.
 For example, the following object values create and name a bundle that contains styles and scripts, and excludes it from injection:
 
 <code-example language="json">

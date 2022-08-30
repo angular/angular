@@ -6,7 +6,7 @@ Schematics are packaged into [collections](guide/glossary#collection) and instal
 
 The schematic collection can be a powerful tool for creating, modifying, and maintaining any software project, but is particularly useful for customizing Angular projects to suit the particular needs of your own organization.
 You might use schematics, for example, to generate commonly-used UI patterns or specific components, using predefined templates or layouts.
-Use schematics to enforce architectural rules and conventions, making your projects consistent and inter-operative.
+Use schematics to enforce architectural rules and conventions, making your projects consistent and interoperative.
 
 ## Schematics for the Angular CLI
 

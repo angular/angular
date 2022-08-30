@@ -29,7 +29,7 @@ We conducted a series of 40 interviews to understand the requirements for micro-
 ### Investigate modern bundles
 
 To improve development experience by speeding up build times research modern bundles.
-As part of the project experiment with [esbuild](https://esbuild.github.io) and other open source solutions, compare them with the state of the art tooling in Angular CLI, and report the findings. In Angular v14 we're releasing an [experimental support](https://github.com/angular/angular-cli/pull/22995) for esbuild. Next, the team will focus on validating the new prototype and implementing watch and Sass support.
+As part of the project experiment with [esbuild](https://esbuild.github.io) and other open source solutions, compare them with the state-of-the-art tooling in Angular CLI, and report the findings. In Angular v14 we're releasing an [experimental support](https://github.com/angular/angular-cli/pull/22995) for esbuild. Next, the team will focus on validating the new prototype and implementing watch and Sass support.
 
 ### Modern CSS
 
@@ -177,7 +177,7 @@ Introduce other correctness and conformance checks to further guarantee correctn
 *Completed Q3 2021*
 
 To ensure we provide a future-proof e2e testing strategy, we want to evaluate the state of Protractor, community innovations, e2e best practices, and explore novel opportunities.
-As first steps of the effort, we shared an [RFC](https://github.com/angular/protractor/issues/5502) and worked with partners to ensure smooth integration between the Angular CLI and state of the art tooling for e2e testing.
+As first steps of the effort, we shared an [RFC](https://github.com/angular/protractor/issues/5502) and worked with partners to ensure smooth integration between the Angular CLI and state-of-the-art tooling for e2e testing.
 As the next step, we need to finalize the recommendations and compile a list of resources for the transition.
 
 ### Angular libraries use Ivy

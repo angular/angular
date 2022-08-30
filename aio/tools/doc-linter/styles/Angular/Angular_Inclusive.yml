@@ -1,4 +1,4 @@
-# Inclusuve language tested by Angular CI/CD
+# Inclusive language tested by Angular CI/CD
 # tests for strings that must be replaced before the content is published
 extends: substitution
 message: "Use '%s' instead of '%s'."
