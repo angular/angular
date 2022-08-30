@@ -19,7 +19,7 @@ along with a brief explanation of what they mean:
   segment).
 
 - **403 (Forbidden)**:
-  Trying to access a sub-directory.
+  Trying to access a subdirectory.
 
 - **404 (Not Found)**:
   File not found.

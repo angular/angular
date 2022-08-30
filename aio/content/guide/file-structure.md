@@ -83,7 +83,7 @@ Subfolders contain the application source and application-specific configuration
 <div class="alert is-helpful">
 
 New Angular projects use strict mode by default.
-If this is not desired you can opt-out when creating the project.
+If this is not desired you can opt out when creating the project.
 For more information, see [Strict mode](guide/strict-mode).
 
 </div>

@@ -72,7 +72,7 @@ Extended diagnostics should generally:
 *   Detect a common, non-obvious developer mistake with Angular templates
 *   Clearly articulate why this pattern can lead to bugs or unintended behavior
 *   Suggest one or more clear solutions
-*   Have a low \(preferrably zero\) false-positive rate
+*   Have a low, preferably zero, false-positive rate
 *   Apply to the vast majority of Angular applications \(not specific to an unofficial library\)
 *   Improve program correctness or performance \(not style, that responsibility falls to a linter\)
 

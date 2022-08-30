@@ -37,5 +37,5 @@ And some are brought in from the `dgeni-packages` node modules, such as `jsdoc` 
 
 ## Templates
 
-All the templates for the angular.io dgeni transformations are stoted in the `tools/transforms/templates` folder.
+All the templates for the angular.io dgeni transformations are stored in the `tools/transforms/templates` folder.
 See the [README](./templates/README.md).

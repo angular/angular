@@ -445,7 +445,7 @@ Architect can support watch mode, but there are some things to look out for.
     This prevents Architect from stopping the builder if another run is scheduled.
 
 When your builder calls `BuilderRun.stop()` to exit watch mode, Architect unsubscribes from the builder's Observable and calls the builder's teardown logic to clean up.
-\(This behavior also allows for long running builds to be stopped and cleaned up.\)
+\(This behavior also allows for long-running builds to be stopped and cleaned up.\)
 
 In general, if your builder is watching an external event, you should separate your run into three phases.
 

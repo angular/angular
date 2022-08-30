@@ -22,7 +22,7 @@ For example, we may want to have a number of elements shown conditionally but th
 
 </code-example>
 
-This can also be augmented with the an else statement alongside an `<ng-template>` as:
+This can also be augmented with an `else` statement alongside an `<ng-template>` as:
 
 <code-example format="html" language="html">
 

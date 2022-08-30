@@ -577,7 +577,7 @@ Use `#docregion` in source files to mark code for use in `<code-example>` or `<c
 The `#docregion` comment begins a code snippet region.
 Every line of code after that comment belongs in the region until the code fragment processor encounters the end of the file or a closing `#enddocregion`.
 
-The following `src/main.ts` is a an example of a file with a single `#docregion` at the top of the file.
+The following `src/main.ts` is an example of a file with a single `#docregion` at the top of the file.
 
 <code-example header="src/main.ts" path="docs-style-guide/src/main.ts"></code-example>
 

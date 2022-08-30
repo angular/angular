@@ -341,7 +341,7 @@ Therefore in those asynchronous APIs, you don't need to trigger change detection
 
 There are still some third party APIs that Zone does not handle.
 In those cases, the `NgZone` service provides a [`run()`](api/core/NgZone#run) method that allows you to execute a function inside the Angular zone.
-This function, and all asynchronous operations in that function, trigger change detection automatically at the correct time.
+This function, and all asynchronous operations in that function, triggers change detection automatically at the correct time.
 
 <code-example format="typescript" language="typescript">
 

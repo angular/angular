@@ -51,7 +51,7 @@ This error often means that you haven't declared the directive "x" or haven't im
 
 <div class="alert is-helpful">
 
-Perhaps you declared "x" in an application sub-module but forgot to export it.
+Perhaps you declared "x" in an application submodule but forgot to export it.
 The "x" class isn't visible to other modules until you add it to the `exports` list.
 
 </div>
@@ -384,7 +384,7 @@ The answer is grounded in a fundamental characteristic of the Angular dependency
 An injector can add providers *until it's first used*.
 Once an injector starts creating and delivering services, its provider list is frozen; no new providers are allowed.
 
-When an applications starts, Angular first configures the root injector with the providers of all eagerly loaded NgModules *before* creating its first component and injecting any of the provided services.
+When an application starts, Angular first configures the root injector with the providers of all eagerly loaded NgModules *before* creating its first component and injecting any of the provided services.
 Once the application begins, the application root injector is closed to new providers.
 
 Time passes and application logic triggers lazy loading of an NgModule.

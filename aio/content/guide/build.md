@@ -307,7 +307,7 @@ The CLI uses [Autoprefixer](https://github.com/postcss/autoprefixer) to ensure c
 You might find it necessary to target specific browsers or exclude certain browser versions from your build.
 
 Internally, Autoprefixer relies on a library called [Browserslist](https://github.com/browserslist/browserslist) to figure out which browsers to support with prefixing.
-Browserlist looks for configuration options in a `browserslist` property of the package configuration file, or in a configuration file named `.browserslistrc`.
+Browserslist looks for configuration options in a `browserslist` property of the package configuration file, or in a configuration file named `.browserslistrc`.
 Autoprefixer looks for the `browserslist` configuration when it prefixes your CSS.
 
 *   Tell Autoprefixer what browsers to target by adding a browserslist property to the package configuration file, `package.json`:

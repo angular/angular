@@ -537,7 +537,7 @@ Like other services, you must provide the interceptor class before the app can u
 Because interceptors are optional dependencies of the `HttpClient` service, you must provide them in the same injector or a parent of the injector that provides `HttpClient`.
 Interceptors provided *after* DI creates the `HttpClient` are ignored.
 
-This app provides `HttpClient` in the app's root injector, as a side-effect of importing the `HttpClientModule` in `AppModule`.
+This app provides `HttpClient` in the app's root injector, as a side effect of importing the `HttpClientModule` in `AppModule`.
 You should provide interceptors in `AppModule` as well.
 
 After importing the `HTTP_INTERCEPTORS` injection token from `@angular/common/http`, write the `NoopInterceptor` provider like this:

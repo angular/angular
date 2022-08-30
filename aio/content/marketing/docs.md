@@ -48,7 +48,7 @@ We want to hear from you. [Report problems or submit suggestions for future docs
 
 Contribute to Angular docs by creating
 [pull requests](https://github.com/angular/angular/pulls "Angular Github pull requests")
-on the Angular Github repository.
+on the Angular GitHub repository.
 See [Contributing to Angular](https://github.com/angular/angular/blob/main/CONTRIBUTING.md "Contributing guide")
 for information about submission guidelines.
 

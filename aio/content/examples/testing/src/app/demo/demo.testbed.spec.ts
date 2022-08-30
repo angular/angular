@@ -497,7 +497,7 @@ describe('demo (with TestBed):', () => {
       @Component({ template: '<my-service-comp></my-service-comp>' })
       class TestComponent { }
 
-      // 3 levels of ValueService provider: module, TestCompomponent, TestProvidersComponent
+      // 3 levels of ValueService provider: module, TestComponent, TestProvidersComponent
       const fixture = TestBed.configureTestingModule({
         declarations: [TestComponent, TestProvidersComponent],
         providers: [ValueService]

@@ -290,7 +290,7 @@ Such tools can be powerful when used properly, but there are a few things to kee
     This can cause behavior with Dev Tools open to differ from behavior a user might experience.
 
 *   If you look in the Cache Storage viewer, the cache is frequently out of date.
-    Right click the Cache Storage title and refresh the caches.
+    Right-click the Cache Storage title and refresh the caches.
 
 *   Stopping and starting the service worker in the Service Worker pane checks for updates
 
@@ -336,7 +336,7 @@ You might have already encountered the error `The script resource is behind a re
 </div>
 
 This can be a problem if you have to change your application's location.
-If you setup a redirect from the old location, such as `example.com`, to the new location, `www.example.com` in this example, the worker stops working.
+If you set up a redirect from the old location, such as `example.com`, to the new location, `www.example.com` in this example, the worker stops working.
 Also, the redirect won't even trigger for users who are loading the site entirely from Service Worker.
 The old worker, which was registered at `example.com`, tries to update and sends a request to the old location `example.com`. This request is redirected to the new location `www.example.com` and creates the error: `The script resource is behind a redirect, which is disallowed`.
 

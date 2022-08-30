@@ -338,9 +338,9 @@ Notice that this form of provider has a third key, `deps`, which specifies depen
 Use this technique to create a dependency object with a factory function whose inputs are a combination of *injected services* and *local state*.
 
 The dependency object \(returned by the factory function\) is typically a class instance, but can be other things as well.
-In this example, the dependency object is a string of the names of the runners up to the "Hero of the Month" contest.
+In this example, the dependency object is a string of the names of the runners-up to the "Hero of the Month" contest.
 
-In the example, the local state is the number `2`, the number of runners up that the component should show.
+In the example, the local state is the number `2`, the number of runners-up that the component should show.
 The state value is passed as an argument to `runnersUpFactory()`.
 The `runnersUpFactory()` returns the *provider factory function*, which can use both the passed-in state value and the injected services `Hero` and `HeroService`.
 
@@ -465,7 +465,7 @@ That's why you call the `HeroService` from within the `ngOnInit` rather than the
 </div>
 
 Users want to see the heroes in alphabetical order.
-Rather than modify the original component, sub-class it and create a `SortedHeroesComponent` that sorts the heroes before presenting them.
+Rather than modify the original component, subclass it and create a `SortedHeroesComponent` that sorts the heroes before presenting them.
 The `SortedHeroesComponent` lets the base class fetch the heroes.
 
 Unfortunately, Angular cannot inject the `HeroService` directly into the base class.

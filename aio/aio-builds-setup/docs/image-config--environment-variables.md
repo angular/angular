@@ -26,7 +26,7 @@ you don't need to specify values for those.
   See also `AIO_GITHUB_TEAM_SLUGS`.
 
 - `AIO_GITHUB_REPO`:
-  The Github repository for which PRs will be hosted.
+  The GitHub repository for which PRs will be hosted.
 
 - `AIO_GITHUB_TEAM_SLUGS`:
   A comma-separated list of teams, whose authors are allowed to preview PRs.

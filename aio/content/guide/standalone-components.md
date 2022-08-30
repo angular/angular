@@ -249,7 +249,7 @@ The new bootstrap API gives us back the means of configuring “module injectors
 Environment injectors can be configured using one of the following:
 
 *   `@NgModule.providers` (in applications bootstrapping through an `NgModule`);
-*   `@Injectable({provideIn: "..."})`(in both the NgModule-based as well as “standalone” applications);
+*   `@Injectable({provideIn: "..."})`(in both the NgModule-based and the “standalone” applications);
 *   `providers` option in the `bootstrapApplication` call (in fully “standalone” applications);
 *   `providers` field in a `Route` configuration.
 

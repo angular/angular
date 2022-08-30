@@ -2,8 +2,8 @@
 
 
 Whenever a PR job is run on CircleCI, we want to build `angular.io` and host the build artifacts on
-a publicly accessible server so that collaborators (developers, designers, authors, etc) can preview
-the changes without having to checkout and build the app locally.
+a publicly accessible server so that collaborators, such as the developers, designers, or authors,
+can preview the changes without having to check out and build the app locally.
 
 This document discusses the security considerations associated with moving build artifacts as
 part of the CI process and serving them publicly.
@@ -136,7 +136,7 @@ This section describes how each of the aforementioned sub-tasks is accomplished:
 ## Assumptions / Things to keep in mind
 
 - Other than the initial webhook trigger, which provides a build number, all requests for data come
-  from the preview-server making requests to well defined API endpoints (e.g. CircleCI and Github).
+  from the preview-server making requests to well-defined API endpoints (e.g. CircleCI and Github).
   This means that any secret access keys need only be stored on the preview-server and not on any of
   the CI build infrastructure (e.g. CircleCI).
 

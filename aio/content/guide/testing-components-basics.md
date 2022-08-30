@@ -264,7 +264,7 @@ Some noteworthy observations:
 
 When you're filtering by CSS selector and only testing properties of a browser's *native element*, the `By.css` approach might be overkill.
 
-It's often straightforward and more clear to filter with a standard `HTMLElement` method such as `querySelector()` or `querySelectorAll()`.
+It's often more straightforward and clear to filter with a standard `HTMLElement` method such as `querySelector()` or `querySelectorAll()`.
 
 <!-- links -->
 

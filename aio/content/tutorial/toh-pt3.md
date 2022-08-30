@@ -3,7 +3,7 @@
 At the moment, the `HeroesComponent` displays both the list of heroes and the selected hero's details.
 
 Keeping all features in one component as the application grows won't be maintainable.
-This tutorial splits up large components into smaller sub-components, each focused on a specific task or workflow.
+This tutorial splits up large components into smaller subcomponents, each focused on a specific task or workflow.
 
 The first step is to move the hero details into a separate, reusable `HeroDetailComponent` and end up with:
 

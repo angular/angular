@@ -198,7 +198,7 @@ But it is limited because the parent-child wiring must be done entirely within t
 The parent component *itself* has no access to the child.
 
 You can't use the *local variable* technique if the parent component's *class* relies on the child component's *class*.
-The parent-child relationship of the components is not established within each components respective *class* with the *local variable* technique.
+The parent-child relationship of the components is not established within each component's respective *class* with the *local variable* technique.
 Because the *class* instances are not connected to one another, the parent *class* cannot access the child *class* properties and methods.
 
 When the parent component *class* requires that kind of access, ***inject*** the child component into the parent as a *ViewChild*.
@@ -248,7 +248,7 @@ Use [the same countdown timer tests](guide/component-interaction#countdown-tests
 
 ## Parent and children communicate using a service
 
-A parent component and its children share a service whose interface enables bi-directional communication *within the family*.
+A parent component and its children share a service whose interface enables bidirectional communication *within the family*.
 
 The scope of the service instance is the parent component and its children.
 Components outside this component subtree have no access to the service or their communications.

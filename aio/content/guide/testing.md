@@ -278,7 +278,7 @@ This article explains how to configure your project to run Circle CI and Travis 
 
     <code-example format="yaml" language="yaml">
 
-    name: CI Angular app through Github Actions
+    name: CI Angular app through GitHub Actions
     on: push
     jobs:
       build:

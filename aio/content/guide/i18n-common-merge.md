@@ -14,7 +14,7 @@ For more information about how to serve each distributable copy of the applicati
 
 </div>
 
-For a compile time translation of the application, the build process uses [ahead-of-time (AOT) compilation][AioGuideGlossaryAheadOfTimeAotCompilation] to produce a small, fast, ready-to-run application.
+For a compile-time translation of the application, the build process uses [ahead-of-time (AOT) compilation][AioGuideGlossaryAheadOfTimeAotCompilation] to produce a small, fast, ready-to-run application.
 
 <div class="alert is-helpful">
 

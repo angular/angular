@@ -15,7 +15,7 @@ What is the process from a directory with files to a link with a stackblitz.
 An "executable" stackblitz is an HTML file with a `<form>` that makes a post to stackblitz on submit.
 It contains an `<input>` element for each file we need in the stackblitz.
 
-The form will be submitted on load, so you can either double click the HTML file or open it with an anchor tag to open the stackblitz.
+The form will be submitted on load, so you can either double-click the HTML file or open it with an anchor tag to open the stackblitz.
 
 So the `builder.mjs` job is to get all the needed files from an example and build this HTML file for you.
 

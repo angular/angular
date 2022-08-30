@@ -384,7 +384,7 @@ These restrictions will be relaxed with the release of Ivy since it'll no longer
 
 Angular applications, and specifically applications that relied on the JIT compiler, used to require a polyfill for the [reflect-metadata](https://github.com/rbuckton/reflect-metadata) APIs.
 
-The need for this polyfill was removed in Angular version 8.0 \([see #14473](https://github.com/angular/angular-cli/pull/14473)\), rendering the presence of the poylfill in most Angular applications unnecessary.
+The need for this polyfill was removed in Angular version 8.0 \([see #14473](https://github.com/angular/angular-cli/pull/14473)\), rendering the presence of the polyfill in most Angular applications unnecessary.
 Because the polyfill can be depended on by 3rd-party libraries, instead of removing it from all Angular projects, we are deprecating the requirement for this polyfill as of version 8.0.
 This should give library authors and application developers sufficient time to evaluate if they need the polyfill, and perform any refactoring necessary to remove the dependency on it.
 
@@ -549,8 +549,8 @@ Projects that currently have `fullTemplateTypeCheck: true` configured can migrat
 
 ## JIT API changes due to ViewEngine deprecation
 
-In ViewEngine, [JIT compilation](https://angular.io/guide/glossary#jit) required special providers \(like `Compiler`, `CompilerFactory`, etc.\) to be injected in the app and corresponding methods to be invoked.
-With Ivy, JIT compilation takes place implicitly if the Component, NgModule, etc have not already been [AOT compiled](https://angular.io/guide/glossary#aot).
+In ViewEngine, [JIT compilation](https://angular.io/guide/glossary#jit) required special providers \(such as `Compiler` or `CompilerFactory`\) to be injected in the app and corresponding methods to be invoked.
+With Ivy, JIT compilation takes place implicitly if the Component, NgModule, etc. have not already been [AOT compiled](https://angular.io/guide/glossary#aot).
 Those special providers were made available in Ivy for backwards-compatibility with ViewEngine to make the transition to Ivy smoother.
 Since ViewEngine is deprecated and will soon be removed, those symbols are now deprecated as well.
 

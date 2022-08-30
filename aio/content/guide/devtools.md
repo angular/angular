@@ -132,7 +132,7 @@ Type `$ng0` to get a reference to the instance of the currently selected compone
 ### Select a directive or component
 
 Similar to browsers' DevTools, you can inspect the page to select a particular component or directive.
-Click the ***Inspect element*** icon at the top left corner within Angular DevTools and hover over a DOM element on the page.
+Click the ***Inspect element*** icon in the top left corner within Angular DevTools and hover over a DOM element on the page.
 The extension recognizes the associated directives and/or components and lets you select the corresponding element in the Component tree.
 
 <div class="lightbox">
@@ -154,7 +154,7 @@ The **Profiler** tab lets you preview the execution of Angular's change detectio
 </div>
 
 The Profiler lets you start profiling or import an existing profile.
-To start profiling your application, hover over the circle at the top-left corner within the **Profiler** tab and click **Start recording**.
+To start profiling your application, hover over the circle in the top-left corner within the **Profiler** tab and click **Start recording**.
 
 During profiling, Angular DevTools captures execution events, such as change detection and lifecycle hook execution.
 To finish recording, click the circle again to **Stop recording**.

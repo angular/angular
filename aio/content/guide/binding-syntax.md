@@ -148,7 +148,7 @@ The binding punctuation of `[]`, `()`, `[()]`, and the prefix specify the direct
 
 *   Use `[]` to bind from source to view
 *   Use `()` to bind from view to source
-*   Use `[()]` to bind in a two way sequence of view to source to view
+*   Use `[()]` to bind in a two-way sequence of view to source to view
 
 Place the expression or statement to the right of the equal sign within double quote \(`""`\) characters.
 For more information see [Interpolation](guide/interpolation) and [Template statements](guide/template-statements).
