@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './progress-spinner-harness';
-export * from './progress-spinner-harness-filters';
+export {MatLegacyProgressSpinnerHarness} from './progress-spinner-harness';
+export {LegacyProgressSpinnerHarnessFilters} from './progress-spinner-harness-filters';

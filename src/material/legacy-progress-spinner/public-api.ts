@@ -8,7 +8,7 @@
 
 import {MatLegacyProgressSpinner} from './progress-spinner';
 
-export * from './progress-spinner-module';
+export {MatLegacyProgressSpinnerModule} from './progress-spinner-module';
 export {
   MatLegacyProgressSpinner,
   MAT_LEGACY_PROGRESS_SPINNER_DEFAULT_OPTIONS,
