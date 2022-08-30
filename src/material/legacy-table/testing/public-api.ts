@@ -6,9 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './table-harness';
-export * from './row-harness';
-export * from './cell-harness';
+export {MatLegacyTableHarness} from './table-harness';
+export {
+  MatLegacyRowHarness,
+  MatLegacyHeaderRowHarness,
+  MatLegacyFooterRowHarness,
+} from './row-harness';
+export {
+  MatLegacyCellHarness,
+  MatLegacyHeaderCellHarness,
+  MatLegacyFooterCellHarness,
+} from './cell-harness';
 export {
   CellHarnessFilters as LegacyCellHarnessFilters,
   RowHarnessFilters as LegacyRowHarnessFilters,
