@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './progress-bar-harness';
-export * from './progress-bar-harness-filters';
+export {MatLegacyProgressBarHarness} from './progress-bar-harness';
+export {LegacyProgressBarHarnessFilters} from './progress-bar-harness-filters';
