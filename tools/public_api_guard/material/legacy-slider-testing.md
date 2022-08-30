@@ -9,6 +9,10 @@ import { ComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 
 // @public
+export interface LegacySliderHarnessFilters extends BaseHarnessFilters {
+}
+
+// @public
 export class MatLegacySliderHarness extends ComponentHarness {
     blur(): Promise<void>;
     focus(): Promise<void>;
@@ -23,11 +27,7 @@ export class MatLegacySliderHarness extends ComponentHarness {
     isDisabled(): Promise<boolean>;
     isFocused(): Promise<boolean>;
     setValue(value: number): Promise<void>;
-    static with(options?: SliderHarnessFilters): HarnessPredicate<MatLegacySliderHarness>;
-}
-
-// @public
-export interface SliderHarnessFilters extends BaseHarnessFilters {
+    static with(options?: LegacySliderHarnessFilters): HarnessPredicate<MatLegacySliderHarness>;
 }
 
 // (No @packageDocumentation comment for this package)

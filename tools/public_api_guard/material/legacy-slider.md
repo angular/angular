@@ -25,7 +25,7 @@ import { NumberInput } from '@angular/cdk/coercion';
 import { OnDestroy } from '@angular/core';
 
 // @public
-export const MAT_SLIDER_VALUE_ACCESSOR: any;
+export const MAT_LEGACY_SLIDER_VALUE_ACCESSOR: any;
 
 // @public
 export class MatLegacySlider extends _MatSliderBase implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, AfterViewInit, HasTabIndex {

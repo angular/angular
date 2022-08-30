@@ -79,7 +79,7 @@ const MIN_VALUE_ACTIVE_THUMB_GAP = 10;
  * This allows it to support [(ngModel)] and [formControl].
  * @docs-private
  */
-export const MAT_SLIDER_VALUE_ACCESSOR: any = {
+export const MAT_LEGACY_SLIDER_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MatLegacySlider),
   multi: true,
@@ -114,7 +114,7 @@ const _MatSliderBase = mixinTabIndex(
 @Component({
   selector: 'mat-slider',
   exportAs: 'matSlider',
-  providers: [MAT_SLIDER_VALUE_ACCESSOR],
+  providers: [MAT_LEGACY_SLIDER_VALUE_ACCESSOR],
   host: {
     '(focus)': '_onFocus()',
     '(blur)': '_onBlur()',

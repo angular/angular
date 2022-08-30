@@ -8,7 +8,7 @@
 
 import {ComponentHarness, HarnessPredicate, parallel} from '@angular/cdk/testing';
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
-import {SliderHarnessFilters} from './slider-harness-filters';
+import {LegacySliderHarnessFilters} from './slider-harness-filters';
 
 /** Harness for interacting with a standard mat-slider in tests. */
 export class MatLegacySliderHarness extends ComponentHarness {
@@ -21,7 +21,7 @@ export class MatLegacySliderHarness extends ComponentHarness {
    * @param options Options for filtering which slider instances are considered a match.
    * @return a `HarnessPredicate` configured with the given options.
    */
-  static with(options: SliderHarnessFilters = {}): HarnessPredicate<MatLegacySliderHarness> {
+  static with(options: LegacySliderHarnessFilters = {}): HarnessPredicate<MatLegacySliderHarness> {
     return new HarnessPredicate(MatLegacySliderHarness, options);
   }
 
