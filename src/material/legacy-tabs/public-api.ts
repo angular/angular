@@ -9,7 +9,7 @@
 import {_MatTabBase} from '@angular/material/tabs';
 
 export {MatLegacyTabsModule} from './tabs-module';
-export * from './tab-group';
+export {MatLegacyTabGroup} from './tab-group';
 export {MatLegacyInkBar} from './ink-bar';
 export {MatLegacyTabBody, MatLegacyTabBodyPortal} from './tab-body';
 export {MatLegacyTabHeader} from './tab-header';
