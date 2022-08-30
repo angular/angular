@@ -6,5 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './radio-harness';
-export {RadioButtonHarnessFilters, RadioGroupHarnessFilters} from '@angular/material/radio/testing';
+export {MatLegacyRadioGroupHarness, MatLegacyRadioButtonHarness} from './radio-harness';
+export {
+  RadioButtonHarnessFilters as LegacyRadioButtonHarnessFilters,
+  RadioGroupHarnessFilters as LegacyRadioGroupHarnessFilters,
+} from '@angular/material/radio/testing';

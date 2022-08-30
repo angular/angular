@@ -37,7 +37,7 @@ import {
  * allows it to support [(ngModel)] and ngControl.
  * @docs-private
  */
-export const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any = {
+export const MAT_LEGACY_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MatLegacyRadioGroup),
   multi: true,
@@ -50,7 +50,7 @@ export const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any = {
   selector: 'mat-radio-group',
   exportAs: 'matRadioGroup',
   providers: [
-    MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR,
+    MAT_LEGACY_RADIO_GROUP_CONTROL_VALUE_ACCESSOR,
     {provide: MAT_RADIO_GROUP, useExisting: MatLegacyRadioGroup},
   ],
   host: {

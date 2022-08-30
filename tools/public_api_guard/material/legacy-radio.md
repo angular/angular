@@ -9,9 +9,9 @@ import { ElementRef } from '@angular/core';
 import { FocusMonitor } from '@angular/cdk/a11y';
 import * as i0 from '@angular/core';
 import * as i2 from '@angular/material/core';
-import { MAT_RADIO_DEFAULT_OPTIONS } from '@angular/material/radio';
-import { MAT_RADIO_DEFAULT_OPTIONS_FACTORY } from '@angular/material/radio';
-import { MAT_RADIO_GROUP } from '@angular/material/radio';
+import { MAT_RADIO_DEFAULT_OPTIONS as MAT_LEGACY_RADIO_DEFAULT_OPTIONS } from '@angular/material/radio';
+import { MAT_RADIO_DEFAULT_OPTIONS_FACTORY as MAT_LEGACY_RADIO_DEFAULT_OPTIONS_FACTORY } from '@angular/material/radio';
+import { MAT_RADIO_GROUP as MAT_LEGACY_RADIO_GROUP } from '@angular/material/radio';
 import { MatRadioChange as MatLegacyRadioChange } from '@angular/material/radio';
 import { MatRadioDefaultOptions as MatLegacyRadioDefaultOptions } from '@angular/material/radio';
 import { _MatRadioButtonBase } from '@angular/material/radio';
@@ -19,14 +19,14 @@ import { _MatRadioGroupBase } from '@angular/material/radio';
 import { QueryList } from '@angular/core';
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
 
-export { MAT_RADIO_DEFAULT_OPTIONS }
+export { MAT_LEGACY_RADIO_DEFAULT_OPTIONS }
 
-export { MAT_RADIO_DEFAULT_OPTIONS_FACTORY }
+export { MAT_LEGACY_RADIO_DEFAULT_OPTIONS_FACTORY }
 
-export { MAT_RADIO_GROUP }
+export { MAT_LEGACY_RADIO_GROUP }
 
 // @public
-export const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any;
+export const MAT_LEGACY_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any;
 
 // @public
 export class MatLegacyRadioButton extends _MatRadioButtonBase {
