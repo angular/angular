@@ -23,13 +23,13 @@ describe('radio styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.radio-theme($theme);
+        @include mat.legacy-radio-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-radio-theme($theme);
-        @include mat.mdc-radio-typography($theme);
+        @include mat.radio-theme($theme);
+        @include mat.radio-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('radio styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.radio-theme($theme);
+        @include arbitrary.legacy-radio-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-radio-theme($theme);
-        @include arbitrary.mdc-radio-typography($theme);
+        @include arbitrary.radio-theme($theme);
+        @include arbitrary.radio-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('radio styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.radio-theme($light-theme);
-        @include mat.radio-theme($dark-theme);
+        @include mat.legacy-radio-theme($light-theme);
+        @include mat.legacy-radio-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-radio-theme($light-theme);
-        @include mat.mdc-radio-typography($light-theme);
-        @include mat.mdc-radio-theme($dark-theme);
-        @include mat.mdc-radio-typography($dark-theme);
+        @include mat.radio-theme($light-theme);
+        @include mat.radio-typography($light-theme);
+        @include mat.radio-theme($dark-theme);
+        @include mat.radio-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('radio styles', () => {
         $theme: ();
 
 
-        @include mat.radio-theme($theme);
+        @include mat.legacy-radio-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('radio styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-radio-theme($theme);
-        @include mat.mdc-radio-typography($theme);
+        @include mat.radio-theme($theme);
+        @include mat.radio-typography($theme);
 
 
       `,

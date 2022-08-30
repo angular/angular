@@ -15,8 +15,8 @@ export class RadioStylesMigrator extends StyleMigrator {
 
   mixinChanges = [
     {
-      old: 'radio-theme',
-      new: ['mdc-radio-theme', 'mdc-radio-typography'],
+      old: 'legacy-radio-theme',
+      new: ['radio-theme', 'radio-typography'],
     },
   ];
 

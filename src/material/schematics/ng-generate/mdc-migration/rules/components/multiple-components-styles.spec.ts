@@ -28,16 +28,16 @@ describe('multiple component styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.checkbox-theme($theme);
-        @include mat.radio-theme($theme);
+        @include mat.legacy-checkbox-theme($theme);
+        @include mat.legacy-radio-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-checkbox-theme($theme);
-        @include mat.mdc-checkbox-typography($theme);
-        @include mat.mdc-radio-theme($theme);
-        @include mat.mdc-radio-typography($theme);
+        @include mat.checkbox-theme($theme);
+        @include mat.checkbox-typography($theme);
+        @include mat.radio-theme($theme);
+        @include mat.radio-typography($theme);
       `,
       );
     });
@@ -48,18 +48,19 @@ describe('multiple component styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.button-theme($theme);
+        @include mat.legacy-button-theme($theme);
         @include mat.legacy-snack-bar-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-button-theme($theme);
-        @include mat.mdc-button-typography($theme);
-        @include mat.mdc-fab-theme($theme);
-        @include mat.mdc-fab-typography($theme);
-        @include mat.mdc-icon-button-theme($theme);
-        @include mat.mdc-icon-button-typography($theme);
+        @include mat.button-theme($theme);
+        @include mat.button-typography($theme);
+        @include mat.fab-theme($theme);
+        @include mat.fab-typography($theme);
+        @include mat.icon-button-theme($theme);
+        @include mat.icon-button-typography($theme);
+        @include mat.snack-bar-theme($theme);
         @include mat.snack-bar-typography($theme);
       `,
       );
@@ -71,12 +72,12 @@ describe('multiple component styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.all-component-themes($theme);
+        @include mat.all-legacy-component-themes($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.all-mdc-component-themes($theme);
+        @include mat.all-component-themes($theme);
       `,
       );
     });
@@ -87,7 +88,7 @@ describe('multiple component styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.all-component-themes((
+        @include mat.all-legacy-component-themes((
           color: $config,
           typography: null,
           density: null,
@@ -96,7 +97,7 @@ describe('multiple component styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.all-mdc-component-themes((
+        @include mat.all-component-themes((
           color: $config,
           typography: null,
           density: null,
@@ -112,15 +113,15 @@ describe('multiple component styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.all-component-themes($light-theme);
-        @include mat.all-component-themes($dark-theme);
+        @include mat.all-legacy-component-themes($light-theme);
+        @include mat.all-legacy-component-themes($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.all-mdc-component-themes($light-theme);
-        @include mat.all-mdc-component-themes($dark-theme);
+        @include mat.all-component-themes($light-theme);
+        @include mat.all-component-themes($dark-theme);
       `,
       );
     });

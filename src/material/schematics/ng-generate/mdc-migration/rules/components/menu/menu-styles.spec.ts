@@ -23,13 +23,13 @@ describe('menu styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.menu-theme($theme);
+        @include mat.legacy-menu-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-menu-theme($theme);
-        @include mat.mdc-menu-typography($theme);
+        @include mat.menu-theme($theme);
+        @include mat.menu-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('menu styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.menu-theme($theme);
+        @include arbitrary.legacy-menu-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-menu-theme($theme);
-        @include arbitrary.mdc-menu-typography($theme);
+        @include arbitrary.menu-theme($theme);
+        @include arbitrary.menu-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('menu styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.menu-theme($light-theme);
-        @include mat.menu-theme($dark-theme);
+        @include mat.legacy-menu-theme($light-theme);
+        @include mat.legacy-menu-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-menu-theme($light-theme);
-        @include mat.mdc-menu-typography($light-theme);
-        @include mat.mdc-menu-theme($dark-theme);
-        @include mat.mdc-menu-typography($dark-theme);
+        @include mat.menu-theme($light-theme);
+        @include mat.menu-typography($light-theme);
+        @include mat.menu-theme($dark-theme);
+        @include mat.menu-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('menu styles', () => {
         $theme: ();
 
 
-        @include mat.menu-theme($theme);
+        @include mat.legacy-menu-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('menu styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-menu-theme($theme);
-        @include mat.mdc-menu-typography($theme);
+        @include mat.menu-theme($theme);
+        @include mat.menu-typography($theme);
 
 
       `,

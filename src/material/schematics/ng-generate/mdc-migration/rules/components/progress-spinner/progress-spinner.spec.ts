@@ -23,13 +23,13 @@ describe('progress-spinner styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.progress-spinner-theme($theme);
+        @include mat.legacy-progress-spinner-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-progress-spinner-theme($theme);
-        @include mat.mdc-progress-spinner-typography($theme);
+        @include mat.progress-spinner-theme($theme);
+        @include mat.progress-spinner-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('progress-spinner styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.progress-spinner-theme($theme);
+        @include arbitrary.legacy-progress-spinner-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-progress-spinner-theme($theme);
-        @include arbitrary.mdc-progress-spinner-typography($theme);
+        @include arbitrary.progress-spinner-theme($theme);
+        @include arbitrary.progress-spinner-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('progress-spinner styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.progress-spinner-theme($light-theme);
-        @include mat.progress-spinner-theme($dark-theme);
+        @include mat.legacy-progress-spinner-theme($light-theme);
+        @include mat.legacy-progress-spinner-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-progress-spinner-theme($light-theme);
-        @include mat.mdc-progress-spinner-typography($light-theme);
-        @include mat.mdc-progress-spinner-theme($dark-theme);
-        @include mat.mdc-progress-spinner-typography($dark-theme);
+        @include mat.progress-spinner-theme($light-theme);
+        @include mat.progress-spinner-typography($light-theme);
+        @include mat.progress-spinner-theme($dark-theme);
+        @include mat.progress-spinner-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('progress-spinner styles', () => {
         $theme: ();
 
 
-        @include mat.progress-spinner-theme($theme);
+        @include mat.legacy-progress-spinner-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('progress-spinner styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-progress-spinner-theme($theme);
-        @include mat.mdc-progress-spinner-typography($theme);
+        @include mat.progress-spinner-theme($theme);
+        @include mat.progress-spinner-typography($theme);
 
 
       `,

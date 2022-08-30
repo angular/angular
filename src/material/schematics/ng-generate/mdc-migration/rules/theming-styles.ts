@@ -47,7 +47,7 @@ export class ThemingStylesMigration extends Migration<ComponentMigrator[], Schem
     });
     if (migrator) {
       migrator.styles.replaceMixin(this.namespace, atRule);
-    } else if (atRule.params.includes('all-component-themes') && atRule.parent) {
+    } else if (atRule.params.includes('all-legacy-component-themes') && atRule.parent) {
       // We use an arbitrary migrator because searching for the right one
       // doesn't matter since the all-component-theme mixin affects all
       // components and it only needs to be replaced once.

@@ -15,14 +15,14 @@ export class ButtonStylesMigrator extends StyleMigrator {
 
   mixinChanges = [
     {
-      old: 'button-theme',
+      old: 'legacy-button-theme',
       new: [
-        'mdc-button-theme',
-        'mdc-button-typography',
-        'mdc-fab-theme',
-        'mdc-fab-typography',
-        'mdc-icon-button-theme',
-        'mdc-icon-button-typography',
+        'button-theme',
+        'button-typography',
+        'fab-theme',
+        'fab-typography',
+        'icon-button-theme',
+        'icon-button-typography',
       ],
       checkForDuplicates: true,
     },

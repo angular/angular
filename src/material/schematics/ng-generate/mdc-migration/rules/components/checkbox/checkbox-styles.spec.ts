@@ -23,13 +23,13 @@ describe('checkbox styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.checkbox-theme($theme);
+        @include mat.legacy-checkbox-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-checkbox-theme($theme);
-        @include mat.mdc-checkbox-typography($theme);
+        @include mat.checkbox-theme($theme);
+        @include mat.checkbox-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('checkbox styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.checkbox-theme($theme);
+        @include arbitrary.legacy-checkbox-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-checkbox-theme($theme);
-        @include arbitrary.mdc-checkbox-typography($theme);
+        @include arbitrary.checkbox-theme($theme);
+        @include arbitrary.checkbox-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('checkbox styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.checkbox-theme($light-theme);
-        @include mat.checkbox-theme($dark-theme);
+        @include mat.legacy-checkbox-theme($light-theme);
+        @include mat.legacy-checkbox-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-checkbox-theme($light-theme);
-        @include mat.mdc-checkbox-typography($light-theme);
-        @include mat.mdc-checkbox-theme($dark-theme);
-        @include mat.mdc-checkbox-typography($dark-theme);
+        @include mat.checkbox-theme($light-theme);
+        @include mat.checkbox-typography($light-theme);
+        @include mat.checkbox-theme($dark-theme);
+        @include mat.checkbox-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('checkbox styles', () => {
         $theme: ();
 
 
-        @include mat.checkbox-theme($theme);
+        @include mat.legacy-checkbox-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('checkbox styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-checkbox-theme($theme);
-        @include mat.mdc-checkbox-typography($theme);
+        @include mat.checkbox-theme($theme);
+        @include mat.checkbox-typography($theme);
 
 
       `,

@@ -23,15 +23,15 @@ describe('select styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.select-theme($theme);
+        @include mat.legacy-select-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-select-theme($theme);
-        @include mat.mdc-select-typography($theme);
-        @include mat.mdc-core-theme($theme);
-        @include mat.mdc-core-typography($theme);
+        @include mat.select-theme($theme);
+        @include mat.select-typography($theme);
+        @include mat.core-theme($theme);
+        @include mat.core-typography($theme);
       `,
       );
     });
@@ -41,15 +41,15 @@ describe('select styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.select-theme($theme);
+        @include arbitrary.legacy-select-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-select-theme($theme);
-        @include arbitrary.mdc-select-typography($theme);
-        @include arbitrary.mdc-core-theme($theme);
-        @include arbitrary.mdc-core-typography($theme);
+        @include arbitrary.select-theme($theme);
+        @include arbitrary.select-typography($theme);
+        @include arbitrary.core-theme($theme);
+        @include arbitrary.core-typography($theme);
       `,
       );
     });
@@ -60,21 +60,21 @@ describe('select styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.select-theme($light-theme);
-        @include mat.select-theme($dark-theme);
+        @include mat.legacy-select-theme($light-theme);
+        @include mat.legacy-select-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-select-theme($light-theme);
-        @include mat.mdc-select-typography($light-theme);
-        @include mat.mdc-core-theme($light-theme);
-        @include mat.mdc-core-typography($light-theme);
-        @include mat.mdc-select-theme($dark-theme);
-        @include mat.mdc-select-typography($dark-theme);
-        @include mat.mdc-core-theme($dark-theme);
-        @include mat.mdc-core-typography($dark-theme);
+        @include mat.select-theme($light-theme);
+        @include mat.select-typography($light-theme);
+        @include mat.core-theme($light-theme);
+        @include mat.core-typography($light-theme);
+        @include mat.select-theme($dark-theme);
+        @include mat.select-typography($dark-theme);
+        @include mat.core-theme($dark-theme);
+        @include mat.core-typography($dark-theme);
       `,
       );
     });
@@ -86,7 +86,7 @@ describe('select styles', () => {
         $theme: ();
 
 
-        @include mat.select-theme($theme);
+        @include mat.legacy-select-theme($theme);
 
 
       `,
@@ -95,10 +95,10 @@ describe('select styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-select-theme($theme);
-        @include mat.mdc-select-typography($theme);
-        @include mat.mdc-core-theme($theme);
-        @include mat.mdc-core-typography($theme);
+        @include mat.select-theme($theme);
+        @include mat.select-typography($theme);
+        @include mat.core-theme($theme);
+        @include mat.core-typography($theme);
 
 
       `,

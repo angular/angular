@@ -23,13 +23,13 @@ describe('card styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.card-theme($theme);
+        @include mat.legacy-card-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-card-theme($theme);
-        @include mat.mdc-card-typography($theme);
+        @include mat.card-theme($theme);
+        @include mat.card-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('card styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.card-theme($theme);
+        @include arbitrary.legacy-card-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-card-theme($theme);
-        @include arbitrary.mdc-card-typography($theme);
+        @include arbitrary.card-theme($theme);
+        @include arbitrary.card-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('card styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.card-theme($light-theme);
-        @include mat.card-theme($dark-theme);
+        @include mat.legacy-card-theme($light-theme);
+        @include mat.legacy-card-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-card-theme($light-theme);
-        @include mat.mdc-card-typography($light-theme);
-        @include mat.mdc-card-theme($dark-theme);
-        @include mat.mdc-card-typography($dark-theme);
+        @include mat.card-theme($light-theme);
+        @include mat.card-typography($light-theme);
+        @include mat.card-theme($dark-theme);
+        @include mat.card-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('card styles', () => {
         $theme: ();
 
 
-        @include mat.card-theme($theme);
+        @include mat.legacy-card-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('card styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-card-theme($theme);
-        @include mat.mdc-card-typography($theme);
+        @include mat.card-theme($theme);
+        @include mat.card-typography($theme);
 
 
       `,

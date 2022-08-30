@@ -23,13 +23,13 @@ describe('dialog styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.dialog-theme($theme);
+        @include mat.legacy-dialog-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-dialog-theme($theme);
-        @include mat.mdc-dialog-typography($theme);
+        @include mat.dialog-theme($theme);
+        @include mat.dialog-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('dialog styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.dialog-theme($theme);
+        @include arbitrary.legacy-dialog-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-dialog-theme($theme);
-        @include arbitrary.mdc-dialog-typography($theme);
+        @include arbitrary.dialog-theme($theme);
+        @include arbitrary.dialog-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('dialog styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.dialog-theme($light-theme);
-        @include mat.dialog-theme($dark-theme);
+        @include mat.legacy-dialog-theme($light-theme);
+        @include mat.legacy-dialog-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-dialog-theme($light-theme);
-        @include mat.mdc-dialog-typography($light-theme);
-        @include mat.mdc-dialog-theme($dark-theme);
-        @include mat.mdc-dialog-typography($dark-theme);
+        @include mat.dialog-theme($light-theme);
+        @include mat.dialog-typography($light-theme);
+        @include mat.dialog-theme($dark-theme);
+        @include mat.dialog-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('dialog styles', () => {
         $theme: ();
 
 
-        @include mat.dialog-theme($theme);
+        @include mat.legacy-dialog-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('dialog styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-dialog-theme($theme);
-        @include mat.mdc-dialog-typography($theme);
+        @include mat.dialog-theme($theme);
+        @include mat.dialog-typography($theme);
 
 
       `,

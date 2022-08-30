@@ -23,13 +23,13 @@ describe('form-field styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.form-field-theme($theme);
+        @include mat.legacy-form-field-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-form-field-theme($theme);
-        @include mat.mdc-form-field-typography($theme);
+        @include mat.form-field-theme($theme);
+        @include mat.form-field-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('form-field styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.form-field-theme($theme);
+        @include arbitrary.legacy-form-field-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-form-field-theme($theme);
-        @include arbitrary.mdc-form-field-typography($theme);
+        @include arbitrary.form-field-theme($theme);
+        @include arbitrary.form-field-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('form-field styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.form-field-theme($light-theme);
-        @include mat.form-field-theme($dark-theme);
+        @include mat.legacy-form-field-theme($light-theme);
+        @include mat.legacy-form-field-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-form-field-theme($light-theme);
-        @include mat.mdc-form-field-typography($light-theme);
-        @include mat.mdc-form-field-theme($dark-theme);
-        @include mat.mdc-form-field-typography($dark-theme);
+        @include mat.form-field-theme($light-theme);
+        @include mat.form-field-typography($light-theme);
+        @include mat.form-field-theme($dark-theme);
+        @include mat.form-field-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('form-field styles', () => {
         $theme: ();
 
 
-        @include mat.form-field-theme($theme);
+        @include mat.legacy-form-field-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('form-field styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-form-field-theme($theme);
-        @include mat.mdc-form-field-typography($theme);
+        @include mat.form-field-theme($theme);
+        @include mat.form-field-typography($theme);
 
 
       `,

@@ -32,8 +32,8 @@ export class FormFieldStylesMigrator extends StyleMigrator {
 
   mixinChanges = [
     {
-      old: 'form-field-theme',
-      new: ['mdc-form-field-theme', 'mdc-form-field-typography'],
+      old: 'legacy-form-field-theme',
+      new: ['form-field-theme', 'form-field-typography'],
     },
   ];
 

@@ -83,7 +83,9 @@ export abstract class StyleMigrator {
           // it's the whole match from the regex.
           const mixinName =
             replacements[index] + (mixinArgumentMatches ? mixinArgumentMatches[0] : '');
-          if (rule.params.includes(mixinName)) {
+          // Remove replacement if mixin found in styles and make sure to not
+          // count component-legacy-theme as a duplicate of component-theme
+          if (rule.params.includes('.' + mixinName)) {
             replacements.splice(Number(index), 1);
           }
         }
@@ -124,8 +126,8 @@ export abstract class StyleMigrator {
   replaceAllComponentThemeMixin(allComponentThemesNode: postcss.AtRule) {
     allComponentThemesNode.cloneBefore({
       params: allComponentThemesNode.params.replace(
+        'all-legacy-component-themes',
         'all-component-themes',
-        'all-mdc-component-themes',
       ),
     });
     allComponentThemesNode.remove();

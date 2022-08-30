@@ -23,13 +23,13 @@ describe('autocomplete styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.autocomplete-theme($theme);
+        @include mat.legacy-autocomplete-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-autocomplete-theme($theme);
-        @include mat.mdc-autocomplete-typography($theme);
+        @include mat.autocomplete-theme($theme);
+        @include mat.autocomplete-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('autocomplete styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.autocomplete-theme($theme);
+        @include arbitrary.legacy-autocomplete-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-autocomplete-theme($theme);
-        @include arbitrary.mdc-autocomplete-typography($theme);
+        @include arbitrary.autocomplete-theme($theme);
+        @include arbitrary.autocomplete-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('autocomplete styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.autocomplete-theme($light-theme);
-        @include mat.autocomplete-theme($dark-theme);
+        @include mat.legacy-autocomplete-theme($light-theme);
+        @include mat.legacy-autocomplete-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-autocomplete-theme($light-theme);
-        @include mat.mdc-autocomplete-typography($light-theme);
-        @include mat.mdc-autocomplete-theme($dark-theme);
-        @include mat.mdc-autocomplete-typography($dark-theme);
+        @include mat.autocomplete-theme($light-theme);
+        @include mat.autocomplete-typography($light-theme);
+        @include mat.autocomplete-theme($dark-theme);
+        @include mat.autocomplete-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('autocomplete styles', () => {
         $theme: ();
 
 
-        @include mat.autocomplete-theme($theme);
+        @include mat.legacy-autocomplete-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('autocomplete styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-autocomplete-theme($theme);
-        @include mat.mdc-autocomplete-typography($theme);
+        @include mat.autocomplete-theme($theme);
+        @include mat.autocomplete-typography($theme);
 
 
       `,

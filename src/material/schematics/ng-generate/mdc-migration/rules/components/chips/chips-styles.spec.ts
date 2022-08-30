@@ -23,13 +23,13 @@ describe('chips styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.chips-theme($theme);
+        @include mat.legacy-chips-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-chips-theme($theme);
-        @include mat.mdc-chips-typography($theme);
+        @include mat.chips-theme($theme);
+        @include mat.chips-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('chips styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.chips-theme($theme);
+        @include arbitrary.legacy-chips-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-chips-theme($theme);
-        @include arbitrary.mdc-chips-typography($theme);
+        @include arbitrary.chips-theme($theme);
+        @include arbitrary.chips-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('chips styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.chips-theme($light-theme);
-        @include mat.chips-theme($dark-theme);
+        @include mat.legacy-chips-theme($light-theme);
+        @include mat.legacy-chips-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-chips-theme($light-theme);
-        @include mat.mdc-chips-typography($light-theme);
-        @include mat.mdc-chips-theme($dark-theme);
-        @include mat.mdc-chips-typography($dark-theme);
+        @include mat.chips-theme($light-theme);
+        @include mat.chips-typography($light-theme);
+        @include mat.chips-theme($dark-theme);
+        @include mat.chips-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('chips styles', () => {
         $theme: ();
 
 
-        @include mat.chips-theme($theme);
+        @include mat.legacy-chips-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('chips styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-chips-theme($theme);
-        @include mat.mdc-chips-typography($theme);
+        @include mat.chips-theme($theme);
+        @include mat.chips-typography($theme);
 
 
       `,

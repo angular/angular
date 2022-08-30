@@ -23,13 +23,13 @@ describe('progress-bar styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.progress-bar-theme($theme);
+        @include mat.legacy-progress-bar-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-progress-bar-theme($theme);
-        @include mat.mdc-progress-bar-typography($theme);
+        @include mat.progress-bar-theme($theme);
+        @include mat.progress-bar-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('progress-bar styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.progress-bar-theme($theme);
+        @include arbitrary.legacy-progress-bar-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-progress-bar-theme($theme);
-        @include arbitrary.mdc-progress-bar-typography($theme);
+        @include arbitrary.progress-bar-theme($theme);
+        @include arbitrary.progress-bar-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('progress-bar styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.progress-bar-theme($light-theme);
-        @include mat.progress-bar-theme($dark-theme);
+        @include mat.legacy-progress-bar-theme($light-theme);
+        @include mat.legacy-progress-bar-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-progress-bar-theme($light-theme);
-        @include mat.mdc-progress-bar-typography($light-theme);
-        @include mat.mdc-progress-bar-theme($dark-theme);
-        @include mat.mdc-progress-bar-typography($dark-theme);
+        @include mat.progress-bar-theme($light-theme);
+        @include mat.progress-bar-typography($light-theme);
+        @include mat.progress-bar-theme($dark-theme);
+        @include mat.progress-bar-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('progress-bar styles', () => {
         $theme: ();
 
 
-        @include mat.progress-bar-theme($theme);
+        @include mat.legacy-progress-bar-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('progress-bar styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-progress-bar-theme($theme);
-        @include mat.mdc-progress-bar-typography($theme);
+        @include mat.progress-bar-theme($theme);
+        @include mat.progress-bar-typography($theme);
 
 
       `,

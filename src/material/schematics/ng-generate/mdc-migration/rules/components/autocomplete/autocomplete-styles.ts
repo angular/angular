@@ -15,8 +15,8 @@ export class AutocompleteStylesMigrator extends StyleMigrator {
 
   mixinChanges = [
     {
-      old: 'autocomplete-theme',
-      new: ['mdc-autocomplete-theme', 'mdc-autocomplete-typography'],
+      old: 'legacy-autocomplete-theme',
+      new: ['autocomplete-theme', 'autocomplete-typography'],
     },
   ];
 

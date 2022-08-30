@@ -23,13 +23,13 @@ describe('slider styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.slider-theme($theme);
+        @include mat.legacy-slider-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-slider-theme($theme);
-        @include mat.mdc-slider-typography($theme);
+        @include mat.slider-theme($theme);
+        @include mat.slider-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('slider styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.slider-theme($theme);
+        @include arbitrary.legacy-slider-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-slider-theme($theme);
-        @include arbitrary.mdc-slider-typography($theme);
+        @include arbitrary.slider-theme($theme);
+        @include arbitrary.slider-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('slider styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.slider-theme($light-theme);
-        @include mat.slider-theme($dark-theme);
+        @include mat.legacy-slider-theme($light-theme);
+        @include mat.legacy-slider-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-slider-theme($light-theme);
-        @include mat.mdc-slider-typography($light-theme);
-        @include mat.mdc-slider-theme($dark-theme);
-        @include mat.mdc-slider-typography($dark-theme);
+        @include mat.slider-theme($light-theme);
+        @include mat.slider-typography($light-theme);
+        @include mat.slider-theme($dark-theme);
+        @include mat.slider-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('slider styles', () => {
         $theme: ();
 
 
-        @include mat.slider-theme($theme);
+        @include mat.legacy-slider-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('slider styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-slider-theme($theme);
-        @include mat.mdc-slider-typography($theme);
+        @include mat.slider-theme($theme);
+        @include mat.slider-typography($theme);
 
 
       `,

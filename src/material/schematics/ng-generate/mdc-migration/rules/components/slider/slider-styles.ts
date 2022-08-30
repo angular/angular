@@ -15,8 +15,8 @@ export class SliderStylesMigrator extends StyleMigrator {
 
   mixinChanges = [
     {
-      old: 'slider-theme',
-      new: ['mdc-slider-theme', 'mdc-slider-typography'],
+      old: 'legacy-slider-theme',
+      new: ['slider-theme', 'slider-typography'],
     },
   ];
 

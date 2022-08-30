@@ -17,8 +17,6 @@ describe('snack-bar styles', () => {
     cliAppTree = patchDevkitTreeToExposeTypeScript(await createTestApp(runner));
   });
 
-  // TODO(wagnermaciel): why don't this emit:
-  //   @include mat.snack-bar-theme($theme);
   describe('mixin migrations', () => {
     it('should replace the old theme with the new ones', async () => {
       await runMigrationTest(
@@ -30,6 +28,7 @@ describe('snack-bar styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
+        @include mat.snack-bar-theme($theme);
         @include mat.snack-bar-typography($theme);
         @include mat.button-theme($theme);
         @include mat.button-typography($theme);
@@ -49,7 +48,9 @@ describe('snack-bar styles', () => {
         @use '@angular/material' as mat;
         $theme: ();
         @include mat.legacy-button-theme($theme);
+        @include mat.snack-bar-theme($theme);
         @include mat.snack-bar-typography($theme);
+        @include mat.button-theme($theme);
         @include mat.button-typography($theme);
       `,
       );
@@ -67,6 +68,7 @@ describe('snack-bar styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
+        @include mat.snack-bar-theme($theme);
         @include mat.snack-bar-typography($theme);
         @include mat.button-theme($theme);
         @include mat.button-typography($theme);
@@ -84,6 +86,7 @@ describe('snack-bar styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
+        @include arbitrary.snack-bar-theme($theme);
         @include arbitrary.snack-bar-typography($theme);
         @include arbitrary.button-theme($theme);
         @include arbitrary.button-typography($theme);
@@ -104,9 +107,11 @@ describe('snack-bar styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
+        @include mat.snack-bar-theme($light-theme);
         @include mat.snack-bar-typography($light-theme);
         @include mat.button-theme($light-theme);
         @include mat.button-typography($light-theme);
+        @include mat.snack-bar-theme($dark-theme);
         @include mat.snack-bar-typography($dark-theme);
         @include mat.button-theme($dark-theme);
         @include mat.button-typography($dark-theme);
@@ -130,6 +135,7 @@ describe('snack-bar styles', () => {
         $theme: ();
 
 
+        @include mat.snack-bar-theme($theme);
         @include mat.snack-bar-typography($theme);
         @include mat.button-theme($theme);
         @include mat.button-typography($theme);

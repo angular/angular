@@ -23,13 +23,13 @@ describe('paginator styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.paginator-theme($theme);
+        @include mat.legacy-paginator-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-paginator-theme($theme);
-        @include mat.mdc-paginator-typography($theme);
+        @include mat.paginator-theme($theme);
+        @include mat.paginator-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('paginator styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.paginator-theme($theme);
+        @include arbitrary.legacy-paginator-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-paginator-theme($theme);
-        @include arbitrary.mdc-paginator-typography($theme);
+        @include arbitrary.paginator-theme($theme);
+        @include arbitrary.paginator-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('paginator styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.paginator-theme($light-theme);
-        @include mat.paginator-theme($dark-theme);
+        @include mat.legacy-paginator-theme($light-theme);
+        @include mat.legacy-paginator-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-paginator-theme($light-theme);
-        @include mat.mdc-paginator-typography($light-theme);
-        @include mat.mdc-paginator-theme($dark-theme);
-        @include mat.mdc-paginator-typography($dark-theme);
+        @include mat.paginator-theme($light-theme);
+        @include mat.paginator-typography($light-theme);
+        @include mat.paginator-theme($dark-theme);
+        @include mat.paginator-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('paginator styles', () => {
         $theme: ();
 
 
-        @include mat.paginator-theme($theme);
+        @include mat.legacy-paginator-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('paginator styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-paginator-theme($theme);
-        @include mat.mdc-paginator-typography($theme);
+        @include mat.paginator-theme($theme);
+        @include mat.paginator-typography($theme);
 
 
       `,

@@ -15,8 +15,8 @@ export class DialogStylesMigrator extends StyleMigrator {
 
   mixinChanges = [
     {
-      old: 'dialog-theme',
-      new: ['mdc-dialog-theme', 'mdc-dialog-typography'],
+      old: 'legacy-dialog-theme',
+      new: ['dialog-theme', 'dialog-typography'],
     },
   ];
 

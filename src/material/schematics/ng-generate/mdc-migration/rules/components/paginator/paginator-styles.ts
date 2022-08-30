@@ -15,8 +15,8 @@ export class PaginatorStylesMigrator extends StyleMigrator {
 
   mixinChanges = [
     {
-      old: 'paginator-theme',
-      new: ['mdc-paginator-theme', 'mdc-paginator-typography'],
+      old: 'legacy-paginator-theme',
+      new: ['paginator-theme', 'paginator-typography'],
     },
   ];
 

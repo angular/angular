@@ -15,8 +15,8 @@ export class CardStylesMigrator extends StyleMigrator {
 
   mixinChanges = [
     {
-      old: 'card-theme',
-      new: ['mdc-card-theme', 'mdc-card-typography'],
+      old: 'legacy-card-theme',
+      new: ['card-theme', 'card-typography'],
     },
   ];
 

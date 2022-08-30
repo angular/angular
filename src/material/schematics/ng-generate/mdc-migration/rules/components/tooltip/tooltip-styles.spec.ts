@@ -23,13 +23,13 @@ describe('tooltip styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.tooltip-theme($theme);
+        @include mat.legacy-tooltip-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-tooltip-theme($theme);
-        @include mat.mdc-tooltip-typography($theme);
+        @include mat.tooltip-theme($theme);
+        @include mat.tooltip-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('tooltip styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.tooltip-theme($theme);
+        @include arbitrary.legacy-tooltip-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-tooltip-theme($theme);
-        @include arbitrary.mdc-tooltip-typography($theme);
+        @include arbitrary.tooltip-theme($theme);
+        @include arbitrary.tooltip-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('tooltip styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.tooltip-theme($light-theme);
-        @include mat.tooltip-theme($dark-theme);
+        @include mat.legacy-tooltip-theme($light-theme);
+        @include mat.legacy-tooltip-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-tooltip-theme($light-theme);
-        @include mat.mdc-tooltip-typography($light-theme);
-        @include mat.mdc-tooltip-theme($dark-theme);
-        @include mat.mdc-tooltip-typography($dark-theme);
+        @include mat.tooltip-theme($light-theme);
+        @include mat.tooltip-typography($light-theme);
+        @include mat.tooltip-theme($dark-theme);
+        @include mat.tooltip-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('tooltip styles', () => {
         $theme: ();
 
 
-        @include mat.tooltip-theme($theme);
+        @include mat.legacy-tooltip-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('tooltip styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-tooltip-theme($theme);
-        @include mat.mdc-tooltip-typography($theme);
+        @include mat.tooltip-theme($theme);
+        @include mat.tooltip-typography($theme);
 
 
       `,

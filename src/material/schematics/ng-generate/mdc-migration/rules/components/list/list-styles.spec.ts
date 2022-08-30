@@ -23,13 +23,13 @@ describe('list styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.list-theme($theme);
+        @include mat.legacy-list-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-list-theme($theme);
-        @include mat.mdc-list-typography($theme);
+        @include mat.list-theme($theme);
+        @include mat.list-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('list styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.list-theme($theme);
+        @include arbitrary.legacy-list-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-list-theme($theme);
-        @include arbitrary.mdc-list-typography($theme);
+        @include arbitrary.list-theme($theme);
+        @include arbitrary.list-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('list styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.list-theme($light-theme);
-        @include mat.list-theme($dark-theme);
+        @include mat.legacy-list-theme($light-theme);
+        @include mat.legacy-list-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-list-theme($light-theme);
-        @include mat.mdc-list-typography($light-theme);
-        @include mat.mdc-list-theme($dark-theme);
-        @include mat.mdc-list-typography($dark-theme);
+        @include mat.list-theme($light-theme);
+        @include mat.list-typography($light-theme);
+        @include mat.list-theme($dark-theme);
+        @include mat.list-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('list styles', () => {
         $theme: ();
 
 
-        @include mat.list-theme($theme);
+        @include mat.legacy-list-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('list styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-list-theme($theme);
-        @include mat.mdc-list-typography($theme);
+        @include mat.list-theme($theme);
+        @include mat.list-typography($theme);
 
 
       `,

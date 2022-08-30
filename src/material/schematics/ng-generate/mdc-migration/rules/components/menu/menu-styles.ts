@@ -15,8 +15,8 @@ export class MenuStylesMigrator extends StyleMigrator {
 
   mixinChanges = [
     {
-      old: 'menu-theme',
-      new: ['mdc-menu-theme', 'mdc-menu-typography'],
+      old: 'legacy-menu-theme',
+      new: ['menu-theme', 'menu-typography'],
     },
   ];
 

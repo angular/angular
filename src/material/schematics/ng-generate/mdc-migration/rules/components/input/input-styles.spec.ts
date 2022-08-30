@@ -23,13 +23,13 @@ describe('input styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.input-theme($theme);
+        @include mat.legacy-input-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-input-theme($theme);
-        @include mat.mdc-input-typography($theme);
+        @include mat.input-theme($theme);
+        @include mat.input-typography($theme);
       `,
       );
     });
@@ -39,13 +39,13 @@ describe('input styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.input-theme($theme);
+        @include arbitrary.legacy-input-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-input-theme($theme);
-        @include arbitrary.mdc-input-typography($theme);
+        @include arbitrary.input-theme($theme);
+        @include arbitrary.input-typography($theme);
       `,
       );
     });
@@ -56,17 +56,17 @@ describe('input styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.input-theme($light-theme);
-        @include mat.input-theme($dark-theme);
+        @include mat.legacy-input-theme($light-theme);
+        @include mat.legacy-input-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-input-theme($light-theme);
-        @include mat.mdc-input-typography($light-theme);
-        @include mat.mdc-input-theme($dark-theme);
-        @include mat.mdc-input-typography($dark-theme);
+        @include mat.input-theme($light-theme);
+        @include mat.input-typography($light-theme);
+        @include mat.input-theme($dark-theme);
+        @include mat.input-typography($dark-theme);
       `,
       );
     });
@@ -78,7 +78,7 @@ describe('input styles', () => {
         $theme: ();
 
 
-        @include mat.input-theme($theme);
+        @include mat.legacy-input-theme($theme);
 
 
       `,
@@ -87,8 +87,8 @@ describe('input styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-input-theme($theme);
-        @include mat.mdc-input-typography($theme);
+        @include mat.input-theme($theme);
+        @include mat.input-typography($theme);
 
 
       `,

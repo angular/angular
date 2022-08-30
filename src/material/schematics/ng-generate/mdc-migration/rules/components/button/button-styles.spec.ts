@@ -23,17 +23,17 @@ describe('button styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.button-theme($theme);
+        @include mat.legacy-button-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-button-theme($theme);
-        @include mat.mdc-button-typography($theme);
-        @include mat.mdc-fab-theme($theme);
-        @include mat.mdc-fab-typography($theme);
-        @include mat.mdc-icon-button-theme($theme);
-        @include mat.mdc-icon-button-typography($theme);
+        @include mat.button-theme($theme);
+        @include mat.button-typography($theme);
+        @include mat.fab-theme($theme);
+        @include mat.fab-typography($theme);
+        @include mat.icon-button-theme($theme);
+        @include mat.icon-button-typography($theme);
       `,
       );
     });
@@ -43,19 +43,19 @@ describe('button styles', () => {
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-button-theme($theme);
-        @include mat.mdc-button-typography($theme);
         @include mat.button-theme($theme);
+        @include mat.button-typography($theme);
+        @include mat.legacy-button-theme($theme);
       `,
         `
         @use '@angular/material' as mat;
         $theme: ();
-        @include mat.mdc-button-theme($theme);
-        @include mat.mdc-button-typography($theme);
-        @include mat.mdc-fab-theme($theme);
-        @include mat.mdc-fab-typography($theme);
-        @include mat.mdc-icon-button-theme($theme);
-        @include mat.mdc-icon-button-typography($theme);
+        @include mat.button-theme($theme);
+        @include mat.button-typography($theme);
+        @include mat.fab-theme($theme);
+        @include mat.fab-typography($theme);
+        @include mat.icon-button-theme($theme);
+        @include mat.icon-button-typography($theme);
       `,
       );
     });
@@ -65,17 +65,17 @@ describe('button styles', () => {
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.button-theme($theme);
+        @include arbitrary.legacy-button-theme($theme);
       `,
         `
         @use '@angular/material' as arbitrary;
         $theme: ();
-        @include arbitrary.mdc-button-theme($theme);
-        @include arbitrary.mdc-button-typography($theme);
-        @include arbitrary.mdc-fab-theme($theme);
-        @include arbitrary.mdc-fab-typography($theme);
-        @include arbitrary.mdc-icon-button-theme($theme);
-        @include arbitrary.mdc-icon-button-typography($theme);
+        @include arbitrary.button-theme($theme);
+        @include arbitrary.button-typography($theme);
+        @include arbitrary.fab-theme($theme);
+        @include arbitrary.fab-typography($theme);
+        @include arbitrary.icon-button-theme($theme);
+        @include arbitrary.icon-button-typography($theme);
       `,
       );
     });
@@ -86,25 +86,25 @@ describe('button styles', () => {
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.button-theme($light-theme);
-        @include mat.button-theme($dark-theme);
+        @include mat.legacy-button-theme($light-theme);
+        @include mat.legacy-button-theme($dark-theme);
       `,
         `
         @use '@angular/material' as mat;
         $light-theme: ();
         $dark-theme: ();
-        @include mat.mdc-button-theme($light-theme);
-        @include mat.mdc-button-typography($light-theme);
-        @include mat.mdc-fab-theme($light-theme);
-        @include mat.mdc-fab-typography($light-theme);
-        @include mat.mdc-icon-button-theme($light-theme);
-        @include mat.mdc-icon-button-typography($light-theme);
-        @include mat.mdc-button-theme($dark-theme);
-        @include mat.mdc-button-typography($dark-theme);
-        @include mat.mdc-fab-theme($dark-theme);
-        @include mat.mdc-fab-typography($dark-theme);
-        @include mat.mdc-icon-button-theme($dark-theme);
-        @include mat.mdc-icon-button-typography($dark-theme);
+        @include mat.button-theme($light-theme);
+        @include mat.button-typography($light-theme);
+        @include mat.fab-theme($light-theme);
+        @include mat.fab-typography($light-theme);
+        @include mat.icon-button-theme($light-theme);
+        @include mat.icon-button-typography($light-theme);
+        @include mat.button-theme($dark-theme);
+        @include mat.button-typography($dark-theme);
+        @include mat.fab-theme($dark-theme);
+        @include mat.fab-typography($dark-theme);
+        @include mat.icon-button-theme($dark-theme);
+        @include mat.icon-button-typography($dark-theme);
       `,
       );
     });
@@ -116,7 +116,7 @@ describe('button styles', () => {
         $theme: ();
 
 
-        @include mat.button-theme($theme);
+        @include mat.legacy-button-theme($theme);
 
 
       `,
@@ -125,12 +125,12 @@ describe('button styles', () => {
         $theme: ();
 
 
-        @include mat.mdc-button-theme($theme);
-        @include mat.mdc-button-typography($theme);
-        @include mat.mdc-fab-theme($theme);
-        @include mat.mdc-fab-typography($theme);
-        @include mat.mdc-icon-button-theme($theme);
-        @include mat.mdc-icon-button-typography($theme);
+        @include mat.button-theme($theme);
+        @include mat.button-typography($theme);
+        @include mat.fab-theme($theme);
+        @include mat.fab-typography($theme);
+        @include mat.icon-button-theme($theme);
+        @include mat.icon-button-typography($theme);
 
 
       `,

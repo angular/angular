@@ -15,8 +15,8 @@ export class ChipsStylesMigrator extends StyleMigrator {
 
   mixinChanges = [
     {
-      old: 'chips-theme',
-      new: ['mdc-chips-theme', 'mdc-chips-typography'],
+      old: 'legacy-chips-theme',
+      new: ['chips-theme', 'chips-typography'],
     },
   ];
 
