@@ -66,7 +66,7 @@ $new-api-dark-theme-default-warn: theming.define-dark-theme((
 $light-theme-only-density: theming.define-light-theme((density: -2));
 $dark-theme-only-density: theming.define-dark-theme((density: -2));
 
-$typography-config: typography.define-typography-config();
+$typography-config: all-typography.define-typography-config();
 $light-theme-only-typography: theming.define-light-theme((typography: $typography-config));
 $dark-theme-only-typography: theming.define-dark-theme((typography: $typography-config));
 

@@ -46,7 +46,7 @@
 /// @param {Map} $button Configuration for the "button" typographic level.
 /// @param {Map} $input Configuration for the "input" typographic level.
 /// @returns {Map} A typography config for the application.
-@function define-typography-config(
+@function define-legacy-typography-config(
   $font-family:   'Roboto, "Helvetica Neue", sans-serif',
   $display-4:     define-typography-level(112px, 112px, 300, $letter-spacing: -0.05em),
   $display-3:     define-typography-level(56px, 56px, 400, $letter-spacing: -0.02em),
@@ -136,7 +136,7 @@
         $non-null-args: map.merge($non-null-args, ($key: $value));
       }
     }
-    @return define-typography-config($non-null-args...);
+    @return define-legacy-typography-config($non-null-args...);
   }
   @return $config;
 }

@@ -33,7 +33,7 @@
   $button:        typography.define-typography-level(14px, 14px, 500),
   $input:         typography.define-typography-level(inherit, 1.125, 400)
 ) {
-  @return typography.define-typography-config($font-family, $display-4, $display-3, $display-2,
-    $display-1, $headline, $title, $subheading-2, $subheading-1, $body-2,
+  @return typography.define-legacy-typography-config($font-family, $display-4, $display-3,
+    $display-2, $display-1, $headline, $title, $subheading-2, $subheading-1, $body-2,
     $body-1, $caption, $button, $input);
 }

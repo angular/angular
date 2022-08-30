@@ -9,8 +9,8 @@
   $amber-palette, $orange-palette, $deep-orange-palette, $brown-palette, $grey-palette,
   $gray-palette, $blue-grey-palette, $blue-gray-palette, $light-theme-background-palette,
   $dark-theme-background-palette, $light-theme-foreground-palette, $dark-theme-foreground-palette;
-@forward './core/typography/typography' show define-typography-level, define-typography-config,
-  typography-hierarchy;
+@forward './core/typography/typography' show define-typography-level,
+  define-legacy-typography-config, typography-hierarchy;
 @forward './core/typography/typography-utils' show typography-level,
   font-size, line-height, font-weight, letter-spacing, font-family, font-shorthand;
 
@@ -51,7 +51,7 @@
 @forward './core/theming/all-theme' show all-component-themes;
 @forward './core/color/all-color' show all-component-colors;
 @forward './core/typography/all-typography' show all-component-typographies,
-  define-mdc-typography-config;
+  define-rem-typography-config, define-typography-config;
 @forward './legacy-core/theming/all-theme' show all-legacy-component-themes;
 @forward './legacy-core/color/all-color' show all-legacy-component-colors;
 @forward './legacy-core/typography/all-typography' show all-legacy-component-typographies;
