@@ -1,9 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {
-  MatLegacyDialog,
-  MAT_LEGACY_DIALOG_DATA,
-  MatLegacyDialogRef,
-} from '@angular/material/legacy-dialog';
+import {MatDialog, MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 export interface DialogData {
   animal: string;
@@ -21,7 +17,7 @@ export class DialogOverviewExample {
   animal: string;
   name: string;
 
-  constructor(public dialog: MatLegacyDialog) {}
+  constructor(public dialog: MatDialog) {}
 
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
@@ -42,8 +38,8 @@ export class DialogOverviewExample {
 })
 export class DialogOverviewExampleDialog {
   constructor(
-    public dialogRef: MatLegacyDialogRef<DialogOverviewExampleDialog>,
-    @Inject(MAT_LEGACY_DIALOG_DATA) public data: DialogData,
+    public dialogRef: MatDialogRef<DialogOverviewExampleDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
   ) {}
 
   onNoClick(): void {

@@ -1,10 +1,10 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyDialogModule} from '@angular/material/legacy-dialog';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacyMenuModule} from '@angular/material/legacy-menu';
+import {MatButtonModule} from '@angular/material/button';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatInputModule} from '@angular/material/input';
+import {MatMenuModule} from '@angular/material/menu';
 import {
   DialogContentExample,
   DialogContentExampleDialog,
@@ -63,10 +63,10 @@ const EXAMPLES = [
 @NgModule({
   imports: [
     CommonModule,
-    MatLegacyButtonModule,
-    MatLegacyDialogModule,
-    MatLegacyInputModule,
-    MatLegacyMenuModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatInputModule,
+    MatMenuModule,
     FormsModule,
   ],
   declarations: EXAMPLES,

@@ -1,5 +1,5 @@
 import {Component, TemplateRef, ViewChild} from '@angular/core';
-import {MatLegacyDialog, MatLegacyDialogConfig} from '@angular/material/legacy-dialog';
+import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 
 /**
  * @title Testing with MatDialogHarness
@@ -11,9 +11,9 @@ import {MatLegacyDialog, MatLegacyDialogConfig} from '@angular/material/legacy-d
 export class DialogHarnessExample {
   @ViewChild(TemplateRef) dialogTemplate: TemplateRef<any>;
 
-  constructor(readonly dialog: MatLegacyDialog) {}
+  constructor(readonly dialog: MatDialog) {}
 
-  open(config?: MatLegacyDialogConfig) {
+  open(config?: MatDialogConfig) {
     return this.dialog.open(this.dialogTemplate, config);
   }
 }

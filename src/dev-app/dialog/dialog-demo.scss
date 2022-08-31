@@ -1,13 +1,28 @@
+@use '@angular/material' as mat;
+
 .demo-dialog-card {
-  max-width: 405px;
+  max-width: 600px;
   margin: 20px 0;
+
+  mat-form-field + mat-form-field {
+    margin-left: 16px;
+  }
+
+  [dir='rtl'] mat-form-field + mat-form-field {
+    margin-left: 0;
+    margin-right: 16px;
+  }
 }
 
-button {
+.demo-dialog-button {
   margin-right: 8px;
 
   [dir='rtl'] & {
     margin-left: 8px;
     margin-right: 0;
   }
+}
+
+.demo-dialog-legacy-padding {
+  @include mat.dialog-legacy-padding();
 }

@@ -6,44 +6,47 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Inject, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
-import {DragDropModule} from '@angular/cdk/drag-drop';
-import {FormsModule} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCardModule} from '@angular/material/legacy-card';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
+import {Component, Inject, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
 import {
-  MAT_LEGACY_DIALOG_DATA,
-  MatLegacyDialog,
-  MatLegacyDialogConfig,
-  MatLegacyDialogModule,
-  MatLegacyDialogRef,
-} from '@angular/material/legacy-dialog';
-import {MatLegacyFormFieldModule} from '@angular/material/legacy-form-field';
-import {MatLegacyInputModule} from '@angular/material/legacy-input';
-import {MatLegacySelectModule} from '@angular/material/legacy-select';
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogConfig,
+  MatDialogRef,
+  MatDialogModule,
+} from '@angular/material/dialog';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
-const defaultDialogConfig = new MatLegacyDialogConfig();
+const defaultDialogConfig = new MatDialogConfig();
 
 @Component({
   selector: 'dialog-demo',
   templateUrl: 'dialog-demo.html',
   styleUrls: ['dialog-demo.css'],
+  // View encapsulation is disabled since we add the legacy dialog padding
+  // styles that need to target the dialog (not only the projected content).
+  encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: [
     FormsModule,
-    MatLegacyButtonModule,
-    MatLegacyCardModule,
-    MatLegacyCheckboxModule,
-    MatLegacyDialogModule,
-    MatLegacyFormFieldModule,
-    MatLegacyInputModule,
-    MatLegacySelectModule,
+    MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
   ],
 })
 export class DialogDemo {
-  dialogRef: MatLegacyDialogRef<JazzDialog> | null;
+  dialogRef: MatDialogRef<JazzDialog> | null;
   lastAfterClosedResult: string;
   lastBeforeCloseResult: string;
   actionsAlignment: 'start' | 'center' | 'end';
@@ -56,8 +59,6 @@ export class DialogDemo {
     height: '',
     minWidth: '',
     minHeight: '',
-    enterAnimationDuration: defaultDialogConfig.enterAnimationDuration,
-    exitAnimationDuration: defaultDialogConfig.exitAnimationDuration,
     maxWidth: defaultDialogConfig.maxWidth,
     maxHeight: '',
     position: {
@@ -71,10 +72,11 @@ export class DialogDemo {
     },
   };
   numTemplateOpens = 0;
+  enableLegacyPadding = false;
 
   @ViewChild(TemplateRef) template: TemplateRef<any>;
 
-  constructor(public dialog: MatLegacyDialog, @Inject(DOCUMENT) doc: any) {
+  constructor(public dialog: MatDialog, @Inject(DOCUMENT) doc: any) {
     // Possible useful example for the open and closeAll events.
     // Adding a class to the body if a dialog opens and
     // removing it after all open dialogs are closed
@@ -89,7 +91,7 @@ export class DialogDemo {
   }
 
   openJazz() {
-    this.dialogRef = this.dialog.open(JazzDialog, this.config);
+    this.dialogRef = this.dialog.open(JazzDialog, this._getDialogConfig());
 
     this.dialogRef.beforeClosed().subscribe((result: string) => {
       this.lastBeforeCloseResult = result;
@@ -101,13 +103,21 @@ export class DialogDemo {
   }
 
   openContentElement() {
-    const dialogRef = this.dialog.open(ContentElementDialog, this.config);
+    const dialogRef = this.dialog.open(ContentElementDialog, this._getDialogConfig());
     dialogRef.componentInstance.actionsAlignment = this.actionsAlignment;
   }
 
   openTemplate() {
     this.numTemplateOpens++;
-    this.dialog.open(this.template, this.config);
+    this.dialog.open(this.template, this._getDialogConfig());
+  }
+
+  private _getDialogConfig(): MatDialogConfig {
+    const config = {...this.config};
+    if (this.enableLegacyPadding) {
+      config.panelClass = `demo-dialog-legacy-padding`;
+    }
+    return config;
   }
 }
 
@@ -122,7 +132,7 @@ export class DialogDemo {
         <input matInput #howMuch>
       </mat-form-field>
 
-      <p cdkDragHandle>{{ data.message }} (use this message to drag the dialog)</p>
+      <p cdkDragHandle> {{ data.message }} </p>
       <button type="button" (click)="dialogRef.close(howMuch.value)">Close dialog</button>
       <button (click)="togglePosition()">Change dimensions</button>
       <button (click)="temporarilyHide()">Hide for 2 seconds</button>
@@ -131,14 +141,14 @@ export class DialogDemo {
   encapsulation: ViewEncapsulation.None,
   styles: [`.hidden-dialog { opacity: 0; }`],
   standalone: true,
-  imports: [MatLegacyFormFieldModule, MatLegacyInputModule, DragDropModule],
+  imports: [MatInputModule, DragDropModule],
 })
 export class JazzDialog {
   private _dimensionToggle = false;
 
   constructor(
-    public dialogRef: MatLegacyDialogRef<JazzDialog>,
-    @Inject(MAT_LEGACY_DIALOG_DATA) public data: any,
+    public dialogRef: MatDialogRef<JazzDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: any,
   ) {}
 
   togglePosition(): void {
@@ -205,12 +215,12 @@ export class JazzDialog {
     </mat-dialog-actions>
   `,
   standalone: true,
-  imports: [MatLegacyDialogModule, MatLegacyButtonModule],
+  imports: [MatDialogModule, MatButtonModule],
 })
 export class ContentElementDialog {
   actionsAlignment: 'start' | 'center' | 'end';
 
-  constructor(public dialog: MatLegacyDialog) {}
+  constructor(public dialog: MatDialog) {}
 
   showInStackedDialog() {
     this.dialog.open(IFrameDialog);
@@ -226,8 +236,6 @@ export class ContentElementDialog {
     }
   `,
   ],
-  standalone: true,
-  imports: [MatLegacyDialogModule, MatLegacyButtonModule],
   template: `
     <h2 mat-dialog-title>Neptune</h2>
 
@@ -242,5 +250,7 @@ export class ContentElementDialog {
         mat-dialog-close>Close</button>
     </mat-dialog-actions>
   `,
+  standalone: true,
+  imports: [MatDialogModule, MatButtonModule],
 })
 export class IFrameDialog {}

@@ -1,0 +1,27 @@
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "legacy-dialog",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "legacy-dialog-demo.html",
+        ":legacy_dialog_demo_scss",
+    ],
+    deps = [
+        "//src/cdk/drag-drop",
+        "//src/material/legacy-button",
+        "//src/material/legacy-card",
+        "//src/material/legacy-checkbox",
+        "//src/material/legacy-dialog",
+        "//src/material/legacy-form-field",
+        "//src/material/legacy-input",
+        "//src/material/legacy-select",
+    ],
+)
+
+sass_binary(
+    name = "legacy_dialog_demo_scss",
+    src = "legacy-dialog-demo.scss",
+)

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MatLegacyDialog} from '@angular/material/legacy-dialog';
+import {MatDialog} from '@angular/material/dialog';
 
 /**
  * @title Dialog elements
@@ -9,7 +9,7 @@ import {MatLegacyDialog} from '@angular/material/legacy-dialog';
   templateUrl: 'dialog-elements-example.html',
 })
 export class DialogElementsExample {
-  constructor(public dialog: MatLegacyDialog) {}
+  constructor(public dialog: MatDialog) {}
 
   openDialog() {
     this.dialog.open(DialogElementsExampleDialog);

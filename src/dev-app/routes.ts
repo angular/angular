@@ -169,8 +169,8 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./mdc-chips/mdc-chips-demo').then(m => m.MdcChipsDemo),
   },
   {
-    path: 'mdc-dialog',
-    loadComponent: () => import('./mdc-dialog/mdc-dialog-demo').then(m => m.DialogDemo),
+    path: 'legacy-dialog',
+    loadComponent: () => import('./legacy-dialog/legacy-dialog-demo').then(m => m.LegacyDialogDemo),
   },
   {
     path: 'input',

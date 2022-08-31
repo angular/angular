@@ -1,18 +1,14 @@
 <h1>Dialog demo</h1>
 
-<button mat-raised-button color="primary" (click)="openJazz()" class="demo-dialog-button">
+<button mat-raised-button color="primary" (click)="openJazz()">
   Open dialog
 </button>
-<button mat-raised-button color="accent" (click)="openContentElement()" class="demo-dialog-button">
+<button mat-raised-button color="accent" (click)="openContentElement()">
   Open dialog with content elements
 </button>
-<button mat-raised-button color="accent" (click)="openTemplate()" class="demo-dialog-button">
+<button mat-raised-button color="accent" (click)="openTemplate()">
   Open dialog with template content
 </button>
-
-<p>
-  <mat-checkbox [(ngModel)]="enableLegacyPadding">Enable legacy padding</mat-checkbox>
-</p>
 
 <mat-card class="demo-dialog-card">
   <mat-card-content>
@@ -107,6 +103,17 @@
     </p>
 
     <p>
+      <mat-form-field>
+        <mat-label>Enter duration</mat-label>
+        <input matInput [(ngModel)]="config.enterAnimationDuration">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Exit duration</mat-label>
+        <input matInput [(ngModel)]="config.exitAnimationDuration">
+      </mat-form-field>
+    </p>
+
+    <p>
       <mat-checkbox [(ngModel)]="config.disableClose">Disable close</mat-checkbox>
     </p>
   </mat-card-content>
@@ -126,12 +133,6 @@
   </mat-form-field>
 
   <p> {{ data.message }} </p>
-  <button type="button" (click)="dialogRef.close(howMuch.value)" class="demo-dialog-button"
-          cdkFocusInitial>
-    Close dialog
-  </button>
-  <button (click)="dialogRef.updateSize('500px', '500px').updatePosition({top: '25px', left: '25px'});"
-          class="demo-dialog-button">
-    Change dimensions
-  </button>
+  <button type="button" (click)="dialogRef.close(howMuch.value)">Close dialog</button>
+  <button (click)="dialogRef.updateSize('500px', '500px').updatePosition({top: '25px', left: '25px'});">Change dimensions</button>
 </ng-template>

@@ -1,0 +1,13 @@
+.demo-dialog-card {
+  max-width: 405px;
+  margin: 20px 0;
+}
+
+button {
+  margin-right: 8px;
+
+  [dir='rtl'] & {
+    margin-left: 8px;
+    margin-right: 0;
+  }
+}

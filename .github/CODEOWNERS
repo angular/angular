@@ -184,7 +184,10 @@
 /src/dev-app/input/**                                       @devversion @mmalerba
 /src/dev-app/layout/**                                      @andrewseguin
 /src/dev-app/legacy-card/**                                 @mmalerba
+/src/dev-app/legacy-checkbox/**                             @mmalerba
+/src/dev-app/legacy-dialog/**                               @devversion
 /src/dev-app/legacy-input/**                                @mmalerba
+/src/dev-app/legacy-list/**                                 @mmalerba
 /src/dev-app/legacy-paginator/**                            @crisbeto
 /src/dev-app/legacy-select/**                               @crisbeto
 /src/dev-app/legacy-snack-bar/**                            @andrewseguin
@@ -194,10 +197,7 @@
 /src/dev-app/live-announcer/**                              @jelbourn
 /src/dev-app/mdc-autocomplete/**                            @crisbeto
 /src/dev-app/mdc-button/**                                  @andrewseguin
-/src/dev-app/legacy-checkbox/**                             @mmalerba
 /src/dev-app/mdc-chips/**                                   @mmalerba
-/src/dev-app/mdc-dialog/**                                  @devversion
-/src/dev-app/legacy-list/**                                 @mmalerba
 /src/dev-app/mdc-menu/**                                    @crisbeto
 /src/dev-app/mdc-progress-bar/**                            @crisbeto
 /src/dev-app/mdc-progress-spinner/**                        @mmalerba
