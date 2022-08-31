@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, NgForOf} from '@angular/common';
+import {CommonModule, NgFor, NgForOf} from '@angular/common';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
@@ -394,6 +394,25 @@ let thisArg: any;
       @Component({
         selector: 'test-component',
         imports: [NgForOf],
+        template: `
+          <ng-container *ngFor="let item of items">{{ item }}|</ng-container>
+        `,
+        standalone: true,
+      })
+      class TestComponent {
+        items = [1, 2, 3];
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('1|2|3|');
+    });
+
+    it('should be available as a standalone directive using an `NgFor` alias', () => {
+      @Component({
+        selector: 'test-component',
+        imports: [NgFor],
         template: `
           <ng-container *ngFor="let item of items">{{ item }}|</ng-container>
         `,

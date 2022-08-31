@@ -450,7 +450,7 @@ export class NgComponentOutlet implements OnChanges, OnDestroy {
 }
 
 // @public
-export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
+class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
     constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T, U>>, _differs: IterableDiffers);
     ngDoCheck(): void;
     set ngForOf(ngForOf: U & NgIterable<T> | undefined | null);
@@ -464,6 +464,8 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgForOf<any, any>, never>;
 }
+export { NgForOf as NgFor }
+export { NgForOf }
 
 // @public (undocumented)
 export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
