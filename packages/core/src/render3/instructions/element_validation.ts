@@ -282,7 +282,7 @@ function getTemplateLocationDetails(lView: LView): string {
  * that the `CommonModule` should also be included.
  */
 export const KNOWN_CONTROL_FLOW_DIRECTIVES = new Map([
-  ['ngIf', 'NgIf'], ['ngFor', 'NgForOf'], ['ngSwitchCase', 'NgSwitchCase'],
+  ['ngIf', 'NgIf'], ['ngFor', 'NgFor'], ['ngSwitchCase', 'NgSwitchCase'],
   ['ngSwitchDefault', 'NgSwitchDefault']
 ]);
 /**

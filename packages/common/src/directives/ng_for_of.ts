@@ -290,6 +290,11 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   }
 }
 
+// Also export the `NgForOf` class as `NgFor` to improve the DX for
+// cases when the directive is used as standalone, so the class name
+// matches the CSS selector (*ngFor).
+export {NgForOf as NgFor};
+
 function applyViewChange<T>(
     view: EmbeddedViewRef<NgForOfContext<T>>, record: IterableChangeRecord<T>) {
   view.context.$implicit = record.item;
