@@ -92,6 +92,7 @@ APPLICATION_FILES = [
     "tsconfig.app.json",
     "tsconfig.json",
     "tsconfig.worker.json",
+    "security-exemptions.json",
     "//aio/src/assets",
     "//aio/src/assets/js",
 ] + glob(
@@ -111,6 +112,7 @@ APPLICATION_DEPS = [
     ":stackblitz",
     ":example-zips",
     "@aio_npm//@angular-devkit/build-angular",
+    "@aio_npm//@angular-eslint/builder",
     "@aio_npm//@angular/animations",
     "@aio_npm//@angular/cdk",
     "@aio_npm//@angular/cli",
@@ -143,7 +145,7 @@ TEST_FILES = APPLICATION_FILES + [
 
 # Dependencies required to test the docs app
 TEST_DEPS = APPLICATION_DEPS + [
-    "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium",
+    "@aio_npm//@angular/build-tooling/bazel/browsers/chromium",
     "@aio_npm//@types/jasmine",
     "@aio_npm//@types/node",
     "@aio_npm//assert",
@@ -163,7 +165,7 @@ E2E_FILES = APPLICATION_FILES + glob(["tests/e2e/**"])
 
 # Dependencies required to run the e2e tests
 E2E_DEPS = APPLICATION_DEPS + [
-    "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium",
+    "@aio_npm//@angular/build-tooling/bazel/browsers/chromium",
     "@aio_npm//@types/jasmine",
     "@aio_npm//@types/node",
     "@aio_npm//jasmine-spec-reporter",
@@ -241,7 +243,7 @@ architect_test(
         "CHROME_BIN": "../$(CHROMIUM)",
     },
     toolchains = [
-        "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias",
+        "@aio_npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
     ],
 )
 
@@ -264,7 +266,7 @@ architect_test(
         "CHROMEDRIVER_BIN": "../$(CHROMEDRIVER)",
     },
     toolchains = [
-        "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias",
+        "@aio_npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
     ],
 )
 
