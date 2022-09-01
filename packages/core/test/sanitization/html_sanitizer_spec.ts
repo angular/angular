@@ -69,9 +69,15 @@ function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
           .toEqual('<img src="pteranodon.jpg" aria-details="details">');
     });
 
-    it('sanitizes srcset attributes', () => {
+    it('ignores srcset attributes', () => {
+      // Modern browsers can handle `srcset` safely without any additional sanitization.
       expect(sanitizeHtml(defaultDoc, '<img srcset="/foo.png 400px, javascript:evil() 23px">'))
-          .toEqual('<img srcset="/foo.png 400px, unsafe:javascript:evil() 23px">');
+          .toEqual('<img srcset="/foo.png 400px, javascript:evil() 23px">');
+
+      // Verify that complex `srcset` with URLs that contain commas are retained as is.
+      const content = '<img src="https://localhost/h_450,w_450/logo.jpg" ' +
+          'srcset="https://localhost/h_450,w_450/logo.jpg 450w, https://localhost/h_300,w_300/logo.jpg 300w">';
+      expect(sanitizeHtml(defaultDoc, content)).toEqual(content);
     });
 
     it('supports sanitizing plain text', () => {
