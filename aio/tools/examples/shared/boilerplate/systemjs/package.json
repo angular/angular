@@ -50,7 +50,7 @@
     "@types/angular-mocks": "^1.7.1",
     "@types/angular-resource": "^1.5.17",
     "@types/angular-route": "^1.7.2",
-    "@types/jasmine": "~4.0.0",
+    "@types/jasmine": "~4.3.0",
     "@types/node": "^16.11.35",
     "concurrently": "^7.0.0",
     "http-server": "^14.0.0",

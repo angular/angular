@@ -39,7 +39,7 @@
     "@angular/compiler-cli": "^14.1.0",
     "@nguniversal/builders": "^14.1.0",
     "@types/express": "^4.17.13",
-    "@types/jasmine": "~4.0.0",
+    "@types/jasmine": "~4.3.0",
     "@types/node": "^16.11.35",
     "jasmine-core": "~4.3.0",
     "jasmine-marbles": "~0.9.2",
