@@ -5,7 +5,7 @@ load("@aio_npm//@angular/build-tooling/bazel:filter_outputs.bzl", "filter_output
 package(default_visibility = ["//visibility:public"])
 
 exports_files([
-    "test-aio-a11y-localhost.mjs",
+    "run-with-local-server.mjs",
 ])
 
 nodejs_binary(
