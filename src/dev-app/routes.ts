@@ -181,8 +181,8 @@ export const DEV_APP_ROUTES: Routes = [
     loadComponent: () => import('./list/list-demo').then(m => m.ListDemo),
   },
   {
-    path: 'mdc-menu',
-    loadComponent: () => import('./mdc-menu/mdc-menu-demo').then(m => m.MdcMenuDemo),
+    path: 'legacy-menu',
+    loadComponent: () => import('./legacy-menu/legacy-menu-demo').then(m => m.LegacyMenuDemo),
   },
   {
     path: 'legacy-paginator',

@@ -3,22 +3,22 @@ load("//tools:defaults.bzl", "ng_module", "sass_binary")
 package(default_visibility = ["//visibility:public"])
 
 ng_module(
-    name = "mdc-menu",
+    name = "legacy-menu",
     srcs = glob(["**/*.ts"]),
     assets = [
-        "mdc-menu-demo.html",
-        ":mdc_menu_demo_scss",
+        "legacy-menu-demo.html",
+        ":legacy_menu_demo_scss",
     ],
     deps = [
-        "//src/material/button",
         "//src/material/divider",
         "//src/material/icon",
-        "//src/material/menu",
+        "//src/material/legacy-button",
+        "//src/material/legacy-menu",
         "//src/material/toolbar",
     ],
 )
 
 sass_binary(
-    name = "mdc_menu_demo_scss",
-    src = "mdc-menu-demo.scss",
+    name = "legacy_menu_demo_scss",
+    src = "legacy-menu-demo.scss",
 )

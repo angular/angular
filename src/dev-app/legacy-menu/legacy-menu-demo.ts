@@ -8,27 +8,27 @@
 
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatIconModule} from '@angular/material/icon';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatDividerModule} from '@angular/material/divider';
-import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatLegacyMenuModule} from '@angular/material/legacy-menu';
+import {MatToolbarModule} from '@angular/material/toolbar';
 
 @Component({
-  selector: 'mdc-menu-demo',
-  templateUrl: 'mdc-menu-demo.html',
-  styleUrls: ['mdc-menu-demo.css'],
+  selector: 'legacy-menu-demo',
+  templateUrl: 'legacy-menu-demo.html',
+  styleUrls: ['legacy-menu-demo.css'],
   standalone: true,
   imports: [
     CommonModule,
-    MatMenuModule,
-    MatButtonModule,
-    MatToolbarModule,
-    MatIconModule,
+    MatLegacyButtonModule,
     MatDividerModule,
+    MatIconModule,
+    MatLegacyMenuModule,
+    MatToolbarModule,
   ],
 })
-export class MdcMenuDemo {
+export class LegacyMenuDemo {
   selected = '';
   items = [
     {text: 'Refresh'},

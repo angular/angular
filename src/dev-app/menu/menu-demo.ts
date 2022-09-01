@@ -8,11 +8,11 @@
 
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatDividerModule} from '@angular/material/divider';
-import {MatIconModule} from '@angular/material/icon';
-import {MatLegacyMenuModule} from '@angular/material/legacy-menu';
+import {MatMenuModule} from '@angular/material/menu';
 import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatIconModule} from '@angular/material/icon';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatButtonModule} from '@angular/material/button';
 
 @Component({
   selector: 'menu-demo',
@@ -21,11 +21,11 @@ import {MatToolbarModule} from '@angular/material/toolbar';
   standalone: true,
   imports: [
     CommonModule,
-    MatLegacyButtonModule,
-    MatDividerModule,
-    MatIconModule,
-    MatLegacyMenuModule,
+    MatMenuModule,
+    MatButtonModule,
     MatToolbarModule,
+    MatIconModule,
+    MatDividerModule,
   ],
 })
 export class MenuDemo {
