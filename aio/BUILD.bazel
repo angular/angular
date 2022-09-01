@@ -11,7 +11,9 @@ load("@aspect_bazel_lib//lib:write_source_files.bzl", generated_files_test = "wr
 
 exports_files([
     "firebase.json",
+    "ngsw-config.json",
     "ngsw-config.template.json",
+    "tsconfig.json",
 ])
 
 # If set will use first party angular deps for aio targets instead of their npm equivalent
@@ -55,6 +57,7 @@ npm_package_bin(
     },
     output_dir = True,
     tool = "@aio_npm//dgeni/bin:dgeni",
+    visibility = ["//aio/tests/deployment:__subpackages__"],
 )
 
 # Copy stackblitz live examples to expected assets location
