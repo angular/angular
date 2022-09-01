@@ -45,8 +45,3 @@ export function _sanitizeUrl(url: string): string {
 
   return 'unsafe:' + url;
 }
-
-export function sanitizeSrcset(srcset: string): string {
-  srcset = String(srcset);
-  return srcset.split(',').map((srcset) => _sanitizeUrl(srcset.trim())).join(', ');
-}

@@ -8,8 +8,9 @@
 
 import {TrustedHTML} from '../util/security/trusted_type_defs';
 import {trustedHTMLFromString} from '../util/security/trusted_types';
+
 import {getInertBodyHelper, InertBodyHelper} from './inert_body';
-import {_sanitizeUrl, sanitizeSrcset} from './url_sanitizer';
+import {_sanitizeUrl} from './url_sanitizer';
 
 function tagSet(tags: string): {[k: string]: boolean} {
   const res: {[k: string]: boolean} = {};
@@ -64,14 +65,11 @@ export const VALID_ELEMENTS =
 // Attributes that have href and hence need to be sanitized
 export const URI_ATTRS = tagSet('background,cite,href,itemtype,longdesc,poster,src,xlink:href');
 
-// Attributes that have special href set hence need to be sanitized
-export const SRCSET_ATTRS = tagSet('srcset');
-
 const HTML_ATTRS = tagSet(
     'abbr,accesskey,align,alt,autoplay,axis,bgcolor,border,cellpadding,cellspacing,class,clear,color,cols,colspan,' +
     'compact,controls,coords,datetime,default,dir,download,face,headers,height,hidden,hreflang,hspace,' +
     'ismap,itemscope,itemprop,kind,label,lang,language,loop,media,muted,nohref,nowrap,open,preload,rel,rev,role,rows,rowspan,rules,' +
-    'scope,scrolling,shape,size,sizes,span,srclang,start,summary,tabindex,target,title,translate,type,usemap,' +
+    'scope,scrolling,shape,size,sizes,span,srclang,srcset,start,summary,tabindex,target,title,translate,type,usemap,' +
     'valign,value,vspace,width');
 
 // Accessibility attributes as per WAI-ARIA 1.1 (W3C Working Draft 14 December 2018)
@@ -92,7 +90,7 @@ const ARIA_ATTRS = tagSet(
 // can be sanitized, but they increase security surface area without a legitimate use case, so they
 // are left out here.
 
-export const VALID_ATTRS = merge(URI_ATTRS, SRCSET_ATTRS, HTML_ATTRS, ARIA_ATTRS);
+export const VALID_ATTRS = merge(URI_ATTRS, HTML_ATTRS, ARIA_ATTRS);
 
 // Elements whose content should not be traversed/preserved, if the elements themselves are invalid.
 //
@@ -177,7 +175,6 @@ class SanitizingHtmlSerializer {
       let value = elAttr!.value;
       // TODO(martinprobst): Special case image URIs for data:image/...
       if (URI_ATTRS[lower]) value = _sanitizeUrl(value);
-      if (SRCSET_ATTRS[lower]) value = sanitizeSrcset(value);
       this.buf.push(' ', attrName, '="', encodeEntities(value), '"');
     }
     this.buf.push('>');
