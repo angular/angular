@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {_sanitizeUrl, sanitizeSrcset} from '../../src/sanitization/url_sanitizer';
+import {_sanitizeUrl} from '../../src/sanitization/url_sanitizer';
 
 {
   describe('URL sanitizer', () => {
@@ -69,43 +69,6 @@ import {_sanitizeUrl, sanitizeSrcset} from '../../src/sanitization/url_sanitizer
       ];
       for (const url of invalidUrls) {
         it(`valid ${url}`, () => expect(_sanitizeUrl(url)).toMatch(/^unsafe:/));
-      }
-    });
-
-    describe('valid srcsets', () => {
-      const validSrcsets = [
-        '',
-        'http://angular.io/images/test.png',
-        'http://angular.io/images/test.png, http://angular.io/images/test.png',
-        'http://angular.io/images/test.png, http://angular.io/images/test.png, http://angular.io/images/test.png',
-        'http://angular.io/images/test.png 2x',
-        'http://angular.io/images/test.png 2x, http://angular.io/images/test.png 3x',
-        'http://angular.io/images/test.png 1.5x',
-        'http://angular.io/images/test.png 1.25x',
-        'http://angular.io/images/test.png 200w, http://angular.io/images/test.png 300w',
-        'https://angular.io/images/test.png, http://angular.io/images/test.png',
-        'http://angular.io:80/images/test.png, http://angular.io:8080/images/test.png',
-        'http://www.angular.io:80/images/test.png, http://www.angular.io:8080/images/test.png',
-        'https://angular.io/images/test.png, https://angular.io/images/test.png',
-        '//angular.io/images/test.png, //angular.io/images/test.png',
-        '/images/test.png, /images/test.png',
-        'images/test.png, images/test.png',
-        'http://angular.io/images/test.png?12345, http://angular.io/images/test.png?12345',
-        'http://angular.io/images/test.png?maxage, http://angular.io/images/test.png?maxage',
-        'http://angular.io/images/test.png?maxage=234, http://angular.io/images/test.png?maxage=234',
-      ];
-      for (const srcset of validSrcsets) {
-        it(`valid ${srcset}`, () => expect(sanitizeSrcset(srcset)).toEqual(srcset));
-      }
-    });
-
-    describe('invalid srcsets', () => {
-      const invalidSrcsets = [
-        'ht:tp://angular.io/images/test.png',
-        'http://angular.io/images/test.png, ht:tp://angular.io/images/test.png',
-      ];
-      for (const srcset of invalidSrcsets) {
-        it(`valid ${srcset}`, () => expect(sanitizeSrcset(srcset)).toMatch(/unsafe:/));
       }
     });
   });
