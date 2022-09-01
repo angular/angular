@@ -1,11 +1,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {
-  MatLegacyRadioButtonHarness,
-  MatLegacyRadioGroupHarness,
-} from '@angular/material/legacy-radio/testing';
+import {MatRadioButtonHarness, MatRadioGroupHarness} from '@angular/material/radio/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
+import {MatRadioModule} from '@angular/material/radio';
 import {RadioHarnessExample} from './radio-harness-example';
 import {ReactiveFormsModule} from '@angular/forms';
 
@@ -15,7 +12,7 @@ describe('RadioHarnessExample', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatLegacyRadioModule, ReactiveFormsModule],
+      imports: [MatRadioModule, ReactiveFormsModule],
       declarations: [RadioHarnessExample],
     }).compileComponents();
     fixture = TestBed.createComponent(RadioHarnessExample);
@@ -24,18 +21,18 @@ describe('RadioHarnessExample', () => {
   });
 
   it('should load all radio-group harnesses', async () => {
-    const groups = await loader.getAllHarnesses(MatLegacyRadioGroupHarness);
+    const groups = await loader.getAllHarnesses(MatRadioGroupHarness);
     expect(groups.length).toBe(1);
   });
 
   it('should get name of radio-group', async () => {
-    const group = await loader.getHarness(MatLegacyRadioGroupHarness);
+    const group = await loader.getHarness(MatRadioGroupHarness);
     const name = await group.getName();
     expect(name).toBe('flavors');
   });
 
   it('should check radio button', async () => {
-    const buttons = await loader.getAllHarnesses(MatLegacyRadioButtonHarness);
+    const buttons = await loader.getAllHarnesses(MatRadioButtonHarness);
     expect(await buttons[0].isChecked()).toBeTrue();
 
     await buttons[1].check();
@@ -45,7 +42,7 @@ describe('RadioHarnessExample', () => {
 
   it('should get label text of buttons', async () => {
     const [firstRadio, secondRadio, thirdRadio] = await loader.getAllHarnesses(
-      MatLegacyRadioButtonHarness,
+      MatRadioButtonHarness,
     );
     expect(await firstRadio.getLabelText()).toBe('Chocolate');
     expect(await secondRadio.getLabelText()).toBe('Vanilla');

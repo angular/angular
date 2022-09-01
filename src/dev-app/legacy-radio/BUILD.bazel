@@ -1,0 +1,23 @@
+load("//tools:defaults.bzl", "ng_module", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "legacy-radio",
+    srcs = glob(["**/*.ts"]),
+    assets = [
+        "legacy-radio-demo.html",
+        ":legacy_radio_demo_scss",
+    ],
+    deps = [
+        "//src/material/legacy-button",
+        "//src/material/legacy-checkbox",
+        "//src/material/legacy-radio",
+        "@npm//@angular/forms",
+    ],
+)
+
+sass_binary(
+    name = "legacy_radio_demo_scss",
+    src = "legacy-radio-demo.scss",
+)

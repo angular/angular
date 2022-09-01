@@ -10,9 +10,9 @@ ng_module(
         ":radio_demo_scss",
     ],
     deps = [
-        "//src/material/legacy-button",
-        "//src/material/legacy-checkbox",
-        "//src/material/legacy-radio",
+        "//src/material/button",
+        "//src/material/checkbox",
+        "//src/material/radio",
         "@npm//@angular/forms",
     ],
 )

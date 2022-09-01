@@ -7,24 +7,18 @@
  */
 
 import {Component} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {MatRadioModule} from '@angular/material/radio';
 import {FormsModule} from '@angular/forms';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
-import {MatLegacyCheckboxModule} from '@angular/material/legacy-checkbox';
-import {MatLegacyRadioModule} from '@angular/material/legacy-radio';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'radio-demo',
   templateUrl: 'radio-demo.html',
   styleUrls: ['radio-demo.css'],
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatLegacyButtonModule,
-    MatLegacyCheckboxModule,
-    MatLegacyRadioModule,
-  ],
+  imports: [CommonModule, MatRadioModule, FormsModule, MatButtonModule, MatCheckboxModule],
 })
 export class RadioDemo {
   isAlignEnd: boolean = false;

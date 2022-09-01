@@ -41,16 +41,15 @@
     <span><mat-checkbox [(ngModel)]="isAlignEnd">Align end</mat-checkbox></span>
   </div>
   <mat-radio-group
-      name="my_options"
-      [disabled]="isDisabled"
-      [required]="isRequired"
-      [labelPosition]="isAlignEnd ? 'after' : 'before'">
+    name="my_options"
+    [disabled]="isDisabled"
+    [required]="isRequired"
+    [labelPosition]="isAlignEnd ? 'after' : 'before'">
     <mat-radio-button value="option_1">Option 1</mat-radio-button>
     <mat-radio-button value="option_2">Option 2</mat-radio-button>
     <mat-radio-button value="option_3">Option 3</mat-radio-button>
   </mat-radio-group>
 </section>
-
 <h1>Favorite Season Example</h1>
 <h2>Dynamic Example with two-way data-binding</h2>
 <section class="demo-section">

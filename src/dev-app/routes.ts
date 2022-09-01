@@ -197,8 +197,8 @@ export const DEV_APP_ROUTES: Routes = [
       ),
   },
   {
-    path: 'mdc-radio',
-    loadComponent: () => import('./mdc-radio/mdc-radio-demo').then(m => m.MdcRadioDemo),
+    path: 'legacy-radio',
+    loadComponent: () => import('./legacy-radio/legacy-radio-demo').then(m => m.LegacyRadioDemo),
   },
   {
     path: 'select',
