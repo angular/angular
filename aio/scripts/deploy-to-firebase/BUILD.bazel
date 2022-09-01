@@ -1,0 +1,24 @@
+load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+load("//aio/tools:defaults.bzl", "nodejs_binary")
+
+DEPLOY_TO_FIREBASE_SOURCES = glob(
+    ["**/*.mjs"],
+    ["**/*.spec.mjs"],
+)
+
+DEPLOY_TO_FIREBASE_DEPS = [
+    "@aio_npm//shelljs",
+]
+
+nodejs_binary(
+    name = "deploy-to-firebase",
+    data = DEPLOY_TO_FIREBASE_SOURCES + DEPLOY_TO_FIREBASE_DEPS,
+    entry_point = "index.mjs",
+)
+
+jasmine_node_test(
+    name = "test",
+    srcs = glob(["**/*.spec.mjs"]),
+    data = DEPLOY_TO_FIREBASE_SOURCES,
+    deps = DEPLOY_TO_FIREBASE_DEPS,
+)
