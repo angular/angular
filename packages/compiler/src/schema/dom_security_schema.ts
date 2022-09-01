@@ -35,10 +35,24 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
     registerContext(SecurityContext.STYLE, ['*|style']);
     // NB: no SCRIPT contexts here, they are never allowed due to the parser stripping them.
     registerContext(SecurityContext.URL, [
-      '*|formAction', 'area|href',       'area|ping',       'audio|src',    'a|href',
-      'a|ping',       'blockquote|cite', 'body|background', 'del|cite',     'form|action',
-      'img|src',      'img|srcset',      'input|src',       'ins|cite',     'q|cite',
-      'source|src',   'source|srcset',   'track|src',       'video|poster', 'video|src',
+      '*|formAction',
+      'area|href',
+      'area|ping',
+      'audio|src',
+      'a|href',
+      'a|ping',
+      'blockquote|cite',
+      'body|background',
+      'del|cite',
+      'form|action',
+      'img|src',
+      'input|src',
+      'ins|cite',
+      'q|cite',
+      'source|src',
+      'track|src',
+      'video|poster',
+      'video|src',
     ]);
     registerContext(SecurityContext.RESOURCE_URL, [
       'applet|code',
