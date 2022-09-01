@@ -4,24 +4,21 @@ import treeKill from 'tree-kill';
 
 sh.set('-e');
 
-// Serve AIO locally on an unused port and run a11y audit tests against it.
-// 
-// This script is a wrapper around the existing test-aio-a11y.mjs script,
-// but additionally acquires an unused port and sets up a local http server
-// prior to running the audit so that it can be run concurrently with other
-// tests under bazel without port contention.
+// Serve contents over http while running an abitrary script. This is an
+// implementation for the bazel macro local_server_test.
 //
-// Arguments: <lightserverScript> <distDir> <testAioA11yScript>
+// Arguments: <lightserverScript> <distDir> <testScript> [testScriptArg ...]
 //    lightserverScript - path light-server binary
-//    distDir - path to aio dist folder
-//    testAioA11yScript - path to the nodejs_binary bash script wrapping
-//     the test-aio-a11y.mjs script
+//    distDir - path to the contents to serve
+//    testScript - path to a script to run
+//    ...testScriptArg - arguments to pass to the test script. The argument LOCALHOST_URL
+//      will be substituted with the url of the served contents
 
 async function main(args) {
   const lightserver = args[0];
   const distDir = args[1];
-  const testAioA11y = args[2];
-
+  const testScript = args[2];
+  const testScriptArgs = args.slice(3);
   const port = await getPort();
 
   const lightserverCmd = [
@@ -36,9 +33,13 @@ async function main(args) {
     '--quiet'
   ];
   const lightserverProcess = sh.exec(lightserverCmd.join(' '), {async: true, silent: true});
+    
+  const command = [
+    testScript,
+    ...testScriptArgs
+  ].join(' ').replace('LOCALHOST_URL', `http://localhost:${port}`);
 
-  const testAioA11yCmd = `${testAioA11y} http://localhost:${port}`;
-  sh.exec(testAioA11yCmd);
+  sh.exec(command);
     
   await killProcess(lightserverProcess);
 }
