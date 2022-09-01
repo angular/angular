@@ -190,7 +190,7 @@ def docs_example(name, test = True):
             data = [
                 ":%s" % name,
                 YARN_LABEL,
-                "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium",
+                "@aio_npm//@angular/build-tooling/bazel/browsers/chromium",
                 "//aio/tools/examples:run-example-e2e",
                 # We install the whole node modules for runtime deps of e2e tests
                 "@{workspace}//:node_modules_files".format(workspace = EXAMPLE_DEPS_WORKSPACE_NAME),
@@ -213,7 +213,7 @@ def docs_example(name, test = True):
                 "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
             },
             toolchains = [
-                "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias",
+                "@aio_npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
             ],
             # RBE complains about superseeding the max inputs limit (70,000) due to the
             # size of the input tree.
