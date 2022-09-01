@@ -1,0 +1,10 @@
+package(default_visibility = ["//aio/tests/deployment:__subpackages__"])
+
+filegroup(
+    name = "shared",
+    srcs = [
+        "URLS_TO_REDIRECT.txt",
+        "cjson.d.ts",
+        "helpers.ts",
+    ],
+)

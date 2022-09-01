@@ -1,0 +1,23 @@
+load("//aio/tools:defaults.bzl", "nodejs_test")
+
+nodejs_test(
+    name = "test",
+    data = [
+        "testFirebaseRedirection.spec.ts",
+        "testServiceWorkerRoutes.spec.ts",
+        "tsconfig.json",
+        "//aio:dgeni",
+        "//aio:firebase.json",
+        "//aio:ngsw-config.json",
+        "//aio:tsconfig.json",
+        "//aio/tests/deployment/shared",
+        "//packages/service-worker/config:sources",
+        "@aio_npm//@types/jasmine",
+        "@aio_npm//canonical-path",
+        "@aio_npm//cjson",
+        "@aio_npm//jasmine",
+        "@aio_npm//ts-node",
+        "@aio_npm//xregexp",
+    ],
+    entry_point = "test.js",
+)
