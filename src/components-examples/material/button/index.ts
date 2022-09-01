@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {MatLegacyButtonModule} from '@angular/material/legacy-button';
+import {MatButtonModule} from '@angular/material/button';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatIconModule} from '@angular/material/icon';
 import {ButtonOverviewExample} from './button-overview/button-overview-example';
@@ -11,7 +11,7 @@ export {ButtonOverviewExample, ButtonTypesExample, ButtonHarnessExample};
 const EXAMPLES = [ButtonOverviewExample, ButtonTypesExample, ButtonHarnessExample];
 
 @NgModule({
-  imports: [MatLegacyButtonModule, MatDividerModule, MatIconModule],
+  imports: [MatButtonModule, MatDividerModule, MatIconModule],
   declarations: EXAMPLES,
   exports: EXAMPLES,
 })

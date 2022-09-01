@@ -1,0 +1,25 @@
+.demo-button {
+  button, a {
+    margin: 8px;
+    text-transform: uppercase;
+  }
+
+  section {
+    display: flex;
+    align-items: center;
+    margin: 8px;
+  }
+
+  p {
+    padding: 5px 15px;
+  }
+
+  .demo-section-header {
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .demo-no-flex {
+    display: block;
+  }
+}

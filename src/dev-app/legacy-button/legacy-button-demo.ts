@@ -7,17 +7,17 @@
  */
 
 import {Component} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyButtonModule} from '@angular/material/legacy-button';
 import {MatIconModule} from '@angular/material/icon';
 
 @Component({
-  selector: 'mdc-button-demo',
-  templateUrl: 'mdc-button-demo.html',
-  styleUrls: ['mdc-button-demo.css'],
+  selector: 'legacy-button-demo',
+  templateUrl: 'legacy-button-demo.html',
+  styleUrls: ['legacy-button-demo.css'],
   standalone: true,
-  imports: [MatButtonModule, MatIconModule],
+  imports: [MatLegacyButtonModule, MatIconModule],
 })
-export class MdcButtonDemo {
+export class LegacyButtonDemo {
   isDisabled: boolean = false;
   clickCounter: number = 0;
   toggleDisable: boolean = false;

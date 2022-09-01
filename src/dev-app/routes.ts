@@ -147,8 +147,8 @@ export const DEV_APP_ROUTES: Routes = [
       import('./mdc-autocomplete/mdc-autocomplete-demo').then(m => m.MdcAutocompleteDemo),
   },
   {
-    path: 'mdc-button',
-    loadComponent: () => import('./mdc-button/mdc-button-demo').then(m => m.MdcButtonDemo),
+    path: 'legacy-button',
+    loadComponent: () => import('./legacy-button/legacy-button-demo').then(m => m.LegacyButtonDemo),
   },
   {
     path: 'legacy-card',
