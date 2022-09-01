@@ -1,9 +1,10 @@
 load("@aio_npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin", "npm_package_bin")
-load("//aio/tools:defaults.bzl", "nodejs_binary", "nodejs_test")
+load("//aio/tools:defaults.bzl", "nodejs_binary")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load(":local_packages_util.bzl", "link_local_packages", "substitute_local_packages")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("//aio/scripts:local_server_test.bzl", "local_server_test")
 
 # The write_source_files macro is used to write bazel outputs to the source tree and test that they are up to date.
 # See: https://docs.aspect.build/aspect-build/bazel-lib/v0.5.0/docs/docs/write_source_files-docgen.html
@@ -314,20 +315,22 @@ nodejs_binary(
     },
 )
 
-nodejs_test(
+local_server_test(
     name = "test-a11y-score-localhost",
+    args = ["LOCALHOST_URL"],
+    entry_point = "//aio/scripts:test-aio-a11y",
+    serve_target = ":build",
+)
+
+local_server_test(
+    name = "test-pwa-score-localhost",
     args = [
-        "$(rootpath @aio_npm//light-server/bin:light-server)",
-        "$(rootpath :build)",
-        "$(rootpath //aio/scripts:test-aio-a11y)",
+        "LOCALHOST_URL",
+        "all:0,pwa:100",
     ],
     data = [
-        ":build",
-        "//aio/scripts:test-aio-a11y",
-        "@aio_npm//get-port",
-        "@aio_npm//light-server/bin:light-server",
-        "@aio_npm//shelljs",
-        "@aio_npm//tree-kill",
+        "//aio/scripts:audit-web-app",
     ],
-    entry_point = "//aio/scripts:test-aio-a11y-localhost.mjs",
+    entry_point = "//aio/scripts:audit-web-app-script",
+    serve_target = ":build",
 )
