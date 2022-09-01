@@ -336,8 +336,6 @@ jobs:
 
         # TODO: run the following tests under bazel
 
-        # Run PWA-score tests
-      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Check the bundle sizes.
       - run: yarn --cwd aio payload-size
 
@@ -364,8 +362,6 @@ jobs:
 
         # TODO: run the following tests under bazel
 
-        # Run PWA-score tests
-      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Check the bundle sizes.
       - run: yarn --cwd aio payload-size aio-local
 
