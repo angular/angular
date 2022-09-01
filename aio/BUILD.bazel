@@ -1,6 +1,6 @@
 load("@aio_npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin", "npm_package_bin")
-load("//aio/tools:defaults.bzl", "nodejs_binary")
+load("//aio/tools:defaults.bzl", "nodejs_binary", "nodejs_test")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load(":local_packages_util.bzl", "link_local_packages", "substitute_local_packages")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
@@ -312,4 +312,22 @@ nodejs_binary(
         # overwriting select sources and then serving them.
         "BAZEL_DGENI_OUTPUT_PATH": "dgeni-fast",
     },
+)
+
+nodejs_test(
+    name = "test-a11y-score-localhost",
+    args = [
+        "$(rootpath @aio_npm//light-server/bin:light-server)",
+        "$(rootpath :build)",
+        "$(rootpath //aio/scripts:test-aio-a11y)",
+    ],
+    data = [
+        ":build",
+        "//aio/scripts:test-aio-a11y",
+        "@aio_npm//get-port",
+        "@aio_npm//light-server/bin:light-server",
+        "@aio_npm//shelljs",
+        "@aio_npm//tree-kill",
+    ],
+    entry_point = "//aio/scripts:test-aio-a11y-localhost.mjs",
 )
