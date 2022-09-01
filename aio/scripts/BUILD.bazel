@@ -1,7 +1,12 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//aio/tools:defaults.bzl", "nodejs_binary")
+load("//aio/tools:defaults.bzl", "nodejs_binary", "nodejs_test")
+load("@aio_npm//@angular/build-tooling/bazel:filter_outputs.bzl", "filter_outputs")
 
 package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "test-aio-a11y-localhost.mjs",
+])
 
 nodejs_binary(
     name = "build-ngsw-config",
@@ -28,4 +33,58 @@ js_library(
 nodejs_binary(
     name = "build-404-page",
     entry_point = "build-404-page.js",
+)
+
+nodejs_binary(
+    name = "audit-web-app",
+    testonly = True,
+    data = [
+        "@aio_npm//@angular/build-tooling/bazel/browsers/chromium",
+        "@aio_npm//lighthouse",
+        "@aio_npm//lighthouse-logger",
+        "@aio_npm//puppeteer-core",
+    ],
+    entry_point = "audit-web-app.mjs",
+    env = {
+        "CHROME_BIN": "$(CHROMIUM)",
+    },
+    toolchains = [
+        "@aio_npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
+    ],
+)
+
+# Extract the executable audit script from DefaultInfo so that we can use
+# $(rootpath) on it.
+filter_outputs(
+    name = "audit-web-app-script",
+    testonly = True,
+    filters = ["audit-web-app.sh"],
+    target = ":audit-web-app",
+)
+
+# This should be a nodejs_binary, however calling "bazel run" on this target
+# on OSX causes the runfiles build to fail due to bazel-provided chromium having
+# files with spaces in the name. However, it works when run in the sandbox when
+# called using "bazel test".
+#
+# On Windows/Linux, call with:
+#
+#    bazel run //aio/scripts:test-aio-a11y [targetUrl]
+#
+# On OXS call with:
+#
+#    bazel test //aio/scripts:test-aio-a11y --test_arg=[targetUrl]
+nodejs_test(
+    name = "test-aio-a11y",
+    testonly = True,
+    data = [
+        ":audit-web-app",
+        ":audit-web-app-script",
+        "@aio_npm//shelljs",
+    ],
+    entry_point = "test-aio-a11y.mjs",
+    env = {
+        "AUDIT_SCRIPT_PATH": "$(rootpath :audit-web-app-script)",
+    },
+    tags = ["manual"],
 )
