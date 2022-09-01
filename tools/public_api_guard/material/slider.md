@@ -27,8 +27,8 @@ import { QueryList } from '@angular/core';
 import { RippleGlobalOptions } from '@angular/material/core';
 import { SpecificEventListener } from '@material/base';
 import { Subscription } from 'rxjs';
-import { Thumb } from '@material/slider';
-import { TickMark } from '@material/slider';
+import { Thumb } from '@material/slider/types';
+import { TickMark } from '@material/slider/types';
 
 // @public
 export class MatSlider extends _MatSliderMixinBase implements AfterViewInit, CanDisableRipple, OnDestroy {
