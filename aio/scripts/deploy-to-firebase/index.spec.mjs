@@ -1,4 +1,5 @@
 import {execSync} from 'child_process';
+import path from 'path';
 import {
   computeDeploymentsInfo,
   computeInputVars,
@@ -575,7 +576,7 @@ describe('deploy-to-firebase:', () => {
     // and thus does not share the `getRemoteRefs()` cache. To improve stability, we use an older
     // branch (`4.4.x`) that is unlikely to receive any new commits (so the one retrieved at the
     // beginning of the tests will still be the latest one for that branch).
-    const scriptPath = `${u.getDirname(import.meta.url)}/index.mjs`;
+    const scriptPath = path.join('aio', 'scripts', 'deploy-to-firebase', 'index.mjs');
     const cmd = `"${process.execPath}" "${scriptPath}" --dry-run`;
     const env = {
       CI_REPO_OWNER: 'angular',
