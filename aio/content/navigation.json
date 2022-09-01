@@ -822,7 +822,7 @@
         },
         {
           "url": "guide/image-directive-setup",
-          "title": "Setting up NgOptimzedImage",
+          "title": "Setting up NgOptimizedImage",
           "tooltip": "Setup the Angular image directive"
         },
         {
