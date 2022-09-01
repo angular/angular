@@ -59,7 +59,7 @@
     "@types/angular-resource": "^1.5.17",
     "@types/angular-route": "^1.7.2",
     "@types/express": "^4.17.13",
-    "@types/jasmine": "~4.0.0",
+    "@types/jasmine": "~4.3.0",
     "@types/jquery": "3.5.14",
     "@types/node": "^16.11.35",
     "canonical-path": "1.0.0",

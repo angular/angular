@@ -33,7 +33,7 @@
     "@angular-devkit/build-angular": "^14.1.0",
     "@angular/cli": "^14.1.0",
     "@angular/compiler-cli": "^14.1.0",
-    "@types/jasmine": "~4.0.0",
+    "@types/jasmine": "~4.3.0",
     "@types/node": "^16.11.35",
     "jasmine-core": "~4.3.0",
     "jasmine-marbles": "~0.9.2",
