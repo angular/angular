@@ -29,7 +29,10 @@ ng_module(
         "//src/material/core",
         "@npm//@angular/forms",
         "@npm//@material/base",
-        "@npm//@material/slider",
+        "@npm//@material/slider/adapter",
+        "@npm//@material/slider/foundation",
+        "@npm//@material/slider/types",
+
     ],
 )
 

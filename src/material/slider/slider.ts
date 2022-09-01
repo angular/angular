@@ -51,7 +51,9 @@ import {
 } from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {SpecificEventListener, EventType} from '@material/base';
-import {MDCSliderAdapter, MDCSliderFoundation, Thumb, TickMark} from '@material/slider';
+import {MDCSliderAdapter} from '@material/slider/adapter';
+import {MDCSliderFoundation} from '@material/slider/foundation';
+import {Thumb, TickMark} from '@material/slider/types';
 import {Subscription} from 'rxjs';
 import {GlobalChangeAndInputListener} from './global-change-and-input-listener';
 
