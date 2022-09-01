@@ -342,8 +342,6 @@ jobs:
       - run: yarn --cwd aio test-a11y-score-localhost
         # Check the bundle sizes.
       - run: yarn --cwd aio payload-size
-        # Run unit tests for Firebase redirects
-      - run: yarn --cwd aio redirects-test
 
   deploy_aio:
     executor: test-browser-executor
