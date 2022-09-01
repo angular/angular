@@ -338,8 +338,6 @@ jobs:
 
         # Run PWA-score tests
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
-        # Run accessibility tests
-      - run: yarn --cwd aio test-a11y-score-localhost
         # Check the bundle sizes.
       - run: yarn --cwd aio payload-size
 
