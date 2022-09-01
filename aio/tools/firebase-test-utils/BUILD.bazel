@@ -1,0 +1,14 @@
+load("//aio/tools:defaults.bzl", "nodejs_test")
+
+nodejs_test(
+    name = "test",
+    data = [
+        "tsconfig.json",
+        "//aio:tsconfig.json",
+        "@aio_npm//@types/jasmine",
+        "@aio_npm//jasmine",
+        "@aio_npm//ts-node",
+        "@aio_npm//xregexp",
+    ] + glob(["*.ts"]),
+    entry_point = "test.js",
+)
