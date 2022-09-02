@@ -293,6 +293,8 @@ groups:
           'aio/content/guide/lazy-loading-ngmodules.md',
           'aio/content/examples/lazy-loading-ngmodules/**/{*,.*}',
           'aio/content/images/guide/lazy-loading-ngmodules/**/{*,.*}',
+          'aio/content/guide/lifecycle-hook/lifecycle-hook-example.md',
+          'aio/content/guide/lifecycle-hook/lifecycle-hook-overview.md',
           'aio/content/guide/lifecycle-hooks.md',
           'aio/content/examples/lifecycle-hooks/**/{*,.*}',
           'aio/content/images/guide/lifecycle-hooks/**/{*,.*}',
