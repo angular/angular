@@ -12,7 +12,10 @@ import {RuntimeErrorCode} from '../../errors';
 import {isPlatformServer} from '../../platform_id';
 
 import {imgDirectiveDetails} from './error_helper';
-import {IMAGE_LOADER} from './image_loaders/image_loader';
+import {cloudinaryLoaderInfo} from './image_loaders/cloudinary_loader';
+import {IMAGE_LOADER, ImageLoader, noopImageLoader} from './image_loaders/image_loader';
+import {imageKitLoaderInfo} from './image_loaders/imagekit_loader';
+import {imgixLoaderInfo} from './image_loaders/imgix_loader';
 import {LCPImageObserver} from './lcp_image_observer';
 import {PreconnectLinkChecker} from './preconnect_link_checker';
 import {PreloadLinkCreator} from './preload-link-creator';
@@ -71,6 +74,9 @@ const ASPECT_RATIO_TOLERANCE = .1;
  * into account a typical device pixel ratio). In pixels.
  */
 const OVERSIZED_IMAGE_TOLERANCE = 1000;
+
+/** Info about built-in loaders we can test for. */
+export const BUILT_IN_LOADERS = [imgixLoaderInfo, imageKitLoaderInfo, cloudinaryLoaderInfo];
 
 /**
  * A configuration object for the NgOptimizedImage directive. Contains:
@@ -385,6 +391,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       if (!this.ngSrcset) {
         assertNoComplexSizes(this);
       }
+      assertNotMissingBuiltInLoader(this.ngSrc, this.imageLoader);
       if (this.priority) {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
@@ -871,5 +878,37 @@ function assertValidLoadingInput(dir: NgOptimizedImage) {
         `${imgDirectiveDetails(dir.ngSrc)} the \`loading\` attribute ` +
             `has an invalid value (\`${dir.loading}\`). ` +
             `To fix this, provide a valid value ("lazy", "eager", or "auto").`);
+  }
+}
+
+/**
+ * Warns if NOT using a loader (falling back to the generic loader) and
+ * the image appears to be hosted on one of the image CDNs for which
+ * we do have a built-in image loader. Suggests switching to the
+ * built-in loader.
+ *
+ * @param ngSrc Value of the ngSrc attribute
+ * @param imageLoader ImageLoader provided
+ */
+function assertNotMissingBuiltInLoader(ngSrc: string, imageLoader: ImageLoader) {
+  if (imageLoader === noopImageLoader) {
+    let builtInLoaderName = '';
+    for (const loader of BUILT_IN_LOADERS) {
+      if (loader.testUrl(ngSrc)) {
+        builtInLoaderName = loader.name;
+        break;
+      }
+    }
+    if (builtInLoaderName) {
+      console.warn(formatRuntimeError(
+          RuntimeErrorCode.MISSING_BUILTIN_LOADER,
+          `NgOptimizedImage: It looks like your images may be hosted on the ` +
+              `${builtInLoaderName} CDN, but your app is not using Angular's ` +
+              `built-in loader for that CDN. We recommend switching to use ` +
+              `the built-in by calling \`provide${builtInLoaderName}Loader()\` ` +
+              `in your \`providers\` and passing it your instance's base URL. ` +
+              `If you don't want to use the built-in loader, define a custom ` +
+              `loader function using IMAGE_LOADER to silence this warning.`));
+    }
   }
 }

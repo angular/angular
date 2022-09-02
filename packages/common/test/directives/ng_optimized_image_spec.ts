@@ -1097,6 +1097,56 @@ describe('Image directive', () => {
       expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
     });
 
+    it('should warn if there is no image loader but using Imgix URL', () => {
+      setUpModuleNoLoader();
+
+      const template = `<img ngSrc="https://some.imgix.net/img.png" width="100" height="50">`;
+      const fixture = createTestComponent(template);
+      const consoleWarnSpy = spyOn(console, 'warn');
+      fixture.detectChanges();
+
+      expect(consoleWarnSpy.calls.count()).toBe(1);
+      expect(consoleWarnSpy.calls.argsFor(0)[0])
+          .toMatch(/your images may be hosted on the Imgix CDN/);
+    });
+
+    it('should warn if there is no image loader but using ImageKit URL', () => {
+      setUpModuleNoLoader();
+
+      const template = `<img ngSrc="https://some.imagekit.io/img.png" width="100" height="50">`;
+      const fixture = createTestComponent(template);
+      const consoleWarnSpy = spyOn(console, 'warn');
+      fixture.detectChanges();
+
+      expect(consoleWarnSpy.calls.count()).toBe(1);
+      expect(consoleWarnSpy.calls.argsFor(0)[0])
+          .toMatch(/your images may be hosted on the ImageKit CDN/);
+    });
+
+    it('should warn if there is no image loader but using Cloudinary URL', () => {
+      setUpModuleNoLoader();
+
+      const template = `<img ngSrc="https://some.cloudinary.com/img.png" width="100" height="50">`;
+      const fixture = createTestComponent(template);
+      const consoleWarnSpy = spyOn(console, 'warn');
+      fixture.detectChanges();
+
+      expect(consoleWarnSpy.calls.count()).toBe(1);
+      expect(consoleWarnSpy.calls.argsFor(0)[0])
+          .toMatch(/your images may be hosted on the Cloudinary CDN/);
+    });
+
+    it('should NOT warn if there is a custom loader but using CDN URL', () => {
+      setupTestingModule();
+
+      const template = `<img ngSrc="https://some.cloudinary.com/img.png" width="100" height="50">`;
+      const fixture = createTestComponent(template);
+      const consoleWarnSpy = spyOn(console, 'warn');
+      fixture.detectChanges();
+
+      expect(consoleWarnSpy.calls.count()).toBe(0);
+    });
+
     it('should set `src` using the image loader provided via the `IMAGE_LOADER` token to compose src URL',
        () => {
          const imageLoader = (config: ImageLoaderConfig) => `${IMG_BASE_URL}/${config.src}`;
@@ -1523,6 +1573,16 @@ function setupTestingModule(config?: {
     // `CommonModule` yet, so it's imported separately.
     imports: [CommonModule, NgOptimizedImage],
     providers
+  });
+}
+
+// Same as above but explicitly doesn't provide a custom loader,
+// so the noopImageLoader should be used.
+function setUpModuleNoLoader() {
+  TestBed.configureTestingModule({
+    declarations: [TestComponent],
+    imports: [CommonModule, NgOptimizedImage],
+    providers: [{provide: DOCUMENT, useValue: window.document}]
   });
 }
 
