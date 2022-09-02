@@ -5,12 +5,6 @@
   align-items: center;
   font-size: 11px;
 
-  .mat-icon-button {
-    height: 25px;
-    width: 25px;
-    line-height: 25px;
-  }
-
   .component-name {
     margin-left: 10px;
     font-weight: 700;
@@ -47,11 +41,5 @@
         }
       }
     }
-  }
-}
-
-:host-context(.dark-theme) {
-  .mat-icon-button {
-    fill: #fff;
   }
 }

@@ -20,6 +20,7 @@ import {FlatNode} from '../../property-resolver/element-property-resolver';
 export class PropertyTabBodyComponent {
   @Input() currentSelectedElement: IndexedNode|null;
   @Output() inspect = new EventEmitter<{node: FlatNode; directivePosition: DirectivePosition}>();
+  @Output() viewSource = new EventEmitter<string>();
 
   getCurrentDirectives(): string[]|undefined {
     if (!this.currentSelectedElement) {

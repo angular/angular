@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
   selector: 'ng-property-view-header',
@@ -15,4 +15,11 @@ import {Component, Input} from '@angular/core';
 })
 export class PropertyViewHeaderComponent {
   @Input() directive: string;
+  @Output() viewSource = new EventEmitter<void>();
+
+  // output that emits directive
+  handleViewSource(event: MouseEvent): void {
+    event.stopPropagation();
+    this.viewSource.emit();
+  }
 }

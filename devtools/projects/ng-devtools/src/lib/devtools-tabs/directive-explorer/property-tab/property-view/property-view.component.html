@@ -1,4 +1,4 @@
-<ng-property-view-header [directive]="directive"></ng-property-view-header>
+<ng-property-view-header [directive]="directive" (viewSource)="viewSource.emit()"></ng-property-view-header>
 <ng-property-view-body
   [controller]="controller"
   [directiveInputControls]="directiveInputControls"

@@ -25,11 +25,21 @@ const extendWindowOperations = <T extends {}>(target, classImpl: T) => {
 };
 
 const chromeWindowExtensions = {
-  findConstructorByPosition: (serializedId: string): Element | undefined => {
+  findConstructorByPosition: (serializedId: string, directiveIndex: number):
+                                 Element | undefined => {
     const node = findNodeFromSerializedPosition(serializedId);
     if (node === null) {
       console.error(`Cannot find element associated with node ${serializedId}`);
       return;
+    }
+    if (directiveIndex !== undefined) {
+      if (node.directives[directiveIndex]) {
+        return node.directives[directiveIndex].instance.constructor;
+      } else {
+        console.error(
+            `Could not find the directive in the current node at index ${directiveIndex}`);
+        return;
+      }
     }
     if (node.component) {
       return node.component.instance.constructor;

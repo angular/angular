@@ -139,11 +139,24 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
     }
   }
 
-  viewSource(): void {
+  viewSource(directiveName: string): void {
+    // find the index of the directive with directiveName in this.currentSelectedElement.directives
+
     if (!this.currentSelectedElement) {
       return;
     }
-    this._appOperations.viewSource(this.currentSelectedElement.position);
+
+    const directiveIndex = this.currentSelectedElement.directives.findIndex(
+        directive => directive.name === directiveName);
+
+    if (directiveIndex === -1) {
+      // view the component definition
+      this._appOperations.viewSource(this.currentSelectedElement.position);
+      return;
+    }
+
+    // view the directive definition
+    this._appOperations.viewSource(this.currentSelectedElement.position, directiveIndex);
   }
 
   handleSelectDomElement(node: IndexedNode): void {
