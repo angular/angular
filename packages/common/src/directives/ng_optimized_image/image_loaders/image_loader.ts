@@ -46,7 +46,15 @@ export type ImageLoader = (config: ImageLoaderConfig) => string;
  * @see `ImageLoader`
  * @see `NgOptimizedImage`
  */
-const noopImageLoader = (config: ImageLoaderConfig) => config.src;
+export const noopImageLoader = (config: ImageLoaderConfig) => config.src;
+
+/**
+ * Metadata about the image loader.
+ */
+export type ImageLoaderInfo = {
+  name: string,
+  testUrl: (url: string) => boolean
+};
 
 /**
  * Injection token that configures the image loader function.
