@@ -6,7 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createImageLoader, ImageLoaderConfig} from './image_loader';
+import {createImageLoader, ImageLoaderConfig, ImageLoaderInfo} from './image_loader';
+
+/**
+ * Name and URL tester for Imgix.
+ */
+export const imgixLoaderInfo: ImageLoaderInfo = {
+  name: 'Imgix',
+  testUrl: isImgixUrl
+};
+
+const IMGIX_LOADER_REGEX = /https?\:\/\/[^\/]+\.imgix\.net\/.+/;
+/**
+ * Tests whether a URL is from Imgix CDN.
+ */
+function isImgixUrl(url: string): boolean {
+  return IMGIX_LOADER_REGEX.test(url);
+}
 
 /**
  * Function that generates an ImageLoader for Imgix and turns it into an Angular provider.
