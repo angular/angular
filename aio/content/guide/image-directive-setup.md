@@ -23,7 +23,7 @@ Based on the image services commonly used with Angular applications, `NgOptimize
 | Image Service | Angular API | Documentation |
 |:--- |:--- |:--- |
 | Cloudflare Image Resizing | `provideCloudflareLoader` | [Documentation](https://developers.cloudflare.com/images/image-resizing/) |
-| Cloudinary | `provideCloudinaryLoader` | [Documentation](https://developers.cloudflare.com/images/image-resizing/) |  |
+| Cloudinary | `provideCloudinaryLoader` | [Documentation](https://cloudinary.com/documentation/resizing_and_cropping) |
 | ImageKit | `provideImageKitLoader` | [Documentation](https://docs.imagekit.io/) |
 | Imgix | `provideImgixLoader` | [Documentation](https://docs.imgix.com/) |
 
