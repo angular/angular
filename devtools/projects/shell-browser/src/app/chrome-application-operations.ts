@@ -12,10 +12,11 @@ import {ApplicationOperations} from 'ng-devtools';
 import {DirectivePosition, ElementPosition} from 'protocol';
 
 export class ChromeApplicationOperations extends ApplicationOperations {
-  viewSource(position: ElementPosition): void {
+  viewSource(position: ElementPosition, directiveIndex: number): void {
     if (chrome.devtools) {
       chrome.devtools.inspectedWindow.eval(
-          `inspect(inspectedApplication.findConstructorByPosition('${position}'))`);
+          `inspect(inspectedApplication.findConstructorByPosition('${position}', ${
+              directiveIndex}))`);
     }
   }
 

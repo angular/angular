@@ -18,6 +18,6 @@ import {FlatNode} from '../property-resolver/element-property-resolver';
 })
 export class PropertyTabComponent {
   @Input() currentSelectedElement: IndexedNode;
-  @Output() viewSource = new EventEmitter<void>();
+  @Output() viewSource = new EventEmitter<string>();
   @Output() inspect = new EventEmitter<{node: FlatNode; directivePosition: DirectivePosition}>();
 }

@@ -19,10 +19,4 @@ import {IndexedNode} from '../directive-forest/index-forest';
 export class PropertyTabHeaderComponent {
   @Input() currentSelectedElement: IndexedNode;
   @Input() currentDirectives: string[]|undefined;
-  @Output() viewSource = new EventEmitter<void>();
-
-  handleViewSource(event: MouseEvent): void {
-    event.stopPropagation();
-    this.viewSource.emit();
-  }
 }
