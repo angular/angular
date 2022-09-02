@@ -169,8 +169,8 @@ Books
 
 <!-- vale Angular.Google_Quotes = NO -->
 
-*   "A Web for Everyone: Designing Accessible User Experiences", Sarah Horton and Whitney Quesenbery
-*   "Inclusive Design Patterns", Heydon Pickering
+*   "A Web for Everyone: Designing Accessible User Experiences," Sarah Horton and Whitney Quesenbery
+*   "Inclusive Design Patterns," Heydon Pickering
 
 <!-- vale Angular.Google_Quotes = YES -->
 
