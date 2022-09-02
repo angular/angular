@@ -9,7 +9,7 @@ StackBlitz is a browser-based development environment where you can create, save
 
 ## Prerequisites
 
-To get the most out of this tutorial you should already have a basic understanding of the following.
+To get the most out of this tutorial, you should already have a basic understanding of the following.
 
 *   [HTML](https://developer.mozilla.org/docs/Learn/HTML "Learning HTML: Guides and tutorials")
 *   [JavaScript](https://developer.mozilla.org/docs/Web/JavaScript "JavaScript")
@@ -24,20 +24,20 @@ Components define areas of responsibility in the UI that let you reuse sets of U
 
 A component consists of three things:
 
-|                           | Details |
+| Component Part            | Details |
 |:---                       |:---     |
-| A component class         | Handles data and functionality. |
-| An HTML template          | Determines the UI.              |
-| Component-specific styles | Define the look and feel.       |
+| A component class         | Handles data and functionality |
+| An HTML template          | Determines the UI              |
+| Component-specific styles | Define the look and feel       |
 
-This guide demonstrates building an application with the following components.
+This guide demonstrates building an application with the following components:
 
 | Components             | Details |
 |:---                    |:---     |
-| `<app-root>`           | The first component to load and the container for the other components. |
-| `<app-top-bar>`        | The store name and checkout button.                                     |
-| `<app-product-list>`   | The product list.                                                       |
-| `<app-product-alerts>` | A component that contains the application's alerts.                     |
+| `<app-root>`           | The first component to load and the container for the other components |
+| `<app-top-bar>`        | The store name and checkout button                                     |
+| `<app-product-list>`   | The product list                                                       |
+| `<app-product-alerts>` | A component that contains the application's alerts                     |
 
 <div class="lightbox">
 
@@ -181,7 +181,7 @@ The `ProductListComponent` also defines a `products` property that contains impo
 The next step is to create a new alert feature that uses product data from the `ProductListComponent`.
 The alert checks the product's price, and, if the price is greater than &dollar;700, displays a **Notify Me** button that lets users sign up for notifications when the product goes on sale.
 
-This section walks you through creating a child component, `ProductAlertsComponent` that can receive data from its parent component, `ProductListComponent`.
+This section walks you through creating a child component, `ProductAlertsComponent`, that can receive data from its parent component, `ProductListComponent`.
 
 1.  Click on the plus sign above the current terminal to create a new terminal to run the command to generate the component.
 
@@ -191,11 +191,11 @@ This section walks you through creating a child component, `ProductAlertsCompone
 
     </div>
 
-1.  In the new terminal, generate a new component named `product-alerts` by running the following command.
+1.  In the new terminal, generate a new component named `product-alerts` by running the following command:
 
     <code-example format="shell" language="shell">
 
-    ng generate component product-alerts
+    `ng generate component product-alerts`
   
     </code-example>
 
