@@ -6,7 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createImageLoader, ImageLoaderConfig} from './image_loader';
+import {createImageLoader, ImageLoaderConfig, ImageLoaderInfo} from './image_loader';
+
+/**
+ * Name and URL tester for ImageKit.
+ */
+export const imageKitLoaderInfo: ImageLoaderInfo = {
+  name: 'ImageKit',
+  testUrl: isImageKitUrl
+};
+
+const IMAGE_KIT_LOADER_REGEX = /https?\:\/\/[^\/]+\.imagekit\.io\/.+/;
+/**
+ * Tests whether a URL is from ImageKit CDN.
+ */
+function isImageKitUrl(url: string): boolean {
+  return IMAGE_KIT_LOADER_REGEX.test(url);
+}
 
 /**
  * Function that generates an ImageLoader for ImageKit and turns it into an Angular provider.
