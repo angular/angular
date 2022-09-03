@@ -8,14 +8,14 @@ import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ContentContainerComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 
-// @public
+// @public @deprecated
 export interface LegacyCardHarnessFilters extends BaseHarnessFilters {
     subtitle?: string | RegExp;
     text?: string | RegExp;
     title?: string | RegExp;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyCardHarness extends ContentContainerComponentHarness<MatLegacyCardSection> {
     getSubtitleText(): Promise<string>;
     getText(): Promise<string>;
@@ -24,7 +24,7 @@ export class MatLegacyCardHarness extends ContentContainerComponentHarness<MatLe
     static with(options?: LegacyCardHarnessFilters): HarnessPredicate<MatLegacyCardHarness>;
 }
 
-// @public
+// @public @deprecated
 export const enum MatLegacyCardSection {
     // (undocumented)
     ACTIONS = ".mat-card-actions",

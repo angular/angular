@@ -9,7 +9,11 @@
 import {HarnessPredicate, ContentContainerComponentHarness} from '@angular/cdk/testing';
 import {LegacyCardHarnessFilters} from './card-harness-filters';
 
-/** Selectors for different sections of the mat-card that can container user content. */
+/**
+ * Selectors for different sections of the mat-card that can container user content.
+ * @deprecated Use `MatCardSection` from `@angular/material/card/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export const enum MatLegacyCardSection {
   HEADER = '.mat-card-header',
   CONTENT = '.mat-card-content',
@@ -17,7 +21,11 @@ export const enum MatLegacyCardSection {
   FOOTER = '.mat-card-footer',
 }
 
-/** Harness for interacting with a standard mat-card in tests. */
+/**
+ * Harness for interacting with a standard mat-card in tests.
+ * @deprecated Use `MatCardHarness` from `@angular/material/card/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyCardHarness extends ContentContainerComponentHarness<MatLegacyCardSection> {
   /** The selector for the host element of a `MatCard` instance. */
   static hostSelector = '.mat-card';
