@@ -11,6 +11,8 @@ import {MAT_OPTGROUP, _MatOptgroupBase} from '@angular/material/core';
 
 /**
  * Component that is used to group instances of `mat-option`.
+ * @deprecated Use `MatOptgroup` from `@angular/material/core` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: 'mat-optgroup',

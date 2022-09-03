@@ -118,7 +118,7 @@ export { MatLegacyLineModule }
 
 export { MatLegacyNativeDateModule }
 
-// @public
+// @public @deprecated
 export class MatLegacyOptgroup extends _MatOptgroupBase {
     // (undocumented)
     static ɵcmp: i0.ɵɵComponentDeclaration<MatLegacyOptgroup, "mat-optgroup", ["matOptgroup"], { "disabled": "disabled"; }, {}, never, ["*", "mat-option, ng-container"], false>;
@@ -126,7 +126,7 @@ export class MatLegacyOptgroup extends _MatOptgroupBase {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyOptgroup, never>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyOption<T = any> extends _MatOptionBase<T> {
     constructor(element: ElementRef<HTMLElement>, changeDetectorRef: ChangeDetectorRef, parent: MatOptionParentComponent, group: MatLegacyOptgroup);
     // (undocumented)
@@ -135,7 +135,7 @@ export class MatLegacyOption<T = any> extends _MatOptionBase<T> {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyOption<any>, [null, null, { optional: true; }, { optional: true; }]>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyOptionModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyOptionModule, never>;

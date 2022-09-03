@@ -11,7 +11,11 @@ import {OptgroupHarnessFilters} from './optgroup-harness-filters';
 import {MatLegacyOptionHarness} from './option-harness';
 import {OptionHarnessFilters} from './option-harness-filters';
 
-/** Harness for interacting with a `mat-optgroup` in tests. */
+/**
+ * Harness for interacting with a `mat-optgroup` in tests.
+ * @deprecated Use `MatOptgroupHarness` from `@angular/material/core/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyOptgroupHarness extends ComponentHarness {
   /** Selector used to locate option group instances. */
   static hostSelector = '.mat-optgroup';

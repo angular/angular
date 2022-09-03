@@ -12,6 +12,10 @@ import {MatRippleModule, MatPseudoCheckboxModule, MatCommonModule} from '@angula
 import {MatLegacyOption} from './option';
 import {MatLegacyOptgroup} from './optgroup';
 
+/**
+ * @deprecated Use `MatOptionModule` from `@angular/material/core` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @NgModule({
   imports: [MatRippleModule, CommonModule, MatCommonModule, MatPseudoCheckboxModule],
   exports: [MatLegacyOption, MatLegacyOptgroup],
@@ -23,12 +27,51 @@ export * from './option';
 export * from './optgroup';
 
 export {
+  /**
+   * @deprecated Use `MAT_OPTGROUP` from `@angular/material/core` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
   MAT_OPTGROUP,
+
+  /**
+   * @deprecated Use `MatOptionSelectionChange` from `@angular/material/core` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
   MatOptionSelectionChange,
+
+  /**
+   * @deprecated Use `MatOptionParentComponent` from `@angular/material/core` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
   MatOptionParentComponent,
+
+  /**
+   * @deprecated Use `MAT_OPTION_PARENT_COMPONENT` from `@angular/material/core` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
   MAT_OPTION_PARENT_COMPONENT,
+
+  /**
+   * @deprecated Use `_countGroupLabelsBeforeOption` from `@angular/material/core` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
   _countGroupLabelsBeforeOption,
+
+  /**
+   * @deprecated Use `_getOptionScrollPosition` from `@angular/material/core` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
   _getOptionScrollPosition,
+
+  /**
+   * @deprecated Use `_MatOptionBase` from `@angular/material/core` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
   _MatOptionBase,
+
+  /**
+   * @deprecated Use `_MatOptgroupBase` from `@angular/material/core` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
   _MatOptgroupBase,
 } from '@angular/material/core';

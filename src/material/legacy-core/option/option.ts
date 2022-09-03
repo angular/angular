@@ -25,6 +25,8 @@ import {MatLegacyOptgroup} from './optgroup';
 
 /**
  * Single option inside of a `<mat-select>` element.
+ * @deprecated Use `MatOption` from `@angular/material/core` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: 'mat-option',

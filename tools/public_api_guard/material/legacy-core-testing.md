@@ -8,7 +8,7 @@ import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 
-// @public
+// @public @deprecated
 export class MatLegacyOptgroupHarness extends ComponentHarness {
     getLabelText(): Promise<string>;
     getOptions(filter?: OptionHarnessFilters): Promise<MatLegacyOptionHarness[]>;
@@ -17,7 +17,7 @@ export class MatLegacyOptgroupHarness extends ComponentHarness {
     static with(options?: OptgroupHarnessFilters): HarnessPredicate<MatLegacyOptgroupHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyOptionHarness extends ComponentHarness {
     click(): Promise<void>;
     getText(): Promise<string>;
@@ -29,13 +29,13 @@ export class MatLegacyOptionHarness extends ComponentHarness {
     static with(options?: OptionHarnessFilters): HarnessPredicate<MatLegacyOptionHarness>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface OptgroupHarnessFilters extends BaseHarnessFilters {
     // (undocumented)
     labelText?: string | RegExp;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface OptionHarnessFilters extends BaseHarnessFilters {
     // (undocumented)
     isSelected?: boolean;
