@@ -14,16 +14,51 @@ export {
 export {MatLegacyCheckboxModule} from './checkbox-module';
 
 export {
-  MAT_CHECKBOX_REQUIRED_VALIDATOR as MAT_LEGACY_CHECKBOX_REQUIRED_VALIDATOR,
-  MatCheckboxClickAction as MatLegacyCheckboxClickAction,
-  MatCheckboxRequiredValidator as MatLegacyCheckboxRequiredValidator,
-  _MatCheckboxRequiredValidatorModule as _MatLegacyCheckboxRequiredValidatorModule,
   /**
-   * @deprecated
-   * @breaking-change 9.0.0
+   * @deprecated Use `MAT_CHECKBOX_REQUIRED_VALIDATOR` from `@angular/material/checkbox` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
+  MAT_CHECKBOX_REQUIRED_VALIDATOR as MAT_LEGACY_CHECKBOX_REQUIRED_VALIDATOR,
+
+  /**
+   * @deprecated Use `MatCheckboxClickAction` from `@angular/material/checkbox` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
+  MatCheckboxClickAction as MatLegacyCheckboxClickAction,
+
+  /**
+   * @deprecated Use `MatCheckboxRequiredValidator` from `@angular/material/checkbox` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
+  MatCheckboxRequiredValidator as MatLegacyCheckboxRequiredValidator,
+
+  /**
+   * @deprecated Use `_MatCheckboxRequiredValidatorModule` from `@angular/material/checkbox` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
+  _MatCheckboxRequiredValidatorModule as _MatLegacyCheckboxRequiredValidatorModule,
+
+  /**
+   * @deprecated Use `TransitionCheckState` from `@angular/material/checkbox` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
    */
   TransitionCheckState as LegacyTransitionCheckState,
+
+  /**
+   * @deprecated Use `MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY` from `@angular/material/checkbox` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
   MAT_CHECKBOX_DEFAULT_OPTIONS_FACTORY as MAT_LEGACY_CHECKBOX_DEFAULT_OPTIONS_FACTORY,
+
+  /**
+   * @deprecated Use `MatCheckboxDefaultOptions` from `@angular/material/checkbox` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
   MatCheckboxDefaultOptions as MatLegacyCheckboxDefaultOptions,
+
+  /**
+   * @deprecated Use `MAT_CHECKBOX_DEFAULT_OPTIONS` from `@angular/material/checkbox` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+   * @breaking-change 17.0.0
+   */
   MAT_CHECKBOX_DEFAULT_OPTIONS as MAT_LEGACY_CHECKBOX_DEFAULT_OPTIONS,
 } from '@angular/material/checkbox';

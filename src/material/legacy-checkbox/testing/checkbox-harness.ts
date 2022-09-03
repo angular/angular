@@ -9,7 +9,11 @@
 import {HarnessPredicate} from '@angular/cdk/testing';
 import {_MatCheckboxHarnessBase, CheckboxHarnessFilters} from '@angular/material/checkbox/testing';
 
-/** Harness for interacting with a standard mat-checkbox in tests. */
+/**
+ * Harness for interacting with a standard mat-checkbox in tests.
+ * @deprecated Use `MatCheckboxHarness` from `@angular/material/checkbox/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyCheckboxHarness extends _MatCheckboxHarnessBase {
   /** The selector for the host element of a checkbox instance. */
   static hostSelector = '.mat-checkbox';

@@ -12,7 +12,7 @@ import { TestElement } from '@angular/cdk/testing';
 
 export { LegacyCheckboxHarnessFilters }
 
-// @public
+// @public @deprecated
 export class MatLegacyCheckboxHarness extends _MatCheckboxHarnessBase {
     static hostSelector: string;
     // (undocumented)

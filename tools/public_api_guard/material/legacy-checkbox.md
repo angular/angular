@@ -27,7 +27,7 @@ import { OnDestroy } from '@angular/core';
 
 export { LegacyTransitionCheckState }
 
-// @public
+// @public @deprecated
 export const MAT_LEGACY_CHECKBOX_CONTROL_VALUE_ACCESSOR: any;
 
 export { MAT_LEGACY_CHECKBOX_DEFAULT_OPTIONS }
@@ -36,7 +36,7 @@ export { MAT_LEGACY_CHECKBOX_DEFAULT_OPTIONS_FACTORY }
 
 export { MAT_LEGACY_CHECKBOX_REQUIRED_VALIDATOR }
 
-// @public
+// @public @deprecated
 export class MatLegacyCheckbox extends _MatCheckboxBase<MatLegacyCheckboxChange> implements AfterViewInit, OnDestroy {
     constructor(elementRef: ElementRef<HTMLElement>, changeDetectorRef: ChangeDetectorRef, _focusMonitor: FocusMonitor, ngZone: NgZone, tabIndex: string, animationMode?: string, options?: MatLegacyCheckboxDefaultOptions);
     // (undocumented)
@@ -64,7 +64,7 @@ export class MatLegacyCheckbox extends _MatCheckboxBase<MatLegacyCheckboxChange>
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCheckbox, [null, null, null, null, { attribute: "tabindex"; }, { optional: true; }, { optional: true; }]>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyCheckboxChange {
     checked: boolean;
     source: MatLegacyCheckbox;
@@ -74,7 +74,7 @@ export { MatLegacyCheckboxClickAction }
 
 export { MatLegacyCheckboxDefaultOptions }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyCheckboxModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyCheckboxModule, never>;

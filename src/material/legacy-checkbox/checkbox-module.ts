@@ -12,6 +12,10 @@ import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatLegacyCheckbox} from './checkbox';
 import {_MatCheckboxRequiredValidatorModule} from '@angular/material/checkbox';
 
+/**
+ * @deprecated Use `MatCheckboxModule` from `@angular/material/checkbox` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @NgModule({
   imports: [MatRippleModule, MatCommonModule, ObserversModule, _MatCheckboxRequiredValidatorModule],
   exports: [MatLegacyCheckbox, MatCommonModule, _MatCheckboxRequiredValidatorModule],
