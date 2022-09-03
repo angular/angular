@@ -17,6 +17,10 @@ import {MatLegacyAutocomplete} from './autocomplete';
 import {MatLegacyAutocompleteTrigger} from './autocomplete-trigger';
 import {MatLegacyAutocompleteOrigin} from './autocomplete-origin';
 
+/**
+ * @deprecated Use `MatAutocompleteModule` from `@angular/material/autocomplete` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @NgModule({
   imports: [OverlayModule, MatLegacyOptionModule, MatCommonModule, CommonModule],
   exports: [

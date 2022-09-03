@@ -23,6 +23,10 @@ import {
 } from '@angular/material/legacy-core';
 import {_MatAutocompleteBase} from '@angular/material/autocomplete';
 
+/**
+ * @deprecated Use `MatAutocomplete` from `@angular/material/autocomplete` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @Component({
   selector: 'mat-autocomplete',
   templateUrl: 'autocomplete.html',

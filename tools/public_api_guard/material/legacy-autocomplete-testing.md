@@ -12,12 +12,12 @@ import { MatLegacyOptionHarness } from '@angular/material/legacy-core/testing';
 import { OptgroupHarnessFilters } from '@angular/material/legacy-core/testing';
 import { OptionHarnessFilters } from '@angular/material/legacy-core/testing';
 
-// @public
+// @public @deprecated
 export interface LegacyAutocompleteHarnessFilters extends BaseHarnessFilters {
     value?: string | RegExp;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyAutocompleteHarness extends _MatAutocompleteHarnessBase<typeof MatLegacyOptionHarness, MatLegacyOptionHarness, OptionHarnessFilters, typeof MatLegacyOptgroupHarness, MatLegacyOptgroupHarness, OptgroupHarnessFilters> {
     static hostSelector: string;
     // (undocumented)

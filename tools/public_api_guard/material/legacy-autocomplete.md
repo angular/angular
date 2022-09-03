@@ -38,10 +38,10 @@ export { MAT_LEGACY_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY }
 
 export { MAT_LEGACY_AUTOCOMPLETE_SCROLL_STRATEGY_FACTORY_PROVIDER }
 
-// @public
+// @public @deprecated
 export const MAT_LEGACY_AUTOCOMPLETE_VALUE_ACCESSOR: any;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyAutocomplete extends _MatAutocompleteBase {
     // (undocumented)
     protected _hiddenClass: string;
@@ -59,7 +59,7 @@ export { MatLegacyAutocompleteActivatedEvent }
 
 export { MatLegacyAutocompleteDefaultOptions }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyAutocompleteModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyAutocompleteModule, never>;
@@ -69,7 +69,7 @@ export class MatLegacyAutocompleteModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<MatLegacyAutocompleteModule, [typeof i1.MatLegacyAutocomplete, typeof i2.MatLegacyAutocompleteTrigger, typeof i3.MatLegacyAutocompleteOrigin], [typeof i4.OverlayModule, typeof i5.MatLegacyOptionModule, typeof i6.MatCommonModule, typeof i7.CommonModule], [typeof i1.MatLegacyAutocomplete, typeof i2.MatLegacyAutocompleteTrigger, typeof i3.MatLegacyAutocompleteOrigin, typeof i8.CdkScrollableModule, typeof i5.MatLegacyOptionModule, typeof i6.MatCommonModule]>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyAutocompleteOrigin extends _MatAutocompleteOriginBase {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyAutocompleteOrigin, "[matAutocompleteOrigin]", ["matAutocompleteOrigin"], {}, {}, never, never, false>;
@@ -79,7 +79,7 @@ export class MatLegacyAutocompleteOrigin extends _MatAutocompleteOriginBase {
 
 export { MatLegacyAutocompleteSelectedEvent }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyAutocompleteTrigger extends _MatAutocompleteTriggerBase {
     // (undocumented)
     protected _aboveClass: string;
