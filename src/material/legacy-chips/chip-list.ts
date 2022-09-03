@@ -70,7 +70,11 @@ const _MatChipListBase = mixinErrorState(
 // Increasing integer for generating unique ids for chip-list components.
 let nextUniqueId = 0;
 
-/** Change event object that is emitted when the chip list value has changed. */
+/**
+ * Change event object that is emitted when the chip list value has changed.
+ * @deprecated Use `MatChipListChange` from `@angular/material/chips` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyChipListChange {
   constructor(
     /** Chip list that emitted the event. */
@@ -82,6 +86,8 @@ export class MatLegacyChipListChange {
 
 /**
  * A material design chips component (named ChipList for its similarity to the List component).
+ * @deprecated Use `MatChipList` from `@angular/material/chips` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Component({
   selector: 'mat-chip-list',

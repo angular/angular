@@ -31,6 +31,10 @@ const CHIP_DECLARATIONS = [
   MatLegacyChipTrailingIcon,
 ];
 
+/**
+ * @deprecated Use `MatChipsModule` from `@angular/material/chips` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 @NgModule({
   imports: [MatCommonModule],
   exports: CHIP_DECLARATIONS,

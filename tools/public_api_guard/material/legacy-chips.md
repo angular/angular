@@ -42,19 +42,19 @@ import { RippleTarget } from '@angular/material/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Subject } from 'rxjs';
 
-// @public
+// @public @deprecated
 export const MAT_LEGACY_CHIP_AVATAR: InjectionToken<MatLegacyChipAvatar>;
 
-// @public
+// @public @deprecated
 export const MAT_LEGACY_CHIP_REMOVE: InjectionToken<MatLegacyChipRemove>;
 
-// @public
+// @public @deprecated
 export const MAT_LEGACY_CHIP_TRAILING_ICON: InjectionToken<MatLegacyChipTrailingIcon>;
 
-// @public
+// @public @deprecated
 export const MAT_LEGACY_CHIPS_DEFAULT_OPTIONS: InjectionToken<MatLegacyChipsDefaultOptions>;
 
-// @public
+// @public @deprecated
 export class MatLegacyChip extends _MatChipMixinBase implements FocusableOption, OnDestroy, CanColor, CanDisableRipple, RippleTarget, HasTabIndex, CanDisable {
     constructor(elementRef: ElementRef<HTMLElement>, _ngZone: NgZone, platform: Platform, globalRippleOptions: RippleGlobalOptions | null, _changeDetectorRef: ChangeDetectorRef, _document: any, animationMode?: string, tabIndex?: string);
     // (undocumented)
@@ -114,7 +114,7 @@ export class MatLegacyChip extends _MatChipMixinBase implements FocusableOption,
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyChip, [null, null, null, { optional: true; }, null, null, { optional: true; }, { attribute: "tabindex"; }]>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyChipAvatar {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyChipAvatar, "mat-chip-avatar, [matChipAvatar]", never, {}, {}, never, never, false>;
@@ -122,12 +122,12 @@ export class MatLegacyChipAvatar {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyChipAvatar, never>;
 }
 
-// @public
+// @public @deprecated
 export interface MatLegacyChipEvent {
     chip: MatLegacyChip;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyChipInput implements MatLegacyChipTextControl, OnChanges, OnDestroy, AfterContentInit {
     constructor(_elementRef: ElementRef<HTMLInputElement>, _defaultOptions: MatLegacyChipsDefaultOptions);
     get addOnBlur(): boolean;
@@ -170,7 +170,7 @@ export class MatLegacyChipInput implements MatLegacyChipTextControl, OnChanges, 
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyChipInput, never>;
 }
 
-// @public
+// @public @deprecated
 export interface MatLegacyChipInputEvent {
     chipInput: MatLegacyChipInput;
     // @deprecated
@@ -178,7 +178,7 @@ export interface MatLegacyChipInputEvent {
     value: string;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyChipList extends _MatChipListBase implements MatLegacyFormFieldControl<any>, ControlValueAccessor, AfterContentInit, DoCheck, OnInit, OnDestroy, CanUpdateErrorState {
     constructor(_elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _dir: Directionality, _parentForm: NgForm, _parentFormGroup: FormGroupDirective, _defaultErrorStateMatcher: ErrorStateMatcher, ngControl: NgControl);
     _allowFocusEscape(): void;
@@ -271,7 +271,7 @@ export class MatLegacyChipList extends _MatChipListBase implements MatLegacyForm
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyChipList, [null, null, { optional: true; }, { optional: true; }, { optional: true; }, null, { optional: true; self: true; }]>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyChipListChange {
     constructor(
     source: MatLegacyChipList,
@@ -280,7 +280,7 @@ export class MatLegacyChipListChange {
     value: any;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyChipRemove {
     constructor(_parentChip: MatLegacyChip, elementRef: ElementRef<HTMLElement>);
     _handleClick(event: Event): void;
@@ -292,12 +292,12 @@ export class MatLegacyChipRemove {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyChipRemove, never>;
 }
 
-// @public
+// @public @deprecated
 export interface MatLegacyChipsDefaultOptions {
     separatorKeyCodes: readonly number[] | ReadonlySet<number>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyChipSelectionChange {
     constructor(
     source: MatLegacyChip,
@@ -308,7 +308,7 @@ export class MatLegacyChipSelectionChange {
     source: MatLegacyChip;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyChipsModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyChipsModule, never>;
@@ -318,7 +318,7 @@ export class MatLegacyChipsModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<MatLegacyChipsModule, [typeof i1.MatLegacyChipList, typeof i2.MatLegacyChip, typeof i3.MatLegacyChipInput, typeof i2.MatLegacyChipRemove, typeof i2.MatLegacyChipAvatar, typeof i2.MatLegacyChipTrailingIcon], [typeof i4.MatCommonModule], [typeof i1.MatLegacyChipList, typeof i2.MatLegacyChip, typeof i3.MatLegacyChipInput, typeof i2.MatLegacyChipRemove, typeof i2.MatLegacyChipAvatar, typeof i2.MatLegacyChipTrailingIcon]>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyChipTrailingIcon {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatLegacyChipTrailingIcon, "mat-chip-trailing-icon, [matChipTrailingIcon]", never, {}, {}, never, never, false>;

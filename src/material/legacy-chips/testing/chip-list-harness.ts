@@ -15,7 +15,11 @@ import {
   LegacyChipInputHarnessFilters,
 } from './chip-harness-filters';
 
-/** Base class for chip list harnesses. */
+/**
+ * Base class for chip list harnesses.
+ * @deprecated Use `class` from `@angular/material/chips/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export abstract class _MatChipListHarnessBase extends ComponentHarness {
   /** Gets whether the chip list is disabled. */
   async isDisabled(): Promise<boolean> {
@@ -44,7 +48,11 @@ export abstract class _MatChipListHarnessBase extends ComponentHarness {
   }
 }
 
-/** Harness for interacting with a standard chip list in tests. */
+/**
+ * Harness for interacting with a standard chip list in tests.
+ * @deprecated Use `MatChipListHarness` from `@angular/material/chips/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyChipListHarness extends _MatChipListHarnessBase {
   /** The selector for the host element of a `MatChipList` instance. */
   static hostSelector = '.mat-chip-list';

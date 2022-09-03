@@ -7,7 +7,11 @@
  */
 import {BaseHarnessFilters} from '@angular/cdk/testing';
 
-/** A set of criteria that can be used to filter a list of chip instances. */
+/**
+ * A set of criteria that can be used to filter a list of chip instances.
+ * @deprecated Use `ChipHarnessFilters` from `@angular/material/chips/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export interface LegacyChipHarnessFilters extends BaseHarnessFilters {
   /** Only find instances whose text matches the given value. */
   text?: string | RegExp;
@@ -19,19 +23,35 @@ export interface LegacyChipHarnessFilters extends BaseHarnessFilters {
   selected?: boolean;
 }
 
-/** A set of criteria that can be used to filter a list of selectable chip instances. */
+/**
+ * A set of criteria that can be used to filter a list of selectable chip instances.
+ * @deprecated Use `ChipOptionHarnessFilters` from `@angular/material/chips/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export interface LegacyChipOptionHarnessFilters extends LegacyChipHarnessFilters {
   /** Only find chip instances whose selected state matches the given value. */
   selected?: boolean;
 }
 
-/** A set of criteria that can be used to filter chip list instances. */
+/**
+ * A set of criteria that can be used to filter chip list instances.
+ * @deprecated Use `ChipListHarnessFilters` from `@angular/material/chips/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export interface LegacyChipListHarnessFilters extends BaseHarnessFilters {}
 
-/** A set of criteria that can be used to filter selectable chip list instances. */
+/**
+ * A set of criteria that can be used to filter selectable chip list instances.
+ * @deprecated Use `ChipListboxHarnessFilters` from `@angular/material/chips/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export interface LegacyChipListboxHarnessFilters extends BaseHarnessFilters {}
 
-/** A set of criteria that can be used to filter a list of `MatChipListInputHarness` instances. */
+/**
+ * A set of criteria that can be used to filter a list of `MatChipListInputHarness` instances.
+ * @deprecated Use `ChipInputHarnessFilters` from `@angular/material/chips/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export interface LegacyChipInputHarnessFilters extends BaseHarnessFilters {
   /** Filters based on the value of the input. */
   value?: string | RegExp;
@@ -39,8 +59,16 @@ export interface LegacyChipInputHarnessFilters extends BaseHarnessFilters {
   placeholder?: string | RegExp;
 }
 
-/** A set of criteria that can be used to filter a list of `MatChipRemoveHarness` instances. */
+/**
+ * A set of criteria that can be used to filter a list of `MatChipRemoveHarness` instances.
+ * @deprecated Use `ChipRemoveHarnessFilters` from `@angular/material/chips/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export interface LegacyChipRemoveHarnessFilters extends BaseHarnessFilters {}
 
-/** A set of criteria that can be used to filter a list of `MatChipAvatarHarness` instances. */
+/**
+ * A set of criteria that can be used to filter a list of `MatChipAvatarHarness` instances.
+ * @deprecated Use `ChipAvatarHarnessFilters` from `@angular/material/chips/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export interface LegacyChipAvatarHarnessFilters extends BaseHarnessFilters {}

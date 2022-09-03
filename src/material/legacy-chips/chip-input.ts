@@ -26,7 +26,11 @@ import {
 import {MatLegacyChipList} from './chip-list';
 import {MatLegacyChipTextControl} from './chip-text-control';
 
-/** Represents an input event on a `matChipInput`. */
+/**
+ * Represents an input event on a `matChipInput`.
+ * @deprecated Use `MatChipInputEvent` from `@angular/material/chips` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export interface MatLegacyChipInputEvent {
   /**
    * The native `<input>` element that the event is being fired for.
@@ -48,6 +52,8 @@ let nextUniqueId = 0;
 /**
  * Directive that adds chip-specific behaviors to an input element inside `<mat-form-field>`.
  * May be placed inside or outside of an `<mat-chip-list>`.
+ * @deprecated Use `MatChipInput` from `@angular/material/chips` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
  */
 @Directive({
   selector: 'input[matChipInputFor]',

@@ -10,41 +10,41 @@ import { ContentContainerComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 import { TestKey } from '@angular/cdk/testing';
 
-// @public
+// @public @deprecated
 export interface LegacyChipAvatarHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public
+// @public @deprecated
 export interface LegacyChipHarnessFilters extends BaseHarnessFilters {
     // @deprecated
     selected?: boolean;
     text?: string | RegExp;
 }
 
-// @public
+// @public @deprecated
 export interface LegacyChipInputHarnessFilters extends BaseHarnessFilters {
     placeholder?: string | RegExp;
     value?: string | RegExp;
 }
 
-// @public
+// @public @deprecated
 export interface LegacyChipListboxHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public
+// @public @deprecated
 export interface LegacyChipListHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public
+// @public @deprecated
 export interface LegacyChipOptionHarnessFilters extends LegacyChipHarnessFilters {
     selected?: boolean;
 }
 
-// @public
+// @public @deprecated
 export interface LegacyChipRemoveHarnessFilters extends BaseHarnessFilters {
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyChipHarness extends ContentContainerComponentHarness {
     // @deprecated
     deselect(): Promise<void>;
@@ -63,7 +63,7 @@ export class MatLegacyChipHarness extends ContentContainerComponentHarness {
     static with(options?: LegacyChipHarnessFilters): HarnessPredicate<MatLegacyChipHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyChipInputHarness extends ComponentHarness {
     blur(): Promise<void>;
     focus(): Promise<void>;
@@ -79,7 +79,7 @@ export class MatLegacyChipInputHarness extends ComponentHarness {
     static with(options?: LegacyChipInputHarnessFilters): HarnessPredicate<MatLegacyChipInputHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyChipListboxHarness extends _MatChipListHarnessBase {
     getChips(filter?: LegacyChipOptionHarnessFilters): Promise<MatLegacyChipOptionHarness[]>;
     static hostSelector: string;
@@ -87,7 +87,7 @@ export class MatLegacyChipListboxHarness extends _MatChipListHarnessBase {
     static with(options?: LegacyChipListboxHarnessFilters): HarnessPredicate<MatLegacyChipListboxHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyChipListHarness extends _MatChipListHarnessBase {
     getChips(filter?: LegacyChipHarnessFilters): Promise<MatLegacyChipHarness[]>;
     getInput(filter?: LegacyChipInputHarnessFilters): Promise<MatLegacyChipInputHarness>;
@@ -97,7 +97,7 @@ export class MatLegacyChipListHarness extends _MatChipListHarnessBase {
     static with(options?: LegacyChipListHarnessFilters): HarnessPredicate<MatLegacyChipListHarness>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyChipOptionHarness extends MatLegacyChipHarness {
     deselect(): Promise<void>;
     static hostSelector: string;
@@ -107,7 +107,7 @@ export class MatLegacyChipOptionHarness extends MatLegacyChipHarness {
     static with(options?: LegacyChipOptionHarnessFilters): HarnessPredicate<MatLegacyChipOptionHarness>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyChipRemoveHarness extends ComponentHarness {
     click(): Promise<void>;
     // (undocumented)

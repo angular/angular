@@ -14,7 +14,11 @@ import {
 } from './chip-harness-filters';
 import {_MatChipListHarnessBase} from './chip-list-harness';
 
-/** Harness for interacting with a standard selectable chip list in tests. */
+/**
+ * Harness for interacting with a standard selectable chip list in tests.
+ * @deprecated Use `MatChipListboxHarness` from `@angular/material/chips/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyChipListboxHarness extends _MatChipListHarnessBase {
   /** The selector for the host element of a `MatChipList` instance. */
   static hostSelector = '.mat-chip-list';
