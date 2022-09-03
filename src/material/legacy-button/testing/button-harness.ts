@@ -10,7 +10,11 @@ import {ContentContainerComponentHarness, HarnessPredicate} from '@angular/cdk/t
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {LegacyButtonHarnessFilters} from './button-harness-filters';
 
-/** Harness for interacting with a standard mat-button in tests. */
+/**
+ * Harness for interacting with a standard mat-button in tests.
+ * @deprecated Use `MatButtonHarness` from `@angular/material/button/testing` instead. See https://material.angular.io/guide/mdc-migration for information about migrating.
+ * @breaking-change 17.0.0
+ */
 export class MatLegacyButtonHarness extends ContentContainerComponentHarness {
   // TODO(jelbourn) use a single class, like `.mat-button-base`
   /** The selector for the host element of a button instance. */

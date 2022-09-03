@@ -20,7 +20,7 @@ import { MatRipple } from '@angular/material/core';
 import { NgZone } from '@angular/core';
 import { OnDestroy } from '@angular/core';
 
-// @public
+// @public @deprecated
 export class MatLegacyAnchor extends MatLegacyButton implements AfterViewInit, OnDestroy {
     constructor(focusMonitor: FocusMonitor, elementRef: ElementRef, animationMode: string,
     _ngZone?: NgZone | undefined);
@@ -37,7 +37,7 @@ export class MatLegacyAnchor extends MatLegacyButton implements AfterViewInit, O
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyAnchor, [null, null, { optional: true; }, { optional: true; }]>;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyButton extends _MatButtonBase implements AfterViewInit, OnDestroy, CanDisable, CanColor, CanDisableRipple, FocusableOption {
     constructor(elementRef: ElementRef, _focusMonitor: FocusMonitor, _animationMode: string);
     // (undocumented)
@@ -61,7 +61,7 @@ export class MatLegacyButton extends _MatButtonBase implements AfterViewInit, On
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyButton, [null, null, { optional: true; }]>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export class MatLegacyButtonModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<MatLegacyButtonModule, never>;

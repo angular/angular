@@ -8,12 +8,12 @@ import { BaseHarnessFilters } from '@angular/cdk/testing';
 import { ContentContainerComponentHarness } from '@angular/cdk/testing';
 import { HarnessPredicate } from '@angular/cdk/testing';
 
-// @public
+// @public @deprecated
 export interface LegacyButtonHarnessFilters extends BaseHarnessFilters {
     text?: string | RegExp;
 }
 
-// @public
+// @public @deprecated
 export class MatLegacyButtonHarness extends ContentContainerComponentHarness {
     blur(): Promise<void>;
     click(relativeX: number, relativeY: number): Promise<void>;
