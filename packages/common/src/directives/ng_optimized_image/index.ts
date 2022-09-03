@@ -9,7 +9,7 @@
 // These exports represent the set of symbols exposed as a public API.
 export {provideCloudflareLoader} from './image_loaders/cloudflare_loader';
 export {provideCloudinaryLoader} from './image_loaders/cloudinary_loader';
-export {IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from './image_loaders/image_loader';
+export {createImageLoader, IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from './image_loaders/image_loader';
 export {provideImageKitLoader} from './image_loaders/imagekit_loader';
 export {provideImgixLoader} from './image_loaders/imgix_loader';
 export {NgOptimizedImage} from './ng_optimized_image';
