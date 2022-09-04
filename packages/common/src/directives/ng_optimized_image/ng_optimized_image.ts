@@ -6,14 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, inject, InjectionToken, Injector, Input, NgZone, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Directive, ElementRef, inject, InjectionToken, Injector, Input, NgZone, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
+import {isPlatformServer} from '../../platform_id';
 
 import {imgDirectiveDetails} from './error_helper';
 import {IMAGE_LOADER} from './image_loaders/image_loader';
 import {LCPImageObserver} from './lcp_image_observer';
 import {PreconnectLinkChecker} from './preconnect_link_checker';
+import {PreloadLinkCreator} from './preload-link-creator';
 
 /**
  * When a Base64-encoded image is passed as an input to the `NgOptimizedImage` directive,
@@ -207,6 +209,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private renderer = inject(Renderer2);
   private imgElement: HTMLImageElement = inject(ElementRef).nativeElement;
   private injector = inject(Injector);
+  private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
+  private readonly preloadLinkChecker = inject(PreloadLinkCreator);
 
   // a LCP image observer - should be injected only in the dev mode
   private lcpObserver = ngDevMode ? this.injector.get(LCPImageObserver) : null;
@@ -386,14 +390,28 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     this.setHostAttribute('fetchpriority', this.getFetchPriority());
     // The `src` and `srcset` attributes should be set last since other attributes
     // could affect the image's loading behavior.
-    this.setHostAttribute('src', this.getRewrittenSrc());
+    const rewrittenSrc = this.getRewrittenSrc();
+    this.setHostAttribute('src', rewrittenSrc);
+
+    let rewrittenSrcset: string|undefined = undefined;
+
     if (this.sizes) {
       this.setHostAttribute('sizes', this.sizes);
     }
+
     if (this.ngSrcset) {
-      this.setHostAttribute('srcset', this.getRewrittenSrcset());
+      rewrittenSrcset = this.getRewrittenSrcset();
     } else if (!this._disableOptimizedSrcset && !this.srcset) {
-      this.setHostAttribute('srcset', this.getAutomaticSrcset());
+      rewrittenSrcset = this.getAutomaticSrcset();
+    }
+
+    if (rewrittenSrcset) {
+      this.setHostAttribute('srcset', rewrittenSrcset);
+    }
+
+    if (this.isServer && this.priority) {
+      this.preloadLinkChecker.createPreloadLinkTag(
+          this.renderer, rewrittenSrc, rewrittenSrcset, this.sizes);
     }
   }
 
