@@ -24,3 +24,4 @@ prepends
 profiler
 rollout
 routable
+sideEffects
