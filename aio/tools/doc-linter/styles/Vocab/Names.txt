@@ -3,6 +3,7 @@ bazel
 bing
 bombasto
 chiho
+esbuild
 heydon
 homebrew
 jazdzewski

@@ -18,6 +18,7 @@ exceptions:
   - CLI
   - Code
   - Cosmos
+  - d.ts
   - Docker
   - ECMAScript
   - Emmet
@@ -39,9 +40,11 @@ exceptions:
   - NgModule
   - NgModules
   - Observable
+  - README
   - REPL
   - RxJS
   - Schematics
+  - sideEffects
   - Studio
   - Tour of Heroes
   - TypeScript
